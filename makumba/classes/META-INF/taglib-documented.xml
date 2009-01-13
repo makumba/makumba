@@ -21,38 +21,6 @@
     <see>value, object</see>
 
     <attribute>
-      <name>id</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Tag's identifier</description>
-      <comments>Fixed. Can be used to distinguish otherwise identical tags on a page (to avoid confusion by Makumba's JSP analyser)</comments>
-    </attribute>
-
-    <attribute>
-      <name>countVar</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>The java.lang.Integer variable that will contain the number of the current iteration.</description>
-      <comments>Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java scope at that point in the JSP. Deprecated, use mak:count() expression language function instead</comments>
-    </attribute>
-
-    <attribute>
-      <name>maxCountVar</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>The java.lang.Integer variable that will contain the total number of iterations.</description>
-      <comments>Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java scope at that point in the JSP. Deprecated, use mak:maxCount() expression language function instead</comments>
-    </attribute>
-
-    <attribute>
-      <name>separator</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Character string as separator between two list elements. It is not included before the first or after the last</description>
-      <comments><![CDATA[Deprecated, use <c:if test="${mak:count<mak:maxCount()}"> instead.]]></comments>
-    </attribute>
-
-    <attribute>
       <name>from</name>
       <required>true</required>
       <rtexprvalue>false</rtexprvalue>
@@ -90,6 +58,14 @@
       <rtexprvalue>false</rtexprvalue>
       <description>OQL GROUP BY  section</description>
       <comments>Fixed, can contain #{ JSP EL expressions }</comments>
+    </attribute>
+
+    <attribute>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Tag's identifier</description>
+      <comments>Fixed. Can be used to distinguish otherwise identical tags on a page (to avoid confusion by Makumba's JSP analyser)</comments>
     </attribute>
 
     <attribute>
@@ -160,6 +136,34 @@ LIMIT can limit the query time dramatically, but the children mak:lists are not 
       <description>Document me please</description>
       <comments>Document me please</comments>
     </attribute>    
+
+    <attribute>
+      <name>countVar</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>The java.lang.Integer variable that will contain the number of the current iteration.</description>
+      <comments>Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java scope at that point in the JSP. Deprecated: Use mak:count() expression language function instead</comments>
+      <deprecated>true</deprecated>
+    </attribute>
+
+    <attribute>
+      <name>maxCountVar</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>The java.lang.Integer variable that will contain the total number of iterations.</description>
+      <comments>Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java scope at that point in the JSP. Deprecated: use mak:maxCount() expression language function instead</comments>
+      <deprecated>true</deprecated>
+    </attribute>
+
+    <attribute>
+      <name>separator</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Character string as separator between two list elements. It is not included before the first or after the last</description>
+      <comments><![CDATA[Deprecated, use <c:if test="${mak:count<mak:maxCount()}"> instead.]]></comments>
+      <deprecated>true</deprecated>
+    </attribute>
+
   </tag>
 
 
@@ -172,18 +176,18 @@ LIMIT can limit the query time dramatically, but the children mak:lists are not 
     <description>Like list, but the query can only have zero or one result. A zero value for maxCountVar and countVar indicate that the object does not exist.</description>
     <see>list, value</see>
     
-    <attribute name="id" specifiedIn="list"/>
-    <attribute name="countVar" specifiedIn="list"/>
-    <attribute name="maxCountVar" specifiedIn="list"/>
     <attribute name="from" specifiedIn="list"/>
     <attribute name="variableFrom" specifiedIn="list"/>
     <attribute name="where" specifiedIn="list"/>
     <attribute name="groupBy" specifiedIn="list"/>
+    <attribute name="id" specifiedIn="list"/>
     <attribute name="db" specifiedIn="list"/>
     <attribute name="authorize" specifiedIn="list"/>
     <attribute name="editable" specifiedIn="list"/>
     <attribute name="logicClass" specifiedIn="list"/>
     <attribute name="editPage" specifiedIn="list"/>
+    <attribute name="countVar" specifiedIn="list"/>
+    <attribute name="maxCountVar" specifiedIn="list"/>
   </tag>
 
 
@@ -204,14 +208,14 @@ LIMIT can limit the query time dramatically, but the children mak:lists are not 
       <comments>Document me please</comments>
     </attribute>
 
-    <attribute name="id" specifiedIn="list"/>
-    <attribute name="separator" specifiedIn="list"/>
     <attribute name="orderBy" specifiedIn="list"/>
     <attribute name="groupBy" specifiedIn="list"/>
-    <attribute name="db" specifiedIn="list"/>
     <attribute name="offset" specifiedIn="list"/>
     <attribute name="limit" specifiedIn="list"/>
     <attribute name="defaultLimit" specifiedIn="list"/>
+    <attribute name="id" specifiedIn="list"/>
+    <attribute name="db" specifiedIn="list"/>
+    <attribute name="separator" specifiedIn="list"/>
   </tag>
 
 
@@ -510,8 +514,8 @@ Values are none (displayed in <mak:response/>), before (before the input), after
       <name>reloadFormOnError</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
+      <description>Indicates whether the form page shall be reloaded on an error, or the specified form action page will be loaded directly.</description>
+      <comments>Fixed. Values are true or false; defaults to false.</comments>
     </attribute>
 
     <attribute>
@@ -522,36 +526,12 @@ Values are none (displayed in <mak:response/>), before (before the input), after
       <comments>Rtexpr. Values are false (off), true (on submission) or live (while tpying).</comments>
     </attribute>
 
-    <attribute>
-      <name>styleId</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      <comments>results in id="..."</comments>
-    </attribute>
-
-    <attribute>
-      <name>styleClass</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      <comments>results in class="..."</comments>
-    </attribute>
-
-    <attribute>
-      <name>style</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
-    </attribute>
-
     <!--form specific:-->
     <attribute>
       <name>target</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Form-specific html tag attributes</description>
+      <description>Form-specific HTML tag attribute</description>
       <comments><![CDATA[The content is copied to the resulting <form...> tag. Careful with (escaping) quotes.]]></comments>
     </attribute>
 
@@ -559,7 +539,7 @@ Values are none (displayed in <mak:response/>), before (before the input), after
       <name>onReset</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Form-specific html tag attributes</description>
+      <description>Form-specific HTML tag attribute</description>
       <comments><![CDATA[The content is copied to the resulting <form...> tag. Careful with
           (escaping) quotes.]]></comments>
     </attribute>
@@ -568,98 +548,122 @@ Values are none (displayed in <mak:response/>), before (before the input), after
       <name>onSubmit</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Form-specific html tag attributes</description>
+      <description>Form-specific HTML tag attribute</description>
       <comments><![CDATA[The content is copied to the resulting <form...> tag. Careful with
           (escaping) quotes.]]></comments>
     </attribute>
 
     <!-- generic: -->
     <attribute>
+      <name>styleId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic HTML tag attribute</description>
+      <comments>results in id="..."</comments>
+    </attribute>
+
+    <attribute>
+      <name>styleClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic HTML tag attribute</description>
+      <comments>results in class="..."</comments>
+    </attribute>
+
+    <attribute>
+      <name>style</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic HTML tag attribute</description>
+      <comments>The content is copied to the resulting html tag. Careful with (escaping) quotes.</comments>
+    </attribute>
+
+    <attribute>
       <name>title</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
+      <description>Generic HTML tag attribute</description>
+      <comments>The content is copied to the resulting html tag. Careful with (escaping) quotes.</comments>
     </attribute>
 
     <attribute>
       <name>onClick</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
+      <description>Generic HTML tag attribute</description>
+      <comments>The content is copied to the resulting html tag. Careful with (escaping) quotes.</comments>
     </attribute>
 
     <attribute>
       <name>onDblClick</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
+      <description>Generic HTML tag attribute</description>
+      <comments>The content is copied to the resulting html tag. Careful with (escaping) quotes.</comments>
     </attribute>
 
     <attribute>
       <name>onKeyDown</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
+      <description>Generic HTML tag attribute</description>
+      <comments>The content is copied to the resulting html tag. Careful with (escaping) quotes.</comments>
     </attribute>
 
     <attribute>
       <name>onKeyUp</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
+      <description>Generic HTML tag attribute</description>
+      <comments>The content is copied to the resulting html tag. Careful with (escaping) quotes.</comments>
     </attribute>
 
     <attribute>
       <name>onKeyPress</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
+      <description>Generic HTML tag attribute</description>
+      <comments>The content is copied to the resulting html tag. Careful with (escaping) quotes.</comments>
     </attribute>
 
     <attribute>
       <name>onMouseDown</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
+      <description>Generic HTML tag attribute</description>
+      <comments>The content is copied to the resulting html tag. Careful with (escaping) quotes.</comments>
     </attribute>
 
     <attribute>
       <name>onMouseUp</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
+      <description>Generic HTML tag attribute</description>
+      <comments>The content is copied to the resulting html tag. Careful with (escaping) quotes.</comments>
     </attribute>
 
     <attribute>
       <name>onMouseMove</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
+      <description>Generic HTML tag attribute</description>
+      <comments>The content is copied to the resulting html tag. Careful with (escaping) quotes.</comments>
     </attribute>
 
     <attribute>
       <name>onMouseOut</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
+      <description>Generic HTML tag attribute</description>
+      <comments>The content is copied to the resulting html tag. Careful with (escaping) quotes.</comments>
     </attribute>
 
     <attribute>
       <name>onMouseOver</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      <comments>The content is copied to the resulting html tags. Careful with (escaping) quotes.</comments>
+      <description>Generic HTML tag attribute</description>
+      <comments>The content is copied to the resulting html tag. Careful with (escaping) quotes.</comments>
     </attribute>
   </tag>
 
@@ -698,9 +702,13 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     <attribute name="reloadFormOnError" specifiedIn="form"/>
     <attribute name="clientSideValidation" specifiedIn="form"/>
 
-    <attribute name="styleId" specifiedIn="form"/>
-    <attribute name="styleClass" specifiedIn="form"/>
-    <attribute name="style" specifiedIn="form"/>
+    <attribute>
+      <name>multipleSubmitErrorMsg</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Enables multiple form submission prevention, and sets the given value as the error message.</description>
+      <comments>Document me please</comments>
+    </attribute>
 
     <!--form specific:-->
     <attribute name="target" specifiedIn="form"/>
@@ -708,6 +716,10 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     <attribute name="onSubmit" specifiedIn="form"/>
 
     <!-- generic: -->
+    <attribute name="styleId" specifiedIn="form"/>
+    <attribute name="styleClass" specifiedIn="form"/>
+    <attribute name="style" specifiedIn="form"/>
+
     <attribute name="title" specifiedIn="form"/>
     <attribute name="onClick" specifiedIn="form"/>
     <attribute name="onDblClick" specifiedIn="form"/>
@@ -719,14 +731,6 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     <attribute name="onMouseMove" specifiedIn="form"/>
     <attribute name="onMouseOut" specifiedIn="form"/>
     <attribute name="onMouseOver" specifiedIn="form"/>
-
-    <attribute>
-      <name>multipleSubmitErrorMsg</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
 
   </tag>
 
@@ -756,16 +760,16 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     <attribute name="reloadFormOnError" specifiedIn="form"/>
     <attribute name="clientSideValidation" specifiedIn="form"/>
 
-    <attribute name="styleId" specifiedIn="form"/>
-    <attribute name="styleClass" specifiedIn="form"/>
-    <attribute name="style" specifiedIn="form"/>
-
     <!--form specific:-->
     <attribute name="target" specifiedIn="form"/>
     <attribute name="onReset" specifiedIn="form"/>
     <attribute name="onSubmit" specifiedIn="form"/>
 
     <!-- generic: -->
+    <attribute name="styleId" specifiedIn="form"/>
+    <attribute name="styleClass" specifiedIn="form"/>
+    <attribute name="style" specifiedIn="form"/>
+
     <attribute name="title" specifiedIn="form"/>
     <attribute name="onClick" specifiedIn="form"/>
     <attribute name="onDblClick" specifiedIn="form"/>
@@ -816,16 +820,16 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     <attribute name="clientSideValidation" specifiedIn="form"/>
     <attribute name="multipleSubmitErrorMsg" specifiedIn="newForm"/>
 
-    <attribute name="styleId" specifiedIn="form"/>
-    <attribute name="styleClass" specifiedIn="form"/>
-    <attribute name="style" specifiedIn="form"/>
-
     <!--form specific:-->
     <attribute name="target" specifiedIn="form"/>
     <attribute name="onReset" specifiedIn="form"/>
     <attribute name="onSubmit" specifiedIn="form"/>
 
     <!-- generic: -->
+    <attribute name="styleId" specifiedIn="form"/>
+    <attribute name="styleClass" specifiedIn="form"/>
+    <attribute name="style" specifiedIn="form"/>
+
     <attribute name="title" specifiedIn="form"/>
     <attribute name="onClick" specifiedIn="form"/>
     <attribute name="onDblClick" specifiedIn="form"/>
@@ -991,14 +995,6 @@ the fields produced by <mak:input> are available separately as a Dictionary to t
     </attribute>
 
     <attribute>
-      <name>styleId</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
-      <comments>Generic html tag attributes, see newForm </comments>
-    </attribute>
-
-    <attribute>
       <name>default</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
@@ -1069,17 +1065,16 @@ for file, a file upload box will automatically created, and handling of file nam
       <name>calendarEditor</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>FIXME</description>
-      <comments>Rtexpr</comments>
+      <description>Whether to generate code for a calendar editor.</description>
+      <comments><![CDATA[Only for date types. Defaults to <code>true</code> resp. the default value specified in the Makumba configuration.]]></comments>
     </attribute>
 
     <attribute>
       <name>calendarEditorLink</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>The formatting that appears on the link to the calendar date-choser. 
-See the detailed example for more information. </description>
-      <comments>Fixed. Only for date.</comments>
+      <description>The formatting that appears on the link to the calendar date-chooser.</description>
+      <comments><![CDATA[Only for date types. Defaults to <img border="0" src="_CONTEXT_PATH_/mak-tools/makumbaResources/image/calendar.gif">]]></comments>
     </attribute>
     
     <attribute>
@@ -1134,8 +1129,10 @@ See the detailed example for more information. </description>
       <name>nullOption</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
+      <description>A text that would be displayed as the "null option" in drop-down boxes, i.e. to add a null value to the other
+          possible options. May be used to allow a ptr to be set to null, and/or require a deliberate action from the users to
+          select a value, rather leaving the default (first) value selected.</description>
+      <comments><![CDATA[Fixed. Only for <code>ptr and intEnum types</code>]]></comments>
     </attribute>
 
     <attribute>
@@ -1144,7 +1141,7 @@ See the detailed example for more information. </description>
       <rtexprvalue>true</rtexprvalue>
       <description><![CDATA[The string that separates the tickbox (radio/check) from the label. Default is " " (space). 
 The output will be < tick >< labelSeparator >< label >]]></description>
-      <comments>Generic html tag attributes, see newForm </comments>
+      <comments><![CDATA[Rtexpr. Only for <code>type="tickbox"</code>]]></comments>
     </attribute>
 
     <attribute>
@@ -1153,7 +1150,7 @@ The output will be < tick >< labelSeparator >< label >]]></description>
       <rtexprvalue>true</rtexprvalue>
       <description><![CDATA[The string that separates the different options. Default is " " (space). 
 The output will be < [x] label >< elementSeparator >< [x] label >]]></description>
-      <comments>Document me please</comments>
+      <comments><![CDATA[Rtexpr. Only for <code>type="tickbox"</code>]]></comments>
     </attribute>
 
     <!--input specific-->
@@ -1161,56 +1158,56 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
       <name>accessKey</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
+      <description>Input-specific HTML tag attribute</description>
+      <comments><![CDATA[The content is copied to the resulting <input...> tag. Careful with (escaping) quotes.]]></comments>
     </attribute>
 
     <attribute>
       <name>disabled</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
+      <description>Input-specific HTML tag attribute</description>
+      <comments><![CDATA[The content is copied to the resulting <input...> tag. Careful with (escaping) quotes.]]></comments>
     </attribute>
 
     <attribute>
       <name>onChange</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
+      <description>Input-specific HTML tag attribute</description>
+      <comments><![CDATA[The content is copied to the resulting <input...> tag. Careful with (escaping) quotes.]]></comments>
     </attribute>
 
     <attribute>
       <name>onBlur</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
+      <description>Input-specific HTML tag attribute</description>
+      <comments><![CDATA[The content is copied to the resulting <input...> tag. Careful with (escaping) quotes.]]></comments>
     </attribute>
 
     <attribute>
       <name>onFocus</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
+      <description>Input-specific HTML tag attribute</description>
+      <comments><![CDATA[The content is copied to the resulting <input...> tag. Careful with (escaping) quotes.]]></comments>
     </attribute>
 
     <attribute>
       <name>onSelect</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
+      <description>Input-specific HTML tag attribute</description>
+      <comments><![CDATA[The content is copied to the resulting <input...> tag. Careful with (escaping) quotes.]]></comments>
     </attribute>
 
     <attribute>
       <name>tabIndex</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
+      <description>Input-specific HTML tag attribute</description>
+      <comments><![CDATA[The content is copied to the resulting <input...> tag. Careful with (escaping) quotes.]]></comments>
     </attribute>
 
     <!-- generic -->
@@ -1314,8 +1311,15 @@ Search forms are in principal related to mak:forms, i.e. attributes allowed ther
       <name>matchMode</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
+      <description><![CDATA[Defines how the search terms shall be matched. Allowed values depend on the data types:
+      <ul>
+        <li>for string matches, i.e. char and text: 'contains', 'equals', 'begins', 'ends'</li>
+    	<li>for range matches, i.e. int, real and date: 'between', 'betweenInclusive'</li>
+        <li>for number comparisons, i.e. int and real: 'equals', 'lessThan', 'greaterThan'</li>
+        <li>for date comparisons: 'equals', 'before', 'after'</li>
+      </ul>
+      ]]></description>
+      <comments>Fixed. Defaults to 'equals' for string, number and date comparisons, and 'betweenInclusive' for range comparisons.</comments>
     </attribute>
   </tag>
 
@@ -1326,22 +1330,34 @@ Search forms are in principal related to mak:forms, i.e. attributes allowed ther
     <description>create a match-mode input</description>
     <see>searchForm, resultList, criterion, searchField</see>
 
-    <attribute name="id" specifiedIn="list"/>
-
     <attribute>
       <name>type</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
+      <description>
+        <![CDATA[HTML input type to be used:
+            <ul>
+              <li>"select" (drop-down).</li>
+              <li>"radio" (radio buttons).</li>
+            </ul>
+        ]]>
+      </description>
+      <comments>Fixed. Defaults to 'select'.</comments>
     </attribute>
 
     <attribute>
       <name>matchModes</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
+      <description><![CDATA[Defines how the search terms shall be matched. Allowed values depend on the data types:
+      <ul>
+        <li>for string matches, i.e. char and text: 'contains', 'equals', 'begins', 'ends'</li>
+    	<li>for range matches, i.e. int, real and date: 'between', 'betweenInclusive'</li>
+        <li>for number comparisons, i.e. int and real: 'equals', 'lessThan', 'greaterThan'</li>
+        <li>for date comparisons: 'equals', 'before', 'after'</li>
+      </ul>
+      ]]></description>
+      <comments>Fixed. Defaults to 'equals' for string, number and date comparisons, and 'betweenInclusive' for range comparisons.</comments>
     </attribute>
 
     <attribute>
@@ -1351,6 +1367,8 @@ Search forms are in principal related to mak:forms, i.e. attributes allowed ther
       <description>The default match-mode to be selected when the form is first loaded.</description>
       <comments>see 'matchModes' for allowed values</comments>
     </attribute>
+
+    <attribute name="id" specifiedIn="list"/>
 
     <attribute name="labelSeparator" specifiedIn="input"/>
     <attribute name="elementSeparator" specifiedIn="input"/>
@@ -1371,8 +1389,8 @@ Search forms are in principal related to mak:forms, i.e. attributes allowed ther
       <name>role</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
+      <description>Indicates whether this input is the input for the lower or upper range.</description>
+      <comments>Only for range searches, values are 'rangeBegin' and 'rangeEnd'. Defaults to 'rangeBegin'.</comments>
     </attribute>
 
     <attribute name="value" specifiedIn="input"/>
@@ -1380,14 +1398,7 @@ Search forms are in principal related to mak:forms, i.e. attributes allowed ther
     <attribute name="dataType" specifiedIn="input"/>
     <attribute name="default" specifiedIn="input"/>
     <attribute name="format" specifiedIn="input"/>
-
-    <attribute>
-      <name>type</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
+    <attribute name="type" specifiedIn="input"/>
 
     <attribute>
       <name>forceInputStyle</name>
@@ -1557,8 +1568,8 @@ This can be used for http authentication with no session tracking. )
       <name>actor</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
+      <description>The name of the attribute to be removed from the session. You can remove multiple attributes by using the star (*) wildcard to partially match attributes.</description>
+      <comments></comments>
     </attribute>
   </tag>
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <taglib xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd" version="2.0">
 
-  <description>Makumba devel-20090112165128 http://www.makumba.org</description>
+  <description>Makumba devel-20090113143303 http://www.makumba.org</description>
   <tlib-version>2.0</tlib-version>
   <short-name>mak</short-name>
   <uri>http://www.makumba.org/presentation</uri>
@@ -18,38 +18,6 @@
     <display-name>manipulate lists</display-name>
     <description>Performs a query on the database. The body of the list, if present, is run once for every item in the resulting data (size 0..N), e.g. to display it. Queries are generated on the spot and can be nested.</description>
     
-
-    <attribute>
-      <name>id</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Tag's identifier</description>
-      
-    </attribute>
-
-    <attribute>
-      <name>countVar</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>The java.lang.Integer variable that will contain the number of the current iteration.</description>
-      
-    </attribute>
-
-    <attribute>
-      <name>maxCountVar</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>The java.lang.Integer variable that will contain the total number of iterations.</description>
-      
-    </attribute>
-
-    <attribute>
-      <name>separator</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Character string as separator between two list elements. It is not included before the first or after the last</description>
-      
-    </attribute>
 
     <attribute>
       <name>from</name>
@@ -88,6 +56,14 @@
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
       <description>OQL GROUP BY  section</description>
+      
+    </attribute>
+
+    <attribute>
+      <name>id</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Tag's identifier</description>
       
     </attribute>
 
@@ -155,6 +131,34 @@ If not present, the default database is used. See database configuration and loo
       <description>Document me please</description>
       
     </attribute>    
+
+    <attribute>
+      <name>countVar</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>The java.lang.Integer variable that will contain the number of the current iteration.</description>
+      
+      
+    </attribute>
+
+    <attribute>
+      <name>maxCountVar</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>The java.lang.Integer variable that will contain the total number of iterations.</description>
+      
+      
+    </attribute>
+
+    <attribute>
+      <name>separator</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Character string as separator between two list elements. It is not included before the first or after the last</description>
+      
+      
+    </attribute>
+
   </tag>
 
 
@@ -167,19 +171,19 @@ If not present, the default database is used. See database configuration and loo
     <description>Like list, but the query can only have zero or one result. A zero value for maxCountVar and countVar indicate that the object does not exist.</description>
     
     
-    <attribute><name>id</name><required>false</required><rtexprvalue>false</rtexprvalue><description>Tag's identifier</description></attribute>
-    <attribute><name>countVar</name><required>false</required><rtexprvalue>false</rtexprvalue><description>The java.lang.Integer variable that will contain the number of the current iteration.</description></attribute>
-    <attribute><name>maxCountVar</name><required>false</required><rtexprvalue>false</rtexprvalue><description>The java.lang.Integer variable that will contain the total number of iterations.</description></attribute>
     <attribute><name>from</name><required>true</required><rtexprvalue>false</rtexprvalue><description>OQL FROM section. If the query is nested, the keys from the parent's query are added to this FROM section in the resulting query</description></attribute>
     <attribute><name>variableFrom</name><required>false</required><rtexprvalue>false</rtexprvalue><description>supplementary, variable OQL FROM section.</description></attribute>
     <attribute><name>where</name><required>false</required><rtexprvalue>false</rtexprvalue><description>OQL WHERE section. If the query is nested, the WHERE section from the parent's query, is added to this in the resulting query</description></attribute>
     <attribute><name>groupBy</name><required>false</required><rtexprvalue>false</rtexprvalue><description>OQL GROUP BY  section</description></attribute>
+    <attribute><name>id</name><required>false</required><rtexprvalue>false</rtexprvalue><description>Tag's identifier</description></attribute>
     <attribute><name>db</name><required>false</required><rtexprvalue>true</rtexprvalue><description>The makumba database to connect to. The format is Host_SQLEngineType_DatabaseName 
 If not present, the default database is used. See database configuration and lookup.</description></attribute>
     <attribute><name>authorize</name><required>false</required><rtexprvalue>false</rtexprvalue><description>Document me please</description></attribute>
     <attribute><name>editable</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Document me please</description></attribute>
     <attribute><name>logicClass</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Document me please</description></attribute>
     <attribute><name>editPage</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Document me please</description></attribute>
+    <attribute><name>countVar</name><required>false</required><rtexprvalue>false</rtexprvalue><description>The java.lang.Integer variable that will contain the number of the current iteration.</description></attribute>
+    <attribute><name>maxCountVar</name><required>false</required><rtexprvalue>false</rtexprvalue><description>The java.lang.Integer variable that will contain the total number of iterations.</description></attribute>
   </tag>
 
 
@@ -200,15 +204,15 @@ If not present, the default database is used. See database configuration and loo
       
     </attribute>
 
-    <attribute><name>id</name><required>false</required><rtexprvalue>false</rtexprvalue><description>Tag's identifier</description></attribute>
-    <attribute><name>separator</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Character string as separator between two list elements. It is not included before the first or after the last</description></attribute>
     <attribute><name>orderBy</name><required>false</required><rtexprvalue>false</rtexprvalue><description>OQL ORDER BY  section</description></attribute>
     <attribute><name>groupBy</name><required>false</required><rtexprvalue>false</rtexprvalue><description>OQL GROUP BY  section</description></attribute>
-    <attribute><name>db</name><required>false</required><rtexprvalue>true</rtexprvalue><description>The makumba database to connect to. The format is Host_SQLEngineType_DatabaseName 
-If not present, the default database is used. See database configuration and lookup.</description></attribute>
     <attribute><name>offset</name><required>false</required><rtexprvalue>false</rtexprvalue><description>the offset of the result to show (0 for starting from the first result)</description></attribute>
     <attribute><name>limit</name><required>false</required><rtexprvalue>false</rtexprvalue><description>the maximum numbers of results to show (-1 for all results)</description></attribute>
     <attribute><name>defaultLimit</name><required>false</required><rtexprvalue>false</rtexprvalue><description>the default value for limit, if the $attribute in limit="$attribute" is not present.</description></attribute>
+    <attribute><name>id</name><required>false</required><rtexprvalue>false</rtexprvalue><description>Tag's identifier</description></attribute>
+    <attribute><name>db</name><required>false</required><rtexprvalue>true</rtexprvalue><description>The makumba database to connect to. The format is Host_SQLEngineType_DatabaseName 
+If not present, the default database is used. See database configuration and lookup.</description></attribute>
+    <attribute><name>separator</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Character string as separator between two list elements. It is not included before the first or after the last</description></attribute>
   </tag>
 
 
@@ -500,7 +504,7 @@ If not present, the default database is used. See database configuration and loo
       <name>reloadFormOnError</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
+      <description>Indicates whether the form page shall be reloaded on an error, or the specified form action page will be loaded directly.</description>
       
     </attribute>
 
@@ -512,36 +516,12 @@ If not present, the default database is used. See database configuration and loo
       
     </attribute>
 
-    <attribute>
-      <name>styleId</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      
-    </attribute>
-
-    <attribute>
-      <name>styleClass</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      
-    </attribute>
-
-    <attribute>
-      <name>style</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
-      
-    </attribute>
-
     <!--form specific:-->
     <attribute>
       <name>target</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Form-specific html tag attributes</description>
+      <description>Form-specific HTML tag attribute</description>
       
     </attribute>
 
@@ -549,7 +529,7 @@ If not present, the default database is used. See database configuration and loo
       <name>onReset</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Form-specific html tag attributes</description>
+      <description>Form-specific HTML tag attribute</description>
       
     </attribute>
 
@@ -557,16 +537,40 @@ If not present, the default database is used. See database configuration and loo
       <name>onSubmit</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Form-specific html tag attributes</description>
+      <description>Form-specific HTML tag attribute</description>
       
     </attribute>
 
     <!-- generic: -->
     <attribute>
+      <name>styleId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic HTML tag attribute</description>
+      
+    </attribute>
+
+    <attribute>
+      <name>styleClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic HTML tag attribute</description>
+      
+    </attribute>
+
+    <attribute>
+      <name>style</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic HTML tag attribute</description>
+      
+    </attribute>
+
+    <attribute>
       <name>title</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
+      <description>Generic HTML tag attribute</description>
       
     </attribute>
 
@@ -574,7 +578,7 @@ If not present, the default database is used. See database configuration and loo
       <name>onClick</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
+      <description>Generic HTML tag attribute</description>
       
     </attribute>
 
@@ -582,7 +586,7 @@ If not present, the default database is used. See database configuration and loo
       <name>onDblClick</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
+      <description>Generic HTML tag attribute</description>
       
     </attribute>
 
@@ -590,7 +594,7 @@ If not present, the default database is used. See database configuration and loo
       <name>onKeyDown</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
+      <description>Generic HTML tag attribute</description>
       
     </attribute>
 
@@ -598,7 +602,7 @@ If not present, the default database is used. See database configuration and loo
       <name>onKeyUp</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
+      <description>Generic HTML tag attribute</description>
       
     </attribute>
 
@@ -606,7 +610,7 @@ If not present, the default database is used. See database configuration and loo
       <name>onKeyPress</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
+      <description>Generic HTML tag attribute</description>
       
     </attribute>
 
@@ -614,7 +618,7 @@ If not present, the default database is used. See database configuration and loo
       <name>onMouseDown</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
+      <description>Generic HTML tag attribute</description>
       
     </attribute>
 
@@ -622,7 +626,7 @@ If not present, the default database is used. See database configuration and loo
       <name>onMouseUp</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
+      <description>Generic HTML tag attribute</description>
       
     </attribute>
 
@@ -630,7 +634,7 @@ If not present, the default database is used. See database configuration and loo
       <name>onMouseMove</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
+      <description>Generic HTML tag attribute</description>
       
     </attribute>
 
@@ -638,7 +642,7 @@ If not present, the default database is used. See database configuration and loo
       <name>onMouseOut</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
+      <description>Generic HTML tag attribute</description>
       
     </attribute>
 
@@ -646,7 +650,7 @@ If not present, the default database is used. See database configuration and loo
       <name>onMouseOver</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attributes.</description>
+      <description>Generic HTML tag attribute</description>
       
     </attribute>
   </tag>
@@ -684,38 +688,38 @@ If not present, the default database is used. See database configuration and loo
 If not present, the default database is used. See database configuration and lookup.</description></attribute>
     <attribute><name>annotation</name><required>false</required><rtexprvalue>true</rtexprvalue><description><![CDATA[Indicates that validation whether errors should be shown in the form, or be displayed in the <mak:response/>.]]></description></attribute>
     <attribute><name>annotationSeparator</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Fixed. Prints the given separator between the annotation and the input field.</description></attribute>
-    <attribute><name>reloadFormOnError</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Document me please</description></attribute>
+    <attribute><name>reloadFormOnError</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Indicates whether the form page shall be reloaded on an error, or the specified form action page will be loaded directly.</description></attribute>
     <attribute><name>clientSideValidation</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Controls whether client side validation shall be used.</description></attribute>
-
-    <attribute><name>styleId</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>styleClass</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>style</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-
-    <!--form specific:-->
-    <attribute><name>target</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Form-specific html tag attributes</description></attribute>
-    <attribute><name>onReset</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Form-specific html tag attributes</description></attribute>
-    <attribute><name>onSubmit</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Form-specific html tag attributes</description></attribute>
-
-    <!-- generic: -->
-    <attribute><name>title</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onDblClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onKeyDown</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onKeyUp</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onKeyPress</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseDown</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseUp</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseMove</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseOut</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseOver</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
 
     <attribute>
       <name>multipleSubmitErrorMsg</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
+      <description>Enables multiple form submission prevention, and sets the given value as the error message.</description>
       
     </attribute>
+
+    <!--form specific:-->
+    <attribute><name>target</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Form-specific HTML tag attribute</description></attribute>
+    <attribute><name>onReset</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Form-specific HTML tag attribute</description></attribute>
+    <attribute><name>onSubmit</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Form-specific HTML tag attribute</description></attribute>
+
+    <!-- generic: -->
+    <attribute><name>styleId</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>styleClass</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>style</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+
+    <attribute><name>title</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onDblClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onKeyDown</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onKeyUp</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onKeyPress</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseDown</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseUp</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseMove</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseOut</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseOver</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
 
   </tag>
 
@@ -742,31 +746,31 @@ If not present, the default database is used. See database configuration and loo
     <attribute><name>message</name><required>false</required><rtexprvalue>true</rtexprvalue><description>the message that is displayed in the response page upon success</description></attribute>
     <attribute><name>annotation</name><required>false</required><rtexprvalue>true</rtexprvalue><description><![CDATA[Indicates that validation whether errors should be shown in the form, or be displayed in the <mak:response/>.]]></description></attribute>
     <attribute><name>annotationSeparator</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Fixed. Prints the given separator between the annotation and the input field.</description></attribute>
-    <attribute><name>reloadFormOnError</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Document me please</description></attribute>
+    <attribute><name>reloadFormOnError</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Indicates whether the form page shall be reloaded on an error, or the specified form action page will be loaded directly.</description></attribute>
     <attribute><name>clientSideValidation</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Controls whether client side validation shall be used.</description></attribute>
 
-    <attribute><name>styleId</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>styleClass</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>style</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-
     <!--form specific:-->
-    <attribute><name>target</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Form-specific html tag attributes</description></attribute>
-    <attribute><name>onReset</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Form-specific html tag attributes</description></attribute>
-    <attribute><name>onSubmit</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Form-specific html tag attributes</description></attribute>
+    <attribute><name>target</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Form-specific HTML tag attribute</description></attribute>
+    <attribute><name>onReset</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Form-specific HTML tag attribute</description></attribute>
+    <attribute><name>onSubmit</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Form-specific HTML tag attribute</description></attribute>
 
     <!-- generic: -->
-    <attribute><name>title</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onDblClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onKeyDown</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onKeyUp</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onKeyPress</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onDblClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseDown</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseUp</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseMove</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseOut</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseOver</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
+    <attribute><name>styleId</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>styleClass</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>style</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+
+    <attribute><name>title</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onDblClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onKeyDown</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onKeyUp</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onKeyPress</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onDblClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseDown</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseUp</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseMove</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseOut</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseOver</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
   </tag>
 
 
@@ -801,31 +805,31 @@ If not present, the default database is used. See database configuration and loo
     <attribute><name>message</name><required>false</required><rtexprvalue>true</rtexprvalue><description>the message that is displayed in the response page upon success</description></attribute>
     <attribute><name>annotation</name><required>false</required><rtexprvalue>true</rtexprvalue><description><![CDATA[Indicates that validation whether errors should be shown in the form, or be displayed in the <mak:response/>.]]></description></attribute>
     <attribute><name>annotationSeparator</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Fixed. Prints the given separator between the annotation and the input field.</description></attribute>
-    <attribute><name>reloadFormOnError</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Document me please</description></attribute>
+    <attribute><name>reloadFormOnError</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Indicates whether the form page shall be reloaded on an error, or the specified form action page will be loaded directly.</description></attribute>
     <attribute><name>clientSideValidation</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Controls whether client side validation shall be used.</description></attribute>
-    <attribute><name>multipleSubmitErrorMsg</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Document me please</description></attribute>
-
-    <attribute><name>styleId</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>styleClass</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>style</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
+    <attribute><name>multipleSubmitErrorMsg</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Enables multiple form submission prevention, and sets the given value as the error message.</description></attribute>
 
     <!--form specific:-->
-    <attribute><name>target</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Form-specific html tag attributes</description></attribute>
-    <attribute><name>onReset</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Form-specific html tag attributes</description></attribute>
-    <attribute><name>onSubmit</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Form-specific html tag attributes</description></attribute>
+    <attribute><name>target</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Form-specific HTML tag attribute</description></attribute>
+    <attribute><name>onReset</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Form-specific HTML tag attribute</description></attribute>
+    <attribute><name>onSubmit</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Form-specific HTML tag attribute</description></attribute>
 
     <!-- generic: -->
-    <attribute><name>title</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onDblClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onKeyDown</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onKeyUp</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onKeyPress</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseDown</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseUp</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseMove</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseOut</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseOver</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
+    <attribute><name>styleId</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>styleClass</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>style</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+
+    <attribute><name>title</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onDblClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onKeyDown</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onKeyUp</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onKeyPress</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseDown</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseUp</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseMove</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseOut</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseOver</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
   </tag>
 
 
@@ -867,24 +871,24 @@ If not present, the default database is used. See database configuration and loo
     </attribute>
 
     <!--link specific:-->
-    <attribute><name>target</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Form-specific html tag attributes</description></attribute>
+    <attribute><name>target</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Form-specific HTML tag attribute</description></attribute>
     <attribute><name>name</name><required>false</required><rtexprvalue>true</rtexprvalue><description>the name of the form</description></attribute>
 
     <!-- generic: -->
-    <attribute><name>styleId</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>styleClass</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>style</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>title</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onDblClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onKeyDown</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onKeyUp</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onKeyPress</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseDown</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseUp</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseMove</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseOut</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseOver</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
+    <attribute><name>styleId</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>styleClass</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>style</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>title</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onDblClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onKeyDown</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onKeyUp</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onKeyPress</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseDown</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseUp</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseMove</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseOut</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseOver</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
   </tag>
 
 
@@ -913,25 +917,25 @@ If not present, the default database is used. See database configuration and loo
     <attribute><name>preserveWhitespace</name><required>false</required><rtexprvalue>true</rtexprvalue><description><![CDATA[All white space inside a <mak:delete> will be trimmed, unless specifically preserved.]]></description></attribute>
 
     <!--link specific:-->
-    <attribute><name>target</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Form-specific html tag attributes</description></attribute>
+    <attribute><name>target</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Form-specific HTML tag attribute</description></attribute>
     <attribute><name>name</name><required>false</required><rtexprvalue>true</rtexprvalue><description>the name of the form</description></attribute>
 
     <!-- generic: -->
-    <attribute><name>styleId</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>styleClass</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>style</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>title</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
+    <attribute><name>styleId</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>styleClass</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>style</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>title</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
 
-    <attribute><name>onClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onDblClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onKeyDown</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onKeyUp</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onKeyPress</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseDown</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseUp</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseMove</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseOut</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseOver</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
+    <attribute><name>onClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onDblClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onKeyDown</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onKeyUp</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onKeyPress</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseDown</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseUp</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseMove</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseOut</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseOver</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
   </tag>
 
 
@@ -976,14 +980,6 @@ the fields produced by <mak:input> are available separately as a Dictionary to t
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
       <description><![CDATA[OQL expression relative to enclosing query tags or a $attribute computed previously in the page (with <mak:value var=.../> or pageContext.setAttribute(...)), or read by in the previous page by an <mak:input />]]></description>
-      
-    </attribute>
-
-    <attribute>
-      <name>styleId</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Generic html tag attributes, see newForm </description>
       
     </attribute>
 
@@ -1058,7 +1054,7 @@ for file, a file upload box will automatically created, and handling of file nam
       <name>calendarEditor</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>FIXME</description>
+      <description>Whether to generate code for a calendar editor.</description>
       
     </attribute>
 
@@ -1066,8 +1062,7 @@ for file, a file upload box will automatically created, and handling of file nam
       <name>calendarEditorLink</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>The formatting that appears on the link to the calendar date-choser. 
-See the detailed example for more information. </description>
+      <description>The formatting that appears on the link to the calendar date-chooser.</description>
       
     </attribute>
     
@@ -1123,7 +1118,9 @@ See the detailed example for more information. </description>
       <name>nullOption</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
+      <description>A text that would be displayed as the "null option" in drop-down boxes, i.e. to add a null value to the other
+          possible options. May be used to allow a ptr to be set to null, and/or require a deliberate action from the users to
+          select a value, rather leaving the default (first) value selected.</description>
       
     </attribute>
 
@@ -1150,7 +1147,7 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
       <name>accessKey</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
+      <description>Input-specific HTML tag attribute</description>
       
     </attribute>
 
@@ -1158,7 +1155,7 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
       <name>disabled</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
+      <description>Input-specific HTML tag attribute</description>
       
     </attribute>
 
@@ -1166,7 +1163,7 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
       <name>onChange</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
+      <description>Input-specific HTML tag attribute</description>
       
     </attribute>
 
@@ -1174,7 +1171,7 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
       <name>onBlur</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
+      <description>Input-specific HTML tag attribute</description>
       
     </attribute>
 
@@ -1182,7 +1179,7 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
       <name>onFocus</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
+      <description>Input-specific HTML tag attribute</description>
       
     </attribute>
 
@@ -1190,7 +1187,7 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
       <name>onSelect</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
+      <description>Input-specific HTML tag attribute</description>
       
     </attribute>
 
@@ -1198,25 +1195,25 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
       <name>tabIndex</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
+      <description>Input-specific HTML tag attribute</description>
       
     </attribute>
 
     <!-- generic -->
-    <attribute><name>styleId</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>styleClass</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>style</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>title</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onDblClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onKeyDown</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onKeyUp</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onKeyPress</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseDown</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseUp</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseMove</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseOut</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseOver</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
+    <attribute><name>styleId</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>styleClass</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>style</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>title</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onDblClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onKeyDown</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onKeyUp</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onKeyPress</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseDown</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseUp</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseMove</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseOut</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseOver</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
   </tag>
 
 
@@ -1253,25 +1250,25 @@ Search forms are in principal related to mak:forms, i.e. attributes allowed ther
 If not present, the default database is used. See database configuration and lookup.</description></attribute>
     
     <!--form specific:-->
-    <attribute><name>target</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Form-specific html tag attributes</description></attribute>
-    <attribute><name>onReset</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Form-specific html tag attributes</description></attribute>
-    <attribute><name>onSubmit</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Form-specific html tag attributes</description></attribute>
+    <attribute><name>target</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Form-specific HTML tag attribute</description></attribute>
+    <attribute><name>onReset</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Form-specific HTML tag attribute</description></attribute>
+    <attribute><name>onSubmit</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Form-specific HTML tag attribute</description></attribute>
     
     <!-- generic -->
-    <attribute><name>styleId</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>styleClass</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>style</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>title</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onDblClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onKeyDown</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onKeyUp</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onKeyPress</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseDown</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseUp</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseMove</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseOut</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseOver</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
+    <attribute><name>styleId</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>styleClass</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>style</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>title</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onDblClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onKeyDown</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onKeyUp</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onKeyPress</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseDown</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseUp</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseMove</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseOut</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseOver</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
   </tag>
 
 
@@ -1304,7 +1301,14 @@ If not present, the default database is used. See database configuration and loo
       <name>matchMode</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
+      <description><![CDATA[Defines how the search terms shall be matched. Allowed values depend on the data types:
+      <ul>
+        <li>for string matches, i.e. char and text: 'contains', 'equals', 'begins', 'ends'</li>
+    	<li>for range matches, i.e. int, real and date: 'between', 'betweenInclusive'</li>
+        <li>for number comparisons, i.e. int and real: 'equals', 'lessThan', 'greaterThan'</li>
+        <li>for date comparisons: 'equals', 'before', 'after'</li>
+      </ul>
+      ]]></description>
       
     </attribute>
   </tag>
@@ -1316,13 +1320,18 @@ If not present, the default database is used. See database configuration and loo
     <description>create a match-mode input</description>
     
 
-    <attribute><name>id</name><required>false</required><rtexprvalue>false</rtexprvalue><description>Tag's identifier</description></attribute>
-
     <attribute>
       <name>type</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
+      <description>
+        <![CDATA[HTML input type to be used:
+            <ul>
+              <li>"select" (drop-down).</li>
+              <li>"radio" (radio buttons).</li>
+            </ul>
+        ]]>
+      </description>
       
     </attribute>
 
@@ -1330,7 +1339,14 @@ If not present, the default database is used. See database configuration and loo
       <name>matchModes</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
+      <description><![CDATA[Defines how the search terms shall be matched. Allowed values depend on the data types:
+      <ul>
+        <li>for string matches, i.e. char and text: 'contains', 'equals', 'begins', 'ends'</li>
+    	<li>for range matches, i.e. int, real and date: 'between', 'betweenInclusive'</li>
+        <li>for number comparisons, i.e. int and real: 'equals', 'lessThan', 'greaterThan'</li>
+        <li>for date comparisons: 'equals', 'before', 'after'</li>
+      </ul>
+      ]]></description>
       
     </attribute>
 
@@ -1341,6 +1357,8 @@ If not present, the default database is used. See database configuration and loo
       <description>The default match-mode to be selected when the form is first loaded.</description>
       
     </attribute>
+
+    <attribute><name>id</name><required>false</required><rtexprvalue>false</rtexprvalue><description>Tag's identifier</description></attribute>
 
     <attribute><name>labelSeparator</name><required>false</required><rtexprvalue>true</rtexprvalue><description><![CDATA[The string that separates the tickbox (radio/check) from the label. Default is " " (space). 
 The output will be < tick >< labelSeparator >< label >]]></description></attribute>
@@ -1363,7 +1381,7 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
       <name>role</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
+      <description>Indicates whether this input is the input for the lower or upper range.</description>
       
     </attribute>
 
@@ -1375,14 +1393,15 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
 Can only countain d, M, y, H, m, s formatting chars, and any kind of separators. Ex: 
 'the day' dd 'of the month' MMMM 'in the year' yyyy. 
 Default is "dd MMMM yyyy"</description></attribute>
-
-    <attribute>
-      <name>type</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description>Document me please</description>
-      
-    </attribute>
+    <attribute><name>type</name><required>false</required><rtexprvalue>false</rtexprvalue><description><![CDATA[HTML INPUT type to be used 
+"hidden" works for all fields 
+for char[] , type can be "text" or "password", default is "text" 
+default type for [set]intEnum, [set]charEnum, ptr and set is "select" (dropdown or scroll list depending on size). Alternative is "tickbox" (checkboxes or radio buttons). Can be forced to a specific type by using "radio" or "checkbox" 
+for set, type can be seteditor, which will create two multiple-select boxes (see an example). 
+for int, spinner creates a spinner input with increase/decrease buttons; if a validation definition defines a range for the field, select and radio are will create select boxes and radio buttons. 
+date is split in 3 inputs, <fieldname>_0 (day), _1 (month), _2 (year), and likewise for time elements 
+for text, default is "textarea"; "file" will create file upload box, and will create supplementary attributes <fieldname>_filename, <fieldname>_contentType and <fieldname>_contentLength that have to be handled separately by the handler method 
+for file, a file upload box will automatically created, and handling of file name, content type and length will be done automatically. ]]></description></attribute>
 
     <attribute>
       <name>forceInputStyle</name>
@@ -1392,11 +1411,12 @@ Default is "dd MMMM yyyy"</description></attribute>
       
     </attribute>
 
-    <attribute><name>calendarEditor</name><required>false</required><rtexprvalue>false</rtexprvalue><description>FIXME</description></attribute>
-    <attribute><name>calendarEditorLink</name><required>false</required><rtexprvalue>false</rtexprvalue><description>The formatting that appears on the link to the calendar date-choser. 
-See the detailed example for more information. </description></attribute>
+    <attribute><name>calendarEditor</name><required>false</required><rtexprvalue>false</rtexprvalue><description>Whether to generate code for a calendar editor.</description></attribute>
+    <attribute><name>calendarEditorLink</name><required>false</required><rtexprvalue>false</rtexprvalue><description>The formatting that appears on the link to the calendar date-chooser.</description></attribute>
     <attribute><name>nameVar</name><required>false</required><rtexprvalue>false</rtexprvalue><description>The name of the java variable in which to store the name of the HTML input. In multiple forms,  there may be more HTML inputs generated by one mak:input, so a suffix is added by makumba to the name to generate unique names for each.</description></attribute>
-    <attribute><name>nullOption</name><required>false</required><rtexprvalue>false</rtexprvalue><description>Document me please</description></attribute>
+    <attribute><name>nullOption</name><required>false</required><rtexprvalue>false</rtexprvalue><description>A text that would be displayed as the "null option" in drop-down boxes, i.e. to add a null value to the other
+          possible options. May be used to allow a ptr to be set to null, and/or require a deliberate action from the users to
+          select a value, rather leaving the default (first) value selected.</description></attribute>
     <attribute><name>labelSeparator</name><required>false</required><rtexprvalue>true</rtexprvalue><description><![CDATA[The string that separates the tickbox (radio/check) from the label. Default is " " (space). 
 The output will be < tick >< labelSeparator >< label >]]></description></attribute>
     <attribute><name>elementSeparator</name><required>false</required><rtexprvalue>true</rtexprvalue><description><![CDATA[The string that separates the different options. Default is " " (space). 
@@ -1407,29 +1427,29 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
     <attribute><name>maxlength</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Max length of a text control</description></attribute>
     <attribute><name>rows</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Number of textarea rows and columns</description></attribute>
     <attribute><name>cols</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Number of textarea rows and columns</description></attribute>
-    <attribute><name>accessKey</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Document me please</description></attribute>
-    <attribute><name>disabled</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Document me please</description></attribute>
-    <attribute><name>onChange</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Document me please</description></attribute>
-    <attribute><name>onBlur</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Document me please</description></attribute>
-    <attribute><name>onFocus</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Document me please</description></attribute>
-    <attribute><name>onSelect</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Document me please</description></attribute>
-    <attribute><name>tabIndex</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Document me please</description></attribute>
+    <attribute><name>accessKey</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Input-specific HTML tag attribute</description></attribute>
+    <attribute><name>disabled</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Input-specific HTML tag attribute</description></attribute>
+    <attribute><name>onChange</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Input-specific HTML tag attribute</description></attribute>
+    <attribute><name>onBlur</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Input-specific HTML tag attribute</description></attribute>
+    <attribute><name>onFocus</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Input-specific HTML tag attribute</description></attribute>
+    <attribute><name>onSelect</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Input-specific HTML tag attribute</description></attribute>
+    <attribute><name>tabIndex</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Input-specific HTML tag attribute</description></attribute>
     
     <!-- generic -->
-    <attribute><name>styleId</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>styleClass</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>style</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>title</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onDblClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onKeyDown</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onKeyUp</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onKeyPress</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseDown</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseUp</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseMove</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseOut</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
-    <attribute><name>onMouseOver</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
+    <attribute><name>styleId</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>styleClass</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>style</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>title</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onDblClick</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onKeyDown</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onKeyUp</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onKeyPress</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseDown</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseUp</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseMove</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseOut</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
+    <attribute><name>onMouseOver</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
   </tag>
 
 
@@ -1552,7 +1572,7 @@ This can be used for http authentication with no session tracking. )
       <name>actor</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
+      <description>The name of the attribute to be removed from the session. You can remove multiple attributes by using the star (*) wildcard to partially match attributes.</description>
       
     </attribute>
   </tag>
@@ -1661,7 +1681,7 @@ This can be used for http authentication with no session tracking. )
     </attribute>
     
     <!-- generic -->
-    <attribute><name>styleClass</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attributes.</description></attribute>
+    <attribute><name>styleClass</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
   </tag>
 
 </taglib>
