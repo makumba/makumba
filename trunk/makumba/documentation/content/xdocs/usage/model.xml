@@ -7,8 +7,8 @@
   </header>
   <body>
 
-    <p>Makumba uses so-called Makumba Data Definitions (MDDs) in order to represent objects. This
-      section provides examples and guidelines on how to design MDDs, check the <a
+    <p>Makumba uses so-called Makumba Data Definitions (MDDs) in order to represent objects. These definitions are also referred to as <strong>type</strong> of an object.
+      This section provides examples and guidelines on how to design MDDs, check the <a
         href="../doc/datadef.html">reference documentation</a> for more details on MDDs.</p>
 
     <section>
@@ -29,7 +29,7 @@
           <a href="../doc/queryfunct.html">query functions</a>
         </li>
       </ul>
-      <p>We will further explain those type of fields by using the example of a Person having a
+      <p>We will <em class="highlighted">dcdcdcd</em>further explain those type of fields by using the example of a Person having a
         number of Cars:</p>
 
       <source><strong>general.Person (general/Person.mdd)</strong>
@@ -49,10 +49,11 @@ minimumAge%compare = birthdate >= date($now,$now,$now - 13) : You have to be at 
 numberOfRedCars() {count(cars) FROM this.cars c WHERE c.colour = 'Red'}  # FIXME does this work?
 ]]></source>
 
-      <source><strong>general.Car (general/Car.mdd)</strong>
+      <source><strong>general. (general/Car.mdd)</strong>
         <![CDATA[
-name = char[50]                                      ;Name of the car
-colour = int{"Green" = 10, "Blue" = 20, "Red" = 30}  ;Colour of this car]]>
+name = char[200]                                      ;Name of the company
+
+]]>
       </source>
     </section>
 
