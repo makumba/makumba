@@ -191,11 +191,15 @@ td.center {
 td.missingDoc {
 	font-weight: bold;
 	color: red;
-	text-decoration: blink; /* just to annoy while the colours don't work.. a*/
 }
 
 tr.deprecated {
-	background-color: yellow;
 	color: blue;
 	font-style: italic;
 }
+
+td.deprecated {
+	color: blue;
+	font-style: italic;
+}
+
