@@ -90,12 +90,12 @@ public class RequestAttributes implements Attributes {
         final Object respFromSession = session.getAttribute(ResponderFactory.RESPONSE_STRING_NAME + suffix);
         Object response = httpServletRequest.getAttribute(org.makumba.forms.responder.ResponderFactory.RESPONSE_FORMATTED_STRING_NAME);
 
-        logger.info("respFromSession: " + respFromSession + ", response: " + response);
+        logger.fine("respFromSession: " + respFromSession + ", response: " + response);
         if (response == null && respFromSession != null) {
             // set the attributes from the session to the request, clear the session values from this form
             for (String attr : ResponderFactory.RESPONSE_ATTRIBUTE_NAMES) {
                 httpServletRequest.setAttribute(attr, session.getAttribute(attr + suffix));
-                logger.info("Setting '" + attr + "' value: '" + req.getAttribute(attr + suffix) + "'.");
+                logger.fine("Setting '" + attr + "' value: '" + req.getAttribute(attr + suffix) + "'.");
                 session.removeAttribute(attr + suffix);
             }
         }
