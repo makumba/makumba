@@ -20,8 +20,8 @@
                 </tr>
                 <tr>
                     <td>type</td>
-                    <td align="center">false</td>
-                    <td align="center">false</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
                     <td>
         HTML input type to be used:
             &lt;ul&gt;
@@ -34,8 +34,8 @@
                 </tr>
                 <tr>
                     <td>matchModes</td>
-                    <td align="center">false</td>
-                    <td align="center">false</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
                     <td>Defines how the search terms shall be matched. Allowed values depend on the data types:
       &lt;ul&gt;
         &lt;li&gt;for string matches, i.e. char and text: 'contains', 'equals', 'begins', 'ends'&lt;/li&gt;
@@ -48,30 +48,30 @@
                 </tr>
                 <tr>
                     <td>default</td>
-                    <td align="center">false</td>
-                    <td align="center">false</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
                     <td>The default match-mode to be selected when the form is first loaded.</td>
                     <td>see 'matchModes' for allowed values</td>
                 </tr>
                 <tr>
                     <td>id</td>
-                    <td align="center">false</td>
-                    <td align="center">false</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
                     <td>Tag's identifier</td>
                     <td>Fixed. Can be used to distinguish otherwise identical tags on a page (to avoid confusion by Makumba's JSP analyser)</td>
                 </tr>
                 <tr>
                     <td>labelSeparator</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>The string that separates the tickbox (radio/check) from the label. Default is " " (space). 
 The output will be &lt; tick &gt;&lt; labelSeparator &gt;&lt; label &gt;</td>
                     <td>Rtexpr. Only for &lt;code&gt;type="tickbox"&lt;/code&gt;</td>
                 </tr>
                 <tr>
                     <td>elementSeparator</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>The string that separates the different options. Default is " " (space). 
 The output will be &lt; [x] label &gt;&lt; elementSeparator &gt;&lt; [x] label &gt;</td>
                     <td>Rtexpr. Only for &lt;code&gt;type="tickbox"&lt;/code&gt;</td>

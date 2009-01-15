@@ -20,200 +20,200 @@
                 </tr>
                 <tr>
                     <td>object</td>
-                    <td align="center" style="font-weight: bold;">true</td>
-                    <td align="center">false</td>
+                    <td class="center required">true</td>
+                    <td class="center">false</td>
                     <td>The label of the object whose sub-object will be created</td>
                     <td>Fixed, mandatory</td>
                 </tr>
                 <tr>
                     <td>field</td>
-                    <td align="center" style="font-weight: bold;">true</td>
-                    <td align="center">false</td>
+                    <td class="center required">true</td>
+                    <td class="center">false</td>
                     <td>The field name that denotes the sub-object.</td>
                     <td>Fixed, mandatory.</td>
                 </tr>
                 <tr>
                     <td>action</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>the response page of the form</td>
                     <td>Mandatory if a &lt;mak:action&gt; is absent</td>
                 </tr>
                 <tr>
                     <td>method</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>the HTTP method (get or post)</td>
                     <td>Defaults to get</td>
                 </tr>
                 <tr>
                     <td>name</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>the name of the form</td>
                     <td/>
                 </tr>
                 <tr>
                     <td>message</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>the message that is displayed in the response page upon success</td>
                     <td>Fixed. Defaults to "changes done".</td>
                 </tr>
                 <tr>
                     <td>annotation</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Indicates that validation whether errors should be shown in the form, or be displayed in the &lt;mak:response/&gt;.</td>
                     <td>Taken into account only if reloadFormOnError is not set to false.
 Values are none (displayed in &lt;mak:response/&gt;), before (before the input), after (after the input) or both (displayed both before and after the input). Defaults to none. </td>
                 </tr>
                 <tr>
                     <td>annotationSeparator</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Fixed. Prints the given separator between the annotation and the input field.</td>
                     <td>Also HTML can be used, e.g. printing an error icon.</td>
                 </tr>
                 <tr>
                     <td>reloadFormOnError</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Indicates whether the form page shall be reloaded on an error, or the specified form action page will be loaded directly.</td>
                     <td>Fixed. Values are true or false; defaults to false.</td>
                 </tr>
                 <tr>
                     <td>clientSideValidation</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Controls whether client side validation shall be used.</td>
                     <td>Rtexpr. Values are false (off), true (on submission) or live (while tpying).</td>
                 </tr>
                 <tr>
                     <td>multipleSubmitErrorMsg</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Enables multiple form submission prevention, and sets the given value as the error message.</td>
-                    <td style="color: red; font-weight: bold;">Document me please</td>
+                    <td class="missingDoc">Document me please</td>
                 </tr>
                 <tr>
                     <td>target</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Form-specific HTML tag attribute</td>
                     <td>The content is copied to the resulting &lt;form...&gt; tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onReset</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Form-specific HTML tag attribute</td>
                     <td>The content is copied to the resulting &lt;form...&gt; tag. Careful with
           (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onSubmit</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Form-specific HTML tag attribute</td>
                     <td>The content is copied to the resulting &lt;form...&gt; tag. Careful with
           (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>styleId</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Generic HTML tag attribute</td>
                     <td>results in id="..."</td>
                 </tr>
                 <tr>
                     <td>styleClass</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Generic HTML tag attribute</td>
                     <td>results in class="..."</td>
                 </tr>
                 <tr>
                     <td>style</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Generic HTML tag attribute</td>
                     <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>title</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Generic HTML tag attribute</td>
                     <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onClick</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Generic HTML tag attribute</td>
                     <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onDblClick</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Generic HTML tag attribute</td>
                     <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onKeyDown</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Generic HTML tag attribute</td>
                     <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onKeyUp</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Generic HTML tag attribute</td>
                     <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onKeyPress</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Generic HTML tag attribute</td>
                     <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onMouseDown</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Generic HTML tag attribute</td>
                     <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onMouseUp</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Generic HTML tag attribute</td>
                     <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onMouseMove</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Generic HTML tag attribute</td>
                     <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onMouseOut</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Generic HTML tag attribute</td>
                     <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onMouseOver</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Generic HTML tag attribute</td>
                     <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>

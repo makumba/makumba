@@ -20,43 +20,43 @@
                 </tr>
                 <tr>
                     <td>from</td>
-                    <td align="center" style="font-weight: bold;">true</td>
-                    <td align="center">false</td>
+                    <td class="center required">true</td>
+                    <td class="center">false</td>
                     <td>OQL FROM section. If the query is nested, the keys from the parent's query are added to this FROM section in the resulting query</td>
                     <td>Fixed, Mandatory.</td>
                 </tr>
                 <tr>
                     <td>variableFrom</td>
-                    <td align="center">false</td>
-                    <td align="center">false</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
                     <td>supplementary, variable OQL FROM section.</td>
                     <td>Fixed, can contain #{ JSP EL expressions }</td>
                 </tr>
                 <tr>
                     <td>where</td>
-                    <td align="center">false</td>
-                    <td align="center">false</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
                     <td>OQL WHERE section. If the query is nested, the WHERE section from the parent's query, is added to this in the resulting query</td>
                     <td>Fixed, can contain #{ JSP EL expressions }</td>
                 </tr>
                 <tr>
                     <td>groupBy</td>
-                    <td align="center">false</td>
-                    <td align="center">false</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
                     <td>OQL GROUP BY  section</td>
                     <td>Fixed, can contain #{ JSP EL expressions }</td>
                 </tr>
                 <tr>
                     <td>id</td>
-                    <td align="center">false</td>
-                    <td align="center">false</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
                     <td>Tag's identifier</td>
                     <td>Fixed. Can be used to distinguish otherwise identical tags on a page (to avoid confusion by Makumba's JSP analyser)</td>
                 </tr>
                 <tr>
                     <td>db</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>The makumba database to connect to. The format is Host_SQLEngineType_DatabaseName 
 If not present, the default database is used. See database configuration and lookup.</td>
                     <td>Fixed, cannot contain attributes, for now. 
@@ -66,45 +66,45 @@ Can be a Rtexpr &lt;%= ...%&gt;</td>
                 </tr>
                 <tr>
                     <td>authorize</td>
-                    <td align="center">false</td>
-                    <td align="center">false</td>
-                    <td style="color: red; font-weight: bold;">Document me please</td>
-                    <td style="color: red; font-weight: bold;">Document me please</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
+                    <td class="missingDoc">Document me please</td>
+                    <td class="missingDoc">Document me please</td>
                 </tr>
                 <tr>
                     <td>editable</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
-                    <td style="color: red; font-weight: bold;">Document me please</td>
-                    <td style="color: red; font-weight: bold;">Document me please</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                    <td class="missingDoc">Document me please</td>
+                    <td class="missingDoc">Document me please</td>
                 </tr>
                 <tr>
                     <td>logicClass</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
-                    <td style="color: red; font-weight: bold;">Document me please</td>
-                    <td style="color: red; font-weight: bold;">Document me please</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                    <td class="missingDoc">Document me please</td>
+                    <td class="missingDoc">Document me please</td>
                 </tr>
                 <tr>
                     <td>editPage</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
-                    <td style="color: red; font-weight: bold;">Document me please</td>
-                    <td style="color: red; font-weight: bold;">Document me please</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                    <td class="missingDoc">Document me please</td>
+                    <td class="missingDoc">Document me please</td>
                 </tr>
                 <tr class="deprecated">
-                    <td class="deprecated" style="color: blue;">countVar (deprecated)</td>
-                    <td class="deprecated" align="center" style="color: blue;">false</td>
-                    <td class="deprecated" align="center" style="color: blue;">false</td>
-                    <td class="deprecated" style="color: blue;">The java.lang.Integer variable that will contain the number of the current iteration.</td>
-                    <td class="deprecated" style="color: blue;">Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java scope at that point in the JSP. Deprecated: Use mak:count() expression language function instead</td>
+                    <td class="deprecated">countVar (deprecated)</td>
+                    <td class="deprecated center">false</td>
+                    <td class="deprecated center">false</td>
+                    <td class="deprecated">The java.lang.Integer variable that will contain the number of the current iteration.</td>
+                    <td class="deprecated">Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java scope at that point in the JSP. Deprecated: Use mak:count() expression language function instead</td>
                 </tr>
                 <tr class="deprecated">
-                    <td class="deprecated" style="color: blue;">maxCountVar (deprecated)</td>
-                    <td class="deprecated" align="center" style="color: blue;">false</td>
-                    <td class="deprecated" align="center" style="color: blue;">false</td>
-                    <td class="deprecated" style="color: blue;">The java.lang.Integer variable that will contain the total number of iterations.</td>
-                    <td class="deprecated" style="color: blue;">Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java scope at that point in the JSP. Deprecated: use mak:maxCount() expression language function instead</td>
+                    <td class="deprecated">maxCountVar (deprecated)</td>
+                    <td class="deprecated center">false</td>
+                    <td class="deprecated center">false</td>
+                    <td class="deprecated">The java.lang.Integer variable that will contain the total number of iterations.</td>
+                    <td class="deprecated">Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java scope at that point in the JSP. Deprecated: use mak:maxCount() expression language function instead</td>
                 </tr>
             </table>
         </section>

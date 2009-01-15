@@ -21,29 +21,29 @@
                 </tr>
                 <tr>
                     <td>action</td>
-                    <td align="center">false</td>
-                    <td align="center">yes</td>
+                    <td class="center">false</td>
+                    <td class="center">yes</td>
                     <td>The target page to go to when clicking on a pagination link.</td>
                     <td>Rtexpr.</td>
                 </tr>
                 <tr>
                     <td>paginationLinkTitle</td>
-                    <td align="center">false</td>
-                    <td align="center">yes</td>
+                    <td class="center">false</td>
+                    <td class="center">yes</td>
                     <td>Whether or not to display title="..." elements on the pagination links.</td>
                     <td>Fixed; defaults to true</td>
                 </tr>
                 <tr>
                     <td>itemName</td>
-                    <td align="center">false</td>
-                    <td align="center">yes</td>
+                    <td class="center">false</td>
+                    <td class="center">yes</td>
                     <td>The name of the items displayed, to be used in the text "Showing 'itemName' x out of y (Page z)".</td>
                     <td>Rtexpr.</td>
                 </tr>
                 <tr>
                     <td>styleClass</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Generic HTML tag attribute</td>
                     <td>results in class="..."</td>
                 </tr>

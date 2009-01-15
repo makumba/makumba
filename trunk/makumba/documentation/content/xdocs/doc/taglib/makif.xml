@@ -20,12 +20,12 @@
                 </tr>
                 <tr>
                     <td>test</td>
-                    <td align="center" style="font-weight: bold;">true</td>
-                    <td align="center">false</td>
+                    <td class="center required">true</td>
+                    <td class="center">false</td>
                     <td>OQL SELECT  projection expression. It must be a test, resulting in a 'boolean' in SQL : 0 or 1.
 
 for the test expressions: =, !=, &lt;, &lt;=, &gt;, &gt;=
-</td>                    <td style="color: red; font-weight: bold;">Document me please</td>
+</td>                    <td class="missingDoc">Document me please</td>
                 </tr>
             </table>
         </section>

@@ -20,58 +20,58 @@
                 </tr>
                 <tr>
                     <td>resultsFrom</td>
-                    <td align="center" style="font-weight: bold;">true</td>
-                    <td align="center">false</td>
+                    <td class="center required">true</td>
+                    <td class="center">false</td>
                     <td>The name of the search form the results are taken from.</td>
-                    <td style="color: red; font-weight: bold;">Document me please</td>
+                    <td class="missingDoc">Document me please</td>
                 </tr>
                 <tr>
                     <td>orderBy</td>
-                    <td align="center">false</td>
-                    <td align="center">false</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
                     <td>OQL ORDER BY  section</td>
                     <td>Fixed, can contain #{ JSP EL expressions } label.$fieldname used to be supported, not anymore</td>
                 </tr>
                 <tr>
                     <td>groupBy</td>
-                    <td align="center">false</td>
-                    <td align="center">false</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
                     <td>OQL GROUP BY  section</td>
                     <td>Fixed, can contain #{ JSP EL expressions }</td>
                 </tr>
                 <tr>
                     <td>offset</td>
-                    <td align="center">false</td>
-                    <td align="center">false</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
                     <td>the offset of the result to show (0 for starting from the first result)</td>
                     <td>Fixed ($attribute allowed). If $attribute is not found, defaults to 0. Only allowed for the outermost mak:list</td>
                 </tr>
                 <tr>
                     <td>limit</td>
-                    <td align="center">false</td>
-                    <td align="center">false</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
                     <td>the maximum numbers of results to show (-1 for all results)</td>
                     <td>Fixed ($attribute allowed). Only allowed for the outermost mak:list. if $attribute is not found, defaults to the value of defaultLimit, if present, or -1 otherwise.
 LIMIT can limit the query time dramatically, but the children mak:lists are not yet limited.</td>
                 </tr>
                 <tr>
                     <td>defaultLimit</td>
-                    <td align="center">false</td>
-                    <td align="center">false</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
                     <td>the default value for limit, if the $attribute in limit="$attribute" is not present.</td>
                     <td>Fixed ($attribute allowed). Only allowed for the outermost mak:list.</td>
                 </tr>
                 <tr>
                     <td>id</td>
-                    <td align="center">false</td>
-                    <td align="center">false</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
                     <td>Tag's identifier</td>
                     <td>Fixed. Can be used to distinguish otherwise identical tags on a page (to avoid confusion by Makumba's JSP analyser)</td>
                 </tr>
                 <tr>
                     <td>db</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>The makumba database to connect to. The format is Host_SQLEngineType_DatabaseName 
 If not present, the default database is used. See database configuration and lookup.</td>
                     <td>Fixed, cannot contain attributes, for now. 
@@ -80,11 +80,11 @@ Can only be set for top-level (root) query tags
 Can be a Rtexpr &lt;%= ...%&gt;</td>
                 </tr>
                 <tr class="deprecated">
-                    <td class="deprecated" style="color: blue;">separator (deprecated)</td>
-                    <td class="deprecated" align="center" style="color: blue;">false</td>
-                    <td class="deprecated" align="center" style="color: blue;">true</td>
-                    <td class="deprecated" style="color: blue;">Character string as separator between two list elements. It is not included before the first or after the last</td>
-                    <td class="deprecated" style="color: blue;">Deprecated, use &lt;c:if test="${mak:count&lt;mak:maxCount()}"&gt; instead.</td>
+                    <td class="deprecated">separator (deprecated)</td>
+                    <td class="deprecated center">false</td>
+                    <td class="deprecated center">true</td>
+                    <td class="deprecated">Character string as separator between two list elements. It is not included before the first or after the last</td>
+                    <td class="deprecated">Deprecated, use &lt;c:if test="${mak:count&lt;mak:maxCount()}"&gt; instead.</td>
                 </tr>
             </table>
         </section>
