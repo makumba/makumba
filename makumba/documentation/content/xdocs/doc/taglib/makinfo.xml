@@ -20,10 +20,10 @@
                 </tr>
                 <tr>
                     <td>applicationProperties</td>
-                    <td align="center">false</td>
-                    <td align="center">false</td>
-                    <td style="color: red; font-weight: bold;">Document me please</td>
-                    <td style="color: red; font-weight: bold;">Document me please</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
+                    <td class="missingDoc">Document me please</td>
+                    <td class="missingDoc">Document me please</td>
                 </tr>
             </table>
         </section>

@@ -30,57 +30,57 @@ the fields produced by &lt;mak:input&gt; are available separately as a Dictionar
                 </tr>
                 <tr>
                     <td>field</td>
-                    <td align="center">false</td>
-                    <td align="center">false</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
                     <td>Makumba field (from the edited record or via base pointers or sub-record pointers)</td>
                     <td>Fixed, mandatory</td>
                 </tr>
                 <tr>
                     <td>name</td>
-                    <td align="center">false</td>
-                    <td align="center">false</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
                     <td>Makumba field (from the edited record or via base pointers or sub-record pointers)</td>
                     <td>Fixed, mandatory</td>
                 </tr>
                 <tr>
                     <td>value</td>
-                    <td align="center">false</td>
-                    <td align="center">false</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
                     <td>OQL expression relative to enclosing query tags or a $attribute computed previously in the page (with &lt;mak:value var=.../&gt; or pageContext.setAttribute(...)), or read by in the previous page by an &lt;mak:input /&gt;</td>
                     <td>Fixed</td>
                 </tr>
                 <tr>
                     <td>default</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
-                    <td style="color: red; font-weight: bold;">FIXME</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                    <td class="missingDoc">FIXME</td>
                     <td>Rtexpr</td>
                 </tr>
                 <tr>
                     <td>empty</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
-                    <td style="color: red; font-weight: bold;">FIXME</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                    <td class="missingDoc">FIXME</td>
                     <td>Rtexpr</td>
                 </tr>
                 <tr>
                     <td>dataType</td>
-                    <td align="center">false</td>
-                    <td align="center">false</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
                     <td>The makumba type of the data (needed if there is no value, no default expression for the value, or no makumba type associated with an attribute)</td>
                     <td>Fixed. Can be char, char[xx], int, date, text, ptr Type, set Type</td>
                 </tr>
                 <tr>
                     <td>display</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>If "false", it will not show the &lt;input&gt; but it will expect to read it in the next page. This allows the page designer to format the input control manually</td>
                     <td>Rtexpr.</td>
                 </tr>
                 <tr>
                     <td>format</td>
-                    <td align="center">false</td>
-                    <td align="center">false</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
                     <td>Format string, according to java.text.SimpleDateFormat 
 Can only countain d, M, y, H, m, s formatting chars, and any kind of separators. Ex: 
 'the day' dd 'of the month' MMMM 'in the year' yyyy. 
@@ -89,8 +89,8 @@ Default is "dd MMMM yyyy"</td>
                 </tr>
                 <tr>
                     <td>type</td>
-                    <td align="center">false</td>
-                    <td align="center">false</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
                     <td>HTML INPUT type to be used 
 "hidden" works for all fields 
 for char[] , type can be "text" or "password", default is "text" 
@@ -104,71 +104,71 @@ for file, a file upload box will automatically created, and handling of file nam
                 </tr>
                 <tr>
                     <td>stepSize</td>
-                    <td align="center">false</td>
-                    <td align="center">false</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
                     <td>For int data with type select or radio, the step size defines the steps between each option. The default stepsize is 1.</td>
                     <td>Rtexpr. Only for int with type=select/radio.</td>
                 </tr>
                 <tr>
                     <td>calendarEditor</td>
-                    <td align="center">false</td>
-                    <td align="center">false</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
                     <td>Whether to generate code for a calendar editor.</td>
                     <td>Only for date types. Defaults to &lt;code&gt;true&lt;/code&gt; resp. the default value specified in the Makumba configuration.</td>
                 </tr>
                 <tr>
                     <td>calendarEditorLink</td>
-                    <td align="center">false</td>
-                    <td align="center">false</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
                     <td>The formatting that appears on the link to the calendar date-chooser.</td>
                     <td>Only for date types. Defaults to &lt;img border="0" src="_CONTEXT_PATH_/mak-tools/makumbaResources/image/calendar.gif"&gt;</td>
                 </tr>
                 <tr>
                     <td>autoComplete</td>
-                    <td align="center">false</td>
-                    <td align="center">false</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
                     <td>Enables auto-completion</td>
                     <td>Fixed. Works only for char[] and ptr.</td>
                 </tr>
                 <tr>
                     <td>size</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Size of the input control</td>
                     <td>Rtexpr. Only for char[], int (size of the textbox) and set, ptr (height of the select)</td>
                 </tr>
                 <tr>
                     <td>maxlength</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Max length of a text control</td>
                     <td>Rtexpr. Only for char[] and int. Defaults to makumba width of the char[]</td>
                 </tr>
                 <tr>
                     <td>rows</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Number of textarea rows and columns</td>
                     <td>only for text</td>
                 </tr>
                 <tr>
                     <td>cols</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Number of textarea rows and columns</td>
                     <td>only for text</td>
                 </tr>
                 <tr>
                     <td>nameVar</td>
-                    <td align="center">false</td>
-                    <td align="center">false</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
                     <td>The name of the java variable in which to store the name of the HTML input. In multiple forms,  there may be more HTML inputs generated by one mak:input, so a suffix is added by makumba to the name to generate unique names for each.</td>
                     <td>Fixed</td>
                 </tr>
                 <tr>
                     <td>nullOption</td>
-                    <td align="center">false</td>
-                    <td align="center">false</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
                     <td>A text that would be displayed as the "null option" in drop-down boxes, i.e. to add a null value to the other
           possible options. May be used to allow a ptr to be set to null, and/or require a deliberate action from the users to
           select a value, rather leaving the default (first) value selected.</td>
@@ -176,164 +176,164 @@ for file, a file upload box will automatically created, and handling of file nam
                 </tr>
                 <tr>
                     <td>labelSeparator</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>The string that separates the tickbox (radio/check) from the label. Default is " " (space). 
 The output will be &lt; tick &gt;&lt; labelSeparator &gt;&lt; label &gt;</td>
                     <td>Rtexpr. Only for &lt;code&gt;type="tickbox"&lt;/code&gt;</td>
                 </tr>
                 <tr>
                     <td>elementSeparator</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>The string that separates the different options. Default is " " (space). 
 The output will be &lt; [x] label &gt;&lt; elementSeparator &gt;&lt; [x] label &gt;</td>
                     <td>Rtexpr. Only for &lt;code&gt;type="tickbox"&lt;/code&gt;</td>
                 </tr>
                 <tr>
                     <td>accessKey</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Input-specific HTML tag attribute</td>
                     <td>The content is copied to the resulting &lt;input...&gt; tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>disabled</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Input-specific HTML tag attribute</td>
                     <td>The content is copied to the resulting &lt;input...&gt; tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onChange</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Input-specific HTML tag attribute</td>
                     <td>The content is copied to the resulting &lt;input...&gt; tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onBlur</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Input-specific HTML tag attribute</td>
                     <td>The content is copied to the resulting &lt;input...&gt; tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onFocus</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Input-specific HTML tag attribute</td>
                     <td>The content is copied to the resulting &lt;input...&gt; tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onSelect</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Input-specific HTML tag attribute</td>
                     <td>The content is copied to the resulting &lt;input...&gt; tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>tabIndex</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Input-specific HTML tag attribute</td>
                     <td>The content is copied to the resulting &lt;input...&gt; tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>styleId</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Generic HTML tag attribute</td>
                     <td>results in id="..."</td>
                 </tr>
                 <tr>
                     <td>styleClass</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Generic HTML tag attribute</td>
                     <td>results in class="..."</td>
                 </tr>
                 <tr>
                     <td>style</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Generic HTML tag attribute</td>
                     <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>title</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Generic HTML tag attribute</td>
                     <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onClick</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Generic HTML tag attribute</td>
                     <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onDblClick</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Generic HTML tag attribute</td>
                     <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onKeyDown</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Generic HTML tag attribute</td>
                     <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onKeyUp</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Generic HTML tag attribute</td>
                     <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onKeyPress</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Generic HTML tag attribute</td>
                     <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onMouseDown</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Generic HTML tag attribute</td>
                     <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onMouseUp</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Generic HTML tag attribute</td>
                     <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onMouseMove</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Generic HTML tag attribute</td>
                     <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onMouseOut</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Generic HTML tag attribute</td>
                     <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onMouseOver</td>
-                    <td align="center">false</td>
-                    <td align="center">true</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
                     <td>Generic HTML tag attribute</td>
                     <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>

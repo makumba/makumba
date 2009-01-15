@@ -26,8 +26,8 @@ This can be used for http authentication with no session tracking. )
                 </tr>
                 <tr>
                     <td>actor</td>
-                    <td align="center" style="font-weight: bold;">true</td>
-                    <td align="center">true</td>
+                    <td class="center required">true</td>
+                    <td class="center">true</td>
                     <td>The name of the attribute to be removed from the session. You can remove multiple attributes by using the star (*) wildcard to partially match attributes.</td>
                     <td/>
                 </tr>

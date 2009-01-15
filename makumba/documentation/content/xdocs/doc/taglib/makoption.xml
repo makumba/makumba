@@ -26,15 +26,15 @@ If an option value appears many times it will only be shown the first time it oc
                 </tr>
                 <tr>
                     <td>value</td>
-                    <td align="center">false</td>
-                    <td align="center">false</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
                     <td>Value of the option, can be an OQL expression or a $attribute</td>
                     <td>Fixed, if not indicated, nil (null option) is default</td>
                 </tr>
                 <tr>
                     <td>selected</td>
-                    <td align="center">false</td>
-                    <td align="center">false</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
                     <td>Whether this option is selected or not</td>
                     <td>False by default</td>
                 </tr>

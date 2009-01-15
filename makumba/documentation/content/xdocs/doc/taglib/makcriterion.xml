@@ -20,22 +20,22 @@
                 </tr>
                 <tr>
                     <td>fields</td>
-                    <td align="center" style="font-weight: bold;">true</td>
-                    <td align="center">false</td>
+                    <td class="center required">true</td>
+                    <td class="center">false</td>
                     <td>The MDD fields to apply this criterion upon</td>
                     <td>Fixed, mandatory; for multiple fields, provide a comma-separated list.</td>
                 </tr>
                 <tr>
                     <td>isRange</td>
-                    <td align="center">false</td>
-                    <td align="center">false</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
                     <td>Toggles range searching on the field(s)</td>
                     <td>Fixed. Values are true or false; defaults to false.</td>
                 </tr>
                 <tr>
                     <td>matchMode</td>
-                    <td align="center">false</td>
-                    <td align="center">false</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
                     <td>Defines how the search terms shall be matched. Allowed values depend on the data types:
       &lt;ul&gt;
         &lt;li&gt;for string matches, i.e. char and text: 'contains', 'equals', 'begins', 'ends'&lt;/li&gt;
