@@ -66,8 +66,9 @@ public class ErrorControllerHandler extends ControllerHandler {
      */
     public void treatException(Throwable t, HttpServletRequest req, HttpServletResponse resp, FilterConfig conf) {
         resp.setContentType("text/html");
+        if (t instanceof RuntimeWrappedException)
+            t = ((RuntimeWrappedException) t).getCause();
         req.setAttribute(javax.servlet.jsp.PageContext.EXCEPTION, t);
-        if(t instanceof RuntimeWrappedException) t = ((RuntimeWrappedException)t).getCause();
         
         if (req.getAttribute("org.makumba.exceptionTreated") == null && !((t instanceof UnauthorizedException) && login(req, resp))) {
         try {

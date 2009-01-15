@@ -42,6 +42,7 @@ import org.makumba.NoSuchFieldException;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.Transaction;
+import org.makumba.UnauthenticatedException;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryProvider;
@@ -304,7 +305,7 @@ public abstract class TransactionImplementation implements Transaction {
         if(contextAttributes==null)
             return m;
         return new EasyMap<String, Object>(){
-            public Object get(Object key){
+            public Object get(Object key) {
                 Object o= m.get(key);
                 if(o!=null)
                     return o;
@@ -313,7 +314,10 @@ public abstract class TransactionImplementation implements Transaction {
                     if(o==null && contextAttributes.hasAttribute(""+key+"_null"))
                         o=Pointer.Null;
                     return o;
-                }catch(LogicException e){
+                } catch (UnauthenticatedException e) {
+                    // we need to pass on a potential UnauthenticatedException that might stem from actor lookup
+                    throw new RuntimeWrappedException(e);
+                } catch (LogicException e) {
                     return null;
                 }
             }

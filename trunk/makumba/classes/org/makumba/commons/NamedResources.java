@@ -229,6 +229,8 @@ public class NamedResources implements java.io.Serializable {
             Object hash = null;
             try {
                 hash = f.getHashObject(name);
+            } catch (RuntimeWrappedException t) {
+                throw t;
             } catch (Throwable t) {
                 throw new RuntimeWrappedException(t);
             }
