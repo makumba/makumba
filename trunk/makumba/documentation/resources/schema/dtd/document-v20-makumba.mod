@@ -64,10 +64,10 @@ NOTES:
         ID is required.
 -->
 <!ENTITY % common.att 'id                     ID              #IMPLIED
-         class                  NMTOKEN         #IMPLIED
+         class                  NMTOKENS         #IMPLIED
          xml:lang               NMTOKEN         #IMPLIED'>
 <!ENTITY % common-idreq.att 'id                     ID              #REQUIRED
-         class                  NMTOKEN         #IMPLIED
+         class                  NMTOKENS         #IMPLIED
          xml:lang               NMTOKEN         #IMPLIED'>
 <!-- xml:space attribute ===============================================
         Indicates that the element contains white space
