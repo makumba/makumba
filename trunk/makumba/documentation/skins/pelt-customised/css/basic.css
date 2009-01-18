@@ -198,8 +198,7 @@ tr.deprecated {
 	font-style: italic;
 }
 
-td.deprecated {
-	color: blue;
-	font-style: italic;
+td.required {
+	font-weight: bold;
 }
 
