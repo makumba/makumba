@@ -57,7 +57,24 @@ public class TLD2Forest {
     private static final String[][] attributeHighlightValues = { null, { "true" }, null,
             { "Document me please", "FIXME" }, { "Document me please" } };
 
+    private static final String[][] genericAttributes = {
+            { "Form-specific HTML tag attribute",
+                    "The content is copied to the resulting <form...> tag. Careful with (escaping) quotes." },
+            { "Generic HTML tag attribute",
+                    "The content is copied to the resulting html tag. Careful with (escaping) quotes." },
+            { "Input-specific HTML tag attribute",
+                    "The content is copied to the resulting <input...> tag. Careful with (escaping) quotes." } };
+
     private static final String[] attributeHighlightClasses = { null, "required", null, "missingDoc", "missingDoc" };
+
+    // stores the name of that latest generic attribute encountered
+    private static String genericAttributeName = null;
+
+    // counts how many rows of generic attributes with the same name we have seen
+    private static int genericAttributesCount = 0;
+
+    // reference to the first row of the generic attribute. needed to afterwards modify the rowspan
+    private static Element genericAttributeFirstRow = null;
 
     public static void main(String[] args) {
 
@@ -231,7 +248,13 @@ public class TLD2Forest {
                         }
                     }
                 }
-            } else { // default mesage if the tag has no attributes
+                // clean up potential generic attributes at the end of the table
+                modifyGenericAttributeFirstRow();
+                genericAttributeName = null;
+                genericAttributeFirstRow = null;
+                genericAttributesCount = 0;
+
+            } else { // default message if the tag has no attributes
                 sectionElement.addElement("p").setText("This tag has no attributes");
             }
         }
@@ -300,54 +323,94 @@ public class TLD2Forest {
         if (isDeprecated) {
             tr.addAttribute("class", "deprecated");
         }
-        /* going thru all the different data of attributes */
-        for (Iterator<Element> tagElementAttributeIter = tagElement.elementIterator(); tagElementAttributeIter.hasNext();) {
-            Element dataElement = tagElementAttributeIter.next();
-            // System.out.println("tagelement attribute: "+dataElement.getText());
-            String tagElementAttributeName = dataElement.getName();
 
-            /* looking only specified data of an attribute, currently there are 4 tags to look for */
-            for (int i = 0; i < attributeTags.length; i++) {
-                String attributeName = attributeTags[i];
-                // if specified attribute is found then write the corresponding data to a table cell
-                if (tagElementAttributeName.equals(attributeName)) {
-                    StringBuffer cssClasses = new StringBuffer();
-                    Element td = tr.addElement("td");
+        Element[] elements = new Element[attributeTags.length];
+        for (int i = 0; i < elements.length; i++) {
+            elements[i] = getChildElement(tagElement, attributeTags[i]);
+        }
+        String thisGenericAttributeName = null;
 
-                    if (isDeprecated) {
-                        appendClass(cssClasses, "deprecated");
-                    }
-                    // content of a current data tag
-                    String elementText = dataElement.getText();
-                    // if a text of the tag is empty a check to avoid nullpointer. Is it possible to have null????
-                    elementText = (elementText != null ? elementText : "");
-
-                    // apply special formatting
-                    if (StringUtils.isNotBlank(attributeClassesAlignment[i])) {
-                        appendClass(cssClasses, attributeClassesAlignment[i]);
-                    }
-                    if (org.makumba.commons.StringUtils.equalsAny(elementText, attributeHighlightValues[i])) {
-                        appendClass(cssClasses, attributeHighlightClasses[i]);
-                    }
-
-                    // special treatment for deprecated attributes
-                    if (isDeprecated ) {
-                        if (attributeName.equals("name")) {
-                            elementText += " (deprecated)";
-                        }
-//                        appendClass(cssClasses, "deprecated");
-                    }
-                    td.setText(elementText);
-                    if (StringUtils.isNotBlank(cssClasses.toString())) {
-                        td.addAttribute("class", cssClasses.toString());
-                    }
-                    cellAddedCount++;
+        for (String[] generic : genericAttributes) {
+            if (generic[0].equals(elements[3].getTextTrim()) && generic[1].equals(elements[4].getTextTrim())) {
+                thisGenericAttributeName = generic[0];
+                // if this attribute is a generic attribute
+                if (genericAttributeName == null) { // if there was no previous generic attribute, set start values
+                    // System.out.println("new generic attribute: " + thisGenericAttributeName);
+                    genericAttributeName = thisGenericAttributeName;
+                    genericAttributeFirstRow = tr;
+                    genericAttributesCount = 1;
+                } else if (genericAttributeName.equals(thisGenericAttributeName)) {
+                    // we have another generic attribute as before
+                    // System.out.println("continued generic attribute: " + thisGenericAttributeName);
+                    genericAttributesCount++;
+                } else { // we have a new generic attribute
+                    // System.out.println("change of generic attribute: " + thisGenericAttributeName);
+                    modifyGenericAttributeFirstRow();
+                    genericAttributeFirstRow = tr;
+                    genericAttributesCount = 1;
                 }
             }
         }
-        for (int j = cellAddedCount; j < attributeTags.length; j++) {
+        // if the attribute is no generic attribute
+        if (thisGenericAttributeName == null && genericAttributeName != null) {
+            // process the generic attributes from before
+            System.out.println("change of generic attribute: " + thisGenericAttributeName);
+            modifyGenericAttributeFirstRow();
+            genericAttributeName = null;
+            genericAttributeFirstRow = null;
+            genericAttributesCount = 0;
+        }
+
+        /* looking only specified data of an attribute, currently there are 4 tags to look for */
+        for (int i = 0; i < elements.length; i++) {
+            if (genericAttributesCount > 1 && (i == 3 || i == 4)) {
+                // if we are in the second or later occurrence of a generic attribute, don't write the last two tables
+                // System.out.println("skipping writing td element " + i + "/" + elements.length);
+                continue;
+            }
+
+            final Element dataElement = elements[i];
+            String attributeName = attributeTags[i];
             Element td = tr.addElement("td");
-            td.setText("");
+            // td.addAttribute("rowspan", "1");
+            StringBuffer cssClasses = new StringBuffer();
+
+            if (isDeprecated) {
+                appendClass(cssClasses, "deprecated");
+            }
+            // content of a current data tag
+            String elementText = dataElement != null ? dataElement.getText() : "FIXME";
+
+            // apply special formatting
+            if (StringUtils.isNotBlank(attributeClassesAlignment[i])) {
+                appendClass(cssClasses, attributeClassesAlignment[i]);
+            }
+            if (org.makumba.commons.StringUtils.equalsAny(elementText, attributeHighlightValues[i])) {
+                appendClass(cssClasses, attributeHighlightClasses[i]);
+            }
+
+            // special treatment for deprecated attributes
+            if (isDeprecated) {
+                if (attributeName.equals("name")) {
+                    elementText += " (deprecated)";
+                }
+                // appendClass(cssClasses, "deprecated");
+            }
+            td.setText(elementText);
+            if (StringUtils.isNotBlank(cssClasses.toString())) {
+                td.addAttribute("class", cssClasses.toString());
+            }
+            cellAddedCount++;
+        }
+    }
+
+    private static void modifyGenericAttributeFirstRow() {
+        if (genericAttributesCount > 1) { // only do it if we have more than one generic attribute
+            final List<Element> elements2 = genericAttributeFirstRow.elements();
+            elements2.get(3).addAttribute("rowspan", String.valueOf(genericAttributesCount));
+            elements2.get(4).addAttribute("rowspan", String.valueOf(genericAttributesCount));
+            elements2.get(3).addAttribute("class", "generic");
+            elements2.get(4).addAttribute("class", "generic");
         }
     }
 
@@ -366,6 +429,15 @@ public class TLD2Forest {
             }
         }
         return false;
+    }
+
+    private static Element getChildElement(Element e, String name) {
+        for (Element dataElement : (List<Element>) e.elements()) {
+            if (dataElement.getName().equals(name)) {
+                return dataElement;
+            }
+        }
+        return null;
     }
 
     /**
