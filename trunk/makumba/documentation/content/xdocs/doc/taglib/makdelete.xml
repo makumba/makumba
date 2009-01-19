@@ -92,85 +92,63 @@
                     <td>style</td>
                     <td class="center">false</td>
                     <td class="center">true</td>
-                    <td>Generic HTML tag attribute</td>
-                    <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
+                    <td rowspan="12" class="generic">Generic HTML tag attribute</td>
+                    <td rowspan="12" class="generic">The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>title</td>
                     <td class="center">false</td>
                     <td class="center">true</td>
-                    <td>Generic HTML tag attribute</td>
-                    <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onClick</td>
                     <td class="center">false</td>
                     <td class="center">true</td>
-                    <td>Generic HTML tag attribute</td>
-                    <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onDblClick</td>
                     <td class="center">false</td>
                     <td class="center">true</td>
-                    <td>Generic HTML tag attribute</td>
-                    <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onKeyDown</td>
                     <td class="center">false</td>
                     <td class="center">true</td>
-                    <td>Generic HTML tag attribute</td>
-                    <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onKeyUp</td>
                     <td class="center">false</td>
                     <td class="center">true</td>
-                    <td>Generic HTML tag attribute</td>
-                    <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onKeyPress</td>
                     <td class="center">false</td>
                     <td class="center">true</td>
-                    <td>Generic HTML tag attribute</td>
-                    <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onMouseDown</td>
                     <td class="center">false</td>
                     <td class="center">true</td>
-                    <td>Generic HTML tag attribute</td>
-                    <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onMouseUp</td>
                     <td class="center">false</td>
                     <td class="center">true</td>
-                    <td>Generic HTML tag attribute</td>
-                    <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onMouseMove</td>
                     <td class="center">false</td>
                     <td class="center">true</td>
-                    <td>Generic HTML tag attribute</td>
-                    <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onMouseOut</td>
                     <td class="center">false</td>
                     <td class="center">true</td>
-                    <td>Generic HTML tag attribute</td>
-                    <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
                 <tr>
                     <td>onMouseOver</td>
                     <td class="center">false</td>
                     <td class="center">true</td>
-                    <td>Generic HTML tag attribute</td>
-                    <td>The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
                 </tr>
             </table>
         </section>
