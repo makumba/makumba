@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -195,25 +194,34 @@ public class FormResponder extends Responder {
             return;
         }
         String targetPage;
-        final String absoluteAction = org.makumba.commons.StringUtils.getAbsolutePath(request.getRequestURI(), action);
-        final boolean shallReload = ResponseControllerHandler.shallReload(reloadFormOnError, action, absoluteAction,
-            originatingPageName);
 
-        Logger.getLogger("org.makumba.controller").info(
-            "Operation: " + operation + ", reloadForm: " + reloadFormOnError + ", will reload: " + shallReload);
-        Logger.getLogger("org.makumba.controller").info(
-            "Originating page: '" + originatingPageName + "', action page: '" + action + "' (absolute: "
-                    + absoluteAction + "), equal: " + originatingPageName.equals(absoluteAction));
-
-        if (shallReload) {
-            // if we shall reload the form page on errors, we submit the form back to the originating page, to be able
-            // to display validation errors on the original page
-            // in case there are no errors in the form submission, ResponseControllerHandler will take care of directing
-            // the client to the original page
-            targetPage = originatingPageName;
-        } else {
-            targetPage = action;
-        }
+        // FIXME
+        // commented out for the moment, as changing the action page has some severe implications and side-effects if
+        // page parameter names thus get accidentally defined twice
+        // see ResponseControllerHandler
+        //
+        // final String absoluteAction = org.makumba.commons.StringUtils.getAbsolutePath(request.getRequestURI(),
+        // action);
+        // final boolean shallReload = ResponseControllerHandler.shallReload(reloadFormOnError, action, absoluteAction,
+        // originatingPageName);
+        //
+        // Logger.getLogger("org.makumba.controller").info(
+        // "Operation: " + operation + ", reloadForm: " + reloadFormOnError + ", will reload: " + shallReload);
+        // Logger.getLogger("org.makumba.controller").info(
+        // "Originating page: '" + originatingPageName + "', action page: '" + action + "' (absolute: "
+        // + absoluteAction + "), equal: " + originatingPageName.equals(absoluteAction));
+        //
+        // if (shallReload) {
+        // // if we shall reload the form page on errors, we submit the form back to the originating page, to be able
+        // // to display validation errors on the original page
+        // // in case there are no errors in the form submission, ResponseControllerHandler will take care of directing
+        // // the client to the original page
+        // targetPage = originatingPageName;
+        // } else {
+        // targetPage = action;
+        // }
+        targetPage = action;
+        // end commented out stuff
 
         String sep = targetPage.indexOf('?') >= 0 ? "&" : "?";
         // handle anchors in actions (bla.jsp?person=hg34bw#employment)
