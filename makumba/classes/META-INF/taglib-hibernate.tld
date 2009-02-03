@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <taglib xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd" version="2.0">
 
-  <description>Makumba devel-20090113143303 http://www.makumba.org</description>
+  <description>Makumba devel-20090204001916 http://www.makumba.org</description>
   <tlib-version>2.0</tlib-version>
   <short-name>mak</short-name>
   <uri>http://www.makumba.org/view-hql</uri>
@@ -1665,11 +1665,25 @@ This can be used for http authentication with no session tracking. )
       <description>The target page to go to when clicking on a pagination link.</description>
       
     </attribute>
+     <attribute>
+      <name>showPageTitle</name>
+      <required>false</required>
+      <rtexprvalue>yes</rtexprvalue>
+      <description>Whether or not to show the 'Showing Item x to y out of z (Page a out of b)' header.</description>
+      
+    </attribute>
     <attribute>
       <name>paginationLinkTitle</name>
       <required>false</required>
       <rtexprvalue>yes</rtexprvalue>
-      <description>Whether or not to display title="..." elements on the pagination links.</description>
+      <description>Whether or not to display title="..." elements on the pagination links (i.e. 'first page', 'previous page', 'next page', 'last page'.</description>
+      
+    </attribute>
+    <attribute>
+      <name>paginationLinkTitleText</name>
+      <required>false</required>
+      <rtexprvalue>yes</rtexprvalue>
+      <description>The test to use for the pagination links. The default is 'page', creating e.g. 'previous page'. The text given in the attribute will be appended to the prefixes 'first', 'previous', 'next', 'last'.</description>
       
     </attribute>
     <attribute>
