@@ -80,34 +80,39 @@ public class ResponseControllerHandler extends ControllerHandler {
             req.setAttribute(ResponderFactory.RESPONSE_STRING_NAME, message);
             req.setAttribute(ResponderFactory.RESPONSE_FORMATTED_STRING_NAME, Responder.errorMessageFormatter(message));
 
-        } else if (e == null && responder != null) { // if there was no error, and we have a form responder
-            // check if we have set to reload the form, we go to the original action page
-            final HttpServletRequest httpServletRequest = (HttpServletRequest) req;
-            final String absoluteAction = StringUtils.getAbsolutePath(httpServletRequest.getRequestURI(),
-                responder.getAction());
-            final boolean shallReload = shallReload(responder.getReloadFormOnError(), responder.getAction(),
-                absoluteAction, responder.getOriginatingPageName());
-            logger.info("Form submission ok, operation: " + responder.operation + ", reloadForm: "
-                    + responder.getReloadFormOnError() + ", will reload: " + shallReload);
-            logger.info("Originating page: '" + responder.getOriginatingPageName() + "', action page: '"
-                    + responder.getAction() + "' (absolute: " + absoluteAction + "), equal: "
-                    + responder.getOriginatingPageName().equals(absoluteAction));
-
-            if (shallReload) {
-                // store the response attributes in the session, to be able to retrieve it later in RequestAttributes
-                HttpSession session = httpServletRequest.getSession();
-
-                final String suffix = "_" + absoluteAction;
-                for (String attr : ResponderFactory.RESPONSE_ATTRIBUTE_NAMES) {
-                    session.setAttribute(attr + suffix, req.getAttribute(attr));
-                    logger.info("Setting '" + attr + suffix + "' value: '" + req.getAttribute(attr) + "'.");
-                }
-
-                // redirecting
-                logger.info("Sending redirect from '" + httpServletRequest.getRequestURI() + "' to '"
-                        + responder.getAction() + "'.");
-                ((HttpServletResponse) resp).sendRedirect(responder.getAction());
-            }
+            // FIXME
+            // commented out for the moment, as changing the action page has some severe implications and side-effects
+            // if page parameter names thus get accidentally defined twice
+            // see FormResponder too
+            //
+            // } else if (e == null && responder != null) { // if there was no error, and we have a form responder
+            // // check if we have set to reload the form, we go to the original action page
+            // final HttpServletRequest httpServletRequest = (HttpServletRequest) req;
+            // final String absoluteAction = StringUtils.getAbsolutePath(httpServletRequest.getRequestURI(),
+            // responder.getAction());
+            // final boolean shallReload = shallReload(responder.getReloadFormOnError(), responder.getAction(),
+            // absoluteAction, responder.getOriginatingPageName());
+            // logger.info("Form submission ok, operation: " + responder.operation + ", reloadForm: "
+            // + responder.getReloadFormOnError() + ", will reload: " + shallReload);
+            // logger.info("Originating page: '" + responder.getOriginatingPageName() + "', action page: '"
+            // + responder.getAction() + "' (absolute: " + absoluteAction + "), equal: "
+            // + responder.getOriginatingPageName().equals(absoluteAction));
+            //
+            // if (shallReload) {
+            // // store the response attributes in the session, to be able to retrieve it later in RequestAttributes
+            // HttpSession session = httpServletRequest.getSession();
+            //
+            // final String suffix = "_" + absoluteAction;
+            // for (String attr : ResponderFactory.RESPONSE_ATTRIBUTE_NAMES) {
+            // session.setAttribute(attr + suffix, req.getAttribute(attr));
+            // logger.info("Setting '" + attr + suffix + "' value: '" + req.getAttribute(attr) + "'.");
+            // }
+            //
+            // // redirecting
+            // logger.info("Sending redirect from '" + httpServletRequest.getRequestURI() + "' to '"
+            // + responder.getAction() + "'.");
+            // ((HttpServletResponse) resp).sendRedirect(responder.getAction());
+            // }
         }
         return true;
     }
