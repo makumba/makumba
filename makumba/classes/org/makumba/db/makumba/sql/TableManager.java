@@ -734,8 +734,7 @@ public class TableManager extends Table {
                     values[j] = d.get(fields[j]);
                 }
                 if (checkDuplicate(fields, values, dbc)) {
-                    notUnique.addException(new NotUniqueException(getDataDefinition().getName(),
-                            multiFieldUniqueKeys[i].getFields(), values));
+                    notUnique.addException(new NotUniqueException(multiFieldUniqueKeys[i].getErrorMessage(values)));
                 }
             }
         }
@@ -2158,8 +2157,7 @@ public class TableManager extends Table {
                         values[j] = fullData.get(fields[j]);
                     }
                     if (findMultiFieldMultiTableDuplicates(pointer, key, values, dbc)) {
-                        notUnique.addException(new NotUniqueException(getDataDefinition().getName(), key.getFields(),
-                                values));
+                        notUnique.addException(new NotUniqueException(key.getErrorMessage(values)));
                         // duplicates.put(fields, values);
                     }
                 }
