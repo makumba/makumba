@@ -78,7 +78,7 @@ public class RecordParser {
     public static final Pattern multiUniquePattern = Pattern.compile(multiUniqueRegExp);
 
     public static final String validationRuleErrorMessageSeparatorChar = " : ";
-    
+
     // regular expressions for validation definitions //
     public static final String validationDefinitionRegExp = RegExpUtils.LineWhitespaces + "(" + RegExpUtils.fieldName
             + ")" + RegExpUtils.LineWhitespaces + VALIDATION_INDICATOR + "(matches|length|range|compare|unique)"
@@ -670,7 +670,7 @@ public class RecordParser {
         } else if (uconn.getClass().getName().endsWith("JarURLConnection")) {
             JarFile jf = ((JarURLConnection) uconn).getJarFile();
 
-            //jar:file:/home/manu/workspace/parade2/webapp/WEB-INF/lib/makumba.jar!/org/makumba/devel/relations/Relation
+            // jar:file:/home/manu/workspace/parade2/webapp/WEB-INF/lib/makumba.jar!/org/makumba/devel/relations/Relation
             // .mdd
             String[] jarURL = u.toExternalForm().split("!");
 
@@ -1236,7 +1236,9 @@ public class RecordParser {
                 String fieldName = singleValidationMatcher.group(1).trim();
                 String operation = singleValidationMatcher.group(2).trim();
                 String ruleDef = singleValidationMatcher.group(3).trim();
-                String errorMessage = line.substring(line.lastIndexOf(validationRuleErrorMessageSeparatorChar) + validationRuleErrorMessageSeparatorChar.length()).trim();
+                String errorMessage = line.substring(
+                    line.lastIndexOf(validationRuleErrorMessageSeparatorChar)
+                            + validationRuleErrorMessageSeparatorChar.length()).trim();
                 String ruleName = line;
                 ValidationRule rule = null;
                 Matcher matcher;
@@ -1319,8 +1321,7 @@ public class RecordParser {
                 rule.getFieldDefinition().addValidationRule(rule);
                 // validationRules.put(fieldName, rule);
                 targetDD.addValidationRule(rule);
-                java.util.logging.Logger.getLogger("org.makumba.datadefinition.makumba").finer(
-                    "added rule: " + rule);
+                java.util.logging.Logger.getLogger("org.makumba.datadefinition.makumba").finer("added rule: " + rule);
             } catch (ValidationDefinitionParseError e) {
                 mpe.add(e);
             }
