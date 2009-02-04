@@ -89,7 +89,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     BodyContent bodyContent = null;
 
-    String annotation = "after";
+    String annotation = Configuration.getDefaultFormAnnotation();
 
     private static final String[] validAnnotationParams = { "none", "before", "after", "both" };
 

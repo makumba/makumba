@@ -45,6 +45,7 @@ import org.makumba.commons.CollectionUtils;
  * services. It can be seen as a service dispatcher in a way.
  * 
  * @author Manuel Gay
+ * @author Rudolf Mayer
  * @version $Id: Configuration.java,v 1.1 28.09.2007 11:15:00 Manuel Exp $
  */
 public class Configuration implements Serializable {
@@ -54,6 +55,8 @@ public class Configuration implements Serializable {
     public static final String KEY_CLIENT_SIDE_VALIDATION = "clientSideValidation";
 
     public static final String KEY_RELOAD_FORM_ON_ERROR = "reloadFormOnError";
+
+    public static final String KEY_FORM_ANNOTATION = "formAnnotation";
 
     public static final String KEY_DEFAULT_DATABASE_LAYER = "defaultDatabaseLayer";
 
@@ -66,6 +69,8 @@ public class Configuration implements Serializable {
     private static String defaultClientSideValidation = "live";
 
     private static boolean defaultReloadFormOnError = true;
+
+    private static String defaultFormAnnotation = "after";
 
     private static final long serialVersionUID = 1L;
 
@@ -156,10 +161,14 @@ public class Configuration implements Serializable {
                         "Could not find application configuration file Makumba.conf in WEB-INF/classes!");
             }
 
-            defaultClientSideValidation = applicationConfig.getStringProperty("controllerConfig",
-                KEY_CLIENT_SIDE_VALIDATION, defaultConfig);
             defaultReloadFormOnError = applicationConfig.getBooleanProperty("controllerConfig",
                 KEY_RELOAD_FORM_ON_ERROR, defaultConfig);
+            // FIXME: check if the value in the file is ok, throw an exception otherwise
+            defaultClientSideValidation = applicationConfig.getStringProperty("controllerConfig",
+                KEY_CLIENT_SIDE_VALIDATION, defaultConfig);
+            // FIXME: check if the value in the file is ok, throw an exception otherwise
+            defaultFormAnnotation = applicationConfig.getStringProperty("controllerConfig", KEY_FORM_ANNOTATION,
+                defaultConfig);
 
             buildConfiguredDataSources();
 
@@ -275,6 +284,10 @@ public class Configuration implements Serializable {
 
     public static boolean getReloadFormOnErrorDefault() {
         return defaultReloadFormOnError;
+    }
+
+    public static String getDefaultFormAnnotation() {
+        return defaultFormAnnotation;
     }
 
     public static boolean getUseDefaultResponseStyles() {
