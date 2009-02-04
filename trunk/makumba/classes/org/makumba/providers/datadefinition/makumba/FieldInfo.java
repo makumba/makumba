@@ -37,6 +37,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
+import org.makumba.CompositeValidationException;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
@@ -319,9 +320,11 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     public void checkInsert(Dictionary<String, Object> d) {
         Object o = d.get(getName());
         if (isNotNull() && (o == null || o.equals(getNull()))) {
-            throw new org.makumba.InvalidValueException(this, ERROR_NOT_NULL);
+            // FIXME: call this in RecordEditor.readFrom, to have more possible exceptions gathered at once
+            throw new CompositeValidationException(new InvalidValueException(this, ERROR_NOT_NULL));
         } else if (isNotEmpty() && StringUtils.isEmpty(o)) {
-            throw new org.makumba.InvalidValueException(this, ERROR_NOT_EMPTY);
+            // FIXME: call this in RecordEditor.readFrom, to have more possible exceptions gathered at once
+            throw new CompositeValidationException(new InvalidValueException(this, ERROR_NOT_EMPTY));
         }
         if (o != null) {
             d.put(getName(), checkValue(o));
@@ -332,13 +335,15 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     public void checkUpdate(Dictionary<String, Object> d) {
         Object o = d.get(getName());
         if (isNotEmpty() && StringUtils.isEmpty(o)) {
-            throw new org.makumba.InvalidValueException(this, ERROR_NOT_EMPTY);
+         // FIXME: call this in RecordEditor.readFrom, to have more possible exceptions gathered at once
+            throw new CompositeValidationException(new InvalidValueException(this, ERROR_NOT_EMPTY));
         }
         if (o == null) {
             return;
         }
         if (isFixed()) {
-            throw new org.makumba.InvalidValueException(this, "You cannot update a fixed field");
+         // FIXME: call this in RecordEditor.readFrom, to have more possible exceptions gathered at once
+            throw new CompositeValidationException(new InvalidValueException(this, "You cannot update a fixed field"));
         }
         d.put(getName(), checkValue(o));
     }

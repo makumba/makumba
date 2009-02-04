@@ -1,7 +1,5 @@
 package org.makumba;
 
-import java.util.Arrays;
-
 /**
  * Not-unique is a special case of an {@link InvalidValueException} - the value is syntactically correct, but is
  * restricted to only one usage. This exception can be used for single-field and multi-field uniqueness with the
@@ -13,15 +11,9 @@ import java.util.Arrays;
 public class NotUniqueException extends InvalidValueException {
     private static final long serialVersionUID = 1L;
 
-    /** Constructor for a multi-field uniqueness violation. */
-    public NotUniqueException(String[] fields, Object[] values) {
-        super("The field-combination " + Arrays.toString((String[]) fields)
-                + " allows only unique values - an entry with the values " + Arrays.toString(values)
-                + " already exists!");
-    }
-
-    public NotUniqueException(String message) {
+    public NotUniqueException(String primaryField, String message) {
         super(message);
+        this.field = primaryField;
     }
 
     /** Uniqueness violation for a single field. */

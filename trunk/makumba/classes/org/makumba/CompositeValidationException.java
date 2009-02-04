@@ -25,7 +25,6 @@ package org.makumba;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Vector;
 
 import org.apache.commons.collections.map.MultiValueMap;
 
@@ -45,10 +44,17 @@ public class CompositeValidationException extends RuntimeException {
     public CompositeValidationException() {
     }
 
-    /** Creates an instance and adds all exceptions from the given {@link Vector} */
-    public CompositeValidationException(Vector<InvalidValueException> exceptions) {
+    /** Creates an instance and adds all exceptions from the given {@link Iterable} */
+    public CompositeValidationException(Iterable<InvalidValueException> exceptions) {
         for (InvalidValueException e : exceptions) {
-            exceptionsHash.put(e.getFieldName(), e);
+            addException(e);
+        }
+    }
+
+    /** Creates an instance and adds all exceptions from the given array */
+    public CompositeValidationException(InvalidValueException... exceptions) {
+        for (InvalidValueException e : exceptions) {
+            addException(e);
         }
     }
 
