@@ -286,7 +286,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         if (findParentForm() == null) { // only for the root form
             pageCache.cache(MakumbaJspAnalyzer.NESTED_FORM_NAMES, getTagKey(), new HashMap<String, MultipleKey>());
         }
-        
+
         if (reloadFormOnError == null) {
             reloadFormOnError = getOperation().equals("search") ? false : Configuration.getReloadFormOnErrorDefault();
         }
@@ -319,7 +319,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
     FormTagBase findRootForm() {
         FormTagBase parent = findParentForm();
         if (parent == null) {
-                return this;
+            return this;
         }
         return parent.findRootForm();
     }
@@ -402,7 +402,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         if (reloadFormOnError == null) {
             reloadFormOnError = getOperation().equals("search") ? false : Configuration.getReloadFormOnErrorDefault();
         }
-        
+
         responder.setReloadFormOnError(reloadFormOnError);
         String url = ((HttpServletRequest) pageContext.getRequest()).getRequestURI();
         String queryString = ((HttpServletRequest) pageContext.getRequest()).getQueryString();
