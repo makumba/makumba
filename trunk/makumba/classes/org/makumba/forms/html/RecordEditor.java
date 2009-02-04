@@ -76,6 +76,12 @@ public class RecordEditor extends RecordFormatter {
     public ArrayList<InvalidValueException> getUnassignedExceptions(CompositeValidationException e,
             ArrayList<InvalidValueException> unassignedExceptions, String suffix) {
         for (int i = 0; i < dd.getFieldNames().size(); i++) {
+            // FIXME: validation definitions that span multiple fields (compare, ..) or multi-field uniqueness
+            // definitions are only added to one field. If that field is not in the form, the exception can't be
+            // annotated next to the form field. However, the secondary field might be present in the form, then it
+            // might make sense to annotate it there.. ?
+            // In any case, if only one of the fields is present in the form, it would make sense to display the value
+            // of the other field somewhere in the form, to give the user a hint
             Collection<InvalidValueException> exceptions = e.getExceptions(FieldEditor.getInputName(this, i, suffix));
             if (exceptions != null) {
                 for (InvalidValueException invalidValueException : exceptions) {
