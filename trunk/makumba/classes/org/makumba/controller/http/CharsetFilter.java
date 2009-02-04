@@ -1,15 +1,15 @@
 package org.makumba.controller.http;
 
 import java.io.IOException;
-import javax.servlet.ServletException;
-import javax.servlet.ServletResponse;
-import javax.servlet.ServletRequest;
+
 import javax.servlet.Filter;
-import javax.servlet.FilterConfig;
 import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
 import org.makumba.providers.Configuration;
-import org.makumba.providers.TransactionProvider;
 
 /**
  * This is a filter making sure the charset encoding is set (for now, only UTF-8 is supported).

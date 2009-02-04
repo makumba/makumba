@@ -73,7 +73,7 @@ public class ArrayMap extends Dictionary<String, Object> {
 
     @Override
     public Object remove(Object key) {
-        return put((String)key, null);
+        return put((String) key, null);
     }
 
     @Override
@@ -103,7 +103,7 @@ public class ArrayMap extends Dictionary<String, Object> {
             public String nextElement() {
                 Object o = nxt;
                 findNext();
-                return (String)o;
+                return (String) o;
             }
         };
     }
@@ -166,7 +166,4 @@ public class ArrayMap extends Dictionary<String, Object> {
         return ret.toString();
     }
 
-    abstract class Enumerator implements Enumeration {
-
-    }
 }

@@ -39,7 +39,7 @@ public class AttributeParametrizer {
 
     String oql;
 
-    public String getTransformedQuery(Map args) {
+    public String getTransformedQuery(Map<String, Object> args) {
         return oql;
     }
     
