@@ -36,12 +36,12 @@ import org.makumba.controller.http.ControllerFilter;
 public class ResponderFactory {
 
     protected boolean useDefaultResponseStyles = Configuration.getUseDefaultResponseStyles();
-    
+
     private ResponderCacheManager cacheManager = ResponderCacheManager.getInstance();
 
     private static class SingletonHolder implements org.makumba.commons.SingletonHolder {
         private static ResponderFactory singleton = new ResponderFactory();
-        
+
         public void release() {
             singleton = null;
         }
@@ -50,7 +50,7 @@ public class ResponderFactory {
             org.makumba.commons.SingletonReleaser.register(this);
         }
     }
-    
+
     public static ResponderFactory getInstance() {
         return SingletonHolder.singleton;
     }
@@ -328,7 +328,7 @@ public class ResponderFactory {
 
     public static final String[] RESPONSE_ATTRIBUTE_NAMES = new String[] { ResponderFactory.RESPONSE_STRING_NAME,
             ResponderFactory.RESPONSE_FORMATTED_STRING_NAME, ResponderFactory.MAKUMBA_SUCCESSFUL_RESPONSE };
-    
+
     public static final String resultNamePrefix = "org.makumba.controller.resultOf_";
 
     /**
@@ -338,12 +338,12 @@ public class ResponderFactory {
      * directly treats the exception of the first form responder, which means that errors in the nested forms are
      * ignored. this should be fixed, in doing something like this:
      * <ul>
-     * <li> iterate through all the forms, extract the form hierarchy and start processing forms in order of appearance</li>
-     * <li> for each form responder, store the message, errors, request and response (containing modified attributes)
+     * <li>iterate through all the forms, extract the form hierarchy and start processing forms in order of appearance</li>
+     * <li>for each form responder, store the message, errors, request and response (containing modified attributes)
      * into a Response object</li>
-     * <li> generate a CompositeResponse object that holds all the errors, messages etc in the right order (or just pass
+     * <li>generate a CompositeResponse object that holds all the errors, messages etc in the right order (or just pass
      * an ArrayList of Response objects)</li>
-     * <li> the controller should then treat the responses and exceptions starting by the inner forms (otherwise errors
+     * <li>the controller should then treat the responses and exceptions starting by the inner forms (otherwise errors
      * get ignored)
      * </ul>
      * 
