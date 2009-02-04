@@ -410,6 +410,9 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
             url += "?" + queryString;
         }
         responder.setOriginatingPageName(url);
+        if (org.apache.commons.lang.StringUtils.isBlank(annotation)) {
+            annotation = Configuration.getDefaultFormAnnotation();
+        }
         responder.setShowFormAnnotated(StringUtils.equalsAny(annotation, new String[] { "before", "after", "both" }));
         responder.setClientSideValidation(clientSideValidation);
 
