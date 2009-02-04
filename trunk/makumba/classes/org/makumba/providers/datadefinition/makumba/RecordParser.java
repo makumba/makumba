@@ -1310,9 +1310,11 @@ public class RecordParser {
                         }
                     }
                     String[] groups = (String[]) groupList.toArray(new String[groupList.size()]);
-                    targetDD.addMultiUniqueKey(new DataDefinition.MultipleUniqueKeyDefinition(groups, line));
+                    targetDD.addMultiUniqueKey(new DataDefinition.MultipleUniqueKeyDefinition(groups, line,
+                            errorMessage));
                     java.util.logging.Logger.getLogger("org.makumba.datadefinition.makumba").finer(
-                        "added multi-field unique key: " + new DataDefinition.MultipleUniqueKeyDefinition(groups, line));
+                        "added multi-field unique key: "
+                                + new DataDefinition.MultipleUniqueKeyDefinition(groups, line, errorMessage));
                     continue;
                 } else {
                     // no recognised rule
@@ -1343,6 +1345,8 @@ public class RecordParser {
         RegExpUtils.evaluate(RecordParser.funcDefPattern, " someFunc() { abc } errorMessage",
             " someFunc(char[] a, int 5) {abc}errorMessages", "someFunction(int a, char[] b) { yeah}errorMessage3",
             "someOtherFunction(int age, char[] b) { this.age > age } You are too young!");
+        System.out.println("\n\n*****************************************************************************");
+        RegExpUtils.evaluate(RecordParser.multiUniquePattern, "unique12%unique = age, email : these need to be unique!");
 
         // test some mdd reading
         System.out.println("\n\n*****************************************************************************");

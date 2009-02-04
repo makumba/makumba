@@ -27,6 +27,7 @@ package org.makumba;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Iterator;
@@ -213,12 +214,15 @@ public interface DataDefinition {
 
         private String line;
 
+        private String errorMessage;
+
         /** indicates whether this key spans over subfields (internal or external sets, or pointer). */
         private boolean keyOverSubfield = false;
 
-        public MultipleUniqueKeyDefinition(String[] fields, String line) {
+        public MultipleUniqueKeyDefinition(String[] fields, String line, String errorMessage) {
             this.fields = fields;
             this.line = line;
+            this.errorMessage = errorMessage;
         }
 
         public String[] getFields() {
@@ -227,6 +231,20 @@ public interface DataDefinition {
 
         public String getLine() {
             return line;
+        }
+
+        protected String getErrorMessage() {
+            return errorMessage;
+        }
+
+        public String getErrorMessage(Object[] values) {
+            if (org.apache.commons.lang.StringUtils.isNotBlank(errorMessage)) {
+                return errorMessage;
+            } else {
+                return "The field-combination " + Arrays.toString(fields)
+                        + " allows only unique values - an entry with the values " + Arrays.toString(values)
+                        + " already exists!";
+            }
         }
 
         public void setKeyOverSubfield(boolean keyOverSubfield) {
