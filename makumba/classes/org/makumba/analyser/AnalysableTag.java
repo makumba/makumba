@@ -283,7 +283,7 @@ public abstract class AnalysableTag extends TagSupport {
     }
 
     /** 
-     * Caled by doEndTag in its finally block. 
+     * Called by doEndTag in its finally block. 
      * Use it to clean references that will not be used next time the servlet container uses the tag object.
      */
     protected void doAnalyzedCleanup() {

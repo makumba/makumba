@@ -268,6 +268,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     String description;
 
     // those fields are only used by some types
+    // FIXME: make specific, typed fields instead of those generic ones, which are really hard to understand!
     Object extra1, extra2, extra3;
 
     private Hashtable<String, ValidationRule> validationRules = new Hashtable<String, ValidationRule>();
