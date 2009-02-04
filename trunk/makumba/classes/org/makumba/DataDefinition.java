@@ -90,10 +90,10 @@ public interface DataDefinition {
     public void addField(FieldDefinition fd);
 
     /** Checks whether all fieldnames exist in the database */
-    public void checkFieldNames(Dictionary<String, Object>  d);
+    public void checkFieldNames(Dictionary<String, Object> d);
 
     /** Checks whether a record can be updated * */
-    public void checkUpdate(String fieldName, Dictionary<String, Object>  d);
+    public void checkUpdate(String fieldName, Dictionary<String, Object> d);
 
     /** Indicates when the data definition was modified the last time */
     public long lastModified();
