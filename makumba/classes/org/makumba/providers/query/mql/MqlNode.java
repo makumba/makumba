@@ -430,6 +430,7 @@ public class MqlNode extends CommonAST {
         mqlFunctions.add(MQLFunctionDefinition.toIntFunction("datediff", "date", "date", "date"));
 
         // to-int functions with more arguments
+        mqlFunctions.add(MQLFunctionDefinition.toIntFunction("mod", "int", "int"));
         mqlFunctions.add(MQLFunctionDefinition.toIntFunction("extract", "char[255]", "date"));
 
         // simple date-to-string functions
