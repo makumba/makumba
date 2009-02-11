@@ -24,17 +24,29 @@
 package org.makumba.commons;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 import org.apache.commons.collections.map.MultiValueMap;
 
 /**
- * This class provides a serialized version of {@link MultiValueMap}.
+ * This class provides a serialized version of {@link MultiValueMap}, and adds generics support.
  * 
  * @author Rudolf Mayer
  * @version $Id$
  */
-public class SerializedMultiValueMap extends MultiValueMap implements Serializable {
+public class SerializedGenericMultiValueMap<T> extends MultiValueMap implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public Collection<T> values() {
+        return super.values();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Collection<T> get(Object key) {
+        return super.getCollection(key);
+    }
 }
