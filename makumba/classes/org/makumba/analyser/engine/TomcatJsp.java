@@ -17,7 +17,7 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 //
 //  -------------
-//  $Id: TomcatJsp.java 1482 2007-09-02 23:05:26Z rosso_nero $
+//  $Id$
 //  $Name$
 /////////////////////////////////////
 
@@ -41,7 +41,7 @@ import javax.servlet.http.HttpServletRequest;
  * servlet decorator.
  * 
  * @author Cristian Bogdan
- * @version $Id: TomcatJsp.java 1482 2007-09-02 23:05:26Z rosso_nero $
+ * @version $Id$
  */
 public class TomcatJsp /* extends HttpServlet */{
 
