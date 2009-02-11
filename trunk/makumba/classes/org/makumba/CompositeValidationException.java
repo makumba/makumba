@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.commons.collections.map.MultiValueMap;
+import org.makumba.commons.SerializedGenericMultiValueMap;
 
 /**
  * This class holds several {@link InvalidValueException} of the same form together.
@@ -38,7 +38,7 @@ import org.apache.commons.collections.map.MultiValueMap;
 public class CompositeValidationException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
-    private MultiValueMap exceptionsHash = new MultiValueMap();
+    private SerializedGenericMultiValueMap<InvalidValueException> exceptionsHash = new SerializedGenericMultiValueMap<InvalidValueException>();
 
     /** Creates an empty instance */
     public CompositeValidationException() {
@@ -100,7 +100,7 @@ public class CompositeValidationException extends RuntimeException {
 
     /** Gets the exceptions gathered for a specific field name */
     public Collection<InvalidValueException> getExceptions(String fieldName) {
-        return (Collection) exceptionsHash.get(fieldName);
+        return exceptionsHash.get(fieldName);
     }
 
 }
