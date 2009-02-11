@@ -17,7 +17,7 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 //
 //  -------------
-//  $Id: NullObject.java 3694 2009-02-11 00:41:05Z rosso_nero $
+//  $Id$
 //  $Name$
 /////////////////////////////////////
 
