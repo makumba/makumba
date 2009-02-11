@@ -33,7 +33,7 @@ import org.makumba.commons.ServletObjects;
 
 /**
  * @author
- * @version $Id $
+ * @version $Id$
  */
 public class DatabaseConnectionControllerHandler extends ControllerHandler {
 
