@@ -17,7 +17,7 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 //
 //  -------------
-//  $Id: hqlanalyzer.java 3494 2008-12-30 22:25:42Z rosso_nero $
+//  $Id$
 //  $Name$
 /////////////////////////////////////
 
@@ -32,6 +32,10 @@ import org.makumba.providers.query.FunctionInliner;
 
 import test.oqlanalyzer;
 
+/**
+ * @author
+ * @version $Id$
+ */
 public abstract class QueryAnalysisProvider {
     protected abstract QueryAnalysis getRawQueryAnalysis(String query);
 
