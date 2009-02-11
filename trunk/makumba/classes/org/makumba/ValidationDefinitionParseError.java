@@ -17,7 +17,7 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 //
 //  -------------
-//  $Id: DataDefinitionParseError.java,v 2.3 2007/09/04 00:45:45 rosso_nero Exp $
+//  $Id$
 //  $Name:$
 /////////////////////////////////////
 
@@ -28,7 +28,7 @@ package org.makumba;
  * during parsing.
  * 
  * @author Rudolf Mayer
- * @version $Id: ValidationDefinitionParseError.java,v 1.1 Sep 16, 2007 11:10:50 PM rudi Exp $
+ * @version $Id$
  */
 public class ValidationDefinitionParseError extends DefinitionParseError {
 
