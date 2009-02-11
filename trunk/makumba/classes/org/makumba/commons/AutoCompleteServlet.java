@@ -1,3 +1,26 @@
+///////////////////////////////
+//  Makumba, Makumba tag library
+//  Copyright (C) 2000-2003  http://www.makumba.org
+//
+//  This library is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU Lesser General Public
+//  License as published by the Free Software Foundation; either
+//  version 2.1 of the License, or (at your option) any later version.
+//
+//  This library is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//  Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with this library; if not, write to the Free Software
+//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+//
+//  -------------
+//  $Id$
+//  $Name$
+/////////////////////////////////////
+
 package org.makumba.commons;
 
 import java.io.IOException;
@@ -28,7 +51,7 @@ import org.makumba.providers.TransactionProvider;
  * queries necessary to get the title (as in the ptrEditor) and generate the right result (read scriptaculous doc)
  * 
  * @author Manuel Gay
- * @version $Id: MakumbaResourceServlet.java,v 1.1 Sep 22, 2007 2:02:17 AM rudi Exp $
+ * @version $Id$
  */
 public class AutoCompleteServlet extends HttpServlet {
     public static final String resourceDirectory = "makumbaResources";

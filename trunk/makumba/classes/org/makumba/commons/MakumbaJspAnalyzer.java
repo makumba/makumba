@@ -17,7 +17,7 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 //
 //  -------------
-//  $Id: MakumbaJspAnalyzer.java 1667 2007-09-20 18:01:18Z manuel_gay $
+//  $Id$
 //  $Name$
 /////////////////////////////////////
 
@@ -42,7 +42,7 @@ import org.makumba.analyser.interfaces.JspAnalyzer;
  * </p>
  * 
  * @author Cristian Bogdan
- * @version $Id: MakumbaJspAnalyzer.java 1667 2007-09-20 18:01:18Z manuel_gay $
+ * @version $Id$
  */
 public class MakumbaJspAnalyzer implements JspAnalyzer {
 
