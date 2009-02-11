@@ -17,7 +17,7 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 //
 //  -------------
-//  $Id: SourceViewControllerHandler.java 3224 2008-10-05 22:32:17Z rosso_nero $
+//  $Id$
 //  $Name$
 /////////////////////////////////////
 
@@ -43,7 +43,7 @@ import org.makumba.providers.Configuration;
  * Handle access to makumba tools, like the {@link UniquenessServlet}.
  * 
  * @author Rudolf Mayer
- * @version $Id: MakumbaToolsControllerHandler.java,v 1.1 Sep 4, 2008 1:33:31 AM rudi Exp $
+ * @version $Id$
  */
 public class MakumbaToolsControllerHandler extends ControllerHandler {
     public boolean beforeFilter(ServletRequest req, ServletResponse res, FilterConfig conf,
