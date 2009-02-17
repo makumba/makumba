@@ -62,6 +62,11 @@ public class DeleteTag extends EditTag {
             return null;
         }
     };
+    
+    @Override
+    protected boolean allowEmptyBody() {
+        return false;
+    }
 
     public void setWidget(String w) {
         if (w.equals("") || w.equals("link") || w.equals("button")) {
