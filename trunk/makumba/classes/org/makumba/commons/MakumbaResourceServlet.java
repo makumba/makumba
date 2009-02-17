@@ -213,6 +213,9 @@ public class MakumbaResourceServlet extends HttpServlet {
                     if (cachedResource.toString().contains(Configuration.PLACEHOLDER_CONTEXT_PATH)) {
                         // exchange placeholders with dynamic values
                         outputStream.print(cachedResource.toString().replaceAll(Configuration.PLACEHOLDER_CONTEXT_PATH, req.getContextPath()));
+                    } else if(cachedResource.toString().contains(Configuration.PLACEHOLDER_UNIQUENESS_SERVLET_PATH)) {
+                        String uniquenessPath = req.getContextPath() + Configuration.getMakumbaUniqueLocation();
+                        outputStream.print(cachedResource.toString().replaceAll(Configuration.PLACEHOLDER_UNIQUENESS_SERVLET_PATH, uniquenessPath));
                     } else {
                         outputStream.print(cachedResource.toString());
                     }
