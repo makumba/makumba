@@ -2,6 +2,7 @@
 
 \usepackage{url, graphicx, subfigure}
 \usepackage{listings}
+% \usepackage{savetrees}
 
 \begin{document}
 
@@ -13,12 +14,12 @@
 \institute{
 	School of Computer Science and Communication\\
 	Royal Institute of Technology, 10044 Stockholm, Sweden\\
-	\email{cristi@csc.kth.se},
+% 	\email{cristi@csc.kth.se},
 \and
 	Institute of Software Technology and Interactive Systems\\
-	Vienna University of Technology\\
-	Favoritenstrasse 9--11, Vienna, Austria\\
-	\email{mayer@ifs.tuwien.ac.at}
+	Vienna University of Technology, Austria\\
+	%Favoritenstrasse 9--11, Vienna, Austria\\
+% 	\email{mayer@ifs.tuwien.ac.at}
 }
 
 
@@ -226,7 +227,8 @@ This leveling, as well as a JSP file number decrease, are due to the Tech Commit
 
 % TODO: rudi: show which axis is for which data
 \begin{figure}\label{fig:intranet-size}
-   \includegraphics[width=0.98\columnwidth]{figures/SizeChart}
+  \centering
+   \includegraphics[width=0.6\columnwidth]{figures/SizeChart}
   \caption{Size of the Intranet}
 \end{figure} 
 
@@ -277,7 +279,8 @@ Figure 2 shows the averaged skill levels of all the members at different points 
 Overall, the per-year self-assessment results suggest that the learning path designed into Makumba has achieved its goal, allowing for members to have an easy start by visualizing data in JSP (which also requires MDD understanding), then starting to change data and finally learning how to write business rules in Java.
 
 \begin{figure}
-   \includegraphics[width=0.98\columnwidth]{figures/learning-technologies}
+  \centering
+   \includegraphics[width=0.6\columnwidth]{figures/learning-technologies}
   \caption{Learning curve for different aspects of Makumba}
   \label{fig:learning-technologies}
 \end{figure} 
@@ -288,23 +291,24 @@ Overall, the per-year self-assessment results suggest that the learning path des
 % \end{figure} 
 
 \begin{figure}
+  \centering
   \label{fig:learning-members}
   \caption{Skill development of selected survey respondents}
   \subfigure[Julian]{
-     \includegraphics[width=0.47\textwidth]{figures/Joao}
+     \includegraphics[width=0.4\textwidth]{figures/Joao}
     \label{fig:learning-members-joao}
   }
   \subfigure[Peter]{
-     \includegraphics[width=0.47\textwidth]{figures/Priit}
+     \includegraphics[width=0.4\textwidth]{figures/Priit}
     \label{fig:learning-members-priit}
   }
   \\
   \subfigure[Kim]{
-     \includegraphics[width=0.47\textwidth]{figures/Karina}
+     \includegraphics[width=0.4\textwidth]{figures/Karina}
     \label{fig:learning-members-karina}
   }
   \subfigure[Sam]{
-     \includegraphics[width=0.47\textwidth]{figures/Stefan}
+     \includegraphics[width=0.4\textwidth]{figures/Stefan}
     \label{fig:learning-members-stefan}
   }
 \end{figure} 
