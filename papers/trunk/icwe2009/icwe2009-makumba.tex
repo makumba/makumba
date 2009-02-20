@@ -24,15 +24,16 @@
 
 \maketitle
 \begin{abstract}
-We address the issue of sustainability of practice, which we regard as crucial for the sustainability of the community at large. In the absence of material reward, sustaining a specialized activity such as programming is not trivial especially when members move often in and out of the community. Our case is the group of voluntary, amateur student programmers from a European-wide student organization. We present this setting as an Amateur Community and as a Community of Practice, and show how such framing helps in understanding sustainability of practice. Although being totally voluntary and managing a large intranet, the group has been thriving for six years. To explain such high practice sustainability we examine the role of the technology framework used by the group during this time. We then propose a more general framework for understanding practice sustainability in the context of amateur communities of practice. 
+We present the design of a web application development framework designed together with and for non-trained programmers. The framework is proven to support sustainable, code-scalable and team-scalable development since 2002. We discuss the positive results of formal qualitative and quantitative evaluation of the framework. We then consider the aspects of the framework design that we believe are at the core of the perceived technology success. Some of these design aspects are, perhaps surprisingly, contrary to current practice in professional web development, which leads us to discuss these contradictions in more detail.
 \end{abstract}
 
 \section{Introduction}\label{sec:introduction}
 Concepts that are covered/tocuhed by Makumba and that are (hopefully) relevant for a web-engineering conference
 \begin{itemize}
  \item Aspect-oriented Programming. Makumba addresses parts of AOP nicely with form validation and MDD-based authorisation.\\
-  Potential reference: Kiczales, Gregor; John Lamping, Anurag Mendhekar, Chris Maeda, Cristina Lopes, Jean-Marc Loingtier, and John Irwin (1997). "Aspect-Oriented Programming". Proceedings of the European Conference on Object-Oriented Programming, vol.1241. pp. 220â€“242
-  \item Model-driven development. Makumba addresses this with the code generator, and more strictly with auto-forms (http://bugs.best.eu.org/cgi-bin/bugzilla/show_bug.cgi?id=781)
+  Potential reference: Kiczales, Gregor; John Lamping, Anurag Mendhekar, Chris Maeda, Cristina Lopes, Jean-Marc Loingtier, and John Irwin (1997). "Aspect-Oriented Programming". Proceedings of the European Conference on Object-Oriented Programming, vol.1241. pp. 220-“242
+  \item Model-driven development. Makumba addresses this with the code generator, and more strictly with auto-forms 
+  %(http://bugs.best.eu.org/cgi-bin/bugzilla/show_bug.cgi?id=781)
   \item Agile development (though agile development might seem simply as coding w/o any planning, might be contrary to the community)
   \item Rapid application development (a bit similar to agile development, but i guess older). Makumba supports this with providing the very simple DB abstration MDDs offer, with generating much of the interface from an abstract description (taglib), and maybe mainly with little overhead in configuration.
   \item Still, makumba enforces adherence to some good-practice development models, such as a simplified MVC by clearly seperating the data layer, and partly the controller.
