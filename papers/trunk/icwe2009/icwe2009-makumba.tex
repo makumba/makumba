@@ -98,10 +98,17 @@ It is important to briefly emphasize the Amateur \cite{bogdan03} and Community o
 \section{Makumba, the Tech Committee tool}\label{sec:makumba}
 
 % TODO: rudi: i think user-programmer is very misleading
-Makumba was designed with influences from Lotus Notes, but without the visual programming approach that was found to be troublesome in the distributed Tech Committee setting; instead, all code is in plain text (cf. \cite{yamauchi00}). As another difference from Lotus Notes, Makumba was designed to offer as few features as possible to its user-programmers and this minimalsitic design was thought to facilitate learning. 
+%TODO: comment rudi: i think that lotus notes
+The initial design of the Makumba framework and it's languages started around 1999. By that time, most of today's web-application development frameworks didn't exist, and such, Makumba was designed with much influences from Lotus Notes, however omitting the visual programming approach that was found to be troublesome in the distributed Tech Committee setting; instead, all code is in plain text (cf. \cite{yamauchi00}). As another difference from Lotus Notes, Makumba was designed to offer as few features as possible to its user-programmers and this minimalistic design was thought to facilitate learning. 
 
-Makumba organizes a system in three parts. The \textit{Makumba Data Definition} (MDD) describes data structures and relations between them. MDDs are simple lists of data fields, with name and type; an example can be seen in Listing \ref{list:mdd} for the data type "Student". The \textit{JSP level} is technically a tag library for the Java Server Pages dynamic web page technology, which allows displaying and changing the data stored in a database and described in MDDs. Finally the \textit{business logic} (BL) describes, in the Java programming language, % (mostly its procedural features)
-"business rules" that restrict the changing of data, and provide authentication and authorization mechanisms. The JSP level, illustrated in Listing 2, provides for a combination of HTML and a subset of SQL (Structured Query Language). The example shows a list of students and, for each student, their completed studies. The data for this list is described in the aforementioned "Student" MDD. Notably the SQL data combinations (so-called joins) and data selections (so-called projections) are generated automatically from notations like "s.education" and "s.surname" respectively. Therefore working with a Makumba JSP would typically not require as much knowledge as using SQL by itself.
+Makumba in it's design is a \textit{query-centric} framework, i.e. most of it's definitions, rules and instructions can be defined in queries. Thus, common to all levels is the usage of a query language, which can either be the Hibernate Query Language (HQL), or Makumba's own Query Language (MQL); both provide an extension to the Structured Query Language (SQL), where MQL is explicitly simplifying the syntax for joins between different database tables.
+
+Makumba organizes a system in three major parts, the \textit{Makumba Data Definition}, the \textit{JSP level} and the \textit{business logic}. These parts allow an intuitive separation of concern in the Aspect-oriented Programming (AOP) \cite{Kiczales97aspect-orientedprogramming}.
+
+\subsection{Makumba Data Definitions}
+The \textit{Makumba Data Definition} (MDD) describes data structures and relations between them. MDDs are simple lists of data fields, with name and type; the number of data types available is deliberately kept small and to a minimum, to reduce complexity. The most used data types comprise ``primitive types'' such as int, real, char, and dates, and ``structural types'' such as pointers and sets, which are references to other data types, and enumeration types. An example of an MDD can be seen in Listing \ref{list:mdd} for the data type "Student".
+
+Additionally to defining the mere data structure, Makumba also allows to define validation rules the data has to comply to when created or modified. These rules can be specified in the form of Query Language Fragments, and will automatically and transparently be composed to complete queries by Makumba. Writing validation rules in the form of query fragments implies that a great deal of the controller-related tasks can be accomplished without the use of a programming language.
 
 \lstset{basicstyle=\small, captionpos=b, caption=Makumba Data Definition "Student", label=list:mdd, frame=shadowbox}
 \begin{lstlisting}
@@ -113,6 +120,15 @@ education = set
 education->name = char[50]
 education->university = ptr University
 \end{lstlisting}
+
+\subsection{JSP Level}
+The \textit{JSP level} is primarily the user-interface level, and is technically a tag library for the Java Server Pages dynamic web page technology, which allows displaying and changing the data stored in a database and described in MDDs. The number of tags needed to perform the most basic operations is again kept very simple.
+
+An example of displaying data is given in Listing \ref{list:mak}, which shows the code required to display a list of students and, for each student, their completed studies; the data for this list is described in the aforementioned "Student" MDD. The example suffices with two tags: mak:list to specify the data definition to retrieve data from, and basic constraints via the ``where'' attribute, and mak:value to indicate which fields to display. Notably, composing the query needed to retrieve the data from the data base, i.e. the SQL data combinations (so-called joins) and data selections (so-called projections) are generated automatically and transparently from notations like "s.education" and "s.surname" respectively. Therefore working with a Makumba JSP would typically not require as much knowledge as using SQL by itself. Note that mak:lists can be nested into each other, and the required queries are optimised by Makumba.
+
+Creation of forms is done similar, with the mak:newForm and mak:editForm tags to define what data to create or edit, and mak:input to create HTML inputs for the given fields. Rendering of the inputs into text fields, combo-boxes or date-choosers is done automatically, based on the type information provided in the MDD.\\
+
+Makumba supports model-driven development methods, as it can automatically create forms and lists by merely specifying the data definition to be used in the form or list, and generating the web pages by taking information on the data from the Makumba Data Definitions; thus, data definition changes are instantly and seamlessly propagated to the JSP level. A weaker form of model-driven development support comes by tools creating the needed JSP pages from the data definitions, applying user-specifiable templates.
 
 \lstset{basicstyle=\small, captionpos=b, caption=Example of viewing data with the Makumba JSP tag library, label=list:mak, frame=shadowbox}
 \begin{lstlisting}
@@ -128,6 +144,11 @@ education->university = ptr University
   <br/>
 </mak:list>
 \end{lstlisting}
+
+\subsection{Business Logics}
+Finally the \textit{business logic} (BL) describes, in the Java programming language, "business rules" that restrict the changing of data, and provide authentication and authorization mechanisms. Makumba provides an API towards the data base, thus business logics classes can also be utilised to perform processing of very complex and advanced forms that might not be generated by Makumba. Thus, the simplicity of use of the JSP level does not impose any limit on application functionality.\\
+
+Recent development is lead into also describing authentication and authorization as query fragments. When rendering a page or processing a form submission, Makumba can derive and compose, from the data definitions involved in the page or form, queries to validate a user login and determine whether an authenticated user has the sufficient authorization privileges to perform an action.\\
 
 
 Through this design, the assumption was that it will be easy for students to read MDDs, and based on that, it will be possible for them to combine HTML and a subset of SQL (itself based on natural language) which they might know prior to start working with Makumba or might learn "on the job". Later on, they would become interested in writing new business rules, and might learn procedural Java for that, maybe using previous knowledge of another procedural programming language. This then would be the "learning path" assumed for a Makumba practitioner.
