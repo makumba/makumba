@@ -28,6 +28,8 @@ We present the design of a web application development framework designed togeth
 \end{abstract}
 
 \section{Introduction}\label{sec:introduction}
+Cristi: we need references/paragraphs on J2EE, Hibernate, Ruby on Rails... See the tech incantation below.
+
 Concepts that are covered/tocuhed by Makumba and that are (hopefully) relevant for a web-engineering conference
 \begin{itemize}
  \item Aspect-oriented Programming. Makumba addresses parts of AOP nicely with form validation and MDD-based authorisation.\\
@@ -46,6 +48,9 @@ Such figures would not be surprising for a professional international organizati
 The figures are however unusual for a voluntary student organization, whose IT crew (referred to as the Tech Committee) is made of amateur voluntary student programmers who often do not study Computer Science or related subjects, or are at the early stages of their education.  
 Since 2002, the Tech Committee had over 10 active members at any given time, and the Intranet was extended with more and more subsystems even if about one third of the Tech Committee membership was renewed each year. Reflection and analysis from a technology design perspective on this {\it sustainability}  is the subject matter of this paper. We assert that the design of the technology used to build the Intranet, called Makumba, is a determining factor in the Tech Committee sustainability.
 Prior to Makumba introduction, the student organization had disparate IT systems, and the Tech Committee was formed in 1997 to maintain them but had much lower membership counts and was highly dependent on a few people.
+
+
+Technology incantation: data driven web application development is far from being a settled matter today. on the java front: ATG dynamo, jhtml, jsp, jsf. ODMG, JDO, j2ee, back to hibernate, spring, dao, dto. We present a technology that breaks DAO and DTO and still works fine. In fact, even procedural programming seems to be needed quite seldom. The evolution of makumba isolated development around HTML and SQL. We will tell the story in this paper.
 
 \section{Setting}\label{sec:setting}
 The student organization running the Intranet of our interest was grounded in 1988 and is currently present in 79 mainly technical universities across 30 European countries. The organization grew from being present in 60 universities in 2003, and has at the moment about 2,500 members. Their aim is to organize {\it complementary education} in the form of courses and competitions for all students of the member universities (i.e. not just for its members), to assist them with {\it career support}, and to encourage the educational involvement of students by organizing symposia on engineering education aspects.
