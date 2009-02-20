@@ -112,7 +112,7 @@ The \textit{Makumba Data Definition} (MDD) describes data structures and relatio
 Additionally to defining the mere data structure, Makumba also allows to define validation rules the data has to comply to when created or modified. These rules can be specified in the form of Query Language Fragments, and will automatically and transparently be composed to complete queries by Makumba. Writing validation rules in the form of query fragments implies that a great deal of the controller-related tasks can be accomplished without the use of a programming language.
 
 \lstset{basicstyle=\small, captionpos=b, caption=Makumba Data Definition "Student", label=list:mdd, frame=shadowbox}
-\begin{lstlisting}[t]
+\begin{lstlisting}
 name = char[50]
 birthdate = date
 hobbies = text
@@ -132,7 +132,7 @@ Creation of forms is done similar, with the mak:newForm and mak:editForm tags to
 Makumba supports model-driven development methods, as it can automatically create forms and lists by merely specifying the data definition to be used in the form or list, and generating the web pages by taking information on the data from the Makumba Data Definitions; thus, data definition changes are instantly and seamlessly propagated to the JSP level. A weaker form of model-driven development support comes by tools creating the needed JSP pages from the data definitions, applying user-specifiable templates.
 
 \lstset{basicstyle=\small, captionpos=b, caption=Example of viewing data with the Makumba JSP tag library, label=list:mak, frame=shadowbox}
-\begin{lstlisting}[t]
+\begin{lstlisting}
 <mak:list from="Student s">
   Name: <mak:value expr="s.name"/> <br/>
   Born on: <mak:value expr="s.birthdate"/><br/>
