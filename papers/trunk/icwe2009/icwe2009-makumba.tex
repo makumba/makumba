@@ -112,7 +112,7 @@ The \textit{Makumba Data Definition} (MDD) describes data structures and relatio
 Additionally to defining the mere data structure, Makumba also allows to define validation rules the data has to comply to when created or modified. These rules can be specified in the form of Query Language Fragments, and will automatically and transparently be composed to complete queries by Makumba. Writing validation rules in the form of query fragments implies that a great deal of the controller-related tasks can be accomplished without the use of a programming language.
 
 \lstset{basicstyle=\small, captionpos=b, caption=Makumba Data Definition "Student", label=list:mdd, frame=shadowbox}
-\begin{lstlisting}
+\begin{lstlisting}[t]
 name = char[50]
 birthdate = date
 hobbies = text
@@ -132,7 +132,7 @@ Creation of forms is done similar, with the mak:newForm and mak:editForm tags to
 Makumba supports model-driven development methods, as it can automatically create forms and lists by merely specifying the data definition to be used in the form or list, and generating the web pages by taking information on the data from the Makumba Data Definitions; thus, data definition changes are instantly and seamlessly propagated to the JSP level. A weaker form of model-driven development support comes by tools creating the needed JSP pages from the data definitions, applying user-specifiable templates.
 
 \lstset{basicstyle=\small, captionpos=b, caption=Example of viewing data with the Makumba JSP tag library, label=list:mak, frame=shadowbox}
-\begin{lstlisting}
+\begin{lstlisting}[t]
 <mak:list from="Student s">
   Name: <mak:value expr="s.name"/> <br/>
   Born on: <mak:value expr="s.birthdate"/><br/>
@@ -171,7 +171,7 @@ We have also elicited data from the Tech Committee members, for purposes related
 
 A further form of data that lets us asses the sustainability is constituted by  {\it membership lists} at different times during the committee activity since 2002. Such lists can be made by examining member profiles in the Intranet. Number of members, as well as their level of activity are useful indicators in assessing sustainability. Therefore the membership lists were complemented with levels of member activity as elicited from committee leaders and self-assessed by members themselves in questionnaires. Personal acquaintance with many of the members and knowledge of their skill evolution has come to complement this further. Some members continued on an IT career after graduation, and this was yet another indicator of their IT skills. 
 
-\begin{table}
+\begin{table}[t]
 	\centering
 	% TODO: explain LOC, etc? explain that all data is measured at the beginning of the year?
 	% TODO: explain the drop from 2008 to 2009 needed? (due to removal of old BCC & public website pages in 2008, new ones have been added since late 2007, thus there were some ``duplicates'')
@@ -226,16 +226,17 @@ As different from that, the amount of Business Logic (BL) files has continuously
 This leveling, as well as a JSP file number decrease, are due to the Tech Committee finding the time to re-organize (refactor) their code without adding functionality, but simplifying it in the process, thereby allowing future members to understand it easier, and making it possible to implement more powerful features over the new, improved, code structure. Finding the time and resources for refactoring is itself a sign of sustainability.
 
 % TODO: rudi: show which axis is for which data
-\begin{figure}\label{fig:intranet-size}
+\begin{figure}[t]
   \centering
    \includegraphics[width=0.6\columnwidth]{figures/SizeChart}
   \caption{Size of the Intranet}
+\label{fig:intranet-size}
 \end{figure} 
 
 % TODO: describe why ``active'' column might have smaller numbers than others..
 Table~\ref{tab:itd-members} illustrates the number of active members in the Tech Committee since 2003, differentiated on the different levels of Makumba, and on their activity in newcomer (``peripheral'') and old-timer (``core'') members. This data was  extracted on the one hand from the latest questionnaire filled in by the members, and then refined and amended by some of the committee coordinators (for the year 2003, only the total number of active core and peripheral members could be estimated). It is interesting to note that while the overall number of active members increased over the years and stabilized in the last years, the (relative) number of members working on data definitions (MDD) was rather decreasing; this might be explained with the arrival at data maturity level as described above, and thus less work and challenges to take for the Tech Committee members, while plenty of challenge is left at other levels. An important sign of sustainability as we characterized it earlier is the sufficient number of members at both novice (peripheral) and expert (core) members active at all the Makumba usage levels at all times. The "learning paths" are thus well populated with community members.
 
-\begin{table}
+\begin{table}[t]
 	\centering
 	\begin{tabular}{c|r|r|r|r|r|r|r|r|}
 		\hline
@@ -278,7 +279,7 @@ Figure 2 shows the averaged skill levels of all the members at different points 
 
 Overall, the per-year self-assessment results suggest that the learning path designed into Makumba has achieved its goal, allowing for members to have an easy start by visualizing data in JSP (which also requires MDD understanding), then starting to change data and finally learning how to write business rules in Java.
 
-\begin{figure}
+\begin{figure}[t]
   \centering
    \includegraphics[width=0.6\columnwidth]{figures/learning-technologies}
   \caption{Learning curve for different aspects of Makumba}
@@ -290,7 +291,7 @@ Overall, the per-year self-assessment results suggest that the learning path des
 %   \caption{Skill development of the survey respondents over the years}
 % \end{figure} 
 
-\begin{figure}
+\begin{figure}[t]
   \centering
   \label{fig:learning-members}
   \caption{Skill development of selected survey respondents}
