@@ -28,19 +28,19 @@ We present the design of a web application development framework designed togeth
 \end{abstract}
 
 \section{Introduction}\label{sec:introduction}
-Cristi: we need references/paragraphs on J2EE, Hibernate, Ruby on Rails... See the tech incantation below.
+%Cristi: we need references/paragraphs on J2EE, Hibernate, Ruby on Rails... See the tech incantation below.
 
-Concepts that are covered/tocuhed by Makumba and that are (hopefully) relevant for a web-engineering conference
-\begin{itemize}
- \item Aspect-oriented Programming. Makumba addresses parts of AOP nicely with form validation and MDD-based authorisation.\\
-  Potential reference: Kiczales, Gregor; John Lamping, Anurag Mendhekar, Chris Maeda, Cristina Lopes, Jean-Marc Loingtier, and John Irwin (1997). "Aspect-Oriented Programming". Proceedings of the European Conference on Object-Oriented Programming, vol.1241. pp. 220-�242
-  \item Model-driven development. Makumba addresses this with the code generator, and more strictly with auto-forms 
-  %(http://bugs.best.eu.org/cgi-bin/bugzilla/show_bug.cgi?id=781)
-  \item Agile development (though agile development might seem simply as coding w/o any planning, might be contrary to the community)
-  \item Rapid application development (a bit similar to agile development, but i guess older). Makumba supports this with providing the very simple DB abstration MDDs offer, with generating much of the interface from an abstract description (taglib), and maybe mainly with little overhead in configuration.
-  \item Still, makumba enforces adherence to some good-practice development models, such as a simplified MVC by clearly seperating the data layer, and partly the controller.
-  \item with all this, also eases software maintenance
-\end{itemize}
+%Concepts that are covered/tocuhed by Makumba and that are (hopefully) relevant for a web-engineering conference
+%\begin{itemize}
+% \item Aspect-oriented Programming. Makumba addresses parts of AOP nicely with form validation and MDD-based authorisation.\\
+%  Potential reference: Kiczales, Gregor; John Lamping, Anurag Mendhekar, Chris Maeda, Cristina Lopes, Jean-Marc Loingtier, and John Irwin (1997). "Aspect-Oriented Programming". Proceedings of the European Conference on Object-Oriented Programming, vol.1241. pp. 220-�242
+%  \item Model-driven development. Makumba addresses this with the code generator, and more strictly with auto-forms 
+%  %(http://bugs.best.eu.org/cgi-bin/bugzilla/show_bug.cgi?id=781)
+%  \item Agile development (though agile development might seem simply as coding w/o any planning, might be contrary to the community)
+%  \item Rapid application development (a bit similar to agile development, but i guess older). Makumba supports this with providing the very simple DB abstration MDDs offer, with generating much of the interface from an abstract description (taglib), and maybe mainly with little overhead in configuration.
+%  \item Still, makumba enforces adherence to some good-practice development models, such as a simplified MVC by clearly seperating the data layer, and partly the controller.
+%  \item with all this, also eases software maintenance
+%\end{itemize}
 
 The Intranet of an European-wide organization had just over 600 dynamic pages at its launch in 2002. The Intranet grew steadily in both size and functionality and at the end of 2008 it has almost 2000 dynamic pages. Throughout, except for a few glitches, the system was highly available and fast. Today the Intranet has around 2000 users from among the organization members, and its public part can be accessed by 4000-5000 organization customers at a time.
 
@@ -77,22 +77,7 @@ The Tech Committee is in charge of developing and maintaining the Intranet, as w
 % rudi: in the training, they normally don't do intranet related tasks, they do completely new pages. they start from a given MDD, and then do the full range: list, object, newForm, and then for the more advanced ones also editForm, deleteLink, mak:count() & co.
 % TODO rudi: not clear here, do you just want to describe the recruiting, or also the first path in ITC
 
-\section{Methods}\label{sec:method}
-We regard sustainability as a long-term matter that cannot be investigated with a short focused study. Throughout our contact with and involvement in the Tech Committee we were concerned with sustainability and at times we considered theoretical frameworks and recipes for how to achieve it, thus sustainability was an ever-present research issue for us, but also a practical issue in the community life. Both authors were active in the Tech Committee at different times (1997-2003 and 2004-2008 respectively), and {\it participant observation} was a conscious investigation approach for the first author, who also designed the Makumba technology together with Tech Committee members in a conscious act of {\it cooperative design} \cite{greenbaum_kyng91}. This paper is the occasion for a {\it reflection exercise} \cite{schon83}, on the part of the second author. Sustainability being a long-term issue, we expect other writings about it to be reflective accounts. 
-
-We are highly aware that our first-hand involvement with the Tech Committee is a potential hinder for us producing an 'objective' account of its sustainability and on other matters of interest, and this is probably not uncommon in community-related research endeavors. We therefore complemented our personal experiences with both non-elicited and elicited data, as described below. Furthermore, our involvement having taken place {\it at different times} has resulted in a fruitful confrontation process that allowed us to depart from our personal opinions and arrive at more reliable and valid results.
-%TODO more about dialog between authors
-%TODO: rudi: here I'd add that we have seen a bit how it goes in other organizations, namely AEGEE, IAESTE, CFES, and to some extent bonding, though they have different settings with loads of meetings
-
-For assessing quantitatively and qualitatively the sustainability of the Tech Committee and its practice, we regard as non-elicited data the {\it code repository} that the community has maintained, which allowed us to assess and reflect upon the progress of the Tech Committee work. The repository uses the Concurrent Versioning Systems (CVS) technology, which allows us to examine the incremental changes and additions that were made to the code, their time, and their authors. We are thus able to reconstitute the Intranet code as it was at any moment in time since 2003. A number of code analysis tools are also available for investigating CVS repositories, and we found them useful for our inquiry.
-
-We have also elicited data from the Tech Committee members, for purposes related to the Makumba technology. In 2002 the first author evaluated the design of Makumba with a questionnaire that had 12 respondents. In 2005 the first author also ran a questionnaire with 32 respondents to asses the status of Tech Committee work and technology use, and thus indirectly look at its sustainability. Finally, both authors designed a questionnaire at the end of 2008 where 30 out of the 45 past (since 2003) and present members who were approached reflected on their activity in the Tech Committee over their whole 1-4 year-long membership period. This questionnaire provides this paper with both quantitative and qualitative data. 
-% parade 2005: http://private.best.eu.org/survey/admin/listAnswers.jsp?survey=fn29yq1
-% makumba 2008: http://private.best.eu.org/survey/admin/listAnswers.jsp?survey=cwu9pab
-
-During our membership we had access to the e-mail traffic and other communication of the Tech Committee. A further form of non-elicited data is constituted by Tech Committee {\it membership lists} at different times during the committee activity since 2002. Such lists can be made by examining member profiles in the Intranet. Number of members, as well as their level of activity are useful indicators in assessing sustainability. Therefore the membership lists were complemented with levels of member activity as elicited from committee leaders and self-assessed by members themselves in questionnaires. Personal acquaintance with many of the members and knowledge of their skill evolution has come to complement this further. Some members continued on an IT career after graduation, and this was yet another indicator of their IT skills. 
-
-To be able to better comment on our data, we will go through some conceptualizations of learning, community, practice, amateur and voluntary work, and sustainability. We will also describe in more detail the design of Makumba.
+%--------
 
 %\subsection{Amateur software development}\label{sec:amateur_devel}
 
@@ -151,6 +136,15 @@ Initially Makumba was designed and developer under another, more neutral name ("
 Ironically, the main Makumba designer had never attended a Makumba party, but knowing about its existence and its fame within the organization was enough to decide on the name.
 
 \section{Sustainability of the Tech Committee}\label{sec:techCommittee}
+
+For assessing quantitatively and qualitatively the sustainability of the Tech Committee and its practice, we will present summaries of the code repository that the community has maintained, which allowed us to assess and reflect upon the progress of the Tech Committee work. The Concurrent Versioning Systems (CVS) repository allows us to examine the incremental changes and additions that were made to the code, their time, and their authors. We also found it useful to employ code analysis tools over the repository.
+
+We have also elicited data from the Tech Committee members, for purposes related to the Makumba technology. In 2002 the first author evaluated the design of Makumba with a questionnaire that had 12 respondents. In 2005 the first author also ran a questionnaire with 32 respondents to asses the status of Tech Committee work and technology use, and thus indirectly look at its sustainability. Finally, both authors designed a questionnaire at the end of 2008 where 30 out of the 45 past (since 2003) and present members who were approached reflected on their activity in the Tech Committee over their whole 1-4 year-long membership period. This questionnaire provides this paper with both quantitative and qualitative data. 
+% parade 2005: http://private.best.eu.org/survey/admin/listAnswers.jsp?survey=fn29yq1
+% makumba 2008: http://private.best.eu.org/survey/admin/listAnswers.jsp?survey=cwu9pab
+
+A further form of data that lets us asses the sustainability is constituted by  {\it membership lists} at different times during the committee activity since 2002. Such lists can be made by examining member profiles in the Intranet. Number of members, as well as their level of activity are useful indicators in assessing sustainability. Therefore the membership lists were complemented with levels of member activity as elicited from committee leaders and self-assessed by members themselves in questionnaires. Personal acquaintance with many of the members and knowledge of their skill evolution has come to complement this further. Some members continued on an IT career after graduation, and this was yet another indicator of their IT skills. 
+
 \begin{table}
 	\centering
 	% TODO: explain LOC, etc? explain that all data is measured at the beginning of the year?
