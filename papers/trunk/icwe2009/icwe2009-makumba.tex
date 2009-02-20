@@ -28,7 +28,26 @@ We present the design of a web application development framework designed togeth
 \end{abstract}
 
 \section{Introduction}\label{sec:introduction}
+The Intranet of an European-wide organization had just over 600 dynamic pages at its launch in 2002. The Intranet grew steadily in both size and functionality and at the end of 2008 it has almost 2000 dynamic pages. Throughout, except for a few glitches, the system was highly available and fast. Today the Intranet has around 2000 users from among the organization members, and its public part can be accessed by 4000-5000 organization customers at a time.
 %Cristi: we need references/paragraphs on J2EE, Hibernate, Ruby on Rails... See the tech incantation below.
+
+Such figures would not be surprising for a professional international organization, which hires or outsources professional programmers and system administrators, and can follow a well-defined development process based on established software and web-engineering concepts and techniques.
+The figures are however unusual for a voluntary student organization, whose IT crew (referred to as the Tech Committee) is made of amateur voluntary student programmers who often do not study Computer Science or related subjects, or are at the early stages of their education.
+% TODO: added by rudi, needs some merging / rethinking
+In this paper, we introduce the framework that enabled the development of this system. We compare its design with web-engineering techniques, and provide a case-study and evaluation of its suitability on the above mentioned web application.\\
+
+With the steady rise in importance of web-based applications, the process and tools available for such web-based applications development has been studied intensively. A number of models for the development process has been proposed, trying to formalise the process with the goal of improving the quality of such web applications. Earlier models include the \textit{Object-Oriented Hypermedia Design Model} (OOHDM) \cite{schwabe1998ooa}, which introduces five different activities in the development process (requirements gathering, conceptual design, navigational desing, abstract interface design and implementation), each of which is supported by a set of formalisms and methods, and yields a specific product. The \textit{Web Modeling Language} (WebML) \cite{Ceri00webmodeling} provides a visual notation for web-application design. It defines several different models as different steps in the process, mainly the structural model defining the data, the composition model specifying the content units, and the navigation model establishing the connection between those units. Tool-support for the development process is provided for example with WebRatio \cite{acerbis2004wit}.
+
+While these methods and techniques might well suit professionl settings, the situation is very different for voluntary or amateur organisations. In such settings, it is in many ways unfeasible to enforce a strict regime of processes and workflows to follow, as the amount, and timing, of work done depends entirely on the motivation and availability of the individual members of the organisation. In many cases, applying to strict formalisms might in fact be counter-productive, as it might seems a demotivating restriction on the work.
+
+We therefore designed a web application development framework which is relaxed in its constraints on formalisation, but still enforces a certain development process and results in web-application which are based on well-known software and web engineering concepts (such as aspect-oriented programming and MVC) by its very nature.
+
+J2EE \footnote{http://java.sun.com/javaee/} is a well-known framework for enterprise and web application development, building on the Java programming language. While J2EE provides certain assistance for different aspects such as for example data object access and persistance, the complexity of the framework, and it's partly lower-level application programmer interface (API) have called for a magnitude of web-application development frameworks building on top of J2EE. An overview of certain shortcomings of J2EE, and how they have been addresses by these frameworks, is given in \cite{johnson2005jdf}. Among those, Struts \footnote{http://struts.apache.org} adds support for separating the application in seperate conecrns using the Model-View-Controller (MVC) architecture, and provides support for building web-based forms. 
+
+Hibernate \footnote{http://www.hibernate.org/} is a object persistance framework, and provides an alternative to the complex Enterprise Java Beans (EJB) framework, which is a part of the J2EE specification. Hibernate is built on idiomatic, transparent persistance of Java objects, and allows to express queries in its own Hibernate Query Language (HQL), an extension of SQL.
+
+Another popular web application frameworks not based on the Java programming language is for example Ruby on Rails (RoR) \footnote{http://rubyonrails.org/}. RoR is intended for the agile software development method, focused on rapid application development and short iteration cycles.
+
 
 %Concepts that are covered/tocuhed by Makumba and that are (hopefully) relevant for a web-engineering conference
 %\begin{itemize}
@@ -42,10 +61,7 @@ We present the design of a web application development framework designed togeth
 %  \item with all this, also eases software maintenance
 %\end{itemize}
 
-The Intranet of an European-wide organization had just over 600 dynamic pages at its launch in 2002. The Intranet grew steadily in both size and functionality and at the end of 2008 it has almost 2000 dynamic pages. Throughout, except for a few glitches, the system was highly available and fast. Today the Intranet has around 2000 users from among the organization members, and its public part can be accessed by 4000-5000 organization customers at a time.
 
-Such figures would not be surprising for a professional international organization, which hires or outsources professional programmers and system administrators. 
-The figures are however unusual for a voluntary student organization, whose IT crew (referred to as the Tech Committee) is made of amateur voluntary student programmers who often do not study Computer Science or related subjects, or are at the early stages of their education.  
 Since 2002, the Tech Committee had over 10 active members at any given time, and the Intranet was extended with more and more subsystems even if about one third of the Tech Committee membership was renewed each year. Reflection and analysis from a technology design perspective on this {\it sustainability}  is the subject matter of this paper. We assert that the design of the technology used to build the Intranet, called Makumba, is a determining factor in the Tech Committee sustainability.
 Prior to Makumba introduction, the student organization had disparate IT systems, and the Tech Committee was formed in 1997 to maintain them but had much lower membership counts and was highly dependent on a few people.
 
