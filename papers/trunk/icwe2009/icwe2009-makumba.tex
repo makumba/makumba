@@ -2,7 +2,6 @@
 
 \usepackage{url, graphicx, subfigure}
 \usepackage{listings}
-% \usepackage{savetrees}
 
 \begin{document}
 
@@ -10,7 +9,7 @@
 %\subtitle{the technological religion of a student tribe}
 
 \author{Cristian Bogdan \inst{1} \and Rudolf Mayer\inst{2}}
-%
+
 \institute{
 	School of Computer Science and Communication\\
 	Royal Institute of Technology, 10044 Stockholm, Sweden\\
@@ -35,7 +34,7 @@ Such figures would not be surprising for a professional international organizati
 The figures are however unusual for a voluntary student organization, whose IT crew (referred to as the Tech Committee) is made of amateur voluntary student programmers who often do not study Computer Science or related subjects, or are at the early stages of their education. 
 Since 2002, the Tech Committee had over 10 active members at any given time, and the Intranet was extended with more and more subsystems even if about one third of the Tech Committee membership was renewed each year. Reflection and analysis from a technology design perspective on this {\it sustainability}  is the subject matter of this paper. We assert that the design of the technology used to build the Intranet, called Makumba, is a determining factor in the Tech Committee sustainability.
 Prior to Makumba introduction, the student organization had disparate IT systems, and the Tech Committee was formed in 1997 to maintain them but had much lower membership counts and was highly dependent on a few people.
-% TODO: added by rudi, needs some merging / rethinking
+
 In this paper, we introduce Makumba, the framework that enabled the development of the web-based Intranet. We compare its design with web-engineering techniques, and provide a case-study and evaluation of its suitability for the Intranet development. With the steady rise in importance of web-based applications, the process and tools available for such web-based applications development has been studied intensively. 
 
 A number of models for the (web-) development process has been proposed, trying to formalize the process with the goal of improving the quality of such web applications. Earlier models include the \textit{Object-Oriented Hypermedia Design Model} (OOHDM) \cite{schwabe1998ooa}, which introduces five different activities in the development process (requirements gathering, conceptual design, navigational design, abstract interface design and implementation), each of which is supported by a set of formalisms and methods, and yields a specific product. The \textit{Web Modelling Language} (WebML) \cite{Ceri00webmodeling} provides a visual notation for web-application design. It defines several different models as different steps in the process, mainly the structural model defining the data, the composition model specifying the content units, and the navigation model establishing the connection between those units. Tool-support for the development process is provided for example with WebRatio \cite{acerbis2004wit}.
@@ -43,7 +42,7 @@ A number of models for the (web-) development process has been proposed, trying 
 While these methods and techniques might well suit professional settings, the situation is very different for voluntary or amateur organizations. In such settings, it is in many ways unfeasible to enforce a strict regime of processes and workflows to follow, as the amount, and timing, of work done depends entirely on the motivation and availability of the individual members of the organization. In many cases, applying to strict formalisms might in fact be counter-productive, as it might be perceived as a demotivating restriction on the development work.
 
 We therefore designed a web application development framework which is relaxed in its constraints on formalization, but still enforces a certain development process and results in web-application which are based on well-known software and web engineering concepts (such as aspect-oriented programming and MVC) by its very nature. 
-Makumba is a framework for developing data-driven web applications, designed for students who do not necessarily know how to program initially. It covers the whole  web application spectrum, from creating the relational database tables and indexes, through creating, updating, and removing objects in the database, through calling back in Java application logic, to providing data presentation in HTML. On many of these fronts, Makumba is different from the state of the art, yet its designers have followed closely the evolutions along the years, using technology elements that were considered suitable, such as Java Server Pages and the Tomcat servlet engine. Still, other technology elements that are usually chosen in the professional Java realm today, such as Struts,
+Makumba is a framework for developing data-driven web applications, designed for students who do not necessarily know how to program initially. It covers the whole  web application spectrum, from creating the relational database tables and indexes, through creating, updating, and removing objects in the database, through calling back in Java application logic, to providing data presentation in HTML. On many of these fronts, Makumba is different from the state of the art, yet its designers have followed closely the evolutions along the years, using technology elements that were considered suitable, such as Java Server Pages and the Tomcat Servlet engine. Still, other technology elements that are usually chosen in the professional Java realm today, such as Struts,
 Hibernate, Spring, Enterprise Java Beans, Java Data Objects were partially or totally left out of the Makumba design. Web and data-driven application programming patterns like Data Access Object (DAO) and Data Transfer Object (DTO) are not adhered to, while patterns such as Model-View-Controller are partially adhered to and partially circumvented resulting in simpler code, lower code interdependence, better learning curve due to code simplicity, and intuitiveness. 
 
 Makumba also has a different programming language focus. Much industrial web development projects are written around procedural or object-oriented languages like  Java. While written in Java and its applications employing some Java code, Makumba programming code is mostly constituted by database queries, hence we call it a \textit{query-centric} technology. As we will show in this paper, we regard this ingredient as very important for the success of the Makumba-based Intranet and we are currently building up on this Makumba aspect.
@@ -94,7 +93,7 @@ It is important to briefly emphasize the Amateur \cite{bogdan03} and Community o
 
 % TODO: rudi: i think user-programmer is very misleading
 %TODO: comment rudi: i think that lotus notes
-The initial design of the Makumba framework and its languages started around 1999. By that time, most of today's web-application development frameworks didn't exist, and such, Makumba was designed with much influences from Lotus Notes, however omitting the visual programming approach that was found to be troublesome in the distributed Tech Committee setting; instead, all code is in plain text (cf. \cite{yamauchi00}). As another difference from Lotus Notes, Makumba was designed to offer as few features as possible to its user-programmers and this minimalistic design was thought to facilitate learning. 
+The initial design of the Makumba framework and its languages started around 1999. By that time, most of today's web-application development frameworks didn't exist, and such, Makumba was designed with much influences from Lotus Notes, however omitting the visual programming approach that was found to be troublesome in the distributed Tech Committee setting; instead, all code is in plain text (cf. \cite{yamauchi00}). As another difference from Lotus Notes, Makumba was designed to offer as few features as possible to its user-programmers and this minimalist design was thought to facilitate learning. 
 
 Makumba is a \textit{query-centric} framework in its design, i.e. most of its definitions, rules and instructions can be defined in queries. Thus, common to all levels is the usage of a query language, which can either be the Hibernate Query Language (HQL), or Makumba's own Query Language (MQL) which is a HQL subset. Both query languages provide an object-oriented extension to the Structured Query Language (SQL), where MQL is explicitly simplifying the syntax for joins between different database tables.
 
@@ -160,7 +159,7 @@ Makumba supports model-driven development methods, as it can automatically creat
 
 
 \subsection{Business Logics}
-The \textit{business logic} (BL) describes, in the Java programming language, "business rules" that restrict the changing of data, and provide authentication and authorization mechanisms. Makumba provides an API towards the data base, thus business logics classes can also be utilized to perform processing of complex querie that might not be generated by Makumba. Thus, the simplicity of use of the JSP level does not impose any limit on application functionality. To provide business logic that will be called before e.g. a Student creation, the programmer has to provide a Java method named \textit{on\_new\_Student()} which will receive as parameters handlers to the page parameters, the session and the database.
+The \textit{business logic} (BL) describes, in the Java programming language, "business rules" that restrict the changing of data, and provide authentication and authorization mechanisms. Makumba provides an API towards the data base, thus business logics classes can also be utilized to perform processing of complex queries that might not be generated by Makumba. Thus, the simplicity of use of the JSP level does not impose any limit on application functionality. To provide business logic that will be called before e.g. a Student creation, the programmer has to provide a Java method named \textit{on\_new\_Student()} which will receive as parameters handlers to the page parameters, the session and the database.
 
 Throughout this design, the assumption was that it will be easy for students to read MDDs, and based on that, it will be possible for them to combine HTML and a subset of SQL (itself based on natural language) which they might know prior to start working with Makumba or might learn "on the job". Later on, they would become interested in writing new business rules, and might learn procedural Java for that, maybe using previous knowledge of another procedural programming language. This then would be the "learning path" assumed for a Makumba practitioner.
 
@@ -320,57 +319,12 @@ Overall, the per-year self-assessment results suggest that the learning path des
 
 Two open questions concluded the questionnaire. The first one aimed at helping to assess how the members experience learning technologies in the Tech Committee. Several respondents emphasized the \textit{simplicity} and conciseness of Makumba code, therefore easiness to start working with, in various ways: as an intuitive link between code and result,  or as a praise to simplicity perceived as being able to express things in only one way, with a direct reference to people coming into and leaving the Tech Committee,  or as a technology that provides for rapid achievement, thereby encouraging further involvement. It is important for the Tech Committee in the international meetings to 'catch' people fast, by allowing them to realize that they can do something, that they can contribute. If this would not happen fast, the prospective new member might lose interest and maybe try to join another international team where contribution is more facile. A respondent emphasizes that "there is life" beyond the first simple steps, i.e. there are more complex things to be done, and Makumba accommodates for these as well. Several respondents compare Makumba with other Web development frameworks in this regard. More than one respondent referred explicitly to "non-IT people", thereby emphasizing the suitability for amateur settings.
 
-% http://private.best.eu.org/survey/viewStatistics.jsp?survey=cwu9pab&graphs=true&comments=true
-%\begin{quotation}
-% 	"I would say that the code is very close to the result ('what you code is what you get'), or at least, very logically connected."
 
-%	"One big advantage is the syntax, which makes it straight forward to understand other people's work. With Makumba, it doesn't happen so often that 2 people write totally different pieces of code for the same feature, and this is very useful for [the student organization] (where people change very often)."
-
-%	 "anybody is able to get a working page after 10 minutes of theory and 5 minutes of practice. That's provide motivation to do more difficult features."
-
-%	"[...] allowing to reach very quickly decent results with its basic features (allowing new joiners not to get tired of the learning effort and to contribute quickly) while also providing more powerful stuff for advanced users (allowing them to still find new challenges)."
-%	
-%	"All the other frameworks and technologies I know (Struts, PHP + templating engine, Zope) require a higher degree of computer technologies knowledge to achieve similar results. This might be changing with new frameworks like Ruby on Rails in which the model definition is done in a similar way as in Makumba, but still I think Ruby on Rails' learning curve is steeper than Makumba's"
-%		
-%	"Makumba being specifically designed for web applications, it is both extremely simple to learn for the basics - easier than PHP, especially for non-programmers - mainly through the easy interactions with databases; yet can be as powerful as any other language"
-%	
-%	"But the main advantage is that everyone \textit{can} learn, without too much of a technological background. I think that for [Tech Committee], or for any organization who wants to involve non-IT people in the development of their applications, the use of Makumba can make things much easier."
-
-%\end{quotation}
-
-
-Respondents refer to their learning primarily from other members, sometimes even without explicit training and without even mastering the basics of the entry-level skill (HTML and SQL). Also learning by reading a mailing list is mentioned. Other informants report having asked questions on the Tech Committee mailing list and getting a multitude of good answers, also usable in the professional life of the then-amateur. %\begin{quotation}
-%% 	% rudi: community learning, but too focused on events. ? good that it's mentioned that HTML & SQL are not needed
-%	"I didn't attend any organized Makumba training, but learned the basics during events, in the first year. It was quite easy, although I didn't even know HTML or SQL when joining [the Tech Committee]. On the first 1-2 projects, I was directly helped by [the Tech Committee]'s experienced members. Afterwards, I started following also the emails and learned a lot from other people's problems/experiences."
-%	
-%	"The [Tech Committee] community is helpful, it is very easy to learn new technologies. I think makumba gives a very good starting point for learning web programming (separation of concerns, data model design). Everything that I learned in [Tech Committee] has proved to be true also in the professional web development world. "
-%\end{quotation}
-% \begin{quotation}
-%	% rudi: mentions only ITD
-% 	I usually learn by reading code and trying to reform it in a way that suits what i want to do. ITD is good at this part, since all our code is available and it's easy to find a place that something similar was done before. 
-% \end{quotation}
-Learning by reading examples (existing code) is emphasized by most respondents. Knowing how the Intranet is organized helps to find relevant code.
-%\begin{quotation}
-%	"Learning is easy thanks to a lot of examples: for most of the tasks I could find another place where a similar feature had been implemented. Having a good knowledge about [the student organization] IT systems helps more than having strong programming skills. Other [Tech Committee] members also very often help and give advice when a problem or mistake occurs. "
-%\end{quotation}
-A problem with learning Makumba is raised: since it is little known outside the student organization, there is no chance that some joining members already come in the Tech Committee with the skill.
-%\begin{quotation}
-%%, altough that involves dealing with Java, which is immediately more complicated - but not more complicated than any complex operation with any language.
-%	"The main disadvantage is that everyone must learn it, since it is quite different from other web technologies."
-%		% (provided that we keep having nerd masters to maintain and update it :p) 
-%\end{quotation}
+Respondents refer to their learning primarily from other members, sometimes even without explicit training and without even mastering the basics of the entry-level skill (HTML and SQL). Also learning by reading a mailing list is mentioned. Other informants report having asked questions on the Tech Committee mailing list and getting a multitude of good answers, also usable in the professional life of the then-amateur.
+Learning by reading examples (existing code) is emphasized by most respondents. Knowing how the Intranet is organized helps to find relevant code. A problem with learning Makumba is raised: since it is little known outside the student organization, there is no chance that some joining members already come in the Tech Committee with the skill.
 
 
 The last question asked the respondents for a comparison of Makumba with other technologies and frameworks aimed for web development. Many of the former or present members of the Tech Committee, currently working in IT jobs, were able to provide comparisons from a qualified professional perspective, with references to related technologies. Notably a number of members make architectural remarks, referring to some technical imperfections of Makumba, which does not provide a good separation between data model, its visualizations and the data change mechanisms (controllers). However most respondents regard this as an asset in the end, leading to easier programmer access to the data and higher maintainability.
-
-%\begin{quotation}
-%	"Mak is significantly more suitable for [the Tech Committee] than anything else I've seen, despite the horrible inflexibility of the J2EE platform. Most other frameworks/setups insist on a very clear separation between the model and the view, and in most situations, this makes sense. However, by moving certain typically controller-world operations, such as database queries, to the view \textbf{in a simple and accessible way}, pages become much more maintainable without very strong documentation discipline, because they somewhat self-document."
-
-%	"atm. I can't think of frameworks that do mix view and model, i.e. view and data query. they all go through a DAO layer, which would break the "what you code is what you get". other frameworks also do have a lot of configuration overhead and rely on Java, which make it difficult for beginners to grasp. e.g. Struts needs to have several files changed in order to get a form to work, which is not so straightforward and slows down the "try and error" process." 
-%	
-%	"Technology-wise, I love Makumba as how it's designed -- the whole way the view/controller separation is less sharp than in other frameworks, how this is made very accessible and maintainable using the Makumba tag library, and how in the end this makes a large intranet maintainable by a community of people of variable skills. "
-
-%\end{quotation}
 
 \section{Discussion and current work}\label{sec:disco}
 Our evaluation data shows that Makumba's learning-oriented design  plays a crucial role in the Tech Committee sustainability. Designing a programming technology that allows member activity at various levels of skill, thereby prescribing a learning path for the members of the amateur community of practice, allows for sustainability of the amateur programming practice. In the case in point, we saw that the 'learning departments' of the setting, corresponding to the different programming languages used, were well populated at all times, in all our annual counts,  even if members left the setting every year while others joined. We thus believe that \textit{skill modularity} is a feature that led to the Makumba success in the Intranet project. The first such module has a low learning threshold (HTML and simplified SQL-queries), and the next modules provide new challenge levels (e.g. Business Logic, with the procedural Java skill to be learned).
