@@ -1075,7 +1075,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
             case FieldDefinition._set:
                 return get_set_Subtable();
             default:
-                throw new RuntimeException("Shouldn't be here");
+                throw new RuntimeException("Trying to get a sub-able for a '" + getType() + "' for field '" + name
+                        + "'.");
         }
     }
 
