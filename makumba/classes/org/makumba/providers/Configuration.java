@@ -65,6 +65,8 @@ public class Configuration implements Serializable {
     private static final String MAKUMBA_CONF_DEFAULT = MAKUMBA_CONF + ".default";
 
     public static final String PLACEHOLDER_CONTEXT_PATH = "_CONTEXT_PATH_";
+    
+    public static final String PLACEHOLDER_UNIQUENESS_SERVLET_PATH = "_UNIQUENESS_SERVLET_PATH_";
 
     private static String defaultClientSideValidation = "live";
 
