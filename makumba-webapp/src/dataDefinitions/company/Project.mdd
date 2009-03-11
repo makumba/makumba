@@ -1,0 +1,3 @@
+name = char[255]
+leader = ptr company.Employee
+
