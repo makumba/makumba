@@ -8,8 +8,8 @@
 <body>
 <mak:response/>
 
-<h1>Create new Person</h1>
-<mak:newForm type="general.Person" action="welcome.jsp">
+<h1>Create new Employee</h1>
+<mak:newForm type="company.Employee" action="welcome.jsp">
 Name: <mak:input field="name" autoComplete="true"/><br/>
 <input type="submit" name="Create"/>
 </mak:newForm>
@@ -17,7 +17,7 @@ Name: <mak:input field="name" autoComplete="true"/><br/>
 <br/>
 
 <h1>Existing persons</h1>
-<mak:list from="general.Person p">
+<mak:list from="company.Employee p">
 <mak:value expr="p.name"/><br/>
 </mak:list>
 
