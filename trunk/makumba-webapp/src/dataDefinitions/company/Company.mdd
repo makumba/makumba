@@ -1,0 +1,5 @@
+name = char[50]
+turnover = real
+suppliers = set company.Company
+targetMarkets = set general.Country
+logo = file

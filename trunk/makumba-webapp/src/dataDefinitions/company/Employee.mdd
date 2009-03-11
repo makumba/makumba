@@ -1,0 +1,8 @@
+name = char[200]
+surname = char[200]
+birthdate = date
+salary = real
+
+projects = set
+projects->project = ptr company.Project
+projects->timePercentage = int ; percentage assigned
