@@ -3,7 +3,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Insert title here</title>
+<title>Makumba example welcome page</title>
 </head>
 <body>
 <mak:response/>
@@ -18,7 +18,7 @@ Name: <mak:input field="name" autoComplete="true"/><br/>
 
 <h1>Existing persons</h1>
 <mak:list from="general.Person p">
-<mak:value expr="p.name"/> [<mak:deleteLink object="p" action="welcome.jsp">Trash</mak:deleteLink>]<br/>
+<mak:value expr="p.name"/><br/>
 </mak:list>
 
 </body>
