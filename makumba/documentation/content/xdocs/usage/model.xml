@@ -22,15 +22,17 @@
           <code>general.Person</code>. </p>
       <p>MDDs contain following elements: </p>
       <ul>
-        <li>the data definitions, i.e. <a href="../doc/datadef.html#Fields">field
-          definitions</a></li>
+        <li>the <a href="../doc/datadef.html#Fields">field definitions</a></li>
         <li><a href="../doc/valrules.html">validation rules</a> referring to one or more fields</li>
         <li>
           <a href="../doc/queryfunct.html">query functions</a>
         </li>
       </ul>
-      <p>We will <em class="highlighted">dcdcdcd</em>further explain those type of fields by using the example of a Person having a
-        number of Cars:</p>
+      <p>We will further explain those type of fields by using the following example:</p>
+
+		
+		
+		
 
       <source><strong>general.Person (general/Person.mdd)</strong>
         <![CDATA[
