@@ -17,7 +17,7 @@
       </p>
       <p>In order to get started, read further on the following topics:</p>
       <ul>
-        <li><a href="../philosophy.html">Makumba Philosophy</a></li>
+        <li><a href="../manifesto.html">Makumba manifesto</a></li>
         <li><a href="model.html">Designing the data model: Makumba Data Definitions</a></li>
         <li><a href="list.html">Displaying data: Makumba list</a></li>
         <li><a href="forms.html">Creating and editing data: Makumba forms</a></li>

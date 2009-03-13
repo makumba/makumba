@@ -36,6 +36,13 @@ Search forms are in principal related to mak:forms, i.e. attributes allowed ther
                     <td>As in mak:forms, but mandatory. Name is used in connection with mak:resultList, and is the prefix for several pageContext attributes set, which can be used to perform searching manually.</td>
                 </tr>
                 <tr>
+                    <td>message</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                    <td>The message that is displayed in the response page</td>
+                    <td>Fixed. Defaults to "Search done!".</td>
+                </tr>
+                <tr>
                     <td>action</td>
                     <td class="center">false</td>
                     <td class="center">true</td>
