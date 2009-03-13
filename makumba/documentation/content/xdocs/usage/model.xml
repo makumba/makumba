@@ -11,59 +11,158 @@
       This section provides examples and guidelines on how to design MDDs, check the <a
         href="../doc/datadef.html">reference documentation</a> for more details on MDDs.</p>
 
-    <section>
-      <title>General principles</title>
-
-      <p>MDDs are stored as files that are located in the
-          <code>WEB-INF/classes/dataDefinitions</code> folder of your webapp. Their file extensions
-        are <code>.mdd</code> and the resulting Makumba type name is using the same naming principle
-        of Java packages, i.e. the MDD stored in
-          <code>WEB-INF/classes/dataDefinitions/general/Person.mdd</code> will have as type name
-          <code>general.Person</code>. </p>
-      <p>MDDs contain following elements: </p>
-      <ul>
-        <li>the <a href="../doc/datadef.html#Fields">field definitions</a></li>
-        <li><a href="../doc/valrules.html">validation rules</a> referring to one or more fields</li>
-        <li>
-          <a href="../doc/queryfunct.html">query functions</a>
-        </li>
-      </ul>
-      <p>We will further explain those type of fields by using the following example:</p>
-
+	<section>
+		<title>General principles</title>
 		
+		<p>MDDs are stored as files that are located in the
+			<code>WEB-INF/classes/dataDefinitions</code> folder of your webapp. Their
+			file extensions are
+			<code>.mdd</code> and the resulting Makumba type name is using the same naming
+			principle of Java packages, i.e. the MDD stored in
+			<code>WEB-INF/classes/dataDefinitions/general/Person.mdd</code> will
+			have as type name
+			<code>general.Person</code>. </p>
+		<p>MDDs contain following elements: </p>
+		<ul>
+			<li>the
+				<a href="../doc/datadef.html#Fields">field definitions</a></li>
+			<li>
+				<a href="../doc/valrules.html">validation rules</a> referring to one
+				or more fields</li>
+			<li>
+				<a href="../doc/queryfunct.html">query functions</a>
+			</li>
+		</ul>
+		<p>We will further explain those type of fields by using the following example of a
+			company that has employees, each working in a department and assigned to several
+			projects:</p>
+		<center>
+			<img src="../images/example-eer.png"/>
+		</center>
+		<p>Let's take a look at how the related Makumba Data Definitions would look like:</p>
 		
+		<source><strong>company.Company (company/Company.mdd)</strong>
+			<![CDATA[
+name = char[50]
+turnover = real
+suppliers = set company.Company
+targetMarkets = set general.Country
+logo = file]]></source>
 		
+		<source><strong>company.Department (company/Department.mdd)</strong>
+			<![CDATA[
+name = char[50]
+manager = ptr company.Employee
+leader = ptr general.Employee]]></source>
+		<source><strong>company.Employee (company/Employee.mdd)</strong>
+			<![CDATA[
+name = char[200]
+surname = char[200]
+birthdate = date
+salary = real
 
-      <source><strong>general.Person (general/Person.mdd)</strong>
-        <![CDATA[
-# field definitions
-name = char[50]                           ;Name
-surname = char[50]                        ;Surname or last name
-birthdate = date                          ;Birthdate
-gender = int{"Male" = 10, "Female" = 20}  ;Gender
-brother = ptr general.Person              ;The brother
-cars = set general.Car                    ;Cars of this person
-
-# validation rules
-minimumAge%compare = birthdate >= date($now,$now,$now - 13) : You have to be at least 13 years old to use this website
-
-# query functions
-numberOfRedCars() {count(cars) FROM this.cars c WHERE c.colour = 'Red'}  # FIXME does this work?
-]]></source>
-
-      <source><strong>general. (general/Car.mdd)</strong>
-        <![CDATA[
-name = char[200]                                      ;Name of the company
-
-]]>
-      </source>
-    </section>
+projects = set
+projects->project = ptr company.Project
+projects->timePercentage = int ;percentage assigned]]></source>		
+		<source><strong>company.Project (company/Project.mdd)</strong>
+			<![CDATA[
+name = char[255]
+leader = ptr company.Employee]]></source>		
+		
+	</section>
 
     <section>
       <title>Field definitions</title>
-      <p>short explanation of what they are, and table of field types and short desc (with link to
-        datadef subsections)</p>
+		
+		<p>This section gives a short overview of the different types of fields that exist in Makumba:</p>
+      
+    <table>
+        <tr>
+          <th>Data definition type</th>
+          <th>Default edit user interface</th>
+          <th>Relational database type (orientative)</th>
+          <th>Java type (orientative)</th>
+        </tr>
+        
+        <tr>
+          <td><a href="/doc/datadef.html#int">int</a></td>
+          <td>text field <span class="futfeat">(or slider)</span></td>
+          <td rowspan="2">integer</td>
+          <td rowspan="2">java.lang.Integer</td>
+        </tr>
+        <tr>
+          <td><a href="/doc/datadef.html#int">int{}</a></td>
+          <td>dropdown choice or radio button</td>
+        </tr>
 
+        <tr>
+          <td><a href="/doc/datadef.html#real">real</a></td>
+          <td>text field</td>
+          <td>double</td>
+          <td>java.lang.Double</td>
+        </tr>
+        <tr>
+          <td><a href="/doc/datadef.html#date">date</a></td>
+          <td>date</td>
+          <td>date and time</td>
+          <td>java.util.Date</td>
+        </tr>
+        <tr>
+          <td><a href="/doc/datadef.html#char">char[]</a></td>
+          <td>text field</td>
+          <td>limited char</td>
+          <td>java.lang.String</td>
+        </tr>
+        <tr>
+          <td><a href="/doc/datadef.html#text">text</a></td>
+          <td>text area</td>
+          <td>unlimited characters</td>
+          <td>org.makumba.Text</td>
+        </tr>
+        <tr>
+          <td><a href="/doc/datadef.html#binary">binary</a></td>
+          <td>binary area</td>
+          <td>unlimited byte</td>
+          <td>org.makumba.Text</td>
+        </tr>
+        <tr>
+          <td><a href="/doc/datadef.html#ptr">ptr</a></td>
+          <td>dropdown select of record titles. set chooser link</td>
+          <td>preferably a long (foreign index)</td>
+          <td rowspan="2"><a href="api/org/makumba/Pointer.html">org.makumba.Pointer</a></td>
+        </tr>
+
+        <tr>
+          <td><a href="/doc/datadef.html#file">file</a></td>
+          <td>file upload</td>
+          <td>preferably a long (foreign index) <br/>
+          + table</td>
+        </tr>
+
+        <tr>
+          <td><a href="/doc/datadef.html#set">set</a></td>
+
+          <td>multiple choice of record titles. See the <a href="scripts/makumba-javascript.html">example</a> for
+          set/ptr choosers with Makumba.</td>
+          <td>table with ptrRel to the parent table and ptr to the foreign table</td>
+          <td>java.util.Vector of <a href="api/org/makumba/Pointer.html">org.makumba.Pointer</a></td>
+
+        </tr>
+        <tr>
+          <td><a href="/doc/datadef.html#set">fieldName=set <br/>
+          fieldName-&gt; ...</a></td>
+          <td><span class="futfeat">(like a table, under current record)</span></td>
+          <td>table with ptrRel to the parent table, and the rest of the fields</td>
+          <td><br/>
+          </td>
+        </tr>
+        <tr>
+          <td><a href="/doc/datadef.html#set">set int{}</a></td>
+          <td>multiple choice from values</td>
+          <td>table with ptrRel to the parent table, and an int field</td>
+          <td>java.util.Vector of java.lang.Integer</td>
+        </tr>
+     </table>
     </section>
     <section>
       <title>Validation rules</title>

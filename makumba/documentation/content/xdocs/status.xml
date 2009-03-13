@@ -19,8 +19,15 @@
                 <tr>
                     <td>Example</td>
                     <td>The Makumba example (demo app, quickstart, usage, tags)</td>
+                    <td>In progress</td>
+                    <td>Document the MDDs, add the address idd</td>
+                </tr>
+                
+				   <tr>
+                    <td>Update examples</td>
+                    <td>Use the new example data model everywhere!!</td>
                     <td>Not started</td>
-                    <td>We need a viable example that can start small and be extended, so as to illustrate all the nice mak concepts. Until this does not exist we can't have the usage section.</td>
+                    <td>Update ALL examples!</td>
                 </tr>
                 
                 
