@@ -10,9 +10,9 @@
             <p> Most of the Makumba configuration is centralised in the WEB-INF/classes/Makumba.conf
                 file. This file is organised in sections, in an INI stlye, so as to be easier to
                 read. </p>
-            </section>
-            <section>
-                <title>Database configuration</title>
+        </section>
+        <section>
+            <title>Database configuration</title>
             <p>Makumba can retrieve data from one or more databases, yet it's most common usage is
                 to work with one database. Makumba has two database base layers, one native layer
                 and one layer that uses Hibernate as an abstraction layer. The native Makumba layer
@@ -46,231 +46,234 @@
 
             </section>
 
-        <section id="datasource_configuration">
-            <title>Data Sources [dataSource:name]</title>
-            <p> A dataSource section provides the necessary information to establish a connection
-                with a database server. It is possible to configure several dataSources and to use
-                them at runtime. The syntax of a dataSource section is as follows: <code>
-                    [dataSource:name host:hostname path:server path] </code> The host and path
-                elements are optional, and can be used to automatically use one specific dataSource
-                depending on which server the web-app runs on. Example: the dataSource <code>
-                    [dataSource:production host:production.mycompany.com
-                    path:/usr/share/tomcat-production] </code> would be automatically selected as
-                default data source when the web-app is ran on production.mycompany.com and the
-                working directory of tomcat is /usr/share/tomcat-production. whereas <code>
-                    [dataSource:test host:production.mycompany.com path:/usr/share/tomcat-test]
-                </code> would be selected when the web-app is run from the tomcat running at
-                /usr/share/tomcat-test </p>
-            <table>
-                <tr>
-                    <th>Parameter</th>
-                    <th>Mandatory</th>
-                    <th>Database Layer</th>
-                    <th>Description</th>
-                </tr>
-                <tr>
-                    <td>databaseLayer=makumba|hibernate</td>
-                    <td>yes</td>
-                    <td>both</td>
-                    <td>Which database layer should be used</td>
-                </tr>
-                <tr>
-                    <td>connection.url=value</td>
-                    <td>yes for the hibernate database layer</td>
-                    <td>both</td>
-                    <td>a JDBC URL to which to connect</td>
-                </tr>
-                <tr>
-                    <td>connection.username=value</td>
-                    <td>no</td>
-                    <td>both</td>
-                    <td>A username to connect to the dataSource</td>
-                </tr>
-                <tr>
-                    <td>connection.password=value</td>
-                    <td>no</td>
-                    <td>both</td>
-                    <td>A password to connect to the dataSource</td>
-                </tr>
-                <tr>
-                    <td>connection.host=hostName</td>
-                    <td>no</td>
-                    <td>Makumba</td>
-                    <td>the host to which to connect</td>
-                </tr>
-                <tr>
-                    <td>connection.port=portNumber</td>
-                    <td>no</td>
-                    <td>Makumba</td>
-                    <td>the port to which to connect</td>
-                </tr>
-                <tr>
-                    <td>connection.database=databaseName</td>
-                    <td>no</td>
-                    <td>Makumba</td>
-                    <td>the name of the database to which to connect</td>
-                </tr>
-                <tr>
-                    <td>connection.engine=engineName</td>
-                    <td>no</td>
-                    <td>Makumba</td>
-                    <td>the SQL engine to use</td>
-                </tr>
-                <tr>
-                    <td>sql.setting=valuetd></td>
-                    <td>no</td>
-                    <td>Makumba</td>
-                    <td>sends a setting to the JDBC driver (for example user, password, create,
-                        etc). Such settings are JDBC driver specific</td>
-                </tr>
-                <tr>
-                    <td>dbsv=value</td>
-                    <td>no</td>
-                    <td>Makumba</td>
-                    <td>the DBSV will be used to set the most significant 8 bits of all primary keys
-                        generated for the new records created by this makumba client. Using
-                        different DBSVs can help to ensure key uniqueness among multiple clients
-                        using (or synchronizing with) the same database. Database inserts of records
-                        that have the same primary key as an already existing record in that table
-                        (i.e. a record created by a client that used the same DBSV) will fail. You
-                        cannot specify both dbsv and auto_increment in the same configuration file,
-                        but you can access the same database with some clients using (different)
-                        dbsv-s, and others using autoIncrement.</td>
-                </tr>
-                <tr>
-                    <td>autoIncrement=true|false</td>
-                    <td>no</td>
-                    <td>Makumba</td>
-                    <td>if autoIncrement is on, makumba will use the server-side primary key
-                        generation. You cannot specify both dbsv and auto_increment in the same
-                        configuration file, but you can access the same database with some clients
-                        using (different) dbsv-s, and others using autoIncrement.</td>
-                </tr>
-                <tr>
-                    <td>initConnections=value</td>
-                    <td>no</td>
-                    <td>Makumba</td>
-                    <td>specifies the initial number of connections that makumba will open when
-                        connecting to the database. Default is 1, though some makumba versions will
-                        open 2-3 more connections pretty early in their activity. High server load
-                        will lead to more connections being open.</td>
-                </tr>
-                <tr>
-                    <td>database_class=className</td>
-                    <td>no</td>
-                    <td>Makumba</td>
-                    <td>The main class of the makumba database driver. This is normally read from
-                        org/makumba/db/sql/sqlEngines.properties, but other, more powerful drivers
-                        can be plugged in.</td>
-                </tr>
-                <tr>
-                    <td>table_class=className</td>
-                    <td>no</td>
-                    <td>Makumba</td>
-                    <td>Table handler of the database driver (optional, norlally known by the
-                        dbclass or read from
-                        org/makumba/db/makumba/db/sql/sqlEngines.properties)</td>
-                </tr>
-                <tr>
-                    <td>typename=SQLtableName</td>
-                    <td>no</td>
-                    <td>Makumba</td>
-                    <td>Sets the name of the SQL table representing the given type to SQLtableName
-                        (to inhibit automatic table name generation)</td>
-                </tr>
-                <tr>
-                    <td>typename->field=SQLfieldName</td>
-                    <td>no</td>
-                    <td>Makumba</td>
-                    <td>Sets the name of the SQL field representing the given object attribute to
-                        SQLfieldName (to inhibit automatic field name generation)</td>
-                </tr>
-                <tr>
-                    <td>alter#typenameShorthand=true|false</td>
-                    <td>no</td>
-                    <td>Makumba</td>
-                    <td>If true allows automatic alteration of the SQL table representing the
-                        type(s) when the SQL table doesn't match the type definition. For example:<br/>
-                        <code>alter#=true</code><br/>
-                        <code>alter#general=false</code><br/> will allow alteration of all tables
-                        from the database except for tables whose names begin with "general"</td>
-                </tr>
-                <tr>
-                    <td>admin#typenameShorthand=true|false</td>
-                    <td>no</td>
-                    <td>Makumba</td>
-                    <td>If true allows deletion of multiple records of the respective typesduring
-                        org.makumba.delete and org.makumba.copy the type(s) when the SQL table
-                        doesn't match the type definition.</td>
-                </tr>
-                <tr>
-                    <td>addUnderscore=true|false</td>
-                    <td>no</td>
-                    <td>Makumba</td>
-                    <td>Specifies whether to add an underscore at the end of the generated field and
-                        table names during automatic name generation. It is true by default.
-                        (Introduced to avoid conflicts with reserved words on some SQL engines)</td>
-                </tr>
-                <tr>
-                    <td>hibernate.dialect=className</td>
-                    <td>yes</td>
-                    <td>Hibernate</td>
-                    <td>the dialect to use with the database server</td>
-                </tr>
-                <tr>
-                    <td>makumba.seed=fileName</td>
-                    <td>no</td>
-                    <td>Hibernate</td>
-                    <td>the file name of a file in the classpath, that will be used to determine the
-                        root directory of the mappings and classes generated by Makumba in order to
-                        use Hibernate as a database layer. by default it is Makumba.conf, hence the
-                        classes and mappings will be generated under WEB-INF/classes.</td>
-                </tr>
-                <tr>
-                    <td>makumba.prefix=value</td>
-                    <td>no</td>
-                    <td>Hibernate</td>
-                    <td>the name of the folder under which the mappings should be generated. by
-                        default it is 'makumbaGeneratedMappings'.</td>
-                </tr>
-                <tr>
-                    <td>makumba.mdd.root=value</td>
-                    <td>no</td>
-                    <td>Hibernate</td>
-                    <td>the name of the folder in which the MDDs of the webapp are located. If none
-                        is provided, the default value is "dataDefinitions".</td>
-                </tr>
-                <tr>
-                    <td>makumba.mdd.list=types</td>
-                    <td>no</td>
-                    <td>Hibernate</td>
-                    <td>a comma-separated list of Makumba Data Definitions that should be used. If
-                        none is provided, makumba will use all the MDDs in the root folder, if there
-                        are.</td>
-                </tr>
-                <tr>
-                    <td>makumba.mdd.additionalList=types</td>
-                    <td>no</td>
-                    <td>Hibernate</td>
-                    <td>a comma-separated list of MDDs that should be used in addition to all MDDs
-                        found in * the root folder. if none is provided, makumba will use all the
-                        MDDs in the root folder, if there are.</td>
-                </tr>
-                <tr>
-                    <td>makumba.schemaUpdate=true|false</td>
-                    <td>no</td>
-                    <td>Hibernate</td>
-                    <td>indicates whether makumba should do a schema update with the session
-                        factory</td>
-                </tr>
-            </table>
+            <section id="datasource_configuration">
+                <title>Data Sources [dataSource:name]</title>
+                <p> A dataSource section provides the necessary information to establish a
+                    connection with a database server. It is possible to configure several
+                    dataSources and to use them at runtime. The syntax of a dataSource section is as
+                    follows: <code> [dataSource:name host:hostname path:server path] </code> The
+                    host and path elements are optional, and can be used to automatically use one
+                    specific dataSource depending on which server the web-app runs on. Example: the
+                    dataSource <code> [dataSource:production host:production.mycompany.com
+                        path:/usr/share/tomcat-production] </code> would be automatically selected
+                    as default data source when the web-app is ran on production.mycompany.com and
+                    the working directory of tomcat is /usr/share/tomcat-production. whereas <code>
+                        [dataSource:test host:production.mycompany.com path:/usr/share/tomcat-test]
+                    </code> would be selected when the web-app is run from the tomcat running at
+                    /usr/share/tomcat-test </p>
+                <table>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Mandatory</th>
+                        <th>Database Layer</th>
+                        <th>Description</th>
+                    </tr>
+                    <tr>
+                        <td>databaseLayer=makumba|hibernate</td>
+                        <td>yes</td>
+                        <td>both</td>
+                        <td>Which database layer should be used</td>
+                    </tr>
+                    <tr>
+                        <td>connection.url=value</td>
+                        <td>yes for the hibernate database layer</td>
+                        <td>both</td>
+                        <td>a JDBC URL to which to connect</td>
+                    </tr>
+                    <tr>
+                        <td>connection.username=value</td>
+                        <td>no</td>
+                        <td>both</td>
+                        <td>A username to connect to the dataSource</td>
+                    </tr>
+                    <tr>
+                        <td>connection.password=value</td>
+                        <td>no</td>
+                        <td>both</td>
+                        <td>A password to connect to the dataSource</td>
+                    </tr>
+                    <tr>
+                        <td>connection.host=hostName</td>
+                        <td>no</td>
+                        <td>Makumba</td>
+                        <td>the host to which to connect</td>
+                    </tr>
+                    <tr>
+                        <td>connection.port=portNumber</td>
+                        <td>no</td>
+                        <td>Makumba</td>
+                        <td>the port to which to connect</td>
+                    </tr>
+                    <tr>
+                        <td>connection.database=databaseName</td>
+                        <td>no</td>
+                        <td>Makumba</td>
+                        <td>the name of the database to which to connect</td>
+                    </tr>
+                    <tr>
+                        <td>connection.engine=engineName</td>
+                        <td>no</td>
+                        <td>Makumba</td>
+                        <td>the SQL engine to use</td>
+                    </tr>
+                    <tr>
+                        <td>sql.setting=valuetd></td>
+                        <td>no</td>
+                        <td>Makumba</td>
+                        <td>sends a setting to the JDBC driver (for example user, password, create,
+                            etc). Such settings are JDBC driver specific</td>
+                    </tr>
+                    <tr>
+                        <td>dbsv=value</td>
+                        <td>no</td>
+                        <td>Makumba</td>
+                        <td>the DBSV will be used to set the most significant 8 bits of all primary
+                            keys generated for the new records created by this makumba client. Using
+                            different DBSVs can help to ensure key uniqueness among multiple clients
+                            using (or synchronizing with) the same database. Database inserts of
+                            records that have the same primary key as an already existing record in
+                            that table (i.e. a record created by a client that used the same DBSV)
+                            will fail. You cannot specify both dbsv and auto_increment in the same
+                            configuration file, but you can access the same database with some
+                            clients using (different) dbsv-s, and others using autoIncrement.</td>
+                    </tr>
+                    <tr>
+                        <td>autoIncrement=true|false</td>
+                        <td>no</td>
+                        <td>Makumba</td>
+                        <td>if autoIncrement is on, makumba will use the server-side primary key
+                            generation. You cannot specify both dbsv and auto_increment in the same
+                            configuration file, but you can access the same database with some
+                            clients using (different) dbsv-s, and others using autoIncrement.</td>
+                    </tr>
+                    <tr>
+                        <td>initConnections=value</td>
+                        <td>no</td>
+                        <td>Makumba</td>
+                        <td>specifies the initial number of connections that makumba will open when
+                            connecting to the database. Default is 1, though some makumba versions
+                            will open 2-3 more connections pretty early in their activity. High
+                            server load will lead to more connections being open.</td>
+                    </tr>
+                    <tr>
+                        <td>database_class=className</td>
+                        <td>no</td>
+                        <td>Makumba</td>
+                        <td>The main class of the makumba database driver. This is normally read
+                            from org/makumba/db/sql/sqlEngines.properties, but other, more powerful
+                            drivers can be plugged in.</td>
+                    </tr>
+                    <tr>
+                        <td>table_class=className</td>
+                        <td>no</td>
+                        <td>Makumba</td>
+                        <td>Table handler of the database driver (optional, norlally known by the
+                            dbclass or read from
+                            org/makumba/db/makumba/db/sql/sqlEngines.properties)</td>
+                    </tr>
+                    <tr>
+                        <td>typename=SQLtableName</td>
+                        <td>no</td>
+                        <td>Makumba</td>
+                        <td>Sets the name of the SQL table representing the given type to
+                            SQLtableName (to inhibit automatic table name generation)</td>
+                    </tr>
+                    <tr>
+                        <td>typename->field=SQLfieldName</td>
+                        <td>no</td>
+                        <td>Makumba</td>
+                        <td>Sets the name of the SQL field representing the given object attribute
+                            to SQLfieldName (to inhibit automatic field name generation)</td>
+                    </tr>
+                    <tr>
+                        <td>alter#typenameShorthand=true|false</td>
+                        <td>no</td>
+                        <td>Makumba</td>
+                        <td>If true allows automatic alteration of the SQL table representing the
+                            type(s) when the SQL table doesn't match the type definition. For example:<br/>
+                            <code>alter#=true</code><br/>
+                            <code>alter#general=false</code><br/> will allow alteration of all
+                            tables from the database except for tables whose names begin with
+                            "general"</td>
+                    </tr>
+                    <tr>
+                        <td>admin#typenameShorthand=true|false</td>
+                        <td>no</td>
+                        <td>Makumba</td>
+                        <td>If true allows deletion of multiple records of the respective
+                            typesduring org.makumba.delete and org.makumba.copy the type(s) when the
+                            SQL table doesn't match the type definition.</td>
+                    </tr>
+                    <tr>
+                        <td>addUnderscore=true|false</td>
+                        <td>no</td>
+                        <td>Makumba</td>
+                        <td>Specifies whether to add an underscore at the end of the generated field
+                            and table names during automatic name generation. It is true by default.
+                            (Introduced to avoid conflicts with reserved words on some SQL
+                            engines)</td>
+                    </tr>
+                    <tr>
+                        <td>hibernate.dialect=className</td>
+                        <td>yes</td>
+                        <td>Hibernate</td>
+                        <td>the dialect to use with the database server</td>
+                    </tr>
+                    <tr>
+                        <td>makumba.seed=fileName</td>
+                        <td>no</td>
+                        <td>Hibernate</td>
+                        <td>the file name of a file in the classpath, that will be used to determine
+                            the root directory of the mappings and classes generated by Makumba in
+                            order to use Hibernate as a database layer. by default it is
+                            Makumba.conf, hence the classes and mappings will be generated under
+                            WEB-INF/classes.</td>
+                    </tr>
+                    <tr>
+                        <td>makumba.prefix=value</td>
+                        <td>no</td>
+                        <td>Hibernate</td>
+                        <td>the name of the folder under which the mappings should be generated. by
+                            default it is 'makumbaGeneratedMappings'.</td>
+                    </tr>
+                    <tr>
+                        <td>makumba.mdd.root=value</td>
+                        <td>no</td>
+                        <td>Hibernate</td>
+                        <td>the name of the folder in which the MDDs of the webapp are located. If
+                            none is provided, the default value is "dataDefinitions".</td>
+                    </tr>
+                    <tr>
+                        <td>makumba.mdd.list=types</td>
+                        <td>no</td>
+                        <td>Hibernate</td>
+                        <td>a comma-separated list of Makumba Data Definitions that should be used.
+                            If none is provided, makumba will use all the MDDs in the root folder,
+                            if there are.</td>
+                    </tr>
+                    <tr>
+                        <td>makumba.mdd.additionalList=types</td>
+                        <td>no</td>
+                        <td>Hibernate</td>
+                        <td>a comma-separated list of MDDs that should be used in addition to all
+                            MDDs found in * the root folder. if none is provided, makumba will use
+                            all the MDDs in the root folder, if there are.</td>
+                    </tr>
+                    <tr>
+                        <td>makumba.schemaUpdate=true|false</td>
+                        <td>no</td>
+                        <td>Hibernate</td>
+                        <td>indicates whether makumba should do a schema update with the session
+                            factory</td>
+                    </tr>
+                </table>
 
-            <p> In addition to these parameters, additional parameters can be passed directly to the
-                database layer. For additional Hibernate configuration parameters, see:
-                http://www.hibernate.org/hib_docs/v3/reference/en/html/configuration-hibernatejdbc.html
-                http://www.hibernate.org/hib_docs/v3/reference/en/html/configuration-optional.html </p>
+                <p> In addition to these parameters, additional parameters can be passed directly to
+                    the database layer. For additional Hibernate configuration parameters, see:
+                    http://www.hibernate.org/hib_docs/v3/reference/en/html/configuration-hibernatejdbc.html
+                    http://www.hibernate.org/hib_docs/v3/reference/en/html/configuration-optional.html </p>
 
-        </section>
+            </section>
         </section>
 
         <section>
@@ -281,16 +284,48 @@
 
         <section>
             <title>Business Logic packages [businessLogicPackages]</title>
-        <p> A list of directory=package values that can be used with the Makumba Business Logics.
-            See the Business Logic documentation for more information. </p>
+            <p> A list of directory=package values that can be used with the Makumba Business
+                Logics. See the Business Logic documentation for more information. </p>
         </section>
-        
-            <section>
+
+        <section>
             <title>Authorization [authorization]</title>
         </section>
         <section>
             <title>Controller behavior [controllerConfig]</title>
+
+            <table>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Default value</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>reloadFormOnError</td>
+                    <td>false</td>
+                    <td>Whether the form should be reloaded if a validation error occurs, or whether the action page should be displayed. If a <a href="/doc/taglib/makresponse.html">&lt;mak:response&gt;</a> tag is used, the errors will be displayed there.</td>
+                </tr>
+                <tr>
+                    <td>clientSideValidation</td>
+                    <td>false</td>
+                    <td>Whether forms are validated client-side. Possible values are <code>false</code> (no client-side validation), <code>true</code> (default client-side validation, that validates only on submission) and <code>live</code> (live validation, that validates fields after input). </td>
+                </tr>
+                <tr>
+                    <td>useDefaultResponseStyles</td>
+                    <td>true</td>
+                    <td>Whether the default display style for should be used. If false, the CSS classes <code>makumbaResponder</code> and <code>makumbaSuccess</code> can be used in order to define customized styles for displaying the response.</td>
+                </tr>
+                <tr>
+                    <td>formAnnotation</td>
+                    <td>none</td>
+                    <td>If none, the validation errors will all be displayed in the <a href="/doc/taglib/makresponse.html">&lt;mak:response&gt;</a>. If true, the form will be annotated with validation errors.</td>
+                </tr>
+            </table>
+            
+            <fixme author="manu">add links to form tags, because attributes in forms can override these global settings</fixme>
+
         </section>
+
 
         <p>[makumbaToolPaths] </p>
         <p>[makumbaToolConfig]</p>
