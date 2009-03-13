@@ -56,6 +56,7 @@ leader = ptr general.Employee]]></source>
 			<![CDATA[
 name = char[200]
 surname = char[200]
+gender = int{"Male" = 10, "Female" = 20}
 birthdate = date
 salary = real
 
@@ -71,11 +72,13 @@ leader = ptr company.Employee]]></source>
     <section>
       <title>Field definitions</title>
 		
-		<p>This section gives a short overview of the different types of fields that exist in Makumba:</p>
+		<p>This section gives a short overview of the different types of field types that exist in Makumba:</p>
+      <section><title>Primitive types</title>
       
     <table>
         <tr>
-          <th>Data definition type</th>
+          <th>Field definition type</th>
+          <th>Description</th>
           <th>Default edit user interface</th>
           <th>Relational database type (orientative)</th>
           <th>Java type (orientative)</th>
@@ -83,64 +86,85 @@ leader = ptr company.Employee]]></source>
         
         <tr>
           <td><a href="/doc/datadef.html#int">int</a></td>
+          <td>a simple integer</td>
           <td>text field</td>
           <td rowspan="2">integer</td>
           <td rowspan="2">java.lang.Integer</td>
         </tr>
         <tr>
           <td><a href="/doc/datadef.html#int">int{}</a></td>
+          <td>Integer enumeration, allowing for a set of predefined values</td>
           <td>dropdown choice or radio button</td>
         </tr>
 
         <tr>
           <td><a href="/doc/datadef.html#real">real</a></td>
+          <td>a real number</td>
           <td>text field</td>
           <td>double</td>
           <td>java.lang.Double</td>
         </tr>
         <tr>
           <td><a href="/doc/datadef.html#date">date</a></td>
+          <td>a date</td>
           <td>date</td>
           <td>date and time</td>
           <td>java.util.Date</td>
         </tr>
         <tr>
           <td><a href="/doc/datadef.html#char">char[]</a></td>
+          <td>a limited text (maximum length is 255)</td>
           <td>text field</td>
           <td>limited char</td>
           <td>java.lang.String</td>
         </tr>
         <tr>
           <td><a href="/doc/datadef.html#text">text</a></td>
+          <td>an unlimited text</td>
           <td>text area</td>
           <td>unlimited characters</td>
           <td>org.makumba.Text</td>
         </tr>
         <tr>
           <td><a href="/doc/datadef.html#binary">binary</a></td>
+          <td>a binary content, e.g. an image</td>
           <td>binary area</td>
           <td>unlimited byte</td>
           <td>org.makumba.Text</td>
         </tr>
+      <tr>
+        <td><a href="/doc/datadef.html#file">file</a></td>
+        <td>a file including its meta-data (content type, size, ...)</td>
+        <td>file upload</td>
+        <td>preferably a long (foreign index) <br/>
+        + table</td>
+        <td></td>
+      </tr>
+    </table></section>
+      <section>
+        <title>Relational types and collections</title>
+      </section>
+      <table>
+        <tr>
+          <th>Field definition type</th>
+          <th>Description</th>
+          <th>Default edit user interface</th>
+          <th>Relational database type (orientative)</th>
+          <th>Java type (orientative)</th>
+        </tr>
+        
         <tr>
           <td><a href="/doc/datadef.html#ptr">ptr</a></td>
-          <td>dropdown select of record titles. set chooser link</td>
+          <td>a pointer to another type record</td>
+          <td>dropdown select of record titles.</td>
           <td>preferably a long (foreign index)</td>
-          <td rowspan="2"><a href="api/org/makumba/Pointer.html">org.makumba.Pointer</a></td>
+          <td><a href="api/org/makumba/Pointer.html">org.makumba.Pointer</a></td>
         </tr>
-
-        <tr>
-          <td><a href="/doc/datadef.html#file">file</a></td>
-          <td>file upload</td>
-          <td>preferably a long (foreign index) <br/>
-          + table</td>
-        </tr>
-
+        
         <tr>
           <td><a href="/doc/datadef.html#set">set</a></td>
-
-          <td>multiple choice of record titles. See the <a href="scripts/makumba-javascript.html">example</a> for
-          set/ptr choosers with Makumba.</td>
+          <td>a set of records of another type (which could be re-used in another type) TODO: set chooser link</td>
+          <td>multiple choice of record titles.</td>
           <td>table with ptrRel to the parent table and ptr to the foreign table</td>
           <td>java.util.Vector of <a href="api/org/makumba/Pointer.html">org.makumba.Pointer</a></td>
 
@@ -148,6 +172,7 @@ leader = ptr company.Employee]]></source>
         <tr>
           <td><a href="/doc/datadef.html#set">fieldName=set <br/>
           fieldName-&gt; ...</a></td>
+          <td>an internal set that relates to one specific record</td>
           <td></td>
           <td>table with ptrRel to the parent table, and the rest of the fields</td>
           <td><br/>
@@ -155,6 +180,7 @@ leader = ptr company.Employee]]></source>
         </tr>
         <tr>
           <td><a href="/doc/datadef.html#set">set int{}</a></td>
+          <td>a set of predefined values</td>
           <td>multiple choice from values</td>
           <td>table with ptrRel to the parent table, and an int field</td>
           <td>java.util.Vector of java.lang.Integer</td>
@@ -164,7 +190,9 @@ leader = ptr company.Employee]]></source>
     <section>
       <title>Validation rules</title>
       <p>Explanation of validation rules, of where they do take places, link to validation rule page
-        and to validation usage page</p>
+      and to validation usage page</p>
+      <p><a href="/doc/valrules.html">Validation rules</a> make it possible to automatically ensure the validity of the data entered by the user in forms. These rules take place at the client level (if <a href="/configuration/configuration.html#Controller+behavior+[controllerConfig]">client-side validation</a> is enabled) and at the server level.
+      </p>
     </section>
     <section>
       <title>Query functions</title>
