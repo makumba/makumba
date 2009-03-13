@@ -36,9 +36,7 @@
 		<p>We will further explain those type of fields by using the following example of a
 			company that has employees, each working in a department and assigned to several
 			projects:</p>
-		<center>
-			<img src="../images/example-eer.png"/>
-		</center>
+			<figure alt="Example EER" src="../images/example-eer.png" />
 		<p>Let's take a look at how the related Makumba Data Definitions would look like:</p>
 		
 		<source><strong>company.Company (company/Company.mdd)</strong>
@@ -68,7 +66,6 @@ projects->timePercentage = int ;percentage assigned]]></source>
 			<![CDATA[
 name = char[255]
 leader = ptr company.Employee]]></source>		
-		
 	</section>
 
     <section>
@@ -86,7 +83,7 @@ leader = ptr company.Employee]]></source>
         
         <tr>
           <td><a href="/doc/datadef.html#int">int</a></td>
-          <td>text field <span class="futfeat">(or slider)</span></td>
+          <td>text field</td>
           <td rowspan="2">integer</td>
           <td rowspan="2">java.lang.Integer</td>
         </tr>
@@ -151,7 +148,7 @@ leader = ptr company.Employee]]></source>
         <tr>
           <td><a href="/doc/datadef.html#set">fieldName=set <br/>
           fieldName-&gt; ...</a></td>
-          <td><span class="futfeat">(like a table, under current record)</span></td>
+          <td></td>
           <td>table with ptrRel to the parent table, and the rest of the fields</td>
           <td><br/>
           </td>
