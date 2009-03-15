@@ -44,7 +44,7 @@
 			<p>Every data definition file contains <strong>field definitions</strong>, separated by
 				newline.</p>
 			<p>A field definition looks like:</p>
-			<source>fieldname= [attributes] fieldtype [parameters] [; description]</source>
+			<source><![CDATA[fieldname= [attributes] fieldtype [parameters] [; description] ]]></source>
 
 			<note>Default values are supported internally, but not by the MDD parser</note>
 
@@ -67,9 +67,7 @@
 				description by default.</p>
 			<p><strong>Comment lines</strong> can be inserted in the data definition files as
 				follows:</p>
-			<source>
-				# your comment...
-			</source>
+			<source><![CDATA[# your comment... ]]></source>
 		</section>
 
 		<section id="DefaultFields">
@@ -94,7 +92,7 @@
 					makumba user, this field will be renamed in the database.</li>
 				<li><strong>Object creation time</strong> Can be accessed as <code>TS_create</code>. </li>
 				<li><strong>Last modification time</strong>. Updates whenever the object is changed.
-					The initicial value is TS_create. Can be accessed as <code>TS_modify</code>.
+					The initicial value is <code>TS_create</code>. Can be accessed as <code>TS_modify</code>.
 				</li>
 			</ul>
 		</section>
@@ -108,7 +106,7 @@
 				<source>shoeSize= int; Shoe size</source>
 				<p>If the int can have a limited number of values, it can be described as
 					follows</p>
-				<source>gender= int{ "male"=0, "female"=1 }; Sex<br/></source>
+				<source>gender = int{ "Male" = 10, "Female" = 20 }<br/></source>
 				<p>This will help the presentation layer to present a suitable input control such as:</p>
 
 				<ihtml>
@@ -132,7 +130,7 @@
 				<p>A real number with double precision with
 						(2-2<sup>-52</sup>)&middot;2<sup>1023</sup> as max value and
 						2<sup>-1074</sup> as min value. For example:</p>
-				<source>height= real; height of a person</source>
+				<source>turnover = real; turnover of the company</source>
 			</section>
 
 			<section id="char">
@@ -142,9 +140,8 @@
 						(lesser than max) can be indicated).</em> Both must be positive integers.
 					For example:</p>
 				<source>
-					<![CDATA[#fieldName= char[maxWidth]
-					name= unique char[80]; ]]>
-				</source>
+<![CDATA[fieldName= char[maxWidth]
+name= unique char[80];]]></source>
 				<p><code>unique</code> is a <a href="#FieldAttributes"
 						>field attribute</a>, explained below.</p>
 				<note>Pay close attention to the character set (charset) for encoding the
@@ -157,8 +154,7 @@
 				<title>boolean</title>
 				<p>A boolean, that can take as values true or false. For example:</p>
 				<source>
-					<![CDATA[hasChildren= true; whether this person has children ]]>
-				</source>
+<![CDATA[currentlyEmployed= true; whether this employee is currently employed]]></source>
 			</section>
 
 			<section id="text">
@@ -169,8 +165,7 @@
 					depending on the underlying DB engine. The text data-type is ready for accepting
 					data in UTF-8 encoding.</p>
 				<source>
-					<![CDATA[description=text ; Description of the object ]]>
-				</source>
+<![CDATA[description=text ; Description of the project ]]></source>
 			</section>
 
 			<section id="binary">
@@ -183,8 +178,7 @@
 					along with meta-data like a file name, content type, etc., you should rather use
 					the <a href="#file">file data type</a>.</p>
 				<source>
-					<![CDATA[singature= binary ; a binary digital signature ]]>
-				</source>
+					<![CDATA[signature= binary ; a binary digital signature ]]></source>
 			</section>
 
 			<section id="date">
@@ -192,9 +186,8 @@
 
 				<p>A date and/or time.</p>
 				<source>
-					<![CDATA[birthdate= date; Date of birth
-					arrivalTime= date; Arrival time]]>
-				</source>
+<![CDATA[birthdate = date; Date of birth
+arrivalTime = date; Arrival time]]></source>
 				<!-- FIXME. (fred, 2003-10-13) bug 606
 
     	 Should there be a warning about "time".
@@ -217,24 +210,8 @@
 				<title>ptr</title>
 
 				<p>Pointers define a reference to an object of a certain type. For example</p>
-				<source>citizenship= ptr general.Country; Citizenship<br/></source>
-				<note class="future">the <code>ptr</code> keyword might be ommitted in future
-					parsers</note>
-				<p>The type can be defined on-the-spot for a single usage. For example</p>
-				<source>
-					<![CDATA[addres= ptr ; Address
-					address->street= char[80]; Street
-					address-;>number= int; Number ]]>
-				</source>
-				<note>The main difference between sets of external types and internal sets is that
-					when the host object (e.g. Person.mdd that has the above field "address") is
-					deleted from the database (DB), also all elements of the set (addresses) are
-					deleted automatically, so there is no orphans (addresses) in the DB. Elements
-					(addresses) of an internal set of some host object (Person X) also can't be used
-					in a set of some other host object (Company Y).</note>
-				
-				<note class="internal">this type is known internally as ptrOne</note>
-			</section>
+				<source><![CDATA[manager = ptr company.Employee; The manager of the department]]></source>
+				</section>
 
 			<section id="set">
 				<title>set</title>
@@ -242,24 +219,27 @@
 				<p>Sets define a number of references to multiple objects of a certain type. For
 					example:</p>
 				<source>
-					<![CDATA[ language= set general.Language; Spoken languages<br/> ]]>
-				</source>
+<![CDATA[suppliers= set company.Company; Suppliers of this company]]></source>
 				<p>This type accomodates sets, bags and lists. The set and list constraints (sets
 					have to contain only one element of a certain value and lists have to be
 					ordered) have to be cared for by the programmer. Lists are easy to represent,
 					just having an integer field, for the order.</p>
 				<p>The type which the set is made of can be defined on the spot:</p>
 				<source>
-					<![CDATA[addresses= set; Addresses<br/> 
-					addresses->street= char[80]; Street
-					addresses-> number= int; Number<br/> ]]>
-				</source>
-				<note class="internal">this type is known internally as setComplex</note>
+<![CDATA[projects = set
+projects->project = ptr company.Project
+projects->timePercentage = int ;percentage assigned]]></source>
+				<note>The main difference between sets of external types and internal sets is that
+					when the host object (e.g. Employee.mdd that has the above field "address") is
+					deleted from the database (DB), also all elements of the set (addresses) are
+					deleted automatically, so there is no orphans (addresses) in the DB. Elements
+					(addresses) of an internal set of some host object (Person X) also can't be used
+					in a set of some other host object (Company Y).</note>
+				<note class="internal">This type is known internally as setComplex</note>
 				<p>The set can contain enumerated int values :</p>
 				<source>
-					<![CDATA[ place= set int {"home"=1, "away"=0} ; Home or away ]]>
-				</source>
-				<note class="internal">this is currently known internally as setintEnum</note>
+<![CDATA[ place= set int {"home"=1, "away"=0} ; Home or away ]]></source>
+				<note class="internal">This is currently known internally as setintEnum</note>
 				
 			</section>
 
@@ -281,8 +261,7 @@
 						height.</li>
 				</ul>
 				<source>
-					<![CDATA[ image= file ; Picture attachment ]]>
-				</source>
+<![CDATA[ logo = file ; Picture attachment ]]></source>
 				<p>All fields are automatically set by Makumba, all needed to do is to make a
 					&lt;mak:input&gt; on the field name.</p>
 				<p>This type should be used in favour of the <a href="#binary">binary data type</a>
@@ -299,11 +278,9 @@
 			<p>A name can be defined for a more complex type and it can be reused in the file. This
 				can be done with a !type directive</p>
 			<source>
-				<![CDATA[!type.yesno= int{"yes"=1, "no"=0}
-				!type.rank= int{"neutral"=0, "very good"=5, "very bad"=-5}
-				married=yesno
-				happyInLife=rank ]]>
-			</source>
+<![CDATA[!type.rank = int{"Neutral"=0, "Very good"=5, "Very bad"=-5}
+
+happyInLife = rank]]></source>
 		</section>
 
 		<section id="FieldAttributes">
@@ -339,17 +316,15 @@
 
 			<p>A record description can include text from one or more files. This is declared as</p>
 			<source>
-				<![CDATA[ !include=name_of_included_type ]]>
-			</source>
+<![CDATA[!include=name_of_included_type ]]></source>
 			<p>The included file has the idd extension and is found in a similar way like the data
 				definitions.</p>
 			<p>The included file is inserted instead of the !include line. There can be more include
 				lines in a record description file. If a field is defined that exists also in the
 				included metadata, the defined field takes precedence. If</p>
 			<source>
-				<![CDATA[ fieldname= ]]>
-			</source>
-			<p>it means that it does not actually exist. this can be used to cancel an included
+<![CDATA[fieldname =]]></source>
+			<p>it means that it does not actually exist. This can be used to cancel an included
 				field.</p>
 			<note class="future">Include might be replaced by more advanced concepts such as
 				inheritance and type inclusion (rather than reference in foreign table)</note>
