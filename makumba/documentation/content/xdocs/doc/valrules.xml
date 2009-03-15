@@ -27,8 +27,11 @@
     
     <section><title>Validation rule</title>
     <p>The validation rule specifies what should be validated, and can be one of the following</p>
-    <source>[range validation | string length | regular expression | comparison]</source>
-    
+      <ul><li>range validation</li>
+      <li>sting length</li>
+        <li>regular expression</li>
+        <li>comparison</li>
+      </ul>
     <section id="range"><title>Number range rule</title>
     <p>The range definition rule applies for <code>Number</code> types, i.e. <em>int</em> and <em>real</em>. The
     [validation rule] is defined as:</p>

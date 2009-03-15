@@ -16,7 +16,7 @@
 			<p>Data definitions describe <strong>data types (or classes)</strong>. They are placed
 				in files contained in directory hierarchies, and the directory name is part of the
 				type name (similar to Java packages). For example <strong>the file
-					general/Person.mdd </strong>describes <strong>the type general.Person</strong>.
+					company/Employee.mdd </strong>describes <strong>the type general.Person</strong>.
 				Type names can contain letters, digits, underscores and dashes and cannot contain
 				slashes and
 				dots.<!-- MDD max size 255 : http://bugs.best.eu.org/show_bug.cgi?id=639 -->
@@ -26,9 +26,9 @@
 			<ul>
 				<li>the designated file extension is <code>.mdd</code> (Makumba Data
 					Definition)</li>
-				<li>relative to CLASSPATH (e.g. <code>classes/general/Person.mdd</code>)</li>
+				<li>relative to CLASSPATH (e.g. <code>classes/company/Employee.mdd</code>)</li>
 				<li>in a directory called "<strong>dataDefinitions/</strong>" in the CLASSPATH (e.g.
-						<code>classes/dataDefinitions/general/Person.mdd</code>)</li>
+						<code>classes/dataDefinitions/company/Employee.mdd</code>)</li>
 			</ul>
 
 			<p><strong>Data objects (records)</strong> are stored in <strong>databases</strong>.</p>
