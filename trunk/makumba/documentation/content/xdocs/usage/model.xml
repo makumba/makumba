@@ -3,57 +3,55 @@
 <!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
 <document>
   <header>
-    <title>Designing the data model: Makumba Data Definitions</title>
+    <title>Defining the data model: Makumba Data Definitions</title>
   </header>
   <body>
 
-    <p>Makumba uses so-called Makumba Data Definitions (MDDs) in order to represent objects. These definitions are also referred to as <strong>type</strong> of an object.
-      This section provides examples and guidelines on how to design MDDs, check the <a
+    <p>Makumba uses so-called Makumba Data Definitions (MDDs) in order to represent objects. These
+      definitions are also referred to as <strong>type</strong> of an object. This section provides
+      a short overview of MDDs and illustrates them with some examples, check the <a
         href="../doc/datadef.html">reference documentation</a> for more details on MDDs.</p>
+    <note>This documentation does not give any guidelines regarding data model design. We assume
+      that you already has some knowledge of general data model design concepts.</note>
 
-	<section>
-		<title>General principles</title>
-		
-		<p>MDDs are stored as files that are located in the
-			<code>WEB-INF/classes/dataDefinitions</code> folder of your webapp. Their
-			file extensions are
-			<code>.mdd</code> and the resulting Makumba type name is using the same naming
-			principle of Java packages, i.e. the MDD stored in
-			<code>WEB-INF/classes/dataDefinitions/general/Person.mdd</code> will
-			have as type name
-			<code>general.Person</code>. </p>
-		<p>MDDs contain following elements: </p>
-		<ul>
-			<li>the
-				<a href="../doc/datadef.html#Fields">field definitions</a></li>
-			<li>
-				<a href="../doc/valrules.html">validation rules</a> referring to one
-				or more fields</li>
-			<li>
-				<a href="../doc/queryfunct.html">query functions</a>
-			</li>
-		</ul>
-		<p>We will further explain those type of fields by using the following example of a
-			company that has employees, each working in a department and assigned to several
-			projects:</p>
-			<figure alt="Example EER" src="../images/example-eer.png" />
-		<p>Let's take a look at how the related Makumba Data Definitions would look like:</p>
-		
-		<source><strong>company.Company (company/Company.mdd)</strong>
-			<![CDATA[
+    <section>
+      <title>General principles</title>
+
+      <p>MDDs are stored as files that are located in the
+          <code>WEB-INF/classes/dataDefinitions</code> folder of your webapp. Their file extensions
+        are <code>.mdd</code> and the resulting Makumba type name is using the same naming principle
+        of Java packages, i.e. the MDD stored in
+          <code>WEB-INF/classes/dataDefinitions/general/Person.mdd</code> will have as type name
+          <code>general.Person</code>. </p>
+      <p>MDDs contain following elements: </p>
+      <ul>
+        <li>the <a href="../doc/datadef.html#Fields">field definitions</a></li>
+        <li>
+          <a href="../doc/valrules.html">validation rules</a> referring to one or more fields</li>
+        <li>
+          <a href="/doc/queryfrag.html#mddFunctions">MDD functions</a>
+        </li>
+      </ul>
+      <p>We will further explain those type of fields by using the following example of a company
+        that has employees, each working in a department and assigned to several projects:</p>
+      <figure alt="Example EER" src="../images/example-eer.png"/>
+      <p>Let's take a look at the Makumba Data Definitions that fit this example:</p>
+
+      <source><strong>company.Company (company/Company.mdd)</strong>
+        <![CDATA[
 name = char[50]
 turnover = real
 suppliers = set company.Company
 targetMarkets = set general.Country
 logo = file]]></source>
-		
-		<source><strong>company.Department (company/Department.mdd)</strong>
-			<![CDATA[
+
+      <source><strong>company.Department (company/Department.mdd)</strong>
+        <![CDATA[
 name = char[50]
 manager = ptr company.Employee
 leader = ptr general.Employee]]></source>
-		<source><strong>company.Employee (company/Employee.mdd)</strong>
-			<![CDATA[
+      <source><strong>company.Employee (company/Employee.mdd)</strong>
+        <![CDATA[
 name = char[200]
 surname = char[200]
 gender = int{"Male" = 10, "Female" = 20}
@@ -62,85 +60,103 @@ salary = real
 
 projects = set
 projects->project = ptr company.Project
-projects->timePercentage = int ;percentage assigned]]></source>		
-		<source><strong>company.Project (company/Project.mdd)</strong>
-			<![CDATA[
+projects->timePercentage = int ;percentage assigned]]></source>
+      <source><strong>company.Project (company/Project.mdd)</strong>
+        <![CDATA[
 name = char[255]
-leader = ptr company.Employee]]></source>		
-	</section>
+leader = ptr company.Employee]]></source>
+    </section>
 
     <section>
       <title>Field definitions</title>
-		
-		<p>This section gives a short overview of the different types of field types that exist in Makumba:</p>
-      <section><title>Primitive types</title>
-      
-    <table>
-        <tr>
-          <th>Field definition type</th>
-          <th>Description</th>
-          <th>Default edit user interface</th>
-          <th>Relational database type (orientative)</th>
-          <th>Java type (orientative)</th>
-        </tr>
-        
-        <tr>
-          <td><a href="/doc/datadef.html#int">int</a></td>
-          <td>a simple integer</td>
-          <td>text field</td>
-          <td rowspan="2">integer</td>
-          <td rowspan="2">java.lang.Integer</td>
-        </tr>
-        <tr>
-          <td><a href="/doc/datadef.html#int">int{}</a></td>
-          <td>Integer enumeration, allowing for a set of predefined values</td>
-          <td>dropdown choice or radio button</td>
-        </tr>
 
-        <tr>
-          <td><a href="/doc/datadef.html#real">real</a></td>
-          <td>a real number</td>
-          <td>text field</td>
-          <td>double</td>
-          <td>java.lang.Double</td>
-        </tr>
-        <tr>
-          <td><a href="/doc/datadef.html#date">date</a></td>
-          <td>a date</td>
-          <td>date</td>
-          <td>date and time</td>
-          <td>java.util.Date</td>
-        </tr>
-        <tr>
-          <td><a href="/doc/datadef.html#char">char[]</a></td>
-          <td>a limited text (maximum length is 255)</td>
-          <td>text field</td>
-          <td>limited char</td>
-          <td>java.lang.String</td>
-        </tr>
-        <tr>
-          <td><a href="/doc/datadef.html#text">text</a></td>
-          <td>an unlimited text</td>
-          <td>text area</td>
-          <td>unlimited characters</td>
-          <td>org.makumba.Text</td>
-        </tr>
-        <tr>
-          <td><a href="/doc/datadef.html#binary">binary</a></td>
-          <td>a binary content, e.g. an image</td>
-          <td>binary area</td>
-          <td>unlimited byte</td>
-          <td>org.makumba.Text</td>
-        </tr>
-      <tr>
-        <td><a href="/doc/datadef.html#file">file</a></td>
-        <td>a file including its meta-data (content type, size, ...)</td>
-        <td>file upload</td>
-        <td>preferably a long (foreign index) <br/>
-        + table</td>
-        <td></td>
-      </tr>
-    </table></section>
+      <p>This section gives a short overview of the different types of field types that exist in
+        Makumba:</p>
+      <section>
+        <title>Primitive types</title>
+
+        <table>
+          <tr>
+            <th>Field definition type</th>
+            <th>Description</th>
+            <th>Default edit user interface</th>
+            <th>Relational database type (orientative)</th>
+            <th>Java type (orientative)</th>
+          </tr>
+
+          <tr>
+            <td>
+              <a href="/doc/datadef.html#int">int</a>
+            </td>
+            <td>a simple integer</td>
+            <td>text field</td>
+            <td rowspan="2">integer</td>
+            <td rowspan="2">java.lang.Integer</td>
+          </tr>
+          <tr>
+            <td>
+              <a href="/doc/datadef.html#int">int{}</a>
+            </td>
+            <td>Integer enumeration, allowing for a set of predefined values</td>
+            <td>dropdown choice or radio button</td>
+          </tr>
+
+          <tr>
+            <td>
+              <a href="/doc/datadef.html#real">real</a>
+            </td>
+            <td>a real number</td>
+            <td>text field</td>
+            <td>double</td>
+            <td>java.lang.Double</td>
+          </tr>
+          <tr>
+            <td>
+              <a href="/doc/datadef.html#date">date</a>
+            </td>
+            <td>a date</td>
+            <td>date</td>
+            <td>date and time</td>
+            <td>java.util.Date</td>
+          </tr>
+          <tr>
+            <td>
+              <a href="/doc/datadef.html#char">char[]</a>
+            </td>
+            <td>a limited text (maximum length is 255)</td>
+            <td>text field</td>
+            <td>limited char</td>
+            <td>java.lang.String</td>
+          </tr>
+          <tr>
+            <td>
+              <a href="/doc/datadef.html#text">text</a>
+            </td>
+            <td>an unlimited text</td>
+            <td>text area</td>
+            <td>unlimited characters</td>
+            <td>org.makumba.Text</td>
+          </tr>
+          <tr>
+            <td>
+              <a href="/doc/datadef.html#binary">binary</a>
+            </td>
+            <td>a binary content, e.g. an image</td>
+            <td>binary area</td>
+            <td>unlimited byte</td>
+            <td>org.makumba.Text</td>
+          </tr>
+          <tr>
+            <td>
+              <a href="/doc/datadef.html#file">file</a>
+            </td>
+            <td>a file including its meta-data (content type, size, ...)</td>
+            <td>file upload</td>
+            <td>preferably a long (foreign index) <br/> + table</td>
+            <td/>
+          </tr>
+        </table>
+      </section>
       <section>
         <title>Relational types and collections</title>
       </section>
@@ -152,59 +168,122 @@ leader = ptr company.Employee]]></source>
           <th>Relational database type (orientative)</th>
           <th>Java type (orientative)</th>
         </tr>
-        
+
         <tr>
-          <td><a href="/doc/datadef.html#ptr">ptr</a></td>
+          <td>
+            <a href="/doc/datadef.html#ptr">ptr</a>
+          </td>
           <td>a pointer to another type record</td>
           <td>dropdown select of record titles.</td>
           <td>preferably a long (foreign index)</td>
-          <td><a href="api/org/makumba/Pointer.html">org.makumba.Pointer</a></td>
+          <td>
+            <a href="api/org/makumba/Pointer.html">org.makumba.Pointer</a>
+          </td>
         </tr>
-        
+
         <tr>
-          <td><a href="/doc/datadef.html#set">set</a></td>
-          <td>a set of records of another type (which could be re-used in another type) TODO: set chooser link</td>
+          <td>
+            <a href="/doc/datadef.html#set">set</a>
+          </td>
+          <td>a set of records of another type (which could be re-used in another type) TODO: set
+            chooser link</td>
           <td>multiple choice of record titles.</td>
           <td>table with ptrRel to the parent table and ptr to the foreign table</td>
-          <td>java.util.Vector of <a href="api/org/makumba/Pointer.html">org.makumba.Pointer</a></td>
+          <td>java.util.Vector of <a href="api/org/makumba/Pointer.html"
+            >org.makumba.Pointer</a></td>
 
         </tr>
         <tr>
-          <td><a href="/doc/datadef.html#set">fieldName=set <br/>
-          fieldName-&gt; ...</a></td>
+          <td>
+            <a href="/doc/datadef.html#set">fieldName=set <br/> fieldName-&gt; ...</a>
+          </td>
           <td>an internal set that relates to one specific record</td>
-          <td></td>
+          <td/>
           <td>table with ptrRel to the parent table, and the rest of the fields</td>
-          <td><br/>
+          <td>
+            <br/>
           </td>
         </tr>
         <tr>
-          <td><a href="/doc/datadef.html#set">set int{}</a></td>
+          <td>
+            <a href="/doc/datadef.html#set">set int{}</a>
+          </td>
           <td>a set of predefined values</td>
           <td>multiple choice from values</td>
           <td>table with ptrRel to the parent table, and an int field</td>
           <td>java.util.Vector of java.lang.Integer</td>
         </tr>
-     </table>
+      </table>
     </section>
     <section>
       <title>Validation rules</title>
-      <p>Explanation of validation rules, of where they do take places, link to validation rule page
-      and to validation usage page</p>
-      <p><a href="/doc/valrules.html">Validation rules</a> make it possible to automatically ensure the validity of the data entered by the user in forms. These rules take place at the client level (if <a href="/configuration/configuration.html#Controller+behavior+[controllerConfig]">client-side validation</a> is enabled) and at the server level.
-      </p>
+      <p><a href="/doc/valrules.html">Validation rules</a> make it possible to automatically ensure
+        the validity of the data entered by the user in forms. These rules take place at the client
+        level (if <a href="/configuration/configuration.html#Controller+behavior+[controllerConfig]"
+          >client-side validation</a> is enabled) and at the server level. </p>
+      <p>If we wanted to ensure that employees have to be at least 16 years old, we could add the
+        following line to the <code>company.Employee</code> MDD:</p>
+      <source><![CDATA[ birthdate%compare = birthdate <= date($now, $now, $now - 16, 0, 0, 0) : An employee has to be at least 16 years old! ]]></source>
+      <p>Additionally to these explicit validation rules, the <a
+          href="/doc/datadef.html#FieldAttributes">field attributes</a> generate automatical checks
+        that reflect on validation. For example <code>name = not null char[255]</code> will lead to
+        a client and server-side check that makes sure this field is not empty.</p>
     </section>
     <section>
-      <title>Query functions</title>
-      <p>Explanation of what they are, how they can be used (in queries, in other functions, at the
-        presentation level...), link to technical reference</p>
+      <title>MDD functions</title>
+      <p><a href="/doc/queryfrag.html#mddFunctions">MDD functions</a> are functions defined in one
+        MDD and can be used in all kind of Makumba queries (in business logic, on the JSP level or
+        in other functions).</p>
+      <p>If we want to often print the name and surname of one employee, we can define the following
+        function in company.Employee:</p>
+      <source><![CDATA[nameSurname() { concat(name, concat(' ', surname)) }]]></source>
+      <p>You can read more about MDD functions in the <a href="/doc/queryfrag.html#mddFunctions"
+          >reference documentation</a> or in the <a href="mddfunct.html">MDD function usage
+          documentation</a>.</p>
     </section>
 
     <section>
       <title>Interaction with the database schema</title>
+      <p>One powerful feature of Makumba is that it takes care of the interaction with the database.
+        This means that once you correctly configured the database, Makumba will create and maintain
+        the table structure for you, as well as indexes and foreign keys.</p>
+      <section>
+        <title>Allowing the alteration of specific types</title>
+        <p>In order to allow Makumba to create the necessary tables related to a type, it is
+          necessary to declare this in the <a
+            href="http://new.makumba.org/configuration/configuration.html#datasource_configuration"
+            >data source configuration</a> in <code>Makumba.conf</code>.</p>
+        <p>When using the Makumba database layer, this is done by using the
+            <code>alter#typeName=tue/false</code> parameter in the data source section it should
+          apply to (it may be that you don't want to allow schema update in your production
+          environment whilst it's not a problem in a test environement).</p>
+        <source><![CDATA[alter#company.Employee=true]]></source>
+        <p>will allow Makumba to allow the table structure of the company.Employee type.</p>
+        <source><![CDATA[alter#=true]]></source>
+        <p>Will allow Makumba to alter <strong>all</strong> the types in the database.</p>
+        <warning>Make sure you allow Makumba to modify a type after creating or updating it, or these changes won't reflect in the database and you will get an error.</warning>
+        <note>Changes in the MDD structure require a webapp restart in order to reflect in the database.</note>
+        <p>When using the Hibernate database layer, the parameter <code>makumba.schemaUpdate=true|false</code> has to be used in order to allow the database layer to alter the database schema.</p>
+      </section>
+      <section>
+        <title>Makumba table and field names</title>
+      <p>Makumba generates table and field names in a specific manner:</p>
+        <ul>
+          <li><code>company.Employee</code> will be kept in the table <code>general_Employee_</code></li>
+          <li>the primitive field <code>company.Employee#name</code> will be called <code>name_</code> in the database</li>
+          <li>the internal set <code>company.Employee#projects</code> will be hold in the table <code>company_Employee__projects_</code></li>
+          <li>the external set <code>company.Company#suppliers</code> will be hold in the table <code>company.Company</code> (since it is a set of companies) and the intermediary table <code>general_Company__suppliers_</code> will hold the references to its members</li>
+        </ul>
+        <p>This mechanism can be modified to some extent by using a number of parameters in the <a
+          href="http://new.makumba.org/configuration/configuration.html#datasource_configuration"
+          >data source configuration</a> in <code>Makumba.conf</code>:</p>
+        <ul>
+          <li><code>company.Company = company</code> means that Makumba will look for the type <code>company.Company</code> in the database table <code>company</code> instead of <code>company_Company_</code></li>
+          <li><code>company.Company->name = companyName</code> means that Makumba will look for the field <code>name</code> in the database field <code>companyName</code> instead of <code>name_</code></li>
+          <li>the parameter <code>addUnderscore=true|false</code> makes it possible to control whether underscores are appended to the database name of tables and fields</li>
+        </ul>
     </section>
-    <p>how makumba generates tables based on the schema, alter#, makumba table names, link to db
-      config options related to schema, what happens when a field name is changed in MDD / type is
-      changed in MDD (warnings etc.) </p>
+    </section>
+    
   </body>
 </document>

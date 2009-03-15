@@ -57,13 +57,13 @@ See http://forrest.apache.org/docs/linking.html for more info
   <usage label="Using Makumba" dir="/usage" description="How to use Makumba" tab="usage">
     <index label="Overview" href="/usage/index.html" description="Reference documentation overview" />
     <manifesto label="Makumba manifesto" href="/manifesto.html" />
-    <model label="Designing the data model" href="/usage/model.html" description="Designing the data model with Makumba Data Definitions" />
+    <model label="Defining the data model" href="/usage/model.html" description="Defining the data model with Makumba Data Definitions" />
     <list label="Displaying data" href="/usage/list.html" description="Displaying data using the Makumba list" />
     <forms label="Creating and editing data" href="/usage/forms.html" description="Creating and editing data using Makumba forms" />
     <multiple label="Multiple forms and lists" href="/usage/multiple.html" description="Multiple forms and lists" />
     <advanced label="Advanced features" href="/usage/advanced.html" />
     <search label="Search forms" href="/usage/search.html" />
-    <queryfunct label="Query functions" href="/usage/queryfunct.html" description="Makumba Query Functions" />
+    <mddfunct label="MDD functions" href="/usage/mddfunct.html" description="MDD Functions" />
     <auth label="Authentication and authorisation" href="/usage/auth.html" />
     <structure label="Layout and navigation" href="/usage/structure.html" description="How to structure your site" />
   </usage>

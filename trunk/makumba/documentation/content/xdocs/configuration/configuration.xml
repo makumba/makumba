@@ -174,16 +174,25 @@
                     <tr>
                         <td>typename=SQLtableName</td>
                         <td>no</td>
-                        <td>Makumba</td>
+                        <td>both</td>
                         <td>Sets the name of the SQL table representing the given type to
                             SQLtableName (to inhibit automatic table name generation)</td>
                     </tr>
                     <tr>
                         <td>typename->field=SQLfieldName</td>
                         <td>no</td>
-                        <td>Makumba</td>
+                        <td>both</td>
                         <td>Sets the name of the SQL field representing the given object attribute
                             to SQLfieldName (to inhibit automatic field name generation)</td>
+                    </tr>
+                    <tr>
+                        <td>addUnderscore=true|false</td>
+                        <td>no</td>
+                        <td>both</td>
+                        <td>Specifies whether to add an underscore at the end of the generated field
+                            and table names during automatic name generation. It is true by default.
+                            (Introduced to avoid conflicts with reserved words on some SQL
+                            engines)</td>
                     </tr>
                     <tr>
                         <td>alter#typenameShorthand=true|false</td>
@@ -201,18 +210,10 @@
                         <td>no</td>
                         <td>Makumba</td>
                         <td>If true allows deletion of multiple records of the respective
-                            typesduring org.makumba.delete and org.makumba.copy the type(s) when the
+                            types during org.makumba.delete and org.makumba.copy the type(s) when the
                             SQL table doesn't match the type definition.</td>
                     </tr>
-                    <tr>
-                        <td>addUnderscore=true|false</td>
-                        <td>no</td>
-                        <td>Makumba</td>
-                        <td>Specifies whether to add an underscore at the end of the generated field
-                            and table names during automatic name generation. It is true by default.
-                            (Introduced to avoid conflicts with reserved words on some SQL
-                            engines)</td>
-                    </tr>
+                    
                     <tr>
                         <td>hibernate.dialect=className</td>
                         <td>yes</td>
@@ -269,10 +270,11 @@
                 </table>
 
                 <p> In addition to these parameters, additional parameters can be passed directly to
-                    the database layer. For additional Hibernate configuration parameters, see:
-                    http://www.hibernate.org/hib_docs/v3/reference/en/html/configuration-hibernatejdbc.html
-                    http://www.hibernate.org/hib_docs/v3/reference/en/html/configuration-optional.html </p>
-
+                the database layer. For additional Hibernate configuration parameters, see:</p>
+                <ul>
+                    <li><a href="http://www.hibernate.org/hib_docs/v3/reference/en/html/configuration-hibernatejdbc.html">http://www.hibernate.org/hib_docs/v3/reference/en/html/configuration-hibernatejdbc.html</a></li>
+                    <li><a href="http://www.hibernate.org/hib_docs/v3/reference/en/html/configuration-optional.html">http://www.hibernate.org/hib_docs/v3/reference/en/html/configuration-optional.html</a></li>
+                </ul>
             </section>
         </section>
 
