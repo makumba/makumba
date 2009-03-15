@@ -107,12 +107,6 @@
                     <td>make entry</td>
                 </tr>
                 <tr>
-                    <td>Makumba example (makumba-example.html)</td>
-                    <td>Example?</td>
-                    <td>Not started</td>
-                    <td>Do we want to keep a whole example, or have a good quick start, a demo-app and a nice makumba usage part?</td>
-                </tr>
-                <tr>
                     <td>Config DB</td>
                     <td>Configuration / Makumba configuration</td>
                     <td>done</td>
@@ -238,6 +232,12 @@
                     <td>reference doc/query languages</td>
                     <td>done</td>
                     <td>need to add the MQL functions</td>
+                </tr>
+                <tr>
+                    <td>Makumba example (makumba-example.html)</td>
+                    <td>Example?</td>
+                    <td>discarded</td>
+                    <td>we will go for a quick start using the MDD example described in model.xml</td>
                 </tr>
                 
                 
