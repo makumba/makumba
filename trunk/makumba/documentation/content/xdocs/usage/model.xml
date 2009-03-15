@@ -64,7 +64,8 @@ projects->timePercentage = int ;percentage assigned]]></source>
       <source><strong>company.Project (company/Project.mdd)</strong>
         <![CDATA[
 name = char[255]
-leader = ptr company.Employee]]></source>
+leader = ptr company.Employee
+description = text]]></source>
     </section>
 
     <section>
@@ -236,7 +237,7 @@ leader = ptr company.Employee]]></source>
         in other functions).</p>
       <p>If we want to often print the name and surname of one employee, we can define the following
         function in company.Employee:</p>
-      <source><![CDATA[nameSurname() { concat(name, concat(' ', surname)) }]]></source>
+      <source><![CDATA[nameSurname() { concat(name, ' ', surname }]]></source>
       <p>You can read more about MDD functions in the <a href="/doc/queryfrag.html#mddFunctions"
           >reference documentation</a> or in the <a href="mddfunct.html">MDD function usage
           documentation</a>.</p>
