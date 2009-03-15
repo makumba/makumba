@@ -11,6 +11,7 @@
 <h1>Create new Employee</h1>
 <mak:newForm type="company.Employee" action="welcome.jsp">
 Name: <mak:input field="name" autoComplete="true"/><br/>
+Surname: <mak:input field="surname" autoComplete="true"/><br/>
 <input type="submit" name="Create"/>
 </mak:newForm>
 
@@ -18,7 +19,7 @@ Name: <mak:input field="name" autoComplete="true"/><br/>
 
 <h1>Existing persons</h1>
 <mak:list from="company.Employee p">
-<mak:value expr="p.name"/><br/>
+<mak:value expr="p.nameSurname()"/> [<mak:deleteLink message="Employee deleted" action="welcome.jsp" object="p">delete</mak:deleteLink>]<br/>
 </mak:list>
 
 </body>

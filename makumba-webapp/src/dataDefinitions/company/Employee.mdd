@@ -1,4 +1,4 @@
-name = char[200]
+name = not null char[200]
 surname = char[200]
 birthdate = date
 salary = real
@@ -6,3 +6,5 @@ salary = real
 projects = set
 projects->project = ptr company.Project
 projects->timePercentage = int ; percentage assigned
+
+nameSurname() { concat(name, '  ', surname)
