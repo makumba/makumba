@@ -162,10 +162,33 @@
                     <td>finish to document it</td>
                 </tr>
                 <tr>
-                    <td/>
-                    <td/>
-                    <td/>
-                    <td/>
+                    <td></td>
+                    <td>configuration of error messages</td>
+                    <td>not started</td>
+                    <td><source>
+
+To enable the custom error for some pages of your application you only
+need to put error.jsp in root folder and it will be used also for all
+subfolders. In case you want a different error message for just some
+pages, they will need to be in their own folder and you will need to
+put a different error.jsp in that folder. In other words, makumba
+searches for error.jsp starting from the folder of the page that
+caused error and going to all the parent folders until it finds it or
+reaches the root of application in which case it shows the default
+error page.
+
+Content of the error.jsp
+
+It's advised that in the error.jsp be simple HTML document or with
+minimum of code. There are 3 attributes that should be placed
+somewhere in the page to get the error information:
+
+mak_error_title - giving the title of the error
+mak_error_description - giving the error description witch is normally
+content of the default error page
+mak_error_realpath - gives you the path to the file that has caused the error
+
+</source></td>
                 </tr>
                 <tr>
                     <td/>
