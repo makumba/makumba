@@ -106,7 +106,7 @@
 				<source>shoeSize= int; Shoe size</source>
 				<p>If the int can have a limited number of values, it can be described as
 					follows</p>
-				<source>gender = int{ "Male" = 10, "Female" = 20 }<br/></source>
+				<source>gender = int{ "Male" = 10, "Female" = 20 }</source>
 				<p>This will help the presentation layer to present a suitable input control such as:</p>
 
 				<ihtml>
