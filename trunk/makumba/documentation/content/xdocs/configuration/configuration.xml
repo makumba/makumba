@@ -324,7 +324,7 @@
                 </tr>
             </table>
             
-            <fixme author="manu">add links to form tags, because attributes in forms can override these global settings</fixme>
+            <note>These settings can also be changed at form level. See the <a href="/doc/taglib/makform.html#attributes">mak:form attribute documentation</a> for more details.</note>
 
         </section>
 
