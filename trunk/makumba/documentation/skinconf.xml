@@ -61,7 +61,7 @@ which will be used to configure the chosen Forrest skin.
   <project-name>Makumba</project-name>
   <project-description>Query-centric framework for rapid JSP development</project-description>
   <project-url>http://www.makumba.org/</project-url>
-  <project-logo>images/project.png</project-logo>
+  <project-logo>images/makumba-logo-small.gif</project-logo>
 <!-- Alternative static image:
   <project-logo>images/project-logo.gif</project-logo> -->
 <!-- optional group logo
