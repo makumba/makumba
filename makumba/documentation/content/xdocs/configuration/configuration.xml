@@ -13,7 +13,7 @@
         </section>
         <section>
             <title>Database configuration</title>
-            <p>Makumba can retrieve data from one or more databases, yet it's most common usage is
+            <p>Makumba can retrieve data from one or more databases, yet its most common usage is
                 to work with one database. Makumba has two database base layers, one native layer
                 and one layer that uses Hibernate as an abstraction layer. The native Makumba layer
                 supports several database engines, but in the past years has mostly been tested with
