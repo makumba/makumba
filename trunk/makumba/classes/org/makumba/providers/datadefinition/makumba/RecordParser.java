@@ -1018,7 +1018,7 @@ public class RecordParser {
     
     public void date_parse1(String fieldName, FieldCursor fc) {
         getFieldInfo(fieldName).description = fc.lookupDescription();
-        getFieldInfo(fieldName).defaultValue = new Date();
+        //getFieldInfo(fieldName).defaultValue = new Date();
         return;
     }
 
