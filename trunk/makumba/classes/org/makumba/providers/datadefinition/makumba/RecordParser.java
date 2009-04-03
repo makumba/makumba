@@ -34,6 +34,7 @@ import java.net.MalformedURLException;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Properties;
@@ -956,6 +957,8 @@ public class RecordParser {
                 text_parse1(fieldName, fc);
                 return;
             case FieldDefinition._date:
+                date_parse1(fieldName, fc);
+                return;
             case FieldDefinition._real:
             case FieldDefinition._ptrIndex:
             case FieldDefinition._dateCreate:
@@ -1010,6 +1013,12 @@ public class RecordParser {
     // moved from simpleParser
     public void simple_parse1(String fieldName, FieldCursor fc) {
         getFieldInfo(fieldName).description = fc.lookupDescription();
+        return;
+    }
+    
+    public void date_parse1(String fieldName, FieldCursor fc) {
+        getFieldInfo(fieldName).description = fc.lookupDescription();
+        getFieldInfo(fieldName).defaultValue = new Date();
         return;
     }
 
