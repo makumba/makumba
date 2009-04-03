@@ -435,7 +435,7 @@ public class RelationCrawler {
                     tr2.insert("org.makumba.devel.relations.Relation", relationInfo);
 
                 } finally {
-                    tr2.close();
+                    if(tr2 != null) tr2.close();
                 }
             }
         }
