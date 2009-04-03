@@ -112,6 +112,10 @@ public class Configuration implements Serializable {
     public static final String KEY_REPOSITORY_LINK_TEXT = "repositoryLinkText";
 
     public static final String KEY_USE_DEFAULT_RESPONSE_STYLES = "useDefaultResponseStyles";
+    
+    // error logging to the database
+    
+    public static final String KEY_DB_ERROR_LOG = "logErrors";
 
     // makumba servlets
     public static final String KEY_MAKUMBA_VALUE_EDITOR = "makumbaValueEditor";
@@ -311,6 +315,10 @@ public class Configuration implements Serializable {
 
     public static String getRepositoryLinkText() {
         return applicationConfig.getProperty("makumbaToolConfig", KEY_REPOSITORY_LINK_TEXT);
+    }
+    
+    public static boolean getErrorLog() {
+        return applicationConfig.getBooleanProperty("makumbaToolConfig", KEY_DB_ERROR_LOG, defaultConfig);
     }
 
     public static String getMakumbaToolsLocation() {
