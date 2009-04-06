@@ -107,6 +107,14 @@ public class MQLFunctionDefinition {
         return new MQLFunctionDefinition(name, "char[255]", arguments);
     }
 
+    public static MQLFunctionDefinition toRealFunction(String name) {
+        return new MQLFunctionDefinition(name, "real", new String[] {});
+    }
+
+    public static MQLFunctionDefinition intToRealFunction(String name) {
+        return new MQLFunctionDefinition(name, "real", "int");
+    }
+
     private MQLFunctionArgument[] arguments;
 
     private String name;
