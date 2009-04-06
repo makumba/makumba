@@ -454,6 +454,10 @@ public class MqlNode extends CommonAST {
 
         // int-to-date functions with more arguments
         mqlFunctions.add(MQLFunctionDefinition.intToDateFunction("from_days"));
+
+        // to-real functions with no arguments
+        mqlFunctions.add(MQLFunctionDefinition.toRealFunction("rand"));
+        mqlFunctions.add(MQLFunctionDefinition.intToRealFunction("rand"));
     }
 
 }
