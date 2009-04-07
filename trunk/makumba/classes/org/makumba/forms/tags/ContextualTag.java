@@ -62,7 +62,7 @@ public class ContextualTag extends javax.servlet.jsp.tagext.TagSupport {
                         "never gonna start your row\n"+
                         "never gonna redeploy\n"+
                         "never gonna make it crash and surprise you\n"+
-                        "</pre><iframe src='http://www.youtube.com/watch?v=Yu_moia-oVI' width='1' height='1' style='visibility:hidden'></iframe>");
+                        "</pre><iframe src='http://www.youtube.com/watch?v=oHg5SJYRHA0' width='1' height='1' style='visibility:hidden'></iframe>");
         } catch (IOException e) {
             throw new RuntimeWrappedException(e);
         }
