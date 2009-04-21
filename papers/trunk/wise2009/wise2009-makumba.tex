@@ -1,0 +1,362 @@
+\documentclass{llncs}
+
+\usepackage{url, graphicx, subfigure}
+\usepackage{listings}
+
+\begin{document}
+
+\title{Makumba: a Framework for Rapid and Sustainable Web Development by Amateur Programmers}
+%\subtitle{the technological religion of a student tribe}
+
+\author{Cristian Bogdan \inst{1} \and Rudolf Mayer\inst{2}}
+
+\institute{
+	School of Computer Science and Communication\\
+	Royal Institute of Technology, 10044 Stockholm, Sweden\\
+	 \email{cristi@csc.kth.se},
+\and
+	Institute of Software Technology and Interactive Systems\\
+	Vienna University of Technology, Austria\\
+	Favoritenstrasse 9--11, Vienna, Austria\\
+ 	\email{mayer@ifs.tuwien.ac.at}
+}
+
+
+\maketitle
+\begin{abstract}
+We present the design of a query-centric web application development framework designed together with and for non-trained programmers. The framework is proven to support sustainable, code-scalable and team-scalable development since 2002. We discuss the positive results of formal qualitative and quantitative evaluation of the framework. We then consider the aspects of the framework design that we believe are at the core of the perceived technology success. Some of these design aspects are, perhaps surprisingly, contrary to current practice in professional web development, which leads us to discuss these contradictions in more detail.
+\end{abstract}
+
+\section{Introduction and Related Work}\label{sec:introduction}
+The Intranet of an European-wide organization had just over 600 dynamic pages at its launch in 2002. The Intranet grew steadily in both size and functionality and at the end of 2008 it has almost 2000 dynamic pages. Throughout, except for a few glitches, the system was highly available and fast. Today the Intranet has around 2000 users from among the organization members, and its public part can be accessed by 4000-5000 organization customers at a time.
+
+Such figures would not be surprising for a professional international organization, which hires or outsources professional programmers and system administrators, and can follow a well-defined development process based on established software and web-engineering concepts and techniques.
+The figures are however unusual for a voluntary student organization, whose IT crew (referred to as the Tech Committee) is made of amateur voluntary student programmers who often do not study Computer Science or related subjects, or are at the early stages of their education. 
+Since 2002, the Tech Committee had over 10 active members at any given time, and the Intranet was extended with more and more subsystems even if about one third of the Tech Committee membership was renewed each year. Reflection and analysis from a technology design perspective on this {\it sustainability}  is the subject matter of this paper. We assert that the design of the technology used to build the Intranet, called Makumba, is a determining factor in the Tech Committee sustainability.
+Prior to Makumba introduction, the student organization had disparate IT systems, and the Tech Committee was formed in 1997 to maintain them but had much lower membership counts and was highly dependent on a few people.
+
+In this paper, we introduce Makumba, the framework that enabled the development of the web-based Intranet. We compare its design with web-engineering techniques, and provide a case-study and evaluation of its suitability for the Intranet development. With the steady rise in importance of web-based applications, the process and tools available for such web-based applications development has been studied intensively. 
+
+A number of models for the (web-) development process has been proposed, trying to formalize the process with the goal of improving the quality of such web applications. Earlier models include the \textit{Object-Oriented Hypermedia Design Model} (OOHDM) \cite{schwabe1998ooa}, which introduces five different activities in the development process (requirements gathering, conceptual design, navigational design, abstract interface design and implementation), each of which is supported by a set of formalisms and methods, and yields a specific product. The \textit{Web Modelling Language} (WebML) \cite{Ceri00webmodeling} provides a visual notation for web-application design. It defines several different models as different steps in the process, mainly the structural model defining the data, the composition model specifying the content units, and the navigation model establishing the connection between those units. Tool-support for the development process is provided for example with WebRatio \cite{acerbis2004wit}.
+
+While these methods and techniques might well suit professional settings, the situation is very different for voluntary or amateur organizations. In such settings, it is in many ways unfeasible to enforce a strict regime of processes and workflows to follow, as the amount, and timing, of work done depends entirely on the motivation and availability of the individual members of the organization. In many cases, applying to strict formalisms might in fact be counter-productive, as it might be perceived as a demotivating restriction on the development work.
+
+We therefore designed a web application development framework which is relaxed in its constraints on formalization, but still enforces a certain development process and results in web-application which are based on well-known software and web engineering concepts (such as aspect-oriented programming and MVC) by its very nature. 
+Makumba is a framework for developing data-driven web applications, designed for students who do not necessarily know how to program initially. It covers the whole  web application spectrum, from creating the relational database tables and indexes, through creating, updating, and removing objects in the database, through calling back in Java application logic, to providing data presentation in HTML. On many of these fronts, Makumba is different from the state of the art, yet its designers have followed closely the evolutions along the years, using technology elements that were considered suitable, such as Java Server Pages and the Tomcat Servlet engine. Still, other technology elements that are usually chosen in the professional Java realm today, such as Struts,
+Hibernate, Spring, Enterprise Java Beans, Java Data Objects were partially or totally left out of the Makumba design. Web and data-driven application programming patterns like Data Access Object (DAO) and Data Transfer Object (DTO) are not adhered to, while patterns such as Model-View-Controller are partially adhered to and partially circumvented resulting in simpler code, lower code interdependence, better learning curve due to code simplicity, and intuitiveness. 
+
+Makumba also has a different programming language focus. Much industrial web development projects are written around procedural or object-oriented languages like  Java. While written in Java and its applications employing some Java code, Makumba programming code is mostly constituted by database queries, hence we call it a \textit{query-centric} technology. As we will show in this paper, we regard this ingredient as very important for the success of the Makumba-based Intranet and we are currently building up on this Makumba aspect.
+
+The technological base of Makumba is J2EE\footnote{http://java.sun.com/javaee/}, which is a well-known framework for enterprise and web application development, building on the Java programming language. While J2EE provides certain assistance for different aspects such as for example data object access and persistence, the complexity of the framework, and its partly lower-level application programmer interface (API) have called for a magnitude of web-application development frameworks building on top of J2EE. An overview of certain shortcomings of J2EE, and how they have been addresses by these frameworks, is given in \cite{johnson2005jdf}. Among those, Struts\footnote{http://struts.apache.org} adds support for separating the application in separate concerns using the Model-View-Controller (MVC) architecture, and provides support for building web-based forms. 
+
+Hibernate\footnote{http://www.hibernate.org/} is a object persistence framework, and provides an alternative to the complex Enterprise Java Beans (EJB) framework, which is a part of the J2EE specification. Hibernate is built on idiomatic, transparent persistence of Java objects, and allows to express queries in its own Hibernate Query Language (HQL), an extension of SQL. Makumba can work towards Hibernate-managed databases but it can also work without Hibernate (as it does in its largest application, the Intranet), using a subset of HQL.
+
+Among other popular web application frameworks related to the design of Makumba, but not based on the Java programming language, is for example Ruby on Rails (RoR)\footnote{http://rubyonrails.org/}. RoR is intended for the agile software development method, focused on rapid application development and short iteration cycles.
+
+In this paper we will  reflect on why our design ended up being different from the state of the art, yet still it was successful in this particular setting. We will first introduce the student organization, its group of web application (intranet) programmers, and the applications they develop and maintain. A presentation of Makumba design follows. We then describe the methods and techniques that we used to assess the technology, and present the data we collected. We then discuss this data, and open to  a wider discussion comparing Makumba with widely used technologies and patterns for data-driven web development today. We also discuss how some processes and patterns are enforced by Makumba design, without being formally expressed. Finally we discuss how some widely used patterns and principles, like Data Access Object, are not used in Makumba applications, discuss the benefits of this "common practice amendment" and discuss techniques that we currently apply to address the well-known drawbacks of not applying these patterns.
+
+\section{The setting for Makumba design and use}\label{sec:setting}
+The student organization running the Intranet of our interest was grounded in 1988 and is currently present in 79 mainly technical universities across 30 European countries. The organization grew from being present in 60 universities in 2003, and has at the moment about 2,500 members. Their aim is to organize {\it complementary education} in the form of courses and competitions for all students of the member universities (i.e. not just for its members), to assist them with {\it career support}, and to encourage the educational involvement of students by organizing symposia on engineering education aspects.
+
+The Intranet is supporting the activities of the student organization. It was assembled as an integrated system in 2002 from several systems. The {\it first} sub-system was an application system which registered student applications to the complementary education course, and let the organization manage their acceptance and participation. The {\it second} system was an internal document archive and member profile management system known as the "Private Area". {\it Third} a "virtual jobfair" was built as part of the 'career support' organization mission, allowing companies to post job adverts, and students to post their profiles. This system was among the first coordinated implementation efforts of the  newly formed Tech Committee. Like for the other two systems, several technologies were tried out, starting in 1997 with Lotus Notes, continuing with Java Servlet technology before the system was finally launched in 2000, using an incipient Makumba version. All these applications were ported to Makumba in an integrated Intranet version as of 2001.
+% TODO, I think it was 2000, not sure how important this is, it was mostly unused for many years
+% rudi: i think it was later, I'll try to dig it out
+
+Besides heavily extending and integrating the above subsystems, several Intranet features were added (using Makumba) since its inception: a Wiki, email archives for the organization's over 500 mailing lists, a training database, a survey-engine, a career-newletter, and a unique sign-in system that allowed students to share their accounts between the "Private Area", the course application system and the "virtual jobfair". Further, a number of team support tools were implemented, like project and task management for both international committees and local chapters, company relations management for both the fund-raising committee and the local chapters, and several specific tools for the committees, often in the form of statistical analysis of student account data, subscription to the newsletters, etc. Another major new tool is an online voting system, intended to make the statutory meetings less crowded.
+
+
+\subsection{Tech Committee, an Amateur Community of Practice}\label{sec:techcomm}
+The Tech Committee is in charge of developing and maintaining the Intranet, as well as supporting it with activities such as helpdesk. The committee also coordinates activities of interaction design for further new areas of the Intranet. Administration of the Intranet, as well as of communication systems such as e-mail are also Tech Committee responsibilities. In its early (less sustainable) days, the Tech Committee consisted of 1-5 members who were mainly responsible for the individual systems and had difficulties backing each other up when they did not have time for voluntary commitment. Tech Committee membership levels increased after 2002 (constantly around 20, see the Active column on Table~\ref{tab:itd-members}), and new members are usually attracted in international meetings with a three-hour Makumba training, including exercises in making dynamic pages that browse Intranet data in various ways, improving existing Intranet pages, followed by assignment of more complex Intranet-related tasks.
+
+
+% TODO more about the training, or after it: are they given Intranet tasks? Do they do Intranet-based exercises to change some interface or browse some Intranet data?
+% rudi: in the training, they normally don't do intranet related tasks, they do completely new pages. they start from a given MDD, and then do the full range: list, object, newForm, and then for the more advanced ones also editForm, deleteLink, mak:count() & co.
+% TODO rudi: not clear here, do you just want to describe the recruiting, or also the first path in ITC
+
+It is important to briefly emphasize the Amateur \cite{bogdan03} and Community of Practice character \cite{lave_wenger91} of the Tech Committee. In being amateur, the Tech committee members are not formally trained, and are not paid. There are thus specific \textit{motivation} and \textit{learning} aspects  in their activity. To be motivated to work without pay in a programming community, a Tech Committee member needs to be able to see very soon that they can contribute, i.e. that they can make a web application element, i.e. a page, that displays Intranet data in some new way. Having passed a low learning threshold (designed into Makumba) that allows them to do so, members have still some learning to do, and the essential aspect of such learning is that it is \textit {learning in doing}, which typically takes place together with peers, or looking at what they have done, as characterized by the Community of Practice learning theory  \cite{lave_wenger91}. During such learning it is important that the members follow a smooth learning path \cite{bogdan_bowers07}, which, if possible should also be designed into technology.
+
+%--------
+
+%\subsection{Amateur software development}\label{sec:amateur_devel}
+
+% i keep this because i think that something about the parallel with open source needs be made
+
+%It is useful to characterize amateur software development such as hackers \cite{levy94} or open source \cite{kollock99} as amateur communities 
+%because Tech Committee is a less professional (pre-professional) correspondent of such communities. 
+%In such communities, code challenges are hardly exhaustible, as programming a machine leads to a rich set of contingencies, bringing along lots of 'trial and error'. 
+%It is also easy to open new contingency spaces partly due to the immateriality of the working artifact, new projects, or project modules can always be started, or the existing ones can be re-organized ("refactored" in the professional jargon). For a newcomer, the complex architecture of large software projects adds to the challenge, and their skills of mastering the programming language will not be enough, they will also have to learn the way the project was organized.
+%Code is shared typically via plain text messages, and carefully examined before being committed to the code repository, which suggests another amateur community feature, related to the notion of audience, the \textit{peer review} of challenge addressing. 
+%Plain text is regarded as a very suitable medium for such distributed development and review efforts \cite{yamauchi00}. 
+%Another important part of the community audience is its public, which can be an important motivation factor: for very generic projects it may be the world at large (e.g. in the case of an open source operating system kernel, an office suite), or very specialized professionals and amateurs in the software development field (e.g. for an open source compiler suite).
+
+\section{Makumba, the Tech Committee tool}\label{sec:makumba}
+
+% TODO: rudi: i think user-programmer is very misleading
+%TODO: comment rudi: i think that lotus notes
+The initial design of the Makumba framework and its languages started around 1999. By that time, most of today's web-application development frameworks didn't exist, and such, Makumba was designed with much influences from Lotus Notes, however omitting the visual programming approach that was found to be troublesome in the distributed Tech Committee setting; instead, all code is in plain text (cf. \cite{yamauchi00}). As another difference from Lotus Notes, Makumba was designed to offer as few features as possible to its user-programmers and this minimalist design was thought to facilitate learning. 
+
+Makumba is a \textit{query-centric} framework in its design, i.e. most of its definitions, rules and instructions can be defined in queries. Thus, common to all levels is the usage of a query language, which can either be the Hibernate Query Language (HQL), or Makumba's own Query Language (MQL) which is a HQL subset. Both query languages provide an object-oriented extension to the Structured Query Language (SQL), where MQL is explicitly simplifying the syntax for joins between different database tables.
+
+Makumba organizes a system in three major parts, the \textit{Makumba Data Definition}, the \textit{JSP level} and the \textit{business logic}. These parts allow an intuitive separation of concerns in the Aspect-oriented Programming (AOP) \cite{Kiczales97aspect-orientedprogramming} perspective.
+
+\subsection{Makumba Data Definitions}
+The \textit{Makumba Data Definition} (MDD) describes data structures and relations between them. MDDs are simple lists of data fields, with name and type; the number of data types available is deliberately kept small and to a minimum, to reduce complexity. The most used data types comprise ``primitive types'' such as int, real, char, and dates, and ``structural types'' such as pointers and sets, which are references to other data types, and enumeration types. An example of an MDD can be seen in Listing \ref{list:mdd} for the data type ``Student".
+
+Additionally to defining the mere data structure, Makumba also allows to define validation rules the data has to comply to when created or modified. These rules can be specified in the form of ``query fragments" (expressions in MQL or HQL), and are automatically and transparently composed to complete queries by Makumba. Writing data validation rules in the form of query fragments implies that a great deal of the controller-related tasks can be accomplished without the use of a procedural programming language.
+
+\lstset{basicstyle=\small, captionpos=b, caption=Makumba Data Definition "Student", label=list:mdd, frame=shadowbox}
+\begin{lstlisting}
+name = char[50]
+birthdate = date
+hobbies = text
+
+education = set
+education->name = char[50]
+education->university = ptr University
+\end{lstlisting}
+
+\subsection{JSP Level}
+The \textit{JSP level} is primarily the user-interface level, and is technically a tag library for the Java Server Pages technology, allowing the display and changing of the data stored in a database and described in MDDs. The number of tags needed to perform the most basic operations is again kept very simple. An example of displaying data is given in Listing \ref{list:mak}, which shows the code required to display a list of students and, for each student, their completed studies; the data for this list is described in the aforementioned ``Student" MDD (Listing \ref{list:mdd}). The example uses two tags: mak:list to specify the data definition to retrieve data from, and basic constraints via the ``where'' attribute, and mak:value to indicate which fields to display. Notably, composing the query needed to retrieve the data from the database, i.e. the SQL joins and data projections are generated automatically and transparently from notations like ``s.education" and ``s.surname" respectively. Therefore working with a Makumba JSP would typically not require as much knowledge as using SQL by itself. Note that mak:lists can be nested into each other, and Makumba will generate exactly one query per mak:list, even in the case of nested mak:lists.
+
+\lstset{basicstyle=\small, captionpos=b, caption=Example of viewing data with the Makumba JSP tag library, label=list:mak, frame=shadowbox}
+\begin{lstlisting}
+<mak:list from="Student s">
+  Name: <mak:value expr="s.name"/> <br/>
+  Born on: <mak:value expr="s.birthdate"/><br/>
+  Completed studies:
+  <mak:list from="s.education e"
+  	    where="e.graduationDate < now()">
+    <mak:value expr="e.name"/>
+    (<mak:value expr="e.university.name"/>),
+  </mak:list>
+  <br/>
+</mak:list>
+\end{lstlisting}
+
+
+Editing objects is done via forms, on a familiar note with HTML, thus helping the programmers in their learning.  Listing  \ref{form:mak} shows the mak:editForm and mak:input tags. The tags mak:editForm and mak:delete allow for the other typical operations. Rendering of the inputs into text fields, combo-boxes or date-choosers is done automatically, based on the type information provided in the MDD. To edit networks of related objects, forms can be embedded in other forms, as shown in Listing \ref{form:mak}.
+
+\lstset{basicstyle=\small, captionpos=b, caption=Example of changing data with the Makumba JSP tag library, label=form:mak, frame=shadowbox}
+\begin{lstlisting}
+<mak:object from="Student s" where="s=:student">
+<mak:editForm object="s" action="somePage" >
+  Name: <mak:input field="s.name"/> <br/>
+  Born on: <mak:input field="s.birthdate"/><br/>
+  Edit  studies:
+   <mak:list from="s.education e"> 
+   	<mak:editForm object="e">
+   	  name: <mak:input field="e.name"/><br>      
+	  graduation: <mak:input field="e.graduationDate"/><br>      
+	  university: <mak:input field="e.university"/><br>
+       </mak:editForm>
+   <mak:list>
+  <input type="submit">
+<mak:editForm>
+</mak:object>
+\end{lstlisting}
+
+Makumba supports model-driven development methods, as it can automatically create forms and lists by merely specifying the data definition to be used in the form or list, and generating pages by taking information on the data fields from the Makumba Data Definitions; programmin-wise, this can be triggered by not specifying the mak:values or mak:inputs in the mak:list and mak:form. Thus, data definition changes are instantly and seamlessly propagated to the JSP level, which makes it ideally suited for Rapid Application Development. A weaker form of model-driven development support comes with tools creating the needed JSP pages from the data definitions, applying user-specifiable templates.
+
+
+\subsection{Business Logics}
+The \textit{business logic} (BL) describes, in the Java programming language, "business rules" that restrict the changing of data, and provide authentication and authorization mechanisms. Makumba provides an API towards the data base, thus business logics classes can also be utilized to perform processing of complex queries that might not be generated by Makumba. Thus, the simplicity of use of the JSP level does not impose any limit on application functionality. To provide business logic that will be called before e.g. a Student creation, the programmer has to provide a Java method named \textit{on\_new\_Student()} which will receive as parameters handlers to the page parameters, the session and the database.
+
+Throughout this design, the assumption was that it will be easy for students to read MDDs, and based on that, it will be possible for them to combine HTML and a subset of SQL (itself based on natural language) which they might know prior to start working with Makumba or might learn "on the job". Later on, they would become interested in writing new business rules, and might learn procedural Java for that, maybe using previous knowledge of another procedural programming language. This then would be the "learning path" assumed for a Makumba practitioner.
+
+%Initially Makumba was designed and developer under another, more neutral name ("Metadata"). When a more specific name was sought, designers remembered of a name that was well-known to many student organization members: the Makumba party. The name was known but not the actual meaning because members who had attended a Makumba party usually described as like below, without further detail. 
+%\begin{quotation}
+%	"You enter a room, the lights are turned off and then somebody tells the Makumba joke."
+%\end{quotation}
+
+%Ironically, the main Makumba designer had never attended a Makumba party, but knowing about its existence and its fame within the organization was enough to decide on the name.
+
+\section{Sustainability of the Tech Committee}\label{sec:techCommittee}
+
+For assessing quantitatively and qualitatively the sustainability of the Tech Committee and its practice, we will present summaries of the code repository that the community has maintained, which allowed us to assess and reflect upon the progress of the Tech Committee work. The Concurrent Versioning Systems (CVS) repository allows us to examine the incremental changes and additions that were made to the code, their time, and their authors. We also found it useful to employ code analysis tools over the repository. We have also elicited data from the Tech Committee members, for purposes related to the Makumba technology. In 2002 the first author evaluated the design of Makumba with a questionnaire that had 12 respondents. In 2005 the first author also ran a questionnaire with 32 respondents to asses the status of Tech Committee work and technology use, and thus indirectly look at its sustainability. Finally, both authors designed a questionnaire at the end of 2008 where 30 out of the 45 past (since 2003) and present members who were approached reflected on their activity in the Tech Committee over their whole 1-4 year-long membership period. This questionnaire provides this paper with both quantitative and qualitative data. 
+% parade 2005: http://private.best.eu.org/survey/admin/listAnswers.jsp?survey=fn29yq1
+% makumba 2008: http://private.best.eu.org/survey/admin/listAnswers.jsp?survey=cwu9pab
+
+\begin{table}[t]
+	\centering
+	% TODO: explain LOC, etc? explain that all data is measured at the beginning of the year?
+	% TODO: explain the drop from 2008 to 2009 needed? (due to removal of old BCC & public website pages in 2008, new ones have been added since late 2007, thus there were some ``duplicates'')
+	\begin{tabular}{c|r|r|r|r|r|r}
+		\hline
+		\hline
+		Year	& MDD	& JSP	& BL	& \# files	& LOC		& CVS	 \\
+		\hline
+		\hline
+		2002 	& 42	& 676	& 80	& 801		& 78479 	& N/A	 \\ 
+		\hline
+		2003 	& 52	& 961	& 116	& 1132		& 104805 	& 1143	 \\ 
+		\hline
+		2004 	& 64	& 1208	& 140	& 1415		& 127873 	& 702	 \\ 
+		\hline
+		2005 	& 76	& 1354	& 190	& 1628		& 151801 	& 1324	 \\ 
+		\hline
+		2006 	& 99	& 1719	& 229	& 2062		& 175315 	& 1632	 \\ 
+		\hline
+		2007 	& 111	& 2135	& 287	& 2559		& 219456 	& 2391	 \\ 
+		\hline
+		2008 	& 114	& 1860	& 289	& 2304		& 196867 	& 1898	 \\ 
+		\hline
+		
+% old data, # files & LOC from CVS-stat
+% 		Year		& \# files 		& LOC		& MDDs	& JSPs	& BL \\
+% 		\hline
+% 		\hline
+% 		2003		& 850			& 55,000	& 42	& 729	& 80\\
+% 		\hline
+% 		2004		& 1,200			& 75,000	& 52	& 1097	& 116\\
+% 		\hline
+% 		2005		& 1,700			& 85,000	& 64	& 1388	& 140\\
+% 		\hline
+% 		2006		& 2,300			& 132,000	& 76	& 1564	& 190\\
+% 		\hline
+% 		2007		& 3,050			& 200,000	& 99	& 2057	& 229\\
+% 		\hline
+% 		2008		& 3,550			& 305,000	& 111	& 2526	& 287\\
+% 		\hline
+% 		2009		& 3,750			& 312,000	& 114	& 2303	& 289\\
+		\hline
+		\hline
+	\end{tabular}
+	\caption{Size of the Intranet}
+	\label{tab:intranet-size}
+\end{table} 
+
+Let us first illustrate the Tech Committee activity in what we perceive as its sustainable period. Table~\ref{tab:intranet-size} shows the evolution of the size of The Intranet since its launch seven years ago, detailed for the different technological levels MDD, JSP and BL. Additionally, the total number of code files is shown, along with the total lines of code (LOC).  Figure \ref{fig:intranet-size} shows the evolution of the code figures graphically. It is worth noting that there was a rather high amount of data definition (MDD) files defined in the beginning of The Intranet, representing data used in the first three sub-systems. Even though more data definitions have been added over time, a certain saturation level has been reached in the last years, with only minor additions. It is not unexpected that the data definitions of an organization (its "domain model") change seldom after an initial development time. 
+
+\begin{figure}[t]
+  	\centering
+	\subfigure{
+   		\includegraphics[width=0.47\columnwidth]{figures/SizeChart}
+		\label{fig:intranet-size}
+	}
+  	\subfigure{
+   		\includegraphics[width=0.47\columnwidth]{figures/learning-technologies}
+  		\label{fig:learning-technologies}
+	}
+   \caption{Size of the Intranet (a), learning curve for different aspects of Makumba (b)}
+\end{figure} 
+
+% TODO: describe why ``active'' column might have smaller numbers than others..
+Table~\ref{tab:itd-members} illustrates the number of active members in the Tech Committee since 2003, differentiated on the different levels of Makumba, and on their activity in newcomer (``peripheral'') and old-timer (``core'') members. This data was  extracted on the one hand from the latest questionnaire filled in by the members, and then refined and amended by some of the committee coordinators (for the year 2003, only the total number of active core and peripheral members could be estimated). It is interesting to note that while the overall number of active members increased over the years and stabilized in the last years, the (relative) number of members working on data definitions (MDD) was rather decreasing; this might be explained with the arrival at data maturity level as described above, and thus less work and challenges to take for the Tech Committee members, while plenty of challenge is left at other levels. An important sign of sustainability as we characterized it earlier is the sufficient number of members at both novice (peripheral) and expert (core) members active at all the Makumba usage levels at all times. The "learning paths" are thus well populated with community members.
+
+
+
+\subsection{Survey}\label{sec:techCommittee-survey}
+A survey was conducted among current and former members of the Tech Committee in the end of 2008, and filled in by 30 members. The time of Tech Committee membership ranges from their activity starting around 2001, to fresh members that just joined in the second half of 2008. Also the educational background is diverse -- 13 members study computer science, computer engineering or informatics; the other respondents follow various other curricula, ranging from mechanical engineering to physics and biomedical engineering. Also, the membership duration in the committee varies, from 6 members that were active for around four years, to members that were (or currently are) active for one to two years. Most members had no knowledge of Makumba before joining.
+
+The questionnaire consisted of 53 questions. The main focus was on gathering an understanding of the learning aspect of Makumba in the context of the Tech Committee, thus the participants were asked to answer several questions on their self-assessed skill level on database design, SQL, general programming, Java, and three aspects of Makumba: JSP pages to view data, JSP pages to change (create, edit, and delete) data, and business logics (BL). The questions were asked repeatedly for several different points in time, namely when joining the committee, and after the first, second, third and fourth year of membership, and allowed answers from ``no skills'' via ``little knowledge'', ``some experience'' and ``experienced'' to ``master''. To balance the self-assessments and to facilitate recall, the participants were further asked to estimate their contribution to the committee in that year, and to list the projects and technologies that they worked with in that year. Also to improve the quality of the self assessment, members were informed that the committee coordinators from their time of activity will review their answers.
+
+
+\begin{table}[t]
+	\centering
+	\begin{tabular}{c|r|r|r|r|r|r|r|r|}
+		\hline
+		\hline
+		Year 		& \multicolumn{2}{c|}{MDD} & \multicolumn{2}{c|}{JSP}	& \multicolumn{2}{c|}{BL}	& \multicolumn{2}{c|}{Active}	\\
+					& Per & Core				& Per & Core				& Per & Core				& Per & Core	\\
+		\hline
+		\hline
+		2003 &   &   &   &   &   &   & 4 & 5 \\
+		\hline
+		2004 & 3 & 4 & 7 & 3 & 3 & 3 & 6 & 5 \\
+		\hline
+		2005 & 5 & 6 & 8 & 11 & 7 & 3 & 8 & 13 \\
+		\hline
+		2006 & 7 & 8 & 9 & 12 & 9 & 3 & 10 & 12 \\
+		\hline
+		2007 & 7 & 7 & 14 & 9 & 10 & 5 & 12 & 11 \\
+		\hline
+		2008 & 6 & 5 & 13 & 7 & 6 & 7 & 12 & 8 \\
+		\hline
+		\hline
+% Summer meetings
+% 2003: http://private.best.eu.org/events/event.jsp?event=21-C-CJ-COM
+% 2004: http://private.best.eu.org/events/event.jsp?event=22-C-RI-COM
+% 2005: http://private.best.eu.org/events/event.jsp?event=23-C-LD-COM
+% 2006: http://private.best.eu.org/events/event.jsp?event=24-C-SF-COM
+% 2007: http://private.best.eu.org/events/event.jsp?event=25-C-TM-COM
+% 2008: http://private.best.eu.org/events/event.jsp?event=26-C-BE-COM
+	\end{tabular}
+	\caption{Members in the Tech Committee}
+	\label{tab:itd-members}
+\end{table} 
+
+Figure \ref{fig:learning-technologies} shows the averaged skill levels of all the members at different points in time, separated for three Makumba usage aspects: JSP for viewing data, JSP for modifying data, and BL. It can be observed that apparently, learning to view and display data in JSP level is faster than handling forms to create, edit, and delete data, while Business Logics are the most difficult concept, especially in the first two years of membership. Most members that stay in the committee for a longer period, however, master all levels of Makumba almost equally well. Such members can (and many do) continue working on the internals of Makumba itself  as a next step. While MDD editing skills are less and less actual, we can consider that currently the learning path milestones in the Tech Committee are: JSP viewing data, JSP changing data and BL. To further illustrate the member skill evolutions, we have selected the charts of four individual members in Figure \ref{fig:learning-members}. This also shows that, although the dynamics vary a lot, the JSP data-changing skills almost always lag behind the JSP data view skills, and BL skill is acquired last. 
+
+Overall, the per-year self-assessment results suggest that the learning path designed into Makumba has achieved its goal, allowing for members to have an easy start by visualizing data in JSP (which also requires MDD understanding), then starting to change data and finally learning how to write business rules in Java.
+
+
+
+\begin{figure}[t]
+  \centering
+  \caption{Skill development of selected survey respondents}
+  \subfigure[Julian]{
+     \includegraphics[width=0.4\textwidth]{figures/Joao}
+    \label{fig:learning-members-joao}
+  }
+  \subfigure[Peter]{
+     \includegraphics[width=0.4\textwidth]{figures/Priit}
+    \label{fig:learning-members-priit}
+  }
+  \\
+  \subfigure[Kim]{
+     \includegraphics[width=0.4\textwidth]{figures/Karina}
+    \label{fig:learning-members-karina}
+  }
+  \subfigure[Sam]{
+     \includegraphics[width=0.4\textwidth]{figures/Stefan}
+    \label{fig:learning-members-stefan}
+  }
+  \label{fig:learning-members}
+\end{figure} 
+
+
+
+
+Two open questions concluded the questionnaire. The first one aimed at helping to assess how the members experience learning technologies in the Tech Committee. Several respondents emphasized the \textit{simplicity} and conciseness of Makumba code, therefore easiness to start working with, in various ways: as an intuitive link between code and result,  or as a praise to simplicity perceived as being able to express things in only one way, with a direct reference to people coming into and leaving the Tech Committee,  or as a technology that provides for rapid achievement, thereby encouraging further involvement. It is important for the Tech Committee in the international meetings to 'catch' people fast, by allowing them to realize that they can do something, that they can contribute. If this would not happen fast, the prospective new member might lose interest and maybe try to join another international team where contribution is more facile. A respondent emphasizes that "there is life" beyond the first simple steps, i.e. there are more complex things to be done, and Makumba accommodates for these as well. Several respondents compare Makumba with other Web development frameworks in this regard. More than one respondent referred explicitly to "non-IT people", thereby emphasizing the suitability for amateur settings.
+
+
+Respondents refer to their learning primarily from other members, sometimes even without explicit training and without even mastering the basics of the entry-level skill (HTML and SQL). Also learning by reading a mailing list is mentioned. Other informants report having asked questions on the Tech Committee mailing list and getting a multitude of good answers, also usable in the professional life of the then-amateur.
+Learning by reading examples (existing code) is emphasized by most respondents. Knowing how the Intranet is organized helps to find relevant code. A problem with learning Makumba is raised: since it is little known outside the student organization, there is no chance that some joining members already come in the Tech Committee with the skill.
+
+
+The last question asked the respondents for a comparison of Makumba with other technologies and frameworks aimed for web development. Many of the former or present members of the Tech Committee, currently working in IT jobs, were able to provide comparisons from a qualified professional perspective, with references to related technologies. Notably a number of members make architectural remarks, referring to some technical imperfections of Makumba, which does not provide a good separation between data model, its visualizations and the data change mechanisms (controllers). However most respondents regard this as an asset in the end, leading to easier programmer access to the data and higher maintainability.
+
+\section{Discussion and current work}\label{sec:disco}
+Our evaluation data shows that Makumba's learning-oriented design  plays a crucial role in the Tech Committee sustainability. Designing a programming technology that allows member activity at various levels of skill, thereby prescribing a learning path for the members of the amateur community of practice, allows for sustainability of the amateur programming practice. In the case in point, we saw that the 'learning departments' of the setting, corresponding to the different programming languages used, were well populated at all times, in all our annual counts,  even if members left the setting every year while others joined. We thus believe that \textit{skill modularity} is a feature that led to the Makumba success in the Intranet project. The first such module has a low learning threshold (HTML and simplified SQL-queries), and the next modules provide new challenge levels (e.g. Business Logic, with the procedural Java skill to be learned).
+
+Especially for the entry-level skill modules (the JSP level of Makumba), \textit{code legibility} is an important Makumba design feature, in such a context of learning in doing, from peers, or from the artifacts they produced. 
+A major part of the Makumba JSP level simplicity and legibility is inherited from the corresponding feature of SQL queries, as legibility and intuitiveness were among its design principles, since it is based on natural language. Members who do not know SQL simply have to rely on their English to find their way around initially. This is further helped by Makumba JSP using a simplified form of SQL queries. Queries and query fragments are currently being introduced in the MDDs, with the aim of reducing the Java BL code, thus further emphasizing the Makumba \textit{query centredness}. Using plain text code rather than visual programming further helps the sharing and understanding of existing examples \cite{yamauchi00}. 
+
+Reflection on Makumba as a technology for \textit{pre-professional amateurs} leads us to two apparently contradictory considerations. On the one hand, Makumba imposes a professional rule, preventing the amateurs from mixing business rules with data views.  The two are programmed in very different languages, requiring different skills, and different skills levels, making  it difficult for the amateurs to even attempt to mix them. Many technologies in use by non-professional web developers (like PHP) do not enforce this separation, leading to lack of \textit{code scaleability} of application development: applications can be started fast, like with Makumba, but once they grow large, problems start to occur due to not enforcing this major principle, affecting in the end sustainability.  
+
+On the other hand, another professional rule, the separation of data view from data access is violated by Makumba, as emphasized by several former members, currently professionals. Ironically, the two rules are part of the same professional design pattern, the Model-View-Controller. In mixing the data view and the data access, Makumba design ignores the Data Access Object and Data Transfer Object patterns usually employed in the industry, and make Makumba different from other agile development technologies like Ruby on Rails. This however has important code legibility consequences, as programmers only need to work with one file to understand how a unit of the JSP presentation layer works. Also the very code composition phase is eased a lot, allowing the students to contribute fast to the Intranet, and especially the easiness of first contribution is very important for motivation. 
+
+The mix of data access and data presentation also leads to \textit{easy code navigation}.  As emphasized by some respondents, Makumba has fewer types of files than professional web application technologies, therefore requiring less navigation between files when performing a task. Although this sometimes breaks the professional principle of separation of concerns, it helps the novices to make easier progress, and achieve better orientation when contributing to a large project like the Intranet. Furthermore, this source file compactness, especially at the JSP level, leads to little interdependency between the JSP source files. The Intranet could thus grow large in a number of independent directions without much dependency between its JSP units. While the multitude of JSP files still depend on the MDD and BL files, these are almost two orders of magnitude fewer in number, thus reducing the probability for conflict. This \textit{code scaleability}  helps when several amateur programmers work on different parts of the Intranet, as they are not prone to affect each other's work, and thus the likely mistakes that a novice makes will not affect his or her peers. Such \textit{team scaleability} at the JSP level is ideal for amateur programming sustainability.
+
+It is interesting to note that we at several points considered outsourcing some of the Makumba code and features by integrating the Struts technology. It was however deemed that the Struts centralization of action configuration in one single XML file can break the low interdependency between developers and their concerns that Makumba achieves today, thereby affecting team scaleability. It would also have added to the configuration work needed to set up a Makumba application which is kept to a minimum by design.
+
+We are currently working on the Makumba shortcomings, especially on the view-access concern mix, attempting to keep its advantages in terms of learning, low interdependence and scaleability, while addressing its issues in regard to safe data access. For example today any Tech Committee member can make a page that displays all the intranet accounts and passwords, accessible for anyone without authorization. Since we do want to preserve the advantages of the mix, we do not plan to change the JSP syntax, or require change in the thousands of existing JSP units. Instead, we have recently finished designs for adding an \textit{implicit data access layer} that analyzes the queries which require data in the JSPs (through tags such as mak:list) and apply MDD-defined query language functions that are appended (through inlining)  to the generated queries to determine whether the user logged in has access to the respective data. This will also help reduce a lot of  BL code that is currently doing the same job at the Java level. Centralizing this feature in the MDDs will also help enforce these access rules throughout the Makumba application, not only in the pages that are associated with the respective BL. Listing \ref{qfauth:mak} shows an example that, once added to the Student MDD in Listing \ref{list:mdd}. would make the Student object only readable by their owner, or by administrator students.
+\lstset{basicstyle=\small, captionpos=b, caption= query fragment authorization rule, label=qfauth:mak, frame=shadowbox}
+\begin{lstlisting}
+canRead(){actor(Student)=this OR actor(Student).admin=1 }
+\end{lstlisting}
+This query fragment will then be added transparently to all mak:lists attempting to fetch Student data.
+
+
+\section{Conclusions}\label{sec:conclusions}
+Based on the Makumba experience we believe that query-centric technologies can gain a firm place among web development frameworks today. Focus on SQL queries, with their later object-oriented counterparts, can lead to good  code legibility, little code interdependence, easy code navigation,  helping the scaleability of the code and the team maintaining it.  We also showed that mixing data access and data view can lead to important positive results. We are currently working on data access determined in an implicit, declarative, and also query-centric way. 
+
+%ACKNOWLEDGMENTS are optional
+\section{Acknowledgments}\label{sec:acknowledgments}
+Thanks to the students, members and associates of the Tech Committee who have worked hard to overcome Makumba imperfections and to make the Intranet what it is today, while also taking time to answer our surveys.  Thanks are also due to all the Makumba contributors.  Yngve Sundblad and John Bowers have supervised this work with good advice during the crucial Makumba design phases.
+
+
+\bibliographystyle{plain}
+\bibliography{wise2009-makumba} 
+
+\end{document}
