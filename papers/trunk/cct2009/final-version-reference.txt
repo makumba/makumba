@@ -3,41 +3,45 @@
 [2] C. Bogdan. IT Design for Amateur Communities. PhD thesis, Royal Institute of Technology (KTH), Stockholm, 2003. http://urn.kb.se/resolve?urn=urn:nbn:se:kth:
 diva-3470.
 
-[3] C. Bogdan and J. Bowers. Tuning in: Challenging design for communities through a ﬁeld study of radio amateurs. In Proceedings of the Third Communities
+[3] C. Bogdan. Longstanding success without awareness support: lessons from a collaborative programming tool. In Proceedings of the International Conference on the Design of Cooperative Systems (COOP 2008), Institut d’Etudes Politiques, Aix-en-Provence, France, 2008.
+
+[4] C. Bogdan and J. Bowers. Tuning in: Challenging design for communities through a ﬁeld study of radio amateurs. In Proceedings of the Third Communities
 and Technologies Conference, pages 439–461, Michigan State University, MI, USA, June 2007. Springer.
 
-[4] A. Clement and P. V. den Besselaar. A retrospective look at pd projects. Communications of the ACM Special issue on Participatory Design, 36(4):29–37,
+[5] A. Clement and P. V. den Besselaar. A retrospective look at pd projects. Communications of the ACM Special issue on Participatory Design, 36(4):29–37,
 1993.
 
-[5] M. Csikszentmihalyi. Flow: The Psychology of Optimal Experience. Harper and Row, New York, 1990.
+[6] M. Csikszentmihalyi. Flow: The Psychology of Optimal Experience. Harper and Row, New York, 1990.
 
-[6] G. A. Fine. Morel Tales. The Culture of Mushrooming. Harvard University Press, 1998.
+[7] G. A. Fine. Morel Tales. The Culture of Mushrooming. Harvard University Press, 1998.
 
-[7] M. Goodwin. Nine principles for making virtual communities work. Wired 2.06, pages 72–73, June 1994.
+[8] M. Goodwin. Nine principles for making virtual communities work. Wired 2.06, pages 72–73, June 1994.
 
-[8] J. Greenbaum and M. Kyng. Design at work: cooperative design of computer systems. Lawrence Erlbaum, Hillsdale, NJ, USA, April 1991.
+[9] J. Greenbaum and M. Kyng. Design at work: cooperative design of computer systems. Lawrence Erlbaum, Hillsdale, NJ, USA, April 1991.
 
-[9] F. Kensing, J. Simonsen, and K. Bödker. Participatory design at a radio station. Computer Supported Cooperative Work, 7(3-4):243–271, 1998.
+[10] F. Kensing, J. Simonsen, and K. Bödker. Participatory design at a radio station. Computer Supported Cooperative Work, 7(3-4):243–271, 1998.
 
-[10] P. Kollock. The economies of online cooperation. In M. Smith and P. Kollock, editors, Communities in Cyberspace. Routledge, London, 1999.
+[11] P. Kollock. The economies of online cooperation. In M. Smith and P. Kollock, editors, Communities in Cyberspace. Routledge, London, 1999.
 
-[11] J. Lave and E. Wenger. Situated Learning: Legitimate Peripheral Participation. Cambridge University Press, September 1991.
+[12] J. Lave and E. Wenger. Situated Learning: Legitimate Peripheral Participation. Cambridge University Press, September 1991.
 
-[12] S. Levy. Hackers: Heroes of the Computer Revolution. Penguin Books, New York, 1994.
+[13] S. Levy. Hackers: Heroes of the Computer Revolution. Penguin Books, New York, 1994.
 
-[13] J. E. Orr. Talking about machines: An Ethnography of a Modern Job. Cornell University Press, 1996.
+[14] J. E. Orr. Talking about machines: An Ethnography of a Modern Job. Cornell University Press, 1996.
 
-[14] D. Pargman. Code begets community. On social and technical aspects of managing a virtual community. PhD thesis, Linköping University, 2000.
+[15] D. Pargman. Code begets community. On social and technical aspects of managing a virtual community. PhD thesis, Linköping University, 2000.
 
-[15] D. Pargman. Virtual community management as socialization and learning. In Proceedings of the Second Communities and Technologies Conference, pages 95–110, Milano, Italy, 2005.
+[16] D. Pargman. Virtual community management as socialization and learning. In Proceedings of the Second Communities and Technologies Conference, pages 95–110, Milano, Italy, 2005.
 
-[16] D. A. Schon. The Reﬂective Practitioner: How Professionals Think in Action. Basic Books, New York, 1983.
+[17] D. A. Schon. The Reﬂective Practitioner: How Professionals Think in Action. Basic Books, New York, 1983.
 
-[17] R. A. Stebbins. Amateurs. On the Margin Between Work and Leisure. Sage Publications, 1979.
+[18] R. A. Stebbins. Amateurs. On the Margin Between Work and Leisure. Sage Publications, 1979.
 
-[18] A. van Gennep. The rites of passage. Routledge & Kegan Paul, London, 1909/1960.
+[19] R. H. Trigg. From sandbox to "fundbox": Weaving participatory design into the fabric of a busy non-proﬁt. In Proceedings of the Conference on Participatory Design, pages 174–183, Palo Alto, CA, USA, 2000. Computer Professionals for Social Responsibility, New York, USA.
 
-[19] E. Wenger. Communities of Practice: Learning, Meaning, and Identity. Cambridge University Press, 1998.
+[20] A. van Gennep. The rites of passage. Routledge & Kegan Paul, London, 1909/1960.
 
-[20] Y. Yamauchi, M. Yokozawa, T. Shinohara, and T. Ishida. Collaboration with lean media: how open-source software succeeds. In CSCW ’00: Proceedings of the 2000 ACM conference on Computer supported cooperative work, pages 329–338, New York, NY, USA, 2000. ACM.
+[21] E. Wenger. Communities of Practice: Learning, Meaning, and Identity. Cambridge University Press, 1998.
+
+[22] Y. Yamauchi, M. Yokozawa, T. Shinohara, and T. Ishida. Collaboration with lean media: how open-source software succeeds. In CSCW ’00: Proceedings of the 2000 ACM conference on Computer supported cooperative work, pages 329–338, New York, NY, USA, 2000. ACM.
 
