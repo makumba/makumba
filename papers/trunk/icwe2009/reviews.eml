@@ -1,0 +1,126 @@
+Return-Path: <icwe2009@easychair.org>
+Received: from mail1.nada.kth.se (localhost [127.0.0.1])
+	by mail1.nada.kth.se (Cyrus v2.1.17) with LMTP; Thu, 09 Apr 2009 09:16:15 +0200
+X-Sieve: CMU Sieve 2.2
+Received: from mx3.nada.kth.se (mx3.nada.kth.se [130.237.222.96])
+	by mail1.nada.kth.se (8.13.6/8.12.1) with ESMTP id n397GEK1025624
+	for <cristi@mail1.nada.kth.se>; Thu, 9 Apr 2009 09:16:15 +0200 (MEST)
+Received: from easychair.cs.man.ac.uk (easychair.cs.man.ac.uk [130.88.199.67]) by mx3.nada.kth.se with mimedefang-milter; Thu, Apr 9 2009 09:16:12 +0200 (MET)
+Received: from easychair.cs.man.ac.uk (easychair.cs.man.ac.uk [130.88.199.67])
+	by mx3.nada.kth.se (8.13.6/8.12.10) with ESMTP id n397GCgc027014
+	for <cristi@nada.kth.se>; Thu, 9 Apr 2009 09:16:12 +0200 (MEST)
+Received: from localhost.localdomain (easychair.cs.man.ac.uk [130.88.199.67])
+	by easychair.cs.man.ac.uk (8.14.2/8.14.2/Debian-2build1) with ESMTP id n38HYY1Q027917
+	for <cristi@nada.kth.se>; Wed, 8 Apr 2009 18:34:37 +0100
+Message-Id: <200904081734.n38HYY1Q027917@easychair.cs.man.ac.uk>
+MIME-Version: 1.0
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: MIME::Lite 3.020 (F2.74; T1.24; A2.03; B3.07; Q3.07)
+Date: Wed, 8 Apr 2009 18:34:37 +0100
+From: ICWE 2009 <icwe2009@easychair.org>
+To: Cristian Bogdan <cristi@nada.kth.se>
+Subject: ICWE 2009 Notification
+X-Greylist: Delayed for 13:41:37 by milter-greylist-1.5.10 (mx3.nada.kth.se [130.237.222.96]); Thu, 09 Apr 2009 09:16:12 +0200 (MEST)
+X-Spam-Score: 1.03 (*) DATE_IN_PAST_12_24,RE_bwc_Survey
+X-Spam-Checker-Version: SpamAssassin 3.001008 (http://www.spamassassin.org/) on mx3.nada.kth.se
+X-Spam-Level: *
+X-Spam-Status: No,hits=1.03 required=5 tests=DATE_IN_PAST_12_24,RE_bwc_Survey
+X-Scanned-By: MIMEDefang 2.56 on 130.237.222.96
+
+Dear authors,
+
+Thank you for your contribution to the ICWE 2009 conference! Based on the reviews we have received for your paper, we are sorry to inform you that it cannot be accepted for presentation in San Sebastiàn in June. We would like to apologize for the late notification caused by a delay in the reviewing process due to heavy discussion among the program committee. 
+
+The program committee has done its best to make a fair evaluation of all submissions. All papers submitted to this year's ICWE conference underwent a careful and exhaustive reviewing process by at least three peer reviewers, one week of discussing the results among the reviewers and PC Co-Chairs, and a final selection process taking reviewers' overall rating and confidence and discussion results into account. The conference accepted 24% of all submissions as full papers. Obviously, such a competitive approach is always prone to misunderstandings. Nevertheless, we would like to encourage you to carefully study the reviews included below. Even if we misunderstood your work, we are sure that the reviews will contain important indications on how to improve your manuscript as you maybe did not explain your contributions well enough.
+
+We hope that we can still welcome you at ICWE 2009 in San Sebastàn in June as we believe that the final program of the conference is very attractive and of high quality!
+
+Best regards,
+Martin Gaedke and Michael Grossniklaus
+ICWE 2009 Program Co-Chairs.
+
+
+---------------------------------------------
+
+Paper: 107
+Title: Makumba: a Framework for Rapid and Sustainable Web Development by Amateur Programmers
+
+
+-------------------- review 1 --------------------
+
+PAPER: 107
+TITLE: Makumba: a Framework for Rapid and Sustainable Web Development by Amateur Programmers
+ 
+OVERALL RATING: -2 (reject) 
+REVIEWER'S CONFIDENCE: 1 (low)  
+----------------------- REVIEW --------------------
+
+This paper addresses an interesting issue - the suitability of formal design methods to less-skilled developers, and the role which a simplified framework can play in supporting the development in this case. The authors have undertaken some interesting analysis, though unfortunately the paper is somewhat let down by a tendency to draw conclusions that are not supported by the data - or at least not data that is presented in the paper. For example, the authors state "Our evaluation data shows that Makumba's learning-oriented design plays a crucial role in the Tech Committee sustainability" - and yet data supporting this assertion is not evident. Having sustainable numbers in the so-called "Tech Committee" is not, in the evidence presented, directly connected to the specific architecture, nor is this connection really made clear. Similar concerns also exist with regard to numerous of the other assertions, particularly in the paper discussion. In general the paper discusses int!
+ eresting design features of Makumba (though at the level that you might expect to find in a technical report on the system) but does not succeed in connecting these to development practices. Overall the paper makes an interesting case study of application framework development, though not of research into its specific use within a given context. The paper is also marginally over-length, and would benefit from a careful proof-reading. 
+
+
+-------------------- review 2 --------------------
+
+PAPER: 107
+TITLE: Makumba: a Framework for Rapid and Sustainable Web Development by Amateur Programmers
+ 
+OVERALL RATING: -2 (reject) 
+REVIEWER'S CONFIDENCE: 2 (medium)  
+----------------------- REVIEW --------------------
+
+I was very excited starting to read this paper as the topic is very interesting: how to make web development possible for non expert.
+Reading the paper though, it is not clear to me what the contributions are.
+
+the first issue i have is that the approach does not seem that simple..... i would argue that it is actually quite complex (see the program statement in the last section of the paper, it is java-ish). i am not entirely sure it is that much simpler than webML or that this is the way to create a simple language. and there is no real evidence that this is the case. 
+
+the approach itself is briefly described, most of the paper is introductory stuff or discussion on the survey. for the survey itself it is not clear to me what value it brings. 
+
+In summary i am not sure what is the take-home message i get from this paper 
+
+
+-------------------- review 3 --------------------
+
+PAPER: 107
+TITLE: Makumba: a Framework for Rapid and Sustainable Web Development by Amateur Programmers
+ 
+OVERALL RATING: -2 (reject) 
+REVIEWER'S CONFIDENCE: 3 (high)  
+----------------------- REVIEW --------------------
+
+This paper is quite informal; it tells us a story about the genesis and the evolution of a framework for rapid development of simple web applications, addressed to non expert programmers.
+I do not see any corroborated contribution of this framework respect to similar ones. 
+The authors come to conclusions on the basis of a survey made of a number of questions that was conducted among users of the framework, but the survey results are not formally and clearly analyzed. 
+
+
+-------------------- review 4 --------------------
+
+PAPER: 107
+TITLE: Makumba: a Framework for Rapid and Sustainable Web Development by Amateur Programmers
+ 
+OVERALL RATING: -1 (weak reject) 
+REVIEWER'S CONFIDENCE: 3 (high)  
+----------------------- REVIEW --------------------
+
+The paper has a promising start, describing a development framework for non-trained programmers that 
+"defies" some of the current practices in professional web development.
+Unfortunately, the paper does not live up to the expectations.
+The decisions behind the technical design of the framework are not well-justified and the paper does not contain enough details to evaluate them. For 
+instance, it is not clear what it is the allowed expressivity in the definition of validation rules or whether your data definition allows 
+declaring supertypes and subtypes. If it is very limited, your framework can be simple to use but not that useful.
+It is not clear at all what you mean by "non-trained programmers". This is misleading because it suggests that people with no programming knowledge can use 
+your framework which is not the case. In fact, looking at the learning curve in Fig.1, I don't see why you keep repeating that your framework is so easy to learn.
+Section 4 is not much helpful either. Your results suggest that your approach can effectively be used in your domain (universies) but this does not prove that your
+framework is a better option than any other option (maybe using another framework you would have obtained the same or better results).
+Wrt the discussion section, you say that you enforce a separation between business rules and data views and that this is not enforced in other languages. Maybe PHP does 
+not forbid programmers to mix both things but all best-practices guidelines recommend you to do it, so PHP programmers, if working correctly, should obtain the same results. The second
+part of the discussion is more interesting even if the trade-offs you mention are already known in the community it is always useful to have some empirical evidence that they are true.
+You should compare your framework with other existing lightweight frameworks.
+I disagree with your sentence about considering WebML as a strict formalism. I think that web modeling languages in general are quite simple to use since 
+they basically use just three different models (data model, navigation model, and presentation model) instead of other UML-based approaches that require
+more types of diagrams.
+To me, your paper is more valuable as an experience report (where you could explain in more detail the lessons learnt during the process of designing and using the framework) than as a technical
+ paper, where
+it is not clear what are your contributions. 
+
