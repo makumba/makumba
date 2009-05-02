@@ -1,58 +1,161 @@
+// implement type checking in analyzer
+// fix the comment grammar (allow multiple words)
+
 header {
     package org.makumba.providers.datadefinition.mdd;
 }
 
 class MDDLexer extends Lexer;
 
-IDENT
-: ('a'..'z'|'A'..'Z') ('a'..'z'|'A'..'Z'|'0'..'9')*
-;  
+options {
+    exportVocab=MDD;
+    k = 2;
+}
+
+WORD
+    : ('a'..'z'|'A'..'Z') ('a'..'z'|'A'..'Z'|'0'..'9'|'.')*
+    ;
+    
+NUMBER
+    : ('0'..'9')*
+    ;
 
 // Grouping
 LEFT_PAREN: '(';
 RIGHT_PAREN: ')';
-LEFT_BR: '{';
-RIGHT_BR: '}';
+LEFT_CUBR: '{';
+RIGHT_CUBR: '}';
+LEFT_SQBR: '[';
+RIGHT_SQBR: ']';
 
-FIELDCOMMENT: ';';
 COMMENT: '#';
 
 EQUALS: '=';
 PERCENT: '%';
+SEMICOLON: ';';
+COMMA: ',';
+DOT: '.';
+QUOTMARK: '"';
 
 SUBFIELD
     : '-' '>'
     ;
 
 WHITESPACE
-    : (' ' | 't' | 'r' | 'n') { $setType(Token.SKIP); }
+    : (' ' | 't' | 'r' | 'n' | '\t') { $setType(Token.SKIP); }
     ;
-
+    
+LINEBREAK
+    :   '\n'      { newline(); }
+    |   '\r' '\n' { newline(); }
+    |   '\r'      { newline(); }
+    { $setType(Token.SKIP); }
+    ;
 
 
 class MDDParser extends Parser;
 
 options {
         buildAST=true;
+        k = 3;
 }
 
+tokens {
+    FIELD<AST=org.makumba.providers.datadefinition.mdd.FieldNode>;
+    VALIDATION<AST=org.makumba.providers.datadefinition.mdd.ValidationNode>;
+    FUNCTION<AST=org.makumba.providers.datadefinition.mdd.FunctionNode>;
+    
+    FIELDNAME;
+    MODIFIER;
+    FIELDTYPE;
+    FIELDCOMMENT;
+    PARENTFIELDNAME;
+    SUBFIELDNAME;
+    SUBFIELDTYPE;
+    
+    // field types
+    CHAR="char";
+    INT="int";
+    INTENUM;
+    INTENUMTEXT;
+    INTENUMINDEX;
+    REAL="real";
+    BOOLEAN="boolean";
+    TEXT="text";
+    BINARY="binary";
+    FILE="file";
+    DATE="date";
+    PTR="ptr";
+    SET="set";
+    
+    UNKNOWN_TYPE; // for type shorthands
+    
+    //modifiers
+    UNIQUE="unique";
+    NOTNULL;
+    
+    // field type attributes
+    CHAR_LENGTH;
+    POINTED_TYPE;
+    DEPRECATED="deprecated"; // intEnum
+    
+}
+
+dataDefinition
+    : (declaration)*
+    ;
 
 declaration
-    : fieldDeclaration
+    : fieldDeclaration (LINEBREAK!)*
     ;
 
 fieldDeclaration
-    : fn:fieldName EQUALS fd:fieldDefinition
+    : fn:fieldName EQUALS^ {#EQUALS.setType(FIELD); #EQUALS.setText(#fn.getText()); }
+        (modifier)* ft:fieldType
+        (SEMICOLON! fc:fieldComment)?
+        (LINEBREAK! subFieldDeclaration)*
     ;
     
 fieldName
-    : atom
+    : a:atom { #a.setType(FIELDNAME); }
     ;
 
-fieldDefinition
-    : (atom)*
+fieldType
+    : a:atom { #a.setType(UNKNOWN_TYPE); }
+    | c:CHAR^ LEFT_SQBR! l:NUMBER {#l.setType(CHAR_LENGTH); } RIGHT_SQBR!
+    | i:INT
+    | ie:INT^ {#ie.setType(INTENUM);} LEFT_CUBR! intEnumBody (COMMA! intEnumBody)*  RIGHT_CUBR! //int { "aa"=5, "bb"=2 deprecated, "cc"=10}  ;bug 28
+    | r:REAL
+    | BOOLEAN
+    | TEXT
+    | BINARY
+    | FILE
+    | DATE
+    | PTR^ (p:atom  {#p.setType(POINTED_TYPE);})?
+    | SET^ (s:atom {#s.setType(POINTED_TYPE);})? 
     ;
 
+intEnumBody
+    : QUOTMARK! t:atom {#t.setType(INTENUMTEXT); } QUOTMARK! EQUALS! i:NUMBER {#i.setType(INTENUMINDEX); } (DEPRECATED)?
+    ;
+
+fieldComment
+    : a:atom {#a.setType(FIELDCOMMENT); }
+    ;
+    
+subFieldDeclaration //TODO add modifier and right field type declaration
+    : fn:fieldName {#fn.setType(PARENTFIELDNAME); } SUBFIELD^ subFieldName EQUALS! fieldType (SEMICOLON! fc:fieldComment)?
+    ;
+
+subFieldName
+    : a:atom {#a.setType(SUBFIELDNAME); }
+    ;
+    
+modifier
+    : u:UNIQUE { #u.setType(MODIFIER); }
+    | "not" "null" {#modifier = #[MODIFIER, "not null"]; }
+    ;
+    
 atom
-    : Id:IDENT
-    ;
+    : WORD
+    ;    
