@@ -1,5 +1,4 @@
 // implement type checking in analyzer
-// fix the comment grammar (allow multiple words)
 
 header {
     package org.makumba.providers.datadefinition.mdd;
@@ -140,7 +139,7 @@ intEnumBody
     ;
 
 fieldComment
-    : a:atom {#a.setType(FIELDCOMMENT); }
+    : {String comment="";} a:atom { comment += #a.getText(); } (b:atom { comment += " " + #b.getText(); })* {#fieldComment = #[FIELDCOMMENT]; #fieldComment.setText(comment); }
     ;
     
 subFieldDeclaration //TODO add modifier and right field type declaration
