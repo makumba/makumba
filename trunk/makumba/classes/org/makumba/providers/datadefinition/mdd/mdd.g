@@ -1,5 +1,3 @@
-// implement type checking in analyzer
-
 header {
     package org.makumba.providers.datadefinition.mdd;
 }
@@ -12,7 +10,7 @@ options {
 }
 
 WORD
-    : ('a'..'z'|'A'..'Z') ('a'..'z'|'A'..'Z'|'0'..'9'|'.')*
+    : ('a'..'z'|'A'..'Z') ('a'..'z'|'A'..'Z'|'0'..'9')*
     ;
     
 NUMBER
@@ -35,6 +33,7 @@ SEMICOLON: ';';
 COMMA: ',';
 DOT: '.';
 QUOTMARK: '"';
+EXMARK: '!';
 
 SUBFIELD
     : '-' '>'
@@ -61,9 +60,12 @@ options {
 
 tokens {
     FIELD<AST=org.makumba.providers.datadefinition.mdd.FieldNode>;
+    TITLEFIELD<AST=org.makumba.providers.datadefinition.mdd.TitleFieldNode>;
     VALIDATION<AST=org.makumba.providers.datadefinition.mdd.ValidationNode>;
     FUNCTION<AST=org.makumba.providers.datadefinition.mdd.FunctionNode>;
     
+    
+    // MDD structure
     FIELDNAME;
     MODIFIER;
     FIELDTYPE;
@@ -71,6 +73,10 @@ tokens {
     PARENTFIELDNAME;
     SUBFIELDNAME;
     SUBFIELDTYPE;
+    
+    
+    TYPENAME;
+    TYPEDEF;
     
     // field types
     CHAR="char";
@@ -91,7 +97,7 @@ tokens {
     
     //modifiers
     UNIQUE="unique";
-    NOTNULL;
+    FIXED="fixed";
     
     // field type attributes
     CHAR_LENGTH;
@@ -100,12 +106,28 @@ tokens {
     
 }
 
+{
+    RecognitionException error;
+    
+    public void reportError(RecognitionException e) {
+        error=e;
+    }
+
+    public void reportError(String s) {
+        if (error == null)
+            error = new RecognitionException(s);
+    }
+    
+}
+
 dataDefinition
     : (declaration)*
     ;
 
 declaration
-    : fieldDeclaration (LINEBREAK!)*
+    : fieldDeclaration (LINEBREAK!)* 
+    | titleDeclaration (LINEBREAK!)*
+    | typeDeclaration (LINEBREAK!)*
     ;
 
 fieldDeclaration
@@ -123,15 +145,15 @@ fieldType
     : a:atom { #a.setType(UNKNOWN_TYPE); }
     | c:CHAR^ LEFT_SQBR! l:NUMBER {#l.setType(CHAR_LENGTH); } RIGHT_SQBR!
     | i:INT
-    | ie:INT^ {#ie.setType(INTENUM);} LEFT_CUBR! intEnumBody (COMMA! intEnumBody)*  RIGHT_CUBR! //int { "aa"=5, "bb"=2 deprecated, "cc"=10}  ;bug 28
+    | ie:INT^ {#ie.setType(INTENUM);} LEFT_CUBR! intEnumBody (COMMA! intEnumBody)*  RIGHT_CUBR! //int { "aa"=5, "bb"=2 deprecated, "cc"=10}
     | r:REAL
     | BOOLEAN
     | TEXT
     | BINARY
     | FILE
     | DATE
-    | PTR^ (p:atom  {#p.setType(POINTED_TYPE);})?
-    | SET^ (s:atom {#s.setType(POINTED_TYPE);})? 
+    | PTR^ (p:type  {#p.setType(POINTED_TYPE);})?
+    | SET^ (s:type {#s.setType(POINTED_TYPE);})? 
     ;
 
 intEnumBody
@@ -139,7 +161,10 @@ intEnumBody
     ;
 
 fieldComment
-    : {String comment="";} a:atom { comment += #a.getText(); } (b:atom { comment += " " + #b.getText(); })* {#fieldComment = #[FIELDCOMMENT]; #fieldComment.setText(comment); }
+    : { String comment=""; }
+      a:atom { comment += #a.getText(); }
+      (b:atom { comment += " " + #b.getText(); })*
+      { #fieldComment = #[FIELDCOMMENT]; #fieldComment.setText(comment); }
     ;
     
 subFieldDeclaration //TODO add modifier and right field type declaration
@@ -152,9 +177,30 @@ subFieldName
     
 modifier
     : u:UNIQUE { #u.setType(MODIFIER); }
-    | "not" "null" {#modifier = #[MODIFIER, "not null"]; }
+    | f:FIXED { #f.setType(MODIFIER); }
+    | "not" "null" { #modifier = #[MODIFIER, "not null"]; }
+    | "not" "empty" { #modifier = #[MODIFIER, "not empty"]; }
     ;
     
+titleDeclaration
+    : EXMARK! "title"! EQUALS! t:title
+    ;
+    
+// !title = name
+title
+    : t:atom { #t.setType(TITLEFIELD); } 
+    ;
+
+// !type.genDef = ...
+typeDeclaration
+    : EXMARK! "type"! DOT! n:atom { #n.setType(TYPENAME); } EQUALS! fieldType
+    ;
+
+// general.Person
+type
+    : {String type="";} a:atom { type = #a.getText(); } (DOT! b:atom {type += "." + #b.getText(); } )* { #type.setText(type); }
+    ;
+
 atom
     : WORD
     ;    

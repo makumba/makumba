@@ -1,4 +1,7 @@
-name = not null unique char[233] ; comment
+!title = name
+!type.genTyp=int{"Female"=0, "Male"=1} 
+
+name = not null unique char[223] ; comment very long
 name2 = ptr general.Student
 name3 = set
 name3-> subname1 = subtype1 ; subcomment1

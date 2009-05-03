@@ -2,28 +2,26 @@ package org.makumba.providers.datadefinition.mdd;
 
 import antlr.ASTFactory;
 
+/**
+ * FIXME not sure whether this will ever be actually needed
+ * @author Manuel Gay
+ * 
+ * @version $Id: MDDASTFactory.java,v 1.1 May 3, 2009 10:16:47 PM manu Exp $
+ */
 public class MDDASTFactory extends ASTFactory {
     
     @Override
     public Class getASTNodeType(int tokenType) {
 
         switch(tokenType) {
-            case MDDTokenTypes.BINARY:
-            case MDDTokenTypes.BOOLEAN:
-            case MDDTokenTypes.CHAR:
-            case MDDTokenTypes.DATE:
-            case MDDTokenTypes.FIELD:
-            case MDDTokenTypes.FILE:
-            case MDDTokenTypes.INT:
-            case MDDTokenTypes.PTR:
-            case MDDTokenTypes.REAL:
-            case MDDTokenTypes.SET:
-            case MDDTokenTypes.TEXT:
-                return FieldNode.class;
+//            case MDDTokenTypes.FIELD:
+//                return FieldNode.class;
             default:
                 return super.getASTNodeType(tokenType);
         }
         
     }
+    
+    
 
 }
