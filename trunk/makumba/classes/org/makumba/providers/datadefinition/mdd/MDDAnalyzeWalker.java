@@ -1,5 +1,6 @@
 package org.makumba.providers.datadefinition.mdd;
 
+import java.net.URL;
 import java.util.HashMap;
 
 import org.makumba.DataDefinition;
@@ -19,15 +20,19 @@ import antlr.collections.AST;
  */
 public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
 
-    private HashMap<String, AST> typeShorthands = new HashMap<String, AST>();
+    protected HashMap<String, AnalysisAST> typeShorthands = new HashMap<String, AnalysisAST>();
     
-    public MDDAnalyzeWalker(String typeName) {
+    public MDDAnalyzeWalker(String typeName, URL origin) {
+        this.origin = origin;
         this.typeName = typeName;
-        this.mdd = new MDDNode(typeName);
+        this.mdd = new MDDNode(typeName, origin);
+        
     }
 
     @Override
     protected void checkFieldType(AST type) {
+        
+        // check type attributes
         switch (type.getType()) {
             case MDDTokenTypes.CHAR:
                 AST length = type.getFirstChild();
@@ -38,6 +43,8 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
                 }
                 break;
         }
+        // TODO add ptr and set destination check / registration
+        
         System.out.println("Checking field type: " + type);
     }
 
@@ -45,7 +52,10 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
     protected void checkSubFieldType(AST type) {
         System.out.println("Checking subfield type: " + type);
         checkFieldType(type);
-        // TODO check if ptrOne or setComplex - not allowed here
+        if(type.getType() == MDDTokenTypes.SETCOMPLEX || type.getType() == MDDTokenTypes.PTRONE) {
+            // FIXME give line and col
+            throw new DataDefinitionParseError(typeName, "Subfields of subfields are not allowed.");
+        }
     }
 
     @Override
@@ -58,8 +68,8 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
 
     @Override
     protected void addTypeShorthand(AST name, AST fieldType) {
-        System.out.println("Registering new type shorhand " + name.getText());
-        typeShorthands.put(name.getText(), fieldType);
+        System.out.println("Registering new type shorthand " + name.getText());
+        typeShorthands.put(name.getText(), (AnalysisAST)fieldType);
     }
     
     @Override
@@ -78,5 +88,6 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
         }
         
     }
+    
 
 }

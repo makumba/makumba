@@ -4,8 +4,8 @@
 name = not null unique char[223] ; comment very long
 name2 = ptr general.Student
 name3 = set
-name3-> subname1 = subtype1 ; subcomment1
-name3-> subname2 = subtype2 ; subcomment2
+name3-> subname1 = unique char[232] ; subcomment1
+name3-> subname2 = genTyp ; subcomment2
 
 name4 = int ;comment4
 name5 = int {"Male" = 10, "Female" = 20, "Shemale" = 30 deprecated}

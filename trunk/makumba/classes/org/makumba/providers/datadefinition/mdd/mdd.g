@@ -92,6 +92,8 @@ tokens {
     DATE="date";
     PTR="ptr";
     SET="set";
+    SETCOMPLEX;
+    PTRONE;
     
     UNKNOWN_TYPE; // for type shorthands
     
@@ -168,7 +170,9 @@ fieldComment
     ;
     
 subFieldDeclaration //TODO add modifier and right field type declaration
-    : fn:fieldName {#fn.setType(PARENTFIELDNAME); } SUBFIELD^ subFieldName EQUALS! fieldType (SEMICOLON! fc:fieldComment)?
+    : fn:fieldName {#fn.setType(PARENTFIELDNAME); } SUBFIELD^ subFieldName EQUALS!
+      (modifier)* fieldType
+      (SEMICOLON! fc:fieldComment)?
     ;
 
 subFieldName
@@ -188,7 +192,9 @@ titleDeclaration
     
 // !title = name
 title
-    : t:atom { #t.setType(TITLEFIELD); } 
+    : t:atom { #t.setType(TITLEFIELD); }
+    // TODO add function here as well
+    // FIXME return TitleFieldNode, see how to build heterogenous trees
     ;
 
 // !type.genDef = ...

@@ -1,9 +1,5 @@
 // TODO
-//   create subfields
-//   transform tree after field declaration for builder
-//   take care of title field (put it in MDDNode)
-//   post processing (builder):
-//     resolve type shorthands, replace wherever needed (i.e. when AST type is UNKNOWN)
+// develop way to get meaningful errors (at parse and analysis time)
 
 // other todo:
 //   add !include mechanism (from beginning in parser)
@@ -12,6 +8,9 @@
 
 header {
     package org.makumba.providers.datadefinition.mdd;
+    
+    import java.net.URL;
+    
 }
 
 class MDDAnalyzeBaseWalker extends TreeParser;
@@ -36,6 +35,8 @@ options {
     
     protected String typeName;
     
+    protected URL origin;
+    
     protected MDDNode mdd;
     
     private FieldNode currentField;
@@ -48,6 +49,9 @@ options {
     
     // set makumba type of currently analyzed field
     protected void setCurrentFieldType(FieldType type) { if(this.currentField != null) this.currentField.makumbaType = type; }
+
+    // set type of currently analyzed field if mak type is unknown
+    protected void setCurrentFieldTypeUnknown(String type) { if(this.currentField != null) this.currentField.unknownType = type; }
     
     // Check if type and type attributes are correct
     protected void checkFieldType(AST type) { }
@@ -64,7 +68,7 @@ options {
     // Add modifier
     protected void addModifier(FieldNode field, String modifier) { }
     
-    // Create subfield - setComplex, ptrOne
+    // Add subfield - setComplex, ptrOne
     protected void addSubfield(FieldNode field) { }
     
 }
@@ -86,28 +90,44 @@ fieldDeclaration
             (m:MODIFIER { addModifier(field, #m.getText()); })*
             ft:fieldType { checkFieldType(#ft); }
             (fc:FIELDCOMMENT { getCurrentField().description = #fc.getText(); } )?
-              (
+              ( { MDDNode subFieldDD = field.initSubfield(); }
                 #(
                     SUBFIELD
                     PARENTFIELDNAME { checkSubFieldName(#fn, #PARENTFIELDNAME); }
-                    SUBFIELDNAME
-                    (MODIFIER)*
+                    sfn:SUBFIELDNAME { FieldNode subField = new FieldNode(subFieldDD, #sfn.getText()); setCurrentField(subField); }
+                    (sm:MODIFIER { addModifier(subField, #sm.getText());} )*
                     sft:fieldType { checkSubFieldType(#sft); }
-                    (FIELDCOMMENT)?
+                    (sfc:FIELDCOMMENT { subField.description = #sfc.getText(); })?
+                    {
+                        // we add the subField to the field
+                        field.addSubfield(subField);
+                        field.addChild(subField);
+                    }
                  )
-              )*
-       )
+              )* {
+                    // we set back the current field
+                    setCurrentField(field);
+                 }
+       ) {
+            mdd.addField(field);
+                        
+            // in the end, the return tree contains only one FieldNode
+            #fieldDeclaration = field;
+            
+         }
     ;
     
     
 fieldType
-    : UNKNOWN_TYPE
-    | #(CHAR { setCurrentFieldType(FieldType.CHAR); }
-        CHAR_LENGTH
+    :
+    { FieldType type = null; } (
+      u:UNKNOWN_TYPE { setCurrentFieldTypeUnknown(#u.getText()); } // will need processing afterwards, this happens when dealing with macro types - needs to be stored somehow in the field though!
+    | #(CHAR { type = FieldType.CHAR; }
+        cl:CHAR_LENGTH { getCurrentField().charLength = Integer.parseInt(#cl.getText()); }
        )
-    | INT { setCurrentFieldType(FieldType.INT); }
+    | INT { type = FieldType.INT; }
     | #(
-        INTENUM { setCurrentFieldType(FieldType.INTENUM); } ( { boolean isDeprecated = false; }
+        INTENUM { type = FieldType.INTENUM; } ( { boolean isDeprecated = false; }
                  it:INTENUMTEXT
                  ii:INTENUMINDEX
                  (id:DEPRECATED { isDeprecated = true; } )?
@@ -121,18 +141,29 @@ fieldType
                 )*
         )
                 
-    | REAL { setCurrentFieldType(FieldType.REAL); }
-    | BOOLEAN { setCurrentFieldType(FieldType.BOOLEAN); }
-    | TEXT { setCurrentFieldType(FieldType.TEXT); }
-    | BINARY { setCurrentFieldType(FieldType.BINARY); }
-    | FILE { setCurrentFieldType(FieldType.FILE); }
-    | DATE { setCurrentFieldType(FieldType.DATE); }
-    | #(PTR { setCurrentFieldType(FieldType.PTR); } (POINTED_TYPE { setCurrentFieldType(FieldType.PTRONE); })? )
-    | #(SET { setCurrentFieldType(FieldType.SET); } (POINTED_TYPE { setCurrentFieldType(FieldType.SETCOMPLEX); })? ) 
+    | REAL { type = FieldType.REAL; }
+    | BOOLEAN { type = FieldType.BOOLEAN; }
+    | TEXT { type = FieldType.TEXT; }
+    | BINARY { type = FieldType.BINARY; }
+    | FILE { type = FieldType.FILE; }
+    | DATE { type = FieldType.DATE; }
+    | #(PTR { type = FieldType.PTRONE; #fieldType.setType(PTRONE); } (p:POINTED_TYPE { getCurrentField().pointedType = #p.getText(); type =FieldType.PTR; })? )
+    | #(SET { type = FieldType.SETCOMPLEX; #fieldType.setType(SETCOMPLEX); } (s:POINTED_TYPE { getCurrentField().pointedType = #s.getText(); type = FieldType.SET; })? )
+    )
+    {
+        setCurrentFieldType(type);
+        ((AnalysisAST)#fieldType).makumbaType = type;
+    }
     ;
     
 titleDeclaration
-    : TITLEFIELD
+    : t:TITLEFIELD { 
+        // FIXME this is a hack for not generating a TitleNode in the initial grammar 
+        mdd.titleField = new TitleFieldNode(); mdd.titleField.setText(#t.getText());
+        
+        // return the title field in the node
+        #titleDeclaration = mdd.titleField;
+        }
     ;
 
 typeDeclaration! // we kick out the declaration after registering it
