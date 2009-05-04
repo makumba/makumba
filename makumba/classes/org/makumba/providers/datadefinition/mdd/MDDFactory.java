@@ -33,6 +33,8 @@ public class MDDFactory {
     
     private String typeName = new String();
     
+    private URL origin;
+    
     private MDDASTFactory astFactory = new MDDASTFactory();
     
     public MDDFactory(String name) {
@@ -46,7 +48,8 @@ public class MDDFactory {
             throw new DataDefinitionNotFoundError((String) name);
         }
         
-        
+        this.origin = u;
+
         Object o = null;
         Object o1 = null;
         
@@ -76,41 +79,39 @@ public class MDDFactory {
             AST tree = parser.getAST();
 
             System.out.println("**** Parser ****");
-            DumpASTVisitor visitor = new DumpASTVisitor();
+            MakumbaDumpASTVisitor visitor = new MakumbaDumpASTVisitor(false);
             visitor.visit(tree);
             
             MDDAnalyzeWalker analysisWalker = null;
             try {
-                analysisWalker = new MDDAnalyzeWalker(this.typeName);
-                analysisWalker.setASTFactory(astFactory);
-//                analysisWalker.setASTNodeClass("org.makumba.providers.datadefinition.mdd.MDDNode");
+                analysisWalker = new MDDAnalyzeWalker(this.typeName, this.origin);
+                //analysisWalker.setASTFactory(astFactory);
+                analysisWalker.setASTNodeClass("org.makumba.providers.datadefinition.mdd.AnalysisAST");
                 analysisWalker.dataDefinition(tree);
             } catch (Throwable e) {
                 doThrow(e, analysisWalker.getAST(), errorReader);
             }
             doThrow(analysisWalker.error, parser.getAST(), errorReader);
-            
-            
+                        
             System.out.println("**** Analysis walker ****");
-            DumpASTVisitor visitor2 = new DumpASTVisitor();
+            MakumbaDumpASTVisitor visitor2 = new MakumbaDumpASTVisitor(false);
             visitor2.visit(analysisWalker.getAST());
-            
             
             MDDBuildWalker builder = null;
             try {
-                builder = new MDDBuildWalker(this.typeName, analysisWalker);
-                builder.dataDefinition(tree);
+                builder = new MDDBuildWalker(this.typeName, analysisWalker.mdd, analysisWalker.typeShorthands);
+                builder.dataDefinition(analysisWalker.getAST());
             } catch (Throwable e) {
                 doThrow(e, builder.getAST(), errorReader);
             }
             doThrow(builder.error, parser.getAST(), errorReader);
             
             System.out.println("**** Build walker ****");
-            DumpASTVisitor visitor3 = new DumpASTVisitor();
+            MakumbaDumpASTVisitor visitor3 = new MakumbaDumpASTVisitor(false);
             visitor3.visit(builder.getAST());
-
             
-    
+            System.out.println(builder.mdd.toString());
+
         
     }
         

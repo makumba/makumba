@@ -8,5 +8,9 @@ import antlr.CommonAST;
  * @version $Id: TitleFieldNode.java,v 1.1 May 3, 2009 10:18:14 PM manu Exp $
  */
 public class TitleFieldNode extends CommonAST {
+    
+    public TitleFieldNode() {
+        setType(MDDTokenTypes.TITLEFIELD);
+    }
 
 }

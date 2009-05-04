@@ -1,7 +1,12 @@
 package org.makumba.providers.datadefinition.mdd;
 
+import java.util.HashMap;
+
 import org.makumba.DataDefinition;
+import org.makumba.DataDefinitionParseError;
 import org.makumba.FieldDefinition;
+
+import antlr.collections.AST;
 
 /**
  * Build walker that glues all the contents of the MDD together. It walks over a simple tree of the kind
@@ -27,13 +32,23 @@ import org.makumba.FieldDefinition;
  */
 public class MDDBuildWalker extends MDDBuildBaseWalker {
     
-    private String typeName;
+    private HashMap<String, AnalysisAST> typeShorthands;
     
-    private MDDAnalyzeWalker walker;
-
-    public MDDBuildWalker(String typeName, MDDAnalyzeWalker analysisWalker) {
+    public MDDBuildWalker(String typeName, MDDNode mdd, HashMap<String, AnalysisAST> typeShorthands) {
         this.typeName = typeName;
-        this.walker = analysisWalker;
+        this.mdd = mdd;
+        this.typeShorthands = typeShorthands;
+    }
+    
+    @Override
+    protected void processUnknownType(FieldNode field) {
+        AnalysisAST type = typeShorthands.get(field.unknownType);
+        if(type == null) {
+            throw new DataDefinitionParseError("Unknown field type: "+field.unknownType);
+        } else {
+            field.makumbaType = type.makumbaType;
+        }
+        
     }
 
 }

@@ -24,8 +24,13 @@ options {
         if (error == null)
             error = new RecognitionException(s);
     }    
+    
+    
+    protected String typeName;
+    
+    protected MDDNode mdd;
 
-    protected void setModifier(FieldDefinitionImpl field, AST modifier) { }
+    protected void processUnknownType(FieldNode field) { }
 
 }
 
@@ -39,50 +44,18 @@ declaration
     ;
 
 fieldDeclaration
-    : #(
-            FIELD { FieldDefinitionImpl field = new FieldDefinitionImpl(); }
-            fn:FIELDNAME { field.setName(#fn.getText()); }
-            (m:MODIFIER { setModifier(field, m); } )*
-            ft:fieldType
-            (FIELDCOMMENT)?
-              (
-                #(
-                    SUBFIELD
-                    PARENTFIELDNAME
-                    SUBFIELDNAME
-                    (MODIFIER)*
-                    sft:fieldType
-                    (FIELDCOMMENT)?
-                 )
-              )*
-       )
+    : #(f:FIELD {
+        if(((FieldNode)#f_in).makumbaType == null) {
+          processUnknownType((FieldNode)#f_in);
+        }
+      }
+      (sf:FIELD {
+        if(((FieldNode)#sf_in).makumbaType == null) {
+          processUnknownType((FieldNode)#sf_in);
+        }
+      } )* )
     ;
-    
-    
-fieldType
-    : UNKNOWN_TYPE
-    | #(CHAR
-        CHAR_LENGTH
-       )
-    | INT
-    | #(
-        INTENUM (
-                 it:INTENUMTEXT
-                 ii:INTENUMINDEX
-                 (id:DEPRECATED)?
-                )*
-        )
-                
-    | REAL
-    | BOOLEAN
-    | TEXT
-    | BINARY
-    | FILE
-    | DATE
-    | #(PTR (POINTED_TYPE)?)
-    | #(SET (POINTED_TYPE)?) 
-    ;
-    
+
 titleDeclaration
     : TITLEFIELD
     ;
