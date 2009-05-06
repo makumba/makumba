@@ -109,6 +109,14 @@ public class dateEditor extends FieldEditor {
             o = null;
         }
         Date d = (Date) o;
+        
+        if(formatParams.get("default") != null) {
+            // FIXME this should actually evaluate the date in a manner similar to MQL...
+            if(((String)formatParams.get("default")).equals("now()")) {
+                d = new Date();
+            }
+        }
+        
         StringBuffer sb = new StringBuffer();
         boolean hidden = "hidden".equals(formatParams.get("type"));
         if (d == null) {
