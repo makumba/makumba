@@ -356,7 +356,7 @@ public class CodeGenerator {
                     appendLine(sb, "<mak:object from=\"" + dd + " " + labelName + "\" where=\"" + labelName
                             + (queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL) ? "=$" : ".id=:") + labelName + "\">");
                     appendLine(sb, "<mak:value expr=\"" + labelName
-                            + (queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL) ? "" : ".id") + "\" var=\"" + labelName
+                            + (queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL) ? "" : ".id") + "\" printVar=\"" + labelName
                             + "Pointer\" />");
                     appendJSPLine(sb, indent, template.beforePageHeader + StringUtils.upperCaseBeginning(labelName)
                             + " <i><mak:value expr=\"" + labelName + "." + dd.getTitleFieldName() + "\" /></i>"
