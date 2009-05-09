@@ -60,10 +60,12 @@ options {
 
 tokens {
     FIELD<AST=org.makumba.providers.datadefinition.mdd.FieldNode>;
-    TITLEFIELD<AST=org.makumba.providers.datadefinition.mdd.TitleFieldNode>;
     VALIDATION<AST=org.makumba.providers.datadefinition.mdd.ValidationNode>;
     FUNCTION<AST=org.makumba.providers.datadefinition.mdd.FunctionNode>;
-    
+
+    TITLEFIELD;
+    TITLEFIELDFIELD;
+    TITLEFIELDFUNCTION;
     
     // MDD structure
     FIELDNAME;
@@ -169,10 +171,18 @@ fieldComment
       { #fieldComment = #[FIELDCOMMENT]; #fieldComment.setText(comment); }
     ;
     
-subFieldDeclaration //TODO add modifier and right field type declaration
-    : fn:fieldName {#fn.setType(PARENTFIELDNAME); } SUBFIELD^ subFieldName EQUALS!
-      (modifier)* fieldType
-      (SEMICOLON! fc:fieldComment)?
+subFieldDeclaration
+    : 
+        (fn:fieldName {#fn.setType(PARENTFIELDNAME); } SUBFIELD^)
+        (titleDeclaration
+        |
+        (
+          subFieldName EQUALS!
+          (modifier)* fieldType
+          (SEMICOLON! fc:fieldComment)?
+        )
+        )
+      
     ;
 
 subFieldName
@@ -192,9 +202,8 @@ titleDeclaration
     
 // !title = name
 title
-    : t:atom { #t.setType(TITLEFIELD); }
+    : t:atom { #t.setType(TITLEFIELDFIELD);}
     // TODO add function here as well
-    // FIXME return TitleFieldNode, see how to build heterogenous trees
     ;
 
 // !type.genDef = ...

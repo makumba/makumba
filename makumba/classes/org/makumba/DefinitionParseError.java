@@ -49,7 +49,7 @@ public abstract class DefinitionParseError extends MakumbaError {
         if (typeName.startsWith("temp")) {
             return "";
         }
-        return typeName + ":";
+        return typeName + ": ";
     }
 
     protected int column;

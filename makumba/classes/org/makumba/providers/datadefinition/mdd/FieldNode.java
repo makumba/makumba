@@ -2,7 +2,7 @@ package org.makumba.providers.datadefinition.mdd;
 
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
 
-import antlr.CommonAST;
+import antlr.collections.AST;
 
 /**
  * AST node that collects information about a MDD field
@@ -10,8 +10,10 @@ import antlr.CommonAST;
  * @author Manuel Gay
  * @version $Id: FieldNode.java,v 1.1 May 3, 2009 6:14:27 PM manu Exp $
  */
-public class FieldNode extends CommonAST {
+public class FieldNode extends MDDAST {
     
+    private static final long serialVersionUID = 1L;
+
     // basic field info
     protected MDDNode mdd;
     
@@ -48,7 +50,6 @@ public class FieldNode extends CommonAST {
     // subfield - ptrOne, setComplex
     protected MDDNode subfield;
 
-    
     public FieldNode(MDDNode mdd, String name) {
         
         // AST
@@ -57,6 +58,22 @@ public class FieldNode extends CommonAST {
         
         this.mdd = mdd;
         this.name = name;
+        
+    }
+    
+    /**
+     * Constructor for FieldNode, originAST being an AST used for giving context to errors
+     */
+    public FieldNode(MDDNode mdd, String name, AST originAST) {
+        initialize(originAST);
+        
+        // we need to overwrite the type after the initialisation
+        setText(name);
+        setType(MDDTokenTypes.FIELD);
+        
+        this.mdd = mdd;
+        this.name = name;
+        
     }
     
     
@@ -83,15 +100,16 @@ public class FieldNode extends CommonAST {
     
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append("Field name: " + name + "\n");
+        sb.append("== Field name: " + name + "\n");
         if(makumbaType != null) {
-            sb.append("Field type: " + makumbaType.getTypeName() + "\n");
+            sb.append("== Field type: " + makumbaType.getTypeName() + "\n");
         } else {
-            sb.append("Unknown field type: " + unknownType + "\n");
+            sb.append("== Unknown field type: " + unknownType + "\n");
         }
-        sb.append("Modifiers: " + (fixed? "fixed ":"") + (unique? "unique ":"") + (notNull? "not null ":"") + (notEmpty? "not empty ":"")  + "\n");
+        sb.append("== Modifiers: " + (fixed? "fixed ":"") + (unique? "unique ":"") + (notNull? "not null ":"") + (notEmpty? "not empty ":"")  + "\n");
+        if(description != null) sb.append("== Description: "+ description + "\n");
         if(subfield != null) {
-            sb.append("\n\n**** Subfield detail ****" + "\n\n");
+            sb.append("\n== Subfield detail" + "\n\n");
             sb.append(subfield.toString() + "\n");
         }
         return sb.toString();
