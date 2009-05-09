@@ -67,7 +67,12 @@ public class MDDNode extends CommonAST {
 
      */
     
-    void addStandardFields(String name) {
+    protected void setTitleField(TitleFieldNode title) {
+        title.mdd = this;
+        titleField = title;
+    }
+    
+    protected void addStandardFields(String name) {
         FieldNode fi;
 
         indexName = name;
@@ -104,7 +109,10 @@ public class MDDNode extends CommonAST {
         sb.append("Type origin: " + origin + "\n");
         if(parent !=null)
             sb.append("Type parent: " + parent.name + "\n");
-        sb.append("Fields:" + "\n");
+        if(titleField != null) {
+            sb.append("Title field: " + titleField.getText());
+        }
+        sb.append("\nFields:" + "\n");
         for(Iterator<String> i = fields.asList().iterator(); i.hasNext();) {
             sb.append(fields.get(i.next()).toString() + "\n");
         }

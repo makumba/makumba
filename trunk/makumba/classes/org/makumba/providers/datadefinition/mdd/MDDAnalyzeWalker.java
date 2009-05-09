@@ -19,27 +19,28 @@ import antlr.collections.AST;
  * @version $Id: MDDAnalyzeWalker.java,v 1.1 May 2, 2009 10:56:49 PM manu Exp $
  */
 public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
-
-    protected HashMap<String, AnalysisAST> typeShorthands = new HashMap<String, AnalysisAST>();
     
-    public MDDAnalyzeWalker(String typeName, URL origin) {
+    private MDDFactory factory = null;
+
+    protected HashMap<String, MDDAST> typeShorthands = new HashMap<String, MDDAST>();
+    
+    public MDDAnalyzeWalker(String typeName, URL origin, MDDFactory factory) {
         this.origin = origin;
         this.typeName = typeName;
         this.mdd = new MDDNode(typeName, origin);
+        this.factory = factory;
         
     }
-
+    
     @Override
     protected void checkFieldType(AST type) {
-        
         // check type attributes
         switch (type.getType()) {
             case MDDTokenTypes.CHAR:
                 AST length = type.getFirstChild();
                 int l = Integer.parseInt(length.getText());
                 if (l > 255) {
-//                    throw new DataDefinitionParseError(typeName, "char too long " + ((MDDNode)type).getParent().getLine());
-                    throw new DataDefinitionParseError(typeName, "char has a maximum size of 255");
+                    factory.doThrow("char has a maximum length of 255", type);
                 }
                 break;
         }
@@ -50,26 +51,26 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
 
     @Override
     protected void checkSubFieldType(AST type) {
+        
         System.out.println("Checking subfield type: " + type);
         checkFieldType(type);
         if(type.getType() == MDDTokenTypes.SETCOMPLEX || type.getType() == MDDTokenTypes.PTRONE) {
-            // FIXME give line and col
-            throw new DataDefinitionParseError(typeName, "Subfields of subfields are not allowed.");
+            factory.doThrow("Subfields of subfields are not allowed.", type);
         }
     }
 
     @Override
     protected void checkSubFieldName(AST parentName, AST name) {
         if (parentName != null && name != null && !parentName.getText().equals(name.getText())) {
-            throw new DataDefinitionParseError("The subfield '" + name.getText() + "' "
-                    + " should have as parent name " + parentName);
+            factory.doThrow("The subfield '" + name.getText() + "' "
+                    + " should have as parent name " + parentName, name);
         }
     }
 
     @Override
     protected void addTypeShorthand(AST name, AST fieldType) {
         System.out.println("Registering new type shorthand " + name.getText());
-        typeShorthands.put(name.getText(), (AnalysisAST)fieldType);
+        typeShorthands.put(name.getText(), (MDDAST)fieldType);
     }
     
     @Override

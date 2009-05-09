@@ -14,7 +14,6 @@ import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.DataDefinitionParseError;
 import org.makumba.MakumbaError;
 
-import antlr.DumpASTVisitor;
 import antlr.MismatchedTokenException;
 import antlr.RecognitionException;
 import antlr.collections.AST;
@@ -35,7 +34,9 @@ public class MDDFactory {
     
     private URL origin;
     
-    private MDDASTFactory astFactory = new MDDASTFactory();
+    private BufferedReader errorReader = null;
+    
+    private MDDASTFactory factory = new MDDASTFactory();
     
     public MDDFactory(String name) {
         
@@ -64,17 +65,19 @@ public class MDDFactory {
             // first pass - simply parse the MDD file
             Reader reader = new InputStreamReader((InputStream) o);
             MDDLexer lexer = new MDDLexer(reader);
-            BufferedReader errorReader = new BufferedReader(new InputStreamReader((InputStream) o1));
+            errorReader = new BufferedReader(new InputStreamReader((InputStream) o1));
             
             MDDParser parser = null;
             try {
                 parser = new MDDParser(lexer);
+                parser.setASTFactory(factory);
+//                parser.setASTNodeClass("org.makumba.providers.datadefinition.mdd.MDDAST");
                 parser.dataDefinition();
                 
             } catch(Throwable t) {
-                doThrow(t, parser.getAST(), errorReader);
+                doThrow(t, parser.getAST());
             }
-            doThrow(parser.error, parser.getAST(), errorReader);
+            doThrow(parser.error, parser.getAST());
             
             AST tree = parser.getAST();
 
@@ -84,14 +87,14 @@ public class MDDFactory {
             
             MDDAnalyzeWalker analysisWalker = null;
             try {
-                analysisWalker = new MDDAnalyzeWalker(this.typeName, this.origin);
-                //analysisWalker.setASTFactory(astFactory);
-                analysisWalker.setASTNodeClass("org.makumba.providers.datadefinition.mdd.AnalysisAST");
+                analysisWalker = new MDDAnalyzeWalker(this.typeName, this.origin, this);
+                analysisWalker.setASTFactory(factory);
+//                analysisWalker.setASTNodeClass("org.makumba.providers.datadefinition.mdd.MDDAST");
                 analysisWalker.dataDefinition(tree);
             } catch (Throwable e) {
-                doThrow(e, analysisWalker.getAST(), errorReader);
+                doThrow(e, analysisWalker.getAST());
             }
-            doThrow(analysisWalker.error, parser.getAST(), errorReader);
+            doThrow(analysisWalker.error, parser.getAST());
                         
             System.out.println("**** Analysis walker ****");
             MakumbaDumpASTVisitor visitor2 = new MakumbaDumpASTVisitor(false);
@@ -99,12 +102,12 @@ public class MDDFactory {
             
             MDDBuildWalker builder = null;
             try {
-                builder = new MDDBuildWalker(this.typeName, analysisWalker.mdd, analysisWalker.typeShorthands);
+                builder = new MDDBuildWalker(this.typeName, analysisWalker.mdd, analysisWalker.typeShorthands, this);
                 builder.dataDefinition(analysisWalker.getAST());
             } catch (Throwable e) {
-                doThrow(e, builder.getAST(), errorReader);
+                doThrow(e, builder.getAST());
             }
-            doThrow(builder.error, parser.getAST(), errorReader);
+            doThrow(builder.error, parser.getAST());
             
             System.out.println("**** Build walker ****");
             MakumbaDumpASTVisitor visitor3 = new MakumbaDumpASTVisitor(false);
@@ -116,46 +119,61 @@ public class MDDFactory {
     }
         
     /**
-     * Throws a {@link DataDefinitionParseError}
-     * TODO adapt to know the lexer / the line number
-     * @param reader TODO
+     * Throws a {@link DataDefinitionParseError} at parse time
      */
-    private void doThrow(Throwable t, AST debugTree, BufferedReader reader) {
+    private void doThrow(Throwable t, AST debugTree) {
         if (t == null)
             return;
+        
+        // we already have a DataDefinitionParse error, just throw it
+        if(t instanceof DataDefinitionParseError) {
+            throw new RuntimeException(t);
+        }
+
         if (t instanceof RuntimeException) {
             t.printStackTrace();
             throw (RuntimeException) t;
         }
+        
+        String line = "";
         int column = 0;
+        
         if (t instanceof RecognitionException) {
             RecognitionException re = (RecognitionException) t;
             if (re.getColumn() > 0) {
                 column = re.getColumn();
+                line = getLine(re.getLine());
             }
-        }
-        if(t instanceof MismatchedTokenException) {
-            MismatchedTokenException mte = (MismatchedTokenException) t;
-            String line = null;
-            try {
-                line = getLine(reader, mte.getLine());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            column = mte.getColumn();
-            
-            throw new DataDefinitionParseError(this.typeName, t.getMessage(), line, column);
-            
         }
         
-        throw new DataDefinitionParseError(this.typeName, t.getMessage());
+        if(t instanceof MismatchedTokenException) {
+            MismatchedTokenException mte = (MismatchedTokenException) t;
+            line = getLine(mte.getLine());
+            column = mte.getColumn();
+        }
+        
+        throw new DataDefinitionParseError(this.typeName, t.getMessage(), line, column);
     }
+
+    /**
+     * Throws a {@link DataDefinitionParseError} based on the information returned by the {@link MDDAST}
+     */
+    protected void doThrow(String message, AST ast) {
+        int line = ((MDDAST)ast).getLine();
+        int col = ((MDDAST)ast).getColumn();
+        throw new DataDefinitionParseError(typeName, message, getLine(line), col);
+    }
+
     
     
-   private String getLine(BufferedReader r, int lineNumber) throws IOException {
+   protected String getLine(int lineNumber) {
        String line = "";
        for(int i = 0; i < lineNumber; i++) {
-           line = r.readLine();
+           try {
+            line = errorReader.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
        }
        return line;
 

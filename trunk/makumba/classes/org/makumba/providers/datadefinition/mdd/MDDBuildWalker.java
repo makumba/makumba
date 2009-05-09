@@ -2,9 +2,11 @@ package org.makumba.providers.datadefinition.mdd;
 
 import java.util.HashMap;
 
+import org.hibernate.property.Getter;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionParseError;
 import org.makumba.FieldDefinition;
+import org.makumba.MakumbaError;
 
 import antlr.collections.AST;
 
@@ -32,23 +34,49 @@ import antlr.collections.AST;
  */
 public class MDDBuildWalker extends MDDBuildBaseWalker {
     
-    private HashMap<String, AnalysisAST> typeShorthands;
+    private MDDFactory factory = null;
     
-    public MDDBuildWalker(String typeName, MDDNode mdd, HashMap<String, AnalysisAST> typeShorthands) {
+    private HashMap<String, MDDAST> typeShorthands;
+    
+    public MDDBuildWalker(String typeName, MDDNode mdd, HashMap<String, MDDAST> typeShorthands, MDDFactory factory) {
         this.typeName = typeName;
         this.mdd = mdd;
         this.typeShorthands = typeShorthands;
+        this.factory = factory;
     }
     
     @Override
-    protected void processUnknownType(FieldNode field) {
-        AnalysisAST type = typeShorthands.get(field.unknownType);
+    protected void processUnknownType(AST field) {
+        FieldNode fieldNode = (FieldNode) field;
+        MDDAST type = typeShorthands.get(fieldNode.unknownType);
         if(type == null) {
-            throw new DataDefinitionParseError("Unknown field type: "+field.unknownType);
+            factory.doThrow("Unknown field type: "+fieldNode.unknownType, field);
         } else {
-            field.makumbaType = type.makumbaType;
+            fieldNode.makumbaType = type.makumbaType;
+        }
+        
+        field = fieldNode;
+        
+    }
+    
+    @Override
+    protected void checkTitleField(AST titleField) {
+        TitleFieldNode title = (TitleFieldNode) titleField;
+        
+        // titleField can be a field name or a function
+        switch(title.titleType) {
+            case MDDTokenTypes.FIELD:
+                Object field = title.mdd.fields.get(title.getText());
+                if(field == null) {
+                    factory.doThrow("Field " + title.getText() + " does not exist in type " + title.mdd.name , titleField);
+                }
+                break;
+            default:
+                throw new MakumbaError("should not be here");
         }
         
     }
+    
+    
 
 }

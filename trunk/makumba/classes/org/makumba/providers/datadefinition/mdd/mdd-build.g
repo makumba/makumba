@@ -10,7 +10,7 @@ class MDDBuildBaseWalker extends TreeParser;
 options {
     importVocab=MDD;
     buildAST=true;
-    k=2;
+    k=1;
 }
 
 {
@@ -30,7 +30,9 @@ options {
     
     protected MDDNode mdd;
 
-    protected void processUnknownType(FieldNode field) { }
+    protected void processUnknownType(AST field) { }
+    
+    protected void checkTitleField(AST titleField) { }
 
 }
 
@@ -44,18 +46,11 @@ declaration
     ;
 
 fieldDeclaration
-    : #(f:FIELD {
-        if(((FieldNode)#f_in).makumbaType == null) {
-          processUnknownType((FieldNode)#f_in);
-        }
-      }
-      (sf:FIELD {
-        if(((FieldNode)#sf_in).makumbaType == null) {
-          processUnknownType((FieldNode)#sf_in);
-        }
-      } )* )
+    : #(f:FIELD { if(((FieldNode)#f_in).makumbaType == null) { processUnknownType(#f_in); } }
+         (sf:FIELD { if(((FieldNode)#sf_in).makumbaType == null) { processUnknownType(#sf_in); } } | st:titleDeclaration )*
+       )
     ;
 
 titleDeclaration
-    : TITLEFIELD
+    : t:TITLEFIELD { checkTitleField(#t_in); }
     ;

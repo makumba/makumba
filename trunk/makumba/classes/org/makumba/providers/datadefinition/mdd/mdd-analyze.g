@@ -1,5 +1,4 @@
 // TODO
-// develop way to get meaningful errors (at parse and analysis time)
 
 // other todo:
 //   add !include mechanism (from beginning in parser)
@@ -18,7 +17,7 @@ class MDDAnalyzeBaseWalker extends TreeParser;
 options {
     importVocab=MDD;
     buildAST=true;
-    k=2;
+    k=1;
 }
 
 {
@@ -79,30 +78,36 @@ dataDefinition
 
 declaration
     : fieldDeclaration
-    | titleDeclaration
+    | t:titleDeclaration { mdd.setTitleField((TitleFieldNode) #t); }
     | typeDeclaration
     ;
 
 fieldDeclaration
     : #(
-            FIELD
-            fn:FIELDNAME { FieldNode field = new FieldNode(mdd, #fn.getText()); setCurrentField(field); }
+            f:FIELD
+            fn:FIELDNAME { FieldNode field = new FieldNode(mdd, #fn.getText(), #f); setCurrentField(field); }
             (m:MODIFIER { addModifier(field, #m.getText()); })*
             ft:fieldType { checkFieldType(#ft); }
             (fc:FIELDCOMMENT { getCurrentField().description = #fc.getText(); } )?
               ( { MDDNode subFieldDD = field.initSubfield(); }
                 #(
-                    SUBFIELD
+                    sf:SUBFIELD
                     PARENTFIELDNAME { checkSubFieldName(#fn, #PARENTFIELDNAME); }
-                    sfn:SUBFIELDNAME { FieldNode subField = new FieldNode(subFieldDD, #sfn.getText()); setCurrentField(subField); }
-                    (sm:MODIFIER { addModifier(subField, #sm.getText());} )*
-                    sft:fieldType { checkSubFieldType(#sft); }
-                    (sfc:FIELDCOMMENT { subField.description = #sfc.getText(); })?
-                    {
-                        // we add the subField to the field
-                        field.addSubfield(subField);
-                        field.addChild(subField);
-                    }
+                    (
+                        (t:titleDeclaration { subFieldDD.setTitleField((TitleFieldNode) #t); field.addChild(#t); }) // FIXME add child to tree so it can be processed in builder
+                        |
+                        (
+                            sfn:SUBFIELDNAME { FieldNode subField = new FieldNode(subFieldDD, #sfn.getText(), #sf); setCurrentField(subField); }
+                            (sm:MODIFIER { addModifier(subField, #sm.getText());} )*
+                            sft:fieldType { checkSubFieldType(#sft); }
+                            (sfc:FIELDCOMMENT { subField.description = #sfc.getText(); })?
+                            {
+                                // we add the subField to the field
+                                field.addSubfield(subField);
+                                field.addChild(subField);
+                            }
+                        )
+                    )
                  )
               )* {
                     // we set back the current field
@@ -152,18 +157,13 @@ fieldType
     )
     {
         setCurrentFieldType(type);
-        ((AnalysisAST)#fieldType).makumbaType = type;
+        ((MDDAST)#fieldType).makumbaType = type;
     }
     ;
     
 titleDeclaration
-    : t:TITLEFIELD { 
-        // FIXME this is a hack for not generating a TitleNode in the initial grammar 
-        mdd.titleField = new TitleFieldNode(); mdd.titleField.setText(#t.getText());
-        
-        // return the title field in the node
-        #titleDeclaration = mdd.titleField;
-        }
+    : tf:TITLEFIELDFIELD { #tf.setType(TITLEFIELD); ((TitleFieldNode)#tf).titleType = FIELD; }
+    | tfun:TITLEFIELDFUNCTION { #tfun.setType(TITLEFIELD); ((TitleFieldNode)#tfun).titleType = FUNCTION; }
     ;
 
 typeDeclaration! // we kick out the declaration after registering it
