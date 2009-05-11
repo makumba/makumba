@@ -138,18 +138,16 @@ public class MDDFactory {
         String line = "";
         int column = 0;
         
-        if (t instanceof RecognitionException) {
+        if(t instanceof MismatchedTokenException) {
+            MismatchedTokenException mte = (MismatchedTokenException) t;
+            line = getLine(mte.getLine());
+            column = mte.getColumn();
+        } else if (t instanceof RecognitionException) {
             RecognitionException re = (RecognitionException) t;
             if (re.getColumn() > 0) {
                 column = re.getColumn();
                 line = getLine(re.getLine());
             }
-        }
-        
-        if(t instanceof MismatchedTokenException) {
-            MismatchedTokenException mte = (MismatchedTokenException) t;
-            line = getLine(mte.getLine());
-            column = mte.getColumn();
         }
         
         throw new DataDefinitionParseError(this.typeName, t.getMessage(), line, column);
