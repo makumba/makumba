@@ -1,3 +1,5 @@
+// fix the parser!
+
 header {
     package org.makumba.providers.datadefinition.mdd;
 }
@@ -6,7 +8,7 @@ class MDDLexer extends Lexer;
 
 options {
     exportVocab=MDD;
-    k = 2;
+    k = 3;
 }
 
 WORD
@@ -42,12 +44,12 @@ SUBFIELD
 WHITESPACE
     : (' ' | 't' | 'r' | 'n' | '\t') { $setType(Token.SKIP); }
     ;
+        
     
 LINEBREAK
-    :   '\n'      { newline(); }
-    |   '\r' '\n' { newline(); }
-    |   '\r'      { newline(); }
-    { $setType(Token.SKIP); }
+    :   '\n'      { newline(); } // unix
+    |   '\r' '\n' { newline(); } // dos
+    |   '\r'      { newline(); } // mac
     ;
 
 
@@ -66,6 +68,8 @@ tokens {
     TITLEFIELD;
     TITLEFIELDFIELD;
     TITLEFIELDFUNCTION;
+    
+    INCLUDED;
     
     // MDD structure
     FIELDNAME;
@@ -122,6 +126,8 @@ tokens {
             error = new RecognitionException(s);
     }
     
+    private AST currentField;
+    
 }
 
 dataDefinition
@@ -129,16 +135,39 @@ dataDefinition
     ;
 
 declaration
-    : fieldDeclaration (LINEBREAK!)* 
+    : fd:fieldDeclaration {currentField = #fd;} (LINEBREAK!)*
+    | subFieldDeclaration (LINEBREAK!)*
     | titleDeclaration (LINEBREAK!)*
     | typeDeclaration (LINEBREAK!)*
+    | includeDeclaration (LINEBREAK!)*
+    
     ;
 
 fieldDeclaration
-    : fn:fieldName EQUALS^ {#EQUALS.setType(FIELD); #EQUALS.setText(#fn.getText()); }
-        (modifier)* ft:fieldType
-        (SEMICOLON! fc:fieldComment)?
-        (LINEBREAK! subFieldDeclaration)*
+    : fn:fieldName
+      EQUALS^ {#EQUALS.setType(FIELD); #EQUALS.setText(#fn.getText()); }
+      (modifier)* fieldType
+      (SEMICOLON! fieldComment LINEBREAK!)?
+    ;
+    
+    
+subFieldDeclaration
+    : 
+      fn:atom {#fn.setType(PARENTFIELDNAME); } SUBFIELD^
+      (
+          titleDeclaration (SEMICOLON! fieldComment! LINEBREAK!)? // allow comment but do not store them
+          |
+          (
+            subFieldName
+            EQUALS!
+            (modifier)* fieldType
+            (SEMICOLON! fieldComment LINEBREAK!)?
+          )
+      )
+      { // we move the subfield node under the current field node
+        currentField.addChild(#subFieldDeclaration); #subFieldDeclaration = null;
+      }
+        
     ;
     
 fieldName
@@ -156,8 +185,8 @@ fieldType
     | BINARY
     | FILE
     | DATE
-    | PTR^ (p:type  {#p.setType(POINTED_TYPE);})?
-    | SET^ (s:type {#s.setType(POINTED_TYPE);})? 
+    | PTR^ (options{greedy=true;}: p:type {#p.setType(POINTED_TYPE);})?
+    | SET^ (options{greedy=true;}: s:type {#s.setType(POINTED_TYPE);})? 
     ;
 
 intEnumBody
@@ -166,23 +195,16 @@ intEnumBody
 
 fieldComment
     : { String comment=""; }
-      a:atom { comment += #a.getText(); }
+      (a:atom { comment += #a.getText(); })
       (b:atom { comment += " " + #b.getText(); })*
       { #fieldComment = #[FIELDCOMMENT]; #fieldComment.setText(comment); }
     ;
-    
-subFieldDeclaration
-    : 
-        (fn:fieldName {#fn.setType(PARENTFIELDNAME); } SUBFIELD^)
-        (titleDeclaration
-        |
-        (
-          subFieldName EQUALS!
-          (modifier)* fieldType
-          (SEMICOLON! fc:fieldComment)?
-        )
-        )
-      
+
+
+fieldCommentNew
+    : { String comment=""; }
+      (a:atom { comment += #a.getText() + " "; })* LINEBREAK!
+      { #fieldCommentNew = #[FIELDCOMMENT]; #fieldCommentNew.setText(comment); }
     ;
 
 subFieldName
@@ -205,6 +227,10 @@ title
     : t:atom { #t.setType(TITLEFIELDFIELD);}
     // TODO add function here as well
     ;
+    
+includeDeclaration
+    : EXMARK! "include"! EQUALS! t:type {#t.setType(INCLUDED); } // TODO call parsing of idd and add resulting AST as result here
+    ;
 
 // !type.genDef = ...
 typeDeclaration
@@ -213,9 +239,9 @@ typeDeclaration
 
 // general.Person
 type
-    : {String type="";} a:atom { type = #a.getText(); } (DOT! b:atom {type += "." + #b.getText(); } )* { #type.setText(type); }
+    : {String type="";} a:atom { type = #a.getText(); } (DOT! b:atom! {type += "." + #b.getText(); } )* { #type.setText(type); }
     ;
 
 atom
     : WORD
-    ;    
+    ;

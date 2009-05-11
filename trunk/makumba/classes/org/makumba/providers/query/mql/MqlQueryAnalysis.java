@@ -21,6 +21,13 @@ import org.makumba.providers.query.oql.QueryAST;
 import antlr.RecognitionException;
 import antlr.collections.AST;
 
+/**
+ * The hearth of the MQL query analysis and compilation. The query is first pre-processed and then the initial parsing takes place to produce the initial mql tree.
+ * After this, the tree is transformed by the MqlSqlWalker for analysis and finally transformed again for sql query generation.
+ * 
+ * @author Cristian Bogdan
+ * @version $Id: MqlQueryAnalysis.java,v 1.1 Apr 29, 2009 8:54:20 PM manu Exp $
+ */
 public class MqlQueryAnalysis implements QueryAnalysis {
 
     private static final String MAKUMBA_PARAM = "param";

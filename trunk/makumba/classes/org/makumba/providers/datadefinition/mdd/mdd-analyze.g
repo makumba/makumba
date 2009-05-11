@@ -80,6 +80,7 @@ declaration
     : fieldDeclaration
     | t:titleDeclaration { mdd.setTitleField((TitleFieldNode) #t); }
     | typeDeclaration
+    | includeDeclaration
     ;
 
 fieldDeclaration
@@ -168,4 +169,8 @@ titleDeclaration
 
 typeDeclaration! // we kick out the declaration after registering it
     : name:TYPENAME ft:fieldType { checkFieldType(#ft); addTypeShorthand(#name, #ft); }
+    ;
+
+includeDeclaration // FIXME remove this
+    : INCLUDED
     ;
