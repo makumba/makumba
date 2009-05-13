@@ -50,7 +50,7 @@ public class MDDBuildWalker extends MDDBuildBaseWalker {
         FieldNode fieldNode = (FieldNode) field;
         MDDAST type = typeShorthands.get(fieldNode.unknownType);
         if(type == null) {
-            factory.doThrow("Unknown field type: "+fieldNode.unknownType, field);
+            factory.doThrow(this.typeName, "Unknown field type: "+fieldNode.unknownType, field);
         } else {
             fieldNode.makumbaType = type.makumbaType;
         }
@@ -68,7 +68,7 @@ public class MDDBuildWalker extends MDDBuildBaseWalker {
             case MDDTokenTypes.FIELD:
                 Object field = title.mdd.fields.get(title.getText());
                 if(field == null) {
-                    factory.doThrow("Field " + title.getText() + " does not exist in type " + title.mdd.name , titleField);
+                    factory.doThrow(this.typeName, "Field " + title.getText() + " does not exist in type " + title.mdd.name , titleField);
                 }
                 break;
             default:
