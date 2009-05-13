@@ -76,7 +76,7 @@
             Use Help/Software Updates for installation, chose http://antlreclipse.sourceforge.net/updates
 		</echo>
     </target>
-    <!-- check if the OQL grammar has changed since last OQL parser generation-->
+    <!-- check if the OQL/HQL/MQL/MDD grammar has changed since last parser generation-->
     <target name="checkAntlr">
         <condition property="antlr.notRequired">
             <and>
@@ -95,11 +95,21 @@
                 <uptodate targetfile="classes/org/makumba/providers/query/mql/MqlSqlGeneratorBase.java">
                     <srcfiles dir="classes/org/makumba/providers/query/mql" includes="**/mql-sql-gen.g" />
                 </uptodate>
+                <uptodate targetfile="classes/org/makumba/providers/datadefinition/mdd/MDDBaseParser.java">
+                    <srcfiles dir="classes/org/makumba/providers/datadefinition/mdd" includes="**/mdd.g" />
+                </uptodate>
+                <uptodate targetfile="classes/org/makumba/providers/datadefinition/mdd/MDDAnalyzeBaseWalker.java">
+                    <srcfiles dir="classes/org/makumba/providers/datadefinition/mdd" includes="**/mdd-analyze.g" />
+                </uptodate>
+                <uptodate targetfile="classes/org/makumba/providers/datadefinition/mdd/MDDBuildBaseWalker.java">
+                    <srcfiles dir="classes/org/makumba/providers/datadefinition/mdd" includes="**/mdd-build.g" />
+                </uptodate>
+                
             </and>
         </condition>
     </target>
 
-    <!-- if the OQL grammar has changed, call antlr to re-generate the parser -->
+    <!-- if the OQL/HQL/MQL/MDD grammar has changed, call antlr to re-generate the parser -->
     <target name="OQLParserGeneration" depends="checkAntlr, install, version, detectHqlTokens" unless="antlr.notRequired">
 
         <java classname="antlr.Tool" fork="true" dir="classes/org/makumba/providers/query/hql" failonerror="true"
@@ -121,6 +131,21 @@
             taskname="antlr">
             <classpath refid="project.class.path" />
             <arg value="mql-sql-gen.g" />
+        </java>
+        <java classname="antlr.Tool" fork="true" dir="classes/org/makumba/providers/datadefinition/mdd/" failonerror="true"
+            taskname="antlr">
+            <classpath refid="project.class.path" />
+            <arg value="mdd.g" />
+        </java>
+        <java classname="antlr.Tool" fork="true" dir="classes/org/makumba/providers/datadefinition/mdd/" failonerror="true"
+            taskname="antlr">
+            <classpath refid="project.class.path" />
+            <arg value="mdd-analyse.g" />
+        </java>
+        <java classname="antlr.Tool" fork="true" dir="classes/org/makumba/providers/datadefinition/mdd/" failonerror="true"
+            taskname="antlr">
+            <classpath refid="project.class.path" />
+            <arg value="mdd-build.g" />
         </java>
         <java classname="antlr.Tool" fork="true" dir="classes/org/makumba/providers/query/oql/" failonerror="true"
             taskname="antlr">
