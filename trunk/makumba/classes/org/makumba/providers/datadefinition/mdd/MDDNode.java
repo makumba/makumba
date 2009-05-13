@@ -103,6 +103,12 @@ public class MDDNode extends CommonAST {
         fields.put(fi.name, fi);
     }
     
+    public void removeField(String name) {
+        if(fields.get(name) != null) {
+            fields.remove(name);
+        }
+    }
+    
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("Type name: " + name + "\n");

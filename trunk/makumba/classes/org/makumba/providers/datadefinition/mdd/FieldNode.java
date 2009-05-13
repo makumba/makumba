@@ -100,7 +100,7 @@ public class FieldNode extends MDDAST {
     
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append("== Field name: " + name + "\n");
+        sb.append("== Field name: " + name + " (line "+ getLine() + ")\n");
         if(makumbaType != null) {
             sb.append("== Field type: " + makumbaType.getTypeName() + "\n");
         } else {

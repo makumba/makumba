@@ -1,5 +1,3 @@
-// fix the parser!
-
 header {
     package org.makumba.providers.datadefinition.mdd;
 }
@@ -19,16 +17,12 @@ NUMBER
     : ('0'..'9')*
     ;
 
-// Grouping
 LEFT_PAREN: '(';
 RIGHT_PAREN: ')';
 LEFT_CUBR: '{';
 RIGHT_CUBR: '}';
 LEFT_SQBR: '[';
 RIGHT_SQBR: ']';
-
-COMMENT: '#';
-
 EQUALS: '=';
 PERCENT: '%';
 SEMICOLON: ';';
@@ -44,7 +38,14 @@ SUBFIELD
 WHITESPACE
     : (' ' | 't' | 'r' | 'n' | '\t') { $setType(Token.SKIP); }
     ;
-        
+
+// Single-line comments
+SL_COMMENT
+    :  "#"
+        (~('\n'|'\r'))* ('\n'|'\r'('\n')?)
+        {$setType(Token.SKIP); newline();}
+    ;
+
     
 LINEBREAK
     :   '\n'      { newline(); } // unix
@@ -53,7 +54,7 @@ LINEBREAK
     ;
 
 
-class MDDParser extends Parser;
+class MDDBaseParser extends Parser;
 
 options {
         buildAST=true;
@@ -127,11 +128,17 @@ tokens {
     }
     
     private AST currentField;
+
+    protected void disableField(AST field) { }
+
+    protected AST include(AST type) { return null; }
+    
+    protected AST includeSubField(AST type, AST parentField, AST subField) { return null; }
     
 }
 
 dataDefinition
-    : (declaration)*
+    : (LINEBREAK!)* (declaration)*
     ;
 
 declaration
@@ -145,17 +152,25 @@ declaration
 
 fieldDeclaration
     : fn:fieldName
-      EQUALS^ {#EQUALS.setType(FIELD); #EQUALS.setText(#fn.getText()); }
-      (modifier)* fieldType
-      (SEMICOLON! fieldComment LINEBREAK!)?
+      EQUALS^ {#EQUALS.setType(FIELD); #EQUALS.setText(#fn.getText()); boolean hasBody = false;}
+      (options{greedy=true;}:
+          (modifier)* fieldType
+          (SEMICOLON! fieldComment LINEBREAK!)? {hasBody = true;}
+      )?
+      {
+      	if(!hasBody) {
+      	    disableField(#fieldDeclaration);
+      	}
+      }
     ;
     
     
 subFieldDeclaration
     : 
-      fn:atom {#fn.setType(PARENTFIELDNAME); } SUBFIELD^
+      fn:atom {#fn.setType(PARENTFIELDNAME); } s:SUBFIELD^
       (
           titleDeclaration (SEMICOLON! fieldComment! LINEBREAK!)? // allow comment but do not store them
+          | EXMARK! "include"! EQUALS! t:type { #subFieldDeclaration = includeSubField(#t, #fn, #s); }
           |
           (
             subFieldName
@@ -229,7 +244,7 @@ title
     ;
     
 includeDeclaration
-    : EXMARK! "include"! EQUALS! t:type {#t.setType(INCLUDED); } // TODO call parsing of idd and add resulting AST as result here
+    : EXMARK! "include"! EQUALS! t:type { #includeDeclaration = include(#t); }
     ;
 
 // !type.genDef = ...

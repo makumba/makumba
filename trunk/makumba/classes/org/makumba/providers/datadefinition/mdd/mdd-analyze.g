@@ -1,7 +1,7 @@
 // TODO
+// add !include mechanism (from beginning in parser)
 
 // other todo:
-//   add !include mechanism (from beginning in parser)
 //   take care of validation
 //   take care of functions
 
@@ -9,7 +9,7 @@ header {
     package org.makumba.providers.datadefinition.mdd;
     
     import java.net.URL;
-    
+    import org.apache.commons.collections.map.ListOrderedMap;
 }
 
 class MDDAnalyzeBaseWalker extends TreeParser;
@@ -40,6 +40,9 @@ options {
     
     private FieldNode currentField;
     
+    // ordered map to keep track of fields and handle duplicates, i.e. overriden fields
+    private ListOrderedMap fields = new ListOrderedMap();
+    
     // set currently analyzed field
     protected void setCurrentField(FieldNode field) { this.currentField = field; }
     
@@ -69,7 +72,7 @@ options {
     
     // Add subfield - setComplex, ptrOne
     protected void addSubfield(FieldNode field) { }
-    
+        
 }
 
 dataDefinition
@@ -80,46 +83,62 @@ declaration
     : fieldDeclaration
     | t:titleDeclaration { mdd.setTitleField((TitleFieldNode) #t); }
     | typeDeclaration
-    | includeDeclaration
     ;
 
 fieldDeclaration
     : #(
             f:FIELD
             fn:FIELDNAME { FieldNode field = new FieldNode(mdd, #fn.getText(), #f); setCurrentField(field); }
-            (m:MODIFIER { addModifier(field, #m.getText()); })*
-            ft:fieldType { checkFieldType(#ft); }
-            (fc:FIELDCOMMENT { getCurrentField().description = #fc.getText(); } )?
-              ( { MDDNode subFieldDD = field.initSubfield(); }
-                #(
-                    sf:SUBFIELD
-                    PARENTFIELDNAME { checkSubFieldName(#fn, #PARENTFIELDNAME); }
-                    (
-                        (t:titleDeclaration { subFieldDD.setTitleField((TitleFieldNode) #t); field.addChild(#t); }) // FIXME add child to tree so it can be processed in builder
-                        |
-                        (
-                            sfn:SUBFIELDNAME { FieldNode subField = new FieldNode(subFieldDD, #sfn.getText(), #sf); setCurrentField(subField); }
-                            (sm:MODIFIER { addModifier(subField, #sm.getText());} )*
-                            sft:fieldType { checkSubFieldType(#sft); }
-                            (sfc:FIELDCOMMENT { subField.description = #sfc.getText(); })?
-                            {
-                                // we add the subField to the field
-                                field.addSubfield(subField);
-                                field.addChild(subField);
-                            }
-                        )
-                    )
-                 )
-              )* {
-                    // we set back the current field
-                    setCurrentField(field);
-                 }
-       ) {
-            mdd.addField(field);
-                        
-            // in the end, the return tree contains only one FieldNode
-            #fieldDeclaration = field;
+              (m:MODIFIER { addModifier(field, #m.getText()); })*
+              ft:fieldType { checkFieldType(#ft); }
+              (fc:FIELDCOMMENT { getCurrentField().description = #fc.getText(); } )?
+                ( { MDDNode subFieldDD = field.initSubfield(); }
+                  #(
+                      sf:SUBFIELD
+                      PARENTFIELDNAME { checkSubFieldName(#fn, #PARENTFIELDNAME); }
+                      (
+                          (t:titleDeclaration { subFieldDD.setTitleField((TitleFieldNode) #t); field.addChild(#t); }) // FIXME add child to tree so it can be processed in builder
+                          |
+                          (
+                              sfn:SUBFIELDNAME { FieldNode subField = new FieldNode(subFieldDD, #sfn.getText(), #sf); setCurrentField(subField); }
+                              (sm:MODIFIER { addModifier(subField, #sm.getText());} )*
+                              sft:fieldType { checkSubFieldType(#sft); }
+                              (sfc:FIELDCOMMENT { subField.description = #sfc.getText(); })?
+                              {
+                                  // we add the subField to the field
+                                  field.addSubfield(subField);
+                                  field.addChild(subField);
+                              }
+                          )
+                      )
+                   )
+                )* {
+                      // we set back the current field
+                      setCurrentField(field);
+                   }
             
+       ) {
+                mdd.addField(field);
+                            
+                // in the end, the return tree contains only one FieldNode
+                #fieldDeclaration = field;
+                
+                // handle overriden fields
+                if(fields.containsKey(#fn.getText())) {
+                  // fetch previous field, replace sibling with next
+                  int i = fields.indexOf(#fn.getText());
+                  AST previous = (AST) fields.getValue(i-1);
+                  AST next = null;
+                  if(fields.size() <= i+1) {
+                    next = #field;
+                  } else {
+                    next = (AST)fields.getValue(i+1);
+                  }
+                  previous.setNextSibling(next);
+                }
+                fields.put(#fn.getText(), #fieldDeclaration);
+            
+                
          }
     ;
     
@@ -169,8 +188,4 @@ titleDeclaration
 
 typeDeclaration! // we kick out the declaration after registering it
     : name:TYPENAME ft:fieldType { checkFieldType(#ft); addTypeShorthand(#name, #ft); }
-    ;
-
-includeDeclaration // FIXME remove this
-    : INCLUDED
     ;

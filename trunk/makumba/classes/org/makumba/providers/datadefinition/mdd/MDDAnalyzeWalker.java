@@ -34,13 +34,16 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
     
     @Override
     protected void checkFieldType(AST type) {
+        if(type == null)
+            return;
+        
         // check type attributes
         switch (type.getType()) {
             case MDDTokenTypes.CHAR:
                 AST length = type.getFirstChild();
                 int l = Integer.parseInt(length.getText());
                 if (l > 255) {
-                    factory.doThrow("char has a maximum length of 255", type);
+                    factory.doThrow(this.typeName, "char has a maximum length of 255", type);
                 }
                 break;
         }
@@ -55,14 +58,14 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
         System.out.println("Checking subfield type: " + type);
         checkFieldType(type);
         if(type.getType() == MDDTokenTypes.SETCOMPLEX || type.getType() == MDDTokenTypes.PTRONE) {
-            factory.doThrow("Subfields of subfields are not allowed.", type);
+            factory.doThrow(this.typeName, "Subfields of subfields are not allowed.", type);
         }
     }
 
     @Override
     protected void checkSubFieldName(AST parentName, AST name) {
         if (parentName != null && name != null && !parentName.getText().equals(name.getText())) {
-            factory.doThrow("The subfield '" + name.getText() + "' "
+            factory.doThrow(this.typeName, "The subfield '" + name.getText() + "' "
                     + " should have as parent name " + parentName, name);
         }
     }
