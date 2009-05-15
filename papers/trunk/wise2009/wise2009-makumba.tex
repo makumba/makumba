@@ -221,6 +221,21 @@ We designed a questionnaire where 30 out of the 45 past (since 2003) and present
 	\label{tab:intranet-size}
 \end{table} 
 
+% number of files per type
+% *** Viewing (list, object): 
+% mak:list: 1097
+% mak:object:
+% total unique viewing files: 
+%
+% *** Adding/Changing: 
+% mak:nNewForm: 179
+% mak:addForm: 79
+% mak:editForm: 284
+% mak:form: 167
+% total unique form files: 596
+%
+% *** BL: 287
+
 Let us first illustrate the Tech Committee activity in what we perceive as its sustainable period. Table~\ref{tab:intranet-size} shows the evolution of the size of The Intranet since its launch seven years ago, detailed for the different technological levels MDD, JSP and BL. Additionally, the total number of code files is shown, along with the total lines of code (LOC).  Figure \ref{fig:intranet-size} shows the evolution of the code figures graphically. It is worth noting that there was a rather high amount of data definition (MDD) files defined in the beginning of The Intranet, representing data used in the first three sub-systems. Even though more data definitions have been added over time, a certain saturation level has been reached in the last years, with only minor additions. It is not unexpected that the data definitions of an organization (its "domain model") change seldom after an initial development time. 
 
 \begin{figure}[t]
@@ -281,34 +296,35 @@ The questionnaire consisted of 53 questions. The main focus was on gathering an 
 	\label{tab:itd-members}
 \end{table} 
 
-Figure \ref{fig:learning-technologies} shows the averaged skill levels of all the members at different points in time, separated for three Makumba usage aspects: JSP for viewing data, JSP for modifying data, and BL. It can be observed that apparently, learning to view and display data in JSP level is faster than handling forms to create, edit, and delete data, while Business Logics are the most difficult concept, especially in the first two years of membership. Most members that stay in the committee for a longer period, however, master all levels of Makumba almost equally well. Such members can (and many do) continue working on the internals of Makumba itself  as a next step. While MDD editing skills are less and less actual, we can consider that currently the learning path milestones in the Tech Committee are: JSP viewing data, JSP changing data and BL. To further illustrate the member skill evolutions, we have selected the charts of four individual members in Figure \ref{fig:learning-members}. This also shows that, although the dynamics vary a lot, the JSP data-changing skills almost always lag behind the JSP data view skills, and BL skill is acquired last. 
+Figure \ref{fig:learning-technologies} shows the averaged skill levels of all the members at different points in time, separated for three Makumba usage aspects: JSP for viewing data, JSP for modifying data, and BL. It can be observed that apparently, learning to view and display data in JSP level is faster than handling forms to create, edit, and delete data, while Business Logics are the most difficult concept, especially in the first two years of membership. Most members that stay in the committee for a longer period, however, master all levels of Makumba almost equally well. Such members can (and many do) continue working on the internals of Makumba itself  as a next step. While MDD editing skills are less and less actual, we can consider that currently the learning path milestones in the Tech Committee are: JSP viewing data, JSP changing data and BL.
+%  To further illustrate the member skill evolutions, we have selected the charts of four individual members in Figure \ref{fig:learning-members}. This also shows that, although the dynamics vary a lot, the JSP data-changing skills almost always lag behind the JSP data view skills, and BL skill is acquired last. 
 
 Overall, the per-year self-assessment results suggest that the learning path designed into Makumba has achieved its goal, allowing for members to have an easy start by visualizing data in JSP (which also requires MDD understanding), then starting to change data and finally learning how to write business rules in Java.
 
 
 
-\begin{figure}[t]
-  \centering
-  \caption{Skill development of selected survey respondents}
-  \subfigure[Julian]{
-     \includegraphics[width=0.4\textwidth]{figures/Joao}
-    \label{fig:learning-members-joao}
-  }
-  \subfigure[Peter]{
-     \includegraphics[width=0.4\textwidth]{figures/Priit}
-    \label{fig:learning-members-priit}
-  }
-  \\
-  \subfigure[Kim]{
-     \includegraphics[width=0.4\textwidth]{figures/Karina}
-    \label{fig:learning-members-karina}
-  }
-  \subfigure[Sam]{
-     \includegraphics[width=0.4\textwidth]{figures/Stefan}
-    \label{fig:learning-members-stefan}
-  }
-  \label{fig:learning-members}
-\end{figure} 
+% \begin{figure}[t]
+%   \centering
+%   \caption{Skill development of selected survey respondents}
+%   \subfigure[Julian]{
+%      \includegraphics[width=0.4\textwidth]{figures/Joao}
+%     \label{fig:learning-members-joao}
+%   }
+%   \subfigure[Peter]{
+%      \includegraphics[width=0.4\textwidth]{figures/Priit}
+%     \label{fig:learning-members-priit}
+%   }
+%   \\
+%   \subfigure[Kim]{
+%      \includegraphics[width=0.4\textwidth]{figures/Karina}
+%     \label{fig:learning-members-karina}
+%   }
+%   \subfigure[Sam]{
+%      \includegraphics[width=0.4\textwidth]{figures/Stefan}
+%     \label{fig:learning-members-stefan}
+%   }
+%   \label{fig:learning-members}
+% \end{figure} 
 
 
 
