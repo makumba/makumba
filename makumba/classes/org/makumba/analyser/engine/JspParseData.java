@@ -542,11 +542,11 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
                 args[0] = me.getValue();
                 m.invoke(t, args);
             } catch (java.lang.reflect.InvocationTargetException ite) {
-                System.out.println("error invoking method " + methodName + " on object of class " + c.getName()
-                        + " with argument " + args[0]);
+                java.util.logging.Logger.getLogger("org.makumba.jspparser").warning(("error invoking method " + methodName + " on object of class " + c.getName()
+                        + " with argument " + args[0]));
                 throw new RuntimeWrappedException(ite.getTargetException());
             } catch (Throwable thr) {
-                System.out.println("error invoking method " + methodName + " on object of class " + c.getName()
+                java.util.logging.Logger.getLogger("org.makumba.jspparser").warning("error invoking method " + methodName + " on object of class " + c.getName()
                         + " with argument " + args[0]);
                 throw new RuntimeWrappedException(thr);
             }
