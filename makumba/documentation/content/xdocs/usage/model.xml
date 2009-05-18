@@ -49,7 +49,7 @@ logo = file]]></source>
         <![CDATA[
 name = char[50]
 manager = ptr company.Employee
-leader = ptr general.Employee]]></source>
+]]></source>
       <source><strong>company.Employee (company/Employee.mdd)</strong>
         <![CDATA[
 name = char[200]
@@ -224,7 +224,7 @@ description = text]]></source>
           >client-side validation</a> is enabled) and at the server level. </p>
       <p>If we wanted to ensure that employees have to be at least 16 years old, we could add the
         following line to the <code>company.Employee</code> MDD:</p>
-      <source><![CDATA[ birthdate%compare = birthdate <= date($now, $now, $now - 16, 0, 0, 0) : An employee has to be at least 16 years old! ]]></source>
+      <source><![CDATA[birthdate%compare = birthdate <= date($now, $now, $now - 16, 0, 0, 0) : An employee has to be at least 16 years old!]]></source>
       <p>Additionally to these explicit validation rules, the <a
           href="/doc/datadef.html#FieldAttributes">field attributes</a> generate automatical checks
         that reflect on validation. For example <code>name = not null char[255]</code> will lead to
