@@ -63,7 +63,7 @@ public class RelationCrawlerTool extends HttpServlet {
         RecordInfo.setWebappRoot(null);
         NamedResources.cleanStaticCache(RecordInfo.infos);
 
-        rc.writeRelationsToDb();
+        rc.writeRelationsToDb(false);
         
         Logger.getLogger("org.makumba.devel.relations").info("\n\nCrawling finished, took: "
             + ReadableFormatter.readableAge(System.currentTimeMillis() - beginDate.getTime()));
