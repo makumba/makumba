@@ -605,8 +605,7 @@ public class CodeGenerator {
             appendJSPLine(sb, indent, "<mak:list from=\"" + labelName + "." + fd.getName() + " " + fd.getName()
                     + "\" >");
             indent++;
-            appendJSPLine(sb, indent, "<mak:editForm object=\"" + fd.getName() + "\" action=\"" + action + "\" />"
-                    + "\" >");
+            appendJSPLine(sb, indent, "<mak:editForm object=\"" + fd.getName() + "\" action=\"" + action + "\" >");
             indent++;
             appendJSPLine(sb, indent, template.afterFormBegin);
 
