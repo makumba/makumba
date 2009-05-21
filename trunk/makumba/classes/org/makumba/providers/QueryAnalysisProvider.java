@@ -39,8 +39,15 @@ import test.oqlanalyzer;
 public abstract class QueryAnalysisProvider {
     protected abstract QueryAnalysis getRawQueryAnalysis(String query);
 
+    protected QueryAnalysis getRawQueryAnalysis(String query, String insertIn){
+        return getRawQueryAnalysis(query, null);
+    }
     public QueryAnalysis getQueryAnalysis(String query) {
         return getRawQueryAnalysis(inlineFunctions(query));
+    }
+
+    public QueryAnalysis getQueryAnalysis(String query, String insertIn) {
+        return getRawQueryAnalysis(inlineFunctions(query), insertIn);
     }
 
     public String inlineFunctions(String query) {
