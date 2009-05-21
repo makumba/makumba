@@ -53,12 +53,16 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
 
     boolean autoLeftJoin;
 
-    public MqlSqlWalker(String query, DataDefinition paramInfo, boolean optimizeJoins, boolean autoLeftJoin) {
+    private DataDefinition insertIn;
+
+    public MqlSqlWalker(String query, DataDefinition insertIn, boolean optimizeJoins, boolean autoLeftJoin) {
         this.query = query;
+        this.insertIn= insertIn;
         this.optimizeJoins = optimizeJoins;
         this.autoLeftJoin = autoLeftJoin;
         setASTFactory(fact = new MqlSqlASTFactory(this));
-        this.paramInfo = paramInfo;
+        this.paramInfo = DataDefinitionProvider.getInstance().getVirtualDataDefinition("Temporary parameters for " + query);
+
     }
 
     public void reportError(RecognitionException e) {
@@ -259,12 +263,12 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         return ASTUtil.create(fact, MqlSqlWalker.PARAM, "?");
     }
 
-    void setParameterType(MqlNode param, MqlNode likewise) {
-        String paramName = "param" + paramInfo.getFieldNames().size();
-        FieldDefinition fd = DataDefinitionProvider.getInstance().makeFieldWithName(paramName, likewise.getMakType());
+    void setParameterType(MqlNode param, FieldDefinition likewise) {
+        String paramName = param.getOriginalText();
+        FieldDefinition fd = DataDefinitionProvider.getInstance().makeFieldWithName(paramName, likewise);
         param.setMakType(fd);
-        // if(paramInfo.getFieldDefinition(paramName)==null)
-        paramInfo.addField(fd);
+        if(paramInfo.getFieldDefinition(paramName)==null)
+            paramInfo.addField(fd);
     }
 
     void setProjectionTypes(DataDefinition proj) {
@@ -281,12 +285,31 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
             if (a.getNextSibling() != null && a.getNextSibling().getType() == ALIAS_REF)
                 name = ((MqlNode) a.getNextSibling()).getOriginalText();
 
-            FieldDefinition makType = ((MqlNode) a).getMakType();
-            if (makType == null) {
+            MqlNode mqlNode = (MqlNode) a;
+            FieldDefinition makType = mqlNode.getMakType();
+
+            // if we have no type but we are a parameter, we maybe found the type somewhere else
+            if (makType == null && mqlNode.isParam())
+                makType= paramInfo.getFieldDefinition(mqlNode.getOriginalText());
+            
+            //  if we have no type but know in which table we'll insert the result
+            if(makType == null && insertIn!=null){
+                makType= insertIn.getFieldDefinition(name);
+                
+                // and such we are most probably a parameter
+                if(makType!=null && mqlNode.isParam())
+                    setParameterType((MqlNode)a, makType);
+            }
+            /*
+             * FIXME if we have a named parameter from the query context, we might be able to determine the type from the actor type
+             */
+             
+            if(makType==null)
                 throw new IllegalStateException("no type set for projection " + name + " "
                         + MqlQueryAnalysis.showAst(a));
-            } else
-                proj.addField(DataDefinitionProvider.getInstance().makeFieldWithName(name, makType));
+            
+
+            proj.addField(DataDefinitionProvider.getInstance().makeFieldWithName(name, makType));
             i++;
         }
     }

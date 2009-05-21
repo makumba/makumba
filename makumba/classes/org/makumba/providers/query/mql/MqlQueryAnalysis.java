@@ -34,6 +34,8 @@ public class MqlQueryAnalysis implements QueryAnalysis {
 
     private String query;
 
+    private DataDefinition insertIn;
+    
     private List<String> parameterOrder = new ArrayList<String>();
 
     private DataDefinition proj;
@@ -48,10 +50,21 @@ public class MqlQueryAnalysis implements QueryAnalysis {
 
     private TextList text;
 
-    public MqlQueryAnalysis(String query, boolean optimizeJoins, boolean autoLeftJoin){
+    static String formatQueryAndInsert(String query, String insertIn) {
+        if(insertIn!=null && insertIn.length()>0)
+            return  "###"+insertIn+"###"+query;
+        else return query;
+    }
+    
+    public MqlQueryAnalysis(String queryAndInsert, boolean optimizeJoins, boolean autoLeftJoin){
         Date d = new Date();
-        
-        this.query = query;
+
+        if(queryAndInsert.startsWith("###")){
+            insertIn= DataDefinitionProvider.getInstance().getDataDefinition(queryAndInsert.substring(3, queryAndInsert.indexOf('#', 3)));
+            query= queryAndInsert.substring(queryAndInsert.indexOf('#', 3)+3);
+        }else
+            query=queryAndInsert;
+
         query = preProcess(query);
 
         if (query.toLowerCase().indexOf("from") == -1) {
@@ -67,9 +80,11 @@ public class MqlQueryAnalysis implements QueryAnalysis {
             doThrow(t, parser.getAST());
         }
         doThrow(parser.error, parser.getAST());
+
+        transformOQLParameters(parser.getAST());
         transformOQL(parser.getAST());
 
-        MqlSqlWalker mqlAnalyzer = new MqlSqlWalker(query, makeParameterInfo(query), optimizeJoins, autoLeftJoin);
+        MqlSqlWalker mqlAnalyzer = new MqlSqlWalker(query, insertIn, optimizeJoins, autoLeftJoin);
         try {
             mqlAnalyzer.statement(parser.getAST());
         } catch (Throwable e) {
@@ -79,9 +94,14 @@ public class MqlQueryAnalysis implements QueryAnalysis {
 
         labels = mqlAnalyzer.rootContext.labels;
         aliases = mqlAnalyzer.rootContext.aliases;
-        paramInfo = mqlAnalyzer.paramInfo;
+        paramInfo = DataDefinitionProvider.getInstance().getVirtualDataDefinition("Parameters for " + query);
         proj = DataDefinitionProvider.getInstance().getVirtualDataDefinition("Projections for " + query);
-        mqlAnalyzer.setProjectionTypes(proj);
+        mqlAnalyzer.setProjectionTypes(proj);        
+        
+        for(int i=0; i<parameterOrder.size(); i++)
+            paramInfo.addField(DataDefinitionProvider.getInstance().makeFieldWithName("param"+i, 
+                   mqlAnalyzer.paramInfo.getFieldDefinition(parameterOrder.get(i))));
+            
         // if(mqlAnalyzer.hasSubqueries)
         // System.out.println(mqlDebug);
         MqlSqlGenerator mg = new MqlSqlGenerator();
@@ -97,10 +117,6 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         long diff = new java.util.Date().getTime() - d.getTime();
         java.util.logging.Logger.getLogger("org.makumba.db.query.compilation").fine("MQL to SQL: " + diff + " ms: " + query);
 
-    }
-
-    private DataDefinition makeParameterInfo(String query) {
-        return DataDefinitionProvider.getInstance().getVirtualDataDefinition("Parameters for " + query);
     }
 
     private void doThrow(Throwable t, AST debugTree) {
@@ -217,17 +233,11 @@ public class MqlQueryAnalysis implements QueryAnalysis {
     public int parameterNumber() {
         return parameterOrder.size();
     }
-
-    void transformOQL(AST a) {
+    
+    /** Transform OQL $x into :parameters, and record the parameter order */
+    void transformOQLParameters(AST a){
         if (a == null)
             return;
-        // FIXME: we take advantage of this depth-first traversal of the HQL pass 1 tree to
-        // set the parameter order. However, the HQL pass 1 tree does not respect query order because
-        // the FROM section comes before the SELECT (to ease pass 2 analysis).
-        // if there are parameters in the FROM section (like in subqueries or so), their order will
-        // not be correctly set by this code.
-        // The solution is to do a separate traversal just for parameter order, making sure SELECT is
-        // traversed before FROM, and then the rest of the tree
         if (a.getType() == HqlTokenTypes.IDENT && a.getText().startsWith("$")) {
             // replacement of $n with (: makumbaParam n)
             a.setType(HqlTokenTypes.COLON);
@@ -242,7 +252,38 @@ public class MqlQueryAnalysis implements QueryAnalysis {
             parameterOrder.add(para.getText());
             a.setFirstChild(para);
             a.setText(":");
-        } else if (a.getType() == HqlTokenTypes.EQ || a.getType() == HqlTokenTypes.NE) {
+        }else if (a.getType() == HqlTokenTypes.COLON && a.getFirstChild() != null
+                && a.getFirstChild().getType() == HqlTokenTypes.IDENT)
+            // we also accept : params though we might not know what to do with them later
+            parameterOrder.add(a.getFirstChild().getText());
+        
+        if(a.getType()==HqlTokenTypes.SELECT_FROM){
+           // first the SELECT part
+           transformOQLParameters(a.getFirstChild().getNextSibling());
+           // then the FROM part
+           transformOQLParameters(a.getFirstChild());           
+           // then the rest
+           transformOQLParameters(a.getNextSibling());            
+
+        }else{
+            transformOQLParameters(a.getFirstChild());
+            // we make sure we don't do "SELECT" again
+            if(a.getType()!=HqlTokenTypes.FROM)
+                transformOQLParameters(a.getNextSibling());
+       }
+    }
+
+    /** Transform the tree so that various OQL notations are still accepted
+     * replacement of = or <> NIL with IS (NOT) NULL
+     * OQL puts a 0.0+ in front of any AVG() expression 
+     * 
+     * This method also does various subquery transformations which are not OQL-specific, to support:
+     * size(), elements(), firstElement()... 
+     * */
+    void transformOQL(AST a) {
+        if (a == null)
+            return;
+        if (a.getType() == HqlTokenTypes.EQ || a.getType() == HqlTokenTypes.NE) {
             // replacement of = or <> NIL with IS (NOT) NULL
             if (MqlQueryAnalysis.isNil(a.getFirstChild())) {
                 MqlQueryAnalysis.setNullTest(a);
@@ -263,10 +304,7 @@ public class MqlQueryAnalysis implements QueryAnalysis {
             plus.setFirstChild(zero);
             zero.setNextSibling(a.getFirstChild());
             a.setFirstChild(plus);
-        } else if (a.getType() == HqlTokenTypes.COLON && a.getFirstChild() != null
-                && a.getFirstChild().getType() == HqlTokenTypes.IDENT)
-            // we also accept : params though we might not know what to do with them later
-            parameterOrder.add(a.getFirstChild().getText());
+        } 
         else if (a.getType() == HqlTokenTypes.ELEMENTS) {
             makeSubquery(a, a.getFirstChild());
         } else if (a.getType() == HqlTokenTypes.METHOD_CALL && a.getFirstChild().getText().toLowerCase().equals("size")) {
