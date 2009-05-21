@@ -427,7 +427,9 @@ public class RelationCrawler {
                         }
                     } else {
                         // delete all previous relations of this webapp
-                        tr2.delete("org.makumba.devel.relations.Relation relation", "relation.webapp = $1", webappPointer);
+                        String oqlWhere = "relation.webapp = $1";
+                        String hqlWhere = "relation.webapp = ?";
+                        tr2.delete("org.makumba.devel.relations.Relation relation", tp.getQueryLanguage().equals("oql") ? oqlWhere : hqlWhere, new Object[] {webappPointer});
                     }
                     
                     
