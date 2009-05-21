@@ -2,9 +2,6 @@
 <projectDescription>
 	<name>makumba-template</name>
 	<comment></comment>
-	<projects>
-		<project>makumba</project>
-	</projects>
 	<buildSpec>
 		<buildCommand>
 			<name>org.eclipse.wst.jsdt.core.javascriptValidator</name>
