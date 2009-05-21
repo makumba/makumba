@@ -376,6 +376,8 @@ selectExpr
 	| arithmeticExpr
 // ********* Mql addition	
 	| logicalExpr
+// ********* Mql addition	
+	| parameter
 	| query
 	;
 
