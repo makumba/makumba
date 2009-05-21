@@ -23,6 +23,12 @@ public class MqlQueryAnalysisProvider extends QueryAnalysisProvider {
     }
 
     @Override
+    public QueryAnalysis getRawQueryAnalysis(String query, String insertIn) {
+        return (QueryAnalysis) NamedResources.getStaticCache(parsedQueries).getResource(MqlQueryAnalysis.formatQueryAndInsert(query, insertIn));
+    }
+
+    
+    @Override
     public boolean selectGroupOrOrderAsLabels() {
         return false;
     }
