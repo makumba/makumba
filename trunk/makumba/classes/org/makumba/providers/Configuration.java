@@ -159,7 +159,7 @@ public class Configuration implements Serializable {
             URL url = org.makumba.commons.ClassResource.get(MAKUMBA_CONF);
             if (url != null) {
                 logger.info("Loading application configuration from " + url);
-                applicationConfig = new MakumbaINIFileReader(url);
+                applicationConfig = new MakumbaINIFileReader(url, defaultConfig);
             } else { // if we did not find any configuration, we shout. we need an application configuration for the
                 // dataSource config.
                 logger.severe("No application configuration found!");
