@@ -45,6 +45,14 @@ import ch.ubique.inieditor.IniEditor;
 public class MakumbaINIFileReader extends IniEditor {
 
     private URL url;
+    
+    private MakumbaINIFileReader defaultProperty;
+
+    public MakumbaINIFileReader(URL url, MakumbaINIFileReader defaultProperty) throws IOException {
+        this(url);
+        this.defaultProperty = defaultProperty;
+        
+    }
 
     public MakumbaINIFileReader(URL url) throws IOException {
         super(true); // use case-sensitive section names
@@ -52,12 +60,13 @@ public class MakumbaINIFileReader extends IniEditor {
         load(FileUtils.getInputStream(url));
     }
 
+    
     public String getStringProperty(String section, String property, MakumbaINIFileReader otherConfig) {
         return get(section, property) != null ? get(section, property) : otherConfig.get(section, property);
     }
 
     public String getProperty(String section, String property) {
-        return get(section, property) != null ? get(section, property) : Configuration.PROPERTY_NOT_SET;
+        return get(section, property) != null ? get(section, property) : ((defaultProperty != null && defaultProperty.getProperty(section, property) != null) ? defaultProperty.getProperty(section, property) : Configuration.PROPERTY_NOT_SET);
     }
 
     public boolean getBooleanProperty(String section, String property, MakumbaINIFileReader otherConfig) {
