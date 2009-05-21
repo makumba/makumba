@@ -362,7 +362,7 @@ public class MqlNode extends CommonAST {
                         getLine(), getColumn());
                 return true;
             } else {
-                walker.setParameterType(right, left);
+                walker.setParameterType(right, left.getMakType());
                 return true;
             }
         }
