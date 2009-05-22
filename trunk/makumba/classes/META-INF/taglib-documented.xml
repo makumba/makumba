@@ -265,7 +265,7 @@ Note: the Java variable must be cast to its specific type (Integer, String, Date
       <name>html</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Normal behaviour is to transform character output to its HTML escaped form. If this is "true", content is assumed to be HTML, and is not escaped. If "auto", heuristically checks the content for HTML tags and inhibits escape if there are any. Default is "false".</description>
+      <description>Normal behaviour is to transform character output to its HTML escaped form. If this is "true", content is assumed to be HTML, and is not escaped. If "auto", heuristically checks the content for HTML tags and inhibits escape if there are any; note: only the first 32768 characters are checked (32kB). Default is "false".</description>
       <comments>Rtexpr. Only char[] and text</comments>
     </attribute>
 
