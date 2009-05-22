@@ -43,6 +43,14 @@ See http://forrest.apache.org/docs/linking.html for more info
     <supporters label="Supporters" href="/supporters.html" />
     <example label="Documentation example" href="/example.html" tab="home"/>
     <status label="Documentation status" href="/status.html" />
+    <license label="License" href="/license.html" />
+    
+    <all label="Download documentation">
+      <whole_site_html label="Whole Site HTML" href="wholesite.html"/>
+      <whole_site_pdf label="Whole Site PDF" href="wholesite.pdf"/>
+    </all>
+      
+    
   </about>
   
   <quickstart label="Quick start" href="/quickstart.html" description="Quick start" />
@@ -101,10 +109,10 @@ See http://forrest.apache.org/docs/linking.html for more info
       <maksearchForm label="mak:searchForm" href="/doc/taglib/maksearchForm.html"/>
       <makvalue label="mak:value" href="/doc/taglib/makvalue.html"/>
       <makversion label="mak:version" href="/doc/taglib/makversion.html"/>
-      <makversion label="mak:count()" href="/doc/taglib/makcount.html"/>
-      <makversion label="mak:maxCount()" href="/doc/taglib/makmaxCount.html"/>
-      <makversion label="mak:lastCount()" href="/doc/taglib/maklastCount.html"/>
-      <makversion label="mak:maxResults()" href="/doc/taglib/makmaxResults.html"/>
+      <makcount label="mak:count()" href="/doc/taglib/makcount.html"/>
+      <makmaxcount label="mak:maxCount()" href="/doc/taglib/makmaxCount.html"/>
+      <maklastcount label="mak:lastCount()" href="/doc/taglib/maklastCount.html"/>
+      <makmaxresults label="mak:maxResults()" href="/doc/taglib/makmaxResults.html"/>
     </taglib>
     <controller label="Makumba Controller" href="/doc/controller.html" />
     <bl label="Business Logics" dir="/doc/BL" description="Makumba Business Logics" tab="documentation">
@@ -114,9 +122,11 @@ See http://forrest.apache.org/docs/linking.html for more info
  	</bl>
   </documentation>
 
-   <showcases label="Showcases" href="/showcases.html" description="Showcases" tab="showcases" />
+  <showcases label="Showcases" href="/showcases.html" description="Showcases" tab="showcases" />
 
-  <!-- develdoc label="Developer documentation" href="/develdoc/index.html" description="Developer documentation" tab="develdoc"/ -->
+  <download label="Download" href="/download.html" tab="download"/>
+
+  <!-- develdoc label="Developer documentation" href="/develdoc/index.html" description="Developer documentation" tab="develdoc"/ -->  
   
 <!--
   The href must be wholesite.html/pdf  You can change the labels and node names
@@ -164,6 +174,6 @@ See http://forrest.apache.org/docs/linking.html for more info
     <getDefaultDatabaseName href="" />
     
     <develdoc href="" />
-    
+        
   </external-refs>
 </site>
