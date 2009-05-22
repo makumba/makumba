@@ -35,12 +35,13 @@ import org.makumba.commons.MultipleKey;
 
 /**
  * mak:option tag
+ * 
  * @author Cristian Bogdan
  * @version $Id$
  */
 public class OptionTag extends BasicValueTag implements BodyTag {
     private static final long serialVersionUID = 1L;
-    
+
     /**
      * {@inheritDoc}
      */
@@ -87,10 +88,13 @@ public class OptionTag extends BasicValueTag implements BodyTag {
         return EVAL_BODY_BUFFERED;
     }
 
-    /** 
+    /**
      * A value was computed, do what's needed with it, cleanup and return the result of doMakumbaEndTag()
-     * @param val the computed value
-     * @param type the type of the value
+     * 
+     * @param val
+     *            the computed value
+     * @param type
+     *            the type of the value
      * @throws JspException
      * @throws {@link LogicException}
      */
@@ -98,13 +102,13 @@ public class OptionTag extends BasicValueTag implements BodyTag {
         getInput().checkBodyContentForNonWhitespace();
         if (isNull())
             val = org.makumba.Pointer.Null;
-        getInput().choiceSet.add(val, bodyContent==null?"":bodyContent.getString(), false, false);
+        getInput().choiceSet.add(val, bodyContent == null ? "" : bodyContent.getString(), false, false);
         valueExprOriginal = dataType = expr = null;
         return EVAL_PAGE;
     }
-    
+
     @Override
-    protected void doAnalyzedCleanup(){
+    protected void doAnalyzedCleanup() {
         super.doAnalyzedCleanup();
         bodyContent = null;
     }
