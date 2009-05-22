@@ -24,10 +24,9 @@
 package org.makumba;
 
 /**
- * This class provides basic 'text-to-HTML' functionality. Note: previously this was an existing class in the internal
- * "util" package (fred, 2003-08-24).
+ * This class provides basic 'text-to-HTML' functionality.<br/>
+ * Note: previously this was an existing class in the internal "util" package (fred, 2003-08-24).
  */
-
 public class HtmlUtils {
 
     // special HTML codes
@@ -135,10 +134,10 @@ public class HtmlUtils {
                 return formatted + endSeparator;
         }
     }
-    
+
     /**
-     * removes HTML tags and replaces double quotes by the corresponding HTML entity, so that the passed text can safely be included in HTML
-     * attributes (such as the &lt;A&gt; TITLE attribute)
+     * removes HTML tags and replaces double quotes by the corresponding HTML entity, so that the passed text can safely
+     * be included in HTML attributes (such as the &lt;A&gt; TITLE attribute)
      */
     public static String stripHTMLTags(String str) {
         // remove quotes
@@ -147,5 +146,5 @@ public class HtmlUtils {
         str = str.replaceAll("<[^>]*>", "");
         return str;
     }
-    
+
 }
