@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <taglib xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd" version="2.0">
 
-  <description>Makumba devel-20090318023858 http://www.makumba.org</description>
+  <description>Makumba devel-20090522191001 http://www.makumba.org</description>
   <tlib-version>2.0</tlib-version>
   <short-name>mak</short-name>
   <uri>http://www.makumba.org/view-hql</uri>
@@ -261,7 +261,7 @@ If not present, the default database is used. See database configuration and loo
       <name>html</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Normal behaviour is to transform character output to its HTML escaped form. If this is "true", content is assumed to be HTML, and is not escaped. If "auto", heuristically checks the content for HTML tags and inhibits escape if there are any. Default is "false".</description>
+      <description>Normal behaviour is to transform character output to its HTML escaped form. If this is "true", content is assumed to be HTML, and is not escaped. If "auto", heuristically checks the content for HTML tags and inhibits escape if there are any; note: only the first 32768 characters are checked (32kB). Default is "false".</description>
       
     </attribute>
 
