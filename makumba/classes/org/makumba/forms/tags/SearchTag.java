@@ -230,6 +230,8 @@ public class SearchTag extends FormTagBase {
                     } else {
                         // seems like a hack, but is needed to get the correct field names in the mdd, etc..
                         inputName = getRangeBeginName(inputName);
+                        // let's also update the value when we're updating the inputName
+                        value = attributes.getAttribute(inputName);
                     }
                 }
 
@@ -276,7 +278,7 @@ public class SearchTag extends FormTagBase {
                                 matchMode);
                         } else {
                             // other comparison
-                            whereThisField += computeTypeSpecificQuery(req, parameters, objectName, finalFieldName,
+                            whereThisField += computeTypeSpecificQuery(req, value, objectName, finalFieldName,
                                 attributeName, matchMode, fd);
                         }
                     }
@@ -371,10 +373,10 @@ public class SearchTag extends FormTagBase {
             return null;
         }
 
-        private String computeTypeSpecificQuery(HttpServletRequest req, HttpParameters parameters, String objectName,
+        private String computeTypeSpecificQuery(HttpServletRequest req, Object value, String objectName,
                 String fieldName, String attributeName, Object matchMode, FieldDefinition fd) throws LogicException {
             String where = "";
-            Object value = parameters.getParameter(attributeName);
+//            Object value = parameters.getParameter(attributeName); // Refactored this function for passing the value directly as a parameter, since it was not working for multi-input fields like Dates
             if (value instanceof Vector || fd.isSetType()) {
                 // we need to check for the field type as well - we have different labels for the sets
                 String labelName;
