@@ -351,7 +351,7 @@ public class CodeGenerator {
                     appendLine(sb, template.beforePageHeader + "New " + StringUtils.upperCaseBeginning(labelName)
                             + template.afterPageHeader);
                     appendLine(sb, "<mak:newForm type=\"" + dd + "\" action=\"" + action + "\" name=\"" + labelName
-                            + "\" >");
+                            + "\" method=\"post\" >");
                 } else if (type == TYPE_OBJECT) {
                     appendLine(sb, "<mak:object from=\"" + dd + " " + labelName + "\" where=\"" + labelName
                             + (queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL) ? "=$" : ".id=:") + labelName + "\">");
@@ -584,7 +584,7 @@ public class CodeGenerator {
         if (type == TYPE_ADDFORM) {
             appendJSPLine(sb, indent, "<%-- Makumba Generator - START ADDFORM FOR FIELD " + fd.getName() + " --%>");
             appendJSPLine(sb, indent, "<mak:addForm object=\"" + labelName + "\" field=\"" + fd.getName()
-                    + "\" action=\"" + action + "\" >");
+                    + "\" action=\"" + action + "\" method=\"post\" >");
             indent++;
             appendJSPLine(sb, indent, template.afterFormBegin);
 
