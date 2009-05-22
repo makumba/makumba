@@ -382,7 +382,14 @@ public class RelationCrawler {
         Map<String, Map<String, Vector<Dictionary<String, Object>>>> relations = getDetectedRelations();
 
         Pointer webappPointer = determineRelationsDatabase(tp, forceDatabase, true);
-
+        
+        /* FIXME this does not work because of a bug in Hibernate
+        if(!updateExistingRelations) {
+            deleteExistingRelations(webappPointer);
+        }
+        */
+        
+        // now we insert the records into the relations table, in the right database
         for (String typeAndtoFile : relations.keySet()) {
             String toFile = typeAndtoFile.substring(typeAndtoFile.indexOf("#") + 1);
             String type = relationTypeDetail ? typeAndtoFile.substring(0, typeAndtoFile.indexOf("#")) : "dependsOn";
@@ -408,7 +415,6 @@ public class RelationCrawler {
                     
                     if(updateExistingRelations) {
                         
-    
                         // we check if there's already such a relation in the database
     
                         String oqlQuery = "SELECT relation AS relation FROM org.makumba.devel.relations.Relation relation WHERE relation.toFile = $1 AND relation.fromFile = $2 and relation.webapp.webappRoot = $3";
@@ -419,19 +425,10 @@ public class RelationCrawler {
     
                         if (previousRelation.size() > 0) {
                             // we delete the previous relation origin
-    
                             Pointer previousRelationPtr = (Pointer) previousRelation.get(0).get("relation");
-    
                             deleteRelation(tr2, previousRelationPtr);
-    
                         }
-                    } else {
-                        // delete all previous relations of this webapp
-                        String oqlWhere = "relation.webapp = $1";
-                        String hqlWhere = "relation.webapp = ?";
-                        tr2.delete("org.makumba.devel.relations.Relation relation", tp.getQueryLanguage().equals("oql") ? oqlWhere : hqlWhere, new Object[] {webappPointer});
                     }
-                    
                     
                     // build relation
                     relationInfo.put("toFile", toFile);
@@ -457,6 +454,32 @@ public class RelationCrawler {
             }
         }
         relations.clear();
+    }
+
+    private void deleteExistingRelations(Pointer webappPointer) {
+        Transaction tr = null;
+
+        try {
+            tr = tp.getConnectionTo(targetDatabase);
+
+        
+        // delete all previous relations of this webapp
+        // FIXME make this work with hibernate
+        String oqlWhere1 = "o in (select r.origin from org.makumba.devel.relations.Relation r where r.webapp = $1)";
+        String hqlWhere1 = "o in (select r.origin from org.makumba.devel.relations.Relation r where r.webapp.id = ?)";
+        tr.delete("org.makumba.devel.relations.RelationOrigin o", tp.getQueryLanguage().equals("oql") ? oqlWhere1 : hqlWhere1, new Object[] { webappPointer });
+        
+        String oqlWhere2 = "relation.webapp = $1";
+        String hqlWhere2 = "relation.webapp.id = ?";
+        tr.delete("org.makumba.devel.relations.Relation relation", tp.getQueryLanguage().equals("oql") ? oqlWhere2 : hqlWhere2, new Object[] { webappPointer });
+        
+        tr.commit();
+        
+        } finally {
+            if(tr != null) {
+                tr.close();
+            }
+        }
     }
 
     private void deleteRelation(Transaction tr2, Pointer previousRelationPtr) {
