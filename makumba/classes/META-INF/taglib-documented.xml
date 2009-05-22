@@ -526,6 +526,14 @@ Values are none (displayed in <mak:response/>), before (before the input), after
       <comments>Rtexpr. Values are false (off), true (on submission) or live (while tpying).</comments>
     </attribute>
 
+    <attribute>
+      <name>multipleSubmitErrorMsg</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Enables multiple form submission prevention, and sets the given value as the error message.</description>
+      <comments>Document me please</comments>
+    </attribute>
+
     <!--form specific:-->
     <attribute>
       <name>target</name>
@@ -701,14 +709,7 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     <attribute name="annotationSeparator" specifiedIn="form"/>
     <attribute name="reloadFormOnError" specifiedIn="form"/>
     <attribute name="clientSideValidation" specifiedIn="form"/>
-
-    <attribute>
-      <name>multipleSubmitErrorMsg</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Enables multiple form submission prevention, and sets the given value as the error message.</description>
-      <comments>Document me please</comments>
-    </attribute>
+    <attribute name="multipleSubmitErrorMsg" specifiedIn="form"/>
 
     <!--form specific:-->
     <attribute name="target" specifiedIn="form"/>
@@ -818,7 +819,7 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     <attribute name="annotationSeparator" specifiedIn="form"/>
     <attribute name="reloadFormOnError" specifiedIn="form"/>
     <attribute name="clientSideValidation" specifiedIn="form"/>
-    <attribute name="multipleSubmitErrorMsg" specifiedIn="newForm"/>
+    <attribute name="multipleSubmitErrorMsg" specifiedIn="form"/>
 
     <!--form specific:-->
     <attribute name="target" specifiedIn="form"/>
@@ -1496,6 +1497,15 @@ If an option value appears many times it will only be shown the first time it oc
       <description>Whether this option is selected or not</description>
       <comments>False by default</comments>
     </attribute>
+
+    <attribute>
+      <name>disabled</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Whether the option will be disabled</description>
+      <comments>Fixed</comments>
+    </attribute>
+    
   </tag>
 
 
