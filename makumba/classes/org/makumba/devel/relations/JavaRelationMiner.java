@@ -70,6 +70,11 @@ public class JavaRelationMiner extends RelationMiner {
                 String s = "Could not parse query "+query+" from file "+path+": "+me.getMessage();
                 logger.warning(s);
                 continue;
+            } catch(NullPointerException npe) {
+                String s = "Could not parse query "+query+" from file "+path+": "+npe.getMessage();
+                logger.warning(s);
+                continue;
+                
             }
                         
             Map<String, String> projections = qA.getProjections();
