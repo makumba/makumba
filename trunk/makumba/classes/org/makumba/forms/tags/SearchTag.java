@@ -230,8 +230,7 @@ public class SearchTag extends FormTagBase {
                     } else {
                         // seems like a hack, but is needed to get the correct field names in the mdd, etc..
                         inputName = getRangeBeginName(inputName);
-                        // let's also update the value when we're updating the inputName
-                        value = attributes.getAttribute(inputName);
+                        // the variable 'value' should NOT be updated here
                     }
                 }
 
