@@ -38,10 +38,10 @@ This can be used for http authentication with no session tracking. )
             <title>See also</title>
             <ul>
                 <li>
-                    <a href="maklogin.html">mak:login</a>
+                    <a href="/doc/taglib/maklogin.html">mak:login</a>
                 </li>
                 <li>
-                    <a href="makattribute.html">mak:attribute</a>
+                    <a href="/doc/taglib/makattribute.html">mak:attribute</a>
                 </li>
             </ul>
         </section>

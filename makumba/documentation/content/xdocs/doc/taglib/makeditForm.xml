@@ -195,22 +195,22 @@ Values are none (displayed in &lt;mak:response/&gt;), before (before the input),
             <title>See also</title>
             <ul>
                 <li>
-                    <a href="makinput.html">mak:input</a>
+                    <a href="/doc/taglib/makinput.html">mak:input</a>
                 </li>
                 <li>
-                    <a href="maknewForm.html">mak:newForm</a>
+                    <a href="/doc/taglib/maknewForm.html">mak:newForm</a>
                 </li>
                 <li>
-                    <a href="makaddForm.html">mak:addForm</a>
+                    <a href="/doc/taglib/makaddForm.html">mak:addForm</a>
                 </li>
                 <li>
-                    <a href="makeditForm.html">mak:editForm</a>
+                    <a href="/doc/taglib/makeditForm.html">mak:editForm</a>
                 </li>
                 <li>
-                    <a href="makdeleteLink.html">mak:deleteLink</a>
+                    <a href="/doc/taglib/makdeleteLink.html">mak:deleteLink</a>
                 </li>
                 <li>
-                    <a href="makdelete.html">mak:delete</a>
+                    <a href="/doc/taglib/makdelete.html">mak:delete</a>
                 </li>
             </ul>
         </section>

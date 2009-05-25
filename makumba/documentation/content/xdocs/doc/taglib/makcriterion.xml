@@ -53,16 +53,16 @@
             <title>See also</title>
             <ul>
                 <li>
-                    <a href="maksearchForm.html">mak:searchForm</a>
+                    <a href="/doc/taglib/maksearchForm.html">mak:searchForm</a>
                 </li>
                 <li>
-                    <a href="makresultList.html">mak:resultList</a>
+                    <a href="/doc/taglib/makresultList.html">mak:resultList</a>
                 </li>
                 <li>
-                    <a href="makmatchMode.html">mak:matchMode</a>
+                    <a href="/doc/taglib/makmatchMode.html">mak:matchMode</a>
                 </li>
                 <li>
-                    <a href="maksearchField.html">mak:searchField</a>
+                    <a href="/doc/taglib/maksearchField.html">mak:searchField</a>
                 </li>
             </ul>
         </section>
