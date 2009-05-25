@@ -286,7 +286,7 @@ public class TLD2Forest {
 
                 Element refElement = seeAlso.addElement("li");
                 Element link = refElement.addElement("a");
-                link.addAttribute("href", "mak" + reference + ".html");
+                link.addAttribute("href", "/doc/taglib/" + "mak" + reference + ".html");
                 link.setText("mak:" + reference);
             }
             seeAlso.setText(links);
