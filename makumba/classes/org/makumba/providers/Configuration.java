@@ -145,6 +145,8 @@ public class Configuration implements Serializable {
     private static MakumbaINIFileReader defaultConfig;
 
     private static MakumbaINIFileReader applicationConfig;
+    
+    private static Object loadLock = new Object();
 
     static Logger logger = Logger.getLogger("org.makumba.config");
 
@@ -159,7 +161,10 @@ public class Configuration implements Serializable {
             URL url = org.makumba.commons.ClassResource.get(MAKUMBA_CONF);
             if (url != null) {
                 logger.info("Loading application configuration from " + url);
-                applicationConfig = new MakumbaINIFileReader(url, defaultConfig);
+                synchronized (loadLock) {
+                    applicationConfig = new MakumbaINIFileReader(url, defaultConfig);
+                }
+                
             } else { // if we did not find any configuration, we shout. we need an application configuration for the
                 // dataSource config.
                 logger.severe("No application configuration found!");
@@ -281,7 +286,9 @@ public class Configuration implements Serializable {
      * @return "makumba" or "hibernate"
      */
     public static String getDefaultDatabaseLayer() {
-        return applicationConfig.getStringProperty("dataSourceConfig", KEY_DEFAULT_DATABASE_LAYER, defaultConfig);
+        synchronized (loadLock) {
+            return applicationConfig.getStringProperty("dataSourceConfig", KEY_DEFAULT_DATABASE_LAYER, defaultConfig);
+        }
     }
 
     public static String getClientSideValidationDefault() {
