@@ -10,7 +10,7 @@
     <p>Makumba uses so-called Makumba Data Definitions (MDDs) in order to represent objects. These
       definitions are also referred to as <strong>type</strong> of an object. This section provides
       a short overview of MDDs and illustrates them with some examples, check the <a
-        href="../doc/datadef.html">reference documentation</a> for more details on MDDs.</p>
+        href="site:datadef">reference documentation</a> for more details on MDDs.</p>
     <note>This documentation does not give any guidelines regarding data model design. We assume
       that you already has some knowledge of general data model design concepts.</note>
 
@@ -25,11 +25,11 @@
           <code>general.Person</code>. </p>
       <p>MDDs contain following elements: </p>
       <ul>
-        <li>the <a href="../doc/datadef.html#Fields">field definitions</a></li>
+        <li>the <a href="site:datadef#Fields">field definitions</a></li>
         <li>
-          <a href="../doc/valrules.html">validation rules</a> referring to one or more fields</li>
+          <a href="site:valrules">validation rules</a> referring to one or more fields</li>
         <li>
-          <a href="/doc/queryfrag.html#mddFunctions">MDD functions</a>
+          <a href="site:queryfrag#mddFunctions">MDD functions</a>
         </li>
       </ul>
       <p>We will further explain those type of fields by using the following example of a company
