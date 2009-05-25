@@ -16,13 +16,13 @@
             <title>See also</title>
             <ul>
                 <li>
-                    <a href="makcount.html">mak:count</a>
+                    <a href="/doc/taglib/makcount.html">mak:count</a>
                 </li>
                 <li>
-                    <a href="makmaxCount.html">mak:maxCount</a>
+                    <a href="/doc/taglib/makmaxCount.html">mak:maxCount</a>
                 </li>
                 <li>
-                    <a href="maklastCount.html">mak:lastCount</a>
+                    <a href="/doc/taglib/maklastCount.html">mak:lastCount</a>
                 </li>
             </ul>
         </section>

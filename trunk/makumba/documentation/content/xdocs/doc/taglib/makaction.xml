@@ -17,16 +17,16 @@
             <title>See also</title>
             <ul>
                 <li>
-                    <a href="makform.html">mak:form</a>
+                    <a href="/doc/taglib/makform.html">mak:form</a>
                 </li>
                 <li>
-                    <a href="maknewForm.html">mak:newForm</a>
+                    <a href="/doc/taglib/maknewForm.html">mak:newForm</a>
                 </li>
                 <li>
-                    <a href="makaddForm.html">mak:addForm</a>
+                    <a href="/doc/taglib/makaddForm.html">mak:addForm</a>
                 </li>
                 <li>
-                    <a href="makeditForm.html">mak:editForm</a>
+                    <a href="/doc/taglib/makeditForm.html">mak:editForm</a>
                 </li>
             </ul>
         </section>

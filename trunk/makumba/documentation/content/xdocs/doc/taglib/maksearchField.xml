@@ -282,16 +282,16 @@ The output will be &lt; [x] label &gt;&lt; elementSeparator &gt;&lt; [x] label &
             <title>See also</title>
             <ul>
                 <li>
-                    <a href="maksearchForm.html">mak:searchForm</a>
+                    <a href="/doc/taglib/maksearchForm.html">mak:searchForm</a>
                 </li>
                 <li>
-                    <a href="makresultList.html">mak:resultList</a>
+                    <a href="/doc/taglib/makresultList.html">mak:resultList</a>
                 </li>
                 <li>
-                    <a href="makcriterion.html">mak:criterion</a>
+                    <a href="/doc/taglib/makcriterion.html">mak:criterion</a>
                 </li>
                 <li>
-                    <a href="makmatchMode.html">mak:matchMode</a>
+                    <a href="/doc/taglib/makmatchMode.html">mak:matchMode</a>
                 </li>
             </ul>
         </section>

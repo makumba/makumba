@@ -149,10 +149,10 @@ LIMIT can limit the query time dramatically, but the children mak:lists are not 
             <title>See also</title>
             <ul>
                 <li>
-                    <a href="makvalue.html">mak:value</a>
+                    <a href="/doc/taglib/makvalue.html">mak:value</a>
                 </li>
                 <li>
-                    <a href="makobject.html">mak:object</a>
+                    <a href="/doc/taglib/makobject.html">mak:object</a>
                 </li>
             </ul>
         </section>

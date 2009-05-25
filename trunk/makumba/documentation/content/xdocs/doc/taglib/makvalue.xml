@@ -147,13 +147,13 @@ Support not available for: date, "choice" = ptr, set, setCharEnum</td>
             <title>See also</title>
             <ul>
                 <li>
-                    <a href="maklist.html">mak:list</a>
+                    <a href="/doc/taglib/maklist.html">mak:list</a>
                 </li>
                 <li>
-                    <a href="makobject.html">mak:object</a>
+                    <a href="/doc/taglib/makobject.html">mak:object</a>
                 </li>
                 <li>
-                    <a href="makoption.html">mak:option</a>
+                    <a href="/doc/taglib/makoption.html">mak:option</a>
                 </li>
             </ul>
         </section>
