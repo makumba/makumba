@@ -12,6 +12,7 @@ rudi: optimised some string concatenations, fixing some generics warnings
 rudi: lineViewer more robust to exceptions of relations tool
 rudi: more sophisticated MQL function analysis
 jasper: allowing Transaction instead of Database in Logic
+cristi: fixes related to SELECT ... INSERT and parameter passing to MQL queries
 
 -----------------------------------------------
 
