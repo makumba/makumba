@@ -249,7 +249,11 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
             }
             ri = ri.getFieldDefinition(name.substring(0, n)).getSubtable();
         }
-        ri = ri.getFieldDefinition(name).getSubtable();
+        FieldDefinition subfieldCheck = ri.getFieldDefinition(name);
+        if(subfieldCheck==null)
+            throw new DataDefinitionParseError("subfield not found: "+name+" in "+ri.getName());
+        
+        ri = subfieldCheck.getSubtable();
         return ri;
     }
 
