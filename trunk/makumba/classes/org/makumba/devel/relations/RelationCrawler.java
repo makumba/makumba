@@ -467,11 +467,12 @@ public class RelationCrawler {
         // FIXME make this work with hibernate
         String oqlWhere1 = "o in (select r.origin from org.makumba.devel.relations.Relation r where r.webapp = $1)";
         String hqlWhere1 = "o in (select r.origin from org.makumba.devel.relations.Relation r where r.webapp.id = ?)";
-        tr.delete("org.makumba.devel.relations.RelationOrigin o", tp.getQueryLanguage().equals("oql") ? oqlWhere1 : hqlWhere1, new Object[] { webappPointer });
         
         String oqlWhere2 = "relation.webapp = $1";
         String hqlWhere2 = "relation.webapp.id = ?";
         tr.delete("org.makumba.devel.relations.Relation relation", tp.getQueryLanguage().equals("oql") ? oqlWhere2 : hqlWhere2, new Object[] { webappPointer });
+
+        tr.delete("org.makumba.devel.relations.RelationOrigin o", tp.getQueryLanguage().equals("oql") ? oqlWhere1 : hqlWhere1, new Object[] { webappPointer });
         
         tr.commit();
         
@@ -488,12 +489,14 @@ public class RelationCrawler {
         Vector<Dictionary<String, Object>> previousRelationOrigin = tr2.executeQuery(
             tp.getQueryLanguage().equals("oql") ? oqlQuery1 : hqlQuery1, new Object[] { previousRelationPtr });
 
+        // we now delete the relation itself
+        tr2.delete(previousRelationPtr);
+        
+        // then we delete the origins it pointed to
         for (Dictionary<String, Object> dictionary : previousRelationOrigin) {
             tr2.delete((Pointer) dictionary.get("origin"));
         }
 
-        // we now delete the relation itself
-        tr2.delete(previousRelationPtr);
     }
     
     /**
