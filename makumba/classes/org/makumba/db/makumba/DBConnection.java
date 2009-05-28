@@ -204,6 +204,7 @@ public abstract class DBConnection extends TransactionImplementation {
     });
     
     public int insertFromQuery(String type, String OQL, Object args) {
+        OQL= QueryProvider.getQueryAnalzyer("oql").inlineFunctions(OQL);
         QueryAndArgs qa= new QueryAndArgs(OQL, args);
         Object[] k = { qa.getQuery(), type };
         return ((Query) getHostDatabase().queries.getResource(k)).insert(qa.getArgs(), this);
