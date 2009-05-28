@@ -87,6 +87,10 @@ public class DBConnectionWrapper extends DBConnection {
         return getWrapped().insert(host, subsetField, data);
     }
 
+ 	public int insertFromQuery(String type, String OQL, Object parameterValues){
+        return getWrapped().insertFromQuery(type, OQL, parameterValues);
+    }
+    
     public int update(Pointer ptr, java.util.Dictionary<String, Object> fieldsToChange) {
         return getWrapped().update(ptr, fieldsToChange);
     }
