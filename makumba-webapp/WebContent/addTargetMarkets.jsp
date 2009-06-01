@@ -1,0 +1,8 @@
+<%@ taglib uri="http://www.makumba.org/presentation" prefix="mak" %>
+
+<h1>Add target markets</h1>
+<mak:newForm type="general.Country" action="" method="post">
+<label>Target markets:</label><mak:input field="name" /><br/>
+<label></label><input type="submit" name="Create"/>
+</mak:newForm>
+
