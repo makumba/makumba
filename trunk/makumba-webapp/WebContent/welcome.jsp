@@ -1,27 +1,18 @@
-<%@ taglib uri="http://www.makumba.org/presentation" prefix="mak" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Makumba example welcome page</title>
-</head>
-<body>
-<mak:response/>
+<jsp:include page="header.jsp" />
 
-<h1>Create new Employee</h1>
-<mak:newForm type="company.Employee" action="welcome.jsp">
-Name: <mak:input field="name" autoComplete="true"/><br/>
-Surname: <mak:input field="surname" autoComplete="true"/><br/>
-Birthdate: <mak:input field="birthdate"/><br/>
-<input type="submit" name="Create"/>
-</mak:newForm>
+<% if(request.getParameter("page").equals("home")){ %>
+	<jsp:include page="home.jsp" />
+<% }%>
 
-<br/>
+<% if(request.getParameter("page").equals("companies")){ %>
+	<jsp:include page="listCompanies.jsp" />
+<% }%>
 
-<h1>Existing employees</h1>
-<mak:list from="company.Employee p">
-<mak:value expr="p.nameSurname()"/> [<mak:deleteLink message="Employee deleted" action="welcome.jsp" object="p">delete</mak:deleteLink>]<br/>
-</mak:list>
+<% if(request.getParameter("page").equals("departments")){ %>
+	<jsp:include page="listDepartments.jsp" />
+<% }%>
 
-</body>
-</html>
+<% if(request.getParameter("page").equals("myTasks")){ %>
+	<jsp:include page="myTasks.jsp" />
+<% }%>
+
