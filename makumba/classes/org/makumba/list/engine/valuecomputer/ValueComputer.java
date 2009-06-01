@@ -71,12 +71,20 @@ public class ValueComputer {
 
         if (check instanceof FieldDefinition)
             set = (FieldDefinition) check;
-
-        if (/*nullableExpr == null && */ set == null)
+        
+        // nullable queries are handled via LEFT JOIN in MQL, but not in HQL
+        
+        if(MakumbaJspAnalyzer.isHQLPage(pageCache) && nullableExpr == null && set == null) {
             return new ValueComputer(analyzed, parentListKey, expr, pageCache);
+        }
+        
+        if(MakumbaJspAnalyzer.isOQLPage(pageCache) && set == null) {
+            return new ValueComputer(analyzed, parentListKey, expr, pageCache);
+        }
 
         if (set == null)
             return new NullableValueComputer(analyzed, parentListKey, nullableExpr, expr, pageCache);
+        
         return new SetValueComputer(analyzed, parentListKey, set, expr, pageCache);
     }
 
