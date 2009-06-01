@@ -316,11 +316,11 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
     }
 
     public static boolean isOQLPage(PageCache pageCache) {
-        return getQueryLanguage(pageCache).equals(QL_OQL);
+        return getQueryLanguage(pageCache).equalsIgnoreCase(QL_OQL);
     }
 
     public static boolean isHQLPage(PageCache pageCache) {
-        return getQueryLanguage(pageCache).equals(QL_HQL);
+        return getQueryLanguage(pageCache).equalsIgnoreCase(QL_HQL);
     }
 
 }
