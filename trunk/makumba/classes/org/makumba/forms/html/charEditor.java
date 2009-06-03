@@ -57,10 +57,10 @@ public class charEditor extends FieldEditor {
 
 //	public static final charEditor singleton = new charEditor();
 
-	static String[] _params = { "default", "empty", "type", "size", "maxlength", "autoComplete" };
+	static String[] _params = { "default", "empty", "type", "size", "maxlength", "autoComplete", "clearDefault" };
 
 	static String[][] _paramValues = { null, null, { "text", "password" },
-			null, null, new String[] { "true", "false" } };
+			null, null, new String[] { "true", "false" }, new String[] {"true", "false"} };
 
 	@Override
     public String[] getAcceptedParams() {
@@ -99,14 +99,17 @@ public class charEditor extends FieldEditor {
 	@Override
     public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
 		boolean autoComplete = formatParams.get("autoComplete") != null && formatParams.get("autoComplete").equals("true");
+        boolean clearDefault = formatParams.get("clearDefault") != null && formatParams.get("clearDefault").equals("true");
 	    String test = getParams(rf, fieldIndex, formatParams);
 		String res = "", id="";
+		
 		
 		res += "<input name=\"" + getInputName(rf, fieldIndex, formatParams) + "\" type=\""
 				+ getInputType(rf, fieldIndex, formatParams) + "\" value=\""
 				+ formatValue(rf, fieldIndex, o, formatParams) + "\" "
 				+ test + getExtraFormatting(rf, fieldIndex, formatParams)
 				+ (autoComplete ? "autocomplete=\"off\"" : "")
+				+ (clearDefault ? "onBlur=\"if(this.value=='') this.value='"+HtmlUtils.escapeQuotes(getDefaultValueFormat(rf, fieldIndex, formatParams))+"';\" onFocus=\"if(this.value=='"+HtmlUtils.escapeQuotes(getDefaultValueFormat(rf, fieldIndex, formatParams))+"') this.value='';\"" : "")
 				+ ">";
 		
 		// the second part of the auto-complete, i.e. the dropdown that appears
@@ -128,8 +131,7 @@ public class charEditor extends FieldEditor {
 	/** Formats the value to appear in an input statement. */
 	@Override
     public String formatValue(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
-		String s = (o == null) ? null : HtmlUtils.string2html(o.toString());
-		return resetValueFormat(rf, fieldIndex, s, formatParams);
+		return HtmlUtils.string2html(resetValueFormat(rf, fieldIndex, (o == null) ? null : o.toString(), formatParams));
 	}
 
 	/*

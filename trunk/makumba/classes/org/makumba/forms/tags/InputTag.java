@@ -113,6 +113,10 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         this.nullOption = s;
     }
 
+    public void setClearDefault(String d) {
+        params.put("clearDefault", d);
+    }
+
     // Extra html formatting parameters
     public void setAccessKey(String s) {
         extraFormattingParams.put("accessKey", s);

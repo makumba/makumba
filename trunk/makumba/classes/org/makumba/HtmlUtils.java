@@ -154,6 +154,21 @@ public class HtmlUtils {
         str = str.replaceAll("<[^>]*>", "");
         return str;
     }
+    
+    /**
+     * escapes single and double quotes in a string by adding a forward slash before them
+     */
+    public static String escapeQuotes(String str) {
+        if(str == null)
+            return null;
+
+        // escape double quotes
+        str = str.replace("\"", "\\\"");
+        // escape single quotes
+        str = str.replace("'", "\\'");
+        
+        return str;
+    }
 
     public static void main(String[] args) {
         String s = "Indeed, during this event, we'll make a great general overview on all kind of transport, from planes to trains, cars and even subways; with a visit in well-known companies for each transport (Airbus, Toyota, TGV.). So lets. So mainly, you.ll be provided a lot of information about the new transportation systems either made or used in France. Do you really believe that this great topic will be the only main thing we.ll do ?? Come on !! Of course not !!! Lets so go. Another main issue of our event is FUN, FUN, FUN and FUN again !!!! At the same time you will discover our city, our region and their secrets. And maybe have the great opportunity to enjoy a week-end trip to Paris (it.s far to be sure but we.re trying our BEST to make you happy !) But don.t worry we.ll find something else if it.s not possible  ;-)  and want to watch the video of our last event click Come and have a look what we can do and if there are any bugs that should be tested and rooted out of here whle at it so what do you think about themall dinosaurs <b> BOLD TEXT </b> if not then the HTML auto detection does not work for this text.";
