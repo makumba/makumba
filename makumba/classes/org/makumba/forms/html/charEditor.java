@@ -109,7 +109,7 @@ public class charEditor extends FieldEditor {
 				+ formatValue(rf, fieldIndex, o, formatParams) + "\" "
 				+ test + getExtraFormatting(rf, fieldIndex, formatParams)
 				+ (autoComplete ? "autocomplete=\"off\"" : "")
-				+ (clearDefault ? "onBlur=\"if(this.value=='') this.value='"+HtmlUtils.escapeQuotes(getDefaultValueFormat(rf, fieldIndex, formatParams))+"';\" onFocus=\"if(this.value=='"+HtmlUtils.escapeQuotes(getDefaultValueFormat(rf, fieldIndex, formatParams))+"') this.value='';\"" : "")
+				+ (clearDefault ? "onBlur=\"if(this.value=='') this.value='"+HtmlUtils.escapeQuotes(HtmlUtils.string2html(getDefaultValueFormat(rf, fieldIndex, formatParams)))+"';\" onFocus=\"if(this.value=='"+HtmlUtils.escapeQuotes(HtmlUtils.string2html(getDefaultValueFormat(rf, fieldIndex, formatParams)))+"') this.value='';\"" : "")
 				+ ">";
 		
 		// the second part of the auto-complete, i.e. the dropdown that appears
