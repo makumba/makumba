@@ -1154,6 +1154,14 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
       <comments><![CDATA[Rtexpr. Only for <code>type="tickbox"</code>]]></comments>
     </attribute>
 
+    <attribute>
+      <name>clearDefault</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Enable this to hide the default text of an input onFocus and display it again onBlur if nothing has been entered.</description>
+    </attribute>
+
+
     <!--input specific-->
     <attribute>
       <name>accessKey</name>
