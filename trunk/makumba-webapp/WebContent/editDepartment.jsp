@@ -3,9 +3,9 @@
 
 
 
-<mak:object from="company.Department d" where="d=$department" >
+<mak:object from="company.Department d" where="d=$department">
 <h1>Edit <mak:value expr="d.name" /></h1>
-<mak:editForm object="d" action="listDepartments.jsp">
+<mak:editForm object="d" action="listDepartments.jsp" message="Department edited">
 <label>Name:</label> <mak:input field="name" /><br/>
 <label>Leader:</label> <mak:input field="manager" /><br/>
 <label></label><input type="submit" name="Edit"/>

@@ -18,7 +18,7 @@ edit
 <mak:list from="company.Department d">
 <tr>
 <td>
-<a href="viewDepartment.jsp?department=<mak:value expr="d"/>"><mak:value expr="d.name"/></a> 
+<a href="viewDepartment.jsp?page=department&department=<mak:value expr="d"/>"><mak:value expr="d.name"/></a> 
 </td>
 <td>
 <a href="viewPerson.jsp?department=<mak:value expr="d.manager"/>"> <mak:value expr="d.manager.name"/></a>
@@ -30,8 +30,6 @@ edit
 </mak:list>
 </table>
 
-<p><a href="#" onclick="showhide('1')">Add department</a></p>
+<p><a href="#" onclick="getPage('addDepartment.jsp','1','')">Add department</a></p>
 
-<div id="1" style="display: none;">
-<jsp:include page="addDepartment.jsp" />
-</div>
+<div id="1"></div>

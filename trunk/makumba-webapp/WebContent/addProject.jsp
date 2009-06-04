@@ -9,7 +9,7 @@
 <mak:response/>
 
 <h1>Create new project</h1>
-<mak:newForm type="company.Project" action="addProject.jsp">
+<mak:newForm type="company.Project" action="addProject.jsp" method="post" message="Project added">
 Name: <mak:input field="name" /><br/>
 Leader: <mak:input field="leader" /><br/>
 <input type="submit" name="Create"/>
