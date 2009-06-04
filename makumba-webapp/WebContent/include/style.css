@@ -5,10 +5,12 @@ margin-right: 0.1em;
 background: #C2F64D;
 }
 a.menu:hover{
+font: normal 14px verdana, arial, helvetica, sans-serif;
 background: #FFF;
 }
-a.menu:active{
-color:#fff;
+a.menu_active{
+font: normal 14px verdana, arial, helvetica, sans-serif;
+background:#FFD800;
 }
 
 box{

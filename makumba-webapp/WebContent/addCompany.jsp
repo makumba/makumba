@@ -1,7 +1,7 @@
 <%@ taglib uri="http://www.makumba.org/presentation" prefix="mak" %>
 
 <h1>Create new company</h1>
-<mak:newForm type="company.Company" action="" method="post">
+<mak:newForm type="company.Company" action="" method="post" message="Company created">
 <fieldset><label>Name:</label> <mak:input field="name" /><br/>
 <label>Turnover:</label> <mak:input field="turnover" /><br/>
 <label>Suppliers:</label> <mak:input field="suppliers" /><br/>

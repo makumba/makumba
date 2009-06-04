@@ -8,3 +8,17 @@ obj.style.display = "none";
 }
 }
 }
+
+function getPage(url,element)
+{		
+	var pars = '';
+	
+	var myAjax = new Ajax.Updater(
+		element, 
+		url, 
+		{
+			method: 'get', 
+			parameters: pars
+		});
+	
+}
