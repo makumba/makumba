@@ -17,7 +17,7 @@
                     >JSP 1.1 specification</a>. You will need a so-called "servlet container" that
                 supports them both, such as <a href="http://jakarta.apache.org/tomcat/">Apache
                     Tomcat</a>. The corresponding <strong>WEB-INF/taglib.tld</strong> is already
-                included in the <a href="../../download.html">distribution</a>
+                included in the <a href="/download.html">distribution</a>
                 <code>makumba.jar</code>. </p>
             <p>Before using Makumba tags in your JSP pages you also need to declare the taglib
                 with:</p>

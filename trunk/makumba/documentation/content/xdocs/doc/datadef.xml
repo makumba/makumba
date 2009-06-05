@@ -86,7 +86,7 @@
 					</ul>
 					<br/> This combination ensures that no two objects of one type have the same
 					primary key field. See <a
-						href="../configuration/configuration.html#datasource_configuration">how to
+						href="/configuration/configuration.html#datasource_configuration">how to
 						configure</a> this.<br/> The name of the primary key field is the same with
 					the last part of the type name. If another field by that name is defined by the
 					makumba user, this field will be renamed in the database.</li>

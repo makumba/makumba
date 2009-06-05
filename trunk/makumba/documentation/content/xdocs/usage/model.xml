@@ -10,7 +10,7 @@
     <p>Makumba uses so-called Makumba Data Definitions (MDDs) in order to represent objects. These
       definitions are also referred to as <strong>type</strong> of an object. This section provides
       a short overview of MDDs and illustrates them with some examples, check the <a
-        href="site:datadef">reference documentation</a> for more details on MDDs.</p>
+        href="/doc/datadef.html">reference documentation</a> for more details on MDDs.</p>
     <note>This documentation does not give any guidelines regarding data model design. We assume
       that you already has some knowledge of general data model design concepts.</note>
 
@@ -25,11 +25,11 @@
           <code>general.Person</code>. </p>
       <p>MDDs contain following elements: </p>
       <ul>
-        <li>the <a href="site:datadef#Fields">field definitions</a></li>
+        <li>the <a href="/doc/datadef.html#Fields">field definitions</a></li>
         <li>
-          <a href="site:valrules">validation rules</a> referring to one or more fields</li>
+          <a href="/doc/valrules.html">validation rules</a> referring to one or more fields</li>
         <li>
-          <a href="site:queryfrag#mddFunctions">MDD functions</a>
+          <a href="/doc/queryfrag.html#mddFunctions">MDD functions</a>
         </li>
       </ul>
       <p>We will further explain those type of fields by using the following example of a company
@@ -239,7 +239,7 @@ description = text]]></source>
         function in company.Employee:</p>
       <source><![CDATA[nameSurname() { concat(name, ' ', surname }]]></source>
       <p>You can read more about MDD functions in the <a href="/doc/queryfrag.html#mddFunctions"
-          >reference documentation</a> or in the <a href="mddfunct.html">MDD function usage
+          >reference documentation</a> or in the <a href="/usage/mddfunct.html">MDD function usage
           documentation</a>.</p>
     </section>
 
@@ -252,7 +252,7 @@ description = text]]></source>
         <title>Allowing the alteration of specific types</title>
         <p>In order to allow Makumba to create the necessary tables related to a type, it is
           necessary to declare this in the <a
-            href="http://new.makumba.org/configuration/configuration.html#datasource_configuration"
+            href="/configuration/configuration.html#datasource_configuration"
             >data source configuration</a> in <code>Makumba.conf</code>.</p>
         <p>When using the Makumba database layer, this is done by using the
             <code>alter#typeName=tue/false</code> parameter in the data source section it should
@@ -276,7 +276,7 @@ description = text]]></source>
           <li>the external set <code>company.Company#suppliers</code> will be hold in the table <code>company.Company</code> (since it is a set of companies) and the intermediary table <code>general_Company__suppliers_</code> will hold the references to its members</li>
         </ul>
         <p>This mechanism can be modified to some extent by using a number of parameters in the <a
-          href="http://new.makumba.org/configuration/configuration.html#datasource_configuration"
+          href="/configuration/configuration.html#datasource_configuration"
           >data source configuration</a> in <code>Makumba.conf</code>:</p>
         <ul>
           <li><code>company.Company = company</code> means that Makumba will look for the type <code>company.Company</code> in the database table <code>company</code> instead of <code>company_Company_</code></li>

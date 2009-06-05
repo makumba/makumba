@@ -27,7 +27,7 @@
       <ul>
         <li>it accepts boolean projections: SELECT a=1 AS col1 ... etc</li>
         <li>selecting an object will lead in selecting the external form of its Makumba pointer</li>
-        <li> it works with <a href="datadef.html">Makumba Data Definitions</a> instead of Hibernate
+        <li> it works with <a href="/doc/datadef.html">Makumba Data Definitions</a> instead of Hibernate
           mappings </li>
         <li> like HQL, it supports subqueries in the style of e.g. <a href="ext:mysql-subqueries"
             >MySQL</a>
@@ -296,7 +296,7 @@
         documentation as support for earlier Makumba versions.</note>
       <p> The database can be interrogated using the following language ( [] means optional, {}
         means any number of repetitions). OQL is similar to SQL, a specification can be found at <a
-          href="ext:odmg">http://www.odmg.org</a> (or check <a href="oql-manual.pdf">this PDF</a> ).
+          href="ext:odmg">http://www.odmg.org</a> (or check <a href="/doc/oql-manual.pdf">this PDF</a> ).
         Makumba recognizes a subset of OQL at the moment, which it translates to the host SQL when
         necessary. </p>
       <source> SELECT expression [[AS] label] {, expression [[AS] label] } FROM {type [AS] label |
