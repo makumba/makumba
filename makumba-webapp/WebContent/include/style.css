@@ -13,20 +13,24 @@ font: normal 14px verdana, arial, helvetica, sans-serif;
 background:#FFD800;
 }
 
-box{
+div.box{
 font: normal 14px verdana, arial, helvetica, sans-serif;
-border: 3px dotted;
-margin: 2em;
-background: #C2F64D;
+border: 1px dotted;
+margin: 1em;
 float: left;
-width: 45%;
+width: 40%;
+text-align: left;
+background: #C2F64D;
+padding:5px;
 }
 
-box.addcomment{
-border: 0px;
-background: #fff;
-float: left;
-width: 80%;
+div.addbox{
+font: normal 14px verdana, arial, helvetica, sans-serif;
+border: 1px dotted;
+margin: 1em;
+position:center;
+text-align: left;
+padding:10px;
 }
 
 label
