@@ -8,7 +8,7 @@
 
     <p>Makumba focuses on combining query fragments to obtain high-performance systems with a
       minimum number of queries sent to the database back-end, while keeping its concerns about easy
-      learnability and rapid development. The <a href="taglib/maklist.html">mak:list engine</a>
+      learnability and rapid development. The <a href="/doc/taglib/maklist.html">mak:list engine</a>
       already combines query fragments for embedded mak:lists by combining their FROM and WHERE
       sections, but we found a need for a better formalization and sharing of query fragments across
       the system. The elementary concept of such formalization is the MDD function.</p>
@@ -143,7 +143,7 @@
       <source><![CDATA[SELECT x FROM Person x WHERE x.username=$user AND x.password=$pass ]]></source>
       <p>Once the actor is authenticated, the <em>$actor_Person</em> attribute is put in the session
         part of the query context. It can be removed using <em>&lt;<a
-            href="taglib/maklogout.html">mak:logout</a> actor=&quot;Person&quot; /&gt;
+            href="/doc/taglib/maklogout.html">mak:logout</a> actor=&quot;Person&quot; /&gt;
         </em>. Some fields of Person (the MDD declaring the actor) <a href="ext:bug1052">may also be
           put in the session</a>, along with the results of functions with no parameters, and along
         with related objects.</p>
@@ -179,16 +179,16 @@
 
       <p>Implicit authorisation constraints are defined in functions like canRead(), canInsert(),
         canUpdate(), canDelete() in the respective MDDs. These functions will be used whenever a <a
-          href="taglib/maklist.html">mak:list</a>, <a href="taglib/makobject.html">mak:object</a> or
-          <a href="taglib/makform.html">mak:*Form</a> attempts to view, create, change or delete an
+          href="/doc/taglib/maklist.html">mak:list</a>, <a href="/doc/taglib/makobject.html">mak:object</a> or
+          <a href="/doc/taglib/makform.html">mak:*Form</a> attempts to view, create, change or delete an
         object of the respective type. The following features are intended:</p>
       <fixme author="cristi"><a href="ext:bug1059">filter out</a> from mak:list and mak:object
         objects that the user is not authorized to see, but do not raise any exception if there are
-        such objects.This will probably be the default for <a href="taglib/maklist.html"
+        such objects.This will probably be the default for <a href="/doc/taglib/maklist.html"
           >mak:list</a></fixme>
       <fixme author="cristi"><a href="ext:bug1061">block access</a> to the whole page if the user is
-        not authorized. This will probably be the default for <a href="taglib/makobject.html"
-          >mak:object</a>, and <a href="taglib/makform.html">mak:*Form</a></fixme>
+        not authorized. This will probably be the default for <a href="/doc/taglib/makobject.html"
+          >mak:object</a>, and <a href="/doc/taglib/makform.html">mak:*Form</a></fixme>
       <fixme author="cristi"><a href="ext:bug1060">not link</a> to a page that is not
         authorized</fixme>
 

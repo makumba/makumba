@@ -10,23 +10,23 @@
       <title>How to use Makumba</title>
       <p>
         This part of the site is aimed at explaining how to use Makumba. In contrary to the
-        <a href="../doc/index.html">Reference Documentation</a>
+        <a href="/doc/index.html">Reference Documentation</a>
         that is more technical, this part of the site will show you how to use Makumba in order to build powerful
         webapps with a minimum of effort through a number of examples, and link to the reference documentation when
         needed, so that you can discover Makumba in a more "hands-on" fashion.
       </p>
       <p>In order to get started, read further on the following topics:</p>
       <ul>
-        <li><a href="../manifesto.html">Makumba manifesto</a></li>
-        <li><a href="model.html">Defining the data model: Makumba Data Definitions</a></li>
-        <li><a href="list.html">Displaying data: Makumba list</a></li>
-        <li><a href="forms.html">Creating and editing data: Makumba forms</a></li>
-        <li><a href="multiple.html">Multiple forms and lists</a></li>
-        <li><a href="advanced.html">Advanced features</a></li>
-        <li><a href="search.html">Search forms</a></li>
-        <li><a href="mddfunct.html">MDD functions</a></li>
-        <li><a href="auth.html">Authentication and authorisation</a></li>
-        <li><a href="structure.html">Layout and navigation</a></li>
+        <li><a href="/manifesto.html">Makumba manifesto</a></li>
+        <li><a href="/usage/model.html">Defining the data model: Makumba Data Definitions</a></li>
+        <li><a href="/usage/list.html">Displaying data: Makumba list</a></li>
+        <li><a href="/usage/forms.html">Creating and editing data: Makumba forms</a></li>
+        <li><a href="/usage/multiple.html">Multiple forms and lists</a></li>
+        <li><a href="/usage/advanced.html">Advanced features</a></li>
+        <li><a href="/usage/search.html">Search forms</a></li>
+        <li><a href="/usage/mddfunct.html">MDD functions</a></li>
+        <li><a href="/usage/auth.html">Authentication and authorisation</a></li>
+        <li><a href="/usage/structure.html">Layout and navigation</a></li>
       </ul>
     </section>
     

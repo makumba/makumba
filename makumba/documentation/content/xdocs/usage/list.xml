@@ -13,13 +13,13 @@
 
     <section>
       <title>Introduction</title>
-      <p>One of the most common operations in database-driven websites is to display information to the user. Makumba provides a query-based approach to this through its <a href="../doc/taglib/makobject.html">mak:object</a> and <a href="../doc/taglib/maklist.html">mak:list</a> tags.</p>
+      <p>One of the most common operations in database-driven websites is to display information to the user. Makumba provides a query-based approach to this through its <a href="/doc/taglib/makobject.html">mak:object</a> and <a href="/doc/taglib/maklist.html">mak:list</a> tags.</p>
     </section>
     
     <section>
       <title>Displaying data through queries</title>
       
-      <p>Both <a href="../doc/taglib/makobject.html">mak:object</a> and <a href="../doc/taglib/maklist.html">mak:list</a> use the same general principles for displaying data. mak:object is meant to handle only one object, while mak:list handles multiple objects. In the following introductionnary examples, we will use mak:object in order to explain the general mechanism.</p>
+      <p>Both <a href="/doc/taglib/makobject.html">mak:object</a> and <a href="/doc/taglib/maklist.html">mak:list</a> use the same general principles for displaying data. mak:object is meant to handle only one object, while mak:list handles multiple objects. In the following introductionnary examples, we will use mak:object in order to explain the general mechanism.</p>
       <p>Let's say that we want to ...</p>
     </section>
 

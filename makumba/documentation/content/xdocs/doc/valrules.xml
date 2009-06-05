@@ -160,7 +160,7 @@
     </section>
 
     <section><title>Multi-field uniqueness definition</title>
-    <p>Similar to the <a href="datadef.html#FieldAttributes"><em>unique</em> field attribute</a>, you can also define multi-field
+    <p>Similar to the <a href="/doc/datadef.html#FieldAttributes"><em>unique</em> field attribute</a>, you can also define multi-field
     uniqueness contraints. These constraints can even span over several data definitions, if they are related via
     pointers.</p>
 
