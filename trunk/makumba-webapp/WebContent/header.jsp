@@ -14,6 +14,7 @@
 
 <c:set var="page"><%= request.getParameter("page") %></c:set>
 
+
 <p>
 <c:choose><c:when test="${page == 'home'}" >
 <a class="menu_active" href="index.jsp?page=home">[ Home ]</a>
@@ -47,3 +48,4 @@
 </c:otherwise>
 </c:choose>
 </p>
+

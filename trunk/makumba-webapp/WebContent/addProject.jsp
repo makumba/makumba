@@ -8,19 +8,16 @@
 <body>
 <mak:response/>
 
+
+<div class="addbox">
 <h1>Create new project</h1>
-<mak:newForm type="company.Project" action="addProject.jsp" method="post" message="Project added">
-Name: <mak:input field="name" /><br/>
-Leader: <mak:input field="leader" /><br/>
-<input type="submit" name="Create"/>
+<mak:newForm type="company.Project" action="" method="post" message="Project added">
+<label>Name:</label> <mak:input field="name" /><br/>
+<label>Leader:</label> <mak:input field="leader" /><br/>
+<label></label><input type="submit" name="Create"/>
 </mak:newForm>
 
-<br/>
-
-<h1>Project list</h1>
-<mak:list from="company.Project p">
-<mak:value expr="p.name"/> <mak:value expr="p.leader.name"/>
-</mak:list>
+</div>
 
 </body>
 </html>
