@@ -17,68 +17,24 @@
                 </tr>
                 
                 <tr>
-                    <td></td>
-                    <td>fix broken links</td>
-                    <td>Not started</td>
-                    <td>links in several pages are broken, fix them</td>
-                </tr>
-
-                <tr>
                     <td>quickstart (makumba-install.html)</td>
                     <td>quickstart.html</td>
-                    <td>Not started</td>
+                    <td>Started</td>
                     <td>needs to be mostly rewritten, totally outdated.</td>
                 </tr>
-
+                
+                <tr>
+                    <td></td>
+                    <td>makumba-template packaing and download</td>
+                    <td>not started</td>
+                    <td>make a target in build.xml to checkout & make a zip of makumba-template, including the latest makumba.jar. might be good to actually make this part of the release cycle along with mak-sources.</td>
+                </tr>
                 
                 <tr>
                     <td>query functions</td>
                     <td>reference doc/query functions</td>
                     <td>not started</td>
                     <td>split in several parts: MDD functions, authentication, authorization</td>
-                </tr>
-                
-                                <tr>
-                    <td></td>
-                    <td>configuration of error messages</td>
-                    <td>not started</td>
-                    <td><source>
-
-To enable the custom error for some pages of your application you only
-need to put error.jsp in root folder and it will be used also for all
-subfolders. In case you want a different error message for just some
-pages, they will need to be in their own folder and you will need to
-put a different error.jsp in that folder. In other words, makumba
-searches for error.jsp starting from the folder of the page that
-caused error and going to all the parent folders until it finds it or
-reaches the root of application in which case it shows the default
-error page.
-
-Content of the error.jsp
-
-It's advised that in the error.jsp be simple HTML document or with
-minimum of code. There are 3 attributes that should be placed
-somewhere in the page to get the error information:
-
-mak_error_title - giving the title of the error
-mak_error_description - giving the error description witch is normally
-content of the default error page
-mak_error_realpath - gives you the path to the file that has caused the error
-
-</source></td>
-                </tr>
-                
-                <tr>
-                    <td>Useful libraries</td>
-                    <td>Configuration / libraries</td>
-                    <td>not done</td>
-                    <td/>
-                </tr>
-                <tr>
-                    <td>Download</td>
-                    <td>Download</td>
-                    <td>not done</td>
-                    <td>add link</td>
                 </tr>
                 
                 <tr>
@@ -93,7 +49,7 @@ mak_error_realpath - gives you the path to the file that has caused the error
                     <td>Example</td>
                     <td>The Makumba example (demo app, quickstart, usage, tags)</td>
                     <td>In progress</td>
-                    <td>Document the MDDs</td>
+                    <td></td>
                 </tr>
                 
 				   <tr>
@@ -155,12 +111,6 @@ mak_error_realpath - gives you the path to the file that has caused the error
                     <td>not started</td>
                     <td>make link / integration</td>
                 </tr>
-                <tr>
-                    <td>FAQ</td>
-                    <td>-</td>
-                    <td/>
-                    <td>Dropped</td>
-                </tr>
                 
                 <tr>
                     <td>Bugzilla</td>
@@ -181,12 +131,6 @@ mak_error_realpath - gives you the path to the file that has caused the error
                     <td>not started</td>
                     <td>ant targets to generate forrest HTML (forrest site) and javadoc</td>
                 </tr>
-                <tr>
-                    <td></td>
-                    <td>usability: data model</td>
-                    <td>started</td>
-                    <td>finish to document it</td>
-                </tr>
 
                 <tr>
                     <td/>
@@ -206,6 +150,67 @@ mak_error_realpath - gives you the path to the file that has caused the error
                     <td/>
                     <td/>
                 </tr>
+                
+                <tr>
+                    <td>FAQ</td>
+                    <td>-</td>
+                    <td/>
+                    <td>Dropped</td>
+                </tr>
+                
+                
+                <tr>
+                    <td></td>
+                    <td>configuration of error messages</td>
+                    <td>not started</td>
+                    <td><source>
+
+To enable the custom error for some pages of your application you only
+need to put error.jsp in root folder and it will be used also for all
+subfolders. In case you want a different error message for just some
+pages, they will need to be in their own folder and you will need to
+put a different error.jsp in that folder. In other words, makumba
+searches for error.jsp starting from the folder of the page that
+caused error and going to all the parent folders until it finds it or
+reaches the root of application in which case it shows the default
+error page.
+
+Content of the error.jsp
+
+It's advised that in the error.jsp be simple HTML document or with
+minimum of code. There are 3 attributes that should be placed
+somewhere in the page to get the error information:
+
+mak_error_title - giving the title of the error
+mak_error_description - giving the error description witch is normally
+content of the default error page
+mak_error_realpath - gives you the path to the file that has caused the error
+
+</source></td>
+                </tr>
+                
+                <tr>
+                    <td>Download</td>
+                    <td>Download</td>
+                    <td>not done</td>
+                    <td>add link</td>
+                </tr>
+                
+                <tr>
+                    <td></td>
+                    <td>usability: data model</td>
+                    <td>started</td>
+                    <td>finish to document it</td>
+                </tr>
+                
+                
+                <tr>
+                    <td></td>
+                    <td>fix broken links</td>
+                    <td>done</td>
+                    <td>links in several pages are broken, fix them</td>
+                </tr>
+                
                 
                 <tr>
                     <td>Showcases</td>
@@ -288,7 +293,6 @@ mak_error_realpath - gives you the path to the file that has caused the error
                     <td>done</td>
                     <td>all the DB doc is ported</td>
                 </tr>
-                
                 
 
             </table>
