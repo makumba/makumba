@@ -14,7 +14,8 @@
 <mak:newForm type="company.Project" action="" method="post" message="Project added">
 <label>Name:</label> <mak:input field="name" /><br/>
 <label>Leader:</label> <mak:input field="leader" /><br/>
-<label></label><input type="submit" name="Create"/>
+<label>Description:</label> <mak:input field="description" rows="5" cols="40" /><br/>
+<label></label><input type="submit" name="Create" value="Create project"/>
 </mak:newForm>
 
 </div>

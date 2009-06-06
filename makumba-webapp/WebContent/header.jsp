@@ -40,6 +40,14 @@
 </c:otherwise>
 </c:choose>
 
+<c:choose><c:when test= "${page== 'projects'}" >
+<a class="menu_active" href="listProjects.jsp?page=projects">[ Projects ]</a>
+</c:when>
+<c:otherwise>
+<a class="menu" href="listProjects.jsp?page=projects">[ Projects ]</a>
+</c:otherwise>
+</c:choose>
+
 <c:choose><c:when test="${page== 'myTasks'}" >
 <a class="menu_active" href="myTasks.jsp?page=myTasks">[ My Tasks ]</a>
 </c:when>

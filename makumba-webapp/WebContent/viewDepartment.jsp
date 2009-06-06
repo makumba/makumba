@@ -4,6 +4,7 @@
 <mak:object from="company.Department d" where="d=$department">
 <div class="box">
 <h1><mak:value expr="d.name" /></h1>
+<a href="editDepartment.jsp?department=<mak:value expr="d"/>">edit</a>
 <p><label>Department manager:</label><mak:value expr="d.manager.name" /></p>
 <p><label>Employees:</label></p>
 <div><mak:list from="company.Employee e" where="e.department=d" >
