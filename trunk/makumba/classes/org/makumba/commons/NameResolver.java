@@ -34,9 +34,7 @@ import org.makumba.db.makumba.sql.Database;
 /**
  * This class provides utility methods to convert names from MDD types into their name in the data source. It also takes
  * into account properties passed in the database configuration.
- * 
- * TODO document these properties
- * 
+ *  * 
  * @author Manuel Gay
  * @author Cristian Bogdan
  * @version $Id$
@@ -281,7 +279,7 @@ public class NameResolver {
                 continue;
 
             
-            String resolved = config.getProperty(getTableNameFromConfig(config, dd) + "#" + name);
+            String resolved = config.getProperty(getTableNameFromConfig(config, dd) + "->" + name);
             if (resolved == null) {
                 resolved = checkReserved(getFieldNameInSource(name));
                 while (checkDuplicateFieldName(resolved, dd))
