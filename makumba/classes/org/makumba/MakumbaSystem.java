@@ -64,7 +64,7 @@ public class MakumbaSystem {
      * The name of the default database according to the lookup file "Makumba.conf"
      * 
      * @since makumba-0.5.4
-     * @deprecated Use {@link #getDefaultDataSourceName()} instead
+     * @deprecated Use {@link org.makumba.providers.TransactionProvider#getDefaultDataSourceName()} instead
      */
     public static String getDefaultDatabaseName() {
         return tp.getDefaultDataSourceName();
