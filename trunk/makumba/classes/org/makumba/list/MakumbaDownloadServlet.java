@@ -35,7 +35,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.makumba.LogicException;
-import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.Transaction;
@@ -62,7 +61,7 @@ public class MakumbaDownloadServlet extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
         Transaction t = null;
         try {
-            t = TransactionProvider.getInstance().getConnectionTo(MakumbaSystem.getDefaultDatabaseName());
+            t = TransactionProvider.getInstance().getConnectionTo(TransactionProvider.getInstance().getDefaultDataSourceName());
             String ptr = req.getParameter("value");
             String type = req.getParameter("type");
             if (StringUtils.isBlank(ptr) || StringUtils.isBlank(type)) {
