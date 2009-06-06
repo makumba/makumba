@@ -160,7 +160,7 @@
         UnauthenticatedException), that will be handled. If the exception returns 0, false or null
         an UnauthorizedException is raised with an error message indicated in the constraint.</p>
       <p>Currently explicit authorisation constraints can be put in the file
-        MakumbaController.properties. authorisation constraints looks like: </p>
+        <code>Makumba.conf</code> (see the <a href="/configuaraiton/configuration.html">configuration documentation</a>. Authorisation constraints looks like: </p>
       <source><![CDATA[
         authorize%/={actor(Person)}
         authorize%/admin=(char[]admin){actor(Person).username=admin} You are not an administrator ]]> </source>
