@@ -59,7 +59,6 @@ See http://forrest.apache.org/docs/linking.html for more info
     <index label="Overview" href="/configuration/index.html" description="Configuration overview" />
     <webapp label="Web-app configuration" href="/configuration/webapp.html" description="Makumba web-app" />
     <conf label="Makumba configuration" href="/configuration/configuration.html" description="Makumba.conf" />
-    <libs label="Libraries" href="/configuration/libraries.html" description="Required and useful libraries" />
   </configuration>
   
   <usage label="Using Makumba" dir="/usage" description="How to use Makumba" tab="usage">

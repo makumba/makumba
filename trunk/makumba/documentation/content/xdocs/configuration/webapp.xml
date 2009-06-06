@@ -39,6 +39,7 @@
                 <li>*.jspx: to enable the source-code viewer for JSP files</li>
                 <li>/mak-tools/ and /mak-tools/*: to enable the various makumba tools, such as the MDD viewer.</li>
             </ul>
+            <note>The <code>/mak-tools</code> path can be configured in <code>Makumba.conf</code>, see the <a href="/configuration/configuration.html#makToolsPath">Makumba tools path configuration</a></note>
         </section>
     </body>
 </document>
