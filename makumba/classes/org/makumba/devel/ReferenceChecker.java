@@ -312,7 +312,7 @@ public class ReferenceChecker extends HttpServlet {
     }
 
     private void writeHeader(PrintWriter w, String contextPath) {
-        w.println("<div>Checking " + MakumbaSystem.getDefaultDatabaseName()
+        w.println("<div>Checking " + TransactionProvider.getInstance().getDefaultDataSourceName()
                 + " <span style=\"font-size: small\">using Makumba version " + MakumbaSystem.getVersion()
                 + "</span></div>");
         w.println("</td>");
