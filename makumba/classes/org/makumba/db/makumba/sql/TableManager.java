@@ -187,7 +187,7 @@ public class TableManager extends Table {
                 makeKeyIndex();
             } else {
                 exists_ = true;
-                alter(dbc, cs);
+                alter(dbc, cs, alter);
             }
         } catch (SQLException sq) {
             sq.printStackTrace();
@@ -433,8 +433,9 @@ public class TableManager extends Table {
         return n;
     }
 
-    /** checks if an alteration is needed, and calls doAlter if so */
-    protected void alter(SQLDBConnection dbc, CheckingStrategy cs) throws SQLException {
+    /** checks if an alteration is needed, and calls doAlter if so 
+     * @param alter TODO*/
+    protected void alter(SQLDBConnection dbc, CheckingStrategy cs, boolean alter) throws SQLException {
         Vector<String> present = new Vector<String>();
         Vector<String> add = new Vector<String>();
         Vector<String> modify = new Vector<String>();
