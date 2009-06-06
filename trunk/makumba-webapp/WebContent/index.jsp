@@ -24,11 +24,11 @@
 <div class="box">
 <h1>Projects</h1>
 <mak:list from="company.Project p" limit="5">
-<p><mak:value expr="p.name"/> (
-<a href="viewEmployee.jsp?page=home&employee=<mak:value expr="p.leader"/>"><mak:value expr="p.leader.nameSurname()"/></a> - leader) </p>
+<p><a href="viewProject.jsp?page=home&project=<mak:value expr="p"/>"><mak:value expr="p.name"/></a> 
+( <a href="viewEmployee.jsp?page=home&employee=<mak:value expr="p.leader"/>"><mak:value expr="p.leader.nameSurname()"/></a> - leader) </p>
 </mak:list>
 
-<p align="right"><a href="listProjects.php?page=home">view all</a></p></div>
+<p align="right"><a href="listProjects.jsp?page=home">view all</a></p></div>
 
 <div class="box">
 <h1>Suppliers</h1>
@@ -36,4 +36,4 @@
 <p><mak:value expr="c.targetMarkets"/></p>
 </mak:list>
 
-<p align="right"><a href="listSuppliers.php?page=home">view all</a></p></div>
+<p align="right"><a href="listSuppliers.jsp?page=home">view all</a></p></div>

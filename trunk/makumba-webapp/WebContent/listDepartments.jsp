@@ -21,7 +21,7 @@ edit
 <a href="viewDepartment.jsp?page=department&department=<mak:value expr="d"/>"><mak:value expr="d.name"/></a> 
 </td>
 <td>
-<a href="viewPerson.jsp?department=<mak:value expr="d.manager"/>"> <mak:value expr="d.manager.name"/></a>
+<a href="viewEmployee.jsp?employee=<mak:value expr="d.manager"/>"> <mak:value expr="d.manager.name"/></a>
 </td>
 <td>
 [ <a href="editDepartment.jsp?department=<mak:value expr="d"/>">edit</a> ] 
