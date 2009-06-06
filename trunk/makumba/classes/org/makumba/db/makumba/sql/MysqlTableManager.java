@@ -36,7 +36,7 @@ protected String createDbSpecific(String command){return command+" type=InnoDB";
 
   /** checks if an alteration is needed, and calls doAlter if so */
   @Override
-protected void alter(org.makumba.db.makumba.sql.SQLDBConnection dbc, CheckingStrategy cs) throws SQLException
+protected void alter(org.makumba.db.makumba.sql.SQLDBConnection dbc, CheckingStrategy cs, boolean alter) throws SQLException
   {
     Statement st= dbc.createStatement();
     ResultSet rs=st.executeQuery("SHOW CREATE TABLE "+getDBName());
@@ -45,12 +45,17 @@ protected void alter(org.makumba.db.makumba.sql.SQLDBConnection dbc, CheckingStr
     if(def.lastIndexOf(')') > def.lastIndexOf(" TYPE=InnoDB") &&
 			def.lastIndexOf(')') > def.lastIndexOf(" ENGINE=InnoDB")){
       String s="ALTER TABLE "+getDBName()+" TYPE=InnoDB";
-      java.util.logging.Logger.getLogger("org.makumba.db.init.tablechecking").info(getSQLDatabase().getName()+": "+s);
-      st.executeUpdate(s);
-    }
+      if(alter) {
+          java.util.logging.Logger.getLogger("org.makumba.db.init.tablechecking").info(getSQLDatabase().getName()+": "+s);
+          st.executeUpdate(s);
+      } else {
+          java.util.logging.Logger.getLogger("org.makumba.db.init.tablechecking").warning("should alter: " + s);
+      }
+
+      }
     rs.close();
     st.close();
-    super.alter(dbc, cs);
+    super.alter(dbc, cs, alter);
   }
 
   /** mysql needs to have it adjustable, depending on version (see bug 512) */
