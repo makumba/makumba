@@ -394,7 +394,12 @@ public class RecordParser {
         }
 
         if (u == null) {
-            u = getResource("dataDefinitions/" + s.replace('.', '/') + "." + ext);
+                u = getResource("dataDefinitions/" + s.replace('.', '/') + "." + ext);
+                
+            // this is maybe a directory?
+            if(u == null)
+                u = getResource("dataDefinitions/" + s);
+                
             if (u == null) {
                 u = getResource(s.replace('.', '/') + "." + ext);
             }
