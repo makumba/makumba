@@ -11,8 +11,14 @@ rudi: search forms - allowing fields to be over more than one field, default="..
 rudi: optimised some string concatenations, fixing some generics warnings
 rudi: lineViewer more robust to exceptions of relations tool
 rudi: more sophisticated MQL function analysis
+rudi: fixing HTML auto detection to be bigger than 1024 characters
 jasper: allowing Transaction instead of Database in Logic
 cristi: fixes related to SELECT ... INSERT and parameter passing to MQL queries
+manu: fixing bugs 1034, 801
+manu: fixing race condition in Configuration 
+marius: adding "clearDefault" parameter to mak:input to allow default text to be cleared onFocus and restore it onBlur
+lenno: fix in SearchTag
+lenno: fixes in CodeGenerator
 
 -----------------------------------------------
 
