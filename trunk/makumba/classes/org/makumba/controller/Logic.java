@@ -488,7 +488,7 @@ public class Logic {
         Pointer p = (Pointer) v.elementAt(0).get("col1");
         Dictionary<String, Object> obj = connection.read(p, null);
 
-        Map<String, Object> ret = new HashMap<String, Object>();
+        MakumbaActorHashMap ret = new MakumbaActorHashMap();
         String att = actorPrefix(dd);
         ret.put(att, p);
 
