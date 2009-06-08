@@ -2,6 +2,8 @@ package org.makumba;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -12,6 +14,7 @@ import javassist.NotFoundException;
 import javax.xml.transform.TransformerConfigurationException;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
 import org.makumba.commons.ClassResource;
@@ -65,7 +68,10 @@ public class HibernateSFManager {
     private static final String DEFAULT_SEED = "Makumba.conf";
 
     private static Vector<String> externalConfigurationResources = new Vector<String>();
+    
+    private static HashMap<String, Vector<Class>> externalClasses = new HashMap<String, Vector<Class>>();
 
+    
     private static Configuration configuredConfiguration;
 
     private static Vector<String> generatedClasses;
@@ -116,10 +122,38 @@ public class HibernateSFManager {
         java.util.logging.Logger.getLogger("org.makumba.hibernate.sf").info(
             "Makumba Hibernate SessionFactory manager, Hibernate " + MakumbaSystem.getHibernateVersionNumber());
 
-        Configuration cfg = new Configuration().setProperties(p);
-
+        Configuration cfg = new AnnotationConfiguration().setProperties(p);
+        
+        HashMap<String, Vector<Class>> classes = new HashMap<String, Vector<Class>>();
+        
         for (String res : externalConfigurationResources) {
-            cfg.addResource(res);
+            
+            if(res.indexOf("hbm.xml") > -1) {
+                cfg.addResource(res);
+                
+            } else {
+            
+                String packageName = res.substring(0, res.lastIndexOf("."));
+                
+                if(!classes.containsKey(packageName)) {
+                    classes.put(packageName, new Vector<Class>());
+                }
+                
+                try {
+                    classes.get(packageName).add(Class.forName(res));
+                    
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        
+        for(String packageName : classes.keySet()) {
+            AnnotationConfiguration cfg1 = ((AnnotationConfiguration) cfg).addPackage(packageName);
+            Vector<Class> packageClasses = classes.get(packageName);
+            for(int i = 0; i < packageClasses.size(); i++) {
+                cfg1.addAnnotatedClass(packageClasses.get(i));
+            }
         }
 
         String seed, prefix;
@@ -227,7 +261,7 @@ public class HibernateSFManager {
             "Initializing configuration from " + dataSource);
         return getSF(dataSource);
     }
-
+    
     public static Configuration getConfiguration(String cfgFilePath) {
         Configuration cfg = new Configuration().configure(cfgFilePath);
         return cfg;
@@ -250,6 +284,17 @@ public class HibernateSFManager {
      */
     public static void setExternalConfigurationResources(Vector<String> resources) {
         externalConfigurationResources = resources;
+    }
+    
+    /**
+     * Sets additional mapping classes (i.e. annotated classes) to be used by the Configuration
+     * @param mappingClasses a Map of Vectors, where the keys are package names and the vector elements classes, e.g.<br>
+     * test.animals<br>
+     *   Dog.class<br>
+     *   Cat.class<br>
+     */
+    public static void setExternalMappingClasses(HashMap<String, Vector<Class>> mappingClasses) {
+        externalClasses = mappingClasses;
     }
 
     public static String getFullyQualifiedName(String className) {
