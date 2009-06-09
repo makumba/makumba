@@ -23,6 +23,7 @@
 
 package org.makumba.commons;
 
+import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
 
 /**
@@ -32,7 +33,9 @@ import java.lang.ref.SoftReference;
  */
 public class SoftNamedResources extends NamedResources {
     private static final long serialVersionUID = 1L;
-
+    private ReferenceQueue<NameValue> queue= new ReferenceQueue<NameValue>();
+    private int diff=0;
+    
     public SoftNamedResources(String name, NamedResourceFactory f) {
         super(name, f);
     }
@@ -40,10 +43,11 @@ public class SoftNamedResources extends NamedResources {
     @Override
     protected NameValue getNameValue(Object name, Object hash) {
         NameValue nv = null;
-        cleanCleared();
-        SoftReference sr = (SoftReference) values.get(hash);
-        if (sr == null || (nv = (NameValue) sr.get()) == null) {
-            values.put(hash, new SoftReference(nv = new NameValue(name, hash, f)));
+        SoftReference<NameValue> sr = (SoftReference<NameValue>) values.get(hash);
+        if (sr == null || (nv = sr.get()) == null){ 
+            if(sr!=null && nv==null)
+                diff--;
+            values.put(hash, new SoftReference<NameValue>(nv = new NameValue(name, hash, f), queue));
             misses++;
         } else {
             hits++;
@@ -56,22 +60,26 @@ public class SoftNamedResources extends NamedResources {
         return name + " (soft cache)";
     }
 
-    /**
-     * remove the residue data structures which were used to refer the resources that were cleared by the garbage
-     * collector
-     */
-    void cleanCleared() {
-        for (java.util.Iterator i = values.keySet().iterator(); i.hasNext();) {
-            SoftReference sr = (SoftReference) values.get(i.next());
-            if (sr.get() == null) {
-                i.remove();
-            }
-        }
-    }
-
     @Override
     public synchronized int size() {
-        cleanCleared();
-        return super.size();
+        while(queue.poll()!=null){
+            try {
+                queue.remove();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            diff++;
+        }
+        
+        // sanity check
+//        int diff2=0;
+//        for (Object o:values.values())
+//            if (((SoftReference<NameValue>) o).get() == null) 
+//                diff2++;
+//        if(diff2!=diff)
+//            throw new IllegalStateException(diff+ "<>"+diff2+" out of " +super.size());
+        // end check
+    
+        return super.size()-diff;
     }
 }

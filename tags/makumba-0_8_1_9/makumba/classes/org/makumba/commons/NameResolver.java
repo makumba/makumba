@@ -1,3 +1,26 @@
+///////////////////////////////
+//  Makumba, Makumba tag library
+//  Copyright (C) 2000-2003  http://www.makumba.org
+//
+//  This library is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU Lesser General Public
+//  License as published by the Free Software Foundation; either
+//  version 2.1 of the License, or (at your option) any later version.
+//
+//  This library is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//  Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with this library; if not, write to the Free Software
+//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+//
+//  -------------
+//  $Id: NameResolver.java 3910 2009-06-06 13:50:08Z manuel_gay $
+//  $Name$
+/////////////////////////////////////
+
 package org.makumba.commons;
 
 import java.util.ArrayList;
@@ -11,12 +34,10 @@ import org.makumba.db.makumba.sql.Database;
 /**
  * This class provides utility methods to convert names from MDD types into their name in the data source. It also takes
  * into account properties passed in the database configuration.
- * 
- * TODO document these properties
- * 
+ *  * 
  * @author Manuel Gay
  * @author Cristian Bogdan
- * @version $Id: DataSource.java,v 1.1 08.11.2007 05:42:48 Manuel Exp $
+ * @version $Id: NameResolver.java 3910 2009-06-06 13:50:08Z manuel_gay $
  */
 public class NameResolver {
 
@@ -258,7 +279,7 @@ public class NameResolver {
                 continue;
 
             
-            String resolved = config.getProperty(getTableNameFromConfig(config, dd) + "#" + name);
+            String resolved = config.getProperty(getTableNameFromConfig(config, dd) + "->" + name);
             if (resolved == null) {
                 resolved = checkReserved(getFieldNameInSource(name));
                 while (checkDuplicateFieldName(resolved, dd))
