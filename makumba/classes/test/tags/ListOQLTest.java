@@ -104,11 +104,11 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
     
     // FIXME this is a bug that needs to be fixed
-    public void testMakListCountClosedList() throws ServletException, IOException {
+    public void testShouldFailMakListCountClosedList() throws ServletException, IOException {
         pageContext.include("list-oql/testMakListCountClosedList.jsp");
     }
 
-    public void endMakListCountClosedList(WebResponse response) throws Exception {
+    public void endShouldFailMakListCountClosedList(WebResponse response) throws Exception {
         try {
             output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
