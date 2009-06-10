@@ -1,34 +1,10 @@
-///////////////////////////////
-//  Makumba, Makumba tag library
-//  Copyright (C) 2000-2003  http://www.makumba.org
-//
-//  This library is free software; you can redistribute it and/or
-//  modify it under the terms of the GNU Lesser General Public
-//  License as published by the Free Software Foundation; either
-//  version 2.1 of the License, or (at your option) any later version.
-//
-//  This library is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//  Lesser General Public License for more details.
-//
-//  You should have received a copy of the GNU Lesser General Public
-//  License along with this library; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-//
-//  -------------
-//  $Id$
-//  $Name$
-/////////////////////////////////////
-
 package org.makumba.analyser;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-
-import org.apache.commons.collections.set.ListOrderedSet;
 
 /**
  * Cache for the page analysis. It is passed along during analysis and holds useful caches. This class provides two
@@ -37,13 +13,12 @@ import org.apache.commons.collections.set.ListOrderedSet;
  * @author Cristian Bogdan
  * @author Manuel Gay
  * @author Rudolf Mayer
- * @version $Id$
  */
 public class PageCache {
 
     private HashMap<String, HashMap<Object, Object>> caches = new HashMap<String, HashMap<Object, Object>>();
 
-    private HashMap<String, ListOrderedSet> setCaches = new HashMap<String, ListOrderedSet>();
+    private HashMap<String, HashSet<Object>> setCaches = new HashMap<String, HashSet<Object>>();
 
     /**
      * Caches an object in a specific cache
@@ -96,9 +71,9 @@ public class PageCache {
      * Caches several objects in a specific cache, using sets, i.e. not keeping duplicate values.
      */
     public void cacheSetValues(String cacheName, Object[] value) {
-        ListOrderedSet hashSet = setCaches.get(cacheName);
+        HashSet<Object> hashSet = setCaches.get(cacheName);
         if (hashSet == null) {
-            hashSet = new ListOrderedSet();
+            hashSet = new HashSet<Object>();
             setCaches.put(cacheName, hashSet);
         }
 
@@ -106,7 +81,7 @@ public class PageCache {
     }
 
     /** Retrieves a set from a specific set cache. */
-    public ListOrderedSet retrieveSetValues(String cacheName) {
+    public HashSet<Object> retrieveSetValues(String cacheName) {
         return setCaches.get(cacheName);
     }
 
@@ -120,11 +95,11 @@ public class PageCache {
                 result += "    - " + key2 + " => " + cache.get(key2) + "\n";
             }
         }
-
+        
         result += "== Set caches\n";
         for (String key : setCaches.keySet()) {
             result += "  == Key " + key + "\n";
-            ListOrderedSet cache = setCaches.get(key);
+            HashSet<Object> cache = setCaches.get(key);
             for (Object entry : cache) {
                 result += "    - " + entry + "\n";
             }

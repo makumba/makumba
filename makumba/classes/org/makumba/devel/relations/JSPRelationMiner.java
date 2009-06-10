@@ -28,13 +28,15 @@ import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.query.hql.HQLQueryAnalysisProvider;
 import org.makumba.providers.query.mql.MqlQueryAnalysis;
 
+import antlr.RecognitionException;
+
 public class JSPRelationMiner extends RelationMiner {
 
     public JSPRelationMiner(RelationCrawler rc) {
         super(rc);
     }
 
-    private Pattern expression = Pattern.compile("[a-zA-Z]\\w*(?:\\.\\w+)?");
+    private Pattern expression = Pattern.compile("[a-zA-Z]" + "\\w" + "*" + "(?:\\.\\w+)?");
 
 
     @Override

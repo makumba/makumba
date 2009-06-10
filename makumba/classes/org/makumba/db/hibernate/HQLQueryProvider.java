@@ -38,13 +38,13 @@ public class HQLQueryProvider extends QueryProvider {
     @Override
     protected void init(String db, Attributes a) {
         super.init(db, a);
-        tp = HibernateTransactionProvider.getInstance();
+        tp = new TransactionProvider(new HibernateTransactionProvider());
         transaction = tp.getConnectionTo(db);
         ((TransactionImplementation)transaction).setContext(a);
     }
 
     @Override
-    public Vector<Dictionary<String, Object>> executeRaw(String query, Map args, int offset, int limit) {
+    public Vector executeRaw(String query, Map args, int offset, int limit) {
         return transaction.executeQuery(query, args, offset, limit);
     }
 
@@ -66,12 +66,12 @@ public class HQLQueryProvider extends QueryProvider {
      * Method for testing the query runner outside a JSP
      */
     public static void main(String[] args) throws LogicException {
-        TransactionProvider tp = HibernateTransactionProvider.getInstance();
+        TransactionProvider tp = new TransactionProvider(new HibernateTransactionProvider());
 
         HQLQueryProvider qr = new HQLQueryProvider();
         qr.init("test/localhost_mysql_makumba", null);
         
-        org.makumba.Transaction t = tp.getConnectionTo("testDatabase");
+        org.makumba.Transaction t = tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
         
         populateDatabase(t);
         

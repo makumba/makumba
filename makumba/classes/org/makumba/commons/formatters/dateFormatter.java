@@ -44,16 +44,8 @@ public class dateFormatter extends FieldFormatter {
 		return _paramValues;
 	}
 	
-	private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
-		static FieldFormatter singleton = new dateFormatter();
-
-        public void release() {
-            singleton = null;
-        }
-
-        public SingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
+	private static final class SingletonHolder {
+		static final FieldFormatter singleton = new dateFormatter();
 	}
 
 	/** Don't use this, use getInstance() */
@@ -65,7 +57,7 @@ public class dateFormatter extends FieldFormatter {
 	}
 
 	@Override
-    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
+    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
 		DateFormat formatter = yearDate;
 		String s = (String) formatParams.get("format");
 		if (s != null) {

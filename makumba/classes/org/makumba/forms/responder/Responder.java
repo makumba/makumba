@@ -32,7 +32,6 @@ import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -44,7 +43,6 @@ import org.makumba.MakumbaError;
 import org.makumba.Pointer;
 import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.controller.http.ControllerFilter;
-import org.makumba.providers.Configuration;
 
 /**
  * A responder is created for each form and stored internally, to respond when the form is submitted. To reduce memory
@@ -59,19 +57,22 @@ public abstract class Responder implements java.io.Serializable {
      */
     public final static String responderName = "__makumba__responder__";
 
+    /** the URI of the page, "__makumba__originatingPage__" */
+    public final static String originatingPageName = "__makumba__originatingPage__";
+
     /**
-     * prevents multiple submission of the same form (bug #190), computes as responder+sessionID,
+     * prevents multiple submition of the same form (bug #190), computes as respoder+sessionID,
      * "__makumba__formSession__"
      */
-    protected final static String formSessionName = "__makumba__formSession__";
+    public final static String formSessionName = "__makumba__formSession__";
 
-    protected static final String FORM_RESULTS = "org.makumba.formResults";
+    public static final String FORM_RESULTS = "org.makumba.formResults";
 
     /** the default label used to store the add and new result, "___mak___edited___" */
-    private static final String anonymousResult = "___mak___edited___";
+    static public final String anonymousResult = "___mak___edited___";
 
     /** the default response message, "changes done" */
-    private static final String defaultMessage = "changes done";
+    static public final String defaultMessage = "changes done";
 
     /** the default response message for search forms, "Search done!" */
     public static final String defaultMessageSearchForm = "Search done!";
@@ -79,11 +80,7 @@ public abstract class Responder implements java.io.Serializable {
     /** the name of the CGI parameter that passes the base pointer, see {@link #basePointerType}, "__makumba__base__" */
     public final static String basePointerName = "__makumba__base__";
 
-    protected static boolean useDefaultResponseStyles = Configuration.getUseDefaultResponseStyles();
-
     protected transient ResponderFactory factory;
-
-    private static final Logger logger = Logger.getLogger("org.makumba.controller");
 
     /** the responder key, as computed from the other fields */
     protected int identity;
@@ -111,8 +108,6 @@ public abstract class Responder implements java.io.Serializable {
      * on the action.
      */
     protected boolean reloadFormOnError;
-
-    protected String originatingPageName;
 
     /**
      * Stores whether the form shall be annotated with the validation errors, or not. Used by {@link ControllerFilter}
@@ -154,7 +149,7 @@ public abstract class Responder implements java.io.Serializable {
 
     /** order of the forms in the page * */
     protected ArrayList<String> formOrder;
-
+    
     protected HashMap<String, String> defaultMatchModes = new HashMap<String, String>();
 
     public String getDefaultMatchMode(String inputName) {
@@ -236,14 +231,6 @@ public abstract class Responder implements java.io.Serializable {
         return reloadFormOnError;
     }
 
-    public void setOriginatingPageName(String originatingPageName) {
-        this.originatingPageName = originatingPageName;
-    }
-
-    public String getOriginatingPageName() {
-        return originatingPageName;
-    }
-
     public void setShowFormAnnotated(boolean showFormAnnotated) {
         this.showFormAnnotated = showFormAnnotated;
     }
@@ -305,7 +292,7 @@ public abstract class Responder implements java.io.Serializable {
     public String responderKey() {
         return basePointerType + message + multipleSubmitErrorMsg + resultAttribute + database + operation
                 + controller.getClass().getName() + handler + addField + newType + reloadFormOnError
-                + originatingPageName + showFormAnnotated + clientSideValidation + defaultMatchModes;
+                + showFormAnnotated + clientSideValidation + defaultMatchModes;
     }
 
     /** get the integer key of this form, and register it if not already registered */
@@ -350,19 +337,12 @@ public abstract class Responder implements java.io.Serializable {
 
     /** formats an error message */
     public static String errorMessage(Throwable t) {
-        return t.getMessage();
+        return errorMessage(t.getMessage());
     }
 
     /** formats an error message */
-    public static String errorMessageFormatter(String message) {
-        return "<span class=\"makumbaResponder makumbaError\""
-                + (useDefaultResponseStyles ? " style=\"color:red\"" : "") + ">" + message + "</span>";
-    }
-
-    /** formats a successful message */
-    public static String successFulMessageFormatter(String message) {
-        return "<span class=\"makumbaResponder makumbaSuccess\""
-                + (useDefaultResponseStyles ? " style=\"color:green\"" : "") + ">" + message + "</span>";
+    public static String errorMessage(String message) {
+        return "<span class=\"makumbaResponder\" style=\"color: red\">" + message + "</span>";
     }
 
     /** reads the HTTP base pointer */
@@ -423,9 +403,8 @@ public abstract class Responder implements java.io.Serializable {
             objectOut.writeObject(this); // we write the responder to disk
             objectOut.close();
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "Error while writing responder to HDD: '" + e.getMessage() + "', deleting file "
-                    + fileName, e);
-            e.printStackTrace();
+            java.util.logging.Logger.getLogger("org.makumba.controller").log(Level.SEVERE,
+                "Error while writing responder to HDD, deleting file " + fileName, e);
             file.delete();
         }
     }

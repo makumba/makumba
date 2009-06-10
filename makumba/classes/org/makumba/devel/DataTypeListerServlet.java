@@ -126,8 +126,8 @@ public class DataTypeListerServlet extends DataServlet {
                     what = what + "obj." + fields.elementAt(i) + " AS " + fields.elementAt(i); // col\"+(i+1);
                 }
 
-                String query = "SELECT obj as ptr, obj." + titleField + " as title, obj." + otherField
-                        + " as other FROM " + type + " obj";
+                String query = "SELECT obj as ptr, obj." + titleField + " as title" + ", obj." + otherField
+                        + " as other" + " FROM " + type + " obj";
                 Vector<Dictionary<String, Object>> results = t.executeQuery(query, null, 0, limit);
 
                 for (int i = 0; i < results.size(); i++) {

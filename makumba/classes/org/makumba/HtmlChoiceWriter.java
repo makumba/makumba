@@ -1,6 +1,7 @@
 package org.makumba;
 
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
@@ -22,6 +23,8 @@ public class HtmlChoiceWriter extends HtmlUtils {
      * PRIVATE CONSTANTS
      ******************************************************************************************************************/
 
+    private static String NEWL = "\n";
+
     private static String[] EMPTY_ARRAY = {};
 
     /*******************************************************************************************************************
@@ -30,9 +33,9 @@ public class HtmlChoiceWriter extends HtmlUtils {
 
     private String _name = null; // input field's name ("NAME=" + name)
 
-    private Iterator<String> _values = null; // iterator over the values (Strings)
+    private Iterator _values = null; // iterator over the values (Strings)
 
-    private Iterator<String> _labels = null; // iterator over the labels (Strings)
+    private Iterator _labels = null; // iterator over the labels (Strings)
 
     private String[] _selectedValues = EMPTY_ARRAY; // list of selected values (String)
 
@@ -83,7 +86,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
     }
 
     /** Sets the values of each of the options for the choice control. Labels and Values must be in the same order. */
-    public void setValues(List<String> values) {
+    public void setValues(List values) {
         _values = values.iterator();
     }
 
@@ -93,12 +96,12 @@ public class HtmlChoiceWriter extends HtmlUtils {
     }
 
     /** Sets the values of each of the options for the choice control. Labels and Values must be in the same order. */
-    public void setValues(Iterator<String> values) {
+    public void setValues(Iterator values) {
         _values = values;
     }
 
     /** Sets the labels of each of the options for the choice control. Labels and Values must be in the same order. */
-    public void setLabels(List<String> labels) {
+    public void setLabels(List labels) {
         _labels = labels.iterator();
     }
 
@@ -108,7 +111,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
     }
 
     /** Sets the labels of each of the options for the choice control. Labels and Values must be in the same order. */
-    public void setLabels(Iterator<String> labels) {
+    public void setLabels(Iterator labels) {
         _labels = labels;
     }
 
@@ -138,7 +141,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
      * Sets the selected values (zero or more). The input can be in any order, not related to the setValues and
      * setLabels methods. The input List is not changed by this method.
      */
-    public void setSelectedValues(List<String> selected) {
+    public void setSelectedValues(List selected) {
         if (selected != null) {
             Arrays.sort(_selectedValues = (String[]) selected.toArray());
         } else {
@@ -162,7 +165,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
      * Sets the deprecated values (zero or more). The input can be in any order, not related to the setValues and
      * setLabels methods. The input List is not changed by this method.
      */
-    public void setDeprecatedValues(List<String> deprecated) {
+    public void setDeprecatedValues(List deprecated) {
         if (deprecated != null) {
             Arrays.sort(_deprecatedValues = (String[]) deprecated.toArray());
         } else {
@@ -231,7 +234,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
      * space. When there is more than one separator, the writer will cycle through all separators, when writing each of
      * the options.
      */
-    public void setOptionSeparator(List<String> s) {
+    public void setOptionSeparator(List s) {
         if (s != null && s.size() > 0)
             _optionSeparator = (String[]) s.toArray();
     }
@@ -255,8 +258,8 @@ public class HtmlChoiceWriter extends HtmlUtils {
     public String getSelectOne() {
         boolean yn_convert2Html = (_convert2Html == TXT2HTML);
         String selectedValue = (_selectedValues.length != 0) ? _selectedValues[0] : null;
-        Iterator<String> itv = _values;
-        Iterator<String> itl = _labels;
+        Iterator itv = _values;
+        Iterator itl = _labels;
 
         StringBuffer selectStatement = new StringBuffer(512);
         selectStatement.append("<SELECT NAME=\"" + _name + "\" SIZE=\"" + _size + "\" " + _literalHtml + ">\n");
@@ -290,8 +293,8 @@ public class HtmlChoiceWriter extends HtmlUtils {
      */
     public String getSelectMultiple() {
         boolean yn_convert2Html = (_convert2Html == TXT2HTML);
-        Iterator<String> itv = _values;
-        Iterator<String> itl = _labels;
+        Iterator itv = _values;
+        Iterator itl = _labels;
 
         StringBuffer selectStatement = new StringBuffer(512);
         String selectString = "<SELECT MULTIPLE NAME=\"" + _name + "\" SIZE=\"" + _size + "\" " + _literalHtml + ">\n";
@@ -337,8 +340,8 @@ public class HtmlChoiceWriter extends HtmlUtils {
      */
     private String makeCheckboxOrRadio(String type) {
         boolean yn_convert2Html = (_convert2Html == TXT2HTML);
-        Iterator<String> itv = _values;
-        Iterator<String> itl = _labels;
+        Iterator itv = _values;
+        Iterator itl = _labels;
 
         StringBuffer inputStatement = new StringBuffer(512);
         int j = -1; // j cycles through optionSeparator[]
@@ -410,7 +413,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
      *            HTML during the writing out. Default is "NO_CONV". Any input other than {TXT2HTML, NO_CONV} has
      *            unpredictable result.
      */
-    public static String makeHtmlSelectOne(String name, List<String> values, List<String> labels, String selectedValue,
+    public static String makeHtmlSelectOne(String name, List values, List labels, String selectedValue,
             String literalHtml, int convert2Html) {
 
         if (values.size() != labels.size()) {
@@ -422,8 +425,8 @@ public class HtmlChoiceWriter extends HtmlUtils {
         StringBuffer selectStatement = new StringBuffer(512);
         selectStatement.append("<SELECT NAME=\"" + name + "\" " + literalHtml + ">\n");
 
-        Iterator<String> itv = values.iterator();
-        Iterator<String> itl = labels.iterator();
+        Iterator itv = values.iterator();
+        Iterator itl = labels.iterator();
 
         for (; itv.hasNext();) {
             String value = (String) itv.next().toString();
@@ -671,3 +674,35 @@ public class HtmlChoiceWriter extends HtmlUtils {
     }
 
 } // end class
+
+/** This class bridges between Enumeration and Iterator. */
+class EnumerationWrapper implements Iterator, Enumeration {
+    private Enumeration _enum;
+
+    private EnumerationWrapper() {
+    } // not allowed.
+
+    public EnumerationWrapper(Enumeration e) {
+        _enum = e;
+    }
+
+    public void remove() {
+        throw new UnsupportedOperationException();
+    }
+
+    public Object next() {
+        return _enum.nextElement();
+    }
+
+    public boolean hasNext() {
+        return _enum.hasMoreElements();
+    }
+
+    public boolean hasMoreElements() {
+        return _enum.hasMoreElements();
+    }
+
+    public Object nextElement() {
+        return _enum.nextElement();
+    }
+}

@@ -25,8 +25,9 @@ package org.makumba;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Vector;
 
-import org.makumba.commons.SerializedGenericMultiValueMap;
+import org.apache.commons.collections.map.MultiValueMap;
 
 /**
  * This class holds several {@link InvalidValueException} of the same form together.
@@ -38,23 +39,16 @@ import org.makumba.commons.SerializedGenericMultiValueMap;
 public class CompositeValidationException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
-    private SerializedGenericMultiValueMap<InvalidValueException> exceptionsHash = new SerializedGenericMultiValueMap<InvalidValueException>();
+    private MultiValueMap exceptionsHash = new MultiValueMap();
 
     /** Creates an empty instance */
     public CompositeValidationException() {
     }
 
-    /** Creates an instance and adds all exceptions from the given {@link Iterable} */
-    public CompositeValidationException(Iterable<InvalidValueException> exceptions) {
+    /** Creates an instance and adds all exceptions from the given {@link Vector} */
+    public CompositeValidationException(Vector<InvalidValueException> exceptions) {
         for (InvalidValueException e : exceptions) {
-            addException(e);
-        }
-    }
-
-    /** Creates an instance and adds all exceptions from the given array */
-    public CompositeValidationException(InvalidValueException... exceptions) {
-        for (InvalidValueException e : exceptions) {
-            addException(e);
+            exceptionsHash.put(e.getFieldName(), e);
         }
     }
 
@@ -100,7 +94,7 @@ public class CompositeValidationException extends RuntimeException {
 
     /** Gets the exceptions gathered for a specific field name */
     public Collection<InvalidValueException> getExceptions(String fieldName) {
-        return exceptionsHash.get(fieldName);
+        return (Collection) exceptionsHash.get(fieldName);
     }
 
 }

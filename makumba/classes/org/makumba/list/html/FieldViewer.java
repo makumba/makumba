@@ -32,16 +32,8 @@ import org.makumba.commons.formatters.RecordFormatter;
 /** Default HTML formatting of fields */
 public class FieldViewer extends FieldFormatter {
 
-	private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
-		static FieldFormatter singleton = new FieldViewer();
-		
-		public void release() {
-            singleton = null;
-        }
-
-        public SingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
+	private static final class SingletonHolder {
+		static final FieldFormatter singleton = new FieldViewer();
 	}
 
 	/** Don't use this, use getInstance() */
@@ -65,7 +57,7 @@ public class FieldViewer extends FieldFormatter {
 	 * @param formatParams
 	 *            formatting parameters
 	 */
-	public String formatMaxLengthEllipsis(RecordFormatter rf, int fieldIndex, String s, Dictionary<String, Object> formatParams) {
+	public String formatMaxLengthEllipsis(RecordFormatter rf, int fieldIndex, String s, Dictionary formatParams) {
 		String prefix = "";
 		String postfix = "";
 		String sOut = s;
@@ -93,8 +85,17 @@ public class FieldViewer extends FieldFormatter {
 		}
 
 		if (addTitle.equals("true")
-				|| (addTitle.equals("auto") && maxLen != -1 && s.length() > maxLen)) { 
-		    // add title, to be normally shown as tooltip on mouse hover
+				|| (addTitle.equals("auto") && maxLen != -1 && s.length() > maxLen)) { //add
+																					   // title,
+																					   // to
+																					   // be
+																					   // normally
+																					   // shown
+																					   // as
+																					   // tooltip
+																					   // on
+																					   // mouse
+																					   // hover
 			prefix = "<span title=\"" + s.replace('\"', '\'') + "\">";
 			postfix = postfix + "</span>";
 		}

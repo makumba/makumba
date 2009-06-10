@@ -725,13 +725,13 @@
 <!-- Make relative paths absolute -->
       <xsl:variable name="imgpath">
         <xsl:choose>
-<!-- resources image dir 
+<!-- resources image dir -->
           <xsl:when test="starts-with(string(@src),'images/')">
             <xsl:value-of select="concat($imagesdir,substring-after(@src,'images'))"/>
           </xsl:when>
           <xsl:when test="contains(string(@src),'/images/')">
             <xsl:value-of select="concat($imagesdir,substring-after(@src,'/images'))"/>
-          </xsl:when>-->
+          </xsl:when>
 <!-- already absolute -->
           <xsl:when test="contains(string(@src),':') or starts-with(string(@src),'/')">
             <xsl:value-of select="@src"/>

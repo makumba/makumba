@@ -52,7 +52,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
     private static final long serialVersionUID = 1L;
 
     protected static String webappRoot;
-    
+
     public static void setWebappRoot(String s) {
         webappRoot = s;
     }
@@ -68,7 +68,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
     Vector<String> fieldOrder = new Vector<String>();
 
     HashMap<String, QueryFragmentFunction> functionNames = new HashMap<String, QueryFragmentFunction>();
-
+    
     String title;
 
     String indexName;
@@ -146,11 +146,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
     }
 
     protected void addField1(FieldDefinition fi) {
-        if(fi.getType() != null && fi.getType().equals("ptrIndex")) {
-            fieldOrder.add(0, fi.getName());
-        } else {
-            fieldOrder.addElement(fi.getName());
-        }
+        fieldOrder.addElement(fi.getName());
         fields.put(fi.getName(), fi);
         ((FieldInfo) fi).dd = this;
     }
@@ -216,7 +212,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
 
     /**
      * returns the record info with the given absolute name
-     * 
+     *
      * @throws org.makumba.DataDefinitionNotFoundError
      *             if the name is not a valid record info name
      * @throws org.makumba.DataDefinitionParseError
@@ -249,11 +245,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
             }
             ri = ri.getFieldDefinition(name.substring(0, n)).getSubtable();
         }
-        FieldDefinition subfieldCheck = ri.getFieldDefinition(name);
-        if(subfieldCheck==null)
-            throw new DataDefinitionParseError("subfield not found: "+name+" in "+ri.getName());
-        
-        ri = subfieldCheck.getSubtable();
+        ri = ri.getFieldDefinition(name).getSubtable();
         return ri;
     }
 
@@ -295,7 +287,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
             if (e.getCause() instanceof DataDefinitionParseError) {
                 throw (DataDefinitionParseError) e.getCause();
             }
-            if (e.getCause() instanceof DataDefinitionNotFoundError) {
+            if(e.getCause() instanceof DataDefinitionNotFoundError) {
                 throw (DataDefinitionNotFoundError) e.getCause();
             }
             if (e.getCause() instanceof MakumbaError) {
@@ -316,26 +308,15 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
         return new Vector<String>(fieldOrder);
     }
 
-    public ArrayList<FieldDefinition> getReferenceFields() {
-        ArrayList<FieldDefinition> l = new ArrayList<FieldDefinition>();
+    public Vector<FieldDefinition> getReferenceFields() {
+        Vector<FieldDefinition> v = new Vector<FieldDefinition>();
         for (FieldDefinition fieldDefinition : fields.values()) {
             FieldDefinition fd = fieldDefinition;
             if (fd.isPointer() || fd.isExternalSet() || fd.isComplexSet()) {
-                l.add(fd);
+                v.add(fd);
             }
         }
-        return l;
-    }
-
-    public ArrayList<FieldDefinition> getUniqueFields() {
-        ArrayList<FieldDefinition> l = new ArrayList<FieldDefinition>();
-        for (FieldDefinition fieldDefinition : fields.values()) {
-            FieldDefinition fd = fieldDefinition;
-            if (fd.isUnique() && !fd.isIndexPointerField()) {
-                l.add(fd);
-            }
-        }
-        return l;
+        return v;
     }
 
     /** returns the field info associated with a name */
@@ -382,7 +363,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
     public Collection<QueryFragmentFunction> getFunctions() {
         return functionNames.values();
     }
-
+    
     public Collection<QueryFragmentFunction> getActorFunctions() {
         ArrayList<QueryFragmentFunction> actorFunctions = new ArrayList<QueryFragmentFunction>();
         for (QueryFragmentFunction function : functionNames.values()) {
@@ -392,7 +373,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
         }
         return actorFunctions;
     }
-
+    
     public Collection<QueryFragmentFunction> getSessionFunctions() {
         ArrayList<QueryFragmentFunction> sessionFunctions = new ArrayList<QueryFragmentFunction>();
         for (QueryFragmentFunction function : functionNames.values()) {
@@ -473,11 +454,16 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
     }
 
     // moved from RecordHandler
-    public void checkFieldNames(Dictionary<String, Object> d) {
-        for (Enumeration<String> e = d.keys(); e.hasMoreElements();) {
-            String s = e.nextElement();
-            if (this.getFieldDefinition(s) == null) {
-                throw new org.makumba.NoSuchFieldException(this, s);
+    public void checkFieldNames(Dictionary d) {
+        for (Enumeration e = d.keys(); e.hasMoreElements();) {
+            Object o = e.nextElement();
+            if (!(o instanceof String)) {
+                throw new org.makumba.NoSuchFieldException(this,
+                        "Dictionaries passed to makumba DB operations should have String keys. Key <" + o
+                                + "> is of type " + o.getClass() + getName());
+            }
+            if (this.getFieldDefinition((String) o) == null) {
+                throw new org.makumba.NoSuchFieldException(this, (String) o);
             }
         }
     }
@@ -542,7 +528,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
         return multiFieldUniqueList.get(fieldNames) != null;
     }
 
-    public void checkUpdate(String fieldName, Dictionary<String, Object> d) {
+    public void checkUpdate(String fieldName, Dictionary d) {
         Object o = d.get(fieldName);
         if (o != null) {
             switch (getFieldDefinition(fieldName).getIntegerType()) {
@@ -561,8 +547,8 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
         }
     }
 
-    private void base_checkUpdate(String fieldName, Dictionary<String, Object> d) {
+    private void base_checkUpdate(String fieldName, Dictionary d) {
         getFieldDefinition(fieldName).checkUpdate(d);
     }
-    
+
 }

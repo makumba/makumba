@@ -89,8 +89,6 @@ public class MatchModeTag extends GenericMakumbaTag {
 
     private String labelSeparator;
 
-    private String defaultMode;
-
     public void setMatchModes(String s) {
         if (getCriterionTag().getMatchMode() != null) {
             throw new ProgrammerError("Cannot have a matchMode tag if the criterion tag already defines a matchMode!");
@@ -145,19 +143,15 @@ public class MatchModeTag extends GenericMakumbaTag {
 
         // analyse the match modes.
         // can do it only here and not in setMatchModes as we need to know the type of the input.
-        Hashtable<String, String> validModes = getValidMatchmodes(getCriterionTag().isRange(), fd);
         if (fd != null && matchModes != null) {
+            Hashtable<String, String> curentModes = getValidMatchmodes(getCriterionTag().isRange(), fd);
             for (int i = 0; i < matchModes[0].length; i++) {
                 String mode = matchModes[0][i];
-                if (!validModes.containsKey(mode)) {
+                if (!curentModes.containsKey(mode)) {
                     throw new ProgrammerError("Unknown match mode '" + mode + "'. Valid options are: "
-                            + StringUtils.toString(validModes.keySet()));
+                            + StringUtils.toString(curentModes.keySet()));
                 }
             }
-        }
-        if (defaultMode != null && !validModes.containsKey(defaultMode)) {
-            throw new ProgrammerError("Unknown default match mode '" + defaultMode + "'. Valid options are: "
-                    + StringUtils.toString(validModes.keySet()));
         }
     }
 
@@ -194,9 +188,7 @@ public class MatchModeTag extends GenericMakumbaTag {
         hcw.setLabels(matchModes[1]);
         hcw.setValues(Arrays.asList(matchModes[0]).iterator());
         hcw.setLabels(Arrays.asList(matchModes[1]).iterator());
-        String selected = org.apache.commons.lang.StringUtils.isNotBlank(matchMode) ? matchMode
-                : org.apache.commons.lang.StringUtils.isNotBlank(defaultMode) ? defaultMode : matchModes[0][0];
-        hcw.setSelectedValues(selected);
+        hcw.setSelectedValues(org.apache.commons.lang.StringUtils.isNotBlank(matchMode) ? matchMode : matchModes[0][0]);
 
         String type = (String) params.get("type");
         try {
@@ -223,10 +215,6 @@ public class MatchModeTag extends GenericMakumbaTag {
     @Override
     public boolean allowsIdenticalKey() {
         return false;
-    }
-
-    public void setDefault(String s) {
-        this.defaultMode = s;
     }
 
 }

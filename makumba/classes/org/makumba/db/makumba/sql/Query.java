@@ -36,6 +36,7 @@ import org.makumba.InvalidValueException;
 import org.makumba.MakumbaError;
 import org.makumba.NoSuchFieldException;
 import org.makumba.db.makumba.DBConnection;
+import org.makumba.db.makumba.DBConnectionWrapper;
 import org.makumba.db.makumba.OQLQueryProvider;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
@@ -80,8 +81,7 @@ public class Query implements org.makumba.db.makumba.Query {
             e.printStackTrace();
         }
   
-        QueryAnalysis qA= (insertIn != null && insertIn.length() > 0)?
-                qap.getQueryAnalysis(OQLQuery, insertIn):qap.getQueryAnalysis(OQLQuery);
+        QueryAnalysis qA= qap.getQueryAnalysis(OQLQuery);
         
         command = qA.writeInSQLQuery(db.getNameResolverHook());
             
@@ -191,7 +191,7 @@ public class Query implements org.makumba.db.makumba.Query {
 
         String com = "INSERT INTO " + tablename + " ( " + fieldList + ") " + command;
         try {
-            SQLDBConnection sqldbc = (SQLDBConnection) dbc;
+            SQLDBConnection sqldbc = (SQLDBConnection) ((DBConnectionWrapper) dbc).getWrapped();
             resultHandler.create(sqldbc, tablename, true);
             PreparedStatement ps = sqldbc.getPreparedStatement(com);
             String s = assigner.assignParameters(ps, args);

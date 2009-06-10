@@ -24,17 +24,8 @@ import org.makumba.controller.Logic;
  */
 public class ResponderCacheManager {
 
-    private static class SingletonHolder implements org.makumba.commons.SingletonHolder {
-        private static ResponderCacheManager singleton = new ResponderCacheManager();
-        
-        public void release() {
-            singleton = null;
-        }
-
-        public SingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
-        
+    private static class SingletonHolder {
+        private static final ResponderCacheManager singleton = new ResponderCacheManager();
     }
     private ResponderFactory factory;
 

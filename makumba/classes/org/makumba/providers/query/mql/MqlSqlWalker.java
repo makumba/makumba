@@ -1,11 +1,8 @@
 package org.makumba.providers.query.mql;
 
 import java.io.PrintWriter;
-
-import org.apache.commons.lang.ArrayUtils;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
-import org.makumba.ProgrammerError;
 import org.makumba.commons.NameResolver.TextList;
 import org.makumba.providers.DataDefinitionProvider;
 
@@ -22,8 +19,6 @@ import antlr.collections.AST;
  * @version $Id: MqlSqlGenerator.java,v 1.1 Aug 5, 2008 5:47:16 PM cristi Exp $
  */
 public class MqlSqlWalker extends MqlSqlBaseWalker {
-    private static final String LINK_FUNCTION_DEF = "http://www.makumba.org/makumba-spec.html#tab_ql";
-
     // TODO:
     // finish subqueries
     // simplify FROM section for sets
@@ -53,16 +48,12 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
 
     boolean autoLeftJoin;
 
-    private DataDefinition insertIn;
-
-    public MqlSqlWalker(String query, DataDefinition insertIn, boolean optimizeJoins, boolean autoLeftJoin) {
+    public MqlSqlWalker(String query, DataDefinition paramInfo, boolean optimizeJoins, boolean autoLeftJoin) {
         this.query = query;
-        this.insertIn= insertIn;
         this.optimizeJoins = optimizeJoins;
         this.autoLeftJoin = autoLeftJoin;
         setASTFactory(fact = new MqlSqlASTFactory(this));
-        this.paramInfo = DataDefinitionProvider.getInstance().getVirtualDataDefinition("Temporary parameters for " + query);
-
+        this.paramInfo = paramInfo;
     }
 
     public void reportError(RecognitionException e) {
@@ -78,45 +69,26 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     @Override
     protected void processFunction(AST functionCall, boolean inSelect) throws SemanticException {
         // determine parameter types here
-        final AST functionNode = functionCall.getFirstChild();
-        final AST exprList = functionNode.getNextSibling();
+        AST functionNode = functionCall.getFirstChild();
+        AST exprList = functionNode.getNextSibling();
         MqlNode paramNode = (MqlNode) exprList.getFirstChild();
-        int index = 0;
-        final String name = functionNode.getText();
-        final MQLFunctionDefinition functionDef = MQLFunctionDefinition.getByName(MqlNode.mqlFunctions, name);
-        if (functionDef == null) {
-            throw new ProgrammerError("MQL Function '" + name + "' is not known! Please refer to " + LINK_FUNCTION_DEF
-                    + " for a list of known functions.");
-        }
-        final MQLFunctionArgument[] args = functionDef.getArguments();
-        if (paramNode == null && !ArrayUtils.isEmpty(args)) {
-            throw new ProgrammerError("The function '" + functionDef + "' requires arguments! Please refer to "
-                    + LINK_FUNCTION_DEF + " for a list of known functions and arguments.");
-        }
-        while (paramNode != null) {
+        if (paramNode.isParam()) {
             String type = null;
-            if (args != null) {
-                if (args.length > index) { // not yet at the last defined argument
-                    type = args[index].getType();
-                } else if (args[args.length - 1].isMultiple()) {// if the last argument is a multiple argument, usethat
-                    type = args[args.length - 1].getType();
-                } else { // otherwise we have an error..
-                    throw new ProgrammerError("The number of arguments for function '" + functionDef
-                            + "' is wrong! Please refer to " + LINK_FUNCTION_DEF
-                            + " for a list of known functions and arguments.");
-                }
-            } else {
-                throw new ProgrammerError("MQL Function '" + functionDef + "' requires no arguments.");
+            String name = functionNode.getText();
+            if (MqlNode.fromDateFunctions.contains(name)) {
+                type = "date";
             }
-            if (paramNode.isParam()) {
-                String paramName = "param" + paramInfo.getFieldNames().size();
-                FieldDefinition fd = DataDefinitionProvider.getInstance().makeFieldOfType(paramName, type);
-                paramNode.setMakType(fd);
-                paramInfo.addField(fd);
-                // FIXME: a param might also be a nested function
+            if (MqlNode.fromIntFunctions.contains(name)) {
+                type = "int";
             }
-            paramNode = (MqlNode) paramNode.getNextSibling();
-            index++;
+            if (MqlNode.fromStringFunctions.contains(name)) {
+                type = "char[255]";
+            }
+            String paramName = "param" + paramInfo.getFieldNames().size();
+            FieldDefinition fd = DataDefinitionProvider.getInstance().makeFieldOfType(paramName, type);
+            paramNode.setMakType(fd);
+            paramInfo.addField(fd);
+            // FIXME: we should now also check potential other parameter nodes!
         }
         super.processFunction(functionCall, inSelect);
     }
@@ -263,12 +235,12 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         return ASTUtil.create(fact, MqlSqlWalker.PARAM, "?");
     }
 
-    void setParameterType(MqlNode param, FieldDefinition likewise) {
-        String paramName = param.getOriginalText();
-        FieldDefinition fd = DataDefinitionProvider.getInstance().makeFieldWithName(paramName, likewise);
+    void setParameterType(MqlNode param, MqlNode likewise) {
+        String paramName = "param" + paramInfo.getFieldNames().size();
+        FieldDefinition fd = DataDefinitionProvider.getInstance().makeFieldWithName(paramName, likewise.getMakType());
         param.setMakType(fd);
-        if(paramInfo.getFieldDefinition(paramName)==null)
-            paramInfo.addField(fd);
+        // if(paramInfo.getFieldDefinition(paramName)==null)
+        paramInfo.addField(fd);
     }
 
     void setProjectionTypes(DataDefinition proj) {
@@ -285,31 +257,12 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
             if (a.getNextSibling() != null && a.getNextSibling().getType() == ALIAS_REF)
                 name = ((MqlNode) a.getNextSibling()).getOriginalText();
 
-            MqlNode mqlNode = (MqlNode) a;
-            FieldDefinition makType = mqlNode.getMakType();
-
-            // if we have no type but we are a parameter, we maybe found the type somewhere else
-            if (makType == null && mqlNode.isParam())
-                makType= paramInfo.getFieldDefinition(mqlNode.getOriginalText());
-            
-            //  if we have no type but know in which table we'll insert the result
-            if(makType == null && insertIn!=null){
-                makType= insertIn.getFieldDefinition(name);
-                
-                // and such we are most probably a parameter
-                if(makType!=null && mqlNode.isParam())
-                    setParameterType((MqlNode)a, makType);
-            }
-            /*
-             * FIXME if we have a named parameter from the query context, we might be able to determine the type from the actor type
-             */
-             
-            if(makType==null)
+            FieldDefinition makType = ((MqlNode) a).getMakType();
+            if (makType == null) {
                 throw new IllegalStateException("no type set for projection " + name + " "
                         + MqlQueryAnalysis.showAst(a));
-            
-
-            proj.addField(DataDefinitionProvider.getInstance().makeFieldWithName(name, makType));
+            } else
+                proj.addField(DataDefinitionProvider.getInstance().makeFieldWithName(name, makType));
             i++;
         }
     }

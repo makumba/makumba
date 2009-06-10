@@ -7,8 +7,6 @@ import org.makumba.FieldDefinition;
 
 public abstract class RangeValidationRule extends SingleFieldValidationRule {
 
-    private static final long serialVersionUID = 1L;
-
     protected static final String rule = rangeDef;
 
     protected static final Pattern pattern = Pattern.compile(getAcceptedRules());

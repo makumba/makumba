@@ -31,6 +31,7 @@ import java.util.Vector;
 import javax.servlet.jsp.PageContext;
 
 import org.makumba.AttributeNotFoundException;
+import org.makumba.Attributes;
 import org.makumba.LogicException;
 import org.makumba.commons.ArrayMap;
 import org.makumba.commons.MakumbaJspAnalyzer;
@@ -76,9 +77,9 @@ public class QueryExecution {
      *            The PageContext object of the current page
      */
     public static void startListGroup(PageContext pageContext) {
-        pageContext.setAttribute(EXECUTIONS, new HashMap<MultipleKey, QueryExecution>());
+        pageContext.setAttribute(EXECUTIONS, new HashMap());
 
-        Stack<Dictionary<String, Object>> currentDataSet = new Stack<Dictionary<String, Object>>();
+        Stack currentDataSet = new Stack();
         // org.makumba.view.Grouper requires the stack not be empty
         currentDataSet.push(NOTHING);
         pageContext.setAttribute(CURRENT_DATA_SET, currentDataSet);
@@ -111,7 +112,7 @@ public class QueryExecution {
      */
     public static QueryExecution getFor(MultipleKey key, PageContext pageContext, String offset, String limit)
             throws LogicException {
-        HashMap<MultipleKey, QueryExecution> executions = (HashMap<MultipleKey, QueryExecution>) pageContext.getAttribute(EXECUTIONS);
+        HashMap executions = (HashMap) pageContext.getAttribute(EXECUTIONS);
 
         QueryExecution lqe = (QueryExecution) executions.get(key);
         if (lqe == null)
@@ -122,7 +123,7 @@ public class QueryExecution {
     /** Like {@link #getFor(MultipleKey, PageContext, String, String)}, but uses the default values for offset/limit from the list tag. */
     public static QueryExecution getFor(MultipleKey key, PageContext pageContext, String offset, String limit,
             String defaultLimit) throws LogicException {
-        HashMap<MultipleKey, QueryExecution> executions = (HashMap<MultipleKey, QueryExecution>) pageContext.getAttribute(EXECUTIONS);
+        HashMap executions = (HashMap) pageContext.getAttribute(EXECUTIONS);
 
         QueryExecution lqe = (QueryExecution) executions.get(key);
         if (lqe == null)
@@ -148,7 +149,7 @@ public class QueryExecution {
      * @throws LogicException
      */
     private QueryExecution(MultipleKey key, PageContext pageContext, String offset, String limit) throws LogicException {
-        currentDataSet = (Stack<Dictionary<String, Object>>) pageContext.getAttribute(CURRENT_DATA_SET);
+        currentDataSet = (Stack) pageContext.getAttribute(CURRENT_DATA_SET);
         ComposedQuery cq = QueryTag.getQuery(GenericListTag.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance()), key);
         QueryProvider qep = QueryProvider.makeQueryRunner(GenericListTag.getDataSourceName(pageContext), MakumbaJspAnalyzer.getQueryLanguage(GenericListTag.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance())),
             PageAttributes.getAttributes(pageContext));
@@ -166,7 +167,7 @@ public class QueryExecution {
     /** Like {@link #QueryExecution(MultipleKey, PageContext, String, String)}, but uses default limit/offset parameters */
     private QueryExecution(MultipleKey key, PageContext pageContext, String offset, String limit, String defaultLimit)
             throws LogicException {
-        currentDataSet = (Stack<Dictionary<String, Object>>) pageContext.getAttribute(CURRENT_DATA_SET);
+        currentDataSet = (Stack) pageContext.getAttribute(CURRENT_DATA_SET);
         ComposedQuery cq = QueryTag.getQuery(
             GenericListTag.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance()), key);
         QueryProvider qep = QueryProvider.makeQueryRunner(GenericListTag.getDataSourceName(pageContext),

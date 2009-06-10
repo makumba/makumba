@@ -51,7 +51,6 @@ import org.makumba.providers.TransactionProvider;
  * @version $Id: MakumbaTag.java 1546 2007-09-14 20:34:45Z manuel_gay $
  */
 public abstract class GenericListTag extends GenericMakumbaTag {
-    private static final long serialVersionUID = 1L;
 
     protected FormDataProvider fdp = ListFormDataProvider.getInstance();
 
@@ -76,7 +75,7 @@ public abstract class GenericListTag extends GenericMakumbaTag {
         AnalysableTag parentList = QueryTag.getParentList(this);
         if (parentList == null)
             throw new org.makumba.ProgrammerError(
-                    "VALUE tags, INPUT, FORM, OPTION or IF tags that compute a value should always be enclosed in a LIST or OBJECT tag");
+                    "VALUE tags, INPUT, FORM or OPTION tags that compute a value should always be enclosed in a LIST or OBJECT tag");
         tagKey = new MultipleKey(parentList.getTagKey(), o);
     }
 

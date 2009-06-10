@@ -23,12 +23,16 @@
 
 package org.makumba.providers.query.oql;
 
-public class GrammarTest {
-    public static void main(String[] argv) throws Exception {
-        OQLLexer lexer = new OQLLexer(new java.io.StringReader(argv[0]));
-        OQLParser parser = new OQLParser(lexer);
-        // Parse the input expression
-        parser.queryProgram();
-    }
+
+public class GrammarTest
+{
+   public static void main (String [] argv) throws Exception
+   {
+       OQLLexer lexer =  new OQLLexer(new java.io.StringReader(argv[0]));
+       OQLParser parser = new OQLParser(lexer);
+       // Parse the input expression
+       OQLAST t= null;
+         parser.queryProgram();
+   }
 
 }

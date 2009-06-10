@@ -48,6 +48,8 @@ public class IfTag extends GenericListTag implements BodyTag {
 
     String testExpr;
 
+    private static final Integer TRUE_INT = new Integer(1);
+
     public void setTest(String s) {
         this.testExpr = s;
     }

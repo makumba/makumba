@@ -26,6 +26,7 @@ package org.makumba.forms.tags;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,7 +34,6 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTag;
 
-import org.apache.commons.collections.set.ListOrderedSet;
 import org.makumba.DataDefinition;
 import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
@@ -89,7 +89,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     BodyContent bodyContent = null;
 
-    String annotation = Configuration.getDefaultFormAnnotation();
+    String annotation = "after";
 
     private static final String[] validAnnotationParams = { "none", "before", "after", "both" };
 
@@ -97,7 +97,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     String annotationSeparator;
 
-    Boolean reloadFormOnError = null;
+    boolean reloadFormOnError = Configuration.getReloadFormOnErrorDefault();
 
     private String clientSideValidation = Configuration.getClientSideValidationDefault();
 
@@ -136,10 +136,6 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     public void setBodyContent(BodyContent bc) {
         bodyContent = bc;
-    }
-    
-    protected boolean allowEmptyBody() {
-        return true;
     }
 
     public void doInitBody() {
@@ -291,10 +287,6 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
             pageCache.cache(MakumbaJspAnalyzer.NESTED_FORM_NAMES, getTagKey(), new HashMap<String, MultipleKey>());
         }
 
-        if (reloadFormOnError == null) {
-            reloadFormOnError = getOperation().equals("search") ? false : Configuration.getReloadFormOnErrorDefault();
-        }
-
         if (org.apache.commons.lang.StringUtils.isNotBlank(formName)) {
             getNestedFormNames(pageCache).put(formName, getTagKey());
         }
@@ -403,20 +395,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         }
         responder.setFormName(formName);
 
-        if (reloadFormOnError == null) {
-            reloadFormOnError = getOperation().equals("search") ? false : Configuration.getReloadFormOnErrorDefault();
-        }
-
         responder.setReloadFormOnError(reloadFormOnError);
-        String url = ((HttpServletRequest) pageContext.getRequest()).getRequestURI();
-        String queryString = ((HttpServletRequest) pageContext.getRequest()).getQueryString();
-        if (queryString != null) {
-            url += "?" + queryString;
-        }
-        responder.setOriginatingPageName(url);
-        if (org.apache.commons.lang.StringUtils.isBlank(annotation)) {
-            annotation = Configuration.getDefaultFormAnnotation();
-        }
         responder.setShowFormAnnotated(StringUtils.equalsAny(annotation, new String[] { "before", "after", "both" }));
         responder.setClientSideValidation(clientSideValidation);
 
@@ -482,20 +461,18 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
             // if we are at the first form
             if (findParentForm() == null && pageContext.getAttribute("firstFormPassed") == null) {
                 // included needed resources
-                ListOrderedSet resources = pageCache.retrieveSetValues(NEEDED_RESOURCES);
+                HashSet<Object> resources = pageCache.retrieveSetValues(NEEDED_RESOURCES);
                 if (resources != null) {
-                    MakumbaResourceServlet.writeResources(sb, request.getContextPath(), resources);
+                    for (Object object : resources) {
+                        String rsc = request.getContextPath() + Configuration.getMakumbaResourcesLocation() + "/"
+                                + MakumbaResourceServlet.RESOURCE_PATH_JAVASCRIPT + object;
+                        sb.append("<script type=\"text/javascript\" src=\"" + rsc + "\">" + "</script>\n");
+                    }
                     pageContext.setAttribute("firstFormPassed", Boolean.TRUE);
                 }
             }
-            
-            // check if the bodyContent is null
-            // if yes, we need to check if that's allowed
-            if(!allowEmptyBody() && bodyContent == null) {
-                throw new ProgrammerError("Tag "+this.getRunningTag().name + " must have a non-empty body");
-            }
 
-            responder.writeFormPreamble(sb, basePointer, (HttpServletRequest) pageContext.getRequest());
+            responder.writeFormPreamble(sb, basePointer);
             bodyContent.getEnclosingWriter().print(sb.toString());
 
             // for a deleteForm, we want to trim the text on the button unless specified otherwise

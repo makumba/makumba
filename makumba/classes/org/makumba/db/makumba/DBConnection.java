@@ -42,7 +42,7 @@ import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.db.TransactionImplementation;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryProvider;
-import org.makumba.providers.TransactionProvider;
+import org.makumba.providers.TransactionProviderInterface;
 
 /**
  * This is the Makumba-specific implementation of a {@link Transaction}
@@ -57,17 +57,17 @@ public abstract class DBConnection extends TransactionImplementation {
     
     protected org.makumba.db.makumba.Database db;
     
-    protected DBConnection(TransactionProvider tp) {
+    protected DBConnection(TransactionProviderInterface tp) {
         super(tp);
     }//for the wrapper
     
-    public DBConnection(Database database, TransactionProvider tp) {
+    public DBConnection(Database database, TransactionProviderInterface tp) {
         this(tp);
         this.db = database;
         this.ddp = DataDefinitionProvider.getInstance();
     }
 
-    public DBConnection(Database database, String dataSource, TransactionProvider tp) {
+    public DBConnection(Database database, String dataSource, TransactionProviderInterface tp) {
         this(database, tp);
         this.dataSource = dataSource;
     }
@@ -83,7 +83,7 @@ public abstract class DBConnection extends TransactionImplementation {
 
     Map<String, Pointer> locks = new HashMap<String, Pointer>(13);
 
-    Hashtable<String, Object> lockRecord = new Hashtable<String, Object>(5);
+    Hashtable<String, String> lockRecord = new Hashtable<String, String>(5);
 
     public void lock(String symbol) {
         lockRecord.clear();
@@ -140,14 +140,14 @@ public abstract class DBConnection extends TransactionImplementation {
 
     /** insert a record */
     @Override
-    public Pointer insert(String type, Dictionary<String, Object> data) {
+    public Pointer insert(String type, Dictionary data) {
         Table t = db.getTable(type);
         t.computeInsertHook();
 
         if (t.insertHook != null) {
-            Hashtable<String, Object> h = new Hashtable<String, Object>();
-            for (Enumeration<String> e = data.keys(); e.hasMoreElements();) {
-                String k = e.nextElement();
+            Hashtable<Object, Object> h = new Hashtable<Object, Object>();
+            for (Enumeration e = data.keys(); e.hasMoreElements();) {
+                Object k = e.nextElement();
                 h.put(k, data.get(k));
             }
             data = h;
@@ -204,7 +204,6 @@ public abstract class DBConnection extends TransactionImplementation {
     });
     
     public int insertFromQuery(String type, String OQL, Object args) {
-        OQL= QueryProvider.getQueryAnalzyer("oql").inlineFunctions(OQL);
         QueryAndArgs qa= new QueryAndArgs(OQL, args);
         Object[] k = { qa.getQuery(), type };
         return ((Query) getHostDatabase().queries.getResource(k)).insert(qa.getArgs(), this);

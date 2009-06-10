@@ -39,7 +39,7 @@ public class MddToMapping {
 
     private NameResolver nr;
 
-    public MddToMapping(Vector<String> v, Configuration cfg, String generationPath, String prefix, NameResolver nr)
+    public MddToMapping(Vector v, Configuration cfg, String generationPath, String prefix, NameResolver nr)
             throws TransformerConfigurationException, SAXException {
         managePaths(generationPath, prefix);
         
@@ -86,8 +86,8 @@ public class MddToMapping {
             return;
         mddsDone.add(dd.getName());
 
-        takenColumnNames = new HashSet<String>();
-        columnNames = new HashMap<String, Object>();
+        takenColumnNames = new HashSet();
+        columnNames = new HashMap();
         String filename = nr.arrowToDoubleUnderscore(dd.getName()) + ".hbm.xml";
         
         /*
@@ -296,9 +296,9 @@ public class MddToMapping {
         cfg.addResource(prefix + File.separator + filename);
     }
 
-    Set<String> takenColumnNames;
+    Set takenColumnNames;
 
-    Map<String, Object> columnNames;
+    Map columnNames;
 
     private String columnName(DataDefinition dd, String name) {
         

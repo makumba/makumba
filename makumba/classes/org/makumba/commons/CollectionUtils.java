@@ -17,7 +17,7 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 //
 //  -------------
-//  $Id$
+//  $Id: SourceViewControllerHandler.java 3224 2008-10-05 22:32:17Z rosso_nero $
 //  $Name$
 /////////////////////////////////////
 package org.makumba.commons;
@@ -25,8 +25,9 @@ package org.makumba.commons;
 import java.util.HashMap;
 
 /**
- * @author Rudolf Mayer
- * @version $Id$
+ * * @author Rudolf Mayer
+ * 
+ * @version $Id: CollectionUtils.java,v 1.1 Dec 16, 2008 1:51:30 AM rudi Exp $
  */
 public class CollectionUtils {
 

@@ -17,7 +17,7 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 //
 //  -------------
-//  $Id$
+//  $Id: MakumbaJspAnalyzer.java 1667 2007-09-20 18:01:18Z manuel_gay $
 //  $Name$
 /////////////////////////////////////
 
@@ -42,7 +42,7 @@ import org.makumba.analyser.interfaces.JspAnalyzer;
  * </p>
  * 
  * @author Cristian Bogdan
- * @version $Id$
+ * @version $Id: MakumbaJspAnalyzer.java 1667 2007-09-20 18:01:18Z manuel_gay $
  */
 public class MakumbaJspAnalyzer implements JspAnalyzer {
 
@@ -133,16 +133,8 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
      * 
      * @author Cristian Bogdan
      */
-    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder{
-        static JspAnalyzer singleton = new MakumbaJspAnalyzer();
-        
-        public void release() {
-            singleton = null;
-        }
-
-        public SingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
+    private static final class SingletonHolder {
+        static final JspAnalyzer singleton = new MakumbaJspAnalyzer();
     }
 
     public static final String QL_OQL = "OQL";
@@ -316,11 +308,11 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
     }
 
     public static boolean isOQLPage(PageCache pageCache) {
-        return getQueryLanguage(pageCache).equalsIgnoreCase(QL_OQL);
+        return getQueryLanguage(pageCache).equals(QL_OQL);
     }
 
     public static boolean isHQLPage(PageCache pageCache) {
-        return getQueryLanguage(pageCache).equalsIgnoreCase(QL_HQL);
+        return getQueryLanguage(pageCache).equals(QL_HQL);
     }
 
 }

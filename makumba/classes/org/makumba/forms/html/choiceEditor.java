@@ -39,10 +39,10 @@ import org.makumba.forms.tags.SearchFieldTag;
 public abstract class choiceEditor extends FieldEditor {
 
     static String[] _params = { "default", "empty", "type", "size", "labelSeparator", "elementSeparator", "nullOption",
-            "forceInputStyle", "autoComplete" };
+            "forceInputStyle" };
 
     static String[][] _paramValues = { null, null, { "hidden", "radio", "checkbox", "tickbox" }, null, null, null,
-            null, SearchFieldTag.allowedSelectTypes, new String[] { "true", "false" } };
+            null, SearchFieldTag.allowedSelectTypes };
 
     protected String nullOption = null;
 
@@ -57,7 +57,7 @@ public abstract class choiceEditor extends FieldEditor {
     }
 
     /** Get the available options. */
-    public abstract Object getOptions(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams);
+    public abstract Object getOptions(RecordFormatter rf, int fieldIndex, Dictionary formatParams);
 
     /** Gets the number of available options. */
     public abstract int getOptionsLength(RecordFormatter rf, int fieldIndex, Object opts);
@@ -75,7 +75,9 @@ public abstract class choiceEditor extends FieldEditor {
     public abstract String formatOptionValue(RecordFormatter rf, int fieldIndex, Object val);
 
     /** Returns blank string, or " multiple " if multiple selections possible. */
-    
+    // FIXME, would be better with "boolean isMultiple()"
+    public abstract String getMultiple(RecordFormatter rf, int fieldIndex);
+
     public abstract boolean isMultiple(RecordFormatter rf, int fieldIndex);
 
     /** Gets the default size of the select HTML box. */
@@ -88,7 +90,7 @@ public abstract class choiceEditor extends FieldEditor {
 
     // height? orderBy? where?
     @Override
-    public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
+    public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
         String type = (String) formatParams.get("type");
         boolean hidden = "hidden".equals(type);
         boolean isRadio = "radio".equals(type);
@@ -169,7 +171,7 @@ public abstract class choiceEditor extends FieldEditor {
             hcw.setLabels(labels);
 
             try { // set deprecated values if data type supports it
-                Vector<String> dv = rf.dd.getFieldDefinition(fieldIndex).getDeprecatedValues();
+                Vector dv = rf.dd.getFieldDefinition(fieldIndex).getDeprecatedValues();
                 // System.out.println("setting deprecated:"+dv);
                 if (dv != null && !dv.isEmpty()) {
                     String[] dvs = new String[dv.size()];
@@ -238,11 +240,11 @@ public abstract class choiceEditor extends FieldEditor {
     /**
      * Return value if not null, or finds the default option and returns it as a Vector.
      */
-    public Object getValueOrDefault(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
-        if (o == null || (o instanceof Vector && ((Vector<?>) o).size() == 0)) {
+    public Object getValueOrDefault(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
+        if (o == null || (o instanceof Vector && ((Vector) o).size() == 0)) {
             String nullReplacer = (String) formatParams.get("default");
             if (nullReplacer != null) {
-                Vector<String> v = new Vector<String>();
+                Vector v = new Vector();
                 v.add(nullReplacer);
                 return v;
             }

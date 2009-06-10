@@ -24,11 +24,11 @@
 package org.makumba.list.tags;
 
 import java.io.IOException;
+import java.util.HashSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 
-import org.apache.commons.collections.set.ListOrderedSet;
 import org.apache.commons.lang.StringUtils;
 import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
@@ -271,7 +271,7 @@ public class ValueTag extends GenericListTag {
                 // if we are at the first value
                 if (pageContext.getAttribute("firstValuePassed") == null) {
                     // included needed resources
-                    ListOrderedSet resources = pageCache.retrieveSetValues(NEEDED_RESOURCES);
+                    HashSet<Object> resources = pageCache.retrieveSetValues(NEEDED_RESOURCES);
                     if (resources != null) {
                         MakumbaResourceServlet.writeResources(sb, (request).getContextPath(), resources);
                         pageContext.setAttribute("firstValuePassed", Boolean.TRUE);

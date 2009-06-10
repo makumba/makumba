@@ -1,26 +1,3 @@
-///////////////////////////////
-//  Makumba, Makumba tag library
-//  Copyright (C) 2000-2008  http://www.makumba.org
-//
-//  This library is free software; you can redistribute it and/or
-//  modify it under the terms of the GNU Lesser General Public
-//  License as published by the Free Software Foundation; either
-//  version 2.1 of the License, or (at your option) any later version.
-//
-//  This library is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//  Lesser General Public License for more details.
-//
-//  You should have received a copy of the GNU Lesser General Public
-//  License along with this library; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-//
-//  -------------
-//  $Id$
-//  $Name$
-/////////////////////////////////////
-
 package org.makumba.providers;
 
 import org.makumba.DataDefinition;
@@ -30,37 +7,24 @@ import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.providers.query.FunctionInliner;
 
-import test.oqlanalyzer;
-
-/**
- * @author
- * @version $Id$
- */
 public abstract class QueryAnalysisProvider {
     protected abstract QueryAnalysis getRawQueryAnalysis(String query);
 
-    protected QueryAnalysis getRawQueryAnalysis(String query, String insertIn){
-        return getRawQueryAnalysis(query, null);
-    }
-    public QueryAnalysis getQueryAnalysis(String query) {
+    public QueryAnalysis getQueryAnalysis(String query){
         return getRawQueryAnalysis(inlineFunctions(query));
     }
 
-    public QueryAnalysis getQueryAnalysis(String query, String insertIn) {
-        return getRawQueryAnalysis(inlineFunctions(query), insertIn);
-    }
-
-    public String inlineFunctions(String query) {
-        try {
+    public String inlineFunctions(String query){
+        try{
             return (String) inlinedQueries.getResource(query);
-        } catch (NullPointerException e) {
+        }catch(NullPointerException e){
             initializeCache(query, e);
             return (String) inlinedQueries.getResource(query);
         }
     }
-
+    
     NamedResources inlinedQueries;
-
+    
     /** Returns whether the GROUP BY or ORDER BY sections can include labels */
     public abstract boolean selectGroupOrOrderAsLabels();
 
@@ -68,7 +32,7 @@ public abstract class QueryAnalysisProvider {
      * Returns a possible alternative field to the one indicated.
      */
     public abstract FieldDefinition getAlternativeField(DataDefinition dd, String fn);
-
+    
     /**
      * Returns the notation of the primary key in the query language
      * 
@@ -170,36 +134,27 @@ public abstract class QueryAnalysisProvider {
             dot = dot1;
         }
     }
-
+    
     boolean initializedCache;
-
     private synchronized void initializeCache(String query, NullPointerException e) {
-        if (inlinedQueries == null) {
-            inlinedQueries = NamedResources.getStaticCache(NamedResources.makeStaticCache("Inlined queries by "
-                    + getClass().getName().substring(getClass().getName().lastIndexOf(".") + 1),
+        if(inlinedQueries==null){
+            inlinedQueries= NamedResources.getStaticCache(NamedResources.makeStaticCache("Inlined queries by "+getClass().getName().substring(getClass().getName().lastIndexOf(".")+1),
                 new NamedResourceFactory() {
                     private static final long serialVersionUID = 1L;
-
+                
                     protected Object makeResource(Object nm, Object hashName) throws Exception {
-                        return FunctionInliner.inline((String) nm, QueryAnalysisProvider.this);
+                        return FunctionInliner.inline((String)nm, QueryAnalysisProvider.this);
                     }
                 }, true));
-            initializedCache = true;
-        } else {
-            if (!initializedCache)
+            initializedCache=true;
+        }else{
+            if(!initializedCache)
                 throw e;
         }
     }
 
-    /** return the first character(s) in a parameter designator */
+	/** return the first character(s) in a parameter designator */
     public abstract String getParameterSyntax();
 
-    public static void main(String[] args) {
-        for (int i = 0; i < oqlanalyzer.TEST_MDD_FUNCTIONS.length; i++) {
-            String string = oqlanalyzer.TEST_MDD_FUNCTIONS[i];
-            System.out.println(string + "\n=>\n" + QueryProvider.getQueryAnalzyer("oql").inlineFunctions(string)
-                    + "\nshould be:\n" + oqlanalyzer.TEST_MDD_FUNCTION_RESULTS[i] + "\n\n");
-        }
-    }
 
 }

@@ -1,23 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd"><document>
-    <header>
-        <title>mak:rickroll tag documentation</title>
-    </header>
-    <body>
-        <section id="description">
-            <title>Description</title>
-            <p class="tagDescription">FIXME: no description for this tag in taglib-documented.xml!</p>
-        </section>
-        <section id="attributes">
-            <title>Attributes</title>
-            <p>This tag has no attributes</p>
-        </section>
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+
+<document xmlns:xi="http://www.w3.org/2001/XInclude">
+  <header>
+    <title>mak:rickroll tag documentation</title>
+  </header>
+  <body>
+    <section id="attributes">
+      <title>Attributes</title>
+      <table>
+        <tr>
+          <th colspan="1" rowspan="1">Name</th>
+          <th colspan="1" rowspan="1">Required</th>
+          <th colspan="1" rowspan="1">rt expression value</th>
+          <th colspan="1" rowspan="1">Description</th>
+        </tr>
+      </table>
+    </section>
+    <section id="example">
+  
+      <title>Example</title>
+  
+      <p/>
+  
+      <p>
     
-      <section id="example">
-        <title>Example</title>
-        <source>
-      <![CDATA[
-      ]]>
-  </source>
-    </section>  </body>
-</document>
+        <code/>
+  
+      </p>
+    </section>  </body></document>

@@ -34,9 +34,8 @@ import org.makumba.LogicException;
 
 public class PageAttributes implements Attributes {
     public static PageAttributes getAttributes(PageContext pc) {
-        if (pc.getAttribute(RequestAttributes.ATTRIBUTES_NAME) == null) {
+        if (pc.getAttribute(RequestAttributes.ATTRIBUTES_NAME) == null)
             pc.setAttribute(RequestAttributes.ATTRIBUTES_NAME, new PageAttributes(pc));
-        }
         return (PageAttributes) pc.getAttribute(RequestAttributes.ATTRIBUTES_NAME);
     }
 
@@ -84,7 +83,6 @@ public class PageAttributes implements Attributes {
     /**
      * @see java.lang.Object#toString()
      */
-    @Override
     public String toString() {
         String[] scopeNames = { "Session", "Application", "Request", "Page" };
         int[] scopes = { PageContext.SESSION_SCOPE, PageContext.APPLICATION_SCOPE, PageContext.REQUEST_SCOPE,
@@ -118,29 +116,24 @@ public class PageAttributes implements Attributes {
         RequestAttributes reqAttrs = RequestAttributes.getAttributes((HttpServletRequest) pageContext.getRequest());
 
         Object o = reqAttrs.checkSessionForAttribute(s);
-        if (o != RequestAttributes.notFound) {
+        if (o != RequestAttributes.notFound)
             return o;
-        }
 
         o = reqAttrs.checkServletLoginForAttribute(s);
-        if (o != RequestAttributes.notFound) {
+        if (o != RequestAttributes.notFound)
             return o;
-        }
 
         o = checkPageForAttribute(s);
-        if (o != RequestAttributes.notFound) {
+        if (o != RequestAttributes.notFound)
             return o;
-        }
 
         o = reqAttrs.checkLogicForAttribute(s);
-        if (o != RequestAttributes.notFound) {
+        if (o != RequestAttributes.notFound)
             return o;
-        }
 
         o = reqAttrs.checkParameterForAttribute(s);
-        if (o != RequestAttributes.notFound) {
+        if (o != RequestAttributes.notFound)
             return o;
-        }
 
         throw new AttributeNotFoundException(s, false);
 
@@ -150,12 +143,10 @@ public class PageAttributes implements Attributes {
         String snull = s + "_null";
 
         Object value = pageContext.getAttribute(s);
-        if (value != null) {
+        if (value != null)
             return value;
-        }
-        if (pageContext.getAttribute(snull) != null) {
+        if (pageContext.getAttribute(snull) != null)
             return null;
-        }
         return RequestAttributes.notFound;
     }
 }

@@ -13,8 +13,6 @@ import org.makumba.commons.RegExpUtils;
  */
 public abstract class SingleFieldValidationRule extends BasicValidationRule {
 
-    private static final long serialVersionUID = 1L;
-
     protected static String compileRule(String operator, String definition) {
          return "(" + RegExpUtils.fieldName + ")" + RegExpUtils.LineWhitespaces + "%" + RegExpUtils.LineWhitespaces
          + "(" + operator + ")" + RegExpUtils.LineWhitespaces + "=" + RegExpUtils.LineWhitespaces + definition;

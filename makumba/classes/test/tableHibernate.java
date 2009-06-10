@@ -42,7 +42,6 @@ import org.makumba.Text;
 import org.makumba.Transaction;
 import org.makumba.commons.NamedResources;
 import org.makumba.db.hibernate.HibernateTransactionProvider;
-import org.makumba.db.makumba.MakumbaTransactionProvider;
 import org.makumba.providers.TransactionProvider;
 
 /**
@@ -69,8 +68,8 @@ public class tableHibernate extends TestCase {
 	}
 
 	public void setUp() {
-        tp = HibernateTransactionProvider.getInstance();
-		db = tp.getConnectionTo("testDatabaseHibernate");
+        tp = new TransactionProvider(new HibernateTransactionProvider());
+		db = tp.getConnectionTo(tp.getDataSourceName("test/testHibernateDatabase.properties"));
 	}
 
 	public void tearDown() {
@@ -618,18 +617,18 @@ public class tableHibernate extends TestCase {
 		 * if yes, we do cleanup
 		 */
 		if(toString().equals("testCopy(test.table)")){
-			String nm = "testDatabaseHibernate";
+			String nm = tp.getDataSourceName("test/testDatabase.properties");
 	
 			System.out.println("\nworked with: "
-			+ MakumbaTransactionProvider.getDatabaseProperty(nm, "sql_engine.name")
+			+ MakumbaSystem.getDatabaseProperty(nm, "sql_engine.name")
 			+ " version: "
-			+ MakumbaTransactionProvider.getDatabaseProperty(nm, "sql_engine.version")
+			+ MakumbaSystem.getDatabaseProperty(nm, "sql_engine.version")
 			+ "\njdbc driver: "
-			+ MakumbaTransactionProvider.getDatabaseProperty(nm, "jdbc_driver.name")
+			+ MakumbaSystem.getDatabaseProperty(nm, "jdbc_driver.name")
 			+ " version: "
-			+ MakumbaTransactionProvider.getDatabaseProperty(nm, "jdbc_driver.version")
+			+ MakumbaSystem.getDatabaseProperty(nm, "jdbc_driver.version")
 			+ "\njdbc connections allocated: "
-			+ MakumbaTransactionProvider.getDatabaseProperty(nm, "jdbc_connections")
+			+ MakumbaSystem.getDatabaseProperty(nm, "jdbc_connections")
 			+ "\ncaches: " + org.makumba.commons.NamedResources.getCacheInfo()
 	
 	);

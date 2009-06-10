@@ -26,7 +26,6 @@ package org.makumba.commons.attributes;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -41,7 +40,6 @@ import org.makumba.UnauthorizedException;
 import org.makumba.commons.DbConnectionProvider;
 import org.makumba.controller.Logic;
 import org.makumba.controller.MakumbaActorHashMap;
-import org.makumba.forms.responder.ResponderFactory;
 import org.makumba.providers.TransactionProvider;
 
 /**
@@ -56,8 +54,6 @@ public class RequestAttributes implements Attributes {
     public static final String ATTRIBUTES_NAME = "makumba.attributes";
 
     public static final String CONTROLLER_NAME = "makumba.controller";
-
-    final static Logger logger = java.util.logging.Logger.getLogger("org.makumba.controller");
 
     HttpServletRequest request;
 
@@ -74,31 +70,9 @@ public class RequestAttributes implements Attributes {
     }
 
     public static RequestAttributes getAttributes(HttpServletRequest req) throws LogicException {
-        if (req.getAttribute(ATTRIBUTES_NAME) == null) {
+        if (req.getAttribute(ATTRIBUTES_NAME) == null)
             req.setAttribute(ATTRIBUTES_NAME, new RequestAttributes(req));
-            setFormRedirectionResponseAttributes(req);
-        }
         return (RequestAttributes) req.getAttribute(ATTRIBUTES_NAME);
-    }
-
-    static void setFormRedirectionResponseAttributes(HttpServletRequest req) {
-        // check if we came from a form-redirection, and move info from the session to the request
-        final HttpServletRequest httpServletRequest = req;
-        final HttpSession session = httpServletRequest.getSession();
-        final String suffix = "_" + httpServletRequest.getRequestURI();
-
-        final Object respFromSession = session.getAttribute(ResponderFactory.RESPONSE_STRING_NAME + suffix);
-        Object response = httpServletRequest.getAttribute(org.makumba.forms.responder.ResponderFactory.RESPONSE_FORMATTED_STRING_NAME);
-
-        logger.fine("respFromSession: " + respFromSession + ", response: " + response);
-        if (response == null && respFromSession != null) {
-            // set the attributes from the session to the request, clear the session values from this form
-            for (String attr : ResponderFactory.RESPONSE_ATTRIBUTE_NAMES) {
-                httpServletRequest.setAttribute(attr, session.getAttribute(attr + suffix));
-                logger.fine("Setting '" + attr + "' value: '" + req.getAttribute(attr + suffix) + "'.");
-                session.removeAttribute(attr + suffix);
-            }
-        }
     }
 
     RequestAttributes(HttpServletRequest req) throws LogicException {
@@ -253,9 +227,9 @@ public class RequestAttributes implements Attributes {
     private String printElement(String s, Object value) {
         if (value instanceof RequestAttributes) { // don't print if type is from this class --> avoid endless loop
             s += value.getClass();
-        } else if (value instanceof Text) {
-            s += ((Text) value).toShortString(100);
-        } else {
+        }else if(value instanceof Text){
+            s+= ((Text)value).toShortString(100);
+        }else {
             s += value;
         }
         return s;
@@ -302,7 +276,7 @@ public class RequestAttributes implements Attributes {
     }
 
     public Object checkServletLoginForAttribute(String s) {
-        if (request.getRemoteUser() != null && request.isUserInRole(s)) {
+        if (request.getRemoteUser() != null && request.isUserInRole(s)){
             request.getSession(true).setAttribute(s, request.getRemoteUser());
             return request.getRemoteUser();
         }
@@ -366,7 +340,7 @@ public class RequestAttributes implements Attributes {
      * Computes a Map that holds all Attributes (meaning, session attributes, request attributes and parameters) FIXME
      * should also take into account all the rest (BL, login, ...)
      */
-    public Map<String, Object> toMap() {
+    public Map toMap() {
         HttpSession ss = request.getSession(true);
         Enumeration<String> enumSession = ss.getAttributeNames();
         Enumeration<String> enumRequest = request.getAttributeNames();

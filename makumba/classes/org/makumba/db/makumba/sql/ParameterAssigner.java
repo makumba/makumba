@@ -62,7 +62,7 @@ public class ParameterAssigner {
             for (int i = 0; i < tree.parameterNumber(); i++) {
                 FieldDefinition fd = paramHandler.getDataDefinition().getFieldDefinition("param" + i);
                 if (fd == null) {
-                    throw new IllegalStateException("No type assigned for param" + i);
+                    throw new IllegalStateException("No type assigned for " + "param" + i);
                 }
 
                 Integer para = new Integer(tree.parameterAt(i));

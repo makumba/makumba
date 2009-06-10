@@ -1,12 +1,10 @@
 package org.makumba.providers;
 
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
 import org.makumba.Attributes;
-import org.makumba.commons.SingletonHolder;
 
 /**
  * This provider makes it possible to run queries against a data source.
@@ -16,7 +14,7 @@ import org.makumba.commons.SingletonHolder;
  * @author Rudolf Mayer
  * @version $Id: QueryExecutionProvider.java,v 1.1 17.09.2007 15:16:57 Manuel Exp $
  */
-public abstract class QueryProvider implements SingletonHolder {
+public abstract class QueryProvider {
 
     private static String[] queryProviders = { "oql", "org.makumba.db.makumba.OQLQueryProvider", "hql",
             "org.makumba.db.hibernate.HQLQueryProvider" };
@@ -28,8 +26,6 @@ public abstract class QueryProvider implements SingletonHolder {
     static final Map<String, Class<?>> providerClasses = new HashMap<String, Class<?>>();
 
     public QueryProvider() {
-        org.makumba.commons.SingletonReleaser.register(this);
-        
         try {
             qap = analyzersByClass.get(getQueryAnalysisProviderClass());
         } catch (NullPointerException e) {
@@ -118,9 +114,9 @@ public abstract class QueryProvider implements SingletonHolder {
      *            until which record should results be returned
      * @return a Vector holding Dictionaries corresponding to a result
      */
-    public abstract Vector<Dictionary<String, Object>> executeRaw(String query, Map args, int offset, int limit);
+    public abstract Vector executeRaw(String query, Map args, int offset, int limit);
 
-    public Vector<Dictionary<String, Object>> execute(String query, Map args, int offset, int limit){
+    public Vector execute(String query, Map args, int offset, int limit){
         return executeRaw(qap.inlineFunctions(query), args, offset, limit);
     }
     
@@ -140,12 +136,6 @@ public abstract class QueryProvider implements SingletonHolder {
      */
     public String getDataSource() {
         return dataSource;
-    }
-    
-    public void release() {
-        analyzersByClass.clear();
-        analyzersByName.clear();
-        providerClasses.clear();
     }
 
 }

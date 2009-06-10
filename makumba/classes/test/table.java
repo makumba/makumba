@@ -41,7 +41,6 @@ import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.Transaction;
 import org.makumba.commons.NamedResources;
-import org.makumba.db.makumba.MakumbaTransactionProvider;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
 
@@ -69,7 +68,7 @@ public class table extends TestCase {
     }
 
     public void setUp() {
-        db = tp.getConnectionTo("testDatabase");
+        db = tp.getConnectionTo(tp.getDataSourceName("test/testDatabase.properties"));
     }
 
     public void tearDown() {
@@ -129,7 +128,6 @@ public class table extends TestCase {
         for (int i = 0; i < v.size(); i++) {
             try {
                 db.executeQuery("SELECT t FROM test.validMdds." + (String) v.elementAt(i) + " t", null);
-                
                 Vector<String> fields = ddp.getDataDefinition("test.validMdds." + v.elementAt(i)).getFieldNames();
                 String what = "";
                 for (String string : fields) {
@@ -141,7 +139,6 @@ public class table extends TestCase {
                         // fields
                         what = what + (what.length() > 0 ? ", " : "") + "t." + fname;
                     }
-                    
                 }
                 // System.out.println(what);
                 if (what.length() > 0) {
@@ -750,13 +747,13 @@ public class table extends TestCase {
          * finished the last test if yes, we do cleanup
          */
         if (toString().equals("testCopy(test.table)")) {
-            String nm = "testDatabase";
+            String nm = tp.getDataSourceName("test/testDatabase.properties");
 
-            System.out.println("\nworked with: " + MakumbaTransactionProvider.getDatabaseProperty(nm, "sql_engine.name")
-                    + " version: " + MakumbaTransactionProvider.getDatabaseProperty(nm, "sql_engine.version") + "\njdbc driver: "
-                    + MakumbaTransactionProvider.getDatabaseProperty(nm, "jdbc_driver.name") + " version: "
-                    + MakumbaTransactionProvider.getDatabaseProperty(nm, "jdbc_driver.version") + "\njdbc connections allocated: "
-                    + MakumbaTransactionProvider.getDatabaseProperty(nm, "jdbc_connections") + "\ncaches: "
+            System.out.println("\nworked with: " + MakumbaSystem.getDatabaseProperty(nm, "sql_engine.name")
+                    + " version: " + MakumbaSystem.getDatabaseProperty(nm, "sql_engine.version") + "\njdbc driver: "
+                    + MakumbaSystem.getDatabaseProperty(nm, "jdbc_driver.name") + " version: "
+                    + MakumbaSystem.getDatabaseProperty(nm, "jdbc_driver.version") + "\njdbc connections allocated: "
+                    + MakumbaSystem.getDatabaseProperty(nm, "jdbc_connections") + "\ncaches: "
                     + org.makumba.commons.NamedResources.getCacheInfo()
 
             );

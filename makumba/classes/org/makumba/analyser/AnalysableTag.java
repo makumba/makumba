@@ -1,26 +1,3 @@
-///////////////////////////////
-//  Makumba, Makumba tag library
-//  Copyright (C) 2000-2003  http://www.makumba.org
-//
-//  This library is free software; you can redistribute it and/or
-//  modify it under the terms of the GNU Lesser General Public
-//  License as published by the Free Software Foundation; either
-//  version 2.1 of the License, or (at your option) any later version.
-//
-//  This library is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//  Lesser General Public License for more details.
-//
-//  You should have received a copy of the GNU Lesser General Public
-//  License along with this library; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-//
-//  -------------
-//  $Id$
-//  $Name$
-/////////////////////////////////////
-
 package org.makumba.analyser;
 
 import java.util.Stack;
@@ -47,12 +24,10 @@ import org.makumba.commons.RuntimeWrappedException;
  * 
  * @author Cristian Bogdan
  * @author Manuel Gay
- * @version $Id$
+ * @version $Id: AnalysableTag.java,v 1.1 15.09.2007 00:46:05 Manuel Exp $
  */
 
 public abstract class AnalysableTag extends TagSupport {
-    private static final long serialVersionUID = 1L;
-
     /** Commonly used Attribute values. */
     public static final String[] ATTRIBUTE_VALUES_TRUE_FALSE = { "true", "false" };
     
@@ -306,7 +281,7 @@ public abstract class AnalysableTag extends TagSupport {
     }
 
     /** 
-     * Called by doEndTag in its finally block. 
+     * Caled by doEndTag in its finally block. 
      * Use it to clean references that will not be used next time the servlet container uses the tag object.
      */
     protected void doAnalyzedCleanup() {

@@ -59,6 +59,7 @@ public class MsSqlDatabase extends org.makumba.db.makumba.sql.Database
 		//or in case with named instances: servername!instancename_mssql_makumba.properties
 		//which needs to give url:
 		//jdbc:microsoft:sqlserver://server_name\\instance_name
+		super.getJdbcUrl(p); //needed to set eng field
 		String url="jdbc:microsoft:sqlserver://";
 		String host = p.getProperty("#host");
 		host = host.replaceAll("!","\\\\");

@@ -188,49 +188,19 @@ public class FormResponder extends Responder {
         this.extraFormatting = extraFormatting;
     }
 
-    public void writeFormPreamble(StringBuffer sb, String basePointer, HttpServletRequest request) {
+    public void writeFormPreamble(StringBuffer sb, String basePointer) {
         if (!storedSuffix.equals("")) {
             // no preamble for non-root forms (forms included in other forms)
             return;
         }
-        String targetPage;
-
-        // FIXME
-        // commented out for the moment, as changing the action page has some severe implications and side-effects if
-        // page parameter names thus get accidentally defined twice
-        // see ResponseControllerHandler
-        //
-        // final String absoluteAction = org.makumba.commons.StringUtils.getAbsolutePath(request.getRequestURI(),
-        // action);
-        // final boolean shallReload = ResponseControllerHandler.shallReload(reloadFormOnError, action, absoluteAction,
-        // originatingPageName);
-        //
-        // Logger.getLogger("org.makumba.controller").info(
-        // "Operation: " + operation + ", reloadForm: " + reloadFormOnError + ", will reload: " + shallReload);
-        // Logger.getLogger("org.makumba.controller").info(
-        // "Originating page: '" + originatingPageName + "', action page: '" + action + "' (absolute: "
-        // + absoluteAction + "), equal: " + originatingPageName.equals(absoluteAction));
-        //
-        // if (shallReload) {
-        // // if we shall reload the form page on errors, we submit the form back to the originating page, to be able
-        // // to display validation errors on the original page
-        // // in case there are no errors in the form submission, ResponseControllerHandler will take care of directing
-        // // the client to the original page
-        // targetPage = originatingPageName;
-        // } else {
-        // targetPage = action;
-        // }
-        targetPage = action;
-        // end commented out stuff
-
-        String sep = targetPage.indexOf('?') >= 0 ? "&" : "?";
+        String sep = action.indexOf('?') >= 0 ? "&" : "?";
         // handle anchors in actions (bla.jsp?person=hg34bw#employment)
-        String actionBase = targetPage;
+        String actionBase = action;
         String actionAnchor = "";
-        int actionHashPos = targetPage.indexOf('#');
+        int actionHashPos = action.indexOf('#');
         if (actionHashPos > -1) {
-            actionBase = targetPage.substring(0, actionHashPos);
-            actionAnchor = targetPage.substring(actionHashPos);
+            actionBase = action.substring(0, actionHashPos);
+            actionAnchor = action.substring(actionHashPos);
         }
 
         if (operation.equals("deleteLink")) {
@@ -258,7 +228,7 @@ public class FormResponder extends Responder {
         } else {
             // a root form, translates into an HTML form
             sb.append("<form action=");
-            sb.append("\"" + targetPage + "\"");
+            sb.append("\"" + action + "\"");
             sb.append(" method=");
             sb.append("\"" + method + "\"");
             if (multipart) {
@@ -317,6 +287,20 @@ public class FormResponder extends Responder {
             } finally {
                 db.close();
             }
+        }
+
+        // write originating page if we reload the form, but only for edit operations (not search)
+        if (!operation.equals("search") && reloadFormOnError) {
+            String url = request.getRequestURI();
+            String queryString = request.getQueryString();
+            if (queryString != null) {
+                if (queryString.indexOf(Responder.originatingPageName) > 0) {
+                    queryString = queryString.substring(0, queryString.indexOf(Responder.originatingPageName) - 1);
+                }
+                url += "?" + queryString;
+            }
+            writeInput(sb, originatingPageName, url, "");
+            sb.append('\n');
         }
 
         if (storedSuffix.equals("")) {

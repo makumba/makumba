@@ -42,11 +42,13 @@ public class delete
       }
     else
       {
+	Transaction db1=null;
+
 	try{
 	  String [] types;
 	  if(argv.length==1)
 	    {
-	      Vector<String> v= org.makumba.MakumbaSystem.mddsInDirectory("dataDefinitions");
+	      Vector v= org.makumba.MakumbaSystem.mddsInDirectory("dataDefinitions");
 	      types= new String[v.size()];
 	      for(int i=0; i<v.size(); i++)
 		types[i]= (String)v.elementAt(i);

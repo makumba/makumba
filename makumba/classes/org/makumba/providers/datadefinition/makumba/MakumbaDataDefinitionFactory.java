@@ -92,33 +92,6 @@ public class MakumbaDataDefinitionFactory implements DataDefinitionProviderInter
     public Vector<String> getDataDefinitionsInLocation(String location) {
         return mddsInDirectory(location);
     }
-    
-    public Vector<String> getDataDefinitionsInDefaultLocations() {
-        return getDataDefinitionsInDefaultLocations((String[]) null);
-    }
-    
-    public Vector<String> getDataDefinitionsInDefaultLocations(String... ignoreList) {
-        Vector<String> mdds = mddsInDirectory("dataDefinitions");
-        Vector<String> mddsInClasses = mddsInDirectory(""); // should direct to classes dir
-        // take all MDDs that are new in classes, i.e. not already found in dataDefinitions
-        for (String string : mddsInClasses) {
-            if (!string.startsWith("dataDefinitions.")) {
-                mdds.add(string);
-            }
-        }
-        // check for MDDs in packages that should be removed
-        if (ignoreList != null) {
-            Vector<String> mddCopy = new Vector<String>(mdds);
-            for (String s : ignoreList) {
-                for (String mdd : mddCopy) {
-                    if (mdd.startsWith(s)) {
-                        mdds.remove(mdd);
-                    }
-                }
-            }
-        }
-        return mdds;
-    }
 
     /**
      * Discover mdds in a directory in classpath.
@@ -129,12 +102,10 @@ public class MakumbaDataDefinitionFactory implements DataDefinitionProviderInter
         Vector<String> mdds = new java.util.Vector<String>();
         try {
             java.net.URL u = org.makumba.commons.ClassResource.get(dirInClasspath);
-            // we need to create the file path with this method. rather than u.getFile(), as that method would keep
+            // we need to create the file path with this methode. rather than u.getFile(), as that method would keep
             // e.g. %20 for spaces in the path, which fails on windows.
-            if (u != null) {
-                java.io.File dir = new File(u.toURI());
-                fillMdds(dir.toString().length() + 1, dir, mdds);
-            }
+            java.io.File dir = new File(u.toURI());
+            fillMdds(dir.toString().length() + 1, dir, mdds);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }

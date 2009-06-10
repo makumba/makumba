@@ -31,6 +31,7 @@ import org.makumba.Transaction;
 import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.db.TransactionImplementation;
 import org.makumba.providers.TransactionProvider;
+import org.makumba.providers.TransactionProviderInterface;
 
 /**
  * A group of database connections, at most one per database name. They can be closed all at a time. This object is not
@@ -41,7 +42,7 @@ import org.makumba.providers.TransactionProvider;
  */
 public class DbConnectionProvider {
     
-    private TransactionProvider tp;
+    private TransactionProviderInterface tp;
     
     Map<String, Transaction> connections = new HashMap<String, Transaction>(7);
 
@@ -73,11 +74,11 @@ public class DbConnectionProvider {
         close();
     }
     
-    public void setTransactionProvider(TransactionProvider tp) {
+    public void setTransactionProvider(TransactionProviderInterface tp) {
         this.tp = tp;
     }
     
-    public TransactionProvider getTransactionProvider() {
+    public TransactionProviderInterface getTransactionProvider() {
         if(tp == null) {
             tp = TransactionProvider.getInstance();
         }

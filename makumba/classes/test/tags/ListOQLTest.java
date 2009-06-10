@@ -103,12 +103,11 @@ public class ListOQLTest extends MakumbaJspTestCase {
         assertTrue(compareTest(output));
     }
     
-    // FIXME this is a bug that needs to be fixed
-    public void testShouldFailMakListCountClosedList() throws ServletException, IOException {
+    public void testMakListCountClosedList() throws ServletException, IOException {
         pageContext.include("list-oql/testMakListCountClosedList.jsp");
     }
 
-    public void endShouldFailMakListCountClosedList(WebResponse response) throws Exception {
+    public void endMakListCountClosedList(WebResponse response) throws Exception {
         try {
             output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
@@ -213,9 +212,6 @@ public class ListOQLTest extends MakumbaJspTestCase {
 
     }
 
-    /* Commented out by manu on 22-05-2009, since those tests fail with the current comparison method
-     
-    
     public void testMakValueTS_create() throws ServletException, IOException {
         // FIXME: this test will fail
         // a line-by-line comparison can not work for the dynamic values TS_create & TS_ modify
@@ -245,8 +241,6 @@ public class ListOQLTest extends MakumbaJspTestCase {
         }
         assertTrue(compareTest(output));
     }
-    
-    */
     
     public void testMQLFunctions() throws ServletException, IOException {
         pageContext.include("list-oql/testMQLFunctions.jsp");

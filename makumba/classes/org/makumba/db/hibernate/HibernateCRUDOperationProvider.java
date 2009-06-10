@@ -34,14 +34,14 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
     private static NameResolver nr = new NameResolver();
 
     @Override
-    public void checkInsert(Transaction t, String type, Dictionary<String, Object> fieldsToCheck, Dictionary<String, Object> fieldsToIgnore,
-            Dictionary<String, Object> allFields) {
+    public void checkInsert(Transaction t, String type, Dictionary fieldsToCheck, Dictionary fieldsToIgnore,
+            Dictionary allFields) {
 
         DataDefinition dd = ddp.getDataDefinition(type);
 
         dd.checkFieldNames(fieldsToCheck);
-        for (String string : dd.getFieldNames()) {
-            String name = string;
+        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
+            String name = (String) e.nextElement();
             if (fieldsToIgnore.get(name) == null) {
                 Object o = fieldsToCheck.get(name);
                 if (o != null) {
@@ -60,18 +60,17 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
     }
 
     @Override
-    public void checkUpdate(Transaction t, String type, Pointer pointer, Dictionary<String, Object> fieldsToCheck,
-            Dictionary<String, Object> fieldsToIgnore, Dictionary<String, Object> allFields) {
+    public void checkUpdate(Transaction t, String type, Pointer pointer, Dictionary fieldsToCheck,
+            Dictionary fieldsToIgnore, Dictionary allFields) {
 
-        // DataDefinition dd =
-        checkUpdate(type, fieldsToCheck, fieldsToIgnore);
+        DataDefinition dd = checkUpdate(type, fieldsToCheck, fieldsToIgnore);
 
         // TODO we still need to check for multi-field key uniqueness that span over more than one table
 
     }
 
     @Override
-    public Pointer insert(Transaction t, String type, Dictionary<String, Object> data) {
+    public Pointer insert(Transaction t, String type, Dictionary data) {
 
         try {
 
@@ -104,7 +103,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                 }
 
                 // now we add our new data
-                Enumeration<Object> e = data.elements();
+                Enumeration e = data.elements();
                 while (e.hasMoreElements()) {
                     Object o = e.nextElement();
                     if (!(o instanceof Pointer && ((Pointer) o).equals(base))) {
@@ -195,7 +194,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
     }
 
-    private void fillObject(Transaction t, Dictionary<String, Object> data, DataDefinition dd, Class<?> recordClass, Object newRecord)
+    private void fillObject(Transaction t, Dictionary data, DataDefinition dd, Class<?> recordClass, Object newRecord)
             throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         Enumeration<String> fields = data.keys();
         while (fields.hasMoreElements()) {
@@ -214,30 +213,26 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                     // break;
                 case FieldDefinition._int:
                     fieldType = Integer.class;
-                    if (fieldValue == Pointer.NullInteger) {
+                    if (fieldValue == Pointer.NullInteger)
                         fieldValue = null;
-                    }
                     break;
                 case FieldDefinition._real:
                     fieldType = Double.class;
-                    if (fieldValue == Pointer.NullReal) {
+                    if (fieldValue == Pointer.NullReal)
                         fieldValue = null;
-                    }
                     break;
                 case FieldDefinition._charEnum:
                 case FieldDefinition._char:
                     fieldType = String.class;
-                    if (fieldValue == Pointer.NullString) {
+                    if (fieldValue == Pointer.NullString)
                         fieldValue = null;
-                    }
                     break;
                 case FieldDefinition._dateModify:
                 case FieldDefinition._dateCreate:
                 case FieldDefinition._date:
                     fieldType = Date.class;
-                    if (fieldValue == Pointer.NullDate) {
+                    if (fieldValue == Pointer.NullDate)
                         fieldValue = null;
-                    }
                     break;
                 case FieldDefinition._ptr:
                 case FieldDefinition._ptrOne:
@@ -258,33 +253,29 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                     break;
                 case FieldDefinition._ptrIndex:
                     fieldType = int.class;
-                    if (fieldValue == Pointer.Null) {
+                    if (fieldValue == Pointer.Null)
                         fieldValue = null;
-                    }
                     break;
                 case FieldDefinition._text:
                     if (!isGenerated(recordClass)) {
                         fieldType = String.class;
                         // FIXME: this is a memory killer, should use streams
                         fieldValue = ((Text) fieldValue).getString();
-                        if (fieldValue == Pointer.NullText) {
+                        if (fieldValue == Pointer.NullText)
                             fieldValue = null;
-                        }
                         break;
                     }
 
                 case FieldDefinition._binary:
                     // FIXME this might not work since we need a byte[] as type
                     fieldType = Text.class;
-                    if (fieldValue == Pointer.NullText) {
+                    if (fieldValue == Pointer.NullText)
                         fieldValue = null;
-                    }
                     break;
                 case FieldDefinition._boolean:
                     fieldType = Boolean.class;
-                    if (fieldValue == Pointer.NullBoolean) {
+                    if (fieldValue == Pointer.NullBoolean)
                         fieldValue = null;
-                    }
                     break;
                 default:
                     throw new RuntimeException("Unmapped type: " + fd.getName() + "-" + fd.getType());
@@ -330,9 +321,8 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
             try {
 
                 Collection values = (Collection) val;
-                if (values.isEmpty()) {
+                if (values.isEmpty())
                     return;
-                }
 
                 HibernateTransaction ht = (HibernateTransaction) t;
                 Class<?> c = getPointerClass(base.getType());
@@ -409,7 +399,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                 }
 
                 Method m = c.getMethod("set" + fieldNameInClass, parameterTypes);
-                m.invoke(baseObject, new Object[] { new ArrayList<Object>() });
+                m.invoke(baseObject, new Object[] { new ArrayList() });
 
                 ht.s.saveOrUpdate(baseObject);
                 ht.s.flush();
@@ -441,11 +431,10 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
     }
 
     @Override
-    public int update1(Transaction t, Pointer p, DataDefinition dd, Dictionary<String, Object> dic) {
+    public int update1(Transaction t, Pointer p, DataDefinition dd, Dictionary dic) {
 
-        if (dic.isEmpty()) {
+        if (dic.isEmpty())
             return 0;
-        }
 
         try {
 

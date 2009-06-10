@@ -1,6 +1,5 @@
 package org.makumba.db.makumba;
 
-import java.util.Dictionary;
 import java.util.Map;
 import java.util.Vector;
 
@@ -26,7 +25,7 @@ public class OQLQueryProvider extends QueryProvider {
 
     
     @Override
-    public Vector<Dictionary<String, Object>> executeRaw(String query, Map args, int offset, int limit) {
+    public Vector executeRaw(String query, Map args, int offset, int limit) {
        return tr.executeQuery(query, args, offset, limit);
     }
 
@@ -38,7 +37,7 @@ public class OQLQueryProvider extends QueryProvider {
     @Override
     protected void init(String dataSource, Attributes a) {
         super.init(dataSource, a);
-        tr = MakumbaTransactionProvider.getInstance().getConnectionTo(dataSource);
+        tr = new TransactionProvider(new MakumbaTransactionProvider()).getConnectionTo(dataSource);
         ((TransactionImplementation)tr).setContext(a);
 
     } 

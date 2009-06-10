@@ -50,15 +50,10 @@ public class errorViewer extends LineViewer {
 
     private static final String patternLineNumber3 = "\\((\\d+),\\d+\\).*"; // (96,2)
 
-    private static final String[] patternLineNumberStrings = { patternLineNumber1, patternLineNumber2,
-            patternLineNumber3 };
+    private static final String[] patternLineNumberStrings = { patternLineNumber1, patternLineNumber2, patternLineNumber3 };
 
-    Pattern[] patternLineNumbers = { Pattern.compile(patternLineNumberStrings[0]),
-            Pattern.compile(patternLineNumberStrings[1]), Pattern.compile(patternLineNumberStrings[2]) };
-
-    private static final String regex = "\\bhttp://[^\\s]+";
-
-    private static final Pattern pattern = Pattern.compile(regex);
+    Pattern[] patternLineNumbers = { Pattern.compile(patternLineNumberStrings[0]), Pattern.compile(patternLineNumberStrings[1]),
+            Pattern.compile(patternLineNumberStrings[2]) };
 
     private String hiddenBody;
 
@@ -73,7 +68,6 @@ public class errorViewer extends LineViewer {
         reader = new StringReader(body);
     }
 
-    @Override
     public String parseLine(String s) {
         Class<?> javaClass;
         String jspPage;
@@ -95,8 +89,7 @@ public class errorViewer extends LineViewer {
                 Integer lineNumber = null;
 
                 // FIXME should not depend directly on RecordParser
-                if (searchMDD
-                        && org.makumba.providers.datadefinition.makumba.RecordParser.findDataDefinition(token, "mdd") != null
+                if (searchMDD && org.makumba.providers.datadefinition.makumba.RecordParser.findDataDefinition(token, "mdd") != null
                         || org.makumba.providers.datadefinition.makumba.RecordParser.findDataDefinition(token, "idd") != null) {
                     result.append(formatMDDLink(token));
                 } else if (searchJavaClasses && (javaClass = findClassSimple(token)) != null) {
@@ -121,25 +114,12 @@ public class errorViewer extends LineViewer {
             }
             source.delete(0, indexOf + token.length());
         }
-        return markupLinks(result.append(source).toString());
-    }
-
-    private static String markupLinks(String string) {
-        Matcher matcher = pattern.matcher(string);
-        StringBuilder sb = new StringBuilder();
-        int currentIndex = 0;
-        while (matcher.find()) {
-            sb.append(string.substring(currentIndex, matcher.start()));
-            sb.append("<a href=\"").append(matcher.group()).append("\">").append(matcher.group()).append("</a>");
-            currentIndex = matcher.end();
-        }
-        sb.append(string.substring(currentIndex));
-        return sb.toString();
+        return result.append(source).toString();
     }
 
     private Integer findLineNumber(String s) {
-        for (Pattern patternLineNumber : patternLineNumbers) {
-            Matcher m = patternLineNumber.matcher(s);
+        for (int i = 0; i < patternLineNumbers.length; i++) {
+            Matcher m = patternLineNumbers[i].matcher(s);
             if (m.matches()) {
                 return Integer.parseInt(m.group(1));
             }
@@ -151,31 +131,16 @@ public class errorViewer extends LineViewer {
      * @param token
      * @return
      */
-    @Override
     public Class<?> findClassSimple(String token) {
         int index = token.lastIndexOf('.');
         String className = token.substring(0, index);
         return super.findClassSimple(className);
     }
 
-    @Override
     public void footer(PrintWriter pw) throws IOException {
-        if (hiddenBody != null) {
+        if (hiddenBody != null)
             pw.println("<!--\n" + hiddenBody + "\n-->");
-        }
         super.footer(pw);
-    }
-
-    public static void main(String[] args) {
-        String[] strings = { "http://parade.best.eu.org/rudi-k/website/company/private/cvSearch.jsp",
-                "http://www.google.com is super, http://www.google.com too, but best is http://www.google.com!",
-                " http://en.wikipedia.org/wiki/PC_Tools_(Central_Point_Software) ",
-                "Visit my website at http://www.example.com, it's awesome! ", "Please go to http://stackoverflow.com" };
-        for (String string : strings) {
-            System.out.println(string);
-            System.out.println(markupLinks(string));
-            System.out.println();
-        }
     }
 
 }

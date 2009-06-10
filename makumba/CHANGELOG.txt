@@ -6,35 +6,20 @@
 --------------------------------------
 
 TO BE RELEASED IMMEDIATELY (No need for more testing)
-rudi: form reload - originating page is now part of the responder, rather than the URL
-rudi: search forms - allowing fields to be over more than one field, default=".." 
-rudi: optimised some string concatenations, fixing some generics warnings
-rudi: lineViewer more robust to exceptions of relations tool
-rudi: more sophisticated MQL function analysis
-rudi: fixing HTML auto detection to be bigger than 1024 characters
-jasper: allowing Transaction instead of Database in Logic
-cristi: fixes related to SELECT ... INSERT and parameter passing to MQL queries
-manu: fixing bugs 1034, 801
-manu: fixing race condition in Configuration 
-marius: adding "clearDefault" parameter to mak:input to allow default text to be cleared onFocus and restore it onBlur
-lenno: fix in SearchTag
-lenno: fixes in CodeGenerator
 
 -----------------------------------------------
 
 NOT TO BE RELEASED YET (need more testing)
-manu: auto-complete for mak:input (char and ptr)
 
 ------------------------------------------
 - add your changes -
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
 
-
 0.8.1.9; 17 Dec 2008
 rudi: allowing MQL functions to operate on $params
 rudi: fixes for search forms: matchMode=".." values checked in criterion tag; >= and <= matchModes added for number types
-rudi: tool to clean the makumba caches; not displaying file-relation crawling link when tool disabled
+rudi: tool to clean the makumba caches; not displaying file-realtion crawling link when tool disabled
 rudi: removed a number of useless string concatenations
 rudi: added >= and <= match modes, between-inclusive default for ranges rather than between
 rudi: better handling of errors with content-type recognition

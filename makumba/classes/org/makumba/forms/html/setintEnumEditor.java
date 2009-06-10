@@ -30,16 +30,8 @@ import org.makumba.commons.formatters.RecordFormatter;
 
 public class setintEnumEditor extends setcharEnumEditor {
 	
-	private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
-		static FieldEditor singleton = new setintEnumEditor();
-		
-		public void release() {
-            singleton = null;
-        }
-
-        public SingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
+	private static final class SingletonHolder {
+		static final FieldEditor singleton = new setintEnumEditor();
 	}
 
 	private setintEnumEditor() {}

@@ -32,11 +32,8 @@
   -->
   <tab id="home" label="Home" href="/index.html"/>
   <tab id="quickstart" label="Quick start" href="quickstart.html" />
-  <tab id="configuration" label="Configuration" dir="configuration" />
-  <tab id="usage" label="Using Makumba" dir="/usage"/>
-  <tab id="documentation" label="Reference Documentation" dir="/doc"/>
-  <tab id="showcases" label="Showcases" href="/showcases.html" />
-  <tab id="download" label="Download" href="/download.html" />
+  <tab id="installation" label="Installation" dir="installation" />
+  <tab id="documentation" label="Documentation" dir="/doc"/>
   <!-- tab id="develdoc" label="Developer documentation" dir="develdoc"/ -->
   
 </tabs>

@@ -25,7 +25,6 @@ import org.makumba.analyser.engine.JspParseData;
 import org.makumba.commons.DbConnectionProvider;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.attributes.RequestAttributes;
-import org.makumba.providers.Configuration;
 
 /**
  * The class that performs exception handling. Receives errors in any makumba page and treats them meant to be friendly
@@ -48,7 +47,7 @@ public class ErrorFormatter {
             { org.makumba.DataDefinitionNotFoundError.class, "data definition not found" },
             { org.makumba.DataDefinitionParseError.class, "data definition parse" },
             { org.makumba.ValidationDefinitionParseError.class, "validation definition parse" },
-            { org.makumba.DBError.class, "database" }, { org.makumba.ConfigurationError.class, "configuration" },
+            { org.makumba.DBError.class, "database" }, { org.makumba.ConfigFileError.class, "configuration" },
             { org.makumba.ProgrammerError.class, "programmer" },
             { org.makumba.list.tags.MakumbaJspException.class, "page" },
             { org.makumba.AttributeNotFoundException.class, "attribute not set" },
@@ -226,49 +225,45 @@ public class ErrorFormatter {
      */
 
     public void logError(Throwable t, HttpServletRequest req) {
-        
-        //we only log if this is configured
-        if(Configuration.getErrorLog()) {
-        
-            try{
-            // we re-use the transaction provider of the request to do our logging
-            DbConnectionProvider dbc = (DbConnectionProvider) req.getAttribute(RequestAttributes.PROVIDER_ATTRIBUTE);
-            Transaction tr = dbc.getTransactionProvider().getConnectionTo(
-                dbc.getTransactionProvider().getDefaultDataSourceName());
-    
-            try {
-                Dictionary<String, Object> d = new Hashtable<String, Object>();
-    
-                // TODO: read and store the source of the submited page
-                // d.put("page", "");
-                if (t != null && t.getMessage() != null) {
-                    d.put("exception", t.getMessage());
-                }
-                d.put("executionDate", new Date());
-                d.put("url", req.getRequestURL().toString());
-                if (req.getAttribute("makumba.parameters") != null) {
-                    d.put("makumbaParameters", req.getAttribute("makumba.parameters").toString());
-                }
-                if (req.getAttribute("makumba.attributes") != null) {
-                    d.put("makumbaAttributes", req.getAttribute("makumba.attributes").toString());
-                }
-                if (req.getAttribute("makumba.controller") != null) {
-                    d.put("makumbaController", req.getAttribute("makumba.controller").toString());
-                }
-    
-                tr.insert("org.makumba.controller.ErrorLog", d);
-            } finally {
-                    tr.close();
+        try{
+        // we re-use the transaction provider of the request to do our logging
+        DbConnectionProvider dbc = (DbConnectionProvider) req.getAttribute(RequestAttributes.PROVIDER_ATTRIBUTE);
+        Transaction tr = dbc.getTransactionProvider().getConnectionTo(
+            dbc.getTransactionProvider().getDefaultDataSourceName());
+
+        try {
+            Dictionary<String, Object> d = new Hashtable<String, Object>();
+
+            // TODO: read and store the source of the submited page
+            // d.put("page", "");
+            if (t != null && t.getMessage() != null) {
+                d.put("exception", t.getMessage());
             }
-            }catch (Throwable t1) {
-                java.util.logging.Logger.getLogger("org.makumba.errorFormatter").log(
-                    java.util.logging.Level.SEVERE,
-                    "Could not log exception to the db, exception to log was", t);
-                java.util.logging.Logger.getLogger("org.makumba.errorFormatter").log(
-                    java.util.logging.Level.SEVERE,
-                    "Could not log exception to the db, database logging exception was", t1);
+            d.put("executionDate", new Date());
+            d.put("url", req.getRequestURL().toString());
+            if (req.getAttribute("makumba.parameters") != null) {
+                d.put("makumbaParameters", req.getAttribute("makumba.parameters").toString());
             }
+            if (req.getAttribute("makumba.attributes") != null) {
+                d.put("makumbaAttributes", req.getAttribute("makumba.attributes").toString());
+            }
+            if (req.getAttribute("makumba.controller") != null) {
+                d.put("makumbaController", req.getAttribute("makumba.controller").toString());
+            }
+
+            tr.insert("org.makumba.controller.ErrorLog", d);
+        } finally {
+                tr.close();
         }
+        }catch (Throwable t1) {
+            java.util.logging.Logger.getLogger("org.makumba.errorFormatter").log(
+                java.util.logging.Level.SEVERE,
+                "Could not log exception to the db, exception to log was", t);
+            java.util.logging.Logger.getLogger("org.makumba.errorFormatter").log(
+                java.util.logging.Level.SEVERE,
+                "Could not log exception to the db, database logging exception was", t1);
+        }
+
     }
 
     /**

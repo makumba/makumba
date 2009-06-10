@@ -1,5 +1,6 @@
 package org.makumba.db.hibernate;
 
+import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Date;
@@ -33,7 +34,7 @@ import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
-import org.makumba.providers.TransactionProvider;
+import org.makumba.providers.TransactionProviderInterface;
 import org.makumba.providers.query.hql.HqlAnalyzer;
 
 /**
@@ -54,15 +55,15 @@ public class HibernateTransaction extends TransactionImplementation {
 
     private static NameResolver nr = new NameResolver();
 
-    public HibernateTransaction(TransactionProvider tp) {
+    public HibernateTransaction(TransactionProviderInterface tp) {
         super(tp);
     }
 
-    public HibernateTransaction(String dataSource, DataDefinitionProvider ddp, HibernateTransactionProvider hibernateTransactionProvider) {
-        this(hibernateTransactionProvider);
+    public HibernateTransaction(String dataSource, DataDefinitionProvider ddp, TransactionProviderInterface tp) {
+        this(tp);
         this.dataSource = dataSource;
         this.ddp = ddp;
-        this.s = ((SessionFactory) ((HibernateTransactionProvider) hibernateTransactionProvider).getHibernateSessionFactory(dataSource)).openSession();
+        this.s = ((SessionFactory) ((HibernateTransactionProvider) tp).getHibernateSessionFactory(dataSource)).openSession();
         s.setCacheMode(CacheMode.IGNORE);
         beginTransaction();
     }

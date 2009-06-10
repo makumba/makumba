@@ -36,7 +36,6 @@ import org.makumba.InvalidValueException;
 import org.makumba.Pointer;
 import org.makumba.commons.SQLPointer;
 import org.makumba.providers.Configuration;
-import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
 
 /**
@@ -97,7 +96,7 @@ public class DataPointerValueConverter extends DataServlet {
         writer.println("    <th>Data type</th>");
         writer.println("    <td>");
         writer.println("      <select name=\"dataType\">");
-        Vector<String> v = DataDefinitionProvider.getInstance().getDataDefinitionsInDefaultLocations("test.brokenMdds");
+        Vector<String> v = org.makumba.MakumbaSystem.mddsInDirectory("dataDefinitions");
         Collections.sort(v);
         for (int i = 0; i < v.size(); i++) {
             String selected = (v.get(i).equals(paramDataType) ? " selected" : "");

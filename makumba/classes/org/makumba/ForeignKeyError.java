@@ -17,7 +17,7 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 //
 //  -------------
-//  $Id$
+//  $Id: DBError.java 1605 2007-09-17 20:33:41Z rosso_nero $
 //  $Name$
 /////////////////////////////////////
 
@@ -25,7 +25,7 @@ package org.makumba;
 
 /**
  * @author Rudolf Mayer
- * @version $Id$
+ * @version $Id: ForeignKeyError.java,v 1.1 Jul 30, 2008 12:55:56 AM rudi Exp $
  */
 public class ForeignKeyError extends DBError {
     private static final long serialVersionUID = 1L;

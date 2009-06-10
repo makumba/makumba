@@ -6,20 +6,21 @@ import java.util.Vector;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.makumba.HibernateSFManager;
 
 public class HibernateTest  {
     
 	public static void main (String[] args) {
         
-        Vector<String> dds= new Vector<String>();
+        Vector dds= new Vector();
         dds.addElement("general.Person");
         
         //Vector dds= org.makumba.MakumbaSystem.mddsInDirectory("dataDefinitions");
         //SessionFactory sf = HibernateSFManager.getSF(dds, "dataDefinitions", "org/makumba/db/hibernate/localhost_mysql_karambasmall.cfg.xml");
 		SessionFactory sf = HibernateSFManager.getSF();
 		Session session = sf.openSession();
-        session.beginTransaction();
+		Transaction tx = session.beginTransaction();
 		
 //		List languages = new ArrayList();
 //		languages.add(new Language("English", "en"));

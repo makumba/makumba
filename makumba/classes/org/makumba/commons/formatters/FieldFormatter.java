@@ -50,16 +50,8 @@ public class FieldFormatter {
         return paramValues;
     }
 
-    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
-        static FieldFormatter singleton = new FieldFormatter();
-        
-        public void release() {
-            singleton = null;
-        }
-
-        public SingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
+    private static final class SingletonHolder {
+        static final FieldFormatter singleton = new FieldFormatter();
     }
 
     public static FieldFormatter getInstance() {
@@ -69,7 +61,7 @@ public class FieldFormatter {
     /** Don't use this, use getInstance() */
     protected FieldFormatter() {
         for (int i = 0; i < getAcceptedParams().length; i++) {
-            Hashtable<String, Object> h = new Hashtable<String, Object>(13);
+            Hashtable h = new Hashtable(13);
             if (getAcceptedValue()[i] != null) {
                 for (int j = 0; j < getAcceptedValue()[i].length; j++) {
                     h.put(getAcceptedValue()[i][j], dummy);
@@ -92,11 +84,11 @@ public class FieldFormatter {
         rf.expr[fieldIndex] = s;
     }
 
-    Hashtable<String, Hashtable<String, Object>> validParams = new Hashtable<String, Hashtable<String, Object>>(13);
+    Hashtable validParams = new Hashtable(13);
 
-    public void checkParams(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
-        for (Enumeration<String> e = formatParams.keys(); e.hasMoreElements();) {
-            String s = e.nextElement();
+    public void checkParams(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
+        for (Enumeration e = formatParams.keys(); e.hasMoreElements();) {
+            String s = (String) e.nextElement();
             if (s.startsWith("org.makumba")) {
                 continue;
             }
@@ -105,7 +97,7 @@ public class FieldFormatter {
     }
 
     public void checkParam(RecordFormatter rf, int fieldIndex, String name, String val) {
-        Hashtable<String, Object> h = validParams.get(name);
+        Hashtable h = (Hashtable) validParams.get(name);
         if (h == null) {
             throw new ProgrammerError("Error for expression '" + rf.expr[fieldIndex] + "': invalid format parameter \'"
                     + name + "\'. Allowed values are: " + ArrayUtils.toString(validParams.keySet()));
@@ -127,7 +119,7 @@ public class FieldFormatter {
      * @param fieldIndex
      *            TODO
      */
-    public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
+    public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
         String formatted;
         if (o == null || o.equals(rf.dd.getFieldDefinition(fieldIndex).getNull())) {
             formatted = formatNull(rf, fieldIndex, formatParams);
@@ -148,18 +140,18 @@ public class FieldFormatter {
      * @param fieldIndex
      *            TODO
      */
-    public String formatNull(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
+    public String formatNull(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
         return getDefaultValueFormat(rf, fieldIndex, formatParams);
     }
 
     /**
      * Formats the not-null-object to pure text. To be over-ridden by subclasses.
      */
-    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
+    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
         return o.toString();
     }
 
-    public int getIntParam(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams, String name) {
+    public int getIntParam(RecordFormatter rf, int fieldIndex, Dictionary formatParams, String name) {
         String s = (String) formatParams.get(name);
         if (s == null) {
             return -1;
@@ -171,7 +163,7 @@ public class FieldFormatter {
         }
     }
 
-    public String getIntParamString(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams, String name) {
+    public String getIntParamString(RecordFormatter rf, int fieldIndex, Dictionary formatParams, String name) {
         int n = getIntParam(rf, fieldIndex, formatParams, name);
         if (n == -1) {
             return "";
@@ -185,7 +177,7 @@ public class FieldFormatter {
     /**
      * Gets the formatted default value, used if real value is null. Returns blank if not set.
      */
-    public String getDefaultValueFormat(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
+    public String getDefaultValueFormat(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
         String s = (String) formatParams.get("default");
         return (s == null) ? "" : s;
     }
@@ -193,7 +185,7 @@ public class FieldFormatter {
     /**
      * Gets the formatted empty value, used if real value is empty. Returns blank if not set.
      */
-    public String getEmptyValueFormat(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
+    public String getEmptyValueFormat(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
         String s = (String) formatParams.get("empty");
         return (s == null) ? "" : s;
     }
@@ -201,7 +193,7 @@ public class FieldFormatter {
     /**
      * Chooses between the real (formatted) value and possible replacements (default, empty).
      */
-    public String resetValueFormat(RecordFormatter rf, int fieldIndex, String s, Dictionary<String, Object> formatParams) {
+    public String resetValueFormat(RecordFormatter rf, int fieldIndex, String s, Dictionary formatParams) {
         if (s == null) {
             s = getDefaultValueFormat(rf, fieldIndex, formatParams);
         }

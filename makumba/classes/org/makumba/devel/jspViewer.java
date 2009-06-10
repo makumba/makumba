@@ -26,8 +26,9 @@ package org.makumba.devel;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLConnection;
 import java.util.Date;
-import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,21 +39,104 @@ import org.makumba.analyser.engine.JspParseData;
 import org.makumba.analyser.engine.SourceSyntaxPoints;
 import org.makumba.analyser.engine.SyntaxPoint;
 import org.makumba.analyser.engine.TomcatJsp;
+import org.makumba.commons.ClassResource;
 import org.makumba.providers.Configuration;
 
 /**
- * This class implements a viewer for .jsp files, and provides highlighting of <mak:>, <jsp:>and JSTL tags.
+ * This classe implements a viewer for .jsp files, and provides highlighting of <mak:>, <jsp:>and JSTL tags.
  * 
  * @version $Id$
  * @author Stefan Baebler
  * @author Rudolf Mayer
  */
 public class jspViewer extends LineViewer {
-    private static Map<String, String> taglibgSytleProperties = Configuration.getJspViewerSyntaxStylesTags();
+    /**
+     * Usage: put the beginning of the tag-name as key, and the style-info you want for the created span around that
+     * tag. both 'key' and /'key' will be matched - if you want a different colouring for /'key', put that as an own
+     * entry, and make sure it is put <b>before </b> the 'key' entry - otherwise it will get matched twice.
+     */
 
-    private static Map<String, String> SystemStyleProperties = Configuration.getJspViewerSyntaxStyles();
+    private static final String PROPERTIES_FILE_NAME = "jspSyntax.properties";
 
-    private static Set<String> syntaxKeys = taglibgSytleProperties.keySet();
+    /**
+     * defines some default taglibs which should be highlighted. will be used when loading the properties file fails.
+     */
+    private static Properties defaultTaglibProperties = new Properties();
+    static {
+        defaultTaglibProperties.put("mak", "background:#eecccc; color:green; border:red thin; font-weight: bold; ");
+        defaultTaglibProperties.put("jsp", "background:lightcyan; color:green; border:red thin; font-weight: bold; ");
+        defaultTaglibProperties.put("fmt", "background::chartreuse; color:green; border:red thin; font-weight: bold; ");
+        defaultTaglibProperties.put("c", "background:lightblue; color:green; border:red thin; font-weight: bold; ");
+    }
+
+    private static Properties taglibgSytleProperties = new Properties();
+
+    private static Properties SystemStyleProperties = new Properties();
+
+    private static final String DEFAULT_JSPSYSTEMTAG_STYLE = defaultTaglibProperties.getProperty("jsp");
+
+    private static final String DEFAULT_JSPSCRIPLET_STYLE = "background:gold;color:green; border:red thin; font-weight: bold;";
+
+    private static final String DEFAULT_JSPCOMMENT_STYLE = "color:gray;";
+
+    private static final String DEFAULT_JSPEXPRESSIONLANGUAGE_STYLE = "font-style:italic;";
+
+    private static final String DEFAULT_HIBERNATEPAGE_STYLE = "background-color: #CCFFCC;";
+
+    private static String hibernateCodeBackgroundStyle;
+
+    static {
+        initProperties();
+    }
+
+    /**
+     * Loads the properties file, if that fails uses {@link org.makumba.devel.javaViewer#initDefaultProperties()
+     * initDefaultProperties}to get default values.
+     */
+    private static void initProperties() {
+        // TODO: should we parse the tag-lib import and check for the prefix?
+        try {
+            URLConnection connection = (ClassResource.get(PROPERTIES_FILE_NAME)).openConnection();
+            Properties jspSyntaxProperties = new Properties();
+            jspSyntaxProperties.load(connection.getInputStream());
+
+            // we load from the properties file the non-taglib properties, using defaults when necessary
+            SystemStyleProperties.put("ExpressionLanguage", jspSyntaxProperties.getProperty("ExpressionLanguage",
+                DEFAULT_JSPEXPRESSIONLANGUAGE_STYLE));
+            SystemStyleProperties.put("JspScriptlet", jspSyntaxProperties.getProperty("JspScriptlet",
+                DEFAULT_JSPSCRIPLET_STYLE));
+            SystemStyleProperties.put("JspComment", jspSyntaxProperties.getProperty("JspComment",
+                DEFAULT_JSPCOMMENT_STYLE));
+            SystemStyleProperties.put("JSPSystemTag", jspSyntaxProperties.getProperty("JSPSystemTag",
+                jspSyntaxProperties.getProperty("jsp", DEFAULT_JSPSYSTEMTAG_STYLE)));
+
+            // now we remove the non-taglib properties, and use the remainders as taglib properties fiel
+            jspSyntaxProperties.remove("JspScriptlet");
+            jspSyntaxProperties.remove("JspComment");
+            jspSyntaxProperties.remove("JSPSystemTag");
+            jspSyntaxProperties.remove("ExpressionLanguage");
+            taglibgSytleProperties = jspSyntaxProperties;
+
+            // set background colour for hibernate code
+            hibernateCodeBackgroundStyle = jspSyntaxProperties.getProperty("HibernatePage", DEFAULT_HIBERNATEPAGE_STYLE);
+
+        } catch (Throwable t) { // the properties file was not found / readable / etc.
+
+            java.util.logging.Logger.getLogger("org.makumba.org.makumba.devel.sourceViewer").fine(
+                "JSP syntax highlighting properties file '" + PROPERTIES_FILE_NAME
+                        + "' not found! Using default values.");
+
+            // we use only default values
+            SystemStyleProperties.put("ExpressionLanguage", DEFAULT_JSPEXPRESSIONLANGUAGE_STYLE);
+            SystemStyleProperties.put("JspScriptlet", DEFAULT_JSPSCRIPLET_STYLE);
+            SystemStyleProperties.put("JspComment", DEFAULT_JSPCOMMENT_STYLE);
+            SystemStyleProperties.put("JSPSystemTag", DEFAULT_JSPSYSTEMTAG_STYLE);
+            taglibgSytleProperties = defaultTaglibProperties;
+            hibernateCodeBackgroundStyle = DEFAULT_HIBERNATEPAGE_STYLE;
+        }
+    }
+
+    private static Set syntaxKeys = taglibgSytleProperties.keySet();
 
     boolean hasLogic;
 
@@ -111,8 +195,8 @@ public class jspViewer extends LineViewer {
             sourceSyntaxPoints = jspParseData.getSyntaxPointArray(null);
 
             // set background colour for hibernate code
-            if (jspParseData.isUsingHibernate() && SystemStyleProperties.get("HibernatePage") != null) {
-                codeBackgroundStyle = SystemStyleProperties.get("HibernatePage");
+            if (jspParseData.isUsingHibernate()) {
+                codeBackgroundStyle = hibernateCodeBackgroundStyle;
             }
 
             syntaxPoints = jspParseData.getSyntaxPoints();
@@ -147,7 +231,7 @@ public class jspViewer extends LineViewer {
         w.println("<tr>");
         w.println("<td align=\"right\" style=\" font-size: smaller;\">");
         w.println("<form method=\"get\" action>");
-        w.println("Hide: <input type=\"checkbox\" name=\"hideComments\" value=\"true\""
+        w.println("Hide:" + " <input type=\"checkbox\" name=\"hideComments\" value=\"true\""
                 + (hideComments ? " checked=\"checked\"" : "") + ">Comments  ");
         w.println("<input type=\"checkbox\" name=\"hideHTML\" value=\"true\""
                 + (hideHTML ? " checked=\"checked\"" : "") + ">HML  ");

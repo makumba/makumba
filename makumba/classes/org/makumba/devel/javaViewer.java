@@ -27,8 +27,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.Hashtable;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,6 +42,7 @@ import org.makumba.analyser.engine.JavaParseData;
 import org.makumba.analyser.engine.SourceSyntaxPoints;
 import org.makumba.analyser.engine.SyntaxPoint;
 import org.makumba.analyser.engine.TomcatJsp;
+import org.makumba.commons.ClassResource;
 import org.makumba.commons.StringUtils;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
@@ -53,9 +56,21 @@ import org.makumba.providers.DataDefinitionProvider;
  * @author Rudolf Mayer
  */
 public class javaViewer extends LineViewer {
-    public static Map<String, String> javaSyntaxProperties = Configuration.getJavaViewerSyntaxStyles();
+    /** the name of the properties file configuring what to highlight how */
+    public static final String PROPERTIES_FILE_NAME = "javaSyntax.properties";
 
-    private static DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
+    public static Hashtable<String, String> javaSyntaxProperties = new Hashtable<String, String>();
+
+    // styles are roughly the same as the ECLIPSE standards
+    private static final String DEFAULT_JAVACOMMENT_STYLE = "color: #1BA55F; font-family: monospace; ";
+
+    private static final String DEFAULT_JAVADOC_STYLE = "color: #3F5FBF; font-family: monospace; ";
+
+    private static final String DEFAULT_JAVAMODIFIER_STYLE = "color: blue; font-weight: bold; font-family: monospace; ";
+
+    private static final String DEFAULT_JAVARESERVEDWORD_STYLE = "color: #7F0055; font-weight: bold; font-family: monospace; ";
+
+    private static final String DEFAULT_JAVASTRINGLITERAL_STYLE = "color: #FF0000; font-style: italic; font-family: monospace; ";
 
     private boolean compiledJSP = false;
 
@@ -66,6 +81,51 @@ public class javaViewer extends LineViewer {
     private SyntaxPoint[] sourceSyntaxPoints;
 
     private JavaParseData javaParseData;
+
+    private DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
+
+    private URL url;
+
+    static {
+        initProperties();
+    }
+
+    /**
+     * Loads the properties file, if that fails uses
+     * {@link org.makumba.devel.javaViewer#initDefaultProperties() initDefaultProperties}to get default values.
+     */
+    private static void initProperties() {
+        try {
+            URLConnection connection = (ClassResource.get(PROPERTIES_FILE_NAME)).openConnection();
+            Properties readProperties = new Properties();
+            readProperties.load(connection.getInputStream());
+
+            // we load from the properties file the non-taglib properties, using defaults when necessary
+            javaSyntaxProperties.put("JavaBlockComment", readProperties.getProperty("JavaBlockComment",
+                DEFAULT_JAVACOMMENT_STYLE));
+            javaSyntaxProperties.put("JavaDocComment", readProperties.getProperty("javaDocComment",
+                DEFAULT_JAVADOC_STYLE));
+            javaSyntaxProperties.put("JavaLineComment", readProperties.getProperty("javaLineComment",
+                DEFAULT_JAVACOMMENT_STYLE));
+            javaSyntaxProperties.put("JavaModifier", readProperties.getProperty("JavaReservedWord",
+                DEFAULT_JAVAMODIFIER_STYLE));
+            javaSyntaxProperties.put("JavaReservedWord", readProperties.getProperty("JavaReservedWord",
+                DEFAULT_JAVARESERVEDWORD_STYLE));
+            javaSyntaxProperties.put("JavaStringLiteral", readProperties.getProperty("JavaStringLiteral",
+                DEFAULT_JAVASTRINGLITERAL_STYLE));
+        } catch (Throwable t) { // the properties file was not found / readable / etc
+            // --> use default values
+            java.util.logging.Logger.getLogger("org.makumba.org.makumba.devel.sourceViewer").fine(
+                "Java syntax highlighting properties file '" + PROPERTIES_FILE_NAME
+                        + "' not found! Using default values.");
+            javaSyntaxProperties.put("JavaDocComment", DEFAULT_JAVADOC_STYLE);
+            javaSyntaxProperties.put("JavaBlockComment", DEFAULT_JAVACOMMENT_STYLE);
+            javaSyntaxProperties.put("JavaLineComment", DEFAULT_JAVACOMMENT_STYLE);
+            javaSyntaxProperties.put("JavaModifier", DEFAULT_JAVAMODIFIER_STYLE);
+            javaSyntaxProperties.put("JavaReservedWord", DEFAULT_JAVARESERVEDWORD_STYLE);
+            javaSyntaxProperties.put("JavaStringLiteral", DEFAULT_JAVASTRINGLITERAL_STYLE);
+        }
+    }
 
     public javaViewer(HttpServletRequest req) throws Exception {
         super(true, req);
@@ -78,8 +138,6 @@ public class javaViewer extends LineViewer {
         } else {
             virtualPath = virtualPath.substring(1);
         }
-
-        URL url;
         if (virtualPath.endsWith(".java")) {
             url = org.makumba.commons.ClassResource.get(virtualPath);
         } else {
@@ -125,18 +183,14 @@ public class javaViewer extends LineViewer {
      */
     @Override
     public String parseLine(String s) {
-        if (s.length() == 0 || s.trim().length() == 0) {
-            return s;
-        }
         String result = super.parseLine(s);
         if (compiledJSP) {
             return result;
         }
         for (String keyWord : javaSyntaxProperties.keySet()) {
-            // we highlight the word if we have a style defined for this syntax point type
-            final String substitute = keyWord + " ";
-            if (javaSyntaxProperties.get(keyWord) != null && result.contains(substitute)) {
-                result = result.replaceAll(substitute, "<span style=\"" + javaSyntaxProperties.get(keyWord) + "\">"
+            // we highlight the word if we have a style defined for this syntax point typ
+            if (javaSyntaxProperties.get(keyWord) != null) {
+                result = result.replaceAll(keyWord + " ", "<span style=\"" + javaSyntaxProperties.get(keyWord) + "\">"
                         + keyWord + "</span> ");
             }
         }
@@ -157,7 +211,8 @@ public class javaViewer extends LineViewer {
             String type = currentSyntaxPoint.getType();
             int currentLine = currentSyntaxPoint.getLine();
 
-            if (type.equals("TextLine") && currentSyntaxPoint.isBegin()) { // begin of line found -> print line numbers
+            if (type.equals("TextLine") && currentSyntaxPoint.isBegin()) { // begin of line found - we print the line
+                                                                            // numbers
                 if (printLineNumbers) {
                     writer.print("\n");
                     if (!hideLineNumbers) {

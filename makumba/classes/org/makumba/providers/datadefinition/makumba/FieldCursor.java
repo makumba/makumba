@@ -241,7 +241,7 @@ public class FieldCursor {
     }
 
     void expectCharEnum(FieldInfo fi) throws DataDefinitionParseError {
-        Vector<String> valueset = new Vector<String>();
+        Vector valueset = new Vector();
 
         fi.extra1 = valueset;
         int len = 0;
@@ -272,9 +272,9 @@ public class FieldCursor {
     }
 
     void expectIntEnum(FieldInfo fi) throws DataDefinitionParseError {
-        Vector<Integer> valueset = new Vector<Integer>();
-        Vector<String> nameset = new Vector<String>();
-        Vector<Integer> deprset = new Vector<Integer>();
+        Vector valueset = new Vector();
+        Vector nameset = new Vector();
+        Vector deprset = new Vector();
 
         fi.extra1 = valueset;
         fi.extra2 = nameset;

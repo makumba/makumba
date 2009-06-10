@@ -46,22 +46,12 @@ public class KruseCalendarEditor implements CalendarEditorProvider {
 
         return sb;
     }
-    
-    private static class SingletonHolder implements org.makumba.commons.SingletonHolder {
-        
-        public static CalendarEditorProvider singleton = new KruseCalendarEditor(); 
-        
-        public void release() {
-            singleton = null;
-        }
-
-        public SingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
-    }
 
     public static CalendarEditorProvider getInstance() {
-        return SingletonHolder.singleton;
+        if (singleton == null) {
+            singleton = new KruseCalendarEditor();
+        }
+        return singleton;
     }
 
     public String[] getNeededJavaScriptFileNames() {

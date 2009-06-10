@@ -40,7 +40,6 @@ import org.makumba.commons.NameResolver;
 import org.makumba.commons.SQLPointer;
 import org.makumba.db.makumba.DBConnection;
 import org.makumba.db.makumba.DBConnectionWrapper;
-import org.makumba.db.makumba.MakumbaTransactionProvider;
 import org.makumba.db.makumba.Update;
 
 /**
@@ -83,8 +82,8 @@ public class Database extends org.makumba.db.makumba.Database {
 
     static public boolean supportsForeignKeys() {
         if(requestForeignKeys == false) return false;
-        if(sqlDrivers.getProperty(eng+".foreignKeys") == null) return false;
-        if(sqlDrivers.getProperty(eng+".foreignKeys").equals("true")) return requestForeignKeys;
+        if(sqlDrivers.getProperty(eng+".foreignkeys") == null) return false;
+        if(sqlDrivers.getProperty(eng+".foreignkeys").equals("true")) return requestForeignKeys;
         return false;
     }
     
@@ -153,19 +152,9 @@ public class Database extends org.makumba.db.makumba.Database {
 		super(p);
 		nrh= new NameResolverHook(this);
 		try {
+			url = getJdbcUrl(p);
+			p.put("jdbc_url", url);
 
-            // set engine
-            eng = p.getProperty("#sqlEngine");
-
-		    // set JDBC Connection URL
-		    if(p.getProperty("jdbc_url") != null) {
-		        url = p.getProperty("jdbc_url");
-		    } else {
-	            url = getJdbcUrl(p);
-		    }
-		    
-		    p.put("jdbc_url", url);
-		    
 			String s;
 
 			for (Enumeration e = p.keys(); e.hasMoreElements();) {
@@ -175,19 +164,17 @@ public class Database extends org.makumba.db.makumba.Database {
 				connectionConfig.put(s.substring(4), p.getProperty(s).trim());
 			}
 
-			// FIXME maybe this should be done just for mysql...
+			// maybe this should be done just for mysql...
 			if (connectionConfig.get("autoReconnect") == null)
 				connectionConfig.setProperty("autoReconnect", "true");
 
-			
-			
 			String driver = p.getProperty("sql.driver");
 			
 
 			if(p.getProperty("encoding") != null && p.getProperty("encoding").equals("utf8")) 
                 requestUTF8 = true;
 
-            if(p.getProperty("foreignKeys") != null && p.getProperty("foreignKeys").equals("true")) 
+            if(p.getProperty("foreignkeys") != null && p.getProperty("foreignkeys").equals("true")) 
                 requestForeignKeys = true;
 			
 			if (driver == null)
@@ -283,12 +270,9 @@ public class Database extends org.makumba.db.makumba.Database {
 		}
 	}
 
-	/**
-	 * builds a JDBC Connection URL given the host, sqlEngine and database properties
-	 */
 	protected String getJdbcUrl(Properties p) {
-	    
 		String _url = "jdbc:";
+		eng = p.getProperty("#sqlEngine");
 		_url += eng + ":";
 		String local = getEngineProperty(eng + ".localJDBC");
 		if (local == null || !local.equals("true"))
@@ -320,10 +304,10 @@ public class Database extends org.makumba.db.makumba.Database {
     protected Class<?> getTableClassConfigured() {
 		String tcs;
 		try {
-			if ((tcs = getConfiguration(MakumbaTransactionProvider.TABLE_CLASS)) != null
+			if ((tcs = getConfiguration("tableclass")) != null
 					|| (tcs = sqlDrivers
 							.getProperty(getConfiguration("#sqlEngine")
-									+ "." + MakumbaTransactionProvider.TABLE_CLASS)) != null)
+									+ ".tableclass")) != null)
 				return Class.forName(tcs);
 			else
 				return getTableClass();

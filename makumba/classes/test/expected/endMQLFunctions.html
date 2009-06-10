@@ -8,18 +8,10 @@
 
 
 
-
-
-
-
-
-
-
 <b>MQL Functions</b>
 <br><br><br>
 
-birthdateJohn: Sat Mar 05 00:00:00 CET 1977<br/><br/>
-testDate: Sun Mar 09 00:00:00 CET 2008<br/><br/>
+someBirthdate: Sat Mar 05 00:00:00 CET 1977<br/><br/>
 
 <i>list from="test.Person p" where="p.birthdate=$someBirthdate"</i><br/>
 
@@ -39,17 +31,17 @@ testDate: Sun Mar 09 00:00:00 CET 2008<br/><br/>
 
 <i>list from="test.Person p"</i><br/>
 
-  &nbsp;<b>name: bart, van Vandervanden, birthdate: 07 June 1982</b><br/>
+  &nbsp;<b>name: bart, van Vandervanden, birthdate: </b><br/>
   &nbsp;&nbsp;&nbsp;
-  year: 1982, month: 6, dayOfMonth: 7<br/>
+  year: , month: , dayOfMonth: <br/>
   &nbsp;&nbsp;&nbsp;
   year($someBirthdate) 1977<br/>
   &nbsp;&nbsp;&nbsp;
-  year(p.birthdate)=year($someBirthdate): No<br/>
+  year(p.birthdate)=year($someBirthdate): <br/>
   &nbsp;&nbsp;&nbsp;
-  month(p.birthdate)=month($someBirthdate): No<br/>
+  month(p.birthdate)=month($someBirthdate): <br/>
   &nbsp;&nbsp;&nbsp;
-  dayOfMonth(p.birthdate)=dayOfMonth($someBirthdate): No
+  dayOfMonth(p.birthdate)=dayOfMonth($someBirthdate): 
   <br>
 
   &nbsp;<b>name: john, von Neumann, birthdate: 05 March 1977</b><br/>
@@ -64,44 +56,6 @@ testDate: Sun Mar 09 00:00:00 CET 2008<br/><br/>
   &nbsp;&nbsp;&nbsp;
   dayOfMonth(p.birthdate)=dayOfMonth($someBirthdate): Yes
   <br>
-
-<br/>
-
-<i>list from="test.Person p"</i><br/>
-
-  &nbsp;<b>name: bart, van Vandervanden, birthdate: 07 June 1982</b><br/>
-  &nbsp;&nbsp;&nbsp;
-  year($day)-year(p.birthdate) - case when (month(p.birthdate) > month($day) or (month(p.birthdate)=month($day) and day(p.birthdate)>day($day))) then 1 else 0 end<br/>
-  &nbsp;&nbsp;&nbsp;
-  month(p.birthdate) > month($day): Yes, month(p.birthdate)=month($day): No, dayOfMonth: No<br/>
-  &nbsp;&nbsp;&nbsp;
-  age: 25
-  <br/>
-
-  &nbsp;<b>name: john, von Neumann, birthdate: 05 March 1977</b><br/>
-  &nbsp;&nbsp;&nbsp;
-  year($day)-year(p.birthdate) - case when (month(p.birthdate) > month($day) or (month(p.birthdate)=month($day) and day(p.birthdate)>day($day))) then 1 else 0 end<br/>
-  &nbsp;&nbsp;&nbsp;
-  month(p.birthdate) > month($day): No, month(p.birthdate)=month($day): Yes, dayOfMonth: No<br/>
-  &nbsp;&nbsp;&nbsp;
-  age: 31
-  <br/>
-
-<br/>
-
-<i>list from="test.Person p"</i><br/>
-
-  &nbsp;<b>name: bart van Vandervanden</b><br>
-  &nbsp;&nbsp;&nbsp;First 2 characters (substring(p.indiv.name, 1, 2): ba  <br/>
-  &nbsp;&nbsp;&nbsp;2 characters starting from 2 (substring(p.indiv.name, $startIndex, $substringLength): ar  <br/>
-  &nbsp;&nbsp;&nbsp;Concat (concat(p.indiv.name, $separator, p.indiv.surname, $exclamationMark): bart van Vandervanden!  <br/>
-  &nbsp;&nbsp;&nbsp;Concat with separator (concat_ws(p.indiv.name, p.indiv.surname): bart van Vandervanden  <br/>
-
-  &nbsp;<b>name: john von Neumann</b><br>
-  &nbsp;&nbsp;&nbsp;First 2 characters (substring(p.indiv.name, 1, 2): jo  <br/>
-  &nbsp;&nbsp;&nbsp;2 characters starting from 2 (substring(p.indiv.name, $startIndex, $substringLength): oh  <br/>
-  &nbsp;&nbsp;&nbsp;Concat (concat(p.indiv.name, $separator, p.indiv.surname, $exclamationMark): john von Neumann!  <br/>
-  &nbsp;&nbsp;&nbsp;Concat with separator (concat_ws(p.indiv.name, p.indiv.surname): john von Neumann  <br/>
 
 <br/>
 

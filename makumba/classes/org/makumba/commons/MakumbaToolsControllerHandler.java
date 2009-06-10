@@ -17,7 +17,7 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 //
 //  -------------
-//  $Id$
+//  $Id: SourceViewControllerHandler.java 3224 2008-10-05 22:32:17Z rosso_nero $
 //  $Name$
 /////////////////////////////////////
 
@@ -43,7 +43,7 @@ import org.makumba.providers.Configuration;
  * Handle access to makumba tools, like the {@link UniquenessServlet}.
  * 
  * @author Rudolf Mayer
- * @version $Id$
+ * @version $Id: MakumbaToolsControllerHandler.java,v 1.1 Sep 4, 2008 1:33:31 AM rudi Exp $
  */
 public class MakumbaToolsControllerHandler extends ControllerHandler {
     public boolean beforeFilter(ServletRequest req, ServletResponse res, FilterConfig conf,
@@ -54,9 +54,6 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
         String path = request.getRequestURI().replace(request.getContextPath(), "");
         if (path.startsWith(Configuration.getMakumbaUniqueLocation())) {
             new UniquenessServlet().doGet(request, response);
-            return false;
-        } else if (path.startsWith(Configuration.getMakumbaAutoCompleteLocation())) {
-            new AutoCompleteServlet().doGet(request, response);
             return false;
         } else if (path.startsWith(Configuration.getMakumbaResourcesLocation())) {
             new MakumbaResourceServlet().doGet(request, response);
@@ -103,8 +100,6 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
                 request.getContextPath());
             writeDescr(w, "Uniqueness", "AJAX uniqueness check", Configuration.KEY_MAKUMBA_UNIQUENESS_VALIDATOR,
                 Configuration.getMakumbaUniqueLocation(), request.getContextPath());
-            writeDescr(w, "Autocomplete", "AJAX autcomplete", Configuration.KEY_MAKUMBA_AUTOCOMPLETE,
-                Configuration.getMakumbaAutoCompleteLocation(), request.getContextPath());
             writeDescr(w, "Value Editor", "Tool for edit-in-place", Configuration.KEY_MAKUMBA_VALUE_EDITOR,
                 Configuration.getMakumbaValueEditorLocation(), request.getContextPath());
             writeDescr(w, "DataDefinition viewer", "View data definitions", Configuration.KEY_MDD_VIEWER,
@@ -125,8 +120,7 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
                 request.getContextPath());
             writeDescr(w, "Code generator", "Generate forms & lists from data definitions",
                 Configuration.KEY_CODE_GENERATOR, Configuration.getCodeGeneratorLocation(), request.getContextPath());
-            writeDescr(w, "Reference Checker",
-                "Checks creation the status of foreign and unique keys and displays broken references",
+            writeDescr(w, "Reference Checker", "Check for broken references and show status of foreign key creation",
                 Configuration.KEY_REFERENCE_CHECKER, Configuration.getReferenceCheckerLocation(),
                 request.getContextPath());
             writeDescr(w, "Relation Crawler", "Runs a detection of file relations", Configuration.KEY_RELATION_CRAWLER,
@@ -139,7 +133,7 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
             w.println("</table>");
 
             writeSectionHeader(w, "Value", "Controller settings");
-            writeDescr(w, "Database layer", "", Configuration.KEY_DEFAULT_DATABASE_LAYER, "The default database layer to use for Transactions (Makumba or Hibernate)");
+            writeDescr(w, "Transaction Provider", "", Configuration.KEY_DEFAULT_TRANSACTION_PROVIDER, "");
             writeDescr(w, "Form reload", "Whether forms shall be reloaded on validation errors",
                 Configuration.KEY_RELOAD_FORM_ON_ERROR, Configuration.getReloadFormOnErrorDefault());
             writeDescr(w, "Clientside validation",

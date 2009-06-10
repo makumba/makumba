@@ -86,7 +86,7 @@ public class SetValueComputer extends QueryValueComputer {
     public Object getValue(PageContext pageContext) throws LogicException {
         QueryExecution ex = runQuery(pageContext);
         int n = ex.dataSize();
-        Vector<Object> v = new Vector<Object>();
+        Vector v = new Vector();
 
         for (ex.iteration = 0; ex.iteration < n; ex.iteration++)
             v.addElement(ex.currentListData().data[projectionIndex]);
@@ -109,10 +109,10 @@ public class SetValueComputer extends QueryValueComputer {
     public void print(ValueTag running, PageCache pageCache) throws JspException, LogicException {
         QueryExecution ex = runQuery(running.getPageContext());
         int n = ex.dataSize();
-        Vector<Object> v = null;
+        Vector v = null;
 
         if (running.getVar() != null)
-            v = new Vector<Object>();
+            v = new Vector();
 
         String sep = "";
         StringBuffer print = new StringBuffer();

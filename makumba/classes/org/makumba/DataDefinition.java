@@ -26,8 +26,6 @@
 package org.makumba;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Iterator;
@@ -91,10 +89,10 @@ public interface DataDefinition {
     public void addField(FieldDefinition fd);
 
     /** Checks whether all fieldnames exist in the database */
-    public void checkFieldNames(Dictionary<String, Object> d);
+    public void checkFieldNames(Dictionary d);
 
     /** Checks whether a record can be updated * */
-    public void checkUpdate(String fieldName, Dictionary<String, Object> d);
+    public void checkUpdate(String fieldName, Dictionary d);
 
     /** Indicates when the data definition was modified the last time */
     public long lastModified();
@@ -112,10 +110,7 @@ public interface DataDefinition {
     public boolean hasMultiUniqueKey(String[] fieldNames);
 
     /** Gets all the fields that are references to other tables, i.e. pointers and some types of sets. */
-    public ArrayList<FieldDefinition> getReferenceFields();
-
-    /** Gets all the fields that have the unique modifier. */
-    public ArrayList<FieldDefinition> getUniqueFields();
+    public Vector<FieldDefinition> getReferenceFields();
 
     /** Returns the function with the specific name. */
     public QueryFragmentFunction getFunction(String name);
@@ -178,7 +173,7 @@ public interface DataDefinition {
         public String getErrorMessage() {
             return errorMessage;
         }
-
+        
         public boolean isActorFunction() {
             return getName().startsWith("actor");
         }
@@ -201,7 +196,7 @@ public interface DataDefinition {
             s += "";
             return "QueryFragment Function: "
                     + (org.apache.commons.lang.StringUtils.isNotBlank(sessionVariableName) ? sessionVariableName + "%"
-                            : "") + getName() + "(" + s + ") { " + queryFragment.trim() + " } " + errorMessage;
+                            : "") + getName() + "(" + s + ")" + " { " + queryFragment.trim() + " } " + errorMessage;
         }
 
     }
@@ -214,15 +209,12 @@ public interface DataDefinition {
 
         private String line;
 
-        private String errorMessage;
-
         /** indicates whether this key spans over subfields (internal or external sets, or pointer). */
         private boolean keyOverSubfield = false;
 
-        public MultipleUniqueKeyDefinition(String[] fields, String line, String errorMessage) {
+        public MultipleUniqueKeyDefinition(String[] fields, String line) {
             this.fields = fields;
             this.line = line;
-            this.errorMessage = errorMessage;
         }
 
         public String[] getFields() {
@@ -231,20 +223,6 @@ public interface DataDefinition {
 
         public String getLine() {
             return line;
-        }
-
-        protected String getErrorMessage() {
-            return errorMessage;
-        }
-
-        public String getErrorMessage(Object[] values) {
-            if (org.apache.commons.lang.StringUtils.isNotBlank(errorMessage)) {
-                return errorMessage;
-            } else {
-                return "The field-combination " + Arrays.toString(fields)
-                        + " allows only unique values - an entry with the values " + Arrays.toString(values)
-                        + " already exists!";
-            }
         }
 
         public void setKeyOverSubfield(boolean keyOverSubfield) {

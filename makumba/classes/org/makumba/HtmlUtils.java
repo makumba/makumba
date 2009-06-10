@@ -23,19 +23,12 @@
 
 package org.makumba;
 
-import org.apache.commons.lang.StringUtils;
-import org.makumba.commons.ReadableFormatter;
-
 /**
- * This class provides basic 'text-to-HTML' functionality.<br/>
- * Note: previously this was an existing class in the internal "util" package (fred, 2003-08-24).
- * 
- * @author
- * @version $Id$
+ * This class provides basic 'text-to-HTML' functionality. Note: previously this was an existing class in the internal
+ * "util" package (fred, 2003-08-24).
  */
-public class HtmlUtils {
 
-    private static final int LENGTH_TO_CHECK = 1024 * 32;
+public class HtmlUtils {
 
     // special HTML codes
     static public String[] specials = { "\"", "quot", "<", "lt", "&", "amp", ">", "gt" };
@@ -46,11 +39,11 @@ public class HtmlUtils {
 
     /**
      * Tries to detect whether input string is HTML-formatted; heuristic detection. Implementation note: For long input
-     * String, checks only first 32768 characters (32 KB).
+     * String, checks only first 1024 characters.
      */
     public static boolean detectHtml(String s) {
-        if (s.length() > LENGTH_TO_CHECK) {
-            s = s.substring(0, LENGTH_TO_CHECK);
+        if (s.length() > 1024) {
+            s = s.substring(0, 1024);
         }
         s = s.toLowerCase();
 
@@ -142,10 +135,10 @@ public class HtmlUtils {
                 return formatted + endSeparator;
         }
     }
-
+    
     /**
-     * removes HTML tags and replaces double quotes by the corresponding HTML entity, so that the passed text can safely
-     * be included in HTML attributes (such as the &lt;A&gt; TITLE attribute)
+     * removes HTML tags and replaces double quotes by the corresponding HTML entity, so that the passed text can safely be included in HTML
+     * attributes (such as the &lt;A&gt; TITLE attribute)
      */
     public static String stripHTMLTags(String str) {
         // remove quotes
@@ -155,31 +148,4 @@ public class HtmlUtils {
         return str;
     }
     
-    /**
-     * escapes single and double quotes in a string by adding a forward slash before them
-     */
-    public static String escapeQuotes(String str) {
-        if(str == null)
-            return null;
-
-        // escape double quotes
-        str = str.replace("\"", "\\\"");
-        // escape single quotes
-        str = str.replace("'", "\\'");
-        
-        return str;
-    }
-
-    public static void main(String[] args) {
-        String s = "Indeed, during this event, we'll make a great general overview on all kind of transport, from planes to trains, cars and even subways; with a visit in well-known companies for each transport (Airbus, Toyota, TGV.). So lets. So mainly, you.ll be provided a lot of information about the new transportation systems either made or used in France. Do you really believe that this great topic will be the only main thing we.ll do ?? Come on !! Of course not !!! Lets so go. Another main issue of our event is FUN, FUN, FUN and FUN again !!!! At the same time you will discover our city, our region and their secrets. And maybe have the great opportunity to enjoy a week-end trip to Paris (it.s far to be sure but we.re trying our BEST to make you happy !) But don.t worry we.ll find something else if it.s not possible  ;-)  and want to watch the video of our last event click Come and have a look what we can do and if there are any bugs that should be tested and rooted out of here whle at it so what do you think about themall dinosaurs <b> BOLD TEXT </b> if not then the HTML auto detection does not work for this text.";
-        int repeats = 50;
-        s = StringUtils.repeat(s, repeats);
-        System.out.println("size: " + ReadableFormatter.readableBytes(s.length()));
-        System.out.println("checking: " + ReadableFormatter.readableBytes(LENGTH_TO_CHECK));
-        long start = System.currentTimeMillis();
-        System.out.println("is HTML: " + detectHtml(s));
-        long duration = System.currentTimeMillis() - start;
-        System.out.println("took ms: " + duration);
-    }
-
 }

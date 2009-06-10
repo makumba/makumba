@@ -76,21 +76,4 @@ public interface DataDefinitionProviderInterface {
      */
     public Vector<String> getDataDefinitionsInLocation(String location);
 
-    /**
-     * gives a list of data definitions in the default locations of the data definition provider
-     * 
-     * @return a vector with references to the data definitions in the default locations of the data definition provider
-     */
-    public Vector<String> getDataDefinitionsInDefaultLocations();
-
-    /**
-     * gives a list of data definitions in the default locations of the data definition provider, ignoring those MDDs
-     * that start with any of the strings in the ignoreList
-     * 
-     * @param ignoreList
-     *            a list of prefixes for MDDs to be ignored
-     * @return a vector with references to the data definitions in the default locations of the data definition provider
-     */
-    public Vector<String> getDataDefinitionsInDefaultLocations(String... ignoreList);
-
 }

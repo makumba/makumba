@@ -70,7 +70,7 @@ public class ObjectImporter {
     String nothing;
 
     // moved from dateImporter
-    Vector<SimpleDateFormat> formats = new Vector<SimpleDateFormat>();
+    Vector formats = new Vector();
 
     // moved from ptrImporter
     String joinField;
@@ -107,29 +107,27 @@ public class ObjectImporter {
                 throw new MakumbaError(f);
             }
         }
-        for (String string : dd.getFieldNames()) {
-            String fieldName = string;
+        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
+            String fieldName = (String) e.nextElement();
             configureField(fieldName, markers);
         }
-        Vector<String> notMarked = new Vector<String>();
-        for (String string : dd.getFieldNames()) {
-            String fieldName = string;
-            if (!isMarked(fieldName) && !isIgnored(fieldName)) {
+        Vector notMarked = new Vector();
+        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
+            String fieldName = (String) e.nextElement();
+            if (!isMarked(fieldName) && !isIgnored(fieldName))
                 notMarked.addElement(fieldName);
-            }
         }
-        if (notMarked.size() > 0) {
+        if (notMarked.size() > 0)
             java.util.logging.Logger.getLogger("org.makumba.import").warning(
                 "marker file "
                         + u
                         + " does not contain markers for:\n "
                         + notMarked
                         + "\nUse \"<fieldname>.ignore=true\" in the marked file if you are shure you don't want the field to be imported");
-        }
 
         boolean hasErrors = false;
-        for (String string : dd.getFieldNames()) {
-            String fieldName = string;
+        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
+            String fieldName = (String) e.nextElement();
             if (configError != null && !isIgnored(fieldName)) {
                 if (!hasErrors) {
                     hasErrors = true;
@@ -143,16 +141,14 @@ public class ObjectImporter {
     }
 
     Object getValue(String fieldName, String s, Transaction db, Pointer[] indexes) {
-        if (isIgnored(fieldName)) {
+        if (isIgnored(fieldName))
             return null;
-        }
         return getFieldValue(fieldName, replaceField(fieldName, s), db, indexes);
     }
 
     protected boolean isMarked(String fieldName) {
-        if (isFieldMarked(fieldName)) {
+        if (isFieldMarked(fieldName))
             return true;
-        }
         if (noMarkers) {
             String s = begin;
             begin = "x";
@@ -171,15 +167,15 @@ public class ObjectImporter {
      * import data from a text. indexes contains the pointers to other records imported from the same text, at the same
      * time
      */
-    public Dictionary<String, Object> importFrom(String s, Transaction db, Pointer[] indexes) {
+    public Dictionary importFrom(String s, Transaction db, Pointer[] indexes) {
 
-        Hashtable<String, Object> ht = new Hashtable<String, Object>();
+        Hashtable ht = new Hashtable();
 
-        for (String string : dd.getFieldNames()) {
-            String fieldName = string;
+        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
+            String fieldName = (String) e.nextElement();
             this.importFieldTo(fieldName, ht, s, db, indexes);
         }
-        return ht;
+        return (Dictionary) ht;
     }
 
     /** imports all files from a directory */
@@ -188,14 +184,13 @@ public class ObjectImporter {
         File dir = new File(argv[1]);
         String[] lst = dir.list();
         char buffer[] = new char[8196];
-        for (String element : lst) {
-            java.util.logging.Logger.getLogger("org.makumba.import").finest(element);
-            Reader r = new FileReader(new File(dir, element));
+        for (int i = 0; i < lst.length; i++) {
+            java.util.logging.Logger.getLogger("org.makumba.import").finest(lst[i]);
+            Reader r = new FileReader(new File(dir, lst[i]));
             StringWriter sw = new StringWriter();
             int n;
-            while ((n = r.read(buffer)) != -1) {
+            while ((n = r.read(buffer)) != -1)
                 sw.write(buffer, 0, n);
-            }
             String content = sw.toString().toString();
             java.util.logging.Logger.getLogger("org.makumba.import").finest(ri.importFrom(content, null, null).toString());
         }
@@ -218,23 +213,20 @@ public class ObjectImporter {
 
     // moved from ptrImporter
     public Object get_ptr_FieldValue(String fieldName, String s, Transaction db, Pointer[] indexes) {
-        if (index != -1) {
+        if (index != -1)
             return indexes[index];
-        }
-        if (s.length() == 0) {
+        if (s.length() == 0)
             return null;
-        }
         String arg = s;
         if (select != null) {
-            Vector<Dictionary<String, Object>> v = db.executeQuery(select, arg);
+            Vector v = db.executeQuery(select, arg);
             if (v.size() > 1) {
                 warningField(fieldName, "too many join results for \"" + s + "\": " + v);
                 return null;
             }
 
-            if (v.size() == 1) {
-                return (v.elementAt(0)).get("col1");
-            }
+            if (v.size() == 1)
+                return (Pointer) ((Dictionary) v.elementAt(0)).get("col1");
 
             warningField(fieldName, "no join results for \"" + s + "\"");
             return null;
@@ -244,16 +236,15 @@ public class ObjectImporter {
         query = "SELECT p, p." + joinField + " FROM " + dd.getFieldDefinition(fieldName).getForeignTable().getName()
                 + " p WHERE p." + joinField + "=$1";
 
-        Vector<Dictionary<String, Object>> v = db.executeQuery(query, arg);
+        Vector v = db.executeQuery(query, arg);
 
         if (v.size() > 1) {
             warningField(fieldName, "too many join results for \"" + s + "\": " + v);
             return null;
         }
 
-        if (v.size() == 1) {
-            return v.elementAt(0).get("col1");
-        }
+        if (v.size() == 1)
+            return (Pointer) ((Dictionary) v.elementAt(0)).get("col1");
 
         if (nchar == -1) {
             warningField(fieldName, "no join results for \"" + s + "\"");
@@ -262,11 +253,10 @@ public class ObjectImporter {
 
         query = "SELECT p, p." + joinField + " FROM " + dd.getFieldDefinition(fieldName).getForeignTable().getName()
                 + " p WHERE p." + joinField + " like $1";
-        if (s.length() < nchar) {
+        if (s.length() < nchar)
             arg = s;
-        } else {
+        else
             arg = s.substring(0, nchar) + "%";
-        }
 
         v = db.executeQuery(query, arg);
 
@@ -278,7 +268,7 @@ public class ObjectImporter {
             warningField(fieldName, "no join results for \"" + s + "\"");
             return null;
         }
-        return v.elementAt(0).get("col1");
+        return (Pointer) ((Dictionary) v.elementAt(0)).get("col1");
     }
 
     // moved from FieldImporter
@@ -304,13 +294,14 @@ public class ObjectImporter {
 
     // moved from dateImporter
     public Object get_date_FieldValue(String fieldName, String s) {
-        if (s.trim().length() == 0) {
+        if (s.trim().length() == 0)
             return null;
-        }
         ParseException lastpe = null;
 
-        for (SimpleDateFormat f : formats) {
+        for (Enumeration e = formats.elements(); e.hasMoreElements();) {
+            SimpleDateFormat f = (SimpleDateFormat) e.nextElement();
             try {
+
                 return f.parse(s);
             } catch (ParseException pe) {
                 lastpe = pe;
@@ -323,16 +314,14 @@ public class ObjectImporter {
     // moved from intEnumImporter
     public Object get_intEnum_FieldValue(String fieldName, String s) {
         s = (String) base_getFieldValue(fieldName, s);
-        if (s.trim().length() == 0) {
+        if (s.trim().length() == 0)
             return null;
-        }
         Enumeration f = dd.getFieldDefinition(fieldName).getValues();
-        for (Enumeration<String> e = dd.getFieldDefinition(fieldName).getNames(); e.hasMoreElements();) {
-            String v = e.nextElement();
+        for (Enumeration e = dd.getFieldDefinition(fieldName).getNames(); e.hasMoreElements();) {
+            String v = (String) e.nextElement();
             Integer i = (Integer) f.nextElement();
-            if (v.equals(s)) {
+            if (v.equals(s))
                 return i;
-            }
         }
         warningField(fieldName, "illegal value: \"" + s + "\"");
         return null;
@@ -341,9 +330,8 @@ public class ObjectImporter {
     // moved from intImporter
     public Object get_int_FieldValue(String fieldName, String s) {
         s = (String) base_getFieldValue(fieldName, s);
-        if (s.trim().length() == 0) {
+        if (s.trim().length() == 0)
             return null;
-        }
         try {
             return new Integer(Integer.parseInt((String) base_getFieldValue(fieldName, s)));
         } catch (Exception e) {
@@ -387,17 +375,16 @@ public class ObjectImporter {
             } else {
                 String val1 = val.replace(' ', '_').replace('=', '_');
                 transf = getFieldMarker(fieldName, "replace." + val1);
-                if (transf != null) {
+                if (transf != null)
                     val = transf;
-                } else if (replaceFile != null) {
+                else if (replaceFile != null) {
                     transf = replaceFile.getProperty(val);
-                    if (transf != null) {
+                    if (transf != null)
                         val = transf;
-                    } else {
+                    else {
                         transf = replaceFile.getProperty(val1);
-                        if (transf != null) {
+                        if (transf != null)
                             val = transf;
-                        }
                     }
                 }
             }
@@ -408,9 +395,8 @@ public class ObjectImporter {
     // moved from FieldImporter
     String getFieldMarker(String fieldName, String m) {
         String s = markers.getProperty(fieldName + "." + m);
-        if (s != null) {
+        if (s != null)
             return s.trim();
-        }
         return null;
     }
 
@@ -422,21 +408,19 @@ public class ObjectImporter {
     // moved from FieldImporter
     void warningField(String fieldName, String s) {
         String err = canonicalFieldName(fieldName) + " " + s;
-        if (canError) {
+        if (canError)
             java.util.logging.Logger.getLogger("org.makumba.import").warning(err);
-        } else {
+        else
             throw new MakumbaError(err);
-        }
     }
 
     // moved from FieldImporter
     void warningField(String fieldName, Throwable t) {
         String err = canonicalFieldName(fieldName);
-        if (canError) {
+        if (canError)
             java.util.logging.Logger.getLogger("org.makumba.import").warning(err + " " + t.toString());
-        } else {
+        else
             throw new MakumbaError(t, err);
-        }
     }
 
     // moved from FieldImporter
@@ -454,20 +438,18 @@ public class ObjectImporter {
 
     // moved from FieldImporter
     static String escapeField(String fieldName, String s) {
-        if (s == null) {
+        if (s == null)
             return null;
-        }
 
         StringBuffer sb = new StringBuffer();
         chars: for (int i = 0; i < s.length(); i++) {
-            for (int j = 0; j < htmlEscape[0].length; j++) {
+            for (int j = 0; j < htmlEscape[0].length; j++)
                 if (s.length() - i >= htmlEscape[0][j].length()
                         && s.substring(i, i + htmlEscape[0][j].length()).toLowerCase().equals(htmlEscape[0][j])) {
                     sb.append(htmlEscape[1][j]);
                     i += htmlEscape[0][j].length() - 1;
                     continue chars;
                 }
-            }
             sb.append(s.charAt(i));
         }
         return sb.toString();
@@ -491,49 +473,40 @@ public class ObjectImporter {
 
     // moved from FieldImporter
     static String decomposeURL(String fieldName, String s) {
-        if (s == null) {
+        if (s == null)
             return null;
-        }
-        if (!s.startsWith("<a")) {
+        if (!s.startsWith("<a"))
             return s;
-        }
         int n = s.indexOf('\"');
-        if (n == -1 || s.length() == n + 1) {
+        if (n == -1 || s.length() == n + 1)
             return s;
-        }
         int n1 = s.indexOf('\"', n + 1);
-        if (n1 == -1 || s.length() == n1 + 1) {
+        if (n1 == -1 || s.length() == n1 + 1)
             return s;
-        }
         String s1 = s.substring(n + 1, n1);
         n = s.indexOf(">");
-        if (n == -1 || s.length() == n + 1) {
+        if (n == -1 || s.length() == n + 1)
             return s;
-        }
         n1 = s.indexOf("</a>");
-        if (n1 == -1) {
+        if (n1 == -1)
             return s;
-        }
         try {
-            if (!s1.equals(s.substring(n + 1, n1))) {
+            if (!s1.equals(s.substring(n + 1, n1)))
                 return s;
-            }
         } catch (StringIndexOutOfBoundsException aio) {
             java.util.logging.Logger.getLogger("org.makumba.import").severe("EEEE " + s + " " + s1);
             return s;
         }
-        if (!s1.startsWith("http")) {
+        if (!s1.startsWith("http"))
             s1 = "http://" + s1;
-        }
         return s1;
     }
 
     // moved from FieldImporter
-    public void importFieldTo(String fieldName, Dictionary<String, Object> d, String s, Transaction db, Pointer[] indexes) {
+    public void importFieldTo(String fieldName, Dictionary d, String s, Transaction db, Pointer[] indexes) {
         try {
-            if (isIgnored(fieldName) || !isFieldMarked(fieldName)) {
+            if (isIgnored(fieldName) || !isFieldMarked(fieldName))
                 return;
-            }
 
             String val = null;
             if (begin != null) {
@@ -543,37 +516,30 @@ public class ObjectImporter {
                     beg += begin.length();
                     try {
                         val = s.substring(beg, s.indexOf(end, beg));
-                        if (noWarning) {
+                        if (noWarning)
                             warningField(fieldName, " found value for unfrequent field: " + val);
-                        }
                     } catch (Exception e) {
                         warningField(fieldName, "no end found");
                         return;
                     }
-                } else if (!ignoreNotFound && !noWarning) {
+                } else if (!ignoreNotFound && !noWarning)
                     warningField(fieldName, "begin not found");
-                }
             }
             Object o = null;
-            if (shouldEscapeField(fieldName)) {
+            if (shouldEscapeField(fieldName))
                 val = escapeField(fieldName, val);
-            }
             val = replaceField(fieldName, val);
-            if (shouldDecomposeURL(fieldName)) {
+            if (shouldDecomposeURL(fieldName))
                 val = decomposeURL(fieldName, val);
-            }
 
-            if (begin == null || val != null) {
+            if (begin == null || val != null)
                 o = getValue(fieldName, val, db, indexes);
-            }
 
-            if (o != null) {
+            if (o != null)
                 if (nothing != null && o.equals(getFieldValue(fieldName, nothing))) {
                     return;
-                } else {
+                } else
                     d.put(fieldName, o);
-                }
-            }
         } catch (RuntimeException e) {
             throw makeFieldError(fieldName, e);
         }
@@ -608,9 +574,8 @@ public class ObjectImporter {
         this.markers = markers;
         String s = getFieldMarker(fieldName, "ignore");
         ignored = s != null && s.equals("true");
-        if (ignored) {
+        if (ignored)
             return;
-        }
 
         s = getFieldMarker(fieldName, "ignoreNotFound");
         ignoreNotFound = s != null && s.equals("true");
@@ -629,9 +594,8 @@ public class ObjectImporter {
         // canError=getMarker("canError")!=null;
         noWarning = getFieldMarker(fieldName, "noWarning") != null;
         end = getFieldMarker(fieldName, "end");
-        if (end == null) {
+        if (end == null)
             end = markers.getProperty("end");
-        }
     }
 
     // moved from dateImporter
@@ -647,30 +611,27 @@ public class ObjectImporter {
                 formats.addElement(dateFormat);
             }
         }
-        if (formats.size() == 0) {
+        if (formats.size() == 0)
             configError = makeFieldError(
                 fieldName,
                 "has no format indicated. Use \""
                         + fieldName
                         + ".format=MM yy dd\" in the marker file.\nSee the class java.text.SimpleDateFormat to see how to compose the formatter");
-        }
     }
 
     // moved from noneImporter
     public void configure_none_Field(String fieldName, Properties markers) {
         base_configureField(fieldName, markers);
-        if (begin != null) {
+        if (begin != null)
             throw new MakumbaError("You cannot have markers for fields of type "
                     + dd.getFieldDefinition(fieldName).getType());
-        }
     }
 
     // moved from ptrImporter
     public void configure_ptr_Field(String fieldName, Properties markers) {
         base_configureField(fieldName, markers);
-        if (ignored) {
+        if (ignored)
             return;
-        }
 
         joinField = getFieldMarker(fieldName, "joinField");
         select = getFieldMarker(fieldName, "select");
@@ -678,29 +639,24 @@ public class ObjectImporter {
             index = Integer.parseInt(getFieldMarker(fieldName, "index"));
         } catch (RuntimeException e) {
         }
-        if (index != -1) {
-            if (begin != null || joinField != null || select != null) {
+        if (index != -1)
+            if (begin != null || joinField != null || select != null)
                 configError = makeFieldError(fieldName,
                     "if pointer index is indicated, begin, end or joinfield are not needed");
-            } else {
+            else
                 ;
-            }
-        } else if (joinField != null) {
-            if (index != -1 || select != null) {
+        else if (joinField != null) {
+            if (index != -1 || select != null)
                 configError = makeFieldError(fieldName,
                     "if join field is indicated, begin and end are needed, index not");
-            }
             String s = getFieldMarker(fieldName, "joinChars");
-            if (s != null) {
+            if (s != null)
                 nchar = Integer.parseInt(s);
-            }
         } else if (select != null) {
-            if (index != -1 || joinField != null) {
+            if (index != -1 || joinField != null)
                 configError = makeFieldError(fieldName, "if select is indicated, begin and end are needed, index not");
-            }
-        } else {
+        } else
             configError = makeFieldError(fieldName, "join field or pointer index must be indicated for pointers");
-        }
     }
 
 }

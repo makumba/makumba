@@ -17,7 +17,7 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 //
 //  -------------
-//  $Id$
+//  $Id: NameResolver.java 3910 2009-06-06 13:50:08Z manuel_gay $
 //  $Name$
 /////////////////////////////////////
 
@@ -34,12 +34,10 @@ import org.makumba.db.makumba.sql.Database;
 /**
  * This class provides utility methods to convert names from MDD types into their name in the data source. It also takes
  * into account properties passed in the database configuration.
- * 
- * TODO document these properties
- * 
+ *  * 
  * @author Manuel Gay
  * @author Cristian Bogdan
- * @version $Id$
+ * @version $Id: NameResolver.java 3910 2009-06-06 13:50:08Z manuel_gay $
  */
 public class NameResolver {
 
@@ -250,13 +248,13 @@ public class NameResolver {
      *            
      * @return <code>true</code> if such a field already exists, <code>false</code> otherwise
      */
-    private static boolean checkDuplicateFieldName(String name, DataDefinition dd, HashMap<String, String> resolvedCache) {
+    private boolean checkDuplicateFieldName(String name, DataDefinition dd) {
         for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
             String fieldName = (String) e.nextElement();
             if (dd.getFieldDefinition(fieldName).getType().startsWith("set"))
                 continue;
-            if (resolvedCache.get(fieldName) != null
-                    && resolvedCache.get(fieldName).toLowerCase().equals(name.toLowerCase()))
+            if (fieldDBNames.get(dd.getName()).get(fieldName) != null
+                    && fieldDBNames.get(dd.getName()).get(fieldName).toLowerCase().equals(name.toLowerCase()))
                 return true;
         }
         return false;
@@ -264,13 +262,14 @@ public class NameResolver {
 
     /**
      * Creates a cache containing the resolved field names for the given type.
-     * FIXME: 2 threads may be doing this at the same time, but they'll achieve the same result so that's OK
+     * 
      * @param dd the {@link DataDefinition} corresponding to the type
      * @return a {@link HashMap} containing the resolved names for each field
      */
     private HashMap<String, String> makeTypeCache(DataDefinition dd) {
         HashMap<String, String> resolvedCache;
         resolvedCache = new HashMap<String, String>();
+        fieldDBNames.put(dd.getName(), resolvedCache);
 
         for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
 
@@ -283,12 +282,12 @@ public class NameResolver {
             String resolved = config.getProperty(getTableNameFromConfig(config, dd) + "->" + name);
             if (resolved == null) {
                 resolved = checkReserved(getFieldNameInSource(name));
-                while (checkDuplicateFieldName(resolved, dd, resolvedCache))
+                while (checkDuplicateFieldName(resolved, dd))
                     resolved = resolved + "_";
             }
             resolvedCache.put(name, resolved);
+
         }
-        fieldDBNames.put(dd.getName(), resolvedCache);
         return resolvedCache;
     }
 

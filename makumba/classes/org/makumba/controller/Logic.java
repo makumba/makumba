@@ -57,7 +57,7 @@ import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
-import org.makumba.providers.TransactionProvider;
+import org.makumba.providers.TransactionProviderInterface;
 
 /** business logic administration */
 public class Logic {
@@ -251,8 +251,7 @@ public class Logic {
 
             @Override
             protected Object makeResource(Object p) {
-                final Map<String, String> authorizationDefinitions = Configuration.getAuthorizationDefinitions();
-                if (authorizationDefinitions == null) {
+                if (Configuration.getAuthorizationDefinitions() == null) {
                     return "none";
                 }
                 String path = (String) p;
@@ -265,12 +264,13 @@ public class Logic {
                 String rule = "none";
                 String params = "";
 
-                for (String k : authorizationDefinitions.keySet()) {
+                for (String k : Configuration.getAuthorizationDefinitions().keySet()) {
                     if (path.startsWith(k) && k.length() > maxKey.length()) {
                         maxKey = k;
-                        rule = authorizationDefinitions.get(k);
+                        rule = Configuration.getAuthorizationDefinitions().get(k);
                     }
                 }
+                String originalRule = rule;
 
                 if (rule.equals("none")) {
                     return rule;
@@ -358,8 +358,7 @@ public class Logic {
         return NamedResources.getStaticCache(logix).getResource(path);
     }
 
-    static Class<?>[] argDbOld = { Attributes.class, Database.class };
-    static Class<?>[] argDb = { Attributes.class, Transaction.class };
+    static Class<?>[] argDb = { Attributes.class, Database.class };
 
     public static Object getAttribute(Object controller, String attname, Attributes a, String db,
             DbConnectionProvider dbcp) throws NoSuchMethodException, LogicException {
@@ -370,19 +369,8 @@ public class Logic {
             throw new NoSuchMethodException("no controller=> no attribute method");
         }
         // this will throw nosuchmethodexception if the findXXX method is missing so this method will kinda finish here
-        Method m = null;
-        // JASPER: I don't understand why this way of looking up a method is different frmo the others
-        try {
-            m = (controller.getClass().getMethod("find" + firstUpper(attname), argDb));
-        } catch (Exception e) {
-            if (m == null) {
-                m = (controller.getClass().getMethod("find" + firstUpper(attname), argDbOld));
-                java.util.logging.Logger.getLogger("org.makumba.controller").fine(
-                    "The use of Database is deprecated. Use Transaction instead.");
-            }
-        }
-        //This doesn't seem to work. 
-        //m = getMethod("find" + firstUpper(attname), argDb, argDbOld, controller);
+        Method m = (controller.getClass().getMethod("find" + firstUpper(attname), argDb));
+
         Transaction d = dbcp.getConnectionTo(db);
         Object[] args = { a, d };
         try {
@@ -488,7 +476,7 @@ public class Logic {
         Pointer p = (Pointer) v.elementAt(0).get("col1");
         Dictionary<String, Object> obj = connection.read(p, null);
 
-        MakumbaActorHashMap ret = new MakumbaActorHashMap();
+        Map<String, Object> ret = new HashMap<String, Object>();
         String att = actorPrefix(dd);
         ret.put(att, p);
 
@@ -502,7 +490,7 @@ public class Logic {
         param.put("x", p);
         for (DataDefinition.QueryFragmentFunction g : dd.getSessionFunctions()) {
             StringBuffer fc = new StringBuffer();
-            fc.append("SELECT x.").append(g.getName()).append("() AS col1 FROM ").append(type).append(
+            fc.append("SELECT x.").append(g.getName()).append("()").append(" AS col1 FROM ").append(type).append(
                 " x WHERE x=").append(qap.getParameterSyntax()).append("x");
             Object result;
             try {
@@ -537,11 +525,9 @@ public class Logic {
         return ret;
     }
 
-    static Class<?>[] editArgsOld = { Pointer.class, Dictionary.class, Attributes.class, Database.class };
-    static Class<?>[] editArgs = { Pointer.class, Dictionary.class, Attributes.class, Transaction.class };
+    static Class<?>[] editArgs = { Pointer.class, Dictionary.class, Attributes.class, Database.class };
 
-    static Class<?>[] opArgsOld = { Dictionary.class, Attributes.class, Database.class };
-    static Class<?>[] opArgs = { Dictionary.class, Attributes.class, Transaction.class };
+    static Class<?>[] opArgs = { Dictionary.class, Attributes.class, Database.class };
 
     static Class<?>[] noClassArgs = {};
 
@@ -580,22 +566,7 @@ public class Logic {
             return null;
         }
     }
-    public static Method getMethod(String name, Class<?>[] args, Class<?>[] argsOld, Object controller) {
-        /*
-         * This version of getMethod was introduced to look up methods for which an argument type changed/deprecated
-         * (More specifically: org.makumba.Database got replaced by org.makumba.Transaction), but to allow
-         * backward compatibility at the same time.
-         */
-        Method m = getMethod(name, args, controller);
-        if (m==null) {
-            m = getMethod(name, argsOld, controller);
-            java.util.logging.Logger.getLogger("org.makumba.controller").fine(
-            "In " + controller.getClass().getName() + "." + name + ": The use of Database is deprecated. Use Transaction instead.");
-        }
-        return m;
-    }
-    
-    
+
     public static void doInit(String path, Attributes a, String dbName, DbConnectionProvider dbcp)
             throws LogicException {
         Object o = getAuthorizationConstraint(path);
@@ -666,7 +637,7 @@ public class Logic {
         }
 
         Transaction db = dbcp.getConnectionTo(dbName);
-        Method init = getMethod("checkAttributes", argDb,argDbOld, controller);
+        Method init = getMethod("checkAttributes", argDb, controller);
         Method oldInit = getMethod("requiredAttributes", noClassArgs, controller);
         if (init == null && oldInit == null) {
             return;
@@ -718,7 +689,7 @@ public class Logic {
         }
     }
 
-    public static TransactionProvider getTransactionProvider(Object controller) throws LogicInvocationError {
+    public static TransactionProviderInterface getTransactionProvider(Object controller) throws LogicInvocationError {
         Method connectionProvider = null;
         if (controller != null) {
             connectionProvider = Logic.getMethod("getTransactionProvider", null, controller);
@@ -730,12 +701,10 @@ public class Logic {
             }
 
             if (transactionProviderClass == null) {
-                return TransactionProvider.getInstance();
+                transactionProviderClass = Configuration.getDefaultTransactionProviderClass();
             }
-            
-            Method getInstance = Class.forName(transactionProviderClass).getDeclaredMethod("getInstance", null);
-            return (TransactionProvider) getInstance.invoke(null, null);
 
+            return (TransactionProviderInterface) Class.forName(transactionProviderClass).newInstance();
         } catch (Throwable e) {
             LogicException le = new LogicException("Could not instantiate transaction provider "
                     + transactionProviderClass != null ? transactionProviderClass : "");
@@ -755,7 +724,7 @@ public class Logic {
         Transaction db = dbcp.getConnectionTo(dbName);
         Object[] editArg = { data, a, db };
         Method op = null;
-        op = getMethod(opName, opArgs, opArgsOld, controller);
+        op = getMethod(opName, opArgs, controller);
         if (op == null) {
             return null;
             /*
@@ -793,8 +762,8 @@ public class Logic {
         
         
         if (!(controller instanceof LogicNotFoundException)) {
-            edit = getMethod(handlerName, editArgs, editArgsOld, controller);
-            afterEdit = getMethod(afterHandlerName, editArgs, editArgsOld, controller);
+            edit = getMethod(handlerName, editArgs, controller);
+            afterEdit = getMethod(afterHandlerName, editArgs, controller);
             /*if (edit == null) {
                 throw new ProgrammerError("Class " + controller.getClass().getName() + " ("
                         + getControllerFile(controller) + ")\n" + "does not define the method\n" + HANDLER_METHOD_HEAD
@@ -826,8 +795,7 @@ public class Logic {
         }
     }
 
-    static Class<?>[] deleteArgsOld = { Pointer.class, Attributes.class, Database.class };
-    static Class<?>[] deleteArgs = { Pointer.class, Attributes.class, Transaction.class };
+    static Class<?>[] deleteArgs = { Pointer.class, Attributes.class, Database.class };
 
     public static Pointer doDelete(Object controller, String typename, Pointer p, Attributes a, String dbName,
             DbConnectionProvider dbcp) throws LogicException {
@@ -839,8 +807,8 @@ public class Logic {
 
         
         if (!(controller instanceof LogicNotFoundException)) {
-            delete = getMethod("on_delete" + upper, deleteArgs, deleteArgsOld, controller);
-            afterDelete = getMethod("after_delete" + upper, deleteArgs, deleteArgsOld, controller);
+            delete = getMethod("on_delete" + upper, deleteArgs, controller);
+            afterDelete = getMethod("after_delete" + upper, deleteArgs, controller);
             /*if (delete == null) {
                 throw new ProgrammerError("Class " + controller.getClass().getName() + " ("
                         + getControllerFile(controller) + ")\n" + "does not define any of the methods\n"
@@ -887,8 +855,8 @@ public class Logic {
 
         
         if (!(controller instanceof LogicNotFoundException)) {
-            on = getMethod(handlerName, editArgs, editArgsOld, controller);
-            after = getMethod(afterHandlerName, editArgs, editArgsOld, controller);
+            on = getMethod(handlerName, editArgs, controller);
+            after = getMethod(afterHandlerName, editArgs, controller);
 
             /*if (on == null && after == null) {
                 throw new ProgrammerError("Class " + controller.getClass().getName() + " ("
@@ -904,7 +872,7 @@ public class Logic {
         try {
             if (on != null) {
                 on.invoke(controller, addArg);
-             }
+            }
             addArg[0] = db.insert(p, field, data);
             if (after != null) {
                 after.invoke(controller, addArg);
@@ -922,8 +890,7 @@ public class Logic {
         }
     }
 
-    static Class<?>[] newArgsOld = { Dictionary.class, Attributes.class, Database.class };
-    static Class<?>[] newArgs = { Dictionary.class, Attributes.class, Transaction.class };
+    static Class<?>[] newArgs = { Dictionary.class, Attributes.class, Database.class };
 
     public static Pointer doNew(Object controller, String handlerName, String afterHandlerName, String typename,
             Dictionary<String, Object> data, Attributes a, String dbName, DbConnectionProvider dbcp)
@@ -935,8 +902,8 @@ public class Logic {
         Method after = null;
         
         if (!(controller instanceof LogicNotFoundException)) {
-            on = getMethod(handlerName, newArgs, newArgsOld, controller);
-            after = getMethod(afterHandlerName, editArgs, editArgsOld, controller);
+            on = getMethod(handlerName, newArgs, controller);
+            after = getMethod(afterHandlerName, editArgs, controller);
             /*if (on == null && after == null) {
                 throw new ProgrammerError("Class " + controller.getClass().getName() + " ("
                         + getControllerFile(controller) + ")\n" + "does not define neither of the methods\n"

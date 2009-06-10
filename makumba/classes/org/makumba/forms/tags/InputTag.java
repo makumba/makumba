@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.makumba.CompositeValidationException;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
@@ -55,7 +56,6 @@ import org.makumba.providers.Configuration;
  * 
  * @author Cristian Bogdan
  * @author Rudolf Mayer
- * @author Manuel Gay
  * @version $Id$
  */
 public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.BodyTag {
@@ -69,8 +69,6 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     protected String nameVar = null;
 
     protected String calendarEditorLink = null;
-
-    private String autoComplete = null;
 
     protected boolean calendarEditor = Configuration.getCalendarEditorDefault();
 
@@ -111,10 +109,6 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
 
     public void setNullOption(String s) {
         this.nullOption = s;
-    }
-
-    public void setClearDefault(String d) {
-        params.put("clearDefault", d);
     }
 
     // Extra html formatting parameters
@@ -231,10 +225,6 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
                         "For using 'seteditor' input types, you have to give the encosing form a name, using name=\"  \"!");
             }
         }
-        if (this.autoComplete != null && this.autoComplete.equals("true")) {
-            pageCache.cacheSetValues(NEEDED_RESOURCES, new String[] { "makumbaAutoComplete.css", "prototype.js",
-                    "scriptaculous.js", "makumba-autocomplete.js" });
-        }
 
         super.doEndAnalyze(pageCache);
     }
@@ -311,7 +301,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         if (val != null) {
             val = type.checkValue(val);
         }
-
+        
         // if the value is null ==> check for a default value
         // FIXME: this is a basic implementation, it can only discover attributes, does not value computation yet
         // FIXME: also some of the code below is just repeating the one from above, could be optimised
@@ -322,8 +312,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
             }
             if (isValue(defaultExpr)) {
                 // FIXME: actually implement this!
-                // for now, we just let this be handled by the various editors, which know how to deal with text and
-                // numbers
+                // for now, we just let this be handled by the various editors, which know how to deal with text and numbers
             }
             if (val != null) {
                 val = type.checkValue(val);
@@ -390,10 +379,6 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
             }
         }
 
-        if (autoComplete != null) {
-            params.put("autoComplete", autoComplete);
-        }
-
         String formatted = getForm().responder.format(name, type, val, params, extraFormatting.toString(),
             getForm().getFormIdentifier());
         String fieldName = name + getForm().responder.getSuffix();
@@ -452,10 +437,6 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         this.calendarEditorLink = calendarEditorLink;
     }
 
-    public void setAutoComplete(String autoComplete) {
-        this.autoComplete = autoComplete;
-    }
-
     public void setCalendarEditor(String calendarEditor) {
         this.calendarEditor = Boolean.parseBoolean(calendarEditor);
     }
@@ -469,7 +450,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         super.doAnalyzedCleanup();
         bodyContent = null;
         choiceSet = null;
-        name = nameVar = nullOption = display = calendarEditorLink = autoComplete = null;
+        name = nameVar = nullOption = display = calendarEditorLink = null;
         calendarEditor = Configuration.getCalendarEditorDefault();
     }
 

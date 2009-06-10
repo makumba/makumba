@@ -1,313 +1,271 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd"><document>
-    <header>
-        <title>mak:searchField tag documentation</title>
-    </header>
-    <body>
-        <section id="description">
-            <title>Description</title>
-            <p class="tagDescription">Enclosed inside a &lt;mak:criterion&gt;, generates an input for that criterion. This tag is based on the &lt;mak:input/&gt; tag, and provides additionally the following attributes:</p>
-        </section>
-        <section id="attributes">
-            <title>Attributes</title>
-            <table>
-                <tr>
-                    <th>Name</th>
-                    <th>Required</th>
-                    <th>Request-time</th>
-                    <th>Description</th>
-                    <th>Comments</th>
-                </tr>
-                <tr>
-                    <td>role</td>
-                    <td class="center">false</td>
-                    <td class="center">false</td>
-                    <td>Indicates whether this input is the input for the lower or upper range.</td>
-                    <td>Only for range searches, values are 'rangeBegin' and 'rangeEnd'. Defaults to 'rangeBegin'.</td>
-                </tr>
-                <tr>
-                    <td>value</td>
-                    <td class="center">false</td>
-                    <td class="center">false</td>
-                    <td>OQL expression relative to enclosing query tags or a $attribute computed previously in the page (with &lt;mak:value var=.../&gt; or pageContext.setAttribute(...)), or read by in the previous page by an &lt;mak:input /&gt;</td>
-                    <td>Fixed</td>
-                </tr>
-                <tr>
-                    <td>id</td>
-                    <td class="center">false</td>
-                    <td class="center">false</td>
-                    <td>Tag's identifier</td>
-                    <td>Fixed. Can be used to distinguish otherwise identical tags on a page (to avoid confusion by Makumba's JSP analyser)</td>
-                </tr>
-                <tr>
-                    <td>dataType</td>
-                    <td class="center">false</td>
-                    <td class="center">false</td>
-                    <td>The makumba type of the data (needed if there is no value, no default expression for the value, or no makumba type associated with an attribute)</td>
-                    <td>Fixed. Can be char, char[xx], int, date, text, ptr Type, set Type</td>
-                </tr>
-                <tr>
-                    <td>default</td>
-                    <td class="center">false</td>
-                    <td class="center">true</td>
-                    <td class="missingDoc">FIXME</td>
-                    <td>Rtexpr</td>
-                </tr>
-                <tr>
-                    <td>format</td>
-                    <td class="center">false</td>
-                    <td class="center">false</td>
-                    <td>Format string, according to java.text.SimpleDateFormat 
-Can only countain d, M, y, H, m, s formatting chars, and any kind of separators. Ex: 
-'the day' dd 'of the month' MMMM 'in the year' yyyy. 
-Default is "dd MMMM yyyy"</td>
-                    <td>Rtexpr. Only for date.</td>
-                </tr>
-                <tr>
-                    <td>type</td>
-                    <td class="center">false</td>
-                    <td class="center">false</td>
-                    <td>HTML INPUT type to be used 
-"hidden" works for all fields 
-for char[] , type can be "text" or "password", default is "text" 
-default type for [set]intEnum, [set]charEnum, ptr and set is "select" (dropdown or scroll list depending on size). Alternative is "tickbox" (checkboxes or radio buttons). Can be forced to a specific type by using "radio" or "checkbox" 
-for set, type can be seteditor, which will create two multiple-select boxes (see an example). 
-for int, spinner creates a spinner input with increase/decrease buttons; if a validation definition defines a range for the field, select and radio are will create select boxes and radio buttons. 
-date is split in 3 inputs, &lt;fieldname&gt;_0 (day), _1 (month), _2 (year), and likewise for time elements 
-for text, default is "textarea"; "file" will create file upload box, and will create supplementary attributes &lt;fieldname&gt;_filename, &lt;fieldname&gt;_contentType and &lt;fieldname&gt;_contentLength that have to be handled separately by the handler method 
-for file, a file upload box will automatically created, and handling of file name, content type and length will be done automatically. </td>
-                    <td>Fixed</td>
-                </tr>
-                <tr>
-                    <td>forceInputStyle</td>
-                    <td class="center">false</td>
-                    <td class="center">false</td>
-                    <td>Changes the style/type of the input as it would be normally computed for the data type.</td>
-                    <td>Fixed; applicable for the following data types: 
-text: 'input' forces an &lt;input&gt; tag rather than a &lt;textArea&gt;. 
-ptr: 'multiple' forces a multiple-select rather than a single-select, and check-boxes rather than radio-buttons. 
-set: 'single' forces a single-select rather than a multiple-select, and radio-buttons rather than check-boxes. </td>
-                </tr>
-                <tr>
-                    <td>calendarEditor</td>
-                    <td class="center">false</td>
-                    <td class="center">false</td>
-                    <td>Whether to generate code for a calendar editor.</td>
-                    <td>Only for date types. Defaults to &lt;code&gt;true&lt;/code&gt; resp. the default value specified in the Makumba configuration.</td>
-                </tr>
-                <tr>
-                    <td>calendarEditorLink</td>
-                    <td class="center">false</td>
-                    <td class="center">false</td>
-                    <td>The formatting that appears on the link to the calendar date-chooser.</td>
-                    <td>Only for date types. Defaults to &lt;img border="0" src="_CONTEXT_PATH_/mak-tools/makumbaResources/image/calendar.gif"&gt;</td>
-                </tr>
-                <tr>
-                    <td>nameVar</td>
-                    <td class="center">false</td>
-                    <td class="center">false</td>
-                    <td>The name of the java variable in which to store the name of the HTML input. In multiple forms,  there may be more HTML inputs generated by one mak:input, so a suffix is added by makumba to the name to generate unique names for each.</td>
-                    <td>Fixed</td>
-                </tr>
-                <tr>
-                    <td>nullOption</td>
-                    <td class="center">false</td>
-                    <td class="center">false</td>
-                    <td>A text that would be displayed as the "null option" in drop-down boxes, i.e. to add a null value to the other
-          possible options. May be used to allow a ptr to be set to null, and/or require a deliberate action from the users to
-          select a value, rather leaving the default (first) value selected.</td>
-                    <td>Fixed. Only for &lt;code&gt;ptr and intEnum types&lt;/code&gt;</td>
-                </tr>
-                <tr>
-                    <td>labelSeparator</td>
-                    <td class="center">false</td>
-                    <td class="center">true</td>
-                    <td>The string that separates the tickbox (radio/check) from the label. Default is " " (space). 
-The output will be &lt; tick &gt;&lt; labelSeparator &gt;&lt; label &gt;</td>
-                    <td>Rtexpr. Only for &lt;code&gt;type="tickbox"&lt;/code&gt;</td>
-                </tr>
-                <tr>
-                    <td>elementSeparator</td>
-                    <td class="center">false</td>
-                    <td class="center">true</td>
-                    <td>The string that separates the different options. Default is " " (space). 
-The output will be &lt; [x] label &gt;&lt; elementSeparator &gt;&lt; [x] label &gt;</td>
-                    <td>Rtexpr. Only for &lt;code&gt;type="tickbox"&lt;/code&gt;</td>
-                </tr>
-                <tr>
-                    <td>size</td>
-                    <td class="center">false</td>
-                    <td class="center">true</td>
-                    <td>Size of the input control</td>
-                    <td>Rtexpr. Only for char[], int (size of the textbox) and set, ptr (height of the select)</td>
-                </tr>
-                <tr>
-                    <td>maxlength</td>
-                    <td class="center">false</td>
-                    <td class="center">true</td>
-                    <td>Max length of a text control</td>
-                    <td>Rtexpr. Only for char[] and int. Defaults to makumba width of the char[]</td>
-                </tr>
-                <tr>
-                    <td>rows</td>
-                    <td class="center">false</td>
-                    <td class="center">true</td>
-                    <td>Number of textarea rows and columns</td>
-                    <td>only for text</td>
-                </tr>
-                <tr>
-                    <td>cols</td>
-                    <td class="center">false</td>
-                    <td class="center">true</td>
-                    <td>Number of textarea rows and columns</td>
-                    <td>only for text</td>
-                </tr>
-                <tr>
-                    <td>accessKey</td>
-                    <td class="center">false</td>
-                    <td class="center">true</td>
-                    <td rowspan="7" class="generic">Input-specific HTML tag attribute</td>
-                    <td rowspan="7" class="generic">The content is copied to the resulting &lt;input...&gt; tag. Careful with (escaping) quotes.</td>
-                </tr>
-                <tr>
-                    <td>disabled</td>
-                    <td class="center">false</td>
-                    <td class="center">true</td>
-                </tr>
-                <tr>
-                    <td>onChange</td>
-                    <td class="center">false</td>
-                    <td class="center">true</td>
-                </tr>
-                <tr>
-                    <td>onBlur</td>
-                    <td class="center">false</td>
-                    <td class="center">true</td>
-                </tr>
-                <tr>
-                    <td>onFocus</td>
-                    <td class="center">false</td>
-                    <td class="center">true</td>
-                </tr>
-                <tr>
-                    <td>onSelect</td>
-                    <td class="center">false</td>
-                    <td class="center">true</td>
-                </tr>
-                <tr>
-                    <td>tabIndex</td>
-                    <td class="center">false</td>
-                    <td class="center">true</td>
-                </tr>
-                <tr>
-                    <td>styleId</td>
-                    <td class="center">false</td>
-                    <td class="center">true</td>
-                    <td>Generic HTML tag attribute</td>
-                    <td>results in id="..."</td>
-                </tr>
-                <tr>
-                    <td>styleClass</td>
-                    <td class="center">false</td>
-                    <td class="center">true</td>
-                    <td>Generic HTML tag attribute</td>
-                    <td>results in class="..."</td>
-                </tr>
-                <tr>
-                    <td>style</td>
-                    <td class="center">false</td>
-                    <td class="center">true</td>
-                    <td rowspan="12" class="generic">Generic HTML tag attribute</td>
-                    <td rowspan="12" class="generic">The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
-                </tr>
-                <tr>
-                    <td>title</td>
-                    <td class="center">false</td>
-                    <td class="center">true</td>
-                </tr>
-                <tr>
-                    <td>onClick</td>
-                    <td class="center">false</td>
-                    <td class="center">true</td>
-                </tr>
-                <tr>
-                    <td>onDblClick</td>
-                    <td class="center">false</td>
-                    <td class="center">true</td>
-                </tr>
-                <tr>
-                    <td>onKeyDown</td>
-                    <td class="center">false</td>
-                    <td class="center">true</td>
-                </tr>
-                <tr>
-                    <td>onKeyUp</td>
-                    <td class="center">false</td>
-                    <td class="center">true</td>
-                </tr>
-                <tr>
-                    <td>onKeyPress</td>
-                    <td class="center">false</td>
-                    <td class="center">true</td>
-                </tr>
-                <tr>
-                    <td>onMouseDown</td>
-                    <td class="center">false</td>
-                    <td class="center">true</td>
-                </tr>
-                <tr>
-                    <td>onMouseUp</td>
-                    <td class="center">false</td>
-                    <td class="center">true</td>
-                </tr>
-                <tr>
-                    <td>onMouseMove</td>
-                    <td class="center">false</td>
-                    <td class="center">true</td>
-                </tr>
-                <tr>
-                    <td>onMouseOut</td>
-                    <td class="center">false</td>
-                    <td class="center">true</td>
-                </tr>
-                <tr>
-                    <td>onMouseOver</td>
-                    <td class="center">false</td>
-                    <td class="center">true</td>
-                </tr>
-            </table>
-        </section>
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+
+<document xmlns:xi="http://www.w3.org/2001/XInclude">
+  <header>
+    <title>mak:searchField tag documentation</title>
+  </header>
+  <body>
+    <section id="attributes">
+      <title>Attributes</title>
+      <table>
+        <tr>
+          <th colspan="1" rowspan="1">Name</th>
+          <th colspan="1" rowspan="1">Required</th>
+          <th colspan="1" rowspan="1">rt expression value</th>
+          <th colspan="1" rowspan="1">Description</th>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">role</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">value</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">id</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">styleId</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">dataType</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">default</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">format</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">type</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">forceInputStyle</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">Changes the style/type of the input as it would be normally computed for the data type.</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">calendarEditor</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">calendarEditorLink</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">size</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">maxlength</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">rows</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">cols</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">nameVar</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">nullOption</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">styleId</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">styleClass</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">style</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">labelSeparator</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">elementSeparator</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">title</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onClick</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onDblClick</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onKeyDown</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onKeyUp</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onKeyPress</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onMouseDown</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onMouseUp</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onMouseMove</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onMouseOut</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onMouseOver</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">accessKey</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">disabled</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onChange</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onBlur</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onFocus</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">onSelect</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">tabIndex</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">Document me please</td>
+        </tr>
+      </table>
+    </section>
+    <section id="example">
+  
+      <title>Example</title>
+  
+      <p/>
+  
+      <p>
     
-        <section id="seeAlso">
-            <title>See also</title>
-            <ul>
-                <li>
-                    <a href="/doc/taglib/maksearchForm.html">mak:searchForm</a>
-                </li>
-                <li>
-                    <a href="/doc/taglib/makresultList.html">mak:resultList</a>
-                </li>
-                <li>
-                    <a href="/doc/taglib/makcriterion.html">mak:criterion</a>
-                </li>
-                <li>
-                    <a href="/doc/taglib/makmatchMode.html">mak:matchMode</a>
-                </li>
-            </ul>
-        </section>
-      <section id="example">
-        <title>Example</title>
-        <source>
-      <![CDATA[
-<mak:searchForm in="best.Student" name="searchPerson">
-    <mak:criterion fields="name"> 
-        <mak:searchField />
-    </mak:criterion>
-    <mak:criterion fields="place">
-        <mak:searchField forceInputStyle="single" /> 
-    </mak:criterion>  
-</mak:searchForm>
-      ]]>
-  </source>
-    </section>  </body>
-</document>
+        <code/>
+  
+      </p>
+    </section>  </body></document>

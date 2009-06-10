@@ -24,13 +24,16 @@
 package org.makumba.list.engine;
 
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
 import org.makumba.DataDefinition;
 import org.makumba.LogicException;
+import org.makumba.commons.ArgumentReplacer;
 import org.makumba.list.tags.QueryTag;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;

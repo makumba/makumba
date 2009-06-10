@@ -1,69 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd"><document>
-    <header>
-        <title>mak:attribute tag documentation</title>
-    </header>
-    <body>
-        <section id="description">
-            <title>Description</title>
-            <p class="tagDescription">Displays the value of an attribute, or sets it to a Java variable.</p>
-        </section>
-        <section id="attributes">
-            <title>Attributes</title>
-            <table>
-                <tr>
-                    <th>Name</th>
-                    <th>Required</th>
-                    <th>Request-time</th>
-                    <th>Description</th>
-                    <th>Comments</th>
-                </tr>
-                <tr>
-                    <td>name</td>
-                    <td class="center required">true</td>
-                    <td class="center">false</td>
-                    <td>the name of the attribute. Will be printed if var is not present and there is no exception when finding the argument. If there is an exception but exceptionVar is indicated, nothing will be printed.</td>
-                    <td>Fixed, Mandatory.</td>
-                </tr>
-                <tr>
-                    <td>var</td>
-                    <td class="center">false</td>
-                    <td class="center">false</td>
-                    <td>The name of the java.lang.Object variable where to store the attribute value. Note that you will have to cast it to its specific type.</td>
-                    <td>Fixed, Mandatory.</td>
-                </tr>
-                <tr>
-                    <td>exceptionVar</td>
-                    <td class="center">false</td>
-                    <td class="center">false</td>
-                    <td>The name of the created java.lang.Throwable variable that will hold eventual exceptions raised when trying to compute the attribute. If exceptionVar is missing, any raised exception will stop page execution. If it is present, and AttibuteNotFoundException occurs, the attribute is set to null (so a next request for the attribute will return null)</td>
-                    <td>Fixed</td>
-                </tr>
-                <tr>
-                    <td>db</td>
-                    <td class="center">false</td>
-                    <td class="center">true</td>
-                    <td>The database in which the business logic (if any) will compute the attribute. The default database is normally used.</td>
-                    <td>Fixed</td>
-                </tr>
-            </table>
-        </section>
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "http://forrest.apache.org/dtd/document-v20.dtd">
+
+<document xmlns:xi="http://www.w3.org/2001/XInclude">
+  <header>
+    <title>mak:attribute tag documentation</title>
+  </header>
+  <body>
+    <section id="attributes">
+      <title>Attributes</title>
+      <table>
+        <tr>
+          <th colspan="1" rowspan="1">Name</th>
+          <th colspan="1" rowspan="1">Required</th>
+          <th colspan="1" rowspan="1">rt expression value</th>
+          <th colspan="1" rowspan="1">Description</th>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">name</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">the name of the attribute. Will be printed if var is not present and there is no exception when finding the argument. If there is an exception but exceptionVar is indicated, nothing will be printed.</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">var</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">The name of the java.lang.Object variable where to store the attribute value. Note that you will have to cast it to its specific type.</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">exceptionVar</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">The name of the created java.lang.Throwable variable that will hold eventual exceptions raised when trying to compute the attribute. If exceptionVar is missing, any raised exception will stop page execution. If it is present, and AttibuteNotFoundException occurs, the attribute is set to null (so a next request for the attribute will return null)</td>
+        </tr>
+        <tr>
+          <td colspan="1" rowspan="1">db</td>
+          <td colspan="1" rowspan="1">false</td>
+          <td colspan="1" rowspan="1">true</td>
+          <td colspan="1" rowspan="1">The database in which the business logic (if any) will compute the attribute. The default database is normally used.</td>
+        </tr>
+      </table>
+    </section>
+    <section id="example">
+  
+      <title>Example</title>
+  
+      <p/>
+  
+      <p>
     
-      <section id="example">
-        <title>Example</title>
-        <source>
-      <![CDATA[
-<mak:attribute name="pattern" var="pattern" exceptionVar="exception"/>
-
-<% if (exception!=null) {
-     pageContext.setAttribute("pattern", (String)pattern+"%");
-%>
-   <mak:list from="type t" where="t.field like $pattern" >...</mak:list>
-
-<% } else { %>
-   No pattern argument. Please indicate one.
-<% } %>
-      ]]>
-  </source>
-    </section>  </body>
-</document>
+        <code/>
+  
+      </p>
+    </section>  </body></document>

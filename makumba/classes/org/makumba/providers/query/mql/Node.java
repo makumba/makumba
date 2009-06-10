@@ -13,8 +13,7 @@ import antlr.Token;
  * @author Steve Ebersole
  */
 public class Node extends antlr.CommonAST {
-    private static final long serialVersionUID = 1L;
-    private String filename;
+	private String filename;
 	private int line;
 	private int column;
 	private int textLength;

@@ -2,8 +2,10 @@ package org.makumba.providers.query.mql;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
+import org.makumba.OQLParseError;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
+import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
 
@@ -22,12 +24,6 @@ public class MqlQueryAnalysisProvider extends QueryAnalysisProvider {
         return (QueryAnalysis) NamedResources.getStaticCache(parsedQueries).getResource(query);
     }
 
-    @Override
-    public QueryAnalysis getRawQueryAnalysis(String query, String insertIn) {
-        return (QueryAnalysis) NamedResources.getStaticCache(parsedQueries).getResource(MqlQueryAnalysis.formatQueryAndInsert(query, insertIn));
-    }
-
-    
     @Override
     public boolean selectGroupOrOrderAsLabels() {
         return false;

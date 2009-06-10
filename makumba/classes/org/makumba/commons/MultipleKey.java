@@ -63,7 +63,7 @@ public class MultipleKey extends Vector<Object> implements Serializable {
      * @param v An instance of Vector 
      * @param o An object to be added
      */
-    public MultipleKey(Vector<Object> v, Object o) {
+    public MultipleKey(Vector v, Object o) {
         this(v, v.size() + 1);
         setAt(o, v.size());
     }
@@ -87,7 +87,7 @@ public class MultipleKey extends Vector<Object> implements Serializable {
      * @param data
      *            The dictionary containing the values of the keys
      */
-    public MultipleKey(Vector<Object> keys, Dictionary<String, Object> data) {
+    public MultipleKey(Vector keys, Dictionary data) {
         this(keys, data, keys.size());
     }
 
@@ -101,7 +101,7 @@ public class MultipleKey extends Vector<Object> implements Serializable {
      * @param size
      *            The size of the MultipleKey object to be constructed
      */
-    public MultipleKey(Vector<Object> keys, Dictionary<String, Object> data, int size) {
+    public MultipleKey(Vector keys, Dictionary data, int size) {
         super(size);
         for (; elementCount < keys.size(); elementCount++) {
             elementData[elementCount] = checkNull(data.get(keys.elementAt(elementCount)));
@@ -116,7 +116,7 @@ public class MultipleKey extends Vector<Object> implements Serializable {
      * @param data
      *            The object array containing the values of the keys
      */
-    public MultipleKey(Vector<Object> indexes, Object[] data) {
+    public MultipleKey(Vector indexes, Object[] data) {
         this(indexes, data, indexes.size());
     }
 
@@ -130,7 +130,7 @@ public class MultipleKey extends Vector<Object> implements Serializable {
      * @param size
      *            The size of the MultipleKey object to be constructed
      */
-    public MultipleKey(Vector<Object> indexes, Object[] data, int size) {
+    public MultipleKey(Vector indexes, Object[] data, int size) {
         super(size);
         for (; elementCount < indexes.size(); elementCount++) {
             elementData[elementCount] = checkNull(data[((Integer) indexes.elementAt(elementCount)).intValue()]);

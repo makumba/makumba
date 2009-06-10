@@ -34,7 +34,6 @@ import java.net.MalformedURLException;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Properties;
@@ -78,13 +77,11 @@ public class RecordParser {
 
     public static final Pattern multiUniquePattern = Pattern.compile(multiUniqueRegExp);
 
-    public static final String validationRuleErrorMessageSeparatorChar = " : ";
-
     // regular expressions for validation definitions //
     public static final String validationDefinitionRegExp = RegExpUtils.LineWhitespaces + "(" + RegExpUtils.fieldName
             + ")" + RegExpUtils.LineWhitespaces + VALIDATION_INDICATOR + "(matches|length|range|compare|unique)"
             + RegExpUtils.LineWhitespaces + "=" + RegExpUtils.LineWhitespaces + "(.+)" + RegExpUtils.LineWhitespaces
-            + validationRuleErrorMessageSeparatorChar + RegExpUtils.LineWhitespaces + ".+";
+            + ":" + RegExpUtils.LineWhitespaces + ".+";
 
     public static final Pattern validationDefinitionPattern = Pattern.compile(validationDefinitionRegExp);
 
@@ -394,14 +391,15 @@ public class RecordParser {
         }
 
         if (u == null) {
-                u = getResource("dataDefinitions/" + s.replace('.', '/') + "." + ext);
-                
-            // this is maybe a directory?
-            if(u == null)
-                u = getResource("dataDefinitions" + (s.length() == 0 ? "" : "/") + s);
-                
+            u = getResource(s.replace('.', '/') + "." + ext);
             if (u == null) {
-                u = getResource(s.replace('.', '/') + "." + ext);
+                u = getResource("dataDefinitions/" + s.replace('.', '/') + "." + ext);
+                if (u == null) {
+                    u = getResource("dataDefinitions/" + s.replace('.', '/'));
+                    if (u == null) {
+                        u = getResource(s.replace('.', '/'));
+                    }
+                }
             }
         }
         return u;
@@ -528,7 +526,7 @@ public class RecordParser {
             sessionVariableName = sessionVariableName.replace("%", "");
         }
         String name = matcher.group(2);
-        if (funcNames.get(name) != null) {
+        if (dd.getFunction(name) != null) {
             mpe.add(new DataDefinitionParseError(dd.getName(), "Duplicate function name: " + name, line));
         }
         String paramsBlock = matcher.group(3); // params are not split yet, we get them all in one
@@ -676,7 +674,7 @@ public class RecordParser {
         } else if (uconn.getClass().getName().endsWith("JarURLConnection")) {
             JarFile jf = ((JarURLConnection) uconn).getJarFile();
 
-            // jar:file:/home/manu/workspace/parade2/webapp/WEB-INF/lib/makumba.jar!/org/makumba/devel/relations/Relation
+            //jar:file:/home/manu/workspace/parade2/webapp/WEB-INF/lib/makumba.jar!/org/makumba/devel/relations/Relation
             // .mdd
             String[] jarURL = u.toExternalForm().split("!");
 
@@ -962,8 +960,6 @@ public class RecordParser {
                 text_parse1(fieldName, fc);
                 return;
             case FieldDefinition._date:
-                date_parse1(fieldName, fc);
-                return;
             case FieldDefinition._real:
             case FieldDefinition._ptrIndex:
             case FieldDefinition._dateCreate:
@@ -1018,12 +1014,6 @@ public class RecordParser {
     // moved from simpleParser
     public void simple_parse1(String fieldName, FieldCursor fc) {
         getFieldInfo(fieldName).description = fc.lookupDescription();
-        return;
-    }
-    
-    public void date_parse1(String fieldName, FieldCursor fc) {
-        getFieldInfo(fieldName).description = fc.lookupDescription();
-        //getFieldInfo(fieldName).defaultValue = new Date();
         return;
     }
 
@@ -1243,16 +1233,15 @@ public class RecordParser {
                 if (!singleValidationMatcher.matches()) {
                     throw new ValidationDefinitionParseError(targetDD.getName(), "Illegal rule definition!", line);
                 }
-                if (line.indexOf(validationRuleErrorMessageSeparatorChar) == -1) {
+                String[] definitionParts = line.split(":");
+                if (definitionParts.length < 2) {
                     throw new ValidationDefinitionParseError(targetDD.getName(),
                             "Rule does not consist of the two parts <rule>:<message>!", line);
                 }
                 String fieldName = singleValidationMatcher.group(1).trim();
                 String operation = singleValidationMatcher.group(2).trim();
                 String ruleDef = singleValidationMatcher.group(3).trim();
-                String errorMessage = line.substring(
-                    line.lastIndexOf(validationRuleErrorMessageSeparatorChar)
-                            + validationRuleErrorMessageSeparatorChar.length()).trim();
+                String errorMessage = definitionParts[1].trim();
                 String ruleName = line;
                 ValidationRule rule = null;
                 Matcher matcher;
@@ -1324,11 +1313,9 @@ public class RecordParser {
                         }
                     }
                     String[] groups = (String[]) groupList.toArray(new String[groupList.size()]);
-                    targetDD.addMultiUniqueKey(new DataDefinition.MultipleUniqueKeyDefinition(groups, line,
-                            errorMessage));
+                    targetDD.addMultiUniqueKey(new DataDefinition.MultipleUniqueKeyDefinition(groups, line));
                     java.util.logging.Logger.getLogger("org.makumba.datadefinition.makumba").finer(
-                        "added multi-field unique key: "
-                                + new DataDefinition.MultipleUniqueKeyDefinition(groups, line, errorMessage));
+                        "added multi-field unique key: " + new DataDefinition.MultipleUniqueKeyDefinition(groups, line));
                     continue;
                 } else {
                     // no recognised rule
@@ -1337,7 +1324,8 @@ public class RecordParser {
                 rule.getFieldDefinition().addValidationRule(rule);
                 // validationRules.put(fieldName, rule);
                 targetDD.addValidationRule(rule);
-                java.util.logging.Logger.getLogger("org.makumba.datadefinition.makumba").finer("added rule: " + rule);
+                java.util.logging.Logger.getLogger("org.makumba.datadefinition.makumba").finer(
+                    "added rule: " + rule);
             } catch (ValidationDefinitionParseError e) {
                 mpe.add(e);
             }
@@ -1359,8 +1347,6 @@ public class RecordParser {
         RegExpUtils.evaluate(RecordParser.funcDefPattern, " someFunc() { abc } errorMessage",
             " someFunc(char[] a, int 5) {abc}errorMessages", "someFunction(int a, char[] b) { yeah}errorMessage3",
             "someOtherFunction(int age, char[] b) { this.age > age } You are too young!");
-        System.out.println("\n\n*****************************************************************************");
-        RegExpUtils.evaluate(RecordParser.multiUniquePattern, "unique12%unique = age, email : these need to be unique!");
 
         // test some mdd reading
         System.out.println("\n\n*****************************************************************************");

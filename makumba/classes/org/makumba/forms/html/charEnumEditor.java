@@ -23,22 +23,12 @@
 
 package org.makumba.forms.html;
 
-import java.util.Dictionary;
-
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.RecordFormatter;
 
 public class charEnumEditor extends choiceEditor {
-    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
-        static FieldEditor singleton = new charEnumEditor();
-        
-        public void release() {
-            singleton = null;
-        }
-
-        public SingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
+    private static final class SingletonHolder {
+        static final FieldEditor singleton = new charEnumEditor();
     }
 
     /** Don't use this, use getInstance() */
@@ -50,7 +40,7 @@ public class charEnumEditor extends choiceEditor {
     }
 
     @Override
-    public Object getOptions(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
+    public Object getOptions(RecordFormatter rf, int fieldIndex, java.util.Dictionary fP) {
         return null;
     }
 
@@ -96,6 +86,11 @@ public class charEnumEditor extends choiceEditor {
             }
         }
         return rf.dd.getFieldDefinition(fieldIndex).getNameAt(i);
+    }
+
+    @Override
+    public String getMultiple(RecordFormatter rf, int fieldIndex) {
+        return "";
     }
 
     @Override

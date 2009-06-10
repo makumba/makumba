@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Properties;
 
+import org.makumba.commons.formatters.FieldFormatter;
+
+
 import com.ecyrd.jspwiki.FileUtil;
 import com.ecyrd.jspwiki.TestEngine;
 import com.ecyrd.jspwiki.TranslatorReader;
@@ -27,7 +30,7 @@ public class JspWikiFormatter implements WikiFormatter {
 
     protected static WikiContext context;
 
-    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+    private static final class SingletonHolder {
         
         static {
             props.put("jspwiki.workDir", ".");
@@ -44,14 +47,6 @@ public class JspWikiFormatter implements WikiFormatter {
         }
         
         static JspWikiFormatter singleton;
-        
-        public void release() {
-            singleton = null;
-        }
-
-        public SingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
     }
     
     /**

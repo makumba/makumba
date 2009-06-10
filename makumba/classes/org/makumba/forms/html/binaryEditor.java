@@ -43,16 +43,8 @@ public class binaryEditor extends FieldEditor {
         return paramValues;
     }
 
-    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
-        static FieldEditor singleton = new binaryEditor();
-        
-        public void release() {
-            singleton = null;
-        }
-
-        public SingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
+    private static final class SingletonHolder {
+        static final FieldEditor singleton = new binaryEditor();
     }
 
     private binaryEditor() {
@@ -63,21 +55,21 @@ public class binaryEditor extends FieldEditor {
     }
 
     @Override
-    public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
+    public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
         return formatNotNull(rf, fieldIndex, o, formatParams);
     }
 
     @Override
-    public String formatNull(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
+    public String formatNull(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
         return formatNotNull(rf, fieldIndex, null, formatParams);
     }
 
     @Override
-    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
+    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
         return fileInput(rf, fieldIndex, formatParams);
     }
 
-    public static String fileInput(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
+    public static String fileInput(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
         return "<INPUT name=\"" + getInputName(rf, fieldIndex, formatParams) + "\" type=\"file\" "
                 + getExtraFormatting(rf, fieldIndex, formatParams) + " >";
     }

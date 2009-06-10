@@ -1,28 +1,6 @@
-///////////////////////////////
-//  Makumba, Makumba tag library
-//  Copyright (C) 2000-2003  http://www.makumba.org
-//
-//  This library is free software; you can redistribute it and/or
-//  modify it under the terms of the GNU Lesser General Public
-//  License as published by the Free Software Foundation; either
-//  version 2.1 of the License, or (at your option) any later version.
-//
-//  This library is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//  Lesser General Public License for more details.
-//
-//  You should have received a copy of the GNU Lesser General Public
-//  License along with this library; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-//
-//  -------------
-//  $Id$
-//  $Name$
-/////////////////////////////////////
-
 package org.makumba;
 
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -30,7 +8,7 @@ import java.util.Vector;
  * This class provides basic support for definition parse errors.
  * 
  * @author Rudolf Mayer
- * @version $Id$
+ * @version $Id: DefinitionParseError.java,v 1.1 Sep 16, 2007 11:11:38 PM rudi Exp $
  */
 public abstract class DefinitionParseError extends MakumbaError {
 
@@ -46,19 +24,18 @@ public abstract class DefinitionParseError extends MakumbaError {
     }
 
     protected static String showTypeName(String typeName) {
-        if (typeName.startsWith("temp")) {
+        if (typeName.startsWith("temp"))
             return "";
-        }
-        return typeName + ": ";
+        return typeName + ":";
     }
 
     protected int column;
 
-    protected Vector<DefinitionParseError> components;
+    protected Vector components;
 
     protected String line;
 
-    protected Hashtable<String, DefinitionParseError> lines;
+    protected Hashtable lines;
 
     protected String typeName;
 
@@ -88,20 +65,19 @@ public abstract class DefinitionParseError extends MakumbaError {
     /** add another error to the main error */
     public void add(DefinitionParseError e) {
         if (components == null) {
-            components = new Vector<DefinitionParseError>();
+            components = new Vector();
         }
 
         components.addElement(e);
         if (e.line != null) {
             if (lines == null) {
-                lines = new Hashtable<String, DefinitionParseError>();
+                lines = new Hashtable();
             }
             lines.put(e.line, e);
         }
     }
 
     /** If the error is single, call the default action, else compose all components' messages */
-    @Override
     public String getMessage() {
         if (isSingle()) {
             return super.getMessage();
@@ -109,8 +85,9 @@ public abstract class DefinitionParseError extends MakumbaError {
 
         StringBuffer sb = new StringBuffer();
 
-        for (DefinitionParseError definitionParseError : components) {
-            sb.append('\n').append(definitionParseError.getMessage()).append('\n');
+        for (Enumeration e = components.elements(); e.hasMoreElements();) {
+            DefinitionParseError error = (DefinitionParseError) e.nextElement();
+            sb.append('\n').append(error.getMessage()).append('\n');
         }
         return sb.toString();
     }

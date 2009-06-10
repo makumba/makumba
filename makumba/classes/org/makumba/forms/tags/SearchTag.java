@@ -95,8 +95,6 @@ public class SearchTag extends FormTagBase {
 
     DataDefinition in = null;
 
-    private ArrayList<String> inputNames = new ArrayList<String>();
-
     private void fillFormAction() {
         if (formAction == null) { // if no action is given, we take the current page as action
             String requestURI = ((HttpServletRequest) pageContext.getRequest()).getRequestURI();
@@ -230,7 +228,6 @@ public class SearchTag extends FormTagBase {
                     } else {
                         // seems like a hack, but is needed to get the correct field names in the mdd, etc..
                         inputName = getRangeBeginName(inputName);
-                        // the variable 'value' should NOT be updated here
                     }
                 }
 
@@ -277,14 +274,14 @@ public class SearchTag extends FormTagBase {
                                 matchMode);
                         } else {
                             // other comparison
-                            whereThisField += computeTypeSpecificQuery(req, value, objectName, finalFieldName,
+                            whereThisField += computeTypeSpecificQuery(req, parameters, objectName, finalFieldName,
                                 attributeName, matchMode, fd);
                         }
                     }
                     if (whereThisField.trim().length() > 0) {
                         where += " (" + whereThisField + ") ";
                         if (fd.isSetType()) { // enhance the variableFrom part if we select sets
-                            variableFroms.add(OBJECT_NAME + "." + inputName + " " + OBJECT_NAME + "_" + inputName.replace(".", "_"));
+                            variableFroms.add(OBJECT_NAME + "." + inputName + " " + OBJECT_NAME + "_" + inputName);
                         }
                     }
                 }
@@ -372,10 +369,10 @@ public class SearchTag extends FormTagBase {
             return null;
         }
 
-        private String computeTypeSpecificQuery(HttpServletRequest req, Object value, String objectName,
+        private String computeTypeSpecificQuery(HttpServletRequest req, HttpParameters parameters, String objectName,
                 String fieldName, String attributeName, Object matchMode, FieldDefinition fd) throws LogicException {
             String where = "";
-//            Object value = parameters.getParameter(attributeName); // Refactored this function for passing the value directly as a parameter, since it was not working for multi-input fields like Dates
+            Object value = parameters.getParameter(attributeName);
             if (value instanceof Vector || fd.isSetType()) {
                 // we need to check for the field type as well - we have different labels for the sets
                 String labelName;
@@ -434,15 +431,6 @@ public class SearchTag extends FormTagBase {
     protected void doAnalyzedCleanup() {
         super.doAnalyzedCleanup();
         in = null;
-        inputNames = null;
-    }
-
-    public boolean containsInput(String inputName) {
-        if (inputNames.contains(inputName)) {
-            return true;
-        }
-        this.inputNames.add(inputName);
-        return false;
     }
 
 }

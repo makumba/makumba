@@ -27,7 +27,7 @@ package org.makumba;
  * Specifies interface for data transformation. Some of your application's class should implement this DataTransformer
  * in order to be used by Makumba during DB operations.
  * <p>
- * In your db configuration file (e.g. <code>localhost_mysql_myapp.properties</code>) it should be specified with a
+ * In your db configuration file (eg <code>localhost_mysql_myapp.properties</code>) it should be specified with a
  * line
  * 
  * <pre class="example">
@@ -73,8 +73,8 @@ public interface DataTransformer {
      *            data to transform
      * @param db
      *            database
-     * @return true if specified database operation should be done (eg data transformed successfully or data is valid),
+     * @return true if specified database operation should be done (eg data transformed succesfully or data is valid),
      *         false otherwise.
      */
-    public boolean transform(java.util.Dictionary<String, Object> d, Transaction db);
+    public boolean transform(java.util.Dictionary d, Transaction db);
 }

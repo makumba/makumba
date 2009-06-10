@@ -17,7 +17,7 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 //
 //  -------------
-//  $Id$
+//  $Id: NoSuchFieldException.java 1211 2006-01-20 03:12:11Z manuel_gay $
 //  $Name$
 /////////////////////////////////////
 
@@ -28,7 +28,7 @@ package org.makumba;
  * caught,
  * 
  * @author Rudolf Mayer
- * @version $Id$
+ * @version $Id: NoSuchLabelException.java,v 1.1 Jun 11, 2008 12:39:28 PM rudi Exp $
  */
 public class NoSuchLabelException extends RuntimeException {
     private static final long serialVersionUID = 1L;

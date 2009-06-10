@@ -1,194 +1,162 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
 
 <document>
-	<header>
-		<title>Data Definition Language</title>
-		<subtitle>(the Makumba abstract level)</subtitle>
-	</header>
-	<body>
+<header>
+	<title>Data Definition Language</title>
+	<subtitle>(the Makumba abstract level)</subtitle>
+</header>
+<body>
 
 
-		<section id="Types_objects_databases">
-			<title>Types, objects, databases</title>
+      <section id="Types_objects_databases"><title>Types, objects, databases</title>
+    	
+    	<p>Data definitions describe <strong>data types (or classes)</strong>. They are placed in files contained in directory
+    	hierarchies, and the directory name is part of the type name (similar to Java packages). For example <strong>the file
+    	best/Student.mdd </strong>describes<strong> the type best.Student</strong>. Type names can contain letters, digits, underscores and
+    	dashes and cannot contain slashes and dots.<!-- MDD max size 255 : http://bugs.best.eu.org/show_bug.cgi?id=639 -->
+    	Usually, the directories are used to separate organisations and projects.</p>
 
-			<p>Data definitions describe <strong>data types (or classes)</strong>. They are placed
-				in files contained in directory hierarchies, and the directory name is part of the
-				type name (similar to Java packages). For example <strong>the file
-					company/Employee.mdd </strong>describes <strong>the type general.Person</strong>.
-				Type names can contain letters, digits, underscores and dashes and cannot contain
-				slashes and
-				dots.<!-- MDD max size 255 : http://bugs.best.eu.org/show_bug.cgi?id=639 -->
-				Usually, the directories are used to separate organisations and projects.</p>
-
-			<p>Current Java implementation finds the data definition files as follows:</p>
-			<ul>
-				<li>the designated file extension is <code>.mdd</code> (Makumba Data
-					Definition)</li>
-				<li>relative to CLASSPATH (e.g. <code>classes/company/Employee.mdd</code>)</li>
-				<li>in a directory called "<strong>dataDefinitions/</strong>" in the CLASSPATH (e.g.
-						<code>classes/dataDefinitions/company/Employee.mdd</code>)</li>
-			</ul>
-
-			<p><strong>Data objects (records)</strong> are stored in <strong>databases</strong>.</p>
-			<p><strong>Data can be copied and/or replicated between different databases</strong>,
-				even between different DB engine types.</p>
-			<note>Replication is not yet implemented, but the design is prepared for it. Copying
-				works.</note>
-		</section>
-
-		<section id="Fields">
-			<title>Fields</title>
-
-			<p>Every data definition file contains <strong>field definitions</strong>, separated by
-				newline.</p>
-			<p>A field definition looks like:</p>
-			<source><![CDATA[fieldname= [attributes] fieldtype [parameters] [; description] ]]></source>
-
-			<note>Default values are supported internally, but not by the MDD parser</note>
-
-			<p>As an implementation guideline, field names tend to stay approximately the same
-				in:</p>
-			<!-- Put this <p> inside the list -->
-			<ul class="internalnote">
-				<li>HTTP requests</li>
-				<li>Record instances (<a
-						href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Dictionary.html"
-						>java.util.Dictionary</a> in the current Java API)</li>
-				<li>Database columns</li>
-				<li>etc</li>
-			</ul>
-
-			<p>The field description is used by the code generator at interface levels to present
-				that field. It is typically shown at the left of, or somewhere near to, the input
-				control (text box, radio button, chooser, etc) that allows for data input in that
-				field. If a field description is not present, its field name stands for its
-				description by default.</p>
-			<p><strong>Comment lines</strong> can be inserted in the data definition files as
-				follows:</p>
-			<source><![CDATA[# your comment... ]]></source>
-		</section>
-
-		<section id="DefaultFields">
-			<title>Default fields</title>
-
-			<p>Every datatype has some additional fields by default, as follows:</p>
-			<ul>
-				<li><strong>Primary Key field</strong>. When using the Makumba database layer, it
-					consists of two parts [DBSV with 8 bits | UID with 24 bits]: <ul>
-						<li>Database identifier (DBSV). It is unique (within the webapp) per
-							database. All objects created thru that webapp and in that database get
-							the same value. It is set by property dbsv in the database config
-							file.</li>
-						<li>Object identifier (UID): unique id for the object in the given
-							database.</li>
-					</ul>
-					<br/> This combination ensures that no two objects of one type have the same
-					primary key field. See <a
-						href="/configuration/configuration.html#datasource_configuration">how to
-						configure</a> this.<br/> The name of the primary key field is the same with
-					the last part of the type name. If another field by that name is defined by the
-					makumba user, this field will be renamed in the database.</li>
-				<li><strong>Object creation time</strong> Can be accessed as <code>TS_create</code>. </li>
-				<li><strong>Last modification time</strong>. Updates whenever the object is changed.
-					The initicial value is <code>TS_create</code>. Can be accessed as <code>TS_modify</code>.
-				</li>
-			</ul>
-		</section>
-
-		<section id="SimpleFieldTypes">
-			<title>Simple field types</title>
-			<section id="int">
-				<title>int</title>
-
-				<p>A 32-bit integer. For example</p>
-				<source>shoeSize= int; Shoe size</source>
-				<p>If the int can have a limited number of values, it can be described as
-					follows</p>
-				<source>gender = int{ "Male" = 10, "Female" = 20 }</source>
-				<p>This will help the presentation layer to present a suitable input control such as:</p>
-
-				<ihtml>
-    	<![CDATA[<select> 
+    		<p>Current Java implementation finds the data definition files as follows: <!-- Put this inside notelist! --><!-- FIXME: is this still correct? Bug 602 --></p>
+    		<ul> <!-- Need to change <ul> to <ul class="notelist" -->
+      			<li>the designated file extension is <code>.mdd</code> (Makumba Data Definition)</li>
+      			<li>relative to CLASSPATH (e.g. <code>classes/best/Student.mdd</code>)</li>
+      			<li>in a directory called "<strong>dataDefinitions/</strong>" in the CLASSPATH (e.g. <source>classes/dataDefinitions/best/Student.mdd</source>)</li>
+      			<li>OLDSTYLE: if no mdd file is present, the no-extension file (i.e. best/Student) is looked
+      			up</li>
+    		</ul>
+    		
+    	<p><strong>Data objects (records)</strong> are stored in <strong>databases</strong>.</p>
+    	<p>The actual implementation of the database is not part of this specification but implementation suggestions
+    	will be made. <strong>Data can be copied and/or replicated between different databases</strong>, even between different DB
+    	engine types.</p>
+    	<note>Replication is not yet implemented, but the design is prepared for it. Copying
+    	works.</note>
+      </section>
+      
+      <section id="Fields"><title>Fields</title>
+      	    
+    	<p>Every data definition file contains <strong>field definitions</strong>, separated by newline.</p>
+    	<p>A field definition looks like:</p>
+    	<source><strong>fieldname= [attributes] fieldtype [parameters] [; description]</strong></source>
+    	
+    	<note>default values are supported internally, but not by the mdd parser</note>
+    	
+    	<p>As an implementation guideline, field names tend to stay approximately the same 
+    	in:</p> <!-- Put this <p> inside the list -->
+    	<ul class ="internalnote">
+      	<li>http requests</li>
+      	<li>Record instances (<a href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/Dictionary.html">java.util.Dictionary</a> in the current Java API)</li>
+      	<li>database columns</li>
+      	<li>etc</li>
+    	</ul>
+    	
+    	<p>(Automatic labeling: The field description might be used at interface levels to present that
+    	field. It is typically shown at the left of, or somewhere near to, the input control (text box, radio button,
+    	chooser, etc) that allows for data input in that field. If a field description is not present, its field name stands
+    	for its description by default.)</p>
+    	<p><strong>Comment lines</strong> can be inserted in the data definition files as follows:</p>
+    	<source><strong>#</strong> <em>your comment...</em></source>
+      </section>
+     
+      <section id="DefaultFields"><title>Default fields</title>
+  
+   	 	<p>Every datatype has some additional fields by default, as follows:</p>
+    	<ul>
+      	<li>Primary Key field, consisting of two parts [DBSV with 8 bits | UID with 24 bits]:
+      	<ul>
+        	<li>Database identifier (DBSV). It is unique (within the webapp) per database. All objects created thru
+        	that webapp and in that database get the same value. It is set by property dbsv in the database config file.</li>
+        	<li>Object identifier (UID): unique id for the object in the given database.</li>
+      	</ul>
+      	<br/>
+      	This combination ensures that no two objects of one type have the same primary key field. See <a
+        	href="SQL-drivers.html#ConfigProperties">how to configure</a> this.<br/>
+      	The name of the primary key field is the same with the last part of the type name. If another field by that name
+      	is defined by the makumba user, this field will be renamed in the database.</li>
+      	<li>Object creation time
+      	<note>Can be accessed as TS_create.</note>
+      	</li>
+      	<li>Last modification time. Updates whenever the object is changed. The initicial value is TS_create.
+      	<note>Can be accessed as TS_modify.</note>
+      	</li>
+    	</ul>
+      </section>
+      
+     <section id="SimpleFieldTypes"><title>Simple field types</title>
+        <section id="int"><title>int</title>
+         
+    	<p>A 32-bit integer. For example</p>
+    	<source>shoeSize= int; Shoe size<br/></source>
+    	<p>If the int can have a limited number of values, it can be described as follows</p>
+    	<source>gender= int{ "male"=0, "female"=1 }; Sex<br/></source>
+    	<p>This will help the presentation layer to present a suitable input control (e.g.</p> 
+      
+      <!-- FIXME
+    	<select>
       	<option value="0">male</option>
       	<option value="1">female</option>
-    	</select> ]]>
-				</ihtml>
-
-				<note>"deprecated" can be used in this way to denote a deprecated option:<br/>
-					userType = int{"type1"=10, "type2"=10,"old"=0 deprecated}</note>
-				<note class="internal">In the present implementation, this type is called "intEnum"
-					internally.<br/> Negative numbers are supported (e.g. int { "aa"=5, "bb"=2,
-					"cc"=-10}).</note>
-			</section>
-
-			<section id="real">
-				<title>real</title>
-				<!-- http://bugs.best.eu.org/show_bug.cgi?id=430 -->
-				<!-- http://java.sun.com/j2se/1.4.2/docs/api/java/lang/Double.html -->
-				<p>A real number with double precision with
-						(2-2<sup>-52</sup>)&middot;2<sup>1023</sup> as max value and
-						2<sup>-1074</sup> as min value. For example:</p>
-				<source>turnover = real; turnover of the company</source>
-			</section>
-
-			<section id="char">
-				<title>char</title>
-				<p>A char field contains a number of characters. Maximal width must be specified and
-					is limited to 255. <em class="future">(Optionally a minimal number of characters
-						(lesser than max) can be indicated).</em> Both must be positive integers.
-					For example:</p>
-				<source>
-<![CDATA[fieldName= char[maxWidth]
-name= unique char[80];]]></source>
-				<p><code>unique</code> is a <a href="#FieldAttributes"
-						>field attribute</a>, explained below.</p>
-				<note>Pay close attention to the character set (charset) for encoding the
-					characters. In Java the charset is Unicode, but the JSP/HTML pages have their
-					own encoding settings, as well as the database, etc.</note>
-
-			</section>
-
-			<section id="boolean">
-				<title>boolean</title>
-				<p>A boolean, that can take as values true or false. For example:</p>
-				<source>
-<![CDATA[currentlyEmployed= true; whether this employee is currently employed]]></source>
-			</section>
-
-			<section id="text">
-				<title>text</title>
-
-				<p>An unlimited-length string of characters. This type is designed to accommodate
-					large text content. It is implemented with LONGTEXT or its counterparts,
-					depending on the underlying DB engine. The text data-type is ready for accepting
-					data in UTF-8 encoding.</p>
-				<source>
-<![CDATA[description=text ; Description of the project ]]></source>
-			</section>
-
-			<section id="binary">
-				<title>binary</title>
-
-				<p>An unlimited-length field designed for binary content. In contrast to the
-						<code>text</code> data type, binary will always be of 8 bit length. It is
-					implemented with LONGTEXT or its counterparts, depending on the underlying DB
-					engine. This type is meant for storing only raw binary data, for storing files
-					along with meta-data like a file name, content type, etc., you should rather use
-					the <a href="#file">file data type</a>.</p>
-				<source>
-					<![CDATA[signature= binary ; a binary digital signature ]]></source>
-			</section>
-
-			<section id="date">
-				<title>date</title>
-
-				<p>A date and/or time.</p>
-				<source>
-<![CDATA[birthdate = date; Date of birth
-arrivalTime = date; Arrival time]]></source>
-				<!-- FIXME. (fred, 2003-10-13) bug 606
+    	</select>
+      -->
+      
+    	<note>"deprecated" can be used in this way to denote a deprecated option:<br/>
+    	userType = int{"type1"=10, "type2"=10,"old"=0 deprecated}</note>
+    	<note class="internal">In the present implementation, this type is called "intEnum" internally.<br/>
+    	Negative numbers are supported (e.g. int { "aa"=5, "bb"=2, "cc"=-10}).</note>
+        </section>
+        
+        <section id="real"><title>real</title>
+            <!-- http://bugs.best.eu.org/show_bug.cgi?id=430 --> <!-- http://java.sun.com/j2se/1.4.2/docs/api/java/lang/Double.html -->
+    	<p>A real number with double precision with (2-2<sup>-52</sup>)&middot;2<sup>1023</sup> as max value and 2<sup>-1074</sup>
+    	as min value. For example:</p>
+    	<source>high= real; high of a person</source>
+        </section>
+        
+        <section id="char"><title>char</title>
+            <p>A char field contains a number of characters. Maximal width must be specified and is limited to 255. 
+            <em class="future">(Optionally a minimal number of characters (lesser than max) can be indicated).</em>
+            Both must be positive integers. For example:</p>
+    	<source>
+		#<em>fieldName</em>= char[<em>maxWidth</em>]<br/>name= unique char[80]; Username
+		<em class="future">password= encrypted char[6..10]; Secret password</em>
+		</source>
+    		<p>"<code>unique</code>" and "<code>encrypted</code>" are <a href="#FieldAttributes">field attributes</a>,
+    		explained below.</p>
+    		<note>Pay close attention to the character set (charset) for encoding the characters. In Java the
+    		charset is Unicode, but the JSP/HTML pages have their own encoding settings, as well as the database, etc.</note>
+        
+    		<p><strong>DEPRECATED (use int{...} instead):</strong> If the char can have a limited number of value, it can be described
+    		as follows</p>
+    		<source>gender= char{ "male", "female" }; Sex</source>
+    		<p>This will help the presentation layer to present a suitable input control (e.g. a HTML SELECT)</p>
+    		<note class="internal">in the present implementation, this type is called "charEnum" internally</note>
+        </section>
+        
+        <section id="boolean"><title>boolean</title>
+    		<p>A boolean, that can take as values true or false. For example:</p>
+    		<source>hasChildren= true; whether this person has children</source>
+        </section>
+        
+        <section id="text"><title>text</title>
+        
+    	<p>An unlimited-length string of characters. This type is designed to accommodate large text content. It is implemented with LONGTEXT or its
+    	counterparts, depending on the underlying DB engine. The text data-type is ready for accepting data in UTF-8 encoding.</p>
+    	<source>application= text ; Application letter<br/>description=text  ; Description of object</source>
+        </section>
+        
+        <section id="binary"><title>binary</title>
+        
+    	<p>An unlimited-length field designed for binary content. In contrast to the <code>text</code> data type, binary will always be of 8 bit
+    	length. It is implemented with LONGTEXT or its counterparts, depending on the underlying DB engine. This type is meant for storing only raw binary
+    	data, for storing files along with meta-data like a file name, content type, etc., you should rather use the <a href="#file">file data type</a>.</p>
+    	<source>singature= binary    ; a binary digital signature</source>
+        </section>
+        
+        <section id="date"><title>date</title>
+         
+    	<p>A date and/or time.</p>
+    	<source>birthdate= date; Date of birth<br/>arrivalTime= date; Arrival time<br/></source> <!-- FIXME. (fred, 2003-10-13) bug 606
 
     	 Should there be a warning about "time".
 
@@ -199,136 +167,285 @@ arrivalTime = date; Arrival time]]></source>
      	values. So comparison as "time" < 9am or so is not possible?
 
          -->
-			</section>
+        </section>
+     </section>
+
+
+      <section id="StructuralTypes"><title>Structural (relational) types</title>
+        
+        <section id="ptr"><title>ptr</title>
+      
+    	<p>Pointers define a reference to an object of a certain type. For example</p>
+    	<source>citizenship= ptr general.Country; Citizenship<br/></source>
+    	<note class="future">the <code>ptr</code> keyword might be ommitted in future parsers</note>
+    	<p>The type can be defined on-the-spot for a single usage. For example</p>
+    	<source>addres= ptr ; Address<br/>address-&gt;street= char[80]; Street<br/>address-&gt;number= int; Number<br/></source>
+    	<note>The main difference between sets of external types and internal sets is that when the host
+    	object (e.g. Person.mdd that has the above field "address") is deleted from the database (DB), also all elements of
+    	the set (addresses) are deleted automatically, so there is no orphans (addresses) in the DB. Elements (addresses) of
+    	an internal set of some host object (Person X) also can't be used in a set of some other host object (Company Y).</note>
+
+    	<!-- FIXME. Is there any relevance to this? bug 607 -->
+    	<note class="future">future parsers might read this:<br/>
+      <code>address= ptr{
+      street= char[80]; Street
+      number= int; Number}; address
+      </code>
+    	</note>
+    	<note class="internal">this type is known internally as ptrOne</note>
+        </section>
+        
+        <section id="set"><title>set</title>
+	        
+	    <p>Sets define a number of references to multiple objects of a certain type. For example:</p>
+	    <source>language= set general.Language; Spoken languages<br/></source>
+	    <p>This type accomodates sets, bags and lists. The set and list constraints (sets have to contain only one
+	    element of a certain value and lists have to be ordered) have to be cared for by the programmer. Lists are easy to
+	    represent, just having an integer field, for the order.</p>
+	    <p>The type which the set is made of can be defined on the spot:</p>
+	    <source>addresses= set; Addresses<br/>  addresses-&gt;street= char[80]; Street<br/>  addresses-&gt; number= int; Number<br/></source>
+	    <note class="future">the future parser might recognize this form:<br/>
+      <code>
+      addresses: set{
+      street: char[80]; Street
+      number: int; Number }; Addresses</code>
+	    </note>
+	    <note class="internal">this type is known internally as setComplex</note>
+	    <p>The set can contain enumerated int values :</p>
+	    <source>place= set int {"home"=1, "away"=0} ; Home or away<br/></source>
+	    <note class="internal">this is currently known internally as setintEnum</note>
+	    <p><strong>DEPRECATED:</strong> The set can contain enumerated char values :</p>
+	    <source>place= set char {"home", "away"} ; Home or away<br/></source>
+	    <note>It means that place is a set that can take only the "home" and "away" values.</note>
+	    <note class="internals">This is currently known internally as setcharEnum</note>
+        
+        </section>
+        
+        <section id="file"><title>file</title>
+       
+	    <p>A file data-type is a kind-of record containing several fields needed when wanting to store files. These fields are:</p>
+	    <ul>
+	      <li>content (<a href="#binary">binary</a>): the actual binary data of the file.</li>
+	      <li>name (<a href="#char">char</a>): the file name.</li>
+	      <li>originalName (<a href="#char">char</a>): the original file name.</li>
+	      <li>contentType (<a href="#char">char</a>): the MIME content-type of the file.</li>
+	      <li>contentLength (<a href="#int">int</a>): the content length in byte.</li>
+	      <li>imageWidth (<a href="#int">int</a>): (only for images) the image width.</li>
+	      <li>imageHeight (<a href="#int">int</a>): (only for images) the image height.</li>
+	    </ul>
+	    <source>image= file    ; Picture attachment</source>
+	    <p>All fields are automatically set by Makumba, all needed to do is to make a &lt;mak:input&gt; on the field name.</p>
+	    <p>This type should be used in favour of the <a href="#binary">binary data type</a> when you don't want to store only the raw binary data, but
+	    also meta-data as in the fields above.</p>
+        
+        </section>
+     </section>
+
+
+      <section id="MacroTypes"><title>Macro types</title>
+       
+	    <p>A name can be defined for a more complex type and it can be reused in the file. This can be done with a !type
+	    directive</p>
+	    <source>!type.yesno= int{"yes"=1, "no"=0}<br/>!type.rank= int{"neutral"=0, "very good"=5, "very bad"=-5}<br/>married=yesno<br/>happyInLife=rank<br/></source>
+      </section>
+      
+      <section id="FieldAttributes"><title>Field attributes</title>
+	    <ul>
+	      <li><strong>fixed</strong> fields can only set during the record's insertion in the database. The subsequent updates
+	      will not update the field</li>
+	      <li><strong>not null</strong> fields will produce a exception if an attempt is made to insert/update without them being
+	      initialized</li>
+	      <li><strong>unique</strong> fields have a unique value in the respective object, for the respective type</li>
+	      <li class="future"><strong>(encrypted</strong> fields are encrypted when written to the database and decrypted when
+	      read)</li>
+	    </ul>
+      </section>
+      
+      <section id="ObjectTitle"><title>Object title</title>
+         
+	    <note>The object title is used for <em>set</em> and <em>ptr</em> choosers</note>
+	    <p>One of the fields is always the <em>object title</em>, and is normally presented differently from other fields
+	    in user interface. For example, when you have a field that is a set and you use a <em>mak:input</em> on that field,
+	    Makumba will automatically create a list with all the items in the set and it will use the <em>object title</em> to
+	    know what field to display. The default is the field called "name" if that exists, otherwise it is the first
+	    non-pointer field in the record description. If another field needs to be title, it can be specified like</p>
+	    <source>!title=gender</source>
+	    <note>for the on-the spot types in the current implementation, the following notation works:<br/> <code>
+	    address-&gt;!title= street</code></note>
+      </section>
+      
+      <section id="Include"><title>Include mechanism</title>
+         
+	    <p>A record description can include text from one or more files. This is declared as</p>
+	    <source>!include=name_of_included_type<br/></source>
+	    <p>The included file has the idd extension and is found in a similar way like the data definitions.</p>
+	    <p>The included file is inserted instead of the !include line. There can be more include lines in a record
+	    description file. If a field is defined that exists also in the included metadata, the defined field takes
+	    precedence. If</p>
+	    <source>fieldname=<br/></source>
+	    <p>it means that it does not actually exist. this can be used to cancel an included field.</p>
+	    <note class="future">include might be replaced by more advanced concepts such as inheritance and type
+	    inclusion (rather than reference in foreign table)</note>
+      </section>
+      
+    <section id="validation"><title>Validation Rules</title>
+      	<p>Validation rules are defined inside a data definition, and allow Makumba to automatically validated form data
+    	input.</p>
+    	<p>The general syntax of a validation rule definition is as follows:</p>
+    	<source>[validation rule name] : [validation rule] : [error message]</source> 
+       
+       <section id="validation_rules_name"><title>Validation rule names</title>
+	    <p>The validation rule name is an identifier which should be unique. The exact usage is not yet specified, but
+	    it could be used in the future to centralise error messages or provide translations into other languages, etc.</p>
+       </section>  
+        
+       <section id="validationRules"><title>Validation rule</title>
+	    <p>The validation rule specifies what should be validated, and can be one of the following</p>
+	    <source>[range validation | string length | regular expression | comparison]</source>
+        
+        <section id="range"><title><strong>Number range rule</strong></title>
+	     <p>The range definition rule applies for <code>Number</code> types, i.e. <em>int</em> and <em>real</em>. The
+	    [validation rule] is defined as:</p>
+	    <source>[fieldName]%range = [1..10]</source>
+	    <p>Using <code>?</code> allows to keep one parameter unbound, which will default to java.lang.Integer.MIN_VALUE
+	    and java.lang.Integer.MAX_VALUE, respectively, i.e. +/- 2<sup>31</sup>-1.</p>
+	    <p>To require that the age needs to be between 12 and 99:</p>
+	    <source>age%range = [12..99] : Age must be between 12 and 99!</source>
+	    <p>To define that we need to be at least 5 year old, but without any upper limit:</p>
+	    <source>age%range = [5..?] : Age must be at least 5!</source>
+        </section>
+        
+        <section id="stringLength"><title>String length rule</title>
+          <p>The length definition rule is very similar to the range definition, but applies for <code>string</code> types, i.e. <code>char</code> and text.
+	    The [validation rule] is defined as:</p>
+	    <source>[fieldName]%length = [1..10]</source>
+	    <p>Using <code>?</code> allows to keep one parameter unbound, which will default to a minimum length of 0 and a
+	    maxium length of 255</p>
+	    <p>To define that the CV needs to be at least 100 characters, define:</p>
+	    <source>cv%length = [100..?] : CV must be of decent length!</source>
+        </section>
+        
+        <section id="regexp"><title>Regular expression rule</title>
+         
+	    <p>The string regular expression rule applies for <code>string</code> types, primarily for <code>char</code>,
+	    but also for text. The [validation rule] is defined as:</p>
+	    <source>[fieldName]%matches = <em>regular expression</em></source>
+	    <p>Regular expressions must be valid regular expressions in Java, for more details please refer to the <a
+	      href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/regex/Pattern.html">specification</a> and <a
+	      href="http://java.sun.com/docs/books/tutorial/essential/regex/">tutorial</a>.</p>
+	    <p>To compare if a field contains a valid e-mail address, define:</p>
+	    <source>email%matches = .+@.+\.[a-z]+ : Email address is not valid!</source>
+        </section>
+        
+        <section id="comparison"><title>Comparison rule</title>
+         
+	    <p>This rule allows to compare a field to a constant value or simple function calls.</p>
+	    <p>The following constants are currently available:</p>
+	    <table>
+	      <tr>
+	        <th>Constants</th>
+	        <th>Description</th>
+	        <th>Valid</th>
+	      </tr>
+	      <tr>
+	        <td>$now</td>
+	        <td>The current date and time.</td>
+	        <td rowspan="2"><code>date</code> types</td>
+	      </tr>
+	      <tr>
+	        <td>$today</td>
+	        <td>The current date, time set to 00:00.</td>
+	      </tr>
+	    </table>
+	    
+	    <p>The following functions are currently available:</p>
+	    <table>
+	      <tr>
+	        <th>Function</th>
+	        <th>Description</th>
+	        <th>Valid</th>
+	      </tr>
+	      <tr>
+	        <td>$date(.., .., .., .., .., ..)</td>
+	        <td>Constructs a date.<br/>
+	        The function takes up to six arguments, for day, month, year, hours, minutes and seconds. If less than six
+	        arguments are passed, the missing values will be automatically set to the current date.<br/>
+	        $now is available as a constant for the current date value, and + and - operators can be used to modify that
+	        value. e.g. <source>date($now,$now,$now - 5)</source> evaluates as the current date 5 years
+	        ago.</td>
+	        <td><code>date</code> types</td>
+	      </tr>
+	      <tr>
+	        <td>lower(..)</td>
+	        <td>Converts a string to lower case.</td>
+	        <td rowspan="2"><code>String</code>, i.e. 'char' and 'text' types</td>
+	      </tr>
+	      <tr>
+	        <td>upper(..)</td>
+	        <td>Converts a string to upper case.</td>
+	      </tr>
+	    </table>
+	    
+	    <p>Valid comparison operators are the ones defined in Java:</p>
+	    <table>
+	      <tr>
+	        <th>Operator</th>
+	        <th>Meaning</th>
+	      </tr>
+	      <tr>
+	        <td>==</td>
+	        <td>equal</td>
+	      </tr>
+	      <tr>
+	        <td>!=</td>
+	        <td>not equal</td>
+	      </tr>
+	      <tr>
+	        <td>&lt;</td>
+	        <td>less than</td>
+	      </tr>
+	      <tr>
+	        <td>&gt;</td>
+	        <td>less than</td>
+	      </tr>
+	      <tr>
+	        <td>=&lt;</td>
+	        <td>less than or equal</td>
+	      </tr>
+	      <tr>
+	        <td>&gt;=</td>
+	        <td>greater than or equal</td>
+	      </tr>
+	    </table>
+	
+	    <p>To compare if someone is at least 15 years old, define the following validation rule:</p>
+	    <source>minimumAge%compare = birthdate >= date($now,$now,$now - 15) : You have to be at least 15 years old!</source>
+	
+	    <p>To ensure that a field doesn't contain only lower-case values, define this rule:</p>
+	    <source>nameNotAllLower%compare = lower(name) != name : Your name must not contain only lower-case letters!</source>
+	
+	    <p>Two fields can be compared in a similar way</p>
+	    <source>graduationCheck%compare = birthdate %lt; graduationDate : You cannot finish school before your birthdate!</source>
+        </section>
+        
+        <section id="multiFielUnique"><title>Multi-field uniqueness definition</title>
+      
+	    <p>Similar to the <a href="#FieldAttributes"><em>unique</em> field attribute</a>, you can also define multi-field
+	    uniqueness contraints. These constraints can even span over several data definitions, if they are related via
+	    pointers.</p>
+	
+	    <p>Multi-field uniqueness can be defined as follows</p>
+	    <source>uniqueAgeEmail%unique = age, email : the combination of age and email must be unique! </source>
+	    	
+	    <note class="internal">If the fields are in the same data definition, the uniqueness definition will
+	    translate into a database level multi-field key and uniqueness will be enforced there.<br/>
+	    Otherwise, Makumba will issue a query checking the uniqueness before new or edit operations.</note>
+        </section>
+      </section>
+   </section>
+		
+		<section id="errormessage"><title>Error message</title>
+		<p>The error message that will be displayed if the validation fails.</p>
 		</section>
-
-
-		<section id="StructuralTypes">
-			<title>Structural (relational) types</title>
-
-			<section id="ptr">
-				<title>ptr</title>
-
-				<p>Pointers define a reference to an object of a certain type. For example</p>
-				<source><![CDATA[manager = ptr company.Employee; The manager of the department]]></source>
-				</section>
-
-			<section id="set">
-				<title>set</title>
-
-				<p>Sets define a number of references to multiple objects of a certain type. For
-					example:</p>
-				<source>
-<![CDATA[suppliers= set company.Company; Suppliers of this company]]></source>
-				<p>This type accomodates sets, bags and lists. The set and list constraints (sets
-					have to contain only one element of a certain value and lists have to be
-					ordered) have to be cared for by the programmer. Lists are easy to represent,
-					just having an integer field, for the order.</p>
-				<p>The type which the set is made of can be defined on the spot:</p>
-				<source>
-<![CDATA[projects = set
-projects->project = ptr company.Project
-projects->timePercentage = int ;percentage assigned]]></source>
-				<note>The main difference between sets of external types and internal sets is that
-					when the host object (e.g. Employee.mdd that has the above field "address") is
-					deleted from the database (DB), also all elements of the set (addresses) are
-					deleted automatically, so there is no orphans (addresses) in the DB. Elements
-					(addresses) of an internal set of some host object (Person X) also can't be used
-					in a set of some other host object (Company Y).</note>
-				<note class="internal">This type is known internally as setComplex</note>
-				<p>The set can contain enumerated int values :</p>
-				<source>
-<![CDATA[ place= set int {"home"=1, "away"=0} ; Home or away ]]></source>
-				<note class="internal">This is currently known internally as setintEnum</note>
-				
-			</section>
-
-			<section id="file">
-				<title>file</title>
-
-				<p>A file data-type is a kind-of record containing several fields needed when
-					wanting to store files. These fields are:</p>
-				<ul>
-					<li>content (<a href="#binary">binary</a>): the actual binary data of the
-						file.</li>
-					<li>name (<a href="#char">char</a>): the file name.</li>
-					<li>originalName (<a href="#char">char</a>): the original file name.</li>
-					<li>contentType (<a href="#char">char</a>): the MIME content-type of the
-						file.</li>
-					<li>contentLength (<a href="#int">int</a>): the content length in byte.</li>
-					<li>imageWidth (<a href="#int">int</a>): (only for images) the image width.</li>
-					<li>imageHeight (<a href="#int">int</a>): (only for images) the image
-						height.</li>
-				</ul>
-				<source>
-<![CDATA[ logo = file ; Picture attachment ]]></source>
-				<p>All fields are automatically set by Makumba, all needed to do is to make a
-					&lt;mak:input&gt; on the field name.</p>
-				<p>This type should be used in favour of the <a href="#binary">binary data type</a>
-					when you don't want to store only the raw binary data, but also meta-data as in
-					the fields above.</p>
-
-			</section>
-		</section>
-
-
-		<section id="MacroTypes">
-			<title>Macro types</title>
-
-			<p>A name can be defined for a more complex type and it can be reused in the file. This
-				can be done with a !type directive</p>
-			<source>
-<![CDATA[!type.rank = int{"Neutral"=0, "Very good"=5, "Very bad"=-5}
-
-happyInLife = rank]]></source>
-		</section>
-
-		<section id="FieldAttributes">
-			<title>Field attributes</title>
-			<ul>
-				<li><strong>fixed</strong> fields can only set during the record's insertion in the
-					database. The subsequent updates will not update the field</li>
-				<li><strong>not null</strong> fields will produce a exception if an attempt is made
-					to insert/update without them being initialized</li>
-				<li><strong>unique</strong> fields have a unique value in the respective object, for
-					the respective type</li>
-			</ul>
-		</section>
-
-		<section id="ObjectTitle">
-			<title>Object title</title>
-
-			<note>The object title is used for <em>set</em> and <em>ptr</em> choosers</note>
-			<p>One of the fields is always the <em>object title</em>, and is normally presented
-				differently from other fields in user interface. For example, when you have a field
-				that is a set and you use a <em>mak:input</em> on that field, Makumba will
-				automatically create a list with all the items in the set and it will use the
-					<em>object title</em> to know what field to display. The default is the field
-				called "name" if that exists, otherwise it is the first non-pointer field in the
-				record description. If another field needs to be title, it can be specified like</p>
-			<source>!title=gender</source>
-			<note>for the on-the spot types in the current implementation, the following notation works:<br/>
-				<code> address-&gt;!title= street</code></note>
-		</section>
-
-		<section id="Include">
-			<title>Include mechanism</title>
-
-			<p>A record description can include text from one or more files. This is declared as</p>
-			<source>
-<![CDATA[!include=name_of_included_type ]]></source>
-			<p>The included file has the idd extension and is found in a similar way like the data
-				definitions.</p>
-			<p>The included file is inserted instead of the !include line. There can be more include
-				lines in a record description file. If a field is defined that exists also in the
-				included metadata, the defined field takes precedence. If</p>
-			<source>
-<![CDATA[fieldname =]]></source>
-			<p>it means that it does not actually exist. This can be used to cancel an included
-				field.</p>
-			<note class="future">Include might be replaced by more advanced concepts such as
-				inheritance and type inclusion (rather than reference in foreign table)</note>
-		</section>
-
-	</body>
+</body>
 </document>

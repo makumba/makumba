@@ -91,7 +91,7 @@ MakumbaValidate.Uniqueness = function(value, paramsObj, e, elem) {
     var table = (paramsObj.table) || "";
     var field = (paramsObj.field) || "";
     
-    new Ajax.Request("_UNIQUENESS_SERVLET_PATH_/?table="+encodeURIComponent(table)+"&field="+encodeURIComponent(field)+"&value="+encodeURIComponent(value), 
+    new Ajax.Request("_CONTEXT_PATH_/makumbaUnique/?table="+encodeURIComponent(table)+"&field="+encodeURIComponent(field)+"&value="+encodeURIComponent(value), 
     { 
     	method:'get',
     	onSuccess: function(transport)

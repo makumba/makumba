@@ -34,10 +34,10 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Vector;
 
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
-import org.makumba.CompositeValidationException;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
@@ -79,14 +79,12 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 
     // TODO adapt setIntEnum and setCharEnum in FieldDefinition
     public static FieldInfo getFieldInfo(String name, Object type, boolean typeSearch) {
-        if (type instanceof FieldInfo) {
+        if (type instanceof FieldInfo)
             return new FieldInfo(name, (FieldInfo) type);
-        }
         String t = ((String) type).trim();
 
-        if (!typeSearch || t.indexOf(" ") == -1) {
+        if (!typeSearch || t.indexOf(" ") == -1)
             return new FieldInfo(name, t);
-        }
 
         t = name + "=" + t;
 
@@ -149,14 +147,13 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
             notNull = false;
             notEmpty = false;
             unique = false;
-            if (type.equals("char")) {
+            if (type.equals("char"))
                 extra2 = new Integer(255);
-            } else if (type.startsWith("char")) {
+            else if (type.startsWith("char")) {
                 int n = type.indexOf("[");
                 int m = type.indexOf("]");
-                if (!type.endsWith("]") || type.substring(3, n).trim().length() > 1) {
+                if (!type.endsWith("]") || type.substring(3, n).trim().length() > 1)
                     throw new InvalidValueException("invalid char type " + type);
-                }
 
                 extra2 = new Integer(Integer.parseInt(type.substring(n + 1, m)));
                 type = "char";
@@ -268,7 +265,6 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     String description;
 
     // those fields are only used by some types
-    // FIXME: make specific, typed fields instead of those generic ones, which are really hard to understand!
     Object extra1, extra2, extra3;
 
     private Hashtable<String, ValidationRule> validationRules = new Hashtable<String, ValidationRule>();
@@ -286,9 +282,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     // Original from FieldHandler
     /** check if the value can be assigned */
     public Object base_checkValue(Object value) {
-        if (!value.equals(getNull())) {
+        if (!value.equals(getNull()))
             return checkValueImpl(value);
-        }
         return value;
     }
 
@@ -298,54 +293,45 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
             // may be just an Integer
             Object o = getEnum().checkValue(value);
             Vector<Object> v = new Vector<Object>();
-            if (o != null && o instanceof Integer) {
+            if (o != null && o instanceof Integer)
                 v.addElement(o);
-            }
             return v;
         } catch (org.makumba.InvalidValueException ive) {
         }
 
         normalCheck(value);
-        Vector v = (Vector) value;
+        Vector<Object> v = (Vector) value;
 
         for (int i = 0; i < v.size(); i++) {
-            if (v.elementAt(i) == null || v.elementAt(i).equals(org.makumba.Pointer.NullInteger)) {
+            if (v.elementAt(i) == null || v.elementAt(i).equals(org.makumba.Pointer.NullInteger))
                 throw new org.makumba.InvalidValueException(this, "set members cannot be null");
-            }
             v.setElementAt(getEnum().checkValue(v.elementAt(i)), i);
         }
         return v;
     }
 
     /** check if the value can be assigned */
-    public void checkInsert(Dictionary<String, Object> d) {
+    public void checkInsert(Dictionary d) {
         Object o = d.get(getName());
         if (isNotNull() && (o == null || o.equals(getNull()))) {
-            // FIXME: call this in RecordEditor.readFrom, to have more possible exceptions gathered at once
-            throw new CompositeValidationException(new InvalidValueException(this, ERROR_NOT_NULL));
+            throw new org.makumba.InvalidValueException(this, ERROR_NOT_NULL);
         } else if (isNotEmpty() && StringUtils.isEmpty(o)) {
-            // FIXME: call this in RecordEditor.readFrom, to have more possible exceptions gathered at once
-            throw new CompositeValidationException(new InvalidValueException(this, ERROR_NOT_EMPTY));
+            throw new org.makumba.InvalidValueException(this, ERROR_NOT_EMPTY);
         }
-        if (o != null) {
+        if (o != null)
             d.put(getName(), checkValue(o));
-        }
     }
 
     /** check if the value can be assigned */
-    public void checkUpdate(Dictionary<String, Object> d) {
+    public void checkUpdate(Dictionary d) {
         Object o = d.get(getName());
         if (isNotEmpty() && StringUtils.isEmpty(o)) {
-         // FIXME: call this in RecordEditor.readFrom, to have more possible exceptions gathered at once
-            throw new CompositeValidationException(new InvalidValueException(this, ERROR_NOT_EMPTY));
+            throw new org.makumba.InvalidValueException(this, ERROR_NOT_EMPTY);
         }
-        if (o == null) {
+        if (o == null)
             return;
-        }
-        if (isFixed()) {
-         // FIXME: call this in RecordEditor.readFrom, to have more possible exceptions gathered at once
-            throw new CompositeValidationException(new InvalidValueException(this, "You cannot update a fixed field"));
-        }
+        if (isFixed())
+            throw new org.makumba.InvalidValueException(this, "You cannot update a fixed field");
         d.put(getName(), checkValue(o));
     }
 
@@ -354,7 +340,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
      * 
      * @return <code>Vector</code>, or <code>null</code> if called on other types
      */
-    public Vector<String> getDeprecatedValues() {
+    public Vector getDeprecatedValues() {
         switch (getIntegerType()) {
             case FieldDefinition._intEnum:
                 return get_intEnum_DeprecatedValues();
@@ -364,8 +350,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     }
 
     // moved from intEnumHandler
-    public Vector<String> get_intEnum_DeprecatedValues() {
-        return (Vector<String>) this.extra3;
+    public Vector get_intEnum_DeprecatedValues() {
+        return (Vector) this.extra3;
     }
 
     /**
@@ -470,12 +456,10 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
      * returns field's description, if present. If not present (null or "") it returns field name.
      */
     public String getDescription() {
-        if (description == null) {
+        if (description == null)
             return name;
-        }
-        if (description.trim().equals("")) {
+        if (description.trim().equals(""))
             return name;
-        }
         return description;
     }
 
@@ -591,9 +575,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 
     /** returns the default value of this field */
     public Object getDefaultValue() {
-        if (defaultValue == null) {
+        if (defaultValue == null)
             return getEmptyValue();
-        }
         return defaultValue;
     }
 
@@ -616,14 +599,14 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     /**
      * works only for intEnum, charEnum, setintEnum, setcharEnum types
      */
-    public Enumeration<String> getNames() {
+    public Enumeration getNames() {
         switch (getIntegerType()) {
             case FieldDefinition._charEnum:
             case FieldDefinition._intEnum:
-                return ((Vector<String>) this.extra2).elements();
+                return ((Vector) this.extra2).elements();
             case FieldDefinition._setCharEnum:
             case FieldDefinition._setIntEnum:
-                return ((Vector<String>) getEnum().extra2).elements();
+                return ((Vector) getEnum().extra2).elements();
             default:
                 throw new RuntimeException("Shouldn't be here");
         }
@@ -675,13 +658,11 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 
     // moved from intEnumHandler
     public String get_intEnum_NameFor(int n) {
-        Vector<String> names = (Vector<String>) this.extra2;
-        Vector<?> values = (Vector<?>) this.extra1;
-        for (int i = 0; i < values.size(); i++) {
-            if (values.elementAt(i).equals(n)) {
-                return names.elementAt(i);
-            }
-        }
+        Vector names = (Vector) this.extra2;
+        Vector values = (Vector) this.extra1;
+        for (int i = 0; i < values.size(); i++)
+            if (values.elementAt(i).equals(new Integer(n)))
+                return (String) names.elementAt(i);
         throw new org.makumba.InvalidValueException(this, "Can't find a name for " + n + " in " + values
                 + " with names " + names);
     }
@@ -692,13 +673,13 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     public String getNameAt(int i) {
         switch (getIntegerType()) {
             case FieldDefinition._charEnum:
-                return (String) ((Vector<String>) this.extra1).elementAt(i);
+                return (String) ((Vector) this.extra1).elementAt(i);
             case FieldDefinition._intEnum:
-                return (String) ((Vector<String>) this.extra2).elementAt(i);
+                return (String) ((Vector) this.extra2).elementAt(i);
             case FieldDefinition._setCharEnum:
-                return (String) ((Vector<String>) getEnum().extra1).elementAt(i);
+                return (String) ((Vector) getEnum().extra1).elementAt(i);
             case FieldDefinition._setIntEnum:
-                return (String) ((Vector<String>) getEnum().extra2).elementAt(i);
+                return (String) ((Vector) getEnum().extra2).elementAt(i);
             default:
                 throw new RuntimeException("Shouldn't be here");
         }
@@ -816,10 +797,9 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     public Object check_char_ValueImpl(Object value) {
         normalCheck(value);
         String s = (String) value;
-        if (s.length() > getWidth()) {
+        if (s.length() > getWidth())
             throw new InvalidValueException(this, "String too long for char[] field. Maximum width: " + getWidth()
                     + " given width " + s.length() + ".\n\tGiven value <" + s + ">");
-        }
         return value;
     }
 
@@ -829,11 +809,9 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 
         Vector names = (Vector) this.extra1;
 
-        for (int i = 0; i < names.size(); i++) {
-            if (names.elementAt(i).equals(value)) {
+        for (int i = 0; i < names.size(); i++)
+            if (names.elementAt(i).equals(value))
                 return value;
-            }
-        }
         throw new org.makumba.InvalidValueException(this, "value set to char enumerator (" + value
                 + ") is not a member of " + names);
     }
@@ -846,9 +824,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     // moved from intHandler
     public Object check_int_ValueImpl(Object value) {
         // we allow Integer and Long types (Long might come e.g. from JSTL <ftm:parseNumber ...> which returns a Long
-        if (!(value instanceof Integer || value instanceof Long)) {
+        if (!(value instanceof Integer || value instanceof Long))
             throw new org.makumba.InvalidValueException(this, getJavaType(), value);
-        }
         if (value instanceof Integer) {
             return value;
         } else { // if it is a Long, we convert it to an Integer
@@ -864,25 +841,20 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         Vector names = (Vector) this.extra2;
         Vector values = (Vector) this.extra1;
         if (value instanceof Integer) {
-            for (int i = 0; i < values.size(); i++) {
-                if (values.elementAt(i).equals(value)) {
+            for (int i = 0; i < values.size(); i++)
+                if (values.elementAt(i).equals(value))
                     return value;
-                }
-            }
             throw new org.makumba.InvalidValueException(this, "int value set to int enumerator (" + value
                     + ") is not a member of " + values);
         }
-        if (!(value instanceof String)) {
+        if (!(value instanceof String))
             throw new org.makumba.InvalidValueException(this,
                     "int enumerators only accept values of type Integer or String. Value supplied (" + value
                             + ") is of type " + value.getClass().getName());
-        }
 
-        for (int i = 0; i < names.size(); i++) {
-            if (names.elementAt(i).equals(value)) {
+        for (int i = 0; i < names.size(); i++)
+            if (names.elementAt(i).equals(value))
                 return values.elementAt(i);
-            }
-        }
 
         throw new org.makumba.InvalidValueException(this, "string value set to int enumerator (" + value
                 + ") is neither a member of " + names + " nor amember of " + values);
@@ -891,14 +863,12 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     // moved from ptrIndexHandler
     public Object check_ptrIndex_ValueImpl(Object value) {
         if (value instanceof Pointer) {
-            if (!((Pointer) value).getType().equals(getPointedType().getName())) {
+            if (!((Pointer) value).getType().equals(getPointedType().getName()))
                 throw new InvalidValueException(this, getPointedType().getName(), (Pointer) value);
-            }
             return value;
         }
-        if (value instanceof String) {
+        if (value instanceof String)
             return new Pointer(getPointedType().getName(), (String) value);
-        }
         throw new InvalidValueException(
                 this,
                 "Only java.lang.String and org.makumba.Pointer (or a java.util.Vector containing elements of those types) are assignable to makumba pointers, given value <"
@@ -907,9 +877,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 
     // moved from realHandler
     public Object check_real_ValueImpl(Object value) {
-        if (value instanceof Integer) {
+        if (value instanceof Integer)
             return value;
-        }
         return normalCheck(value);
     }
 
@@ -919,9 +888,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
             // may be just a pointer
             Object o = check_ptrIndex_ValueImpl(value);
             Vector<Object> v = new Vector<Object>();
-            if (o != null && o instanceof Pointer) {
+            if (o != null && o instanceof Pointer)
                 v.addElement(o);
-            }
             return v;
         } catch (org.makumba.InvalidValueException ive) {
         }
@@ -933,9 +901,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         FieldDefinition ptr = getForeignTable().getFieldDefinition(getForeignTable().getIndexPointerFieldName());
 
         for (int i = 0; i < v.size(); i++) {
-            if (v.elementAt(i) == null || v.elementAt(i).equals(org.makumba.Pointer.Null)) {
+            if (v.elementAt(i) == null || v.elementAt(i).equals(org.makumba.Pointer.Null))
                 throw new org.makumba.InvalidValueException(this, "set members cannot be null");
-            }
             try {
                 v.setElementAt(ptr.checkValue(v.elementAt(i)), i);
             } catch (org.makumba.InvalidValueException e) {
@@ -951,9 +918,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         try {
             Object o = getEnum().checkValue(value);
             Vector<Object> v = new Vector<Object>();
-            if (o != null && o instanceof String) {
+            if (o != null && o instanceof String)
                 v.addElement(o);
-            }
             return v;
         } catch (org.makumba.InvalidValueException ive) {
         }
@@ -963,9 +929,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         Vector<Object> v = (Vector) value;
 
         for (int i = 0; i < v.size(); i++) {
-            if (v.elementAt(i) == null || v.elementAt(i).equals(org.makumba.Pointer.NullString)) {
+            if (v.elementAt(i) == null || v.elementAt(i).equals(org.makumba.Pointer.NullString))
                 throw new org.makumba.InvalidValueException(this, "set members cannot be null");
-            }
             v.setElementAt(getEnum().checkValue(v.elementAt(i)), i);
         }
         return v;
@@ -1047,11 +1012,10 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 
     // moved from setHandler
     public DataDefinition get_set_ForeignTable() {
-        if (this.extra3 == null) {
+        if (this.extra3 == null) // automatic set
             return pointerToForeign().getForeignTable();
-        } else {
+        else
             return (DataDefinition) this.extra3; // manually made
-        }
     }
 
     // moved from setHandler
@@ -1075,8 +1039,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
             case FieldDefinition._set:
                 return get_set_Subtable();
             default:
-                throw new RuntimeException("Trying to get a sub-able for a '" + getType() + "' for field '" + name
-                        + "'.");
+                throw new RuntimeException("Shouldn't be here");
         }
     }
 
@@ -1141,9 +1104,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 
     // moved from ptrHandler
     public String get_ptr_TitleField() {
-        if (hasTitleFieldIndicated()) {
+        if (hasTitleFieldIndicated())
             return (String) this.extra2;
-        }
         return getForeignTable().getTitleFieldName();
     }
 
@@ -1171,9 +1133,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 
     // moved from FieldHandler
     protected Object normalCheck(Object value) {
-        if (!getJavaType().isInstance(value)) {
+        if (!getJavaType().isInstance(value))
             throw new org.makumba.InvalidValueException(this, getJavaType(), value);
-        }
         return value;
     }
 
@@ -1243,8 +1204,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 
     public void addValidationRule(Collection<ValidationRule> rules) {
         if (rules != null) {
-            for (ValidationRule validationRule : rules) {
-                addValidationRule((ValidationRule) validationRule);
+            for (Iterator<ValidationRule> iter = rules.iterator(); iter.hasNext();) {
+                addValidationRule((ValidationRule) iter.next());
             }
         }
     }

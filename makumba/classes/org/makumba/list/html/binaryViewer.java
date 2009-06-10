@@ -48,16 +48,8 @@ public class binaryViewer extends FieldViewer {
         return paramValues;
     }
 
-    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
-        static FieldFormatter singleton = new binaryViewer();
-        
-        public void release() {
-            singleton = null;
-        }
-
-        public SingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
+    private static final class SingletonHolder {
+        static final FieldFormatter singleton = new binaryViewer();
     }
 
     private binaryViewer() {
@@ -67,7 +59,7 @@ public class binaryViewer extends FieldViewer {
         return SingletonHolder.singleton;
     }
 
-    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
+    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
         Pointer pointer = ((Pointer) o);
         return "/makumbaDownload?type=" + pointer.getType() + "&value=" + pointer.toExternalForm();
     }

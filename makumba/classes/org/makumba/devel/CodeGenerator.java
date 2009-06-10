@@ -25,6 +25,7 @@ package org.makumba.devel;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -56,6 +57,20 @@ import org.makumba.providers.DataDefinitionProvider;
  * @version $Id$
  */
 public class CodeGenerator {
+    /**
+     * A filename filter for filtering template properties.
+     * 
+     * @author Rudolf Mayer
+     */
+    private static class TemplateFileFilter implements FileFilter {
+        /**
+         * accepts files that can be read and end with <code>.properties</code>.
+         */
+        public boolean accept(File fileName) {
+            return (fileName.canRead() && fileName.isFile() && fileName.getName().endsWith(".properties"));
+        }
+    }
+
     /** Mapping from a action name to the action code */
     public static Hashtable<String, String> nameToTypeMapping = new Hashtable<String, String>();
 
@@ -92,6 +107,11 @@ public class CodeGenerator {
         for (int i = 0; i < allCodeTypes.length; i++) {
             nameToTypeMapping.put(allCodeTypes[i], allCodeTypes[i]);
         }
+    }
+
+    /** Returns an instance of {@link TemplateFileFilter}. */
+    public static FileFilter getFileFilter() {
+        return new TemplateFileFilter();
     }
 
     /** Constructs a fitting file name for the given DataDefinition and code generation type */
@@ -151,8 +171,7 @@ public class CodeGenerator {
             BufferedWriter out = new BufferedWriter(fw);
             StringBuffer sb = new StringBuffer();
             String action = getLabelNameFromDataDefinition(dd) + "View.jsp";
-            new CodeGenerator().generateCode(sb, ALL_PROCESSABLE_TYPES[i], dd, action, template,
-                MakumbaJspAnalyzer.QL_OQL);
+            new CodeGenerator().generateCode(sb, ALL_PROCESSABLE_TYPES[i], dd, action, template, MakumbaJspAnalyzer.QL_OQL);
             out.write(sb.toString());
             out.close();
         }
@@ -161,12 +180,8 @@ public class CodeGenerator {
     /** Contains lists of already used accessKeys for each DataDefinition. */
     private Hashtable<DataDefinition, ArrayList<String>> accessKeys = new Hashtable<DataDefinition, ArrayList<String>>();
 
-    /**
-     * Starts the code generation for the given code type and DataDefinition.
-     * 
-     * @param queryLanguage
-     *            TODO
-     */
+    /** Starts the code generation for the given code type and DataDefinition. 
+     * @param queryLanguage TODO*/
     public void generateCode(StringBuffer sb, String type, DataDefinition dd, String action,
             CodeGeneratorTemplate template, String queryLanguage) {
         generateCode(sb, type, dd, action, DataServlet.extractFields(dd, true), template, 0, queryLanguage);
@@ -327,8 +342,8 @@ public class CodeGenerator {
         }
     }
 
-    private void generateCode(StringBuffer sb, String type, DataDefinition dd, String action,
-            Vector<FieldDefinition>[] processData, CodeGeneratorTemplate template, int indent, String queryLanguage) {
+    private void generateCode(StringBuffer sb, String type, DataDefinition dd, String action, Vector<FieldDefinition>[] processData,
+            CodeGeneratorTemplate template, int indent, String queryLanguage) {
 
         long beginTime = System.currentTimeMillis();
         Vector<FieldDefinition> fields = processData[0];
@@ -351,22 +366,18 @@ public class CodeGenerator {
                     appendLine(sb, template.beforePageHeader + "New " + StringUtils.upperCaseBeginning(labelName)
                             + template.afterPageHeader);
                     appendLine(sb, "<mak:newForm type=\"" + dd + "\" action=\"" + action + "\" name=\"" + labelName
-                            + "\" method=\"post\" >");
+                            + "\" >");
                 } else if (type == TYPE_OBJECT) {
-                    appendLine(sb, "<mak:object from=\"" + dd + " " + labelName + "\" where=\"" + labelName
-                            + (queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL) ? "=$" : ".id=:") + labelName + "\">");
-                    appendLine(sb, "<mak:value expr=\"" + labelName
-                            + (queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL) ? "" : ".id") + "\" printVar=\"" + labelName
-                            + "Pointer\" />");
+                    appendLine(sb, "<mak:object from=\"" + dd + " " + labelName + "\" where=\"" + labelName + (queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL) ? "=$" : ".id=:")
+                            + labelName + "\">");
+                    appendLine(sb, "<mak:value expr=\"" + labelName + (queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL) ? "" : ".id" ) + "\" var=\""+labelName+"Pointer\" />");
                     appendJSPLine(sb, indent, template.beforePageHeader + StringUtils.upperCaseBeginning(labelName)
                             + " <i><mak:value expr=\"" + labelName + "." + dd.getTitleFieldName() + "\" /></i>"
                             + template.afterPageHeader);
                 } else if (type == TYPE_EDITFORM) {
-                    appendLine(sb, "<mak:object from=\"" + dd + " " + labelName + "\" where=\"" + labelName
-                            + (queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL) ? "=$" : ".id=:") + labelName + "\">");
-                    appendLine(sb, "<mak:value expr=\"" + labelName
-                            + (queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL) ? "" : ".id") + "\" printVar=\"" + labelName
-                            + "Pointer\" />");
+                    appendLine(sb, "<mak:object from=\"" + dd + " " + labelName + "\" where=\"" + labelName + (queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL) ? "=$" : ".id=:")
+                            + labelName + "\">");
+                    appendLine(sb, "<mak:value expr=\"" + labelName + (queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL) ? "" : ".id" ) + "\" var=\""+labelName+"Pointer\" />");
                     appendJSPLine(sb, indent, template.beforePageHeader + "Edit "
                             + StringUtils.upperCaseBeginning(labelName) + " <i><mak:value expr=\"" + labelName + "."
                             + dd.getTitleFieldName() + "\" /></i>" + template.afterPageHeader);
@@ -463,17 +474,13 @@ public class CodeGenerator {
                 + (System.currentTimeMillis() - beginTime) + " ms");
     }
 
-    /**
-     * Generates the code for a delete form.
-     * 
-     * @param queryLanguage
-     *            TODO
-     */
+    /** Generates the code for a delete form. 
+     * @param queryLanguage TODO*/
     private void generateDeleteCode(StringBuffer sb, DataDefinition dd, CodeGeneratorTemplate template,
             String labelName, int indent, String queryLanguage) {
         appendLine(sb, template.beforePageHeader + "Delete confirmation" + template.afterPageHeader);
-        appendLine(sb, "<mak:object from=\"" + dd + " " + labelName + "\" where=\"" + labelName
-                + (queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL) ? "=$" : ".id=:") + labelName + "\">");
+        appendLine(sb, "<mak:object from=\"" + dd + " " + labelName + "\" where=\"" + labelName + (queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL) ? "=$" : ".id=:") + labelName
+                + "\">");
         indent++;
         appendJSPLine(sb, indent, "Delete " + labelName + " '<mak:value expr=\"" + labelName + "."
                 + dd.getTitleFieldName() + "\" />'?");
@@ -487,8 +494,8 @@ public class CodeGenerator {
     }
 
     /** generate inner field code for mak:new/editForm. */
-    private void generateInnerFieldFormCode(CodeGeneratorTemplate template, StringBuffer sb,
-            Vector<FieldDefinition> innerFields, int indent) throws IOException {
+    private void generateInnerFieldFormCode(CodeGeneratorTemplate template, StringBuffer sb, Vector<FieldDefinition> innerFields,
+            int indent) throws IOException {
         for (int i = 0; i < innerFields.size(); i++) {
             FieldDefinition innerFd = (FieldDefinition) innerFields.get(i);
             appendJSPLine(sb, indent, template.beforeField);
@@ -496,12 +503,8 @@ public class CodeGenerator {
         }
     }
 
-    /**
-     * Generate the code for listing objects.
-     * 
-     * @param queryLanguage
-     *            TODO
-     */
+    /** Generate the code for listing objects. 
+     * @param queryLanguage TODO*/
     private void generateListCode(StringBuffer sb, DataDefinition dd, CodeGeneratorTemplate template, int indent,
             String labelName, String queryLanguage) {
 
@@ -509,8 +512,7 @@ public class CodeGenerator {
                 + template.afterPageHeader);
 
         // links to this file for sort-by links
-        String cgiParam = "?" + labelName + "=<mak:value expr=\"" + labelName
-                + (queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL) ? "" : ".id") + "\" />";
+        String cgiParam = "?" + labelName + "=<mak:value expr=\"" + labelName + (queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL) ? "" : ".id" ) + "\" />";
         String thisFile = getFileNameFromObject(dd, TYPE_LIST) + "?sortBy=";
 
         // converting parameters --> EL sort by values
@@ -553,7 +555,7 @@ public class CodeGenerator {
 
         // actual mak:list generation
         indent++;
-        appendJSPLine(sb, indent, "<mak:list from=\"" + dd + " " + labelName + "\" orderBy=\"#{sortBy}\">");
+        appendJSPLine(sb, indent, "<mak:list from=\"" + dd + " " + labelName + "\" orderBy=\"" + "#{sortBy}\">");
 
         appendJSPLine(sb, indent, template.beforeField);
         appendJSPLine(sb, indent, template.beforeFieldTag + "${mak:count()}" + template.afterFieldTag);
@@ -578,13 +580,12 @@ public class CodeGenerator {
 
     /** Generate code for sets for addForm, editForm and object. */
     private void generateSetCode(StringBuffer sb, String type, FieldDefinition fd, String action,
-            CodeGeneratorTemplate template, Vector<FieldDefinition> innerFields, int indent, String labelName)
-            throws IOException {
+            CodeGeneratorTemplate template, Vector<FieldDefinition> innerFields, int indent, String labelName) throws IOException {
         appendEmptyLine(sb);
         if (type == TYPE_ADDFORM) {
             appendJSPLine(sb, indent, "<%-- Makumba Generator - START ADDFORM FOR FIELD " + fd.getName() + " --%>");
             appendJSPLine(sb, indent, "<mak:addForm object=\"" + labelName + "\" field=\"" + fd.getName()
-                    + "\" action=\"" + action + "\" method=\"post\" >");
+                    + "\" action=\"" + action + "\" >");
             indent++;
             appendJSPLine(sb, indent, template.afterFormBegin);
 
@@ -605,7 +606,7 @@ public class CodeGenerator {
             appendJSPLine(sb, indent, "<mak:list from=\"" + labelName + "." + fd.getName() + " " + fd.getName()
                     + "\" >");
             indent++;
-            appendJSPLine(sb, indent, "<mak:editForm object=\"" + fd.getName() + "\" action=\"" + action + "\" method=\"post\">");
+            appendJSPLine(sb, indent, "<mak:editForm object=\"" + fd.getName() + "\" action=\"" + action + "\" />"+ "\" >");
             indent++;
             appendJSPLine(sb, indent, template.afterFormBegin);
 

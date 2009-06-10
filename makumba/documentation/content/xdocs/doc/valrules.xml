@@ -8,7 +8,7 @@
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language
     governing permissions and limitations under the License.
   -->
-<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
 <document>
   <header>
     <title>Makumba Documentation - Validation Rules</title>
@@ -27,11 +27,8 @@
     
     <section><title>Validation rule</title>
     <p>The validation rule specifies what should be validated, and can be one of the following</p>
-      <ul><li>range validation</li>
-      <li>sting length</li>
-        <li>regular expression</li>
-        <li>comparison</li>
-      </ul>
+    <source>[range validation | string length | regular expression | comparison]</source>
+    
     <section id="range"><title>Number range rule</title>
     <p>The range definition rule applies for <code>Number</code> types, i.e. <em>int</em> and <em>real</em>. The
     [validation rule] is defined as:</p>
@@ -160,7 +157,7 @@
     </section>
 
     <section><title>Multi-field uniqueness definition</title>
-    <p>Similar to the <a href="/doc/datadef.html#FieldAttributes"><em>unique</em> field attribute</a>, you can also define multi-field
+    <p>Similar to the <a href="datadef.html#FieldAttributes"><em>unique</em> field attribute</a>, you can also define multi-field
     uniqueness contraints. These constraints can even span over several data definitions, if they are related via
     pointers.</p>
 

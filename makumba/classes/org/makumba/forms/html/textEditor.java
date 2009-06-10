@@ -34,16 +34,8 @@ import org.makumba.forms.tags.SearchFieldTag;
 
 public class textEditor extends FieldEditor {
 	
-	private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
-		static FieldEditor singleton = new textEditor();
-		
-		public void release() {
-            singleton = null;
-        }
-
-        public SingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
+	private static final class SingletonHolder {
+		static final FieldEditor singleton = new textEditor();
 	}
 
     private boolean forceInput;
@@ -69,26 +61,26 @@ public class textEditor extends FieldEditor {
 		return _paramValues;
 	}
 
-	public String getParams(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
+	public String getParams(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
         return getIntParamString(rf, fieldIndex, formatParams, "rows")
                 + getIntParamString(rf, fieldIndex, formatParams, "cols");
     }
     
     @Override
-    public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
+    public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
         forceInput = StringUtils.equals(formatParams.get("forceInputStyle"), "input");
         formatParams.remove("forceInputStyle");
         return super.format(rf, fieldIndex, o, formatParams);
     }
 
 	@Override
-    public String formatNull(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
+    public String formatNull(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
         return formatNotNull(rf, fieldIndex, null, formatParams);
     }
 
 	@Override
     public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o,
-			Dictionary<String, Object> formatParams) {
+			Dictionary formatParams) {
 		if (isTextArea(rf, fieldIndex, formatParams)) {
 			return (forceInput ? "<INPUT type=\"text\"" : "<TEXTAREA") + " name=\""
 					+ getInputName(rf, fieldIndex, formatParams) + "\" "
@@ -107,14 +99,14 @@ public class textEditor extends FieldEditor {
 	 */
 	@Override
     public String formatValue(RecordFormatter rf, int fieldIndex, Object o,
-			Dictionary<String, Object> formatParams) {
+			Dictionary formatParams) {
 	    if(o instanceof Text)
 	        o=((Text)o).getString();
 		String s = (o == null) ? null : HtmlUtils.string2html(o.toString());
 		return resetValueFormat(rf, fieldIndex, s, formatParams);
 	}
 
-	boolean isTextArea(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
+	boolean isTextArea(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
         String s = (String) formatParams.get("type");
         if (s == null) {
             return true;

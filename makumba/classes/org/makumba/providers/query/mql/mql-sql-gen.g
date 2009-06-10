@@ -217,8 +217,7 @@ selectExpr
 	| arithmeticExpr
 // *********  Mql addition
 	| booleanExpr[false]
-// ********* Mql change from PARAM to parameter
-	| parameter
+	| PARAM { out("?"); }
 	| sn:SQL_NODE { out(sn); }
 	| { out("("); } selectStatement { out(")"); }
 	;

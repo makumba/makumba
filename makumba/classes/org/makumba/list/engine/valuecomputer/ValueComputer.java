@@ -37,6 +37,7 @@ import org.makumba.list.engine.QueryExecution;
 import org.makumba.list.html.RecordViewer;
 import org.makumba.list.tags.QueryTag;
 import org.makumba.list.tags.ValueTag;
+import org.makumba.providers.QueryAnalysis;
 
 /**
  * Every ValueTag will build a ValueComputer at page analysis, which it then retrieves and uses at page running
@@ -71,17 +72,13 @@ public class ValueComputer {
 
         if (check instanceof FieldDefinition)
             set = (FieldDefinition) check;
-        
-        if(set != null) {
-            return new SetValueComputer(analyzed, parentListKey, set, expr, pageCache);
-        }
-        
-        // nullable queries are handled via LEFT JOIN in MQL, but not in HQL
-        if(MakumbaJspAnalyzer.isHQLPage(pageCache) && nullableExpr != null) {
+
+        if (/*nullableExpr == null && */ set == null)
+            return new ValueComputer(analyzed, parentListKey, expr, pageCache);
+
+        if (set == null)
             return new NullableValueComputer(analyzed, parentListKey, nullableExpr, expr, pageCache);
-        }
-        
-        return new ValueComputer(analyzed, parentListKey, expr, pageCache);
+        return new SetValueComputer(analyzed, parentListKey, set, expr, pageCache);
     }
 
     /** The key of the parentList */

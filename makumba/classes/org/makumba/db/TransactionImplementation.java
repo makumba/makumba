@@ -42,11 +42,10 @@ import org.makumba.NoSuchFieldException;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.Transaction;
-import org.makumba.UnauthenticatedException;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryProvider;
-import org.makumba.providers.TransactionProvider;
+import org.makumba.providers.TransactionProviderInterface;
 
 /**
  * @version $Id: TransactionImplementation.java,v 1.1 Jun 15, 2008 3:31:07 PM rudi Exp $
@@ -57,11 +56,11 @@ public abstract class TransactionImplementation implements Transaction {
 
     protected QueryProvider qp;
 
-    protected TransactionProvider tp;
+    protected TransactionProviderInterface tp;
 
     private Attributes contextAttributes;
 
-    public TransactionImplementation(TransactionProvider tp) {
+    public TransactionImplementation(TransactionProviderInterface tp) {
         this.tp = tp;
         this.ddp = DataDefinitionProvider.getInstance();
     }
@@ -138,7 +137,7 @@ public abstract class TransactionImplementation implements Transaction {
 
     public abstract Vector<Dictionary<String, Object>> executeQuery(String OQL, Object parameterValues);
 
-    public TransactionProvider getTransactionProvider() {
+    public TransactionProviderInterface getTransactionProvider() {
         return this.tp;
     }
 
@@ -305,7 +304,7 @@ public abstract class TransactionImplementation implements Transaction {
         if(contextAttributes==null)
             return m;
         return new EasyMap<String, Object>(){
-            public Object get(Object key) {
+            public Object get(Object key){
                 Object o= m.get(key);
                 if(o!=null)
                     return o;
@@ -314,10 +313,7 @@ public abstract class TransactionImplementation implements Transaction {
                     if(o==null && contextAttributes.hasAttribute(""+key+"_null"))
                         o=Pointer.Null;
                     return o;
-                } catch (UnauthenticatedException e) {
-                    // we need to pass on a potential UnauthenticatedException that might stem from actor lookup
-                    throw new RuntimeWrappedException(e);
-                } catch (LogicException e) {
+                }catch(LogicException e){
                     return null;
                 }
             }

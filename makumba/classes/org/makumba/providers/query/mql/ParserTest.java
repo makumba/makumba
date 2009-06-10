@@ -30,7 +30,7 @@ public class ParserTest {
 
     private static QueryAnalysisProvider qap = new HQLQueryAnalysisProvider();
 
-    private static PrintWriter pw = new PrintWriter(System.err);
+    private static PrintWriter pw = new PrintWriter(System.out);
 
     private static NameResolver nr;
     static {
@@ -40,7 +40,7 @@ public class ParserTest {
         try {
             p.load(org.makumba.commons.ClassResource.get(databaseProperties).openStream());
         } catch (Exception e) {
-            throw new org.makumba.ProgrammerError(databaseProperties);
+            throw new org.makumba.ConfigFileError(databaseProperties);
         }
 
         nr = new NameResolver();
@@ -65,7 +65,7 @@ public class ParserTest {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        System.err.println("analyzed " + line + " queries");
+        System.out.println("analyzed " + line + " queries");
 
     }
 
@@ -117,20 +117,20 @@ public class ParserTest {
                 mql_sql = cleanUp(mql_sql, " ");
 
                 if (!oql_sql.equals(mql_sql) && !cleanUp(oql_sql, "()").equals(cleanUp(mql_sql, "()"))) {
-                    System.err.println(line + ": MQL!=OQL: " + query + "\n\t" + mql_sql + "\n\t" + oql_sql);
+                    System.out.println(line + ": MQL!=OQL: " + query + "\n\t" + mql_sql + "\n\t" + oql_sql);
                 }
                 
                 StringBuffer sb= new StringBuffer();
                 compareMdds("parameter", sb, mq.getParameterTypes(), oq.getParameterTypes());
                 if(sb.length()>0)
-                    System.err.println(line + ": "+ sb+" "+ query); 
+                    System.out.println(line + ": "+ sb+" "+ query); 
                 sb= new StringBuffer();
                 compareMdds("projection", sb, mq.getProjectionType(), oq.getProjectionType());
                 if(sb.length()>0)
-                    System.err.println(line + ": "+ sb+" "+ query); 
+                    System.out.println(line + ": "+ sb+" "+ query); 
                 String mqLabels = mq.getLabelTypes().toString();
                 if(!mqLabels.equals(oq.getLabelTypes().toString())&&!mqLabels.equals("{c=org.makumba.db.makumba.Catalog}")){
-                    System.err.println(line + ": "+ query+"\n\t"+mq.getLabelTypes()+"\n\t"+oq.getLabelTypes()); 
+                    System.out.println(line + ": "+ query+"\n\t"+mq.getLabelTypes()+"\n\t"+oq.getLabelTypes()); 
                 }
             }
             /*
@@ -143,12 +143,12 @@ public class ParserTest {
             
             System.err.println(line + ":"+(mqlThr==null?" only in":"")+" OQL: " + t.getMessage() + " " + query);
             if(mqlThr==null)
-                System.err.println(line+": MQL SQL: "+mql_sql);
+                System.out.println(line+": MQL SQL: "+mql_sql);
             return;
         }
         if(mqlThr!=null){
             System.err.println(line + ": only in MQL: " + mqlThr.getMessage() + " " + query);
-            System.err.println(line+": OQL SQL: " + oql_sql);
+            System.out.println(line+": OQL SQL: " + oql_sql);
             if(!(mqlThr instanceof OQLParseError))
                 mqlThr.printStackTrace();
         }

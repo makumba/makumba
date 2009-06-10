@@ -45,7 +45,7 @@ NOTES:
 <!ENTITY % markup "strong|em|code|sub|sup">
 <!ENTITY % special-inline "br|img|icon|acronym|map">
 <!ENTITY % links "a">
-<!ENTITY % paragraphs "p|source|note|warning|fixme|ihtml">
+<!ENTITY % paragraphs "p|source|note|warning|fixme">
 <!ENTITY % tables "table">
 <!ENTITY % lists "ol|ul|dl">
 <!ENTITY % special-blocks "figure|anchor">
@@ -64,10 +64,10 @@ NOTES:
         ID is required.
 -->
 <!ENTITY % common.att 'id                     ID              #IMPLIED
-         class                  NMTOKENS         #IMPLIED
+         class                  NMTOKEN         #IMPLIED
          xml:lang               NMTOKEN         #IMPLIED'>
 <!ENTITY % common-idreq.att 'id                     ID              #REQUIRED
-         class                  NMTOKENS         #IMPLIED
+         class                  NMTOKEN         #IMPLIED
          xml:lang               NMTOKEN         #IMPLIED'>
 <!-- xml:space attribute ===============================================
         Indicates that the element contains white space
@@ -256,7 +256,7 @@ NOTES:
   %xmlspace.att; 
 >
 <!-- Note Paragraph (normally shown encapsulated) -->
-<!ELEMENT note (%content.mix;|%lists;)*>
+<!ELEMENT note (%text;|%markup;|%special-inline;|xi:include %local.inline;|%lists;)*>
 <!ATTLIST note
   label CDATA #IMPLIED
   %common.att; 
@@ -273,14 +273,6 @@ NOTES:
   author CDATA #REQUIRED
   %common.att; 
 >
-
-<!-- Inlined HTML Paragraph-->
-<!ELEMENT ihtml (%text;)*>
-<!ATTLIST ihtml
-  %common.att; 
->
-
-
 <!-- ==================================================== -->
 <!-- Tables -->
 <!-- ==================================================== -->
@@ -443,7 +435,7 @@ NOTES:
 <!ATTLIST body
   %common.att; 
 >
-<!ELEMENT section (title, (%sections; | %blocks; )*)>
+<!ELEMENT section (title, (%sections; | %blocks;)*)>
 <!ATTLIST section
   %common.att; 
 >

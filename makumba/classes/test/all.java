@@ -23,6 +23,8 @@
 
 package test;
 
+import test.newtags.FormsHQLTest;
+import test.newtags.ListOQLTest;
 import test.tags.FormsOQLTest;
 import test.tags.ListHQLTest;
 import junit.framework.Test;
@@ -49,8 +51,10 @@ public class all {
 		suite.addTest(mdd.suite());
 		suite.addTest(table.suite());
 		suite.addTest(tableHibernate.suite());
+		suite.addTest(FormsHQLTest.suite());
         suite.addTest(ListHQLTest.suite());
         suite.addTest(FormsOQLTest.suite());
+        suite.addTest(ListOQLTest.suite());
 	    return suite;
 	}
 }

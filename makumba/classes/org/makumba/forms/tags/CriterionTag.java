@@ -53,8 +53,8 @@ public class CriterionTag extends GenericMakumbaTag implements BodyTag {
         }
     }
 
-    public SearchTag getForm() {
-        return (SearchTag) TagSupport.findAncestorWithClass(this, FormTagBase.class);
+    public FormTagBase getForm() {
+        return (FormTagBase) TagSupport.findAncestorWithClass(this, FormTagBase.class);
     }
 
     /**
@@ -68,15 +68,6 @@ public class CriterionTag extends GenericMakumbaTag implements BodyTag {
             throw new ProgrammerError("fields attribute is required");
         }
         parseFieldList(pageCache);
-        // FIXME: we can't have the same field as the primary criterion yet => it would lead to two inputs with
-        // the same name. 
-        // The fix should be to give a different name to the input, and store a mapping input-name => field
-        // name, so we can construct the query correctly.
-        // For now, we just prevent errors by checking that this field was not yet used in this search form
-        if (getForm().containsInput(getInputName())) {
-            throw new ProgrammerError(
-                    "This search form already contains one critireon tag with the same field as the first criterion. For now, this is not supported in Makumba!");
-        }
         super.doStartAnalyze(pageCache);
     }
 
@@ -204,7 +195,7 @@ public class CriterionTag extends GenericMakumbaTag implements BodyTag {
 
     @Override
     public void setTagKey(PageCache pageCache) {
-        tagKey = new MultipleKey(new Object[] { getForm().tagKey, id, fields, matchMode });
+        tagKey = new MultipleKey(new Object[] { getForm().tagKey, id, fields });
     }
 
     @Override

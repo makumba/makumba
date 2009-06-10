@@ -61,13 +61,27 @@ public class MakumbaSystem {
     }
 
     /**
-     * The name of the default database according to the lookup file "Makumba.conf"
+     * The name of the default database according to the lookup file "MakumbaDatabase.properties"
      * 
      * @since makumba-0.5.4
-     * @deprecated Use {@link org.makumba.providers.TransactionProvider#getDefaultDataSourceName()} instead
+     * @deprecated Use {@link #getDefaultDataSourceName()} instead
      */
     public static String getDefaultDatabaseName() {
         return tp.getDefaultDataSourceName();
+    }
+
+    /**
+     * The name of the default database according to the database lookup file indicated
+     * 
+     * @param dbLookupFile
+     *            the name of the database lookup file, including ".properties", or any other extension. The file should
+     *            be in CLASSPATH.
+     * @since makumba-0.5.4
+     * @deprecated use {@link TransactionProvider#getDataSourceName(String)} instead
+     */
+    @Deprecated
+    public static String getDefaultDatabaseName(String dbLookupFile) {
+        return tp.getDataSourceName(dbLookupFile);
     }
 
     /**
@@ -90,7 +104,7 @@ public class MakumbaSystem {
     }
 
     /**
-     * Get a connection to the default database found according to Makumba.conf
+     * Get a connection to the default database found according to MakumbaDatabase.properties
      * 
      * @since makumba-0.5
      * @deprecated This method name is misleading since it returns a connection, not a database. Use
@@ -98,6 +112,18 @@ public class MakumbaSystem {
      */
     public static Transaction findDatabase() {
         return getConnectionTo(tp.getDefaultDataSourceName());
+    }
+
+    /**
+     * Find the Database according to the given lookup file from the CLASSPATH. The file name will include the
+     * .properties extension
+     * 
+     * @since makumba-0.5
+     * @deprecated This method name is misleading since it returns a connection, not a database. Use
+     *             getConnectionTo(getDefaultDatabaseName(dbLookupFile)) instead
+     */
+    public static Transaction findDatabase(String dbLookupFile) {
+        return getConnectionTo(getDefaultDatabaseName(dbLookupFile));
     }
 
     /**
@@ -111,7 +137,38 @@ public class MakumbaSystem {
     public static Transaction getDatabase(String connectionFile) {
         return getConnectionTo(connectionFile);
     }
-    
+
+    /**
+     * Access the properties of a database. Besides the properties defined in the database connection file, the
+     * following are available <table border =1>
+     * <tr>
+     * <td><code>sql_engine.name</code>
+     * <td>name of the SQL engine used
+     * <tr>
+     * <td><code>sql_engine.version</code>
+     * <td>version of the SQL engine used
+     * <tr>
+     * <td><code>sql.jdbc_driver.name</code>
+     * <td>name of the JDBC driver used
+     * <tr>
+     * <td><code>jdbc_driver.name</code>
+     * <td>name of the JDBC driver used
+     * <tr>
+     * <td><code>jdbc_driver.version</code>
+     * <td>version of the JDBC driver used
+     * <tr>
+     * <td><code>jdbc_url</code>
+     * <td>JDBC url connected to
+     * <tr>
+     * <td><code>jdbc_connections</code>
+     * <td>number of jdbc connections open </table>
+     * 
+     * @since makumba-0.5.5.7
+     */
+    public static String getDatabaseProperty(String name, String propName) {
+        return tp.getDatabaseProperty(name, propName);
+    }
+
     /**
      * Get the DataDefinition defined by the given type. The type a.b.C will generate a lookup for the file
      * CLASSPATH/a/b/C.mdd and then for CLASSPATH/dataDefinitions/a/b/C.mdd
@@ -288,7 +345,7 @@ public class MakumbaSystem {
      * @since makumba-0.5.5.3
      */
     public static java.util.logging.Logger getLogger() {
-        return java.util.logging.Logger.getLogger("org.makumba.apps");
+        return java.util.logging.Logger.getLogger("org.makumba." + "apps");
     }
 
     /**

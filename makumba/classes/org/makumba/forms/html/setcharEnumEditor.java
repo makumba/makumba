@@ -28,16 +28,8 @@ import org.makumba.commons.formatters.RecordFormatter;
 
 public class setcharEnumEditor extends charEnumEditor {
 	
-	private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
-		static FieldEditor singleton = new setcharEnumEditor();
-		
-		public void release() {
-            singleton = null;
-        }
-
-        public SingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
+	private static final class SingletonHolder {
+		static final FieldEditor singleton = new setcharEnumEditor();
 	}
 
 	/** Don't use this, use getInstance() */
@@ -45,6 +37,11 @@ public class setcharEnumEditor extends charEnumEditor {
 
 	public static FieldFormatter getInstance() {
 		return SingletonHolder.singleton;
+	}
+
+	@Override
+    public String getMultiple(RecordFormatter rf, int fieldIndex) {
+		return " multiple";
 	}
 
 	@Override

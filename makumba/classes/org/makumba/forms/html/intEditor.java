@@ -38,16 +38,8 @@ import org.makumba.providers.datadefinition.makumba.validation.NumberRangeValida
 
 public class intEditor extends charEditor {
 
-    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
-        static FieldEditor singleton = new intEditor();
-        
-        public void release() {
-            singleton = null;
-        }
-
-        public SingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
+    private static final class SingletonHolder {
+        static final FieldEditor singleton = new intEditor();
     }
 
     /** Don't use this, use getInstance() */
@@ -79,7 +71,7 @@ public class intEditor extends charEditor {
 
     /** Formats the value to appear in an input statement. */
     @Override
-    public String formatValue(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
+    public String formatValue(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
         // note: only diff with charEditor.formatValue is not calling
         // string2html
         // maybe can just as well not redefine this method?
@@ -99,7 +91,7 @@ public class intEditor extends charEditor {
     }
 
     @Override
-    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
+    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
         int stepSize = 1;
         try {
             stepSize = Integer.parseInt((String) formatParams.get("stepSize"));

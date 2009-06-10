@@ -49,16 +49,8 @@ public class textViewer extends FieldViewer {
 
     static int screenLength = 30;
 
-    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
-        static FieldFormatter singleton = new textViewer();
-        
-        public void release() {
-            singleton = null;
-        }
-
-        public SingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
+    private static final class SingletonHolder {
+        static final FieldFormatter singleton = new textViewer();
     }
 
     private textViewer() {
@@ -68,7 +60,7 @@ public class textViewer extends FieldViewer {
         return SingletonHolder.singleton;
     }
 
-    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
+    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
         if(o instanceof Text)
             o=((Text)o).getString();
         String txt = o.toString();

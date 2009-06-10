@@ -1,18 +1,20 @@
 package org.makumba.devel.relations;
 
 import java.io.File;
-import java.util.Collection;
+import java.io.FileInputStream;
 import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Vector;
 
 import org.makumba.DataDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.analyser.engine.JavaParseData;
 import org.makumba.devel.JavaSourceAnalyzer;
-import org.makumba.providers.Configuration;
+import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.query.oql.QueryAST;
 
 import antlr.RecognitionException;
@@ -28,7 +30,7 @@ import antlr.RecognitionException;
  */
 public class JavaRelationMiner extends RelationMiner {
 
-    private Collection<String> webappJavaPackages = new Vector<String>();
+    private Vector<String> webappJavaPackages = new Vector<String>();
 
     public JavaRelationMiner(RelationCrawler rc) {
         super(rc);
@@ -70,11 +72,6 @@ public class JavaRelationMiner extends RelationMiner {
                 String s = "Could not parse query "+query+" from file "+path+": "+me.getMessage();
                 logger.warning(s);
                 continue;
-            } catch(NullPointerException npe) {
-                String s = "Could not parse query "+query+" from file "+path+": "+npe.getMessage();
-                logger.warning(s);
-                continue;
-                
             }
                         
             Map<String, String> projections = qA.getProjections();
@@ -134,7 +131,7 @@ public class JavaRelationMiner extends RelationMiner {
         jpd.getAnalysisResult(null);
 
         if (webappJavaPackages == null) {
-            webappJavaPackages = Configuration.getLogicPackages().values();
+            readMakumbaControllerPackages();
         }
 
         Hashtable<String, String> importedClasses = jpd.getImportedClasses();
@@ -152,6 +149,34 @@ public class JavaRelationMiner extends RelationMiner {
                 addJava2JavaRelation(path, className, "import");
             }
         }
+    }
+
+    /**
+     * Reads MakumbaController.properties and extracts the packages
+     */
+    private void readMakumbaControllerPackages() {
+        String makumbaControllerPath = rc.getWebappRoot() + File.separator
+                + "/WEB-INF/classes/MakumbaController.properties";
+        Properties p = null;
+        try {
+            p.load(new FileInputStream(makumbaControllerPath));
+        } catch (Exception e) {
+            logger.severe("Could not read " + makumbaControllerPath
+                    + ", hence relations in Java files won't be correctly analysed.");
+            return;
+        }
+
+        Iterator<Object> it = p.keySet().iterator();
+        while (it.hasNext()) {
+            String key = (String) it.next();
+            String packageName = p.getProperty(key);
+            if (packageName != null && packageName.length() > 0) {
+                webappJavaPackages.add(packageName);
+            }
+        }
+
+        // TODO remove sub-packages to increase performance
+
     }
 
     /**

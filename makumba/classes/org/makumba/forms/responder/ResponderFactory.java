@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.makumba.AttributeNotFoundException;
-import org.makumba.providers.Configuration;
 import org.makumba.CompositeValidationException;
 import org.makumba.InvalidValueException;
 import org.makumba.LogicException;
@@ -27,6 +26,8 @@ import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.controller.http.ControllerFilter;
 
+import test.newtags.FormsOQLTest;
+
 /**
  * This factory handles the creation, caching and retrieval of Responder objects.
  * 
@@ -35,28 +36,18 @@ import org.makumba.controller.http.ControllerFilter;
  */
 public class ResponderFactory {
 
-    protected boolean useDefaultResponseStyles = Configuration.getUseDefaultResponseStyles();
-
     private ResponderCacheManager cacheManager = ResponderCacheManager.getInstance();
 
-    private static class SingletonHolder implements org.makumba.commons.SingletonHolder {
-        private static ResponderFactory singleton = new ResponderFactory();
-
-        public void release() {
-            singleton = null;
-        }
-
-        public SingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
+    private static class SingletonHolder {
+        private static final ResponderFactory singleton = new ResponderFactory();
     }
-
+    
     public static ResponderFactory getInstance() {
         return SingletonHolder.singleton;
     }
 
     /**
-     * Initialises the factory
+     * Initalises the factory
      */
     private void init() {
         cacheManager.setFactory(this);
@@ -322,13 +313,6 @@ public class ResponderFactory {
 
     static public final String RESPONSE_STRING_NAME = "makumba.response";
 
-    static public final String RESPONSE_FORMATTED_STRING_NAME = "makumba.responseFormatted";
-
-    public static final String MAKUMBA_SUCCESSFUL_RESPONSE = "makumba.successfulResponse";
-
-    public static final String[] RESPONSE_ATTRIBUTE_NAMES = new String[] { ResponderFactory.RESPONSE_STRING_NAME,
-            ResponderFactory.RESPONSE_FORMATTED_STRING_NAME, ResponderFactory.MAKUMBA_SUCCESSFUL_RESPONSE };
-
     public static final String resultNamePrefix = "org.makumba.controller.resultOf_";
 
     /**
@@ -338,12 +322,12 @@ public class ResponderFactory {
      * directly treats the exception of the first form responder, which means that errors in the nested forms are
      * ignored. this should be fixed, in doing something like this:
      * <ul>
-     * <li>iterate through all the forms, extract the form hierarchy and start processing forms in order of appearance</li>
-     * <li>for each form responder, store the message, errors, request and response (containing modified attributes)
+     * <li> iterate through all the forms, extract the form hierarchy and start processing forms in order of appearance</li>
+     * <li> for each form responder, store the message, errors, request and response (containing modified attributes)
      * into a Response object</li>
-     * <li>generate a CompositeResponse object that holds all the errors, messages etc in the right order (or just pass
+     * <li> generate a CompositeResponse object that holds all the errors, messages etc in the right order (or just pass
      * an ArrayList of Response objects)</li>
-     * <li>the controller should then treat the responses and exceptions starting by the inner forms (otherwise errors
+     * <li> the controller should then treat the responses and exceptions starting by the inner forms (otherwise errors
      * get ignored)
      * </ul>
      * 
@@ -362,7 +346,6 @@ public class ResponderFactory {
         }
         req.setAttribute(RESPONSE_STRING_NAME, "");
         String message = "";
-        String formattedMessage = "";
 
         // printOrderedResponders(req);
 
@@ -395,13 +378,12 @@ public class ResponderFactory {
                     }
                 }
                 // display the response message and set attributes
-                message = responder.message;
-                formattedMessage = Responder.successFulMessageFormatter(message);
+                message = "<font color=green>" + responder.message + "</font>";
                 if (result != null) {
                     req.setAttribute(responder.resultAttribute, result);
                     req.setAttribute(resultNamePrefix + suffix, result);
                 }
-                req.setAttribute(MAKUMBA_SUCCESSFUL_RESPONSE, "yes");
+                req.setAttribute("makumba.successfulResponse", "yes");
 
             } catch (AttributeNotFoundException anfe) {
                 // attribute not found is a programmer error and is reported
@@ -414,7 +396,6 @@ public class ResponderFactory {
             } catch (LogicException e) {
                 java.util.logging.Logger.getLogger("org.makumba.logic.error").log(Level.INFO, "error", e);
                 message = Responder.errorMessage(e);
-                formattedMessage = Responder.errorMessageFormatter(message);
                 req.setAttribute(responder.resultAttribute, Pointer.Null);
                 req.setAttribute(resultNamePrefix + suffix, Pointer.Null);
             } catch (Throwable t) {
@@ -424,7 +405,6 @@ public class ResponderFactory {
             // messages of inner forms are ignored
             if (suffix.equals("")) {
                 req.setAttribute(RESPONSE_STRING_NAME, message);
-                req.setAttribute(RESPONSE_FORMATTED_STRING_NAME, formattedMessage);
             }
         }
         return null;

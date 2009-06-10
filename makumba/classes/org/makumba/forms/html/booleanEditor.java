@@ -38,16 +38,8 @@ import org.makumba.commons.formatters.RecordFormatter;
  */
 public class booleanEditor extends choiceEditor {
     
-    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
-        static FieldEditor singleton = new booleanEditor();
-        
-        public void release() {
-            singleton = null;
-        }
-
-        public SingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
+    private static final class SingletonHolder {
+        static final FieldEditor singleton = new booleanEditor();
     }
 
     /** Don't use this, use getInstance() */
@@ -73,7 +65,7 @@ public class booleanEditor extends choiceEditor {
 
     /** Formats the value to appear in an input statement. */
     @Override
-    public String formatValue(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
+    public String formatValue(RecordFormatter rf, int fieldIndex, Object o, Dictionary formatParams) {
 
         String s = (o == null) ? null : (((Boolean)o) ? "Yes" : "No");
         return resetValueFormat(rf, fieldIndex, s, formatParams);
@@ -117,7 +109,7 @@ public class booleanEditor extends choiceEditor {
     }
 
     @Override
-    public Object getOptions(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
+    public Object getOptions(RecordFormatter rf, int fieldIndex, Dictionary formatParams) {
         ChoiceSet c = new ChoiceSet();
         c.add("true", "Yes", true, false);
         c.add("false", "No", false, false);
@@ -132,6 +124,11 @@ public class booleanEditor extends choiceEditor {
     @Override
     public boolean isMultiple(RecordFormatter rf, int fieldIndex) {
         return false;
+    }
+
+    @Override
+    public String getMultiple(RecordFormatter rf, int fieldIndex) {
+        return "";
     }
 
 }

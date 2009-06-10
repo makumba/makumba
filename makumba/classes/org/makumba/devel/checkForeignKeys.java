@@ -36,15 +36,13 @@ import org.makumba.db.makumba.Database;
 import org.makumba.db.makumba.MakumbaTransactionProvider;
 import org.makumba.db.makumba.sql.SQLDBConnection;
 import org.makumba.db.makumba.sql.TableManager;
-import org.makumba.providers.Configuration;
-import org.makumba.providers.DataDefinitionProvider;
 
 /**
  * Opens given database tables; if allowed to, this would also trigger alter commands.
  * <p>
  * Usage: <code>java org.makumba.devel.open [source [type1 [type2 ...] ] ]</code>
  * </p>
- * If no source is specified the default data source is used. If not types
+ * If no source is specified the default database specified in <i>MakumbaDatabase.properties</i> is used. If not types
  * are specified, all MDDs found in the webapp are processed.
  * 
  * @author Cristian Bogdan
@@ -56,7 +54,7 @@ public class checkForeignKeys {
         Database d = null;
         try {
             if (argv.length == 0) {
-                d = MakumbaTransactionProvider.getDatabase(Configuration.getDefaultDataSourceName());
+                d = MakumbaTransactionProvider.findDatabase("MakumbaDatabase.properties");
             } else {
                 d = MakumbaTransactionProvider.getDatabase(argv[0]);
             }
@@ -66,7 +64,17 @@ public class checkForeignKeys {
             }
             SQLDBConnection sqlConnection = ((SQLDBConnection) connection);
 
-            Vector<String> mddsInDirectory = DataDefinitionProvider.getInstance().getDataDefinitionsInDefaultLocations("test.brokenMdds");
+            Vector<String> mddsInDirectory = org.makumba.MakumbaSystem.mddsInDirectory("dataDefinitions");
+//            Vector<String> mddsInDirectory = org.makumba.MakumbaSystem.mddsInDirectory("");
+            
+            Vector<String> clean = (Vector<String>) mddsInDirectory.clone();
+            for (int i = 0; i < mddsInDirectory.size(); i++) {
+                String element = (String) mddsInDirectory.get(i);
+                if (element.contains("broken") || element.contains("dataDefinitions")) {
+                    clean.remove(element);
+                }
+            }
+            mddsInDirectory = clean;
 
             String[] tables = mddsInDirectory.toArray(new String[mddsInDirectory.size()]);
             for (int i = 0; i < tables.length; i++) {

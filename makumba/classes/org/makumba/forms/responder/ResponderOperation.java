@@ -12,8 +12,6 @@ import org.makumba.commons.attributes.RequestAttributes;
  * @author Manuel Gay
  */
 public abstract class ResponderOperation implements java.io.Serializable {
-    private static final long serialVersionUID = 1L;
-
     /** respond to the given request, with the data from the given responder, read using the given multiple form suffix */
     public abstract Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
             throws LogicException;

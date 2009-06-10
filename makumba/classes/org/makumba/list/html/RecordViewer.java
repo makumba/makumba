@@ -49,12 +49,12 @@ public class RecordViewer extends RecordFormatter {
         for (int i = 0; i < dd.getFieldNames().size(); i++)
             expr[i] = q.getProjectionAt(i);
     }
-	public RecordViewer(DataDefinition ri, Hashtable<String, String> h) {
+	public RecordViewer(DataDefinition ri, Hashtable h) {
 		super(ri, h, false, null); // false = no searchform, null = no form identifier
 	}
 
 	protected String applyParameters(FieldFormatter ff,
-			Dictionary<String, Object> formatParams, String s) {
+			Dictionary formatParams, String s) {
 		if (formatParams.get("urlEncode") != null)
 			try {
 				return java.net.URLEncoder.encode(s, "UTF-8");

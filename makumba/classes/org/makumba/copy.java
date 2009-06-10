@@ -25,7 +25,6 @@ package org.makumba;
 import java.util.Vector;
 
 import org.makumba.commons.NamedResources;
-import org.makumba.db.makumba.MakumbaTransactionProvider;
 import org.makumba.providers.TransactionProvider;
 
 /** Copies one database to the other. Usage: 
@@ -63,7 +62,7 @@ public class copy
 		  String [] types;
 		  if(nargs==2)
 		    {
-		      Vector<String> v= org.makumba.MakumbaSystem.mddsInDirectory("dataDefinitions");
+		      Vector v= org.makumba.MakumbaSystem.mddsInDirectory("dataDefinitions");
 		      types= new String[v.size()];
 		      for(int i=0; i<v.size(); i++)
 				  types[i]= (String)v.elementAt(i);
@@ -96,7 +95,7 @@ public class copy
  * <b><code>"db.admin.copy"</code></b> logger, with {@link java.util.logging.Level#INFO} logging level.
  */
 public static void _copy(String sourceDB, String destinationDB, String[] typeNames, boolean ignoreDbsv) {
-    ((MakumbaTransactionProvider)(MakumbaTransactionProvider.getInstance()))._copy(sourceDB, destinationDB, typeNames, ignoreDbsv);
+    (TransactionProvider.getInstance())._copy(sourceDB, destinationDB, typeNames, ignoreDbsv);
 }
   
 }

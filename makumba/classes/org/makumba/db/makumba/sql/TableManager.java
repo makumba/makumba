@@ -125,7 +125,6 @@ public class TableManager extends Table {
     protected void open(Properties config, NameResolver nr) {
         setTableAndFieldNames(nr);
         if (!getDataDefinition().isTemporary()) {
-            // System.out.println("\n\n** Opening table " + getDBName());
             DBConnectionWrapper dbcw = (DBConnectionWrapper) getSQLDatabase().getDBConnection();
             SQLDBConnection dbc = (SQLDBConnection) dbcw.getWrapped();
             try {
@@ -135,7 +134,7 @@ public class TableManager extends Table {
                 preparedInsertAutoIncrementString = prepareInsert(true);
                 preparedDeleteString = prepareDelete();
                 preparedDeleteFromIgnoreDbsvString = "DELETE FROM " + getDBName();
-                preparedDeleteFromString = "DELETE FROM " + getDBName() + " WHERE " + indexDBField + " >= ? AND "
+                preparedDeleteFromString = "DELETE FROM " + getDBName() + " WHERE " + indexDBField + " >= ?" + " AND "
                         + indexDBField + " <= ?";
             } catch (SQLException e) {
                 // TODO Auto-generated catch block
@@ -170,7 +169,7 @@ public class TableManager extends Table {
         alter = (s != null && config.getProperty(s).trim().equals("true"));
 
         java.util.logging.Logger.getLogger("org.makumba.db.init.tablechecking").info(
-            getDatabase().getName() + ": checking " + getDataDefinition().getName() + " as " + tbname);
+            getDatabase().getConfiguration() + ": checking " + getDataDefinition().getName() + " as " + tbname);
 
         try {
             CheckingStrategy cs = null;
@@ -187,7 +186,7 @@ public class TableManager extends Table {
                 makeKeyIndex();
             } else {
                 exists_ = true;
-                alter(dbc, cs, alter);
+                alter(dbc, cs);
             }
         } catch (SQLException sq) {
             sq.printStackTrace();
@@ -209,7 +208,6 @@ public class TableManager extends Table {
 
     protected void initFields(SQLDBConnection dbc, Properties config) throws SQLException {
         try {
-            // System.out.println("\t** init fields " + getDBName());
             ResultSet rs = dbc.getMetaData().getIndexInfo(null, null, getDBName(), false, false);
             while (rs.next()) {
                 String iname = rs.getString("INDEX_NAME");
@@ -433,9 +431,8 @@ public class TableManager extends Table {
         return n;
     }
 
-    /** checks if an alteration is needed, and calls doAlter if so 
-     * @param alter TODO*/
-    protected void alter(SQLDBConnection dbc, CheckingStrategy cs, boolean alter) throws SQLException {
+    /** checks if an alteration is needed, and calls doAlter if so */
+    protected void alter(SQLDBConnection dbc, CheckingStrategy cs) throws SQLException {
         Vector<String> present = new Vector<String>();
         Vector<String> add = new Vector<String>();
         Vector<String> modify = new Vector<String>();
@@ -508,7 +505,7 @@ public class TableManager extends Table {
         autoIncrementAlter = false;
         String s = "ALTER TABLE " + getDBName() + " " + op + " " + inCreate(fieldName, getSQLDatabase());
         java.util.logging.Logger.getLogger("org.makumba.db.init.tablechecking").info(
-            getSQLDatabase().getName() + ": " + s);
+            getSQLDatabase().getConfiguration() + ": " + s);
         st.executeUpdate(s);
         handlerExist.put(fieldName, "");
         dbc.commit();
@@ -530,8 +527,8 @@ public class TableManager extends Table {
      * @param modify
      *            the abstract fields that exist in the db but need to be modified to the new abstract definition
      */
-    protected void doAlter(SQLDBConnection dbc, Vector<String> drop, Vector<String> present, Vector<String> add,
-            Vector<String> modify) throws SQLException {
+    protected void doAlter(SQLDBConnection dbc, Vector<String> drop, Vector<String> present, Vector<String> add, Vector<String> modify)
+            throws SQLException {
         // MakumbaSystem.getLogger("debug.db").severe(drop);
         // MakumbaSystem.getLogger("debug.db").severe(present);
         // MakumbaSystem.getLogger("debug.db").severe(add);
@@ -583,7 +580,8 @@ public class TableManager extends Table {
 
         command = createDbSpecific(command);
         if (!really) {
-            java.util.logging.Logger.getLogger("org.makumba.db.init.tablechecking").warning("would be:\n" + command);
+            java.util.logging.Logger.getLogger("org.makumba.db.init.tablechecking").warning(
+                "would be:\n" + command);
             return;
         }
         if (!tblname.startsWith("temp"))
@@ -596,7 +594,7 @@ public class TableManager extends Table {
 
     /* TODO: move to initFields */
     /** list the given fields in a command field1, field2 ... */
-    protected void fieldList(StringBuffer command, Enumeration<String> e) {
+    protected void fieldList(StringBuffer command, Enumeration e) {
         String comma = "";
 
         while (e.hasMoreElements()) {
@@ -628,7 +626,7 @@ public class TableManager extends Table {
     }
 
     @Override
-    public Pointer insertRecordImpl(DBConnection dbc, Dictionary<String, Object> d) {
+    public Pointer insertRecordImpl(DBConnection dbc, Dictionary d) {
         boolean wasIndex = d.get(indexField) != null;
         boolean wasCreate = d.get("TS_create") != null;
         boolean wasModify = d.get("TS_create") != null;
@@ -691,8 +689,8 @@ public class TableManager extends Table {
                 d.remove("TS_modify");
             return ret;
         }/*
-          * catch(ReconnectedException re) { prepareStatements(); continue; }
-          */
+             * catch(ReconnectedException re) { prepareStatements(); continue; }
+             */
         // catch(SQLException e) { throw new org.makumba.DBError (e); }
         catch (Throwable t) {
             // we wrap errors into a DB error, except CompositeValidationException, which will be handled separately
@@ -707,7 +705,7 @@ public class TableManager extends Table {
         }
     }
 
-    protected CompositeValidationException findDuplicates(SQLDBConnection dbc, Dictionary<String, Object> d) {
+    protected CompositeValidationException findDuplicates(SQLDBConnection dbc, Dictionary d) {
         CompositeValidationException notUnique = new CompositeValidationException();
 
         // first we check all fields of the data definition
@@ -735,8 +733,8 @@ public class TableManager extends Table {
                     values[j] = d.get(fields[j]);
                 }
                 if (checkDuplicate(fields, values, dbc)) {
-                    notUnique.addException(new NotUniqueException(multiFieldUniqueKeys[i].getFields()[0],
-                            multiFieldUniqueKeys[i].getErrorMessage(values)));
+                    notUnique.addException(new NotUniqueException(getDataDefinition().getName(),
+                            multiFieldUniqueKeys[i].getFields(), values));
                 }
             }
         }
@@ -766,7 +764,7 @@ public class TableManager extends Table {
         }
     }
 
-    public void updateRecord(DBConnection dbc, Pointer uid, Dictionary<String, Object> d) {
+    public void updateRecord(DBConnection dbc, Pointer uid, Dictionary d) {
         if (dbc instanceof DBConnectionWrapper)
             dbc = ((DBConnectionWrapper) dbc).getWrapped();
         d.remove(indexField);
@@ -778,7 +776,7 @@ public class TableManager extends Table {
         StringBuffer command = new StringBuffer("UPDATE ").append(tbname).append(" SET ");
 
         String s = "";
-        for (Enumeration<String> e = d.keys(); e.hasMoreElements();) {
+        for (Enumeration e = d.keys(); e.hasMoreElements();) {
             if (s.length() > 0)
                 command.append(",");
             String fieldName = (String) e.nextElement();
@@ -797,7 +795,7 @@ public class TableManager extends Table {
             PreparedStatement st = ((SQLDBConnection) dbc).getPreparedStatement(command.toString());
 
             int n = 1;
-            for (Enumeration<String> e = d.keys(); e.hasMoreElements(); n++) {
+            for (Enumeration e = d.keys(); e.hasMoreElements(); n++) {
                 String ss = (String) e.nextElement();
                 setUpdateArgument(ss/* (String) e.nextElement() */, st, n, d);
             }
@@ -814,7 +812,7 @@ public class TableManager extends Table {
         }
     }
 
-    protected void fillResult(ResultSet rs, Dictionary<String, Object> p) throws java.sql.SQLException {
+    protected void fillResult(ResultSet rs, Dictionary p) throws java.sql.SQLException {
         int n = dd.getFieldNames().size();
         for (int i = 0; i < n;) {
             if (dd.getFieldDefinition(i).getType().startsWith("set"))
@@ -1029,8 +1027,7 @@ public class TableManager extends Table {
     /**
      * ask this field to write write its argumment value in a prepared UPDATE SQL statement
      */
-    public void setUpdateArgument(String fieldName, PreparedStatement ps, int n, Dictionary<String, Object> d)
-            throws SQLException {
+    public void setUpdateArgument(String fieldName, PreparedStatement ps, int n, Dictionary d) throws SQLException {
         switch (getFieldDefinition(fieldName).getIntegerType()) {
             case FieldDefinition._dateCreate:
             case FieldDefinition._ptrIndex:
@@ -1215,7 +1212,7 @@ public class TableManager extends Table {
     // moved from charManager
     /** write in CREATE, in the form name char[size] */
     public String in_char_Create(String fieldName, Database d) {
-        String s = Database.getEngineProperty(d.getEngine() + ".charBinary");
+        String s = Database.getEngineProperty(d.getEngine() + "." + "charBinary");
         if (s != null && s.equals("true"))
             s = " BINARY";
         else
@@ -1355,8 +1352,7 @@ public class TableManager extends Table {
     /**
      * ask this field to write write its argumment value in a prepared INSERT SQL statement
      */
-    public void setInsertArgument(String fieldName, PreparedStatement ps, int n, Dictionary<String, Object> d)
-            throws SQLException {
+    public void setInsertArgument(String fieldName, PreparedStatement ps, int n, Dictionary d) throws SQLException {
         switch (getFieldDefinition(fieldName).getIntegerType()) {
             case FieldDefinition._dateCreate:
             case FieldDefinition._dateModify:
@@ -1381,8 +1377,7 @@ public class TableManager extends Table {
     }
 
     // original setInsertArgument from FieldManager
-    public void base_setInsertArgument(String fieldName, PreparedStatement ps, int n, Dictionary<String, Object> d)
-            throws SQLException {
+    public void base_setInsertArgument(String fieldName, PreparedStatement ps, int n, Dictionary d) throws SQLException {
         Object o = d.get(fieldName);
         if (o == null || o.equals(getFieldDefinition(fieldName).getNull()))
             setNullArgument(fieldName, ps, n);
@@ -1391,8 +1386,8 @@ public class TableManager extends Table {
     }
 
     // moved from timeStampManager
-    public void set_timeStamp_InsertArgument(String fieldName, PreparedStatement ps, int n,
-            java.util.Dictionary<String, Object> d) throws SQLException {
+    public void set_timeStamp_InsertArgument(String fieldName, PreparedStatement ps, int n, java.util.Dictionary d)
+            throws SQLException {
         Object o = d.get(fieldName);
         if (o instanceof java.util.Date && !(o instanceof Timestamp))
             d.put(fieldName, new Timestamp(((java.util.Date) o).getTime()));
@@ -1403,8 +1398,7 @@ public class TableManager extends Table {
     /**
      * ask this field to write write its argumment value in a prepared SQL statement for copying
      */
-    public void setCopyArgument(String fieldName, PreparedStatement ps, int n, Dictionary<String, Object> d)
-            throws SQLException {
+    public void setCopyArgument(String fieldName, PreparedStatement ps, int n, Dictionary d) throws SQLException {
         try {
             Object o = d.get(fieldName);
             if (o == null || o.equals(getFieldDefinition(fieldName).getNull()))
@@ -1421,7 +1415,7 @@ public class TableManager extends Table {
      * ask this field to write its contribution in a SQL UPDATE statement should return "" if this field doesn't want to
      * take part in the update
      */
-    public String inCondition(String fieldName, Dictionary<String, Object> d, String cond) {
+    public String inCondition(String fieldName, Dictionary d, String cond) {
         return getDBName() + cond + writeConstant(fieldName, d.get(fieldName));
     }
 
@@ -1522,7 +1516,6 @@ public class TableManager extends Table {
                 if (!getSQLDatabase().isAutoIncrement()) {
                     dbsv = getSQLDatabase().getDbsv();
                     Statement st = dbc.createStatement();
-                    // System.out.println("\t\t** Checking keys " + getDBName() + " " + fieldName);
                     resetPrimaryKey();
                     ResultSet rs = st.executeQuery("SELECT MAX(" + getFieldDBName(fieldName) + "), COUNT("
                             + getFieldDBName(fieldName) + ") FROM " + tbname + " WHERE " + getFieldDBName(fieldName)
@@ -1531,7 +1524,6 @@ public class TableManager extends Table {
                     rs.next();
                     if (rs.getLong(2) > 0)
                         primaryKeyCurrentIndex = rs.getLong(1);
-                    // System.out.println("\t\t\tprimaryKeyCurrentIndex: " + primaryKeyCurrentIndex);
                     rs.close();
                     st.close();
                 }
@@ -1716,24 +1708,22 @@ public class TableManager extends Table {
 
     /** Syntax for unique index creation. */
     public String foreignKeyCreateSyntax(String fieldName, String fkTableName, String fkFieldName) {
-        return "ALTER TABLE " + getDBName() + " ADD FOREIGN KEY "
-                + shortIndexName(((TableManager) getDatabase().getTable(fkTableName)).getDBName(), fieldName) + " ("
-                + getFieldDBName(fieldName) + ") REFERENCES "
+        return "ALTER TABLE " + getDBName() + " ADD FOREIGN KEY " + shortIndexName(((TableManager) getDatabase().getTable(fkTableName)).getDBName(), fieldName) + " (" + getFieldDBName(fieldName) + ") REFERENCES "
                 + ((TableManager) getDatabase().getTable(fkTableName)).getDBName() + " ("
                 + ((TableManager) getDatabase().getTable(fkTableName)).getFieldDBName(fkFieldName) + ")";
     }
-
+    
     /** Makes a short index based on the table and field name, if needed **/
     private String shortIndexName(String tableName, String fieldName) {
-        // FIXME this may not be true for other DBMS than mysql
+        //FIXME this may not be true for other DBMS than mysql
         String standardIndex = tableName + "__" + fieldName;
-        if (standardIndex.length() > 64) {
+        if(standardIndex.length() > 64) {
             // general_archive_Email__fromPerson --> g_a_E__fromPerson
             String shortIndex = "";
             StringTokenizer st = new StringTokenizer(tableName, "_");
-            while (st.hasMoreTokens()) {
-                shortIndex += st.nextToken().substring(0, 1);
-                if (st.hasMoreTokens())
+            while(st.hasMoreTokens()) {
+                shortIndex += st.nextToken().substring(0,1);
+                if(st.hasMoreTokens())
                     shortIndex += "_";
             }
             shortIndex += "__" + fieldName;
@@ -1766,7 +1756,7 @@ public class TableManager extends Table {
     /**
      * set the java value in a data chunk. If the value in the recordset is SQL null, a NullPointerException is thrown
      */
-    public void setValue(String fieldName, Dictionary<String, Object> d, ResultSet rs, int i) throws SQLException {
+    public void setValue(String fieldName, Dictionary d, ResultSet rs, int i) throws SQLException {
         Object o = getValue("", rs, i);
         if (o != null)
             d.put(fieldName, o);
@@ -1794,7 +1784,7 @@ public class TableManager extends Table {
     /**
      * return whether there was a duplicate for this field when inserting the given data
      */
-    public boolean checkDuplicate(String fieldName, SQLDBConnection dbc, Dictionary<String, Object> data) {
+    public boolean checkDuplicate(String fieldName, SQLDBConnection dbc, Dictionary data) {
         if (!getFieldDefinition(fieldName).isUnique())
             return false;
         Object val = data.get(fieldName);
@@ -1810,7 +1800,7 @@ public class TableManager extends Table {
         } catch (SQLException se) {
             Database.logException(se, dbc);
             throw new org.makumba.DBError(se, checkDuplicate.get(fieldName));
-        } finally {
+        }finally{
             try {
                 ps.close();
             } catch (SQLException e) {
@@ -1844,7 +1834,7 @@ public class TableManager extends Table {
         } catch (SQLException se) {
             Database.logException(se, dbc);
             throw new org.makumba.DBError(se, StringUtils.toString(fields));
-        } finally {
+        }finally{
             try {
                 ps.close();
             } catch (SQLException e) {
@@ -1931,7 +1921,7 @@ public class TableManager extends Table {
         } catch (SQLException se) {
             Database.logException(se, dbc);
             throw new org.makumba.DBError(se, StringUtils.toString(fields));
-        } finally {
+        }finally{
             try {
                 ps.close();
             } catch (SQLException e) {
@@ -1946,8 +1936,7 @@ public class TableManager extends Table {
      * check if the column from the SQL database (read from the catalog) still corresponds with the abstract definition
      * of this field
      */
-    protected boolean unmodified(String fieldName, int type, int size, Vector<Hashtable<String, Object>> columns,
-            int index) throws SQLException {
+    protected boolean unmodified(String fieldName, int type, int size, Vector<Hashtable<String, Object>> columns, int index) throws SQLException {
         switch (getFieldDefinition(fieldName).getIntegerType()) {
             case FieldDefinition._char:
             case FieldDefinition._charEnum:
@@ -1960,13 +1949,13 @@ public class TableManager extends Table {
     }
 
     // original unmodified() from FieldManager
-    protected boolean base_unmodified(String fieldName, int type, int size, Vector<Hashtable<String, Object>> columns,
-            int index) throws SQLException {
+    protected boolean base_unmodified(String fieldName, int type, int size, Vector<Hashtable<String, Object>> columns, int index)
+            throws SQLException {
         return type == getSQLType(fieldName);
     }
 
-    private boolean unmodified_primaryKey(String fieldName, int type, int size,
-            Vector<Hashtable<String, Object>> columns, int index) throws SQLException {
+    private boolean unmodified_primaryKey(String fieldName, int type, int size, Vector<Hashtable<String, Object>> columns, int index)
+            throws SQLException {
         if (!base_unmodified(fieldName, type, size, columns, index))
             return false;
         if (!getSQLDatabase().isAutoIncrement() && !getDatabase().usesHibernateIndexes())
@@ -1996,8 +1985,8 @@ public class TableManager extends Table {
      * Checks if the type is java.sql.Types.CHAR. Then, if the size of the SQL column is still large enough, this
      * returns true. Some SQL drivers allocate more anyway.
      */
-    protected boolean unmodified_char(String fieldName, int type, int size,
-            java.util.Vector<Hashtable<String, Object>> columns, int index) throws SQLException {
+    protected boolean unmodified_char(String fieldName, int type, int size, java.util.Vector<Hashtable<String, Object>> columns, int index)
+            throws SQLException {
         return (base_unmodified(fieldName, type, size, columns, index) || type == java.sql.Types.CHAR)
                 && check_char_Width(fieldName, size);
     }
@@ -2006,8 +1995,8 @@ public class TableManager extends Table {
     /**
      * check if the column from the SQL database still coresponds with the abstract definition of this field
      */
-    protected boolean unmodified_wrapper(String fieldName, int type, int size,
-            java.util.Vector<Hashtable<String, Object>> v, int index) throws SQLException {
+    protected boolean unmodified_wrapper(String fieldName, int type, int size, java.util.Vector<Hashtable<String, Object>> v, int index)
+            throws SQLException {
         return base_unmodified(fieldName, type, size, v, index);
     }
 
@@ -2031,7 +2020,7 @@ public class TableManager extends Table {
     }
 
     // moved from dateCreateJavaManager and dateModifyJavaManager
-    void nxt(String fieldName, Dictionary<String, Object> d) {
+    void nxt(String fieldName, Dictionary d) {
         switch (getFieldDefinition(fieldName).getIntegerType()) {
             case FieldDefinition._dateCreate:
                 d.put(fieldName, d.get(dd.getLastModificationDateFieldName()));
@@ -2043,7 +2032,7 @@ public class TableManager extends Table {
     }
 
     // moved from ptrIndexJavaManager
-    public SQLPointer nxt_ptrIndex(String fieldName, Dictionary<String, Object> d) {
+    public SQLPointer nxt_ptrIndex(String fieldName, Dictionary d) {
         SQLPointer i = new SQLPointer(dd.getName(), nextId_ptrIndex());
         d.put(fieldName, i);
         return i;
@@ -2066,8 +2055,7 @@ public class TableManager extends Table {
      *            the entire data to be inserted
      */
     @Override
-    public void checkInsert(Dictionary<String, Object> fieldsToCheck, Dictionary<String, Object> fieldsToIgnore,
-            Dictionary<String, Object> allFields) {
+    public void checkInsert(Dictionary fieldsToCheck, Dictionary fieldsToIgnore, Dictionary allFields) {
         dd.checkFieldNames(fieldsToCheck);
         for (String string : dd.getFieldNames()) {
             String name = (String) string;
@@ -2107,7 +2095,7 @@ public class TableManager extends Table {
      *            the entire data to be inserted
      */
     @Override
-    public void checkUpdate(Pointer pointer, Dictionary<String, Object> allFields) {
+    public void checkUpdate(Pointer pointer, Dictionary allFields) {
 
         // check multi-field key uniqueness that span over more than one table
         checkMultiFieldMultiTableUniqueness(pointer, allFields);
@@ -2140,7 +2128,7 @@ public class TableManager extends Table {
      * the database, and we just need to find them if something fails
      * {@link #findDuplicates(SQLDBConnection, Dictionary)}.
      */
-    private void checkMultiFieldMultiTableUniqueness(Pointer pointer, Dictionary<String, Object> fullData)
+    private void checkMultiFieldMultiTableUniqueness(Pointer pointer, Dictionary fullData)
             throws CompositeValidationException {
 
         DBConnectionWrapper dbcw = (DBConnectionWrapper) getSQLDatabase().getDBConnection();
@@ -2159,7 +2147,8 @@ public class TableManager extends Table {
                         values[j] = fullData.get(fields[j]);
                     }
                     if (findMultiFieldMultiTableDuplicates(pointer, key, values, dbc)) {
-                        notUnique.addException(new NotUniqueException(key.getFields()[0], key.getErrorMessage(values)));
+                        notUnique.addException(new NotUniqueException(getDataDefinition().getName(), key.getFields(),
+                                values));
                         // duplicates.put(fields, values);
                     }
                 }
@@ -2167,11 +2156,7 @@ public class TableManager extends Table {
             notUnique.throwCheck();
 
         } catch (Exception e) {
-            if (e instanceof CompositeValidationException) {
-                throw (CompositeValidationException) e;
-            } else {
-                throw new RuntimeWrappedException(e);
-            }
+            throw new RuntimeWrappedException(e);
         } finally {
             dbcw.close();
         }
