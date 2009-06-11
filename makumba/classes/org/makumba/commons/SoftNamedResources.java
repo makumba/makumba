@@ -62,14 +62,8 @@ public class SoftNamedResources extends NamedResources {
 
     @Override
     public synchronized int size() {
-        while(queue.poll()!=null){
-            try {
-                queue.remove();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        while(queue.poll()!=null)
             diff++;
-        }
         
         // sanity check
 //        int diff2=0;
