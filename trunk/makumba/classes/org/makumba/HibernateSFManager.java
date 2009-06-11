@@ -66,6 +66,10 @@ public class HibernateSFManager {
     private static final String DEFAULT_PREFIX = "makumbaGeneratedMappings";
 
     private static final String DEFAULT_SEED = "Makumba.conf";
+    
+    public static final String HIBERNATE_TRANSACTION_FACTORY = "hibernate.transaction.factory_class";
+    
+    public static final String HIBERNATE_CURRENT_SESSION_CONTEXT = "hibernate.current_session_context_class";
 
     private static Vector<String> externalConfigurationResources = new Vector<String>();
     
@@ -118,6 +122,11 @@ public class HibernateSFManager {
                 p.put(property, value);
             }
         }
+        
+        // add the properties for the session management
+        //p.put(HIBERNATE_TRANSACTION_FACTORY, "org.hibernate.transaction.JDBCTransactionFactory");
+        //p.put(HIBERNATE_CURRENT_SESSION_CONTEXT, "thread");
+
 
         java.util.logging.Logger.getLogger("org.makumba.hibernate.sf").info(
             "Makumba Hibernate SessionFactory manager, Hibernate " + MakumbaSystem.getHibernateVersionNumber());

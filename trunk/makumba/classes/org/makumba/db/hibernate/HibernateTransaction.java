@@ -45,6 +45,8 @@ import org.makumba.providers.query.hql.HqlAnalyzer;
 public class HibernateTransaction extends TransactionImplementation {
 
     public org.hibernate.Transaction t;
+    
+    private boolean useCurrentSession = false;
 
     public Session s;
 
@@ -62,8 +64,16 @@ public class HibernateTransaction extends TransactionImplementation {
         this(hibernateTransactionProvider);
         this.dataSource = dataSource;
         this.ddp = ddp;
-        this.s = ((SessionFactory) ((HibernateTransactionProvider) hibernateTransactionProvider).getHibernateSessionFactory(dataSource)).openSession();
-        s.setCacheMode(CacheMode.IGNORE);
+        
+        useCurrentSession = org.makumba.providers.Configuration.getDataSourceConfiguration(dataSource).containsKey(HibernateSFManager.HIBERNATE_CURRENT_SESSION_CONTEXT);
+        
+        if(useCurrentSession) {
+            this.s = ((SessionFactory) ((HibernateTransactionProvider) hibernateTransactionProvider).getHibernateSessionFactory(dataSource)).getCurrentSession();
+        }
+        else {
+            this.s = ((SessionFactory) ((HibernateTransactionProvider) hibernateTransactionProvider).getHibernateSessionFactory(dataSource)).openSession();
+            s.setCacheMode(CacheMode.IGNORE);
+        }
         beginTransaction();
     }
 
@@ -71,7 +81,10 @@ public class HibernateTransaction extends TransactionImplementation {
     public void close() {
         setContext(null);
         t.commit();
-        s.close();
+        if(!useCurrentSession) {
+            s.close();
+        }
+        
     }
 
     @Override
@@ -446,6 +459,12 @@ public class HibernateTransaction extends TransactionImplementation {
                     q.setParameter(paramName, paramValue);
             }
         }
+    }
+    
+    @Override
+    public Vector<Pointer> insert(String type, Collection<Dictionary<String, Object>> data) {
+        // TODO Auto-generated method stub
+        return super.insert(type, data);
     }
 
     @Override
