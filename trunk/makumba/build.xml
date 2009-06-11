@@ -504,6 +504,25 @@
             taskname="junit" />
     </target>
     
+<!-- Targets for Selenium testing -->
+    
+    <target name="runSeleniumServer">
+        <java jar="lib/selenium-server.jar" fork="true"/>
+    </target>
+
+    <target name="createTestData">
+        <java classname="test.MakumbaTestData" fork="true" classpath="classes" classpathref="project.class.path.complete">
+            <arg value="create" />
+        </java>
+    </target>
+
+    <target name="deleteTestData">
+        <java classname="test.MakumbaTestData" fork="true" classpath="classes" classpathref="project.class.path.complete">
+            <arg value="delete"/>
+        </java>
+    </target>
+    
+    
 <!-- Targets for TLD generation -->
 
     <target name="make12tld">
