@@ -38,6 +38,7 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidFieldTypeException;
 import org.makumba.LogicException;
+import org.makumba.MakumbaError;
 import org.makumba.NoSuchFieldException;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
@@ -151,6 +152,10 @@ public abstract class TransactionImplementation implements Transaction {
         dh.checkInsert();
         return dh.insert();
 
+    }
+    
+    public Vector<Pointer> insert(String type, Collection<Dictionary<String, Object>> data) {
+        throw new MakumbaError("not implemented");
     }
 
     /**

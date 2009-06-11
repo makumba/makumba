@@ -23,6 +23,7 @@
 
 package org.makumba.db.makumba;
 
+import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -33,6 +34,7 @@ import java.util.Vector;
 
 import org.makumba.DataDefinition;
 import org.makumba.LogicException;
+import org.makumba.MakumbaError;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.Transaction;
@@ -157,6 +159,11 @@ public abstract class DBConnection extends TransactionImplementation {
             return super.insert(type, data);
         }
         return null;
+    }
+    
+    /** mass insert of a record **/
+    public Vector<Pointer> insert(String type, Collection<Dictionary<String, Object>> data) {
+        throw new MakumbaError("Not implemented");
     }
  
     class QueryAndArgs{

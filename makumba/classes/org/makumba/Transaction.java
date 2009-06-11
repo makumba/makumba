@@ -23,12 +23,14 @@
 
 package org.makumba;
 
+import java.util.Collection;
 import java.util.Dictionary;
+import java.util.Vector;
 
 import org.makumba.providers.TransactionProvider;
 
-/** This class models operations with a database.  To obtain such an object, use methods from {@link MakumbaSystem}. <p>
-  Stricly speaking this class represents a database connection (later on, transaction). Obtaining more such objects for the same database configurations will result in opening more connections. Connections must be given back to the system using the {@link #close()} method. That will be done automatically by the object's finalizer. In makumba business logic, connections passed to the BL methods are automatically closed by the system after the BL operations (including eventual automatic DB acceses) were completed. To open a "sibling" of a connection <i>conn</i> of this type, use MakumbaSystem.getConnectionTo(<i>conn</i>.getName()). In most cases, you will have to close the sibling yourself.<p>
+/** This class models operations with a database.<p>
+  Strictly speaking this class represents a database connection. Obtaining more such objects for the same database configurations will result in opening more connections. Connections must be given back to the system using the {@link #close()} method. That will be done automatically by the object's finalizer. In makumba business logic, connections passed to the BL methods are automatically closed by the system after the BL operations (including eventual automatic DB acceses) were completed. To open a "sibling" of a connection <i>conn</i> of this type, use MakumbaSystem.getConnectionTo(<i>conn</i>.getName()). In most cases, you will have to close the sibling yourself.<p>
  * At the level of this API, data is represented as java.util.Dictionary, both for reading and writing. Most methods throw {@link DBError} if a fatal database error occurs. If the connection to the database is lost, an attempt is made to reconnect before throwing a {@link DBError}.<P>
  * All methods throw subclasses of either Error or RuntimeException, so nothing needs to be caught explicitely.
  * @see org.makumba.MakumbaSystem#getDefaultDataSourceName()
@@ -95,6 +97,15 @@ public interface Transaction extends Database
      * @exception IllegalStateException if the connection was already closed
      */ 
     public Pointer insert(String type, java.util.Dictionary<String, Object> data);
+    
+    /**
+     * Performs a batch insert. The way of providing data is the same as for {@link #insert(String, Dictionary)}, only that a collection is provided instead of a single Dictionary.
+     * @param type the makumba type to create a new record for
+     * @param data a set of field-value mapping for the new record. <br>
+     * @return a Vector containing the pointers of the inserted records, in the order in which they were inserted.
+     */
+    public Vector<Pointer> insert(String type, Collection<Dictionary<String, Object>> data);
+
 
     /** Insert a record in a subset (1-N set) of the given record. <br>
      * Database update is logged (see {@link java.util.logging.Logger}, {@link org.makumba.MakumbaSystem#setLoggingRoot(java.lang.String)}) in the <b><code>"db.update.execution", "db.update.performance"</code></b> loggers, with {@link java.util.logging.Level#INFO} logging level. "db.update.execution" also logs {@link java.util.logging.Level#SEVERE} fatal errors.<br
@@ -118,7 +129,7 @@ public interface Transaction extends Database
      * @exception IllegalStateException if the connection was already closed
      */ 
     public Pointer insert(Pointer host, String subsetField, java.util.Dictionary<String, Object> data);
-
+    
     /** Insert the results of the query in the given type. Generates an INSERT...SELECT. The labels of the OQL query must match field names of the given type.
      * @param type the type where to insert
      * @param OQL the OQL query to execute. Refers to parameters as $1, $2 ...
