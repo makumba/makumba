@@ -43,6 +43,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.makumba.forms.responder.ResponderFactory;
 import org.xml.sax.SAXException;
 
+import test.MakumbaTestData;
 import test.MakumbaTestSetup;
 import test.util.MakumbaJspTestCase;
 
@@ -265,7 +266,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         // we get the first form in the jsp
         WebForm form = resp.getForms()[0];
         // set the inputs in the add-to-new form
-        form.setParameter("indiv.name", MakumbaTestSetup.namePersonIndivName_AddToNew);
+        form.setParameter("indiv.name", MakumbaTestData.namePersonIndivName_AddToNew);
         form.setParameter("description_1", "addToNewDescription");
         form.setParameter("email_1", "addToNew@makumba.org");
         // submit the form
@@ -444,15 +445,15 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         form.setParameter("firstSex_0", String.valueOf(first.getDate()));
         form.setParameter("firstSex_1", String.valueOf(first.getMonth()));
         form.setParameter("firstSex_2", String.valueOf(first.getYear() + 1900));
-        form.setParameter("birthdate_0", String.valueOf(MakumbaTestSetup.birthdateJohn.getDate()));
-        form.setParameter("birthdate_1", String.valueOf(MakumbaTestSetup.birthdateJohn.getMonth()));
-        form.setParameter("birthdate_2", String.valueOf(MakumbaTestSetup.birthdateJohn.getYear() + 1800));
-        form.setParameter("uniqDate_0", String.valueOf(MakumbaTestSetup.birthdateJohn.getDate()));
-        form.setParameter("uniqDate_1", String.valueOf(MakumbaTestSetup.birthdateJohn.getMonth()));
-        form.setParameter("uniqDate_2", String.valueOf(MakumbaTestSetup.birthdateJohn.getYear() + 1900));
+        form.setParameter("birthdate_0", String.valueOf(MakumbaTestData.birthdateJohn.getDate()));
+        form.setParameter("birthdate_1", String.valueOf(MakumbaTestData.birthdateJohn.getMonth()));
+        form.setParameter("birthdate_2", String.valueOf(MakumbaTestData.birthdateJohn.getYear() + 1800));
+        form.setParameter("uniqDate_0", String.valueOf(MakumbaTestData.birthdateJohn.getDate()));
+        form.setParameter("uniqDate_1", String.valueOf(MakumbaTestData.birthdateJohn.getMonth()));
+        form.setParameter("uniqDate_2", String.valueOf(MakumbaTestData.birthdateJohn.getYear() + 1900));
         form.setParameter("hobbies", " ");
-        form.setParameter("uniqInt", MakumbaTestSetup.uniqInt.toString());
-        form.setParameter("uniqChar", MakumbaTestSetup.uniqChar);
+        form.setParameter("uniqInt", MakumbaTestData.uniqInt.toString());
+        form.setParameter("uniqChar", MakumbaTestData.uniqChar);
 
         // TODO: read HTTP unit documents carefully.
         // not sure if that is the most elegant / intended solution
@@ -586,9 +587,9 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         // we get the first form in the jsp
         WebForm form = resp.getForms()[0];
         // set the inputs in the add-to-new form
-        form.setParameter("indiv.name", MakumbaTestSetup.namePersonIndivName_FirstBrother);
+        form.setParameter("indiv.name", MakumbaTestData.namePersonIndivName_FirstBrother);
         form.setParameter("indiv.surname", "Person");
-        form.setParameter("indiv.name_1", MakumbaTestSetup.namePersonIndivName_SecondBrother);
+        form.setParameter("indiv.name_1", MakumbaTestData.namePersonIndivName_SecondBrother);
         form.setParameter("indiv.surname_1", "Person");
 
         // TODO: read HTTP unit documents carefully.
@@ -630,7 +631,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         // we get the first form in the jsp
         WebForm form = resp.getForms()[0];
         // set the inputs in the add-to-new form
-        form.setParameter("indiv.name", MakumbaTestSetup.namePersonIndivName_StepBrother);
+        form.setParameter("indiv.name", MakumbaTestData.namePersonIndivName_StepBrother);
         form.setParameter("indiv.surname", namePersonIndivSurname);
 
         // TODO: read HTTP unit documents carefully.
