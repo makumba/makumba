@@ -1,14 +1,14 @@
 <%@page contentType="text/html"%>
 <%@page pageEncoding="utf-8"%>
 
-<%@page import="test.MakumbaTestSetup"%><html>
+<%@page import="test.MakumbaTestData"%><html>
 <head><title>MQL Functions</title></head>
 <body>
 
 <%@taglib uri="http://www.makumba.org/presentation" prefix="mak" %>
 <%@taglib uri="http://java.sun.com/jstl/core_rt" prefix="c" %>
-<% pageContext.setAttribute("someBirthdate", MakumbaTestSetup.birthdateJohn); %>
-<% pageContext.setAttribute("day", MakumbaTestSetup.testDate); %>
+<% pageContext.setAttribute("someBirthdate", MakumbaTestData.birthdateJohn); %>
+<% pageContext.setAttribute("day", MakumbaTestData.testDate); %>
 <c:set var="startIndex" value="${2}" />
 <c:set var="substringLength" value="${2}" />
 <c:set var="separator" value=" " />
