@@ -103,13 +103,28 @@ public abstract class Database {
 
         // preventing stale connections
         @Override
-        public void renew(Object o) {
-            ((DBConnection) o).commit();
+        public boolean renew(Object o) {
+            try {
+                ((DBConnection) o).commit();
+            } catch(Throwable t) {
+                return false;
+            }
+            return true;
         }
 
         @Override
         public void close(Object o) {
             ((DBConnection) o).close();
+        }
+
+        @Override
+        public boolean check(Object o) {
+            try {
+                ((DBConnection) o).commit();
+            } catch(Throwable t) {
+                return false;
+            }
+            return true;
         }
     };
 

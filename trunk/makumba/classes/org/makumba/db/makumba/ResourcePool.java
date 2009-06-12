@@ -26,6 +26,8 @@ package org.makumba.db.makumba;
 import java.lang.ref.WeakReference;
 import java.util.Date;
 import java.util.Stack;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.Vector;
 
 /**
@@ -34,6 +36,7 @@ import java.util.Vector;
  * TODO: this class should be replaced by one more generic pool that exists out there
  * 
  * @author Cristian Bogdan
+ * @author Manuel Gay
  */
 public abstract class ResourcePool {
     // a stack of resources
@@ -69,7 +72,14 @@ public abstract class ResourcePool {
                 return createAndCount();
             timeStack.pop();
             java.util.logging.Logger.getLogger("org.makumba.util.pool.member").fine("pool members: " + timeStack.size());
-            return stack.pop();
+            
+            Object r = stack.pop();
+            if(!check(r)) {
+                // resource is not valid anymore, we have to get another one
+                return get();
+            }
+            
+            return r;
         }
     }
 
@@ -94,8 +104,8 @@ public abstract class ResourcePool {
     public void close() {
         poolRef.clear();
         synchronized (stack) {
-            if (stalePreventionThread != null)
-                stalePreventionThread.interrupt();
+            if (stalePreventionTimer != null)
+                stalePreventionTimer.cancel();
 
             stack.clear();
             timeStack.clear();
@@ -113,23 +123,28 @@ public abstract class ResourcePool {
     // sleeping is the stale prevention thread sleeping period
     // typically sleeping= stale/2
     long sleeping, stale;
+    
+    Timer stalePreventionTimer;
 
-    Thread stalePreventionThread;
-
-    /** refresh a resource that was unused for a long time to prevent it from staling */
-    public void renew(Object o) {
-    }
+    /** 
+     * refresh a resource that was unused for a long time to prevent it from staling.
+     * returns false if resource could not be renewed
+     */
+    public abstract boolean renew(Object o);
 
     /** close a resource */
-    public void close(Object o) {
-    }
-
-    /** start a stale prevention thread */
-    public void startStalePreventionThread(long sleepingTime, long staleTime) {
+    public abstract void close(Object o);
+    
+    /** check if a resource is valid **/
+    public abstract boolean check(Object o);
+    
+    /** start a stale prevention timer */
+    public void startStalePreventionTimer(long sleepingTime, long staleTime) {
         this.sleeping = sleepingTime;
         this.stale = staleTime;
-        stalePreventionThread = new StalePreventionThread(poolRef, sleeping);
-        stalePreventionThread.start();
+        
+        stalePreventionTimer = new Timer(true);
+        stalePreventionTimer.scheduleAtFixedRate(new StalePreventionTask(poolRef), new Date(), sleepingTime);
     }
 
     /** check for stale resources and renew the rotten ones */
@@ -140,8 +155,16 @@ public abstract class ResourcePool {
                 if (((Date) timeStack.elementAt(i)).getTime() + stale < (new Date()).getTime() + sleeping) {
                     java.util.logging.Logger.getLogger("org.makumba.util.pool").fine(
                         "renewing resource " + stack.elementAt(i) + " not used since " + timeStack.elementAt(i));
-                    renew(stack.elementAt(i));
-                    timeStack.setElementAt(new Date(), i);
+                    
+                    // make sure the renewal works, if not, remove the resource from the pool
+                    if(renew(stack.elementAt(i))) {
+                        timeStack.setElementAt(new Date(), i);
+                    } else {
+                        java.util.logging.Logger.getLogger("org.makumba.util.pool").fine(
+                            "removing resource " + stack.elementAt(i) + " as it could not be renewed");
+                        stack.remove(i);
+                        timeStack.remove(i);
+                    }
                 }
             }
         }
@@ -153,41 +176,28 @@ public abstract class ResourcePool {
 
 }
 
-/** a thread that wakes up periodically and asks the pool to look for stale resources */
-class StalePreventionThread extends Thread implements Runnable {
+/** a task that asks the pool to look for stale resources */
+class StalePreventionTask extends TimerTask {
     // we only keep a weak reference to the pool
     // otherwise the system (which keeps a reference to every thread)
-    // would not allow the resource pool to be gargage-collected.
+    // would not allow the resource pool to be garbage-collected.
     WeakReference<ResourcePool> poolRef;
 
-    long sleeping;
-
-    StalePreventionThread(WeakReference<ResourcePool> poolRef, long sleeping) {
+    StalePreventionTask(WeakReference<ResourcePool> poolRef) {
         this.poolRef = poolRef;
-        this.sleeping = sleeping;
-        this.setDaemon(true);
     }
 
     public void run() {
-        while (true) {
-            ResourcePool rp = (ResourcePool) poolRef.get();
+        ResourcePool rp = (ResourcePool) poolRef.get();
 
-            // if the weak reference was cleared, GC and finalization occured,
-            // so we return
-            if (rp == null)
-                return;
+        // if the weak reference was cleared, GC and finalization occured,
+        // so we return
+        if (rp == null)
+            return;
 
-            rp.renewAll();
+        rp.renewAll();
 
-            // lose the reference while sleeping to allow for garbage collection of the pool
-            rp = null;
-
-            try {
-                sleep(sleeping);
-            } catch (InterruptedException e) {
-                // we've been interrupted due to GC, so we end the thread
-                return;
-            }
-        }
+        // lose the reference to allow for garbage collection of the pool
+        rp = null;
     }
 }
