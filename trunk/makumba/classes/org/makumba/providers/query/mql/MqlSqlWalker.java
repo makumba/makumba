@@ -108,13 +108,9 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
             } else {
                 throw new ProgrammerError("MQL Function '" + functionDef + "' requires no arguments.");
             }
-            if (paramNode.isParam()) {
-                String paramName = "param" + paramInfo.getFieldNames().size();
-                FieldDefinition fd = DataDefinitionProvider.getInstance().makeFieldOfType(paramName, type);
-                paramNode.setMakType(fd);
-                paramInfo.addField(fd);
+            if (paramNode.isParam()) 
+                setParameterType(paramNode, DataDefinitionProvider.getInstance().makeFieldOfType("dummy", type));
                 // FIXME: a param might also be a nested function
-            }
             paramNode = (MqlNode) paramNode.getNextSibling();
             index++;
         }
@@ -267,8 +263,17 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         String paramName = param.getOriginalText();
         FieldDefinition fd = DataDefinitionProvider.getInstance().makeFieldWithName(paramName, likewise);
         param.setMakType(fd);
-        if(paramInfo.getFieldDefinition(paramName)==null)
+        FieldDefinition fd1=paramInfo.getFieldDefinition(paramName);
+        if(fd1==null)
             paramInfo.addField(fd);
+        else if(!fd1.isAssignableFrom(fd))
+            if(!fd.isAssignableFrom(fd1))
+                throw new ProgrammerError("two different types deduced for parameter "+fd.getName()+": "+fd+"  "+fd1);
+            //else    
+            // FIXME: the most generic type (fd in this case) should replace the les generic type
+            // (fd1 in this case) in the DataDefinition
+            // currently there is no DataDefinition method for such replacement.
+            //    paramInfo.addField(fd);
     }
 
     void setProjectionTypes(DataDefinition proj) {
