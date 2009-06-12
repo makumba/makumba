@@ -144,7 +144,7 @@ public abstract class ResourcePool {
         this.stale = staleTime;
         
         stalePreventionTimer = new Timer(true);
-        stalePreventionTimer.scheduleAtFixedRate(new StalePreventionTask(poolRef), new Date(), staleTime);
+        stalePreventionTimer.scheduleAtFixedRate(new StalePreventionTask(poolRef), new Date(), sleepingTime);
     }
 
     /** check for stale resources and renew the rotten ones */
