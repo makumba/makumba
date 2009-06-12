@@ -203,7 +203,7 @@ public class Database extends org.makumba.db.makumba.Database {
 
 			if (staleConn != null) {
 				long l = Long.parseLong(staleConn) * 60000l;
-				connections.startStalePreventionTimer(30000, l);
+				connections.startStalePreventionTimer(l / 2, l);
 			}
 			
 
