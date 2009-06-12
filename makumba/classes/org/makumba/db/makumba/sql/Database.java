@@ -175,12 +175,6 @@ public class Database extends org.makumba.db.makumba.Database {
 				connectionConfig.put(s.substring(4), p.getProperty(s).trim());
 			}
 
-			// FIXME maybe this should be done just for mysql...
-			if (connectionConfig.get("autoReconnect") == null)
-				connectionConfig.setProperty("autoReconnect", "true");
-
-			
-			
 			String driver = p.getProperty("sql.driver");
 			
 
@@ -201,14 +195,17 @@ public class Database extends org.makumba.db.makumba.Database {
 					"Makumba " + MakumbaSystem.getVersion() + " INIT: " + url);
 			Class.forName(driver);
 			initConnections();
+			
+			
 			String staleConn = sqlDrivers
 					.getProperty(getConfiguration("#sqlEngine")
 							+ ".staleConnectionTime");
 
 			if (staleConn != null) {
 				long l = Long.parseLong(staleConn) * 60000l;
-				connections.startStalePreventionThread(l / 2, l);
+				connections.startStalePreventionTimer(30000, l);
 			}
+			
 
 			DBConnectionWrapper dbcw = (DBConnectionWrapper) getDBConnection();
 			SQLDBConnection dbc = (SQLDBConnection) dbcw.getWrapped();
