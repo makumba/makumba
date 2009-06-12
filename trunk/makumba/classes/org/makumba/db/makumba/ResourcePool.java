@@ -144,7 +144,7 @@ public abstract class ResourcePool {
         this.stale = staleTime;
         
         stalePreventionTimer = new Timer(true);
-        stalePreventionTimer.scheduleAtFixedRate(new StalePreventionTask(poolRef), new Date(), sleepingTime);
+        stalePreventionTimer.scheduleAtFixedRate(new StalePreventionTask(poolRef), new Date(), staleTime);
     }
 
     /** check for stale resources and renew the rotten ones */
@@ -161,7 +161,7 @@ public abstract class ResourcePool {
                         timeStack.setElementAt(new Date(), i);
                     } else {
                         java.util.logging.Logger.getLogger("org.makumba.util.pool").fine(
-                            "removing resource " + stack.elementAt(i) + " as it could not be renewed");
+                            "removing resource " + stack.elementAt(i) + " as it could not be renewed. was last used at "+ timeStack.get(i));
                         stack.remove(i);
                         timeStack.remove(i);
                     }
