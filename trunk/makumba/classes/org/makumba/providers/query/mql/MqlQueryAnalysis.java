@@ -9,6 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.makumba.DataDefinition;
+import org.makumba.FieldDefinition;
 import org.makumba.OQLParseError;
 import org.makumba.commons.NameResolver;
 import org.makumba.commons.RegExpUtils;
@@ -98,10 +99,20 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         proj = DataDefinitionProvider.getInstance().getVirtualDataDefinition("Projections for " + query);
         mqlAnalyzer.setProjectionTypes(proj);        
         
-        for(int i=0; i<parameterOrder.size(); i++)
-            paramInfo.addField(DataDefinitionProvider.getInstance().makeFieldWithName("param"+i, 
-                   mqlAnalyzer.paramInfo.getFieldDefinition(parameterOrder.get(i))));
+        for (int i = 0; i < parameterOrder.size(); i++) {
+            // first we check whether we have a parameter type for exactly this position
+            FieldDefinition fd = mqlAnalyzer.paramInfoByPosition.getFieldDefinition("param" + i);
             
+            // failing that, we see if we have a parameter with the same name on another position
+            // but we consider that only if the parameter is not multi-type
+            if (fd == null && ! mqlAnalyzer.multiTypeParams.contains(parameterOrder.get(i)))
+                fd = mqlAnalyzer.paramInfoByName.getFieldDefinition(parameterOrder.get(i));
+
+            if (fd != null)
+                paramInfo.addField(DataDefinitionProvider.getInstance().makeFieldWithName("param" + i, fd));
+            // FIXME: throw an exception if a type of a parameter cannot be determined
+            // most probably the clients of QueryAnalysis do throw one
+        }
         // if(mqlAnalyzer.hasSubqueries)
         // System.out.println(mqlDebug);
         MqlSqlGenerator mg = new MqlSqlGenerator();
@@ -250,13 +261,21 @@ public class MqlQueryAnalysis implements QueryAnalysis {
                 para.setText(a.getText().substring(1));
             }
             parameterOrder.add(para.getText());
+
+            // we append in the tree to the parameter name the parameter position, 
+            // to be able to retrieve the position, and thus identify the parameter at type analysis
+            para.setText(para.getText() + "###" + (parameterOrder.size() - 1));
             a.setFirstChild(para);
             a.setText(":");
         }else if (a.getType() == HqlTokenTypes.COLON && a.getFirstChild() != null
-                && a.getFirstChild().getType() == HqlTokenTypes.IDENT)
+                && a.getFirstChild().getType() == HqlTokenTypes.IDENT){
             // we also accept : params though we might not know what to do with them later
             parameterOrder.add(a.getFirstChild().getText());
-        
+
+            // we append in the tree to the parameter name the parameter position, 
+            // to be able to retrieve the position, and thus identify the parameter at type analysis
+            a.getFirstChild().setText(a.getFirstChild().getText() + "###" + (parameterOrder.size() - 1));
+        }
         if(a.getType()==HqlTokenTypes.SELECT_FROM){
            // first the SELECT part
            transformOQLParameters(a.getFirstChild().getNextSibling());

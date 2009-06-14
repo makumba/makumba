@@ -1,6 +1,9 @@
 package org.makumba.providers.query.mql;
 
 import java.io.PrintWriter;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.makumba.DataDefinition;
@@ -39,8 +42,22 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
 
     static PrintWriter pw = new PrintWriter(System.out);
 
-    DataDefinition paramInfo;
+    /** Parameters as paramN=type, where N is the parameter position in the query.
+     * This is normally the structure returned to the query analyzer clients. 
+     * It allows for a parameter to have different types on different positions (multi-type parameters). 
+     */
+    DataDefinition paramInfoByPosition;
 
+    /** Parameters as name=type, where name is the string after $ for named parameters
+     * or paramX for numbrered paramteres, where X is the parameter number (not its query position!).
+     * This is used if a parameter is mentioned more times in a query and the type for some of these mentions
+     * cannot be determined 
+     */
+    DataDefinition paramInfoByName;
+
+    /** The set of parameters that have different types on different positions (multi-type parameters) */
+    Set<String> multiTypeParams= new HashSet<String>();
+    
     private AST select;
 
     QueryContext rootContext;
@@ -61,7 +78,8 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         this.optimizeJoins = optimizeJoins;
         this.autoLeftJoin = autoLeftJoin;
         setASTFactory(fact = new MqlSqlASTFactory(this));
-        this.paramInfo = DataDefinitionProvider.getInstance().getVirtualDataDefinition("Temporary parameters for " + query);
+        this.paramInfoByPosition = DataDefinitionProvider.getInstance().getVirtualDataDefinition("Temporary parameters by order for " + query);
+        this.paramInfoByName = DataDefinitionProvider.getInstance().getVirtualDataDefinition("Temporary parameters by name for " + query);
 
     }
 
@@ -261,19 +279,38 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
 
     void setParameterType(MqlNode param, FieldDefinition likewise) {
         String paramName = param.getOriginalText();
-        FieldDefinition fd = DataDefinitionProvider.getInstance().makeFieldWithName(paramName, likewise);
+        
+        // we separate the parameter position from the name, as both are registered in the same string
+        int paramPositionIndex = paramName.indexOf("###");
+        int paramPosition = Integer.parseInt(paramName.substring(paramPositionIndex + 3));
+        paramName = paramName.substring(0, paramPositionIndex);
+
+        // if the parameter is not already registered as multi-type (with different types on different position)
+        if (!multiTypeParams.contains(paramName)) {
+            FieldDefinition fd = DataDefinitionProvider.getInstance().makeFieldWithName(paramName, likewise);
+            FieldDefinition fd1 = paramInfoByName.getFieldDefinition(paramName);
+
+            // if we already have a type for that name and the types are not compatible
+            if (fd1 != null && !fd1.isAssignableFrom(fd))
+                // FIXME: if(fd.isAssignableFrom(fd1) we are still ok
+                // so we should not declare the param as multitype
+                // but then we'd have to replace fd1 with fd in paramInfoByName
+                // and that's currently not possible
+                
+                // we register the parameter as multi-type
+                multiTypeParams.add(paramName);
+            else
+                if(fd1==null)
+                    // we register the type if we don't have any for this name
+                    paramInfoByName.addField(fd);
+        }
+
+        // we now register the type for this position. 
+        // we don't check for duplicate type on this position
+        // as each tree node should be visited only once...
+        FieldDefinition fd = DataDefinitionProvider.getInstance().makeFieldWithName("param" + paramPosition, likewise);
         param.setMakType(fd);
-        FieldDefinition fd1=paramInfo.getFieldDefinition(paramName);
-        if(fd1==null)
-            paramInfo.addField(fd);
-        else if(!fd1.isAssignableFrom(fd))
-            if(!fd.isAssignableFrom(fd1))
-                throw new ProgrammerError("two different types deduced for parameter "+fd.getName()+": "+fd+"  "+fd1);
-            //else    
-            // FIXME: the most generic type (fd in this case) should replace the les generic type
-            // (fd1 in this case) in the DataDefinition
-            // currently there is no DataDefinition method for such replacement.
-            //    paramInfo.addField(fd);
+        paramInfoByPosition.addField(fd);
     }
 
     void setProjectionTypes(DataDefinition proj) {
@@ -294,8 +331,14 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
             FieldDefinition makType = mqlNode.getMakType();
 
             // if we have no type but we are a parameter, we maybe found the type somewhere else
-            if (makType == null && mqlNode.isParam())
-                makType= paramInfo.getFieldDefinition(mqlNode.getOriginalText());
+            if (makType == null && mqlNode.isParam()) {
+                // we separate the type from the position
+                String paramName = mqlNode.getOriginalText();
+                paramName = paramName.substring(0, paramName.indexOf("###"));
+                // we accept the type registered on some other position unless it is a multi-type param
+                if (!multiTypeParams.contains(paramName))
+                    makType = paramInfoByName.getFieldDefinition(paramName);
+            }
             
             //  if we have no type but know in which table we'll insert the result
             if(makType == null && insertIn!=null){
