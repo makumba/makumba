@@ -78,7 +78,7 @@ public class MqlQueryAnalysis implements QueryAnalysis {
             parser = HqlParser.getInstance(query);
             parser.statement();
         }catch(Throwable t){
-            doThrow(t, parser.getAST());
+            doThrow(t, parser!=null?parser.getAST():null);
         }
         doThrow(parser.error, parser.getAST());
 
