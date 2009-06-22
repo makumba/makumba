@@ -64,27 +64,36 @@ options {
 
 tokens {
     FIELD<AST=org.makumba.providers.datadefinition.mdd.FieldNode>;
-    VALIDATION<AST=org.makumba.providers.datadefinition.mdd.ValidationNode>;
+    VALIDATION<AST=org.makumba.providers.datadefinition.mdd.ValidationRuleNode>;
     FUNCTION<AST=org.makumba.providers.datadefinition.mdd.FunctionNode>;
 
+	// title field
+	// !title=name
+	// !title = nameSurname()
     TITLEFIELD;
     TITLEFIELDFIELD;
     TITLEFIELDFUNCTION;
     
+    // macro types
+	// !type.genTyp=int{"Female"=0, "Male"=1}
+    TYPENAME;
+    TYPEDEF;
+    
     INCLUDED;
     
-    // MDD structure
+    // MDD field
+    // name = unique char[255] ;some comment
     FIELDNAME;
     MODIFIER;
     FIELDTYPE;
     FIELDCOMMENT;
+    
+    // MDD subfield
+    // cars = set
+    // cars->brand = char[255]
     PARENTFIELDNAME;
     SUBFIELDNAME;
     SUBFIELDTYPE;
-    
-    
-    TYPENAME;
-    TYPEDEF;
     
     // field types
     CHAR="char";
@@ -102,7 +111,6 @@ tokens {
     SET="set";
     SETCOMPLEX;
     PTRONE;
-    
     UNKNOWN_TYPE; // for type shorthands
     
     //modifiers
@@ -114,8 +122,12 @@ tokens {
     POINTED_TYPE;
     DEPRECATED="deprecated"; // intEnum
     
+    
     // validation rules
-    RANGE;
+    VALIDATIONNAME;
+    
+    RANGE="range";
+    LENGTH="length";
     RANGE_FROM;
     RANGE_TO;
     
@@ -136,10 +148,12 @@ tokens {
     private AST currentField;
 
     protected void disableField(AST field) { }
+    
+    protected void transformToFile(AST field) {}
 
     protected AST include(AST type) { return null; }
     
-    protected AST includeSubField(AST type, AST parentField, AST subField) { return null; }
+    protected AST includeSubField(AST type, AST parentField) { return null; }
     
 }
 
@@ -164,12 +178,15 @@ fieldDeclaration
     : fn:fieldName
       EQUALS^ {#EQUALS.setType(FIELD); #EQUALS.setText(#fn.getText()); boolean hasBody = false;}
       (options{greedy=true;}:
-          (modifier)* fieldType
+          (modifier)* ft:fieldType
           (SEMICOLON! fieldComment LINEBREAK!)? {hasBody = true;}
       )?
       {
       	if(!hasBody) {
       	    disableField(#fieldDeclaration);
+      	}
+      	if(#ft.getType() == FILE) {
+      		transformToFile(#fieldDeclaration);
       	}
       }
     ;
@@ -180,7 +197,7 @@ subFieldDeclaration
       fn:atom {#fn.setType(PARENTFIELDNAME); } s:SUBFIELD^
       (
           titleDeclaration (SEMICOLON! fieldComment! LINEBREAK!)? // allow comment but do not store them
-          | EXMARK! "include"! EQUALS! t:type { #subFieldDeclaration = includeSubField(#t, #fn, #s); }
+          | EXMARK! "include"! EQUALS! t:type { #subFieldDeclaration = includeSubField(#t, #fn); }
           |
           (
             a:atom { #a.setType(SUBFIELDNAME); }
@@ -258,19 +275,23 @@ typeDeclaration
 validationRuleDeclaration
     : a:atom { #a.setType(FIELDNAME); }
       p:PERCENT^ {#p.setType(VALIDATION);}
+      // SIMPLE VALIDATION RULES
       (
         rangeRule //| uniquenessRule | comparisonRule
       )
     ;
     
+// name%length = [1..?]
+// age%range = [18..99]
 rangeRule
-    : r:"range"^ {#r.setType(RANGE);}
+    : (RANGE^ | LENGTH^)
       EQUALS!
       LEFT_SQBR!
       f:rangeBound {#f.setType(RANGE_FROM);} DOT! DOT! t:rangeBound {#t.setType(RANGE_TO);}
       RIGHT_SQBR!
     ;
 
+// [1..?] [?..5]
 rangeBound
     : n:NUMBER | m:INTMARK
     ;

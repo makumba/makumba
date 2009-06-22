@@ -88,10 +88,18 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
         } else if(modifier.equals("not empty")) {
             field.notEmpty = true;
         } else {
-            throw new MakumbaError("Should not be here");
+            throw new MakumbaError("Modifier " + modifier + " invalid");
         }
         
     }
     
-
+    
+    @Override
+    protected void checkRuleApplicability() {
+        try {
+            getCurrentValidationRule().checkApplicability();
+        } catch(Throwable t) {
+            factory.doThrow(this.typeName, t.getMessage(), getCurrentValidationRule());
+        }
+    }
 }

@@ -47,7 +47,7 @@ public class FieldNode extends MDDAST {
     // pointed type
     protected String pointedType;
     
-    // subfield - ptrOne, setComplex
+    // subfield - ptrOne, setComplex, file
     protected MDDNode subfield;
 
     public FieldNode(MDDNode mdd, String name) {
@@ -91,12 +91,10 @@ public class FieldNode extends MDDAST {
         }
         return this.subfield;
     }
-    
+
     public void addSubfield(FieldNode subfield) {
         this.subfield.addField(subfield);
     }   
-    
-    
     
     public String toString() {
         StringBuffer sb = new StringBuffer();
@@ -114,5 +112,6 @@ public class FieldNode extends MDDAST {
         }
         return sb.toString();
     }
+
 
 }

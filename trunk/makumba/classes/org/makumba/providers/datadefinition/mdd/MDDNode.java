@@ -2,9 +2,11 @@ package org.makumba.providers.datadefinition.mdd;
 
 import java.net.URL;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 
-import org.apache.commons.collections.map.LinkedMap;
 import org.makumba.DataDefinition;
+import org.makumba.MakumbaError;
+
 
 import antlr.CommonAST;
 
@@ -35,10 +37,11 @@ public class MDDNode extends CommonAST {
     /** parent of the data definition **/
     protected MDDNode parent;
     
+    protected LinkedHashMap<String, FieldNode> fields = new LinkedHashMap<String, FieldNode>();
     
+    protected LinkedHashMap<String, ValidationRuleNode> singleFieldValidationRules = new LinkedHashMap<String, ValidationRuleNode>();
     
-    protected LinkedMap fields = new LinkedMap();
-    
+    protected LinkedHashMap<String, ValidationRuleNode> namedValidationRules = new LinkedHashMap<String, ValidationRuleNode>();
     
     public MDDNode(String name, URL origin) {
         this.name = name;
@@ -109,6 +112,18 @@ public class MDDNode extends CommonAST {
         }
     }
     
+    public void addValidationRule(ValidationRuleNode vn) {
+        switch(vn.type) {
+            case LENGTH:
+            case RANGE:
+                singleFieldValidationRules.put(vn.field, vn);
+                break;
+            default:
+                throw new MakumbaError("should not be here");
+        }
+    }
+    
+    
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("Type name: " + name + "\n");
@@ -119,12 +134,23 @@ public class MDDNode extends CommonAST {
             sb.append("Title field: " + titleField.getText());
         }
         sb.append("\nFields:" + "\n");
-        for(Iterator<String> i = fields.asList().iterator(); i.hasNext();) {
+        for(Iterator<String> i = fields.keySet().iterator(); i.hasNext();) {
             sb.append(fields.get(i.next()).toString() + "\n");
         }
+        
+        sb.append("\nValidation rules:" + "\n");
+        for(Iterator<String> i = singleFieldValidationRules.keySet().iterator(); i.hasNext();) {
+            sb.append(singleFieldValidationRules.get(i.next()).toString() + "\n");
+        }
+        
+        for(Iterator<String> i = namedValidationRules.keySet().iterator(); i.hasNext();) {
+            sb.append(singleFieldValidationRules.get(i.next()).toString() + "\n");
+        }
+        
         
         return sb.toString();
         
     }
+
 
 }

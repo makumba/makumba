@@ -5,15 +5,12 @@ import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Vector;
 
-import org.apache.commons.collections.map.ListOrderedMap;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.ValidationDefinition;
 
 public class DataDefinitionImpl implements DataDefinition {
     
-    private ListOrderedMap fields = new ListOrderedMap();
-
     public void addField(FieldDefinition fd) {
         // TODO Auto-generated method stub
             

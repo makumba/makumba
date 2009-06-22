@@ -1,3 +1,5 @@
+// TODO expand FILE type into file declaration
+
 header {
     package org.makumba.providers.datadefinition.mdd;
 }
