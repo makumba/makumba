@@ -30,6 +30,7 @@ COMMA: ',';
 DOT: '.';
 QUOTMARK: '"';
 EXMARK: '!';
+INTMARK: '?';
 
 SUBFIELD
     : '-' '>'
@@ -113,6 +114,11 @@ tokens {
     POINTED_TYPE;
     DEPRECATED="deprecated"; // intEnum
     
+    // validation rules
+    RANGE;
+    RANGE_FROM;
+    RANGE_TO;
+    
 }
 
 {
@@ -147,8 +153,12 @@ declaration
     | titleDeclaration (LINEBREAK!)*
     | typeDeclaration (LINEBREAK!)*
     | includeDeclaration (LINEBREAK!)*
+    | validationRuleDeclaration (LINEBREAK!)*
     
     ;
+    
+    
+//////////////// FIELD DECLARATION
 
 fieldDeclaration
     : fn:fieldName
@@ -173,7 +183,7 @@ subFieldDeclaration
           | EXMARK! "include"! EQUALS! t:type { #subFieldDeclaration = includeSubField(#t, #fn, #s); }
           |
           (
-            subFieldName
+            a:atom { #a.setType(SUBFIELDNAME); }
             EQUALS!
             (modifier)* fieldType
             (SEMICOLON! fieldComment LINEBREAK!)?
@@ -214,17 +224,6 @@ fieldComment
       (b:atom { comment += " " + #b.getText(); })*
       { #fieldComment = #[FIELDCOMMENT]; #fieldComment.setText(comment); }
     ;
-
-
-fieldCommentNew
-    : { String comment=""; }
-      (a:atom { comment += #a.getText() + " "; })* LINEBREAK!
-      { #fieldCommentNew = #[FIELDCOMMENT]; #fieldCommentNew.setText(comment); }
-    ;
-
-subFieldName
-    : a:atom {#a.setType(SUBFIELDNAME); }
-    ;
     
 modifier
     : u:UNIQUE { #u.setType(MODIFIER); }
@@ -233,11 +232,11 @@ modifier
     | "not" "empty" { #modifier = #[MODIFIER, "not empty"]; }
     ;
     
+// !title = name
 titleDeclaration
     : EXMARK! "title"! EQUALS! t:title
     ;
     
-// !title = name
 title
     : t:atom { #t.setType(TITLEFIELDFIELD);}
     // TODO add function here as well
@@ -251,6 +250,41 @@ includeDeclaration
 typeDeclaration
     : EXMARK! "type"! DOT! n:atom { #n.setType(TYPENAME); } EQUALS! fieldType
     ;
+    
+    
+    
+//////////////// VALIDATION RULES
+
+validationRuleDeclaration
+    : a:atom { #a.setType(FIELDNAME); }
+      p:PERCENT^ {#p.setType(VALIDATION);}
+      (
+        rangeRule //| uniquenessRule | comparisonRule
+      )
+    ;
+    
+rangeRule
+    : r:"range"^ {#r.setType(RANGE);}
+      EQUALS!
+      LEFT_SQBR!
+      f:rangeBound {#f.setType(RANGE_FROM);} DOT! DOT! t:rangeBound {#t.setType(RANGE_TO);}
+      RIGHT_SQBR!
+    ;
+
+rangeBound
+    : n:NUMBER | m:INTMARK
+    ;
+
+//uniquenessRule
+//    :
+//    ;
+    
+//comparisonRule
+//    : 
+//    ;
+
+
+//////////////// COMMON
 
 // general.Person
 type
