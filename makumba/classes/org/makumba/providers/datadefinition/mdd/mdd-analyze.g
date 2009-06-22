@@ -1,5 +1,4 @@
 // TODO
-// add !include mechanism (from beginning in parser)
 
 // other todo:
 //   take care of validation
@@ -83,6 +82,7 @@ declaration
     : fieldDeclaration
     | t:titleDeclaration { mdd.setTitleField((TitleFieldNode) #t); }
     | typeDeclaration
+    | validationRuleDeclaration
     ;
 
 fieldDeclaration
@@ -189,3 +189,13 @@ titleDeclaration
 typeDeclaration! // we kick out the declaration after registering it
     : name:TYPENAME ft:fieldType { checkFieldType(#ft); addTypeShorthand(#name, #ft); }
     ;
+    
+    
+validationRuleDeclaration
+    : #(VALIDATION fn:FIELDNAME rangeRule) { ValidationNode vNode = new ValidationNode(mdd); }
+    ;
+    
+rangeRule
+    : #(RANGE RANGE_FROM RANGE_TO)
+    ;
+      
