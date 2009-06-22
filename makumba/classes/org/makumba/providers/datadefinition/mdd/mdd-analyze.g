@@ -39,6 +39,8 @@ options {
     
     private FieldNode currentField;
     
+    private ValidationRuleNode currentValidationRule;
+    
     // ordered map to keep track of fields and handle duplicates, i.e. overriden fields
     private ListOrderedMap fields = new ListOrderedMap();
     
@@ -71,6 +73,24 @@ options {
     
     // Add subfield - setComplex, ptrOne
     protected void addSubfield(FieldNode field) { }
+    
+    // create and set validation rule
+    protected void createValidationRule(AST vr, String field) {
+	    this.currentValidationRule = new ValidationRuleNode(this.mdd, vr, field);
+    }
+    
+    // set current validation rule
+    protected void setCurrentValidationRule(ValidationRuleNode validation) {
+    	this.currentValidationRule = validation;
+    }
+    
+    // get current validation rule
+    protected ValidationRuleNode getCurrentValidationRule() {
+    	return this.currentValidationRule;
+    }
+    
+    // check if rule can be applied to fields
+    protected void checkRuleApplicability() {}
         
 }
 
@@ -85,6 +105,9 @@ declaration
     | validationRuleDeclaration
     ;
 
+
+//////////////// FIELD DECLARATION
+
 fieldDeclaration
     : #(
             f:FIELD
@@ -97,7 +120,7 @@ fieldDeclaration
                       sf:SUBFIELD
                       PARENTFIELDNAME { checkSubFieldName(#fn, #PARENTFIELDNAME); }
                       (
-                          (t:titleDeclaration { subFieldDD.setTitleField((TitleFieldNode) #t); field.addChild(#t); }) // FIXME add child to tree so it can be processed in builder
+                          (t:titleDeclaration { subFieldDD.setTitleField((TitleFieldNode) #t); field.addChild(#t); })
                           |
                           (
                               sfn:SUBFIELDNAME { FieldNode subField = new FieldNode(subFieldDD, #sfn.getText(), #sf); setCurrentField(subField); }
@@ -124,6 +147,7 @@ fieldDeclaration
                 #fieldDeclaration = field;
                 
                 // handle overriden fields
+                // TODO maybe remove this
                 if(fields.containsKey(#fn.getText())) {
                   // fetch previous field, replace sibling with next
                   int i = fields.indexOf(#fn.getText());
@@ -136,9 +160,8 @@ fieldDeclaration
                   }
                   previous.setNextSibling(next);
                 }
-                fields.put(#fn.getText(), #fieldDeclaration);
-            
                 
+                fields.put(#fn.getText(), #fieldDeclaration);    
          }
     ;
     
@@ -191,11 +214,39 @@ typeDeclaration! // we kick out the declaration after registering it
     ;
     
     
-validationRuleDeclaration
-    : #(VALIDATION fn:FIELDNAME rangeRule) { ValidationNode vNode = new ValidationNode(mdd); }
-    ;
+//////////////// VALIDATION RULES    
     
+validationRuleDeclaration
+    : rangeRule
+	
+	{
+		checkRuleApplicability();
+		mdd.addValidationRule(getCurrentValidationRule());
+		#validationRuleDeclaration = getCurrentValidationRule();
+	}    
+    
+    ;
+
+// TODO maybe there's a way to avoid repeating the setting of bounds...    
 rangeRule
-    : #(RANGE RANGE_FROM RANGE_TO)
+    : #(vr:VALIDATION fn:FIELDNAME  { createValidationRule(#vr, #fn.getText()); }
+    	(
+		    #( RANGE rl:RANGE_FROM ru:RANGE_TO
+		    	{
+			    	getCurrentValidationRule().type = ValidationType.RANGE;
+			    	getCurrentValidationRule().lowerBound = #rl.getText();
+			    	getCurrentValidationRule().upperBound = #ru.getText();
+		    	}
+		    )
+		    |
+		    #( LENGTH ll:RANGE_FROM lu:RANGE_TO
+		    	{
+			    	getCurrentValidationRule().type = ValidationType.LENGTH;
+			    	getCurrentValidationRule().lowerBound = #ll.getText();
+			    	getCurrentValidationRule().upperBound = #lu.getText();
+		    	}
+		    )
+		)
+	   )
     ;
       

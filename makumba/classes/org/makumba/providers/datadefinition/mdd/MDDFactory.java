@@ -1,6 +1,7 @@
 package org.makumba.providers.datadefinition.mdd;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -83,21 +84,37 @@ public class MDDFactory {
     }
 
     /**
+     * parses a MDD text
+     */
+    protected AST parse(String typeName, String text) {
+        
+        InputStream o = new ByteArrayInputStream(text.getBytes());
+        InputStream o1 = new ByteArrayInputStream(text.getBytes());
+        
+        return parseText(typeName, o, o1);
+
+    }
+    
+    /**
      * finds the MDD file using type name and extension and parses it
      */
     private AST parse(String typeName, URL u) {
 
-        Object o = null;
-        Object o1 = null;
+        InputStream o = null;
+        InputStream o1 = null;
 
         try {
-            o = u.getContent();
-            o1 = u.getContent();
+            o = (InputStream) u.getContent();
+            o1 = (InputStream) u.getContent();
         } catch (IOException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
 
+        return parseText(typeName, o, o1);
+    }
+
+    private AST parseText(String typeName, InputStream o, InputStream o1) {
         // first pass - simply parse the MDD file
         Reader reader = new InputStreamReader((InputStream) o);
         MDDLexer lexer = new MDDLexer(reader);
@@ -167,7 +184,7 @@ public class MDDFactory {
             }
         }
 
-        throw new DataDefinitionParseError(typeName, t.getMessage(), line, column);
+        throw new DataDefinitionParseError(typeName, t.getMessage(), line, column - 1);
     }
 
     /**

@@ -2,9 +2,7 @@ package org.makumba.providers.datadefinition.mdd;
 
 import java.util.HashMap;
 
-import org.hibernate.property.Getter;
 import org.makumba.DataDefinition;
-import org.makumba.DataDefinitionParseError;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 
@@ -72,7 +70,7 @@ public class MDDBuildWalker extends MDDBuildBaseWalker {
                 }
                 break;
             default:
-                throw new MakumbaError("should not be here");
+                throw new MakumbaError("invalid title field type: " + title.titleType);
         }
         
     }
