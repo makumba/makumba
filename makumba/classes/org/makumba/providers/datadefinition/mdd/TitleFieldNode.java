@@ -2,6 +2,9 @@ package org.makumba.providers.datadefinition.mdd;
 
 /**
  * AST node that holds the information about the MDD title field
+ * 
+ * TODO add support for functions
+ * 
  * @author Manuel Gay
  * @version $Id: TitleFieldNode.java,v 1.1 May 3, 2009 10:18:14 PM manu Exp $
  */

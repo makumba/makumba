@@ -6,11 +6,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Vector;
 
-import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.makumba.CompositeValidationException;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
@@ -20,11 +20,12 @@ import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.ValidationRule;
 import org.makumba.commons.StringUtils;
+import org.makumba.providers.DataDefinitionProvider;
 
 public class FieldDefinitionImpl implements FieldDefinition {
 
     // basic field info
-    protected MDDNode mdd;
+    protected DataDefinitionImpl mdd;
     
     protected String name;
     
@@ -47,29 +48,93 @@ public class FieldDefinitionImpl implements FieldDefinition {
 
     protected boolean unique;
     
-    // intEnum - index, string
-    private DualHashBidiMap intEnumValues = new DualHashBidiMap();
+    // intEnum
+    private LinkedHashMap<Integer, String> intEnumValues = new LinkedHashMap<Integer, String>();
 
-    private DualHashBidiMap intEnumValuesDeprecated = new DualHashBidiMap();
+    private LinkedHashMap<Integer, String> intEnumValuesDeprecated = new LinkedHashMap<Integer, String>();
     
     // char length
     protected int charLength;
     
-    // pointed type
+    // pointed type name
     protected String pointedType;
     
+    // pointed type 
+    protected transient DataDefinition pointed;
+    
     // subfield - ptrOne, setComplex
-    protected MDDNode subfield;
+    protected DataDefinition subfield;
     
     
     // validation rules for this field
     private Hashtable<String, ValidationRule> validationRules = new Hashtable<String, ValidationRule>();
 
+    // name of the field definition parent, needed for serialization
+    private String originalFieldDefinitionParent;
+
+    // name of the original field definition, needed for serialization
+    private String originalFieldDefinitionName;
+
     
+    
+    /** for temporary field info */
+    public FieldDefinitionImpl(String name, FieldDefinitionImpl fi) {
+        this.name = name;
+        type = fi.type;
+        fixed = fi.fixed;
+        notEmpty = fi.notEmpty;
+        unique = fi.unique;
+        defaultValue = fi.defaultValue;
+        description = fi.description;
+        subfield = fi.subfield;
+        if (type.equals("ptrIndex")) {
+            type = FieldType.PTR;
+            subfield = fi.getDataDefinition();
+        }
+        validationRules = fi.validationRules;
+
+        // store names of original field definition and data definition; see getOriginalFieldDefinition() for details
+        if (fi.getDataDefinition() != null) {
+            originalFieldDefinitionParent = fi.getDataDefinition().getName();
+            originalFieldDefinitionName = fi.getName();
+        }
+    }
+    
+    
+    
+    public FieldDefinitionImpl(DataDefinitionImpl mdd, FieldNode f) {
+        this.charLength = f.charLength;
+        this.defaultValue = f.defaultValue;
+        this.description = f.description;
+        this.fixed = f.fixed;
+        this.intEnumValues = f.intEnumValues;
+        this.intEnumValuesDeprecated = f.intEnumValuesDeprecated;
+        this.mdd = mdd;
+        this.name = f.name;
+        this.notEmpty = f.notEmpty;
+        this.notNull = f.notNull;
+        this.pointedType = f.pointedType;
+        this.subfield = new DataDefinitionImpl(f.subfield);
+        this.type = f.makumbaType;
+        this.unique = f.unique;
+        this.validationRules = f.validationRules;
+        
+        // TODO check if this works
+        this.originalFieldDefinitionName = name;
+        this.originalFieldDefinitionParent = getDataDefinition().getName();
+        
+    }
+
+
+
     /** methods for base fields **/
     
     public void setName(String name) {
         this.name = name;
+    }
+    
+    public String getName() {
+        return this.name;
     }
 
     public void setType(String type) {
@@ -107,6 +172,26 @@ public class FieldDefinitionImpl implements FieldDefinition {
     public void addIntEnumValueDeprecated(int index, String text) {
         intEnumValuesDeprecated.put(index, text);
     }
+    
+    public String getDescription() {
+        if (description == null) {
+            return name;
+        }
+        if (description.trim().equals("")) {
+            return name;
+        }
+        return description;
+    }
+    
+    public boolean hasDescription() {
+        return this.description != null;
+    }
+    
+    public DataDefinition getDataDefinition() {
+        return this.mdd;
+    }
+
+
     
     
     /** methods for modifiers **/
@@ -150,9 +235,8 @@ public class FieldDefinitionImpl implements FieldDefinition {
         return type == FieldType.SET;
     }
 
-    // FIXME
     public boolean isFileType() {
-        return type == FieldType.FILE;
+        return subfield != null && ((DataDefinitionImpl) subfield).isFileSubfield;
     }
 
     public boolean isIndexPointerField() {
@@ -288,18 +372,13 @@ public class FieldDefinitionImpl implements FieldDefinition {
                 case PTRONE:
                 case PTRREL:
                     
-                    // FIXME
-                    /*
-                    if (isFileType() && !(value instanceof Pointer)) {// file is a transformed to a pointer type on MDD
-                        // parsing but the binary input is on the name of the field, not field.content
-                        return check_binary_ValueImpl(value);
+                    // file is a transformed to a pointer type on MDD
+                    // parsing but the binary input is on the name of the field, not field.content
+                    if (isFileType() && !(value instanceof Pointer)) {
+                        return checkBinary(value);
                     } else {
-                        return check_ptrIndex_ValueImpl(value);
+                        return checkPointer(value);
                     }
-                    */
-                    
-                    return checkPointer(value);
-                    
                     
                 case REAL:
                     if (value instanceof Integer) {
@@ -358,18 +437,8 @@ public class FieldDefinitionImpl implements FieldDefinition {
                 case SETCOMPLEX:
                     throw new org.makumba.InvalidValueException(this, "subsets cannot be assigned directly");
                 case TEXT:
-                    try {
-                        return Text.getText(value);
-                    } catch (InvalidValueException e) {
-                        throw new InvalidValueException(this, e.getMessage());
-                    }
+                    return checkBinary(value);
                 case BINARY:
-                case FILE:
-                    try {
-                        return Text.getText(value);
-                    } catch (InvalidValueException e) {
-                        throw new InvalidValueException(this, e.getMessage());
-                    }
                 case BOOLEAN:
                     if (value instanceof Boolean) {
                         return value;
@@ -385,6 +454,14 @@ public class FieldDefinitionImpl implements FieldDefinition {
         return value;
     }
 
+    private Object checkBinary(Object value) {
+        try {
+            return Text.getText(value);
+        } catch (InvalidValueException e) {
+            throw new InvalidValueException(this, e.getMessage());
+        }
+    }
+
     private Object checkIntEnum(Object value) {
         if (value instanceof Integer && !intEnumValues.containsKey(value) /* && !intEnumValuesDeprecated.containsKey(value)*/) {
             throw new org.makumba.InvalidValueException(this, "int value set to int enumerator (" + value
@@ -395,7 +472,7 @@ public class FieldDefinitionImpl implements FieldDefinition {
                     "int enumerators only accept values of type Integer or String. Value supplied (" + value
                             + ") is of type " + value.getClass().getName());
         }
-        if(!intEnumValues.containsKey(value) /* && !intEnumValuesDeprecated.containsKey(value) */) {
+        if(!intEnumValues.containsValue(value) /* && !intEnumValuesDeprecated.containsKey(value) */) {
             throw new org.makumba.InvalidValueException(this, "string value set to int enumerator (" + value
                     + ") is neither a member of " + Arrays.toString(intEnumValues.values().toArray()) + " nor a member of " + Arrays.toString(intEnumValues.keySet().toArray()));
         }
@@ -419,176 +496,323 @@ public class FieldDefinitionImpl implements FieldDefinition {
                         + value + "> is of type " + value.getClass().getName());
     }
 
-    public Object checkValueImpl(Object value) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public DataDefinition getDataDefinition() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public String getDataType() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Date getDefaultDate() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public int getDefaultInt() {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    public String getDefaultString() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Object getDefaultValue() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Vector<String> getDeprecatedValues() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public String getDescription() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Object getEmptyValue() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public int getEnumeratorSize() {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    public DataDefinition getForeignTable() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public int getIntAt(int i) {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    public int getIntegerType() {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    public Class<?> getJavaType() {
-        return this.type.getJavaType();
-    }
-
-    public String getName() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public String getNameAt(int i) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public String getNameFor(int i) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Enumeration<String> getNames() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Object getNull() {
-        return this.type.getNullType();
-    }
-
-    public FieldDefinition getOriginalFieldDefinition() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public DataDefinition getPointedType() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public String getStringAt(int i) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public DataDefinition getSubtable() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public String getTitleField() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public String getType() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Enumeration getValues() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public int getWidth() {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    public boolean hasDescription() {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public boolean hasTitleFieldIndicated() {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public boolean isAssignableFrom(FieldDefinition fd) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-
-    public boolean isDefaultField() {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-
-    public boolean shouldEditBySingleInput() {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
     protected Object normalCheck(Object value) {
         if (!getJavaType().isInstance(value)) {
             throw new org.makumba.InvalidValueException(this, getJavaType(), value);
         }
         return value;
     }
+    
+    public boolean isAssignableFrom(FieldDefinition fi) {
+        switch (type) {
+            case INT:
+                return is_int_AssignableFrom(fi);
+            case INTENUM:
+                return is_intEnum_AssignableFrom(fi);
+            case PTR:
+            case PTRREL:
+                return is_ptrRel_AssignableFrom(fi);
+            case REAL:
+                return is_real_AssignableFrom(fi);
+            case SET:
+                return is_set_AssignableFrom(fi);
+            default:
+                return base_isAssignableFrom(fi);
+        }
+    }
+
+    public boolean base_isAssignableFrom(FieldDefinition fi) {
+        return fi.getType().equals("nil") || getType().equals(fi.getType());
+    }
+
+    public boolean is_int_AssignableFrom(FieldDefinition fi) {
+        return base_isAssignableFrom(fi) || fi.getType().equals("intEnum");
+    }
+
+    public boolean is_intEnum_AssignableFrom(FieldDefinition fi) {
+        return is_int_AssignableFrom(fi) || fi.getType().equals("int") || fi.getType().equals("char");
+    }
+
+    public boolean is_ptrRel_AssignableFrom(FieldDefinition fi) {
+        return "nil".equals(fi.getType()) || getType().equals(fi.getType())
+                && ((DataDefinition) ((FieldDefinitionImpl) fi).subfield).getName().equals(getForeignTable().getName());
+    }
+
+    public boolean is_real_AssignableFrom(FieldDefinition fi) {
+        return base_isAssignableFrom(fi) || fi.getType().equals("intEnum") || fi.getType().equals("int");
+    }
+
+    public boolean is_set_AssignableFrom(FieldDefinition fi) {
+        return "nil".equals(fi.getType()) || getType().equals(fi.getType())
+                && getForeignTable().getName().equals(fi.getForeignTable().getName());
+    }
+    
+    
+
+    /** methods for types (java, sql, null) **/
+    
+    public String getDataType() {
+        return type.getDataType();
+    }
+    
+    public Class<?> getJavaType() {
+        return this.type.getJavaType();
+    }
+    
+    public int getIntegerType() {
+        return type.getIntegerType();
+    }
+    
+    public Object getNull() {
+        // file is a transformed to a pointer type on MDD parsing
+        // but the binary input is on the name of the field, not field.content
+        if(type == FieldType.PTRONE && isFileType()) {
+            return Pointer.NullText;
+        }
+        
+        return this.type.getNullType();
+    }
+    
+    public Object getEmptyValue() {
+        return type.getEmptyValue();
+    }
+    
+    public String getType() {
+        return this.type.getTypeName();
+    }
+    
+    public boolean isDefaultField() {
+        return type == FieldType.PTRINDEX || type == FieldType.DATECREATE || type == FieldType.DATEMODIFY;
+    }
+
+
+
+    
+    /** methods for default values **/
+    
+
+    public Date getDefaultDate() {
+
+        switch (type) {
+            case DATE:
+            case DATECREATE:
+            case DATEMODIFY:
+                return (Date) getDefaultValue();
+            default:
+                throw new RuntimeException("Shouldn't be here");
+        }
+    }
+    
+    public int getDefaultInt() {
+        switch (type) {
+            case INT:
+            case INTENUM:
+                return (Integer) getDefaultValue();
+            case SETINTENUM:
+             // FIXME this is returning the wrong thing
+                // in the old implementation it was returning the default value of the "enum"
+                // field in the subfield MDD, which exists no longer
+                // however this field seems never to be used
+                return -1;
+            default:
+                throw new RuntimeException("Shouldn't be here");
+        }
+    }
+
+    public String getDefaultString() {
+        switch (type) {
+            case CHAR:
+            case CHARENUM:
+            case TEXT:
+            case BINARY:
+                return (String) getDefaultValue();
+            case SETCHARENUM:
+                // FIXME this is returning the wrong thing
+                // in the old implementation it was returning the default value of the "enum"
+                // field in the subfield MDD, which exists no longer
+                // however this field seems never to be used
+                return null;
+            default:
+                throw new RuntimeException("Shouldn't be here");
+        }
+    }
+
+    /** returns the default value of this field */
+    public Object getDefaultValue() {
+        if (defaultValue == null) {
+            return getEmptyValue();
+        }
+        return defaultValue;
+    }
+
+    
+    
+
+    /** methods for enumerations **/
+    
+    public Vector<String> getDeprecatedValues() {
+        return new Vector<String>(intEnumValuesDeprecated.values());
+    }
+    
+
+    public int getEnumeratorSize() {
+        switch (type) {
+            case CHARENUM:
+                throw new MakumbaError("not implemented");
+            case INTENUM:
+                return this.intEnumValues.size();
+            case SETCHARENUM:
+                throw new MakumbaError("not implemented");
+            case SETINTENUM:
+                return this.intEnumValues.size();
+            default:
+                throw new RuntimeException("Shouldn't be here");
+        }
+    }
+    
+    public int getIntAt(int i) {
+        if(i > intEnumValues.size()) {
+            throw new RuntimeException("intEnum size is " + intEnumValues.size() + ", index is " + i);
+        }
+        
+        Iterator<Integer> it = intEnumValues.keySet().iterator();
+        int k = 0;
+        int res = 0;
+        while(k != i) {
+            res = it.next();
+        }
+        return res;
+    }
+
+    public String getNameAt(int i) {
+        if(i > intEnumValues.size()) {
+            throw new RuntimeException("intEnum size is " + intEnumValues.size() + ", index is " + i);
+        }
+
+        Iterator<String> it = intEnumValues.values().iterator();
+        int k = 0;
+        String res = "";
+        while(k != i) {
+            res = it.next();
+        }
+        return res;
+    }
+
+    public String getNameFor(int i) {
+        if(type != FieldType.INTENUM) {
+            throw new RuntimeException("getNameFor works only for intEnum");
+        }
+        return (String) intEnumValues.get(i);
+    }
+
+    public Collection<String> getNames() {
+        return intEnumValues.values();
+    }
+    
+    public Collection getValues() {
+        return intEnumValues.keySet();
+    }
+
+    
+    
+    
+    /** methods for relational types **/
+    
+    
+    public DataDefinition getForeignTable() {
+        switch (type) {
+            case PTR:
+            case PTRREL:
+                return this.subfield;
+            case SET:
+                return pointerToForeign().getForeignTable();
+            default:
+                throw new RuntimeException("Shouldn't be here");
+        }
+    }
+    
+    // TODO understand this
+    FieldDefinition pointerToForeign() {
+        return getSubtable().getFieldDefinition((String) getSubtable().getFieldNames().elementAt(4));
+    }
+
+    public FieldDefinition getOriginalFieldDefinition() {
+        // we can't store a reference to the original field definition, otherwise it will be serialised in the form
+        // responder, and in turn will serialise it's data definition, which might cause issues like locking..
+        // thus, we do a lookup here
+        DataDefinition dataDefinition = DataDefinitionProvider.getInstance().getDataDefinition(
+            originalFieldDefinitionParent);
+        return dataDefinition != null ? dataDefinition.getFieldDefinition(originalFieldDefinitionName) : null;
+    }
+
+
+    public DataDefinition getPointedType() {
+        switch (type) {
+            case PTRINDEX:
+                return getDataDefinition();
+            case PTRONE:
+            case SETCHARENUM:
+            case SETCOMPLEX:
+            case SETINTENUM:
+            case FILE:
+                return getSubtable();
+            case PTRREL:
+            case PTR:
+            case SET:
+                return getForeignTable();
+            default:
+                throw new RuntimeException("Shouldn't be here");
+        }
+    }
+
+    public DataDefinition getSubtable() {
+        switch (type) {
+            case PTRONE:
+            case SETCHARENUM:
+            case SETCOMPLEX:
+            case SETINTENUM:
+            case FILE:
+                return this.subfield;
+            case SET:
+                return this.pointed;
+            default:
+                throw new RuntimeException("Trying to get a sub-able for a '" + getType() + "' for field '" + name
+                        + "'.");
+        }
+    }
+
+    public String getTitleField() {
+        switch (type) {
+            case PTR:
+            case SET:
+                if (((DataDefinitionImpl) pointed).titleField != null) {
+                    return ((DataDefinitionImpl) pointed).titleField;
+                }
+                return getForeignTable().getTitleFieldName();
+            default:
+                throw new RuntimeException("Shouldn't be here");
+        }
+    }
+
+    
+
+    public int getWidth() {
+        switch (type) {
+            case CHAR:
+                return this.charLength;
+            case CHARENUM:
+                return this.intEnumValues.size();
+            case SETCHARENUM:
+                return this.intEnumValues.size();
+            default:
+                throw new RuntimeException("Shouldn't be here");
+        }
+    }
+
+    public boolean shouldEditBySingleInput() {
+        return !(getIntegerType() == _ptrOne || getIntegerType() == _setComplex);
+    }
+
+    
     
 }

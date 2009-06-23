@@ -1,9 +1,13 @@
 package org.makumba.providers.datadefinition.mdd;
 
+import org.makumba.FieldDefinition;
+import org.makumba.InvalidValueException;
+import org.makumba.ValidationRule;
+
 import antlr.collections.AST;
 
 
-public class ValidationRuleNode extends MDDAST {
+public class ValidationRuleNode extends MDDAST implements ValidationRule {
     
     /** name of the rule **/
     protected String name;
@@ -11,10 +15,9 @@ public class ValidationRuleNode extends MDDAST {
     /** type of the rule **/
     protected ValidationType type;
     
-    public ValidationType getValidationType() {
-        return type;
-    }
-
+    /** message **/
+    protected String message;
+    
     /** field the rule applies to **/
     protected String field;
     
@@ -52,13 +55,43 @@ public class ValidationRuleNode extends MDDAST {
         }
     }
     
+    // TODO name should be line or so
+    public String getRuleName() {
+        return this.name;
+    }
+    
+    public ValidationType getValidationType() {
+        return type;
+    }
+   
+    public String getErrorMessage() {
+        return message;
+    }
+
+    public FieldDefinition getFieldDefinition() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public boolean validate(Object value) throws InvalidValueException {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public int compareTo(ValidationRule o) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("== Validation rule: " + (name==null?"":name) + " (line "+ getLine() + ")\n");
         sb.append("== Type: " + type.getDescription() + "\n");
-        sb.append("== Field: " + field);
+        sb.append("== Field: " + field + "\n");
+        sb.append("== Message: " + message);
         return sb.toString();
     }
 
+    
 }

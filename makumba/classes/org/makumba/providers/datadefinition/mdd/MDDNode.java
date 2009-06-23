@@ -5,8 +5,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 import org.makumba.DataDefinition;
-import org.makumba.MakumbaError;
-
 
 import antlr.CommonAST;
 
@@ -18,30 +16,34 @@ import antlr.CommonAST;
  */
 public class MDDNode extends CommonAST {
     
-    static final String createName = "TS_create";
+    final static String createName = "TS_create";
 
-    static final String modifyName = "TS_modify";
-    
+    final static String modifyName = "TS_modify";
+        
     /** name of the data definition **/
     protected String name;
     
     /** name of the index field **/
     protected String indexName;
-    
+        
     /** the title field **/
     protected TitleFieldNode titleField;
     
     /** origin of the data definition **/
     protected URL origin;
-    
-    /** parent of the data definition **/
+
+    /** parent of the subfield **/
     protected MDDNode parent;
+    
+    /** name of the parent field, if this is a ptrOne or setComplex **/
+    protected String parentFieldName;
+
+    /** indicator if this is MDD is a file subfield **/
+    protected boolean isFileSubfield = false;
     
     protected LinkedHashMap<String, FieldNode> fields = new LinkedHashMap<String, FieldNode>();
     
-    protected LinkedHashMap<String, ValidationRuleNode> singleFieldValidationRules = new LinkedHashMap<String, ValidationRuleNode>();
-    
-    protected LinkedHashMap<String, ValidationRuleNode> namedValidationRules = new LinkedHashMap<String, ValidationRuleNode>();
+    protected LinkedHashMap<String, ValidationRuleNode> validationRules = new LinkedHashMap<String, ValidationRuleNode>();
     
     public MDDNode(String name, URL origin) {
         this.name = name;
@@ -54,6 +56,7 @@ public class MDDNode extends CommonAST {
         this.name = parent.name + "->" + subFieldName;
         this.origin = parent.origin;
         this.parent = parent;
+        this.parentFieldName = subFieldName;
     }
     
     
@@ -113,14 +116,7 @@ public class MDDNode extends CommonAST {
     }
     
     public void addValidationRule(ValidationRuleNode vn) {
-        switch(vn.type) {
-            case LENGTH:
-            case RANGE:
-                singleFieldValidationRules.put(vn.field, vn);
-                break;
-            default:
-                throw new MakumbaError("should not be here");
-        }
+        validationRules.put(vn.getRuleName(), vn);
     }
     
     
@@ -139,14 +135,11 @@ public class MDDNode extends CommonAST {
         }
         
         sb.append("\nValidation rules:" + "\n");
-        for(Iterator<String> i = singleFieldValidationRules.keySet().iterator(); i.hasNext();) {
-            sb.append(singleFieldValidationRules.get(i.next()).toString() + "\n");
+        for(Iterator<String> i = validationRules.keySet().iterator(); i.hasNext();) {
+            sb.append(validationRules.get(i.next()).toString() + "\n");
         }
         
-        for(Iterator<String> i = namedValidationRules.keySet().iterator(); i.hasNext();) {
-            sb.append(singleFieldValidationRules.get(i.next()).toString() + "\n");
-        }
-        
+       
         
         return sb.toString();
         

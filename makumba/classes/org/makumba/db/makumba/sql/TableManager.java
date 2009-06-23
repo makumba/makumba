@@ -2129,7 +2129,7 @@ public class TableManager extends Table {
 
     // moved from timeStampManager
     public Object check_timeStamp_ValueImpl(String fieldName, Object value) {
-        Object o = getFieldDefinition(fieldName).checkValueImpl(value);
+        Object o = getFieldDefinition(fieldName).checkValue(value);
         if (o instanceof java.util.Date && !(o instanceof Timestamp))
             o = new Timestamp(((java.util.Date) o).getTime());
         return o;
