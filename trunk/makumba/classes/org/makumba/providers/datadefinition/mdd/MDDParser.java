@@ -3,7 +3,6 @@ package org.makumba.providers.datadefinition.mdd;
 import java.util.HashMap;
 
 import org.makumba.DataDefinitionNotFoundError;
-import org.makumba.providers.datadefinition.makumba.FieldInfo;
 
 import antlr.TokenStream;
 import antlr.collections.AST;
@@ -134,6 +133,8 @@ public class MDDParser extends MDDBaseParser {
             if(t.getType() == MDDTokenTypes.FIELD && fieldsToDisable.containsKey(t.getText())) {
                 prec.setNextSibling(t.getNextSibling());
             }
+            
+            /*
 
             if(t.getType() == MDDTokenTypes.FIELD && fieldsToTransform.containsKey(t.getText())) {
                 // we have a data definition
@@ -170,6 +171,7 @@ public class MDDParser extends MDDBaseParser {
                 
 
            }
+           */
         }
     }
     

@@ -9,8 +9,10 @@
 #overrideIt=char[22]
 #removeIt=
 
+
 # here come the field
 name = not null unique char[233] ; comment very long
+  
 name2 = ptr general.Student
 
 # now we have a setComplex!
@@ -20,5 +22,11 @@ name3-> subname1 = unique char[232] ; subcomment1
 name3-> subname2 = genTyp ; subcomment2
 name3->!include = validMdds.Included
 
-name4 = int ;comment4
+name4 = char[255] ;comment4
 name5 = int {"Male" = 10, "Female" = 20, "Shemale" = 30 deprecated}
+
+image = file
+
+# simple validation rules
+name4%length = [1..?] :          name4 must beware not empty
+

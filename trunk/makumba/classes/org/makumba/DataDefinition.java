@@ -68,12 +68,17 @@ public interface DataDefinition {
 
     /** The name of the index field (primary key), if any? */
     public String getIndexPointerFieldName();
+    
+    // TODO the two methods beneath are actually not needed but not using them
+    // somehow breaks the TableManager
 
-    /** The name of the creation timestamp field, if any? */
+	/** The name of the creation timestamp field, if any? */
     public String getCreationDateFieldName();
 
     /** The name of the modification timestamp field, if any? */
     public String getLastModificationDateFieldName();
+
+	
 
     /**
      * If this type is the data pointed to by a 1-1 pointer or subset, return the field definition in the main record,

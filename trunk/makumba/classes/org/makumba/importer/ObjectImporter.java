@@ -29,9 +29,11 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -326,10 +328,9 @@ public class ObjectImporter {
         if (s.trim().length() == 0) {
             return null;
         }
-        Enumeration f = dd.getFieldDefinition(fieldName).getValues();
-        for (Enumeration<String> e = dd.getFieldDefinition(fieldName).getNames(); e.hasMoreElements();) {
-            String v = e.nextElement();
-            Integer i = (Integer) f.nextElement();
+        Iterator<Integer> f = dd.getFieldDefinition(fieldName).getValues().iterator();
+        for (String v : dd.getFieldDefinition(fieldName).getNames()) {
+            Integer i = (Integer) f.next();
             if (v.equals(s)) {
                 return i;
             }

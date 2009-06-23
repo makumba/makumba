@@ -26,6 +26,7 @@ RIGHT_SQBR: ']';
 EQUALS: '=';
 PERCENT: '%';
 SEMICOLON: ';';
+COLON: ':';
 COMMA: ',';
 DOT: '.';
 QUOTMARK: '"';
@@ -54,7 +55,11 @@ LINEBREAK
     |   '\r'      { newline(); } // mac
     ;
 
+MESSAGE
+	: COLON (~('\n'|'\r'))* ('\n'|'\r'('\n')?) {newline();}
+	;
 
+// TODO throw better exceptions when no message for validation rules
 class MDDBaseParser extends Parser;
 
 options {
@@ -235,12 +240,25 @@ intEnumBody
     : QUOTMARK! t:atom {#t.setType(INTENUMTEXT); } QUOTMARK! EQUALS! i:NUMBER {#i.setType(INTENUMINDEX); } (DEPRECATED)?
     ;
 
+// TODO this is clumsy, could maybe be replaced with appropriate lexer syntax, see MESSAGE token definition
 fieldComment
-    : { String comment=""; }
+	: { String comment=""; }
       (a:atom { comment += #a.getText(); })
       (b:atom { comment += " " + #b.getText(); })*
       { #fieldComment = #[FIELDCOMMENT]; #fieldComment.setText(comment); }
-    ;
+	;
+	
+errorMessage
+	: m:MESSAGE {int k = #m.getText().indexOf(":"); #errorMessage.setText(#m.getText().substring(k+1).trim()); }
+	;
+
+//message
+//	: { String message=""; }
+//      (a:atom { message += #a.getText(); })
+//      (b:atom { message += " " + #b.getText(); })*
+//      { #message = #[MESSAGE]; #message.setText(message); }
+//	;
+
     
 modifier
     : u:UNIQUE { #u.setType(MODIFIER); }
@@ -279,6 +297,8 @@ validationRuleDeclaration
       (
         rangeRule //| uniquenessRule | comparisonRule
       )
+      errorMessage
+      
     ;
     
 // name%length = [1..?]

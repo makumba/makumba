@@ -132,7 +132,7 @@ public interface FieldDefinition {
      * TODO nil and real and timeStamp need to be added???
      */
     public String getType();
-
+    
     /** returns the integer value associated with the field's internal makumba type. */
     public int getIntegerType();
 
@@ -187,7 +187,7 @@ public interface FieldDefinition {
      * @exception ClassCastException
      *                for other types
      */
-    public java.util.Enumeration getValues();
+    public java.util.Collection getValues();
 
     /**
      * Get the names of an enumerated field. Works only for intEnum, charEnum types
@@ -195,7 +195,7 @@ public interface FieldDefinition {
      * @exception ClassCastException
      *                for other types
      */
-    public java.util.Enumeration<String> getNames();
+    public java.util.Collection<String> getNames();
 
     /**
      * Get the number of the members of an enumerated field. Works only for intEnum, charEnum types
@@ -204,14 +204,6 @@ public interface FieldDefinition {
      *                for other types
      */
     public int getEnumeratorSize();
-
-    /**
-     * Get the String value at a certain position in an enumerated field. Works only for intEnum, charEnum types
-     * 
-     * @exception ClassCastException
-     *                for other types
-     */
-    public String getStringAt(int i);
 
     /**
      * Get the name at a certain position in an enumerated field. Works only for intEnum, charEnum types
@@ -285,23 +277,11 @@ public interface FieldDefinition {
      */
     public String getTitleField();
 
-    /**
-     * Tells if the title to be used is indicated specifically on a ptr or set. works only for ptr and set types
-     * 
-     * @return whether the definition indicates a title field
-     * @exception ClassCastException
-     *                for other types
-     */
-    public boolean hasTitleFieldIndicated();
-
     /** check compatibility with the given type */
     public boolean isAssignableFrom(FieldDefinition fd);
 
     /** check if the value can be assigned */
     public Object checkValue(Object value);
-
-    // inserted 20050418
-    public Object checkValueImpl(Object value);
 
     /** check if the corresponding field from the dictionary can be inserted */
     public void checkInsert(Dictionary<String, Object> d);

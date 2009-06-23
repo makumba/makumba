@@ -91,13 +91,10 @@ public class MDDFactory {
         InputStream o = new ByteArrayInputStream(text.getBytes());
         InputStream o1 = new ByteArrayInputStream(text.getBytes());
         
-        return parseText(typeName, o, o1);
+        return parse(typeName, o, o1);
 
     }
     
-    /**
-     * finds the MDD file using type name and extension and parses it
-     */
     private AST parse(String typeName, URL u) {
 
         InputStream o = null;
@@ -111,16 +108,16 @@ public class MDDFactory {
             e1.printStackTrace();
         }
 
-        return parseText(typeName, o, o1);
+        return parse(typeName, o, o1);
     }
 
-    private AST parseText(String typeName, InputStream o, InputStream o1) {
+    private AST parse(String typeName, InputStream o, InputStream o1) {
         // first pass - simply parse the MDD file
-        Reader reader = new InputStreamReader((InputStream) o);
+        Reader reader = new InputStreamReader(o);
         MDDLexer lexer = new MDDLexer(reader);
 
         // create reader for error handling
-        BufferedReader errorReader = new BufferedReader(new InputStreamReader((InputStream) o1));
+        BufferedReader errorReader = new BufferedReader(new InputStreamReader(o1));
         errorReaders.put(typeName, errorReader);
         
         MDDParser parser = null;

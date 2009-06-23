@@ -72,7 +72,7 @@ options {
     protected void addModifier(FieldNode field, String modifier) { }
     
     // Add subfield - setComplex, ptrOne
-    protected void addSubfield(FieldNode field) { }
+    protected void addSubfield(String parentFieldName, FieldNode field) { }
     
     // create and set validation rule
     protected void createValidationRule(AST vr, String field) {
@@ -118,7 +118,7 @@ fieldDeclaration
                 ( { MDDNode subFieldDD = field.initSubfield(); }
                   #(
                       sf:SUBFIELD
-                      PARENTFIELDNAME { checkSubFieldName(#fn, #PARENTFIELDNAME); }
+                      pf:PARENTFIELDNAME { checkSubFieldName(#fn, #pf); }
                       (
                           (t:titleDeclaration { subFieldDD.setTitleField((TitleFieldNode) #t); field.addChild(#t); })
                           |
@@ -129,7 +129,7 @@ fieldDeclaration
                               (sfc:FIELDCOMMENT { subField.description = #sfc.getText(); })?
                               {
                                   // we add the subField to the field
-                                  field.addSubfield(subField);
+                                  field.addSubfield(#pf.getText(), subField);
                                   field.addChild(subField);
                               }
                           )
@@ -247,6 +247,11 @@ rangeRule
 		    	}
 		    )
 		)
+
+	   m:MESSAGE {getCurrentValidationRule().message = #m.getText();}
+
+
 	   )
+	   
     ;
       

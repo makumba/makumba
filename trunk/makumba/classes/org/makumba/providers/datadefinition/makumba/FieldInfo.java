@@ -600,14 +600,14 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     /**
      * works only for intEnum, charEnum, setintEnum, setcharEnum types
      */
-    public Enumeration getValues() {
+    public Collection getValues() {
         switch (getIntegerType()) {
             case FieldDefinition._charEnum:
             case FieldDefinition._intEnum:
-                return ((Vector) this.extra1).elements();
+                return ((Vector) this.extra1);
             case FieldDefinition._setCharEnum:
             case FieldDefinition._setIntEnum:
-                return ((Vector) getEnum().extra1).elements();
+                return ((Vector) getEnum().extra1);
             default:
                 throw new RuntimeException("Shouldn't be here");
         }
@@ -616,14 +616,14 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     /**
      * works only for intEnum, charEnum, setintEnum, setcharEnum types
      */
-    public Enumeration<String> getNames() {
+    public Collection<String> getNames() {
         switch (getIntegerType()) {
             case FieldDefinition._charEnum:
             case FieldDefinition._intEnum:
-                return ((Vector<String>) this.extra2).elements();
+                return ((Vector<String>) this.extra2);
             case FieldDefinition._setCharEnum:
             case FieldDefinition._setIntEnum:
-                return ((Vector<String>) getEnum().extra2).elements();
+                return ((Vector<String>) getEnum().extra2);
             default:
                 throw new RuntimeException("Shouldn't be here");
         }
@@ -640,22 +640,6 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
             case FieldDefinition._setCharEnum:
             case FieldDefinition._setIntEnum:
                 return ((Vector) getEnum().extra1).size();
-            default:
-                throw new RuntimeException("Shouldn't be here");
-        }
-    }
-
-    /**
-     * works only for intEnum, charEnum, setintEnum, setcharEnum types
-     */
-    public String getStringAt(int i) {
-        switch (getIntegerType()) {
-            case FieldDefinition._charEnum:
-            case FieldDefinition._intEnum:
-                return ((Vector) this.extra1).elementAt(i).toString();
-            case FieldDefinition._setCharEnum:
-            case FieldDefinition._setIntEnum:
-                return ((Vector) getEnum().extra1).elementAt(i).toString();
             default:
                 throw new RuntimeException("Shouldn't be here");
         }

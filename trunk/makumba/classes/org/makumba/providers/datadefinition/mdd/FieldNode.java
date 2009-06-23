@@ -1,6 +1,9 @@
 package org.makumba.providers.datadefinition.mdd;
 
-import org.apache.commons.collections.bidimap.DualHashBidiMap;
+import java.util.Hashtable;
+import java.util.LinkedHashMap;
+
+import org.makumba.ValidationRule;
 
 import antlr.collections.AST;
 
@@ -25,6 +28,10 @@ public class FieldNode extends MDDAST {
     
     // for unknown mak type, probably macro type
     protected String unknownType;
+    
+    // default value
+    // FIXME where does this come from?
+    protected Object defaultValue;
 
     // modifiers
     protected boolean fixed;
@@ -37,9 +44,9 @@ public class FieldNode extends MDDAST {
 
     
     // intEnum
-    private DualHashBidiMap intEnumValues = new DualHashBidiMap();
+    protected LinkedHashMap<Integer, String> intEnumValues = new LinkedHashMap<Integer, String>();
 
-    private DualHashBidiMap intEnumValuesDeprecated = new DualHashBidiMap();
+    protected LinkedHashMap<Integer, String> intEnumValuesDeprecated = new LinkedHashMap<Integer, String>();
     
     // char length
     protected int charLength;
@@ -49,6 +56,9 @@ public class FieldNode extends MDDAST {
     
     // subfield - ptrOne, setComplex, file
     protected MDDNode subfield;
+    
+    // validation rules for this field
+    protected Hashtable<String, ValidationRule> validationRules = new Hashtable<String, ValidationRule>();
 
     public FieldNode(MDDNode mdd, String name) {
         
@@ -92,8 +102,9 @@ public class FieldNode extends MDDAST {
         return this.subfield;
     }
 
-    public void addSubfield(FieldNode subfield) {
+    public void addSubfield(String parentFieldName, FieldNode subfield) {
         this.subfield.addField(subfield);
+        this.subfield.parentFieldName = parentFieldName;
     }   
     
     public String toString() {

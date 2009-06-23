@@ -73,7 +73,7 @@ public class charEnumEditor extends choiceEditor {
                 i -= 1;
             }
         }
-        return rf.dd.getFieldDefinition(fieldIndex).getStringAt(i);
+        return rf.dd.getFieldDefinition(fieldIndex).getNameAt(i);
     }
 
     @Override
