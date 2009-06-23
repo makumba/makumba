@@ -75,9 +75,7 @@ options {
     protected void addSubfield(String parentFieldName, FieldNode field) { }
     
     // create and set validation rule
-    protected void createValidationRule(AST vr, String field) {
-	    this.currentValidationRule = new ValidationRuleNode(this.mdd, vr, field);
-    }
+    protected void createValidationRule(AST vr, String field, ValidationType type) { }
     
     // set current validation rule
     protected void setCurrentValidationRule(ValidationRuleNode validation) {
@@ -229,10 +227,11 @@ validationRuleDeclaration
 
 // TODO maybe there's a way to avoid repeating the setting of bounds...    
 rangeRule
-    : #(vr:VALIDATION fn:FIELDNAME  { createValidationRule(#vr, #fn.getText()); }
+    : #(vr:VALIDATION fn:FIELDNAME
     	(
-		    #( RANGE rl:RANGE_FROM ru:RANGE_TO
+		    #( r:RANGE rl:RANGE_FROM ru:RANGE_TO
 		    	{
+		    		createValidationRule(#vr, #fn.getText(), ValidationType.RANGE);
 			    	getCurrentValidationRule().type = ValidationType.RANGE;
 			    	getCurrentValidationRule().lowerBound = #rl.getText();
 			    	getCurrentValidationRule().upperBound = #ru.getText();
@@ -241,6 +240,7 @@ rangeRule
 		    |
 		    #( LENGTH ll:RANGE_FROM lu:RANGE_TO
 		    	{
+			    	createValidationRule(#vr, #fn.getText(), ValidationType.LENGTH);
 			    	getCurrentValidationRule().type = ValidationType.LENGTH;
 			    	getCurrentValidationRule().lowerBound = #ll.getText();
 			    	getCurrentValidationRule().upperBound = #lu.getText();
@@ -249,7 +249,6 @@ rangeRule
 		)
 
 	   m:MESSAGE {getCurrentValidationRule().message = #m.getText();}
-
 
 	   )
 	   

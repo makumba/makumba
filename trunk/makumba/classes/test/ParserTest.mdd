@@ -25,8 +25,12 @@ name3->!include = validMdds.Included
 name4 = char[255] ;comment4
 name5 = int {"Male" = 10, "Female" = 20, "Shemale" = 30 deprecated}
 
+age = int ; age of someone
+
 image = file
 
 # simple validation rules
-name4%length = [1..?] :          name4 must beware not empty
+name4%length = [1..?] : name4 must not be empty
+age%range = [15..18] : Must be at least 15 years old and at most 18!
+#name4%matches = "http://.+" : the homepage must start with http://
 
