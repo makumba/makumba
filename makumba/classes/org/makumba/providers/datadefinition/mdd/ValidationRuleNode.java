@@ -1,13 +1,16 @@
 package org.makumba.providers.datadefinition.mdd;
 
+import java.io.Serializable;
+
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.ValidationRule;
+import org.makumba.providers.datadefinition.mdd.validation.ComparisonValidationRule;
 
 import antlr.collections.AST;
 
 
-public class ValidationRuleNode extends MDDAST implements ValidationRule {
+public class ValidationRuleNode extends MDDAST implements ValidationRule, Serializable {
     
     /** name of the rule **/
     protected String name;
@@ -73,14 +76,23 @@ public class ValidationRuleNode extends MDDAST implements ValidationRule {
         return null;
     }
 
+    /** should be overriden in extended classes **/
     public boolean validate(Object value) throws InvalidValueException {
-        // TODO Auto-generated method stub
         return false;
     }
 
+    /**
+     * We order the rules such that comparison rules come last. This is important for live validation, where first the
+     * validity of each field by itself should be checked.
+     */
     public int compareTo(ValidationRule o) {
-        // TODO Auto-generated method stub
-        return 0;
+        if (this instanceof ComparisonValidationRule) {
+            return 1;
+        } else if (o instanceof ComparisonValidationRule) {
+            return -1;
+        } else {
+            return 0;
+        }
     }
 
     @Override

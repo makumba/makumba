@@ -7,7 +7,12 @@ package org.makumba.providers.datadefinition.mdd;
  */
 public enum ValidationType {
 
-    COMPARISON("comparison rule"), UNIQUENESS("uniqueness rule"), RANGE("range rule", FieldType.INT, FieldType.INTENUM), LENGTH("length rule", FieldType.CHAR, FieldType.TEXT);
+    COMPARISON("comparison rule"),
+    UNIQUENESS("uniqueness rule"),
+    RANGE("range rule", FieldType.INT, FieldType.INTENUM),
+    LENGTH("length rule", FieldType.CHAR, FieldType.TEXT),
+    REGEXP("regular expression rule", FieldType.CHAR, FieldType.TEXT);
+    
     
     ValidationType(String description, FieldType... fieldType) {
         this.description = description;

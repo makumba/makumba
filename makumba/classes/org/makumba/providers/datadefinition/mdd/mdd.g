@@ -58,6 +58,41 @@ LINEBREAK
 MESSAGE
 	: COLON (~('\n'|'\r'))* ('\n'|'\r'('\n')?) {newline();}
 	;
+		
+protected
+ESC
+	:	'\\'
+		(	'n'
+		|	'r'
+		|	't'
+		|	'b'
+		|	'f'
+		|	'"'
+		|	'\''
+		|	'\\'
+		|	'0'..'3'
+			(
+				options {
+					warnWhenFollowAmbig = false;
+				}
+			:	'0'..'7'
+				(
+					options {
+						warnWhenFollowAmbig = false;
+					}
+				:	'0'..'7'
+				)?
+			)?
+		|	'4'..'7'
+			(
+				options {
+					warnWhenFollowAmbig = false;
+				}
+			:	'0'..'7'
+			)?
+		)
+	;
+
 
 // TODO throw better exceptions when no message for validation rules
 class MDDBaseParser extends Parser;
@@ -135,6 +170,11 @@ tokens {
     LENGTH="length";
     RANGE_FROM;
     RANGE_TO;
+    
+    MATCHES="matches";
+    
+    COMPARISON;
+    
     
 }
 
@@ -295,7 +335,7 @@ validationRuleDeclaration
       p:PERCENT^ {#p.setType(VALIDATION);}
       // SIMPLE VALIDATION RULES
       (
-        rangeRule //| uniquenessRule | comparisonRule
+        rangeRule | regExpRule
       )
       errorMessage
       
@@ -314,6 +354,16 @@ rangeRule
 // [1..?] [?..5]
 rangeBound
     : n:NUMBER | m:INTMARK
+    ;
+    
+// name4%matches = "http://.+" : the homepage must start with http://
+regExpRule
+    : MATCHES^
+      EQUALS!
+      
+      errorMessage
+      
+      
     ;
 
 //uniquenessRule

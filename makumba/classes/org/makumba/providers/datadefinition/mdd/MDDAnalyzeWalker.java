@@ -7,6 +7,9 @@ import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionParseError;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
+import org.makumba.providers.datadefinition.mdd.validation.ComparisonValidationRule;
+import org.makumba.providers.datadefinition.mdd.validation.RangeValidationRule;
+import org.makumba.providers.datadefinition.mdd.validation.RegExpValidationRule;
 
 import antlr.collections.AST;
 
@@ -93,6 +96,25 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
         
     }
     
+    @Override
+    protected void createValidationRule(AST vr, String field, ValidationType type) {
+        
+        switch(type) {
+            case RANGE:
+            case LENGTH:
+                setCurrentValidationRule(new RangeValidationRule(mdd, vr, field));
+                break;
+            case REGEXP:
+                setCurrentValidationRule(new RegExpValidationRule(mdd, vr, field));
+                break;
+            case COMPARISON:
+                setCurrentValidationRule(new ComparisonValidationRule(mdd, vr));
+            default:
+                throw new RuntimeException("no matching validation rule found!");
+        }
+        
+        
+    }
     
     @Override
     protected void checkRuleApplicability() {
