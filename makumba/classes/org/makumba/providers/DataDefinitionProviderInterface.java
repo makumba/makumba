@@ -25,7 +25,7 @@ public interface DataDefinitionProviderInterface {
      * FIXME this is particular to mdds
      * 
      * @param name the name of the field
-     * @param definition the definition string
+     * @param definition the definition string, e.g. "ptr general.Person ;pointer to a person"
      * @return a field definition built on a definition string
      */
     public FieldDefinition makeFieldDefinition(String name, String definition);
