@@ -104,7 +104,7 @@ public class FieldNode extends MDDAST {
 
     public void addSubfield(String parentFieldName, FieldNode subfield) {
         this.subfield.addField(subfield);
-        this.subfield.parentFieldName = parentFieldName;
+        this.subfield.fieldNameInParent = parentFieldName;
     }   
     
     public String toString() {

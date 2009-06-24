@@ -2,30 +2,12 @@ package org.makumba.providers.datadefinition.mdd;
 
 import java.util.HashMap;
 
-import org.makumba.DataDefinition;
-import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 
 import antlr.collections.AST;
 
 /**
- * Build walker that glues all the contents of the MDD together. It walks over a simple tree of the kind
- * <pre>
- * MDDNode
- *   TitleFieldNode
- *   FieldNode
- *   FieldNode
- *   ...
- *   FieldNode
- *   ...
- *   ValidationNode
- *   ValidationNode
- *   ...
- *   FunctionNode
- *   FunctionNode
- * </pre>
- * 
- * and builds the {@link DataDefinition} and {@link FieldDefinition} objects.
+ * Build walker that glues all the contents of the MDD together.
  * 
  * @author Manuel Gay
  * @version $Id: MDDBuildWalker.java,v 1.1 May 3, 2009 10:13:05 PM manu Exp $

@@ -175,12 +175,5 @@ public class MDDParser extends MDDBaseParser {
         }
     }
     
-    private final static String fileTypeDef = 
-          "content = binary\n"
-        + "contentLength = int\n"
-        + "contentType = char[255]\n"
-        + "originalName = char[255]\n"
-        + "name = char[255]\n"
-        + "imageWidth = int\n"
-        + "imageHeight = int\n";
+ 
 }

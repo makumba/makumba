@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 import org.makumba.DataDefinition;
+import org.makumba.ValidationRule;
 
 import antlr.CommonAST;
 
@@ -21,10 +22,10 @@ public class MDDNode extends CommonAST {
     final static String modifyName = "TS_modify";
         
     /** name of the data definition **/
-    protected String name;
+    protected String name = "";
     
     /** name of the index field **/
-    protected String indexName;
+    protected String indexName = "";
         
     /** the title field **/
     protected TitleFieldNode titleField;
@@ -32,18 +33,18 @@ public class MDDNode extends CommonAST {
     /** origin of the data definition **/
     protected URL origin;
 
-    /** parent of the subfield **/
-    protected MDDNode parent;
+    /** name of the parent MDD of the subfield **/
+    protected String parent;
     
-    /** name of the parent field, if this is a ptrOne or setComplex **/
-    protected String parentFieldName;
+    /** name of the field in the parent MDD, if this is a ptrOne or setComplex **/
+    protected String fieldNameInParent = "";
 
     /** indicator if this is MDD is a file subfield **/
     protected boolean isFileSubfield = false;
     
     protected LinkedHashMap<String, FieldNode> fields = new LinkedHashMap<String, FieldNode>();
     
-    protected LinkedHashMap<String, ValidationRuleNode> validationRules = new LinkedHashMap<String, ValidationRuleNode>();
+    protected LinkedHashMap<String, ValidationRule> validationRules = new LinkedHashMap<String, ValidationRule>();
     
     public MDDNode(String name, URL origin) {
         this.name = name;
@@ -55,8 +56,10 @@ public class MDDNode extends CommonAST {
     public MDDNode(MDDNode parent, String subFieldName) {
         this.name = parent.name + "->" + subFieldName;
         this.origin = parent.origin;
-        this.parent = parent;
-        this.parentFieldName = subFieldName;
+        this.parent = parent.name;
+        this.fieldNameInParent = subFieldName;
+        addStandardFields(this.name);
+
     }
     
     
@@ -106,9 +109,14 @@ public class MDDNode extends CommonAST {
     }
     
     public void addField(FieldNode fi) {
-        fields.put(fi.name, fi);
+        
+        // FIXME make a name check for all methods calling this one, i.e. during analysis
+            
+        
+            fields.put(fi.name, fi);
     }
     
+
     public void removeField(String name) {
         if(fields.get(name) != null) {
             fields.remove(name);
@@ -125,7 +133,7 @@ public class MDDNode extends CommonAST {
         sb.append("Type name: " + name + "\n");
         sb.append("Type origin: " + origin + "\n");
         if(parent !=null)
-            sb.append("Type parent: " + parent.name + "\n");
+            sb.append("Type parent: " + parent + "\n");
         if(titleField != null) {
             sb.append("Title field: " + titleField.getText());
         }

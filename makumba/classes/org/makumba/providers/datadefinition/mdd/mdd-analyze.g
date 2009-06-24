@@ -70,10 +70,7 @@ options {
     
     // Add modifier
     protected void addModifier(FieldNode field, String modifier) { }
-    
-    // Add subfield - setComplex, ptrOne
-    protected void addSubfield(String parentFieldName, FieldNode field) { }
-    
+        
     // create and set validation rule
     protected void createValidationRule(AST vr, String field, ValidationType type) { }
     
@@ -139,6 +136,7 @@ fieldDeclaration
                    }
             
        ) {
+                // FIXME check for field name validity here
                 mdd.addField(field);
                             
                 // in the end, the return tree contains only one FieldNode
