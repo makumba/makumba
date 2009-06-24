@@ -191,8 +191,8 @@ fieldType
     | BINARY { type = FieldType.BINARY; }
     | FILE { type = FieldType.FILE; }
     | DATE { type = FieldType.DATE; }
-    | #(PTR { type = FieldType.PTRONE; #fieldType.setType(PTRONE); } (p:POINTED_TYPE { getCurrentField().pointedType = #p.getText(); type =FieldType.PTR; })? )
-    | #(SET { type = FieldType.SETCOMPLEX; #fieldType.setType(SETCOMPLEX); } (s:POINTED_TYPE { getCurrentField().pointedType = #s.getText(); type = FieldType.SET; })? )
+    | #(PTR { type = FieldType.PTRONE; #fieldType.setType(PTRONE); } (p:POINTED_TYPE { getCurrentField().pointedType = #p.getText(); #fieldType.setType(PTR); type =FieldType.PTRREL; })? )
+    | #(SET { type = FieldType.SETCOMPLEX; #fieldType.setType(SETCOMPLEX); } (s:POINTED_TYPE { getCurrentField().pointedType = #s.getText(); #fieldType.setType(SET); type = FieldType.SET; })? )
     )
     {
         setCurrentFieldType(type);

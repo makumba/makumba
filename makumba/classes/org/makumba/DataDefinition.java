@@ -42,6 +42,11 @@ import org.makumba.commons.StringUtils;
  */
 public interface DataDefinition {
 
+    String createName = "TS_CREATE";
+    String modifyName = "TS_MODIFY";
+    
+    
+    
     /** name of this data definition */
     public String getName();
 

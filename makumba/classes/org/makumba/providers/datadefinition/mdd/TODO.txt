@@ -1,13 +1,14 @@
 TODO new MDD parser:
 
-- DataDefinitionImpl and FieldDefinitionImpl builing
-  - maybe rename mdd-build.g to mdd-postprocess.g ?
+- rename mdd-build.g to mdd-postprocess.g
 
 - creation of subfields in mdd-analyze needs to also set the modifiers etc., see RecordParser
 - check RecordParser to see what else needs to be done
 
-- MDDProvider, with methods to build virtual MDDs
-- use caching when building MDDs
+
+- make unit tests to see if this works, first using simple MDD
+
+- use caching for creation of virtual fields (from definitions), to avoid parsing twice the same def ?
 
 - grammar for regexp validation rule
 - grammar for multi-unique index

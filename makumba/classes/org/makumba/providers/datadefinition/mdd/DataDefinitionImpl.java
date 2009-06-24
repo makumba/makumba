@@ -65,6 +65,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
         this.origin = null;
         this.parent = parent;
         this.fieldNameInParent = name;
+        addStandardFields(name);
     }
     
     
@@ -80,6 +81,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
         this.parent = parent;
         
         System.out.println("now going to add the fields of the subfield");
+        addStandardFields(name);
         addFieldNodes(mdd.fields);
     }
     
@@ -94,6 +96,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
         this.validationRules = mdd.validationRules;
 
         System.out.println("populating fields of " + mdd.name);
+        addStandardFields(name);
         addFieldNodes(mdd.fields);
     }
     
@@ -114,6 +117,40 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
         }
     }
     
+    /**
+     * adds standard fields
+     */
+    private void addStandardFields(String name) {
+        FieldDefinitionImpl fi;
+        
+        int k = name.lastIndexOf(".");
+        if(k > -1)
+            name = name.substring(name.lastIndexOf("."));
+
+        indexName = name;
+
+        fi = new FieldDefinitionImpl(indexName, this);
+        fi.type = FieldType.PTRINDEX;
+        fi.description = "Unique index";
+        fi.fixed = true;
+        fi.notNull = true;
+        fi.unique = true;
+        addField(fi);
+
+        fi = new FieldDefinitionImpl(DataDefinition.modifyName, this);
+        fi.type = FieldType.DATEMODIFY;
+        fi.notNull = true;
+        fi.description = "Last modification date";
+        addField(fi);
+
+        fi = new FieldDefinitionImpl(DataDefinition.createName, this);
+        fi.type = FieldType.DATECREATE;
+        fi.description = "Creation date";
+        fi.fixed = true;
+        fi.notNull = true;
+        addField(fi);
+        
+    }
     /**
      * builds a FieldDefinition for the file type
      */
@@ -391,16 +428,16 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
     sb.append("   == origin: " + origin + "\n");
     sb.append("   == indexName: " + indexName + "\n");
     sb.append("   == titleField: " + titleField + "\n");
-    sb.append("   == parent: " + parent + "\n");
+    if(parent != null)
+        sb.append("   == parent: " + parent.getName() + "\n");
     sb.append("   == parentFieldName: " + fieldNameInParent + "\n");
     sb.append("   == isFileSubfield: " + isFileSubfield + "\n");
     sb.append("\n   === Fields \n\n");
     
     for(FieldDefinition f : fields.values()) {
-        sb.append(sb.toString());
+        sb.append(f.toString());
     }
     
-//    return sb.toString();
-  return "";  
+    return sb.toString();
     }
 }
