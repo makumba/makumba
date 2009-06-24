@@ -13,7 +13,7 @@
 # here come the field
 name = not null unique char[233] ; comment very long
   
-name2 = ptr general.Student
+name2 = ptr ParserTest
 
 # now we have a setComplex!
 name3 = set

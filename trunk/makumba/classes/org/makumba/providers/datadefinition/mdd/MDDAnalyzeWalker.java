@@ -49,6 +49,14 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
                     factory.doThrow(this.typeName, "char has a maximum length of 255", type);
                 }
                 break;
+            case MDDTokenTypes.PTR:
+                AST pointedType = type.getFirstChild();
+                // we check if we can find this type
+                URL u = MDDProvider.findDataDefinition(pointedType.getText(), "mdd");
+                if(u == null) {
+                    factory.doThrow(this.typeName, "could not find type " + pointedType.getText(), pointedType);
+                }
+                break;
         }
         // TODO add ptr and set destination check / registration
         

@@ -82,12 +82,23 @@ public class FieldDefinitionImpl implements FieldDefinition {
         this(name, type);
         this.description = description;
     }
+    
+    /**
+     * Minimal constructor for standard fields
+     */
+    public FieldDefinitionImpl(String name, DataDefinition dd) {
+        this.name = name;
+        this.mdd = dd;
+    }
+    
 
     /**
      * Creates a field definition given a name and a type
      * @param name the name of the field
      * @param type the type of the filed, e.g. char, int, ptr - but no relational type definition
      */
+    // FIXME what about pointed in the case of ptr?
+
     public FieldDefinitionImpl(String name, String type) {
         this.name = name;
         fixed = false;
@@ -136,9 +147,11 @@ public class FieldDefinitionImpl implements FieldDefinition {
         
         switch (type) {
             case PTRONE:
+            // FIXME what to do with these two?
             case SETCHARENUM:
-            case SETCOMPLEX:
             case SETINTENUM:
+
+            case SETCOMPLEX:
             case FILE:
                 subfield = fi.getSubtable();
             case SET:
@@ -169,19 +182,28 @@ public class FieldDefinitionImpl implements FieldDefinition {
     /** constructor used when creating the {@link DataDefinitionImpl} during parsing **/
     public FieldDefinitionImpl(DataDefinition mdd, FieldNode f) {
         System.out.println("creating new field def " + f.name);
+        this.mdd = mdd;
+        this.name = f.name;
+        this.fixed = f.fixed;
+        this.notEmpty = f.notEmpty;
+        this.notNull = f.notNull;
+        this.unique = f.unique;
         this.charLength = f.charLength;
         this.defaultValue = f.defaultValue;
         this.description = f.description;
-        this.fixed = f.fixed;
+        this.type = f.makumbaType;
         this.intEnumValues = f.intEnumValues;
         this.intEnumValuesDeprecated = f.intEnumValuesDeprecated;
-        this.mdd = mdd;
-        this.name = f.name;
-        this.notEmpty = f.notEmpty;
-        this.notNull = f.notNull;
         this.pointedType = f.pointedType;
-        this.type = f.makumbaType;
-        this.unique = f.unique;
+        
+        
+        // we build the pointed type lazily, that way we also avoid getting into nasty loops
+        /*
+        if(f.pointedType != null && (this.type == FieldType.PTR || this.type == FieldType.PTRREL || this.type == FieldType.SET)) {
+            this.pointed = MDDProvider.getMDD(pointedType);
+        }
+        */
+        
         this.validationRules = f.validationRules;
         
         // TODO check if this works
@@ -844,6 +866,9 @@ public class FieldDefinitionImpl implements FieldDefinition {
             case FILE:
                 return this.subfield;
             case SET:
+                if(this.pointed == null) {
+                    this.pointed = MDDProvider.getMDD(pointedType);
+                }
                 return this.pointed;
             default:
                 throw new RuntimeException("Trying to get a sub-able for a '" + getType() + "' for field '" + name
@@ -901,7 +926,7 @@ public class FieldDefinitionImpl implements FieldDefinition {
             case PTR:
             case PTRINDEX:
             case SET:
-                sb.append("== pointed type: " + pointed.getName());
+                sb.append("== pointed type: " + pointedType + "\n");
                 break;
             case SETCOMPLEX:
             case PTRONE:

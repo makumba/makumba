@@ -49,7 +49,7 @@ public class MDDNode extends CommonAST {
     public MDDNode(String name, URL origin) {
         this.name = name;
         this.origin = origin;
-        addStandardFields(name);
+//        addStandardFields(name);
     }
     
     /** constructor for the creation of subfields **/
@@ -58,8 +58,7 @@ public class MDDNode extends CommonAST {
         this.origin = parent.origin;
         this.parent = parent.name;
         this.fieldNameInParent = subFieldName;
-        addStandardFields(this.name);
-
+//        addStandardFields(this.name);
     }
     
     
@@ -83,6 +82,8 @@ public class MDDNode extends CommonAST {
     
     protected void addStandardFields(String name) {
         FieldNode fi;
+        
+        name = name.substring(name.lastIndexOf("."));
 
         indexName = name;
 

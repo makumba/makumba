@@ -118,7 +118,7 @@ public class MDDFactory {
 
         // step 4 - make the DataDefinitionImpl object, together with its FieldDefinitionImpl objects
         DataDefinitionImpl result = new DataDefinitionImpl(builder.mdd);
-        //System.out.println(result.toString());
+        System.out.println(result.toString());
 
         return result;
     }
@@ -230,7 +230,7 @@ public class MDDFactory {
      */
     protected void doThrow(String typeName, String message, AST ast) {
         int line = ((MDDAST) ast).getLine();
-        int col = ((MDDAST) ast).getColumn();
+        int col = ((MDDAST) ast).getColumn() - 1; // for some fishy reason the cursor gets too far
         throw new DataDefinitionParseError(typeName, message, getLine(line, typeName), col);
     }
 
