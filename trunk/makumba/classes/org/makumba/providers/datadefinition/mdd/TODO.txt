@@ -1,0 +1,22 @@
+TODO new MDD parser:
+
+- DataDefinitionImpl and FieldDefinitionImpl builing
+  - maybe rename mdd-build.g to mdd-postprocess.g ?
+
+- creation of subfields in mdd-analyze needs to also set the modifiers etc., see RecordParser
+- check RecordParser to see what else needs to be done
+
+- MDDProvider, with methods to build virtual MDDs
+- use caching when building MDDs
+
+- grammar for regexp validation rule
+- grammar for multi-unique index
+- grammar for comparison validation rule
+
+- implementation of range validation rule
+- implementation of multi-unique validation rule?
+- implementation of comparison validation rule
+- implementation of regexp validation rule
+
+- grammar for functions
+- implementation of functions
