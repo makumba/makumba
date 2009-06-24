@@ -35,9 +35,7 @@ options {
     protected void processUnknownType(AST field) { }
     
     protected void checkTitleField(AST titleField) { }
-    
-//    protected DataDefinitionImpl dataDef = new DataDefinitionImpl(mdd);
-
+   
 }
 
 dataDefinition

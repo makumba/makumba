@@ -27,7 +27,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
     protected String name;
     
     /** name of the index field **/
-    protected String indexName;
+    protected String indexName = "";
     
     /** the title field **/
     protected String titleField;
@@ -35,11 +35,11 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
     /** origin of the data definition **/
     protected URL origin;
     
-    /** parent of the subfield **/
-    protected DataDefinitionImpl parent;
+    /** parent MDD of the subfield **/
+    protected DataDefinition parent;
     
     /** name of the parent field, for ptrOne and setComplex **/
-    protected String parentFieldName;
+    protected String fieldNameInParent;
     
     /** indicator if this is MDD is a file subfield **/
     protected boolean isFileSubfield = false;
@@ -53,20 +53,48 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
     private HashMap<Object, MultipleUniqueKeyDefinition> multiFieldUniqueList = new HashMap<Object, MultipleUniqueKeyDefinition>();
 
     
-    public DataDefinitionImpl(MDDNode mdd) {
+    /** make a virtual data definition **/
+    public DataDefinitionImpl(String name) {
+        this.name = name;
+        this.origin = null;
+    }
+    
+    /** constructor for virtual subfield data definitions **/
+    public DataDefinitionImpl(String name, DataDefinition parent) {
+        this.name = parent.getName() + "->" + name;
+        this.origin = null;
+        this.parent = parent;
+        this.fieldNameInParent = name;
+    }
+    
+    
+    /** constructor for subfield data definitions during parsing **/
+    public DataDefinitionImpl(MDDNode mdd, DataDefinition parent) {
+        System.out.println("now creating MDD for subfield " + mdd.name + " in type " + parent);
         this.indexName = mdd.indexName;
         this.isFileSubfield = mdd.isFileSubfield;
         this.name = mdd.name;
         this.origin = mdd.origin;
-        this.parent = new DataDefinitionImpl(mdd.parent);
-
         this.titleField = mdd.titleField.getText();
-        addFieldNodes(mdd.fields);
-  
-        // TODO convert ValidationRuleNode to validation Rule or else.
+        this.validationRules = mdd.validationRules;
+        this.parent = parent;
         
-//        this.validationRules = mdd.validationRules;
+        System.out.println("now going to add the fields of the subfield");
+        addFieldNodes(mdd.fields);
+    }
+    
+    /** constructor for data definitions during parsing **/
+    public DataDefinitionImpl(MDDNode mdd) {
+        System.out.println("creating dataDef " + mdd.name);
+        this.indexName = mdd.indexName;
+        this.isFileSubfield = mdd.isFileSubfield;
+        this.name = mdd.name;
+        this.origin = mdd.origin;
+        this.titleField = mdd.titleField.getText();
+        this.validationRules = mdd.validationRules;
 
+        System.out.println("populating fields of " + mdd.name);
+        addFieldNodes(mdd.fields);
     }
     
     /**
@@ -75,12 +103,37 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
      */
     private void addFieldNodes(LinkedHashMap<String, FieldNode> fields) {
         for(FieldNode f : fields.values()) {
-            addField(new FieldDefinitionImpl(this, f));
+            System.out.println("now adding field " + f.name + " into mdd " +this.name);
+            // when we have a file field, we transform it into an ptrOne with a specific structure
+            if(f.makumbaType == FieldType.FILE) {
+                System.out.println("FILE!");
+                addField(buildFileField(this, f));
+            } else {
+                addField(new FieldDefinitionImpl(this, f));
+            }
         }
     }
     
-    
-    
+    /**
+     * builds a FieldDefinition for the file type
+     */
+    private FieldDefinition buildFileField(DataDefinitionImpl dataDefinitionImpl, FieldNode f) {
+        System.out.println("now building file Field definition for field " + f.name + " in mdd " + dataDefinitionImpl.name);
+        FieldDefinitionImpl fi = new FieldDefinitionImpl(f.name, "ptrOne");
+        DataDefinitionImpl dd = new DataDefinitionImpl(f.name, this);
+        dd.isFileSubfield = true;
+        dd.addField(new FieldDefinitionImpl("content", "binary"));
+        dd.addField(new FieldDefinitionImpl("contentLength", "int"));
+        dd.addField(new FieldDefinitionImpl("contentType", "char"));
+        dd.addField(new FieldDefinitionImpl("originalName", "char"));
+        dd.addField(new FieldDefinitionImpl("name", "char"));
+        dd.addField(new FieldDefinitionImpl("imageWidth", "int"));
+        dd.addField(new FieldDefinitionImpl("imageHeight", "int"));
+        fi.subfield = dd;
+        
+        return fi;
+    }
+
     /** base methods **/
     
     public String getName() {
@@ -274,7 +327,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
         if (parent == null) {
             return null;
         }
-        return parent.getFieldDefinition(parentFieldName);
+        return parent.getFieldDefinition(fieldNameInParent);
     }
     
     
@@ -329,4 +382,25 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
         // TODO Auto-generated method stub
         return null;
     }   
+    
+    
+    @Override
+    public String toString() {
+    StringBuffer sb = new StringBuffer();
+    sb.append("==== MDD " + name + "\n");
+    sb.append("   == origin: " + origin + "\n");
+    sb.append("   == indexName: " + indexName + "\n");
+    sb.append("   == titleField: " + titleField + "\n");
+    sb.append("   == parent: " + parent + "\n");
+    sb.append("   == parentFieldName: " + fieldNameInParent + "\n");
+    sb.append("   == isFileSubfield: " + isFileSubfield + "\n");
+    sb.append("\n   === Fields \n\n");
+    
+    for(FieldDefinition f : fields.values()) {
+        sb.append(sb.toString());
+    }
+    
+//    return sb.toString();
+  return "";  
+    }
 }

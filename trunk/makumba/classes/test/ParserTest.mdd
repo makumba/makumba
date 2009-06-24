@@ -21,6 +21,7 @@ name3->!title = subname1 ;test
 name3-> subname1 = unique char[232] ; subcomment1
 name3-> subname2 = genTyp ; subcomment2
 name3->!include = validMdds.Included
+name3->image = file
 
 name4 = char[255] ;comment4
 name5 = int {"Male" = 10, "Female" = 20, "Shemale" = 30 deprecated}

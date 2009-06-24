@@ -2,19 +2,16 @@ package org.makumba.providers.datadefinition.mdd;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.DataDefinitionParseError;
-import org.makumba.MakumbaError;
 
 import antlr.MismatchedTokenException;
 import antlr.RecognitionException;
@@ -30,25 +27,64 @@ import antlr.collections.AST;
  */
 public class MDDFactory {
 
-    private static String webappRoot;
-    
     private static MDDASTFactory astFactory = new MDDASTFactory();
+
+    private HashMap<String, BufferedReader> errorReaders = new HashMap<String, BufferedReader>();
+
+    private MDDFactory() {
+
+    }
     
-    private static HashMap<String, BufferedReader> errorReaders = new HashMap<String, BufferedReader>();
+    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+        static MDDFactory singleton = new MDDFactory();
+        
+        public void release() {
+            singleton = null;
+        }
 
-
-    // TODO refactor this class so that these arguments are not global anymore, and the parse process can be called several times from the same class...
-
+        public SingletonHolder() {
+            org.makumba.commons.SingletonReleaser.register(this);
+        }
+    }
     
+    
+    public static MDDFactory getInstance() {
+        return SingletonHolder.singleton;
+    }
 
-    public MDDFactory(String typeName) {
+    /**
+     * Gets the dataDefinition for a given MDD type
+     */
+    public DataDefinition getDataDefinition(String typeName) {
+
+        // step 0 - reset common fields
+        errorReaders = new HashMap<String, BufferedReader>();
 
         // step 1 - parse the MDD
-        URL u = getDataDefinition(typeName, "mdd");
+        URL u = getDataDefinitionURL(typeName, "mdd");
 
-        
         AST tree = parse(typeName, u);
 
+        return buildDataDefinition(typeName, u, tree);
+
+    }
+    
+    /**
+     * Gets the dataDefinition given a definition text
+     */
+    public DataDefinition getVirtualDataDefinition(String typeName, String definition) {
+        
+        // step 0 - reset common fields
+        errorReaders = new HashMap<String, BufferedReader>();
+
+        // step 1 - parse the definition
+        AST tree = parse(typeName, definition);
+
+        return buildDataDefinition(typeName, null, tree);
+        
+    }
+
+    private DataDefinition buildDataDefinition(String typeName, URL u, AST tree) {
         // step 2 - analysis
         MDDAnalyzeWalker analysisWalker = null;
         try {
@@ -60,11 +96,10 @@ public class MDDFactory {
         }
         doThrow(analysisWalker.error, tree, typeName);
 
-        System.out.println("**** Analysis walker ****");
+        //System.out.println("**** Analysis walker ****");
         MakumbaDumpASTVisitor visitor2 = new MakumbaDumpASTVisitor(false);
-        visitor2.visit(analysisWalker.getAST());
+        //visitor2.visit(analysisWalker.getAST());
 
-        
         // step 3 - build the resulting DataDefinition and FieldDefinition
         MDDBuildWalker builder = null;
         try {
@@ -75,26 +110,31 @@ public class MDDFactory {
         }
         doThrow(builder.error, analysisWalker.getAST(), typeName);
 
-        System.out.println("**** Build walker ****");
+        //System.out.println("**** Build walker ****");
         MakumbaDumpASTVisitor visitor3 = new MakumbaDumpASTVisitor(false);
-        visitor3.visit(builder.getAST());
+        //visitor3.visit(builder.getAST());
 
-        System.out.println(builder.mdd.toString());
+        //System.out.println(builder.mdd.toString());
 
+        // step 4 - make the DataDefinitionImpl object, together with its FieldDefinitionImpl objects
+        DataDefinitionImpl result = new DataDefinitionImpl(builder.mdd);
+        //System.out.println(result.toString());
+
+        return result;
     }
 
     /**
      * parses a MDD text
      */
     protected AST parse(String typeName, String text) {
-        
+
         InputStream o = new ByteArrayInputStream(text.getBytes());
         InputStream o1 = new ByteArrayInputStream(text.getBytes());
-        
+
         return parse(typeName, o, o1);
 
     }
-    
+
     private AST parse(String typeName, URL u) {
 
         InputStream o = null;
@@ -111,6 +151,7 @@ public class MDDFactory {
         return parse(typeName, o, o1);
     }
 
+    /** the main parser method **/
     private AST parse(String typeName, InputStream o, InputStream o1) {
         // first pass - simply parse the MDD file
         Reader reader = new InputStreamReader(o);
@@ -119,7 +160,7 @@ public class MDDFactory {
         // create reader for error handling
         BufferedReader errorReader = new BufferedReader(new InputStreamReader(o1));
         errorReaders.put(typeName, errorReader);
-        
+
         MDDParser parser = null;
         try {
             parser = new MDDParser(lexer, this);
@@ -134,21 +175,21 @@ public class MDDFactory {
 
         AST tree = parser.getAST();
 
-        System.out.println("**** Parser ****");
-        MakumbaDumpASTVisitor visitor = new MakumbaDumpASTVisitor(false);
-        visitor.visit(tree);
+//        System.out.println("**** Parser ****");
+//        MakumbaDumpASTVisitor visitor = new MakumbaDumpASTVisitor(false);
+//        visitor.visit(tree);
 
         return tree;
     }
-    
+
     /**
      * parses an included data definition (.idd)
      */
     protected AST parseIncludedDataDefinition(String includedName) {
-        URL idd = getDataDefinition(includedName, "idd");
+        URL idd = getDataDefinitionURL(includedName, "idd");
         return parse(includedName, idd);
     }
-    
+
     /**
      * Throws a {@link DataDefinitionParseError} at parse time
      */
@@ -206,74 +247,17 @@ public class MDDFactory {
 
     }
 
-    private URL getDataDefinition(String typeName, String extension) throws DataDefinitionNotFoundError {
-        URL u = findDataDefinition(typeName, extension);
+    private URL getDataDefinitionURL(String typeName, String extension) throws DataDefinitionNotFoundError {
+        URL u = MDDProvider.findDataDefinition(typeName, extension);
         if (u == null) {
             throw new DataDefinitionNotFoundError(typeName);
         }
         return u;
     }
-    
-    /**
-     * Finds a data definition, based on its name and extensions
-     */
-    private URL findDataDefinition(String s, String ext) {
-        // must specify a filename, not a directory (or package), see bug 173
-        java.net.URL u = findDataDefinitionOrDirectory(s, ext);
-        if (u != null && (s.endsWith("/") || getResource(s + '/') != null)) {
-            return null;
-        }
-        return u;
-    }
 
-    private URL getResource(String s) {
-        return org.makumba.commons.ClassResource.get(s);
-    }
-
-    /**
-     * Looks up a data definition. First tries to see if an arbitrary webapp root path was passed, if not uses the
-     * classpath
-     * 
-     * @param s
-     *            the name of the type
-     * @param ext
-     *            the extension (e.g. mdd)
-     * @return a URL to the MDD file, null if none was found
-     */
-    private URL findDataDefinitionOrDirectory(String s, String ext) {
-        java.net.URL u = null;
-        if (s.startsWith("/")) {
-            s = s.substring(1);
-        }
-        if (s.endsWith(".") || s.endsWith("//")) {
-            return null;
-        }
-
-        // if a webappRoot was passed, we fetch the MDDs from there, not using the CP
-        if (webappRoot != null) {
-            File f = new File(webappRoot);
-            if (!f.exists() || (f.exists() && !f.isDirectory())) {
-                throw new MakumbaError("webappRoot " + webappRoot + " does not appear to be a valid directory");
-            }
-            String mddPath = webappRoot + "/WEB-INF/classes/dataDefinitions/" + s.replace('.', '/') + "." + ext;
-            File mdd = new File(mddPath.replaceAll("/", File.separator));
-            if (mdd.exists()) {
-                try {
-                    u = new java.net.URL("file://" + mdd.getAbsolutePath());
-                } catch (MalformedURLException e) {
-                    throw new MakumbaError("internal error while trying to retrieve URL for MDD "
-                            + mdd.getAbsolutePath());
-                }
-            }
-        }
-
-        if (u == null) {
-            u = getResource("dataDefinitions/" + s.replace('.', '/') + "." + ext);
-            if (u == null) {
-                u = getResource(s.replace('.', '/') + "." + ext);
-            }
-        }
-        return u;
+    public void release() {
+        // TODO Auto-generated method stub
+        
     }
 
 }

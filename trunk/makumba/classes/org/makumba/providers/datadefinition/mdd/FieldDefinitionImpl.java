@@ -25,7 +25,7 @@ import org.makumba.providers.DataDefinitionProvider;
 public class FieldDefinitionImpl implements FieldDefinition {
 
     // basic field info
-    protected DataDefinitionImpl mdd;
+    protected DataDefinition mdd;
     
     protected String name;
     
@@ -35,9 +35,6 @@ public class FieldDefinitionImpl implements FieldDefinition {
     
     // default value for this field
     private Object defaultValue;
-    
-    // for unknown mak type, probably macro type
-    protected String unknownType;
 
     // modifiers
     protected boolean fixed;
@@ -74,24 +71,85 @@ public class FieldDefinitionImpl implements FieldDefinition {
 
     // name of the original field definition, needed for serialization
     private String originalFieldDefinitionName;
+    
+    /**
+     * Creates a field definition given a name, type and description
+     * @param name the name of the field
+     * @param type the type of the filed, e.g. char, int, ptr - but no relational type definition
+     * @param description the description of the field
+     */
+    public FieldDefinitionImpl(String name, String type, String description) {
+        this(name, type);
+        this.description = description;
+    }
 
-    
-    
-    /** for temporary field info */
-    public FieldDefinitionImpl(String name, FieldDefinitionImpl fi) {
+    /**
+     * Creates a field definition given a name and a type
+     * @param name the name of the field
+     * @param type the type of the filed, e.g. char, int, ptr - but no relational type definition
+     */
+    public FieldDefinitionImpl(String name, String type) {
         this.name = name;
-        type = fi.type;
-        fixed = fi.fixed;
-        notEmpty = fi.notEmpty;
-        unique = fi.unique;
-        defaultValue = fi.defaultValue;
-        description = fi.description;
-        subfield = fi.subfield;
-        if (type.equals("ptrIndex")) {
-            type = FieldType.PTR;
-            subfield = fi.getDataDefinition();
+        fixed = false;
+        notNull = false;
+        notEmpty = false;
+        unique = false;
+        try {
+            this.type = FieldType.valueOf(type.toUpperCase());
+            if(this.type == FieldType.CHAR) {
+                charLength = 255;
+            }
+
+        } catch(IllegalArgumentException e) {
+            // type is not a strict type
+            if(type.startsWith("char")) {
+                
+                try {
+                    
+                    int n = type.indexOf("[");
+                    int m = type.indexOf("]");
+                    if (!type.endsWith("]") || type.substring(3, n).trim().length() > 1) {
+                        throw new InvalidValueException("invalid char type " + type);
+                    }
+
+                    charLength = new Integer(Integer.parseInt(type.substring(n + 1, m)));
+                    this.type = FieldType.CHAR;
+                    
+                } catch (StringIndexOutOfBoundsException e1) {
+                    throw new InvalidValueException("bad type " + type);
+                } catch (NumberFormatException f) {
+                    throw new InvalidValueException("bad char[] size " + type);
+                }
+            }
+        }   
+    }
+    
+    /** for virtual FieldDefinition */
+    public FieldDefinitionImpl(String name, FieldDefinition fi) {
+        this.name = name;
+        type = FieldType.valueOf(fi.getType());
+        fixed = fi.isFixed();
+        notEmpty = fi.isNotEmpty();
+        unique = fi.isUnique();
+        defaultValue = fi.getDefaultValue();
+        description = fi.getDescription();
+        
+        switch (type) {
+            case PTRONE:
+            case SETCHARENUM:
+            case SETCOMPLEX:
+            case SETINTENUM:
+            case FILE:
+                subfield = fi.getSubtable();
+            case SET:
+                pointed = fi.getSubtable();
         }
-        validationRules = fi.validationRules;
+        
+        if (type == FieldType.PTRINDEX) {
+            type = FieldType.PTR;
+            pointed = fi.getDataDefinition();
+        }
+        validationRules = ((FieldDefinitionImpl)fi).validationRules;
 
         // store names of original field definition and data definition; see getOriginalFieldDefinition() for details
         if (fi.getDataDefinition() != null) {
@@ -100,9 +158,17 @@ public class FieldDefinitionImpl implements FieldDefinition {
         }
     }
     
+    /** for virtual field definitions **/
+    public FieldDefinitionImpl(String name, FieldDefinition field, String description) {
+        this(name, field);
+        this.description = description;
+    }
+
+
     
-    
-    public FieldDefinitionImpl(DataDefinitionImpl mdd, FieldNode f) {
+    /** constructor used when creating the {@link DataDefinitionImpl} during parsing **/
+    public FieldDefinitionImpl(DataDefinition mdd, FieldNode f) {
+        System.out.println("creating new field def " + f.name);
         this.charLength = f.charLength;
         this.defaultValue = f.defaultValue;
         this.description = f.description;
@@ -114,7 +180,6 @@ public class FieldDefinitionImpl implements FieldDefinition {
         this.notEmpty = f.notEmpty;
         this.notNull = f.notNull;
         this.pointedType = f.pointedType;
-        this.subfield = new DataDefinitionImpl(f.subfield);
         this.type = f.makumbaType;
         this.unique = f.unique;
         this.validationRules = f.validationRules;
@@ -123,6 +188,11 @@ public class FieldDefinitionImpl implements FieldDefinition {
         this.originalFieldDefinitionName = name;
         this.originalFieldDefinitionParent = getDataDefinition().getName();
         
+        // we have to transform the subfield MDDNode into a DataDefinitionImpl
+        if(f.subfield != null &&f.makumbaType == FieldType.SETCOMPLEX || f.makumbaType == FieldType.PTRONE) {
+            System.out.println("this file has a subfield, going to create MDD");
+                this.subfield = new DataDefinitionImpl(f.subfield, mdd);
+        }
     }
 
 
@@ -811,6 +881,37 @@ public class FieldDefinitionImpl implements FieldDefinition {
 
     public boolean shouldEditBySingleInput() {
         return !(getIntegerType() == _ptrOne || getIntegerType() == _setComplex);
+    }
+    
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append("== Field name: " + name + "\n");
+        sb.append("== Field type: " + type.getTypeName() + "\n");
+        sb.append("== Modifiers: " + (fixed? "fixed ":"") + (unique? "unique ":"") + (notNull? "not null ":"") + (notEmpty? "not empty ":"")  + "\n");
+        if(description != null) sb.append("== Description: "+ description + "\n");
+
+        switch(type) {
+            case CHAR:
+                sb.append("== char length: " + charLength + "\n");
+                break;
+            case INTENUM:
+                sb.append("== int enum values:" + Arrays.toString(intEnumValues.keySet().toArray()) + "\n");
+                sb.append("== int enum names:" + Arrays.toString(intEnumValues.values().toArray()) + "\n");
+                break;
+            case PTR:
+            case PTRINDEX:
+            case SET:
+                sb.append("== pointed type: " + pointed.getName());
+                break;
+            case SETCOMPLEX:
+            case PTRONE:
+                sb.append("== Subfield detail" + "\n\n");
+                sb.append(subfield.toString() + "\n");
+                break;
+        }
+        
+        
+        return sb.toString();
     }
 
     
