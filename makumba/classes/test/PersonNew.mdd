@@ -58,5 +58,7 @@ intSet= set int {"a"=0, "b"=1, "c"=2 }
 
 charSet=set char{ "d", "e", "f" }
 
+email = char[40]
+#email%matches = .+@.+\.[a-z]+ : Email address is not valid!
 
 
