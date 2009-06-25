@@ -22,7 +22,6 @@ import org.makumba.ValidationRule;
 import org.makumba.commons.StringUtils;
 import org.makumba.providers.DataDefinitionProvider;
 
-// TODO add charEnum and setCharEnum
 public class FieldDefinitionImpl implements FieldDefinition {
 
     // basic field info
@@ -200,6 +199,8 @@ public class FieldDefinitionImpl implements FieldDefinition {
         this.type = f.makumbaType;
         this.intEnumValues = f.intEnumValues;
         this.intEnumValuesDeprecated = f.intEnumValuesDeprecated;
+        this.charEnumValues = f.charEnumValues;
+        this.charEnumValuesDeprecated = f.charEnumValuesDeprecated;
         this.pointedType = f.pointedType;
         
         
@@ -437,7 +438,7 @@ public class FieldDefinitionImpl implements FieldDefinition {
                     }
                     return value;
                 case CHARENUM:
-                    throw new MakumbaError("not implemented");
+                    return checkCharEnum(value);
                 case DATE:
                 case DATECREATE:
                 case DATEMODIFY:
@@ -522,8 +523,21 @@ public class FieldDefinitionImpl implements FieldDefinition {
                     return v;
                     
                 case SETCHARENUM:
-                    throw new MakumbaError("not implemented");
-                    //return check_setcharEnum_ValueImpl(value);
+                    
+                    normalCheck(value);
+                    v = (Vector) value;
+    
+                    for (int i = 0; i < v.size(); i++) {
+                        if (v.elementAt(i) == null || v.elementAt(i).equals(org.makumba.Pointer.NullString)) {
+                            throw new org.makumba.InvalidValueException(this, "set members cannot be null");
+                        } else {
+                            
+                        }
+                        v.setElementAt(checkCharEnum(v.elementAt(i)), i);
+                    }
+                    return v;
+                        
+                    
                 case SETCOMPLEX:
                     throw new org.makumba.InvalidValueException(this, "subsets cannot be assigned directly");
                 case TEXT:
@@ -565,6 +579,20 @@ public class FieldDefinitionImpl implements FieldDefinition {
         if(!intEnumValues.containsValue(value) /* && !intEnumValuesDeprecated.containsKey(value) */) {
             throw new org.makumba.InvalidValueException(this, "string value set to int enumerator (" + value
                     + ") is neither a member of " + Arrays.toString(intEnumValues.values().toArray()) + " nor a member of " + Arrays.toString(intEnumValues.keySet().toArray()));
+        }
+        
+        return value;
+    }
+    
+    private Object checkCharEnum(Object value) {
+        if(value instanceof String && !charEnumValues.contains(value))
+            throw new org.makumba.InvalidValueException(this, "char value set to char enumerator (" + value
+                + ") is not a member of " + Arrays.toString(charEnumValues.toArray())); 
+        
+        if (!(value instanceof String)) {
+            throw new org.makumba.InvalidValueException(this,
+                    "char enumerators only accept values of type String. Value supplied (" + value
+                            + ") is of type " + value.getClass().getName());
         }
         
         return value;
@@ -741,7 +769,14 @@ public class FieldDefinitionImpl implements FieldDefinition {
     /** methods for enumerations **/
     
     public Vector<String> getDeprecatedValues() {
-        return new Vector<String>(intEnumValuesDeprecated.values());
+        switch(type) {
+            case INTENUM:
+                return new Vector<String>(intEnumValuesDeprecated.values());
+            case CHARENUM:
+                return charEnumValuesDeprecated;
+            default:
+                throw new RuntimeException("getDeprecatedValues() only works for intEnum and charEnum");
+        }
     }
     
 
@@ -752,7 +787,7 @@ public class FieldDefinitionImpl implements FieldDefinition {
             case INTENUM:
                 return this.intEnumValues.size();
             case SETCHARENUM:
-                throw new MakumbaError("not implemented");
+                return this.charEnumValues.size();
             case SETINTENUM:
                 return this.intEnumValues.size();
             default:
@@ -796,11 +831,26 @@ public class FieldDefinitionImpl implements FieldDefinition {
     }
 
     public Collection<String> getNames() {
-        return intEnumValues.values();
+        switch(type) {
+            case INTENUM:
+                return intEnumValues.values();
+            case CHARENUM:
+                return charEnumValues;
+            default:
+                throw new RuntimeException("getNames() only work for intEnum and charEnum");
+        }
+        
     }
     
     public Collection getValues() {
-        return intEnumValues.keySet();
+        switch(type) {
+            case INTENUM:
+                return intEnumValues.values();
+            case CHARENUM:
+                return charEnumValues;
+            default:
+                throw new RuntimeException("getNames() only work for intEnum and charEnum");
+        }
     }
 
     
@@ -894,7 +944,7 @@ public class FieldDefinitionImpl implements FieldDefinition {
             case CHAR:
                 return this.charLength;
             case CHARENUM:
-                return this.intEnumValues.size();
+                return this.charEnumValues.size();
             case SETCHARENUM:
                 return this.intEnumValues.size();
             default:
@@ -921,6 +971,10 @@ public class FieldDefinitionImpl implements FieldDefinition {
             case SETINTENUM:
                 sb.append("== int enum values:" + Arrays.toString(intEnumValues.keySet().toArray()) + "\n");
                 sb.append("== int enum names:" + Arrays.toString(intEnumValues.values().toArray()) + "\n");
+                break;
+            case CHARENUM:
+            case SETCHARENUM:
+                sb.append("== char enum values:" + Arrays.toString(charEnumValues.toArray()) + "\n");
                 break;
             case PTR:
             case PTRINDEX:
