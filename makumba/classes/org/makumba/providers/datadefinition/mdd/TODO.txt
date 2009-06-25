@@ -1,7 +1,5 @@
 TODO new MDD parser:
 
-- rename mdd-build.g to mdd-postprocess.g
-
 - creation of subfields in mdd-analyze needs to also set the modifiers etc., see RecordParser
 - check RecordParser to see what else needs to be done
 
