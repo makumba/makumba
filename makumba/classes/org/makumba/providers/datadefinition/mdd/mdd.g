@@ -8,15 +8,7 @@ options {
     exportVocab=MDD;
     k = 3;
 }
-
-WORD
-    : ('a'..'z'|'A'..'Z') ('a'..'z'|'A'..'Z'|'0'..'9')*
-    ;
-    
-NUMBER
-    : ('0'..'9')*
-    ;
-
+	    
 LEFT_PAREN: '(';
 RIGHT_PAREN: ')';
 LEFT_CUBR: '{';
@@ -37,6 +29,57 @@ SUBFIELD
     : '-' '>'
     ;
 
+
+// from the Java example grammar
+
+protected ID_START:
+        '_' | '$' | 
+        (            
+            {Character.isLetter(LA(1))}? 
+            ~(
+                '_' | '$' | '/' | '*' | '0'..'9' | 
+                '.' | '\'' | '\\' | '"' | '\t' | '\n' | 
+                '\r' | ' ' | '\f' | '(' | ')' |
+                '{' | '}' | '[' | ']'| ';' | ',' | '=' |
+                '+' | '~' | '&' | '<' | '>' | '-' | '!' |
+                '^' | '%' | ':' | '?' | '|'| '@'
+            )
+        )
+    ;
+
+protected ID_PART :
+        '_' | '$' | 
+        (
+            {Character.isLetterOrDigit(LA(1))}?
+            ~(
+                '_' | '$' | '/' | '*' | 
+                '.' | '\'' | '\\' | '"' | '\t' | '\n' | 
+                '\r' | ' ' | '\f' | '(' | ')' |
+                '{' | '}' | '[' | ']'| ';' | ',' | '=' |
+                '+' | '~' | '&' | '<' | '>' | '-' | '!' |
+                '^' | '%' | ':' | '?' | '|' | '@'
+            )
+        )
+    ;
+
+
+// an identifier. Note that testLiterals is set to true! This means
+// that after we match the rule, we look in the literals table to see
+// if it's a literal or really an identifer
+IDENT
+	options {testLiterals=true;}
+	:	ID_START (ID_PART)*
+	;
+
+
+NUMBER
+	: '0'..'9' ('0'..'9')*
+	;
+	
+
+
+
+
 WHITESPACE
     : (' ' | 't' | 'r' | 'n' | '\t') { $setType(Token.SKIP); }
     ;
@@ -47,13 +90,17 @@ SL_COMMENT
         (~('\n'|'\r'))* ('\n'|'\r'('\n')?)
         {$setType(Token.SKIP); newline();}
     ;
-
     
 LINEBREAK
     :   '\n'      { newline(); } // unix
     |   '\r' '\n' { newline(); } // dos
     |   '\r'      { newline(); } // mac
     ;
+
+FIELDCOMMENT
+	: SEMICOLON (~('\n'|'\r'))* ('\n'|'\r'('\n')?) {newline();}
+	;
+
 
 MESSAGE
 	: COLON (~('\n'|'\r'))* ('\n'|'\r'('\n')?) {newline();}
@@ -126,7 +173,6 @@ tokens {
     FIELDNAME;
     MODIFIER;
     FIELDTYPE;
-    FIELDCOMMENT;
     
     // MDD subfield
     // cars = set
@@ -141,6 +187,8 @@ tokens {
     INTENUM;
     INTENUMTEXT;
     INTENUMINDEX;
+    CHARENUM;
+    CHARENUMELEMENT;
     REAL="real";
     BOOLEAN="boolean";
     TEXT="text";
@@ -150,6 +198,8 @@ tokens {
     PTR="ptr";
     SET="set";
     SETCOMPLEX;
+    SETINTENUM;
+    SETCHARENUM;
     PTRONE;
     UNKNOWN_TYPE; // for type shorthands
     
@@ -167,7 +217,19 @@ tokens {
     VALIDATIONNAME;
     
     RANGE="range";
-    LENGTH="length";
+    
+    // FIXME this can't be length because otherwise we mess up with "length" fields
+    // in fact with the current validation rule syntax we can't really make a difference between
+    // length = int ; some length
+    // and
+    // name%length=[1..?] : has to be not empty!
+    //
+    // this is probably because ": has to be not empty" is recognized as token by the lexer
+    // as this was the only proper way to deal with the linebreak properly
+    //
+    // changing the syntax would help a lot here
+    
+    LENGTH="len";
     RANGE_FROM;
     RANGE_TO;
     
@@ -176,6 +238,11 @@ tokens {
     COMPARISON;
     
     
+    // Literal tokens
+	NUM_DOUBLE;
+	NUM_FLOAT;
+	NUM_LONG;
+	TRIPLE_DOT;
 }
 
 {
@@ -194,8 +261,6 @@ tokens {
 
     protected void disableField(AST field) { }
     
-    protected void transformToFile(AST field) {}
-
     protected AST include(AST type) { return null; }
     
     protected AST includeSubField(AST type, AST parentField) { return null; }
@@ -224,14 +289,11 @@ fieldDeclaration
       EQUALS^ {#EQUALS.setType(FIELD); #EQUALS.setText(#fn.getText()); boolean hasBody = false;}
       (options{greedy=true;}:
           (modifier)* ft:fieldType
-          (SEMICOLON! fieldComment LINEBREAK!)? {hasBody = true;}
+          (fieldComment)? {hasBody = true;}
       )?
       {
       	if(!hasBody) {
       	    disableField(#fieldDeclaration);
-      	}
-      	if(#ft.getType() == FILE) {
-      		transformToFile(#fieldDeclaration);
       	}
       }
     ;
@@ -241,14 +303,14 @@ subFieldDeclaration
     : 
       fn:atom {#fn.setType(PARENTFIELDNAME); } s:SUBFIELD^
       (
-          titleDeclaration (SEMICOLON! fieldComment! LINEBREAK!)? // allow comment but do not store them
+          titleDeclaration (fieldComment!)? // allow comment but do not store them
           | EXMARK! "include"! EQUALS! t:type { #subFieldDeclaration = includeSubField(#t, #fn); }
           |
           (
             a:atom { #a.setType(SUBFIELDNAME); }
             EQUALS!
             (modifier)* fieldType
-            (SEMICOLON! fieldComment LINEBREAK!)?
+            (fieldComment)?
           )
       )
       { // we move the subfield node under the current field node
@@ -264,41 +326,45 @@ fieldName
 fieldType
     : a:atom { #a.setType(UNKNOWN_TYPE); }
     | c:CHAR^ LEFT_SQBR! l:NUMBER {#l.setType(CHAR_LENGTH); } RIGHT_SQBR!
-    | i:INT
-    | ie:INT^ {#ie.setType(INTENUM);} LEFT_CUBR! intEnumBody (COMMA! intEnumBody)*  RIGHT_CUBR! //int { "aa"=5, "bb"=2 deprecated, "cc"=10}
-    | r:REAL
+    | INT
+    | intEnum
+    | charEnum
+    | REAL
     | BOOLEAN
     | TEXT
     | BINARY
     | FILE
     | DATE
     | PTR^ (options{greedy=true;}: p:type {#p.setType(POINTED_TYPE);})?
-    | SET^ (options{greedy=true;}: s:type {#s.setType(POINTED_TYPE);})? 
+    | SET^ (options{greedy=true;}: s:type {#s.setType(POINTED_TYPE);})?
+    | SET! si:intEnum {#si.setType(SETINTENUM);}
+    | SET! sc:charEnum {#sc.setType(SETCHARENUM);}
     ;
+
+intEnum
+	: ie:INT^ {#ie.setType(INTENUM);} LEFT_CUBR! intEnumBody (COMMA! intEnumBody)*  RIGHT_CUBR! //int { "aa"=5, "bb"=2 deprecated, "cc"=10}
+	;
 
 intEnumBody
     : QUOTMARK! t:atom {#t.setType(INTENUMTEXT); } QUOTMARK! EQUALS! i:NUMBER {#i.setType(INTENUMINDEX); } (DEPRECATED)?
     ;
 
-// TODO this is clumsy, could maybe be replaced with appropriate lexer syntax, see MESSAGE token definition
-fieldComment
-	: { String comment=""; }
-      (a:atom { comment += #a.getText(); })
-      (b:atom { comment += " " + #b.getText(); })*
-      { #fieldComment = #[FIELDCOMMENT]; #fieldComment.setText(comment); }
+charEnum
+	: ce:CHAR^ {#ce.setType(CHARENUM);} LEFT_CUBR! charEnumBody (COMMA! charEnumBody)*  RIGHT_CUBR! //char { "aa", "bb" deprecated, "cc"}
 	;
 	
+charEnumBody
+	: QUOTMARK! t:atom {#t.setType(CHARENUMELEMENT); } QUOTMARK! (DEPRECATED)?
+	;
+
+fieldComment
+	: f:FIELDCOMMENT {int k = #f.getText().indexOf(";"); #fieldComment.setText(#f.getText().substring(k+1).trim()); }
+	;
+
+
 errorMessage
 	: m:MESSAGE {int k = #m.getText().indexOf(":"); #errorMessage.setText(#m.getText().substring(k+1).trim()); }
 	;
-
-//message
-//	: { String message=""; }
-//      (a:atom { message += #a.getText(); })
-//      (b:atom { message += " " + #b.getText(); })*
-//      { #message = #[MESSAGE]; #message.setText(message); }
-//	;
-
     
 modifier
     : u:UNIQUE { #u.setType(MODIFIER); }
@@ -313,7 +379,7 @@ titleDeclaration
     ;
     
 title
-    : t:atom { #t.setType(TITLEFIELDFIELD);}
+    : t:type { #t.setType(TITLEFIELDFIELD);}
     // TODO add function here as well
     ;
     
@@ -335,7 +401,8 @@ validationRuleDeclaration
       p:PERCENT^ {#p.setType(VALIDATION);}
       // SIMPLE VALIDATION RULES
       (
-        rangeRule | regExpRule
+        rangeRule
+         | regExpRule
       )
       errorMessage
       
@@ -360,10 +427,8 @@ rangeBound
 regExpRule
     : MATCHES^
       EQUALS!
-      
+
       errorMessage
-      
-      
     ;
 
 //uniquenessRule
@@ -379,9 +444,9 @@ regExpRule
 
 // general.Person
 type
-    : {String type="";} a:atom { type = #a.getText(); } (DOT! b:atom! {type += "." + #b.getText(); } )* { #type.setText(type); }
+    : {String type="";} a:atom { type = #a.getText(); } (DOT! b:atom! {type += "." + #b.getText(); } )* { #type.setText(type); System.out.println(type);}
     ;
 
 atom
-    : WORD
+    : IDENT
     ;

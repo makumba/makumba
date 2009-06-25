@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 
 import org.makumba.DataDefinition;
 import org.makumba.ValidationRule;
+import org.makumba.commons.ReservedKeywords;
 
 import antlr.CommonAST;
 
@@ -28,7 +29,7 @@ public class MDDNode extends CommonAST {
     protected String indexName = "";
         
     /** the title field **/
-    protected TitleFieldNode titleField;
+    protected TitleFieldNode titleField = new TitleFieldNode();
     
     /** origin of the data definition **/
     protected URL origin;
@@ -49,7 +50,6 @@ public class MDDNode extends CommonAST {
     public MDDNode(String name, URL origin) {
         this.name = name;
         this.origin = origin;
-//        addStandardFields(name);
     }
     
     /** constructor for the creation of subfields **/
@@ -58,63 +58,16 @@ public class MDDNode extends CommonAST {
         this.origin = parent.origin;
         this.parent = parent.name;
         this.fieldNameInParent = subFieldName;
-//        addStandardFields(this.name);
     }
-    
-    
-    /*
-       RecordInfo(RecordInfo ri, String subfield) {
-        // initStandardFields(subfield);
-        name = ri.name;
-        origin = ri.origin;
-        this.subfield = subfield;
-        this.papa = ri;
-        // this.templateArgumentNames= ri.templateArgumentNames;
-        ptrSubfield = papa.ptrSubfield + "->" + subfield;
-        subfieldPtr = papa.subfieldPtr + subfield + "->";
 
-     */
     
     protected void setTitleField(TitleFieldNode title) {
-        title.mdd = this;
         titleField = title;
-    }
-    
-    protected void addStandardFields(String name) {
-        FieldNode fi;
-        
-        name = name.substring(name.lastIndexOf("."));
-
-        indexName = name;
-
-        fi = new FieldNode(this, indexName);
-        fi.makumbaType = FieldType.PTRINDEX;
-        fi.description = "Unique index";
-        fi.fixed = true;
-        fi.notNull = true;
-        fi.unique = true;
-        addField(fi);
-
-        fi = new FieldNode(this, modifyName);
-        fi.makumbaType = FieldType.DATEMODIFY;
-        fi.notNull = true;
-        fi.description = "Last modification date";
-        addField(fi);
-
-        fi = new FieldNode(this, createName);
-        fi.makumbaType = FieldType.DATECREATE;
-        fi.description = "Creation date";
-        fi.fixed = true;
-        fi.notNull = true;
-        addField(fi);
+        titleField.mdd = this;
     }
     
     public void addField(FieldNode fi) {
-        
-        // FIXME make a name check for all methods calling this one, i.e. during analysis
-            
-        
-            fields.put(fi.name, fi);
+        fields.put(fi.name, fi);
     }
     
 

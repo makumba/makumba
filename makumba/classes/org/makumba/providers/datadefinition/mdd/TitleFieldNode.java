@@ -11,7 +11,7 @@ package org.makumba.providers.datadefinition.mdd;
 public class TitleFieldNode extends MDDAST {
     
     protected MDDNode mdd;
-    
+   
     protected int titleType;
     
     public TitleFieldNode() {

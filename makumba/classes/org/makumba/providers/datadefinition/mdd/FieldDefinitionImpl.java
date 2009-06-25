@@ -22,6 +22,7 @@ import org.makumba.ValidationRule;
 import org.makumba.commons.StringUtils;
 import org.makumba.providers.DataDefinitionProvider;
 
+// TODO add charEnum and setCharEnum
 public class FieldDefinitionImpl implements FieldDefinition {
 
     // basic field info
@@ -49,6 +50,11 @@ public class FieldDefinitionImpl implements FieldDefinition {
     private LinkedHashMap<Integer, String> intEnumValues = new LinkedHashMap<Integer, String>();
 
     private LinkedHashMap<Integer, String> intEnumValuesDeprecated = new LinkedHashMap<Integer, String>();
+    
+    // charEnum
+    protected Vector<String> charEnumValues = new Vector<String>();
+
+    protected Vector<String> charEnumValuesDeprecated = new Vector<String>();
     
     // char length
     protected int charLength;
@@ -255,14 +261,6 @@ public class FieldDefinitionImpl implements FieldDefinition {
 
     public void setDefaultValue(Object defaultValue) {
         this.defaultValue = defaultValue;
-    }
-    
-    public void addIntEnumValue(int index, String text) {
-        intEnumValues.put(index, text);
-    }
-
-    public void addIntEnumValueDeprecated(int index, String text) {
-        intEnumValuesDeprecated.put(index, text);
     }
     
     public String getDescription() {
@@ -920,6 +918,7 @@ public class FieldDefinitionImpl implements FieldDefinition {
                 sb.append("== char length: " + charLength + "\n");
                 break;
             case INTENUM:
+            case SETINTENUM:
                 sb.append("== int enum values:" + Arrays.toString(intEnumValues.keySet().toArray()) + "\n");
                 sb.append("== int enum names:" + Arrays.toString(intEnumValues.values().toArray()) + "\n");
                 break;

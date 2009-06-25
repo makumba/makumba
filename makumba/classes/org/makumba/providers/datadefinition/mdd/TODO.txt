@@ -1,8 +1,6 @@
 TODO new MDD parser:
 
-- creation of subfields in mdd-analyze needs to also set the modifiers etc., see RecordParser
-- check RecordParser to see what else needs to be done
-
+- fix bug: type definition postprocessing has to happen before mdd building
 
 - make unit tests to see if this works, first using simple MDD
 
@@ -19,3 +17,8 @@ TODO new MDD parser:
 
 - grammar for functions
 - implementation of functions
+
+
+test:
+- creation of subfields in mdd-analyze needs to also set the modifiers etc., see RecordParser
+- check RecordParser to see what else needs to be done

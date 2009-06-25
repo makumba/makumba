@@ -104,13 +104,6 @@ public class MDDParser extends MDDBaseParser {
     }
     
     private HashMap<String, AST> fieldsToDisable = new HashMap<String, AST>();
-
-    private HashMap<String, AST> fieldsToTransform = new HashMap<String, AST>();
-
-    @Override
-    protected void transformToFile(AST field) {
-        fieldsToTransform.put(field.getText(), field);
-    }
     
     @Override
     protected void disableField(AST field) {

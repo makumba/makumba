@@ -1,0 +1,62 @@
+# temporary file, should be removed once new parser works
+
+!type.yesNo=int{"No"=0, "Yes"=1}
+!type.genTyp=int{"Female"=0, "Male"=1}
+#!title= fullName()
+!title= indiv.name
+
+indiv = unique fixed not null ptr test.IndividualNew ;lala
+
+
+birthdate=date		 ;Birthdate
+#birthdate%compare = birthdate <= date($now, $now, $now - 15, 0, 0, 0) : You have to be at least 15 years old!
+#birthdate%compare = birthdate >= date($now, $now, $now - 105, 0, 0, 0) : Maximum age is 105!
+
+firstSex = date
+
+myapp_username=char[80] ; username for this user
+
+password=char[80] ; password for this user
+
+beginDate = date;a
+
+#beginDate%compare = beginDate >= $now : Begin date can't be in the past!
+#beginDate%compare = beginDate >= date($now,$now,$now - 5) : Begin date can't be longer than 5 years ago!
+
+gender=genTyp		 ;Gender
+all=char[25]             ;test a reserved word
+field=char[80]           ;another reserved word
+
+militarySucksAndEverybodyKnowsItButDoesNotSpeakOutLoudAboutIt=yesNo           ;A very long fieldname
+driver=yesNo		 ;Driving Licence
+
+age=int				;Age
+#age%range = [12..99] : Age must be between 12 and 99!
+
+makumbaTillDeath = not null yesNo	; makumbian or not
+designer = yesNo	; are you a designer?
+
+weight=real ; weight in kilos
+
+
+# test some QL functions as field names
+length=int ; height in cm
+max=int ; max value
+
+extraData=ptr
+extraData->something=char[20]
+extraData->what=int
+
+
+#for uniqness tests:
+uniqInt=unique int		;test int uniqness
+uniqChar=unique char[33]	;test char uniqness
+uniqDate=unique date		;test date uniqness
+
+speaks=set test.Language
+intSet= set int {"a"=0, "b"=1, "c"=2 }
+
+charSet=set char{ "d", "e", "f" }
+
+
+

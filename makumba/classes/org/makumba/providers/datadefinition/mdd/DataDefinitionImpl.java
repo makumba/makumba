@@ -71,7 +71,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
     
     /** constructor for subfield data definitions during parsing **/
     public DataDefinitionImpl(MDDNode mdd, DataDefinition parent) {
-        System.out.println("now creating MDD for subfield " + mdd.name + " in type " + parent);
+        System.out.println("now creating MDD for subfield " + mdd.name + " in type " + parent.getName());
         this.indexName = mdd.indexName;
         this.isFileSubfield = mdd.isFileSubfield;
         this.name = mdd.name;
@@ -125,7 +125,10 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
         
         int k = name.lastIndexOf(".");
         if(k > -1)
-            name = name.substring(name.lastIndexOf("."));
+            name = name.substring(k+1);
+        int j = name.lastIndexOf("->");
+        if(j > -1)
+            name = name.substring(j+2);
 
         indexName = name;
 
@@ -151,6 +154,8 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
         addField(fi);
         
     }
+    
+    
     /**
      * builds a FieldDefinition for the file type
      */
@@ -159,6 +164,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
         FieldDefinitionImpl fi = new FieldDefinitionImpl(f.name, "ptrOne");
         DataDefinitionImpl dd = new DataDefinitionImpl(f.name, this);
         dd.isFileSubfield = true;
+        dd.addStandardFields(f.name);
         dd.addField(new FieldDefinitionImpl("content", "binary"));
         dd.addField(new FieldDefinitionImpl("contentLength", "int"));
         dd.addField(new FieldDefinitionImpl("contentType", "char"));

@@ -96,9 +96,9 @@ public class MDDFactory {
         }
         doThrow(analysisWalker.error, tree, typeName);
 
-        //System.out.println("**** Analysis walker ****");
+        System.out.println("**** Analysis walker ****");
         MakumbaDumpASTVisitor visitor2 = new MakumbaDumpASTVisitor(false);
-        //visitor2.visit(analysisWalker.getAST());
+        visitor2.visit(analysisWalker.getAST());
 
         // step 3 - build the resulting DataDefinition and FieldDefinition
         MDDPostProcessorWalker builder = null;
@@ -110,13 +110,14 @@ public class MDDFactory {
         }
         doThrow(builder.error, analysisWalker.getAST(), typeName);
 
-        //System.out.println("**** Build walker ****");
+        System.out.println("**** Build walker ****");
         MakumbaDumpASTVisitor visitor3 = new MakumbaDumpASTVisitor(false);
-        //visitor3.visit(builder.getAST());
+        visitor3.visit(builder.getAST());
 
         //System.out.println(builder.mdd.toString());
 
         // step 4 - make the DataDefinitionImpl object, together with its FieldDefinitionImpl objects
+        
         DataDefinitionImpl result = new DataDefinitionImpl(builder.mdd);
         System.out.println(result.toString());
 
@@ -175,9 +176,9 @@ public class MDDFactory {
 
         AST tree = parser.getAST();
 
-//        System.out.println("**** Parser ****");
-//        MakumbaDumpASTVisitor visitor = new MakumbaDumpASTVisitor(false);
-//        visitor.visit(tree);
+        System.out.println("**** Parser ****");
+        MakumbaDumpASTVisitor visitor = new MakumbaDumpASTVisitor(false);
+        visitor.visit(tree);
 
         return tree;
     }
