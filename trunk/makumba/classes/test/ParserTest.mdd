@@ -9,7 +9,6 @@
 #overrideIt=char[22]
 #removeIt=
 
-
 # here come the field
 name = not null unique char[233] ; comment very long
   
@@ -34,4 +33,3 @@ image = file
 name4%length = [1..?] : name4 must not be empty
 age%range = [15..18] : Must be at least 15 years old and at most 18!
 #name4%matches = "http://.+" : the homepage must start with http://
-

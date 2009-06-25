@@ -7,6 +7,7 @@ import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionParseError;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
+import org.makumba.commons.ReservedKeywords;
 import org.makumba.providers.datadefinition.mdd.validation.ComparisonValidationRule;
 import org.makumba.providers.datadefinition.mdd.validation.RangeValidationRule;
 import org.makumba.providers.datadefinition.mdd.validation.RegExpValidationRule;
@@ -25,7 +26,7 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
     
     private MDDFactory factory = null;
 
-    protected HashMap<String, MDDAST> typeShorthands = new HashMap<String, MDDAST>();
+    protected HashMap<String, FieldNode> typeShorthands = new HashMap<String, FieldNode>();
     
     public MDDAnalyzeWalker(String typeName, URL origin, MDDFactory factory) {
         this.origin = origin;
@@ -33,6 +34,27 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
         this.mdd = new MDDNode(typeName, origin);
         this.factory = factory;
         
+    }
+    
+    @Override
+    protected void checkFieldName(AST fieldName) {
+    
+        String nm = fieldName.getText();
+        
+        for (int i = 0; i < nm.length(); i++) {
+            if (i == 0 && !Character.isJavaIdentifierStart(nm.charAt(i)) || i > 0
+                    && !Character.isJavaIdentifierPart(nm.charAt(i))) {
+                factory.doThrow(this.typeName, "Invalid character \"" + nm.charAt(i) + "\" in field name \"" + nm, fieldName);
+            }
+        }
+
+        if (ReservedKeywords.isReservedKeyword(nm)) {
+            factory.doThrow(this.typeName, "Error: field name cannot be one of the reserved keywords "
+                    + ReservedKeywords.getKeywordsAsString(), fieldName);
+        }
+
+
+
     }
     
     @Override
@@ -82,9 +104,9 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
     }
 
     @Override
-    protected void addTypeShorthand(AST name, AST fieldType) {
+    protected void addTypeShorthand(AST name, FieldNode fieldType) {
         System.out.println("Registering new type shorthand " + name.getText());
-        typeShorthands.put(name.getText(), (MDDAST)fieldType);
+        typeShorthands.put(name.getText(), fieldType);
     }
     
     @Override

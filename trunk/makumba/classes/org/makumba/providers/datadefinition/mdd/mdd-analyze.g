@@ -56,6 +56,9 @@ options {
     // set type of currently analyzed field if mak type is unknown
     protected void setCurrentFieldTypeUnknown(String type) { if(this.currentField != null) this.currentField.unknownType = type; }
     
+    // Check if field name is valid
+    protected void checkFieldName(AST fieldName) {}
+    
     // Check if type and type attributes are correct
     protected void checkFieldType(AST type) { }
     
@@ -66,7 +69,7 @@ options {
     protected void checkSubFieldName(AST parentName, AST name) { }
     
     // Add type shorthand
-    protected void addTypeShorthand(AST name, AST fieldType) { }
+    protected void addTypeShorthand(AST name, FieldNode fieldType) { }
     
     // Add modifier
     protected void addModifier(FieldNode field, String modifier) { }
@@ -106,7 +109,7 @@ declaration
 fieldDeclaration
     : #(
             f:FIELD
-            fn:FIELDNAME { FieldNode field = new FieldNode(mdd, #fn.getText(), #f); setCurrentField(field); }
+            fn:FIELDNAME { checkFieldName(#fn); FieldNode field = new FieldNode(mdd, #fn.getText(), #f); setCurrentField(field); }
               (m:MODIFIER { addModifier(field, #m.getText()); })*
               ft:fieldType { checkFieldType(#ft); }
               (fc:FIELDCOMMENT { getCurrentField().description = #fc.getText(); } )?
@@ -136,7 +139,6 @@ fieldDeclaration
                    }
             
        ) {
-                // FIXME check for field name validity here
                 mdd.addField(field);
                             
                 // in the end, the return tree contains only one FieldNode
@@ -184,8 +186,53 @@ fieldType
                  }
                 )*
         )
-                
-    | REAL { type = FieldType.REAL; }
+
+	// FIXME it's quite ugly that we copy this, we could try to make a separate subrule but we'd need to somehow return the type
+	| #(
+    SETINTENUM { type = FieldType.SETINTENUM; } ( { boolean isDeprecated = false; }
+             sit:INTENUMTEXT
+             sii:INTENUMINDEX
+             (sid:DEPRECATED { isDeprecated = true; } )?
+             {
+                if(isDeprecated) {
+                    getCurrentField().addIntEnumValueDeprecated(Integer.parseInt(#sii.getText()), #sit.getText());
+                } else {
+                    getCurrentField().addIntEnumValue(Integer.parseInt(#sii.getText()), #sit.getText());
+                }
+             }
+            )*
+    )
+    
+    | #(
+        CHARENUM { type = FieldType.CHARENUM; } ( { boolean isDeprecated = false; }
+                 ee:CHARENUMELEMENT
+                 (cd:DEPRECATED { isDeprecated = true; } )?
+                 {
+                    if(isDeprecated) {
+                        getCurrentField().addCharEnumValueDeprecated(#ee.getText());
+                    } else {
+                        getCurrentField().addCharEnumValue(#ee.getText());
+                    }
+                 }
+                )*
+        )
+        
+    | #(
+        SETCHARENUM { type = FieldType.SETCHARENUM; } ( { boolean isDeprecated = false; }
+                 see:CHARENUMELEMENT
+                 (scd:DEPRECATED { isDeprecated = true; } )?
+                 {
+                    if(isDeprecated) {
+                        getCurrentField().addCharEnumValueDeprecated(#see.getText());
+                    } else {
+                        getCurrentField().addCharEnumValue(#see.getText());
+                    }
+                 }
+                )*
+        )
+    
+    
+	| REAL { type = FieldType.REAL; }
     | BOOLEAN { type = FieldType.BOOLEAN; }
     | TEXT { type = FieldType.TEXT; }
     | BINARY { type = FieldType.BINARY; }
@@ -201,12 +248,15 @@ fieldType
     ;
     
 titleDeclaration
-    : tf:TITLEFIELDFIELD { #tf.setType(TITLEFIELD); ((TitleFieldNode)#tf).titleType = FIELD; }
+    : tf:TITLEFIELDFIELD { #tf.setType(TITLEFIELD); ((TitleFieldNode)#tf).titleType = FIELD;}
     | tfun:TITLEFIELDFUNCTION { #tfun.setType(TITLEFIELD); ((TitleFieldNode)#tfun).titleType = FUNCTION; }
     ;
 
 typeDeclaration! // we kick out the declaration after registering it
-    : name:TYPENAME ft:fieldType { checkFieldType(#ft); addTypeShorthand(#name, #ft); }
+	: name:TYPENAME
+	  // dummy field, needed for keeping intEnum values
+	  { FieldNode field = new FieldNode(mdd, #name.getText(), #name); setCurrentField(field); }
+	  ft:fieldType { checkFieldType(#ft); field.makumbaType = ((MDDAST)#ft).makumbaType; addTypeShorthand(#name, field); }
     ;
     
     

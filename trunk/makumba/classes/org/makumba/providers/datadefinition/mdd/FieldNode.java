@@ -2,6 +2,7 @@ package org.makumba.providers.datadefinition.mdd;
 
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
+import java.util.Vector;
 
 import org.makumba.ValidationRule;
 
@@ -47,6 +48,12 @@ public class FieldNode extends MDDAST {
     protected LinkedHashMap<Integer, String> intEnumValues = new LinkedHashMap<Integer, String>();
 
     protected LinkedHashMap<Integer, String> intEnumValuesDeprecated = new LinkedHashMap<Integer, String>();
+
+    // charEnum
+    protected Vector<String> charEnumValues = new Vector<String>();
+
+    protected Vector<String> charEnumValuesDeprecated = new Vector<String>();
+
     
     // char length
     protected int charLength;
@@ -93,6 +100,14 @@ public class FieldNode extends MDDAST {
 
     public void addIntEnumValueDeprecated(int index, String text) {
         intEnumValuesDeprecated.put(index, text);
+    }
+    
+    public void addCharEnumValue(String text) {
+        charEnumValues.add(text);
+    }
+
+    public void addCharEnumValueDeprecated(String text) {
+        charEnumValuesDeprecated.add(text);
     }
         
     public MDDNode initSubfield() {

@@ -54,5 +54,5 @@ fieldDeclaration
     ;
 
 titleDeclaration
-    : t:TITLEFIELD { checkTitleField(#t_in); }
+    : t:TITLEFIELD {checkTitleField(#t_in); }
     ;
