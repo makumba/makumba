@@ -101,9 +101,9 @@ public class MDDFactory {
         //visitor2.visit(analysisWalker.getAST());
 
         // step 3 - build the resulting DataDefinition and FieldDefinition
-        MDDBuildWalker builder = null;
+        MDDPostProcessorWalker builder = null;
         try {
-            builder = new MDDBuildWalker(typeName, analysisWalker.mdd, analysisWalker.typeShorthands, this);
+            builder = new MDDPostProcessorWalker(typeName, analysisWalker.mdd, analysisWalker.typeShorthands, this);
             builder.dataDefinition(analysisWalker.getAST());
         } catch (Throwable e) {
             doThrow(e, builder.getAST(), typeName);

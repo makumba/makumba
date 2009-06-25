@@ -7,7 +7,7 @@ header {
 /**
  * MDD builder. Transforms the analysed tree and builds DataDefinition and FieldDefinition objects
  */
-class MDDBuildBaseWalker extends TreeParser;
+class MDDPostProcessorBaseWalker extends TreeParser;
 
 options {
     importVocab=MDD;

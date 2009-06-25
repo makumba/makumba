@@ -12,13 +12,13 @@ import antlr.collections.AST;
  * @author Manuel Gay
  * @version $Id: MDDBuildWalker.java,v 1.1 May 3, 2009 10:13:05 PM manu Exp $
  */
-public class MDDBuildWalker extends MDDBuildBaseWalker {
+public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
     
     private MDDFactory factory = null;
     
     private HashMap<String, MDDAST> typeShorthands;
     
-    public MDDBuildWalker(String typeName, MDDNode mdd, HashMap<String, MDDAST> typeShorthands, MDDFactory factory) {
+    public MDDPostProcessorWalker(String typeName, MDDNode mdd, HashMap<String, MDDAST> typeShorthands, MDDFactory factory) {
         this.typeName = typeName;
         this.mdd = mdd;
         this.typeShorthands = typeShorthands;
