@@ -31,7 +31,7 @@ militarySucksAndEverybodyKnowsItButDoesNotSpeakOutLoudAboutIt=yesNo           ;A
 driver=yesNo		 ;Driving Licence
 
 age=int				;Age
-#age%range = [12..99] : Age must be between 12 and 99!
+age%range = [12..99] : Age must be between 12 and 99!
 
 makumbaTillDeath = not null yesNo	; makumbian or not
 designer = yesNo	; are you a designer?
@@ -75,16 +75,25 @@ address=set			 ;Addresses
   address->usagestart=date		;Use from
   address->usageend=date		;Use till
   address->homepage=char[50]
+  address->languages = set test.Language ; languages spoken in that address
+  address->description%length = [3..?] : Description must be at least 3 letters long!
 
 #  address->sth=ptr
 #  address->sth->aaa=char[20]
 #  address->sth->aaa%len = [3..?] : aaa must be at least 3 letters long!
 #  address->sth->someSuperNestedFunction() { 1 + 2 } Some nested nested message 
 
-  address->languages = set test.Language ; languages spoken in that address
 #  address->someFunction() { 1 + 2 } Some nested message 
-# address->description%length = [3..?] : Description must be at least 3 letters long!
 #  address->homepage%matches = http://.+ : the homepage must start with http://
 #  address->notAllLowerDescription%compare = lower(description) != description : Description cannot all be lower case!
+
+
+toys=set
+  toys->name=char[30]
+  
+groupMembers = set test.PersonNew
+
+uniqPtr=unique ptr test.Language	;test ptr uniqness
+
 
 
