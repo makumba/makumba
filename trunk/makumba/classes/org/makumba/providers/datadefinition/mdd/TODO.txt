@@ -1,7 +1,5 @@
 TODO new MDD parser:
 
-- make unit tests to see if this works, first using simple MDD
-
 - use caching for creation of virtual fields (from definitions), to avoid parsing twice the same def ?
 
 - grammar for regexp validation rule
@@ -15,6 +13,9 @@ TODO new MDD parser:
 
 - grammar for functions
 - implementation of functions
+  - !title= fullName()
+  
+- make unit tests to see if this works, use valid/broken MDDs
 
 
 test:

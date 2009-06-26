@@ -7,7 +7,6 @@
 
 indiv = unique fixed not null ptr test.IndividualNew ;lala
 
-
 birthdate=date		 ;Birthdate
 #birthdate%compare = birthdate <= date($now, $now, $now - 15, 0, 0, 0) : You have to be at least 15 years old!
 #birthdate%compare = birthdate >= date($now, $now, $now - 105, 0, 0, 0) : Maximum age is 105!
@@ -94,6 +93,3 @@ toys=set
 groupMembers = set test.PersonNew
 
 uniqPtr=unique ptr test.Language	;test ptr uniqness
-
-
-
