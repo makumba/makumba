@@ -129,10 +129,22 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
     }
     
     @Override
-    protected void createValidationRule(AST vr, String field, ValidationType type) {
+    protected void createValidationRule(AST vr, String field, ValidationType type, FieldNode fieldNode) {
         
-        // FIXME fetch subfield if this is a subfield validation rule
-        FieldNode f = mdd.fields.get(field);
+        // if fieldNode is not null, we got the FieldNode of a subfield, and hence fetch the field from there
+        FieldNode f = null;
+        if(fieldNode != null) {
+            f = fieldNode.subfield.fields.get(field);
+            if(f == null) {
+                factory.doThrow(this.typeName, "Subfield " + field + " does not exist in field " + fieldNode.subfield.name, vr);
+            }
+        } else {
+            f = mdd.fields.get(field);
+            if(f == null) {
+                factory.doThrow(this.typeName, "Field " + field + " does not exist in type " + mdd.name, vr);
+            }
+
+        }
         
         switch(type) {
             case RANGE:

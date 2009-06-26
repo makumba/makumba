@@ -45,14 +45,22 @@ dataDefinition
 declaration
     : fieldDeclaration
     | titleDeclaration
+    | validationRuleDeclaration
     ;
 
 fieldDeclaration
     : #(f:FIELD { if(((FieldNode)#f_in).makumbaType == null) { processUnknownType(#f_in); } }
-         (sf:FIELD { if(((FieldNode)#sf_in).makumbaType == null) { processUnknownType(#sf_in); } } | st:titleDeclaration )*
+         (sf:FIELD { if(((FieldNode)#sf_in).makumbaType == null) { processUnknownType(#sf_in); } }
+          | st:titleDeclaration
+          | v:validationRuleDeclaration
+         )*
        )
     ;
 
 titleDeclaration
     : t:TITLEFIELD {checkTitleField(#t_in); }
     ;
+
+validationRuleDeclaration
+	: VALIDATION
+	;
