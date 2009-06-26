@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.SequenceInputStream;
 import java.net.URL;
 import java.util.HashMap;
 
@@ -154,12 +155,22 @@ public class MDDFactory {
 
     /** the main parser method **/
     private AST parse(String typeName, InputStream o, InputStream o1) {
+        
+        // this is an ugly workaround to the fact that the grammar has problems handling EOF
+        // so we just add a new line by hand
+        InputStream newLine1 = new ByteArrayInputStream("\n".getBytes());
+        InputStream newLine2 = new ByteArrayInputStream("\n".getBytes());
+        SequenceInputStream seq1 = new SequenceInputStream(o, newLine1); 
+        SequenceInputStream seq2 = new SequenceInputStream(o1, newLine2); 
+        
         // first pass - simply parse the MDD file
-        Reader reader = new InputStreamReader(o);
+        Reader reader = new InputStreamReader(seq1);
         MDDLexer lexer = new MDDLexer(reader);
 
+        
+        
         // create reader for error handling
-        BufferedReader errorReader = new BufferedReader(new InputStreamReader(o1));
+        BufferedReader errorReader = new BufferedReader(new InputStreamReader(seq2));
         errorReaders.put(typeName, errorReader);
 
         MDDParser parser = null;

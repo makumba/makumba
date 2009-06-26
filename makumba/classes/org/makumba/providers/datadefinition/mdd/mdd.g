@@ -96,14 +96,14 @@ LINEBREAK
     |   '\r' '\n' { newline(); } // dos
     |   '\r'      { newline(); } // mac
     ;
-
+	
 FIELDCOMMENT
-	: SEMICOLON (~('\n'|'\r'))* ('\n'|'\r'('\n')?) {newline();}
+	: SEMICOLON (~('\n'|'\r'))* LINEBREAK //('\n'|'\r'('\n')?) {newline();}
 	;
 
 
 MESSAGE
-	: COLON (~('\n'|'\r'))* ('\n'|'\r'('\n')?) {newline();}
+	: COLON (~('\n'|'\r'))* LINEBREAK //('\n'|'\r'('\n')?) {newline();}
 	;
 		
 protected
@@ -256,7 +256,7 @@ tokens {
 }
 
 dataDefinition
-    : (LINEBREAK!)* (declaration)*
+    : (LINEBREAK!)* (declaration)* EOF!
     ;
 
 declaration
@@ -350,7 +350,7 @@ charEnumBody
 	;
 
 fieldComment
-	: f:FIELDCOMMENT {int k = #f.getText().indexOf(";"); #fieldComment.setText(#f.getText().substring(k+1).trim()); }
+	: f:FIELDCOMMENT { int k = #f.getText().indexOf(";"); #fieldComment.setText(#f.getText().substring(k+1).trim()); }
 	;
 
 
