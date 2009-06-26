@@ -62,3 +62,29 @@ email = char[40]
 #email%matches = .+@.+\.[a-z]+ : Email address is not valid!
 
 
+address=set			 ;Addresses
+  address->!title=description
+  address->description=char[30]	;Description (home address, study-time address, ...)
+  address->streetno=char[100]	      ;Street  
+  address->zipcode=char[10]		;Zipcode
+  address->city=char[40]		;City
+  address->country=char[20]             ;Country
+  address->phone=char[20]		;Phone
+  address->fax=char[20]			;Fax
+  address->email=char[40]		;E-Mail
+  address->usagestart=date		;Use from
+  address->usageend=date		;Use till
+  address->homepage=char[50]
+
+#  address->sth=ptr
+#  address->sth->aaa=char[20]
+#  address->sth->aaa%len = [3..?] : aaa must be at least 3 letters long!
+#  address->sth->someSuperNestedFunction() { 1 + 2 } Some nested nested message 
+
+  address->languages = set test.Language ; languages spoken in that address
+#  address->someFunction() { 1 + 2 } Some nested message 
+# address->description%length = [3..?] : Description must be at least 3 letters long!
+#  address->homepage%matches = http://.+ : the homepage must start with http://
+#  address->notAllLowerDescription%compare = lower(description) != description : Description cannot all be lower case!
+
+

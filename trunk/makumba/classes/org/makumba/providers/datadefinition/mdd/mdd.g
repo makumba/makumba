@@ -217,19 +217,7 @@ tokens {
     VALIDATIONNAME;
     
     RANGE="range";
-    
-    // FIXME this can't be length because otherwise we mess up with "length" fields
-    // in fact with the current validation rule syntax we can't really make a difference between
-    // length = int ; some length
-    // and
-    // name%length=[1..?] : has to be not empty!
-    //
-    // this is probably because ": has to be not empty" is recognized as token by the lexer
-    // as this was the only proper way to deal with the linebreak properly
-    //
-    // changing the syntax would help a lot here
-    
-    LENGTH="len";
+    LENGTH="length";
     RANGE_FROM;
     RANGE_TO;
     
@@ -304,14 +292,9 @@ subFieldDeclaration
       fn:atom {#fn.setType(PARENTFIELDNAME); } s:SUBFIELD^
       (
           titleDeclaration (fieldComment!)? // allow comment but do not store them
+          | validationRuleDeclaration
           | EXMARK! "include"! EQUALS! t:type { #subFieldDeclaration = includeSubField(#t, #fn); }
-          |
-          (
-            a:atom { #a.setType(SUBFIELDNAME); }
-            EQUALS!
-            (modifier)* fieldType
-            (fieldComment)?
-          )
+          | subFieldBody
       )
       { // we move the subfield node under the current field node
         currentField.addChild(#subFieldDeclaration); #subFieldDeclaration = null;
@@ -319,8 +302,17 @@ subFieldDeclaration
         
     ;
     
+subFieldBody
+	: a:atom { #a.setType(SUBFIELDNAME); }
+      EQUALS!
+      (modifier)* fieldType
+      (fieldComment)?
+    ;
+    
 fieldName
     : a:atom { #a.setType(FIELDNAME); }
+    // this is an ugly workaround to allow "length" as a field name
+    | l:LENGTH { #l.setType(FIELDNAME); }
     ;
 
 fieldType
@@ -401,8 +393,8 @@ validationRuleDeclaration
       p:PERCENT^ {#p.setType(VALIDATION);}
       // SIMPLE VALIDATION RULES
       (
-        rangeRule
-         | regExpRule
+       rangeRule
+       | regExpRule
       )
       errorMessage
       

@@ -22,7 +22,7 @@ public class ValidationRuleNode extends MDDAST implements ValidationRule, Serial
     protected String message;
     
     /** field the rule applies to **/
-    protected String field;
+    protected FieldNode field;
     
     /** the parent MDD **/
     protected MDDNode mdd;
@@ -42,7 +42,7 @@ public class ValidationRuleNode extends MDDAST implements ValidationRule, Serial
         this.mdd = mdd;
     }
     
-    public ValidationRuleNode(MDDNode mdd, AST originAST, String field) {
+    public ValidationRuleNode(MDDNode mdd, AST originAST, FieldNode field) {
         this(mdd, originAST);
         this.field = field;
     }
@@ -52,9 +52,8 @@ public class ValidationRuleNode extends MDDAST implements ValidationRule, Serial
      * Checks if the type of the rule is compatible with the field types it referrs to
      */
     public void checkApplicability() {
-        FieldType makType = ((FieldNode)mdd.fields.get(field)).makumbaType;
-        if(!type.checkApplicability(makType)) {
-            throw new RuntimeException("A " + getValidationType().getDescription() + " can only be assigned to fields of type " + getValidationType().getApplicableTypes() + " whereas the type of field " + field + " is " + makType.getTypeName());
+        if(!type.checkApplicability(field.makumbaType)) {
+            throw new RuntimeException("A " + getValidationType().getDescription() + " can only be assigned to fields of type " + getValidationType().getApplicableTypes() + " whereas the type of field " + field.name + " is " + field.makumbaType.getTypeName());
         }
     }
     
