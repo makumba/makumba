@@ -1,7 +1,5 @@
 TODO new MDD parser:
 
-- fix bug: type definition postprocessing has to happen before mdd building
-
 - make unit tests to see if this works, first using simple MDD
 
 - use caching for creation of virtual fields (from definitions), to avoid parsing twice the same def ?

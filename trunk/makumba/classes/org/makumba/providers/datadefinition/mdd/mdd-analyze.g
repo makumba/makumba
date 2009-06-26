@@ -67,7 +67,7 @@ options {
     protected void addModifier(FieldNode field, String modifier) { }
         
     // create and set validation rule
-    protected void createValidationRule(AST vr, String field, ValidationType type) { }
+    protected void createValidationRule(AST vr, String field, ValidationType type, FieldNode fieldNode) { }
     
     // set current validation rule
     protected void setCurrentValidationRule(ValidationRuleNode validation) {
@@ -92,7 +92,7 @@ declaration
     : fieldDeclaration
     | t:titleDeclaration { mdd.setTitleField((TitleFieldNode) #t); }
     | typeDeclaration
-    | validationRuleDeclaration
+    | validationRuleDeclaration[null]
     ;
 
 
@@ -138,34 +138,36 @@ fieldDeclaration {FieldType fieldType = null; }
 // cars->name%length=[1..?] : A car must have a non-empty name
 // cars->niceName() { upper(name) }
 subField[FieldNode field]
-	: 
-                  #(
-                      sf:SUBFIELD
-                      pf:PARENTFIELDNAME { checkSubFieldName(field.name, #pf); }
-                      (
-                          t:titleDeclaration
-                          	{
-                          		field.subfield.setTitleField((TitleFieldNode) #t);
-                          		field.addChild(#t);
-                          	}
-                          | validationRuleDeclaration
-                          |
-                          (
-                          	{
-                          		FieldType subFieldType = null;
-                          	}
-                            sfn:SUBFIELDNAME { FieldNode subField = new FieldNode(field.subfield, #sfn.getText(), #sf); /*setCurrentField(subField);*/ }
-                            (sm:MODIFIER { addModifier(subField, #sm.getText());} )*
-                            subFieldType=sft:fieldType[subField] { checkSubFieldType(#sft); subField.makumbaType = subFieldType; }
-                            (sfc:FIELDCOMMENT { subField.description = #sfc.getText(); })?
-                            {
-                      		// we add the subField to the field
-                      			field.addSubfield(subField);
-                      			field.addChild(subField);
-                    	    }
-                          )
-                      )
-                   )
+	: #(
+		sf:SUBFIELD
+		pf:PARENTFIELDNAME { checkSubFieldName(field.name, #pf); }
+		(
+			// TITLE DECLARATION
+			t:titleDeclaration
+          	{
+          		field.subfield.setTitleField((TitleFieldNode) #t);
+          		field.addChild(#t);
+          	}
+          	// VALIDATION RULE
+			| validationRuleDeclaration[field]
+			// FIELD DECLARATION
+			|
+			(
+				{
+          			FieldType subFieldType = null;
+          		}
+				sfn:SUBFIELDNAME { FieldNode subField = new FieldNode(field.subfield, #sfn.getText(), #sf); /*setCurrentField(subField);*/ }
+				(sm:MODIFIER { addModifier(subField, #sm.getText());} )*
+				subFieldType=sft:fieldType[subField] { checkSubFieldType(#sft); subField.makumbaType = subFieldType; }
+				(sfc:FIELDCOMMENT { subField.description = #sfc.getText(); })?
+				{
+  					// we add the subField to the field
+      				field.addSubfield(subField);
+      				field.addChild(subField);
+    	    	}
+          	)
+      	)
+   	  )
 	;
 
     
@@ -235,25 +237,25 @@ typeDeclaration! // we kick out the declaration after registering it
     
     
 //////////////// VALIDATION RULES    
-    
-validationRuleDeclaration
-    : rangeRule
+
+// for the moment we don't pass those further as we don't need postprocessing
+validationRuleDeclaration[FieldNode field]
+    : rangeRule[field]
 	
 	{
 		checkRuleApplicability();
 		mdd.addValidationRule(getCurrentValidationRule());
 		#validationRuleDeclaration = getCurrentValidationRule();
-	}    
-    
-    ;
+	}
+	;
 
-// TODO maybe there's a way to avoid repeating the setting of bounds...    
-rangeRule
+// TODO maybe there's a way to avoid repeating the setting of boundaries...    
+rangeRule[FieldNode field]
     : #(vr:VALIDATION fn:FIELDNAME
     	(
 		    #( r:RANGE rl:RANGE_FROM ru:RANGE_TO
 		    	{
-		    		createValidationRule(#vr, #fn.getText(), ValidationType.RANGE);
+		    		createValidationRule(#fn, #fn.getText(), ValidationType.RANGE, field);
 			    	getCurrentValidationRule().type = ValidationType.RANGE;
 			    	getCurrentValidationRule().lowerBound = #rl.getText();
 			    	getCurrentValidationRule().upperBound = #ru.getText();
@@ -262,7 +264,7 @@ rangeRule
 		    |
 		    #( LENGTH ll:RANGE_FROM lu:RANGE_TO
 		    	{
-			    	createValidationRule(#vr, #fn.getText(), ValidationType.LENGTH);
+			    	createValidationRule(#fn, #fn.getText(), ValidationType.LENGTH, field);
 			    	getCurrentValidationRule().type = ValidationType.LENGTH;
 			    	getCurrentValidationRule().lowerBound = #ll.getText();
 			    	getCurrentValidationRule().upperBound = #lu.getText();
