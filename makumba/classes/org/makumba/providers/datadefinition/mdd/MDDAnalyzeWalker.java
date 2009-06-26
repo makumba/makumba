@@ -58,6 +58,8 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
     }
     
     @Override
+    // TODO maybe refactor, i.e. use the already set variables (pointedType, charLength, ...) instead of traversing the AST
+    // keep type AST for error processing
     protected void checkFieldType(AST type) {
         if(type == null)
             return;
@@ -72,6 +74,7 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
                 }
                 break;
             case MDDTokenTypes.PTR:
+            case MDDTokenTypes.SET:
                 AST pointedType = type.getFirstChild();
                 // we check if we can find this type
                 URL u = MDDProvider.findDataDefinition(pointedType.getText(), "mdd");
@@ -80,7 +83,6 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
                 }
                 break;
         }
-        // TODO add ptr and set destination check / registration
         
         System.out.println("Checking field type: " + type);
     }
@@ -96,8 +98,8 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
     }
 
     @Override
-    protected void checkSubFieldName(AST parentName, AST name) {
-        if (parentName != null && name != null && !parentName.getText().equals(name.getText())) {
+    protected void checkSubFieldName(String parentName, AST name) {
+        if (parentName != null && name != null && !parentName.equals(name.getText())) {
             factory.doThrow(this.typeName, "The subfield '" + name.getText() + "' "
                     + " should have as parent name " + parentName, name);
         }
@@ -129,13 +131,16 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
     @Override
     protected void createValidationRule(AST vr, String field, ValidationType type) {
         
+        // FIXME fetch subfield if this is a subfield validation rule
+        FieldNode f = mdd.fields.get(field);
+        
         switch(type) {
             case RANGE:
             case LENGTH:
-                setCurrentValidationRule(new RangeValidationRule(mdd, vr, field));
+                setCurrentValidationRule(new RangeValidationRule(mdd, vr, f));
                 break;
             case REGEXP:
-                setCurrentValidationRule(new RegExpValidationRule(mdd, vr, field));
+                setCurrentValidationRule(new RegExpValidationRule(mdd, vr, f));
                 break;
             case COMPARISON:
                 setCurrentValidationRule(new ComparisonValidationRule(mdd, vr));

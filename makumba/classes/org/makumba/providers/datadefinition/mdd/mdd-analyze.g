@@ -37,36 +37,28 @@ options {
     
     protected MDDNode mdd;
     
-    private FieldNode currentField;
-    
     private ValidationRuleNode currentValidationRule;
     
     // ordered map to keep track of fields and handle duplicates, i.e. overriden fields
     private ListOrderedMap fields = new ListOrderedMap();
     
-    // set currently analyzed field
-    protected void setCurrentField(FieldNode field) { this.currentField = field; }
-    
-    // get currently analyzed field
-    protected FieldNode getCurrentField() { if(this.currentField == null) this.currentField = new FieldNode(mdd, "dummy"); return this.currentField; }
     
     // set makumba type of currently analyzed field
-    protected void setCurrentFieldType(FieldType type) { if(this.currentField != null) this.currentField.makumbaType = type; }
-
-    // set type of currently analyzed field if mak type is unknown
-    protected void setCurrentFieldTypeUnknown(String type) { if(this.currentField != null) this.currentField.unknownType = type; }
+    //protected void setCurrentFieldType(FieldType type) { if(this.currentField != null) this.currentField.makumbaType = type; }
     
     // Check if field name is valid
     protected void checkFieldName(AST fieldName) {}
     
     // Check if type and type attributes are correct
+    // TODO maybe refactor, i.e. use the already set variables (pointedType, charLength, ...) instead of traversing the AST
+    // keep type AST for error processing
     protected void checkFieldType(AST type) { }
     
     // Check if subfield type is allowed - same as field type but without ptrOne and setComplex
     protected void checkSubFieldType(AST type) { }
     
     // Check if name of parent in subfield is the name of parent
-    protected void checkSubFieldName(AST parentName, AST name) { }
+    protected void checkSubFieldName(String parentName, AST name) { }
     
     // Add type shorthand
     protected void addTypeShorthand(AST name, FieldNode fieldType) { }
@@ -106,39 +98,15 @@ declaration
 
 //////////////// FIELD DECLARATION
 
-fieldDeclaration
-    : #(
+fieldDeclaration {FieldType fieldType = null; }
+    : #( 
             f:FIELD
-            fn:FIELDNAME { checkFieldName(#fn); FieldNode field = new FieldNode(mdd, #fn.getText(), #f); setCurrentField(field); }
+            fn:FIELDNAME { checkFieldName(#fn); FieldNode field = new FieldNode(mdd, #fn.getText(), #f); }
               (m:MODIFIER { addModifier(field, #m.getText()); })*
-              ft:fieldType { checkFieldType(#ft); }
-              (fc:FIELDCOMMENT { getCurrentField().description = #fc.getText(); } )?
-                ( { MDDNode subFieldDD = field.initSubfield(); }
-                  #(
-                      sf:SUBFIELD
-                      pf:PARENTFIELDNAME { checkSubFieldName(#fn, #pf); }
-                      (
-                          (t:titleDeclaration { subFieldDD.setTitleField((TitleFieldNode) #t); field.addChild(#t); })
-                          |
-                          (
-                              sfn:SUBFIELDNAME { FieldNode subField = new FieldNode(subFieldDD, #sfn.getText(), #sf); setCurrentField(subField); }
-                              (sm:MODIFIER { addModifier(subField, #sm.getText());} )*
-                              sft:fieldType { checkSubFieldType(#sft); }
-                              (sfc:FIELDCOMMENT { subField.description = #sfc.getText(); })?
-                              {
-                                  // we add the subField to the field
-                                  field.addSubfield(#pf.getText(), subField);
-                                  field.addChild(subField);
-                              }
-                          )
-                      )
-                   )
-                )* {
-                      // we set back the current field
-                      setCurrentField(field);
-                   }
-            
-       ) {
+              fieldType=ft:fieldType[field] { checkFieldType(#ft); field.makumbaType = fieldType; }
+              (fc:FIELDCOMMENT { field.description = #fc.getText(); } )?
+              ( { field.initSubfield(); } subField[field] )*
+      ) {
                 mdd.addField(field);
                             
                 // in the end, the return tree contains only one FieldNode
@@ -162,91 +130,97 @@ fieldDeclaration
                 fields.put(#fn.getText(), #fieldDeclaration);    
          }
     ;
-    
-    
-fieldType
-    :
-    { FieldType type = null; } (
-      u:UNKNOWN_TYPE { setCurrentFieldTypeUnknown(#u.getText()); } // will need processing afterwards, this happens when dealing with macro types - needs to be stored somehow in the field though!
-    | #(CHAR { type = FieldType.CHAR; }
-        cl:CHAR_LENGTH { getCurrentField().charLength = Integer.parseInt(#cl.getText()); }
-       )
-    | INT { type = FieldType.INT; }
-    | #(
-        INTENUM { type = FieldType.INTENUM; } ( { boolean isDeprecated = false; }
-                 it:INTENUMTEXT
-                 ii:INTENUMINDEX
-                 (id:DEPRECATED { isDeprecated = true; } )?
-                 {
-                    if(isDeprecated) {
-                        getCurrentField().addIntEnumValueDeprecated(Integer.parseInt(#ii.getText()), #it.getText());
-                    } else {
-                        getCurrentField().addIntEnumValue(Integer.parseInt(#ii.getText()), #it.getText());
-                    }
-                 }
-                )*
-        )
 
-	// FIXME it's quite ugly that we copy this, we could try to make a separate subrule but we'd need to somehow return the type
-	| #(
-    SETINTENUM { type = FieldType.SETINTENUM; } ( { boolean isDeprecated = false; }
+// a subfield, i.e. a normal field, a title field, a validation rule or a function, e.g.
+// cars=set
+// cars->!title = name
+// cars->name = char[255]
+// cars->name%length=[1..?] : A car must have a non-empty name
+// cars->niceName() { upper(name) }
+subField[FieldNode field]
+	: 
+                  #(
+                      sf:SUBFIELD
+                      pf:PARENTFIELDNAME { checkSubFieldName(field.name, #pf); }
+                      (
+                          t:titleDeclaration
+                          	{
+                          		field.subfield.setTitleField((TitleFieldNode) #t);
+                          		field.addChild(#t);
+                          	}
+                          | validationRuleDeclaration
+                          |
+                          (
+                          	{
+                          		FieldType subFieldType = null;
+                          	}
+                            sfn:SUBFIELDNAME { FieldNode subField = new FieldNode(field.subfield, #sfn.getText(), #sf); /*setCurrentField(subField);*/ }
+                            (sm:MODIFIER { addModifier(subField, #sm.getText());} )*
+                            subFieldType=sft:fieldType[subField] { checkSubFieldType(#sft); subField.makumbaType = subFieldType; }
+                            (sfc:FIELDCOMMENT { subField.description = #sfc.getText(); })?
+                            {
+                      		// we add the subField to the field
+                      			field.addSubfield(subField);
+                      			field.addChild(subField);
+                    	    }
+                          )
+                      )
+                   )
+	;
+
+    
+fieldType[FieldNode field] returns [FieldType fieldType = null; ]
+    : (
+      u:UNKNOWN_TYPE { field.unknownType = #u.getText(); } // will need processing afterwards, this happens when dealing with macro types - needs to be stored somehow in the field though!
+    | #(CHAR { fieldType = FieldType.CHAR; }
+        cl:CHAR_LENGTH { field.charLength = Integer.parseInt(#cl.getText()); }
+       )
+    | INT { fieldType = FieldType.INT; }
+    | #(INTENUM { fieldType = FieldType.INTENUM; } ( intEnumBody[field] )* )
+	| #(SETINTENUM { fieldType = FieldType.SETINTENUM; } ( intEnumBody[field] )* )
+    | #(CHARENUM { fieldType = FieldType.CHARENUM; } ( charEnumBody[field] )* )
+    | #(SETCHARENUM { fieldType = FieldType.SETCHARENUM; } ( charEnumBody[field] )* )
+	| REAL { fieldType = FieldType.REAL; }
+    | BOOLEAN { fieldType = FieldType.BOOLEAN; }
+    | TEXT { fieldType = FieldType.TEXT; }
+    | BINARY { fieldType = FieldType.BINARY; }
+    | FILE { fieldType = FieldType.FILE; }
+    | DATE { fieldType = FieldType.DATE; }
+    | #(PTR { fieldType = FieldType.PTRONE; #fieldType.setType(PTRONE); } (p:POINTED_TYPE { field.pointedType = #p.getText(); #fieldType.setType(PTR); fieldType = FieldType.PTRREL; })? )
+    | #(SET { fieldType = FieldType.SETCOMPLEX; #fieldType.setType(SETCOMPLEX); } (s:POINTED_TYPE { field.pointedType = #s.getText(); #fieldType.setType(SET); fieldType = FieldType.SET; })? )
+    )
+    {
+        ((MDDAST)#fieldType).makumbaType = fieldType;
+    }
+    ;
+
+intEnumBody[FieldNode field]
+	:  { boolean isDeprecated = false; }
              sit:INTENUMTEXT
              sii:INTENUMINDEX
              (sid:DEPRECATED { isDeprecated = true; } )?
              {
                 if(isDeprecated) {
-                    getCurrentField().addIntEnumValueDeprecated(Integer.parseInt(#sii.getText()), #sit.getText());
+                    field.addIntEnumValueDeprecated(Integer.parseInt(#sii.getText()), #sit.getText());
                 } else {
-                    getCurrentField().addIntEnumValue(Integer.parseInt(#sii.getText()), #sit.getText());
+                    field.addIntEnumValue(Integer.parseInt(#sii.getText()), #sit.getText());
                 }
              }
-            )*
-    )
-    
-    | #(
-        CHARENUM { type = FieldType.CHARENUM; } ( { boolean isDeprecated = false; }
+	;
+
+charEnumBody[FieldNode field]
+	: { boolean isDeprecated = false; }
                  ee:CHARENUMELEMENT
                  (cd:DEPRECATED { isDeprecated = true; } )?
                  {
                     if(isDeprecated) {
-                        getCurrentField().addCharEnumValueDeprecated(#ee.getText());
+                        field.addCharEnumValueDeprecated(#ee.getText());
                     } else {
-                        getCurrentField().addCharEnumValue(#ee.getText());
+                        field.addCharEnumValue(#ee.getText());
                     }
                  }
-                )*
-        )
-        
-    | #(
-        SETCHARENUM { type = FieldType.SETCHARENUM; } ( { boolean isDeprecated = false; }
-                 see:CHARENUMELEMENT
-                 (scd:DEPRECATED { isDeprecated = true; } )?
-                 {
-                    if(isDeprecated) {
-                        getCurrentField().addCharEnumValueDeprecated(#see.getText());
-                    } else {
-                        getCurrentField().addCharEnumValue(#see.getText());
-                    }
-                 }
-                )*
-        )
-    
-    
-	| REAL { type = FieldType.REAL; }
-    | BOOLEAN { type = FieldType.BOOLEAN; }
-    | TEXT { type = FieldType.TEXT; }
-    | BINARY { type = FieldType.BINARY; }
-    | FILE { type = FieldType.FILE; }
-    | DATE { type = FieldType.DATE; }
-    | #(PTR { type = FieldType.PTRONE; #fieldType.setType(PTRONE); } (p:POINTED_TYPE { getCurrentField().pointedType = #p.getText(); #fieldType.setType(PTR); type =FieldType.PTRREL; })? )
-    | #(SET { type = FieldType.SETCOMPLEX; #fieldType.setType(SETCOMPLEX); } (s:POINTED_TYPE { getCurrentField().pointedType = #s.getText(); #fieldType.setType(SET); type = FieldType.SET; })? )
-    )
-    {
-        setCurrentFieldType(type);
-        ((MDDAST)#fieldType).makumbaType = type;
-    }
-    ;
-    
+	;
+
 titleDeclaration
     : tf:TITLEFIELDFIELD { #tf.setType(TITLEFIELD); ((TitleFieldNode)#tf).titleType = FIELD;}
     | tfun:TITLEFIELDFUNCTION { #tfun.setType(TITLEFIELD); ((TitleFieldNode)#tfun).titleType = FUNCTION; }
@@ -255,8 +229,8 @@ titleDeclaration
 typeDeclaration! // we kick out the declaration after registering it
 	: name:TYPENAME
 	  // dummy field, needed for keeping intEnum values
-	  { FieldNode field = new FieldNode(mdd, #name.getText(), #name); setCurrentField(field); }
-	  ft:fieldType { checkFieldType(#ft); field.makumbaType = ((MDDAST)#ft).makumbaType; addTypeShorthand(#name, field); }
+	  { FieldNode field = new FieldNode(mdd, #name.getText(), #name); FieldType type = null; }
+	  type=ft:fieldType[field] { checkFieldType(#ft); field.makumbaType = type; addTypeShorthand(#name, field); }
     ;
     
     
