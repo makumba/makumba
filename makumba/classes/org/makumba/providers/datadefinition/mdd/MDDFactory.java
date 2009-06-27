@@ -64,9 +64,9 @@ public class MDDFactory {
         // step 1 - parse the MDD
         URL u = getDataDefinitionURL(typeName, "mdd");
 
-        AST tree = parse(typeName, u);
+        MDDParser parser = parse(typeName, u, false);
 
-        return buildDataDefinition(typeName, u, tree);
+        return buildDataDefinition(typeName, u, parser);
 
     }
     
@@ -79,23 +79,23 @@ public class MDDFactory {
         errorReaders = new HashMap<String, BufferedReader>();
 
         // step 1 - parse the definition
-        AST tree = parse(typeName, definition);
-
-        return buildDataDefinition(typeName, null, tree);
+        MDDParser parser = parse(typeName, definition);
+        
+        return buildDataDefinition(typeName, null, parser);
         
     }
 
-    private DataDefinition buildDataDefinition(String typeName, URL u, AST tree) {
+    private DataDefinition buildDataDefinition(String typeName, URL u, MDDParser parser) {
         // step 2 - analysis
         MDDAnalyzeWalker analysisWalker = null;
         try {
-            analysisWalker = new MDDAnalyzeWalker(typeName, u, this);
+            analysisWalker = new MDDAnalyzeWalker(typeName, u, this, parser);
             analysisWalker.setASTFactory(astFactory);
-            analysisWalker.dataDefinition(tree);
+            analysisWalker.dataDefinition(parser.getAST());
         } catch (Throwable e) {
             doThrow(e, analysisWalker.getAST(), typeName);
         }
-        doThrow(analysisWalker.error, tree, typeName);
+        doThrow(analysisWalker.error, parser.getAST(), typeName);
 
         System.out.println("**** Analysis walker ****");
         MakumbaDumpASTVisitor visitor2 = new MakumbaDumpASTVisitor(false);
@@ -128,16 +128,16 @@ public class MDDFactory {
     /**
      * parses a MDD text
      */
-    protected AST parse(String typeName, String text) {
+    protected MDDParser parse(String typeName, String text) {
 
         InputStream o = new ByteArrayInputStream(text.getBytes());
         InputStream o1 = new ByteArrayInputStream(text.getBytes());
 
-        return parse(typeName, o, o1);
+        return parse(typeName, o, o1, false);
 
     }
 
-    private AST parse(String typeName, URL u) {
+    private MDDParser parse(String typeName, URL u, boolean included) {
 
         InputStream o = null;
         InputStream o1 = null;
@@ -150,11 +150,12 @@ public class MDDFactory {
             e1.printStackTrace();
         }
 
-        return parse(typeName, o, o1);
+        return parse(typeName, o, o1, included);
     }
 
     /** the main parser method **/
-    private AST parse(String typeName, InputStream o, InputStream o1) {
+    private MDDParser parse(String typeName, InputStream o, InputStream o1, boolean included) {
+        System.out.println("++++++++ now parsing " + typeName);
         
         // this is an ugly workaround to the fact that the grammar has problems handling EOF
         // so we just add a new line by hand
@@ -167,15 +168,13 @@ public class MDDFactory {
         Reader reader = new InputStreamReader(seq1);
         MDDLexer lexer = new MDDLexer(reader);
 
-        
-        
         // create reader for error handling
         BufferedReader errorReader = new BufferedReader(new InputStreamReader(seq2));
         errorReaders.put(typeName, errorReader);
 
         MDDParser parser = null;
         try {
-            parser = new MDDParser(lexer, this);
+            parser = new MDDParser(lexer, this, typeName, included);
             parser.setASTFactory(astFactory);
             parser.dataDefinition();
             parser.postProcess();
@@ -191,27 +190,27 @@ public class MDDFactory {
         MakumbaDumpASTVisitor visitor = new MakumbaDumpASTVisitor(false);
         visitor.visit(tree);
 
-        return tree;
+        return parser;
     }
 
     /**
      * parses an included data definition (.idd)
      */
-    protected AST parseIncludedDataDefinition(String includedName) {
+    protected MDDParser parseIncludedDataDefinition(String includedName) {
         URL idd = getDataDefinitionURL(includedName, "idd");
-        return parse(includedName, idd);
+        return parse(includedName, idd, true);
     }
 
     /**
      * Throws a {@link DataDefinitionParseError} at parse time
      */
-    private void doThrow(Throwable t, AST debugTree, String typeName) {
+    private void doThrow(Throwable t, AST debugTree, String typeName) throws DataDefinitionParseError {
         if (t == null)
             return;
 
-        // we already have a DataDefinitionParse error, just throw it
+        // we already have a DataDefinitionParse error, just throw it further
         if (t instanceof DataDefinitionParseError) {
-            throw new RuntimeException(t);
+            throw (DataDefinitionParseError) t;
         }
 
         if (t instanceof RuntimeException) {

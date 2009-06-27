@@ -17,13 +17,11 @@ import antlr.collections.AST;
 public class FieldNode extends MDDAST {
     
     private static final long serialVersionUID = 1L;
-
+    
     // basic field info
     protected MDDNode mdd;
     
     protected String name;
-
-    protected FieldType makumbaType;
     
     protected String description;
     

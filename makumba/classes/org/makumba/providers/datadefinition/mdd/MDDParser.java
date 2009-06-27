@@ -1,6 +1,7 @@
 package org.makumba.providers.datadefinition.mdd;
 
 import java.util.HashMap;
+import java.util.Vector;
 
 import org.makumba.DataDefinitionNotFoundError;
 
@@ -16,30 +17,28 @@ import antlr.collections.AST;
 public class MDDParser extends MDDBaseParser {
 
     private MDDFactory factory = null;
+    
+    private String typeName = null;
 
     
-    public MDDParser(TokenStream lexer, MDDFactory factory) {
+    public MDDParser(TokenStream lexer, MDDFactory factory, String typeName, boolean included) {
         super(lexer);
         this.factory = factory;
+        this.typeName = typeName;
+        this.included = included;
     }
+    
+    
+    protected Vector<String> includedFieldNames = new Vector<String>();
     
     @Override
     protected AST include(AST type) {
         AST included = null;
         try {
-            included = factory.parseIncludedDataDefinition(type.getText());
+            included = factory.parseIncludedDataDefinition(type.getText()).getAST();
         } catch(DataDefinitionNotFoundError e) {
             factory.doThrow(type.getText(), "Could not find included data definition", type);
         }
-        
-        // TODO fix line number
-        /*
-        MDDAST t = (MDDAST)included;
-        while(t.getNextSibling() != null) {
-            ((MDDAST)t.getFirstChild()).setLine(type.getLine());
-            t = (MDDAST) t.getNextSibling();
-        }
-        */
         
         return included;
         
@@ -50,7 +49,7 @@ public class MDDParser extends MDDBaseParser {
         AST included = include(type);
         return transformToSubfield(parentField, included);
     }
-
+    
     private AST transformToSubfield(AST parentField, AST included) {
         // process the included AST so that it fits the subField structure parentName -> field = type
         AST t = included;
@@ -83,6 +82,8 @@ public class MDDParser extends MDDBaseParser {
             // build tree
             t.getFirstChild().setType(MDDTokenTypes.SUBFIELDNAME);
             
+            includedFieldNames.add(t.getText());
+            
             subfield.getFirstChild().setNextSibling(t.getFirstChild());
             
             if(result == null) {
@@ -110,8 +111,6 @@ public class MDDParser extends MDDBaseParser {
         fieldsToDisable.put(field.getText(), field);
     }
     
-    private AST fileAST = null;
-    
     /**
      * performs post-processing tasks of parsing:<br>
      * - deactivates disabled fields from inclusions<br>
@@ -119,9 +118,10 @@ public class MDDParser extends MDDBaseParser {
     protected void postProcess() {
         AST t = getAST();
         AST prec = null;
-        while(t.getNextSibling() != null) {
+        while(t!= null && t.getNextSibling() != null) {
             prec = t;
             t = t.getNextSibling();
+            // FIXME should warn if a field without body is not overriding another one
             if(t.getType() == MDDTokenTypes.FIELD && fieldsToDisable.containsKey(t.getText())) {
                 prec.setNextSibling(t.getNextSibling());
             }

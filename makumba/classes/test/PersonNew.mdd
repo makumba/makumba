@@ -48,9 +48,10 @@ extraData->what=int
 
 
 #for uniqness tests:
-uniqInt=unique int		;test int uniqness
-uniqChar=unique char[33]	;test char uniqness
-uniqDate=unique date		;test date uniqness
+uniqInt=unique int		            ;test int uniqness
+uniqChar=unique char[33]	        ;test char uniqness
+uniqDate=unique date		        ;test date uniqness
+uniqPtr=unique ptr test.Language    ;test ptr uniqness
 
 speaks=set test.Language
 intSet= set int {"a"=0, "b"=1, "c"=2 }
@@ -91,5 +92,3 @@ toys=set
   toys->name=char[30]
   
 groupMembers = set test.PersonNew
-
-uniqPtr=unique ptr test.Language	;test ptr uniqness
