@@ -14,6 +14,9 @@ public class MDDAST extends antlr.CommonAST {
     // makumba field type
     protected FieldType makumbaType;
     
+    // whether this AST was included (for fields)
+    protected boolean wasIncluded;
+    
     private int col = 0, line = 0;
     
     @Override

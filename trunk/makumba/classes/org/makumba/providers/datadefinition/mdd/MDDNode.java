@@ -6,7 +6,6 @@ import java.util.LinkedHashMap;
 
 import org.makumba.DataDefinition;
 import org.makumba.ValidationRule;
-import org.makumba.commons.ReservedKeywords;
 
 import antlr.CommonAST;
 

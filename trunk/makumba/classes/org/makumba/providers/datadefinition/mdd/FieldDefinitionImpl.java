@@ -959,6 +959,9 @@ public class FieldDefinitionImpl implements FieldDefinition {
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("== Field name: " + name + "\n");
+        if(type == null) {
+            System.out.println("NULL!!!! in field " + name);
+        }
         sb.append("== Field type: " + type.getTypeName() + "\n");
         sb.append("== Modifiers: " + (fixed? "fixed ":"") + (unique? "unique ":"") + (notNull? "not null ":"") + (notEmpty? "not empty ":"")  + "\n");
         if(description != null) sb.append("== Description: "+ description + "\n");

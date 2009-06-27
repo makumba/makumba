@@ -26,14 +26,17 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
     
     private MDDFactory factory = null;
 
+    private MDDParser parser = null;
+
     protected HashMap<String, FieldNode> typeShorthands = new HashMap<String, FieldNode>();
+
     
-    public MDDAnalyzeWalker(String typeName, URL origin, MDDFactory factory) {
+    public MDDAnalyzeWalker(String typeName, URL origin, MDDFactory factory, MDDParser parser) {
         this.origin = origin;
         this.typeName = typeName;
         this.mdd = new MDDNode(typeName, origin);
         this.factory = factory;
-        
+        this.parser  = parser;
     }
     
     @Override
@@ -52,9 +55,6 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
             factory.doThrow(this.typeName, "Error: field name cannot be one of the reserved keywords "
                     + ReservedKeywords.getKeywordsAsString(), fieldName);
         }
-
-
-
     }
     
     @Override
@@ -125,7 +125,33 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
         } else {
             throw new MakumbaError("Modifier " + modifier + " invalid");
         }
-        
+    }
+    
+    @Override
+    protected void addField(MDDNode mdd, FieldNode field) {
+        FieldNode previous = mdd.fields.get(field.name);
+        if(previous != null && (previous.wasIncluded || field.wasIncluded)) {
+            mdd.fields.remove(field.name);
+            mdd.addField(field);
+        } else if(previous != null && !(previous.wasIncluded || field.wasIncluded)) {
+            factory.doThrow(typeName, "Duplicated field definition for field " + field.name, field);
+        } else {
+            mdd.addField(field);
+        }
+    }
+    
+    @Override
+    protected void addSubfield(FieldNode parent, FieldNode field) {
+        FieldNode previous = parent.subfield.fields.get(field.name);
+        if(previous != null && (previous.wasIncluded || field.wasIncluded)) {
+            parent.subfield.fields.remove(field.name);
+            parent.subfield.addField(field);
+        } else if(previous != null && !(previous.wasIncluded || field.wasIncluded)) {
+            factory.doThrow(typeName, "Duplicated field definition for field " + field.name, field);
+        } else {
+            parent.subfield.addField(field);
+        }
+
     }
     
     @Override

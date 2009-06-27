@@ -38,11 +38,7 @@ options {
     protected MDDNode mdd;
     
     private ValidationRuleNode currentValidationRule;
-    
-    // ordered map to keep track of fields and handle duplicates, i.e. overriden fields
-    private ListOrderedMap fields = new ListOrderedMap();
-    
-    
+        
     // set makumba type of currently analyzed field
     //protected void setCurrentFieldType(FieldType type) { if(this.currentField != null) this.currentField.makumbaType = type; }
     
@@ -65,7 +61,13 @@ options {
     
     // Add modifier
     protected void addModifier(FieldNode field, String modifier) { }
-        
+    
+    // Add field to mdd
+    protected void addField(MDDNode mdd, FieldNode field) { }
+    
+    // Add subfield
+    protected void addSubfield(FieldNode parent, FieldNode field) { }
+    
     // create and set validation rule
     protected void createValidationRule(AST vr, String field, ValidationType type, FieldNode fieldNode) { }
     
@@ -98,37 +100,19 @@ declaration
 
 //////////////// FIELD DECLARATION
 
-fieldDeclaration {FieldType fieldType = null; }
+fieldDeclaration { FieldType fieldType = null; }
     : #( 
             f:FIELD
-            fn:FIELDNAME { checkFieldName(#fn); FieldNode field = new FieldNode(mdd, #fn.getText(), #f); }
+            fn:FIELDNAME { checkFieldName(#fn); FieldNode field = new FieldNode(mdd, #fn.getText(), #f); field.wasIncluded = ((MDDAST)#f_in).wasIncluded; }
               (m:MODIFIER { addModifier(field, #m.getText()); })*
               fieldType=ft:fieldType[field] { checkFieldType(#ft); field.makumbaType = fieldType; }
               (fc:FIELDCOMMENT { field.description = #fc.getText(); } )?
               ( { field.initSubfield(); } subField[field] )*
       ) {
-                mdd.addField(field);
-                            
+                addField(mdd, field);
                 // in the end, the return tree contains only one FieldNode
                 #fieldDeclaration = field;
-                
-                // handle overriden fields
-                // TODO maybe remove this
-                if(fields.containsKey(#fn.getText())) {
-                  // fetch previous field, replace sibling with next
-                  int i = fields.indexOf(#fn.getText());
-                  AST previous = (AST) fields.getValue(i-1);
-                  AST next = null;
-                  if(fields.size() <= i+1) {
-                    next = #field;
-                  } else {
-                    next = (AST)fields.getValue(i+1);
-                  }
-                  previous.setNextSibling(next);
-                }
-                
-                fields.put(#fn.getText(), #fieldDeclaration);    
-         }
+        }
     ;
 
 // a subfield, i.e. a normal field, a title field, a validation rule or a function, e.g.
@@ -156,13 +140,13 @@ subField[FieldNode field]
 				{
           			FieldType subFieldType = null;
           		}
-				sfn:SUBFIELDNAME { FieldNode subField = new FieldNode(field.subfield, #sfn.getText(), #sf); /*setCurrentField(subField);*/ }
+				sfn:SUBFIELDNAME { FieldNode subField = new FieldNode(field.subfield, #sfn.getText(), #sf); subField.wasIncluded = ((MDDAST)#sfn_in).wasIncluded; }
 				(sm:MODIFIER { addModifier(subField, #sm.getText());} )*
 				subFieldType=sft:fieldType[subField] { checkSubFieldType(#sft); subField.makumbaType = subFieldType; }
 				(sfc:FIELDCOMMENT { subField.description = #sfc.getText(); })?
 				{
   					// we add the subField to the field
-      				field.addSubfield(subField);
+      				addSubfield(field, subField);
       				field.addChild(subField);
     	    	}
           	)
@@ -236,7 +220,7 @@ typeDeclaration! // we kick out the declaration after registering it
     ;
     
     
-//////////////// VALIDATION RULES    
+//////////////// VALIDATION RULES
 
 // for the moment we don't pass those further as we don't need postprocessing
 validationRuleDeclaration[FieldNode field]

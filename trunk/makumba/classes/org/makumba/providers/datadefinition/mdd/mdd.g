@@ -24,60 +24,44 @@ DOT: '.';
 QUOTMARK: '"';
 EXMARK: '!';
 INTMARK: '?';
+MINUS: '-';
 
 SUBFIELD
     : '-' '>'
     ;
 
 
-// from the Java example grammar
-
-protected ID_START:
-        '_' | '$' | 
-        (            
-            {Character.isLetter(LA(1))}? 
-            ~(
-                '_' | '$' | '/' | '*' | '0'..'9' | 
-                '.' | '\'' | '\\' | '"' | '\t' | '\n' | 
-                '\r' | ' ' | '\f' | '(' | ')' |
-                '{' | '}' | '[' | ']'| ';' | ',' | '=' |
-                '+' | '~' | '&' | '<' | '>' | '-' | '!' |
-                '^' | '%' | ':' | '?' | '|'| '@'
-            )
-        )
+// we allow identifiers to start with a number
+IDENT options { testLiterals=true; }
+    : ID_START_LETTER ( ID_LETTER )*
     ;
 
-protected ID_PART :
-        '_' | '$' | 
-        (
-            {Character.isLetterOrDigit(LA(1))}?
-            ~(
-                '_' | '$' | '/' | '*' | 
-                '.' | '\'' | '\\' | '"' | '\t' | '\n' | 
-                '\r' | ' ' | '\f' | '(' | ')' |
-                '{' | '}' | '[' | ']'| ';' | ',' | '=' |
-                '+' | '~' | '&' | '<' | '>' | '-' | '!' |
-                '^' | '%' | ':' | '?' | '|' | '@'
-            )
-        )
+protected
+ID_START_LETTER
+    :    'a'..'z'
+    |    'A'..'Z'
+    |    '_'
+    |    '\u0080'..'\ufffe'
     ;
 
+protected
+ID_LETTER
+    :    ID_START_LETTER
+    |    '0'..'9'
+    ;
+    
+POSITIVE_INTEGER
+    : ('+')? NUMBER
+    ;
 
-// an identifier. Note that testLiterals is set to true! This means
-// that after we match the rule, we look in the literals table to see
-// if it's a literal or really an identifer
-IDENT
-	options {testLiterals=true;}
-	:	ID_START (ID_PART)*
-	;
+NEGATIVE_INTEGER
+    : '-' NUMBER
+    ;
 
-
+protected    
 NUMBER
-	: '0'..'9' ('0'..'9')*
-	;
-	
-
-
+    : '0'..'9' ('0'..'9')*
+    ;
 
 
 WHITESPACE
@@ -105,40 +89,62 @@ FIELDCOMMENT
 MESSAGE
 	: COLON (~('\n'|'\r'))* LINEBREAK //('\n'|'\r'('\n')?) {newline();}
 	;
-		
+
+// string literals
+STRING_LITERAL
+    :   '"' (ESC|~('"'|'\\'|'\n'|'\r'))* '"'
+    ;
+
+
+// escape sequence -- note that this is protected; it can only be called
+// from another lexer rule -- it will not ever directly return a token to
+// the parser
+// There are various ambiguities hushed in this rule. The optional
+// '0'...'9' digit matches should be matched here rather than letting
+// them go back to STRING_LITERAL to be matched. ANTLR does the
+// right thing by matching immediately; hence, it's ok to shut off
+// the FOLLOW ambig warnings.
 protected
 ESC
-	:	'\\'
-		(	'n'
-		|	'r'
-		|	't'
-		|	'b'
-		|	'f'
-		|	'"'
-		|	'\''
-		|	'\\'
-		|	'0'..'3'
-			(
-				options {
-					warnWhenFollowAmbig = false;
-				}
-			:	'0'..'7'
-				(
-					options {
-						warnWhenFollowAmbig = false;
-					}
-				:	'0'..'7'
-				)?
-			)?
-		|	'4'..'7'
-			(
-				options {
-					warnWhenFollowAmbig = false;
-				}
-			:	'0'..'7'
-			)?
-		)
-	;
+    :   '\\'
+        (   'n'
+        |   'r'
+        |   't'
+        |   'b'
+        |   'f'
+        |   '"'
+        |   '\''
+        |   '\\'
+        |   ('u')+ HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT
+        |   '0'..'3'
+            (
+                options {
+                    warnWhenFollowAmbig = false;
+                }
+            :   '0'..'7'
+                (
+                    options {
+                        warnWhenFollowAmbig = false;
+                    }
+                :   '0'..'7'
+                )?
+            )?
+        |   '4'..'7'
+            (
+                options {
+                    warnWhenFollowAmbig = false;
+                }
+            :   '0'..'7'
+            )?
+        )
+    ;
+
+
+// hexadecimal digit (again, note it's protected!)
+protected
+HEX_DIGIT
+    :   ('0'..'9'|'A'..'F'|'a'..'f')
+    ;
 
 
 // TODO throw better exceptions when no message for validation rules
@@ -234,6 +240,7 @@ tokens {
 }
 
 {
+    
     RecognitionException error;
     
     public void reportError(RecognitionException e) {
@@ -245,7 +252,14 @@ tokens {
             error = new RecognitionException(s);
     }
     
+    private void checkNumber(AST n) {
+    	if(n == null)
+    	   reportError("Incorrect value for number");
+    }
+    
     private AST currentField;
+    
+    protected boolean included = false;
 
     protected void disableField(AST field) { }
     
@@ -266,7 +280,6 @@ declaration
     | typeDeclaration (LINEBREAK!)*
     | includeDeclaration (LINEBREAK!)*
     | validationRuleDeclaration (LINEBREAK!)*
-    
     ;
     
     
@@ -274,7 +287,7 @@ declaration
 
 fieldDeclaration
     : fn:fieldName
-      EQUALS^ {#EQUALS.setType(FIELD); #EQUALS.setText(#fn.getText()); boolean hasBody = false;}
+      EQUALS^ {#EQUALS.setType(FIELD); #EQUALS.setText(#fn.getText()); ((MDDAST)#EQUALS).wasIncluded = this.included; boolean hasBody = false;}
       (options{greedy=true;}:
           (modifier)* ft:fieldType
           (fieldComment)? {hasBody = true;}
@@ -317,7 +330,7 @@ fieldName
 
 fieldType
     : a:atom { #a.setType(UNKNOWN_TYPE); }
-    | c:CHAR^ LEFT_SQBR! l:NUMBER {#l.setType(CHAR_LENGTH); } RIGHT_SQBR!
+    | c:CHAR^ LEFT_SQBR! l:POSITIVE_INTEGER {#l.setType(CHAR_LENGTH); } RIGHT_SQBR!
     | INT
     | intEnum
     | charEnum
@@ -338,7 +351,7 @@ intEnum
 	;
 
 intEnumBody
-    : QUOTMARK! t:atom {#t.setType(INTENUMTEXT); } QUOTMARK! EQUALS! i:NUMBER {#i.setType(INTENUMINDEX); } (DEPRECATED)?
+    : t:STRING_LITERAL {#t.setType(INTENUMTEXT); } EQUALS! i:number { checkNumber(#i); if(#i != null) #i.setType(INTENUMINDEX); } (DEPRECATED)?
     ;
 
 charEnum
@@ -346,7 +359,8 @@ charEnum
 	;
 	
 charEnumBody
-	: QUOTMARK! t:atom {#t.setType(CHARENUMELEMENT); } QUOTMARK! (DEPRECATED)?
+	: t:STRING_LITERAL { #t.setType(CHARENUMELEMENT); }
+	  (DEPRECATED)?
 	;
 
 fieldComment
@@ -412,7 +426,7 @@ rangeRule
 
 // [1..?] [?..5]
 rangeBound
-    : n:NUMBER | m:INTMARK
+    : n:POSITIVE_INTEGER | m:INTMARK
     ;
     
 // name4%matches = "http://.+" : the homepage must start with http://
@@ -436,7 +450,12 @@ regExpRule
 
 // general.Person
 type
-    : {String type="";} a:atom { type = #a.getText(); } (DOT! b:atom! {type += "." + #b.getText(); } )* { #type.setText(type); System.out.println(type);}
+    : {String type="";} a:atom { type = #a.getText(); } (DOT! b:atom! {type += "." + #b.getText(); } )* { #type.setText(type);}
+    ;
+
+number
+    : POSITIVE_INTEGER | NEGATIVE_INTEGER
+        {checkNumber(#number);}
     ;
 
 atom

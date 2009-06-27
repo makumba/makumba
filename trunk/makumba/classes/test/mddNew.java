@@ -76,6 +76,11 @@ public class mddNew extends TestCase {
             System.out.println("\n\nOperating System is "
                     + osName
                     + ", skipping 'testWronglyCapitalizedMdd' test (Windows does not support capitalization in file name).\n");
+        } else if(osName.toLowerCase().startsWith("mac os")) {
+            System.out.println("\n\nOperating System is "
+                + osName
+                + ", skipping 'testWronglyCapitalizedMdd' test (Mac OS X with HFS+ does not support capitalization in file name).\n");
+
         } else {
             try {
                 ddp.getDataDefinition("test.personnew");
