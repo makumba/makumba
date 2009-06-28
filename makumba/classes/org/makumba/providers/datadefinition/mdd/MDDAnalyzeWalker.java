@@ -9,6 +9,7 @@ import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.commons.ReservedKeywords;
 import org.makumba.providers.datadefinition.mdd.validation.ComparisonValidationRule;
+import org.makumba.providers.datadefinition.mdd.validation.MultiUniquenessValidationRule;
 import org.makumba.providers.datadefinition.mdd.validation.RangeValidationRule;
 import org.makumba.providers.datadefinition.mdd.validation.RegExpValidationRule;
 
@@ -155,46 +156,54 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
     }
     
     @Override
-    protected void createValidationRule(AST vr, String field, ValidationType type, FieldNode fieldNode) {
-        
-        // if fieldNode is not null, we got the FieldNode of a subfield, and hence fetch the field from there
-        FieldNode f = null;
-        if(fieldNode != null) {
-            f = fieldNode.subfield.fields.get(field);
-            if(f == null) {
-                factory.doThrow(this.typeName, "Subfield " + field + " does not exist in field " + fieldNode.subfield.name, vr);
-            }
-        } else {
-            f = mdd.fields.get(field);
-            if(f == null) {
-                factory.doThrow(this.typeName, "Field " + field + " does not exist in type " + mdd.name, vr);
-            }
-
-        }
-        
+    protected ValidationRuleNode createNamedValidationRule(AST originAST, String ruleName, ValidationType type) {
         switch(type) {
-            case RANGE:
-            case LENGTH:
-                setCurrentValidationRule(new RangeValidationRule(mdd, vr, f));
-                break;
-            case REGEXP:
-                setCurrentValidationRule(new RegExpValidationRule(mdd, vr, f));
-                break;
-            case COMPARISON:
-                setCurrentValidationRule(new ComparisonValidationRule(mdd, vr));
+            case UNIQUENESS:
+                ValidationRuleNode n = new MultiUniquenessValidationRule(mdd, originAST, ruleName);
+                n.type = ValidationType.UNIQUENESS;
+                return n;
             default:
                 throw new RuntimeException("no matching validation rule found!");
         }
+    }
+
+    @Override
+    protected ValidationRuleNode createSingleFieldValidationRule(AST originAST, String fieldName, ValidationType type, FieldNode subField) {
         
-        
+        // if fieldNode is not null, we got the FieldNode of a subfield, and hence fetch the field from there
+        FieldNode f = null;
+        if(subField != null) {
+            f = subField.subfield.fields.get(fieldName);
+            if(f == null) {
+                factory.doThrow(this.typeName, "Subfield " + fieldName + " does not exist in field " + subField.subfield.name, originAST);
+            }
+        } else {
+            f = mdd.fields.get(fieldName);
+            if(f == null) {
+                factory.doThrow(this.typeName, "Field " + fieldName + " does not exist in type " + mdd.name, originAST);
+            }
+
+        }
+      
+        switch(type) {
+            case RANGE:
+            case LENGTH:
+                return new RangeValidationRule(mdd, originAST, f, type);
+            case REGEXP:
+                return new RegExpValidationRule(mdd, originAST, f);
+            case COMPARISON:
+                return new ComparisonValidationRule(mdd, originAST);
+            default:
+                throw new RuntimeException("no matching validation rule found");
+        }
     }
     
     @Override
-    protected void checkRuleApplicability() {
+    protected void checkRuleApplicability(ValidationRuleNode validation) {
         try {
-            getCurrentValidationRule().checkApplicability();
+            validation.checkApplicability();
         } catch(Throwable t) {
-            factory.doThrow(this.typeName, t.getMessage(), getCurrentValidationRule());
+            factory.doThrow(this.typeName, t.getMessage(), validation);
         }
     }
 }

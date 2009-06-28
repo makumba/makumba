@@ -13,6 +13,7 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.ValidationDefinition;
 import org.makumba.ValidationRule;
+import org.makumba.providers.datadefinition.mdd.validation.MultiUniquenessValidationRule;
 
 /**
  * Implementation of the {@link DataDefinition} interface.<br>
@@ -94,6 +95,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
         this.origin = mdd.origin;
         this.titleField = mdd.titleField.getText();
         this.validationRules = mdd.validationRules;
+        this.multiFieldUniqueList = mdd.multiFieldUniqueList;
 
         System.out.println("populating fields of " + mdd.name);
         addStandardFields(name);
@@ -441,7 +443,20 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
     sb.append("\n   === Fields \n\n");
     
     for(FieldDefinition f : fields.values()) {
-        sb.append(f.toString());
+        sb.append(f.toString()+ "\n");
+    }
+    
+    sb.append("\n   === Validation rules \n\n");
+    
+    for(ValidationRule r : validationRules.values()) {
+        sb.append(r.toString() + "\n");
+    }
+    
+    
+    sb.append("\n   === Multi-unique keys \n\n");
+    
+    for(DataDefinition.MultipleUniqueKeyDefinition k : multiFieldUniqueList.values()) {
+        sb.append(k.toString()+ "\n");
     }
     
     return sb.toString();

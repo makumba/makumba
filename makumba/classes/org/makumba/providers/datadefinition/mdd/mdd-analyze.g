@@ -37,11 +37,6 @@ options {
     
     protected MDDNode mdd;
     
-    private ValidationRuleNode currentValidationRule;
-        
-    // set makumba type of currently analyzed field
-    //protected void setCurrentFieldType(FieldType type) { if(this.currentField != null) this.currentField.makumbaType = type; }
-    
     // Check if field name is valid
     protected void checkFieldName(AST fieldName) {}
     
@@ -69,20 +64,13 @@ options {
     protected void addSubfield(FieldNode parent, FieldNode field) { }
     
     // create and set validation rule
-    protected void createValidationRule(AST vr, String field, ValidationType type, FieldNode fieldNode) { }
+    protected ValidationRuleNode createSingleFieldValidationRule(AST originAST, String fieldName, ValidationType type, FieldNode subField) { return null; }
     
-    // set current validation rule
-    protected void setCurrentValidationRule(ValidationRuleNode validation) {
-    	this.currentValidationRule = validation;
-    }
-    
-    // get current validation rule
-    protected ValidationRuleNode getCurrentValidationRule() {
-    	return this.currentValidationRule;
-    }
-    
+    protected ValidationRuleNode createNamedValidationRule(AST originAST, String ruleName, ValidationType type) { return null; }
+        
+     
     // check if rule can be applied to fields
-    protected void checkRuleApplicability() {}
+    protected void checkRuleApplicability(ValidationRuleNode validation) {}
         
 }
 
@@ -220,45 +208,124 @@ typeDeclaration! // we kick out the declaration after registering it
     ;
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 //////////////// VALIDATION RULES
 
-// for the moment we don't pass those further as we don't need postprocessing
-validationRuleDeclaration[FieldNode field]
-    : rangeRule[field]
+validationRuleDeclaration[FieldNode subField]
+    : #(VALIDATION {ValidationRuleNode v = null; }
+          (
+            v = singleFieldValidationRule[subField]
+          | v = namedValidationRule[subField]
+          )
+        
+  	      m:MESSAGE {v.message = #m.getText();}
+  	  )
 	
 	{
-		checkRuleApplicability();
-		mdd.addValidationRule(getCurrentValidationRule());
-		#validationRuleDeclaration = getCurrentValidationRule();
+		mdd.addValidationRule(v);
+		#validationRuleDeclaration = v;
 	}
 	;
 
-// TODO maybe there's a way to avoid repeating the setting of boundaries...    
-rangeRule[FieldNode field]
-    : #(vr:VALIDATION fn:FIELDNAME
-    	(
-		    #( r:RANGE rl:RANGE_FROM ru:RANGE_TO
-		    	{
-		    		createValidationRule(#fn, #fn.getText(), ValidationType.RANGE, field);
-			    	getCurrentValidationRule().type = ValidationType.RANGE;
-			    	getCurrentValidationRule().lowerBound = #rl.getText();
-			    	getCurrentValidationRule().upperBound = #ru.getText();
-		    	}
-		    )
-		    |
-		    #( LENGTH ll:RANGE_FROM lu:RANGE_TO
-		    	{
-			    	createValidationRule(#fn, #fn.getText(), ValidationType.LENGTH, field);
-			    	getCurrentValidationRule().type = ValidationType.LENGTH;
-			    	getCurrentValidationRule().lowerBound = #ll.getText();
-			    	getCurrentValidationRule().upperBound = #lu.getText();
-		    	}
-		    )
-		)
 
-	   m:MESSAGE {getCurrentValidationRule().message = #m.getText();}
-
-	   )
-	   
-    ;
+singleFieldValidationRule[FieldNode subField] returns [ValidationRuleNode v = null; ]
+    : fn:FIELDNAME
+      (
+          v = rangeValidationRule[subField, fn]
+        | v = lengthValidationRule[subField, fn]
+      )
       
+      {
+        checkRuleApplicability(v);
+      }
+    ;
+    
+namedValidationRule[FieldNode subField] returns [ValidationRuleNode v = null; ]
+    : rn:VALIDATIONNAME
+      (
+        v = multiUniquenessValidationRule[subField, rn]
+      )
+    ;
+
+multiUniquenessValidationRule[FieldNode subField, AST rn] returns [ValidationRuleNode v = null;]
+    : #(UNIQUE {v = createNamedValidationRule(#rn, #rn.getText(), ValidationType.UNIQUENESS); } (p:PATH {v.multiUniquenessFields.add(#p.getText()); } )* )
+    ;
+
+rangeValidationRule[FieldNode subField, AST fn] returns [ValidationRuleNode v = null;]
+    : #(r:RANGE rl:RANGE_FROM ru:RANGE_TO
+      
+      {
+      	v = createSingleFieldValidationRule(#fn, #fn.getText(), ValidationType.RANGE, subField);
+      	v.lowerBound = #rl.getText();
+      	v.upperBound = #ru.getText();
+      }
+      
+      )
+    ;
+
+lengthValidationRule[FieldNode subField, AST fn] returns [ValidationRuleNode v = null;]
+    : #(r:LENGTH rl:RANGE_FROM ru:RANGE_TO
+      
+      {
+        v = createSingleFieldValidationRule(#fn, #fn.getText(), ValidationType.LENGTH, subField);
+        v.lowerBound = #rl.getText();
+        v.upperBound = #ru.getText();
+      }
+      
+      )
+    ;    
+    
+        
+////////////////// VALIDATION RULES
+//
+//validationRuleDeclaration[FieldNode subField]
+//    : rangeRule[subField]
+//    
+//    {
+//        checkRuleApplicability();
+//        mdd.addValidationRule(getCurrentValidationRule());
+//        #validationRuleDeclaration = getCurrentValidationRule();
+//    }
+//    ;
+//
+//
+//
+//
+//
+//// TODO maybe there's a way to avoid repeating the setting of boundaries...    
+//rangeRule[FieldNode subField]
+//    : #(vr:VALIDATION fn:FIELDNAME
+//        (
+//            #( r:RANGE rl:RANGE_FROM ru:RANGE_TO
+//                {
+//                    createValidationRule(#fn, #fn.getText(), ValidationType.RANGE, subField);
+//                    getCurrentValidationRule().type = ValidationType.RANGE;
+//                    getCurrentValidationRule().lowerBound = #rl.getText();
+//                    getCurrentValidationRule().upperBound = #ru.getText();
+//                }
+//            )
+//            |
+//            #( LENGTH ll:RANGE_FROM lu:RANGE_TO
+//                {
+//                    createValidationRule(#fn, #fn.getText(), ValidationType.LENGTH, subField);
+//                    getCurrentValidationRule().type = ValidationType.LENGTH;
+//                    getCurrentValidationRule().lowerBound = #ll.getText();
+//                    getCurrentValidationRule().upperBound = #lu.getText();
+//                }
+//            )
+//        )
+//
+//       m:MESSAGE {getCurrentValidationRule().message = #m.getText();}
+//
+//       )
+//       
+//    ;

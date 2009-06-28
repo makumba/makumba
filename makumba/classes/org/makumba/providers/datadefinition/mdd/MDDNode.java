@@ -1,11 +1,13 @@
 package org.makumba.providers.datadefinition.mdd;
 
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 import org.makumba.DataDefinition;
 import org.makumba.ValidationRule;
+import org.makumba.DataDefinition.MultipleUniqueKeyDefinition;
 
 import antlr.CommonAST;
 
@@ -46,6 +48,9 @@ public class MDDNode extends CommonAST {
     
     protected LinkedHashMap<String, ValidationRule> validationRules = new LinkedHashMap<String, ValidationRule>();
     
+    protected HashMap<Object, MultipleUniqueKeyDefinition> multiFieldUniqueList = new HashMap<Object, MultipleUniqueKeyDefinition>();
+
+    
     public MDDNode(String name, URL origin) {
         this.name = name;
         this.origin = origin;
@@ -80,6 +85,9 @@ public class MDDNode extends CommonAST {
         validationRules.put(vn.getRuleName(), vn);
     }
     
+    public void addMultiUniqueKey(MultipleUniqueKeyDefinition definition) {
+        multiFieldUniqueList.put(definition.getFields(), definition);
+    }
     
     public String toString() {
         StringBuffer sb = new StringBuffer();

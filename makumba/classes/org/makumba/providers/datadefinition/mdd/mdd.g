@@ -179,6 +179,7 @@ tokens {
     FIELDNAME;
     MODIFIER;
     FIELDTYPE;
+    PATH;
     
     // MDD subfield
     // cars = set
@@ -403,15 +404,22 @@ typeDeclaration
 //////////////// VALIDATION RULES
 
 validationRuleDeclaration
+    : singleFieldValidationRuleDeclaration
+    | namedValidationRuleDeclaration
+    ;
+
+singleFieldValidationRuleDeclaration
     : a:atom { #a.setType(FIELDNAME); }
       p:PERCENT^ {#p.setType(VALIDATION);}
-      // SIMPLE VALIDATION RULES
-      (
-       rangeRule
-       | regExpRule
-      )
+      ( rangeRule | regExpRule )
       errorMessage
-      
+    ;
+
+namedValidationRuleDeclaration
+    : a:atom { #a.setType(VALIDATIONNAME); }
+      p:PERCENT^ {#p.setType(VALIDATION);}
+      (multiUniquenessRule ) //| comparisonRule
+      errorMessage
     ;
     
 // name%length = [1..?]
@@ -437,9 +445,12 @@ regExpRule
       errorMessage
     ;
 
-//uniquenessRule
-//    :
-//    ;
+
+// unique12%unique = age, email : these need to be unique!
+// unique13%unique = indiv.name, indiv.surname : these too!
+multiUniquenessRule
+    : UNIQUE^ EQUALS! a:type (COMMA! b:type)*
+    ;
     
 //comparisonRule
 //    : 
@@ -450,7 +461,7 @@ regExpRule
 
 // general.Person
 type
-    : {String type="";} a:atom { type = #a.getText(); } (DOT! b:atom! {type += "." + #b.getText(); } )* { #type.setText(type);}
+    : {String type="";} a:atom { type = #a.getText(); } (DOT! b:atom! {type += "." + #b.getText(); } )* { #type.setText(type); #type.setType(PATH); }
     ;
 
 number
