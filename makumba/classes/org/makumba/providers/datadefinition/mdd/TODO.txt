@@ -10,6 +10,7 @@ TODO new MDD parser:
 - implementation of functions
   - !title= fullName()
   
+- http://bugs.best.eu.org/cgi-bin/bugzilla/show_bug.cgi?id=1098
 
 OPTIMIZATION:
 - use caching for creation of virtual fields (from definitions), to avoid parsing twice the same def ?
