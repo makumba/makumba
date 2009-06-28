@@ -91,6 +91,10 @@ public class FieldNode extends MDDAST {
         
     }
     
+    public String getName() {
+        return this.name;
+    }
+    
     
     public void addIntEnumValue(int index, String text) {
         intEnumValues.put(index, text);

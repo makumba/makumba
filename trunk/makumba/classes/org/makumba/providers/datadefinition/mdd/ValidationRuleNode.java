@@ -1,6 +1,7 @@
 package org.makumba.providers.datadefinition.mdd;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
@@ -32,19 +33,25 @@ public class ValidationRuleNode extends MDDAST implements ValidationRule, Serial
     protected String lowerBound;
     protected String upperBound;
     
+    /** multi-uniqueness constraints **/
+    protected ArrayList<String> multiUniquenessFields = new ArrayList<String>();
     
     public ValidationRuleNode(MDDNode mdd, AST originAST) {
         initialize(originAST);
      
         // we need to overwrite the type after the initialisation
         setType(MDDTokenTypes.VALIDATION);
-        
         this.mdd = mdd;
     }
     
     public ValidationRuleNode(MDDNode mdd, AST originAST, FieldNode field) {
         this(mdd, originAST);
         this.field = field;
+    }
+    
+    public ValidationRuleNode(MDDNode mdd, AST originAST, String ruleName) {
+        this(mdd, originAST);
+        this.name = ruleName;
     }
     
     
@@ -94,13 +101,20 @@ public class ValidationRuleNode extends MDDAST implements ValidationRule, Serial
         }
     }
 
+    /** Throw a default exception. */
+    protected void throwException() throws InvalidValueException {
+        throw new InvalidValueException(field.name, getErrorMessage());
+    }
+
+    
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("== Validation rule: " + (name==null?"":name) + " (line "+ getLine() + ")\n");
         sb.append("== Type: " + type.getDescription() + "\n");
-        sb.append("== Field: " + field + "\n");
-        sb.append("== Message: " + message);
+        if(field != null)
+            sb.append("== Field: " + field.name + "\n");
+        sb.append("== Message: " + message +"\n");
         return sb.toString();
     }
 

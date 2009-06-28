@@ -5,6 +5,8 @@ import java.util.HashMap;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.MakumbaError;
+import org.makumba.ValidationRule;
+import org.makumba.providers.datadefinition.mdd.validation.MultiUniquenessValidationRule;
 
 import antlr.collections.AST;
 
@@ -91,6 +93,12 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
         
     }
     
-    
+    @Override
+    protected void processMultiUniqueValidationDefinitions(ValidationRuleNode v) {
+        if(v instanceof MultiUniquenessValidationRule) {
+            DataDefinition.MultipleUniqueKeyDefinition key = new DataDefinition.MultipleUniqueKeyDefinition(v.multiUniquenessFields.toArray(new String[] {}), v.message);
+            mdd.addMultiUniqueKey(key);
+        }
+    }
 
 }

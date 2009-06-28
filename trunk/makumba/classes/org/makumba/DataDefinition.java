@@ -230,8 +230,12 @@ public interface DataDefinition {
         private boolean keyOverSubfield = false;
 
         public MultipleUniqueKeyDefinition(String[] fields, String line, String errorMessage) {
-            this.fields = fields;
+            this(fields, errorMessage);
             this.line = line;
+        }
+        
+        public MultipleUniqueKeyDefinition(String[] fields, String errorMessage) {
+            this.fields = fields;
             this.errorMessage = errorMessage;
         }
 

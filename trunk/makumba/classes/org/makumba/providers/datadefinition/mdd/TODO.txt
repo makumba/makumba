@@ -1,13 +1,8 @@
 TODO new MDD parser:
 
-- use caching for creation of virtual fields (from definitions), to avoid parsing twice the same def ?
-
-- grammar for regexp validation rule
-- grammar for multi-unique index
 - grammar for comparison validation rule
+- grammar for regexp validation rule
 
-- implementation of range validation rule
-- implementation of multi-unique validation rule?
 - implementation of comparison validation rule
 - implementation of regexp validation rule
 
@@ -15,9 +10,6 @@ TODO new MDD parser:
 - implementation of functions
   - !title= fullName()
   
-- make unit tests to see if this works, use valid/broken MDDs
 
-
-test:
-- creation of subfields in mdd-analyze needs to also set the modifiers etc., see RecordParser
-- check RecordParser to see what else needs to be done
+OPTIMIZATION:
+- use caching for creation of virtual fields (from definitions), to avoid parsing twice the same def ?

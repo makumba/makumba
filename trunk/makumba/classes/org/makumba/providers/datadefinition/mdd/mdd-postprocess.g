@@ -33,6 +33,8 @@ options {
     protected void processUnknownType(AST field) { }
     
     protected void checkTitleField(AST titleField) { }
+    
+    protected void processMultiUniqueValidationDefinitions(ValidationRuleNode v) { }
    
 }
 
@@ -60,5 +62,5 @@ titleDeclaration
     ;
 
 validationRuleDeclaration
-	: VALIDATION
+	: v:VALIDATION { processMultiUniqueValidationDefinitions((ValidationRuleNode)v); }
 	;
