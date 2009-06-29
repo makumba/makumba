@@ -58,7 +58,6 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
     public DataDefinitionImpl(String name) {
         this.name = name;
         this.origin = null;
-        addStandardFields(name);
     }
     
     /** constructor for virtual subfield data definitions **/
