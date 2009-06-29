@@ -46,6 +46,7 @@ declaration
     : fieldDeclaration
     | titleDeclaration
     | validationRuleDeclaration
+    | functionDeclaration
     ;
 
 fieldDeclaration
@@ -53,6 +54,7 @@ fieldDeclaration
          (sf:FIELD { if(((FieldNode)#sf_in).makumbaType == null) { processUnknownType(#sf_in); } }
           | st:titleDeclaration
           | v:validationRuleDeclaration
+          | functionDeclaration
          )*
        )
     ;
@@ -63,4 +65,8 @@ titleDeclaration
 
 validationRuleDeclaration
 	: v:VALIDATION { processMultiUniqueValidationDefinitions((ValidationRuleNode)v); }
+	;
+	
+functionDeclaration
+	: FUNCTION
 	;

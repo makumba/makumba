@@ -1,29 +1,17 @@
 package org.makumba.providers.datadefinition.mdd;
 
-import java.io.Reader;
-import java.io.StringReader;
 import java.net.URL;
 import java.util.HashMap;
 
-import org.hibernate.QueryException;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionParseError;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
-import org.makumba.MakumbaSystem;
 import org.makumba.commons.ReservedKeywords;
-import org.makumba.providers.Configuration;
-import org.makumba.providers.QueryAnalysis;
-import org.makumba.providers.QueryAnalysisProvider;
-import org.makumba.providers.QueryProvider;
 import org.makumba.providers.datadefinition.mdd.validation.ComparisonValidationRule;
 import org.makumba.providers.datadefinition.mdd.validation.MultiUniquenessValidationRule;
 import org.makumba.providers.datadefinition.mdd.validation.RangeValidationRule;
 import org.makumba.providers.datadefinition.mdd.validation.RegExpValidationRule;
-import org.makumba.providers.query.mql.MqlQueryAnalysis;
-
-import antlr.RecognitionException;
-import antlr.TokenStreamException;
 import antlr.collections.AST;
 
 /**
@@ -219,7 +207,7 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
             case RANGE:
             case LENGTH:
                 return new RangeValidationRule(mdd, originAST, f, type);
-            case REGEXP:
+            case REGEX:
                 return new RegExpValidationRule(mdd, originAST, f);
             case COMPARISON:
                 return new ComparisonValidationRule(mdd, originAST, type);

@@ -38,3 +38,5 @@ length(name4) {1..?} : name4 must not be empty
 unique() { name2, name } : these need to be unique!
 
 compare() { lower(name) = name } : Name must not have capital letters
+
+myFunction(char[] cdcd) { text + this.name }

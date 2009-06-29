@@ -168,10 +168,10 @@ options {
 }
 
 tokens {
-    FIELD<AST=org.makumba.providers.datadefinition.mdd.FieldNode>;
-    VALIDATION<AST=org.makumba.providers.datadefinition.mdd.ValidationRuleNode>;
-    FUNCTION<AST=org.makumba.providers.datadefinition.mdd.FunctionNode>;
-
+    FIELD;
+    VALIDATION;
+    FUNCTION;
+    
 	// title field
 	// !title=name
 	// !title = nameSurname()
@@ -245,6 +245,7 @@ tokens {
     
     // functions
     
+    FUNCTION_ARGUMENT_NAME;
     FUNCTION_ARGUMENT;
     FUNCTION_NAME;
     
@@ -298,6 +299,7 @@ declaration
     | typeDeclaration (LINEBREAK!)*
     | includeDeclaration (LINEBREAK!)*
     | validationRuleDeclaration (LINEBREAK!)*
+    | functionDeclaration (LINEBREAK!)*
     ;
     
     
@@ -324,6 +326,7 @@ subFieldDeclaration
       (
           titleDeclaration (fieldComment!)? // allow comment but do not store them
           | validationRuleDeclaration
+          | functionDeclaration
           | EXMARK! "include"! EQ! t:type { #subFieldDeclaration = includeSubField(#t, #fn); }
           | subFieldBody
       )
@@ -348,7 +351,7 @@ fieldName
 
 fieldType
     : a:atom { #a.setType(UNKNOWN_TYPE); }
-    | c:CHAR^ LEFT_SQBR! l:POSITIVE_INTEGER {#l.setType(CHAR_LENGTH); } RIGHT_SQBR!
+    | c:CHAR^ LEFT_SQBR! (l:POSITIVE_INTEGER {#l.setType(CHAR_LENGTH); })? RIGHT_SQBR!
     | INT
     | intEnum
     | charEnum
@@ -364,30 +367,25 @@ fieldType
     | SET! sc:charEnum {#sc.setType(SETCHARENUM);}
     ;
 
+//int { "aa"=5, "bb"=2 deprecated, "cc"=10}
 intEnum
-	: ie:INT^ {#ie.setType(INTENUM);} parsedFunctionBody //int { "aa"=5, "bb"=2 deprecated, "cc"=10}
+	// intEnum has no function body as such, but the syntax is the same so we use this trick
+	: ie:INT^ {#ie.setType(INTENUM);} parsedFunctionBody 
 	;
 
-//intEnumBody
-//   : t:STRING_LITERAL {#t.setType(INTENUMTEXT); } EQ! i:number { checkNumber(#i); if(#i != null) #i.setType(INTENUMINDEX); } (DEPRECATED)?
-//    ;
-
+//char { "aa", "bb" deprecated, "cc"}
 charEnum
-	: ce:CHAR^ {#ce.setType(CHARENUM);} parsedFunctionBody //char { "aa", "bb" deprecated, "cc"}
+	// charEnum has no function body as such, but the syntax is the same so we use this trick
+	: ce:CHAR^ {#ce.setType(CHARENUM);} parsedFunctionBody
 	;
 	
-//charEnumBody
-//	: t:STRING_LITERAL { #t.setType(CHARENUMELEMENT); }
-//	  (DEPRECATED)?
-//	;
-
 fieldComment
 	: f:FIELDCOMMENT { int k = #f.getText().indexOf(";"); #fieldComment.setText(#f.getText().substring(k+1).trim()); }
 	;
 
 
 errorMessage
-	: m:MESSAGE {System.out.println("******************************************* " + #m.getText()); int k = #m.getText().indexOf(":"); #errorMessage.setText(#m.getText().substring(k+1).trim()); }
+	: m:MESSAGE {int k = #m.getText().indexOf(":"); #errorMessage.setText(#m.getText().substring(k+1).trim()); }
 	;
     
 modifier
@@ -425,6 +423,7 @@ validationRuleDeclaration
 			rangeValidationRuleDeclaration
 			| uniquenessValidationRuleDeclaration
 			| comparisonValidationRuleDeclaration
+			| regexValidationRuleDeclaration
 		)
 		errorMessage
 	;
@@ -436,7 +435,10 @@ comparisonValidationRuleDeclaration
 		
 rangeValidationRuleDeclaration
 	: (RANGE^ | LENGTH^) functionArguments parsedFunctionBody
-	
+	;
+
+regexValidationRuleDeclaration
+	: MATCHES^ functionArguments functionBody
 	;
 
 // unique() {field1, field2} : These need to be unique
@@ -445,19 +447,22 @@ uniquenessValidationRuleDeclaration
 	parsedFunctionBody
 	;
 
+
+
 //////////////// FUNCTIONS
 
-functionBody
-	: b:FUNCTION_BODY
-	  { String body = ""; body = #b.getText().substring(1); body = body.substring(0, body.length() - 1); #b.setText(body);}
+functionDeclaration
+	: a:atom {#a.setType(FUNCTION_NAME);} d:functionArgumentDeclaration b:functionBody (errorMessage)?
+	{ #functionDeclaration = #(#[FUNCTION, "function"], #functionDeclaration); }
 	;
 
-parsedFunctionBody
-	: b:functionBody
-	  {
-	  	#parsedFunctionBody = parseExpression(#b);
-	  }
-	;	  
+functionArgumentDeclaration
+	: LEFT_PAREN! (functionArgumentBody)? (COMMA! functionArgumentBody)*  RIGHT_PAREN!
+	;
+
+functionArgumentBody
+	: fieldType n:atom {#n.setType(FUNCTION_ARGUMENT_NAME); }
+	;
 
 functionCall
 	: a:atom {#a.setType(FUNCTION_NAME);} functionArguments
@@ -467,8 +472,16 @@ functionArguments
 	: LEFT_PAREN! (a:atom {#a.setType(FUNCTION_ARGUMENT);} )? (COMMA! b:atom {#b.setType(FUNCTION_ARGUMENT);} )* RIGHT_PAREN!
 	;
 
-operator
-	: EQ | LT | GT | LE | GE | NE | SQL_NE | LIKE
+functionBody
+	: b:FUNCTION_BODY
+	  { String body = ""; body = #b.getText().substring(1); body = body.substring(0, body.length() - 1); #b.setText(body.trim());}
+	;
+
+parsedFunctionBody
+	: b:functionBody
+	  {
+	  	#parsedFunctionBody = parseExpression(#b);
+	  }
 	;
 
 //////////////// COMMON
@@ -482,6 +495,10 @@ number
     : POSITIVE_INTEGER | NEGATIVE_INTEGER
         {checkNumber(#number);}
     ;
+
+operator
+	: EQ | LT | GT | LE | GE | NE | SQL_NE | LIKE
+	;
 
 atom
     : IDENT

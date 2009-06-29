@@ -48,8 +48,9 @@ public class MDDNode extends CommonAST {
     
     protected LinkedHashMap<String, ValidationRule> validationRules = new LinkedHashMap<String, ValidationRule>();
     
-    protected HashMap<Object, MultipleUniqueKeyDefinition> multiFieldUniqueList = new HashMap<Object, MultipleUniqueKeyDefinition>();
+    protected LinkedHashMap<Object, MultipleUniqueKeyDefinition> multiFieldUniqueList = new LinkedHashMap<Object, MultipleUniqueKeyDefinition>();
 
+    protected LinkedHashMap<String, DataDefinition.QueryFragmentFunction> functions = new LinkedHashMap<String, DataDefinition.QueryFragmentFunction>();
     
     public MDDNode(String name, URL origin) {
         this.name = name;
@@ -87,6 +88,11 @@ public class MDDNode extends CommonAST {
     
     public void addMultiUniqueKey(MultipleUniqueKeyDefinition definition) {
         multiFieldUniqueList.put(definition.getFields(), definition);
+    }
+    
+    public void addFunction(FunctionNode funct) {
+        DataDefinition.QueryFragmentFunction function = new DataDefinition.QueryFragmentFunction(funct.name, null, funct.queryFragment, funct.parameters, funct.errorMessage);
+        functions.put(function.getName(), function);
     }
     
     public String toString() {

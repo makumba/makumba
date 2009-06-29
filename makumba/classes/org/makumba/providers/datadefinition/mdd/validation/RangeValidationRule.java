@@ -73,10 +73,11 @@ public class RangeValidationRule extends ValidationRuleNode {
         
     }
     
-//    @Override
-//    public String toString() {
-//        return field.getName() + " " + type.name() + " [" + lowerBound + ".." + upperBound + "]";
-//    }
+    @Override
+    public String getRuleName() {
+        return type.name().toLowerCase() + "(" + field.getName() + ") {" + lowerBound + ".." +  upperBound+ "} : " + message  + " (line " + getLine() + ")";
+    }
+
 
     
 

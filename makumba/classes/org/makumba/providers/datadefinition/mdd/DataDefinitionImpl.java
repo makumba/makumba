@@ -13,7 +13,6 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.ValidationDefinition;
 import org.makumba.ValidationRule;
-import org.makumba.providers.datadefinition.mdd.validation.MultiUniquenessValidationRule;
 
 /**
  * Implementation of the {@link DataDefinition} interface.<br>
@@ -45,13 +44,14 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
     /** indicator if this is MDD is a file subfield **/
     protected boolean isFileSubfield = false;
     
+    
     protected LinkedHashMap<String, FieldDefinition> fields = new LinkedHashMap<String, FieldDefinition>();
     
     protected LinkedHashMap<String, ValidationRule> validationRules = new LinkedHashMap<String, ValidationRule>();    
     
-    protected HashMap<String, QueryFragmentFunction> functionNames = new HashMap<String, QueryFragmentFunction>();
+    protected LinkedHashMap<Object, MultipleUniqueKeyDefinition> multiFieldUniqueList = new LinkedHashMap<Object, MultipleUniqueKeyDefinition>();
 
-    private HashMap<Object, MultipleUniqueKeyDefinition> multiFieldUniqueList = new HashMap<Object, MultipleUniqueKeyDefinition>();
+    protected LinkedHashMap<String, DataDefinition.QueryFragmentFunction> functions = new LinkedHashMap<String, DataDefinition.QueryFragmentFunction>();
 
     
     /** make a virtual data definition **/
@@ -96,6 +96,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
         this.titleField = mdd.titleField.getText();
         this.validationRules = mdd.validationRules;
         this.multiFieldUniqueList = mdd.multiFieldUniqueList;
+        this.functions = mdd.functions;
 
         System.out.println("populating fields of " + mdd.name);
         addStandardFields(name);
@@ -328,12 +329,12 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
     /** methods for functions **/
     
     public void addFunction(String name, QueryFragmentFunction function) {
-        functionNames.put(name, function);
+        functions.put(name, function);
     }
 
     public Collection<QueryFragmentFunction> getActorFunctions() {
         ArrayList<QueryFragmentFunction> actorFunctions = new ArrayList<QueryFragmentFunction>();
-        for (QueryFragmentFunction function : functionNames.values()) {
+        for (QueryFragmentFunction function : functions.values()) {
             if (function.isActorFunction()) {
                 actorFunctions.add(function);
             }
@@ -342,16 +343,16 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
     }
     
     public QueryFragmentFunction getFunction(String name) {
-        return functionNames.get(name);
+        return functions.get(name);
     }
 
     public Collection<QueryFragmentFunction> getFunctions() {
-        return functionNames.values();
+        return functions.values();
     }
 
     public Collection<QueryFragmentFunction> getSessionFunctions() {
         ArrayList<QueryFragmentFunction> sessionFunctions = new ArrayList<QueryFragmentFunction>();
-        for (QueryFragmentFunction function : functionNames.values()) {
+        for (QueryFragmentFunction function : functions.values()) {
             if (function.isSessionFunction()) {
                 sessionFunctions.add(function);
             }
@@ -457,6 +458,12 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
     
     for(DataDefinition.MultipleUniqueKeyDefinition k : multiFieldUniqueList.values()) {
         sb.append(k.toString()+ "\n");
+    }
+    
+    sb.append("\n   === Functions \n\n");
+    
+    for(DataDefinition.QueryFragmentFunction f : functions.values()) {
+        sb.append(f.toString()+ "\n");
     }
     
     return sb.toString();

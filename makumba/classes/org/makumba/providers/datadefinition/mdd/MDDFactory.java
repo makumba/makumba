@@ -170,6 +170,7 @@ public class MDDFactory {
         
         // this is an ugly workaround to the fact that the grammar has problems handling EOF
         // so we just add a new line by hand
+        // TODO we might be able to check for EOF in the lexer with EOF_CHAR
         InputStream newLine1 = new ByteArrayInputStream("\n".getBytes());
         InputStream newLine2 = new ByteArrayInputStream("\n".getBytes());
         SequenceInputStream seq1 = new SequenceInputStream(o, newLine1); 
