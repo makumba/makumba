@@ -274,6 +274,8 @@ tokens {
     	   reportError("Incorrect value for number");
     }
     
+    protected String typeName;
+    
     private AST currentField;
     
     protected boolean included = false;

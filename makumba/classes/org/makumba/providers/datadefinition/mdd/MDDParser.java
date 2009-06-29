@@ -22,9 +22,6 @@ public class MDDParser extends MDDBaseParser {
 
     private MDDFactory factory = null;
     
-    private String typeName = null;
-
-    
     public MDDParser(TokenStream lexer, MDDFactory factory, String typeName, boolean included) {
         super(lexer);
         this.factory = factory;
@@ -141,11 +138,11 @@ public class MDDParser extends MDDBaseParser {
             try {
                 parser.expression();
             } catch (RecognitionException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                e.column = expression.getColumn() + e.column;
+                e.line = expression.getLine();
+                factory.doThrow(e, expression, typeName);
             } catch (TokenStreamException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                factory.doThrow(e, expression, typeName);
             }
             
             AST tree = parser.getAST();

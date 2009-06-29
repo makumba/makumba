@@ -17,8 +17,6 @@ import antlr.collections.AST;
 /**
  * MDD analysis walker, collects useful information for creation of {@link DataDefinition} and {@link FieldDefinition}
  * 
- * TODO implement mechanism to throw useful {@link DataDefinitionParseError} (col, line, line text)
- * 
  * @author Manuel Gay
  * @version $Id: MDDAnalyzeWalker.java,v 1.1 May 2, 2009 10:56:49 PM manu Exp $
  */

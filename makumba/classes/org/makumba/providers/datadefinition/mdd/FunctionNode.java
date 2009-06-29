@@ -26,18 +26,14 @@ public class FunctionNode extends MDDAST {
         this.mdd = mdd;
         this.name = name;
         this.setType(MDDTokenTypes.FUNCTION);
+        parameters = DataDefinitionProvider.getInstance().getVirtualDataDefinition(mdd.name + "." + name);
+
     }
     
     public void addParameter(String paramName, FieldType type, String pointedType) {
-        if(parameters == null) {
-            parameters = DataDefinitionProvider.getInstance().getVirtualDataDefinition(mdd.name + "." + name);
-        }
-        
         if(type == FieldType.PTRREL) {
             DataDefinition pointedDD = MDDProvider.getMDD(pointedType);
-            // FIXME
-            parameters.addField(new FieldDefinitionImpl(paramName,
-                    (FieldDefinitionImpl) pointedDD.getFieldDefinition(pointedDD.getIndexPointerFieldName())));            
+            parameters.addField(DataDefinitionProvider.getInstance().makeFieldWithName(paramName, pointedDD.getFieldDefinition(pointedDD.getIndexPointerFieldName())));
         } else {
             FieldDefinition fd = DataDefinitionProvider.getInstance().makeFieldOfType(paramName, type.getTypeName());
             parameters.addField(fd);
