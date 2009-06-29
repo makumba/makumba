@@ -97,29 +97,40 @@ public class MDDFactory {
         }
         doThrow(analysisWalker.error, parser.getAST(), typeName);
 
+        if(analysisWalker.getAST() == null && parser.getAST() != null) {
+            throw new RuntimeException("Analyser returned empty AST!");
+        }
+        
         System.out.println("**** Analysis walker ****");
         MakumbaDumpASTVisitor visitor2 = new MakumbaDumpASTVisitor(false);
         visitor2.visit(analysisWalker.getAST());
 
+        
+        
         // step 3 - build the resulting DataDefinition and FieldDefinition
-        MDDPostProcessorWalker builder = null;
+        MDDPostProcessorWalker postProcessor = null;
         try {
-            builder = new MDDPostProcessorWalker(typeName, analysisWalker.mdd, analysisWalker.typeShorthands, this);
-            builder.dataDefinition(analysisWalker.getAST());
+            postProcessor = new MDDPostProcessorWalker(typeName, analysisWalker.mdd, analysisWalker.typeShorthands, this);
+            postProcessor.dataDefinition(analysisWalker.getAST());
         } catch (Throwable e) {
-            doThrow(e, builder.getAST(), typeName);
+            doThrow(e, postProcessor.getAST(), typeName);
         }
-        doThrow(builder.error, analysisWalker.getAST(), typeName);
+        doThrow(postProcessor.error, analysisWalker.getAST(), typeName);
 
-        System.out.println("**** Build walker ****");
+        if(postProcessor.getAST() == null && analysisWalker.getAST() != null) {
+            throw new RuntimeException("Postprocessor returned empty AST!");
+        }
+        
+        
+        System.out.println("**** Postprocessor walker ****");
         MakumbaDumpASTVisitor visitor3 = new MakumbaDumpASTVisitor(false);
-        visitor3.visit(builder.getAST());
+        visitor3.visit(postProcessor.getAST());
 
         //System.out.println(builder.mdd.toString());
 
         // step 4 - make the DataDefinitionImpl object, together with its FieldDefinitionImpl objects
         
-        DataDefinitionImpl result = new DataDefinitionImpl(builder.mdd);
+        DataDefinitionImpl result = new DataDefinitionImpl(postProcessor.mdd);
         System.out.println(result.toString());
 
         return result;

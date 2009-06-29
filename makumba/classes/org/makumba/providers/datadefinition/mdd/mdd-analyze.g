@@ -63,15 +63,18 @@ options {
     // Add subfield
     protected void addSubfield(FieldNode parent, FieldNode field) { }
     
+    // Add multi-unique key
+    protected void addMultiUniqueKey(ValidationRuleNode v, AST path) { }
+    
     // create and set validation rule
     protected ValidationRuleNode createSingleFieldValidationRule(AST originAST, String fieldName, ValidationType type, FieldNode subField) { return null; }
     
-    protected ValidationRuleNode createNamedValidationRule(AST originAST, String ruleName, ValidationType type) { return null; }
+    protected ValidationRuleNode createMultiFieldValidationRule(AST originAST, ValidationType type) { return null; }
         
      
     // check if rule can be applied to fields
     protected void checkRuleApplicability(ValidationRuleNode validation) {}
-        
+         
 }
 
 dataDefinition
@@ -221,111 +224,48 @@ typeDeclaration! // we kick out the declaration after registering it
 //////////////// VALIDATION RULES
 
 validationRuleDeclaration[FieldNode subField]
-    : #(VALIDATION {ValidationRuleNode v = null; }
-          (
-            v = singleFieldValidationRule[subField]
-          | v = namedValidationRule[subField]
-          )
-        
-  	      m:MESSAGE {v.message = #m.getText();}
-  	  )
-	
-	{
+	: {ValidationRuleNode v = null; }
+	  (
+	  		v = rangeValidationRule[subField]
+	  	|	v = lengthValidationRule[subField]
+	  	|	v = multiUniquenessValidationRule[subField]
+	  	|	v = comparisonValidationRule[subField]
+	  )
+	  m:MESSAGE {v.message = #m.getText();}
+	  
+	  {
 		mdd.addValidationRule(v);
 		#validationRuleDeclaration = v;
-	}
+	  }
+	  
 	;
 
+comparisonValidationRule[FieldNode subField] returns [ValidationRuleNode v = null;]
+	:#(c:COMPARE {v = createMultiFieldValidationRule(#c, ValidationType.COMPARISON); } (fn:FUNCTION_ARGUMENT)* f:FUNCTION_BODY { v.expression = #f.getText();} )
+	;
 
-singleFieldValidationRule[FieldNode subField] returns [ValidationRuleNode v = null; ]
-    : fn:FIELDNAME
-      (
-          v = rangeValidationRule[subField, fn]
-        | v = lengthValidationRule[subField, fn]
-      )
-      
-      {
-        checkRuleApplicability(v);
-      }
-    ;
-    
-namedValidationRule[FieldNode subField] returns [ValidationRuleNode v = null; ]
-    : rn:VALIDATIONNAME
-      (
-        v = multiUniquenessValidationRule[subField, rn]
-      )
+multiUniquenessValidationRule[FieldNode subField] returns [ValidationRuleNode v = null;]
+    : #(u:UNIQUE {v = createMultiFieldValidationRule(#u, ValidationType.UNIQUENESS); } (p:PATH {addMultiUniqueKey(v, #p); } )* )
     ;
 
-multiUniquenessValidationRule[FieldNode subField, AST rn] returns [ValidationRuleNode v = null;]
-    : #(UNIQUE {v = createNamedValidationRule(#rn, #rn.getText(), ValidationType.UNIQUENESS); } (p:PATH {v.multiUniquenessFields.add(#p.getText()); } )* )
-    ;
-
-rangeValidationRule[FieldNode subField, AST fn] returns [ValidationRuleNode v = null;]
-    : #(r:RANGE rl:RANGE_FROM ru:RANGE_TO
-      
-      {
+rangeValidationRule[FieldNode subField] returns [ValidationRuleNode v = null; ]
+	: #(RANGE fn:FUNCTION_ARGUMENT rl:RANGE_FROM ru:RANGE_TO)
+	
+	{
       	v = createSingleFieldValidationRule(#fn, #fn.getText(), ValidationType.RANGE, subField);
       	v.lowerBound = #rl.getText();
       	v.upperBound = #ru.getText();
-      }
-      
-      )
-    ;
+    }
+	;
 
-lengthValidationRule[FieldNode subField, AST fn] returns [ValidationRuleNode v = null;]
-    : #(r:LENGTH rl:RANGE_FROM ru:RANGE_TO
-      
-      {
-        v = createSingleFieldValidationRule(#fn, #fn.getText(), ValidationType.LENGTH, subField);
-        v.lowerBound = #rl.getText();
-        v.upperBound = #ru.getText();
-      }
-      
-      )
-    ;    
-    
-        
-////////////////// VALIDATION RULES
-//
-//validationRuleDeclaration[FieldNode subField]
-//    : rangeRule[subField]
-//    
-//    {
-//        checkRuleApplicability();
-//        mdd.addValidationRule(getCurrentValidationRule());
-//        #validationRuleDeclaration = getCurrentValidationRule();
-//    }
-//    ;
-//
-//
-//
-//
-//
-//// TODO maybe there's a way to avoid repeating the setting of boundaries...    
-//rangeRule[FieldNode subField]
-//    : #(vr:VALIDATION fn:FIELDNAME
-//        (
-//            #( r:RANGE rl:RANGE_FROM ru:RANGE_TO
-//                {
-//                    createValidationRule(#fn, #fn.getText(), ValidationType.RANGE, subField);
-//                    getCurrentValidationRule().type = ValidationType.RANGE;
-//                    getCurrentValidationRule().lowerBound = #rl.getText();
-//                    getCurrentValidationRule().upperBound = #ru.getText();
-//                }
-//            )
-//            |
-//            #( LENGTH ll:RANGE_FROM lu:RANGE_TO
-//                {
-//                    createValidationRule(#fn, #fn.getText(), ValidationType.LENGTH, subField);
-//                    getCurrentValidationRule().type = ValidationType.LENGTH;
-//                    getCurrentValidationRule().lowerBound = #ll.getText();
-//                    getCurrentValidationRule().upperBound = #lu.getText();
-//                }
-//            )
-//        )
-//
-//       m:MESSAGE {getCurrentValidationRule().message = #m.getText();}
-//
-//       )
-//       
-//    ;
+lengthValidationRule[FieldNode subField] returns [ValidationRuleNode v = null; ]
+	: #(LENGTH fn:FUNCTION_ARGUMENT rl:RANGE_FROM ru:RANGE_TO)
+	
+	{
+      	v = createSingleFieldValidationRule(#fn, #fn.getText(), ValidationType.LENGTH, subField);
+      	v.lowerBound = #rl.getText();
+      	v.upperBound = #ru.getText();
+    }
+	;
+	
+

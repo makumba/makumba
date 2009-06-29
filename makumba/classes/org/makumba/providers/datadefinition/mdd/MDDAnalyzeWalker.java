@@ -1,18 +1,29 @@
 package org.makumba.providers.datadefinition.mdd;
 
+import java.io.Reader;
+import java.io.StringReader;
 import java.net.URL;
 import java.util.HashMap;
 
+import org.hibernate.QueryException;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionParseError;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
+import org.makumba.MakumbaSystem;
 import org.makumba.commons.ReservedKeywords;
+import org.makumba.providers.Configuration;
+import org.makumba.providers.QueryAnalysis;
+import org.makumba.providers.QueryAnalysisProvider;
+import org.makumba.providers.QueryProvider;
 import org.makumba.providers.datadefinition.mdd.validation.ComparisonValidationRule;
 import org.makumba.providers.datadefinition.mdd.validation.MultiUniquenessValidationRule;
 import org.makumba.providers.datadefinition.mdd.validation.RangeValidationRule;
 import org.makumba.providers.datadefinition.mdd.validation.RegExpValidationRule;
+import org.makumba.providers.query.mql.MqlQueryAnalysis;
 
+import antlr.RecognitionException;
+import antlr.TokenStreamException;
 import antlr.collections.AST;
 
 /**
@@ -152,16 +163,35 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
         } else {
             parent.subfield.addField(field);
         }
-
     }
     
     @Override
-    protected ValidationRuleNode createNamedValidationRule(AST originAST, String ruleName, ValidationType type) {
+    protected void addMultiUniqueKey(ValidationRuleNode v, AST path) {
+        
+        String fieldPath = path.getText();
+        if(fieldPath.indexOf(".") == -1) {
+            if(!mdd.fields.containsKey(fieldPath)) {
+                factory.doThrow(this.typeName, "Field " + fieldPath + " does not exist", path);
+            }
+        } else {
+            // TODO check if the path is valid
+            
+        }
+        
+        v.multiUniquenessFields.add(path.getText());
+        
+    }
+    
+    @Override
+    protected ValidationRuleNode createMultiFieldValidationRule(AST originAST, ValidationType type) {
         switch(type) {
             case UNIQUENESS:
-                ValidationRuleNode n = new MultiUniquenessValidationRule(mdd, originAST, ruleName);
+                ValidationRuleNode n = new MultiUniquenessValidationRule(mdd, originAST, type);
                 n.type = ValidationType.UNIQUENESS;
                 return n;
+            case COMPARISON:
+                ValidationRuleNode comparison = new ComparisonValidationRule(mdd, originAST, type);
+                return comparison;
             default:
                 throw new RuntimeException("no matching validation rule found!");
         }
@@ -192,7 +222,7 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
             case REGEXP:
                 return new RegExpValidationRule(mdd, originAST, f);
             case COMPARISON:
-                return new ComparisonValidationRule(mdd, originAST);
+                return new ComparisonValidationRule(mdd, originAST, type);
             default:
                 throw new RuntimeException("no matching validation rule found");
         }
@@ -205,5 +235,5 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
         } catch(Throwable t) {
             factory.doThrow(this.typeName, t.getMessage(), validation);
         }
-    }
+    }    
 }

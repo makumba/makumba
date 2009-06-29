@@ -1,5 +1,7 @@
 TODO new MDD parser:
 
+- analyser/postprocessor: add method that checks the validity of a path
+
 - grammar for comparison validation rule
 - grammar for regexp validation rule
 
