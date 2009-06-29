@@ -15,7 +15,15 @@ LEFT_CUBR: '{';
 RIGHT_CUBR: '}';
 LEFT_SQBR: '[';
 RIGHT_SQBR: ']';
-EQUALS: '=';
+
+EQ: '=';
+LT: '<';
+GT: '>';
+SQL_NE: "<>";
+NE: "!=" | "^=";
+LE: "<=";
+GE: ">=";
+
 PERCENT: '%';
 SEMICOLON: ';';
 COLON: ':';
@@ -89,7 +97,11 @@ FIELDCOMMENT
 MESSAGE
 	: COLON (~('\n'|'\r'))* LINEBREAK //('\n'|'\r'('\n')?) {newline();}
 	;
-
+	
+FUNCTION_BODY
+	: LEFT_CUBR (~('}'))* RIGHT_CUBR
+	;
+	
 // string literals
 STRING_LITERAL
     :   '"' (ESC|~('"'|'\\'|'\n'|'\r'))* '"'
@@ -229,9 +241,12 @@ tokens {
     RANGE_TO;
     
     MATCHES="matches";
+    COMPARE="compare";
     
-    COMPARISON;
+    // functions
     
+    FUNCTION_ARGUMENT;
+    FUNCTION_NAME;
     
     // Literal tokens
 	NUM_DOUBLE;
@@ -268,6 +283,8 @@ tokens {
     
     protected AST includeSubField(AST type, AST parentField) { return null; }
     
+    protected AST parseExpression(AST expr) { return null; }
+    
 }
 
 dataDefinition
@@ -288,7 +305,7 @@ declaration
 
 fieldDeclaration
     : fn:fieldName
-      EQUALS^ {#EQUALS.setType(FIELD); #EQUALS.setText(#fn.getText()); ((MDDAST)#EQUALS).wasIncluded = this.included; boolean hasBody = false;}
+      e:EQ^ {#e.setType(FIELD); #e.setText(#fn.getText()); ((MDDAST)#e).wasIncluded = this.included; boolean hasBody = false;}
       (options{greedy=true;}:
           (modifier)* ft:fieldType
           (fieldComment)? {hasBody = true;}
@@ -307,7 +324,7 @@ subFieldDeclaration
       (
           titleDeclaration (fieldComment!)? // allow comment but do not store them
           | validationRuleDeclaration
-          | EXMARK! "include"! EQUALS! t:type { #subFieldDeclaration = includeSubField(#t, #fn); }
+          | EXMARK! "include"! EQ! t:type { #subFieldDeclaration = includeSubField(#t, #fn); }
           | subFieldBody
       )
       { // we move the subfield node under the current field node
@@ -318,7 +335,7 @@ subFieldDeclaration
     
 subFieldBody
 	: a:atom { #a.setType(SUBFIELDNAME); }
-      EQUALS!
+      EQ!
       (modifier)* fieldType
       (fieldComment)?
     ;
@@ -348,21 +365,21 @@ fieldType
     ;
 
 intEnum
-	: ie:INT^ {#ie.setType(INTENUM);} LEFT_CUBR! intEnumBody (COMMA! intEnumBody)*  RIGHT_CUBR! //int { "aa"=5, "bb"=2 deprecated, "cc"=10}
+	: ie:INT^ {#ie.setType(INTENUM);} parsedFunctionBody //int { "aa"=5, "bb"=2 deprecated, "cc"=10}
 	;
 
-intEnumBody
-    : t:STRING_LITERAL {#t.setType(INTENUMTEXT); } EQUALS! i:number { checkNumber(#i); if(#i != null) #i.setType(INTENUMINDEX); } (DEPRECATED)?
-    ;
+//intEnumBody
+//   : t:STRING_LITERAL {#t.setType(INTENUMTEXT); } EQ! i:number { checkNumber(#i); if(#i != null) #i.setType(INTENUMINDEX); } (DEPRECATED)?
+//    ;
 
 charEnum
-	: ce:CHAR^ {#ce.setType(CHARENUM);} LEFT_CUBR! charEnumBody (COMMA! charEnumBody)*  RIGHT_CUBR! //char { "aa", "bb" deprecated, "cc"}
+	: ce:CHAR^ {#ce.setType(CHARENUM);} parsedFunctionBody //char { "aa", "bb" deprecated, "cc"}
 	;
 	
-charEnumBody
-	: t:STRING_LITERAL { #t.setType(CHARENUMELEMENT); }
-	  (DEPRECATED)?
-	;
+//charEnumBody
+//	: t:STRING_LITERAL { #t.setType(CHARENUMELEMENT); }
+//	  (DEPRECATED)?
+//	;
 
 fieldComment
 	: f:FIELDCOMMENT { int k = #f.getText().indexOf(";"); #fieldComment.setText(#f.getText().substring(k+1).trim()); }
@@ -370,7 +387,7 @@ fieldComment
 
 
 errorMessage
-	: m:MESSAGE {int k = #m.getText().indexOf(":"); #errorMessage.setText(#m.getText().substring(k+1).trim()); }
+	: m:MESSAGE {System.out.println("******************************************* " + #m.getText()); int k = #m.getText().indexOf(":"); #errorMessage.setText(#m.getText().substring(k+1).trim()); }
 	;
     
 modifier
@@ -382,7 +399,7 @@ modifier
     
 // !title = name
 titleDeclaration
-    : EXMARK! "title"! EQUALS! t:title
+    : EXMARK! "title"! EQ! t:title
     ;
     
 title
@@ -391,12 +408,12 @@ title
     ;
     
 includeDeclaration
-    : EXMARK! "include"! EQUALS! t:type { #includeDeclaration = include(#t); }
+    : EXMARK! "include"! EQ! t:type { #includeDeclaration = include(#t); }
     ;
 
 // !type.genDef = ...
 typeDeclaration
-    : EXMARK! "type"! DOT! n:atom { #n.setType(TYPENAME); } EQUALS! fieldType
+    : EXMARK! "type"! DOT! n:atom { #n.setType(TYPENAME); } EQ! fieldType
     ;
     
     
@@ -404,58 +421,55 @@ typeDeclaration
 //////////////// VALIDATION RULES
 
 validationRuleDeclaration
-    : singleFieldValidationRuleDeclaration
-    | namedValidationRuleDeclaration
-    ;
+	: 	(
+			rangeValidationRuleDeclaration
+			| uniquenessValidationRuleDeclaration
+			| comparisonValidationRuleDeclaration
+		)
+		errorMessage
+	;
+	
+comparisonValidationRuleDeclaration
+	: COMPARE^ functionArguments functionBody
+	
+	;
+		
+rangeValidationRuleDeclaration
+	: (RANGE^ | LENGTH^) functionArguments parsedFunctionBody
+	
+	;
 
-singleFieldValidationRuleDeclaration
-    : a:atom { #a.setType(FIELDNAME); }
-      p:PERCENT^ {#p.setType(VALIDATION);}
-      ( rangeRule | regExpRule )
-      errorMessage
-    ;
+// unique() {field1, field2} : These need to be unique
+uniquenessValidationRuleDeclaration
+	: UNIQUE^ LEFT_PAREN! RIGHT_PAREN!
+	parsedFunctionBody
+	;
 
-namedValidationRuleDeclaration
-    : a:atom { #a.setType(VALIDATIONNAME); }
-      p:PERCENT^ {#p.setType(VALIDATION);}
-      (multiUniquenessRule ) //| comparisonRule
-      errorMessage
-    ;
-    
-// name%length = [1..?]
-// age%range = [18..99]
-rangeRule
-    : (RANGE^ | LENGTH^)
-      EQUALS!
-      LEFT_SQBR!
-      f:rangeBound {#f.setType(RANGE_FROM);} DOT! DOT! t:rangeBound {#t.setType(RANGE_TO);}
-      RIGHT_SQBR!
-    ;
+//////////////// FUNCTIONS
 
-// [1..?] [?..5]
-rangeBound
-    : n:POSITIVE_INTEGER | m:INTMARK
-    ;
-    
-// name4%matches = "http://.+" : the homepage must start with http://
-regExpRule
-    : MATCHES^
-      EQUALS!
+functionBody
+	: b:FUNCTION_BODY
+	  { String body = ""; body = #b.getText().substring(1); body = body.substring(0, body.length() - 1); #b.setText(body);}
+	;
 
-      errorMessage
-    ;
+parsedFunctionBody
+	: b:functionBody
+	  {
+	  	#parsedFunctionBody = parseExpression(#b);
+	  }
+	;	  
 
+functionCall
+	: a:atom {#a.setType(FUNCTION_NAME);} functionArguments
+	;
 
-// unique12%unique = age, email : these need to be unique!
-// unique13%unique = indiv.name, indiv.surname : these too!
-multiUniquenessRule
-    : UNIQUE^ EQUALS! a:type (COMMA! b:type)*
-    ;
-    
-//comparisonRule
-//    : 
-//    ;
+functionArguments
+	: LEFT_PAREN! (a:atom {#a.setType(FUNCTION_ARGUMENT);} )? (COMMA! b:atom {#b.setType(FUNCTION_ARGUMENT);} )* RIGHT_PAREN!
+	;
 
+operator
+	: EQ | LT | GT | LE | GE | NE | SQL_NE | LIKE
+	;
 
 //////////////// COMMON
 

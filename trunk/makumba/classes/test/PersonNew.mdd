@@ -30,7 +30,7 @@ militarySucksAndEverybodyKnowsItButDoesNotSpeakOutLoudAboutIt=yesNo           ;A
 driver=yesNo		 ;Driving Licence
 
 age=int				;Age
-age%range = [12..99] : Age must be between 12 and 99!
+range(age) {12..99} : Age must be between 12 and 99!
 
 makumbaTillDeath = not null yesNo	; makumbian or not
 designer = yesNo	; are you a designer?
@@ -76,7 +76,7 @@ address=set			 ;Addresses
   address->usageend=date		;Use till
   address->homepage=char[50]
   address->languages = set test.Language ; languages spoken in that address
-  address->description%length = [3..?] : Description must be at least 3 letters long!
+  address->length(description) {3..?} : Description must be at least 3 letters long!
 
 #  address->sth=ptr
 #  address->sth->aaa=char[20]
@@ -100,5 +100,5 @@ groupMembers = set test.PersonNew
 #lowerName%compare = lower(indiv.name) != indiv.name : Your name can't be all lower cases!
 
 # multi-field uniqueness keys
-unique12%unique = age, email : these need to be unique!
-unique13%unique = indiv.name, indiv.surname : these too!
+unique() { age, email } : these need to be unique!
+unique() { indiv.name, indiv.surname } : these too!

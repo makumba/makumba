@@ -2,6 +2,7 @@ package org.makumba.providers.datadefinition.mdd;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Vector;
 
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
@@ -36,6 +37,13 @@ public class ValidationRuleNode extends MDDAST implements ValidationRule, Serial
     /** multi-uniqueness constraints **/
     protected ArrayList<String> multiUniquenessFields = new ArrayList<String>();
     
+    /** arguments of the comparison rule **/
+    protected ArrayList<String> arguments = new ArrayList<String>();
+
+    /** comparison expression **/
+    protected String expression;
+    
+    
     public ValidationRuleNode(MDDNode mdd, AST originAST) {
         initialize(originAST);
      
@@ -49,9 +57,10 @@ public class ValidationRuleNode extends MDDAST implements ValidationRule, Serial
         this.field = field;
     }
     
-    public ValidationRuleNode(MDDNode mdd, AST originAST, String ruleName) {
+    public ValidationRuleNode(MDDNode mdd, AST originAST, ValidationType type) {
         this(mdd, originAST);
-        this.name = ruleName;
+        this.type = type;
+        this.name = type.getDescription();
     }
     
     

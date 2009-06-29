@@ -56,6 +56,8 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
             
             case MDDTokenTypes.FIELD:
                 
+                // FIXME this should be recursive, until the last "." is resolved
+                // FIXME check if the path can be traversed i.e. if it is is made of non-nullable pointers
                 String t = title.getText();
                 if(t.indexOf(".") > -1) {
                     String field = t.substring(0, t.indexOf("."));

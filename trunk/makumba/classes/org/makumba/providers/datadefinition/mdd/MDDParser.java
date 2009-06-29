@@ -1,11 +1,15 @@
 package org.makumba.providers.datadefinition.mdd;
 
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Vector;
 
 import org.makumba.DataDefinitionNotFoundError;
 
+import antlr.RecognitionException;
 import antlr.TokenStream;
+import antlr.TokenStreamException;
 import antlr.collections.AST;
 
 /**
@@ -126,6 +130,43 @@ public class MDDParser extends MDDBaseParser {
                 prec.setNextSibling(t.getNextSibling());
             }
         }
+    }
+    
+    protected AST parseExpression(AST expression) {
+            
+            Reader in = new StringReader(expression.getText());
+            MDDExpressionLexer lexer = new MDDExpressionLexer(in);
+            MDDExpressionParser parser = new MDDExpressionParser(lexer);
+            parser.setASTNodeClass("org.makumba.providers.datadefinition.mdd.MDDAST");
+            try {
+                parser.expression();
+            } catch (RecognitionException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (TokenStreamException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            
+            AST tree = parser.getAST();
+            if(tree != null)
+                shift(tree, expression);
+            
+            System.out.println("/////////////// EXPR");
+            MakumbaDumpASTVisitor visitor = new MakumbaDumpASTVisitor(false);
+            visitor.visit(parser.getAST());
+            
+            return parser.getAST();
+    }
+    
+    private void shift(AST toShift, AST parent) {
+        ((MDDAST)toShift).setLine(parent.getLine());
+        ((MDDAST)toShift).setCol(parent.getColumn() + toShift.getColumn());
+        
+        if(toShift.getNextSibling() != null)
+            shift(toShift.getNextSibling(), parent);
+        if(toShift.getFirstChild() != null)
+            shift(toShift.getFirstChild(), parent);
     }
     
  
