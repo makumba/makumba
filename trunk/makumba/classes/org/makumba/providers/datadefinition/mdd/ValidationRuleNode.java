@@ -73,7 +73,7 @@ public class ValidationRuleNode extends MDDAST implements ValidationRule, Serial
         }
     }
     
-    // TODO name should be line or so
+    // should be overridden in subclasses to represent the rule depending on its type
     public String getRuleName() {
         return this.name;
     }
@@ -119,11 +119,7 @@ public class ValidationRuleNode extends MDDAST implements ValidationRule, Serial
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append("== Validation rule: " + (name==null?"":name) + " (line "+ getLine() + ")\n");
-        sb.append("== Type: " + type.getDescription() + "\n");
-        if(field != null)
-            sb.append("== Field: " + field.name + "\n");
-        sb.append("== Message: " + message +"\n");
+        sb.append("== Validation rule: " + getRuleName() + "\n");
         return sb.toString();
     }
 

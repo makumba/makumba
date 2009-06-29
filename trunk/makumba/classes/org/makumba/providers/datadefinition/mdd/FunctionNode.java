@@ -1,12 +1,49 @@
 package org.makumba.providers.datadefinition.mdd;
 
-import antlr.CommonAST;
+import org.makumba.DataDefinition;
+import org.makumba.FieldDefinition;
+import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.datadefinition.makumba.FieldInfo;
 
 /**
  * AST node that collects information about a mdd function
  * @author Manuel Gay
  * @version $Id: FunctionNode.java,v 1.1 May 3, 2009 10:15:52 PM manu Exp $
  */
-public class FunctionNode extends CommonAST {
+public class FunctionNode extends MDDAST {
+    
+    protected MDDNode mdd;
+    
+    protected String name;
+    
+    protected DataDefinition parameters;
+    
+    protected String queryFragment;
+    
+    protected String errorMessage;
+    
+    public FunctionNode(MDDNode mdd, String name) {
+        this.mdd = mdd;
+        this.name = name;
+        this.setType(MDDTokenTypes.FUNCTION);
+    }
+    
+    public void addParameter(String paramName, FieldType type, String pointedType) {
+        if(parameters == null) {
+            parameters = DataDefinitionProvider.getInstance().getVirtualDataDefinition(mdd.name + "." + name);
+        }
+        
+        if(type == FieldType.PTRREL) {
+            DataDefinition pointedDD = MDDProvider.getMDD(pointedType);
+            // FIXME
+            parameters.addField(new FieldDefinitionImpl(paramName,
+                    (FieldDefinitionImpl) pointedDD.getFieldDefinition(pointedDD.getIndexPointerFieldName())));            
+        } else {
+            FieldDefinition fd = DataDefinitionProvider.getInstance().makeFieldOfType(paramName, type.getTypeName());
+            parameters.addField(fd);
+        }
+        
+        
+    }
 
 }

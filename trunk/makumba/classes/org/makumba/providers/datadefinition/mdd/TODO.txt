@@ -1,14 +1,16 @@
 TODO new MDD parser:
 
+- fix function parameter creation
+
 - analyser/postprocessor: add method that checks the validity of a path
 
-- grammar for comparison validation rule
-- grammar for regexp validation rule
+- actor functions
+  - grammar
+  - implementation
 
 - implementation of comparison validation rule
 - implementation of regexp validation rule
 
-- grammar for functions
 - implementation of functions
   - !title= fullName()
   

@@ -14,6 +14,11 @@ public class ComparisonValidationRule extends ValidationRuleNode {
     public ComparisonValidationRule(MDDNode mdd, AST originAST, ValidationType type) {
         super(mdd, originAST, type);
     }
+    
+    @Override
+    public String getRuleName() {
+        return "compare() { " + expression + " } : " + message + " (line " + getLine() + ")";
+    }
 
 
 }

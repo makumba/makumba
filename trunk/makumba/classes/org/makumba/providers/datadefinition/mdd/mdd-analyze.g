@@ -86,6 +86,7 @@ declaration
     | t:titleDeclaration { mdd.setTitleField((TitleFieldNode) #t); }
     | typeDeclaration
     | validationRuleDeclaration[null]
+    | functionDeclaration[null]
     ;
 
 
@@ -125,6 +126,8 @@ subField[FieldNode field]
           	}
           	// VALIDATION RULE
 			| validationRuleDeclaration[field]
+			// FUNCTION DECLARATION
+			| functionDeclaration[field]
 			// FIELD DECLARATION
 			|
 			(
@@ -150,7 +153,7 @@ fieldType[FieldNode field] returns [FieldType fieldType = null; ]
     : (
       u:UNKNOWN_TYPE { field.unknownType = #u.getText(); } // will need processing afterwards, this happens when dealing with macro types - needs to be stored somehow in the field though!
     | #(CHAR { fieldType = FieldType.CHAR; }
-        cl:CHAR_LENGTH { field.charLength = Integer.parseInt(#cl.getText()); }
+        (cl:CHAR_LENGTH { field.charLength = Integer.parseInt(#cl.getText()); })?
        )
     | INT { fieldType = FieldType.INT; }
     | #(INTENUM { fieldType = FieldType.INTENUM; } ( intEnumBody[field] )* )
@@ -213,14 +216,6 @@ typeDeclaration! // we kick out the declaration after registering it
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
 //////////////// VALIDATION RULES
 
 validationRuleDeclaration[FieldNode subField]
@@ -230,6 +225,7 @@ validationRuleDeclaration[FieldNode subField]
 	  	|	v = lengthValidationRule[subField]
 	  	|	v = multiUniquenessValidationRule[subField]
 	  	|	v = comparisonValidationRule[subField]
+	  	|	v = regexValidationRule[subField]
 	  )
 	  m:MESSAGE {v.message = #m.getText();}
 	  
@@ -268,4 +264,37 @@ lengthValidationRule[FieldNode subField] returns [ValidationRuleNode v = null; ]
     }
 	;
 	
+regexValidationRule[FieldNode subField] returns [ValidationRuleNode v = null; ]
+	: #(MATCHES fn:FUNCTION_ARGUMENT b:FUNCTION_BODY)
+	
+	{
+		v = createSingleFieldValidationRule(#fn, #fn.getText(), ValidationType.REGEX, subField);
+		v.expression = #b.getText();
+	}
+	;
+	
 
+//////////////// FUNCTIONS
+
+functionDeclaration[FieldNode subField]
+	: #(FUNCTION
+	    fn:FUNCTION_NAME {FunctionNode funct = new FunctionNode(mdd, fn.getText());}
+	    functionArgumentDeclaration[funct]
+	    b:FUNCTION_BODY {funct.queryFragment = #b.getText();}
+	    (m:MESSAGE {funct.errorMessage = #m.getText();})?
+	    {
+    		mdd.addFunction(funct);
+    		#functionDeclaration = funct;
+	  	}
+	  )
+	  
+	;
+
+functionArgumentDeclaration[FunctionNode funct]
+	: { FieldNode dummy = new FieldNode(mdd, funct.name, funct); FieldType argumentType = null;}
+	  	(
+		  	argumentType=fieldType[dummy]
+		  	an:FUNCTION_ARGUMENT_NAME
+		  	{funct.addParameter(an.getText(), argumentType, dummy.pointedType);}
+	  	)*
+	;

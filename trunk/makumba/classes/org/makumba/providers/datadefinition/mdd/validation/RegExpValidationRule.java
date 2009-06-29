@@ -14,5 +14,10 @@ public class RegExpValidationRule extends ValidationRuleNode {
         super(mdd, originAST, field);
         // TODO Auto-generated constructor stub
     }
+    
+    @Override
+    public String getRuleName() {
+        return "matches(" + field.getName() + ") {" + expression + "} : " + message + " (line " + getLine() + ")";
+    }
 
 }

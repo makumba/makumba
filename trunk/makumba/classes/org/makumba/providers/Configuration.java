@@ -78,6 +78,8 @@ public class Configuration implements Serializable {
 
     private static final String defaultDataDefinitionProvider = "org.makumba.providers.datadefinition.makumba.MakumbaDataDefinitionFactory";
 
+    private static final String KEY_DATADEFINITIONPROVIDER = "dataDefinitionProvider";
+    
     // calendar editor
     public static final String KEY_CALENDAR_EDITOR = "calendarEditor";
 
@@ -276,8 +278,9 @@ public class Configuration implements Serializable {
      * @return a String containing the class name of the data definition provider implementation
      */
     public static String getDataDefinitionProviderClass() {
-        // FIXME this should lookup a configuration file and return whatever is specified there
-        return defaultDataDefinitionProvider;
+        
+        return applicationConfig.getStringProperty("dataSourceConfig", KEY_DATADEFINITIONPROVIDER, defaultConfig);
+        
     }
 
     /**

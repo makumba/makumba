@@ -16,4 +16,8 @@ public class MultiUniquenessValidationRule extends ValidationRuleNode {
         super(mdd, originAST, type);
     }
 
+    @Override
+    public String getRuleName() {
+        return "unique() { " + multiUniquenessFields.toString() + " } : " + message  + " (line " + getLine() + ")";
+    }
 }
