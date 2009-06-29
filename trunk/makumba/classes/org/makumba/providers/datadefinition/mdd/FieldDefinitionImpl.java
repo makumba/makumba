@@ -143,7 +143,7 @@ public class FieldDefinitionImpl implements FieldDefinition {
     /** for virtual FieldDefinition */
     public FieldDefinitionImpl(String name, FieldDefinition fi) {
         this.name = name;
-        type = FieldType.valueOf(fi.getType());
+        type = FieldType.valueOf(fi.getType().toUpperCase());
         fixed = fi.isFixed();
         notEmpty = fi.isNotEmpty();
         unique = fi.isUnique();

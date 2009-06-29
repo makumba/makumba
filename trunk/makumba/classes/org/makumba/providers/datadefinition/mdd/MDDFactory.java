@@ -216,7 +216,7 @@ public class MDDFactory {
     /**
      * Throws a {@link DataDefinitionParseError} at parse time
      */
-    private void doThrow(Throwable t, AST debugTree, String typeName) throws DataDefinitionParseError {
+    protected void doThrow(Throwable t, AST debugTree, String typeName) throws DataDefinitionParseError {
         if (t == null)
             return;
 
