@@ -1,6 +1,10 @@
 TODO new MDD parser:
 
-- implementation of comparison validation rule
+- make a diff of what the two data def parser implementations return for a test DD
+
+- set can't have unique modifier
+
+- finish implementation of comparison validation rule
 
 - analyser/postprocessor: add method that checks the validity of a path
   
