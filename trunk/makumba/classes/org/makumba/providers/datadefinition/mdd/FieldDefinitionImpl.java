@@ -65,7 +65,7 @@ public class FieldDefinitionImpl implements FieldDefinition {
     protected transient DataDefinition pointed;
     
     // subfield - ptrOne, setComplex
-    protected DataDefinition subfield;
+    protected DataDefinitionImpl subfield;
     
     
     // validation rules for this field
@@ -142,25 +142,44 @@ public class FieldDefinitionImpl implements FieldDefinition {
     
     /** for virtual FieldDefinition */
     public FieldDefinitionImpl(String name, FieldDefinition fi) {
-        this.name = name;
-        type = FieldType.valueOf(fi.getType().toUpperCase());
-        fixed = fi.isFixed();
-        notEmpty = fi.isNotEmpty();
-        unique = fi.isUnique();
-        defaultValue = fi.getDefaultValue();
-        description = fi.getDescription();
         
+        FieldDefinitionImpl f = (FieldDefinitionImpl) fi;
+        
+        this.name = name;
+        this.mdd = f.mdd;
+
+        this.type = f.type;
+        this.fixed = f.fixed;
+        this.notEmpty = f.notEmpty;
+        this.notNull = f.notNull;
+        this.unique = f.unique;
+        this.defaultValue = fi.getDefaultValue();
+        this.description = fi.getDescription();
+        this.charLength = f.charLength;
+        this.defaultValue = f.defaultValue;
+        this.description = f.description;
+
         switch (type) {
             case PTRONE:
-            // FIXME what to do with these two?
-            case SETCHARENUM:
-            case SETINTENUM:
-
             case SETCOMPLEX:
             case FILE:
-                subfield = fi.getSubtable();
+                subfield = f.subfield;
+                break;
+            case SETCHARENUM:
+                this.intEnumValues = f.intEnumValues;
+                this.intEnumValuesDeprecated = f.intEnumValuesDeprecated;
+                break;
+            case SETINTENUM:
+                this.charEnumValues = f.charEnumValues;
+                this.charEnumValuesDeprecated = f.charEnumValuesDeprecated;
+                break;
             case SET:
                 pointed = fi.getSubtable();
+                break;
+            case PTRREL:
+                pointedType = f.pointedType;
+                pointed = f.pointed;
+                break;
         }
         
         if (type == FieldType.PTRINDEX) {
@@ -863,7 +882,10 @@ public class FieldDefinitionImpl implements FieldDefinition {
         switch (type) {
             case PTR:
             case PTRREL:
-                return this.subfield;
+                if(this.pointed == null) {
+                    this.pointed = MDDProvider.getMDD(pointedType);
+                }
+                return this.pointed;
             case SET:
                 return pointerToForeign().getForeignTable();
             default:

@@ -2,8 +2,8 @@
 
 !type.yesNo=int{"No"=0, "Yes"=1}
 !type.genTyp=int{"Female"=0, "Male"=1}
-#!title= fullName()
-!title= indiv.name
+!title= fullName()
+#!title= indiv.name
 
 indiv = unique fixed not null ptr test.IndividualNew ;lala
 
@@ -116,3 +116,7 @@ allNamesMin2CharsLong() { character_length(indiv.name) > 2 AND character_length(
 oneNameMin2CharsLong() { character_length(indiv.name) > 2 OR character_length(indiv.surname) > 2 } : Your name and surname is not long enough!
 
 fullName() { indiv.fullName() }
+
+actor(char[] username, char[] password) { myapp_username=username AND this.password=password }
+actor2(char[] username, char[] password) { indiv.someusername=username AND this.password=password }
+principal%actor3(char[] username) { indiv.someusername=username }

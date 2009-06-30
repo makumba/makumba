@@ -1,17 +1,8 @@
 TODO new MDD parser:
 
-- analyser/postprocessor: add method that checks the validity of a path
-
-- actor functions
-  - grammar
-  - implementation
-  - preprocessing (http://fisheye3.atlassian.com/browse/makumba/trunk/makumba/classes/org/makumba/providers/datadefinition/makumba/RecordParser.java?r1=2811&r2=2814)
-
 - implementation of comparison validation rule
-- implementation of regexp validation rule
 
-- implementation of functions
-  - !title= fullName()
+- analyser/postprocessor: add method that checks the validity of a path
   
 - http://bugs.best.eu.org/cgi-bin/bugzilla/show_bug.cgi?id=1098
 

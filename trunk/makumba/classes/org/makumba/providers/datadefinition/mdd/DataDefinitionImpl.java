@@ -2,12 +2,15 @@ package org.makumba.providers.datadefinition.mdd;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
@@ -22,7 +25,9 @@ import org.makumba.ValidationRule;
  * @version $Id: DataDefinitionImpl.java,v 1.1 23.06.2009 11:52:36 gaym Exp $
  */
 public class DataDefinitionImpl implements DataDefinition, ValidationDefinition {
-    
+        
+    public static final String ENUM_FIELD_NAME = "enum";
+
     /** name of the data definition **/
     protected String name;
     
@@ -31,6 +36,13 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
     
     /** the title field **/
     protected String titleField;
+    
+    /** the original title expression **/
+    protected String titleFieldExpr;
+    
+    /** the type of the title expression **/
+    protected enum TitleFieldType {FIELD, FUNCTION};
+    protected TitleFieldType titleFieldType;
     
     /** origin of the data definition **/
     protected URL origin;
@@ -44,7 +56,9 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
     /** indicator if this is MDD is a file subfield **/
     protected boolean isFileSubfield = false;
     
-    
+    /** name of the enumerator field, for setIntEnum and charIntEnum **/
+    protected String setMemberFieldName;
+        
     protected LinkedHashMap<String, FieldDefinition> fields = new LinkedHashMap<String, FieldDefinition>();
     
     protected LinkedHashMap<String, ValidationRule> validationRules = new LinkedHashMap<String, ValidationRule>();    
@@ -60,7 +74,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
         this.origin = null;
     }
     
-    /** constructor for virtual subfield data definitions **/
+    /** constructor for virtual subfield data definitions, like file **/
     public DataDefinitionImpl(String name, DataDefinition parent) {
         this.name = parent.getName() + "->" + name;
         this.origin = null;
@@ -72,35 +86,59 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
     
     /** constructor for subfield data definitions during parsing **/
     public DataDefinitionImpl(MDDNode mdd, DataDefinition parent) {
-        System.out.println("now creating MDD for subfield " + mdd.name + " in type " + parent.getName());
+        System.out.println("now creating MDD for subfield " + mdd.getName() + " in type " + parent.getName());
         this.indexName = mdd.indexName;
         this.isFileSubfield = mdd.isFileSubfield;
-        this.name = mdd.name;
+        this.name = mdd.getName();
         this.origin = mdd.origin;
-        this.titleField = mdd.titleField.getText();
+        this.titleFieldExpr = mdd.titleField.getText();
+        switch(mdd.titleField.titleType) {
+            case MDDTokenTypes.FIELD:
+                this.titleFieldType = TitleFieldType.FIELD;
+                break;
+            case MDDTokenTypes.FUNCTION:
+                this.titleFieldType = TitleFieldType.FUNCTION;
+                break;
+        }
         this.validationRules = mdd.validationRules;
         this.parent = parent;
         
         System.out.println("now going to add the fields of the subfield");
         addStandardFields(name);
         addFieldNodes(mdd.fields);
+        addFunctions(mdd.functions);
+        
+        // evaluate the title, when all fields and functions are processed
+        evaluateTitle();
     }
     
     /** constructor for data definitions during parsing **/
     public DataDefinitionImpl(MDDNode mdd) {
-        System.out.println("creating dataDef " + mdd.name);
+        System.out.println("creating dataDef " + mdd.getName());
         this.indexName = mdd.indexName;
         this.isFileSubfield = mdd.isFileSubfield;
-        this.name = mdd.name;
+        this.name = mdd.getName();
         this.origin = mdd.origin;
-        this.titleField = mdd.titleField.getText();
+        this.titleFieldExpr = mdd.titleField.getText();
+        switch(mdd.titleField.titleType) {
+            case MDDTokenTypes.FIELD:
+                this.titleFieldType = TitleFieldType.FIELD;
+                break;
+            case MDDTokenTypes.FUNCTION:
+                this.titleFieldType = TitleFieldType.FUNCTION;
+                break;
+        }
         this.validationRules = mdd.validationRules;
         this.multiFieldUniqueList = mdd.multiFieldUniqueList;
-        this.functions = mdd.functions;
 
-        System.out.println("populating fields of " + mdd.name);
+        System.out.println("populating fields of " + mdd.getName());
         addStandardFields(name);
         addFieldNodes(mdd.fields);
+        addFunctions(mdd.functions);
+        
+        // evaluate the title, when all fields and functions are processed
+        evaluateTitle();
+
     }
     
     /**
@@ -110,16 +148,61 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
     private void addFieldNodes(LinkedHashMap<String, FieldNode> fields) {
         for(FieldNode f : fields.values()) {
             System.out.println("now adding field " + f.name + " into mdd " +this.name);
+            FieldDefinitionImpl field = new FieldDefinitionImpl(this, f);
+           
             // when we have a file field, we transform it into an ptrOne with a specific structure
-            if(f.makumbaType == FieldType.FILE) {
-                System.out.println("FILE!");
-                addField(buildFileField(this, f));
-            } else {
-                addField(new FieldDefinitionImpl(this, f));
+            
+            switch(f.makumbaType) {
+                case FILE:
+                    FieldDefinitionImpl fileField = buildFileField(f);
+                    addField(fileField);
+                    addPointerToParent(fileField);
+                    break;
+                case SETCOMPLEX:
+                case PTRONE:
+                    addField(field);
+                    addPointerToParent(field);
+                    break;
+                case SET:
+                    addField(field);
+                    field.subfield.setMemberFieldName = addPointerToParent(field);
+                    break;
+                case SETINTENUM:
+                case SETCHARENUM:
+                    addField(field);
+                    addPointerToParent(field);
+                    // this is probably not the proper way, but we 
+                    field.subfield.setMemberFieldName = ENUM_FIELD_NAME;
+                    break;
+                default:
+                    addField(field);
             }
         }
     }
     
+    private String addPointerToParent(FieldDefinitionImpl subField) {
+        int s = this.name.indexOf("->");
+        String parentName = this.name.substring(s+2);
+        int n = parentName.lastIndexOf('.');
+        if (n != -1) {
+            parentName = parentName.substring(n + 1);
+        }
+        while (subField.subfield.getFieldDefinition(parentName) != null) {
+            parentName = parentName + "_";
+        }
+
+        FieldDefinitionImpl ptr = new FieldDefinitionImpl(parentName, "ptrRel");
+        subField.subfield.addField(ptr);
+        ptr.fixed = true;
+        ptr.notNull = true;
+        ptr.type = FieldType.PTRREL;
+        ptr.pointed = this;
+        ptr.pointedType = this.name;
+        ptr.description = "relational pointer";
+        
+        return parentName;
+    }
+
     /**
      * adds standard fields
      */
@@ -141,6 +224,8 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
         fi.fixed = true;
         fi.notNull = true;
         fi.unique = true;
+        fi.pointedType = this.name;
+        fi.pointed = this;
         addField(fi);
 
         fi = new FieldDefinitionImpl(DataDefinition.modifyName, this);
@@ -162,8 +247,8 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
     /**
      * builds a FieldDefinition for the file type
      */
-    private FieldDefinition buildFileField(DataDefinitionImpl dataDefinitionImpl, FieldNode f) {
-        System.out.println("now building file Field definition for field " + f.name + " in mdd " + dataDefinitionImpl.name);
+    private FieldDefinitionImpl buildFileField(FieldNode f) {
+        System.out.println("now building file Field definition for field " + f.name + " in mdd " + this.name);
         FieldDefinitionImpl fi = new FieldDefinitionImpl(f.name, "ptrOne");
         DataDefinitionImpl dd = new DataDefinitionImpl(f.name, this);
         dd.isFileSubfield = true;
@@ -179,6 +264,84 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
         
         return fi;
     }
+    
+    
+    private static final Pattern ident = Pattern.compile("[a-zA-Z]\\w*");
+    
+    /** pre-processes functions (adds this. everywhere needed) **/
+    public void addFunctions(HashMap<String, QueryFragmentFunction> funcNames) {
+        
+        for (String fn : funcNames.keySet()) {
+        
+            StringBuffer sb = new StringBuffer();
+            QueryFragmentFunction f = funcNames.get(fn);
+            String queryFragment = f.getQueryFragment();
+            Matcher m = ident.matcher(queryFragment);
+            boolean found = false;
+            while (m.find()) {
+                String id = queryFragment.substring(m.start(), m.end());
+                int after = -1;
+                for (int index = m.end(); index < queryFragment.length(); index++) {
+                    char c = queryFragment.charAt(index);
+                    if (c == ' ' || c == '\t') {
+                        continue;
+                    }
+                    after = c;
+                    break;
+                }
+                int before = -1;
+                for (int index = m.start() - 1; index >= 0; index--) {
+                    char c = queryFragment.charAt(index);
+                    if (c == ' ' || c == '\t') {
+                        continue;
+                    }
+                    before = c;
+                    break;
+                }
+
+                if (before == '.' || id.equals("this") || id.equals("actor")
+                        || f.getParameters().getFieldDefinition(id) != null) {
+                    continue;
+                }
+                if (this.fields.get(id) != null || after == '(' && funcNames.get(id) != null) {
+                    m.appendReplacement(sb, "this." + id);
+                    found = true;
+                }
+            }
+            m.appendTail(sb);
+            if (found) {
+                java.util.logging.Logger.getLogger("org.makumba.db.query.inline").fine(
+                    queryFragment + " -> " + sb.toString());
+                f = new QueryFragmentFunction(f.getName(), f.getSessionVariableName(), sb.toString(),
+                        f.getParameters(), f.getErrorMessage());
+
+            }
+            addFunction(f.getName(), f);
+        }
+    }
+    
+    /**
+     * evaluates the title field:
+     * <ul>
+     * <li>for simple field names, sets title to field name</li>
+     * <li>for paths, checks the path and sets the title to the path</li>
+     * <li>for functions, sets the title to the function expression</li>
+     * <li>if no title indicated, take the first field in the DD as title</li>
+     * </ul>
+     * all the checking has already been done in {@link TitleFieldNode}
+     * TODO add support for function calls in !title and for use of expressions
+     */
+    private void evaluateTitle() {
+        if(titleFieldExpr == null) {
+            titleField = (String) (Arrays.asList(fields.keySet().toArray())).get(0);
+        } else if(titleFieldType == TitleFieldType.FUNCTION){
+            QueryFragmentFunction f = functions.get(titleFieldExpr.substring(0, titleFieldExpr.indexOf("(")));
+            titleField = f.getQueryFragment(); 
+        } else {
+            titleField = titleFieldExpr;
+        }
+    }
+    
 
     /** base methods **/
     
@@ -376,16 +539,12 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
         return parent.getFieldDefinition(fieldNameInParent);
     }
     
-    
-    
     public String getSetMemberFieldName() {
-        // TODO Auto-generated method stub
-        return null;
+        return setMemberFieldName;
     }
 
     public String getSetOwnerFieldName() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.parent.getName();
     }
 
     
@@ -419,15 +578,15 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
         return validationRules.get(ruleName);
     }
 
+    /** which is the name of the creation timestamp field, if any? */
     public String getCreationDateFieldName() {
-        // TODO Auto-generated method stub
-        return null;
+        return createName;
     }
 
+    /** which is the name of the modification timestamp field, if any? */
     public String getLastModificationDateFieldName() {
-        // TODO Auto-generated method stub
-        return null;
-    }   
+        return modifyName;
+    }
     
     
     @Override

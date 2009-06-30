@@ -56,36 +56,52 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
             
             case MDDTokenTypes.FIELD:
                 
-                // FIXME this should be recursive, until the last "." is resolved
-                // FIXME check if the path can be traversed i.e. if it is is made of non-nullable pointers
                 String t = title.getText();
+                
                 if(t.indexOf(".") > -1) {
-                    String field = t.substring(0, t.indexOf("."));
-                    FieldNode n = title.mdd.fields.get(field);
-                    if(n == null) {
-                        factory.doThrow(this.typeName, "Field " + field + " does not exist in type " + mdd.name , titleField);
-                    } else {
-                        // check if this is a pointer to another type
-                        // FIXME maybe we should also support ptrOne?
-                        if(n.makumbaType != FieldType.PTRREL) {
-                            factory.doThrow(this.typeName, "Field " + field + " is not a pointer", titleField);
+                
+                    while(t.indexOf(".") > -1) {
+                        String field = t.substring(0, t.indexOf("."));
+                        t = t.substring(t.indexOf(".") + 1);
+                        String fieldInPointed = t.substring(0, t.indexOf("."));
+                        FieldNode n = title.mdd.fields.get(field);
+                        if(n == null) {
+                            factory.doThrow(this.typeName, "Field " + field + " does not exist in type " + mdd.getName() , titleField);
                         } else {
-                            // if it's a pointer, let's check if we can make something out of it
-                            try {
-                                DataDefinition pointed = MDDProvider.getMDD(n.pointedType);
-                                if(pointed.getFieldDefinition(t.substring(t.indexOf(".") + 1)) == null) {
-                                    factory.doThrow(this.typeName, "Field " + t.indexOf(".") + 1 + " does not exist in type " + pointed.getName(), titleField);
+                            // check if this is a pointer to another type
+                            if(n.makumbaType != FieldType.PTRREL || n.makumbaType != FieldType.PTRONE) {
+                                factory.doThrow(this.typeName, "Field " + field + " is not a pointer", titleField);
+                            } else {
+                                // if it's a pointer, let's check if we can make something out of it
+                                try {
+                                    DataDefinition pointed = MDDProvider.getMDD(n.pointedType);
+                                    if(pointed.getFieldDefinition(fieldInPointed) == null) {
+                                        factory.doThrow(this.typeName, "Field " + fieldInPointed + " does not exist in type " + pointed.getName(), titleField);
+                                    }
+                                    
+                                } catch(DataDefinitionNotFoundError d) {
+                                    factory.doThrow(this.typeName, "Could not find type " + n.pointedType, titleField);
                                 }
-                                
-                            } catch(DataDefinitionNotFoundError d) {
-                                factory.doThrow(this.typeName, "Could not find type " + n.pointedType, titleField);
                             }
                         }
                     }
+                
                 } else {
                     Object field = title.mdd.fields.get(title.getText());
                     if(field == null) {
-                        factory.doThrow(this.typeName, "Field " + title.getText() + " does not exist in type " + mdd.name , titleField);
+                        factory.doThrow(this.typeName, "Field " + title.getText() + " does not exist in type " + mdd.getName() , titleField);
+                    }
+                }
+                break;
+                
+                
+            case FUNCTION:
+                // TODO add support for calls with arguments
+                if(title.functionArgs.size() > 0) {
+                    factory.doThrow(this.typeName, "There's no support for function calls with arguments in the !title directive yet", titleField);
+                } else {
+                    if(mdd.functions.get(title.functionName) == null ) {
+                        factory.doThrow(this.typeName, "Function " + title.getText() + " not defined in type " + typeName , titleField);
                     }
                 }
                 break;
