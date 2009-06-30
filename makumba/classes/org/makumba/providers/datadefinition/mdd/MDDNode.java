@@ -1,14 +1,11 @@
 package org.makumba.providers.datadefinition.mdd;
 
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-
 import org.makumba.DataDefinition;
 import org.makumba.ValidationRule;
 import org.makumba.DataDefinition.MultipleUniqueKeyDefinition;
-
 import antlr.CommonAST;
 
 /**
@@ -24,7 +21,7 @@ public class MDDNode extends CommonAST {
     final static String modifyName = "TS_modify";
         
     /** name of the data definition **/
-    protected String name = "";
+    private String name = "";
     
     /** name of the index field **/
     protected String indexName = "";
@@ -53,18 +50,25 @@ public class MDDNode extends CommonAST {
     protected LinkedHashMap<String, DataDefinition.QueryFragmentFunction> functions = new LinkedHashMap<String, DataDefinition.QueryFragmentFunction>();
     
     public MDDNode(String name, URL origin) {
-        this.name = name;
+        this.setName(name);
         this.origin = origin;
     }
     
     /** constructor for the creation of subfields **/
     public MDDNode(MDDNode parent, String subFieldName) {
-        this.name = parent.name + "->" + subFieldName;
+        this.setName(parent.getName() + "->" + subFieldName);
         this.origin = parent.origin;
-        this.parent = parent.name;
+        this.parent = parent.getName();
         this.fieldNameInParent = subFieldName;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
     
     protected void setTitleField(TitleFieldNode title) {
         titleField = title;
@@ -91,13 +95,14 @@ public class MDDNode extends CommonAST {
     }
     
     public void addFunction(FunctionNode funct) {
-        DataDefinition.QueryFragmentFunction function = new DataDefinition.QueryFragmentFunction(funct.name, null, funct.queryFragment, funct.parameters, funct.errorMessage);
+        DataDefinition.QueryFragmentFunction function = new DataDefinition.QueryFragmentFunction(funct.name, funct.sessionVariableName, funct.queryFragment, funct.parameters, funct.errorMessage);
         functions.put(function.getName(), function);
     }
     
+    
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append("Type name: " + name + "\n");
+        sb.append("Type name: " + getName() + "\n");
         sb.append("Type origin: " + origin + "\n");
         if(parent !=null)
             sb.append("Type parent: " + parent + "\n");
@@ -119,6 +124,5 @@ public class MDDNode extends CommonAST {
         return sb.toString();
         
     }
-
 
 }

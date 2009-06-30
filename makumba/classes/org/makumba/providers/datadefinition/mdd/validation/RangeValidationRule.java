@@ -25,17 +25,20 @@ public class RangeValidationRule extends ValidationRuleNode {
     @Override
     public boolean validate(Object value) throws InvalidValueException {
         
-        if (lowerBound.equals("?")) {
-            lowerLimit = new Double(Double.MIN_VALUE); // FIXME: use the min value makumba can handle
-        } else {
-            lowerLimit = Double.valueOf(lowerBound);
+        if(lowerLimit == null || upperLimit == null) {
+            
+            if (lowerBound.equals("?")) {
+                lowerLimit = new Double(Double.MIN_VALUE); // FIXME: use the min value makumba can handle
+            } else {
+                lowerLimit = Double.valueOf(lowerBound);
+            }
+            if (upperBound.equals("?")) {
+                upperLimit = new Double(Double.MAX_VALUE); // FIXME: use the max value makumba can handle
+            } else {
+                upperLimit = Double.valueOf(upperBound);
+            }
+            
         }
-        if (upperBound.equals("?")) {
-            upperLimit = new Double(Double.MAX_VALUE); // FIXME: use the max value makumba can handle
-        } else {
-            upperLimit = Double.valueOf(upperBound);
-        }
-
         
         switch(type) {
             case LENGTH:

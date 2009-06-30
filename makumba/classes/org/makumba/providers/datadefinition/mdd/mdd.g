@@ -248,6 +248,7 @@ tokens {
     FUNCTION_ARGUMENT_NAME;
     FUNCTION_ARGUMENT;
     FUNCTION_NAME;
+    SESSIONVAR_NAME;
     
     // Literal tokens
 	NUM_DOUBLE;
@@ -404,7 +405,7 @@ titleDeclaration
     
 title
     : t:type { #t.setType(TITLEFIELDFIELD);}
-    // TODO add function here as well
+    | f:functionCall
     ;
     
 includeDeclaration
@@ -454,7 +455,7 @@ uniquenessValidationRuleDeclaration
 //////////////// FUNCTIONS
 
 functionDeclaration
-	: a:atom {#a.setType(FUNCTION_NAME);} d:functionArgumentDeclaration b:functionBody (errorMessage)?
+	: (s:atom {#s.setType(SESSIONVAR_NAME);} PERCENT!)? a:atom {#a.setType(FUNCTION_NAME);} d:functionArgumentDeclaration b:functionBody (errorMessage)?
 	{ #functionDeclaration = #(#[FUNCTION, "function"], #functionDeclaration); }
 	;
 

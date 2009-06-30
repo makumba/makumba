@@ -22,11 +22,13 @@ public class FunctionNode extends MDDAST {
     
     protected String errorMessage;
     
+    protected String sessionVariableName;
+    
     public FunctionNode(MDDNode mdd, String name) {
         this.mdd = mdd;
         this.name = name;
         this.setType(MDDTokenTypes.FUNCTION);
-        parameters = DataDefinitionProvider.getInstance().getVirtualDataDefinition(mdd.name + "." + name);
+        parameters = DataDefinitionProvider.getInstance().getVirtualDataDefinition(mdd.getName() + "." + name);
 
     }
     

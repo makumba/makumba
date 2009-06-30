@@ -74,11 +74,17 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
             case MDDTokenTypes.PTR:
             case MDDTokenTypes.SET:
                 AST pointedType = type.getFirstChild();
+                
+                
+                /*
                 // we check if we can find this type
                 URL u = MDDProvider.findDataDefinition(pointedType.getText(), "mdd");
+                
+                
                 if(u == null) {
                     factory.doThrow(this.typeName, "could not find type " + pointedType.getText(), pointedType);
                 }
+                */
                 break;
         }
         
@@ -191,12 +197,12 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
         if(subField != null) {
             f = subField.subfield.fields.get(fieldName);
             if(f == null) {
-                factory.doThrow(this.typeName, "Subfield " + fieldName + " does not exist in field " + subField.subfield.name, originAST);
+                factory.doThrow(this.typeName, "Subfield " + fieldName + " does not exist in field " + subField.subfield.getName(), originAST);
             }
         } else {
             f = mdd.fields.get(fieldName);
             if(f == null) {
-                factory.doThrow(this.typeName, "Field " + fieldName + " does not exist in type " + mdd.name, originAST);
+                factory.doThrow(this.typeName, "Field " + fieldName + " does not exist in type " + mdd.getName(), originAST);
             }
 
         }

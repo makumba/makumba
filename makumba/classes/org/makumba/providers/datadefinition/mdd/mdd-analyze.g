@@ -157,9 +157,9 @@ fieldType[FieldNode field] returns [FieldType fieldType = null; ]
        )
     | INT { fieldType = FieldType.INT; }
     | #(INTENUM { fieldType = FieldType.INTENUM; } ( intEnumBody[field] )* )
-	| #(SETINTENUM { fieldType = FieldType.SETINTENUM; } ( intEnumBody[field] )* )
+	| #(SETINTENUM { fieldType = FieldType.SETINTENUM; } ( intEnumBody[field] )* { field.initIntEnumSubfield(); } )
     | #(CHARENUM { fieldType = FieldType.CHARENUM; } ( charEnumBody[field] )* )
-    | #(SETCHARENUM { fieldType = FieldType.SETCHARENUM; } ( charEnumBody[field] )* )
+    | #(SETCHARENUM { fieldType = FieldType.SETCHARENUM; } ( charEnumBody[field] )* { field.initCharEnumSubfield(); } )
 	| REAL { fieldType = FieldType.REAL; }
     | BOOLEAN { fieldType = FieldType.BOOLEAN; }
     | TEXT { fieldType = FieldType.TEXT; }
@@ -203,7 +203,9 @@ charEnumBody[FieldNode field]
 
 titleDeclaration
     : tf:TITLEFIELDFIELD { #tf.setType(TITLEFIELD); ((TitleFieldNode)#tf).titleType = FIELD;}
-    | tfun:TITLEFIELDFUNCTION { #tfun.setType(TITLEFIELD); ((TitleFieldNode)#tfun).titleType = FUNCTION; }
+    | {String[] nameAndArgs;}
+      nameAndArgs=tfun:functionCall
+      {TitleFieldNode title = new TitleFieldNode(nameAndArgs); #titleDeclaration = title; }
     ;
 
 typeDeclaration! // we kick out the declaration after registering it
@@ -277,8 +279,13 @@ regexValidationRule[FieldNode subField] returns [ValidationRuleNode v = null; ]
 //////////////// FUNCTIONS
 
 functionDeclaration[FieldNode subField]
-	: #(FUNCTION
-	    fn:FUNCTION_NAME {FunctionNode funct = new FunctionNode(mdd, fn.getText());}
+	: #(FUNCTION {String sessionVar = null;}
+	    (s:SESSIONVAR_NAME {sessionVar = #s.getText();})?
+	    fn:FUNCTION_NAME
+	    {
+	    	FunctionNode funct = new FunctionNode(mdd, fn.getText());
+	    	funct.sessionVariableName = sessionVar;
+	    }
 	    functionArgumentDeclaration[funct]
 	    b:FUNCTION_BODY {funct.queryFragment = #b.getText();}
 	    (m:MESSAGE {funct.errorMessage = #m.getText();})?
@@ -287,7 +294,6 @@ functionDeclaration[FieldNode subField]
     		#functionDeclaration = funct;
 	  	}
 	  )
-	  
 	;
 
 functionArgumentDeclaration[FunctionNode funct]
@@ -297,4 +303,9 @@ functionArgumentDeclaration[FunctionNode funct]
 		  	an:FUNCTION_ARGUMENT_NAME
 		  	{funct.addParameter(an.getText(), argumentType, dummy.pointedType);}
 	  	)*
+	;
+	
+functionCall returns[String[] nameAndArgs = null;]
+	: {nameAndArgs = new String[20]; int i = 1; } 
+	n:FUNCTION_NAME {nameAndArgs[0] = #n.getText(); } (FUNCTION_ARGUMENT {nameAndArgs[i] = #n.getText(); i++; })*
 	;
