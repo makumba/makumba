@@ -119,6 +119,11 @@ public class FieldNode extends MDDAST {
         return this.subfield;
     }
     
+    public void initSetSubfield() {
+        MDDNode sub = initSubfield();
+        this.subfield.name = this.mdd.name + "->" + this.name;
+    }
+    
     public void initIntEnumSubfield() {
         initEnumSubfield(FieldType.INTENUM);
     }

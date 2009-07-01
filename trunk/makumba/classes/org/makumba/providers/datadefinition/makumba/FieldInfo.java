@@ -31,7 +31,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -72,6 +71,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         // we can't store a reference to the original field definition, otherwise it will be serialised in the form
         // responder, and in turn will serialise it's data definition, which might cause issues like locking..
         // thus, we do a lookup here
+        if(originalFieldDefinitionParent == null)
+            return null;
         DataDefinition dataDefinition = DataDefinitionProvider.getInstance().getDataDefinition(
             originalFieldDefinitionParent);
         return dataDefinition != null ? dataDefinition.getFieldDefinition(originalFieldDefinitionName) : null;
@@ -615,17 +616,19 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 
     /**
      * works only for intEnum, charEnum, setintEnum, setcharEnum types
+     * FIXME this does not work, because of a {@link ClassCastException} when attempting to convert
+     * the extra2 informatino into a Vector of Strings
      */
     public Collection<String> getNames() {
         switch (getIntegerType()) {
             case FieldDefinition._charEnum:
             case FieldDefinition._intEnum:
-                return ((Vector<String>) this.extra2);
+                return ((Vector) this.extra2);
             case FieldDefinition._setCharEnum:
             case FieldDefinition._setIntEnum:
-                return ((Vector<String>) getEnum().extra2);
+                return ((Vector) getEnum().extra2);
             default:
-                throw new RuntimeException("Shouldn't be here");
+                throw new RuntimeException("getNames() only work for intEnum and charEnum");
         }
     }
 
@@ -1243,4 +1246,128 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         Collections.sort(arrayList);
         return arrayList;
     }
+    
+    
+    
+    public String getStructure() {
+        StringBuffer sb = new StringBuffer();
+        
+        sb.append("getName() " + getName() + "\n");
+        sb.append("getDataDefinition() " + getDataDefinition().getName() + "\n");
+//        sb.append("getOriginalFieldDefinition() " + getOriginalFieldDefinition().getName() + "\n");
+        sb.append("isIndexPointerField() " + isIndexPointerField() + "\n");
+        sb.append("getEmptyValue() " + getEmptyValue() + "\n");
+        sb.append("getNull()" + getNull() + "\n");
+        sb.append("hasDescription() " + hasDescription() + "\n");
+        sb.append("getDescription() " + getDescription() + "\n");
+        sb.append("getType() " + getType() + "\n");
+        sb.append("getIntegerType() " + getIntegerType() + "\n");
+        sb.append("getDataType() " + getDataType() + "\n");
+        sb.append("getJavaType() " + getJavaType() + "\n");
+        sb.append("isFixed() " + isFixed() + "\n");
+        sb.append("isNotNull() " + isNotNull() + "\n");
+        sb.append("isNotEmpty() " + isNotEmpty() + "\n");
+        sb.append("isUnique() " + isUnique() + "\n");
+        sb.append("getDefaultValue() " + getDefaultValue() + "\n");
+        sb.append("getDefaultString()\n");
+        try {
+            sb.append(getDefaultString() + "\n");
+        } catch(RuntimeException re) {
+            sb.append("was not a string\n");
+        }
+        sb.append("getDefaultInt()\n");
+        try {
+            sb.append(getDefaultInt() + "\n");
+        } catch(RuntimeException re) {
+            sb.append("was not an int: " + re.getMessage() + "\n");
+        }
+        sb.append("getDefaultDate()\n");
+        try {
+            sb.append(getDefaultDate() + "\n");
+        } catch(RuntimeException re) {
+            sb.append("was not a date\n");
+        }
+        sb.append("getValues()\n");
+        try {
+            sb.append(getValues() + "\n");
+        } catch(RuntimeException re) {
+            sb.append("was not an enum\n");
+        }
+        sb.append("getNames()\n");
+        try {
+            sb.append(getNames() + "\n");
+        } catch(RuntimeException re) {
+            sb.append("was not an enum: " + re.getMessage() + "\n");
+        }
+        sb.append("getEnumeratorSize()\n");
+        try {
+            sb.append(getEnumeratorSize() + "\n");
+        } catch(RuntimeException re) {
+            sb.append("was not an enum\n");
+        }
+        
+        sb.append("getWidth()\n");
+        try {
+            sb.append(getWidth() + "\n");
+        } catch(RuntimeException re) {
+            sb.append("was not a char\n");
+        }
+        
+        sb.append("getForeignTable()\n");
+        try {
+            sb.append(((RecordInfo)getForeignTable()).getName() + "\n");
+        } catch(RuntimeException re) {
+            sb.append("was not a ptr\n");
+        }
+        
+        sb.append("getSubtable()\n");
+        try {
+            sb.append(((RecordInfo)getSubtable()).getName() + "\n");
+        } catch(RuntimeException re) {
+            sb.append("was not a ptr\n");
+        }
+        
+        
+        sb.append("getPointedType()\n");
+        try {
+            sb.append(((RecordInfo)getPointedType()).getName() + "\n");
+        } catch(RuntimeException re) {
+            sb.append("was not a ptr\n");
+        }
+        
+        sb.append("getTitleField()\n");
+        try {
+            sb.append(getTitleField() + "\n");
+        } catch(RuntimeException re) {
+            sb.append("was not a ptr\n");
+        }
+        
+        sb.append("getDeprecatedValues()\n");
+        try {
+            sb.append(getDeprecatedValues() + "\n");
+        } catch(RuntimeException re) {
+            sb.append("was not an enum\n");
+        }
+        
+        sb.append("isDefaultField()" + isDefaultField() + "\n");
+        sb.append("shouldEditBySingleInput() " + shouldEditBySingleInput() + "\n");
+        sb.append("isDateType() " + isDateType() + "\n");
+        sb.append("isNumberType() " + isNumberType() + "\n");
+        sb.append("isIntegerType() " + isIntegerType() + "\n");
+        sb.append("isRealType() " + isRealType() + "\n");
+        sb.append("isBinaryType() " + isBinaryType() + "\n");
+        sb.append("isFileType() " +isFileType() + "\n");
+        sb.append("isSetType() " + isSetType() + "\n");
+        sb.append("isSetEnumType() " + isSetEnumType() + "\n");
+        sb.append("isEnumType() " + isEnumType() + "\n");
+        sb.append("isInternalSet() " + isInternalSet() +"\n");
+        sb.append("isExternalSet() " + isExternalSet() + "\n");
+        sb.append("isComplexSet() " + isComplexSet() + "\n");
+        sb.append("isPointer() " + isPointer() + "\n");
+        sb.append("isStringType() " + isStringType() + "\n");
+        
+        
+        return sb.toString();
+    }
+    
 }

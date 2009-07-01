@@ -166,8 +166,8 @@ fieldType[FieldNode field] returns [FieldType fieldType = null; ]
     | BINARY { fieldType = FieldType.BINARY; }
     | FILE { fieldType = FieldType.FILE; }
     | DATE { fieldType = FieldType.DATE; }
-    | #(PTR { fieldType = FieldType.PTRONE; #fieldType.setType(PTRONE); } (p:POINTED_TYPE { field.pointedType = #p.getText(); #fieldType.setType(PTR); fieldType = FieldType.PTRREL; })? )
-    | #(SET { fieldType = FieldType.SETCOMPLEX; #fieldType.setType(SETCOMPLEX); } (s:POINTED_TYPE { field.pointedType = #s.getText(); #fieldType.setType(SET); fieldType = FieldType.SET; })? )
+    | #(PTR { fieldType = FieldType.PTRONE; #fieldType.setType(PTRONE); } (p:POINTED_TYPE { field.pointedType = #p.getText(); #fieldType.setType(PTR); fieldType = FieldType.PTR; })? )
+    | #(SET { fieldType = FieldType.SETCOMPLEX; #fieldType.setType(SETCOMPLEX); } (s:POINTED_TYPE { field.pointedType = #s.getText(); #fieldType.setType(SET); fieldType = FieldType.SET; field.initSetSubfield(); })? )
     )
     {
         ((MDDAST)#fieldType).makumbaType = fieldType;
@@ -182,9 +182,8 @@ intEnumBody[FieldNode field]
              {
                 if(isDeprecated) {
                     field.addIntEnumValueDeprecated(Integer.parseInt(#sii.getText()), #sit.getText());
-                } else {
-                    field.addIntEnumValue(Integer.parseInt(#sii.getText()), #sit.getText());
                 }
+                field.addIntEnumValue(Integer.parseInt(#sii.getText()), #sit.getText());
              }
 	;
 
@@ -195,17 +194,18 @@ charEnumBody[FieldNode field]
                  {
                     if(isDeprecated) {
                         field.addCharEnumValueDeprecated(#ee.getText());
-                    } else {
-                        field.addCharEnumValue(#ee.getText());
-                    }
+                    } 
+                    field.addCharEnumValue(#ee.getText());
                  }
 	;
 
 titleDeclaration
-    : tf:TITLEFIELDFIELD { #tf.setType(TITLEFIELD); ((TitleFieldNode)#tf).titleType = FIELD;}
-    | {String[] nameAndArgs;}
-      nameAndArgs=tfun:functionCall
-      {TitleFieldNode title = new TitleFieldNode(nameAndArgs); #titleDeclaration = title; }
+    : tf:TITLEFIELDFIELD { #tf.setType(TITLEFIELD); ((TitleFieldNode)#tf).titleType = FIELD; #titleDeclaration = #tf; }
+    | (
+    	{String[] nameAndArgs;}
+      	nameAndArgs=tfun:functionCall
+      	{TitleFieldNode title = new TitleFieldNode(nameAndArgs); #titleDeclaration = title; }
+      )
     ;
 
 typeDeclaration! // we kick out the declaration after registering it

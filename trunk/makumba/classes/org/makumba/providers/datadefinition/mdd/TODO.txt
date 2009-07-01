@@ -1,12 +1,13 @@
 TODO new MDD parser:
 
-- make a diff of what the two data def parser implementations return for a test DD
+- fix unit tests
 
 - set can't have unique modifier
 
 - finish implementation of comparison validation rule
 
 - analyser/postprocessor: add method that checks the validity of a path
+	- addMultiUniqueKey in MddANalyzeWalker
   
 - http://bugs.best.eu.org/cgi-bin/bugzilla/show_bug.cgi?id=1098
 

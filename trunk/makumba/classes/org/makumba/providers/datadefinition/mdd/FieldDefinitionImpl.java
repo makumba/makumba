@@ -15,7 +15,6 @@ import org.makumba.CompositeValidationException;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
-import org.makumba.MakumbaError;
 import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.ValidationRule;
@@ -45,14 +44,16 @@ public class FieldDefinitionImpl implements FieldDefinition {
 
     protected boolean unique;
     
-    // intEnum
+    // intEnum - contains all values, including deprecated
     private LinkedHashMap<Integer, String> intEnumValues = new LinkedHashMap<Integer, String>();
 
+    // intEnum - contains depreciated values
     private LinkedHashMap<Integer, String> intEnumValuesDeprecated = new LinkedHashMap<Integer, String>();
     
-    // charEnum
+    // charEnum - contains all values, including deprecated
     protected Vector<String> charEnumValues = new Vector<String>();
 
+    // chaEnum - contains depreciated values
     protected Vector<String> charEnumValuesDeprecated = new Vector<String>();
     
     // char length
@@ -205,7 +206,6 @@ public class FieldDefinitionImpl implements FieldDefinition {
     
     /** constructor used when creating the {@link DataDefinitionImpl} during parsing **/
     public FieldDefinitionImpl(DataDefinition mdd, FieldNode f) {
-        System.out.println("creating new field def " + f.name);
         this.mdd = mdd;
         this.name = f.name;
         this.fixed = f.fixed;
@@ -237,9 +237,18 @@ public class FieldDefinitionImpl implements FieldDefinition {
         this.originalFieldDefinitionParent = getDataDefinition().getName();
         
         // we have to transform the subfield MDDNode into a DataDefinitionImpl
-        if(f.subfield != null &&f.makumbaType == FieldType.SETCOMPLEX || f.makumbaType == FieldType.PTRONE) {
-            System.out.println("this file has a subfield, going to create MDD");
-                this.subfield = new DataDefinitionImpl(f.subfield, mdd);
+        
+        if(f.subfield != null) {
+            switch(type) {
+                case SETCOMPLEX:
+                case SETINTENUM:
+                case SETCHARENUM:
+                case PTRONE:
+                case SET:
+                    this.subfield = new DataDefinitionImpl(f.getName(), f.subfield, mdd);
+                    this.subfield.build();
+                    break;
+            }
         }
     }
 
@@ -334,7 +343,7 @@ public class FieldDefinitionImpl implements FieldDefinition {
     }
 
     public boolean isDateType() {
-        return type == FieldType.DATE;
+        return type == FieldType.DATE || type == FieldType.DATECREATE || type == FieldType.DATEMODIFY;
     }
 
     public boolean isEnumType() {
@@ -743,14 +752,10 @@ public class FieldDefinitionImpl implements FieldDefinition {
     public int getDefaultInt() {
         switch (type) {
             case INT:
-            case INTENUM:
                 return (Integer) getDefaultValue();
+            case INTENUM:
             case SETINTENUM:
-             // FIXME this is returning the wrong thing
-                // in the old implementation it was returning the default value of the "enum"
-                // field in the subfield MDD, which exists no longer
-                // however this field seems never to be used
-                return -1;
+                return 0;
             default:
                 throw new RuntimeException("Shouldn't be here");
         }
@@ -790,11 +795,16 @@ public class FieldDefinitionImpl implements FieldDefinition {
     public Vector<String> getDeprecatedValues() {
         switch(type) {
             case INTENUM:
-                return new Vector<String>(intEnumValuesDeprecated.values());
+                // TODO optimize this, maybe change interface...
+                Vector<String> depr = new Vector<String>();
+                for(Integer i : intEnumValuesDeprecated.keySet()) {
+                    depr.add(i.toString());
+                }
+                return depr;
             case CHARENUM:
                 return charEnumValuesDeprecated;
             default:
-                throw new RuntimeException("getDeprecatedValues() only works for intEnum and charEnum");
+                return null;
         }
     }
     
@@ -802,7 +812,7 @@ public class FieldDefinitionImpl implements FieldDefinition {
     public int getEnumeratorSize() {
         switch (type) {
             case CHARENUM:
-                throw new MakumbaError("not implemented");
+                return this.charEnumValues.size();
             case INTENUM:
                 return this.intEnumValues.size();
             case SETCHARENUM:
@@ -852,8 +862,10 @@ public class FieldDefinitionImpl implements FieldDefinition {
     public Collection<String> getNames() {
         switch(type) {
             case INTENUM:
+            case SETINTENUM:
                 return intEnumValues.values();
             case CHARENUM:
+            case SETCHARENUM:
                 return charEnumValues;
             default:
                 throw new RuntimeException("getNames() only work for intEnum and charEnum");
@@ -864,8 +876,10 @@ public class FieldDefinitionImpl implements FieldDefinition {
     public Collection getValues() {
         switch(type) {
             case INTENUM:
-                return intEnumValues.values();
+            case SETINTENUM:
+                return intEnumValues.keySet();
             case CHARENUM:
+            case SETCHARENUM:
                 return charEnumValues;
             default:
                 throw new RuntimeException("getNames() only work for intEnum and charEnum");
@@ -882,12 +896,11 @@ public class FieldDefinitionImpl implements FieldDefinition {
         switch (type) {
             case PTR:
             case PTRREL:
+            case SET:
                 if(this.pointed == null) {
                     this.pointed = MDDProvider.getMDD(pointedType);
                 }
                 return this.pointed;
-            case SET:
-                return pointerToForeign().getForeignTable();
             default:
                 throw new RuntimeException("Shouldn't be here");
         }
@@ -913,8 +926,8 @@ public class FieldDefinitionImpl implements FieldDefinition {
             case PTRINDEX:
                 return getDataDefinition();
             case PTRONE:
-            case SETCHARENUM:
             case SETCOMPLEX:
+            case SETCHARENUM:
             case SETINTENUM:
             case FILE:
                 return getSubtable();
@@ -930,16 +943,12 @@ public class FieldDefinitionImpl implements FieldDefinition {
     public DataDefinition getSubtable() {
         switch (type) {
             case PTRONE:
-            case SETCHARENUM:
             case SETCOMPLEX:
+            case SETCHARENUM:
             case SETINTENUM:
             case FILE:
-                return this.subfield;
             case SET:
-                if(this.pointed == null) {
-                    this.pointed = MDDProvider.getMDD(pointedType);
-                }
-                return this.pointed;
+                return this.subfield;
             default:
                 throw new RuntimeException("Trying to get a sub-able for a '" + getType() + "' for field '" + name
                         + "'.");
@@ -960,15 +969,31 @@ public class FieldDefinitionImpl implements FieldDefinition {
     }
 
     
+    private int longestChar = -1;
+    
 
     public int getWidth() {
         switch (type) {
             case CHAR:
                 return this.charLength;
             case CHARENUM:
-                return this.charEnumValues.size();
+                if(longestChar == -1) {
+                    for(String s : charEnumValues) {
+                        if(s.length() > longestChar) {
+                            longestChar = s.length();
+                        }
+                    }
+                }
+                return longestChar;
             case SETCHARENUM:
-                return this.intEnumValues.size();
+                if(longestChar == -1) {
+                    for(String s : charEnumValues) {
+                        if(s.length() > longestChar) {
+                            longestChar = s.length();
+                        }
+                    }
+                }
+                return longestChar;
             default:
                 throw new RuntimeException("Shouldn't be here");
         }
@@ -978,12 +1003,14 @@ public class FieldDefinitionImpl implements FieldDefinition {
         return !(getIntegerType() == _ptrOne || getIntegerType() == _setComplex);
     }
     
+    @Override
     public String toString() {
+        return getType();
+    }
+    
+    public String toString1() {
         StringBuffer sb = new StringBuffer();
         sb.append("== Field name: " + name + "\n");
-        if(type == null) {
-            System.out.println("NULL!!!! in field " + name);
-        }
         sb.append("== Field type: " + type.getTypeName() + "\n");
         sb.append("== Modifiers: " + (fixed? "fixed ":"") + (unique? "unique ":"") + (notNull? "not null ":"") + (notEmpty? "not empty ":"")  + "\n");
         if(description != null) sb.append("== Description: "+ description + "\n");
@@ -1012,6 +1039,127 @@ public class FieldDefinitionImpl implements FieldDefinition {
                 sb.append(subfield.toString() + "\n");
                 break;
         }
+        
+        
+        return sb.toString();
+    }
+
+    public String getStructure() {
+        StringBuffer sb = new StringBuffer();
+        
+        sb.append("getName() " + getName() + "\n");
+        sb.append("getDataDefinition() " + getDataDefinition().getName() + "\n");
+//        sb.append("getOriginalFieldDefinition() " + getOriginalFieldDefinition().getName() + "\n");
+        sb.append("isIndexPointerField() " + isIndexPointerField() + "\n");
+        sb.append("getEmptyValue() " + getEmptyValue() + "\n");
+        sb.append("getNull()" + getNull() + "\n");
+        sb.append("hasDescription() " + hasDescription() + "\n");
+        sb.append("getDescription() " + getDescription() + "\n");
+        sb.append("getType() " + getType() + "\n");
+        sb.append("getIntegerType() " + getIntegerType() + "\n");
+        sb.append("getDataType() " + getDataType() + "\n");
+        sb.append("getJavaType() " + getJavaType() + "\n");
+        sb.append("isFixed() " + isFixed() + "\n");
+        sb.append("isNotNull() " + isNotNull() + "\n");
+        sb.append("isNotEmpty() " + isNotEmpty() + "\n");
+        sb.append("isUnique() " + isUnique() + "\n");
+        sb.append("getDefaultValue() " + getDefaultValue() + "\n");
+        sb.append("getDefaultString()\n");
+        try {
+            sb.append(getDefaultString() + "\n");
+        } catch(RuntimeException re) {
+            sb.append("was not a string\n");
+        }
+        sb.append("getDefaultInt()\n");
+        try {
+            sb.append(getDefaultInt() + "\n");
+        } catch(RuntimeException re) {
+            sb.append("was not an int: " + re.getMessage() + "\n");
+        }
+        sb.append("getDefaultDate()\n");
+        try {
+            sb.append(getDefaultDate() + "\n");
+        } catch(RuntimeException re) {
+            sb.append("was not a date\n");
+        }
+        sb.append("getValues()\n");
+        try {
+            sb.append(getValues() + "\n");
+        } catch(RuntimeException re) {
+            sb.append("was not an enum\n");
+        }
+        sb.append("getNames()\n");
+        try {
+            sb.append(getNames() + "\n");
+        } catch(RuntimeException re) {
+            sb.append("was not an enum: " + re.getMessage() + "\n");
+        }
+        sb.append("getEnumeratorSize()\n");
+        try {
+            sb.append(getEnumeratorSize() + "\n");
+        } catch(RuntimeException re) {
+            sb.append("was not an enum\n");
+        }
+        
+        sb.append("getWidth()\n");
+        try {
+            sb.append(getWidth() + "\n");
+        } catch(RuntimeException re) {
+            sb.append("was not a char\n");
+        }
+        
+        sb.append("getForeignTable()\n");
+        try {
+            sb.append(((DataDefinitionImpl)getForeignTable()).getName() + "\n");
+        } catch(RuntimeException re) {
+            sb.append("was not a ptr\n");
+        }
+        
+        sb.append("getSubtable()\n");
+        try {
+            sb.append(((DataDefinitionImpl)getSubtable()).getName() + "\n");
+        } catch(RuntimeException re) {
+            sb.append("was not a ptr\n");
+        }
+        
+        
+        sb.append("getPointedType()\n");
+        try {
+            sb.append(((DataDefinitionImpl)getPointedType()).getName() + "\n");
+        } catch(RuntimeException re) {
+            sb.append("was not a ptr\n");
+        }
+        
+        sb.append("getTitleField()\n");
+        try {
+            sb.append(getTitleField() + "\n");
+        } catch(RuntimeException re) {
+            sb.append("was not a ptr\n");
+        }
+        
+        sb.append("getDeprecatedValues()\n");
+        try {
+            sb.append(getDeprecatedValues() + "\n");
+        } catch(RuntimeException re) {
+            sb.append("was not an enum\n");
+        }
+        
+        sb.append("isDefaultField()" + isDefaultField() + "\n");
+        sb.append("shouldEditBySingleInput() " + shouldEditBySingleInput() + "\n");
+        sb.append("isDateType() " + isDateType() + "\n");
+        sb.append("isNumberType() " + isNumberType() + "\n");
+        sb.append("isIntegerType() " + isIntegerType() + "\n");
+        sb.append("isRealType() " + isRealType() + "\n");
+        sb.append("isBinaryType() " + isBinaryType() + "\n");
+        sb.append("isFileType() " +isFileType() + "\n");
+        sb.append("isSetType() " + isSetType() + "\n");
+        sb.append("isSetEnumType() " + isSetEnumType() + "\n");
+        sb.append("isEnumType() " + isEnumType() + "\n");
+        sb.append("isInternalSet() " + isInternalSet() +"\n");
+        sb.append("isExternalSet() " + isExternalSet() + "\n");
+        sb.append("isComplexSet() " + isComplexSet() + "\n");
+        sb.append("isPointer() " + isPointer() + "\n");
+        sb.append("isStringType() " + isStringType() + "\n");
         
         
         return sb.toString();

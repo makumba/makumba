@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -87,7 +88,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
     // nr of relations, 0= none, 1= 1:n, 2= m:n
     int relations = 0;
 
-    HashMap<String, FieldDefinition> fields = new HashMap<String, FieldDefinition>();
+    LinkedHashMap<String, FieldDefinition> fields = new LinkedHashMap<String, FieldDefinition>();
 
     // Hashtable fieldIndexes=null;
 
@@ -563,6 +564,39 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
 
     private void base_checkUpdate(String fieldName, Dictionary<String, Object> d) {
         getFieldDefinition(fieldName).checkUpdate(d);
+    }
+
+    
+    
+    public String getStructure() {
+        StringBuffer sb = new StringBuffer();
+        
+        sb.append("getName() " + getName() + "\n");
+        sb.append("getFieldNames()\n");
+        for(String n : getFieldNames()) {
+            sb.append(n + "\n");
+        }
+        sb.append("getFieldDefinition()\n");
+        for(String n : getFieldNames()) {
+            sb.append(((FieldInfo)getFieldDefinition(n)).getStructure() + "\n");
+        }
+        sb.append("isTemporary() " + isTemporary() + "\n");
+        sb.append("getTitleFieldName() " + getTitleFieldName() + "\n");
+        sb.append("getIndexPointerFieldName() " + getIndexPointerFieldName() + "\n");
+        sb.append("getParentField()\n");
+        sb.append(((FieldInfo)getParentField()) + "\n");
+        sb.append("getSetMemberFieldName() " + getSetMemberFieldName() + "\n");
+        sb.append("getSetOwnerFieldName() " + getSetOwnerFieldName() + "\n");
+        sb.append("lastModified() " + lastModified() + "\n");
+        sb.append("getReferenceFields()\n");
+        for(FieldDefinition fi : getReferenceFields()) {
+            sb.append(((FieldInfo)fi).getStructure() + "\n");
+        }
+        
+        
+        
+        return sb.toString();
+        
     }
     
 }
