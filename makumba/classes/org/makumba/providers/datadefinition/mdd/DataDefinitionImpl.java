@@ -67,6 +67,8 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
 
     protected LinkedHashMap<String, DataDefinition.QueryFragmentFunction> functions = new LinkedHashMap<String, DataDefinition.QueryFragmentFunction>();
 
+    private MDDNode mddNode;
+
     
     /** make a virtual data definition **/
     public DataDefinitionImpl(String name) {
@@ -85,42 +87,28 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
     
     
     /** constructor for subfield data definitions during parsing **/
-    public DataDefinitionImpl(MDDNode mdd, DataDefinition parent) {
-        System.out.println("now creating MDD for subfield " + mdd.getName() + " in type " + parent.getName());
-        this.indexName = mdd.indexName;
-        this.isFileSubfield = mdd.isFileSubfield;
-        this.name = mdd.getName();
-        this.origin = mdd.origin;
-        this.titleFieldExpr = mdd.titleField.getText();
-        switch(mdd.titleField.titleType) {
-            case MDDTokenTypes.FIELD:
-                this.titleFieldType = TitleFieldType.FIELD;
-                break;
-            case MDDTokenTypes.FUNCTION:
-                this.titleFieldType = TitleFieldType.FUNCTION;
-                break;
-        }
-        this.validationRules = mdd.validationRules;
+    public DataDefinitionImpl(String fieldName, MDDNode mdd, DataDefinition parent) {
+        this.fieldNameInParent = fieldName;
         this.parent = parent;
-        
-        System.out.println("now going to add the fields of the subfield");
-        addStandardFields(name);
-        addFieldNodes(mdd.fields);
-        addFunctions(mdd.functions);
-        
-        // evaluate the title, when all fields and functions are processed
-        evaluateTitle();
+        this.mddNode = mdd;
     }
     
     /** constructor for data definitions during parsing **/
     public DataDefinitionImpl(MDDNode mdd) {
-        System.out.println("creating dataDef " + mdd.getName());
-        this.indexName = mdd.indexName;
-        this.isFileSubfield = mdd.isFileSubfield;
-        this.name = mdd.getName();
-        this.origin = mdd.origin;
-        this.titleFieldExpr = mdd.titleField.getText();
-        switch(mdd.titleField.titleType) {
+        this.mddNode = mdd;
+    }
+    
+    /**
+     * Builds the {@link DataDefinitionImpl} based on the {@link MDDNode}. This step needs to be done separately,
+     * as a MDD may refer to itself (through ptr or set).
+     */
+    protected void build() {
+        this.name = mddNode.getName();
+        this.origin = mddNode.origin;
+        this.indexName = mddNode.indexName;
+        this.isFileSubfield = mddNode.isFileSubfield;
+        this.titleFieldExpr = mddNode.titleField.getText();
+        switch(mddNode.titleField.titleType) {
             case MDDTokenTypes.FIELD:
                 this.titleFieldType = TitleFieldType.FIELD;
                 break;
@@ -128,17 +116,16 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
                 this.titleFieldType = TitleFieldType.FUNCTION;
                 break;
         }
-        this.validationRules = mdd.validationRules;
-        this.multiFieldUniqueList = mdd.multiFieldUniqueList;
-
-        System.out.println("populating fields of " + mdd.getName());
+        this.validationRules = mddNode.validationRules;
+        this.multiFieldUniqueList = mddNode.multiFieldUniqueList;
+        
+        
         addStandardFields(name);
-        addFieldNodes(mdd.fields);
-        addFunctions(mdd.functions);
+        addFieldNodes(mddNode.fields);
+        addFunctions(mddNode.functions);
         
         // evaluate the title, when all fields and functions are processed
         evaluateTitle();
-
     }
     
     /**
@@ -147,16 +134,14 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
      */
     private void addFieldNodes(LinkedHashMap<String, FieldNode> fields) {
         for(FieldNode f : fields.values()) {
-            System.out.println("now adding field " + f.name + " into mdd " +this.name);
             FieldDefinitionImpl field = new FieldDefinitionImpl(this, f);
            
-            // when we have a file field, we transform it into an ptrOne with a specific structure
-            
             switch(f.makumbaType) {
                 case FILE:
+                    // when we have a file field, we transform it into an ptrOne with a specific structure
                     FieldDefinitionImpl fileField = buildFileField(f);
                     addField(fileField);
-                    addPointerToParent(fileField);
+                    fileField.subfield.setMemberFieldName = addPointerToParent(fileField);
                     break;
                 case SETCOMPLEX:
                 case PTRONE:
@@ -165,13 +150,12 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
                     break;
                 case SET:
                     addField(field);
-                    field.subfield.setMemberFieldName = addPointerToParent(field);
+                    field.subfield.setMemberFieldName = addPointerToForeign(field);
                     break;
                 case SETINTENUM:
                 case SETCHARENUM:
                     addField(field);
                     addPointerToParent(field);
-                    // this is probably not the proper way, but we 
                     field.subfield.setMemberFieldName = ENUM_FIELD_NAME;
                     break;
                 default:
@@ -180,17 +164,14 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
         }
     }
     
+    /**
+     * Adds a pointer to this {@link DataDefinitionImpl} into the subField
+     * 
+     * @param subField the subField to which to add a pointer
+     * @return the name of the pointer field in the subField, computed so as not to collide with existing subField fields
+     */
     private String addPointerToParent(FieldDefinitionImpl subField) {
-        int s = this.name.indexOf("->");
-        String parentName = this.name.substring(s+2);
-        int n = parentName.lastIndexOf('.');
-        if (n != -1) {
-            parentName = parentName.substring(n + 1);
-        }
-        while (subField.subfield.getFieldDefinition(parentName) != null) {
-            parentName = parentName + "_";
-        }
-
+        String parentName = getPointerName(this.name, subField);
         FieldDefinitionImpl ptr = new FieldDefinitionImpl(parentName, "ptrRel");
         subField.subfield.addField(ptr);
         ptr.fixed = true;
@@ -202,6 +183,48 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
         
         return parentName;
     }
+    
+    /**
+     * Adds a pointer to a foreign {@link DataDefinition} to the subField. Used for external sets only.
+     * @param subField the subfield of the set
+     * @return the name of the pointer field in the subField
+     */
+    private String addPointerToForeign(FieldDefinitionImpl subField) {
+        String pointed = getPointerName(subField.pointedType, subField);
+        FieldDefinitionImpl ptr = new FieldDefinitionImpl(pointed, "ptrRel");
+        subField.subfield.addField(ptr);
+        ptr.fixed = true;
+        ptr.notNull = true;
+        ptr.type = FieldType.PTRREL;
+        ptr.pointed = subField.getPointedType();
+        ptr.pointedType = subField.pointedType;
+        ptr.description = "relational pointer";
+        
+        return pointed;
+    }
+
+    /**
+     * Computes the name for a pointer field in a subfield, so as not to collide with existing fields
+     * @param typeName the original name of the type
+     * @param subField the subfield to which to add the pointer
+     * @return the name of the pointer field in the subField, computed so as not to collide with existing subField fields
+     */
+    private String getPointerName(String typeName, FieldDefinitionImpl subField) {
+        int s = typeName.indexOf("->");
+        if(s != -1)
+            typeName = typeName.substring(s+2);
+        int n = typeName.lastIndexOf('.');
+        if (n != -1) {
+            typeName = typeName.substring(n + 1);
+        }
+        
+        while (subField.getPointedType().getFieldDefinition(typeName) != null) {
+            typeName = typeName + "_";
+        }
+        return typeName;
+    }
+    
+    
 
     /**
      * adds standard fields
@@ -248,10 +271,12 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
      * builds a FieldDefinition for the file type
      */
     private FieldDefinitionImpl buildFileField(FieldNode f) {
-        System.out.println("now building file Field definition for field " + f.name + " in mdd " + this.name);
         FieldDefinitionImpl fi = new FieldDefinitionImpl(f.name, "ptrOne");
+        fi.mdd = this;
         DataDefinitionImpl dd = new DataDefinitionImpl(f.name, this);
         dd.isFileSubfield = true;
+        dd.fieldNameInParent = fi.name;
+        dd.parent = this;
         dd.addStandardFields(f.name);
         dd.addField(new FieldDefinitionImpl("content", "binary"));
         dd.addField(new FieldDefinitionImpl("contentLength", "int"));
@@ -544,10 +569,11 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
     }
 
     public String getSetOwnerFieldName() {
+        if(this.parent == null) {
+            return null;
+        }
         return this.parent.getName();
     }
-
-    
     
     
     /** methods for validation definitions **/
@@ -587,10 +613,13 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
     public String getLastModificationDateFieldName() {
         return modifyName;
     }
-    
-    
+
     @Override
     public String toString() {
+        return getName();
+    }
+    
+    public String toString1() {
     StringBuffer sb = new StringBuffer();
     sb.append("==== MDD " + name + "\n");
     sb.append("   == origin: " + origin + "\n");
@@ -626,5 +655,36 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
     }
     
     return sb.toString();
+    }
+
+    public String getStructure() {
+        StringBuffer sb = new StringBuffer();
+        
+        sb.append("getName() " + getName() + "\n");
+        sb.append("getFieldNames()\n");
+        for(String n : getFieldNames()) {
+            sb.append(n + "\n");
+        }
+        sb.append("getFieldDefinition()\n");
+        for(String n : getFieldNames()) {
+            sb.append(((FieldDefinitionImpl)getFieldDefinition(n)).getStructure() + "\n");
+        }
+        sb.append("isTemporary() " + isTemporary() + "\n");
+        sb.append("getTitleFieldName() " + getTitleFieldName() + "\n");
+        sb.append("getIndexPointerFieldName() " + getIndexPointerFieldName() + "\n");
+        sb.append("getParentField()\n");
+        sb.append(getParentField() + "\n");
+        sb.append("getSetMemberFieldName() " + getSetMemberFieldName() + "\n");
+        sb.append("getSetOwnerFieldName() " + getSetOwnerFieldName() + "\n");
+        sb.append("lastModified() " + lastModified() + "\n");
+        sb.append("getReferenceFields()\n");
+        for(FieldDefinition fi : getReferenceFields()) {
+            sb.append(((FieldDefinitionImpl)fi).getStructure() + "\n");
+        }
+        
+        
+        
+        return sb.toString();
+        
     }
 }

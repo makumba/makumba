@@ -21,7 +21,7 @@ public class MDDNode extends CommonAST {
     final static String modifyName = "TS_modify";
         
     /** name of the data definition **/
-    private String name = "";
+    protected String name = "";
     
     /** name of the index field **/
     protected String indexName = "";

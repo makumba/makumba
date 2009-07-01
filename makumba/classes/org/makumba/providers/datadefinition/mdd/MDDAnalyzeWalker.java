@@ -4,7 +4,6 @@ import java.net.URL;
 import java.util.HashMap;
 
 import org.makumba.DataDefinition;
-import org.makumba.DataDefinitionParseError;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.commons.ReservedKeywords;
@@ -87,14 +86,10 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
                 */
                 break;
         }
-        
-        System.out.println("Checking field type: " + type);
     }
 
     @Override
     protected void checkSubFieldType(AST type) {
-        
-        System.out.println("Checking subfield type: " + type);
         checkFieldType(type);
         if(type.getType() == MDDTokenTypes.SETCOMPLEX || type.getType() == MDDTokenTypes.PTRONE) {
             factory.doThrow(this.typeName, "Subfields of subfields are not allowed.", type);
@@ -111,7 +106,6 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
 
     @Override
     protected void addTypeShorthand(AST name, FieldNode fieldType) {
-        System.out.println("Registering new type shorthand " + name.getText());
         typeShorthands.put(name.getText(), fieldType);
     }
     

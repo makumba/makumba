@@ -167,6 +167,10 @@ options {
     	if(n == null)
     	   reportError("Incorrect value for number");
     }
+    
+    private String removeQuotation(String s) {
+    	return s.substring(1, s.length() -1);
+    }
 	
 }
 
@@ -186,11 +190,11 @@ charEnum
 	;
 	
 intEnumBody
-    : t:STRING_LITERAL {#t.setType(INTENUMTEXT); } EQ! i:number { checkNumber(#i); if(#i != null) #i.setType(INTENUMINDEX); } (DEPRECATED)?
+    : t:STRING_LITERAL {#t.setType(INTENUMTEXT); #t.setText(removeQuotation(#t.getText())); } EQ! i:number { checkNumber(#i); if(#i != null) #i.setType(INTENUMINDEX); } (DEPRECATED)?
     ;
 
 charEnumBody
-	: t:STRING_LITERAL { #t.setType(CHARENUMELEMENT); }
+	: t:STRING_LITERAL { #t.setType(CHARENUMELEMENT); #t.setText(removeQuotation(#t.getText())); }
 	  (DEPRECATED)?
 	;
 

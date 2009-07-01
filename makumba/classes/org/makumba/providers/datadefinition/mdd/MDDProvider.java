@@ -352,6 +352,11 @@ public class MDDProvider implements DataDefinitionProviderInterface {
             return MDDFactory.getInstance().getDataDefinition(nm);
         }
         
+        @Override
+        protected void configureResource(Object name, Object hashName, Object resource) throws Throwable {
+            ((DataDefinitionImpl)resource).build();
+        }
+        
 
         
     });

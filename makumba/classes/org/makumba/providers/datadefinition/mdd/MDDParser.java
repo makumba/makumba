@@ -149,9 +149,10 @@ public class MDDParser extends MDDBaseParser {
             if(tree != null)
                 shift(tree, expression);
             
-            System.out.println("/////////////// EXPR");
-            MakumbaDumpASTVisitor visitor = new MakumbaDumpASTVisitor(false);
-            visitor.visit(parser.getAST());
+            
+            //System.out.println("/////////////// Expression parser");
+            //MakumbaDumpASTVisitor visitor = new MakumbaDumpASTVisitor(false);
+            //visitor.visit(parser.getAST());
             
             return parser.getAST();
     }
@@ -164,6 +165,11 @@ public class MDDParser extends MDDBaseParser {
             shift(toShift.getNextSibling(), parent);
         if(toShift.getFirstChild() != null)
             shift(toShift.getFirstChild(), parent);
+    }
+    
+    @Override
+    protected void errorNestedSubfield(AST s) {
+        factory.doThrow(typeName, "Nested subtypes are not allowed", s);
     }
     
  

@@ -271,6 +271,12 @@ public class Configuration implements Serializable {
         c.setProperties(dataSourceConfiguration);
         return c;
     }
+    
+    private static String dataDefinitionProviderClass;
+    
+    public static void setDataDefinitionProviderClass(String className) {
+        dataDefinitionProviderClass = className;
+    }
 
     /**
      * Gives the data definition provider implementation to use
@@ -278,9 +284,9 @@ public class Configuration implements Serializable {
      * @return a String containing the class name of the data definition provider implementation
      */
     public static String getDataDefinitionProviderClass() {
-        
+        if(dataDefinitionProviderClass != null)
+            return dataDefinitionProviderClass;
         return applicationConfig.getStringProperty("dataSourceConfig", KEY_DATADEFINITIONPROVIDER, defaultConfig);
-        
     }
 
     /**

@@ -35,25 +35,12 @@ public class MDDParserTest {
         
         DataDefinitionImpl dd = (DataDefinitionImpl) MDDProvider.getMDD("ParserTest");
         
-        System.out.println(dd.getFieldDefinition("name3").getType());
-        
         for(ValidationRule r : dd.validationRules.values()) {
             
             if(r instanceof ComparisonValidationRule) {
                 System.out.println(r.getRuleName() + " : " + r.validate("AAA"));
             }
         }
-        
-        
-        System.out.println("set cplx getSetOwnerFieldName : "+dd.getFieldDefinition("name3").getSubtable().getSetOwnerFieldName());
-        System.out.println("set cplx getSetMemberFieldName: "+dd.getFieldDefinition("name3").getSubtable().getSetMemberFieldName());
-
-        System.out.println("set int getSetOwnerFieldName : "+dd.getFieldDefinition("testSetInt").getSubtable().getSetOwnerFieldName());
-        System.out.println("set int getSetMemberFieldName: "+dd.getFieldDefinition("testSetInt").getSubtable().getSetMemberFieldName());
-
-        System.out.println("set getSetOwnerFieldName : "+dd.getFieldDefinition("testSet").getSubtable().getSetOwnerFieldName());
-        System.out.println("set getSetMemberFieldName: "+dd.getFieldDefinition("testSet").getSubtable().getSetMemberFieldName());
-
 
     }
    

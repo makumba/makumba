@@ -289,6 +289,8 @@ tokens {
     
     protected AST parseExpression(AST expr) { return null; }
     
+    protected void errorNestedSubfield(AST s) {}
+    
 }
 
 dataDefinition
@@ -340,16 +342,15 @@ subFieldDeclaration
     ;
     
 subFieldBody
-	: a:atom { #a.setType(SUBFIELDNAME); }
-      EQ!
-      (modifier)* fieldType
-      (fieldComment)?
+	: a:fieldName { #a.setType(SUBFIELDNAME); }
+      (EQ! (modifier)* fieldType (fieldComment)?)
     ;
     
 fieldName
     : a:atom { #a.setType(FIELDNAME); }
     // this is an ugly workaround to allow "length" as a field name
     | l:LENGTH { #l.setType(FIELDNAME); }
+    | c:CHAR { #c.setType(FIELDNAME); }
     ;
 
 fieldType
