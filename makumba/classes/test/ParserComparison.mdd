@@ -11,13 +11,13 @@ removeIt=
 
 # here come the field
 name = not null unique char[233] ; comment very long
-name2 = ptr ParserTest
+name2 = ptr ParserComparison
 
 # now we have a setComplex!
 name3 = set
-name3->!title = subname1 ;test
-name3-> subname1 = unique char[232] ; subcomment1
-name3-> subname2 = genTyp ; subcomment2
+name3->!title = subname1
+name3->subname1 = unique char[232]
+name3->subname2 = genTyp
 name3->!include = validMdds.Included
 name3->subImage = file
 #name3->length(subname1) {1..2} : this is an error message
@@ -25,16 +25,14 @@ name3->subImage = file
 name4 = char[255] ;comment4
 age = int ; age of someone
 name5 = int {"Male" = 10, "Female" = 20, "Shemale" = 30 deprecated}
-name6 = char {"Some", "Other", "Value"}
+name6 = char {"Some", "Otherrrrrrr", "Value"}
 
 setint = set int {"Male" = 10, "Female" = 20, "Shemale" = 30 deprecated}
 setchar = set char {"Some", "Other", "Value"}
 
 image = file
 
-testSetInt = set int{"Female"=0, "Male"=1}
-testSet = set ParserTest
-
+testSet = set ParserComparison
 
 # simple validation rules
 #range(age) {15..18} : Must be at least 15 years old and at most 18!
