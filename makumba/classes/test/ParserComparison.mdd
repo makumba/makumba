@@ -1,46 +1,75 @@
-# this is a single line comment
+# temporary file, should be removed once new parser works
 
-!title = name
+!type.yesNo=int{"No"=0, "Yes"=1}
 !type.genTyp=int{"Female"=0, "Male"=1}
 
-# included data definition
-!include = validMdds.Included
-
-overrideIt=char[22]
-removeIt=
-
-# here come the field
-name = not null unique char[233] ; comment very long
-name2 = ptr ParserComparison
-
-# now we have a setComplex!
-name3 = set
-name3->!title = subname1
-name3->subname1 = unique char[232]
-name3->subname2 = genTyp
-name3->!include = validMdds.Included
-name3->subImage = file
-#name3->length(subname1) {1..2} : this is an error message
-
-name4 = char[255] ;comment4
-age = int ; age of someone
-name5 = int {"Male" = 10, "Female" = 20, "Shemale" = 30 deprecated}
-name6 = char {"Some", "Otherrrrrrr", "Value"}
-
-setint = set int {"Male" = 10, "Female" = 20, "Shemale" = 30 deprecated}
-setchar = set char {"Some", "Other", "Value"}
+birthdate=date		 ;Birthdate
 
 image = file
 
-testSet = set ParserComparison
+firstSex = date
 
-# simple validation rules
-#range(age) {15..18} : Must be at least 15 years old and at most 18!
-#name4%matches = "http://.+" : the homepage must start with http://
+myapp_username=char[80] ; username for this user
 
-#length(name4) {1..?} : name4 must not be empty
-#unique() { name2, name } : these need to be unique!
+password=char[80] ; password for this user
 
-#compare() { lower(name) = name } : Name must not have capital letters
+beginDate = date;a
 
-#myFunction(char[] cdcd) { text + this.name }
+gender=genTyp		 ;Gender
+all=char[25]             ;test a reserved word
+field=char[80]           ;another reserved word
+
+militarySucksAndEverybodyKnowsItButDoesNotSpeakOutLoudAboutIt=yesNo           ;A very long fieldname
+driver=yesNo		 ;Driving Licence
+
+age=int				;Age
+
+makumbaTillDeath = not null yesNo	; makumbian or not
+designer = yesNo	; are you a designer?
+
+weight=real ; weight in kilos
+
+
+# test some QL functions as field names
+length=int ; height in cm
+max=int ; max value
+
+extraData=ptr
+extraData->something=char[20]
+extraData->what=int
+
+
+#for uniqness tests:
+uniqInt=unique int		            ;test int uniqness
+uniqChar=unique char[33]	        ;test char uniqness
+uniqDate=unique date		        ;test date uniqness
+uniqPtr=unique ptr test.Language    ;test ptr uniqness
+
+speaks=set test.Language
+intSet= set int {"a"=0, "b"=1, "c"=2 }
+
+charSet=set char{ "d", "e", "f" }
+
+email = char[40]
+
+
+address=set			 ;Addresses
+  address->!title=description
+  address->description=char[30]	;Description (home address, study-time address, ...)
+  address->streetno=char[100]	      ;Street  
+  address->zipcode=char[10]		;Zipcode
+  address->city=char[40]		;City
+  address->country=char[20]             ;Country
+  address->phone=char[20]		;Phone
+  address->fax=char[20]			;Fax
+  address->email=char[40]		;E-Mail
+  address->usagestart=date		;Use from
+  address->usageend=date		;Use till
+  address->homepage=char[50]
+  address->languages = set test.Language ; languages spoken in that address
+
+
+toys=set
+  toys->name=char[30]
+  
+groupMembers = set test.ParserComparison

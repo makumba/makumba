@@ -121,6 +121,7 @@ public class FieldNode extends MDDAST {
     
     public void initSetSubfield() {
         MDDNode sub = initSubfield();
+//        this.subfield.name = this.pointedType + "->" + this.name;
         this.subfield.name = this.mdd.name + "->" + this.name;
     }
     
@@ -134,7 +135,7 @@ public class FieldNode extends MDDAST {
     
     private void initEnumSubfield(FieldType type) {
         MDDNode sub = initSubfield();
-        
+        /*
         // add enumerator field
         FieldNode f = new FieldNode(sub, DataDefinitionImpl.ENUM_FIELD_NAME);
         sub.addField(f);
@@ -142,6 +143,7 @@ public class FieldNode extends MDDAST {
         sub.titleField.setText(f.name);
         sub.titleField.titleType = MDDTokenTypes.FIELD;
         f.makumbaType = type;
+         */
     }
 
     public void addSubfield(FieldNode subfield) {

@@ -1,14 +1,9 @@
 TODO new MDD parser:
 
-- fix unit tests
-
-- set can't have unique modifier
-
 - finish implementation of comparison validation rule
 
-- analyser/postprocessor: add method that checks the validity of a path
-	- addMultiUniqueKey in MddANalyzeWalker
-  
+- refactor DataDefinitionProvider interface, use abstract
+
 - http://bugs.best.eu.org/cgi-bin/bugzilla/show_bug.cgi?id=1098
 
 OPTIMIZATION:

@@ -6,7 +6,6 @@ import java.util.HashMap;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
-import org.makumba.commons.ReservedKeywords;
 import org.makumba.providers.datadefinition.mdd.validation.ComparisonValidationRule;
 import org.makumba.providers.datadefinition.mdd.validation.MultiUniquenessValidationRule;
 import org.makumba.providers.datadefinition.mdd.validation.RangeValidationRule;
@@ -27,37 +26,22 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
 
     protected HashMap<String, FieldNode> typeShorthands = new HashMap<String, FieldNode>();
 
+    private boolean strictTypeCheck;
+
     
-    public MDDAnalyzeWalker(String typeName, URL origin, MDDFactory factory, MDDParser parser) {
+    public MDDAnalyzeWalker(String typeName, URL origin, MDDFactory factory, MDDParser parser, boolean strictTypeCheck) {
         this.origin = origin;
         this.typeName = typeName;
         this.mdd = new MDDNode(typeName, origin);
         this.factory = factory;
         this.parser  = parser;
-    }
-    
-    @Override
-    protected void checkFieldName(AST fieldName) {
-    
-        String nm = fieldName.getText();
-        
-        for (int i = 0; i < nm.length(); i++) {
-            if (i == 0 && !Character.isJavaIdentifierStart(nm.charAt(i)) || i > 0
-                    && !Character.isJavaIdentifierPart(nm.charAt(i))) {
-                factory.doThrow(this.typeName, "Invalid character \"" + nm.charAt(i) + "\" in field name \"" + nm, fieldName);
-            }
-        }
-
-        if (ReservedKeywords.isReservedKeyword(nm)) {
-            factory.doThrow(this.typeName, "Error: field name cannot be one of the reserved keywords "
-                    + ReservedKeywords.getKeywordsAsString(), fieldName);
-        }
+        this.strictTypeCheck = strictTypeCheck;
     }
     
     @Override
     // TODO maybe refactor, i.e. use the already set variables (pointedType, charLength, ...) instead of traversing the AST
     // keep type AST for error processing
-    protected void checkFieldType(AST type) {
+    protected void checkFieldType(AST type, FieldNode field) {
         if(type == null)
             return;
         
@@ -71,26 +55,40 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
                 }
                 break;
             case MDDTokenTypes.PTR:
+                checkPointed(type);
+                break;
             case MDDTokenTypes.SET:
-                AST pointedType = type.getFirstChild();
-                
-                
-                /*
-                // we check if we can find this type
-                URL u = MDDProvider.findDataDefinition(pointedType.getText(), "mdd");
-                
-                
-                if(u == null) {
-                    factory.doThrow(this.typeName, "could not find type " + pointedType.getText(), pointedType);
-                }
-                */
+                checkPointed(type);
+                checkModifiers(type, field);
+                break;
+            case MDDTokenTypes.SETCHARENUM:
+            case MDDTokenTypes.SETINTENUM:
+            case MDDTokenTypes.SETCOMPLEX:
+                checkModifiers(type, field);
                 break;
         }
     }
 
+    private void checkModifiers(AST type, FieldNode field) {
+        if(field.unique) {
+            factory.doThrow(this.typeName, "sets can't be unique", type);
+        }
+    }
+
+    private void checkPointed(AST type) {
+        AST pointedType = type.getFirstChild();
+        if(strictTypeCheck) {
+            // we check if we can find this type
+            URL u = MDDProvider.findDataDefinition(pointedType.getText(), "mdd");
+            if(u == null) {
+                factory.doThrow(this.typeName, "could not find type " + pointedType.getText(), pointedType);
+            }
+        }
+    }
+
     @Override
-    protected void checkSubFieldType(AST type) {
-        checkFieldType(type);
+    protected void checkSubFieldType(AST type, FieldNode field) {
+        checkFieldType(type, field);
         if(type.getType() == MDDTokenTypes.SETCOMPLEX || type.getType() == MDDTokenTypes.PTRONE) {
             factory.doThrow(this.typeName, "Subfields of subfields are not allowed.", type);
         }
@@ -153,19 +151,8 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
     
     @Override
     protected void addMultiUniqueKey(ValidationRuleNode v, AST path) {
-        
-        String fieldPath = path.getText();
-        if(fieldPath.indexOf(".") == -1) {
-            if(!mdd.fields.containsKey(fieldPath)) {
-                factory.doThrow(this.typeName, "Field " + fieldPath + " does not exist", path);
-            }
-        } else {
-            // TODO check if the path is valid
-            
-        }
-        
+        // we check for validity of the paths during postprocessing, when we have all the fields
         v.multiUniquenessFields.add(path.getText());
-        
     }
     
     @Override

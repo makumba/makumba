@@ -37,16 +37,13 @@ options {
     
     protected MDDNode mdd;
     
-    // Check if field name is valid
-    protected void checkFieldName(AST fieldName) {}
-    
     // Check if type and type attributes are correct
     // TODO maybe refactor, i.e. use the already set variables (pointedType, charLength, ...) instead of traversing the AST
     // keep type AST for error processing
-    protected void checkFieldType(AST type) { }
+    protected void checkFieldType(AST type, FieldNode field) { }
     
     // Check if subfield type is allowed - same as field type but without ptrOne and setComplex
-    protected void checkSubFieldType(AST type) { }
+    protected void checkSubFieldType(AST type, FieldNode field) { }
     
     // Check if name of parent in subfield is the name of parent
     protected void checkSubFieldName(String parentName, AST name) { }
@@ -95,9 +92,9 @@ declaration
 fieldDeclaration { FieldType fieldType = null; }
     : #( 
             f:FIELD
-            fn:FIELDNAME { checkFieldName(#fn); FieldNode field = new FieldNode(mdd, #fn.getText(), #f); field.wasIncluded = ((MDDAST)#f_in).wasIncluded; }
+            fn:FIELDNAME { FieldNode field = new FieldNode(mdd, #fn.getText(), #f); field.wasIncluded = ((MDDAST)#f_in).wasIncluded; }
               (m:MODIFIER { addModifier(field, #m.getText()); })*
-              fieldType=ft:fieldType[field] { checkFieldType(#ft); field.makumbaType = fieldType; }
+              fieldType=ft:fieldType[field] { checkFieldType(#ft, field); field.makumbaType = fieldType; }
               (fc:FIELDCOMMENT { field.description = #fc.getText(); } )?
               ( { field.initSubfield(); } subField[field] )*
       ) {
@@ -136,7 +133,7 @@ subField[FieldNode field]
           		}
 				sfn:SUBFIELDNAME { FieldNode subField = new FieldNode(field.subfield, #sfn.getText(), #sf); subField.wasIncluded = ((MDDAST)#sfn_in).wasIncluded; }
 				(sm:MODIFIER { addModifier(subField, #sm.getText());} )*
-				subFieldType=sft:fieldType[subField] { checkSubFieldType(#sft); subField.makumbaType = subFieldType; }
+				subFieldType=sft:fieldType[subField] { checkSubFieldType(#sft, subField); subField.makumbaType = subFieldType; }
 				(sfc:FIELDCOMMENT { subField.description = #sfc.getText(); })?
 				{
   					// we add the subField to the field
@@ -212,7 +209,7 @@ typeDeclaration! // we kick out the declaration after registering it
 	: name:TYPENAME
 	  // dummy field, needed for keeping intEnum values
 	  { FieldNode field = new FieldNode(mdd, #name.getText(), #name); FieldType type = null; }
-	  type=ft:fieldType[field] { checkFieldType(#ft); field.makumbaType = type; addTypeShorthand(#name, field); }
+	  type=ft:fieldType[field] { checkFieldType(#ft, field); field.makumbaType = type; addTypeShorthand(#name, field); }
     ;
     
     

@@ -54,45 +54,8 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
         switch(title.titleType) {
             
             case MDDTokenTypes.FIELD:
-                
-                String t = title.getText();
-                
-                if(t.indexOf(".") > -1) {
-                
-                    while(t.indexOf(".") > -1) {
-                        String field = t.substring(0, t.indexOf("."));
-                        t = t.substring(t.indexOf(".") + 1);
-                        String fieldInPointed = t.substring(0, t.indexOf("."));
-                        FieldNode n = title.mdd.fields.get(field);
-                        if(n == null) {
-                            factory.doThrow(this.typeName, "Field " + field + " does not exist in type " + mdd.getName() , titleField);
-                        } else {
-                            // check if this is a pointer to another type
-                            if(n.makumbaType != FieldType.PTRREL || n.makumbaType != FieldType.PTRONE) {
-                                factory.doThrow(this.typeName, "Field " + field + " is not a pointer", titleField);
-                            } else {
-                                // if it's a pointer, let's check if we can make something out of it
-                                try {
-                                    DataDefinition pointed = MDDProvider.getMDD(n.pointedType);
-                                    if(pointed.getFieldDefinition(fieldInPointed) == null) {
-                                        factory.doThrow(this.typeName, "Field " + fieldInPointed + " does not exist in type " + pointed.getName(), titleField);
-                                    }
-                                    
-                                } catch(DataDefinitionNotFoundError d) {
-                                    factory.doThrow(this.typeName, "Could not find type " + n.pointedType, titleField);
-                                }
-                            }
-                        }
-                    }
-                
-                } else {
-                    Object field = title.mdd.fields.get(title.getText());
-                    if(field == null) {
-                        factory.doThrow(this.typeName, "Field " + title.getText() + " does not exist in type " + mdd.getName() , titleField);
-                    }
-                }
+                checkPathValid(titleField, title.getText(), title.mdd);
                 break;
-                
                 
             case FUNCTION:
                 // TODO add support for calls with arguments
@@ -109,10 +72,57 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
         }
         
     }
+
+    private void checkPathValid(AST ast, String t, MDDNode mddNode) {
+        
+        
+        if(t.indexOf(".") > -1) {
+        
+            while(t.indexOf(".") > -1) {
+                String field = t.substring(0, t.indexOf("."));
+                t = t.substring(t.indexOf(".") + 1);
+                String fieldInPointed = t;
+                if(fieldInPointed.indexOf(".") > -1) {
+                    fieldInPointed = fieldInPointed.substring(0, fieldInPointed.indexOf("."));
+                }
+                FieldNode n = mddNode.fields.get(field);
+                if(n == null) {
+                    factory.doThrow(this.typeName, "Field " + field + " does not exist in type " + mdd.getName() , ast);
+                } else {
+                    // check if this is a pointer to another type
+                    if(!(n.makumbaType == FieldType.PTRREL || n.makumbaType == FieldType.PTR || n.makumbaType == FieldType.PTRONE)) {
+                        factory.doThrow(this.typeName, "Field " + field + " is not a pointer", ast);
+                    } else {
+                        // if it's a pointer, let's check if we can make something out of it
+                        try {
+                            DataDefinition pointed = MDDProvider.getMDD(n.pointedType);
+                            if(pointed.getFieldDefinition(fieldInPointed) == null) {
+                                factory.doThrow(this.typeName, "Field " + fieldInPointed + " does not exist in type " + pointed.getName(), ast);
+                            }
+                            
+                        } catch(DataDefinitionNotFoundError d) {
+                            factory.doThrow(this.typeName, "Could not find type " + n.pointedType, ast);
+                        }
+                    }
+                }
+            }
+        
+        } else {
+            Object field = mddNode.fields.get(t);
+            if(field == null) {
+                factory.doThrow(this.typeName, "Field " + t + " does not exist in type " + mdd.getName(), ast);
+            }
+        }
+    }
     
     @Override
-    protected void processMultiUniqueValidationDefinitions(ValidationRuleNode v) {
+    protected void processMultiUniqueValidationDefinitions(ValidationRuleNode v, AST v_in) {
         if(v instanceof MultiUniquenessValidationRule) {
+            
+            for(String path : v.multiUniquenessFields) {
+                checkPathValid(v_in, path, v.mdd);
+            }
+            
             DataDefinition.MultipleUniqueKeyDefinition key = new DataDefinition.MultipleUniqueKeyDefinition(v.multiUniquenessFields.toArray(new String[] {}), v.message);
             mdd.addMultiUniqueKey(key);
         }

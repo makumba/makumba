@@ -20,11 +20,12 @@ import org.makumba.Text;
 import org.makumba.ValidationRule;
 import org.makumba.commons.StringUtils;
 import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.datadefinition.makumba.RecordInfo;
 
 public class FieldDefinitionImpl implements FieldDefinition {
 
     // basic field info
-    protected DataDefinition mdd;
+    protected DataDefinitionImpl mdd;
     
     protected String name;
     
@@ -45,10 +46,10 @@ public class FieldDefinitionImpl implements FieldDefinition {
     protected boolean unique;
     
     // intEnum - contains all values, including deprecated
-    private LinkedHashMap<Integer, String> intEnumValues = new LinkedHashMap<Integer, String>();
+    protected LinkedHashMap<Integer, String> intEnumValues = new LinkedHashMap<Integer, String>();
 
     // intEnum - contains depreciated values
-    private LinkedHashMap<Integer, String> intEnumValuesDeprecated = new LinkedHashMap<Integer, String>();
+    protected LinkedHashMap<Integer, String> intEnumValuesDeprecated = new LinkedHashMap<Integer, String>();
     
     // charEnum - contains all values, including deprecated
     protected Vector<String> charEnumValues = new Vector<String>();
@@ -92,7 +93,7 @@ public class FieldDefinitionImpl implements FieldDefinition {
     /**
      * Minimal constructor for standard fields
      */
-    public FieldDefinitionImpl(String name, DataDefinition dd) {
+    public FieldDefinitionImpl(String name, DataDefinitionImpl dd) {
         this.name = name;
         this.mdd = dd;
     }
@@ -103,8 +104,6 @@ public class FieldDefinitionImpl implements FieldDefinition {
      * @param name the name of the field
      * @param type the type of the filed, e.g. char, int, ptr - but no relational type definition
      */
-    // FIXME what about pointed in the case of ptr?
-
     public FieldDefinitionImpl(String name, String type) {
         this.name = name;
         fixed = false;
@@ -141,6 +140,11 @@ public class FieldDefinitionImpl implements FieldDefinition {
         }   
     }
     
+    public FieldDefinitionImpl(String name, String type, DataDefinitionImpl mdd) {
+        this(name, type);
+        this.mdd = mdd;
+    }
+    
     /** for virtual FieldDefinition */
     public FieldDefinitionImpl(String name, FieldDefinition fi) {
         
@@ -159,29 +163,13 @@ public class FieldDefinitionImpl implements FieldDefinition {
         this.charLength = f.charLength;
         this.defaultValue = f.defaultValue;
         this.description = f.description;
-
-        switch (type) {
-            case PTRONE:
-            case SETCOMPLEX:
-            case FILE:
-                subfield = f.subfield;
-                break;
-            case SETCHARENUM:
-                this.intEnumValues = f.intEnumValues;
-                this.intEnumValuesDeprecated = f.intEnumValuesDeprecated;
-                break;
-            case SETINTENUM:
-                this.charEnumValues = f.charEnumValues;
-                this.charEnumValuesDeprecated = f.charEnumValuesDeprecated;
-                break;
-            case SET:
-                pointed = fi.getSubtable();
-                break;
-            case PTRREL:
-                pointedType = f.pointedType;
-                pointed = f.pointed;
-                break;
-        }
+        this.pointedType = f.pointedType;
+        this.pointed = f.pointed;
+        this.subfield = f.subfield;
+        this.intEnumValues = f.intEnumValues;
+        this.intEnumValuesDeprecated = f.intEnumValuesDeprecated;
+        this.charEnumValues = f.charEnumValues;
+        this.charEnumValuesDeprecated = f.charEnumValuesDeprecated;
         
         if (type == FieldType.PTRINDEX) {
             type = FieldType.PTR;
@@ -205,7 +193,7 @@ public class FieldDefinitionImpl implements FieldDefinition {
 
     
     /** constructor used when creating the {@link DataDefinitionImpl} during parsing **/
-    public FieldDefinitionImpl(DataDefinition mdd, FieldNode f) {
+    public FieldDefinitionImpl(DataDefinitionImpl mdd, FieldNode f) {
         this.mdd = mdd;
         this.name = f.name;
         this.fixed = f.fixed;
@@ -221,15 +209,6 @@ public class FieldDefinitionImpl implements FieldDefinition {
         this.charEnumValues = f.charEnumValues;
         this.charEnumValuesDeprecated = f.charEnumValuesDeprecated;
         this.pointedType = f.pointedType;
-        
-        
-        // we build the pointed type lazily, that way we also avoid getting into nasty loops
-        /*
-        if(f.pointedType != null && (this.type == FieldType.PTR || this.type == FieldType.PTRREL || this.type == FieldType.SET)) {
-            this.pointed = MDDProvider.getMDD(pointedType);
-        }
-        */
-        
         this.validationRules = f.validationRules;
         
         // TODO check if this works
@@ -237,18 +216,9 @@ public class FieldDefinitionImpl implements FieldDefinition {
         this.originalFieldDefinitionParent = getDataDefinition().getName();
         
         // we have to transform the subfield MDDNode into a DataDefinitionImpl
-        
         if(f.subfield != null) {
-            switch(type) {
-                case SETCOMPLEX:
-                case SETINTENUM:
-                case SETCHARENUM:
-                case PTRONE:
-                case SET:
-                    this.subfield = new DataDefinitionImpl(f.getName(), f.subfield, mdd);
-                    this.subfield.build();
-                    break;
-            }
+            this.subfield = new DataDefinitionImpl(f.getName(), f.subfield, mdd);
+            this.subfield.build();
         }
     }
 
@@ -306,7 +276,7 @@ public class FieldDefinitionImpl implements FieldDefinition {
         return this.description != null;
     }
     
-    public DataDefinition getDataDefinition() {
+    public DataDefinitionImpl getDataDefinition() {
         return this.mdd;
     }
 
@@ -950,7 +920,7 @@ public class FieldDefinitionImpl implements FieldDefinition {
             case SET:
                 return this.subfield;
             default:
-                throw new RuntimeException("Trying to get a sub-able for a '" + getType() + "' for field '" + name
+                throw new RuntimeException("Trying to get a sub-table for a '" + getType() + "' for field '" + name
                         + "'.");
         }
     }
@@ -1046,6 +1016,7 @@ public class FieldDefinitionImpl implements FieldDefinition {
 
     public String getStructure() {
         StringBuffer sb = new StringBuffer();
+        sb.append("--- structure of " + getName() + "\n");
         
         sb.append("getName() " + getName() + "\n");
         sb.append("getDataDefinition() " + getDataDefinition().getName() + "\n");
@@ -1117,9 +1088,9 @@ public class FieldDefinitionImpl implements FieldDefinition {
         
         sb.append("getSubtable()\n");
         try {
-            sb.append(((DataDefinitionImpl)getSubtable()).getName() + "\n");
+            sb.append(((DataDefinitionImpl)getSubtable()).getStructure() + "\n");
         } catch(RuntimeException re) {
-            sb.append("was not a ptr\n");
+            sb.append("was not a ptr: " + re.getMessage() + "\n");
         }
         
         
@@ -1161,7 +1132,8 @@ public class FieldDefinitionImpl implements FieldDefinition {
         sb.append("isPointer() " + isPointer() + "\n");
         sb.append("isStringType() " + isStringType() + "\n");
         
-        
+        sb.append("---  end structure of " + getName());
+
         return sb.toString();
     }
 

@@ -16,6 +16,7 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.ValidationDefinition;
 import org.makumba.ValidationRule;
+import org.makumba.providers.DataDefinitionProvider;
 
 /**
  * Implementation of the {@link DataDefinition} interface.<br>
@@ -140,23 +141,44 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
                 case FILE:
                     // when we have a file field, we transform it into an ptrOne with a specific structure
                     FieldDefinitionImpl fileField = buildFileField(f);
-                    addField(fileField);
                     fileField.subfield.setMemberFieldName = addPointerToParent(fileField);
+                    addField(fileField);
                     break;
-                case SETCOMPLEX:
                 case PTRONE:
                     addField(field);
+                    break;
+                case SETCOMPLEX:
                     addPointerToParent(field);
+                    addField(field);
                     break;
                 case SET:
-                    addField(field);
+                    addPointerToParent(field);
                     field.subfield.setMemberFieldName = addPointerToForeign(field);
+                    addField(field);
                     break;
                 case SETINTENUM:
                 case SETCHARENUM:
-                    addField(field);
                     addPointerToParent(field);
+                    addField(field);
+
+                    // add enum field
+                    String type = "";
+                    if(field.type == FieldType.SETINTENUM)
+                        type = "intEnum";
+                    if(field.type == FieldType.SETCHARENUM)
+                        type = "charEnum";
+                    
+                    FieldDefinitionImpl enumField = new FieldDefinitionImpl(ENUM_FIELD_NAME, type);
+                    enumField.charEnumValues = field.charEnumValues;
+                    enumField.charEnumValuesDeprecated = field.charEnumValuesDeprecated;
+                    enumField.intEnumValues = field.intEnumValues;
+                    enumField.intEnumValuesDeprecated = field.intEnumValuesDeprecated;
+                    enumField.mdd = field.subfield;
+                    enumField.description = field.name;
+                    field.subfield.addField(enumField);
                     field.subfield.setMemberFieldName = ENUM_FIELD_NAME;
+                    field.subfield.titleFieldExpr = "enum";
+                    field.subfield.titleField = "enum";
                     break;
                 default:
                     addField(field);
@@ -174,6 +196,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
         String parentName = getPointerName(this.name, subField);
         FieldDefinitionImpl ptr = new FieldDefinitionImpl(parentName, "ptrRel");
         subField.subfield.addField(ptr);
+        ptr.mdd = subField.subfield;
         ptr.fixed = true;
         ptr.notNull = true;
         ptr.type = FieldType.PTRREL;
@@ -190,9 +213,19 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
      * @return the name of the pointer field in the subField
      */
     private String addPointerToForeign(FieldDefinitionImpl subField) {
-        String pointed = getPointerName(subField.pointedType, subField);
+        String pointed = subField.pointedType;
+        int s = pointed.indexOf("->");
+        if(s != -1)
+            pointed = pointed.substring(s+2);
+        int n = pointed.lastIndexOf('.');
+        if (n != -1) {
+            pointed = pointed.substring(n + 1);
+        }
+        
         FieldDefinitionImpl ptr = new FieldDefinitionImpl(pointed, "ptrRel");
         subField.subfield.addField(ptr);
+        subField.subfield.titleField = subField.getPointedType().getTitleFieldName();
+        ptr.mdd = subField.subfield;
         ptr.fixed = true;
         ptr.notNull = true;
         ptr.type = FieldType.PTRREL;
@@ -278,13 +311,13 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
         dd.fieldNameInParent = fi.name;
         dd.parent = this;
         dd.addStandardFields(f.name);
-        dd.addField(new FieldDefinitionImpl("content", "binary"));
-        dd.addField(new FieldDefinitionImpl("contentLength", "int"));
-        dd.addField(new FieldDefinitionImpl("contentType", "char"));
-        dd.addField(new FieldDefinitionImpl("originalName", "char"));
-        dd.addField(new FieldDefinitionImpl("name", "char"));
-        dd.addField(new FieldDefinitionImpl("imageWidth", "int"));
-        dd.addField(new FieldDefinitionImpl("imageHeight", "int"));
+        dd.addField(new FieldDefinitionImpl("content", "binary", dd));
+        dd.addField(new FieldDefinitionImpl("contentLength", "int", dd));
+        dd.addField(new FieldDefinitionImpl("contentType", "char", dd));
+        dd.addField(new FieldDefinitionImpl("originalName", "char", dd));
+        dd.addField(new FieldDefinitionImpl("name", "char", dd));
+        dd.addField(new FieldDefinitionImpl("imageWidth", "int", dd));
+        dd.addField(new FieldDefinitionImpl("imageHeight", "int", dd));
         fi.subfield = dd;
         
         return fi;
@@ -358,7 +391,13 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
      */
     private void evaluateTitle() {
         if(titleFieldExpr == null) {
-            titleField = (String) (Arrays.asList(fields.keySet().toArray())).get(0);
+            // if we have no tite field set, the title field is the first field in the MDD
+            // but not the PtrIndex
+            if(fields.keySet().size() > 3) {
+                titleField = (String) (Arrays.asList(fields.keySet().toArray())).get(3);
+            } else {
+                titleField = (String) (Arrays.asList(fields.keySet().toArray())).get(0);
+            }
         } else if(titleFieldType == TitleFieldType.FUNCTION){
             QueryFragmentFunction f = functions.get(titleFieldExpr.substring(0, titleFieldExpr.indexOf("(")));
             titleField = f.getQueryFragment(); 
@@ -572,7 +611,12 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
         if(this.parent == null) {
             return null;
         }
-        return this.parent.getName();
+        String name = this.parent.getName();
+        int n = name.indexOf("->");
+        if(n > -1)
+            name = name.substring(n+2);
+        
+        return name;
     }
     
     
