@@ -40,7 +40,7 @@ SUBFIELD
 
 
 // we allow identifiers to start with a number
-IDENT options { testLiterals=true; }
+IDENT options { testLiterals=true; paraphrase = "an identifier";}
     : ID_START_LETTER ( ID_LETTER )*
     ;
 
@@ -58,11 +58,11 @@ ID_LETTER
     |    '0'..'9'
     ;
     
-POSITIVE_INTEGER
+POSITIVE_INTEGER options { paraphrase = "a positive integer";}
     : ('+')? NUMBER
     ;
 
-NEGATIVE_INTEGER
+NEGATIVE_INTEGER options { paraphrase = "a negative integer";}
     : '-' NUMBER
     ;
 
@@ -83,7 +83,7 @@ SL_COMMENT
         {$setType(Token.SKIP); newline();}
     ;
     
-LINEBREAK
+LINEBREAK options { paraphrase = "a line break";}
     :   '\n'      { newline(); } // unix
     |   '\r' '\n' { newline(); } // dos
     |   '\r'      { newline(); } // mac
@@ -94,7 +94,7 @@ FIELDCOMMENT
 	;
 
 
-MESSAGE
+MESSAGE options { paraphrase = "an error message";}
 	: COLON (~('\n'|'\r'))* LINEBREAK //('\n'|'\r'('\n')?) {newline();}
 	;
 	
@@ -103,7 +103,7 @@ FUNCTION_BODY
 	;
 	
 // string literals
-STRING_LITERAL
+STRING_LITERAL options { paraphrase = "a string litteral";}
     :   '"' (ESC|~('"'|'\\'|'\n'|'\r'))* '"'
     ;
 
@@ -291,6 +291,8 @@ tokens {
     
     protected void errorNestedSubfield(AST s) {}
     
+    protected void checkFieldName(AST n) {}
+    
 }
 
 dataDefinition
@@ -320,6 +322,7 @@ fieldDeclaration
       {
       	if(!hasBody) {
       	    disableField(#fieldDeclaration);
+      	    #fieldDeclaration = null;
       	}
       }
     ;
@@ -347,10 +350,10 @@ subFieldBody
     ;
     
 fieldName
-    : a:atom { #a.setType(FIELDNAME); }
+    : a:atom { checkFieldName(#a); #a.setType(FIELDNAME); }
     // this is an ugly workaround to allow "length" as a field name
-    | l:LENGTH { #l.setType(FIELDNAME); }
-    | c:CHAR { #c.setType(FIELDNAME); }
+    | l:LENGTH { checkFieldName(#l); #l.setType(FIELDNAME); }
+    | c:CHAR { checkFieldName(#c); #c.setType(FIELDNAME); }
     ;
 
 fieldType

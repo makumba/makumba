@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import org.makumba.DataDefinitionNotFoundError;
+import org.makumba.commons.ReservedKeywords;
 
 import antlr.RecognitionException;
 import antlr.TokenStream;
@@ -122,10 +123,14 @@ public class MDDParser extends MDDBaseParser {
         while(t!= null && t.getNextSibling() != null) {
             prec = t;
             t = t.getNextSibling();
-            // FIXME should warn if a field without body is not overriding another one
             if(t.getType() == MDDTokenTypes.FIELD && fieldsToDisable.containsKey(t.getText())) {
                 prec.setNextSibling(t.getNextSibling());
+                fieldsToDisable.remove(t.getText());
             }
+        }
+        
+        for(String key : fieldsToDisable.keySet()) {
+            factory.doThrow(this.typeName, "Fields cannot have an empty body unless they override an included field", fieldsToDisable.get(key));
         }
     }
     
@@ -143,6 +148,14 @@ public class MDDParser extends MDDBaseParser {
                 factory.doThrow(e, expression, typeName);
             } catch (TokenStreamException e) {
                 factory.doThrow(e, expression, typeName);
+            }   
+            if(parser.error != null) {
+                if(parser.error instanceof RecognitionException) {
+                    RecognitionException e = (RecognitionException) parser.error;
+                    e.column = expression.getColumn() + e.column;
+                    e.line = expression.getLine();
+                    factory.doThrow(e, expression, typeName);
+                }
             }
             
             AST tree = parser.getAST();
@@ -170,6 +183,24 @@ public class MDDParser extends MDDBaseParser {
     @Override
     protected void errorNestedSubfield(AST s) {
         factory.doThrow(typeName, "Nested subtypes are not allowed", s);
+    }
+    
+    @Override
+    protected void checkFieldName(AST fieldName) {
+        
+        String nm = fieldName.getText();
+        
+        for (int i = 0; i < nm.length(); i++) {
+            if (i == 0 && !Character.isJavaIdentifierStart(nm.charAt(i)) || i > 0
+                    && !Character.isJavaIdentifierPart(nm.charAt(i))) {
+                factory.doThrow(this.typeName, "Invalid character \"" + nm.charAt(i) + "\" in field name \"" + nm, fieldName);
+            }
+        }
+
+        if (ReservedKeywords.isReservedKeyword(nm)) {
+            factory.doThrow(this.typeName, "Error: field name cannot be one of the reserved keywords "
+                    + ReservedKeywords.getKeywordsAsString(), fieldName);
+        }
     }
     
  

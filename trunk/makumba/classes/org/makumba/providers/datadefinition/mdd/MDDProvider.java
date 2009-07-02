@@ -48,7 +48,6 @@ public class MDDProvider implements DataDefinitionProviderInterface {
     public FieldDefinition makeFieldDefinition(String name, String definition) {
         
         String def = name.replaceAll("__", "->") + "=" + definition.replaceAll("__", "->");
-        
         return MDDFactory.getInstance().getVirtualDataDefinition(name.replaceAll("__", "->"), def).getFieldDefinition(name.replaceAll("__", "->"));
         
     }
@@ -59,6 +58,11 @@ public class MDDProvider implements DataDefinitionProviderInterface {
      * @see org.makumba.providers.DataDefinitionProviderInterface#makeFieldOfType(java.lang.String, java.lang.String)
      */
     public FieldDefinition makeFieldOfType(String name, String type) {
+        
+        if(type.startsWith("ptr ")) {
+            return makeFieldDefinition(name, type);
+        }
+        
         return new FieldDefinitionImpl(name.replaceAll("__", "->"), type.replaceAll("__", "->"));
     }
 

@@ -19,8 +19,8 @@ name3->!title = subname1 ;test
 name3-> subname1 = unique char[232] ; subcomment1
 name3-> subname2 = genTyp ; subcomment2
 name3->!include = validMdds.Included
-name3->subImage = file
-#name3->length(subname1) {1..2} : this is an error message
+#name3->subImage = file
+name3->length(subname1) {1..2} : this is an error message
 
 name4 = char[255] ;comment4
 age = int ; age of someone
@@ -30,19 +30,19 @@ name6 = char {"Some", "Other", "Value"}
 setint = set int {"Male" = 10, "Female" = 20, "Shemale" = 30 deprecated}
 setchar = set char {"Some", "Other", "Value"}
 
-image = file
+#image = file
 
 testSetInt = set int{"Female"=0, "Male"=1}
 testSet = set ParserTest
 
 
 # simple validation rules
-#range(age) {15..18} : Must be at least 15 years old and at most 18!
-#name4%matches = "http://.+" : the homepage must start with http://
+range(age) {15..18} : Must be at least 15 years old and at most 18!
+matches(name4) { http://.+ } : the homepage must start with http://
 
-#length(name4) {1..?} : name4 must not be empty
-#unique() { name2, name } : these need to be unique!
+length(name4) {1..?} : name4 must not be empty
+unique() { name2, name } : these need to be unique!
 
-#compare() { lower(name) = name } : Name must not have capital letters
+compare() { lower(name) = name } : Name must not have capital letters
 
-#myFunction(char[] cdcd) { text + this.name }
+myFunction(char[] cdcd) { text + this.name }

@@ -1062,7 +1062,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
             case FieldDefinition._set:
                 return get_set_Subtable();
             default:
-                throw new RuntimeException("Trying to get a sub-able for a '" + getType() + "' for field '" + name
+                throw new RuntimeException("Trying to get a sub-table for a '" + getType() + "' for field '" + name
                         + "'.");
         }
     }
@@ -1251,7 +1251,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     
     public String getStructure() {
         StringBuffer sb = new StringBuffer();
-        
+        sb.append("--- structure of " + getName() + "\n");
+
         sb.append("getName() " + getName() + "\n");
         sb.append("getDataDefinition() " + getDataDefinition().getName() + "\n");
 //        sb.append("getOriginalFieldDefinition() " + getOriginalFieldDefinition().getName() + "\n");
@@ -1322,15 +1323,15 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         
         sb.append("getSubtable()\n");
         try {
-            sb.append(((RecordInfo)getSubtable()).getName() + "\n");
+            sb.append(((RecordInfo)getSubtable()).getStructure() + "\n");
         } catch(RuntimeException re) {
-            sb.append("was not a ptr\n");
+            sb.append("was not a ptr: " + re.getMessage() + "\n");
         }
         
         
         sb.append("getPointedType()\n");
         try {
-            sb.append(((RecordInfo)getPointedType()).getName() + "\n");
+                sb.append(((RecordInfo)getPointedType()).getName() + "\n");
         } catch(RuntimeException re) {
             sb.append("was not a ptr\n");
         }
@@ -1366,7 +1367,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         sb.append("isPointer() " + isPointer() + "\n");
         sb.append("isStringType() " + isStringType() + "\n");
         
-        
+        sb.append("---  end structure of " + getName());
+
         return sb.toString();
     }
     

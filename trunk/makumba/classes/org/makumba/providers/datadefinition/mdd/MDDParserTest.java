@@ -9,15 +9,15 @@ import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.datadefinition.makumba.RecordInfo;
 import org.makumba.providers.datadefinition.mdd.validation.ComparisonValidationRule;
+import org.makumba.providers.datadefinition.mdd.validation.RegExpValidationRule;
 
 
 public class MDDParserTest {
 
     public static void main(String[] args) {
         /*
+        Configuration.setDataDefinitionProviderClass("org.makumba.providers.datadefinition.makumba.MakumbaDataDefinitionFactory");
         RecordInfo dd = (RecordInfo) DataDefinitionProvider.getInstance().getDataDefinition("OldTest");
-        System.out.println(dd.getFieldDefinition("name3").getPointedType().getName());
-        System.out.println(dd.toString());
         
         QueryProvider query = QueryProvider.makeQueryRunner(Configuration.getDefaultDataSourceName(), "oql");
         Vector<Dictionary<String, Object>> res = query.execute("SELECT (lower(t.name) = t.name) as expression FROM OldTest t", null, 0, -1);
@@ -28,7 +28,6 @@ public class MDDParserTest {
 
         Vector<Dictionary<String, Object>> res4 = query.execute("SELECT e.OldTest FROM OldTest t, t.testSet e", null, 0, -1);
 
-        
         */
         
         
@@ -36,6 +35,10 @@ public class MDDParserTest {
         DataDefinitionImpl dd = (DataDefinitionImpl) MDDProvider.getMDD("ParserTest");
         
         for(ValidationRule r : dd.validationRules.values()) {
+            
+            if(r instanceof RegExpValidationRule) {
+                System.out.println(r.getRuleName() + " : " + r.validate("http://www.com"));
+            }
             
             if(r instanceof ComparisonValidationRule) {
                 System.out.println(r.getRuleName() + " : " + r.validate("AAA"));

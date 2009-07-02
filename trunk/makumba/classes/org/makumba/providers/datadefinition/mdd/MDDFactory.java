@@ -14,9 +14,8 @@ import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.DataDefinitionParseError;
 
-import antlr.MismatchedTokenException;
+import antlr.ANTLRException;
 import antlr.RecognitionException;
-import antlr.TokenStreamException;
 import antlr.collections.AST;
 
 /**
@@ -67,7 +66,7 @@ public class MDDFactory {
 
         MDDParser parser = parse(typeName, u, false);
 
-        return buildDataDefinition(typeName, u, parser);
+        return buildDataDefinition(typeName, u, parser, true, false);
 
     }
     
@@ -82,28 +81,25 @@ public class MDDFactory {
         // step 1 - parse the definition
         MDDParser parser = parse(typeName, definition);
         
-        return buildDataDefinition(typeName, null, parser);
+        return buildDataDefinition(typeName, null, parser, false, true);
         
     }
 
-    private DataDefinition buildDataDefinition(String typeName, URL u, MDDParser parser) {
+    private DataDefinition buildDataDefinition(String typeName, URL u, MDDParser parser, boolean strictTypeCheck, boolean virtual) {
         // step 2 - analysis
         MDDAnalyzeWalker analysisWalker = null;
         try {
-            analysisWalker = new MDDAnalyzeWalker(typeName, u, this, parser);
+            analysisWalker = new MDDAnalyzeWalker(typeName, u, this, parser, strictTypeCheck);
             analysisWalker.setASTFactory(astFactory);
             analysisWalker.dataDefinition(parser.getAST());
-        } catch (MismatchedTokenException t) {
+        } catch (ANTLRException t) {
             doThrow(t, parser.getAST(), typeName);
-        } catch(RecognitionException re) {
-            doThrow(re, parser.getAST(), typeName);
         } catch(DataDefinitionParseError dpe) {
             throw dpe;
         } catch(Throwable t) {
-            // for all the rest, we hope to get something through the AST error
-            doThrow(analysisWalker.error, parser.getAST(), typeName);
+            doThrow(t, parser.getAST(), typeName);
         }
-        doThrow(analysisWalker.error, parser.getAST(), typeName);
+        doThrow(parser.error, parser.getAST(), typeName);
         
         if(analysisWalker.getAST() == null && parser.getAST() != null) {
             throw new DataDefinitionParseError("Could not parse " + typeName + ": analyser returned empty AST. Please report to developers.");
@@ -121,16 +117,14 @@ public class MDDFactory {
         try {
             postProcessor = new MDDPostProcessorWalker(typeName, analysisWalker.mdd, analysisWalker.typeShorthands, this);
             postProcessor.dataDefinition(analysisWalker.getAST());
-        } catch (MismatchedTokenException t) {
+        } catch (ANTLRException t) {
             doThrow(t, parser.getAST(), typeName);
-        } catch(RecognitionException re) {
-            doThrow(re, parser.getAST(), typeName);
         } catch(DataDefinitionParseError dpe) {
             throw dpe;
         } catch(Throwable t) {
-            // for all the rest, we hope to get something through the AST error
-            doThrow(postProcessor.error, parser.getAST(), typeName);
+            doThrow(t, parser.getAST(), typeName);
         }
+        doThrow(parser.error, parser.getAST(), typeName);
 
         if(postProcessor.getAST() == null && analysisWalker.getAST() != null) {
             throw new DataDefinitionParseError("Could not parse " + typeName + ": postprocessor returned empty AST. Please report to developers.");
@@ -142,8 +136,14 @@ public class MDDFactory {
         //visitor3.visit(postProcessor.getAST());
 
         // step 4 - make the DataDefinitionImpl object, together with its FieldDefinitionImpl objects
-        // at this point, the DataDefinitionImpl object is not yet initialised, but will be by the NamedResource creation
-        return new DataDefinitionImpl(postProcessor.mdd);
+        DataDefinitionImpl result = new DataDefinitionImpl(postProcessor.mdd);;
+        if(!virtual) {
+            // at this point, the DataDefinitionImpl object is not yet initialised, but will be by the NamedResource creation
+            return result;
+        } else {
+            result.build();
+            return result;
+        }
     }
 
     /**
@@ -188,7 +188,7 @@ public class MDDFactory {
         // first pass - simply parse the MDD file
         Reader reader = new InputStreamReader(seq1);
         MDDLexer lexer = new MDDLexer(reader);
-
+        
         // create reader for error handling
         BufferedReader errorReader = new BufferedReader(new InputStreamReader(seq2));
         errorReaders.put(typeName, errorReader);
@@ -199,17 +199,14 @@ public class MDDFactory {
             parser.setASTFactory(astFactory);
             parser.dataDefinition();
             parser.postProcess();
-        } catch (MismatchedTokenException t) {
+        } catch (ANTLRException t) {
             doThrow(t, parser.getAST(), typeName);
-        } catch(RecognitionException re) {
-            doThrow(re, parser.getAST(), typeName);
-        } catch(TokenStreamException tse) {
-            doThrow(tse, parser.getAST(), typeName);
         } catch(DataDefinitionParseError dpe) {
             throw dpe;
         } catch(Throwable t) {
-            doThrow(parser.error, parser.getAST(), typeName);
+            doThrow(t, parser.getAST(), typeName);
         }
+        doThrow(parser.error, parser.getAST(), typeName);
         
         AST tree = parser.getAST();
         System.out.println("**** Parser ****");
@@ -242,11 +239,7 @@ public class MDDFactory {
         String line = "";
         int column = 0;
 
-        if (t instanceof MismatchedTokenException) {
-            MismatchedTokenException mte = (MismatchedTokenException) t;
-            line = getLine(mte.getLine(), typeName);
-            column = mte.getColumn();
-        } else if (t instanceof RecognitionException) {
+        if (t instanceof RecognitionException) {
             RecognitionException re = (RecognitionException) t;
             if (re.getColumn() > 0) {
                 column = re.getColumn();
