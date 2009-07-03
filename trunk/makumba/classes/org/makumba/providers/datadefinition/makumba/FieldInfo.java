@@ -1255,11 +1255,14 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 
         sb.append("getName() " + getName() + "\n");
         sb.append("getDataDefinition() " + getDataDefinition().getName() + "\n");
-//        sb.append("getOriginalFieldDefinition() " + getOriginalFieldDefinition().getName() + "\n");
         sb.append("isIndexPointerField() " + isIndexPointerField() + "\n");
         sb.append("getEmptyValue() " + getEmptyValue() + "\n");
         sb.append("getNull()" + getNull() + "\n");
-        sb.append("hasDescription() " + hasDescription() + "\n");
+        try {
+            sb.append("hasDescription() " + hasDescription() + "\n");
+        } catch(RuntimeException e) {
+            sb.append("has invalid description");
+        }
         sb.append("getDescription() " + getDescription() + "\n");
         sb.append("getType() " + getType() + "\n");
         sb.append("getIntegerType() " + getIntegerType() + "\n");
@@ -1331,7 +1334,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         
         sb.append("getPointedType()\n");
         try {
-                sb.append(((RecordInfo)getPointedType()).getName() + "\n");
+            sb.append(((RecordInfo)getPointedType()).getName() + "\n");
         } catch(RuntimeException re) {
             sb.append("was not a ptr\n");
         }
