@@ -63,7 +63,7 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
                     factory.doThrow(this.typeName, "There's no support for function calls with arguments in the !title directive yet", titleField);
                 } else {
                     if(mdd.functions.get(title.functionName) == null ) {
-                        factory.doThrow(this.typeName, "Function " + title.getText() + " not defined in type " + typeName , titleField);
+                        factory.doThrow(this.typeName, "Function " + title.functionName + " not defined in type " + typeName , titleField);
                     }
                 }
                 break;

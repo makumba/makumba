@@ -269,6 +269,8 @@ public class FieldDefinitionImpl implements FieldDefinition {
         if (description.trim().equals("")) {
             return name;
         }
+        if(type == FieldType.SETCOMPLEX)
+            return name;
         return description;
     }
     
@@ -565,16 +567,14 @@ public class FieldDefinitionImpl implements FieldDefinition {
     }
 
     private Object checkIntEnum(Object value) {
-        if (value instanceof Integer && !intEnumValues.containsKey(value) /* && !intEnumValuesDeprecated.containsKey(value)*/) {
+        if (value instanceof Integer && !intEnumValues.containsKey(value)) {
             throw new org.makumba.InvalidValueException(this, "int value set to int enumerator (" + value
                     + ") is not a member of " + Arrays.toString(intEnumValues.keySet().toArray()));
-        }
-        if (!(value instanceof String)) {
+        } else if(!(value instanceof Integer) && !(value instanceof String)) {
             throw new org.makumba.InvalidValueException(this,
-                    "int enumerators only accept values of type Integer or String. Value supplied (" + value
-                            + ") is of type " + value.getClass().getName());
-        }
-        if(!intEnumValues.containsValue(value) /* && !intEnumValuesDeprecated.containsKey(value) */) {
+                "int enumerators only accept values of type Integer or String. Value supplied (" + value
+                + ") is of type " + value.getClass().getName());
+        } else if(value instanceof String && !intEnumValues.containsValue(value)) {
             throw new org.makumba.InvalidValueException(this, "string value set to int enumerator (" + value
                     + ") is neither a member of " + Arrays.toString(intEnumValues.values().toArray()) + " nor a member of " + Arrays.toString(intEnumValues.keySet().toArray()));
         }
@@ -651,7 +651,7 @@ public class FieldDefinitionImpl implements FieldDefinition {
 
     public boolean is_ptrRel_AssignableFrom(FieldDefinition fi) {
         return "nil".equals(fi.getType()) || getType().equals(fi.getType())
-                && ((DataDefinition) ((FieldDefinitionImpl) fi).subfield).getName().equals(getForeignTable().getName());
+                && ((FieldDefinitionImpl) fi).pointedType.equals(getForeignTable().getName());
     }
 
     public boolean is_real_AssignableFrom(FieldDefinition fi) {
@@ -1024,7 +1024,11 @@ public class FieldDefinitionImpl implements FieldDefinition {
         sb.append("isIndexPointerField() " + isIndexPointerField() + "\n");
         sb.append("getEmptyValue() " + getEmptyValue() + "\n");
         sb.append("getNull()" + getNull() + "\n");
-        sb.append("hasDescription() " + hasDescription() + "\n");
+        try {
+            sb.append("hasDescription() " + hasDescription() + "\n");
+        } catch(RuntimeException e) {
+            sb.append("has invalid description");
+        }
         sb.append("getDescription() " + getDescription() + "\n");
         sb.append("getType() " + getType() + "\n");
         sb.append("getIntegerType() " + getIntegerType() + "\n");

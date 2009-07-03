@@ -23,6 +23,9 @@ public class MDDNode extends CommonAST {
     /** name of the data definition **/
     protected String name = "";
     
+    /** name of the pointer to the subfield, for building names dynamically **/
+    protected String ptrSubfield = "";
+    
     /** name of the index field **/
     protected String indexName = "";
         
@@ -56,7 +59,8 @@ public class MDDNode extends CommonAST {
     
     /** constructor for the creation of subfields **/
     public MDDNode(MDDNode parent, String subFieldName) {
-        this.setName(parent.getName() + "->" + subFieldName);
+        this.setName(parent.getName());
+        this.ptrSubfield = "->" + subFieldName;
         this.origin = parent.origin;
         this.parent = parent.getName();
         this.fieldNameInParent = subFieldName;
@@ -67,7 +71,7 @@ public class MDDNode extends CommonAST {
     }
 
     public String getName() {
-        return name;
+        return name + ptrSubfield;
     }
     
     protected void setTitleField(TitleFieldNode title) {
