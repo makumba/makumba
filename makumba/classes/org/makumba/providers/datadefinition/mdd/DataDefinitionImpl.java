@@ -16,7 +16,6 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.ValidationDefinition;
 import org.makumba.ValidationRule;
-import org.makumba.providers.DataDefinitionProvider;
 
 /**
  * Implementation of the {@link DataDefinition} interface.<br>
@@ -31,6 +30,9 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
 
     /** name of the data definition **/
     protected String name;
+    
+    /** pointer to the subfield, for construction of subfield names dynamically **/
+    protected String ptrSubfield;
     
     /** name of the index field **/
     protected String indexName = "";
@@ -59,6 +61,9 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
     
     /** name of the enumerator field, for setIntEnum and charIntEnum **/
     protected String setMemberFieldName;
+    
+    /** name of the field that holds the relational pointer to the parent field **/
+    protected String setOwnerFieldName;
         
     protected LinkedHashMap<String, FieldDefinition> fields = new LinkedHashMap<String, FieldDefinition>();
     
@@ -78,9 +83,10 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
     }
     
     /** constructor for virtual subfield data definitions, like file **/
-    public DataDefinitionImpl(String name, DataDefinition parent) {
-        this.name = parent.getName() + "->" + name;
-        this.origin = null;
+    public DataDefinitionImpl(String name, DataDefinitionImpl parent) {
+        this.name = parent.getName();
+        this.ptrSubfield = "->" + name;
+        this.origin = parent.origin;
         this.parent = parent;
         this.fieldNameInParent = name;
         addStandardFields(name);
@@ -104,7 +110,8 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
      * as a MDD may refer to itself (through ptr or set).
      */
     protected void build() {
-        this.name = mddNode.getName();
+        this.name = parent != null ? parent.getName() : mddNode.getName();
+        this.ptrSubfield = mddNode.ptrSubfield;
         this.origin = mddNode.origin;
         this.indexName = mddNode.indexName;
         this.isFileSubfield = mddNode.isFileSubfield;
@@ -121,7 +128,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
         this.multiFieldUniqueList = mddNode.multiFieldUniqueList;
         
         
-        addStandardFields(name);
+        addStandardFields(getName());
         addFieldNodes(mddNode.fields);
         addFunctions(mddNode.functions);
         
@@ -141,24 +148,23 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
                 case FILE:
                     // when we have a file field, we transform it into an ptrOne with a specific structure
                     FieldDefinitionImpl fileField = buildFileField(f);
-                    fileField.subfield.setMemberFieldName = addPointerToParent(fileField);
                     addField(fileField);
                     break;
                 case PTRONE:
                     addField(field);
                     break;
                 case SETCOMPLEX:
-                    addPointerToParent(field);
+                    field.subfield.setOwnerFieldName = addPointerToParent(field);
                     addField(field);
                     break;
                 case SET:
-                    addPointerToParent(field);
+                    field.subfield.setOwnerFieldName = addPointerToParent(field);
                     field.subfield.setMemberFieldName = addPointerToForeign(field);
                     addField(field);
                     break;
                 case SETINTENUM:
                 case SETCHARENUM:
-                    addPointerToParent(field);
+                    field.subfield.setOwnerFieldName = addPointerToParent(field);
                     addField(field);
 
                     // add enum field
@@ -193,7 +199,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
      * @return the name of the pointer field in the subField, computed so as not to collide with existing subField fields
      */
     private String addPointerToParent(FieldDefinitionImpl subField) {
-        String parentName = getPointerName(this.name, subField);
+        String parentName = getPointerName(this.getName(), subField);
         FieldDefinitionImpl ptr = new FieldDefinitionImpl(parentName, "ptrRel");
         subField.subfield.addField(ptr);
         ptr.mdd = subField.subfield;
@@ -201,7 +207,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
         ptr.notNull = true;
         ptr.type = FieldType.PTRREL;
         ptr.pointed = this;
-        ptr.pointedType = this.name;
+        ptr.pointedType = this.getName();
         ptr.description = "relational pointer";
         
         return parentName;
@@ -280,7 +286,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
         fi.fixed = true;
         fi.notNull = true;
         fi.unique = true;
-        fi.pointedType = this.name;
+        fi.pointedType = this.getName();
         fi.pointed = this;
         addField(fi);
 
@@ -306,7 +312,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
     private FieldDefinitionImpl buildFileField(FieldNode f) {
         FieldDefinitionImpl fi = new FieldDefinitionImpl(f.name, "ptrOne");
         fi.mdd = this;
-        DataDefinitionImpl dd = new DataDefinitionImpl(f.name, this);
+        DataDefinitionImpl dd = new DataDefinitionImpl(f.getName(), this);
         dd.isFileSubfield = true;
         dd.fieldNameInParent = fi.name;
         dd.parent = this;
@@ -410,7 +416,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
     /** base methods **/
     
     public String getName() {
-        return name;
+        return (parent != null ? parent.getName() : name ) + ptrSubfield;
     }
     
     public String getTitleFieldName() {
@@ -421,6 +427,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
         return origin == null;
     }
 
+    // FIXME for now we keep the old behaviour but we may want to be more robust here
     public long lastModified() {
         return new java.io.File(this.origin.getFile()).lastModified();
     }
@@ -433,6 +440,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
     /** methods related to fields **/
 
     public void addField(FieldDefinition fd) {
+        ((FieldDefinitionImpl)fd).mdd = this;
         fields.put(fd.getName(), fd);
     }
     
@@ -608,15 +616,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
     }
 
     public String getSetOwnerFieldName() {
-        if(this.parent == null) {
-            return null;
-        }
-        String name = this.parent.getName();
-        int n = name.indexOf("->");
-        if(n > -1)
-            name = name.substring(n+2);
-        
-        return name;
+        return setOwnerFieldName;
     }
     
     
@@ -709,10 +709,6 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
         for(String n : getFieldNames()) {
             sb.append(n + "\n");
         }
-        sb.append("getFieldDefinition()\n");
-        for(String n : getFieldNames()) {
-            sb.append(((FieldDefinitionImpl)getFieldDefinition(n)).getStructure() + "\n");
-        }
         sb.append("isTemporary() " + isTemporary() + "\n");
         sb.append("getTitleFieldName() " + getTitleFieldName() + "\n");
         sb.append("getIndexPointerFieldName() " + getIndexPointerFieldName() + "\n");
@@ -721,6 +717,10 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
         sb.append("getSetMemberFieldName() " + getSetMemberFieldName() + "\n");
         sb.append("getSetOwnerFieldName() " + getSetOwnerFieldName() + "\n");
         sb.append("lastModified() " + lastModified() + "\n");
+        sb.append("getFieldDefinition()\n");
+        for(String n : getFieldNames()) {
+            sb.append(((FieldDefinitionImpl)getFieldDefinition(n)).getStructure() + "\n");
+        }
         sb.append("getReferenceFields()\n");
         for(FieldDefinition fi : getReferenceFields()) {
             sb.append(((FieldDefinitionImpl)fi).getStructure() + "\n");

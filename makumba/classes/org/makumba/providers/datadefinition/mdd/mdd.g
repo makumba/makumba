@@ -494,8 +494,14 @@ parsedFunctionBody
 //////////////// COMMON
 
 // general.Person
+// general.Person->extraData
 type
-    : {String type="";} a:atom { type = #a.getText(); } (DOT! b:atom! {type += "." + #b.getText(); } )* { #type.setText(type); #type.setType(PATH); }
+    : {String type="";} a:atom {type+=#a.getText();}
+    	(
+    		  (DOT! b:atom! {type += "." + #b.getText(); })
+    		| (SUBFIELD! s:atom! {type += "->" + #s.getText(); })
+    	)*
+    	{ #type.setText(type); #type.setType(PATH); }
     ;
 
 number
