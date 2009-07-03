@@ -576,10 +576,6 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
         for(String n : getFieldNames()) {
             sb.append(n + "\n");
         }
-        sb.append("getFieldDefinition()\n");
-        for(String n : getFieldNames()) {
-            sb.append(((FieldInfo)getFieldDefinition(n)).getStructure() + "\n");
-        }
         sb.append("isTemporary() " + isTemporary() + "\n");
         sb.append("getTitleFieldName() " + getTitleFieldName() + "\n");
         sb.append("getIndexPointerFieldName() " + getIndexPointerFieldName() + "\n");
@@ -588,6 +584,10 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
         sb.append("getSetMemberFieldName() " + getSetMemberFieldName() + "\n");
         sb.append("getSetOwnerFieldName() " + getSetOwnerFieldName() + "\n");
         sb.append("lastModified() " + lastModified() + "\n");
+        sb.append("getFieldDefinition()\n");
+        for(String n : getFieldNames()) {
+            sb.append(((FieldInfo)getFieldDefinition(n)).getStructure() + "\n");
+        }
         sb.append("getReferenceFields()\n");
         for(FieldDefinition fi : getReferenceFields()) {
             sb.append(((FieldInfo)fi).getStructure() + "\n");
