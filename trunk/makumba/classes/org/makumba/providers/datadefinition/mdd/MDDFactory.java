@@ -63,9 +63,7 @@ public class MDDFactory {
 
         // step 1 - parse the MDD
         URL u = getDataDefinitionURL(typeName, "mdd");
-
         MDDParser parser = parse(typeName, u, false);
-
         return buildDataDefinition(typeName, u, parser, true, false);
 
     }
@@ -96,6 +94,12 @@ public class MDDFactory {
             doThrow(t, parser.getAST(), typeName);
         } catch(DataDefinitionParseError dpe) {
             throw dpe;
+        } catch(NullPointerException npe) {
+            if(analysisWalker.error != null) {
+                doThrow(analysisWalker.error, parser.getAST(), typeName);
+            } else {
+                throw npe;
+            }
         } catch(Throwable t) {
             doThrow(t, parser.getAST(), typeName);
         }
@@ -106,9 +110,9 @@ public class MDDFactory {
         }
         
         
-        System.out.println("**** Analysis walker for " + typeName + " ****");
-        MakumbaDumpASTVisitor visitor2 = new MakumbaDumpASTVisitor(false);
-        visitor2.visit(analysisWalker.getAST());
+        //System.out.println("**** Analysis walker for " + typeName + " ****");
+        //MakumbaDumpASTVisitor visitor2 = new MakumbaDumpASTVisitor(false);
+        //visitor2.visit(analysisWalker.getAST());
 
         
         
@@ -121,6 +125,12 @@ public class MDDFactory {
             doThrow(t, parser.getAST(), typeName);
         } catch(DataDefinitionParseError dpe) {
             throw dpe;
+        } catch(NullPointerException npe) {
+            if(postProcessor.error != null) {
+                doThrow(postProcessor.error, parser.getAST(), typeName);
+            } else {
+                throw npe;
+            }
         } catch(Throwable t) {
             doThrow(t, parser.getAST(), typeName);
         }
@@ -176,7 +186,6 @@ public class MDDFactory {
 
     /** the main parser method **/
     private MDDParser parse(String typeName, InputStream o, InputStream o1, boolean included) {
-        System.out.println("parsing type " + typeName);
         // this is an ugly workaround to the fact that the grammar has problems handling EOF
         // so we just add a new line by hand
         // TODO we might be able to check for EOF in the lexer with EOF_CHAR
@@ -203,15 +212,21 @@ public class MDDFactory {
             doThrow(t, parser.getAST(), typeName);
         } catch(DataDefinitionParseError dpe) {
             throw dpe;
+        } catch(NullPointerException npe) {
+            if(parser.error != null) {
+                doThrow(parser.error, parser.getAST(), typeName);
+            } else {
+                throw npe;
+            }
         } catch(Throwable t) {
             doThrow(t, parser.getAST(), typeName);
         }
         doThrow(parser.error, parser.getAST(), typeName);
         
-        AST tree = parser.getAST();
-        System.out.println("**** Parser ****");
-        MakumbaDumpASTVisitor visitor = new MakumbaDumpASTVisitor(false);
-        visitor.visit(tree);
+        //AST tree = parser.getAST();
+        //System.out.println("**** Parser ****");
+        //MakumbaDumpASTVisitor visitor = new MakumbaDumpASTVisitor(false);
+        //visitor.visit(tree);
 
         return parser;
     }

@@ -45,9 +45,10 @@ import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
 
 /**
- * Testing table operations
+ * Testing table operations, using new MDD parser
  * 
  * @author Cristian Bogdan
+ * @author Manuel Gay
  */
 public class tableNew extends TestCase {
 
@@ -97,19 +98,19 @@ public class tableNew extends TestCase {
 
     static Pointer set1, set2;
 
-    String readPerson = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData as extraData FROM test.Person p WHERE p= $1";
+    String readPerson = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData as extraData FROM test.PersonNew p WHERE p= $1";
 
-    String readPerson1 = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.weight as weight, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData as extraData, p.comment as comment, p.picture AS picture FROM test.Person p WHERE p= $1";
+    String readPerson1 = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.weight as weight, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData as extraData, p.comment as comment, p.picture AS picture FROM test.PersonNew p WHERE p= $1";
 
-    String readPerson2 = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.weight as weight, p.brother as brother, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData as extraData, p.comment as comment, p.picture AS picture FROM test.Person p WHERE p= $1";
+    String readPerson2 = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.weight as weight, p.brother as brother, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData as extraData, p.comment as comment, p.picture AS picture FROM test.PersonNew p WHERE p= $1";
 
     String readToy1 = "SELECT t.name AS name, t.color AS color, t.serial AS serial FROM test.AllTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers t WHERE t = $1";
 
     String readToy2 = "SELECT t.name AS name, t.color AS color, t.serial AS serial, t.relatedToy AS relatedToy FROM test.AllTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers t WHERE t = $1";
     
-    String readIntSet = "SELECT i as member FROM test.Person p, p.intSet i WHERE p=$1 ORDER BY i";
+    String readIntSet = "SELECT i as member FROM test.PersonNew p, p.intSet i WHERE p=$1 ORDER BY i";
 
-    String readCharSet = "SELECT c as member FROM test.Person p, p.charSet c WHERE p=$1 ORDER BY c";
+    String readCharSet = "SELECT c as member FROM test.PersonNew p, p.charSet c WHERE p=$1 ORDER BY c";
 
     static InputStream getExampleData() {
         try {
@@ -126,34 +127,36 @@ public class tableNew extends TestCase {
 
         Vector<String> errors = new Vector<String>();
         for (int i = 0; i < v.size(); i++) {
-            try {
-                db.executeQuery("SELECT t FROM test.validMdds." + (String) v.elementAt(i) + " t", null);
-                
-                Vector<String> fields = ddp.getDataDefinition("test.validMdds." + v.elementAt(i)).getFieldNames();
-                String what = "";
-                for (String string : fields) {
-                    String fname = (String) string;
-                    String ftype = ddp.getDataDefinition("test.validMdds." + (String) v.elementAt(i)).getFieldDefinition(
-                        fname).getDataType();
-                    // System.out.println(fname+": "+ftype);
-                    if (ftype != null && !ftype.equals("null") && !ftype.startsWith("set")) {
-                        // fields
-                        what = what + (what.length() > 0 ? ", " : "") + "t." + fname;
-                    }
+            if(!v.elementAt(i).equals("NestedSet")) {
+                try {
+                    db.executeQuery("SELECT t FROM test.validMdds." + v.elementAt(i) + " t", null);
                     
+                    Vector<String> fields = ddp.getDataDefinition("test.validMdds." + v.elementAt(i)).getFieldNames();
+                    String what = "";
+                    for (String string : fields) {
+                        String fname = (String) string;
+                        String ftype = ddp.getDataDefinition("test.validMdds." + (String) v.elementAt(i)).getFieldDefinition(
+                            fname).getDataType();
+                        // System.out.println(fname+": "+ftype);
+                        if (ftype != null && !ftype.equals("null") && !ftype.startsWith("set")) {
+                            // fields
+                            what = what + (what.length() > 0 ? ", " : "") + "t." + fname;
+                        }
+                        
+                    }
+                    // System.out.println(what);
+                    if (what.length() > 0) {
+                        db.executeQuery("SELECT " + what + " FROM test.validMdds." + (String) v.elementAt(i) + " t", null);
+                    }
+                } catch (Exception e) {
+                    errors.add("\n ." + (errors.size() + 1) + ") Error querying valid MDD <" + (String) v.elementAt(i)
+                            + ">:\n\t " + e);
                 }
-                // System.out.println(what);
-                if (what.length() > 0) {
-                    db.executeQuery("SELECT " + what + " FROM test.validMdds." + (String) v.elementAt(i) + " t", null);
-                }
-            } catch (Exception e) {
-                errors.add("\n ." + (errors.size() + 1) + ") Error querying valid MDD <" + (String) v.elementAt(i)
-                        + ">:\n\t " + e);
             }
-        }
-        if (errors.size() > 0) {
-            fail("\n  Tested " + v.size() + " valid MDDs, of which " + errors.size() + " cant be used for DB queries:"
-                    + errors.toString());
+            if (errors.size() > 0) {
+                fail("\n  Tested " + v.size() + " valid MDDs, of which " + errors.size() + " cant be used for DB queries:"
+                        + errors.toString());
+            }
         }
     }
 
@@ -187,9 +190,9 @@ public class tableNew extends TestCase {
         p.put("intSet", setintElem);
         p.put("charSet", setcharElem);
 
-        ptr = db.insert("test.Person", p);
+        ptr = db.insert("test.PersonNew", p);
         assertNotNull(ptr);
-        assertEquals(ptr.getType(), "test.Person");
+        assertEquals(ptr.getType(), "test.PersonNew");
 
         now = new Date();
 
@@ -241,11 +244,11 @@ public class tableNew extends TestCase {
         p.put("indiv.surname", "doe_1");
         p.put("extraData.something", "else");
 
-        fptr = db.insert("test.Person", p);
+        fptr = db.insert("test.PersonNew", p);
 
         // check if he got inserted
         assertNotNull(fptr);
-        assertEquals(fptr.getType(), "test.Person");
+        assertEquals(fptr.getType(), "test.PersonNew");
 
         Vector<Dictionary<String, Object>> v = db.executeQuery(readPerson2, fptr);
         // System.out.println(v.size());
@@ -262,9 +265,9 @@ public class tableNew extends TestCase {
         p.put("indiv.surname", "doe_2");
         p.put("extraData.something", "else");
 
-        fptr1 = db.insert("test.Person", p);
+        fptr1 = db.insert("test.PersonNew", p);
         assertNotNull(fptr1);
-        assertEquals(fptr.getType(), "test.Person");
+        assertEquals(fptr.getType(), "test.PersonNew");
 
         // check if it links to the first one correctly
         v = db.executeQuery(readPerson2, fptr1);
@@ -356,12 +359,11 @@ public class tableNew extends TestCase {
 
     }
 
-    static String subsetQuery = "SELECT a.description, a, a.description, a.sth.aaa FROM test.Person p, p.address a WHERE p=$1 ORDER BY a.description";
+    static String subsetQuery = "SELECT a.description, a, a.description FROM test.PersonNew p, p.address a WHERE p=$1 ORDER BY a.description";
 
     public void testSetInsert() {
         Dictionary<String, Object> p = new Hashtable<String, Object>();
         p.put("description", "home");
-        p.put("sth.aaa", "bbb");
 
         set1 = db.insert(ptr, "address", p);
 
@@ -371,7 +373,6 @@ public class tableNew extends TestCase {
         assertEquals("home", v.elementAt(0).get("col1"));
         assertEquals(set1, v.elementAt(0).get("col2"));
         assertEquals("home", v.elementAt(0).get("col3"));
-        assertEquals("bbb", v.elementAt(0).get("col4"));
 
         p.put("description", "away");
 
@@ -440,9 +441,9 @@ public class tableNew extends TestCase {
 
     static String langQuery = "SELECT l FROM test.Language l WHERE l.name=$1";
 
-    static String speaksQuery = "SELECT l as k, l.name as name FROM test.Person p, p.speaks l WHERE p=$1";
+    static String speaksQuery = "SELECT l as k, l.name as name FROM test.PersonNew p, p.speaks l WHERE p=$1";
 
-    static String checkSpeaksQuery = "SELECT l, l.Language FROM test.Person.speaks l WHERE l.Person=$1";
+    static String checkSpeaksQuery = "SELECT l, l.Language FROM test.PersonNew.speaks l WHERE l.PersonNew=$1";
 
     void workWithSet(String[] t) {
         Vector<Object> v = new Vector<Object>();
@@ -509,7 +510,7 @@ public class tableNew extends TestCase {
         Vector<Dictionary<String, Object>> result = db.executeQuery(speaksQuery, ptr);
         assertEquals(0, result.size());
 
-        assertEquals(0, db.executeQuery("SELECT l FROM  test.Person.speaks l WHERE l.Person=$1", ptr).size());
+        assertEquals(0, db.executeQuery("SELECT l FROM  test.PersonNew.speaks l WHERE l.PersonNew=$1", ptr).size());
 
         workWithSet(toInsert3);
 
@@ -591,9 +592,9 @@ public class tableNew extends TestCase {
         assertEquals(0, db.executeQuery(speaksQuery, ptr).size());
         assertEquals(0, db.executeQuery(readIntSet, ptr).size());
         assertEquals(0, db.executeQuery(readCharSet, ptr).size());
-        assertEquals(0, db.executeQuery("SELECT l FROM  test.Person.speaks l WHERE l.Person=$1", ptr).size());
-        assertEquals(0, db.executeQuery("SELECT l FROM  test.Person.intSet l WHERE l.Person=$1", ptr).size());
-        assertEquals(0, db.executeQuery("SELECT l FROM  test.Person.charSet l WHERE l.Person=$1", ptr).size());
+        assertEquals(0, db.executeQuery("SELECT l FROM  test.PersonNew.speaks l WHERE l.PersonNew=$1", ptr).size());
+        assertEquals(0, db.executeQuery("SELECT l FROM  test.PersonNew.intSet l WHERE l.PersonNew=$1", ptr).size());
+        assertEquals(0, db.executeQuery("SELECT l FROM  test.PersonNew.charSet l WHERE l.PersonNew=$1", ptr).size());
 
         // delete all entries, bug 673:
         db.delete("test.validMdds.CharWithLength name", "name.name='bla'", null);
@@ -665,7 +666,7 @@ public class tableNew extends TestCase {
         Hashtable<String, Object> personData = new Hashtable<String, Object>();
         personData.put("indiv.name", "rudi");
         personData.put("indiv.surname", "doe");
-        Pointer ptrPerson = db.insert("test.Person", personData);
+        Pointer ptrPerson = db.insert("test.PersonNew", personData);
 
         Vector<Object> languages = new Vector<Object>();
 
@@ -679,16 +680,15 @@ public class tableNew extends TestCase {
         Hashtable<String, Object> address = new Hashtable<String, Object>();
         address.put("streetno", "Sesame Street 15");
         address.put("languages", languages);
-        address.put("sth.aaa", "someAAA");
         
         db.insert(ptrPerson, "address", address);
         address.put("streetno", "Sesame Street 16");
         Pointer ptrAddress2 = db.insert(ptrPerson, "address", address);
         // check that we have two subsets
-        assertEquals(2, db.executeQuery("SELECT a as a FROM test.Person p, p.address a WHERE p=$1", ptrPerson).size());
+        assertEquals(2, db.executeQuery("SELECT a as a FROM test.PersonNew p, p.address a WHERE p=$1", ptrPerson).size());
         // delete one including deleting subsets, and check that we have now 1 address, and still 45 languages
         db.delete(ptrAddress2);
-        assertEquals(1, db.executeQuery("SELECT a as a FROM test.Person p, p.address a WHERE p=$1", ptrPerson).size());
+        assertEquals(1, db.executeQuery("SELECT a as a FROM test.PersonNew p, p.address a WHERE p=$1", ptrPerson).size());
         assertEquals(5, db.executeQuery("SELECT l as l FROM test.Language l", null).size());
 
         // delte the person (should delete all subPtrs/Sets), check that we still have 5 languages
@@ -718,7 +718,7 @@ public class tableNew extends TestCase {
         Date mod = c.getTime();
         p.put("TS_modify", mod);
 
-        ptr1 = db.insert("test.Person", p);
+        ptr1 = db.insert("test.PersonNew", p);
         assertNotNull(ptr1);
 
         now = new Date();
@@ -733,7 +733,7 @@ public class tableNew extends TestCase {
         assertEquals(cr, new Date(((Date) pc1.get("TS_create")).getTime()));
         assertEquals(mod, new Date(((Date) pc1.get("TS_modify")).getTime()));
         db.delete(ptr1);
-        db.delete("test.Individual i", "1=1", null);
+        db.delete("test.IndividualNew i", "1=1", null);
     }
 
     public void run(TestResult r) {

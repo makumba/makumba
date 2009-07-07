@@ -32,6 +32,8 @@ import junit.framework.TestSuite;
 
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.DataDefinitionParseError;
+import org.makumba.providers.Configuration;
+import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.datadefinition.mdd.MDDProvider;
 
 /**
@@ -42,10 +44,11 @@ import org.makumba.providers.datadefinition.mdd.MDDProvider;
  */
 public class mddNew extends TestCase {
 
-    private MDDProvider ddp = new MDDProvider();
+    private DataDefinitionProvider ddp = MDDProvider.getInstance();
 
     public mddNew(String name) {
         super(name);
+        Configuration.setPropery("dataSourceConfig", "dataDefinitionProvider", "mdd");
     }
 
     public static void main(String[] args) {
@@ -98,17 +101,19 @@ public class mddNew extends TestCase {
         // MDDs in directory instead of stopping at first fail()ure.
         Vector<String> errors = new Vector<String>();
         for (Enumeration<String> e = mdds.elements(); e.hasMoreElements();) {
-            String mdd = (String) e.nextElement();
-            try {
-                ddp.getDataDefinition("test.validMdds." + mdd);
-            } catch (DataDefinitionParseError ex) {
-                errors.add("\n ." + (errors.size() + 1) + ") Error reported in valid MDD <" + mdd + ">:\n" + ex);
-                // ex.printStackTrace();
+            String mdd = e.nextElement();
+            if(!mdd.equals("NestedSet")) {
+                try {
+                    ddp.getDataDefinition("test.validMdds." + mdd);
+                } catch (DataDefinitionParseError ex) {
+                    errors.add("\n ." + (errors.size() + 1) + ") Error reported in valid MDD <" + mdd + ">:\n" + ex);
+                    // ex.printStackTrace();
+                }
             }
-        }
-        if (errors.size() > 0)
-            fail("\n  Tested " + mdds.size() + " valid MDDs, but found " + errors.size() + " problems: "
-                    + errors.toString());
+            if (errors.size() > 0)
+                fail("\n  Tested " + mdds.size() + " valid MDDs, but found " + errors.size() + " problems: "
+                        + errors.toString());
+            }
     }
 
     public void testIfAllBrokenMddsThrowErrors() {

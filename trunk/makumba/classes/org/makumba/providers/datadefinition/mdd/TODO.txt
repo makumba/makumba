@@ -1,10 +1,6 @@
 TODO new MDD parser:
 
-- fix naming issue (test.Person->subfield instead of Person.subfield)
-
 - finish implementation of comparison validation rule
-
-- refactor DataDefinitionProvider interface, use abstract
 
 - http://bugs.best.eu.org/cgi-bin/bugzilla/show_bug.cgi?id=1098
 
