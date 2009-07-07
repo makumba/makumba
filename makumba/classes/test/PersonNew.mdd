@@ -3,7 +3,6 @@
 !type.yesNo=int{"No"=0, "Yes"=1}
 !type.genTyp=int{"Female"=0, "Male"=1}
 !title= fullName()
-#!title= indiv.name
 
 indiv = unique fixed not null ptr test.IndividualNew ;lala
 
@@ -17,7 +16,7 @@ myapp_username=char[80] ; username for this user
 
 password=char[80] ; password for this user
 
-beginDate = date;a
+beginDate = date;
 
 #beginDate%compare = beginDate >= $now : Begin date can't be in the past!
 #beginDate%compare = beginDate >= date($now,$now,$now - 5) : Begin date can't be longer than 5 years ago!
@@ -32,15 +31,27 @@ driver=yesNo		 ;Driving Licence
 age=int				;Age
 range(age) {12..99} : Age must be between 12 and 99!
 
-makumbaTillDeath = not null yesNo	; makumbian or not
-designer = yesNo	; are you a designer?
+makumbaTillDeath = not null yesNo   ; makumbian or not
+designer = yesNo    ; are you a designer?
 
 weight=real ; weight in kilos
-
 
 # test some QL functions as field names
 length=int ; height in cm
 max=int ; max value
+
+hobbies=text             ;Hobbies
+length(hobbies) {1..?} : Hobbies must not be empty! 
+
+comment=text         ;Comments
+
+picture=binary      ;Picture of the person
+
+someAttachment=file
+
+favouriteToy= ptr test.AllTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers  ;Favourite toy in a long tablename
+
+brother= ptr test.PersonNew
 
 extraData=ptr
 extraData->something=char[20]
@@ -83,9 +94,9 @@ address=set			 ;Addresses
 #  address->sth->aaa%len = [3..?] : aaa must be at least 3 letters long!
 #  address->sth->someSuperNestedFunction() { 1 + 2 } Some nested nested message 
 
-#  address->someFunction() { 1 + 2 } Some nested message 
-#  address->homepage%matches = http://.+ : the homepage must start with http://
-#  address->notAllLowerDescription%compare = lower(description) != description : Description cannot all be lower case!
+   address->someFunction() { 1 + 2 } : Some nested message 
+   address->matches(homepage) { http://.+ } : the homepage must start with http://
+#  address->compare() { lower(description) != description } : Description cannot all be lower case!
 
 
 toys=set
@@ -100,8 +111,8 @@ compare() { lower(email) = email } : E-mail address must be all lower case!
 compare() { lower(indiv.name) != indiv.name } : Your name can't be all lower cases!
 
 # multi-field uniqueness keys
-unique() { age, email } : these need to be unique!
-unique() { indiv.name, indiv.surname } : these too!
+#unique() { age, email } : these need to be unique!
+#unique() { indiv.name, indiv.surname } : these too!
 
 
 someFunction(char[] b) { count(address) > 0 } : You need to specify an address
@@ -111,7 +122,7 @@ someFunctionWithParams(int param, int param2, int param3) { age+param > 20 } : Y
 nameMin2CharsLong() { character_length(indiv.name) > 2 } : Your name is not long enough!
 nameMin4CharsLong() { character_length(indiv.name) > 4 } : Your name is not long enough!
 nameMin3CharsLong() { indiv.nameMin3CharsLong() } : Your name is not long enough!
-someTest(){ actor(test.Person) }
+someTest(){ actor(test.PersonNew) }
 allNamesMin2CharsLong() { character_length(indiv.name) > 2 AND character_length(indiv.surname) > 2 } : Your name or surname is not long enough!
 oneNameMin2CharsLong() { character_length(indiv.name) > 2 OR character_length(indiv.surname) > 2 } : Your name and surname is not long enough!
 

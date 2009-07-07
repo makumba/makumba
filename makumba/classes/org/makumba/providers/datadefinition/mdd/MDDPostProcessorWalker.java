@@ -10,7 +10,7 @@ import org.makumba.providers.datadefinition.mdd.validation.MultiUniquenessValida
 import antlr.collections.AST;
 
 /**
- * Build walker that glues all the contents of the MDD together.
+ * Postprocessor walker that performs some finalizing steps.
  * 
  * @author Manuel Gay
  * @version $Id: MDDBuildWalker.java,v 1.1 May 3, 2009 10:13:05 PM manu Exp $

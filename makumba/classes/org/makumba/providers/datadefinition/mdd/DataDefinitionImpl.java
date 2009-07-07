@@ -115,13 +115,14 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
         this.origin = mddNode.origin;
         this.indexName = mddNode.indexName;
         this.isFileSubfield = mddNode.isFileSubfield;
-        this.titleFieldExpr = mddNode.titleField.getText();
         switch(mddNode.titleField.titleType) {
             case MDDTokenTypes.FIELD:
                 this.titleFieldType = TitleFieldType.FIELD;
+                this.titleFieldExpr = mddNode.titleField.getText();
                 break;
             case MDDTokenTypes.FUNCTION:
                 this.titleFieldType = TitleFieldType.FUNCTION;
+                this.titleFieldExpr = mddNode.titleField.functionName;
                 break;
         }
         this.validationRules = mddNode.validationRules;
@@ -314,9 +315,6 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
         fi.mdd = this;
         DataDefinitionImpl dd = new DataDefinitionImpl(f.getName(), this);
         dd.isFileSubfield = true;
-        dd.fieldNameInParent = fi.name;
-        dd.parent = this;
-        dd.addStandardFields(f.name);
         dd.addField(new FieldDefinitionImpl("content", "binary", dd));
         dd.addField(new FieldDefinitionImpl("contentLength", "int", dd));
         dd.addField(new FieldDefinitionImpl("contentType", "char", dd));
@@ -405,8 +403,9 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
                 titleField = (String) (Arrays.asList(fields.keySet().toArray())).get(0);
             }
         } else if(titleFieldType == TitleFieldType.FUNCTION){
-            QueryFragmentFunction f = functions.get(titleFieldExpr.substring(0, titleFieldExpr.indexOf("(")));
-            titleField = f.getQueryFragment(); 
+            QueryFragmentFunction f = functions.get(titleFieldExpr);
+            // TODO here we could inline a function call from title
+            titleField = f.getName() + "()"; //f.getQueryFragment(); 
         } else {
             titleField = titleFieldExpr;
         }

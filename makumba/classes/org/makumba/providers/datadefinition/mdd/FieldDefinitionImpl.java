@@ -263,14 +263,9 @@ public class FieldDefinitionImpl implements FieldDefinition {
     }
     
     public String getDescription() {
-        if (description == null) {
+        if (description == null || description.trim().equals("")) {
             return name;
         }
-        if (description.trim().equals("")) {
-            return name;
-        }
-        if(type == FieldType.SETCOMPLEX)
-            return name;
         return description;
     }
     

@@ -34,10 +34,10 @@ public class MDDParserTest {
 //        Configuration.setDataDefinitionProviderClass("org.makumba.providers.datadefinition.makumba.MakumbaDataDefinitionFactory");
 //        RecordInfo dd = (RecordInfo) DataDefinitionProvider.getInstance().getDataDefinition("OldTest");
 
-        DataDefinitionImpl dd = (DataDefinitionImpl) MDDProvider.getMDD("ParserTest2");
+        DataDefinitionImpl dd = (DataDefinitionImpl) MDDProvider.getMDD("ParserTest");
 
         QueryProvider query = QueryProvider.makeQueryRunner(Configuration.getDefaultDataSourceName(), "oql");
-        Vector<Dictionary<String, Object>> res = query.execute("SELECT (lower(t.name) = t.name) as expression FROM ParserTest2 t", null, 0, -1);
+        Vector<Dictionary<String, Object>> res = query.execute("SELECT (lower(t.name) = t.name) as expression FROM ParserTest t", null, 0, -1);
 /*
         for(ValidationRule r : dd.validationRules.values()) {
             

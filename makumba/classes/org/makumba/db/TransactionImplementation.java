@@ -289,7 +289,7 @@ public abstract class TransactionImplementation implements Transaction {
                         delete1(p);
                     }
                     executeUpdate(transformTypeName(fi.getSubtable().getName()) + " this", null, "this."
-                            + transformTypeName(fi.getSubtable().getFieldDefinition(3).getName()) + getPrimaryKeyName()
+                            + transformTypeName(fi.getSubtable().getFieldDefinition(fi.getSubtable().getSetOwnerFieldName()).getName()) + getPrimaryKeyName()
                             + "= " + getParameterName(), param);
                 } else {
                     tp.getCRUD().deleteSet(this, ptr, fi);
