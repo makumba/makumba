@@ -34,7 +34,7 @@ options {
     
     protected void checkTitleField(AST titleField) { }
     
-    protected void processMultiUniqueValidationDefinitions(ValidationRuleNode v, AST v_in) { }
+    protected void processValidationDefinitions(ValidationRuleNode v, AST v_in) { }
    
 }
 
@@ -64,7 +64,7 @@ titleDeclaration
     ;
 
 validationRuleDeclaration
-	: v:VALIDATION { processMultiUniqueValidationDefinitions((ValidationRuleNode)v, #v_in); }
+	: v:VALIDATION { processValidationDefinitions((ValidationRuleNode)v, #v_in); }
 	;
 	
 functionDeclaration

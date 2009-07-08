@@ -7,8 +7,8 @@
 indiv = unique fixed not null ptr test.IndividualNew ;lala
 
 birthdate=date		 ;Birthdate
-compare(birthdate) { birthdate <= date($now, $now, $now - 15, 0, 0, 0) } : You have to be at least 15 years old!
-compare(birthdate) { birthdate >= date($now, $now, $now - 105, 0, 0, 0) } : Maximum age is 105!
+compare(birthdate) { birthdate <= date($now, $now, $now - 15, 0, 0, 0) } : "You have to be at least 15 years old!"
+compare(birthdate) { birthdate >= date($now, $now, $now - 105, 0, 0, 0) } : "Maximum age is 105!"
 
 firstSex = date
 
@@ -18,8 +18,8 @@ password=char[80] ; password for this user
 
 beginDate = date;
 
-#beginDate%compare = beginDate >= $now : Begin date can't be in the past!
-#beginDate%compare = beginDate >= date($now,$now,$now - 5) : Begin date can't be longer than 5 years ago!
+#beginDate%compare = beginDate >= $now : "Begin date can't be in the past!"
+#beginDate%compare = beginDate >= date($now,$now,$now - 5) : "Begin date can't be longer than 5 years ago!"
 
 gender=genTyp		 ;Gender
 all=char[25]             ;test a reserved word
@@ -29,7 +29,7 @@ militarySucksAndEverybodyKnowsItButDoesNotSpeakOutLoudAboutIt=yesNo           ;A
 driver=yesNo		 ;Driving Licence
 
 age=int				;Age
-range(age) {12..99} : Age must be between 12 and 99!
+range(age) {12..99} : "Age must be between 12 and 99!"
 
 makumbaTillDeath = not null yesNo   ; makumbian or not
 designer = yesNo    ; are you a designer?
@@ -41,7 +41,7 @@ length=int ; height in cm
 max=int ; max value
 
 hobbies=text             ;Hobbies
-length(hobbies) {1..?} : Hobbies must not be empty! 
+length(hobbies) {1..?} : "Hobbies must not be empty!"
 
 comment=text         ;Comments
 
@@ -70,7 +70,7 @@ intSet= set int {"a"=0, "b"=1, "c"=2 }
 charSet=set char{ "d", "e", "f" }
 
 email = char[40]
-matches(email) { .+@.+\.[a-z]+ } : Email address is not valid!
+matches(email) { .+@.+\.[a-z]+ } : "Email address is not valid!"
 
 
 address=set			 ;Addresses
@@ -87,16 +87,16 @@ address=set			 ;Addresses
   address->usageend=date		;Use till
   address->homepage=char[50]
   address->languages = set test.Language ; languages spoken in that address
-  address->length(description) {3..?} : Description must be at least 3 letters long!
+  address->length(description) {3..?} : "Description must be at least 3 letters long!"
 
 #  address->sth=ptr
 #  address->sth->aaa=char[20]
-#  address->sth->aaa%len = [3..?] : aaa must be at least 3 letters long!
+#  address->sth->aaa%len = [3..?] : "aaa must be at least 3 letters long!"
 #  address->sth->someSuperNestedFunction() { 1 + 2 } Some nested nested message 
 
-   address->someFunction() { 1 + 2 } : Some nested message 
-   address->matches(homepage) { http://.+ } : the homepage must start with http://
-#  address->compare() { lower(description) != description } : Description cannot all be lower case!
+   address->someFunction() { 1 + 2 } : "Some nested message"
+   address->matches(homepage) { http://.+ } : "the homepage must start with http://"
+#  address->compare() { lower(description) != description } : "Description cannot all be lower case!"
 
 
 toys=set
@@ -105,26 +105,26 @@ toys=set
 groupMembers = set test.PersonNew
 
 # comparison validation rules spanning over more than one field
-compare() { weight < age } : You should not be more heavy than you're old!
-compare() { firstSex >= birthdate } : Can't have sex before you'are born!
-compare() { lower(email) = email } : E-mail address must be all lower case!
-compare() { lower(indiv.name) != indiv.name } : Your name can't be all lower cases!
+compare(weight, age) { weight < age } : "You should not be more heavy than you're old!"
+compare(firstSex, birthdate) { firstSex >= birthdate } : "Can't have sex before you'are born!"
+compare(email) { lower(email) = email } : "E-mail address must be all lower case!"
+compare(indiv.name) { lower(indiv.name) != indiv.name } : "Your name can't be all lower cases!"
 
 # multi-field uniqueness keys
-#unique() { age, email } : these need to be unique!
-#unique() { indiv.name, indiv.surname } : these too!
+#unique() { age, email } : "these need to be unique!"
+#unique() { indiv.name, indiv.surname } : "these too!"
 
 
-someFunction(char[] b) { count(address) > 0 } : You need to specify an address
-someOtherFunction(int age, char[] b) { this.age > age } : You are too young!
-functionWithPointer(ptr test.IndividualNew i, int age, char[] b) { this.age > age } : You are too young!
-someFunctionWithParams(int param, int param2, int param3) { age+param > 20 } : You are too young!
-nameMin2CharsLong() { character_length(indiv.name) > 2 } : Your name is not long enough!
-nameMin4CharsLong() { character_length(indiv.name) > 4 } : Your name is not long enough!
-nameMin3CharsLong() { indiv.nameMin3CharsLong() } : Your name is not long enough!
+someFunction(char[] b) { count(address) > 0 } : "You need to specify an address"
+someOtherFunction(int age, char[] b) { this.age > age } : "You are too young!"
+functionWithPointer(ptr test.IndividualNew i, int age, char[] b) { this.age > age } : "You are too young!"
+someFunctionWithParams(int param, int param2, int param3) { age+param > 20 } : "You are too young!"
+nameMin2CharsLong() { character_length(indiv.name) > 2 } : "Your name is not long enough!"
+nameMin4CharsLong() { character_length(indiv.name) > 4 } : "Your name is not long enough!"
+nameMin3CharsLong() { indiv.nameMin3CharsLong() } : "Your name is not long enough!"
 someTest(){ actor(test.PersonNew) }
-allNamesMin2CharsLong() { character_length(indiv.name) > 2 AND character_length(indiv.surname) > 2 } : Your name or surname is not long enough!
-oneNameMin2CharsLong() { character_length(indiv.name) > 2 OR character_length(indiv.surname) > 2 } : Your name and surname is not long enough!
+allNamesMin2CharsLong() { character_length(indiv.name) > 2 AND character_length(indiv.surname) > 2 } : "Your name or surname is not long enough!"
+oneNameMin2CharsLong() { character_length(indiv.name) > 2 OR character_length(indiv.surname) > 2 } : "Your name and surname is not long enough!"
 
 fullName() { indiv.fullName() }
 

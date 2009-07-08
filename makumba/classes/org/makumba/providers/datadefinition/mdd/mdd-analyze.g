@@ -67,11 +67,13 @@ options {
     protected ValidationRuleNode createSingleFieldValidationRule(AST originAST, String fieldName, ValidationType type, FieldNode subField) { return null; }
     
     protected ValidationRuleNode createMultiFieldValidationRule(AST originAST, ValidationType type) { return null; }
-        
+     
+    // add validation rule arguments, i.e. field names that should be checked
+    protected void addValidationRuleArgument(String name, ValidationRuleNode n) {n.arguments.add(name);}
      
     // check if rule can be applied to fields
     protected void checkRuleApplicability(ValidationRuleNode validation) {}
-         
+             
 }
 
 dataDefinition
@@ -236,7 +238,13 @@ validationRuleDeclaration[FieldNode subField]
 	;
 
 comparisonValidationRule[FieldNode subField] returns [ValidationRuleNode v = null;]
-	:#(c:COMPARE {v = createMultiFieldValidationRule(#c, ValidationType.COMPARISON); } (fn:FUNCTION_ARGUMENT)* f:FUNCTION_BODY { v.expression = #f.getText();} )
+	: #(c:COMPARE {v = createMultiFieldValidationRule(#c, ValidationType.COMPARISON); }
+		(fn:FUNCTION_ARGUMENT {addValidationRuleArgument(#fn.getText(), v);})*
+		ce:COMPARE_EXPRESSION
+		{
+			v.comparisonExpression = (ComparisonExpressionNode) #ce_in;
+		}
+	  )
 	;
 
 multiUniquenessValidationRule[FieldNode subField] returns [ValidationRuleNode v = null;]
