@@ -270,7 +270,7 @@ public class MakumbaInfoTag extends TagSupport {
             line = 0;
             printMakumbaPropertyRow(out, "<a href=\"/makumba-docs/CHANGELOG.txt\">version</a>",
                 MakumbaSystem.getVersion());
-            printMakumbaPropertyRow(out, "Default database name", dbname);
+            printMakumbaPropertyRow(out, "Default datasource name", dbname);
             printMakumbaPropertyRow(out, "DBSV", MakumbaTransactionProvider.getDatabaseProperty(dbname, "dbsv"));
             printMakumbaPropertyRow(out, "Number of connections open", MakumbaTransactionProvider.getDatabaseProperty(dbname,
                 "jdbc_connections"));
