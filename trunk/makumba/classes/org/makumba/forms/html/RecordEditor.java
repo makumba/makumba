@@ -187,18 +187,22 @@ public class RecordEditor extends RecordFormatter {
                 // if we have a file type data-definition, put all fields in the sub-record
                 String inputName = FieldEditor.getInputName(this, i, "");
                 if (fieldDefinition.isFileType()) {
-                    data.put(inputName + ".content", o);
                     HttpParameters parameters = RequestAttributes.getParameters(req);
-                    data.put(inputName + ".contentType", parameters.getParameter(inputName + "_contentType"));
-                    data.put(inputName + ".contentLength", parameters.getParameter(inputName + "_contentLength"));
-                    data.put(inputName + ".originalName", parameters.getParameter(inputName + "_filename"));
-                    data.put(inputName + ".name", parameters.getParameter(inputName + "_filename"));
-                    if (parameters.getParameter(inputName + "_imageWidth") != null) {
-                        data.put(inputName + ".imageWidth", parameters.getParameter(inputName + "_imageWidth"));
+                    Integer length = (Integer) parameters.getParameter(inputName + "_contentLength");
+                    if(length > 0) {
+                        data.put(inputName + ".content", o);
+                        data.put(inputName + ".contentType", parameters.getParameter(inputName + "_contentType"));
+                        data.put(inputName + ".contentLength", parameters.getParameter(inputName + "_contentLength"));
+                        data.put(inputName + ".originalName", parameters.getParameter(inputName + "_filename"));
+                        data.put(inputName + ".name", parameters.getParameter(inputName + "_filename"));
+                        if (parameters.getParameter(inputName + "_imageWidth") != null) {
+                            data.put(inputName + ".imageWidth", parameters.getParameter(inputName + "_imageWidth"));
+                        }
+                        if (parameters.getParameter(inputName + "_imageHeight") != null) {
+                            data.put(inputName + ".imageHeight", parameters.getParameter(inputName + "_imageHeight"));
+                        }
                     }
-                    if (parameters.getParameter(inputName + "_imageHeight") != null) {
-                        data.put(inputName + ".imageHeight", parameters.getParameter(inputName + "_imageHeight"));
-                    }
+                    
                 } else {
                     // the data is written in the dictionary without the suffix
                     data.put(inputName, o);
