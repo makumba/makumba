@@ -137,8 +137,8 @@ public class MDDParser extends MDDBaseParser {
     protected AST parseExpression(AST expression) {
             
             Reader in = new StringReader(expression.getText());
-            MDDExpressionLexer lexer = new MDDExpressionLexer(in);
-            MDDExpressionParser parser = new MDDExpressionParser(lexer);
+            MDDLexer lexer = new MDDLexer(in);
+            MDDExpressionParser parser = new MDDExpressionParser(lexer, factory, typeName, expression);
             parser.setASTNodeClass("org.makumba.providers.datadefinition.mdd.MDDAST");
             try {
                 parser.expression();
@@ -163,9 +163,9 @@ public class MDDParser extends MDDBaseParser {
                 shift(tree, expression);
             
             
-            //System.out.println("/////////////// Expression parser");
-            //MakumbaDumpASTVisitor visitor = new MakumbaDumpASTVisitor(false);
-            //visitor.visit(parser.getAST());
+            System.out.println("/////////////// Expression parser");
+            MakumbaDumpASTVisitor visitor = new MakumbaDumpASTVisitor(false);
+            visitor.visit(parser.getAST());
             
             return parser.getAST();
     }

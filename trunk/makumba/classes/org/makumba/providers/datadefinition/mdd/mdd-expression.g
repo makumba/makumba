@@ -2,153 +2,13 @@ header {
     package org.makumba.providers.datadefinition.mdd;
 }
 
-class MDDExpressionLexer extends Lexer;
+class MDDExpressionBaseParser extends Parser;
 
 options {
-    importVocab=MDD;
-    k = 3;
-}
-	    
-LEFT_PAREN: '(';
-RIGHT_PAREN: ')';
-LEFT_CUBR: '{';
-RIGHT_CUBR: '}';
-LEFT_SQBR: '[';
-RIGHT_SQBR: ']';
-
-EQ: '=';
-LT: '<';
-GT: '>';
-SQL_NE: "<>";
-NE: "!=" | "^=";
-LE: "<=";
-GE: ">=";
-
-PERCENT: '%';
-SEMICOLON: ';';
-COLON: ':';
-COMMA: ',';
-DOT: '.';
-QUOTMARK: '"';
-EXMARK: '!';
-INTMARK: '?';
-MINUS: '-';
-
-SUBFIELD
-    : '-' '>'
-    ;
-
-
-// we allow identifiers to start with a number
-IDENT options { testLiterals=true; }
-    : ID_START_LETTER ( ID_LETTER )*
-    ;
-
-protected
-ID_START_LETTER
-    :    'a'..'z'
-    |    'A'..'Z'
-    |    '_'
-    |    '\u0080'..'\ufffe'
-    ;
-
-protected
-ID_LETTER
-    :    ID_START_LETTER
-    |    '0'..'9'
-    ;
-    
-POSITIVE_INTEGER
-    : ('+')? NUMBER
-    ;
-
-NEGATIVE_INTEGER
-    : '-' NUMBER
-    ;
-
-protected    
-NUMBER
-    : '0'..'9' ('0'..'9')*
-    ;
-
-
-WHITESPACE
-    : (' ' | 't' | 'r' | 'n' | '\t') { $setType(Token.SKIP); }
-    ;
-
-    
-LINEBREAK
-    :   '\n'      { newline(); } // unix
-    |   '\r' '\n' { newline(); } // dos
-    |   '\r'      { newline(); } // mac
-    ;
-	
-// string literals
-STRING_LITERAL
-    :   '"' (ESC|~('"'|'\\'|'\n'|'\r'))* '"'
-    ;
-
-
-// escape sequence -- note that this is protected; it can only be called
-// from another lexer rule -- it will not ever directly return a token to
-// the parser
-// There are various ambiguities hushed in this rule. The optional
-// '0'...'9' digit matches should be matched here rather than letting
-// them go back to STRING_LITERAL to be matched. ANTLR does the
-// right thing by matching immediately; hence, it's ok to shut off
-// the FOLLOW ambig warnings.
-protected
-ESC
-    :   '\\'
-        (   'n'
-        |   'r'
-        |   't'
-        |   'b'
-        |   'f'
-        |   '"'
-        |   '\''
-        |   '\\'
-        |   ('u')+ HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT
-        |   '0'..'3'
-            (
-                options {
-                    warnWhenFollowAmbig = false;
-                }
-            :   '0'..'7'
-                (
-                    options {
-                        warnWhenFollowAmbig = false;
-                    }
-                :   '0'..'7'
-                )?
-            )?
-        |   '4'..'7'
-            (
-                options {
-                    warnWhenFollowAmbig = false;
-                }
-            :   '0'..'7'
-            )?
-        )
-    ;
-
-
-// hexadecimal digit (again, note it's protected!)
-protected
-HEX_DIGIT
-    :   ('0'..'9'|'A'..'F'|'a'..'f')
-    ;
-
-
-
-
-class MDDExpressionParser extends Parser;
-
-options {
+		importVocab=MDD;
         buildAST=true;
         k = 3;
 }
-
 
 {
 
@@ -168,6 +28,8 @@ options {
     	   reportError("Incorrect value for number");
     }
     
+    protected void assignPart(ComparisonExpressionNode ce, AST part) {};
+    
     private String removeQuotation(String s) {
     	return s.substring(1, s.length() -1);
     }
@@ -179,8 +41,71 @@ expression
 	| fieldList
 	| intEnum
 	| charEnum
+	| comparisonExpression
 	;
 	
+	
+	
+//////// COMPARISON EXPRESSION
+
+comparisonExpression
+	: {ComparisonExpressionNode ce = new ComparisonExpressionNode();} lhs:comparisonPart o:operator {ce.setOp(#o.getType());} rhs:comparisonPart
+		{	assignPart(ce, #lhs);
+			assignPart(ce, #rhs);
+			ce.setType(COMPARE_EXPRESSION);
+			ce.setText(#lhs.getText() + " " + #o.getText() + " " + #rhs.getText());
+			#comparisonExpression = ce;
+		}
+	;
+
+	
+comparisonPart
+	: t:fieldPath
+	| n:number
+	| df:dateFunction
+	| u:upperFunction
+	| l:lowerFunction
+	| d:dateConstant
+	;
+
+fieldPath
+	: type
+	;
+
+// here we pass only the type name of the argument, with the function as type
+upperFunction
+	: UPPER! LEFT_PAREN! t:fieldPath RIGHT_PAREN!
+		{#upperFunction.setText(#t.getText()); #upperFunction.setType(UPPER);}
+	;
+
+// here we pass only the type name of the argument, with the function as type
+lowerFunction
+	: LOWER! LEFT_PAREN! t:fieldPath RIGHT_PAREN!
+		{#lowerFunction.setText(#t.getText()); #lowerFunction.setType(LOWER);}
+	;
+
+dateConstant
+	: NOW | TODAY;
+
+dateFunction
+	: DATE^ LEFT_PAREN! dateFunctionArgument (COMMA! dateFunctionArgument)* RIGHT_PAREN!
+	;
+	
+dateFunctionArgument
+	: dateFunctionArgumentMember
+		(
+			(PLUS^ | MINUS^) dateFunctionArgumentMember
+		)?
+	;
+	
+dateFunctionArgumentMember
+	: number
+	| dateConstant
+	;
+
+
+//////// ENUMERATOR BODIES
+
 intEnum
 	: intEnumBody (COMMA! intEnumBody)*
 	;
@@ -198,10 +123,8 @@ charEnumBody
 	  (DEPRECATED)?
 	;
 
-	
-fieldList
-	: a:type (COMMA! b:type)*
-	;
+
+//////// RANGE DEFINITION
 
 // name%length = [1..?]
 // age%range = [18..99]
@@ -214,23 +137,34 @@ range
 rangeBound
     : n:POSITIVE_INTEGER | m:INTMARK
     ;
+    
+//////// MISC
 
-
-operator
-	: EQ | LT | GT | LE | GE | NE | SQL_NE | LIKE
+fieldList
+	: a:type (COMMA! b:type)*
 	;
 
 //////////////// COMMON
 
 // general.Person
+// general.Person->extraData
 type
-    : {String type="";} a:atom { type = #a.getText(); } (DOT! b:atom! {type += "." + #b.getText(); } )* { #type.setText(type); #type.setType(PATH); }
+    : {String type="";} a:atom {type+=#a.getText();}
+    	(
+    		  (DOT! b:atom! {type += "." + #b.getText(); })
+    		| (SUBFIELD! s:atom! {type += "->" + #s.getText(); })
+    	)*
+    	{ #type.setText(type); #type.setType(PATH); }
     ;
 
 number
     : POSITIVE_INTEGER | NEGATIVE_INTEGER
         {checkNumber(#number);}
     ;
+
+operator
+	: EQ | LT | GT | LE | GE | NE | SQL_NE | LIKE
+	;
 
 atom
     : IDENT

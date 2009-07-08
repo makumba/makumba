@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.ValidationRule;
@@ -40,10 +41,12 @@ public class ValidationRuleNode extends MDDAST implements ValidationRule, Serial
     /** arguments of the comparison rule **/
     protected ArrayList<String> arguments = new ArrayList<String>();
 
-    /** comparison expression **/
+    /** regex expression **/
     protected String expression;
     
-    
+    /** comparison expression **/
+    protected ComparisonExpressionNode comparisonExpression;
+        
     public ValidationRuleNode(MDDNode mdd, AST originAST) {
         initialize(originAST);
      
@@ -95,7 +98,7 @@ public class ValidationRuleNode extends MDDAST implements ValidationRule, Serial
     public boolean validate(Object value) throws InvalidValueException {
         return false;
     }
-
+    
     /**
      * We order the rules such that comparison rules come last. This is important for live validation, where first the
      * validity of each field by itself should be checked.

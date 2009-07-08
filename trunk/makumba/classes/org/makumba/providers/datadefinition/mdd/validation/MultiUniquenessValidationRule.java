@@ -14,6 +14,7 @@ public class MultiUniquenessValidationRule extends ValidationRuleNode {
 
     public MultiUniquenessValidationRule(MDDNode mdd, AST originAST, ValidationType type) {
         super(mdd, originAST, type);
+        this.type = ValidationType.UNIQUENESS;
     }
 
     @Override

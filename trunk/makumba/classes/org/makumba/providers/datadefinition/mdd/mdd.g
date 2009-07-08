@@ -33,6 +33,7 @@ QUOTMARK: '"';
 EXMARK: '!';
 INTMARK: '?';
 MINUS: '-';
+PLUS: '+';
 
 SUBFIELD
     : '-' '>'
@@ -94,9 +95,9 @@ FIELDCOMMENT
 	;
 
 
-MESSAGE options { paraphrase = "an error message";}
-	: COLON (~('\n'|'\r'))* LINEBREAK //('\n'|'\r'('\n')?) {newline();}
-	;
+//MESSAGE options { paraphrase = "an error message";}
+//	: COLON (~('\n'|'\r'))* LINEBREAK //('\n'|'\r'('\n')?) {newline();}
+//	;
 	
 FUNCTION_BODY
 	: LEFT_CUBR (~('}'))* RIGHT_CUBR
@@ -157,6 +158,13 @@ protected
 HEX_DIGIT
     :   ('0'..'9'|'A'..'F'|'a'..'f')
     ;
+    
+    
+NOW: "$now";
+TODAY: "$today";
+DATE: "date";
+UPPER: "upper";
+LOWER: "lower";
 
 
 // TODO throw better exceptions when no message for validation rules
@@ -230,10 +238,10 @@ tokens {
     CHAR_LENGTH;
     POINTED_TYPE;
     DEPRECATED="deprecated"; // intEnum
-    
-    
+        
     // validation rules
     VALIDATIONNAME;
+    MESSAGE;
     
     RANGE="range";
     LENGTH="length";
@@ -242,6 +250,8 @@ tokens {
     
     MATCHES="matches";
     COMPARE="compare";
+    
+    COMPARE_EXPRESSION;
     
     // functions
     
@@ -273,6 +283,10 @@ tokens {
     private void checkNumber(AST n) {
     	if(n == null)
     	   reportError("Incorrect value for number");
+    }
+    
+    private String removeQuotation(String s) {
+    	return s.substring(1, s.length() -1);
     }
     
     protected String typeName;
@@ -390,9 +404,8 @@ fieldComment
 	: f:FIELDCOMMENT { int k = #f.getText().indexOf(";"); #fieldComment.setText(#f.getText().substring(k+1).trim()); }
 	;
 
-
 errorMessage
-	: m:MESSAGE {int k = #m.getText().indexOf(":"); #errorMessage.setText(#m.getText().substring(k+1).trim()); }
+	: COLON! m:STRING_LITERAL {#m.setType(MESSAGE); #m.setText(removeQuotation(#m.getText())); }
 	;
     
 modifier
@@ -436,8 +449,7 @@ validationRuleDeclaration
 	;
 	
 comparisonValidationRuleDeclaration
-	: COMPARE^ functionArguments functionBody
-	
+	: COMPARE^ functionArguments parsedFunctionBody
 	;
 		
 rangeValidationRuleDeclaration
@@ -468,7 +480,7 @@ functionArgumentDeclaration
 	;
 
 functionArgumentBody
-	: fieldType n:atom {#n.setType(FUNCTION_ARGUMENT_NAME); }
+	: fieldType n:type {#n.setType(FUNCTION_ARGUMENT_NAME); }
 	;
 
 functionCall
@@ -476,7 +488,7 @@ functionCall
 	;
 
 functionArguments
-	: LEFT_PAREN! (a:atom {#a.setType(FUNCTION_ARGUMENT);} )? (COMMA! b:atom {#b.setType(FUNCTION_ARGUMENT);} )* RIGHT_PAREN!
+	: LEFT_PAREN! (a:type {#a.setType(FUNCTION_ARGUMENT);} )? (COMMA! b:type {#b.setType(FUNCTION_ARGUMENT);} )* RIGHT_PAREN!
 	;
 
 functionBody

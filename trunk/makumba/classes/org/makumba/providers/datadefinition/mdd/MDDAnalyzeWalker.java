@@ -6,6 +6,7 @@ import java.util.HashMap;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
+import org.makumba.providers.datadefinition.mdd.ComparisonExpressionNode.ComparisonType;
 import org.makumba.providers.datadefinition.mdd.validation.ComparisonValidationRule;
 import org.makumba.providers.datadefinition.mdd.validation.MultiUniquenessValidationRule;
 import org.makumba.providers.datadefinition.mdd.validation.RangeValidationRule;
@@ -160,7 +161,6 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
         switch(type) {
             case UNIQUENESS:
                 ValidationRuleNode n = new MultiUniquenessValidationRule(mdd, originAST, type);
-                n.type = ValidationType.UNIQUENESS;
                 return n;
             case COMPARISON:
                 ValidationRuleNode comparison = new ComparisonValidationRule(mdd, originAST, type);
@@ -208,5 +208,5 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
         } catch(Throwable t) {
             factory.doThrow(this.typeName, t.getMessage(), validation);
         }
-    }    
-}
+    }
+ }

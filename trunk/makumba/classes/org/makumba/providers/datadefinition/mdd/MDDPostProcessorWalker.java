@@ -4,7 +4,10 @@ import java.util.HashMap;
 
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
+import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
+import org.makumba.providers.datadefinition.mdd.ComparisonExpressionNode.ComparisonType;
+import org.makumba.providers.datadefinition.mdd.validation.ComparisonValidationRule;
 import org.makumba.providers.datadefinition.mdd.validation.MultiUniquenessValidationRule;
 
 import antlr.collections.AST;
@@ -73,8 +76,9 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
         
     }
 
-    private void checkPathValid(AST ast, String t, MDDNode mddNode) {
+    private String checkPathValid(AST ast, String t, MDDNode mddNode) {
         
+        String type = "";
         
         if(t.indexOf(".") > -1) {
         
@@ -98,6 +102,8 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
                             DataDefinition pointed = MDDProvider.getMDD(n.pointedType);
                             if(pointed.getFieldDefinition(fieldInPointed) == null) {
                                 factory.doThrow(this.typeName, "Field " + fieldInPointed + " does not exist in type " + pointed.getName(), ast);
+                            } else {
+                                type = pointed.getFieldDefinition(fieldInPointed).getType();
                             }
                             
                         } catch(DataDefinitionNotFoundError d) {
@@ -106,17 +112,20 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
                     }
                 }
             }
-        
+            
         } else {
-            Object field = mddNode.fields.get(t);
+            FieldNode field = mddNode.fields.get(t);
             if(field == null) {
                 factory.doThrow(this.typeName, "Field " + t + " does not exist in type " + mdd.getName(), ast);
+            } else {
+                type =  field.makumbaType.getTypeName();
             }
         }
+        return type;
     }
     
     @Override
-    protected void processMultiUniqueValidationDefinitions(ValidationRuleNode v, AST v_in) {
+    protected void processValidationDefinitions(ValidationRuleNode v, AST v_in) {
         if(v instanceof MultiUniquenessValidationRule) {
             
             for(String path : v.multiUniquenessFields) {
@@ -125,7 +134,74 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
             
             DataDefinition.MultipleUniqueKeyDefinition key = new DataDefinition.MultipleUniqueKeyDefinition(v.multiUniquenessFields.toArray(new String[] {}), v.message);
             mdd.addMultiUniqueKey(key);
+        } else if(v instanceof ComparisonValidationRule) {
+            ComparisonExpressionNode ce = v.comparisonExpression;
+            
+            // check type
+            ComparisonType lhs_type = getPartType(ce, ce.getLhs_type(), ce.getLhs());
+            ComparisonType rhs_type = getPartType(ce, ce.getRhs_type(), ce.getRhs());
+            
+            if(!rhs_type.equals(rhs_type)) {
+                factory.doThrow(typeName, "Invalid comparison expression: left-hand side type is " + lhs_type.name().toLowerCase() + ", right-hand side type is "+rhs_type.name().toLowerCase(), ce);
+            }
+            
+            ce.setComparisonType(lhs_type);
+            
+            // check arguments vs. operands
+            for(String arg : v.arguments) {
+                if(!ce.getLhs().equals(arg) && !ce.getRhs().equals(arg)) {
+                    factory.doThrow(typeName, "Argument '" + arg + "' is not being used in the comparison expression", ce);
+                }
+            }
+            
+            // now we do it the other way
+            if(ce.getLhs_type() == PATH && !v.arguments.contains(ce.getLhs())) {
+                factory.doThrow(typeName, "Field '" + ce.getLhs() + "' not an argument of the comparison expression", ce);
+            }
+            
+            if(ce.getRhs_type() == PATH && !v.arguments.contains(ce.getRhs())) {
+                factory.doThrow(typeName, "Field '" + ce.getRhs() + "' not an argument of the comparison expression", ce);
+            }
         }
+            
+    }
+    
+    private ComparisonType getPartType(ComparisonExpressionNode ce, int type, String path) {
+        
+        switch(type) {
+            case UPPER:
+            case LOWER:
+                return ComparisonType.STRING;
+            case DATE:
+            case NOW:
+            case TODAY:
+                return ComparisonType.DATE;
+            case NUMBER:
+            case POSITIVE_INTEGER:
+            case NEGATIVE_INTEGER:
+                return ComparisonType.NUMBER;
+            case PATH:
+                String fieldType = checkPathValid(ce, path, mdd);
+                FieldType ft = FieldType.valueOf(fieldType.toUpperCase());
+                switch(ft) {
+                    case CHAR:
+                    case TEXT:
+                        return ComparisonType.STRING;
+                    case INT:
+                    case REAL:
+                        return ComparisonType.NUMBER;
+                    case DATE:
+                    case DATECREATE:
+                    case DATEMODIFY:
+                        return ComparisonType.DATE;
+                    default:
+                        return ComparisonType.INVALID;
+                            
+                }
+        }
+        throw new RuntimeException("could not compute comparison part type of type " + ce.toString());
+        
+        
     }
 
 }
