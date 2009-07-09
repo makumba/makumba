@@ -9,9 +9,8 @@ import antlr.collections.AST;
 
 public class ComparisonValidationRule extends ValidationRuleNode {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -3236085075060228473L;
 
-    
     public ComparisonValidationRule(MDDNode mdd, AST originAST, ValidationType type) {
         super(mdd, originAST, type);
     }

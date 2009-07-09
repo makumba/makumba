@@ -12,6 +12,8 @@ import antlr.collections.AST;
  */
 public class MultiUniquenessValidationRule extends ValidationRuleNode {
 
+    private static final long serialVersionUID = 6912344546110275697L;
+
     public MultiUniquenessValidationRule(MDDNode mdd, AST originAST, ValidationType type) {
         super(mdd, originAST, type);
         this.type = ValidationType.UNIQUENESS;

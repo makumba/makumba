@@ -1,5 +1,6 @@
 package org.makumba.providers.datadefinition.mdd;
 
+import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,8 +25,10 @@ import org.makumba.ValidationRule;
  * @author Manuel Gay
  * @version $Id: DataDefinitionImpl.java,v 1.1 23.06.2009 11:52:36 gaym Exp $
  */
-public class DataDefinitionImpl implements DataDefinition, ValidationDefinition {
+public class DataDefinitionImpl implements DataDefinition, ValidationDefinition, Serializable {
         
+    private static final long serialVersionUID = 5973863780194787175L;
+
     public static final String ENUM_FIELD_NAME = "enum";
 
     /** name of the data definition **/
@@ -73,7 +76,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition 
 
     protected LinkedHashMap<String, DataDefinition.QueryFragmentFunction> functions = new LinkedHashMap<String, DataDefinition.QueryFragmentFunction>();
 
-    private MDDNode mddNode;
+    private transient MDDNode mddNode;
 
     
     /** make a virtual data definition **/

@@ -16,6 +16,8 @@ import antlr.CommonAST;
  */
 public class MDDNode extends CommonAST {
     
+    private static final long serialVersionUID = -2197404256348086058L;
+
     final static String createName = "TS_create";
 
     final static String modifyName = "TS_modify";

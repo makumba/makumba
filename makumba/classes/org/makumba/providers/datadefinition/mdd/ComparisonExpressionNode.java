@@ -9,6 +9,8 @@ import java.util.Date;
  */
 public class ComparisonExpressionNode extends MDDAST {
 
+    private static final long serialVersionUID = 4483783192311810176L;
+
     public static enum ComparisonType {
         STRING, NUMBER, DATE, INVALID
     };

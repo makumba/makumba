@@ -163,9 +163,9 @@ public class MDDParser extends MDDBaseParser {
                 shift(tree, expression);
             
             
-            System.out.println("/////////////// Expression parser");
-            MakumbaDumpASTVisitor visitor = new MakumbaDumpASTVisitor(false);
-            visitor.visit(parser.getAST());
+//            System.out.println("/////////////// Expression parser");
+//            MakumbaDumpASTVisitor visitor = new MakumbaDumpASTVisitor(false);
+//            visitor.visit(parser.getAST());
             
             return parser.getAST();
     }

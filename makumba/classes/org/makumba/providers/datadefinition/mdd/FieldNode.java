@@ -15,9 +15,9 @@ import antlr.collections.AST;
  * @version $Id: FieldNode.java,v 1.1 May 3, 2009 6:14:27 PM manu Exp $
  */
 public class FieldNode extends MDDAST {
-    
-    private static final long serialVersionUID = 1L;
-    
+ 
+    private static final long serialVersionUID = 1844582254529895123L;
+
     // basic field info
     protected MDDNode mdd;
     
@@ -30,7 +30,8 @@ public class FieldNode extends MDDAST {
     
     // default value
     // FIXME where does this come from?
-    protected Object defaultValue;
+    // FIXME should this actually be transient?
+    protected transient Object defaultValue;
 
     // modifiers
     protected boolean fixed;

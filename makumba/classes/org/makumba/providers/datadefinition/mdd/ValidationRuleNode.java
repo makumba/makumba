@@ -1,10 +1,6 @@
 package org.makumba.providers.datadefinition.mdd;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Vector;
-
-import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.ValidationRule;
@@ -13,8 +9,10 @@ import org.makumba.providers.datadefinition.mdd.validation.ComparisonValidationR
 import antlr.collections.AST;
 
 
-public class ValidationRuleNode extends MDDAST implements ValidationRule, Serializable {
+public class ValidationRuleNode extends MDDAST implements ValidationRule {
     
+    private static final long serialVersionUID = -6754730605192680602L;
+
     /** name of the rule **/
     protected String name;
     
@@ -25,10 +23,10 @@ public class ValidationRuleNode extends MDDAST implements ValidationRule, Serial
     protected String message;
     
     /** field the rule applies to **/
-    protected FieldNode field;
+    protected transient FieldNode field;
     
     /** the parent MDD **/
-    protected MDDNode mdd;
+    protected transient MDDNode mdd;
     
     
     /** range validation limits **/
@@ -68,7 +66,7 @@ public class ValidationRuleNode extends MDDAST implements ValidationRule, Serial
     
     
     /**
-     * Checks if the type of the rule is compatible with the field types it referrs to
+     * Checks if the type of the rule is compatible with the field types it refers to
      */
     public void checkApplicability() {
         if(!type.checkApplicability(field.makumbaType)) {

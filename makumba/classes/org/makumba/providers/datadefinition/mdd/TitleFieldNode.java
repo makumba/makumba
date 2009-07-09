@@ -12,6 +12,8 @@ import java.util.Vector;
  */
 public class TitleFieldNode extends MDDAST {
     
+    private static final long serialVersionUID = -3717029364503597220L;
+
     protected MDDNode mdd;
    
     protected int titleType;
