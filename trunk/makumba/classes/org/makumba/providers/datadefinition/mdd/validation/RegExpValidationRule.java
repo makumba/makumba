@@ -12,7 +12,7 @@ import antlr.collections.AST;
 
 public class RegExpValidationRule extends ValidationRuleNode {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 8505083575565314064L;
     
     private Pattern regExpPattern;
 

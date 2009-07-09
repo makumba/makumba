@@ -1,5 +1,6 @@
 package org.makumba.providers.datadefinition.mdd;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -20,9 +21,10 @@ import org.makumba.Text;
 import org.makumba.ValidationRule;
 import org.makumba.commons.StringUtils;
 import org.makumba.providers.DataDefinitionProvider;
-import org.makumba.providers.datadefinition.makumba.RecordInfo;
 
-public class FieldDefinitionImpl implements FieldDefinition {
+public class FieldDefinitionImpl implements FieldDefinition, Serializable {
+
+    private static final long serialVersionUID = 1595860664381445238L;
 
     // basic field info
     protected DataDefinitionImpl mdd;
@@ -212,8 +214,10 @@ public class FieldDefinitionImpl implements FieldDefinition {
         this.validationRules = f.validationRules;
         
         // TODO check if this works
-        this.originalFieldDefinitionName = name;
-        this.originalFieldDefinitionParent = getDataDefinition().getName();
+        if (getDataDefinition() != null) {
+            originalFieldDefinitionParent = getDataDefinition().getName();
+            originalFieldDefinitionName = getName();
+        }
         
         // we have to transform the subfield MDDNode into a DataDefinitionImpl
         if(f.subfield != null) {
@@ -794,27 +798,15 @@ public class FieldDefinitionImpl implements FieldDefinition {
             throw new RuntimeException("intEnum size is " + intEnumValues.size() + ", index is " + i);
         }
         
-        Iterator<Integer> it = intEnumValues.keySet().iterator();
-        int k = 0;
-        int res = 0;
-        while(k != i) {
-            res = it.next();
-        }
-        return res;
+        return (Integer) intEnumValues.keySet().toArray()[i];
     }
 
     public String getNameAt(int i) {
         if(i > intEnumValues.size()) {
             throw new RuntimeException("intEnum size is " + intEnumValues.size() + ", index is " + i);
         }
-
-        Iterator<String> it = intEnumValues.values().iterator();
-        int k = 0;
-        String res = "";
-        while(k != i) {
-            res = it.next();
-        }
-        return res;
+        
+        return (String) intEnumValues.values().toArray()[i];
     }
 
     public String getNameFor(int i) {

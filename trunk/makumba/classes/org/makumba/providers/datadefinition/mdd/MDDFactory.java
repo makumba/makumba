@@ -110,9 +110,9 @@ public class MDDFactory {
         }
         
         
-        System.out.println("**** Analysis walker for " + typeName + " ****");
-        MakumbaDumpASTVisitor visitor2 = new MakumbaDumpASTVisitor(false);
-        visitor2.visit(analysisWalker.getAST());
+//        System.out.println("**** Analysis walker for " + typeName + " ****");
+//        MakumbaDumpASTVisitor visitor2 = new MakumbaDumpASTVisitor(false);
+//        visitor2.visit(analysisWalker.getAST());
 
         
         
@@ -223,10 +223,10 @@ public class MDDFactory {
         }
         doThrow(parser.error, parser.getAST(), typeName);
         
-        AST tree = parser.getAST();
-        System.out.println("**** Parser ****");
-        MakumbaDumpASTVisitor visitor = new MakumbaDumpASTVisitor(false);
-        visitor.visit(tree);
+//        AST tree = parser.getAST();
+//        System.out.println("**** Parser ****");
+//        MakumbaDumpASTVisitor visitor = new MakumbaDumpASTVisitor(false);
+//        visitor.visit(tree);
 
         return parser;
     }

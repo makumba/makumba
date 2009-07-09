@@ -11,12 +11,12 @@ import antlr.collections.AST;
 
 public class RangeValidationRule extends ValidationRuleNode {
     
+    private static final long serialVersionUID = 3906776093230956372L;
+
     private Number lowerLimit;
     
     private Number upperLimit;
     
-    private static final long serialVersionUID = 1L;
-
     public RangeValidationRule(MDDNode mdd, AST originAST, FieldNode field, ValidationType type) {
         super(mdd, originAST, field);
         this.type = type;
