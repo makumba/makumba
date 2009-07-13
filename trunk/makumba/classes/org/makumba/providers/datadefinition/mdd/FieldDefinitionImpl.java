@@ -916,7 +916,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         switch (type) {
             case PTR:
             case SET:
-                if (((DataDefinitionImpl) pointed).titleField != null) {
+                if (pointed != null && ((DataDefinitionImpl) pointed).titleField != null) {
                     return ((DataDefinitionImpl) pointed).titleField;
                 }
                 return getForeignTable().getTitleFieldName();

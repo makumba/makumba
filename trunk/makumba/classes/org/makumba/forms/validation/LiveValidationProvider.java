@@ -71,44 +71,9 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
         }
         
         if (validationRules != null) {
-            for (ValidationRule validationRule : validationRules) {
-                ValidationRule rule = validationRule;
-                if (rule instanceof StringLengthValidationRule) {
-                    validations.append(getValidationLine(inputVarName, "Validate.Length", rule,
-                        getRangeLimits((RangeValidationRule) rule)));
-                } else if (rule instanceof NumberRangeValidationRule) {
-                    validations.append(getValidationLine(inputVarName, "Validate.Numericality", rule,
-                        getRangeLimits((RangeValidationRule) rule)));
-                } else if (rule instanceof RegExpValidationRule) {
-                    validations.append(getValidationLine(inputVarName, "Validate.Format", rule, "pattern: /^"
-                            + ((RegExpValidationRule) rule).getRegExp() + "$/i, "));
-                } else if (rule instanceof ComparisonValidationRule) {
-                    ComparisonValidationRule c = (ComparisonValidationRule) rule;
-
-                    // FIXME: need to implement date comparisons
-                    if (c.getFieldDefinition().isDateType()) {
-                        continue;
-                    }
-
-                    String arguments = "element1: \"" + c.getFieldName() + formIdentifier + "\", element2: \""
-                            + c.getOtherFieldName() + formIdentifier + "\", comparisonOperator: \""
-                            + c.getCompareOperator() + "\", ";
-
-                    if (c.getFieldDefinition().isNumberType()) {
-                        validations.append(getValidationLine(inputVarName, "MakumbaValidate.NumberComparison", rule,
-                            arguments));
-                    } else if (c.getFieldDefinition().isDateType()) {
-                        // TODO: implement!
-                    } else if (c.getFieldDefinition().isStringType()) {
-                        if (c.getFunctionName() != null && c.getFunctionName().length() > 0) {
-                            arguments += "functionToApply: \"" + c.getFunctionName() + "\", ";
-                            validations.append(getValidationLine(inputVarName, "MakumbaValidate.StringComparison",
-                                rule, arguments));
-                        }
-                    }
-                }
-            }
+            addValidationRules(formIdentifier, validationRules, validations, inputVarName);
         }
+        
         if (fieldDefinition.isUnique() && !fieldDefinition.isDateType()) {
             validations.append(getValidationLine(inputVarName, "MakumbaValidate.Uniqueness",
                 FieldDefinition.ERROR_NOT_UNIQUE, "table: \"" + fieldDefinition.getDataDefinition().getName() + "\", "
@@ -121,6 +86,50 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
                     + "', { validMessage: \" \" });\n");
             validationObjects.append(validations);
             validationObjects.append("\n");
+        }
+    }
+
+    protected void addValidationRules(String formIdentifier, Collection<ValidationRule> validationRules,
+            StringBuffer validations, String inputVarName) {
+        
+        for (ValidationRule validationRule : validationRules) {
+            ValidationRule rule = validationRule;
+            
+            
+            if (rule instanceof StringLengthValidationRule) {
+                validations.append(getValidationLine(inputVarName, "Validate.Length", rule,
+                    getRangeLimits((RangeValidationRule) rule)));
+            } else if (rule instanceof NumberRangeValidationRule) {
+                validations.append(getValidationLine(inputVarName, "Validate.Numericality", rule,
+                    getRangeLimits((RangeValidationRule) rule)));
+            } else if (rule instanceof RegExpValidationRule) {
+                validations.append(getValidationLine(inputVarName, "Validate.Format", rule, "pattern: /^"
+                        + ((RegExpValidationRule) rule).getRegExp() + "$/i, "));
+            } else if (rule instanceof ComparisonValidationRule) {
+                ComparisonValidationRule c = (ComparisonValidationRule) rule;
+
+                // FIXME: need to implement date comparisons
+                if (c.getFieldDefinition().isDateType()) {
+                    continue;
+                }
+
+                String arguments = "element1: \"" + c.getFieldName() + formIdentifier + "\", element2: \""
+                        + c.getOtherFieldName() + formIdentifier + "\", comparisonOperator: \""
+                        + c.getCompareOperator() + "\", ";
+
+                if (c.getFieldDefinition().isNumberType()) {
+                    validations.append(getValidationLine(inputVarName, "MakumbaValidate.NumberComparison", rule,
+                        arguments));
+                } else if (c.getFieldDefinition().isDateType()) {
+                    // TODO: implement!
+                } else if (c.getFieldDefinition().isStringType()) {
+                    if (c.getFunctionName() != null && c.getFunctionName().length() > 0) {
+                        arguments += "functionToApply: \"" + c.getFunctionName() + "\", ";
+                        validations.append(getValidationLine(inputVarName, "MakumbaValidate.StringComparison",
+                            rule, arguments));
+                    }
+                }
+            }
         }
     }
 
@@ -166,15 +175,15 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
         return new String[] { "prototype.js", "makumba-livevalidation.js", "livevalidation_1.3_standalone.js" };
     }
 
-    private String getValidationLine(String inputVarName, String validationType, ValidationRule rule, String arguments) {
+    protected String getValidationLine(String inputVarName, String validationType, ValidationRule rule, String arguments) {
         return getValidationLine(inputVarName, validationType, rule.getErrorMessage(), arguments);
     }
 
-    private String getValidationLine(String inputVarName, String validationType, String failureMessage) {
+    protected String getValidationLine(String inputVarName, String validationType, String failureMessage) {
         return getValidationLine(inputVarName, validationType, failureMessage, "");
     }
 
-    private String getValidationLine(String inputVarName, String validationType, String failureMessage, String arguments) {
+    protected String getValidationLine(String inputVarName, String validationType, String failureMessage, String arguments) {
         return inputVarName + ".add( " + validationType + " , { " + arguments + " failureMessage: \"" + failureMessage
                 + "\" } );\n";
     }
@@ -185,7 +194,7 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
         return getRangeLimits(lower, upper);
     }
 
-    private String getRangeLimits(String lower, String upper) {
+    protected String getRangeLimits(String lower, String upper) {
         String s = "";
         if (!lower.equals("?")) {
             s += "minimum: " + lower;

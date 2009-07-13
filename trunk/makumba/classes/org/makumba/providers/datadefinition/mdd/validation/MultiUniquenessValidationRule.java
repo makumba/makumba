@@ -1,5 +1,6 @@
 package org.makumba.providers.datadefinition.mdd.validation;
 
+import org.makumba.providers.datadefinition.mdd.FieldNode;
 import org.makumba.providers.datadefinition.mdd.MDDNode;
 import org.makumba.providers.datadefinition.mdd.ValidationRuleNode;
 import org.makumba.providers.datadefinition.mdd.ValidationType;
@@ -14,8 +15,8 @@ public class MultiUniquenessValidationRule extends ValidationRuleNode {
 
     private static final long serialVersionUID = 6912344546110275697L;
 
-    public MultiUniquenessValidationRule(MDDNode mdd, AST originAST, ValidationType type) {
-        super(mdd, originAST, type);
+    public MultiUniquenessValidationRule(MDDNode mdd, AST originAST, ValidationType type, FieldNode parentField) {
+        super(mdd, originAST, type, parentField);
         this.type = ValidationType.UNIQUENESS;
     }
 

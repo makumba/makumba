@@ -49,7 +49,7 @@ expression
 //////// COMPARISON EXPRESSION
 
 comparisonExpression
-	: {ComparisonExpressionNode ce = new ComparisonExpressionNode();} lhs:comparisonPart o:operator {ce.setOp(#o.getType());} rhs:comparisonPart
+	: {ComparisonExpressionNode ce = new ComparisonExpressionNode();} lhs:comparisonPart o:operator {ce.setOperatorType(#o.getType());} rhs:comparisonPart
 		{	assignPart(ce, #lhs);
 			assignPart(ce, #rhs);
 			ce.setType(COMPARE_EXPRESSION);

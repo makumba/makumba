@@ -191,6 +191,7 @@ tokens {
 	// !type.genTyp=int{"Female"=0, "Male"=1}
     TYPENAME;
     TYPEDEF;
+    TYPE="type";
     
     INCLUDED;
     
@@ -365,14 +366,15 @@ subFieldBody
     
 fieldName
     : a:atom { checkFieldName(#a); #a.setType(FIELDNAME); }
-    // this is an ugly workaround to allow "length" as a field name
+    // this is an ugly workaround to allow certain keywords as a field name
     | l:LENGTH { checkFieldName(#l); #l.setType(FIELDNAME); }
     | c:CHAR { checkFieldName(#c); #c.setType(FIELDNAME); }
+    | t:TYPE { checkFieldName(#t); #t.setType(FIELDNAME); }
     ;
 
 fieldType
     : a:atom { #a.setType(UNKNOWN_TYPE); }
-    | c:CHAR^ LEFT_SQBR! (l:POSITIVE_INTEGER {#l.setType(CHAR_LENGTH); })? RIGHT_SQBR!
+    | c:CHAR^ (LEFT_SQBR! (l:POSITIVE_INTEGER {#l.setType(CHAR_LENGTH); })? RIGHT_SQBR!)?
     | INT
     | intEnum
     | charEnum
@@ -431,7 +433,7 @@ includeDeclaration
 
 // !type.genDef = ...
 typeDeclaration
-    : EXMARK! "type"! DOT! n:atom { #n.setType(TYPENAME); } EQ! fieldType
+    : EXMARK! TYPE! DOT! n:atom { #n.setType(TYPENAME); } EQ! fieldType
     ;
     
     

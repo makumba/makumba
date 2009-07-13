@@ -27,7 +27,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Vector;
 
@@ -43,7 +45,8 @@ import org.makumba.commons.attributes.HttpParameters;
 import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.RecordFormatter;
-import org.makumba.providers.datadefinition.makumba.validation.ComparisonValidationRule;
+import org.makumba.providers.datadefinition.mdd.validation.ComparisonValidationRule;
+
 
 /**
  * Editor of Makumba data. Each subclass knows how to format HTML <input> and <select> tags for each type of Makumba
@@ -92,13 +95,15 @@ public class RecordEditor extends RecordFormatter {
         return unassignedExceptions;
     }
 
-    public Dictionary<String, Object> readFrom(HttpServletRequest req, String suffix, boolean applyValidationRules) {
+    public Dictionary<String, Object> readFrom(HttpServletRequest req, String suffix, boolean applyValidationRules, HashMap<String, String> lazyEvaluatedInputs) {
         Dictionary<String, Object> data = new Hashtable<String, Object>();
         // will collect all exceptions from the field validity checks
         Vector<InvalidValueException> exceptions = new Vector<InvalidValueException>();
 
         Hashtable<Integer, Object> validatedFields = new Hashtable<Integer, Object>();
         Hashtable<String, Object> validatedFieldsNameCache = new Hashtable<String, Object>();
+        Hashtable<FieldDefinition, Object> validatedFieldsFdCache = new Hashtable<FieldDefinition, Object>();
+        
 
         // we validate all fields in two passes - first we validate data type integrity, i.e. we let makumba check if
         // the declared types in the MDD match with what we have in the form
@@ -116,7 +121,11 @@ public class RecordEditor extends RecordFormatter {
                     o = fd.checkValue(o);
                 } else {
                     // check for not-null fields
-                    if (applyValidationRules && fd.isNotNull()) {
+                    // we don't check for this if the field is going to be lazily evaluated
+                    // TODO maybe find a more robust way to make sure wether the field is to be lazily evaluated
+                    boolean lazyEvaluation = lazyEvaluatedInputs.containsValue(inputName.substring(0, inputName.indexOf(suffix)));
+                    
+                    if (applyValidationRules && fd.isNotNull() && !lazyEvaluation) {
                         throw new InvalidValueException(inputName, FieldDefinition.ERROR_NOT_NULL);
                     }
                     o = fd.getNull();
@@ -128,6 +137,9 @@ public class RecordEditor extends RecordFormatter {
 
                 validatedFields.put(new Integer(i), o);
                 validatedFieldsNameCache.put(inputName, o);
+                
+                // FIXME this is not the most efficient thing to do
+                validatedFieldsFdCache.put(fd.getOriginalFieldDefinition(), o);
 
             } catch (InvalidValueException e) {
                 // if there is an exception in this field
@@ -141,6 +153,11 @@ public class RecordEditor extends RecordFormatter {
 
         // in the second validation pass, we only validate those fields that passed the first check
         // on those, we apply the user-defined checks from the validation definition
+        
+        // TODO once we have more than one multi-field validation rule type, abstract this to ValidationRule
+        LinkedHashMap<ComparisonValidationRule, FieldDefinition> multiFieldValidationRules = new LinkedHashMap<ComparisonValidationRule, FieldDefinition>();
+        
+        // STEP 1: go over all the fields and fetch validation rules
         for (int index = 0; index < validatedFieldsOrdered.size(); index++) {
             int i = (validatedFieldsOrdered.get(index)).intValue();
             FieldDefinition fieldDefinition = dd.getFieldDefinition(i);
@@ -150,10 +167,15 @@ public class RecordEditor extends RecordFormatter {
             if (validationRules != null && applyValidationRules) {
                 for (ValidationRule validationRule : validationRules) {
                     ValidationRule rule = validationRule;
+                    
                     try { // evaluate each rule separately
-                        if (rule instanceof ComparisonValidationRule
-                                && !((ComparisonValidationRule) rule).isCompareToExpression()) {
-                            FieldDefinition otherFd = ((ComparisonValidationRule) rule).getOtherFd();
+
+                        // STEP 1-a: treat or fetch multi-field validation rules
+
+                        // FIXME this is an old validation rule, once we switch, remove this
+                        if (rule instanceof org.makumba.providers.datadefinition.makumba.validation.ComparisonValidationRule
+                                && !((org.makumba.providers.datadefinition.makumba.validation.ComparisonValidationRule) rule).isCompareToExpression()) {
+                            FieldDefinition otherFd = ((org.makumba.providers.datadefinition.makumba.validation.ComparisonValidationRule) rule).getOtherFd();
                             Object otherValue = validatedFieldsNameCache.get(otherFd.getName());
                             if (otherValue == null) { // check if the other field definition is maybe in a pointed type
                                 // do this by checking if it equals any of the original field definitions the form field
@@ -171,6 +193,15 @@ public class RecordEditor extends RecordFormatter {
                             if (otherValue != null) {
                                 rule.validate(new Object[] { o, otherValue });
                             }
+                        } else if (rule instanceof ComparisonValidationRule) {
+                            
+                            // we just fetch the multi-field validation definitions, do not treat them yet
+                            
+                            ComparisonValidationRule c = (ComparisonValidationRule) rule;
+                            multiFieldValidationRules.put(c, fieldDefinition);
+
+                            // STEP 1-b: treat single-field validation rules
+
                         } else {
                             rule.validate(o);
                         }
@@ -183,33 +214,66 @@ public class RecordEditor extends RecordFormatter {
             org.makumba.commons.attributes.RequestAttributes.setAttribute(req,
                 FieldEditor.getInputName(this, i, suffix) + "_type", fieldDefinition);
 
-            if (o != null) {
+            String inputName = FieldEditor.getInputName(this, i, "");
+            if (fieldDefinition.isFileType() && o != null) {
                 // if we have a file type data-definition, put all fields in the sub-record
-                String inputName = FieldEditor.getInputName(this, i, "");
-                if (fieldDefinition.isFileType()) {
-                    HttpParameters parameters = RequestAttributes.getParameters(req);
-                    Integer length = (Integer) parameters.getParameter(inputName + "_contentLength");
-                    if(length > 0) {
-                        data.put(inputName + ".content", o);
-                        data.put(inputName + ".contentType", parameters.getParameter(inputName + "_contentType"));
-                        data.put(inputName + ".contentLength", parameters.getParameter(inputName + "_contentLength"));
-                        data.put(inputName + ".originalName", parameters.getParameter(inputName + "_filename"));
-                        data.put(inputName + ".name", parameters.getParameter(inputName + "_filename"));
-                        if (parameters.getParameter(inputName + "_imageWidth") != null) {
-                            data.put(inputName + ".imageWidth", parameters.getParameter(inputName + "_imageWidth"));
-                        }
-                        if (parameters.getParameter(inputName + "_imageHeight") != null) {
-                            data.put(inputName + ".imageHeight", parameters.getParameter(inputName + "_imageHeight"));
-                        }
+                HttpParameters parameters = RequestAttributes.getParameters(req);
+                Integer length = (Integer) parameters.getParameter(inputName + "_contentLength");
+                if(length > 0) {
+                    data.put(inputName + ".content", o);
+                    data.put(inputName + ".contentType", parameters.getParameter(inputName + "_contentType"));
+                    data.put(inputName + ".contentLength", parameters.getParameter(inputName + "_contentLength"));
+                    data.put(inputName + ".originalName", parameters.getParameter(inputName + "_filename"));
+                    data.put(inputName + ".name", parameters.getParameter(inputName + "_filename"));
+                    if (parameters.getParameter(inputName + "_imageWidth") != null) {
+                        data.put(inputName + ".imageWidth", parameters.getParameter(inputName + "_imageWidth"));
                     }
-                    
-                } else {
-                    // the data is written in the dictionary without the suffix
-                    data.put(inputName, o);
+                    if (parameters.getParameter(inputName + "_imageHeight") != null) {
+                        data.put(inputName + ".imageHeight", parameters.getParameter(inputName + "_imageHeight"));
+                    }
                 }
+                    
+            } else {
+                // the data is written in the dictionary without the suffix
+                data.put(inputName, o);
             }
+            
             org.makumba.commons.attributes.RequestAttributes.setAttribute(req,
                 FieldEditor.getInputName(this, i, suffix), o);
+        }
+        
+        
+        // STEP 2 - process multi-field validation rules
+        for(ComparisonValidationRule r : multiFieldValidationRules.keySet()) {
+            LinkedHashMap<String, Object> values = new LinkedHashMap<String, Object>();
+            boolean validate = true;
+            // fetch the fields of the rule
+            for(String fieldName : r.getValidationRuleArguments()) {
+                if(validatedFieldsNameCache.containsKey(fieldName)) {
+                    values.put(fieldName, validatedFieldsNameCache.get(fieldName));
+                } else {
+                    // check if this field is maybe a pointed type
+                    // do this by checking if any of the original field definitions the form is made of
+                    // for this we use the data definition the validation rule applies to and the field that is pointed
+                    DataDefinition ruleDD = r.getDataDefinition();
+                    FieldDefinition ruleFd = ruleDD.getFieldOrPointedFieldDefinition(fieldName);
+                    Object o = validatedFieldsFdCache.get(ruleFd);
+                    if(o != null) {
+                        values.put(fieldName, o);
+                    } else {
+                        // TODO what to do in this case? we don't have all the values for the validation rule, so we can't evaluate it.
+                        // we could maybe fetch the value of the field from the DB in some cases, pretty advanced stuff though.
+                        validate = false;
+                    }
+                }
+            }
+            if(validate) {
+                try {
+                    r.validate(values);
+                } catch(InvalidValueException e) {
+                    exceptions.add(e);
+                }
+            }
         }
 
         if (exceptions.size() > 0) {

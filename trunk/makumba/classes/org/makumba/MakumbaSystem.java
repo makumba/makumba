@@ -35,9 +35,11 @@ import org.makumba.forms.html.CalendarEditorProvider;
 import org.makumba.forms.html.KruseCalendarEditor;
 import org.makumba.forms.validation.ClientsideValidationProvider;
 import org.makumba.forms.validation.LiveValidationProvider;
+import org.makumba.forms.validation.MDDLiveValidationProvider;
 import org.makumba.importer.HtmlTableImporter;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
+import org.makumba.providers.datadefinition.mdd.MDDProvider;
 
 /** The makumba runtime system. Provides starter methods to obtain {@link Transaction} and {@link DataDefinition} objects */
 public class MakumbaSystem {
@@ -346,6 +348,10 @@ public class MakumbaSystem {
 
     /** Get the default client-side validation provider. */
     public static ClientsideValidationProvider getClientsideValidationProvider() {
+        
+        if(MDDFactory instanceof MDDProvider) {
+            return new MDDLiveValidationProvider();
+        }
         return new LiveValidationProvider();
     }
 

@@ -23,8 +23,8 @@ import org.makumba.commons.SingletonHolder;
 public abstract class DataDefinitionProvider implements SingletonHolder {
     
     
-    private static String[] dataDefinitionProviders = { "mdd", "org.makumba.providers.datadefinition.mdd.MDDProvider",
-        "recordinfo", "org.makumba.providers.datadefinition.makumba.MakumbaDataDefinitionFactory" };
+    private static String[] dataDefinitionProviders = { Configuration.MDD_DATADEFINITIONPROVIDER, "org.makumba.providers.datadefinition.mdd.MDDProvider",
+        Configuration.RECORDINFO_DATADEFINITIONPROVIDER, "org.makumba.providers.datadefinition.makumba.MakumbaDataDefinitionFactory" };
 
     static final Map<String, DataDefinitionProvider> providerInstances = new HashMap<String, DataDefinitionProvider>();
 

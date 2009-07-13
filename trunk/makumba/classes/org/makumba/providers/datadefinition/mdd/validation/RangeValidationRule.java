@@ -81,7 +81,4 @@ public class RangeValidationRule extends ValidationRuleNode {
         return type.name().toLowerCase() + "(" + field.getName() + ") {" + lowerBound + ".." +  upperBound+ "} : " + message  + " (line " + getLine() + ")";
     }
 
-
-    
-
 }

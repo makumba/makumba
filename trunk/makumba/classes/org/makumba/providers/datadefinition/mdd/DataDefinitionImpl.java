@@ -17,6 +17,8 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.ValidationDefinition;
 import org.makumba.ValidationRule;
+import org.makumba.providers.datadefinition.mdd.validation.RangeValidationRule;
+import org.makumba.providers.datadefinition.mdd.validation.RegExpValidationRule;
 
 /**
  * Implementation of the {@link DataDefinition} interface.<br>
@@ -128,18 +130,50 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
                 this.titleFieldExpr = mddNode.titleField.functionName;
                 break;
         }
-        this.validationRules = mddNode.validationRules;
         this.multiFieldUniqueList = mddNode.multiFieldUniqueList;
         
         
         addStandardFields(getName());
         addFieldNodes(mddNode.fields);
+        addValidationRules(mddNode.validationRules);
         addFunctions(mddNode.functions);
         
         // evaluate the title, when all fields and functions are processed
         evaluateTitle();
     }
     
+    /**
+     * add the validation rules to the data definition, i.e. make sure each field definition gets the validation definition it needs.
+     * we can do this only at this stage since we now work with field definitions and not field nodes.
+     */
+    private void addValidationRules(LinkedHashMap<String, ValidationRule> validationRules) {
+        
+        for(ValidationRule v : validationRules.values()) {
+            
+            ValidationRuleNode n = (ValidationRuleNode) v;
+            
+            for(String field : v.getValidationRuleArguments()) {
+                FieldDefinition fd = this.getFieldOrPointedFieldDefinition(field);
+                if(fd == null) {
+                    // we are in a subfield
+                    // in case of a single-field validation rule, we can fetch the subfield data definition from the field
+                    //if(v instanceof RangeValidationRule || v instanceof RegExpValidationRule) {
+                        fd = this.getFieldDefinition(n.field.mdd.fieldNameInParent).getSubtable().getFieldDefinition(field);
+                    //} else {
+                        // in case of a multi-field validation rule, we can get the subfield data definition from the field
+                    //}
+                    
+                    if(fd == null) {
+                        throw new RuntimeException("could not retrieve field definition for validation rule " + v.getRuleName());
+                    }
+                }
+                fd.addValidationRule(v);
+            }
+        }
+        
+        this.validationRules = validationRules;
+    }
+
     /**
      * method needed for converting FieldNodes into FieldDefinitionImpl objects.
      * FieldNode cannot implement FieldDefinition due to a conflict with the getType() type with ANTLR.

@@ -1,18 +1,27 @@
 package org.makumba.providers.datadefinition.mdd.validation;
 
+import java.util.Date;
+import java.util.LinkedHashMap;
+
 import org.makumba.InvalidValueException;
+import org.makumba.providers.datadefinition.mdd.FieldNode;
 import org.makumba.providers.datadefinition.mdd.MDDNode;
+import org.makumba.providers.datadefinition.mdd.MDDTokenTypes;
 import org.makumba.providers.datadefinition.mdd.ValidationRuleNode;
 import org.makumba.providers.datadefinition.mdd.ValidationType;
 
 import antlr.collections.AST;
 
+/**
+ * FIXME the whole Lhs/Rhs thing is a very clumsy implementation.
+ * @version $Id: ComparisonValidationRule.java,v 1.1 Jul 10, 2009 2:25:21 PM manu Exp $
+ */
 public class ComparisonValidationRule extends ValidationRuleNode {
 
     private static final long serialVersionUID = -3236085075060228473L;
 
-    public ComparisonValidationRule(MDDNode mdd, AST originAST, ValidationType type) {
-        super(mdd, originAST, type);
+    public ComparisonValidationRule(MDDNode mdd, AST originAST, ValidationType type, FieldNode parentField) {
+        super(mdd, originAST, type, parentField);
     }
     
     @Override
@@ -23,22 +32,94 @@ public class ComparisonValidationRule extends ValidationRuleNode {
     @Override
     public boolean validate(Object value) throws InvalidValueException {
         
-        // TODO implement this
-        // we have all the necessary data in the comparisonExpressionNode
-        // we now need to take the arguments of the validation expression and assign the values
-        // so we have
-        // compare(birthdate) { birthdate >= date($now, $now, $now - 105, 0, 0, 2) } : "Maximum age is 105!"
-        // and we get a value, so we use that value on the operand that corresponds to the argument name
-        // another possibility is that we have
-        // compare() { firstSex >= birthdate } : "Can't have sex before you'are born!"
-        // then we get two values, but which one is which?
-        // ==> we need to pass the value and its field/expression name when calling this rule
-        // in fact, when such a rule is executed, we have to retrieve the values according to the field names
-        // and then we pass the values along with their names to the rule, and it can process them
+        LinkedHashMap<String, Object> values = null;
+        
+        if(!(value instanceof LinkedHashMap)) {
+            throw new RuntimeException("can't validate multi-field validation rule without right argument type, dude!");
+        } else {
+            values = (LinkedHashMap<String, Object>) value;
+        }
+        
+        Object left = null;
+        Object right = null;
+        int compare = -1;
         
         
-        return false;
+        // treat functions
+        if(values.containsKey(comparisonExpression.getLhs())) {
+            left = values.get(comparisonExpression.getLhs());
+            if(comparisonExpression.getLhs_type() == MDDTokenTypes.UPPER) {
+                left = ((String)left).toUpperCase();
+            } else if(comparisonExpression.getLhs_type() == MDDTokenTypes.LOWER) {
+                left = ((String)left).toLowerCase();
+            }
+        }
+        if(values.containsKey(comparisonExpression.getRhs())) {
+            right = values.get(comparisonExpression.getRhs());
+            if(comparisonExpression.getRhs_type() == MDDTokenTypes.UPPER) {
+                right = ((String)right).toUpperCase();
+            } else if(comparisonExpression.getRhs_type() == MDDTokenTypes.LOWER) {
+                right = ((String)right).toLowerCase();
+            }
+        }
+        
+        switch(comparisonExpression.getComparisonType()) {
+            
+            case DATE:
+                if(left == null) {
+                    left = comparisonExpression.getLhs_date();
+                }
+                if(right == null) {
+                    right = comparisonExpression.getRhs_date();
+                }
+                compare = ((Date)left).compareTo(((Date)right));
+                break;
+                
+            case NUMBER:
+                if(left == null) {
+                    left = comparisonExpression.getLhs();
+                }
+                if(right == null) {
+                    right = comparisonExpression.getRhs();
+                }
+                compare = Double.compare(((Number) left).doubleValue(), ((Number) right).doubleValue());
+                break;
+                
+            case STRING:
+                if (((String) left).length() > 0 && ((String) right).length() > 0) {
+                    compare = ((String) left).compareTo((String) right);
+                } else {
+                    return true;
+                }
+                break;
+        }
+        
+        int compareOperator = comparisonExpression.getOperatorType();
+
+        if (compareOperator == MDDTokenTypes.LT) {
+            return throwException(compare < 0);
+        } else if (compareOperator == MDDTokenTypes.LE) {
+            return throwException(compare < 0 || compare == 0);
+        } else if (compareOperator == MDDTokenTypes.EQ) {
+            return throwException(compare == 0);
+        } else if (compareOperator == MDDTokenTypes.GT) {
+            return throwException(compare > 0);
+        } else if (compareOperator == MDDTokenTypes.GE) {
+            return throwException(compare > 0 || compare == 0);
+        } else if (compareOperator == MDDTokenTypes.NE) {
+            return throwException(compare != 0);
+        }
+        return false; // TODO: think of throwing some "cannot validate exception"        
     
     }
+    
+    protected boolean throwException(boolean b) throws InvalidValueException {
+        if (!b) {
+            throw new InvalidValueException(arguments.get(0), getErrorMessage());
+        } else {
+            return b;
+        }
+    }
+
 
 }
