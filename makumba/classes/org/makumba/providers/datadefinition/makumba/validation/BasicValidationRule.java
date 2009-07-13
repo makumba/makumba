@@ -3,10 +3,12 @@ package org.makumba.providers.datadefinition.makumba.validation;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.ValidationRule;
 import org.makumba.commons.RegExpUtils;
@@ -190,6 +192,15 @@ public abstract class BasicValidationRule implements ValidationRule, Serializabl
 
     public static ArrayList<String> getValidationRuleOperators() {
         return operators;
+    }
+    
+    
+    public Collection<String> getValidationRuleArguments() {
+        throw new RuntimeException("not implemented");
+    }
+    
+    public DataDefinition getDataDefinition() {
+        throw new RuntimeException("not implemented");
     }
 
 }

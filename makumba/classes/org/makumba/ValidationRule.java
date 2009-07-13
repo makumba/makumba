@@ -23,10 +23,13 @@
 
 package org.makumba;
 
+import java.util.Collection;
+
 /**
  * Defines the basics of a Makumba Validation rule.
  * 
  * @author Rudolf Mayer
+ * @author Manuel Gay
  * @version $Id$
  */
 public interface ValidationRule extends Comparable<ValidationRule> {
@@ -46,4 +49,10 @@ public interface ValidationRule extends Comparable<ValidationRule> {
 
     /** Gets the {@link FieldDefinition} this rule applies to. */
     public FieldDefinition getFieldDefinition();
+    
+    /** Gets the arguments (field names) this rule applies to **/
+    public Collection<String> getValidationRuleArguments();
+    
+    /** Gets the {@link DataDefinition} this rule applies to **/
+    public DataDefinition getDataDefinition();
 }

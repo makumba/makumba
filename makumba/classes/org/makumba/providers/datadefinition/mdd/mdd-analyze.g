@@ -66,7 +66,7 @@ options {
     // create and set validation rule
     protected ValidationRuleNode createSingleFieldValidationRule(AST originAST, String fieldName, ValidationType type, FieldNode subField) { return null; }
     
-    protected ValidationRuleNode createMultiFieldValidationRule(AST originAST, ValidationType type) { return null; }
+    protected ValidationRuleNode createMultiFieldValidationRule(AST originAST, ValidationType type, FieldNode subField) { return null; }
      
     // add validation rule arguments, i.e. field names that should be checked
     protected void addValidationRuleArgument(String name, ValidationRuleNode n) {n.arguments.add(name);}
@@ -238,7 +238,7 @@ validationRuleDeclaration[FieldNode subField]
 	;
 
 comparisonValidationRule[FieldNode subField] returns [ValidationRuleNode v = null;]
-	: #(c:COMPARE {v = createMultiFieldValidationRule(#c, ValidationType.COMPARISON); }
+	: #(c:COMPARE {v = createMultiFieldValidationRule(#c, ValidationType.COMPARISON, subField); }
 		(fn:FUNCTION_ARGUMENT {addValidationRuleArgument(#fn.getText(), v);})*
 		ce:COMPARE_EXPRESSION
 		{
@@ -248,7 +248,7 @@ comparisonValidationRule[FieldNode subField] returns [ValidationRuleNode v = nul
 	;
 
 multiUniquenessValidationRule[FieldNode subField] returns [ValidationRuleNode v = null;]
-    : #(u:UNIQUE {v = createMultiFieldValidationRule(#u, ValidationType.UNIQUENESS); } (p:PATH {addMultiUniqueKey(v, #p); } )* )
+    : #(u:UNIQUE {v = createMultiFieldValidationRule(#u, ValidationType.UNIQUENESS, subField); } (p:PATH {addMultiUniqueKey(v, #p); } )* )
     ;
 
 rangeValidationRule[FieldNode subField] returns [ValidationRuleNode v = null; ]

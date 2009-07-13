@@ -50,9 +50,11 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
         switch (type.getType()) {
             case MDDTokenTypes.CHAR:
                 AST length = type.getFirstChild();
-                int l = Integer.parseInt(length.getText());
-                if (l > 255) {
-                    factory.doThrow(this.typeName, "char has a maximum length of 255", type);
+                if(length != null) {
+                    int l = Integer.parseInt(length.getText());
+                    if (l > 255) {
+                        factory.doThrow(this.typeName, "char has a maximum length of 255", type);
+                    }
                 }
                 break;
             case MDDTokenTypes.PTR:
@@ -157,13 +159,13 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
     }
     
     @Override
-    protected ValidationRuleNode createMultiFieldValidationRule(AST originAST, ValidationType type) {
+    protected ValidationRuleNode createMultiFieldValidationRule(AST originAST, ValidationType type, FieldNode subField) {
         switch(type) {
             case UNIQUENESS:
-                ValidationRuleNode n = new MultiUniquenessValidationRule(mdd, originAST, type);
+                ValidationRuleNode n = new MultiUniquenessValidationRule(mdd, originAST, type, subField);
                 return n;
             case COMPARISON:
-                ValidationRuleNode comparison = new ComparisonValidationRule(mdd, originAST, type);
+                ValidationRuleNode comparison = new ComparisonValidationRule(mdd, originAST, type, subField);
                 return comparison;
             default:
                 throw new RuntimeException("no matching validation rule found!");
@@ -194,8 +196,8 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
                 return new RangeValidationRule(mdd, originAST, f, type);
             case REGEX:
                 return new RegExpValidationRule(mdd, originAST, f);
-            case COMPARISON:
-                return new ComparisonValidationRule(mdd, originAST, type);
+            //case COMPARISON:
+            //   return new ComparisonValidationRule(mdd, originAST, type);
             default:
                 throw new RuntimeException("no matching validation rule found");
         }

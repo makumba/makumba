@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
-import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.providers.datadefinition.mdd.ComparisonExpressionNode.ComparisonType;
 import org.makumba.providers.datadefinition.mdd.validation.ComparisonValidationRule;
@@ -134,7 +133,9 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
             
             DataDefinition.MultipleUniqueKeyDefinition key = new DataDefinition.MultipleUniqueKeyDefinition(v.multiUniquenessFields.toArray(new String[] {}), v.message);
             mdd.addMultiUniqueKey(key);
+            
         } else if(v instanceof ComparisonValidationRule) {
+            
             ComparisonExpressionNode ce = v.comparisonExpression;
             
             // check type
@@ -154,7 +155,7 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
                 }
             }
             
-            // now we do it the other way
+            // now we do it the other way around
             if(ce.getLhs_type() == PATH && !v.arguments.contains(ce.getLhs())) {
                 factory.doThrow(typeName, "Field '" + ce.getLhs() + "' not an argument of the comparison expression", ce);
             }

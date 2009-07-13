@@ -78,6 +78,10 @@ public class Configuration implements Serializable {
 
     private static final String KEY_DATADEFINITIONPROVIDER = "dataDefinitionProvider";
     
+    public static final String MDD_DATADEFINITIONPROVIDER = "mdd";
+    
+    public static final String RECORDINFO_DATADEFINITIONPROVIDER = "recordinfo";
+    
     // calendar editor
     public static final String KEY_CALENDAR_EDITOR = "calendarEditor";
 

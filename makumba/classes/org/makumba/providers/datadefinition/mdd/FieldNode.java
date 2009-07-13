@@ -55,7 +55,7 @@ public class FieldNode extends MDDAST {
 
     
     // char length
-    protected int charLength;
+    protected int charLength = 255;
     
     // pointed type
     protected String pointedType;

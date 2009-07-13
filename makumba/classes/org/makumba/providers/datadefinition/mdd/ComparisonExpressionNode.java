@@ -3,7 +3,9 @@ package org.makumba.providers.datadefinition.mdd;
 import java.util.Date;
 
 /**
- * Node that holds data of a comparison expression
+ * Node that holds data of a comparison expression of the kind RHS operator LHS, where RHS/LHS can be either a field
+ * name, a date constant or construct, or a function applied to a field
+ * 
  * @author Manuel Gay
  * @version $Id: ComparisonExpressionNode.java,v 1.1 08.07.2009 16:01:49 gaym Exp $
  */
@@ -47,11 +49,33 @@ public class ComparisonExpressionNode extends MDDAST {
         this.rhs_date = rhs_date;
     }
 
-    public int getOp() {
+    public int getOperatorType() {
         return op;
     }
 
-    public void setOp(int op) {
+    public String getOperator() {
+        
+        switch(op) {
+            case MDDTokenTypes.EQ:
+                return "=";
+            case MDDTokenTypes.LT:
+                return "<";
+            case MDDTokenTypes.GT:
+                return ">";
+            case MDDTokenTypes.SQL_NE:
+                return "<>";
+            case MDDTokenTypes.NE:
+                return "!=";
+            case MDDTokenTypes.LE:
+                return "<=";
+            case MDDTokenTypes.GE:
+                return ">=";
+        }
+        throw new RuntimeException("invalid value for operator");
+        
+    }
+
+    public void setOperatorType(int op) {
         this.op = op;
     }
 
@@ -97,6 +121,6 @@ public class ComparisonExpressionNode extends MDDAST {
 
     @Override
     public String toString() {
-        return lhs + " " + op + " " + rhs;
+        return lhs + " " + getOperator() + " " + rhs;
     }
 }
