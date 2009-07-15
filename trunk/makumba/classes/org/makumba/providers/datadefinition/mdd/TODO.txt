@@ -1,7 +1,5 @@
 TODO new MDD parser:
 
-- implement identifier trickery that HQL uses for identifiers
-
 - validation rules:
     - adapt mak-tools for new validation rules, function syntax, multi-unique keys (mdd viewer)
     
