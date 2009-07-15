@@ -59,7 +59,13 @@ public class MDDParser extends MDDBaseParser {
         
         while(t != null) {
             
-            //  subfield
+            //  subfield1
+            //  |
+            //  |-- parentFieldName
+            //  |   |
+            //  |   titleField
+            //  |
+            //  subfield2
             //  |
             //  |-- parentFieldName
             //  |   |
@@ -67,7 +73,7 @@ public class MDDParser extends MDDBaseParser {
             //  |   |
             //  |   subFieldType
             //  |
-            //  subfield2
+            //  subfield3
             //  ...
             MDDAST subfield = new MDDAST();
             subfield.setText("->!");
@@ -82,11 +88,15 @@ public class MDDParser extends MDDBaseParser {
             subfield.setFirstChild(parentFieldName);
             
             // build tree
-            t.getFirstChild().setType(MDDTokenTypes.SUBFIELDNAME);
+            if(t.getType() == MDDTokenTypes.TITLEFIELDFIELD || t.getType() == MDDTokenTypes.TITLEFIELDFUNCTION) {
+                System.out.println("I am an included title");
+                subfield.getFirstChild().setNextSibling(t);
+            } else {
+                t.getFirstChild().setType(MDDTokenTypes.SUBFIELDNAME);
+                includedFieldNames.add(t.getText());
+                subfield.getFirstChild().setNextSibling(t.getFirstChild());
+            }
             
-            includedFieldNames.add(t.getText());
-            
-            subfield.getFirstChild().setNextSibling(t.getFirstChild());
             
             if(result == null) {
                 result = subfield;

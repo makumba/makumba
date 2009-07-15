@@ -1,13 +1,9 @@
 TODO new MDD parser:
 
+- implement identifier trickery that HQL uses for identifiers
+
 - validation rules:
     - adapt mak-tools for new validation rules, function syntax, multi-unique keys (mdd viewer)
-
-- bug entry about better validation, esp. multi-field validation. comparison validation rules should use the mql query analysis combined
-  with a special 3rd pass that does expression evaluation, that way it would be possible to use query fragments as boolean
-  validation functions (multi-field expression evaluation). however this needs more design & the use-cases are not sure of yet.
-
-  - bug entry, decide what to do when a multi-field validation rule doesn't get all its arguments
     
 - http://bugs.best.eu.org/cgi-bin/bugzilla/show_bug.cgi?id=1098
 
