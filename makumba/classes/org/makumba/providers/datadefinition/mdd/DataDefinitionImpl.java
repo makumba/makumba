@@ -17,8 +17,6 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.ValidationDefinition;
 import org.makumba.ValidationRule;
-import org.makumba.providers.datadefinition.mdd.validation.RangeValidationRule;
-import org.makumba.providers.datadefinition.mdd.validation.RegExpValidationRule;
 
 /**
  * Implementation of the {@link DataDefinition} interface.<br>
@@ -79,6 +77,8 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
     protected LinkedHashMap<String, DataDefinition.QueryFragmentFunction> functions = new LinkedHashMap<String, DataDefinition.QueryFragmentFunction>();
 
     private transient MDDNode mddNode;
+    
+    private transient LinkedHashMap<String, FieldNode> postponedFields = new LinkedHashMap<String, FieldNode>();
 
     
     /** make a virtual data definition **/
@@ -130,16 +130,22 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
                 this.titleFieldExpr = mddNode.titleField.functionName;
                 break;
         }
+        
         this.multiFieldUniqueList = mddNode.multiFieldUniqueList;
         
         
         addStandardFields(getName());
-        addFieldNodes(mddNode.fields);
+        addFieldNodes(mddNode.fields, false);
         addValidationRules(mddNode.validationRules);
         addFunctions(mddNode.functions);
-        
+
         // evaluate the title, when all fields and functions are processed
         evaluateTitle();
+
+        // finally also add the postponed fields, which basically are fields that in some way point to this DD
+        addFieldNodes(postponedFields, true);
+        
+
     }
     
     /**
@@ -177,11 +183,12 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
     /**
      * method needed for converting FieldNodes into FieldDefinitionImpl objects.
      * FieldNode cannot implement FieldDefinition due to a conflict with the getType() type with ANTLR.
+     * @param secondPass TODO
      */
-    private void addFieldNodes(LinkedHashMap<String, FieldNode> fields) {
+    private void addFieldNodes(LinkedHashMap<String, FieldNode> fields, boolean secondPass) {
         for(FieldNode f : fields.values()) {
             FieldDefinitionImpl field = new FieldDefinitionImpl(this, f);
-           
+            
             switch(f.makumbaType) {
                 case FILE:
                     // when we have a file field, we transform it into an ptrOne with a specific structure
@@ -192,17 +199,22 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
                     addField(field);
                     break;
                 case SETCOMPLEX:
-                    field.subfield.setOwnerFieldName = addPointerToParent(field);
+                    field.subfield.setOwnerFieldName = addPointerToParent(field, getPointerName(this.getName(), field));
                     addField(field);
                     break;
                 case SET:
-                    field.subfield.setOwnerFieldName = addPointerToParent(field);
+                    if(!secondPass && field.getPointedType() == this) {
+                        postponedFields.put(f.name, f);
+                        continue;
+                    }
+                    
+                    field.subfield.setOwnerFieldName = addPointerToParent(field, getPointerName(this.getName(), field));
                     field.subfield.setMemberFieldName = addPointerToForeign(field);
                     addField(field);
                     break;
                 case SETINTENUM:
                 case SETCHARENUM:
-                    field.subfield.setOwnerFieldName = addPointerToParent(field);
+                    field.subfield.setOwnerFieldName = addPointerToParent(field, getPointerName(this.getName(), field));
                     addField(field);
 
                     // add enum field
@@ -236,8 +248,8 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
      * @param subField the subField to which to add a pointer
      * @return the name of the pointer field in the subField, computed so as not to collide with existing subField fields
      */
-    private String addPointerToParent(FieldDefinitionImpl subField) {
-        String parentName = getPointerName(this.getName(), subField);
+    private String addPointerToParent(FieldDefinitionImpl subField, String parentName) {
+        
         FieldDefinitionImpl ptr = new FieldDefinitionImpl(parentName, "ptrRel");
         subField.subfield.addField(ptr);
         ptr.mdd = subField.subfield;
@@ -257,7 +269,17 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
      * @return the name of the pointer field in the subField
      */
     private String addPointerToForeign(FieldDefinitionImpl subField) {
-        String pointed = subField.pointedType;
+        
+        // FIXME this is a hack in order to create the right names for the pointer to the parent field in case of types that point to
+        // themselves. this was the behavior in the old parser and somehow not having it messes up the behavior of other parts of mak
+        // probably the order of creation of some types is different, i.e. those pointers were added first before any other fields
+        // but this is not the case anymore
+        String pointed = null;
+        if(subField.getPointedType() == this) {
+            pointed = getPointerName(subField.pointedType, subField);
+        } else {
+            pointed = subField.pointedType;
+        }
         int s = pointed.indexOf("->");
         if(s != -1)
             pointed = pointed.substring(s+2);
@@ -436,6 +458,9 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
             // but not the PtrIndex
             if(fields.keySet().size() > 3) {
                 titleField = (String) (Arrays.asList(fields.keySet().toArray())).get(3);
+                // if this happens to be an MDD which points to itself we may have to use the following trick to get the right title
+            } else if(fields.keySet().size() == 3 && postponedFields.keySet().size() > 0) {
+                titleField = (String) (Arrays.asList(postponedFields.keySet().toArray())).get(0);
             } else {
                 titleField = (String) (Arrays.asList(fields.keySet().toArray())).get(0);
             }
