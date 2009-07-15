@@ -121,38 +121,11 @@ public class FieldNode extends MDDAST {
     }
     
     public void initSetSubfield() {
-        MDDNode sub = initSubfield();
-//        this.subfield.name = this.pointedType + "->" + this.name;
+        initSubfield();
         this.subfield.name = this.mdd.getName();
         this.subfield.ptrSubfield = "->" + this.name;
     }
-    
-    public void initIntEnumSubfield() {
-        initEnumSubfield(FieldType.INTENUM);
-    }
-    
-    public void initCharEnumSubfield() {
-        initEnumSubfield(FieldType.CHARENUM);
-    }
-    
-    private void initEnumSubfield(FieldType type) {
-        MDDNode sub = initSubfield();
-        /*
-        // add enumerator field
-        FieldNode f = new FieldNode(sub, DataDefinitionImpl.ENUM_FIELD_NAME);
-        sub.addField(f);
-        sub.titleField = new TitleFieldNode();
-        sub.titleField.setText(f.name);
-        sub.titleField.titleType = MDDTokenTypes.FIELD;
-        f.makumbaType = type;
-         */
-    }
-
-    public void addSubfield(FieldNode subfield) {
-        this.subfield.addField(subfield);
-        this.subfield.fieldNameInParent = this.name;
-    }   
-    
+        
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("== Field name: " + name + " (line "+ getLine() + ")\n");
