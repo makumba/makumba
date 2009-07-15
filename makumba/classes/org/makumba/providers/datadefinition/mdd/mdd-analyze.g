@@ -156,9 +156,9 @@ fieldType[FieldNode field] returns [FieldType fieldType = null; ]
        )
     | INT { fieldType = FieldType.INT; }
     | #(INTENUM { fieldType = FieldType.INTENUM; } ( intEnumBody[field] )* )
-	| #(SETINTENUM { fieldType = FieldType.SETINTENUM; } ( intEnumBody[field] )* { field.initIntEnumSubfield(); } )
+	| #(SETINTENUM { fieldType = FieldType.SETINTENUM; } ( intEnumBody[field] )* { field.initSubfield(); } )
     | #(CHARENUM { fieldType = FieldType.CHARENUM; } ( charEnumBody[field] )* )
-    | #(SETCHARENUM { fieldType = FieldType.SETCHARENUM; } ( charEnumBody[field] )* { field.initCharEnumSubfield(); } )
+    | #(SETCHARENUM { fieldType = FieldType.SETCHARENUM; } ( charEnumBody[field] )* { field.initSubfield(); } )
 	| REAL { fieldType = FieldType.REAL; }
     | BOOLEAN { fieldType = FieldType.BOOLEAN; }
     | TEXT { fieldType = FieldType.TEXT; }
