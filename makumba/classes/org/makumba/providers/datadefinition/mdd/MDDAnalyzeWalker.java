@@ -92,9 +92,9 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
     @Override
     protected void checkSubFieldType(AST type, FieldNode field) {
         checkFieldType(type, field);
-        //if(type.getType() == MDDTokenTypes.SETCOMPLEX || type.getType() == MDDTokenTypes.PTRONE) {
-        //    factory.doThrow(this.typeName, "Subfields of subfields are not allowed.", type);
-        //}
+        if(type.getType() == MDDTokenTypes.SETCOMPLEX || type.getType() == MDDTokenTypes.PTRONE) {
+            factory.doThrow(this.typeName, "Subfields of subfields are not allowed.", type);
+        }
     }
 
     @Override
