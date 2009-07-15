@@ -15,7 +15,7 @@ public class MDDParserDiff {
     
     public static void main(String[] args) {
         
-//      Configuration.setDataDefinitionProviderClass("org.makumba.providers.datadefinition.makumba.MakumbaDataDefinitionFactory");
+        Configuration.setPropery("dataSourceConfig", "dataDefinitionProvider", "recordinfo");
         DataDefinition dd = DataDefinitionProvider.getInstance().getDataDefinition("ParserComparison");
         
         
@@ -27,10 +27,10 @@ public class MDDParserDiff {
             e.printStackTrace();
         }
         
-//        Configuration.setDataDefinitionProviderClass("org.makumba.providers.datadefinition.mdd.MDDProvider");
-        DataDefinition dd1 = MDDProvider.getMDD("P");
+        Configuration.setPropery("dataSourceConfig", "dataDefinitionProvider", "mdd");
+        DataDefinition dd1 = MDDProvider.getMDD("ParserComparison");
         
-        
+
         String newDD = ((DataDefinitionImpl)dd1).getStructure();
         
         File newFile = new File("new.txt");

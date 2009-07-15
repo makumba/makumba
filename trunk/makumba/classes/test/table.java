@@ -45,9 +45,10 @@ import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
 
 /**
- * Testing table operations
+ * Testing table operations, using new MDD parser
  * 
  * @author Cristian Bogdan
+ * @author Manuel Gay
  */
 public class table extends TestCase {
 
@@ -126,34 +127,36 @@ public class table extends TestCase {
 
         Vector<String> errors = new Vector<String>();
         for (int i = 0; i < v.size(); i++) {
-            try {
-                db.executeQuery("SELECT t FROM test.validMdds." + (String) v.elementAt(i) + " t", null);
-                
-                Vector<String> fields = ddp.getDataDefinition("test.validMdds." + v.elementAt(i)).getFieldNames();
-                String what = "";
-                for (String string : fields) {
-                    String fname = (String) string;
-                    String ftype = ddp.getDataDefinition("test.validMdds." + (String) v.elementAt(i)).getFieldDefinition(
-                        fname).getDataType();
-                    // System.out.println(fname+": "+ftype);
-                    if (ftype != null && !ftype.equals("null") && !ftype.startsWith("set")) {
-                        // fields
-                        what = what + (what.length() > 0 ? ", " : "") + "t." + fname;
-                    }
+            if(!v.elementAt(i).equals("NestedSet")) {
+                try {
+                    db.executeQuery("SELECT t FROM test.validMdds." + v.elementAt(i) + " t", null);
                     
+                    Vector<String> fields = ddp.getDataDefinition("test.validMdds." + v.elementAt(i)).getFieldNames();
+                    String what = "";
+                    for (String string : fields) {
+                        String fname = (String) string;
+                        String ftype = ddp.getDataDefinition("test.validMdds." + (String) v.elementAt(i)).getFieldDefinition(
+                            fname).getDataType();
+                        // System.out.println(fname+": "+ftype);
+                        if (ftype != null && !ftype.equals("null") && !ftype.startsWith("set")) {
+                            // fields
+                            what = what + (what.length() > 0 ? ", " : "") + "t." + fname;
+                        }
+                        
+                    }
+                    // System.out.println(what);
+                    if (what.length() > 0) {
+                        db.executeQuery("SELECT " + what + " FROM test.validMdds." + (String) v.elementAt(i) + " t", null);
+                    }
+                } catch (Exception e) {
+                    errors.add("\n ." + (errors.size() + 1) + ") Error querying valid MDD <" + (String) v.elementAt(i)
+                            + ">:\n\t " + e);
                 }
-                // System.out.println(what);
-                if (what.length() > 0) {
-                    db.executeQuery("SELECT " + what + " FROM test.validMdds." + (String) v.elementAt(i) + " t", null);
-                }
-            } catch (Exception e) {
-                errors.add("\n ." + (errors.size() + 1) + ") Error querying valid MDD <" + (String) v.elementAt(i)
-                        + ">:\n\t " + e);
             }
-        }
-        if (errors.size() > 0) {
-            fail("\n  Tested " + v.size() + " valid MDDs, of which " + errors.size() + " cant be used for DB queries:"
-                    + errors.toString());
+            if (errors.size() > 0) {
+                fail("\n  Tested " + v.size() + " valid MDDs, of which " + errors.size() + " cant be used for DB queries:"
+                        + errors.toString());
+            }
         }
     }
 
@@ -356,12 +359,11 @@ public class table extends TestCase {
 
     }
 
-    static String subsetQuery = "SELECT a.description, a, a.description, a.sth.aaa FROM test.Person p, p.address a WHERE p=$1 ORDER BY a.description";
+    static String subsetQuery = "SELECT a.description, a, a.description FROM test.Person p, p.address a WHERE p=$1 ORDER BY a.description";
 
     public void testSetInsert() {
         Dictionary<String, Object> p = new Hashtable<String, Object>();
         p.put("description", "home");
-        p.put("sth.aaa", "bbb");
 
         set1 = db.insert(ptr, "address", p);
 
@@ -371,7 +373,6 @@ public class table extends TestCase {
         assertEquals("home", v.elementAt(0).get("col1"));
         assertEquals(set1, v.elementAt(0).get("col2"));
         assertEquals("home", v.elementAt(0).get("col3"));
-        assertEquals("bbb", v.elementAt(0).get("col4"));
 
         p.put("description", "away");
 
@@ -679,7 +680,6 @@ public class table extends TestCase {
         Hashtable<String, Object> address = new Hashtable<String, Object>();
         address.put("streetno", "Sesame Street 15");
         address.put("languages", languages);
-        address.put("sth.aaa", "someAAA");
         
         db.insert(ptrPerson, "address", address);
         address.put("streetno", "Sesame Street 16");

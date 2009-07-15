@@ -50,13 +50,13 @@ import org.makumba.providers.TransactionProvider;
  * 
  * @author Cristian Bogdan
  */
-public class tableHibernate extends TestCase {
+public class tableHibernateOld extends TestCase {
     
 	static Transaction db;
 
 	static long epsilon = 2000;
 
-	public tableHibernate(String name) {
+	public tableHibernateOld(String name) {
 		super(name);
 	}
 
@@ -65,7 +65,7 @@ public class tableHibernate extends TestCase {
 	}
 
 	public static Test suite() {
-		return new TestSuite(tableHibernate.class);
+		return new TestSuite(tableHibernateOld.class);
 	}
 
 	public void setUp() {
@@ -85,7 +85,7 @@ public class tableHibernate extends TestCase {
     
 	static Date create;
 
-	static String[] personFields = { "TS_modify", "TS_create", "extraData",
+	static String[] PersonOldFields = { "TS_modify", "TS_create", "extraData",
 			"birthdate" };
 
 	static String[] ptrOneFields = { "something" };
@@ -100,15 +100,15 @@ public class tableHibernate extends TestCase {
 
 	static Pointer set1, set2;
 
-	String readPerson = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData.id as extraData FROM test.Person p WHERE p.id= ?";
+	String readPersonOld = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData.id as extraData FROM test.PersonOld p WHERE p.id= ?";
 
-	String readPerson1 = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.weight as weight, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData.id as extraData, p.comment as comment, p.picture AS picture FROM test.Person p WHERE p.id = ?";
+	String readPersonOld1 = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.weight as weight, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData.id as extraData, p.comment as comment, p.picture AS picture FROM test.PersonOld p WHERE p.id = ?";
 
-    String readPerson2 = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.weight as weight, p.brother.id as brother, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData.id as extraData, p.comment as comment, p.picture AS picture FROM test.Person p WHERE p.id= ?";
+    String readPersonOld2 = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.weight as weight, p.brother.id as brother, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData.id as extraData, p.comment as comment, p.picture AS picture FROM test.PersonOld p WHERE p.id= ?";
 
-	String readIntSet = "SELECT i.enum_ as member FROM test.Person p JOIN p.intSet i WHERE p.id=? ORDER BY i.enum_";
+	String readIntSet = "SELECT i.enum_ as member FROM test.PersonOld p JOIN p.intSet i WHERE p.id=? ORDER BY i.enum_";
 
-	String readCharSet = "SELECT c.enum_ as member FROM test.Person p JOIN p.charSet c WHERE p.id=? ORDER BY c.enum_";
+	String readCharSet = "SELECT c.enum_ as member FROM test.PersonOld p JOIN p.charSet c WHERE p.id=? ORDER BY c.enum_";
 
 	static InputStream getExampleData() {
 		try {
@@ -190,13 +190,13 @@ public class tableHibernate extends TestCase {
 		p.put("intSet", setintElem);
 		p.put("charSet", setcharElem);
 
-		ptr = db.insert("test.Person", p);
+		ptr = db.insert("test.PersonOld", p);
 		assertNotNull(ptr);
-		assertEquals(ptr.getType(), "test.Person");
+		assertEquals(ptr.getType(), "test.PersonOld");
 
 		now = new Date();
 
-		Vector<Dictionary<String, Object>> v = db.executeQuery(readPerson1, ptr);
+		Vector<Dictionary<String, Object>> v = db.executeQuery(readPersonOld1, ptr);
 
 		assertEquals(1, v.size());
 
@@ -237,7 +237,7 @@ public class tableHibernate extends TestCase {
         // try to delete brother = that ID
         // try to delete the other brother
         
-        // insert the first person
+        // insert the first PersonOld
         Hashtable<String, Object> p = new Hashtable<String, Object>();
         
         Text comment = new Text("Hello world!!!!");
@@ -248,17 +248,17 @@ public class tableHibernate extends TestCase {
         p.put("indiv.surname", "doe_1");
         p.put("extraData.something", "else");
 
-        fptr = db.insert("test.Person", p);
+        fptr = db.insert("test.PersonOld", p);
         
         // check if he got inserted
         assertNotNull(fptr);
-        assertEquals(fptr.getType(), "test.Person");
+        assertEquals(fptr.getType(), "test.PersonOld");
 
-        Vector<Dictionary<String, Object>> v = db.executeQuery(readPerson2, fptr);
+        Vector<Dictionary<String, Object>> v = db.executeQuery(readPersonOld2, fptr);
         //System.out.println(v.size()); 
         assertEquals(1, v.size());
 
-        // insert the second person (brother)
+        // insert the second PersonOld (brother)
         p = new Hashtable<String, Object>();
         
         comment = new Text("SomeComment");
@@ -269,12 +269,12 @@ public class tableHibernate extends TestCase {
         p.put("indiv.surname", "doe_2");
         p.put("extraData.something", "else");
 
-        fptr1 = db.insert("test.Person", p);
+        fptr1 = db.insert("test.PersonOld", p);
         assertNotNull(fptr1);
-        assertEquals(fptr.getType(), "test.Person");
+        assertEquals(fptr.getType(), "test.PersonOld");
 
         // check if it links to the first one correctly
-        v = db.executeQuery(readPerson2, fptr1);
+        v = db.executeQuery(readPersonOld2, fptr1);
 
         assertEquals(1, v.size());
         
@@ -302,11 +302,12 @@ public class tableHibernate extends TestCase {
 
     }
     
-	static String subsetQuery = "SELECT a.description, a.id, a.description FROM test.Person p JOIN p.address a WHERE p.id=? ORDER BY a.description";
+	static String subsetQuery = "SELECT a.description, a.id, a.description, a.sth.aaa FROM test.PersonOld p JOIN p.address a WHERE p.id=? ORDER BY a.description";
 
 	public void testSetInsert() {
 		Dictionary<String, Object> p = new Hashtable<String, Object>();
 		p.put("description", "home");
+		p.put("sth.aaa", "bbb");
 
 		set1 = db.insert(ptr, "address", p);
 
@@ -316,6 +317,7 @@ public class tableHibernate extends TestCase {
 		assertEquals("home", (v.elementAt(0)).get("col1"));
 		assertEquals(set1, (v.elementAt(0)).get("col2"));
 		assertEquals("home", (v.elementAt(0)).get("col3"));
+		assertEquals("bbb", (v.elementAt(0)).get("col4"));
 
 		p.put("description", "away");
 
@@ -369,7 +371,7 @@ public class tableHibernate extends TestCase {
 
 		db.update(ptrOne, p);
 
-		Dictionary<String, Object> d = db.read(ptr, personFields);
+		Dictionary<String, Object> d = db.read(ptr, PersonOldFields);
 		assertNotNull(d);
 		assertEquals(ptrOne, d.get("extraData"));
 
@@ -385,9 +387,9 @@ public class tableHibernate extends TestCase {
 
 	static String langQuery = "SELECT l.id FROM test.Language l WHERE l.name=?";
 
-	static String speaksQuery = "SELECT l.id as k, l.name as name FROM test.Person p JOIN p.speaks l WHERE p.id=?";
+	static String speaksQuery = "SELECT l.id as k, l.name as name FROM test.PersonOld p JOIN p.speaks l WHERE p.id=?";
 
-	static String checkSpeaksQuery = "SELECT l.id FROM test.Person s JOIN s.speaks l WHERE s.id=?";
+	static String checkSpeaksQuery = "SELECT l.id FROM test.PersonOld s JOIN s.speaks l WHERE s.id=?";
 
 	void workWithSet(String[] t) {
 		Vector<Object> v = new Vector<Object>();
@@ -459,7 +461,7 @@ public class tableHibernate extends TestCase {
 		assertEquals(0, result.size());
 
 		assertEquals(0, db.executeQuery(
-				"SELECT l.id FROM test.Person p JOIN p.speaks l WHERE p.id=?", ptr)
+				"SELECT l.id FROM test.PersonOld p JOIN p.speaks l WHERE p.id=?", ptr)
 				.size());
 		workWithSet(toInsert3);
         //db.delete("test.Language l", "1=1", null); 
@@ -470,7 +472,7 @@ public class tableHibernate extends TestCase {
 	public void testPtrOneDelete() {
 		db.delete(ptrOne);
 
-		Dictionary<String, Object> d = db.read(ptr, personFields);
+		Dictionary<String, Object> d = db.read(ptr, PersonOldFields);
 		assertNotNull(d);
 		assertNull(d.get("extraData"));
 
@@ -481,7 +483,7 @@ public class tableHibernate extends TestCase {
 		Dictionary<String, Object> p = new Hashtable<String, Object>();
 		p.put("extraData.something", "else2");
 		db.update(ptr, p);
-		Dictionary<String, Object> d = db.read(ptr, personFields);
+		Dictionary<String, Object> d = db.read(ptr, PersonOldFields);
 		ptrOne = (Pointer) d.get("extraData");
 		assertNotNull(ptrOne);
 		Dictionary <String, Object>read;
@@ -506,7 +508,7 @@ public class tableHibernate extends TestCase {
 		int updates = db.update(ptr, pmod);
 
 		now = new Date();
-		Vector<Dictionary<String, Object>> v = db.executeQuery(readPerson, ptr);
+		Vector<Dictionary<String, Object>> v = db.executeQuery(readPersonOld, ptr);
 		assertEquals(1, v.size());
 		assertEquals(1, updates);
         
@@ -536,7 +538,7 @@ public class tableHibernate extends TestCase {
 
 		db.delete(ptr);
         
-		assertNull(db.read(ptr, personFields));
+		assertNull(db.read(ptr, PersonOldFields));
 		assertNull(db.read(ptrOne, ptrOneFields));
 		assertEquals(0, db.executeQuery(subsetQuery, ptr).size());
 		assertNull(db.read(set1, subsetFields));
@@ -545,13 +547,13 @@ public class tableHibernate extends TestCase {
 		assertEquals(0, db.executeQuery(readIntSet, ptr).size());
 		assertEquals(0, db.executeQuery(readCharSet, ptr).size());
 		assertEquals(0, db.executeQuery(
-				"SELECT l.id FROM  test.Person p JOIN p.speaks l WHERE p.id=?", ptr)
+				"SELECT l.id FROM  test.PersonOld p JOIN p.speaks l WHERE p.id=?", ptr)
 				.size());
 		assertEquals(0, db.executeQuery(
-				"SELECT l.enum_ FROM  test.Person p JOIN p.intSet l WHERE p.id=?", ptr)
+				"SELECT l.enum_ FROM  test.PersonOld p JOIN p.intSet l WHERE p.id=?", ptr)
 				.size());
 		assertEquals(0, db.executeQuery(
-				"SELECT l.enum_ FROM  test.Person p JOIN p.charSet l WHERE p.id=?", ptr)
+				"SELECT l.enum_ FROM  test.PersonOld p JOIN p.charSet l WHERE p.id=?", ptr)
 				.size());
 
 		/* delete all entries, bug 673:
@@ -586,11 +588,11 @@ public class tableHibernate extends TestCase {
 		Date mod = c.getTime();
 		p.put("TS_modify", mod);
 
-		ptr1 = db.insert("test.Person", p);
+		ptr1 = db.insert("test.PersonOld", p);
 		assertNotNull(ptr1);
 
 		now = new Date();
-		Vector<Dictionary<String, Object>> v = db.executeQuery(readPerson, ptr1);
+		Vector<Dictionary<String, Object>> v = db.executeQuery(readPersonOld, ptr1);
 		assertEquals(1, v.size());
 
 		pc1 = v.elementAt(0);
@@ -601,7 +603,7 @@ public class tableHibernate extends TestCase {
 		assertEquals(cr, new Date(((Date) pc1.get("TS_create")).getTime()));
 		assertEquals(mod, new Date(((Date) pc1.get("TS_modify")).getTime()));
         db.delete(ptr1);
-        db.delete("test.Individual i","i.surname='Copy'",null);
+        db.delete("test.IndividualOld i","i.surname='Copy'",null);
         db.delete("test.Language l", "1=1", null);
 	}
 	

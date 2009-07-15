@@ -1,6 +1,0 @@
-surname=not empty char[40]         ;Family Name
-name=not empty char[40]            ;First Name
-person=ptr test.Person
-someDate=date
-
-someusername=char[80]
