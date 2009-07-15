@@ -162,12 +162,17 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
                 FieldDefinition fd = this.getFieldOrPointedFieldDefinition(field);
                 if(fd == null) {
                     // we are in a subfield
-                    // in case of a single-field validation rule, we can fetch the subfield data definition from the field
-                    //if(v instanceof RangeValidationRule || v instanceof RegExpValidationRule) {
-                        fd = this.getFieldDefinition(n.field.mdd.fieldNameInParent).getSubtable().getFieldDefinition(field);
-                    //} else {
-                        // in case of a multi-field validation rule, we can get the subfield data definition from the field
-                    //}
+                    FieldDefinition subFd = this.getFieldDefinition(n.field.mdd.fieldNameInParent);
+                    if(subFd == null) {
+                        // we try our luck another way
+                        subFd = this.getFieldDefinition(n.field.subfield.fieldNameInParent);
+                        if(subFd == null) {
+                            throw new RuntimeException("could not retrieve field definition for validation rule " + v.getRuleName());
+                        }
+                    }
+                    
+                   fd = subFd.getSubtable().getFieldDefinition(field);
+                    
                     
                     if(fd == null) {
                         throw new RuntimeException("could not retrieve field definition for validation rule " + v.getRuleName());
