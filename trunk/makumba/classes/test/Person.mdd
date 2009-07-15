@@ -88,15 +88,9 @@ address=set			 ;Addresses
   address->homepage=char[50]
   address->languages = set test.Language ; languages spoken in that address
   address->length(description) {3..?} : "Description must be at least 3 letters long!"
-
-#  address->sth=ptr
-#  address->sth->aaa=char[20]
-#  address->sth->aaa%len = [3..?] : "aaa must be at least 3 letters long!"
-#  address->sth->someSuperNestedFunction() { 1 + 2 } Some nested nested message 
-
-   address->someFunction() { 1 + 2 } : "Some nested message"
-   address->matches(homepage) { http://.+ } : "the homepage must start with http://"
-#  address->compare() { lower(description) != description } : "Description cannot all be lower case!"
+  address->someFunction() { 1 + 2 } : "Some nested message"
+  address->matches(homepage) { http://.+ } : "the homepage must start with http://"
+  address->compare(description) { lower(description) != description } : "Description cannot all be lower case!"
 
 
 toys=set
@@ -111,8 +105,8 @@ compare(email) { lower(email) = email } : "E-mail address must be all lower case
 compare(indiv.name) { lower(indiv.name) != indiv.name } : "Your name can't be all lower cases!"
 
 # multi-field uniqueness keys
-#unique() { age, email } : "these need to be unique!"
-#unique() { indiv.name, indiv.surname } : "these too!"
+unique() { age, email } : "these need to be unique!"
+unique() { indiv.name, indiv.surname } : "these too!"
 
 
 someFunction(char[] b) { count(address) > 0 } : "You need to specify an address"
