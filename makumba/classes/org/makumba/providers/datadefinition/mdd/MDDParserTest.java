@@ -4,7 +4,7 @@ public class MDDParserTest {
 
     public static void main(String[] args) {
 
-        DataDefinitionImpl dd = (DataDefinitionImpl) MDDProvider.getMDD("org.makumba.devel.relations.Relation");
+        DataDefinitionImpl dd = (DataDefinitionImpl) MDDProvider.getMDD("ParserTest2");
 
     }
    

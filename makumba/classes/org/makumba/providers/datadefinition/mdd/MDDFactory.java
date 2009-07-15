@@ -16,6 +16,7 @@ import org.makumba.DataDefinitionParseError;
 
 import antlr.ANTLRException;
 import antlr.RecognitionException;
+import antlr.TokenStreamRecognitionException;
 import antlr.collections.AST;
 
 /**
@@ -253,6 +254,11 @@ public class MDDFactory {
 
         String line = "";
         int column = 0;
+        
+        if(t instanceof TokenStreamRecognitionException) {
+            TokenStreamRecognitionException te = (TokenStreamRecognitionException) t;
+            t = te.recog;
+        }
 
         if (t instanceof RecognitionException) {
             RecognitionException re = (RecognitionException) t;
@@ -261,6 +267,7 @@ public class MDDFactory {
                 line = getLine(re.getLine(), typeName);
             }
         }
+        
 
         throw new DataDefinitionParseError(typeName, t.getMessage(), line, column - 1);
     }

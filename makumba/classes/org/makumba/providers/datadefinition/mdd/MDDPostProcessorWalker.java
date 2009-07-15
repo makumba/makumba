@@ -38,9 +38,16 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
             factory.doThrow(this.typeName, "Unknown field type: "+fieldNode.unknownType, field);
         } else {
             fieldNode.makumbaType = type.makumbaType;
-            if(fieldNode.makumbaType == FieldType.INTENUM) {
+            if(fieldNode.makumbaType == FieldType.INTENUM || fieldNode.makumbaType == FieldType.SETINTENUM) {
                 fieldNode.intEnumValues = type.intEnumValues;
                 fieldNode.intEnumValuesDeprecated = type.intEnumValuesDeprecated;
+            } else if(fieldNode.makumbaType == FieldType.CHARENUM || fieldNode.makumbaType == FieldType.SETCHARENUM) {
+                fieldNode.charEnumValues = type.charEnumValues;
+                fieldNode.charEnumValuesDeprecated = type.charEnumValuesDeprecated;
+            }
+            
+            if(fieldNode.makumbaType == FieldType.SETCHARENUM || fieldNode.makumbaType == FieldType.SETINTENUM) {
+                fieldNode.subfield = type.subfield;
             }
         }
         

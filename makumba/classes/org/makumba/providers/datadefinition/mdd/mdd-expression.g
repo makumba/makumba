@@ -57,10 +57,9 @@ comparisonExpression
 			#comparisonExpression = ce;
 		}
 	;
-
 	
 comparisonPart
-	: t:fieldPath
+	: t:type
 	| n:number
 	| df:dateFunction
 	| u:upperFunction
@@ -68,19 +67,15 @@ comparisonPart
 	| d:dateConstant
 	;
 
-fieldPath
-	: type
-	;
-
 // here we pass only the type name of the argument, with the function as type
 upperFunction
-	: UPPER! LEFT_PAREN! t:fieldPath RIGHT_PAREN!
+	: UPPER! LEFT_PAREN! t:type RIGHT_PAREN!
 		{#upperFunction.setText(#t.getText()); #upperFunction.setType(UPPER);}
 	;
 
 // here we pass only the type name of the argument, with the function as type
 lowerFunction
-	: LOWER! LEFT_PAREN! t:fieldPath RIGHT_PAREN!
+	: LOWER! LEFT_PAREN! t:type RIGHT_PAREN!
 		{#lowerFunction.setText(#t.getText()); #lowerFunction.setType(LOWER);}
 	;
 
@@ -115,7 +110,10 @@ charEnum
 	;
 	
 intEnumBody
-    : t:STRING_LITERAL {#t.setType(INTENUMTEXT); #t.setText(removeQuotation(#t.getText())); } EQ! i:number { checkNumber(#i); if(#i != null) #i.setType(INTENUMINDEX); } (DEPRECATED)?
+    : t:STRING_LITERAL {#t.setType(INTENUMTEXT); #t.setText(removeQuotation(#t.getText())); }
+      EQ!
+      i:number { checkNumber(#i); if(#i != null) #i.setType(INTENUMINDEX); }
+      (DEPRECATED)?
     ;
 
 charEnumBody
@@ -141,7 +139,7 @@ rangeBound
 //////// MISC
 
 fieldList
-	: a:type (COMMA! b:type)*
+	: type (COMMA! type)*
 	;
 
 //////////////// COMMON
@@ -151,15 +149,20 @@ fieldList
 type
     : {String type="";} a:atom {type+=#a.getText();}
     	(
-    		  (DOT! b:atom! {type += "." + #b.getText(); })
-    		| (SUBFIELD! s:atom! {type += "->" + #s.getText(); })
+    		  (DOT! {type += ".";} | SUBFIELD! {type += "->";})
+    		  (b:atom! {type += #b.getText(); } | k:keyword! {type += #k.getText(); }) 
     	)*
     	{ #type.setText(type); #type.setType(PATH); }
     ;
+    
+keyword
+    : FILE
+    ;
+    
 
 number
     : POSITIVE_INTEGER | NEGATIVE_INTEGER
-        {checkNumber(#number);}
+      {checkNumber(#number);}
     ;
 
 operator

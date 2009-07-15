@@ -162,7 +162,6 @@ HEX_DIGIT
     
 NOW: "$now";
 TODAY: "$today";
-DATE: "date";
 UPPER: "upper";
 LOWER: "lower";
 
@@ -183,6 +182,7 @@ tokens {
 	// title field
 	// !title=name
 	// !title = nameSurname()
+	TITLE="title";
     TITLEFIELD;
     TITLEFIELDFIELD;
     TITLEFIELDFUNCTION;
@@ -193,6 +193,7 @@ tokens {
     TYPEDEF;
     TYPE="type";
     
+    INCLUDE="include";
     INCLUDED;
     
     // MDD field
@@ -350,7 +351,7 @@ subFieldDeclaration
           titleDeclaration (fieldComment!)? // allow comment but do not store them
           | validationRuleDeclaration
           | functionDeclaration
-          | EXMARK! "include"! EQ! t:type { #subFieldDeclaration = includeSubField(#t, #fn); }
+          | EXMARK! INCLUDE! EQ! t:type { #subFieldDeclaration = includeSubField(#t, #fn); }
           | subFieldBody
       )
       { // we move the subfield node under the current field node
@@ -360,8 +361,7 @@ subFieldDeclaration
     ;
     
 subFieldBody
-	: a:fieldName { #a.setType(SUBFIELDNAME); }
-      (EQ! (modifier)* fieldType (fieldComment)?)
+	: a:fieldName { #a.setType(SUBFIELDNAME); } EQ! (modifier)* fieldType (fieldComment)?
     ;
     
 fieldName
@@ -370,6 +370,10 @@ fieldName
     | l:LENGTH { checkFieldName(#l); #l.setType(FIELDNAME); }
     | c:CHAR { checkFieldName(#c); #c.setType(FIELDNAME); }
     | t:TYPE { checkFieldName(#t); #t.setType(FIELDNAME); }
+    | ti:TITLE { checkFieldName(#ti); #ti.setType(FIELDNAME); }
+    | f:FILE  { checkFieldName(#f); #f.setType(FIELDNAME); }
+    | te:TEXT  { checkFieldName(#te); #te.setType(FIELDNAME); }
+    
     ;
 
 fieldType
@@ -389,7 +393,7 @@ fieldType
     | SET! si:intEnum {#si.setType(SETINTENUM);}
     | SET! sc:charEnum {#sc.setType(SETCHARENUM);}
     ;
-
+    
 //int { "aa"=5, "bb"=2 deprecated, "cc"=10}
 intEnum
 	// intEnum has no function body as such, but the syntax is the same so we use this trick
@@ -419,7 +423,7 @@ modifier
     
 // !title = name
 titleDeclaration
-    : EXMARK! "title"! EQ! t:title
+    : EXMARK! TITLE! EQ! t:title
     ;
     
 title
@@ -428,7 +432,7 @@ title
     ;
     
 includeDeclaration
-    : EXMARK! "include"! EQ! t:type { #includeDeclaration = include(#t); }
+    : EXMARK! INCLUDE! EQ! t:type { #includeDeclaration = include(#t); }
     ;
 
 // !type.genDef = ...
@@ -511,12 +515,17 @@ parsedFunctionBody
 // general.Person->extraData
 type
     : {String type="";} a:atom {type+=#a.getText();}
-    	(
-    		  (DOT! b:atom! {type += "." + #b.getText(); })
-    		| (SUBFIELD! s:atom! {type += "->" + #s.getText(); })
-    	)*
-    	{ #type.setText(type); #type.setType(PATH); }
+        (
+              (DOT! {type += ".";} | SUBFIELD! {type += "->";})
+              (b:atom! {type += #b.getText(); } | k:keyword! {type += #k.getText(); }) 
+        )*
+        { #type.setText(type); #type.setType(PATH); }
     ;
+    
+keyword
+    : FILE
+    ;
+
 
 number
     : POSITIVE_INTEGER | NEGATIVE_INTEGER
