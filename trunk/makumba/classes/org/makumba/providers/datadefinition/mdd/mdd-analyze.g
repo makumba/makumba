@@ -42,6 +42,8 @@ options {
     // keep type AST for error processing
     protected void checkFieldType(AST type, FieldNode field) { }
     
+    protected FieldNode getParentField(AST parentField) { return null; }
+    
     // Check if subfield type is allowed - same as field type but without ptrOne and setComplex
     protected void checkSubFieldType(AST type, FieldNode field) { }
     
@@ -82,6 +84,7 @@ dataDefinition
 
 declaration
     : fieldDeclaration
+    | subFieldDeclaration
     | t:titleDeclaration { mdd.setTitleField((TitleFieldNode) #t); }
     | typeDeclaration
     | validationRuleDeclaration[null]
@@ -98,13 +101,19 @@ fieldDeclaration { FieldType fieldType = null; }
               (m:MODIFIER { addModifier(field, #m.getText()); })*
               fieldType=ft:fieldType[field] { checkFieldType(#ft, field); field.makumbaType = fieldType; }
               (fc:FIELDCOMMENT { field.description = #fc.getText(); } )?
-              ( { field.initSubfield(); } subField[field] )*
+              //( { field.initSubfield(); } subField[field] )*
       ) {
-                addField(mdd, field);
-                // in the end, the return tree contains only one FieldNode
-                #fieldDeclaration = field;
+            addField(mdd, field);
+            // in the end, the return tree contains only one FieldNode
+            #fieldDeclaration = field;
         }
     ;
+    
+// we remove the subField definition from the tree after it was processed
+subFieldDeclaration!
+    : #(SUBFIELD p:PARENTFIELDNAME {FieldNode field = getParentField(#p); } subField[field] )
+    ;
+
 
 // a subfield, i.e. a normal field, a title field, a validation rule or a function, e.g.
 // cars=set
@@ -113,38 +122,34 @@ fieldDeclaration { FieldType fieldType = null; }
 // cars->name%length=[1..?] : A car must have a non-empty name
 // cars->niceName() { upper(name) }
 subField[FieldNode field]
-	: #(
-		sf:SUBFIELD
-		pf:PARENTFIELDNAME { checkSubFieldName(field.name, #pf); }
+	: (
+		// TITLE DECLARATION
+		t:titleDeclaration
+      	{
+    		field.subfield.setTitleField((TitleFieldNode) #t);
+      		field.addChild(#t);
+      	}
+      	// VALIDATION RULE
+		| validationRuleDeclaration[field]
+		// FUNCTION DECLARATION
+		| functionDeclaration[field]
+		// FIELD DECLARATION
+		|
 		(
-			// TITLE DECLARATION
-			t:titleDeclaration
-          	{
-          		field.subfield.setTitleField((TitleFieldNode) #t);
-          		field.addChild(#t);
-          	}
-          	// VALIDATION RULE
-			| validationRuleDeclaration[field]
-			// FUNCTION DECLARATION
-			| functionDeclaration[field]
-			// FIELD DECLARATION
-			|
-			(
-				{
-          			FieldType subFieldType = null;
-          		}
-				sfn:SUBFIELDNAME { FieldNode subField = new FieldNode(field.subfield, #sfn.getText(), #sf); subField.wasIncluded = ((MDDAST)#sfn_in).wasIncluded; }
-				(sm:MODIFIER { addModifier(subField, #sm.getText());} )*
-				subFieldType=sft:fieldType[subField] { checkSubFieldType(#sft, subField); subField.makumbaType = subFieldType; }
-				(sfc:FIELDCOMMENT { subField.description = #sfc.getText(); })?
-				{
-  					// we add the subField to the field
-      				addSubfield(field, subField);
-      				field.addChild(subField);
-    	    	}
-          	)
+			{
+    			FieldType subFieldType = null;
+      		}
+			sfn:SUBFIELDNAME { FieldNode subField = new FieldNode(field.subfield, #sfn.getText(), #sfn); subField.wasIncluded = ((MDDAST)#sfn_in).wasIncluded; }
+			(sm:MODIFIER { addModifier(subField, #sm.getText());} )*
+			subFieldType=sft:fieldType[subField] { checkSubFieldType(#sft, subField); subField.makumbaType = subFieldType; }
+			(sfc:FIELDCOMMENT { subField.description = #sfc.getText(); })?
+			{
+				// we add the subField to the field
+  				addSubfield(field, subField);
+  				field.addChild(subField);
+  	    	}
       	)
-   	  )
+  	 )
 	;
 
     

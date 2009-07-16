@@ -133,7 +133,6 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
         
         this.multiFieldUniqueList = mddNode.multiFieldUniqueList;
         
-        
         addStandardFields(getName());
         addFieldNodes(mddNode.fields, false);
         addValidationRules(mddNode.validationRules);

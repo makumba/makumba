@@ -127,7 +127,6 @@ public class table extends TestCase {
 
         Vector<String> errors = new Vector<String>();
         for (int i = 0; i < v.size(); i++) {
-            if(!v.elementAt(i).equals("NestedSet")) {
                 try {
                     db.executeQuery("SELECT t FROM test.validMdds." + v.elementAt(i) + " t", null);
                     
@@ -157,7 +156,7 @@ public class table extends TestCase {
                 fail("\n  Tested " + v.size() + " valid MDDs, of which " + errors.size() + " cant be used for DB queries:"
                         + errors.toString());
             }
-        }
+        
     }
 
     public void testInsert() {
@@ -359,11 +358,12 @@ public class table extends TestCase {
 
     }
 
-    static String subsetQuery = "SELECT a.description, a, a.description FROM test.Person p, p.address a WHERE p=$1 ORDER BY a.description";
+    static String subsetQuery = "SELECT a.description, a, a.description, a.sth.aaa FROM test.Person p, p.address a WHERE p=$1 ORDER BY a.description";
 
     public void testSetInsert() {
         Dictionary<String, Object> p = new Hashtable<String, Object>();
         p.put("description", "home");
+        p.put("sth.aaa", "bbb");
 
         set1 = db.insert(ptr, "address", p);
 
@@ -373,6 +373,7 @@ public class table extends TestCase {
         assertEquals("home", v.elementAt(0).get("col1"));
         assertEquals(set1, v.elementAt(0).get("col2"));
         assertEquals("home", v.elementAt(0).get("col3"));
+        assertEquals("bbb", v.elementAt(0).get("col4"));
 
         p.put("description", "away");
 
@@ -680,6 +681,8 @@ public class table extends TestCase {
         Hashtable<String, Object> address = new Hashtable<String, Object>();
         address.put("streetno", "Sesame Street 15");
         address.put("languages", languages);
+        address.put("sth.aaa", "someAAA");
+
         
         db.insert(ptrPerson, "address", address);
         address.put("streetno", "Sesame Street 16");

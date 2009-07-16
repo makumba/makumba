@@ -302,11 +302,12 @@ public class tableHibernate extends TestCase {
 
     }
     
-	static String subsetQuery = "SELECT a.description, a.id, a.description FROM test.Person p JOIN p.address a WHERE p.id=? ORDER BY a.description";
+	static String subsetQuery = "SELECT a.description, a.id, a.description, a.sth.aaa FROM test.Person p JOIN p.address a WHERE p.id=? ORDER BY a.description";
 
 	public void testSetInsert() {
 		Dictionary<String, Object> p = new Hashtable<String, Object>();
 		p.put("description", "home");
+		p.put("sth.aaa", "bbb");
 
 		set1 = db.insert(ptr, "address", p);
 

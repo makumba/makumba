@@ -346,7 +346,7 @@ fieldDeclaration
     
 subFieldDeclaration
     : 
-      fn:atom {#fn.setType(PARENTFIELDNAME); } s:SUBFIELD^
+      fn:atom {#fn.setType(PARENTFIELDNAME); } (SUBFIELD! a:atom! { #fn.setText(#fn.getText() + "->" + #a.getText()); } )* s:SUBFIELD^
       (
           titleDeclaration (fieldComment!)? // allow comment but do not store them
           | validationRuleDeclaration
@@ -354,9 +354,9 @@ subFieldDeclaration
           | EXMARK! INCLUDE! EQ! t:type { #subFieldDeclaration = includeSubField(#t, #fn); }
           | subFieldBody
       )
-      { // we move the subfield node under the current field node
-        currentField.addChild(#subFieldDeclaration); #subFieldDeclaration = null;
-      }
+      //{ // we move the subfield node under the current field node
+      //  currentField.addChild(#subFieldDeclaration); #subFieldDeclaration = null;
+      //}
         
     ;
     
