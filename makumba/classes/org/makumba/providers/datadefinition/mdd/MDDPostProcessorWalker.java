@@ -134,11 +134,14 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
     protected void processValidationDefinitions(ValidationRuleNode v, AST v_in) {
         if(v instanceof MultiUniquenessValidationRule) {
             
+            boolean keyOverSubfield = false;
             for(String path : v.multiUniquenessFields) {
                 checkPathValid(v_in, path, v.mdd);
+                keyOverSubfield = path.indexOf(".") > -1;
             }
             
             DataDefinition.MultipleUniqueKeyDefinition key = new DataDefinition.MultipleUniqueKeyDefinition(v.multiUniquenessFields.toArray(new String[] {}), v.message);
+            key.setKeyOverSubfield(keyOverSubfield);
             mdd.addMultiUniqueKey(key);
             
         } else if(v instanceof ComparisonValidationRule) {

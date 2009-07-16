@@ -86,6 +86,9 @@ address=set			 ;Addresses
   address->usagestart=date		;Use from
   address->usageend=date		;Use till
   address->homepage=char[50]
+  address->sth=ptr
+  address->sth->aaa=char[20]
+  address->sth->someSuperNestedFunction() { 1 + 2 } : "Some nested nested message"
   address->languages = set test.Language ; languages spoken in that address
   address->length(description) {3..?} : "Description must be at least 3 letters long!"
   address->someFunction() { 1 + 2 } : "Some nested message"

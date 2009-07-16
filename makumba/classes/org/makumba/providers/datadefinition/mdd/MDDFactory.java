@@ -28,6 +28,8 @@ import antlr.collections.AST;
  * @version $Id: MDDAnalyzer.java,v 1.1 Apr 29, 2009 8:59:46 PM manu Exp $
  */
 public class MDDFactory {
+    
+    private static final boolean printTrees = false;
 
     private static MDDASTFactory astFactory = new MDDASTFactory();
 
@@ -110,10 +112,11 @@ public class MDDFactory {
             throw new DataDefinitionParseError("Could not parse " + typeName + ": analyser returned empty AST. Please report to developers.");
         }
         
-        
-//        System.out.println("**** Analysis walker for " + typeName + " ****");
-//        MakumbaDumpASTVisitor visitor2 = new MakumbaDumpASTVisitor(false);
-//        visitor2.visit(analysisWalker.getAST());
+        if(printTrees) {
+            System.out.println("**** Analysis walker for " + typeName + " ****");
+            MakumbaDumpASTVisitor visitor2 = new MakumbaDumpASTVisitor(false);
+            visitor2.visit(analysisWalker.getAST());
+        }
 
         
         
@@ -142,10 +145,12 @@ public class MDDFactory {
         }
         
         
-        //System.out.println("**** Postprocessor walker ****");
-        //MakumbaDumpASTVisitor visitor3 = new MakumbaDumpASTVisitor(false);
-        //visitor3.visit(postProcessor.getAST());
-
+        if(printTrees) {
+            System.out.println("**** Postprocessor walker ****");
+            MakumbaDumpASTVisitor visitor3 = new MakumbaDumpASTVisitor(false);
+            visitor3.visit(postProcessor.getAST());
+        }
+        
         // step 4 - make the DataDefinitionImpl object, together with its FieldDefinitionImpl objects
         DataDefinitionImpl result = new DataDefinitionImpl(postProcessor.mdd);;
         if(!virtual) {
@@ -224,11 +229,13 @@ public class MDDFactory {
         }
         doThrow(parser.error, parser.getAST(), typeName);
         
-//        AST tree = parser.getAST();
-//        System.out.println("**** Parser ****");
-//        MakumbaDumpASTVisitor visitor = new MakumbaDumpASTVisitor(false);
-//        visitor.visit(tree);
-
+        if(printTrees) {
+            AST tree = parser.getAST();
+            System.out.println("**** Parser ****");
+            MakumbaDumpASTVisitor visitor = new MakumbaDumpASTVisitor(false);
+            visitor.visit(tree);
+        }
+        
         return parser;
     }
 

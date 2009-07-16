@@ -67,14 +67,12 @@ public class FieldNode extends MDDAST {
     protected Hashtable<String, ValidationRule> validationRules = new Hashtable<String, ValidationRule>();
 
     public FieldNode(MDDNode mdd, String name) {
-        
         // AST
         setText(name);
         setType(MDDTokenTypes.FIELD);
         
         this.mdd = mdd;
-        this.name = name;
-        
+        this.name = name;        
     }
     
     /**
@@ -88,8 +86,7 @@ public class FieldNode extends MDDAST {
         setType(MDDTokenTypes.FIELD);
         
         this.mdd = mdd;
-        this.name = name;
-        
+        this.name = name;        
     }
     
     public String getName() {
@@ -142,6 +139,4 @@ public class FieldNode extends MDDAST {
         }
         return sb.toString();
     }
-
-
 }

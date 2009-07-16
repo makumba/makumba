@@ -92,9 +92,9 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
     @Override
     protected void checkSubFieldType(AST type, FieldNode field) {
         checkFieldType(type, field);
-        if(type.getType() == MDDTokenTypes.SETCOMPLEX || type.getType() == MDDTokenTypes.PTRONE) {
-            factory.doThrow(this.typeName, "Subfields of subfields are not allowed.", type);
-        }
+//        if(type.getType() == MDDTokenTypes.SETCOMPLEX || type.getType() == MDDTokenTypes.PTRONE) {
+//            factory.doThrow(this.typeName, "Subfields of subfields are not allowed.", type);
+//        }
     }
 
     @Override
@@ -104,6 +104,43 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
                     + " should have as parent name " + parentName, name);
         }
     }
+    
+    
+    @Override
+    protected FieldNode getParentField(AST parentField) {
+        
+        FieldNode f = null;
+        
+        if(parentField.getText().indexOf("->") > -1) {
+            
+            String path = parentField.getText();
+            MDDNode searchMDD = mdd;
+            
+            while(path.indexOf("->") > -1) {
+                String p = path.substring(0, path.indexOf("->"));
+                path = path.substring(path.indexOf("->") + 2, path.length());
+                FieldNode parent = searchMDD.fields.get(p);
+                if(parent == null) {
+                    factory.doThrow(typeName, "Field " + p + " does not exist.", parentField);
+                }
+                searchMDD = parent.subfield;
+            }
+            
+            f = searchMDD.fields.get(path);
+            
+            
+        } else {
+            f = mdd.fields.get(parentField.getText());
+            
+        }
+        if(f == null) {
+            factory.doThrow(typeName, "Field " + parentField.getText() + " does not exist.", parentField);
+        }
+        f.initSubfield();
+        return f;
+        
+    }
+    
 
     @Override
     protected void addTypeShorthand(AST name, FieldNode fieldType) {
