@@ -187,7 +187,6 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
     /**
      * method needed for converting FieldNodes into FieldDefinitionImpl objects.
      * FieldNode cannot implement FieldDefinition due to a conflict with the getType() type with ANTLR.
-     * @param secondPass TODO
      */
     private void addFieldNodes(LinkedHashMap<String, FieldNode> fields, boolean secondPass) {
         for(FieldNode f : fields.values()) {
@@ -321,7 +320,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
             typeName = typeName.substring(n + 1);
         }
         
-        while (subField.getPointedType().getFieldDefinition(typeName) != null) {
+        while (subField.getSubtable().getFieldDefinition(typeName) != null) {
             typeName = typeName + "_";
         }
         return typeName;
