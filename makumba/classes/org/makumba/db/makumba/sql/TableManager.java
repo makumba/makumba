@@ -1727,7 +1727,7 @@ public class TableManager extends Table {
     private String shortIndexName(String tableName, String fieldName) {
         // FIXME this may not be true for other DBMS than mysql
         String standardIndex = tableName + "__" + fieldName;
-        if (standardIndex.length() > 64) {
+        if (standardIndex.length() + "__ibfk_XX".length() > 64) {
             // general_archive_Email__fromPerson --> g_a_E__fromPerson
             String shortIndex = "";
             StringTokenizer st = new StringTokenizer(tableName, "_");
