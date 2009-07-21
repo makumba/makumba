@@ -64,6 +64,8 @@ uniqChar=unique char[33]	        ;test char uniqness
 uniqDate=unique date		        ;test date uniqness
 uniqPtr=unique ptr test.Language    ;test ptr uniqness
 
+uniqChar.unique = "There can only be a unique char"
+
 speaks=set test.Language
 intSet= set int {"a"=0, "b"=1, "c"=2 }
 
