@@ -1399,4 +1399,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         return null;
     }
     
+    public String getNotBooleanErrorMessage() {
+        return null;
+    }
+    
 }

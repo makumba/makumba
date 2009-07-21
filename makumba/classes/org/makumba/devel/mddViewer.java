@@ -248,6 +248,11 @@ public class mddViewer extends LineViewer {
             // if the mdd wasn't parsed (due to an error), we cannot get details on the validation definition
             return "<span name=\"validationRule\" class=\"mddValidationLine\">" + s + "</span>";
         }
+        
+        if(Configuration.getDataDefinitionProvider().equals(Configuration.MDD_DATADEFINITIONPROVIDER)) {
+            return parseNewValidationLine(s);
+        }
+        
         StringBuffer result = new StringBuffer();
         result.append("<span name=\"validationRule\" class=\"mddValidationLine\">");
         boolean endsWithComment = false;
@@ -297,6 +302,61 @@ public class mddViewer extends LineViewer {
         }
         result.append("</span>");
         return super.parseLine(result.toString());
+    }
+
+    private String parseNewValidationLine(String s) {
+        
+        StringBuffer result = new StringBuffer();
+        result.append("<span name=\"validationRule\" class=\"mddValidationLine\">");
+        boolean endsWithComment = false;
+        String ruleName = s.trim();
+        StringTokenizer tokenizer = new StringTokenizer(s, " ", true);
+        while (tokenizer.hasMoreElements()) {
+            String token = tokenizer.nextToken();
+            ValidationDefinition vd = dd.getValidationDefinition();
+            if (BasicValidationRule.getValidationRuleOperators().contains(token.trim())) {
+                result.append("<span style=\"color:blue; font-weight: bold;\">" + htmlEscape(token) + "</span>");
+            } else if (token.equals(";")) {
+                endsWithComment = true;
+                result.append("</span> <span style=\"color:green\">" + htmlEscape(token)
+                        + htmlEscape(tokenizer.nextToken("")) + "</span>");
+            } else {
+                if (token.trim().startsWith(ComparisonValidationRule.now)
+                        || token.trim().startsWith(ComparisonValidationRule.dateFunction)) {
+                    Object value = "Error retrieving value!";
+                    if (ruleName != null && dd != null && vd != null) {
+                        ValidationRule rule = vd.getValidationRule(ruleName);
+                        if (rule != null && rule instanceof ComparisonValidationRule
+                                && ((ComparisonValidationRule) rule).isCompareToExpression()) {
+                            value = (((ComparisonValidationRule) rule).evaluateExpression());
+                        }
+                    }
+                    String id = "validationRule" + validationRuleCounter;
+                    result.append("<a class=\"mddDateFunction\" title=\"" + value
+                            + "\" onclick=\"javascript:toggleDateFunctionDisplay(" + id + ");\">");
+                    result.append(htmlEscape(token));
+                    if (token.trim().startsWith(ComparisonValidationRule.dateFunction)) {
+                        while ((token = tokenizer.nextToken()).indexOf(")") == -1) {
+                            result.append(htmlEscape(token));
+                        }
+                        result.append(htmlEscape(token));
+                    }
+                    result.append("</a>");
+                    result.append("<span id=\"" + id
+                            + "\" class=\"mddDateFunctionEvaluated\" style=\"display:none;\"> [" + value + "]</span>");
+                    continue;
+                }
+
+                result.append(htmlEscape(token));
+            }
+        }
+        if (!endsWithComment) {
+            result.append("</span>");
+        }
+        result.append("</span>");
+        return super.parseLine(result.toString());
+
+        
     }
 
     @Override
