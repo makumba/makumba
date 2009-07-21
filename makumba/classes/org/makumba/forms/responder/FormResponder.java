@@ -166,7 +166,7 @@ public class FormResponder extends Responder {
      * Values of inputs that could not be resolved (yet), e.g. from nested form operations. Stores a formName->fieldName
      * mapping.
      */
-    private HashMap<String, String> lazyEvaluatedInputs;
+    private HashMap<String, String> lazyEvaluatedInputs = new HashMap<String, String>();
 
     public void setAction(String action) {
         this.action = action;
