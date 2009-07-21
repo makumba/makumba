@@ -351,5 +351,23 @@ public interface FieldDefinition {
 
     /** adds several new validation rules to this field. */
     public void addValidationRule(Collection<ValidationRule> rules);
+    
+    /** gets the error message for not null field, if specified **/
+    public String getNotNullErrorMessage();
+    
+    /** gets the error message for the not a number field constraint, if specified **/
+    public String getNotANumberErrorMessage();
+    
+    /** gets the error message for the not unique field constraint, if specified **/
+    public String getNotUniqueErrorMessage();
 
+    /** gets the error message for the not empty field constraint, if specified **/
+    public String getNotEmptyErrorMessage();
+    
+    /** gets the error message for the not an int field constraint, if specified **/
+    public String getNotIntErrorMessage();
+    
+    /** gets the error message for the not a real field constraint, if specified **/
+    public String getNotRealErrorMessage();
+    
 }
