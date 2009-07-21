@@ -121,18 +121,25 @@ public class RecordEditor extends RecordFormatter {
                     o = fd.checkValue(o);
                 } else {
                     // check for not-null fields
-                    // we don't check for this if the field is going to be lazily evaluated
+                    // we don't check if the field is going to be lazily evaluated
                     // TODO maybe find a more robust way to make sure wether the field is to be lazily evaluated
                     boolean lazyEvaluation = lazyEvaluatedInputs.containsValue(inputName.substring(0, inputName.indexOf(suffix)));
                     
                     if (applyValidationRules && fd.isNotNull() && !lazyEvaluation) {
-                        throw new InvalidValueException(inputName, FieldDefinition.ERROR_NOT_NULL);
+                        String error = fd.getNotNullErrorMessage();
+                        if(error == null)
+                            error = FieldDefinition.ERROR_NOT_NULL;
+                        throw new InvalidValueException(inputName, error);
                     }
                     o = fd.getNull();
                 }
                 // for string types (text, char) check not empty
                 if (applyValidationRules && fd.isNotEmpty() && fd.isStringType() && StringUtils.isEmpty(o.toString())) {
-                    throw new InvalidValueException(inputName, FieldDefinition.ERROR_NOT_EMPTY);
+                    String error = fd.getNotEmptyErrorMessage();
+                    if(error == null)
+                        error = FieldDefinition.ERROR_NOT_EMPTY;
+
+                    throw new InvalidValueException(inputName, error);
                 }
 
                 validatedFields.put(new Integer(i), o);
