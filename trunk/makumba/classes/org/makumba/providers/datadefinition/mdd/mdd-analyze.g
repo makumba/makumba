@@ -293,7 +293,7 @@ nativeValidationRuleMessage!
     ;
     
 errorType
-    : UNIQUE | NAN | NOTNULL | NOTEMPTY | NOTINT | NOTREAL
+    : UNIQUE | NAN | NOTNULL | NOTEMPTY | NOTINT | NOTREAL | NOTBOOLEAN
     ;
 	
 

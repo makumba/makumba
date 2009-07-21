@@ -56,6 +56,8 @@ public class FieldNode extends MDDAST {
 
     protected String notRealError;
 
+    protected String notBooleanError;
+
     
     // intEnum
     protected LinkedHashMap<Integer, String> intEnumValues = new LinkedHashMap<Integer, String>();
@@ -79,6 +81,7 @@ public class FieldNode extends MDDAST {
     
     // validation rules for this field
     protected Hashtable<String, ValidationRule> validationRules = new Hashtable<String, ValidationRule>();
+
 
     public FieldNode(MDDNode mdd, String name) {
         // AST

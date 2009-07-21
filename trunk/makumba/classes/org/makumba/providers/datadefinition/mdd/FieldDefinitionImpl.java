@@ -59,6 +59,8 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
 
     protected String notRealError;
     
+    protected String notBooleanError;
+    
     // intEnum - contains all values, including deprecated
     protected LinkedHashMap<Integer, String> intEnumValues = new LinkedHashMap<Integer, String>();
 
@@ -172,9 +174,15 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         this.notEmpty = f.notEmpty;
         this.notNull = f.notNull;
         this.unique = f.unique;
+        
         this.uniqueError = f.uniqueError;
         this.notNullError = f.notNullError;
+        this.notEmptyError = f.notEmptyError;
         this.NaNError = f.NaNError;
+        this.notIntError = f.notIntError;
+        this.notRealError = f.notRealError;
+        this.notBooleanError = f.notBooleanError;
+        
         this.defaultValue = fi.getDefaultValue();
         this.description = fi.getDescription();
         this.charLength = f.charLength;
@@ -217,9 +225,15 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         this.notEmpty = f.notEmpty;
         this.notNull = f.notNull;
         this.unique = f.unique;
+        
         this.uniqueError = f.uniqueError;
         this.notNullError = f.notNullError;
+        this.notEmptyError = f.notEmptyError;
         this.NaNError = f.NaNError;
+        this.notIntError = f.notIntError;
+        this.notRealError = f.notRealError;
+        this.notBooleanError = f.notBooleanError;
+        
         this.charLength = f.charLength;
         this.defaultValue = f.defaultValue;
         this.description = f.description;
@@ -1167,6 +1181,10 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
     
     public String getNotRealErrorMessage() {
         return this.notRealError;
+    }
+    
+    public String getNotBooleanErrorMessage() {
+        return this.notBooleanError;
     }
     
 }

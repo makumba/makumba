@@ -280,6 +280,9 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
             case NOTREAL:
                 f.notRealError = message;
                 break;
+            case NOTBOOLEAN:
+                f.notBooleanError = message;
+                break;
                 
         }
     }

@@ -370,4 +370,7 @@ public interface FieldDefinition {
     /** gets the error message for the not a real field constraint, if specified **/
     public String getNotRealErrorMessage();
     
+    /** gets the error message for the not a boolean field constraint, if specified **/
+    public String getNotBooleanErrorMessage();
+    
 }

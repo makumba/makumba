@@ -242,6 +242,7 @@ tokens {
     NOTEMPTY="notEmpty";
     NOTINT="notInt";
     NOTREAL="notReal";
+    NOTBOOLEAN="notBoolean";
     
     // field type attributes
     CHAR_LENGTH;
@@ -486,6 +487,7 @@ nativeValidationRuleMessage
       | NOTEMPTY
       | NOTINT
       | NOTREAL
+      | NOTBOOLEAN
       )
       EQ!
       m:STRING_LITERAL {#m.setType(NATIVE_MESSAGE); #m.setText(removeQuotation(#m.getText())); }
