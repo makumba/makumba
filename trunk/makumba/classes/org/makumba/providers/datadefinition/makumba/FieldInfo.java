@@ -1374,5 +1374,29 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 
         return sb.toString();
     }
+
+    public String getNotANumberErrorMessage() {
+        return null;
+    }
+
+    public String getNotNullErrorMessage() {
+        return null;
+    }
+
+    public String getNotUniqueErrorMessage() {
+        return null;
+    }
+
+    public String getNotEmptyErrorMessage() {
+        return null;
+    }
+    
+    public String getNotIntErrorMessage() {
+        return null;
+    }
+    
+    public String getNotRealErrorMessage() {
+        return null;
+    }
     
 }

@@ -236,6 +236,13 @@ tokens {
     UNIQUE="unique";
     FIXED="fixed";
     
+    // native validation rules
+    NOTNULL;
+    NAN="NaN"; // not a number
+    NOTEMPTY="notEmpty";
+    NOTINT="notInt";
+    NOTREAL="notReal";
+    
     // field type attributes
     CHAR_LENGTH;
     POINTED_TYPE;
@@ -244,6 +251,7 @@ tokens {
     // validation rules
     VALIDATIONNAME;
     MESSAGE;
+    NATIVE_MESSAGE;
     
     RANGE="range";
     LENGTH="length";
@@ -323,6 +331,7 @@ declaration
     | includeDeclaration (LINEBREAK!)*
     | validationRuleDeclaration (LINEBREAK!)*
     | functionDeclaration (LINEBREAK!)*
+    | nativeValidationRuleMessage (LINEBREAK!)*
     ;
     
     
@@ -354,10 +363,6 @@ subFieldDeclaration
           | EXMARK! INCLUDE! EQ! t:type { #subFieldDeclaration = includeSubField(#t, #fn); }
           | subFieldBody
       )
-      //{ // we move the subfield node under the current field node
-      //  currentField.addChild(#subFieldDeclaration); #subFieldDeclaration = null;
-      //}
-        
     ;
     
 subFieldBody
@@ -373,7 +378,6 @@ fieldName
     | ti:TITLE { checkFieldName(#ti); #ti.setType(FIELDNAME); }
     | f:FILE  { checkFieldName(#f); #f.setType(FIELDNAME); }
     | te:TEXT  { checkFieldName(#te); #te.setType(FIELDNAME); }
-    
     ;
 
 fieldType
@@ -428,6 +432,7 @@ titleDeclaration
     
 title
     : t:type { #t.setType(TITLEFIELDFIELD);}
+    | ti:TITLE { #ti.setType(TITLEFIELDFIELD);}
     | f:functionCall
     ;
     
@@ -472,7 +477,19 @@ uniquenessValidationRuleDeclaration
 	parsedFunctionBody
 	;
 
-
+nativeValidationRuleMessage
+    : fieldName DOT!
+      (
+        UNIQUE
+      | n:"notNull" { #n.setType(NOTNULL); }
+      | NAN
+      | NOTEMPTY
+      | NOTINT
+      | NOTREAL
+      )
+      EQ!
+      m:STRING_LITERAL {#m.setType(NATIVE_MESSAGE); #m.setText(removeQuotation(#m.getText())); }
+    ;
 
 //////////////// FUNCTIONS
 

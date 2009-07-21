@@ -4,7 +4,9 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 
 import org.makumba.InvalidValueException;
+import org.makumba.NullObject;
 import org.makumba.providers.datadefinition.mdd.FieldNode;
+import org.makumba.providers.datadefinition.mdd.FieldType;
 import org.makumba.providers.datadefinition.mdd.MDDNode;
 import org.makumba.providers.datadefinition.mdd.MDDTokenTypes;
 import org.makumba.providers.datadefinition.mdd.ValidationRuleNode;
@@ -69,9 +71,17 @@ public class ComparisonValidationRule extends ValidationRuleNode {
                 if(left == null) {
                     left = comparisonExpression.getLhs_date();
                 }
+                if(left instanceof NullObject) {
+                    left = FieldType.DATE.getEmptyValue();
+                }
+                
                 if(right == null) {
                     right = comparisonExpression.getRhs_date();
                 }
+                if(right instanceof NullObject) {
+                    right = FieldType.DATE.getEmptyValue();
+                }
+                
                 compare = ((Date)left).compareTo(((Date)right));
                 break;
                 
