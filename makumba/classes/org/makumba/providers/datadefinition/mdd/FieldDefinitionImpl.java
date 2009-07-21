@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Vector;
 
@@ -46,6 +45,19 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
     protected boolean notEmpty;
 
     protected boolean unique;
+    
+    // native validation rule messages
+    protected String notNullError;
+    
+    protected String NaNError;
+    
+    protected String uniqueError;
+    
+    protected String notEmptyError;
+    
+    protected String notIntError;
+
+    protected String notRealError;
     
     // intEnum - contains all values, including deprecated
     protected LinkedHashMap<Integer, String> intEnumValues = new LinkedHashMap<Integer, String>();
@@ -160,6 +172,9 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         this.notEmpty = f.notEmpty;
         this.notNull = f.notNull;
         this.unique = f.unique;
+        this.uniqueError = f.uniqueError;
+        this.notNullError = f.notNullError;
+        this.NaNError = f.NaNError;
         this.defaultValue = fi.getDefaultValue();
         this.description = fi.getDescription();
         this.charLength = f.charLength;
@@ -202,6 +217,9 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         this.notEmpty = f.notEmpty;
         this.notNull = f.notNull;
         this.unique = f.unique;
+        this.uniqueError = f.uniqueError;
+        this.notNullError = f.notNullError;
+        this.NaNError = f.NaNError;
         this.charLength = f.charLength;
         this.defaultValue = f.defaultValue;
         this.description = f.description;
@@ -213,7 +231,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         this.pointedType = f.pointedType;
         this.validationRules = f.validationRules;
         
-        // TODO check if this works
+        // store names of original field definition and data definition; see getOriginalFieldDefinition() for details
         if (getDataDefinition() != null) {
             originalFieldDefinitionParent = getDataDefinition().getName();
             originalFieldDefinitionName = getName();
@@ -396,10 +414,10 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         Object o = d.get(getName());
         if (isNotNull() && (o == null || o.equals(getNull()))) {
             // FIXME: call this in RecordEditor.readFrom, to have more possible exceptions gathered at once
-            throw new CompositeValidationException(new InvalidValueException(this, ERROR_NOT_NULL));
+            throw new CompositeValidationException(new InvalidValueException(this, notNullError != null ? notNullError : ERROR_NOT_NULL));
         } else if (isNotEmpty() && StringUtils.isEmpty(o)) {
             // FIXME: call this in RecordEditor.readFrom, to have more possible exceptions gathered at once
-            throw new CompositeValidationException(new InvalidValueException(this, ERROR_NOT_EMPTY));
+            throw new CompositeValidationException(new InvalidValueException(this, notEmptyError != null ? notEmptyError : ERROR_NOT_EMPTY));
         }
         if (o != null) {
             d.put(getName(), checkValue(o));
@@ -927,7 +945,6 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
 
     
     private int longestChar = -1;
-    
 
     public int getWidth() {
         switch (type) {
@@ -1128,6 +1145,28 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         return sb.toString();
     }
 
+    public String getNotANumberErrorMessage() {
+        return this.NaNError;
+    }
+
+    public String getNotNullErrorMessage() {
+        return this.notNullError;
+    }
+
+    public String getNotUniqueErrorMessage() {
+        return this.uniqueError;
+    }
+
+    public String getNotEmptyErrorMessage() {
+        return this.notEmptyError;
+    }
     
+    public String getNotIntErrorMessage() {
+        return this.notIntError;
+    }
+    
+    public String getNotRealErrorMessage() {
+        return this.notRealError;
+    }
     
 }

@@ -7,6 +7,7 @@ import org.makumba.InvalidValueException;
 import org.makumba.providers.datadefinition.mdd.FieldNode;
 import org.makumba.providers.datadefinition.mdd.MDDNode;
 import org.makumba.providers.datadefinition.mdd.ValidationRuleNode;
+import org.makumba.providers.datadefinition.mdd.ValidationType;
 
 import antlr.collections.AST;
 
@@ -16,8 +17,9 @@ public class RegExpValidationRule extends ValidationRuleNode {
     
     private Pattern regExpPattern;
 
-    public RegExpValidationRule(MDDNode mdd, AST originAST, FieldNode field) {
+    public RegExpValidationRule(MDDNode mdd, AST originAST, FieldNode field, ValidationType type) {
         super(mdd, originAST, field);
+        this.type = type;
     }
     
     @Override

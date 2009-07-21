@@ -6,7 +6,6 @@ import java.util.HashMap;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
-import org.makumba.providers.datadefinition.mdd.ComparisonExpressionNode.ComparisonType;
 import org.makumba.providers.datadefinition.mdd.validation.ComparisonValidationRule;
 import org.makumba.providers.datadefinition.mdd.validation.MultiUniquenessValidationRule;
 import org.makumba.providers.datadefinition.mdd.validation.RangeValidationRule;
@@ -232,12 +231,15 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
             case LENGTH:
                 return new RangeValidationRule(mdd, originAST, f, type);
             case REGEX:
-                return new RegExpValidationRule(mdd, originAST, f);
-            //case COMPARISON:
-            //   return new ComparisonValidationRule(mdd, originAST, type);
+                return new RegExpValidationRule(mdd, originAST, f, type);
             default:
                 throw new RuntimeException("no matching validation rule found");
         }
+    }
+    
+    @Override
+    protected void addValidationRuleArgument(String name, ValidationRuleNode n) {
+        n.arguments.add(name);
     }
     
     @Override
@@ -248,4 +250,38 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
             factory.doThrow(this.typeName, t.getMessage(), validation);
         }
     }
- }
+    
+    @Override
+    protected void addNativeValidationRuleMessage(AST fieldName, AST errorType, String message) {
+        
+        // TODO add subfield support
+        
+        FieldNode f = mdd.fields.get(fieldName.getText());
+        if(f == null) {
+            factory.doThrow(typeName, "Field " + fieldName.getText() + " does not exist", fieldName);
+        }
+        
+        switch(errorType.getType()) {
+            case UNIQUE:
+                f.uniqueError = message;
+                break;
+            case NOTNULL:
+                f.notNullError = message;
+                break;
+            case NAN:
+                f.NaNError = message;
+                break;
+            case NOTEMPTY:
+                f.notEmptyError = message;
+                break;
+            case NOTINT:
+                f.notIntError = message;
+                break;
+            case NOTREAL:
+                f.notRealError = message;
+                break;
+                
+        }
+    }
+    
+}

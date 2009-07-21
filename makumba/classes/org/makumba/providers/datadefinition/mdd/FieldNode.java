@@ -41,6 +41,20 @@ public class FieldNode extends MDDAST {
     protected boolean notEmpty;
 
     protected boolean unique;
+    
+    
+    // native validation rule messages
+    protected String notNullError;
+    
+    protected String NaNError;
+    
+    protected String uniqueError;
+
+    protected String notEmptyError;
+
+    protected String notIntError;
+
+    protected String notRealError;
 
     
     // intEnum

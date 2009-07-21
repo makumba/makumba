@@ -5,8 +5,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import org.makumba.forms.html.dateEditor;
-import org.makumba.providers.datadefinition.mdd.ComparisonExpressionNode.ComparisonType;
-import org.makumba.providers.query.oql.ComparisonTree;
 
 import antlr.TokenStream;
 import antlr.collections.AST;

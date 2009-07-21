@@ -71,10 +71,14 @@ options {
     protected ValidationRuleNode createMultiFieldValidationRule(AST originAST, ValidationType type, FieldNode subField) { return null; }
      
     // add validation rule arguments, i.e. field names that should be checked
-    protected void addValidationRuleArgument(String name, ValidationRuleNode n) {n.arguments.add(name);}
+    protected void addValidationRuleArgument(String name, ValidationRuleNode n) { }
      
     // check if rule can be applied to fields
-    protected void checkRuleApplicability(ValidationRuleNode validation) {}
+    protected void checkRuleApplicability(ValidationRuleNode validation) { }
+    
+    // Add native validation rule 
+    protected void addNativeValidationRuleMessage(AST fieldName, AST errorType, String message) { }
+    
              
 }
 
@@ -89,6 +93,7 @@ declaration
     | typeDeclaration
     | validationRuleDeclaration[null]
     | functionDeclaration[null]
+    | nativeValidationRuleMessage
     ;
 
 
@@ -219,9 +224,6 @@ typeDeclaration! // we kick out the declaration after registering it
 	  type=ft:fieldType[field] { checkFieldType(#ft, field); field.makumbaType = type; addTypeShorthand(#name, field); }
     ;
     
-    
-    
-    
 //////////////// VALIDATION RULES
 
 validationRuleDeclaration[FieldNode subField]
@@ -284,6 +286,15 @@ regexValidationRule[FieldNode subField] returns [ValidationRuleNode v = null; ]
 		v.expression = #b.getText();
 	}
 	;
+
+
+nativeValidationRuleMessage!
+    : fn:FIELDNAME e:errorType m:NATIVE_MESSAGE { addNativeValidationRuleMessage(#fn, #e, #m.getText()); }
+    ;
+    
+errorType
+    : UNIQUE | NAN | NOTNULL | NOTEMPTY | NOTINT | NOTREAL
+    ;
 	
 
 //////////////// FUNCTIONS
