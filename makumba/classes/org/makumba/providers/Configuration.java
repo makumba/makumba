@@ -78,6 +78,8 @@ public class Configuration implements Serializable {
 
     private static final String KEY_DATADEFINITIONPROVIDER = "dataDefinitionProvider";
     
+    private static final String KEY_QUERYFUNCTIONINLINER = "queryFunctionInliner";
+    
     public static final String MDD_DATADEFINITIONPROVIDER = "mdd";
     
     public static final String RECORDINFO_DATADEFINITIONPROVIDER = "recordinfo";
@@ -292,6 +294,11 @@ public class Configuration implements Serializable {
     public static String getDataDefinitionProvider() {
         return applicationConfig.getStringProperty("dataSourceConfig", KEY_DATADEFINITIONPROVIDER, defaultConfig);
     }
+    
+    public static String getQueryInliner() {
+        return applicationConfig.getStringProperty("dataSourceConfig", KEY_QUERYFUNCTIONINLINER, defaultConfig);
+    }
+    
 
     /**
      * Gives the default database layer to use

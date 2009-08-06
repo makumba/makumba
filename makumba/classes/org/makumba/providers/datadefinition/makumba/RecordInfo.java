@@ -41,6 +41,7 @@ import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.ValidationDefinition;
 import org.makumba.ValidationRule;
+import org.makumba.DataDefinition.QueryFragmentFunction;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.commons.RuntimeWrappedException;
@@ -565,6 +566,25 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
     private void base_checkUpdate(String fieldName, Dictionary<String, Object> d) {
         getFieldDefinition(fieldName).checkUpdate(d);
     }
+    
+    /** returns the field info associated with a name */
+    public QueryFragmentFunction getFunctionOrPointedFunction(String nm) {
+        if (getFunction(nm) != null) {
+            return getFunction(nm);
+        }
+        String fieldName = nm;
+        DataDefinition dd = this;
+
+        int indexOf = -1;
+        while ((indexOf = fieldName.indexOf(".")) != -1) {
+            String subFieldName = fieldName.substring(0, indexOf);
+            fieldName = fieldName.substring(indexOf + 1);
+            FieldDefinition fieldDefinition = dd.getFieldDefinition(subFieldName);
+            dd = fieldDefinition.getPointedType();
+        }
+        return dd.getFunction(fieldName);
+    }
+
 
     
     

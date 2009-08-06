@@ -112,7 +112,7 @@ statement
 selectStatement
 	: #(SELECT { out("select "); }
 		selectClause
-		from
+		f:from
 		( #(WHERE { out(" where "); } whereExpr ) )?
 		( #(GROUP { out(" group by "); } groupExprs ( #(HAVING { out(" having "); } booleanExpr[false]) )? ) )?
 		( #(ORDER { out(" order by "); } orderExprs ) )?
@@ -252,7 +252,7 @@ selectAtom
 // manner.
 from
 	: #(f:FROM { out(" from "); }
-		(fromTable)* )
+		(t:fromTable)* )
 	;
 
 fromTable

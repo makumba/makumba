@@ -14,6 +14,8 @@ import org.makumba.OQLParseError;
 import org.makumba.commons.ClassResource;
 import org.makumba.commons.NameResolver;
 import org.makumba.providers.QueryAnalysisProvider;
+import org.makumba.providers.QueryProvider;
+import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.query.hql.HQLQueryAnalysisProvider;
 import org.makumba.providers.query.oql.QueryAST;
 

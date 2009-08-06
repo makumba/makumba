@@ -2,6 +2,7 @@
 foreignKeys=true
 defaultDatabaseLayer=makumba
 dataDefinitionProvider=recordinfo
+queryFunctionInliner=normal
 
 [businessLogicPackages]
 default=

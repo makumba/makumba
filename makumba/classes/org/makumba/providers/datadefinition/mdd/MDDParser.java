@@ -7,6 +7,14 @@ import java.util.Vector;
 
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.commons.ReservedKeywords;
+import org.makumba.providers.QueryAnalysis;
+import org.makumba.providers.QueryProvider;
+import org.makumba.providers.TransactionProvider;
+import org.makumba.providers.query.mql.FunctionInliner;
+import org.makumba.providers.query.mql.HqlParser;
+import org.makumba.providers.query.mql.MqlQueryAnalysis;
+import org.makumba.providers.query.mql.MqlQueryAnalysisProvider;
+import org.makumba.providers.query.mql.Node;
 
 import antlr.RecognitionException;
 import antlr.TokenStream;
@@ -32,6 +40,8 @@ public class MDDParser extends MDDBaseParser {
     
     
     protected Vector<String> includedFieldNames = new Vector<String>();
+    
+    protected HashMap<AST, AST> parsedFunctions = new HashMap<AST, AST>();
     
     @Override
     protected AST include(AST type) {
@@ -89,7 +99,6 @@ public class MDDParser extends MDDBaseParser {
             
             // build tree
             if(t.getType() == MDDTokenTypes.TITLEFIELDFIELD || t.getType() == MDDTokenTypes.TITLEFIELDFUNCTION) {
-                System.out.println("I am an included title");
                 subfield.getFirstChild().setNextSibling(t);
             } else {
                 t.getFirstChild().setType(MDDTokenTypes.SUBFIELDNAME);
@@ -180,6 +189,54 @@ public class MDDParser extends MDDBaseParser {
             return parser.getAST();
     }
     
+    @Override
+    protected AST parseFunctionBody(AST expression) {
+        
+        // here we parse the function to see if it's okay
+        // when the expression is a subquery, i.e. starts with SELECT, we add paranthesis around it
+        boolean subquery = expression.getText().toUpperCase().startsWith("SELECT ");
+        
+        
+        String query = "SELECT " + (subquery?"(":"") + expression.getText() + (subquery?")":"") + " FROM " + typeName + " makumbaGeneratedAlias";
+        HqlParser parser = HqlParser.getInstance(query);
+        try {
+            parser.statement();
+        } catch (RecognitionException e) {
+            e.column = expression.getColumn() + e.column;
+            e.line = expression.getLine();
+            factory.doThrow(e, expression, typeName);
+        } catch (TokenStreamException e) {
+            factory.doThrow(e, expression, typeName);
+        }   
+        if(parser.getError() != null) {
+            if(parser.getError() instanceof RecognitionException) {
+                RecognitionException e = (RecognitionException) parser.getError();
+                e.column = expression.getColumn() + e.column;
+                e.line = expression.getLine();
+                factory.doThrow(e, expression, typeName);
+            }
+        }
+        
+        AST tree = parser.getAST();
+        if(tree != null)
+            shiftHql(tree, expression);
+        
+        /* FIXME we can't do this here because then we want to access the MDD from within the inliner and it doesn't exist yet
+        // now that we did the parsing, we also try to inline the AST
+        // that way we will get the errors thrown by the inlining here and can display them nicely
+        FunctionInliner inliner = new FunctionInliner(query);
+        
+        try {
+            inliner.inlineFunctions(parser.getAST(), true);
+        } catch(Throwable t) {
+            factory.doThrow(typeName, t.getMessage(), parser.getAST());
+        }
+        */
+        
+        return parser.getAST();
+        
+    }
+    
     private void shift(AST toShift, AST parent) {
         ((MDDAST)toShift).setLine(parent.getLine());
         ((MDDAST)toShift).setCol(parent.getColumn() + toShift.getColumn());
@@ -189,6 +246,17 @@ public class MDDParser extends MDDBaseParser {
         if(toShift.getFirstChild() != null)
             shift(toShift.getFirstChild(), parent);
     }
+    
+    private void shiftHql(AST toShift, AST parent) {
+        ((Node)toShift).setLine(parent.getLine());
+        ((Node)toShift).setCol(parent.getColumn() + toShift.getColumn());
+        
+        if(toShift.getNextSibling() != null)
+            shiftHql(toShift.getNextSibling(), parent);
+        if(toShift.getFirstChild() != null)
+            shiftHql(toShift.getFirstChild(), parent);
+    }
+
     
     @Override
     protected void errorNestedSubfield(AST s) {
@@ -211,6 +279,11 @@ public class MDDParser extends MDDBaseParser {
             factory.doThrow(this.typeName, "Error: field name cannot be one of the reserved keywords "
                     + ReservedKeywords.getKeywordsAsString(), fieldName);
         }
+    }
+    
+    @Override
+    protected void addParsedFunction(AST a, AST b) {
+        parsedFunctions.put(a, b);
     }
     
  

@@ -256,8 +256,9 @@ public class RecordEditor extends RecordFormatter {
             boolean validate = true;
             // fetch the fields of the rule
             for(String fieldName : r.getValidationRuleArguments()) {
-                if(validatedFieldsNameCache.containsKey(fieldName)) {
-                    values.put(fieldName, validatedFieldsNameCache.get(fieldName));
+                // we have to append the suffix to the field name of the rule in order to find back our field
+                if(validatedFieldsNameCache.containsKey(fieldName + suffix)) {
+                    values.put(fieldName, validatedFieldsNameCache.get(fieldName + suffix));
                 } else {
                     // check if this field is maybe a pointed type
                     // do this by checking if any of the original field definitions the form is made of

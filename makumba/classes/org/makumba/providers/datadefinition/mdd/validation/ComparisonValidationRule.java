@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 
 import org.makumba.InvalidValueException;
+import org.makumba.MakumbaError;
 import org.makumba.NullObject;
 import org.makumba.providers.datadefinition.mdd.FieldNode;
 import org.makumba.providers.datadefinition.mdd.FieldType;
@@ -37,7 +38,7 @@ public class ComparisonValidationRule extends ValidationRuleNode {
         LinkedHashMap<String, Object> values = null;
         
         if(!(value instanceof LinkedHashMap)) {
-            throw new RuntimeException("can't validate multi-field validation rule without right argument type, dude!");
+            throw new MakumbaError("can't validate multi-field validation rule without right argument type, dude!");
         } else {
             values = (LinkedHashMap<String, Object>) value;
         }
@@ -63,6 +64,10 @@ public class ComparisonValidationRule extends ValidationRuleNode {
             } else if(comparisonExpression.getRhs_type() == MDDTokenTypes.LOWER) {
                 right = ((String)right).toLowerCase();
             }
+        }
+        
+        if(comparisonExpression.getComparisonType() == null) {
+            throw new MakumbaError("Comparison type of comparison validation rule '" + this.getRuleName() + "' not set.");
         }
         
         switch(comparisonExpression.getComparisonType()) {

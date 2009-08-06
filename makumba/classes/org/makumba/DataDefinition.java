@@ -35,6 +35,8 @@ import java.util.Vector;
 
 import org.makumba.commons.StringUtils;
 
+import antlr.collections.AST;
+
 /**
  * Information about a makumba data definition as obtained from an MDD file or the structure of an OQL query result.
  * This class is provided for makumba programs to be able to introspect makumba data structures. Such introspection is
@@ -60,8 +62,11 @@ public interface DataDefinition {
     public FieldDefinition getFieldDefinition(int n);
 
     /** Returns a field definition that is either contained in this data definition, or in a pointed type. */
-    public FieldDefinition getFieldOrPointedFieldDefinition(String nm);
+    public FieldDefinition getFieldOrPointedFieldDefinition(String name);
 
+    /** Returns a query function that is either contained in this data definition, or in a pointed type. */
+    public QueryFragmentFunction getFunctionOrPointedFunction(String name);
+    
     /**
      * tells whether this data definition was generated temporarily to depict a query result as opposed to being read
      * from an MDD file
@@ -151,12 +156,18 @@ public interface DataDefinition {
 
         private String queryFragment;
 
+        private AST parsedQueryFragment;
+
         private DataDefinition parameters;
 
         private String errorMessage;
+        
+        public AST getParsedQueryFragment() {
+            return parsedQueryFragment;
+        }
 
         public QueryFragmentFunction(String name, String sessionVariableName, String queryFragment,
-                DataDefinition parameters, String errorMessage) {
+                DataDefinition parameters, String errorMessage, AST parsedQueryFragment) {
             super();
             this.name = name;
             this.sessionVariableName = sessionVariableName;
@@ -167,6 +178,7 @@ public interface DataDefinition {
             } else {
                 this.errorMessage = "";
             }
+            this.parsedQueryFragment = parsedQueryFragment;
         }
 
         public String getName() {
@@ -192,6 +204,10 @@ public interface DataDefinition {
         public boolean isActorFunction() {
             return getName().startsWith("actor");
         }
+        
+        public boolean isSubquery() {
+            return getQueryFragment().toUpperCase().startsWith("SELECT ");
+        }
 
         public boolean isSessionFunction() {
             return !isActorFunction() && getParameters().getFieldNames().size() == 0;
@@ -209,8 +225,7 @@ public interface DataDefinition {
                 }
             }
             s += "";
-            return "QueryFragment Function: "
-                    + (org.apache.commons.lang.StringUtils.isNotBlank(sessionVariableName) ? sessionVariableName + "%"
+            return (org.apache.commons.lang.StringUtils.isNotBlank(sessionVariableName) ? sessionVariableName + "%"
                             : "") + getName() + "(" + s + ") { " + queryFragment.trim() + " } " + errorMessage;
         }
 

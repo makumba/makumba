@@ -99,4 +99,5 @@ public interface QueryAnalysis {
      * @return a SQL string
      */
     public String writeInSQLQuery(NameResolver nr);
+    
 }

@@ -2,8 +2,10 @@ package org.makumba.providers.datadefinition.mdd;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
+import org.makumba.DataDefinition.QueryFragmentFunction;
 import org.makumba.providers.DataDefinitionProvider;
-import org.makumba.providers.datadefinition.makumba.FieldInfo;
+
+import antlr.collections.AST;
 
 /**
  * AST node that collects information about a mdd function
@@ -12,6 +14,8 @@ import org.makumba.providers.datadefinition.makumba.FieldInfo;
  */
 public class FunctionNode extends MDDAST {
     
+    private static final long serialVersionUID = -7546695379163902054L;
+
     protected MDDNode mdd;
     
     protected String name;
@@ -23,10 +27,16 @@ public class FunctionNode extends MDDAST {
     protected String errorMessage;
     
     protected String sessionVariableName;
+
+    protected QueryFragmentFunction function;
     
-    public FunctionNode(MDDNode mdd, String name) {
+    public FunctionNode(MDDNode mdd, AST name) {
+        initialize(name);
+        
+        // we need to overwrite the type after the initialisation
+        this.setText(name.getText());
         this.mdd = mdd;
-        this.name = name;
+        this.name = name.getText();
         this.setType(MDDTokenTypes.FUNCTION);
         parameters = DataDefinitionProvider.getInstance().getVirtualDataDefinition(mdd.getName() + "." + name);
 

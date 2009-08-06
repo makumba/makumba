@@ -315,4 +315,9 @@ public final class HqlParser extends HqlBaseParser {
 		//overriden to avoid System.exit
 		throw new OQLParseError("Parser: panic");
 	}
+	
+	//MQL addition to get error
+	public Exception getError() {
+	    return error;
+	}
 }

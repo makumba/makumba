@@ -7,6 +7,7 @@ import org.makumba.DataDefinition;
 import org.makumba.ValidationRule;
 import org.makumba.DataDefinition.MultipleUniqueKeyDefinition;
 import antlr.CommonAST;
+import antlr.collections.AST;
 
 /**
  * AST node that collects information for building a {@link DataDefinition}
@@ -100,8 +101,9 @@ public class MDDNode extends CommonAST {
         multiFieldUniqueList.put(definition.getFields(), definition);
     }
     
-    public void addFunction(FunctionNode funct) {
-        DataDefinition.QueryFragmentFunction function = new DataDefinition.QueryFragmentFunction(funct.name, funct.sessionVariableName, funct.queryFragment, funct.parameters, funct.errorMessage);
+    public void addFunction(FunctionNode funct, AST parsedFunction) {
+        DataDefinition.QueryFragmentFunction function = new DataDefinition.QueryFragmentFunction(funct.name, funct.sessionVariableName, funct.queryFragment, funct.parameters, funct.errorMessage, parsedFunction);
+        funct.function = function;
         functions.put(function.getName(), function);
     }
     

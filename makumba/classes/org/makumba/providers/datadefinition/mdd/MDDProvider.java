@@ -14,7 +14,6 @@ import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.DataDefinitionProvider;
-import org.makumba.providers.datadefinition.makumba.MakumbaDataDefinitionFactory;
 
 public class MDDProvider extends DataDefinitionProvider {
     
