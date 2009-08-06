@@ -25,6 +25,8 @@ import org.makumba.forms.tags.NewTag;
 import org.makumba.forms.tags.SearchFieldTag;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.providers.QueryAnalysis;
+import org.makumba.providers.QueryProvider;
+import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.query.hql.HQLQueryAnalysisProvider;
 import org.makumba.providers.query.mql.MqlQueryAnalysis;
 
@@ -175,7 +177,7 @@ public class JSPRelationMiner extends RelationMiner {
                     String ql = MakumbaJspAnalyzer.getQueryLanguage(pageCache);
                     if (ql.equals("oql")) {
                         try {
-                            qA = new MqlQueryAnalysis(typeDeterminationQuery, false, false);
+                            qA = QueryProvider.getQueryAnalzyer(TransactionProvider.getInstance().getQueryLanguage()).getQueryAnalysis(typeDeterminationQuery);
                         } catch (OQLParseError e) {
                             logger.warning("Could not determine type using query "+typeDeterminationQuery+" in file "+fromFile);
                             return;

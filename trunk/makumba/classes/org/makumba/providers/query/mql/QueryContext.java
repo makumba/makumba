@@ -3,6 +3,7 @@ package org.makumba.providers.query.mql;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.Vector;
 
 import org.makumba.DataDefinition;
@@ -24,12 +25,12 @@ import antlr.collections.AST;
  * @version $Id: QueryContext.java,v 1.1 Aug 5, 2008 5:50:39 PM cristi Exp $
  */
 public class QueryContext {
-    DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
-
     private QueryContext parent;
 
     MqlSqlWalker walker;
 
+    DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
+    
     MqlNode inTree = null;
 
     public QueryContext(MqlSqlWalker mqlSqlWalker) {
@@ -70,7 +71,7 @@ public class QueryContext {
     // //-----------
 
     /** associate each label to its makumba type */
-    Hashtable<String, DataDefinition> labels = new Hashtable<String, DataDefinition>();
+    LinkedHashMap<String, DataDefinition> labels = new LinkedHashMap<String, DataDefinition>();
 
     /** labels explicitly defined in OQL FROM */
     Hashtable<String, DataDefinition> fromLabels = new Hashtable<String, DataDefinition>();

@@ -2,12 +2,14 @@ package org.makumba.providers.query.mql;
 
 import java.io.PrintWriter;
 import java.util.HashSet;
-import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.Set;
+import java.util.Vector;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
+import org.makumba.OQLParseError;
 import org.makumba.ProgrammerError;
 import org.makumba.commons.NameResolver.TextList;
 import org.makumba.providers.DataDefinitionProvider;
@@ -31,6 +33,8 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     // finish subqueries
     // simplify FROM section for sets
     // use a subclass for analysing hql
+    
+    DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
 
     ASTFactory fact;
 
@@ -49,7 +53,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     DataDefinition paramInfoByPosition;
 
     /** Parameters as name=type, where name is the string after $ for named parameters
-     * or paramX for numbrered paramteres, where X is the parameter number (not its query position!).
+     * or paramX for numbered parameters, where X is the parameter number (not its query position!).
      * This is used if a parameter is mentioned more times in a query and the type for some of these mentions
      * cannot be determined 
      */
@@ -61,7 +65,9 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     private AST select;
 
     QueryContext rootContext;
-
+    
+    LinkedHashMap<String, FunctionCall> orderedFunctionCalls = new LinkedHashMap<String, FunctionCall>();
+    
     boolean hasSubqueries;
 
     String query;
@@ -72,15 +78,16 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
 
     private DataDefinition insertIn;
 
-    public MqlSqlWalker(String query, DataDefinition insertIn, boolean optimizeJoins, boolean autoLeftJoin) {
+    public MqlSqlWalker(String query, DataDefinition insertIn, boolean optimizeJoins, boolean autoLeftJoin, boolean functionAsInliner) {
         this.query = query;
+        this.functionAsInliner = functionAsInliner;
         this.insertIn= insertIn;
         this.optimizeJoins = optimizeJoins;
         this.autoLeftJoin = autoLeftJoin;
         setASTFactory(fact = new MqlSqlASTFactory(this));
         this.paramInfoByPosition = DataDefinitionProvider.getInstance().getVirtualDataDefinition("Temporary parameters by order for " + query);
         this.paramInfoByName = DataDefinitionProvider.getInstance().getVirtualDataDefinition("Temporary parameters by name for " + query);
-
+        
     }
 
     public void reportError(RecognitionException e) {
@@ -92,9 +99,82 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         if (error == null)
             error = new RecognitionException(s);
     }
+    
+    @Override
+    protected String inlineFunction(AST functionCall, boolean inFunctionCall) throws SemanticException {
+        
+        final AST functionNode = functionCall.getFirstChild();
+        final AST exprList = functionNode.getNextSibling();
+        MqlNode paramNode = (MqlNode) exprList.getFirstChild();
+        String name = functionNode.getText();
+        
+        DataDefinition type;
+        
+        // we get a.b.c.functionName, resolve type of the path so we can retrieve the DD
+        String path = name;
+        String additionalPath = name;
+        int d = name.lastIndexOf(".");
+        if(d > -1) {
+            path = name.substring(0, d);
+            additionalPath = path;
+            name = name.substring(d + 1);
+            String label = "";
+            int d1 = path.indexOf(".");
+            if(d1 > -1) {
+                label = path.substring(0, d1);
+                additionalPath = additionalPath.substring(d1 + 1);
+            } else {
+                label = path;
+                additionalPath = "";
+            }
+            
+            type = rootContext.labels.get(label);
+            
+            additionalPath = additionalPath + (additionalPath.length() == 0 ? "" : ".") + name;
+            
+        } else {
+            type = rootContext.labels.get(name);
+        }
+        
+        // FIXME not sure if that's okay
+        if(type == null) {
+            type = rootContext.labels.values().iterator().next();
+        }
+        
+        DataDefinition.QueryFragmentFunction funct = type.getFunctionOrPointedFunction(additionalPath);
+        
+        // we didn't find the function in the MDD, so it might be a MQL function
+        if(funct == null) {
+            processFunction(functionCall);
+            
+            // we still make a dummy function call because we need it to have the right index in the inliner
+            FunctionCall c = new FunctionCall(null, null, null, null, additionalPath, false, true);
+            orderedFunctionCalls.put(c.getKey(), c);
+            return c.getKey();
+
+        }
+       
+        
+        // fetch the function parameters of the call and store them so we can perform inlining in the QueryAnalyser
+        // we have to store the arguments for each functionCall separately
+        Vector<MqlNode> args = new Vector<MqlNode>();
+        while(paramNode != null) {
+            args.add(paramNode);
+            paramNode = (MqlNode) paramNode.getNextSibling();
+        }
+        
+        FunctionCall c = new FunctionCall(funct, args, null, type, path, inFunctionCall, false);
+        orderedFunctionCalls.put(c.getKey(), c);
+        return c.getKey();
+    }
+    
+    @Override
+    protected void setBooleanType(AST a) {
+        ((MqlNode)a).setMakType(DataDefinitionProvider.getInstance().makeFieldOfType("dummy", "boolean"));
+    }
 
     @Override
-    protected void processFunction(AST functionCall, boolean inSelect) throws SemanticException {
+    protected void processFunction(AST functionCall) throws SemanticException {
         // determine parameter types here
         final AST functionNode = functionCall.getFirstChild();
         final AST exprList = functionNode.getNextSibling();
@@ -103,7 +183,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         final String name = functionNode.getText();
         final MQLFunctionDefinition functionDef = MQLFunctionDefinition.getByName(MqlNode.mqlFunctions, name);
         if (functionDef == null) {
-            throw new ProgrammerError("MQL Function '" + name + "' is not known! Please refer to " + LINK_FUNCTION_DEF
+            throw new ProgrammerError("MQL Function '" + name + "' is not defined as query fragment, nor is it a known MQL function! Please refer to " + LINK_FUNCTION_DEF
                     + " for a list of known functions.");
         }
         final MQLFunctionArgument[] args = functionDef.getArguments();
@@ -132,7 +212,6 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
             paramNode = (MqlNode) paramNode.getNextSibling();
             index++;
         }
-        super.processFunction(functionCall, inSelect);
     }
 
     public void reportWarning(String s) {
@@ -335,9 +414,20 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
                 // we separate the type from the position
                 String paramName = mqlNode.getOriginalText();
                 paramName = paramName.substring(0, paramName.indexOf("###"));
-                // we accept the type registered on some other position unless it is a multi-type param
-                if (!multiTypeParams.contains(paramName))
-                    makType = paramInfoByName.getFieldDefinition(paramName);
+                
+                // if we are an actor param, we can infer the type from the actor type
+                // TODO check if this works
+                if(paramName.startsWith("actor_")) {
+                    String type = paramName.substring("actor_".length());
+                    makType = DataDefinitionProvider.getInstance().getDataDefinition(type).getFieldDefinition(type);
+                    mqlNode.setMakType(makType);
+                    
+                } else {
+                    // we accept the type registered on some other position unless it is a multi-type param
+                    if (!multiTypeParams.contains(paramName))
+                        makType = paramInfoByName.getFieldDefinition(paramName);
+                }
+                
             }
             
             //  if we have no type but know in which table we'll insert the result

@@ -217,7 +217,7 @@ public class MqlNode extends CommonAST {
 
     protected void setMakType(FieldDefinition fd) {
         if (fd.getType().equals("ptrIndex")) {
-            fd = walker.currentContext.ddp.makeFieldDefinition("x", "ptr " + fd.getPointedType().getName());
+            fd = walker.ddp.makeFieldDefinition("x", "ptr " + fd.getPointedType().getName());
         }
         makType = fd;
     }
@@ -279,7 +279,7 @@ public class MqlNode extends CommonAST {
     boolean isParam() {
         return getType() == HqlSqlTokenTypes.NAMED_PARAM || getType() == HqlSqlTokenTypes.PARAM;
     }
-
+    
     void checkOperandTypes(MqlNode left, MqlNode right) throws SemanticException {
         checkForOperandType(left);
         checkForOperandType(right);

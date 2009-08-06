@@ -62,4 +62,12 @@ public class Node extends antlr.CommonAST {
 	public int getTextLength() {
 		return textLength;
 	}
+	
+	public void setLine(int line) {
+	    this.line = line;
+	}
+	
+	public void setCol(int col) {
+	    this.column = col;
+	}
 }

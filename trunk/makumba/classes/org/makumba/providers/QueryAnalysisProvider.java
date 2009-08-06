@@ -90,10 +90,23 @@ public abstract class QueryAnalysisProvider {
             // subqueries do not need separate queries
             return null;
 
-        String query = "SELECT " + expr + " FROM " + from;
+        if(from == null) {
+            // wtf?
+            return null;
+        }
+        
+        String query = "select " + expr + " from " + from;
         query = inlineFunctions(query);
         expr = query.substring(7);
-        expr = expr.substring(0, expr.indexOf("FROM"));
+        expr = expr.substring(0, expr.indexOf("from"));
+        
+        // since from may have changed due to inlining of functions that require joins, we also need to replace the from
+        int where = query.toLowerCase().indexOf("where");
+        if(where > -1) {
+            from = query.substring(query.indexOf("from ") + 5, where);
+        } else {
+            from = query.substring(query.indexOf("from ") + 5);
+        }
 
         int n = 0;
         int m = 0;
@@ -181,7 +194,13 @@ public abstract class QueryAnalysisProvider {
                     private static final long serialVersionUID = 1L;
 
                     protected Object makeResource(Object nm, Object hashName) throws Exception {
-                        return FunctionInliner.inline((String) nm, QueryAnalysisProvider.this);
+                        
+                        if(!Configuration.getQueryInliner().equals("tree")) {
+                            return FunctionInliner.inline((String) nm, QueryAnalysisProvider.this);
+                        } else {
+                            return org.makumba.providers.query.mql.FunctionInliner.inlineQuery((String) nm, QueryAnalysisProvider.this);
+                        }
+                        
                     }
                 }, true));
             initializedCache = true;
@@ -201,5 +220,6 @@ public abstract class QueryAnalysisProvider {
                     + "\nshould be:\n" + oqlanalyzer.TEST_MDD_FUNCTION_RESULTS[i] + "\n\n");
         }
     }
+    
 
 }

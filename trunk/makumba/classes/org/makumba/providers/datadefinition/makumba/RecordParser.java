@@ -557,7 +557,7 @@ public class RecordParser {
         }
 
         DataDefinition.QueryFragmentFunction function = new DataDefinition.QueryFragmentFunction(name,
-                sessionVariableName, queryFragment, ddParams, errorMessage);
+                sessionVariableName, queryFragment, ddParams, errorMessage, null);
         funcNames.put(function.getName(), function);
         return true;
     }
@@ -606,7 +606,7 @@ public class RecordParser {
                 java.util.logging.Logger.getLogger("org.makumba.db.query.inline").fine(
                     queryFragment + " -> " + sb.toString());
                 f = new QueryFragmentFunction(f.getName(), f.getSessionVariableName(), sb.toString(),
-                        f.getParameters(), f.getErrorMessage());
+                        f.getParameters(), f.getErrorMessage(), null);
 
             }
             dd.addFunction(f.getName(), f);

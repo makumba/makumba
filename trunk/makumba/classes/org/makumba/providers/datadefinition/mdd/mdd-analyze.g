@@ -1,9 +1,3 @@
-// TODO
-
-// other todo:
-//   take care of validation
-//   take care of functions
-
 header {
     package org.makumba.providers.datadefinition.mdd;
     
@@ -59,6 +53,9 @@ options {
     // Add field to mdd
     protected void addField(MDDNode mdd, FieldNode field) { }
     
+    // Add function to mdd
+    protected void addFunction(MDDNode mdd, FunctionNode function, AST a, FieldNode subField) { }
+    
     // Add subfield
     protected void addSubfield(FieldNode parent, FieldNode field) { }
     
@@ -78,7 +75,6 @@ options {
     
     // Add native validation rule 
     protected void addNativeValidationRuleMessage(AST fieldName, AST errorType, String message) { }
-    
              
 }
 
@@ -135,9 +131,9 @@ subField[FieldNode field]
       		field.addChild(#t);
       	}
       	// VALIDATION RULE
-		| validationRuleDeclaration[field]
+		| v:validationRuleDeclaration[field] { field.addChild(#v); }
 		// FUNCTION DECLARATION
-		| functionDeclaration[field]
+		| f:functionDeclaration[field] { field.addChild(#f); }
 		// FIELD DECLARATION
 		|
 		(
@@ -300,21 +296,26 @@ errorType
 //////////////// FUNCTIONS
 
 functionDeclaration[FieldNode subField]
-	: #(FUNCTION {String sessionVar = null;}
+	: { FunctionNode n = null; }
+	  #(FUNCTION {String sessionVar = null;}
 	    (s:SESSIONVAR_NAME {sessionVar = #s.getText();})?
 	    fn:FUNCTION_NAME
 	    {
-	    	FunctionNode funct = new FunctionNode(mdd, fn.getText());
+	    	FunctionNode funct = new FunctionNode(mdd, fn);
 	    	funct.sessionVariableName = sessionVar;
 	    }
 	    functionArgumentDeclaration[funct]
 	    b:FUNCTION_BODY {funct.queryFragment = #b.getText();}
 	    (m:MESSAGE {funct.errorMessage = #m.getText();})?
 	    {
-    		mdd.addFunction(funct);
-    		#functionDeclaration = funct;
+    		addFunction(mdd, funct, #functionDeclaration_in, subField);
+            n = funct;
 	  	}
 	  )
+	  {
+	      #functionDeclaration = n;
+	  }         
+	  
 	;
 
 functionArgumentDeclaration[FunctionNode funct]
@@ -328,5 +329,5 @@ functionArgumentDeclaration[FunctionNode funct]
 	
 functionCall returns[String[] nameAndArgs = null;]
 	: {nameAndArgs = new String[20]; int i = 1; } 
-	n:FUNCTION_NAME {nameAndArgs[0] = #n.getText(); } (FUNCTION_ARGUMENT {nameAndArgs[i] = #n.getText(); i++; })*
+	  n:FUNCTION_NAME {nameAndArgs[0] = #n.getText(); } (FUNCTION_ARGUMENT {nameAndArgs[i] = #n.getText(); i++; })*
 	;

@@ -33,8 +33,14 @@ public class MqlAritmeticNode extends MqlBinaryOperator {
     
     @Override
     protected void setMakType(MqlNode left, MqlNode right){
-        if(returnType==null)
+        boolean hasType = returnType!=null && returnType.getMakType() != null;
+        if(!hasType && left.getMakType() != null) {
             returnType=left;
+        } else if(!hasType && right.getMakType() != null) {
+            returnType = right;
+        } else if(!hasType) {
+            throw new RuntimeException("could not compute return type of arithmetic expression");
+        }
         setMakType(returnType.getMakType());
     }
 

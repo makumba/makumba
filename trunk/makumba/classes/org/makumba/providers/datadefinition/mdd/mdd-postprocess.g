@@ -35,6 +35,8 @@ options {
     protected void checkTitleField(AST titleField) { }
     
     protected void processValidationDefinitions(ValidationRuleNode v, AST v_in) { }
+    
+    protected void analyzeFunction(FunctionNode f) { }
    
 }
 
@@ -76,5 +78,5 @@ validationRuleDeclaration
 	;
 	
 functionDeclaration
-	: FUNCTION
+	: f:FUNCTION { analyzeFunction((FunctionNode)#f_in); }
 	;

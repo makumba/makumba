@@ -316,4 +316,11 @@ public final class ASTUtil {
 		return array;
 	}
 
+    public static Node makeNode(int type, String string) {
+        Node node = new Node();
+        node.setType(type);
+        node.setText(string);
+        return node;
+    }
+
 }

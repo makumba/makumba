@@ -318,6 +318,10 @@ tokens {
     
     protected void checkFieldName(AST n) {}
     
+    protected AST parseFunctionBody(AST b) { return null; }
+    
+    protected void addParsedFunction(AST a, AST b) {}
+        
 }
 
 dataDefinition
@@ -402,13 +406,13 @@ fieldType
 //int { "aa"=5, "bb"=2 deprecated, "cc"=10}
 intEnum
 	// intEnum has no function body as such, but the syntax is the same so we use this trick
-	: ie:INT^ {#ie.setType(INTENUM);} parsedFunctionBody 
+	: ie:INT^ {#ie.setType(INTENUM);} parsedExpression 
 	;
 
 //char { "aa", "bb" deprecated, "cc"}
 charEnum
 	// charEnum has no function body as such, but the syntax is the same so we use this trick
-	: ce:CHAR^ {#ce.setType(CHARENUM);} parsedFunctionBody
+	: ce:CHAR^ {#ce.setType(CHARENUM);} parsedExpression
 	;
 	
 fieldComment
@@ -461,11 +465,11 @@ validationRuleDeclaration
 	;
 	
 comparisonValidationRuleDeclaration
-	: COMPARE^ functionArguments parsedFunctionBody
+	: COMPARE^ functionArguments parsedExpression
 	;
 		
 rangeValidationRuleDeclaration
-	: (RANGE^ | LENGTH^) functionArguments parsedFunctionBody
+	: (RANGE^ | LENGTH^) functionArguments parsedExpression
 	;
 
 regexValidationRuleDeclaration
@@ -475,7 +479,7 @@ regexValidationRuleDeclaration
 // unique() {field1, field2} : These need to be unique
 uniquenessValidationRuleDeclaration
 	: UNIQUE^ LEFT_PAREN! RIGHT_PAREN!
-	parsedFunctionBody
+	parsedExpression
 	;
 
 nativeValidationRuleMessage
@@ -495,9 +499,12 @@ nativeValidationRuleMessage
 
 //////////////// FUNCTIONS
 
-functionDeclaration
-	: (s:atom {#s.setType(SESSIONVAR_NAME);} PERCENT!)? a:atom {#a.setType(FUNCTION_NAME);} d:functionArgumentDeclaration b:functionBody (errorMessage)?
-	{ #functionDeclaration = #(#[FUNCTION, "function"], #functionDeclaration); }
+functionDeclaration { AST p = null; }
+	: (s:atom {#s.setType(SESSIONVAR_NAME);} PERCENT!)? a:atom {#a.setType(FUNCTION_NAME);} d:functionArgumentDeclaration p = b:parsedFunctionBody (errorMessage)?
+	{
+		#functionDeclaration = #(#[FUNCTION, "function"], #functionDeclaration);
+		addParsedFunction(#functionDeclaration, #p);
+	}
 	;
 
 functionArgumentDeclaration
@@ -518,13 +525,22 @@ functionArguments
 
 functionBody
 	: b:FUNCTION_BODY
-	  { String body = ""; body = #b.getText().substring(1); body = body.substring(0, body.length() - 1); #b.setText(body.trim());}
+	  {
+	  	String body = ""; body = #b.getText().substring(1); body = body.substring(0, body.length() - 1); #b.setText(body.trim());
+	  }
 	;
+	
+parsedFunctionBody returns [AST p = null; ]
+    : b:functionBody
+    {
+    	p = parseFunctionBody(#b);
+    }
+    ;
 
-parsedFunctionBody
+parsedExpression
 	: b:functionBody
 	  {
-	  	#parsedFunctionBody = parseExpression(#b);
+	  	#parsedExpression = parseExpression(#b);
 	  }
 	;
 

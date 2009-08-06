@@ -26,7 +26,14 @@ public class MqlBinaryOperator extends MqlNode {
             checkForOperandType(left);
             checkForOperandType(right);
             analyzeOperands(left, right);
+            if(walker.error != null && walker.error instanceof SemanticException) {
+                throw (SemanticException)walker.error;
+            }
             analyzeOperands(right, left);
+            if(walker.error != null && walker.error instanceof SemanticException) {
+                throw (SemanticException)walker.error;
+            }
+
             setMakType(left, right);
         } catch (SemanticException se) {
             walker.error = se;

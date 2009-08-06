@@ -1,13 +1,18 @@
 package org.makumba.providers.datadefinition.mdd;
 
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.MakumbaError;
+import org.makumba.DataDefinition.QueryFragmentFunction;
 import org.makumba.providers.datadefinition.mdd.ComparisonExpressionNode.ComparisonType;
 import org.makumba.providers.datadefinition.mdd.validation.ComparisonValidationRule;
 import org.makumba.providers.datadefinition.mdd.validation.MultiUniquenessValidationRule;
+import org.makumba.providers.query.mql.FunctionInliner;
+import org.makumba.providers.query.mql.HqlParser;
 
 import antlr.collections.AST;
 
@@ -145,12 +150,11 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
             mdd.addMultiUniqueKey(key);
             
         } else if(v instanceof ComparisonValidationRule) {
-            
             ComparisonExpressionNode ce = v.comparisonExpression;
             
             // check type
-            ComparisonType lhs_type = getPartType(ce, ce.getLhs_type(), ce.getLhs());
-            ComparisonType rhs_type = getPartType(ce, ce.getRhs_type(), ce.getRhs());
+            ComparisonType lhs_type = getPartType(ce, ce.getLhs_type(), ce.getLhs(), v.field);
+            ComparisonType rhs_type = getPartType(ce, ce.getRhs_type(), ce.getRhs(), v.field);
             
             if(!rhs_type.equals(rhs_type)) {
                 factory.doThrow(typeName, "Invalid comparison expression: left-hand side type is " + lhs_type.name().toLowerCase() + ", right-hand side type is "+rhs_type.name().toLowerCase(), ce);
@@ -177,7 +181,7 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
             
     }
     
-    private ComparisonType getPartType(ComparisonExpressionNode ce, int type, String path) {
+    private ComparisonType getPartType(ComparisonExpressionNode ce, int type, String path, FieldNode parentField) {
         
         switch(type) {
             case UPPER:
@@ -192,7 +196,13 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
             case NEGATIVE_INTEGER:
                 return ComparisonType.NUMBER;
             case PATH:
-                String fieldType = checkPathValid(ce, path, mdd);
+                String fieldType = "";
+                // we check if by chance we are in a subfield
+                if(parentField != null && parentField.subfield != null) {
+                    fieldType = checkPathValid(ce, path, parentField.subfield);
+                } else {
+                    fieldType = checkPathValid(ce, path, mdd);
+                }
                 FieldType ft = FieldType.valueOf(fieldType.toUpperCase());
                 switch(ft) {
                     case CHAR:
@@ -212,6 +222,89 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
         }
         throw new RuntimeException("could not compute comparison part type of type " + ce.toString());
         
+        
+    }
+    
+    @Override
+    protected void analyzeFunction(FunctionNode f) {
+        
+        preProcessFunction(f);
+        
+    }
+    
+    
+    
+    private static final Pattern ident = Pattern.compile("[a-zA-Z]\\w*");
+    
+    private void preProcessFunction(FunctionNode funct) {
+        
+        QueryFragmentFunction f = funct.function;
+        StringBuffer sb = new StringBuffer();
+        String queryFragment = funct.queryFragment;
+        Matcher m = ident.matcher(queryFragment);
+        boolean found = false;
+        while (m.find()) {
+            String id = queryFragment.substring(m.start(), m.end());
+            int after = -1;
+            for (int index = m.end(); index < queryFragment.length(); index++) {
+                char c = queryFragment.charAt(index);
+                if (c == ' ' || c == '\t') {
+                    continue;
+                }
+                after = c;
+                break;
+            }
+            int before = -1;
+            for (int index = m.start() - 1; index >= 0; index--) {
+                char c = queryFragment.charAt(index);
+                if (c == ' ' || c == '\t') {
+                    continue;
+                }
+                before = c;
+                break;
+            }
+
+            if (before == '.' || id.equals("this") /* || id.equals("actor") */
+                    || funct.parameters.getFieldDefinition(id) != null) {
+                continue;
+            }
+            if (mdd.fields.get(id) != null || after == '(' && mdd.functions.get(id) != null) {
+                m.appendReplacement(sb, "this." + id);
+                found = true;
+            }
+        }
+        m.appendTail(sb);
+        if (found) {
+            java.util.logging.Logger.getLogger("org.makumba.db.query.inline").fine(queryFragment + " -> " + sb.toString());
+            
+            // we have to parse the query again now that we added this. and so forth
+            // not very efficient, but what the heck, we want to throw good errors
+            // another way would be to defer the "this." appending to the FunctionInliner, but this is good code
+            
+            
+            boolean subquery = sb.toString().toUpperCase().startsWith("SELECT ");
+            
+            String query = "SELECT " + (subquery?"(":"") + sb.toString() + (subquery?")":"") + " FROM " + typeName + " makumbaGeneratedAlias";
+
+            HqlParser parser = null;
+//            FunctionInliner inliner = new FunctionInliner(query);
+            try {
+                parser = HqlParser.getInstance(query);
+                parser.statement();
+//                inliner.inlineFunctions(parser.getAST(), true);
+            } catch (Throwable t) {
+                // in theory this should never happen because this process is already done at MDD parsing time
+                // where errors are being handled nicely
+                throw new RuntimeException("ok now this should not have happened.");
+            }
+            
+            funct.function = new QueryFragmentFunction(f.getName(), f.getSessionVariableName(), sb.toString(),
+                    f.getParameters(), f.getErrorMessage(), parser.getAST());
+            
+            // we re-add the function, overriding the non-processed one
+            mdd.functions.put(funct.function.getName(), funct.function);
+
+        }
         
     }
 

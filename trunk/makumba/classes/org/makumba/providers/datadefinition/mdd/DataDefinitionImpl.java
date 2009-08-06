@@ -389,57 +389,10 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
         return fi;
     }
     
-    
-    private static final Pattern ident = Pattern.compile("[a-zA-Z]\\w*");
-    
     /** pre-processes functions (adds this. everywhere needed) **/
     public void addFunctions(HashMap<String, QueryFragmentFunction> funcNames) {
         
-        for (String fn : funcNames.keySet()) {
-        
-            StringBuffer sb = new StringBuffer();
-            QueryFragmentFunction f = funcNames.get(fn);
-            String queryFragment = f.getQueryFragment();
-            Matcher m = ident.matcher(queryFragment);
-            boolean found = false;
-            while (m.find()) {
-                String id = queryFragment.substring(m.start(), m.end());
-                int after = -1;
-                for (int index = m.end(); index < queryFragment.length(); index++) {
-                    char c = queryFragment.charAt(index);
-                    if (c == ' ' || c == '\t') {
-                        continue;
-                    }
-                    after = c;
-                    break;
-                }
-                int before = -1;
-                for (int index = m.start() - 1; index >= 0; index--) {
-                    char c = queryFragment.charAt(index);
-                    if (c == ' ' || c == '\t') {
-                        continue;
-                    }
-                    before = c;
-                    break;
-                }
-
-                if (before == '.' || id.equals("this") || id.equals("actor")
-                        || f.getParameters().getFieldDefinition(id) != null) {
-                    continue;
-                }
-                if (this.fields.get(id) != null || after == '(' && funcNames.get(id) != null) {
-                    m.appendReplacement(sb, "this." + id);
-                    found = true;
-                }
-            }
-            m.appendTail(sb);
-            if (found) {
-                java.util.logging.Logger.getLogger("org.makumba.db.query.inline").fine(
-                    queryFragment + " -> " + sb.toString());
-                f = new QueryFragmentFunction(f.getName(), f.getSessionVariableName(), sb.toString(),
-                        f.getParameters(), f.getErrorMessage());
-
-            }
+        for (QueryFragmentFunction f : funcNames.values()) {
             addFunction(f.getName(), f);
         }
     }
@@ -541,6 +494,24 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
         return dd.getFieldDefinition(fieldName);
     }
 
+    /** returns the field info associated with a name */
+    public QueryFragmentFunction getFunctionOrPointedFunction(String nm) {
+        if (getFunction(nm) != null) {
+            return getFunction(nm);
+        }
+        String fieldName = nm;
+        DataDefinition dd = this;
+
+        int indexOf = -1;
+        while ((indexOf = fieldName.indexOf(".")) != -1) {
+            String subFieldName = fieldName.substring(0, indexOf);
+            fieldName = fieldName.substring(indexOf + 1);
+            FieldDefinition fieldDefinition = dd.getFieldDefinition(subFieldName);
+            dd = fieldDefinition.getPointedType();
+        }
+        return dd.getFunction(fieldName);
+    }
+    
 
     /** which is the name of the index field, if any? */
     public String getIndexPointerFieldName() {
