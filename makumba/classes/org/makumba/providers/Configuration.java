@@ -599,6 +599,10 @@ public class Configuration implements Serializable {
                 String path = System.getProperty("user.dir");
                 java.net.URL u = ClassResource.get("/");
                 String alternatePath = u != null ? u.toString() : null;
+                if(alternatePath != null && alternatePath.startsWith("file:")) {
+                    alternatePath = alternatePath.substring("file:".length());
+                    
+                }
 
                 String thisConfiguration1 = "dataSource:" + dataSourceName + " host:" + host + " path:" + path;
                 String thisConfiguration2 = "dataSource:" + dataSourceName + " host:" + host + " path:" + alternatePath;
@@ -613,21 +617,27 @@ public class Configuration implements Serializable {
                         result = configuredDataSources.get(k);
                     }
                 }
-
-                for (String k : configuredDataSources.keySet()) {
-                    if (thisConfiguration2.startsWith(k) && k.length() > maxKey.length()
-                            && k.startsWith("dataSource:" + dataSourceName + " ")) {
-                        maxKey = k;
-                        result = configuredDataSources.get(k);
+                
+                if(result == null) {
+                    
+                    for (String k : configuredDataSources.keySet()) {
+                        if (thisConfiguration2.startsWith(k) && k.length() > maxKey.length()
+                                && k.startsWith("dataSource:" + dataSourceName + " ")) {
+                            maxKey = k;
+                            result = configuredDataSources.get(k);
+                        }
                     }
-                }
 
-                // there was no dataSource:<name> path: ... found
-                // we fall back to the simple one
-                result = configuredDataSources.get("dataSource:" + dataSourceName);
+                    if(result == null) {
+                        
+                        // there was no dataSource:<name> path: ... found
+                        // we fall back to the simple one
+                        result = configuredDataSources.get("dataSource:" + dataSourceName);
 
-                if (result == null) {
-                    throw new ConfigurationError("No DataSource " + dataSourceName + " configured in Makumba.conf");
+                        if (result == null) {
+                            throw new ConfigurationError("No DataSource " + dataSourceName + " configured in Makumba.conf");
+                        }
+                    }
                 }
 
             } catch (UnknownHostException e) {
