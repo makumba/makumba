@@ -371,7 +371,7 @@ subFieldDeclaration
     ;
     
 subFieldBody
-	: a:fieldName { #a.setType(SUBFIELDNAME); } EQ! (modifier)* fieldType (fieldComment)?
+	: a:fieldName { #a.setType(SUBFIELDNAME); ((MDDAST)#a).wasIncluded = this.included; } EQ! (modifier)* fieldType (fieldComment)?
     ;
     
 fieldName

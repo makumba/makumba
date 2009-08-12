@@ -172,11 +172,11 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
     @Override
     protected void addSubfield(FieldNode parent, FieldNode field) {
         FieldNode previous = parent.subfield.fields.get(field.name);
-        if (previous != null && (previous.wasIncluded || field.wasIncluded)) {
+        if (previous != null && (previous.wasIncluded || field.wasIncluded || parent.wasIncluded)) {
             parent.subfield.fields.remove(field.name);
             parent.subfield.addField(field);
-        } else if (previous != null && !(previous.wasIncluded || field.wasIncluded)) {
-            factory.doThrow(typeName, "Duplicated field definition for field " + field.name, field);
+        } else if (previous != null && !(previous.wasIncluded || field.wasIncluded || parent.wasIncluded)) {
+            factory.doThrow(typeName, "Duplicated field definition for subfield " + field.name, field);
         } else {
             parent.subfield.addField(field);
         }
