@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.Properties;
+import java.util.Vector;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
@@ -14,8 +15,6 @@ import org.makumba.OQLParseError;
 import org.makumba.commons.ClassResource;
 import org.makumba.commons.NameResolver;
 import org.makumba.providers.QueryAnalysisProvider;
-import org.makumba.providers.QueryProvider;
-import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.query.hql.HQLQueryAnalysisProvider;
 import org.makumba.providers.query.oql.QueryAST;
 
@@ -29,6 +28,8 @@ import antlr.collections.AST;
  * @version $Id: ParserTest.java,v 1.1 Aug 5, 2008 5:55:08 PM cristi Exp $
  */
 public class ParserTest {
+    
+    private static Vector<String> errors = new Vector<String>();
 
     private static QueryAnalysisProvider qap = new HQLQueryAnalysisProvider();
 
@@ -68,6 +69,11 @@ public class ParserTest {
             e.printStackTrace();
         }
         System.err.println("analyzed " + line + " queries");
+        System.err.println("**********************************");
+        System.err.println("********** Found following errors:");
+        for(String e : errors) {
+            System.err.println(e);
+        }
 
     }
 
@@ -124,12 +130,14 @@ public class ParserTest {
                 
                 StringBuffer sb= new StringBuffer();
                 compareMdds("parameter", sb, mq.getParameterTypes(), oq.getParameterTypes());
-                if(sb.length()>0)
-                    System.err.println(line + ": "+ sb+" "+ query); 
+                if(sb.length()>0) {
+                    System.err.println(line + ": "+ sb+" "+ query);
+                }
                 sb= new StringBuffer();
                 compareMdds("projection", sb, mq.getProjectionType(), oq.getProjectionType());
-                if(sb.length()>0)
+                if(sb.length()>0) {
                     System.err.println(line + ": "+ sb+" "+ query); 
+                }
                 String mqLabels = mq.getLabelTypes().toString();
                 if(!mqLabels.equals(oq.getLabelTypes().toString())&&!mqLabels.equals("{c=org.makumba.db.makumba.Catalog}")){
                     System.err.println(line + ": "+ query+"\n\t"+mq.getLabelTypes()+"\n\t"+oq.getLabelTypes()); 
@@ -140,17 +148,18 @@ public class ParserTest {
              * walker.setTypeComputer(new MddObjectType()); walker.setDebug(query); walker.statement(hql);
              */
         } catch (Throwable t) {
-            if(mqlThr!=null)
-                System.err.println(line + ": MQL: " + mqlThr.getMessage() + " " + query);
+            if(mqlThr!=null) {
+                error(line + ": MQL: " + mqlThr.getMessage() + " " + query);
+            }
             
-            System.err.println(line + ":"+(mqlThr==null?" only in":"")+" OQL: " + t.getMessage() + " " + query);
+            error(line + ":"+(mqlThr==null?" only in":"")+" OQL: " + t.getMessage() + " " + query);
             if(mqlThr==null)
-                System.err.println(line+": MQL SQL: "+mql_sql);
+                error(line+": MQL SQL: "+mql_sql);
             return;
         }
         if(mqlThr!=null){
-            System.err.println(line + ": only in MQL: " + mqlThr.getMessage() + " " + query);
-            System.err.println(line+": OQL SQL: " + oql_sql);
+            error(line + ": only in MQL: " + mqlThr.getMessage() + " " + query);
+            error(line+": OQL SQL: " + oql_sql);
             if(!(mqlThr instanceof OQLParseError))
                 mqlThr.printStackTrace();
         }
@@ -190,6 +199,11 @@ public class ParserTest {
 
     private static void appendFieldDefinition(StringBuffer sb, FieldDefinition fd) {
         sb.append(fd.getName()).append("=").append(fd.getType());
+    }
+    
+    private static void error(String s) {
+        System.err.println(s);
+        errors.add(s);
     }
 
 }
