@@ -196,6 +196,10 @@ public class MDDParser extends MDDBaseParser {
         // when the expression is a subquery, i.e. starts with SELECT, we add paranthesis around it
         boolean subquery = expression.getText().toUpperCase().startsWith("SELECT ");
         
+        int offset = "SELECT ".length();
+        if(subquery) {
+            offset += 1;
+        }
         
         String query = "SELECT " + (subquery?"(":"") + expression.getText() + (subquery?")":"") + " FROM " + typeName + " makumbaGeneratedAlias";
         HqlParser parser = HqlParser.getInstance(query);
@@ -208,10 +212,11 @@ public class MDDParser extends MDDBaseParser {
         } catch (TokenStreamException e) {
             factory.doThrow(e, expression, typeName);
         }   
+        
         if(parser.getError() != null) {
             if(parser.getError() instanceof RecognitionException) {
                 RecognitionException e = (RecognitionException) parser.getError();
-                e.column = expression.getColumn() + e.column;
+                e.column = expression.getColumn() + e.column -offset;
                 e.line = expression.getLine();
                 factory.doThrow(e, expression, typeName);
             }
@@ -219,7 +224,7 @@ public class MDDParser extends MDDBaseParser {
         
         AST tree = parser.getAST();
         if(tree != null)
-            shiftHql(tree, expression);
+            shiftHql(tree, expression, offset);
         
         /* FIXME we can't do this here because then we want to access the MDD from within the inliner and it doesn't exist yet
         // now that we did the parsing, we also try to inline the AST
@@ -247,14 +252,14 @@ public class MDDParser extends MDDBaseParser {
             shift(toShift.getFirstChild(), parent);
     }
     
-    private void shiftHql(AST toShift, AST parent) {
+    private void shiftHql(AST toShift, AST parent, int offset) {
         ((Node)toShift).setLine(parent.getLine());
-        ((Node)toShift).setCol(parent.getColumn() + toShift.getColumn());
+        ((Node)toShift).setCol(parent.getColumn() + toShift.getColumn() + offset);
         
         if(toShift.getNextSibling() != null)
-            shiftHql(toShift.getNextSibling(), parent);
+            shiftHql(toShift.getNextSibling(), parent, offset);
         if(toShift.getFirstChild() != null)
-            shiftHql(toShift.getFirstChild(), parent);
+            shiftHql(toShift.getFirstChild(), parent, offset);
     }
 
     

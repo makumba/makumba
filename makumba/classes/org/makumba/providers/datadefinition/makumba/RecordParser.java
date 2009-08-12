@@ -62,6 +62,11 @@ import org.makumba.providers.datadefinition.makumba.validation.NumberRangeValida
 import org.makumba.providers.datadefinition.makumba.validation.RangeValidationRule;
 import org.makumba.providers.datadefinition.makumba.validation.RegExpValidationRule;
 import org.makumba.providers.datadefinition.makumba.validation.StringLengthValidationRule;
+import org.makumba.providers.query.mql.HqlParser;
+
+import antlr.RecognitionException;
+import antlr.TokenStreamException;
+import antlr.collections.AST;
 
 public class RecordParser {
     public static final String VALIDATION_INDICATOR = "%";
@@ -555,9 +560,12 @@ public class RecordParser {
                 }
             }
         }
+        
+        // now parse the function text to see if that's okay
+        AST tree = getParsedFunction(name, queryFragment, line);
 
         DataDefinition.QueryFragmentFunction function = new DataDefinition.QueryFragmentFunction(name,
-                sessionVariableName, queryFragment, ddParams, errorMessage, null);
+                sessionVariableName, queryFragment, ddParams, errorMessage, tree);
         funcNames.put(function.getName(), function);
         return true;
     }
@@ -606,11 +614,30 @@ public class RecordParser {
                 java.util.logging.Logger.getLogger("org.makumba.db.query.inline").fine(
                     queryFragment + " -> " + sb.toString());
                 f = new QueryFragmentFunction(f.getName(), f.getSessionVariableName(), sb.toString(),
-                        f.getParameters(), f.getErrorMessage(), null);
+                        f.getParameters(), f.getErrorMessage(), f.getParsedQueryFragment());
 
             }
             dd.addFunction(f.getName(), f);
         }
+    }
+    
+    private AST getParsedFunction(String fName, String expression, String line) {
+        
+     // here we parse the function to see if it's okay
+        // when the expression is a subquery, i.e. starts with SELECT, we add paranthesis around it
+        boolean subquery = expression.toUpperCase().startsWith("SELECT ");
+        
+        String query = "SELECT " + (subquery?"(":"") + expression + (subquery?")":"") + " FROM " + dd.getName() + " makumbaGeneratedAlias";
+        HqlParser parser = HqlParser.getInstance(query);
+        try {
+            parser.statement();
+        } catch (Exception e) {
+            mpe.add(new DataDefinitionParseError(dd.getName(), "Error in function " + fName + ": " + e.getMessage(), line));
+        }
+        
+        return parser.getAST();
+        
+        
     }
 
     void configSubfields() {

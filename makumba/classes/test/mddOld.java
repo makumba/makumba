@@ -32,6 +32,7 @@ import junit.framework.TestSuite;
 
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.DataDefinitionParseError;
+import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 
 /**
@@ -46,6 +47,8 @@ public class mddOld extends TestCase {
 
     public mddOld(String name) {
         super(name);
+        Configuration.setPropery("dataSourceConfig", "dataDefinitionProvider", Configuration.RECORDINFO_DATADEFINITIONPROVIDER);
+
     }
 
     public static void main(String[] args) {
