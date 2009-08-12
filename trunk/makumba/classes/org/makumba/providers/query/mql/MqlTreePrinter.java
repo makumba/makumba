@@ -2,6 +2,7 @@ package org.makumba.providers.query.mql;
 
 import org.makumba.MakumbaError;
 import org.makumba.providers.QueryAnalysisProvider;
+import org.makumba.providers.datadefinition.mdd.MakumbaDumpASTVisitor;
 
 import antlr.collections.AST;
 
@@ -20,6 +21,8 @@ public class MqlTreePrinter {
     
     QueryAnalysisProvider qp;
     
+    MakumbaDumpASTVisitor v = new MakumbaDumpASTVisitor(false);
+    
     public MqlTreePrinter(QueryAnalysisProvider qp) {
         this.qp = qp;
     }
@@ -36,7 +39,13 @@ public class MqlTreePrinter {
         //     WHERE [53] 
         //     order [41]                    
 
-        handleAST(tree);
+        try {
+            handleAST(tree);
+        } catch(NullPointerException npe) {
+            System.out.println("Error while printing MQL tree ");
+            v.visit(tree);
+            throw(npe);
+        }
         
         
         String result =  sb.toString();
@@ -139,6 +148,7 @@ public class MqlTreePrinter {
             case HqlTokenTypes.TRUE:
             case HqlTokenTypes.FALSE:
             case HqlTokenTypes.IDENT:
+            case HqlTokenTypes.WEIRD_IDENT:
                 out(a.getText());
                 break;
 
@@ -149,8 +159,6 @@ public class MqlTreePrinter {
             case HqlTokenTypes.MINUS:
             case HqlTokenTypes.DIV:
             case HqlTokenTypes.STAR:
-            case HqlTokenTypes.UNARY_MINUS:
-            case HqlTokenTypes.UNARY_PLUS:
             case HqlTokenTypes.AND:
             case HqlTokenTypes.OR:
                 handleAST(a.getFirstChild());
@@ -196,6 +204,8 @@ public class MqlTreePrinter {
             // starting operators without parentheses
                 
             case HqlTokenTypes.ESCAPE:
+            case HqlTokenTypes.UNARY_MINUS:
+            case HqlTokenTypes.UNARY_PLUS:
                 printOperator(a);
                 handleAST(a.getFirstChild());
                 break;
