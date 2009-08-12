@@ -43,10 +43,13 @@ import org.makumba.db.makumba.DBConnectionWrapper;
 import org.makumba.db.makumba.MakumbaTransactionProvider;
 import org.makumba.db.makumba.Update;
 
+import com.mchange.v2.c3p0.ComboPooledDataSource;
+
 /**
  * An SQL database, using JDBC. This class should comply with SQL-92
  */
 public class Database extends org.makumba.db.makumba.Database {
+    
 	Properties connectionConfig = new Properties();
 
 	String url;
@@ -65,6 +68,8 @@ public class Database extends org.makumba.db.makumba.Database {
 
 	static Properties sqlDrivers;
 	//static boolean requestUTF8 = false;
+	
+    protected ComboPooledDataSource pooledDataSource;
 
 	public String getEngine() {
 		return eng;
@@ -91,7 +96,7 @@ public class Database extends org.makumba.db.makumba.Database {
 	@Override
     protected DBConnection makeDBConnection() {
 		try {
-			return new SQLDBConnection(this, tp);
+			return new SQLDBConnection(this, tp, pooledDataSource);
 		} catch (SQLException e) {
 			logException(e);
 			throw new DBError(e);
@@ -194,19 +199,21 @@ public class Database extends org.makumba.db.makumba.Database {
 			java.util.logging.Logger.getLogger("org.makumba.db.init").info(
 					"Makumba " + MakumbaSystem.getVersion() + " INIT: " + url);
 			Class.forName(driver);
-			initConnections();
-			
-			
-			String staleConn = sqlDrivers
-					.getProperty(getConfiguration("#sqlEngine")
-							+ ".staleConnectionTime");
-
-			if (staleConn != null) {
-				long l = Long.parseLong(staleConn) * 60000l;
-				connections.startStalePreventionTimer(l / 2, l);
-			}
 			
 
+			// initialise the c3p0 pooled data source
+	        pooledDataSource = new ComboPooledDataSource();
+			pooledDataSource.setDriverClass(driver);
+			pooledDataSource.setJdbcUrl(url);
+			
+			// some default configuration that should fit any kind of makumba webapp
+            // this can anyway be overriden in Makumba.conf
+            pooledDataSource.setAcquireIncrement(5);
+            pooledDataSource.setMaxIdleTime(1800); // 30 mins
+            
+			pooledDataSource.setProperties(connectionConfig);
+			
+			
 			DBConnectionWrapper dbcw = (DBConnectionWrapper) getDBConnection();
 			SQLDBConnection dbc = (SQLDBConnection) dbcw.getWrapped();
 			try {
@@ -243,6 +250,26 @@ public class Database extends org.makumba.db.makumba.Database {
 		} catch (Exception e) {
 			throw new org.makumba.MakumbaError(e);
 		}
+	}
+	
+	@Override
+	protected void closeResourcePool() {
+	    pooledDataSource.close();
+	}
+	
+	@Override
+	protected int getResourcePoolSize() {
+	    try {
+            return pooledDataSource.getNumConnectionsDefaultUser();
+        } catch (SQLException e) {
+            logException(e);
+            return -1;
+        }
+	}
+	
+	@Override
+	protected DBConnection getPooledDBConnection() {
+	    return makeDBConnection();
 	}
 
 	protected void readCatalog(SQLDBConnection dbc) throws SQLException {

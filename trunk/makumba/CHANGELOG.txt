@@ -19,10 +19,9 @@ manu: fixing race condition in Configuration
 marius: adding "clearDefault" parameter to mak:input to allow default text to be cleared onFocus and restore it onBlur
 lenno: fix in SearchTag
 lenno: fixes in CodeGenerator
-manu: changed the StalePreventionThread in ResourcePool to a timer task, to avoid having it killed by GC
-manu: added a checking mechanism to resources returned by the ResourcePool, discarding resourced that can't be renewed
-manu: removing the autoReconnect property, since it is not working and not recommened to usage by the mysql connector folks
-
+manu: new MDD parser based on ANTLR
+manu: new function inliner based on tree transoformation
+manu: replacing ResourcePool with c3p0
 -----------------------------------------------
 
 NOT TO BE RELEASED YET (need more testing)
