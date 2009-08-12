@@ -25,7 +25,6 @@ package org.makumba.db.makumba.sql;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -34,6 +33,8 @@ import org.makumba.DBError;
 import org.makumba.db.makumba.DBConnection;
 import org.makumba.providers.TransactionProvider;
 
+import com.mchange.v2.c3p0.PooledDataSource;
+
 public class SQLDBConnection extends DBConnection {
     static int nconn = 0;
 
@@ -41,22 +42,22 @@ public class SQLDBConnection extends DBConnection {
 
     private Connection conn;
 
-    SQLDBConnection(org.makumba.db.makumba.Database db, TransactionProvider tp) throws SQLException {
+    SQLDBConnection(org.makumba.db.makumba.Database db, TransactionProvider tp, PooledDataSource pooledDataSource) throws SQLException {
         super(db, tp);
         n = nconn++;
-        makeConnection();
+        makeConnection(pooledDataSource);
     }
 
-    private void makeConnection() throws SQLException {
-        conn = DriverManager.getConnection(((org.makumba.db.makumba.sql.Database) db).url,
-            ((org.makumba.db.makumba.sql.Database) db).connectionConfig);
+    private void makeConnection(PooledDataSource pooledDataSource) throws SQLException {
+        
+        conn = pooledDataSource.getConnection();
+        
         if (conn.getMetaData().supportsTransactions())
             conn.setAutoCommit(false);
         if (conn.getMetaData().supportsTransactionIsolationLevel(Database.DESIRED_TRANSACTION_LEVEL))
             conn.setTransactionIsolation(Database.DESIRED_TRANSACTION_LEVEL);
 
         if (org.makumba.db.makumba.sql.Database.supportsUTF8()) {
-            // System.out.println("UTF: SQLDBConenction: supports utf8");
             Statement st = this.createStatement();
             st.execute("SET CHARACTER SET utf8");
             st.close();

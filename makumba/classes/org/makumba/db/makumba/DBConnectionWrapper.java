@@ -129,7 +129,9 @@ public class DBConnectionWrapper extends DBConnection {
         try{
             getWrapped().setContext(null);
             commit();
-            getHostDatabase().connections.put(getWrapped());
+            // we close the connection here - in fact since it's a connection wrapped by the c3p0 pool it will not be closed but returned
+            // to the pool
+            getWrapped().close();
         } finally{
             wrapped = ClosedDBConnection.getInstance();
         }

@@ -92,55 +92,13 @@ public abstract class Database {
     static protected boolean supportsForeignKeys() {
         return requestForeignKeys;
     }
-
-    protected ResourcePool connections = new ResourcePool() {
-        @Override
-        public Object create() {
-            nconn++;
-            config.put("jdbc_connections", "" + nconn);
-            return makeDBConnection();
-        }
-
-        // preventing stale connections
-        @Override
-        public boolean renew(Object o) {
-            try {
-                ((DBConnection) o).commit();
-            } catch(Throwable t) {
-                return false;
-            }
-            return true;
-        }
-
-        @Override
-        public void close(Object o) {
-            ((DBConnection) o).close();
-        }
-
-        @Override
-        public boolean check(Object o) {
-            try {
-                ((DBConnection) o).commit();
-            } catch(Throwable t) {
-                return false;
-            }
-            return true;
-        }
-    };
-
-    public void initConnections() {
-        try {
-            // resourcePool should have limits...
-            connections.init(initConnections);
-        } catch (Exception e) {
-            throw new DBError(e);
-        }
-    }
-
-    protected void closeConnections() {
-        connections.close();
-    }
-
+    
+    protected abstract void closeResourcePool();
+    
+    protected abstract int getResourcePoolSize();
+    
+    protected abstract DBConnection getPooledDBConnection();
+    
     public void close() {
         java.util.logging.Logger.getLogger("org.makumba.db.init").info(
             "closing  " + getName() + "\n\tat "
@@ -148,12 +106,12 @@ public abstract class Database {
         tables.close();
         queries.close();
         updates.close();
-        closeConnections();
+        closeResourcePool();
     }
 
     public DBConnection getDBConnection(String dataSource) {
         try {
-            return new DBConnectionWrapper((DBConnection) connections.get(), dataSource, tp);
+            return new DBConnectionWrapper(getPooledDBConnection(), dataSource, tp);
         } catch (Exception e) {
             throw new DBError(e);
         }
@@ -161,7 +119,7 @@ public abstract class Database {
 
     public DBConnection getDBConnection() {
         try {
-            return new DBConnectionWrapper((DBConnection) connections.get(), getName(), tp);
+            return new DBConnectionWrapper(getPooledDBConnection(), getName(), tp);
         } catch (Exception e) {
             throw new DBError(e);
         }
@@ -199,7 +157,7 @@ public abstract class Database {
 
     public String getConfiguration(String v) {
         if (v.equals("resource_pool_size")) {
-            return String.valueOf(connections.getSize());
+            return String.valueOf(getResourcePoolSize());
         }
         return config.getProperty(v);
     }
