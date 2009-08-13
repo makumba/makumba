@@ -159,6 +159,9 @@ public class Database extends org.makumba.db.makumba.Database {
 		nrh= new NameResolverHook(this);
 		try {
 
+            if(p.getProperty("encoding") != null && p.getProperty("encoding").equals("utf8")) 
+                requestUTF8 = true;
+
             // set engine
             eng = p.getProperty("#sqlEngine");
 
@@ -182,10 +185,6 @@ public class Database extends org.makumba.db.makumba.Database {
 
 			String driver = p.getProperty("sql.driver");
 			
-
-			if(p.getProperty("encoding") != null && p.getProperty("encoding").equals("utf8")) 
-                requestUTF8 = true;
-
             if(p.getProperty("foreignKeys") != null && p.getProperty("foreignKeys").equals("true")) 
                 requestForeignKeys = true;
 			
@@ -317,7 +316,7 @@ public class Database extends org.makumba.db.makumba.Database {
 		String local = getEngineProperty(eng + ".localJDBC");
 		if (local == null || !local.equals("true"))
 			_url += "//" + p.getProperty("#host") + "/";
-		return _url + p.getProperty("#database");
+		return _url + p.getProperty("#database")+(supportsUTF8()?"?useEncoding=true&characterEncoding=UTF-8":"");
 	}
 
 	@Override
