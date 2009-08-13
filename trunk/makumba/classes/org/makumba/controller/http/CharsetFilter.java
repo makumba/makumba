@@ -40,10 +40,7 @@ public class CharsetFilter implements Filter {
         }
 
         chain.doFilter(request, response);
-        if (Configuration.getDefaultDataSourceConfiguration().get("encoding").equals("utf8")) {
-            response.setContentType("text/html; charset=UTF-8");
-            request.setCharacterEncoding("UTF8");
-        }
+        
     }
 
     public void destroy() {
