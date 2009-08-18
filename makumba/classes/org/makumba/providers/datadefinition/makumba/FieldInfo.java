@@ -472,12 +472,12 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
      */
     public String getDescription() {
         if (description == null) {
-            return name;
+            return StringUtils.upperCaseBeginning(name);
         }
-        if (description.trim().equals("")) {
-            return name;
+        if (description.trim().equals("") || description.trim().equals(name)) {
+            return StringUtils.upperCaseBeginning(name);
         }
-        return description;
+        return description.trim();
     }
 
     /** returns field's type */
