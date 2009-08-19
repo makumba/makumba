@@ -1,7 +1,7 @@
 [dataSourceConfig]
 foreignKeys=true
 defaultDatabaseLayer=makumba
-dataDefinitionProvider=recordinfo
+dataDefinitionProvider=mdd
 queryFunctionInliner=normal
 
 [businessLogicPackages]
