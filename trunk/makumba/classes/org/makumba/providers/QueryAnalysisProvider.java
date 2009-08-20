@@ -97,7 +97,6 @@ public abstract class QueryAnalysisProvider {
         
         String query = "select " + expr + " from " + from;
         query = inlineFunctions(query);
-        System.out.println(query);
         expr = query.substring(7);
         expr = expr.substring(0, expr.indexOf("from"));
         
