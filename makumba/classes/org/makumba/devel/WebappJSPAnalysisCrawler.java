@@ -89,12 +89,13 @@ public class WebappJSPAnalysisCrawler {
             jsap.registerParameter(new FlaggedOption("skipPaths", JSAP.STRING_PARSER, null, false, 's', "skipPaths"));
             jsap.registerParameter(new FlaggedOption("analysisOutputFile", JSAP.STRING_PARSER, null, false, 'o',
                     "output"));
+            jsap.registerParameter(new FlaggedOption("queryOutputFile", JSAP.STRING_PARSER, null, false, 'q', "queryOutputFile"));
             jsap.registerParameter(new UnflaggedOption("path", JSAP.STRING_PARSER, null, false, true));
         } catch (JSAPException e) {
             e.printStackTrace();
         }
         JSAPResult result = jsap.parse(args);
-        if (!result.success()) {
+        if (!result.success() || args.length == 0) {
             System.err.println();
             for (Iterator<?> errs = result.getErrorMessageIterator(); errs.hasNext();) {
                 System.err.println("Error: " + errs.next());
