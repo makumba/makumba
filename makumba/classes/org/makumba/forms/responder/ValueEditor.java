@@ -19,9 +19,6 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
-import org.makumba.db.makumba.DBConnectionWrapper;
-import org.makumba.db.makumba.Database;
-import org.makumba.db.makumba.sql.TableManager;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
 
@@ -39,12 +36,6 @@ public class ValueEditor extends HttpServlet {
     public static final String RESOURCE_PATH_JAVASCRIPT = "javaScript/";
 
     public static final SimpleDateFormat dfLastModified = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
-
-    DBConnectionWrapper dbc = null;
-
-    Database db = null;
-
-    TableManager table = null;
 
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // get the writer
@@ -90,7 +81,7 @@ public class ValueEditor extends HttpServlet {
 
             // check if the pointer exists
             Pointer ptr = new Pointer(tableName, pointer);
-            Vector<Dictionary<String, Object>> v = dbc.executeQuery("SELECT l FROM " + tableName + " l WHERE l=$1", ptr);
+            Vector<Dictionary<String, Object>> v = transaction.executeQuery("SELECT l FROM " + tableName + " l WHERE l=$1", ptr);
             if (v.size() < 1) {
                 writer.println("No such data");
             }
