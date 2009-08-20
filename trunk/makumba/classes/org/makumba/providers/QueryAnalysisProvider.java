@@ -97,23 +97,34 @@ public abstract class QueryAnalysisProvider {
         
         String query = "select " + expr + " from " + from;
         query = inlineFunctions(query);
-        expr = query.substring(7);
-        expr = expr.substring(0, expr.indexOf("from"));
+        
+        int lastFromIndex = query.toLowerCase().lastIndexOf(" from ");
+        expr = query.substring(0, lastFromIndex);
+        expr = expr.substring(7);
         
         // since FROM may have changed due to inlining of functions that require joins, we also need to replace the from
         // we also check for where, maybe a query function appended it
         
-        int lastFromIndex = query.toLowerCase().lastIndexOf(" from ");
         int lastWhereIndex = query.toLowerCase().indexOf(" where ");
         if(lastWhereIndex < lastFromIndex) {
             lastWhereIndex = -1;
         }
         
         if(lastWhereIndex > -1) {
-            from = query.substring(query.indexOf(" from ") + 5, lastWhereIndex);
+            from = query.substring(query.indexOf(" from ") + 6, lastWhereIndex);
         } else {
-            from = query.substring(lastFromIndex + 5);
+            from = query.substring(lastFromIndex + 6);
         }
+        
+        // at this stage, we might either have a.b.c or have something else, such as a method like exists(subquery)
+        // so in that case, we have to return null, but we first have to check that this is the case
+        // FIXME it seems that in the time of OQL, makumba was not built to handle complex expressions of this kind
+        // we might have to do a lot more work here
+        // this is a very clumsy check, but it does the job for now
+        if(expr.indexOf("(")  > -1 && expr.endsWith(")")) {
+            return null;
+        }
+                
 
         int n = 0;
         int m = 0;
@@ -165,6 +176,8 @@ public abstract class QueryAnalysisProvider {
         }
         DataDefinition dd = getQueryAnalysis("SELECT 1 FROM " + from).getLabelType(substring);
         if (dd == null) {
+            System.out.println(from);
+            System.out.println(referenceSequence);
             throw new org.makumba.NoSuchLabelException("no such label '" + substring + "'.");
         }
         while (true) {
