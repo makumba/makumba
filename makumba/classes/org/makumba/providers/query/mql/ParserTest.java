@@ -16,7 +16,6 @@ import org.makumba.commons.ClassResource;
 import org.makumba.commons.NameResolver;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.query.hql.HQLQueryAnalysisProvider;
-import org.makumba.providers.query.oql.QueryAST;
 
 import antlr.collections.AST;
 
@@ -30,10 +29,6 @@ import antlr.collections.AST;
 public class ParserTest {
     
     private static Vector<String> errors = new Vector<String>();
-
-    private static QueryAnalysisProvider qap = new HQLQueryAnalysisProvider();
-
-    private static PrintWriter pw = new PrintWriter(System.err);
 
     private static NameResolver nr;
     static {
@@ -106,7 +101,6 @@ public class ParserTest {
         boolean passedMql = false;
         Throwable thr = null;
         boolean printedError;
-        String oql_sql = null;
         String mql_sql = null; 
 
         MqlQueryAnalysis mq = null;
@@ -118,16 +112,10 @@ public class ParserTest {
             mqlThr=t;
         }
         try {
-            QueryAST oq = (QueryAST) QueryAST.parseQueryFundamental(query);
-            oql_sql = oq.writeInSQLQuery(nr).toLowerCase();
             if (mqlThr==null) {
-                oql_sql = cleanUp(oql_sql, " ").replace('\"', '\'');
                 mql_sql = cleanUp(mql_sql, " ");
 
-                if (!oql_sql.equals(mql_sql) && !cleanUp(oql_sql, "()").equals(cleanUp(mql_sql, "()"))) {
-                    System.err.println(line + ": MQL!=OQL: " + query + "\n\t" + mql_sql + "\n\t" + oql_sql);
-                }
-                
+                /* comparison with OLD mql parser. it's here to keep the mechanism in case we evolve to something else
                 StringBuffer sb= new StringBuffer();
                 compareMdds("parameter", sb, mq.getParameterTypes(), oq.getParameterTypes());
                 if(sb.length()>0) {
@@ -142,6 +130,7 @@ public class ParserTest {
                 if(!mqLabels.equals(oq.getLabelTypes().toString())&&!mqLabels.equals("{c=org.makumba.db.makumba.Catalog}")){
                     System.err.println(line + ": "+ query+"\n\t"+mq.getLabelTypes()+"\n\t"+oq.getLabelTypes()); 
                 }
+                */
             }
             /*
              * HqlAnalyzeWalker walker = new HqlAnalyzeWalker(); walker.setAllowLogicalExprInSelect(true);
@@ -159,7 +148,6 @@ public class ParserTest {
         }
         if(mqlThr!=null){
             error(line + ": only in MQL: " + mqlThr.getMessage() + " " + query);
-            error(line+": OQL SQL: " + oql_sql);
             if(!(mqlThr instanceof OQLParseError))
                 mqlThr.printStackTrace();
         }
