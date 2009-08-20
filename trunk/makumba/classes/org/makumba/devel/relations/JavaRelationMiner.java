@@ -11,11 +11,11 @@ import java.util.Vector;
 import org.makumba.DataDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.analyser.engine.JavaParseData;
+import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.devel.JavaSourceAnalyzer;
 import org.makumba.providers.Configuration;
-import org.makumba.providers.query.oql.QueryAST;
-
-import antlr.RecognitionException;
+import org.makumba.providers.QueryProvider;
+import org.makumba.providers.query.mql.MqlQueryAnalysis;
 
 /**
  * Extracts relations from a Java source file <br>
@@ -58,14 +58,9 @@ public class JavaRelationMiner extends RelationMiner {
         // that would be just one method in QueryaAnalysis (or in MqlQueryAnalysis directly!) instead of three as it was
         for (String query : queries) {
             // FIXME for the moment, we only have OQL queries in BL. but this won't be necessarily true in the future.
-            QueryAST qA = null;
+            MqlQueryAnalysis qA = null;
             try {
-                 qA = (QueryAST)QueryAST.parseQueryFundamental(query);
-            } catch (RecognitionException e) {
-                String s = "Could not parse query "+query+" from file "+path+": "+e.getMessage();
-                logger.warning(s);
-                rc.addJavaAnalysisError(s);
-                continue;
+                 qA = (MqlQueryAnalysis)QueryProvider.getQueryAnalzyer(MakumbaJspAnalyzer.QL_OQL).getQueryAnalysis(query);
             } catch(MakumbaError me) {
                 String s = "Could not parse query "+query+" from file "+path+": "+me.getMessage();
                 logger.warning(s);
@@ -76,10 +71,9 @@ public class JavaRelationMiner extends RelationMiner {
                 continue;
                 
             }
-                        
-            Map<String, String> projections = qA.getProjections();
-            for (Iterator<String> e = projections.keySet().iterator(); e.hasNext();) {
-                String expr = e.next();
+                       
+            Vector<String> projections = qA.getProjectionType().getFieldNames();
+            for (String expr : projections) {
                 String field = qA.getFieldOfExpr(expr);
                 DataDefinition dd = qA.getTypeOfExprField(expr);
                 String realExpr;

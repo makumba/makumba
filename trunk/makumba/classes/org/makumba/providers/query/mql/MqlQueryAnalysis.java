@@ -14,14 +14,15 @@ import org.hibernate.hql.antlr.HqlTokenTypes;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.OQLParseError;
+import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.NameResolver;
 import org.makumba.commons.RegExpUtils;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.NameResolver.TextList;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
+import org.makumba.providers.QueryProvider;
 import org.makumba.providers.datadefinition.mdd.MakumbaDumpASTVisitor;
-import org.makumba.providers.query.oql.QueryAST;
 
 import antlr.RecognitionException;
 import antlr.collections.AST;
@@ -213,7 +214,7 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         return splitAtWhere[0];
     }
 
-    
+    // FIXME needed for relation miner, but should maybe be moved, it's dependent on the analysis per se
     public String getFieldOfExpr(String expr) {
         if (expr.indexOf(".") > -1)
             return expr.substring(expr.lastIndexOf(".") + 1);
@@ -221,6 +222,7 @@ public class MqlQueryAnalysis implements QueryAnalysis {
             return expr;
     }
 
+    // FIXME needed for relation miner, but should be refactored or made more robust
     public DataDefinition getTypeOfExprField(String expr) {
 
         if (expr.indexOf(".") == -1) {
@@ -236,12 +238,8 @@ public class MqlQueryAnalysis implements QueryAnalysis {
 
                 // FIXME will this work if the FROM contains subqueries?
                 String dummyQuery = "SELECT " + beforeLastDot + " AS projection FROM " + getFrom();
-                try {
-                    result = QueryAST.parseQueryFundamental(dummyQuery).getProjectionType().getFieldDefinition(
-                        "projection").getPointedType();
-                } catch (RecognitionException e) {
-                    throw new RuntimeWrappedException(e);
-                }
+                result = QueryProvider.getQueryAnalzyer(MakumbaJspAnalyzer.QL_OQL).getQueryAnalysis(dummyQuery).getProjectionType().getFieldDefinition(
+                    "projection").getPointedType();
             }
             return result;
 
