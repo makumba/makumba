@@ -97,15 +97,23 @@ public abstract class QueryAnalysisProvider {
         
         String query = "select " + expr + " from " + from;
         query = inlineFunctions(query);
+        System.out.println(query);
         expr = query.substring(7);
         expr = expr.substring(0, expr.indexOf("from"));
         
-        // since from may have changed due to inlining of functions that require joins, we also need to replace the from
-        int where = query.toLowerCase().indexOf("where");
-        if(where > -1) {
-            from = query.substring(query.indexOf("from ") + 5, where);
+        // since FROM may have changed due to inlining of functions that require joins, we also need to replace the from
+        // we also check for where, maybe a query function appended it
+        
+        int lastFromIndex = query.toLowerCase().lastIndexOf(" from ");
+        int lastWhereIndex = query.toLowerCase().indexOf(" where ");
+        if(lastWhereIndex < lastFromIndex) {
+            lastWhereIndex = -1;
+        }
+        
+        if(lastWhereIndex > -1) {
+            from = query.substring(query.indexOf(" from ") + 5, lastWhereIndex);
         } else {
-            from = query.substring(query.indexOf("from ") + 5);
+            from = query.substring(lastFromIndex + 5);
         }
 
         int n = 0;
