@@ -22,6 +22,9 @@ public class MqlBinaryOperator extends MqlNode {
     private void analyze(MqlNode left, MqlNode right) {
         if (walker.error != null)
             return;
+        if(left.isFunctionCall() || right.isFunctionCall()) {
+            return;
+        }
         try {
             checkForOperandType(left);
             checkForOperandType(right);

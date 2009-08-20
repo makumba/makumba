@@ -133,12 +133,20 @@ public class FunctionInliner {
         
         boolean inlined = false;
 
+        // search all method calls in this AST
+        ArrayList<MethodCall> methodCalls = findMethodCalls(ast, ast, null, null, null, false,
+            new ArrayList<MethodCall>());
+        
+        if(methodCalls.size() == 0) {
+            return false;
+        }
+
+
         //System.out.println("** inlining tree of function " + printer.printTree(ast));
         //v.visit(ast);
 
         // let's analyze this function with a magic analyzer that accepts function calls
-        // FIXME
-        // - in case of SemanticExceptions, fetch them and append meaningful text
+        // FIXME in case of SemanticExceptions, fetch them and append meaningful text
         MqlSqlWalker mqlAnalyzer = new MqlSqlWalker(printer.printTree(ast), null, true, true, true);
 
         try {
@@ -152,12 +160,6 @@ public class FunctionInliner {
             throw new Throwable(mqlAnalyzer.error);
         }
 
-
-        // now we do a mapping between the method calls of the analyser and the method calls of the query parser
-        // since the order does not change, we can do those mappings very easily
-        ArrayList<MethodCall> methodCalls = findMethodCalls(ast, ast, null, null, null, false,
-            new ArrayList<MethodCall>());
-        
         //for(MethodCall m : methodCalls) {
         //    System.out.println(m);
         //}
@@ -206,29 +208,29 @@ public class FunctionInliner {
                 inlined = true;
 
                 //System.out.println("Iterating over function call " + c);
-
-                AST queryFragmentTree = fact.dupTree(c.getFunction().getParsedQueryFragment());
-                //v.visit(queryFragmentTree);
-
-                // apply oql-specific tree transformations on the function tree
-                List<String> parameterOrder = new ArrayList<String>();
-                MqlQueryAnalysisProvider.transformOQLParameters(queryFragmentTree, parameterOrder);
-                MqlQueryAnalysisProvider.transformOQL(queryFragmentTree);
-
-                //System.out.println("QF tree before args");
-                //v.visit(queryFragmentTree);
-                replaceArgsAndThis(queryFragmentTree, queryFragmentTree, c, null, null, mqlAnalyzer, false, null, null);
                 
-                //System.out.println("QF tree after args");
-                //v.visit(queryFragmentTree);
-
-                // now we inline all the functions of the resulting tree
-                inline(queryFragmentTree, false);
-
                 // if this is an actor function, we need to inline it differently than other functions
-                if (c.getFunction().isActorFunction() && root) {
+                if (c.isActorFunction()) {
                     processActorFunction(c, ast, methodCalls.get(index));
                 } else {
+                    AST queryFragmentTree = fact.dupTree(c.getFunction().getParsedQueryFragment());
+                    //v.visit(queryFragmentTree);
+    
+                    // apply oql-specific tree transformations on the function tree
+                    List<String> parameterOrder = new ArrayList<String>();
+                    MqlQueryAnalysisProvider.transformOQLParameters(queryFragmentTree, parameterOrder);
+                    MqlQueryAnalysisProvider.transformOQL(queryFragmentTree);
+    
+                    //System.out.println("QF tree before args");
+                    //v.visit(queryFragmentTree);
+                    replaceArgsAndThis(queryFragmentTree, queryFragmentTree, c, null, null, mqlAnalyzer, false, null, null);
+                    
+                    //System.out.println("QF tree after args");
+                    //v.visit(queryFragmentTree);
+    
+                    // now we inline all the functions of the resulting tree
+                    inline(queryFragmentTree, false);
+    
                     // replace method call in original tree
                     // here we use the 1st pass method calls and rely on the fact that the order with the function calls
                     // is the same

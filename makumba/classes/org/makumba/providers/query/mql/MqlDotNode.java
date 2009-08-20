@@ -1,5 +1,9 @@
 package org.makumba.providers.query.mql;
 
+import org.makumba.DataDefinition;
+import org.makumba.DataDefinitionNotFoundError;
+import org.makumba.providers.DataDefinitionProvider;
+
 import antlr.SemanticException;
 
 /**
@@ -19,20 +23,37 @@ public class MqlDotNode extends MqlNode {
     String field;
 
     void processInExpression() throws SemanticException {
-        // normally we just transcribe label.field_
-        // but we keep the label and the field just in case we need another join
-
-        field = getFirstChild().getNextSibling().getText();
-        if (getFirstChild() instanceof MqlDotNode) {
-            MqlDotNode son = (MqlDotNode) getFirstChild();
-            label = walker.currentContext.join(son.label, son.field, null, -1, this);
-        } else if (getFirstChild() instanceof MqlIdentNode) {
-            label = ((MqlIdentNode) getFirstChild()).label;
-        } else {
-            throw new SemanticException("(expression).field not supported", "", getLine(), getColumn());
+        // first we check if this sequence is maybe not a fully-qualified MDD type
+        String path = ASTUtil.getPathText(this);
+        DataDefinition type = null;
+        try {
+            type = DataDefinitionProvider.getInstance().getDataDefinition(path);
+        } catch(DataDefinitionNotFoundError e) {
+            // do nothing, we will test if type is not null
         }
+        
+        if(type != null) {
+            int lastDot = path.lastIndexOf(".");
+            String ptrIndex = lastDot > -1 ? path.substring(lastDot + 1) : path;
+            setMakType(type.getFieldDefinition(ptrIndex));
+        } else {
+            // normally we just transcribe label.field_
+            // but we keep the label and the field just in case we need another join
 
-        walker.currentContext.selectField(label, field, this);
+            field = getFirstChild().getNextSibling().getText();
+            if (getFirstChild() instanceof MqlDotNode) {
+                MqlDotNode son = (MqlDotNode) getFirstChild();
+                label = walker.currentContext.join(son.label, son.field, null, -1, this);
+            } else if (getFirstChild() instanceof MqlIdentNode) {
+                label = ((MqlIdentNode) getFirstChild()).label;
+            } else {
+                throw new SemanticException("(expression).field not supported", "", getLine(), getColumn());
+            }
+
+            walker.currentContext.selectField(label, field, this);
+        }
+        
+        
     }
 
     void processInFrom() throws SemanticException {

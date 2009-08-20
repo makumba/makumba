@@ -143,17 +143,17 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         
         DataDefinition.QueryFragmentFunction funct = type.getFunctionOrPointedFunction(additionalPath);
         
+        
         // we didn't find the function in the MDD, so it might be a MQL function
-        if(funct == null) {
+        // we ignore actors as they will be processed by the inliner
+        if(funct == null && !additionalPath.startsWith("actor")) {
             processFunction(functionCall);
             
             // we still make a dummy function call because we need it to have the right index in the inliner
-            FunctionCall c = new FunctionCall(null, null, null, null, additionalPath, false, true);
+            FunctionCall c = new FunctionCall(null, null, null, null, additionalPath, false, true, false);
             orderedFunctionCalls.put(c.getKey(), c);
             return c.getKey();
-
-        }
-       
+        }       
         
         // fetch the function parameters of the call and store them so we can perform inlining in the QueryAnalyser
         // we have to store the arguments for each functionCall separately
@@ -163,7 +163,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
             paramNode = (MqlNode) paramNode.getNextSibling();
         }
         
-        FunctionCall c = new FunctionCall(funct, args, null, type, path, inFunctionCall, false);
+        FunctionCall c = new FunctionCall(funct, args, null, type, path, inFunctionCall, false, additionalPath.startsWith("actor"));
         orderedFunctionCalls.put(c.getKey(), c);
         return c.getKey();
     }
@@ -172,7 +172,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     protected void setBooleanType(AST a) {
         ((MqlNode)a).setMakType(DataDefinitionProvider.getInstance().makeFieldOfType("dummy", "boolean"));
     }
-
+    
     @Override
     protected void processFunction(AST functionCall) throws SemanticException {
         // determine parameter types here
@@ -326,12 +326,12 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     }
 
     protected void resolve(AST node) throws SemanticException {
-        if (error != null || !fromEnded)
+        if (error != null || !fromEnded || (functionAsInliner && inFunctionCall))
             return;
         if (node.getType() == HqlSqlTokenTypes.IDENT)
             ((MqlIdentNode) node).resolve();
     }
-
+    
     protected void setAlias(AST selectExpr, AST ident) {
         if (error != null)
             return;
