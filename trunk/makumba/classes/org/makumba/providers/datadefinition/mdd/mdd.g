@@ -462,6 +462,7 @@ validationRuleDeclaration
 			| regexValidationRuleDeclaration
 		)
 		errorMessage
+		(FIELDCOMMENT!)?
 	;
 	
 comparisonValidationRuleDeclaration
@@ -500,7 +501,7 @@ nativeValidationRuleMessage
 //////////////// FUNCTIONS
 
 functionDeclaration { AST p = null; }
-	: (s:atom {#s.setType(SESSIONVAR_NAME);} PERCENT!)? a:atom {#a.setType(FUNCTION_NAME);} d:functionArgumentDeclaration p = b:parsedFunctionBody (errorMessage)?
+	: (s:atom {#s.setType(SESSIONVAR_NAME);} PERCENT!)? a:atom {#a.setType(FUNCTION_NAME);} d:functionArgumentDeclaration p = b:parsedFunctionBody (errorMessage)? (FIELDCOMMENT!)?
 	{
 		#functionDeclaration = #(#[FUNCTION, "function"], #functionDeclaration);
 		addParsedFunction(#functionDeclaration, #p);
