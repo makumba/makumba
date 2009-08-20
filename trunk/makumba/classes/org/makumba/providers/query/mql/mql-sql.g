@@ -60,7 +60,7 @@ tokens
 
 	private int level = 0;
 	private boolean inSelect = false;
-	private boolean inFunctionCall = false;
+	protected boolean inFunctionCall = false;
 	private boolean inCase = false;
 	private boolean inFrom = false;
 	private int statementType;
@@ -589,7 +589,8 @@ arithmeticExpr
 	;
 
 caseExpr
-	: #(CASE { inCase = true; } (#(WHEN logicalExpr expr))+ (#(ELSE expr))?) { inCase = false; }
+// ***** MQL addition: allowing function calls in case when ... statements
+	: #(CASE { inCase = true; } (#(WHEN logicalExprOrFunctionCall expr))+ (#(ELSE expr))?) { inCase = false; }
 	| #(CASE2 { inCase = true; } expr (#(WHEN expr expr))+ (#(ELSE expr))?) { inCase = false; }
 	;
 
@@ -603,8 +604,8 @@ collectionFunction
 	;
 
 functionCall
-	: #(METHOD_CALL  {boolean wasInFunctionCall = inFunctionCall; inFunctionCall=true;} pathAsIdent ( #(EXPR_LIST (expr)* ) )? )
-        // MQL addition: entry point for function inlining
+	: #(METHOD_CALL {boolean wasInFunctionCall = inFunctionCall; inFunctionCall=true;} p:pathAsIdent ( #(EXPR_LIST (expr)* ) )? )
+	    // MQL addition: entry point for function inlining
 		{
 		    if(functionAsInliner) {
 		          String key = inlineFunction(#functionCall, wasInFunctionCall);
@@ -647,8 +648,8 @@ addrExpr! [ boolean root ]
 	: #(d:DOT lhs:addrExprLhs rhs:propertyName )	{
 		// This gives lookupProperty() a chance to transform the tree 
 		// to process collection properties (.elements, etc).
-		#addrExpr = #(#d, #lhs, #rhs);
-		#addrExpr = lookupProperty(#addrExpr,root,false);
+    	#addrExpr = #(#d, #lhs, #rhs);
+        #addrExpr = lookupProperty(#addrExpr,root,false);
 	}
 	| #(i:INDEX_OP lhs2:addrExprLhs rhs2:expr)	{
 		#addrExpr = #(#i, #lhs2, #rhs2);

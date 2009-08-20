@@ -41,10 +41,13 @@ public class MqlTreePrinter {
 
         try {
             handleAST(tree);
-        } catch(NullPointerException npe) {
-            System.out.println("Error while printing MQL tree ");
+        } catch(Throwable npe) {
+        // FIXME this is ugly because it might pop up at any time
+        // but the only way to construct this printer is to account for any kind of mql query that can be constructructed
+        // one way to accelerate the implementation might be to run the handleAST method against generated trees of all types
+            System.out.println("Error while printing MQL tree: " + npe.getMessage());
+            npe.printStackTrace();
             v.visit(tree);
-            throw(npe);
         }
         
         
@@ -216,6 +219,7 @@ public class MqlTreePrinter {
             case HqlTokenTypes.DESCENDING:
             case HqlTokenTypes.ROW_STAR:
             case HqlTokenTypes.DISTINCT:
+            case HqlTokenTypes.INNER:
                 printOperator(a);
                 break;
         
@@ -463,7 +467,9 @@ public class MqlTreePrinter {
     }
 
     private void handleSelectFrom(AST a) {
-        handleSelect(a.getFirstChild().getNextSibling());
+        if(a.getFirstChild().getNextSibling() != null) {
+            handleSelect(a.getFirstChild().getNextSibling());
+        }
         handleFrom(a.getFirstChild());
     }
 
@@ -573,6 +579,9 @@ public class MqlTreePrinter {
                 break;
             case HqlTokenTypes.ROW_STAR:
                 out("*");
+                break;
+            case HqlTokenTypes.INNER:
+                out("inner");
                 break;
                 
                 default:

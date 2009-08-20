@@ -280,6 +280,10 @@ public class MqlNode extends CommonAST {
         return getType() == HqlSqlTokenTypes.NAMED_PARAM || getType() == HqlSqlTokenTypes.PARAM;
     }
     
+    boolean isFunctionCall() {
+        return getType() == HqlSqlTokenTypes.METHOD_CALL;
+    }
+    
     void checkOperandTypes(MqlNode left, MqlNode right) throws SemanticException {
         checkForOperandType(left);
         checkForOperandType(right);
