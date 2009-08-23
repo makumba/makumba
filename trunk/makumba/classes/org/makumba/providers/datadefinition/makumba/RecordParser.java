@@ -560,12 +560,9 @@ public class RecordParser {
                 }
             }
         }
-        
-        // now parse the function text to see if that's okay
-        AST tree = getParsedFunction(name, queryFragment, line);
 
         DataDefinition.QueryFragmentFunction function = new DataDefinition.QueryFragmentFunction(name,
-                sessionVariableName, queryFragment, ddParams, errorMessage, tree);
+                sessionVariableName, queryFragment, ddParams, errorMessage, null);
         funcNames.put(function.getName(), function);
         return true;
     }
@@ -613,8 +610,12 @@ public class RecordParser {
             if (found) {
                 java.util.logging.Logger.getLogger("org.makumba.db.query.inline").fine(
                     queryFragment + " -> " + sb.toString());
+                
+                // now parse the function text to see if that's okay
+                AST tree = getParsedFunction(f.getName(), sb.toString(), f.toString());
+                
                 f = new QueryFragmentFunction(f.getName(), f.getSessionVariableName(), sb.toString(),
-                        f.getParameters(), f.getErrorMessage(), f.getParsedQueryFragment());
+                        f.getParameters(), f.getErrorMessage(), tree);
 
             }
             dd.addFunction(f.getName(), f);
