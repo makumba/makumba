@@ -540,18 +540,26 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
                     return v;
                 case SETINTENUM:
                     
+                    Vector<Object> vect = new Vector<Object>();
+                    // may be just an Integer
+                     
+                    if (value != null && value instanceof Integer) {
+                        vect.addElement(value);
+                        return vect;
+                    }
+                    
                     normalCheck(value);
-                    v = (Vector) value;
+                    vect = (Vector) value;
     
-                    for (int i = 0; i < v.size(); i++) {
-                        if (v.elementAt(i) == null || v.elementAt(i).equals(org.makumba.Pointer.NullInteger)) {
+                    for (int i = 0; i < vect.size(); i++) {
+                        if (vect.elementAt(i) == null || vect.elementAt(i).equals(org.makumba.Pointer.NullInteger)) {
                             throw new org.makumba.InvalidValueException(this, "set members cannot be null");
                         } else {
                             
                         }
-                        v.setElementAt(checkIntEnum(v.elementAt(i)), i);
+                        vect.setElementAt(checkIntEnum(vect.elementAt(i)), i);
                     }
-                    return v;
+                    return vect;
                     
                 case SETCHARENUM:
                     
@@ -608,6 +616,12 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         } else if(value instanceof String && !intEnumValues.containsValue(value)) {
             throw new org.makumba.InvalidValueException(this, "string value set to int enumerator (" + value
                     + ") is neither a member of " + Arrays.toString(intEnumValues.values().toArray()) + " nor a member of " + Arrays.toString(intEnumValues.keySet().toArray()));
+        } else if(value instanceof String && intEnumValues.containsValue(value)) {
+            for(Integer i : intEnumValues.keySet()) {
+                if(intEnumValues.get(i).equals(value)) {
+                    return i;
+                }
+            }
         }
         
         return value;
