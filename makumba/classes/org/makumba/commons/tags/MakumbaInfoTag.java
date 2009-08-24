@@ -191,7 +191,7 @@ public class MakumbaInfoTag extends TagSupport {
             }
 
             if (activeSessions == null) {
-                activeSessions = "<span title=\"" + activeSessionsTitle + "\">Unknwon</span>";
+                activeSessions = "<span title=\"" + activeSessionsTitle + "\">Unknown</span>";
             }
 
             out.println("<table border=\"0\" bgcolor=\"white\" cellspacing=\"3\" cellpadding=\"3\" >");
@@ -272,11 +272,9 @@ public class MakumbaInfoTag extends TagSupport {
                 MakumbaSystem.getVersion());
             printMakumbaPropertyRow(out, "Default datasource name", dbname);
             printMakumbaPropertyRow(out, "DBSV", MakumbaTransactionProvider.getDatabaseProperty(dbname, "dbsv"));
-            printMakumbaPropertyRow(out, "Number of connections open", MakumbaTransactionProvider.getDatabaseProperty(dbname,
-                "jdbc_connections"));
-            printMakumbaPropertyRow(out, "Out of this, unused connections in the pool",
-                MakumbaTransactionProvider.getDatabaseProperty(dbname, "resource_pool_size"));
-
+            printMakumbaPropertyRow(out, "Size of the connection pool", MakumbaTransactionProvider.getDatabaseProperty(dbname, "resource_pool_size"));
+            printMakumbaPropertyRow(out, "Number of busy connections", MakumbaTransactionProvider.getDatabaseProperty(dbname, "jdbc_connections"));
+            printMakumbaPropertyRow(out, "Unused connections in the pool", MakumbaTransactionProvider.getDatabaseProperty(dbname, "idle_connections"));
             printMakumbaPropertyRow(out, "SQL engine and version", MakumbaTransactionProvider.getDatabaseProperty(dbname,
                 "sql_engine.name"));
             printMakumbaPropertyRow(out, "JDBC driver and version", MakumbaTransactionProvider.getDatabaseProperty(dbname,

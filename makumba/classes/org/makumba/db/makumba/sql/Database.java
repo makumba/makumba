@@ -275,6 +275,26 @@ public class Database extends org.makumba.db.makumba.Database {
 	}
 	
 	@Override
+	protected int getIdleConnections() {
+	    try {
+            return pooledDataSource.getNumIdleConnectionsDefaultUser();
+        } catch (SQLException e) {
+            logException(e);
+            return -1;
+        }
+	}
+	
+	@Override
+	protected int getOpenedConnections() {
+	    try {
+	        return pooledDataSource.getNumBusyConnectionsDefaultUser();
+        } catch (SQLException e) {
+            logException(e);
+            return -1;
+        }
+	}
+	
+	@Override
 	protected DBConnection getPooledDBConnection() {
 	    return makeDBConnection();
 	}

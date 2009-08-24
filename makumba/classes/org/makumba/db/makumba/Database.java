@@ -97,6 +97,10 @@ public abstract class Database {
     
     protected abstract int getResourcePoolSize();
     
+    protected abstract int getOpenedConnections();
+    
+    protected abstract int getIdleConnections();
+    
     protected abstract DBConnection getPooledDBConnection();
     
     public void close() {
@@ -158,6 +162,12 @@ public abstract class Database {
     public String getConfiguration(String v) {
         if (v.equals("resource_pool_size")) {
             return String.valueOf(getResourcePoolSize());
+        }
+        if (v.equals("idle_connections")) {
+            return String.valueOf(getIdleConnections());
+        }
+        if(v.equals("jdbc_connections")) {
+            return String.valueOf(getOpenedConnections());
         }
         return config.getProperty(v);
     }
