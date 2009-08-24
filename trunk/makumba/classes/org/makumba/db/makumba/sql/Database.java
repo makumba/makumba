@@ -44,6 +44,7 @@ import org.makumba.db.makumba.MakumbaTransactionProvider;
 import org.makumba.db.makumba.Update;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
+import com.mysql.jdbc.CommunicationsException;
 
 /**
  * An SQL database, using JDBC. This class should comply with SQL-92
@@ -97,6 +98,13 @@ public class Database extends org.makumba.db.makumba.Database {
     protected DBConnection makeDBConnection() {
 		try {
 			return new SQLDBConnection(this, tp, pooledDataSource);
+		} catch(CommunicationsException ce) {
+		    // it may be that a connection returned by the pooledDataSource is in fact stale
+		    // in that case we prevent the user that there is a problem
+		    // TODO in fact we should try to get another connection or figure out if the connection given by the pool is valid
+		    // but this should be done by the pool...
+		    logException(ce);
+		    throw new DBError(ce, "Communications exception in database connection, make sure the timeout option 'MaxIdleTime' (current value: )" + pooledDataSource.getMaxIdleTime() + " s) is smaller than the connection timeout of your database server");
 		} catch (SQLException e) {
 			logException(e);
 			throw new DBError(e);
