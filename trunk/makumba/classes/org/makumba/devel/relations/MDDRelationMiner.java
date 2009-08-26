@@ -30,9 +30,9 @@ public class MDDRelationMiner extends RelationMiner {
         }
         
         String mddPath;
-        if (path.startsWith(DEFAULT_DATADEFINITIONS_PATH)) {
+        if (path.replace(File.separator, "/").startsWith(DEFAULT_DATADEFINITIONS_PATH)) {
             mddPath = path.substring(DEFAULT_DATADEFINITIONS_PATH.length());
-        } else if (path.startsWith(CLASSES_PATH)) {
+        } else if (path.replace(File.separator, "/").startsWith(CLASSES_PATH)) {
             mddPath = path.substring(CLASSES_PATH.length());
         } else {
             System.out.println("\nIgnoring MDD not in default MDD path (" + CLASSES_PATH + " or "
