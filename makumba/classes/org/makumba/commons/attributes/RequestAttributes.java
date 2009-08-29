@@ -87,7 +87,7 @@ public class RequestAttributes implements Attributes {
         final HttpSession session = httpServletRequest.getSession();
         final String suffix = "_" + httpServletRequest.getRequestURI();
 
-        final Object respFromSession = session.getAttribute(ResponderFactory.RESPONSE_STRING_NAME + suffix);
+        final Object respFromSession = session.getAttribute(ResponderFactory.RESPONSE_FORMATTED_STRING_NAME + suffix);
         Object response = httpServletRequest.getAttribute(org.makumba.forms.responder.ResponderFactory.RESPONSE_FORMATTED_STRING_NAME);
 
         logger.fine("respFromSession: " + respFromSession + ", response: " + response);
