@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.makumba.AttributeNotFoundException;
 import org.makumba.Attributes;
 import org.makumba.LogicException;
@@ -42,6 +43,7 @@ import org.makumba.commons.DbConnectionProvider;
 import org.makumba.controller.Logic;
 import org.makumba.controller.MakumbaActorHashMap;
 import org.makumba.forms.responder.ResponderFactory;
+import org.makumba.forms.responder.ResponseControllerHandler;
 import org.makumba.providers.TransactionProvider;
 
 /**
@@ -51,6 +53,7 @@ import org.makumba.providers.TransactionProvider;
  * @version $Id: RequestAttributes.java 1707 2007-09-28 15:35:48Z manuel_gay $
  */
 public class RequestAttributes implements Attributes {
+    
     public static final String PARAMETERS_NAME = "makumba.parameters";
 
     public static final String ATTRIBUTES_NAME = "makumba.attributes";
@@ -75,12 +78,26 @@ public class RequestAttributes implements Attributes {
 
     public static RequestAttributes getAttributes(HttpServletRequest req) throws LogicException {
         if (req.getAttribute(ATTRIBUTES_NAME) == null) {
-            req.setAttribute(ATTRIBUTES_NAME, new RequestAttributes(req));
             setFormRedirectionResponseAttributes(req);
+            req.setAttribute(ATTRIBUTES_NAME, new RequestAttributes(req));
         }
         return (RequestAttributes) req.getAttribute(ATTRIBUTES_NAME);
     }
-
+    
+    static Map<Object, Object> getFormRedirectionResponseParameters(HttpServletRequest req) {
+        final HttpServletRequest httpServletRequest = req;
+        final HttpSession session = httpServletRequest.getSession();
+        final String suffix = "_" + httpServletRequest.getRequestURI();
+        
+        Map<Object, Object> sessionMap =  (Map<Object, Object>) session.getAttribute(ResponseControllerHandler.MAKUMBA_FORM_RELOAD_PARAMS + suffix);
+        if(sessionMap == null) {
+            return null;
+        }
+        session.removeAttribute(ResponseControllerHandler.MAKUMBA_FORM_RELOAD_PARAMS + suffix);
+        
+        return sessionMap;
+    }
+    
     static void setFormRedirectionResponseAttributes(HttpServletRequest req) {
         // check if we came from a form-redirection, and move info from the session to the request
         final HttpServletRequest httpServletRequest = req;
@@ -92,8 +109,14 @@ public class RequestAttributes implements Attributes {
 
         logger.fine("respFromSession: " + respFromSession + ", response: " + response);
         if (response == null && respFromSession != null) {
+            
             // set the attributes from the session to the request, clear the session values from this form
-            for (String attr : ResponderFactory.RESPONSE_ATTRIBUTE_NAMES) {
+            String[] attributes = ResponderFactory.RESPONSE_ATTRIBUTE_NAMES;
+            attributes = (String[]) ArrayUtils.add(attributes, ResponseControllerHandler.MAKUMBA_FORM_VALIDATION_ERRORS);
+            attributes = (String[]) ArrayUtils.add(attributes, ResponseControllerHandler.MAKUMBA_FORM_RELOAD);
+
+            
+            for (String attr : attributes) {
                 httpServletRequest.setAttribute(attr, session.getAttribute(attr + suffix));
                 logger.fine("Setting '" + attr + "' value: '" + req.getAttribute(attr + suffix) + "'.");
                 session.removeAttribute(attr + suffix);
@@ -126,6 +149,8 @@ public class RequestAttributes implements Attributes {
             }
         }
     }
+    
+    
 
     static final public String PROVIDER_ATTRIBUTE = "org.makumba.providerAttribute";
 
@@ -146,15 +171,23 @@ public class RequestAttributes implements Attributes {
     }
 
     public static HttpParameters getParameters(HttpServletRequest req) {
-        if (req.getAttribute(PARAMETERS_NAME) == null)
-            req.setAttribute(PARAMETERS_NAME, makeParameters(req));
+        if (req.getAttribute(PARAMETERS_NAME) == null) {
+            req.setAttribute(PARAMETERS_NAME, makeParameters(req, getFormRedirectionResponseParameters(req)));
+        }
         return (HttpParameters) req.getAttribute(PARAMETERS_NAME);
     }
 
-    public static HttpParameters makeParameters(HttpServletRequest req) {
-        if (req.getContentType() != null && req.getContentType().indexOf("multipart") != -1)
+    public static HttpParameters makeParameters(HttpServletRequest req, Map<Object, Object> reloadedParams) {
+        if (req.getContentType() != null && req.getContentType().indexOf("multipart") != -1) {
             return new MultipartHttpParameters(req);
-        return new HttpParameters(req);
+        }
+
+        if(reloadedParams != null) {
+            return new HttpParameters(req, reloadedParams);
+        } else {
+            return new HttpParameters(req);
+        }
+        
     }
 
     static public void setAttribute(HttpServletRequest req, String var, Object o) {
@@ -212,9 +245,9 @@ public class RequestAttributes implements Attributes {
         String s = "Makumba Atributes:\n";
         s += "\tSession: {";
         HttpSession ss = request.getSession(true);
-        Enumeration enumSession = ss.getAttributeNames();
+        Enumeration<String> enumSession = ss.getAttributeNames();
         while (enumSession.hasMoreElements()) {
-            String key = (String) enumSession.nextElement();
+            String key = enumSession.nextElement();
             s += key + "=";
             Object value = ss.getAttribute(key);
             s = printElement(s, value);
@@ -224,10 +257,10 @@ public class RequestAttributes implements Attributes {
         }
         s += "}\n";
 
-        Enumeration enumRequest = request.getAttributeNames();
+        Enumeration<String> enumRequest = request.getAttributeNames();
         s += "\tRequest: {";
         while (enumRequest.hasMoreElements()) {
-            String key = (String) enumRequest.nextElement();
+            String key = enumRequest.nextElement();
             s += key + "=";
             Object value = request.getAttribute(key);
             s = printElement(s, value);
@@ -237,10 +270,10 @@ public class RequestAttributes implements Attributes {
         }
         s += "}\n";
 
-        Enumeration enumParams = request.getParameterNames();
+        Enumeration<String> enumParams = request.getParameterNames();
         s += "\tParameters: {";
         while (enumParams.hasMoreElements()) {
-            String key = (String) enumParams.nextElement();
+            String key = enumParams.nextElement();
             s += key + "=" + request.getParameter(key);
             if (enumParams.hasMoreElements()) {
                 s += ", ";
