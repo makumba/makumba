@@ -2,6 +2,8 @@ package org.makumba.forms.responder;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.servlet.FilterConfig;
@@ -13,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.makumba.CompositeValidationException;
 import org.makumba.InvalidValueException;
 import org.makumba.commons.ControllerHandler;
@@ -25,6 +28,8 @@ public class ResponseControllerHandler extends ControllerHandler {
 
     public static final String MAKUMBA_FORM_RELOAD = "__makumba__formReload__";
 
+    public static final String MAKUMBA_FORM_RELOAD_PARAMS = "__makumba__formReload__parameters__";
+    
     private ResponderFactory factory = ResponderFactory.getInstance();
 
     final Logger logger = java.util.logging.Logger.getLogger("org.makumba.controller");
@@ -88,6 +93,7 @@ public class ResponseControllerHandler extends ControllerHandler {
             // now we redirect to the original page
            
             if (shallReload) {
+                
                 // store the response attributes in the session, to be able to retrieve it later in RequestAttributes
                 HttpSession session = httpServletRequest.getSession();
            
@@ -99,12 +105,23 @@ public class ResponseControllerHandler extends ControllerHandler {
                 }
                 
                 final String suffix = "_" + originatingPageName;
-                for (String attr : ResponderFactory.RESPONSE_ATTRIBUTE_NAMES) {
+                String[] attributes = ResponderFactory.RESPONSE_ATTRIBUTE_NAMES;
+                attributes = (String[]) ArrayUtils.add(attributes, MAKUMBA_FORM_VALIDATION_ERRORS);
+                attributes = (String[]) ArrayUtils.add(attributes, MAKUMBA_FORM_RELOAD);
+                
+                for (String attr : attributes) {
                     session.setAttribute(attr + suffix, req.getAttribute(attr));
                     logger.fine("Setting '" + attr + suffix + "' value: '" + req.getAttribute(attr) + "'.");
                 }
-           
+                
+                // we also need to store the parameters, i.e. what was already filled in the form
+                Map<Object, Object> paramMap = new HashMap<Object, Object>();
+                paramMap.putAll(req.getParameterMap());
+                paramMap.remove(Responder.responderName);
+                
+                session.setAttribute(MAKUMBA_FORM_RELOAD_PARAMS + suffix, paramMap);
                 // redirecting
+                
                 logger.fine("Sending redirect from '" + httpServletRequest.getRequestURI() + "' to '"
                 + responder.getOriginatingPageName() + "'.");
                 ((HttpServletResponse) resp).sendRedirect(responder.getOriginatingPageName());

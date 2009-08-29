@@ -24,11 +24,16 @@
 package org.makumba.commons.attributes;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.ArrayUtils;
 
 /**
  * Helper class to work with http parameters
@@ -37,10 +42,13 @@ import javax.servlet.http.HttpServletRequest;
  * @version $Id: HttpParameters.java 1402 2007-07-25 11:52:28Z manuel_gay $
  */
 public class HttpParameters {
+    
     HttpServletRequest request;
 
     Hashtable<Object, Object> atStart;
 
+    Map<Object, Object> reloadedParameters = null;
+    
     public boolean knownAtStart(String s) {
         return atStart.get(s) != null;
     }
@@ -48,6 +56,13 @@ public class HttpParameters {
     public HttpParameters(HttpServletRequest req) {
         request = req;
         computeAtStart();
+    }
+    
+    public HttpParameters(HttpServletRequest req, Map<Object, Object> additionalParams) {
+        request = req;
+        reloadedParameters = additionalParams;
+        computeAtStart();
+        atStart.putAll(additionalParams);
     }
 
     void computeAtStart() {
@@ -66,17 +81,38 @@ public class HttpParameters {
      */
     public Object getParameter(String s) {
         Object value = null;
-        String[] param = request.getParameterValues(s);
-        if (param == null)
+        ArrayList<String> param = new ArrayList<String>();
+        
+        String[] params = request.getParameterValues(s);
+        if(params != null) {
+            for(String p : params) {
+                param.add(p);
+            }
+        }
+        
+        if(reloadedParameters != null) {
+            if(reloadedParameters.get(s) instanceof String) {
+                param.add((String)reloadedParameters.get(s));
+            } else if(reloadedParameters.get(s) instanceof String[]) {
+                String[] paramValues = (String[]) reloadedParameters.get(s);
+                for(String v : paramValues) {
+                    param.add(v);
+                }
+            }
+            
+        }
+        
+        if(param.size() == 0) {
             return null;
+        }
 
-        if (param.length == 1)
-            value = param[0];
+        if (param.size() == 1)
+            value = param.get(0);
         else {
             Vector<String> v = new java.util.Vector<String>();
             value = v;
-            for (int i = 0; i < param.length; i++)
-                v.addElement(param[i]);
+            for (int i = 0; i < param.size(); i++)
+                v.addElement(param.get(i));
         }
         // request.setAttribute(s, value);
 
@@ -86,17 +122,30 @@ public class HttpParameters {
     public ArrayList<String> getParametersStartingWith(String s) {
         ArrayList<String> result = new ArrayList<String>();
         Enumeration<String> parameterNames = request.getParameterNames();
+
         while (parameterNames.hasMoreElements()) {
             String param = (String) parameterNames.nextElement();
-            if (param.startsWith(s)) {
-                result.add(param);
+        }
+        
+        if(reloadedParameters != null) {
+            Iterator<Object> i = reloadedParameters.keySet().iterator();
+            while(i.hasNext()) {
+                String param = (String)i.next();
+                if (param.startsWith(s)) {
+                    result.add(param);
+                }
             }
         }
+
+        
         return result;
     }
 
     public String toString() {
-        return request.getParameterMap().toString();
+        if(reloadedParameters == null) {
+            return request.getParameterMap().toString();
+        }
+        return request.getParameterMap().toString() + reloadedParameters.toString();
     }
 
 }
