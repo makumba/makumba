@@ -81,13 +81,10 @@
     
 <!-- Targets for Makumba compilation and building -->    
     
-    <!-- check if the OQL/HQL/MQL/MDD grammar has changed since last parser generation-->
+    <!-- check if the HQL/MQL/MDD grammar has changed since last parser generation-->
     <target name="checkAntlr">
         <condition property="antlr.notRequired">
             <and>
-                <uptodate targetfile="classes/org/makumba/providers/query/oql/OQLParser.java">
-                    <srcfiles dir="classes/org/makumba/providers/query/oql/" includes="**/OQL-translator.g" />
-                </uptodate>
                 <uptodate targetfile="classes/org/makumba/providers/query/hql/HqlAnalyzeBaseWalker.java">
                     <srcfiles dir="classes/org/makumba/providers/query/hql" includes="**/hql-analyze.g" />
                 </uptodate>
@@ -115,8 +112,8 @@
     </target>
     
 
-    <!-- if the OQL/HQL/MQL/MDD grammar has changed, call antlr to re-generate the parser -->
-    <target name="OQLParserGeneration" depends="checkAntlr, install, version, detectHqlTokens" unless="antlr.notRequired">
+    <!-- if the HQL/MQL/MDD grammar has changed, call antlr to re-generate the parser -->
+    <target name="ANTLRParserGeneration" depends="checkAntlr, install, version, detectHqlTokens" unless="antlr.notRequired">
 
         <java classname="antlr.Tool" fork="true" dir="classes/org/makumba/providers/query/hql" failonerror="true"
             taskname="antlr">
@@ -153,11 +150,6 @@
             <classpath refid="project.class.path" />
             <arg value="mdd-postprocess.g" />
         </java>
-        <java classname="antlr.Tool" fork="true" dir="classes/org/makumba/providers/query/oql/" failonerror="true"
-            taskname="antlr">
-            <classpath refid="project.class.path" />
-            <arg value="OQL-translator.g" />
-        </java>
     </target>
 
     <target name="version">
@@ -167,13 +159,13 @@
         <echo message="buildDate=${CURDATE}" file="classes/org/makumba/versionBuildDate.properties" />
     </target>
 
-    <target name="compileDebug" depends="OQLParserGeneration" description="compile all java files with full debug info">
+    <target name="compileDebug" depends="ANTLRParserGeneration" description="compile all java files with full debug info">
         <javac srcdir="classes" source="1.5" target="1.5" debug="on" debuglevel="lines, vars, source">
             <classpath refid="project.class.path" />
         </javac>
     </target>
 
-    <target name="compile" depends="OQLParserGeneration" description="compile all java files">
+    <target name="compile" depends="ANTLRParserGeneration" description="compile all java files">
         <javac srcdir="classes" source="1.5" target="1.5" debug="on">
             <classpath refid="project.class.path" />
         </javac>
@@ -181,7 +173,7 @@
 
     <target name="clean" description="delete all generated files and backups">
         <delete includeEmptyDirs="true" failonerror="false">
-            <fileset dir="classes" includes="**/*.class,**/*.*~,org/makumba/providers/query/oql/OQLParser.java"
+            <fileset dir="classes" includes="**/*.class,**/*.*~"
                 defaultExcludes="no" />
             <fileset dir="doc/api" includes="**/*.html,**/package-list" excludes="API_users_guide.html"
                 defaultExcludes="no" />
@@ -620,39 +612,39 @@
 
 <!-- Targets for modular building (list, forms, commons, ...) -->
 
-    <target name="compileList" depends="OQLParserGeneration" description="compile all java files for list">
+    <target name="compileList" depends="ANTLRParserGeneration" description="compile all java files for list">
         <javac srcdir="classes" source="1.5" target="1.5" debug="on" includes="org/makumba/list/**/*.java">
             <classpath refid="project.class.path" />
         </javac>
     </target>
 
-    <target name="compileForms" depends="OQLParserGeneration" description="compile all java files for forms">
+    <target name="compileForms" depends="ANTLRParserGeneration" description="compile all java files for forms">
         <javac srcdir="classes" source="1.5" target="1.5" debug="on" includes="org/makumba/forms/**/*.java">
             <classpath refid="project.class.path" />
         </javac>
     </target>
 
-    <target name="compileAnalyser" depends="OQLParserGeneration" description="compile all java files for analyser">
+    <target name="compileAnalyser" depends="ANTLRParserGeneration" description="compile all java files for analyser">
         <javac srcdir="classes" source="1.5" target="1.5" debug="on" includes="org/makumba/analyser/**/*.java">
             <classpath refid="project.class.path" />
         </javac>
     </target>
 
-    <target name="compileMDDProvider" depends="OQLParserGeneration" description="compile all java files for MDDProvider">
+    <target name="compileMDDProvider" depends="ANTLRParserGeneration" description="compile all java files for MDDProvider">
         <javac srcdir="classes" source="1.5" target="1.5" debug="on"
             includes="org/makumba/providers/datadefinition/makumba/**/*.java">
             <classpath refid="project.class.path" />
         </javac>
     </target>
 
-    <target name="compileCommons" depends="OQLParserGeneration" description="compile all java files for commons">
+    <target name="compileCommons" depends="ANTLRParserGeneration" description="compile all java files for commons">
         <javac srcdir="classes" source="1.5" target="1.5" debug="on"
             includes="org/makumba/*.java, org/makumba/commons/**/*.java, org/makumba/providers/*.java, org.makumba.controller/**/*.java">
             <classpath refid="project.class.path" />
         </javac>
     </target>
 
-    <target name="compileRest" depends="OQLParserGeneration" description="compile all java files for list">
+    <target name="compileRest" depends="ANTLRParserGeneration" description="compile all java files for list">
         <javac srcdir="classes" source="1.5" target="1.5" debug="on"
             excludes="org/makumba/list/**/*.java, org/makumba/forms/**/*.java, org/makumba/analyser/**/*.java, org/makumba/providers/datadefinition/makumba/**/*.java">
             <classpath refid="project.class.path" />
