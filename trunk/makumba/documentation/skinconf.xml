@@ -32,7 +32,7 @@ which will be used to configure the chosen Forrest skin.
 <!-- Disable the print link? If enabled, invalid HTML 4.0.1 -->
   <disable-print-link>true</disable-print-link>
 <!-- Disable the PDF link? -->
-  <disable-pdf-link>false</disable-pdf-link>
+  <disable-pdf-link>true</disable-pdf-link>
 <!-- Disable the POD link? -->
   <disable-pod-link>true</disable-pod-link>
 <!-- Disable the Text link? FIXME: NOT YET IMPLEMENETED. -->
@@ -97,7 +97,7 @@ which will be used to configure the chosen Forrest skin.
     be complete, that is it must point to the file itself, not to a 
     directory.
   -->
-  <trail>
+  <trail location="none">
     <link1 name="Makumba" href="http://www.makumba.org/"/>
     <link2 name="Documentation" href="http://www.makumba.org/documentation"/>
     <link3 name="" href=""/>

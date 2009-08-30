@@ -1,0 +1,344 @@
+/*
+  content width: 1034px;
+  
+*/
+
+/* 
+  GENERAL STUFF
+*/
+
+html,body {
+  margin:0px;
+  height:100%;
+}
+html,body,p,a,table,td,li,div {
+  font-family: Trebuchet MS, sans;
+  font-size: 12px;
+  
+}
+#content, #content p {
+ line-height:1.6em;
+}
+div {
+  margin:0px;
+  padding:0px;
+}
+
+a {
+  color:#5a7302;
+}
+img {
+  float:right;
+  margin-left:5px;
+}
+
+
+#site {
+  width:1031px;
+  margin: 0px auto;
+  min-height:100%;
+}
+
+/* 
+  HEADER
+*/
+
+
+#top{
+  width:1031px;
+  background: #000 url('images/header_back1.png') no-repeat;
+  position:relative;
+  height:161px;
+}
+#homeLink {
+	border:none;
+	width:210px;
+	height:82px;
+	left:180px;
+	top:0px;
+	position:absolute;
+}
+.searchbox {
+  position:absolute;
+  width:140px;
+  top:35px;
+  right:0px;
+  text-align:right;
+  font-size:11px;
+  color:#93a603;
+}
+.searchbox a {
+  text-decoration:none;
+  color:#93a603;
+}
+.searchbox a:hover {
+  text-decoration:underline;
+}
+.searchbox form {
+  display:inline;
+  margin:0px;
+  padding:0px;
+}
+.searchbox input {
+  border: 1px solid #5a7302;
+  margin-left:5px;
+  width:86px;
+  font-size:11px;
+  color:#93a603;
+  padding-left:23px;
+  background: #fff url('images/search.png') no-repeat;
+  height:20px;
+}
+
+/* 
+
+  TOP NAVIGATION
+
+*/
+
+#tabs {
+  padding-left:204px;
+  position:absolute;
+  left:0px;
+  top:71px;
+  height:63px;
+	list-style-type:none;
+	display:block;
+}
+#tabs li {
+  display:none;
+}
+#tabs a {
+	
+  height:63px;
+  display:block;
+  float:left;
+}
+
+
+/* ITEM 1 - Quick_start */
+#tabs .tab_quickstart {
+  width: 142px;
+  background: url('images/menu_quickstart.png') no-repeat;
+}
+#tabs .tab_quickstart:hover, #tabs .tab_quickstart.current {
+  background: url('images/menu_quickstart_active.png') no-repeat;
+}
+
+/* ITEM 2 - configuration */
+#tabs .tab_configuration {
+  width: 162px;
+  background: url('images/menu_configuration.png') no-repeat;
+}
+#tabs .tab_configuration:hover, #tabs .tab_configuration.current {
+  background: url('images/menu_configuration_active.png') no-repeat;
+}
+
+/* ITEM 3 - usage */
+#tabs .tab_usage {
+  width: 98px;
+  background: url('images/menu_usage.png') no-repeat;
+}
+#tabs .tab_usage:hover, #tabs .tab_usage.current {
+  background: url('images/menu_usage_active.png') no-repeat;
+}
+
+/* ITEM 4 - documentation */
+#tabs .tab_documentation {
+  width: 169px;
+  background: url('images/menu_documentation.png') no-repeat;
+}
+#tabs .tab_documentation:hover, #tabs .tab_documentation.current {
+  background: url('images/menu_documentation_active.png') no-repeat;
+}
+
+/* ITEM 5 - showcase */
+#tabs .tab_showcases {
+  width: 125px;
+  background: url('images/menu_showcase.png') no-repeat;
+}
+#tabs .tab_showcases:hover, #tabs .tab_showcases.current {
+  background: url('images/menu_showcase_active.png') no-repeat;
+}
+
+/* ITEM 6 - download */
+#tabs .tab_download {
+  width: 131px;
+  background: url('images/menu_download.png') no-repeat;
+}
+#tabs .tab_download:hover, #tabs .tab_download.current  {
+  background: url('images/menu_download_active.png') no-repeat;
+}
+
+/*
+
+  THE SIDE BAR
+
+*/
+#menu {
+  background: #fff url('images/sidemenu_back.png') 0px 36px repeat-x;
+  width:196px;
+  border-top:2px solid #000;
+  min-height:100%;
+  float:left;
+}
+#menu>.menutitle{
+  text-align:center;
+  background:url('images/sidemenu_title_back.png') 0px 0px repeat-x;
+  height:36px;
+  vertical-align:middle;
+  line-height:36px;
+  font-size:17px;
+  font-family: Trebuchet MS, Tahoma, Sans;
+  font-weight:normal;
+}
+
+/* FIRST level sidemenu items */
+#menu>div>.menuitem, #menu>div>.menupage, #menu>div>.menutitle {
+  width: 161px;
+  display:block;
+  height:35px;
+  line-height:35px;
+  border-bottom:1px solid black;
+  margin: 0px 17px;
+  /*overflow:hidden;*/
+}
+#menu>div>.menupage {
+  padding-left: 18px;
+  width: 143px;
+  background: url('images/sidemenu_selector.png') 2px 12px no-repeat;
+}
+#menu>div>div>.menupage {
+  padding-left: 16px;
+  width: 143px;
+  background: url('images/sidemenu_selector.png') 0px 5px no-repeat;
+}
+#menu .menupagetitle {
+	font-weight:bold;
+}
+/* SECOND level sidemenu items */
+#menu>div>div>.menuitem, #menu>div>div>.menupage
+{
+  width: 151px;
+  display:block;
+  height:20px;
+  line-height:20px;
+  /*border-bottom:1px solid black;*/
+  margin: 0px 17px 0px 27px;
+}
+#menu a {
+  text-decoration:none;
+  color: #000;
+}
+
+/*
+
+  THE FOOTER
+  
+*/
+
+#footer {
+	 border-left:2px solid #000;
+  width: 815px !important; width: 834px;
+  padding-left:18px;
+  padding-top:10px;
+  float:right;
+  text-align:right;
+}
+
+/*
+
+  THE CONTENT
+
+*/
+
+#content {
+  border-left:2px solid #000;
+  width: 815px !important; width: 834px;
+  padding-left:18px;
+  float:left;
+  min-height:100%;
+  line-height:1.6em;
+}
+
+h1 {
+  border-top:2px solid #000;
+  border-bottom:2px solid #000;
+  background: #f2ae0c;
+  height:34px;
+  line-height:32px;
+  padding-left:12px;
+  margin:0px 0px 10px 0px;
+  font-size:21px;
+  font-family: Trebuchet MS, Tahoma, Sans;
+  
+}
+
+h2 {
+  border-top:1px solid #000;
+  border-bottom:1px solid #000;
+  font-family: tahoma, Trebuchet MS, sans;
+  font-size:11px;
+  line-height:24px;
+  width:50%;
+  background:white;
+}
+
+/* Forrest specific thingies */
+
+pre.code, div.note, #minitoc-area {
+  background: #f2f1e4;
+  border:1px solid #c4db16;
+}
+pre.code {
+	padding-left:10px;
+	border-left:4px solid #c4db16;
+}
+
+#minitoc-area {
+	display:inline-block;
+	padding:5px 10px;
+}
+#minitoc-area h3 {
+	margin:0px;
+}
+ul.minitoc {
+	list-style-type:decimal;
+	padding-left:20px;
+	margin-top:6px;
+}
+div.note .label, div.fixme .label, div.warning .label {
+  display:block;
+  font-weight:bold;
+  background: #c4db16;
+  padding:2px 6px;
+  color:#000;
+}
+div.note .content, div.warning .content, div.fixme .content{
+  display:block;
+  padding:10px 12px;
+}
+
+div.fixme {
+  border-color: #51C2DB;
+}
+div.fixme .label {
+  background: #51C2DB;
+}
+div.warning {
+  border-color: #e84200;
+}
+div.warning .label {
+  background: #e84200;
+  color:white;
+}
+
+th {
+	background: #51C2DB;
+	color:white;
+}
+
+td {
+	background: #FCFCF5;
+	border-bottom: 1px solid black;
+}
