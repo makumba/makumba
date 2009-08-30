@@ -86,8 +86,9 @@ img {
   font-size:11px;
   color:#93a603;
   padding-left:23px;
+  padding-top:2px;
   background: #fff url('images/search.png') no-repeat;
-  height:20px;
+  height:15px;
 }
 
 /* 
