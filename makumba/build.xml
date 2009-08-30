@@ -97,6 +97,9 @@
                 <uptodate targetfile="classes/org/makumba/providers/query/mql/MqlSqlGeneratorBase.java">
                     <srcfiles dir="classes/org/makumba/providers/query/mql" includes="**/mql-sql-gen.g" />
                 </uptodate>
+                <uptodate targetfile="classes/org/makumba/providers/datadefinition/mdd/MDDExpressionBaseParser.java">
+                    <srcfiles dir="classes/org/makumba/providers/datadefinition/mdd" includes="**/mdd-expression.g" />
+                </uptodate>
                 <uptodate targetfile="classes/org/makumba/providers/datadefinition/mdd/MDDBaseParser.java">
                     <srcfiles dir="classes/org/makumba/providers/datadefinition/mdd" includes="**/mdd.g" />
                 </uptodate>
@@ -139,6 +142,11 @@
             taskname="antlr">
             <classpath refid="project.class.path" />
             <arg value="mdd.g" />
+        </java>
+        <java classname="antlr.Tool" fork="true" dir="classes/org/makumba/providers/datadefinition/mdd/" failonerror="true"
+            taskname="antlr">
+            <classpath refid="project.class.path" />
+            <arg value="mdd-expression.g" />
         </java>
         <java classname="antlr.Tool" fork="true" dir="classes/org/makumba/providers/datadefinition/mdd/" failonerror="true"
             taskname="antlr">
