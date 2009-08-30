@@ -27,10 +27,6 @@ div {
 a {
   color:#5a7302;
 }
-img {
-  float:right;
-  margin-left:5px;
-}
 
 
 #site {
@@ -101,7 +97,7 @@ img {
   padding-left:204px;
   position:absolute;
   left:0px;
-  top:71px;
+  top:73px;
   height:63px;
 	list-style-type:none;
 	display:block;
