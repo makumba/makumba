@@ -104,17 +104,17 @@ toys=set
 groupMembers = set test.Person
 
 # comparison validation rules spanning over more than one field
-compare(weight, age) { weight < age } : "You should not be more heavy than you're old!"
+compare(weight, age) { weight < age } : "You should not be more heavy than you're old!" ; comment
 compare(firstSex, birthdate) { firstSex >= birthdate } : "Can't have sex before you'are born!"
 compare(email) { lower(email) = email } : "E-mail address must be all lower case!"
 compare(indiv.name) { lower(indiv.name) != indiv.name } : "Your name can't be all lower cases!"
 
 # multi-field uniqueness keys
-unique() { age, email } : "these need to be unique!"
+unique() { age, email } : "these need to be unique!" ;comment
 unique() { indiv.name, indiv.surname } : "these too!"
 
 
-someFunction(char[] b) { count(address) > 0 } : "You need to specify an address"
+someFunction(char[] b) { count(address) > 0 } : "You need to specify an address" ; comment
 someOtherFunction(int age, char[] b) { this.age > age } : "You are too young!"
 functionWithPointer(ptr test.Individual i, int age, char[] b) { this.age > age } : "You are too young!"
 someFunctionWithParams(int param, int param2, int param3) { age+param > 20 } : "You are too young!"
@@ -125,7 +125,7 @@ someTest(){ actor(test.Person) }
 allNamesMin2CharsLong() { character_length(indiv.name) > 2 AND character_length(indiv.surname) > 2 } : "Your name or surname is not long enough!"
 oneNameMin2CharsLong() { character_length(indiv.name) > 2 OR character_length(indiv.surname) > 2 } : "Your name and surname is not long enough!"
 
-fullName() { indiv.fullName() }
+fullName() { indiv.fullName() } ; comment
 
 actor(char[] username, char[] password) { myapp_username=username AND this.password=password }
 actor2(char[] username, char[] password) { indiv.someusername=username AND this.password=password }
