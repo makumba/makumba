@@ -94,22 +94,27 @@ a {
 */
 
 #tabs {
-  padding-left:204px;
+  padding: 0px 0px 0px 204px;
+  margin:0px;
   position:absolute;
   left:0px;
-  top:73px;
+  top:82px;
   height:63px;
 	list-style-type:none;
 	display:block;
 }
 #tabs li {
   display:none;
+  padding:0px;
 }
 #tabs a {
-	
   height:63px;
   display:block;
   float:left;
+  position:relative;
+  top:0px;
+  height:63px;
+  
 }
 
 
