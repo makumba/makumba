@@ -27,7 +27,7 @@
                     <td></td>
                     <td>makumba-template packaing and download</td>
                     <td>not started</td>
-                    <td>make a target in build.xml to checkout & make a zip of makumba-template, including the latest makumba.jar. might be good to actually make this part of the release cycle along with mak-sources.</td>
+                    <td>make a target in build.xml to checkout &amp; make a zip of makumba-template, including the latest makumba.jar. might be good to actually make this part of the release cycle along with mak-sources.</td>
                 </tr>
                 
                 <tr>
