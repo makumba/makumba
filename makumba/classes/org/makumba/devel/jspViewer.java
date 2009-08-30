@@ -150,7 +150,7 @@ public class jspViewer extends LineViewer {
         w.println("Hide: <input type=\"checkbox\" name=\"hideComments\" value=\"true\""
                 + (hideComments ? " checked=\"checked\"" : "") + ">Comments  ");
         w.println("<input type=\"checkbox\" name=\"hideHTML\" value=\"true\""
-                + (hideHTML ? " checked=\"checked\"" : "") + ">HML  ");
+                + (hideHTML ? " checked=\"checked\"" : "") + ">HTML  ");
         w.println("<input type=\"checkbox\" name=\"hideJava\" value=\"true\""
                 + (hideJava ? " checked=\"checked\"" : "") + ">Java  ");
         w.println("<input type=\"checkbox\" name=\"hideJSTLCore\" value=\"true\""
