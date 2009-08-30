@@ -30,7 +30,7 @@
    Tabs can be embedded to a depth of two. The second level of tabs will only 
     be displayed when their parent tab is selected.    
   -->
-  <tab id="home" label="Home" href="/index.html"/>
+  <!-- tab id="home" label="Home" href="/index.html"/ -->
   <tab id="quickstart" label="Quick start" href="quickstart.html" />
   <tab id="configuration" label="Configuration" dir="configuration" />
   <tab id="usage" label="Using Makumba" dir="/usage"/>
