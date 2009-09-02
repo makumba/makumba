@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd"><document>
+    <header>
+        <title>mak:action tag documentation</title>
+    </header>
+    <body>
+        <section id="description">
+            <title>Description</title>
+            <p class="tagDescription">If the action URI of a form or deleteLink is more complex, possibly including other makumba tags, the action parameter of the form tag can be omitted, and the action URI can be indicated in a mak:action, anywhere inside the form tag.</p>
+        </section>
+        <section id="attributes">
+            <title>Attributes</title>
+            <p>This tag has no attributes</p>
+        </section>
+    
+        <section id="seeAlso">
+            <title>See also</title>
+            <ul>
+                <li>
+                    <a href="/doc/taglib/makform.html">mak:form</a>
+                </li>
+                <li>
+                    <a href="/doc/taglib/maknewForm.html">mak:newForm</a>
+                </li>
+                <li>
+                    <a href="/doc/taglib/makaddForm.html">mak:addForm</a>
+                </li>
+                <li>
+                    <a href="/doc/taglib/makeditForm.html">mak:editForm</a>
+                </li>
+            </ul>
+        </section>
+      <section id="example">
+        <title>Example</title>
+        <source>
+      <![CDATA[
+<mak:editForm object="ins" method="post">
+    <mak:action>memberView.jsp?person=<mak:value expr="p"/></mak:action>
+    ...
+</mak:editForm>
+      ]]>
+  </source>
+    </section>  </body>
+</document>
