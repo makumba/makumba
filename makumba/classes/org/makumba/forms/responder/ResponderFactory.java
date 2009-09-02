@@ -249,7 +249,7 @@ public class ResponderFactory {
 
     /**
      * Returns the first responder object found fitting the request. It can be used to retrieve information about the
-     * form which is valid for all nested forms, and is used e.g. in {@link ControllerFilter} to find out the value of
+     * form which is valid for all nested forms, and is used e.g. in {@link ResponseControllerHandler} to find out the value of
      * {@link #getReloadFormOnError()}.
      * 
      * @param req
@@ -351,7 +351,7 @@ public class ResponderFactory {
      *            the {@link HttpServletRequest} corresponding to the current page
      * @param resp
      *            the {@link HttpServletRequest} corresponding to the current page
-     * @return a response object holding all necessary information for the {@link ControllerFilter}
+     * @return a response object holding all necessary information for the {@link ResponseControllerHandler}
      */
     public Exception getResponse(HttpServletRequest req, HttpServletResponse resp) {
 
