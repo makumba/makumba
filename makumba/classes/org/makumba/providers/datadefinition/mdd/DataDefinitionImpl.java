@@ -207,6 +207,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
                     break;
                 case SET:
                     if(!secondPass && field.getPointedType() == this) {
+                        // if the DD points to itself, we postpone the evaluation of this field or we get into an endless loop
                         postponedFields.put(f.name, f);
                         continue;
                     }
@@ -403,24 +404,29 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
      * <li>for simple field names, sets title to field name</li>
      * <li>for paths, checks the path and sets the title to the path</li>
      * <li>for functions, sets the title to the function expression</li>
-     * <li>if no title indicated, take the first field in the DD as title</li>
+     * <li>if no title indicated, take the "name" field, if none exists, take the first field in the DD that is not a ptr or set as title</li>
      * </ul>
      * all the checking has already been done in {@link TitleFieldNode}
      * TODO add support for function calls in !title and for use of expressions
      */
     private void evaluateTitle() {
         if(titleFieldExpr == null) {
-            // if we have no tite field set, the title field is the first field in the MDD
-            // but not the PtrIndex
-            if(fields.keySet().size() > 3) {
-                titleField = (String) (Arrays.asList(fields.keySet().toArray())).get(3);
-                // if this happens to be an MDD which points to itself we may have to use the following trick to get the right title
+            // check if we have a "name" field
+            if(fields.containsKey("name")) {
+                titleField = "name";
+            } else if(fields.keySet().size() > 3) { // we have TS_create, TS_modify and the PtrIndex
+            
+                // the title field is the first non-ptr field in the MDD
+                // but not the PtrIndex
+                titleField = getFirstNonPointerFieldName(3);
+
+            // if this happens to be an MDD which points to itself we may have to use the following trick to get the right title
             } else if(fields.keySet().size() == 3 && postponedFields.keySet().size() > 0) {
                 titleField = (String) (Arrays.asList(postponedFields.keySet().toArray())).get(0);
             } else {
-                titleField = (String) (Arrays.asList(fields.keySet().toArray())).get(0);
+                titleField = getFirstNonPointerFieldName(0);
             }
-        } else if(titleFieldType == TitleFieldType.FUNCTION){
+        } else if(titleFieldType == TitleFieldType.FUNCTION) {
             QueryFragmentFunction f = functions.get(titleFieldExpr);
             // TODO here we could inline a function call from title
             titleField = f.getName() + "()"; //f.getQueryFragment(); 
@@ -429,6 +435,28 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
         }
     }
     
+    /**
+     * Returns the name of the first field in the DD that is not a pointer or a set
+     */
+    private String getFirstNonPointerFieldName(int index) {
+        String field = null;
+        int initial = index;
+        while(field == null && index < fields.size()) {
+            FieldDefinition titleDef = (FieldDefinition) (Arrays.asList(fields.values().toArray())).get(index);
+            if(titleDef.isPointer() || titleDef.isSetType()) {
+                index++;
+                continue;
+            }
+            field = titleDef.getName();
+        }
+        
+        if(field == null) {
+            field = (String) (Arrays.asList(fields.keySet().toArray())).get(initial);
+        }
+        
+        return field;
+    }
+
 
     /** base methods **/
     
