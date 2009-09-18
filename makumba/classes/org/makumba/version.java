@@ -49,7 +49,7 @@ public class version {
 
     /** @see MakumbaSystem#getVersion() */
     static String getVersion() {
-        String vs = "$HeadURL: https://makumba.svn.sourceforge.net/svnroot/makumba/trunk/makumba/classes/org/makumba/version.java $";
+        String vs = "$HeadURL$";
         
         // HeadURL will return something like
         // https://makumba.svn.sourceforge.net/svnroot/makumba/trunk/makumba/classes/org/makumba/version.java for HEAD
