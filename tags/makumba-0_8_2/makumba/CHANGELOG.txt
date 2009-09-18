@@ -6,6 +6,19 @@
 --------------------------------------
 
 TO BE RELEASED IMMEDIATELY (No need for more testing)
+
+-----------------------------------------------
+
+NOT TO BE RELEASED YET (need more testing)
+manu: auto-complete for mak:input (char and ptr)
+manu, marius: edit-in-place for mak:input and mak:list ("editable" attribute). Is yet to be finished.
+
+------------------------------------------
+- add your changes -
+<!-- ============================================================================= -->
+<!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
+
+0.8.2 30 Aug 2009
 rudi: form reload - originating page is now part of the responder, rather than the URL
 rudi: search forms - allowing fields to be over more than one field, default=".." 
 rudi: optimised some string concatenations, fixing some generics warnings
@@ -23,16 +36,7 @@ manu: new MDD parser based on ANTLR
 manu: new function inliner based on tree transformation
 manu: replacing ResourcePool with c3p0
 manu: changing form reload mechanism: redirect to original page is sent if form contains error
------------------------------------------------
-
-NOT TO BE RELEASED YET (need more testing)
-manu: auto-complete for mak:input (char and ptr)
-manu, marius: edit-in-place for mak:input and mak:list ("editable" attribute). Is yet to be finished.
-
-------------------------------------------
-- add your changes -
-<!-- ============================================================================= -->
-<!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
+manu: fixing part of the form-reload on error mechanism
 
 0.8.1.9.1 11 Jun 2009
 cristi: fixed race condition in NameResolver
