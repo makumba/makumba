@@ -55,14 +55,14 @@
       <section id="regexp"><title>Regular expression rule</title>
       <p>The string regular expression rule applies for <code>string</code> types, primarily for <code>char</code>,
       but also for <code>text</code>. The validation rule is defined as:</p>
-      <p>
-      <source>matches(fieldName) { regular expression }</source></p>
+      
+      <source>matches(fieldName) { regular expression }</source>
       <p>Regular expressions must be valid regular expressions in Java, for more details please refer to the <a
         href="ext:javaregexp">specification</a> and <a
         href="ext:javaregexptutorial">tutorial</a>.</p>
       <p>To compare if a field contains a valid e-mail address, define:</p>
-      <p>
-      <source>matches(email) { .+@.+\.[a-z]+ } : "Email address is not valid!"</source></p>
+      
+      <source>matches(email) { .+@.+\.[a-z]+ } : "Email address is not valid!"</source>
       </section>
   
     
