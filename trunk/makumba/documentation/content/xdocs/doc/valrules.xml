@@ -23,11 +23,11 @@
     <section><title>Validation rule types</title>
     <p>There are different kind of validation rules, each with a specific name:</p>
     <ul>
-    <li>number range (<en>range</en>)</li>
-    <li>string length (<en>length</en>)</li>
-    <li>regular expression (<en>matches</en>)</li>
-    <li>comparison (<en>compare</en>)</li>
-    <li>uniqueness (<en>unique</en>)</li>
+    <li>number range (<em>range</em>)</li>
+    <li>string length (<em>length</em>)</li>
+    <li>regular expression (<em>matches</em>)</li>
+    <li>comparison (<em>compare</em>)</li>
+    <li>uniqueness (<em>unique</em>)</li>
     </ul>
     <p>The arguments depend on the type, as we'll see later.</p>
       
