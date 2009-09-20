@@ -290,9 +290,20 @@ happyInLife = rank]]></source>
 					database. The subsequent updates will not update the field</li>
 				<li><strong>not null</strong> fields will produce a exception if an attempt is made
 					to insert/update without them being initialized</li>
+                <li><strong>not empty</strong> fields will produce a exception if an attempt is made
+                    to insert/update an empty string value</li>
 				<li><strong>unique</strong> fields have a unique value in the respective object, for
 					the respective type</li>
 			</ul>
+        <p>It is possible to customise the error message that will be displayed:</p>
+        <source><![CDATA[login.unique = "This login is already taken, please choose another one"
+surname.notEmpty = "Please fill in your surname"
+age.notNull = "Please fill in your age"
+age.NaN = "Please enter a valid number"
+age.notInt = "Please enter a valid integer"
+amount.notReal = "Please enter a valid real"]]></source>
+
+<note>The NaN (Not A Number), notInt (not an integer) and notReal (not a real) error message is part of implicit, type-dependent validation and is performed by makumba automatically, without the need of adding a field attribute.</note>
 		</section>
 
 		<section id="ObjectTitle">
