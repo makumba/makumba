@@ -16,16 +16,15 @@
     <section id="mddFunctions">
       <title>MDD functions</title>
 
-      <p>A simple function for an MDD called <em>Leveler</em> that has a <em>level </em> integer
+      <p>A simple function for an MDD called <em>Leveler</em> that has a <em>level</em> integer
         field looks like</p>
-      <source>
-        <![CDATA[level=int function(int a) { level+a } ]]>
-      </source>
+      <source><![CDATA[level=int
+function(int a) { level+a }]]></source>
       <note>In principle, a function is <strong>inlined</strong> in queries whenever it is
-        encountered in a SELECT projection or WHERE condition as follows: <code>SELECT
-          label.function($param) FROM Leveler label</code></note>
-      <note>The above query is inlined like this: <code>SELECT label.level + $param FROM Leveler
-          label</code></note>
+        encountered in a SELECT projection or WHERE condition as follows:
+        <code>SELECT label.function($param) FROM Leveler label</code></note>
+      <note>The above query is inlined like this:
+      <code>SELECT label.level + $param FROM Leveler label</code></note>
       <p>Some properties of MDD functions:</p>
       <ul>
         <li>If the underlying query language allows it, functions can use subqueries.</li>
@@ -55,9 +54,7 @@
       <title>Function specification</title>
 
       <p>The complete specification of function definition is as follows: </p>
-      <source>
-        <![CDATA[[sessionVar%]function([type parameter]*){ expression [FROM supplementaryLabels [WHERE condition]]} [errorMessage] [; comment] ]]>
-      </source>
+      <source><![CDATA[[sessionVar%]function([type parameter]*){ expression [FROM supplementaryLabels [WHERE condition]]} [: "errorMessage" ] [; comment] ]]></source>
       <ul>
         <li><em>sessionVar</em>
           <a href="ext:bug1052">may be used</a> for MDDs that define actors (or those related to
@@ -108,9 +105,8 @@
       <p>and a query invoking it may be</p>
       <source><![CDATA[SELECT actor(Person).name SELECT obj.hasDoneJob(actor(Person)) FROM SomeType obj ]]></source>
       <p>These queries are inlined as follows:</p>
-      <source><![CDATA[
-        SELECT actor_Person.name FROM Person actor_Person WHERE actor_Person=$actor_Person
-        SELECT obj.hasDoneJob($actor_Person) FROM SomeType obj]]></source>
+      <source><![CDATA[SELECT actor_Person.name FROM Person actor_Person WHERE actor_Person=$actor_Person
+SELECT obj.hasDoneJob($actor_Person) FROM SomeType obj]]></source>
       <p>(in the second example, the function <em>hasDoneJob() </em>will be inlined further)</p>
       <p>
         <em>$actor_Person</em> is a special attribute retrieved from the query context. The query
@@ -118,10 +114,9 @@
         MDD indicated by the actor attribute name (<em>Person</em>) for <em>actor functions</em>.
         Assuming that Person has a username and a passoword field, some actor functions may look
         like</p>
-      <source><![CDATA[
-        username=char[255] password=char[255] actor(char[] user){username=user}
-        actor1(char[] admin){ username=admin }
-        actor2(char[] user, char []pass){ username=user AND password=pass } ]]></source>
+      <source><![CDATA[username=char[255] password=char[255] actor(char[] user){username=user}
+actor1(char[] admin){ username=admin }
+actor2(char[] user, char []pass){ username=user AND password=pass } ]]></source>
       <p>First, the context handler will look for a suitable function to use. For example if the
         attribute <em>user</em> is defined in the context, the first function (<em>actor()</em>)
         will match. However if both the attributes<em> user </em>and <em>pass</em> are defined in
@@ -161,9 +156,8 @@
         an UnauthorizedException is raised with an error message indicated in the constraint.</p>
       <p>Currently explicit authorisation constraints can be put in the file
         <code>Makumba.conf</code> (see the <a href="/configuaraiton/configuration.html">configuration documentation</a>. Authorisation constraints looks like: </p>
-      <source><![CDATA[
-        authorize%/={actor(Person)}
-        authorize%/admin=(char[]admin){actor(Person).username=admin} You are not an administrator ]]> </source>
+      <source><![CDATA[authorize%/={actor(Person)}
+authorize%/admin=(char[]admin){actor(Person).username=admin} You are not an administrator ]]> </source>
       <p>The first example makes the whole site accessible to users who can authenticate as a Person
         actor.</p>
       <p>The second example makes the /admin part of the site accesible only if there is an admin
@@ -201,7 +195,7 @@
       on the page, request, and session attributes, as well as request parameters. If however
       application logic is executed before launching a JSP, the context will be made of the session
       and request attributes and of request parameters. This is managed by two different <em>query
-        context handlers </em>(implementing the interface Attrributes) and other such handlers can
+        context handlers </em>(implementing the interface Attributes) and other such handlers can
       be defined. </p>
     <p>Actor functions define a special type of session attributes that are computed based on other
       attributes from the query context.</p>
