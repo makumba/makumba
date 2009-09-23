@@ -377,12 +377,7 @@ subFieldBody
 fieldName
     : a:atom { checkFieldName(#a); #a.setType(FIELDNAME); }
     // this is an ugly workaround to allow certain keywords as a field name
-    | l:LENGTH { checkFieldName(#l); #l.setType(FIELDNAME); }
-    | c:CHAR { checkFieldName(#c); #c.setType(FIELDNAME); }
-    | t:TYPE { checkFieldName(#t); #t.setType(FIELDNAME); }
-    | ti:TITLE { checkFieldName(#ti); #ti.setType(FIELDNAME); }
-    | f:FILE  { checkFieldName(#f); #f.setType(FIELDNAME); }
-    | te:TEXT  { checkFieldName(#te); #te.setType(FIELDNAME); }
+    | k:keyword { checkFieldName(#k); #k.setType(FIELDNAME); }
     ;
 
 fieldType
@@ -437,7 +432,6 @@ titleDeclaration
     
 title
     : t:type { #t.setType(TITLEFIELDFIELD);}
-    | ti:TITLE { #ti.setType(TITLEFIELDFIELD);}
     | f:functionCall
     ;
     
@@ -550,18 +544,13 @@ parsedExpression
 // general.Person
 // general.Person->extraData
 type
-    : {String type="";} a:atom {type+=#a.getText();}
+    : {String type="";} (a:atom {type+=#a.getText();} | k:keyword {type+=#k.getText();})
         (
               (DOT! {type += ".";} | SUBFIELD! {type += "->";})
-              (b:atom! {type += #b.getText(); } | k:keyword! {type += #k.getText(); }) 
+              ( b:atom! {type += #b.getText(); } | ke:keyword! {type += #ke.getText(); }) 
         )*
         { #type.setText(type); #type.setType(PATH); }
     ;
-    
-keyword
-    : FILE
-    ;
-
 
 number
     : POSITIVE_INTEGER | NEGATIVE_INTEGER
@@ -571,6 +560,15 @@ number
 operator
 	: EQ | LT | GT | LE | GE | NE | SQL_NE | LIKE
 	;
+
+keyword
+    : LENGTH
+    | CHAR
+    | TYPE
+    | FILE
+    | TEXT
+    | TITLE
+    ;
 
 atom
     : IDENT
