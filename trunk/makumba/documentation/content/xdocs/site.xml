@@ -112,6 +112,7 @@ See http://forrest.apache.org/docs/linking.html for more info
         <javahandlerclasses label="Java Handler Classes" href="/doc/BL/JavaHandlerClasses.html" description="Java Handler Classes"/>
  		<login label="Login" href="/doc/BL/login.html" description="Login"/>
  	</bl>
+    <api label="Java API" tab="documentation" href="/apidocs/org/makumba/package-summary.html" />
   </documentation>
 
    <showcases label="Showcases" href="/showcases.html" description="Showcases" tab="showcases" />
