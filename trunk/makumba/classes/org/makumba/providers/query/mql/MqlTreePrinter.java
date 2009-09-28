@@ -198,6 +198,7 @@ public class MqlTreePrinter {
             case HqlTokenTypes.SOME:
             case HqlTokenTypes.EXISTS:
             case HqlTokenTypes.NOT:
+            case HqlTokenTypes.IN_LIST:
                 printOperator(a);
                 out("(");
                 handleAST(a.getFirstChild());
@@ -582,6 +583,9 @@ public class MqlTreePrinter {
                 break;
             case HqlTokenTypes.INNER:
                 out("inner");
+                break;
+            case HqlTokenTypes.IN_LIST:
+                out("in");
                 break;
                 
                 default:
