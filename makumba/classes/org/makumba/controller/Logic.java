@@ -53,6 +53,7 @@ import org.makumba.UnauthorizedException;
 import org.makumba.commons.DbConnectionProvider;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
+import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysisProvider;
@@ -606,15 +607,20 @@ public class Logic {
         QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer(dbcp.getTransactionProvider().getQueryLanguage());
 
         Object result = null;
-        if (constraint.fromWhere == null) {
+        // FIXME the !constraint.rule.startsWith("actor(") is an ugly way of figuring whether we are trying an actor
+        if (constraint.fromWhere == null&& !constraint.rule.startsWith("actor(")) {
             // we have no FROM and WHERE section, this leads in a hard-to-analyze query
-            // so we try a paramter
+            // so we try a parameter
             String q1;
             try {
                 q1 = qap.inlineFunctions(constraint.rule).trim();
-            } catch (MakumbaError e) {
-                throw new ProgrammerError("Error while checking authorization constraint " + constraint.key
-                        + " during inlining of query " + constraint.rule + " " + e.getMessage());
+            } catch(RuntimeWrappedException rwe) {
+                if(rwe.getCause() instanceof MakumbaError) {
+                    throw new ProgrammerError("Error while checking authorization constraint " + constraint.key
+                        + " during inlining of query " + constraint.rule + " " + rwe.getMessage());
+                } else {
+                    throw rwe;
+                }
             }
             if (q1.startsWith(qap.getParameterSyntax()) && q1.substring(1).matches("[a-zA-Z]\\w*")) {
                 result = a.getAttribute(q1.substring(1));
