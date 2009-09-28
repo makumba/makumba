@@ -145,8 +145,12 @@ public class RecordEditor extends RecordFormatter {
                 validatedFields.put(new Integer(i), o);
                 validatedFieldsNameCache.put(inputName, o);
                 
-                // FIXME this is not the most efficient thing to do
-                validatedFieldsFdCache.put(fd.getOriginalFieldDefinition(), o);
+                // FIXME caching the original FDs is not the most efficient thing to do
+                FieldDefinition originalFd = fd.getOriginalFieldDefinition();
+                
+                if(originalFd != null) {
+                    validatedFieldsFdCache.put(originalFd, o);
+                }
 
             } catch (InvalidValueException e) {
                 // if there is an exception in this field
