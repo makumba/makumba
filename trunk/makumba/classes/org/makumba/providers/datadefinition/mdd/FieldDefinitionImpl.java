@@ -13,6 +13,7 @@ import java.util.Vector;
 
 import org.makumba.CompositeValidationException;
 import org.makumba.DataDefinition;
+import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.Pointer;
@@ -918,8 +919,13 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         // we can't store a reference to the original field definition, otherwise it will be serialised in the form
         // responder, and in turn will serialise it's data definition, which might cause issues like locking..
         // thus, we do a lookup here
-        DataDefinition dataDefinition = DataDefinitionProvider.getInstance().getDataDefinition(
-            originalFieldDefinitionParent);
+        DataDefinition dataDefinition = null;
+        
+        try {
+            dataDefinition = DataDefinitionProvider.getInstance().getDataDefinition(originalFieldDefinitionParent);
+        } catch(DataDefinitionNotFoundError dnfe) {
+            dataDefinition = null;
+        }
         return dataDefinition != null ? dataDefinition.getFieldDefinition(originalFieldDefinitionName) : null;
     }
 
