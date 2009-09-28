@@ -68,9 +68,9 @@ public class FunctionInliner {
             parser = HqlParser.getInstance(query);
             parser.statement();
         }catch(Throwable t) {
-            doThrow(t, parser!=null?parser.getAST():null);
+            doThrow(t, parser!=null?parser.getAST():null, query);
         }
-        doThrow(parser.error, parser.getAST());
+        doThrow(parser.error, parser.getAST(), query);
         
         AST ast = parser.getAST();
         
@@ -84,7 +84,7 @@ public class FunctionInliner {
         try {
             inlined = inline(ast, true);
         } catch(Throwable t) {
-            doThrow(t, ast);
+            doThrow(t, ast, query);
         }
         
         if(!inlined) {
@@ -100,7 +100,7 @@ public class FunctionInliner {
         return res;
     }
     
-    protected void doThrow(Throwable t, AST debugTree) {
+    protected void doThrow(Throwable t, AST debugTree, String query) {
         if (t == null)
             return;
         if (t instanceof RuntimeException) {
@@ -123,7 +123,7 @@ public class FunctionInliner {
                 errorLocation = sb.toString();
             }
         }
-        throw new OQLParseError("\r\nin "+errorLocationNumber+" query:\r\n" + query + errorLocation+errorLocation+errorLocation, t);
+        throw new OQLParseError("\r\nin "+errorLocationNumber+" query (during inlining of functions):\r\n" + query + errorLocation+errorLocation+errorLocation, t);
     }
 
     
@@ -153,6 +153,8 @@ public class FunctionInliner {
             mqlAnalyzer.statement(ast);
         } catch(Throwable t) {
             t.printStackTrace();
+            System.out.println("in AST");
+            v.visit(ast);
         }
         
         if(mqlAnalyzer.error != null) {
@@ -232,9 +234,8 @@ public class FunctionInliner {
                     inline(queryFragmentTree, false);
     
                     // replace method call in original tree
-                    // here we use the 1st pass method calls and rely on the fact that the order with the function calls
-                    // is the same
-                    replaceMethodCall(methodCalls.get(index), fact.dupTree(queryFragmentTree), methodCalls);
+                    // here we use the 1st pass method calls and rely on the fact that the order with the function calls is the same
+                    replaceMethodCall(methodCalls.get(index), fact.dupTree(queryFragmentTree), methodCalls, c);
                 }
 
                 //System.out.println("*** inlined query tree");
@@ -298,7 +299,7 @@ public class FunctionInliner {
         if (lastAlias == null) {
             AST range = findFrom(tree).getFirstChild();
 
-            // try to fetch the first FROM alias and if it's generated, replace it with something meaningful
+            // try to fetch the first FROM alias and if it's generated, replace it with something meaningful.
             // we get generated aliases because of the fake query we build in order to analyse the query fragments
             AST l = range.getFirstChild();
             AST a = l.getNextSibling();
@@ -306,7 +307,7 @@ public class FunctionInliner {
             if (a != null && a.getText().equals("makumbaGeneratedAlias")) {
                 String path = c.getPath();
                 
-                // we have a path that refers to pointed types so we have to expans the FROM section to account for those pointed types
+                // we have a path that refers to pointed types so we have to expand the FROM section to account for those pointed types
                 if (path.indexOf(".") > -1) {
                     // replace the RANGE elements: first the type, then the alias
                     l = ASTUtil.makeNode(HqlTokenTypes.IDENT, c.getParentType().getName());
@@ -458,7 +459,7 @@ public class FunctionInliner {
         // replace the method call the same way we do it in normal queries
         AST where = findWhere(root);
         MethodCall mc = new MethodCall(firstChild, root, parent, currentFrom, where);
-        replaceMethodCall(mc, inlinedFunction, null);
+        replaceMethodCall(mc, inlinedFunction, null, null);
     }
 
     /**
@@ -552,6 +553,8 @@ public class FunctionInliner {
     private void processActorFunction(FunctionCall c, AST queryFragmentTree, MethodCall methodCall) {
         // check whether we just call the actor function, or if we call a field of the actor
         
+        // FIXME this does not work: the methodCall tree is not containing the .field !!
+        // so maybe the HQL parser is to modify? aaah!
         if (methodCall.getParent().getType() == HqlTokenTypes.DOT && methodCall.isFirstChild()) {
             // we have actor(Type).field
             // SELECT actor(test.Person).field
@@ -587,9 +590,10 @@ public class FunctionInliner {
             //v.visit(a);
 
             // finally we replace the actor method call with the new tree
-            replaceMethodCall(methodCall, a, null);
+            replaceMethodCall(methodCall, a, null, null);
 
         } else {
+            v.visit(methodCall.getRoot());
             // we have actor(Type)
             // SELECT actor(test.Person) --> $actor_test_Person
 
@@ -622,7 +626,7 @@ public class FunctionInliner {
      * Replaces a method call in the first-pass tree with an inlined function, also adding the necessary elements to the
      * FROM and WHERE
      */
-    private void replaceMethodCall(MethodCall methodCall, AST inlinedFunction, List<MethodCall> methodCalls) {
+    private void replaceMethodCall(MethodCall methodCall, AST inlinedFunction, List<MethodCall> methodCalls, FunctionCall functionCall) {
 
         AST select = findSelectContent(inlinedFunction);
         
@@ -630,8 +634,29 @@ public class FunctionInliner {
 
             // we need to add the FROM...WHERE part to the existing tree
             AST additionalFrom = findFrom(inlinedFunction);
+            
             if (additionalFrom != null) {
-                join(methodCall.getFrom(), fact.dupTree(additionalFrom), inlinedFunction);
+                
+                if(functionCall != null && functionCall.getPath() != null) {
+                    
+                    String label = functionCall.getPath().substring(0, functionCall.getPath().indexOf(".") > 0 ? functionCall.getPath().indexOf(".") : functionCall.getPath().length());
+                    
+                    // if we have a constraint on the label of the function, we will not re-use the label
+                    if(methodCall.getWhere() != null) {
+                        boolean hasConstraint = false;
+                        findIdentifier(methodCall.getWhere(), label, hasConstraint);
+                        
+                        if(hasConstraint) {
+                            join(methodCall.getFrom(), fact.dupTree(additionalFrom), inlinedFunction, null);
+                        }
+                        
+                    } else {
+                        join(methodCall.getFrom(), fact.dupTree(additionalFrom), inlinedFunction, label);
+                    }
+                    
+                } else {
+                    join(methodCall.getFrom(), fact.dupTree(additionalFrom), inlinedFunction, null);
+                }
             }
 
             AST additionalWhere = findWhere(inlinedFunction);
@@ -685,9 +710,11 @@ public class FunctionInliner {
 
     /**
      * joins the elements of the first FROM with the second one, avoiding label collision.
+     * in some cases, we might not want to avoid label collision but instead have label re-usage
+     * in that case we replace the to-be-reused label in the additionalFrom before joining
      */
-    private void join(AST from, AST additionalFrom, AST tree) {
-
+    private void join(AST from, AST additionalFrom, AST tree, String labelToReuse) {
+        
         Hashtable<String, AST> existingLabels = getLabels(from);
         Hashtable<String, AST> newLabels = getLabels(additionalFrom);
 
@@ -699,11 +726,30 @@ public class FunctionInliner {
         // - scan all the identifiers in the query (a.b.c), if they contain a reference to the label (a), replace it too
         Hashtable<String, String> collisions = new Hashtable<String, String>();
         for (String l : newLabels.keySet()) {
-            if (existingLabels.containsKey(l)) {
+            if (existingLabels.containsKey(l) && !l.equals(labelToReuse)) {
                 String r = createLabel();
                 collisions.put(l, r);
                 // replace the label in the tree we want to join the existing FROM with
                 newLabels.get(l).getFirstChild().getNextSibling().setText(r);
+            } else if(existingLabels.containsKey(l) && l.equals(labelToReuse)) {
+                // remove the duplicate RANGE element from the additionalFrom so we don't have it twice in the end
+                AST additionalRange = additionalFrom.getFirstChild();
+                AST parent = additionalRange;
+                while(!additionalRange.getFirstChild().getNextSibling().getText().equals(newLabels.get(l).getFirstChild().getNextSibling().getText())) {
+                    additionalRange = additionalRange.getNextSibling();
+                    parent = additionalRange;
+                }
+                if(additionalRange.getNextSibling() != null && additionalRange != parent) {
+                    parent.setNextSibling(additionalRange.getNextSibling());
+                } else if(additionalRange.getNextSibling() != null && additionalRange == parent) {
+                    // we are at the beginning of the tree
+                    additionalFrom.setFirstChild(additionalRange.getNextSibling());
+                } else {
+                    // we only have one RANGE element
+                    // so we completely remove it from the FROM
+                    additionalFrom.setFirstChild(null);
+                }
+                
             }
 
             // t.x.y.z (where t collides)
@@ -723,9 +769,11 @@ public class FunctionInliner {
         // now that we are done with processing the RANGE elements, do the replacement in the rest of the tree
         replaceLabels(tree, collisions);
 
-        // finally, append the RANGE elements from the new tree to the existing one
+        // finally, append the RANGE elements from the new tree to the existing one, if there is one to append
         AST endFrom = ASTUtil.getLastChild(from);
-        endFrom.setNextSibling(additionalFrom.getFirstChild());
+        if(additionalFrom.getFirstChild() != null) {
+            endFrom.setNextSibling(additionalFrom.getFirstChild());
+        }
     }
 
     /**
@@ -795,7 +843,21 @@ public class FunctionInliner {
 
         return labels;
     }
-
+    
+    private void findIdentifier(AST tree, String identifier, boolean found) {
+        if(tree == null) {
+            return;
+        }
+        
+        if(tree.getType() == HqlTokenTypes.IDENT && tree.getText().equals(identifier)) {
+            found = true;
+            return;
+        } else {
+            findIdentifier(tree.getFirstChild(), identifier, found);
+            findIdentifier(tree.getNextSibling(), identifier, found);
+        }
+    }
+    
     /**
      * Finds the content of the SELECT of a query tree
      * 

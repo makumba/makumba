@@ -45,6 +45,8 @@ public class MqlDotNode extends MqlNode {
                 MqlDotNode son = (MqlDotNode) getFirstChild();
                 label = walker.currentContext.join(son.label, son.field, null, -1, this);
             } else if (getFirstChild() instanceof MqlIdentNode) {
+                // resolve first, in case we didn't resolve earlier
+                ((MqlIdentNode) getFirstChild()).resolve();
                 label = ((MqlIdentNode) getFirstChild()).label;
             } else {
                 throw new SemanticException("(expression).field not supported", "", getLine(), getColumn());

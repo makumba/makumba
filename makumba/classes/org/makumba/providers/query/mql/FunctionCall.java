@@ -55,6 +55,9 @@ public class FunctionCall {
         return parentType;
     }
 
+    /**
+     * get the path to the function call, i.e. a.b.c.functionCall()
+     */
     public String getPath() {
         return path;
     }
