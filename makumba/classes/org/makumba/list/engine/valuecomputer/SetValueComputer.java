@@ -53,7 +53,10 @@ public class SetValueComputer extends QueryValueComputer {
         queryProps[ComposedQuery.FROM] = (hql?"JOIN ":"")+ setExpr + " " + label;
 
         if (analyzed instanceof ValueTag) {
-            name = label + "." + set.getForeignTable().getTitleFieldName();
+            if(set.getType().equals("set"))
+                name = label + "." + set.getForeignTable().getTitleFieldName();
+            else // setintEnum or setcharEnum
+                name= label+"."+  set.getSubtable().getTitleFieldName();
             queryProps[ComposedQuery.ORDERBY] = name;
         }
 
