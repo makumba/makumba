@@ -188,7 +188,7 @@ public abstract class QueryAnalysisProvider {
                 if (fd == null && (fd = getAlternativeField(dd, fn)) == null)
                     throw new org.makumba.NoSuchFieldException(dd, fn);
 
-                if (fd.getType().equals("set"))
+                if (fd.getType().equals("set") || fd.getType().equals("setintEnum") || fd.getType().equals("setcharEnum"))
                     return fd;
                 return null;
             }
