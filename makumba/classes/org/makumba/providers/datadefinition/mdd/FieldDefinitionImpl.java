@@ -849,11 +849,27 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
     }
 
     public String getNameAt(int i) {
-        if(i > intEnumValues.size()) {
-            throw new RuntimeException("intEnum size is " + intEnumValues.size() + ", index is " + i);
+        
+        switch(type) {
+            case INTENUM:
+            case SETINTENUM:
+                if(i > intEnumValues.size()) {
+                    throw new RuntimeException("enumerator size is " + intEnumValues.size() + ", index is " + i);
+                }
+                return (String) intEnumValues.values().toArray()[i];
+
+            case CHARENUM:
+            case SETCHARENUM:
+                if(i > charEnumValues.size()) {
+                    throw new RuntimeException("enumerator size is " + charEnumValues.size() + ", index is " + i);
+                }
+                return (String) charEnumValues.elementAt(i);
+        
+            default:
+                throw new RuntimeException("getNameAt works only for intEnum, setintEnum, charEnum and setcharEnum");
         }
         
-        return (String) intEnumValues.values().toArray()[i];
+        
     }
 
     public String getNameFor(int i) {
