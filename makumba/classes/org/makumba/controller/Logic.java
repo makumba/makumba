@@ -608,12 +608,18 @@ public class Logic {
 
         Object result = null;
         // FIXME the !constraint.rule.startsWith("actor(") is an ugly way of figuring whether we are trying an actor
-        if (constraint.fromWhere == null&& !constraint.rule.startsWith("actor(")) {
+        if (constraint.fromWhere == null) {
             // we have no FROM and WHERE section, this leads in a hard-to-analyze query
             // so we try a parameter
             String q1;
+            
+            String constraintQuery = constraint.rule;
+            if (constraint.rule.startsWith("actor(")) {
+                // try to fetch the type from the actor
+                constraintQuery = "select " + constraint.rule + " from " + constraint.rule.substring(6, constraint.rule.indexOf(")"));
+            }
             try {
-                q1 = qap.inlineFunctions(constraint.rule).trim();
+                q1 = qap.inlineFunctions(constraintQuery).trim();
             } catch(RuntimeWrappedException rwe) {
                 if(rwe.getCause() instanceof MakumbaError) {
                     throw new ProgrammerError("Error while checking authorization constraint " + constraint.key
@@ -622,6 +628,7 @@ public class Logic {
                     throw rwe;
                 }
             }
+            q1 = q1.substring("SELECT ".length(), q1.indexOf(" from"));
             if (q1.startsWith(qap.getParameterSyntax()) && q1.substring(1).matches("[a-zA-Z]\\w*")) {
                 result = a.getAttribute(q1.substring(1));
             }
@@ -637,7 +644,6 @@ public class Logic {
                 result = q1;
             }
         }
-
         if (result == null) {
             String query = "SELECT " + constraint.rule + " AS col1 ";
             if (constraint.fromWhere != null) {
