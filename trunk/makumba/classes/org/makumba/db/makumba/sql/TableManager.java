@@ -30,6 +30,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -982,6 +984,8 @@ public class TableManager extends Table {
         return b;
     }
 
+    static SimpleDateFormat sqlDateFormat= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
     // moved from dateTimeManager
     /**
      * get the java value of the recordSet column corresponding to this field. This method should return null if the SQL
@@ -991,6 +995,13 @@ public class TableManager extends Table {
         Object o = rs.getObject(i);
         if (rs.wasNull())
             return null;
+        if(o instanceof String){
+            try {
+                o= sqlDateFormat.parse((String)o);
+            } catch (ParseException e) {
+                throw new RuntimeWrappedException(e);
+            }                
+        }
         return o;
     }
 
