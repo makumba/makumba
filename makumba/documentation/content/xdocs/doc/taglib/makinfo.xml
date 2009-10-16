@@ -5,9 +5,9 @@
     </header>
     <body>
         <section id="description">
-            <title>Description</title>
-            <p class="tagDescription">Document me please</p>
-        </section>
+      
+      
+          <title>Description</title>      <p>Document me please</p>    </section>
         <section id="attributes">
             <title>Attributes</title>
             <table>
@@ -27,7 +27,13 @@
                 </tr>
             </table>
         </section>
-    
+        <section id="example">
+      
+          <title>Example</title>      <source>
+      <![CDATA[
+<mak:info applicationProperties="parade.properties" />
+      ]]>
+  </source>    </section>
         <section id="seeAlso">
             <title>See also</title>
             <ul>
@@ -36,12 +42,5 @@
                 </li>
             </ul>
         </section>
-      <section id="example">
-        <title>Example</title>
-        <source>
-      <![CDATA[
-<mak:info applicationProperties="parade.properties" />
-      ]]>
-  </source>
-    </section>  </body>
+    </body>
 </document>

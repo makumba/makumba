@@ -15,6 +15,27 @@
                     <th>Status</th>
                     <th>Comments</th>
                 </tr>
+
+                <tr>
+                    <td></td>
+                    <td>mak:response</td>
+                    <td>not started</td>
+                    <td>rewrite the text and add info about the styles</td>
+                </tr>
+                
+                <tr>
+                    <td></td>
+                    <td>BL</td>
+                    <td>not started</td>
+                    <td>rewrite businessLogicClasses (RTF)</td>
+                </tr>
+                                
+                <tr>
+                    <td>Check and format taglib text</td>
+                    <td>Update the tag description</td>
+                    <td>Not started</td>
+                    <td></td>
+                </tr>
                 
                 <tr>
                     <td>quickstart (makumba-install.html)</td>
@@ -25,7 +46,7 @@
                 
                 <tr>
                     <td></td>
-                    <td>makumba-template packaing and download</td>
+                    <td>makumba-template packaging and download</td>
                     <td>not started</td>
                     <td>make a target in build.xml to checkout &amp; make a zip of makumba-template, including the latest makumba.jar. might be good to actually make this part of the release cycle along with mak-sources.</td>
                 </tr>
@@ -40,19 +61,11 @@
                 <tr>
                     <td>Showcases</td>
                     <td>Schowcases</td>
-                    <td>In progress</td>
+                    <td>not started</td>
                     <td>Update showcase with case from russian site</td>
                 </tr>
                 
-                
-                <tr>
-                    <td>Example</td>
-                    <td>The Makumba example (demo app, quickstart, usage, tags)</td>
-                    <td>In progress</td>
-                    <td></td>
-                </tr>
-                
-				   <tr>
+			   <tr>
                     <td>Update examples</td>
                     <td>Use the new example data model everywhere!!</td>
                     <td>Not started</td>

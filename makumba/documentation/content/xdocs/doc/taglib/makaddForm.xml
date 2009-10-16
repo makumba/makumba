@@ -5,9 +5,12 @@
     </header>
     <body>
         <section id="description">
-            <title>Description</title>
-            <p class="tagDescription">Makes a form for creating a sub-object of the mandatory enclosing &lt;mak:object$rt; (e.g. a language of a student, an address for a person).</p>
-        </section>
+      
+      
+          <title>Description</title>      <p>
+    Makes a form for creating a sub-object of the mandatory enclosing
+    &lt;mak:object&gt; $ rt ; e.g. a language of a student , an address for a person )&gt;
+  </p>    </section>
         <section id="attributes">
             <title>Attributes</title>
             <table>
@@ -79,7 +82,8 @@ Values are none (displayed in &lt;mak:response/&gt;), before (before the input),
                     <td>reloadFormOnError</td>
                     <td class="center">false</td>
                     <td class="center">true</td>
-                    <td>Indicates whether the form page shall be reloaded on an error, or the specified form action page will be loaded directly.</td>
+                    <td>Indicates whether the form page shall be reloaded on an error, or the specified form action page will
+        be loaded directly.</td>
                     <td>Fixed. Values are true or false; defaults to false.</td>
                 </tr>
                 <tr>
@@ -93,7 +97,8 @@ Values are none (displayed in &lt;mak:response/&gt;), before (before the input),
                     <td>multipleSubmitErrorMsg</td>
                     <td class="center">false</td>
                     <td class="center">true</td>
-                    <td>Enables multiple form submission prevention, and sets the given value as the error message.</td>
+                    <td>Enables multiple form submission prevention, and sets the given value as the error message.
+      </td>
                     <td class="missingDoc">Document me please</td>
                 </tr>
                 <tr>
@@ -191,7 +196,19 @@ Values are none (displayed in &lt;mak:response/&gt;), before (before the input),
                 </tr>
             </table>
         </section>
-    
+        <section id="example">
+      
+          <title>Example</title>      <source>
+      <![CDATA[
+<mak:object from="best.Student s" where="s=$student">
+    <mak:addForm object="s" field="languages" action="studentView.jsp" method="post">
+        <mak:value expr="s.name"/>
+        <mak:input name="level"/>
+        <mak:input name="comments"/>
+    </mak:addForm>
+</mak:object>
+      ]]>
+  </source>    </section>
         <section id="seeAlso">
             <title>See also</title>
             <ul>
@@ -215,18 +232,5 @@ Values are none (displayed in &lt;mak:response/&gt;), before (before the input),
                 </li>
             </ul>
         </section>
-      <section id="example">
-        <title>Example</title>
-        <source>
-      <![CDATA[
-<mak:object from="best.Student s" where="s=$student">
-    <mak:addForm object="s" field="languages" action="studentView.jsp" method="post">
-        <mak:value expr="s.name"/>
-        <mak:input name="level"/>
-        <mak:input name="comments"/>
-    </mak:addForm>
-</mak:object>
-      ]]>
-  </source>
-    </section>  </body>
+    </body>
 </document>

@@ -5,10 +5,15 @@
     </header>
     <body>
         <section id="description">
-            <title>Description</title>
-            <p class="tagDescription">Provides pagination of the results in an enclosing &lt;mak:list&gt;. The tag provides links to the first, previous, next and last item in the result set, and the page number currently displayed. To achieve this, pagination makes use of the information provided by the enclosing &lt;mak:list&gt;, i.e. the offset and limit, and automatically computes the total of rows that would be returned by the list, if no limit was specified.
-    </p>
-        </section>
+      
+      
+          <title>Description</title>      <p>Provides
+    pagination of the results in an enclosing &lt;mak:list&gt;. The tag provides links to the first, previous, next and
+    last item in the result set, and the page number currently displayed. To achieve this, pagination makes use of the
+    information provided by the enclosing
+    &lt;mak:list&gt;, i.e. the offset and limit, and automatically computes the total of rows that would be returned by the
+      list, if no limit was specified.
+  </p>    </section>
         <section id="attributes">
             <title>Attributes</title>
             <table>
@@ -37,21 +42,24 @@
                     <td>paginationLinkTitle</td>
                     <td class="center">false</td>
                     <td class="center">yes</td>
-                    <td>Whether or not to display title="..." elements on the pagination links (i.e. 'first page', 'previous page', 'next page', 'last page'.</td>
+                    <td>Whether or not to display title="..." elements on the pagination links (i.e. 'first page', 'previous
+        page', 'next page', 'last page'.</td>
                     <td>Fixed; defaults to true</td>
                 </tr>
                 <tr>
                     <td>paginationLinkTitleText</td>
                     <td class="center">false</td>
                     <td class="center">yes</td>
-                    <td>The test to use for the pagination links. The default is 'page', creating e.g. 'previous page'. The text given in the attribute will be appended to the prefixes 'first', 'previous', 'next', 'last'.</td>
+                    <td>The test to use for the pagination links. The default is 'page', creating e.g. 'previous page'. The
+        text given in the attribute will be appended to the prefixes 'first', 'previous', 'next', 'last'.</td>
                     <td>Fixed; defaults to true</td>
                 </tr>
                 <tr>
                     <td>itemName</td>
                     <td class="center">false</td>
                     <td class="center">yes</td>
-                    <td>The name of the items displayed, to be used in the text "Showing 'itemName' x out of y (Page z)".</td>
+                    <td>The name of the items displayed, to be used in the text "Showing 'itemName' x out of y (Page z)".
+      </td>
                     <td>Rtexpr.</td>
                 </tr>
                 <tr>
@@ -63,7 +71,17 @@
                 </tr>
             </table>
         </section>
-    
+        <section id="example">
+      
+          <title>Example</title>      <source>
+      <![CDATA[
+  <mak:list from="best.Student s" offset="$offset" limit="$limit" defaultLimit="25" orderBy="s.name">
+      <mak:pagination action="studentList.jsp" title="true" itemName="Students" />
+      <mak:value expr="s.person.name"/>, born on <mak:value expr="s.person.birthdate" />
+      <mak:pagination action="studentList.jsp" title="true" itemName="Students" />
+  </mak:list>
+      ]]>
+  </source>    </section>
         <section id="seeAlso">
             <title>See also</title>
             <ul>
@@ -72,16 +90,5 @@
                 </li>
             </ul>
         </section>
-      <section id="example">
-        <title>Example</title>
-        <source>
-      <![CDATA[
-  <mak:list from="best.Student s" offset="$offset" limit="$limit" defaultLimit="25" orderBy="s.name">
-      <mak:pagination action="studentList.jsp" title="true" itemName="Students" />
-      <mak:value expr="s.person.name"/>, born on <mak:value expr="s.person.birthdate" />
-      <mak:pagination action="studentList.jsp" title="true" itemName="Students" />
-  </mak:list>
-      ]]>
-  </source>
-    </section>  </body>
+    </body>
 </document>

@@ -5,9 +5,9 @@
     </header>
     <body>
         <section id="description">
-            <title>Description</title>
-            <p class="tagDescription">Makes a form for creating a new object of the indicated type.</p>
-        </section>
+      
+      
+          <title>Description</title>      <p>Makes a form for creating a new object of the indicated type.</p>    </section>
         <section id="attributes">
             <title>Attributes</title>
             <table>
@@ -57,8 +57,8 @@
                     <td>db</td>
                     <td class="center">false</td>
                     <td class="center">true</td>
-                    <td>The makumba database to connect to. The format is Host_SQLEngineType_DatabaseName 
-If not present, the default database is used. See database configuration and lookup.</td>
+                    <td>The makumba database to connect to. The format is Host_SQLEngineType_DatabaseName
+        If not present, the default database is used. See database configuration and lookup.</td>
                     <td>Fixed, cannot contain attributes, for now. 
 The default database is chosen if this argument is not set. 
 Can only be set for top-level (root) query tags
@@ -83,7 +83,8 @@ Values are none (displayed in &lt;mak:response/&gt;), before (before the input),
                     <td>reloadFormOnError</td>
                     <td class="center">false</td>
                     <td class="center">true</td>
-                    <td>Indicates whether the form page shall be reloaded on an error, or the specified form action page will be loaded directly.</td>
+                    <td>Indicates whether the form page shall be reloaded on an error, or the specified form action page will
+        be loaded directly.</td>
                     <td>Fixed. Values are true or false; defaults to false.</td>
                 </tr>
                 <tr>
@@ -97,7 +98,8 @@ Values are none (displayed in &lt;mak:response/&gt;), before (before the input),
                     <td>multipleSubmitErrorMsg</td>
                     <td class="center">false</td>
                     <td class="center">true</td>
-                    <td>Enables multiple form submission prevention, and sets the given value as the error message.</td>
+                    <td>Enables multiple form submission prevention, and sets the given value as the error message.
+      </td>
                     <td class="missingDoc">Document me please</td>
                 </tr>
                 <tr>
@@ -195,7 +197,17 @@ Values are none (displayed in &lt;mak:response/&gt;), before (before the input),
                 </tr>
             </table>
         </section>
-    
+        <section id="example">
+      
+          <title>Example</title>      <source>
+      <![CDATA[
+<mak:newForm type="general.Person" action="personList.jsp" method="post">
+    <mak:input name="name"/>
+    <mak:input name="surname"/>
+    <input type="submit">
+</mak:newForm>
+      ]]>
+  </source>    </section>
         <section id="seeAlso">
             <title>See also</title>
             <ul>
@@ -219,16 +231,5 @@ Values are none (displayed in &lt;mak:response/&gt;), before (before the input),
                 </li>
             </ul>
         </section>
-      <section id="example">
-        <title>Example</title>
-        <source>
-      <![CDATA[
-<mak:newForm type="general.Person" action="personList.jsp" method="post">
-    <mak:input name="name"/>
-    <mak:input name="surname"/>
-    <input type="submit">
-</mak:newForm>
-      ]]>
-  </source>
-    </section>  </body>
+    </body>
 </document>

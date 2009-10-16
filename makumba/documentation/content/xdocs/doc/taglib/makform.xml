@@ -5,9 +5,12 @@
     </header>
     <body>
         <section id="description">
-            <title>Description</title>
-            <p class="tagDescription">Creates a generic form, that may call a handler method in response. It allows the JSP author to make any kind of form. They are suitable for more complex operations than new, add, edit.</p>
-        </section>
+      
+      
+          <title>Description</title>      <p>
+    Creates a generic form, that may call a handler method in response. It allows the JSP author to make any kind of
+    form. They are suitable for more complex operations than new, add, edit.
+  </p>    </section>
         <section id="attributes">
             <title>Attributes</title>
             <table>
@@ -23,8 +26,8 @@
                     <td class="center">false</td>
                     <td class="center">false</td>
                     <td>the Java method that handles the response</td>
-                    <td>Arguments: (Dictionary formFields, Attributes restOfArguments, Database db) 
-Not mandatory. A form without handler will simply set attributes (as makumba objects) for the next page</td>
+                    <td>Arguments: (Dictionary formFields, Attributes restOfArguments, Database db)
+        Not mandatory. A form without handler will simply set attributes (as makumba objects) for the next page</td>
                 </tr>
                 <tr>
                     <td>action</td>
@@ -58,8 +61,8 @@ Not mandatory. A form without handler will simply set attributes (as makumba obj
                     <td>db</td>
                     <td class="center">false</td>
                     <td class="center">true</td>
-                    <td>The makumba database to connect to. The format is Host_SQLEngineType_DatabaseName 
-If not present, the default database is used. See database configuration and lookup.</td>
+                    <td>The makumba database to connect to. The format is Host_SQLEngineType_DatabaseName
+        If not present, the default database is used. See database configuration and lookup.</td>
                     <td>Fixed, cannot contain attributes, for now. 
 The default database is chosen if this argument is not set. 
 Can only be set for top-level (root) query tags
@@ -84,7 +87,8 @@ Values are none (displayed in &lt;mak:response/&gt;), before (before the input),
                     <td>reloadFormOnError</td>
                     <td class="center">false</td>
                     <td class="center">true</td>
-                    <td>Indicates whether the form page shall be reloaded on an error, or the specified form action page will be loaded directly.</td>
+                    <td>Indicates whether the form page shall be reloaded on an error, or the specified form action page will
+        be loaded directly.</td>
                     <td>Fixed. Values are true or false; defaults to false.</td>
                 </tr>
                 <tr>
@@ -93,6 +97,14 @@ Values are none (displayed in &lt;mak:response/&gt;), before (before the input),
                     <td class="center">true</td>
                     <td>Controls whether client side validation shall be used.</td>
                     <td>Rtexpr. Values are false (off), true (on submission) or live (while tpying).</td>
+                </tr>
+                <tr>
+                    <td>multipleSubmitErrorMsg</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                    <td>Enables multiple form submission prevention, and sets the given value as the error message.
+      </td>
+                    <td class="missingDoc">Document me please</td>
                 </tr>
                 <tr>
                     <td>target</td>
@@ -189,7 +201,18 @@ Values are none (displayed in &lt;mak:response/&gt;), before (before the input),
                 </tr>
             </table>
         </section>
-    
+        <section id="example">
+      
+          <title>Example</title>      <source>
+      <![CDATA[
+<mak:object from="best.Student s" where="s=$student">
+    <mak:form handler="doSomething" action="studentView.jsp" method="post">
+        <mak:input name="xxx" value="s.person.name"/>
+        <input type=submit>
+    </mak:form>
+</mak:object>
+      ]]>
+  </source>    </section>
         <section id="seeAlso">
             <title>See also</title>
             <ul>
@@ -213,17 +236,5 @@ Values are none (displayed in &lt;mak:response/&gt;), before (before the input),
                 </li>
             </ul>
         </section>
-      <section id="example">
-        <title>Example</title>
-        <source>
-      <![CDATA[
-<mak:object from="best.Student s" where="s=$student">
-    <mak:form handler="doSomething" action="studentView.jsp" method="post">
-        <mak:input name="xxx" value="s.person.name"/>
-        <input type=submit>
-    </mak:form>
-</mak:object>
-      ]]>
-  </source>
-    </section>  </body>
+    </body>
 </document>

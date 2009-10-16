@@ -5,19 +5,29 @@
     </header>
     <body>
         <section id="description">
-            <title>Description</title>
-            <p class="tagDescription">An input field to be created, depending on the makumba type of the field.
-
-Set and pointer inputs will render as select boxes. Sometimes you may need to use two select boxes whereby the user can move items from one box to the other, which is illustrated in this example.
-
-Date inputs are slightly different than normal inputs, as they are rendered with several input fields (for the day, month, year, hours, minutes and second, depending on the date/time format). Additionally, a JavaScript-based calendar widget can be used, as shown in an example.
-
-The difference between &lt;mak:input &gt; and normal HTML &lt;input&gt; in a makumba form are:
-
-&lt;mak:input&gt; produces objects prepared for setting/comparing makumba fields (e.g. Pointer, Date, Text). 
-the fields produced by &lt;input&gt; will be available as page $attributes but will all be of type String 
-the fields produced by &lt;mak:input&gt; are available separately as a Dictionary to the handler method</p>
-        </section>
+      
+      
+          <title>Description</title>      <p>
+    An input field to be created, depending on the makumba type of the field.
+</p>      <p>Set and pointer inputs will render as select boxes. Sometimes you may need to use two select boxes whereby the user
+    can
+    move items from one box to the other, which is illustrated in this example.</p>      <p>Date inputs are slightly different than normal inputs, as they are rendered with several input fields (for the day,
+    month,
+    year, hours, minutes and second, depending on the date/time format). Additionally, a JavaScript-based calendar
+    widget can be used, as shown in an example.</p>      <p>
+    The difference between
+    &lt;mak:input&gt;
+    and normal HTML
+    &lt;input&gt;
+    in a makumba form are:</p>      <ul>
+            <li>&lt;mak:input&gt;
+      produces objects prepared for setting/comparing makumba fields (e.g. Pointer, Date, Text).
+      the fields produced by</li>
+            <li>&lt;input&gt;</li>
+    will be available as page $attributes but will all be of type String
+            <li>the fields produced by
+      &lt;mak:input&gt; are available separately as a Dictionary to the handler method</li>
+        </ul>    </section>
         <section id="attributes">
             <title>Attributes</title>
             <table>
@@ -67,7 +77,8 @@ the fields produced by &lt;mak:input&gt; are available separately as a Dictionar
                     <td>dataType</td>
                     <td class="center">false</td>
                     <td class="center">false</td>
-                    <td>The makumba type of the data (needed if there is no value, no default expression for the value, or no makumba type associated with an attribute)</td>
+                    <td>The makumba type of the data (needed if there is no value, no default expression for the value, or no
+        makumba type associated with an attribute)</td>
                     <td>Fixed. Can be char, char[xx], int, date, text, ptr Type, set Type</td>
                 </tr>
                 <tr>
@@ -81,10 +92,10 @@ the fields produced by &lt;mak:input&gt; are available separately as a Dictionar
                     <td>format</td>
                     <td class="center">false</td>
                     <td class="center">false</td>
-                    <td>Format string, according to java.text.SimpleDateFormat 
-Can only countain d, M, y, H, m, s formatting chars, and any kind of separators. Ex: 
-'the day' dd 'of the month' MMMM 'in the year' yyyy. 
-Default is "dd MMMM yyyy"</td>
+                    <td>Format string, according to java.text.SimpleDateFormat
+        Can only countain d, M, y, H, m, s formatting chars, and any kind of separators. Ex:
+        'the day' dd 'of the month' MMMM 'in the year' yyyy.
+        Default is "dd MMMM yyyy"</td>
                     <td>Rtexpr. Only for date.</td>
                 </tr>
                 <tr>
@@ -106,7 +117,8 @@ for file, a file upload box will automatically created, and handling of file nam
                     <td>stepSize</td>
                     <td class="center">false</td>
                     <td class="center">false</td>
-                    <td>For int data with type select or radio, the step size defines the steps between each option. The default stepsize is 1.</td>
+                    <td>For int data with type select or radio, the step size defines the steps between each option. The
+        default stepsize is 1.</td>
                     <td>Rtexpr. Only for int with type=select/radio.</td>
                 </tr>
                 <tr>
@@ -162,16 +174,19 @@ for file, a file upload box will automatically created, and handling of file nam
                     <td>nameVar</td>
                     <td class="center">false</td>
                     <td class="center">false</td>
-                    <td>The name of the java variable in which to store the name of the HTML input. In multiple forms,  there may be more HTML inputs generated by one mak:input, so a suffix is added by makumba to the name to generate unique names for each.</td>
+                    <td>The name of the java variable in which to store the name of the HTML input. In multiple forms, there
+        may be more HTML inputs generated by one mak:input, so a suffix is added by makumba to the name to generate
+        unique names for each.</td>
                     <td>Fixed</td>
                 </tr>
                 <tr>
                     <td>nullOption</td>
                     <td class="center">false</td>
                     <td class="center">false</td>
-                    <td>A text that would be displayed as the "null option" in drop-down boxes, i.e. to add a null value to the other
-          possible options. May be used to allow a ptr to be set to null, and/or require a deliberate action from the users to
-          select a value, rather leaving the default (first) value selected.</td>
+                    <td>A text that would be displayed as the "null option" in drop-down boxes, i.e. to add a null value to
+        the other
+        possible options. May be used to allow a ptr to be set to null, and/or require a deliberate action from the users to
+        select a value, rather leaving the default (first) value selected.</td>
                     <td>Fixed. Only for &lt;code&gt;ptr and intEnum types&lt;/code&gt;</td>
                 </tr>
                 <tr>
@@ -189,6 +204,14 @@ The output will be &lt; tick &gt;&lt; labelSeparator &gt;&lt; label &gt;</td>
                     <td>The string that separates the different options. Default is " " (space). 
 The output will be &lt; [x] label &gt;&lt; elementSeparator &gt;&lt; [x] label &gt;</td>
                     <td>Rtexpr. Only for &lt;code&gt;type="tickbox"&lt;/code&gt;</td>
+                </tr>
+                <tr>
+                    <td>clearDefault</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                    <td>Enable this to hide the default text of an input onFocus and display it again onBlur if nothing has
+        been entered.</td>
+                    <td>FIXME</td>
                 </tr>
                 <tr>
                     <td>accessKey</td>
@@ -305,7 +328,20 @@ The output will be &lt; [x] label &gt;&lt; elementSeparator &gt;&lt; [x] label &
                 </tr>
             </table>
         </section>
-    
+        <section id="example">
+      
+          <title>Example</title>      <source>
+      <![CDATA[
+<mak:object from="best.Student s, s.person p" where="s=$student">
+    <mak:editForm object="p" action="studentView.jsp" method="post">
+        name      <mak:input name="name"/>
+        surname   <mak:input name="surname"/>
+        gender    <mak:input name="gender" type="tickbox" />
+        dob       <mak:input name="birthdate" format="yyyy-MM-dd" />
+    </mak:editForm>
+</mak:object>
+      ]]>
+  </source>    </section>
         <section id="seeAlso">
             <title>See also</title>
             <ul>
@@ -329,19 +365,5 @@ The output will be &lt; [x] label &gt;&lt; elementSeparator &gt;&lt; [x] label &
                 </li>
             </ul>
         </section>
-      <section id="example">
-        <title>Example</title>
-        <source>
-      <![CDATA[
-<mak:object from="best.Student s, s.person p" where="s=$student">
-    <mak:editForm object="p" action="studentView.jsp" method="post">
-        name      <mak:input name="name"/>
-        surname   <mak:input name="surname"/>
-        gender    <mak:input name="gender" type="tickbox" />
-        dob       <mak:input name="birthdate" format="yyyy-MM-dd" />
-    </mak:editForm>
-</mak:object>
-      ]]>
-  </source>
-    </section>  </body>
+    </body>
 </document>

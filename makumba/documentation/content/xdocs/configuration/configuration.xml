@@ -289,7 +289,7 @@
 
 
 
-        <section>
+        <section id="BL">
             <title>Business Logic packages [businessLogicPackages]</title>
             <p> A list of directory=package values that can be used with the Makumba Business
                 Logics. See the Business Logic documentation for more information. </p>
@@ -301,7 +301,7 @@
             <p>This section contains the explicit authorization configuration. See the <a href="/doc/queryfrag.html#explAutho">authorization reference</a> for more details.</p>
         
         </section>
-        <section>
+        <section id="controllerBehaviour">
             <title>Controller behavior [controllerConfig]</title>
 
             <table>

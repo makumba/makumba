@@ -5,9 +5,11 @@
     </header>
     <body>
         <section id="description">
-            <title>Description</title>
-            <p class="tagDescription">Like list, but the query can only have zero or one result. A zero value for maxCountVar and countVar indicate that the object does not exist.</p>
-        </section>
+      
+      
+          <title>Description</title>      <p>Like list, but the query can only have zero or one result. A zero value for maxCountVar and countVar indicate that
+    the object does not exist.
+</p>    </section>
         <section id="attributes">
             <title>Attributes</title>
             <table>
@@ -22,7 +24,8 @@
                     <td>from</td>
                     <td class="center required">true</td>
                     <td class="center">false</td>
-                    <td>OQL FROM section. If the query is nested, the keys from the parent's query are added to this FROM section in the resulting query</td>
+                    <td>OQL FROM section. If the query is nested, the keys from the parent's query are added to this FROM
+        section in the resulting query</td>
                     <td>Fixed, Mandatory.</td>
                 </tr>
                 <tr>
@@ -36,14 +39,15 @@
                     <td>where</td>
                     <td class="center">false</td>
                     <td class="center">false</td>
-                    <td>OQL WHERE section. If the query is nested, the WHERE section from the parent's query, is added to this in the resulting query</td>
+                    <td>OQL WHERE section. If the query is nested, the WHERE section from the parent's query, is added to
+        this in the resulting query</td>
                     <td>Fixed, can contain #{ JSP EL expressions }</td>
                 </tr>
                 <tr>
                     <td>groupBy</td>
                     <td class="center">false</td>
                     <td class="center">false</td>
-                    <td>OQL GROUP BY  section</td>
+                    <td>OQL GROUP BY section</td>
                     <td>Fixed, can contain #{ JSP EL expressions }</td>
                 </tr>
                 <tr>
@@ -51,14 +55,15 @@
                     <td class="center">false</td>
                     <td class="center">false</td>
                     <td>Tag's identifier</td>
-                    <td>Fixed. Can be used to distinguish otherwise identical tags on a page (to avoid confusion by Makumba's JSP analyser)</td>
+                    <td>Fixed. Can be used to distinguish otherwise identical tags on a page (to avoid confusion by Makumba's
+        JSP analyser)</td>
                 </tr>
                 <tr>
                     <td>db</td>
                     <td class="center">false</td>
                     <td class="center">true</td>
-                    <td>The makumba database to connect to. The format is Host_SQLEngineType_DatabaseName 
-If not present, the default database is used. See database configuration and lookup.</td>
+                    <td>The makumba database to connect to. The format is Host_SQLEngineType_DatabaseName
+        If not present, the default database is used. See database configuration and lookup.</td>
                     <td>Fixed, cannot contain attributes, for now. 
 The default database is chosen if this argument is not set. 
 Can only be set for top-level (root) query tags
@@ -97,18 +102,25 @@ Can be a Rtexpr &lt;%= ...%&gt;</td>
                     <td class="deprecated center">false</td>
                     <td class="deprecated center">false</td>
                     <td class="deprecated">The java.lang.Integer variable that will contain the number of the current iteration.</td>
-                    <td class="deprecated">Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java scope at that point in the JSP. Deprecated: Use mak:count() expression language function instead</td>
+                    <td class="deprecated">Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java scope
+        at that point in the JSP. Deprecated: Use mak:count() expression language function instead</td>
                 </tr>
                 <tr class="deprecated">
                     <td class="deprecated">maxCountVar (deprecated)</td>
                     <td class="deprecated center">false</td>
                     <td class="deprecated center">false</td>
                     <td class="deprecated">The java.lang.Integer variable that will contain the total number of iterations.</td>
-                    <td class="deprecated">Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java scope at that point in the JSP. Deprecated: use mak:maxCount() expression language function instead</td>
+                    <td class="deprecated">Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java scope
+        at that point in the JSP. Deprecated: use mak:maxCount() expression language function instead</td>
                 </tr>
             </table>
         </section>
-    
+        <section id="example">
+      
+          <title>Example</title>      <source>
+      <![CDATA[
+      ]]>
+  </source>    </section>
         <section id="seeAlso">
             <title>See also</title>
             <ul>
@@ -120,11 +132,5 @@ Can be a Rtexpr &lt;%= ...%&gt;</td>
                 </li>
             </ul>
         </section>
-      <section id="example">
-        <title>Example</title>
-        <source>
-      <![CDATA[
-      ]]>
-  </source>
-    </section>  </body>
+    </body>
 </document>

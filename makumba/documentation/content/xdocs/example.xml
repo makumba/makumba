@@ -183,7 +183,7 @@
       <p><a href="ext:mysql">MySQL</a></p>
       <p>In much the same way, the nodes in <a href="site.xml"><code>site.xml</code></a> can be referred to using the <code>site:</code> link:</p>
       <source>
-        <![CDATA[<a href="site:documentation//overview">Documentation</a> ]]>
+        <![CDATA[<a href="site:documentation//overview">Documentation</a>]]>
       </source>
       <p><a href="site:documentation//overview">Documentation</a></p>
       <p>Note that those links use XPATH to determine to which node to link to.</p>
@@ -195,6 +195,11 @@
         <tr><th>Header 1</th><th>Header 2</th></tr>
         <tr><td>Column 1</td><td>Column 2</td></tr>
       </table>
+      <source><![CDATA[<table>
+        <tr><th>Header 1</th><th>Header 2</th></tr>
+        <tr><td>Column 1</td><td>Column 2</td></tr>
+      </table>]]>      
+      </source>
       <note>Tables in forrest do not have the <code>&lt;thead&gt;</code> and <code>&lt;tbody&gt;</code></note>
     </section>
     

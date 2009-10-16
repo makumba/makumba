@@ -6,29 +6,14 @@
     <body>
         <section id="description">
             <title>Description</title>
-            <p class="tagDescription">the count of the enclosing mak:list</p>
+            <p class="tagDescription">FIXME: no description for this tag in taglib-documented.xml!</p>
         </section>
         <section id="attributes">
             <title/>
         </section>
-    
-        <section id="seeAlso">
-            <title>See also</title>
-            <ul>
-                <li>
-                    <a href="/doc/taglib/makmaxCount.html">mak:maxCount</a>
-                </li>
-                <li>
-                    <a href="/doc/taglib/maklastCount.html">mak:lastCount</a>
-                </li>
-                <li>
-                    <a href="/doc/taglib/makmaxResults.html">mak:maxResults</a>
-                </li>
-            </ul>
-        </section>
-      <section id="example">
-        <title>Example</title>
-        <source>
+        <section id="example">
+      
+          <title>Example</title>      <source>
       <![CDATA[
 <mak:list ...>
    <c:if test="${mak:count()==1}">These are the list elements: </c:if>
@@ -43,6 +28,20 @@
 </mak:list>
 <c:if test="${mak:lastCount()==0}">These are no elements </c:if>
       ]]>
-  </source>
-    </section>  </body>
+  </source>    </section>
+        <section id="seeAlso">
+            <title>See also</title>
+            <ul>
+                <li>
+                    <a href="/doc/taglib/makmaxCount.html">mak:maxCount</a>
+                </li>
+                <li>
+                    <a href="/doc/taglib/maklastCount.html">mak:lastCount</a>
+                </li>
+                <li>
+                    <a href="/doc/taglib/makmaxResults.html">mak:maxResults</a>
+                </li>
+            </ul>
+        </section>
+    </body>
 </document>

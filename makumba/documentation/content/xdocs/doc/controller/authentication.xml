@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
+<document>
+    <header>
+        <title>Authentication</title>
+    </header>
+    <body>
+<section><title>Authentication</title></section>
+<p>In order to handle the authentication of a user, it is recommended to use standard authentication approaches enforced by the servlet container.</p>
+<note>Support for container-specific authentication, such as Tomcat Realms, might be developed in the future.</note>
+<section><title>Legacy authentication mechanism</title>
+
+<warning>This legacy authentication mechanism is described for historical purposes. However, it is recommended to use a more standard approach to authentication, such as using the authentication mechanisms of the servlet container.</warning>
+
+<p>makumba has a built-in authentication mechanism which is based on checking whether specific <a href="attributes.html">makumba attributes</a> are being set.
+In case an attribute is required when accessing the page but not set, an <a href="/api/org/makumba/UnauthenticatedException.html"><code>org.makumba.UnauthenticatedException</code></a> will 
+be thrown and the corresponding login page called.</p>
+<p>When an <a href="/api/org/makumba/UnauthenticatedException.html"><code>org.makumba.UnauthenticatedException</code></a> is thrown, makumba will look for a <code>login.jsp</code> page, starting from the directory of the page accessed in the request until the root directory.</p>
+<p>the <a href="/taglib/maklogin.html">mak:login</a> and <a href="/taglib/maklogout.html">mak:logout</a> tags can be used in order to set and remove <a href="attributes.html">makumba attributes</a>.</p>
+</section>
+    
+
+    </body>
+</document>

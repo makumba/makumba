@@ -5,9 +5,11 @@
     </header>
     <body>
         <section id="description">
-            <title>Description</title>
-            <p class="tagDescription">Makes a form for editing the object indicated by any of the labels of the mandatory enclosing &lt;mak:object&gt; or &lt;mak:list&gt;. Also linked objects can be edited through the same form.</p>
-        </section>
+      
+      
+          <title>Description</title>      <p>
+    Makes a form for editing the object indicated by any of the labels of the mandatory enclosing &lt;mak:object&gt; or &lt;mak:list&gt;. Also linked objects can be edited through the same form.
+  </p>    </section>
         <section id="attributes">
             <title>Attributes</title>
             <table>
@@ -30,8 +32,8 @@
                     <td class="center">false</td>
                     <td class="center">false</td>
                     <td>the Java method that handles the response</td>
-                    <td>Arguments: (Dictionary formFields, Attributes restOfArguments, Database db) 
-Not mandatory. A form without handler will simply set attributes (as makumba objects) for the next page</td>
+                    <td>Arguments: (Dictionary formFields, Attributes restOfArguments, Database db)
+        Not mandatory. A form without handler will simply set attributes (as makumba objects) for the next page</td>
                 </tr>
                 <tr>
                     <td>action</td>
@@ -80,7 +82,8 @@ Values are none (displayed in &lt;mak:response/&gt;), before (before the input),
                     <td>reloadFormOnError</td>
                     <td class="center">false</td>
                     <td class="center">true</td>
-                    <td>Indicates whether the form page shall be reloaded on an error, or the specified form action page will be loaded directly.</td>
+                    <td>Indicates whether the form page shall be reloaded on an error, or the specified form action page will
+        be loaded directly.</td>
                     <td>Fixed. Values are true or false; defaults to false.</td>
                 </tr>
                 <tr>
@@ -190,7 +193,19 @@ Values are none (displayed in &lt;mak:response/&gt;), before (before the input),
                 </tr>
             </table>
         </section>
-    
+        <section id="example">
+      
+          <title>Example</title>      <source>
+      <![CDATA[
+<mak:object from="best.Student s, s.person p" where="s=$student">
+    <mak:editForm object="s" action="studentView.jsp" method="post">
+        <mak:input name="person.name"/>
+        <mak:input name="person.surname"/>
+        <mak:input name="graduated"/>
+    </mak:editForm>
+</mak:object>
+      ]]>
+  </source>    </section>
         <section id="seeAlso">
             <title>See also</title>
             <ul>
@@ -214,18 +229,5 @@ Values are none (displayed in &lt;mak:response/&gt;), before (before the input),
                 </li>
             </ul>
         </section>
-      <section id="example">
-        <title>Example</title>
-        <source>
-      <![CDATA[
-<mak:object from="best.Student s, s.person p" where="s=$student">
-    <mak:editForm object="s" action="studentView.jsp" method="post">
-        <mak:input name="person.name"/>
-        <mak:input name="person.surname"/>
-        <mak:input name="graduated"/>
-    </mak:editForm>
-</mak:object>
-      ]]>
-  </source>
-    </section>  </body>
+    </body>
 </document>

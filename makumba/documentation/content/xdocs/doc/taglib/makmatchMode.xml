@@ -5,9 +5,9 @@
     </header>
     <body>
         <section id="description">
-            <title>Description</title>
-            <p class="tagDescription">create a match-mode input</p>
-        </section>
+      
+      
+          <title>Description</title>      <p>create a match-mode input</p>    </section>
         <section id="attributes">
             <title>Attributes</title>
             <table>
@@ -44,7 +44,8 @@
         &lt;li&gt;for date comparisons: 'equals', 'before', 'after'&lt;/li&gt;
       &lt;/ul&gt;
       </td>
-                    <td>Fixed. Defaults to 'equals' for string, number and date comparisons, and 'betweenInclusive' for range comparisons.</td>
+                    <td>Fixed. Defaults to 'equals' for string, number and date comparisons, and 'betweenInclusive' for range
+        comparisons.</td>
                 </tr>
                 <tr>
                     <td>default</td>
@@ -58,7 +59,8 @@
                     <td class="center">false</td>
                     <td class="center">false</td>
                     <td>Tag's identifier</td>
-                    <td>Fixed. Can be used to distinguish otherwise identical tags on a page (to avoid confusion by Makumba's JSP analyser)</td>
+                    <td>Fixed. Can be used to distinguish otherwise identical tags on a page (to avoid confusion by Makumba's
+        JSP analyser)</td>
                 </tr>
                 <tr>
                     <td>labelSeparator</td>
@@ -78,7 +80,18 @@ The output will be &lt; [x] label &gt;&lt; elementSeparator &gt;&lt; [x] label &
                 </tr>
             </table>
         </section>
-    
+        <section id="example">
+      
+          <title>Example</title>      <source>
+      <![CDATA[
+<mak:searchForm in="best.Student" name="searchPerson">
+    <mak:criterion fields="name">
+        <mak:matchMode matchModes="contains, equals, begins, ends">
+        <mak:searchField />
+    </mak:criterion>
+</mak:searchForm>
+      ]]>
+  </source>    </section>
         <section id="seeAlso">
             <title>See also</title>
             <ul>
@@ -96,17 +109,5 @@ The output will be &lt; [x] label &gt;&lt; elementSeparator &gt;&lt; [x] label &
                 </li>
             </ul>
         </section>
-      <section id="example">
-        <title>Example</title>
-        <source>
-      <![CDATA[
-<mak:searchForm in="best.Student" name="searchPerson">
-    <mak:criterion fields="name">
-        <mak:matchMode matchModes="contains, equals, begins, ends">
-        <mak:searchField />
-    </mak:criterion>
-</mak:searchForm>
-      ]]>
-  </source>
-    </section>  </body>
+    </body>
 </document>
