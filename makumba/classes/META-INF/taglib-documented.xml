@@ -17,14 +17,14 @@
     <tei-class>org.makumba.list.tags.CountTEI</tei-class>
     <body-content>JSP</body-content>
     <display-name>manipulate lists</display-name>
-    <description>Performs a query on the database. The body of the list, if present, is run once for every item in the resulting data (size 0..N), e.g. to display it. Queries are generated on the spot and can be nested.</description>
     <see>value, object</see>
 
     <attribute>
       <name>from</name>
       <required>true</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>OQL FROM section. If the query is nested, the keys from the parent's query are added to this FROM section in the resulting query</description>
+      <description>OQL FROM section. If the query is nested, the keys from the parent's query are added to this FROM
+        section in the resulting query</description>
       <comments>Fixed, Mandatory.</comments>
     </attribute>
 
@@ -40,7 +40,8 @@
       <name>where</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>OQL WHERE section. If the query is nested, the WHERE section from the parent's query, is added to this in the resulting query</description>
+      <description>OQL WHERE section. If the query is nested, the WHERE section from the parent's query, is added to
+        this in the resulting query</description>
       <comments>Fixed, can contain #{ JSP EL expressions }</comments>
     </attribute>
 
@@ -48,7 +49,7 @@
       <name>orderBy</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>OQL ORDER BY  section</description>
+      <description>OQL ORDER BY section</description>
       <comments>Fixed, can contain #{ JSP EL expressions } label.$fieldname used to be supported, not anymore</comments>
     </attribute>
 
@@ -56,7 +57,7 @@
       <name>groupBy</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>OQL GROUP BY  section</description>
+      <description>OQL GROUP BY section</description>
       <comments>Fixed, can contain #{ JSP EL expressions }</comments>
     </attribute>
 
@@ -65,15 +66,16 @@
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
       <description>Tag's identifier</description>
-      <comments>Fixed. Can be used to distinguish otherwise identical tags on a page (to avoid confusion by Makumba's JSP analyser)</comments>
+      <comments>Fixed. Can be used to distinguish otherwise identical tags on a page (to avoid confusion by Makumba's
+        JSP analyser)</comments>
     </attribute>
 
     <attribute>
       <name>db</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>The makumba database to connect to. The format is Host_SQLEngineType_DatabaseName 
-If not present, the default database is used. See database configuration and lookup.</description>
+      <description>The makumba database to connect to. The format is Host_SQLEngineType_DatabaseName
+        If not present, the default database is used. See database configuration and lookup.</description>
       <comments><![CDATA[Fixed, cannot contain attributes, for now. 
 The default database is chosen if this argument is not set. 
 Can only be set for top-level (root) query tags
@@ -85,7 +87,8 @@ Can be a Rtexpr <%= ...%>]]></comments>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
       <description>the offset of the result to show (0 for starting from the first result)</description>
-      <comments>Fixed ($attribute allowed). If $attribute is not found, defaults to 0. Only allowed for the outermost mak:list</comments>
+      <comments>Fixed ($attribute allowed). If $attribute is not found, defaults to 0. Only allowed for the outermost
+        mak:list</comments>
     </attribute>
 
     <attribute>
@@ -93,10 +96,11 @@ Can be a Rtexpr <%= ...%>]]></comments>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
       <description>the maximum numbers of results to show (-1 for all results)</description>
-      <comments>Fixed ($attribute allowed). Only allowed for the outermost mak:list. if $attribute is not found, defaults to the value of defaultLimit, if present, or -1 otherwise.
-LIMIT can limit the query time dramatically, but the children mak:lists are not yet limited.</comments>
+      <comments>Fixed ($attribute allowed). Only allowed for the outermost mak:list. if $attribute is not found,
+        defaults to the value of defaultLimit, if present, or -1 otherwise.
+        LIMIT can limit the query time dramatically, but the children mak:lists are not yet limited.</comments>
     </attribute>
-    
+
     <attribute>
       <name>defaultLimit</name>
       <required>false</required>
@@ -104,7 +108,7 @@ LIMIT can limit the query time dramatically, but the children mak:lists are not 
       <description>the default value for limit, if the $attribute in limit="$attribute" is not present.</description>
       <comments>Fixed ($attribute allowed). Only allowed for the outermost mak:list.</comments>
     </attribute>
-     
+
     <attribute>
       <name>authorize</name>
       <required>false</required>
@@ -112,7 +116,7 @@ LIMIT can limit the query time dramatically, but the children mak:lists are not 
       <description>Document me please</description>
       <comments>Document me please</comments>
     </attribute>
-    
+
     <attribute>
       <name>editable</name>
       <required>false</required>
@@ -120,7 +124,7 @@ LIMIT can limit the query time dramatically, but the children mak:lists are not 
       <description>Document me please</description>
       <comments>Document me please</comments>
     </attribute>
-    
+
     <attribute>
       <name>logicClass</name>
       <required>false</required>
@@ -128,21 +132,22 @@ LIMIT can limit the query time dramatically, but the children mak:lists are not 
       <description>Document me please</description>
       <comments>Document me please</comments>
     </attribute>
-    
+
     <attribute>
       <name>editPage</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <description>Document me please</description>
       <comments>Document me please</comments>
-    </attribute>    
+    </attribute>
 
     <attribute>
       <name>countVar</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
       <description>The java.lang.Integer variable that will contain the number of the current iteration.</description>
-      <comments>Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java scope at that point in the JSP. Deprecated: Use mak:count() expression language function instead</comments>
+      <comments>Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java scope
+        at that point in the JSP. Deprecated: Use mak:count() expression language function instead</comments>
       <deprecated>true</deprecated>
     </attribute>
 
@@ -151,7 +156,8 @@ LIMIT can limit the query time dramatically, but the children mak:lists are not 
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
       <description>The java.lang.Integer variable that will contain the total number of iterations.</description>
-      <comments>Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java scope at that point in the JSP. Deprecated: use mak:maxCount() expression language function instead</comments>
+      <comments>Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java scope
+        at that point in the JSP. Deprecated: use mak:maxCount() expression language function instead</comments>
       <deprecated>true</deprecated>
     </attribute>
 
@@ -159,7 +165,8 @@ LIMIT can limit the query time dramatically, but the children mak:lists are not 
       <name>separator</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Character string as separator between two list elements. It is not included before the first or after the last</description>
+      <description>Character string as separator between two list elements. It is not included before the first or after
+        the last</description>
       <comments><![CDATA[Deprecated, use <c:if test="${mak:count<mak:maxCount()}"> instead.]]></comments>
       <deprecated>true</deprecated>
     </attribute>
@@ -173,21 +180,20 @@ LIMIT can limit the query time dramatically, but the children mak:lists are not 
     <tei-class>org.makumba.list.tags.CountTEI</tei-class>
     <body-content>JSP</body-content>
     <display-name>manipulate record</display-name>
-    <description>Like list, but the query can only have zero or one result. A zero value for maxCountVar and countVar indicate that the object does not exist.</description>
     <see>list, value</see>
-    
-    <attribute name="from" specifiedIn="list"/>
-    <attribute name="variableFrom" specifiedIn="list"/>
-    <attribute name="where" specifiedIn="list"/>
-    <attribute name="groupBy" specifiedIn="list"/>
-    <attribute name="id" specifiedIn="list"/>
-    <attribute name="db" specifiedIn="list"/>
-    <attribute name="authorize" specifiedIn="list"/>
-    <attribute name="editable" specifiedIn="list"/>
-    <attribute name="logicClass" specifiedIn="list"/>
-    <attribute name="editPage" specifiedIn="list"/>
-    <attribute name="countVar" specifiedIn="list"/>
-    <attribute name="maxCountVar" specifiedIn="list"/>
+
+    <attribute name="from" specifiedIn="list" />
+    <attribute name="variableFrom" specifiedIn="list" />
+    <attribute name="where" specifiedIn="list" />
+    <attribute name="groupBy" specifiedIn="list" />
+    <attribute name="id" specifiedIn="list" />
+    <attribute name="db" specifiedIn="list" />
+    <attribute name="authorize" specifiedIn="list" />
+    <attribute name="editable" specifiedIn="list" />
+    <attribute name="logicClass" specifiedIn="list" />
+    <attribute name="editPage" specifiedIn="list" />
+    <attribute name="countVar" specifiedIn="list" />
+    <attribute name="maxCountVar" specifiedIn="list" />
   </tag>
 
 
@@ -197,9 +203,8 @@ LIMIT can limit the query time dramatically, but the children mak:lists are not 
     <tei-class>org.makumba.list.tags.CountTEI</tei-class>
     <body-content>JSP</body-content>
     <display-name>Display result from a search form</display-name>
-    <description><![CDATA[Similar to, and based on the <mak:list>, this tag automatically iterates over the results from a specified search form. On top of <mak:list>, the following attributes are available:]]></description>
     <see>searchForm, criterion, matchMode, searchField</see>
-    
+
     <attribute>
       <name>resultsFrom</name>
       <required>true</required>
@@ -208,14 +213,14 @@ LIMIT can limit the query time dramatically, but the children mak:lists are not 
       <comments>Document me please</comments>
     </attribute>
 
-    <attribute name="orderBy" specifiedIn="list"/>
-    <attribute name="groupBy" specifiedIn="list"/>
-    <attribute name="offset" specifiedIn="list"/>
-    <attribute name="limit" specifiedIn="list"/>
-    <attribute name="defaultLimit" specifiedIn="list"/>
-    <attribute name="id" specifiedIn="list"/>
-    <attribute name="db" specifiedIn="list"/>
-    <attribute name="separator" specifiedIn="list"/>
+    <attribute name="orderBy" specifiedIn="list" />
+    <attribute name="groupBy" specifiedIn="list" />
+    <attribute name="offset" specifiedIn="list" />
+    <attribute name="limit" specifiedIn="list" />
+    <attribute name="defaultLimit" specifiedIn="list" />
+    <attribute name="id" specifiedIn="list" />
+    <attribute name="db" specifiedIn="list" />
+    <attribute name="separator" specifiedIn="list" />
   </tag>
 
 
@@ -225,14 +230,14 @@ LIMIT can limit the query time dramatically, but the children mak:lists are not 
     <tei-class>org.makumba.list.tags.VarTEI</tei-class>
     <body-content>empty</body-content>
     <display-name>Value of an expression</display-name>
-    <description>Displays the value of an expression from within the query.</description>
     <see>list, object, option</see>
-    
+
     <attribute>
       <name>expr</name>
       <required>true</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>OQL SELECT projection expression. It will be displayed if var nor printVar are not specified.</description>
+      <description>OQL SELECT projection expression. It will be displayed if var nor printVar are not specified.
+      </description>
       <comments>Fixed, Mandatory.</comments>
     </attribute>
 
@@ -240,24 +245,31 @@ LIMIT can limit the query time dramatically, but the children mak:lists are not 
       <name>var</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>The value of the expression is set to a new java.lang.Object variable by this name, as well as to a page-scope attribute, also by the same name (accessible as $attributename).</description>
-      <comments>Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java scope at that point in the JSP. 
-Note: the Java variable must be cast to its specific type (Integer, String, Date, Text, Pointer, Vector) before using it as such.</comments>
+      <description>The value of the expression is set to a new java.lang.Object variable by this name, as well as to a
+        page-scope attribute, also by the same name (accessible as $attributename).</description>
+      <comments>Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java scope
+        at that point in the JSP.
+        Note: the Java variable must be cast to its specific type (Integer, String, Date, Text, Pointer, Vector) before using it
+        as such.</comments>
     </attribute>
 
     <attribute>
       <name>printVar</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>The formatted output as it would have been printed, is instead stored in a new java.lang.String variable by this name, as well as to a page-scope attribute by the same name (accessible as $attributename). </description>
-      <comments>Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java scope at that point in the JSP.</comments>
+      <description>The formatted output as it would have been printed, is instead stored in a new java.lang.String
+        variable by this name, as well as to a page-scope attribute by the same name (accessible as $attributename).
+      </description>
+      <comments>Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java scope
+        at that point in the JSP.</comments>
     </attribute>
 
     <attribute>
       <name>urlEncode</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Indicates if the expression will be part of an URL or not. If "true", the output is URL-encoded. Default is "false".</description>
+      <description>Indicates if the expression will be part of an URL or not. If "true", the output is URL-encoded.
+        Default is "false".</description>
       <comments>Rtexpr.</comments>
     </attribute>
 
@@ -265,7 +277,10 @@ Note: the Java variable must be cast to its specific type (Integer, String, Date
       <name>html</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Normal behaviour is to transform character output to its HTML escaped form. If this is "true", content is assumed to be HTML, and is not escaped. If "auto", heuristically checks the content for HTML tags and inhibits escape if there are any; note: only the first 32768 characters are checked (32kB). Default is "false".</description>
+      <description>Normal behaviour is to transform character output to its HTML escaped form. If this is "true",
+        content is assumed to be HTML, and is not escaped. If "auto", heuristically checks the content for HTML tags and
+        inhibits escape if there are any; note: only the first 32768 characters are checked (32kB). Default is "false".
+      </description>
       <comments>Rtexpr. Only char[] and text</comments>
     </attribute>
 
@@ -273,7 +288,8 @@ Note: the Java variable must be cast to its specific type (Integer, String, Date
       <name>format</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Format string to specify the formatting of a date value, according to java.text.SimpleDateFormat </description>
+      <description>Format string to specify the formatting of a date value, according to java.text.SimpleDateFormat
+      </description>
       <comments>Rtexpr. Only for date. Defaults to "dd MMMM yyyy"</comments>
     </attribute>
 
@@ -282,14 +298,16 @@ Note: the Java variable must be cast to its specific type (Integer, String, Date
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <description><![CDATA[Separator for long lines. If a text consists of short lines only, it will be surrounded by <pre>...</pre>. Default is "<p>".]]></description>
-      <comments>Rtexpr. Only for text. Current implementation is buggy: separator is added before every long line, instead of between every long line.</comments>
+      <comments>Rtexpr. Only for text. Current implementation is buggy: separator is added before every long line,
+        instead of between every long line.</comments>
     </attribute>
 
     <attribute>
       <name>longLineLength</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>The length of a long line. If a text contains long lines, it will be printed differently. See lineSeparator. Default is "30"</description>
+      <description>The length of a long line. If a text contains long lines, it will be printed differently. See
+        lineSeparator. Default is "30"</description>
       <comments>Rtexpr. Only for text.</comments>
     </attribute>
 
@@ -297,7 +315,8 @@ Note: the Java variable must be cast to its specific type (Integer, String, Date
       <name>maxLength</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>The maximum length (number of characters) to print. Longer output is cut off, and an ellipsis is added to indicate the cut. If not set (default), there is no maximum.</description>
+      <description>The maximum length (number of characters) to print. Longer output is cut off, and an ellipsis is
+        added to indicate the cut. If not set (default), there is no maximum.</description>
       <comments>Rtexpr. Only applies for char[] AND if it is not already HTML formatted (cfr. html).</comments>
     </attribute>
 
@@ -305,7 +324,8 @@ Note: the Java variable must be cast to its specific type (Integer, String, Date
       <name>ellipsis</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>The character string to print to indicate that the text extended the maxLength. Default is "...". The final printed string, including the ellipsis, will not exceed maxLength.</description>
+      <description>The character string to print to indicate that the text extended the maxLength. Default is "...". The
+        final printed string, including the ellipsis, will not exceed maxLength.</description>
       <comments>Rtexpr</comments>
     </attribute>
 
@@ -313,7 +333,8 @@ Note: the Java variable must be cast to its specific type (Integer, String, Date
       <name>ellipsisLength</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>The equivalent character length of ellipsis. By default, this is the number of characters in ellipsis. But if ellipsis is e.g. HTML code, then that is not appropriate.</description>
+      <description>The equivalent character length of ellipsis. By default, this is the number of characters in
+        ellipsis. But if ellipsis is e.g. HTML code, then that is not appropriate.</description>
       <comments><![CDATA[Rtexpr. 
 Example, the ellipsis is an image of approx 3 characters wide. ellipsis="<img src='icon.gif' width='10' height='10'>" ellipsisLength="3"]]></comments>
     </attribute>
@@ -322,7 +343,8 @@ Example, the ellipsis is an image of approx 3 characters wide. ellipsis="<img sr
       <name>addTitle</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>If "true", add an HTML tooltip with the value, to the printed output. If "auto", add tooltip only if the printed output is cut (cfr maxLength). Default is "false". </description>
+      <description>If "true", add an HTML tooltip with the value, to the printed output. If "auto", add tooltip only if
+        the printed output is cut (cfr maxLength). Default is "false". </description>
       <comments><![CDATA[Rtexpr. Note: implementated by producing as output: <span title="printVar">possibly-cut-printVar</span> ]]></comments>
     </attribute>
 
@@ -330,8 +352,9 @@ Example, the ellipsis is an image of approx 3 characters wide. ellipsis="<img sr
       <name>default</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>The character string to print if the expr results in a NULL value. Default is default="" (i.e. zero-length string)
-Support not available for: date, "choice" = ptr, set, setCharEnum</description>
+      <description>The character string to print if the expr results in a NULL value. Default is default="" (i.e.
+        zero-length string)
+        Support not available for: date, "choice" = ptr, set, setCharEnum</description>
       <comments>Rtexpr</comments>
     </attribute>
 
@@ -339,7 +362,8 @@ Support not available for: date, "choice" = ptr, set, setCharEnum</description>
       <name>empty</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>The character string to print if the normal printed output would be empty (i.e. zero-length string). Therefore, this is also used for case expr=NULL and default="".</description>
+      <description>The character string to print if the normal printed output would be empty (i.e. zero-length string).
+        Therefore, this is also used for case expr=NULL and default="".</description>
       <comments>Rtexpr</comments>
     </attribute>
 
@@ -350,7 +374,7 @@ Support not available for: date, "choice" = ptr, set, setCharEnum</description>
       <description>Document me please</description>
       <comments>Document me please</comments>
     </attribute>
-    
+
     <attribute>
       <name>logicClass</name>
       <required>false</required>
@@ -358,7 +382,7 @@ Support not available for: date, "choice" = ptr, set, setCharEnum</description>
       <description>Document me please</description>
       <comments>Document me please</comments>
     </attribute>
-    
+
     <attribute>
       <name>editPage</name>
       <required>false</required>
@@ -366,7 +390,7 @@ Support not available for: date, "choice" = ptr, set, setCharEnum</description>
       <description>Document me please</description>
       <comments>Document me please</comments>
     </attribute>
-    
+
   </tag>
 
   <tag>
@@ -374,7 +398,6 @@ Support not available for: date, "choice" = ptr, set, setCharEnum</description>
     <tag-class>org.makumba.list.tags.IfTag</tag-class>
     <body-content>JSP</body-content>
     <display-name>Shows body only if the expression is true</display-name>
-    <description>Displays the body of the tag only if the OQL expression evaluates to true.</description>
 
     <attribute>
       <name>test</name>
@@ -396,13 +419,14 @@ for the test expressions: =, !=, <, <=, >, >=
     <tei-class>org.makumba.list.tags.AttrTEI</tei-class>
     <body-content>empty</body-content>
     <display-name>Value of an expression</display-name>
-    <description>Displays the value of an attribute, or sets it to a Java variable.</description>
 
     <attribute>
       <name>name</name>
       <required>true</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>the name of the attribute. Will be printed if var is not present and there is no exception when finding the argument. If there is an exception but exceptionVar is indicated, nothing will be printed.</description>
+      <description>the name of the attribute. Will be printed if var is not present and there is no exception when
+        finding the argument. If there is an exception but exceptionVar is indicated, nothing will be printed.
+      </description>
       <comments>Fixed, Mandatory.</comments>
     </attribute>
 
@@ -410,7 +434,8 @@ for the test expressions: =, !=, <, <=, >, >=
       <name>var</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>The name of the java.lang.Object variable where to store the attribute value. Note that you will have to cast it to its specific type.</description>
+      <description>The name of the java.lang.Object variable where to store the attribute value. Note that you will have
+        to cast it to its specific type.</description>
       <comments>Fixed, Mandatory.</comments>
     </attribute>
 
@@ -418,7 +443,10 @@ for the test expressions: =, !=, <, <=, >, >=
       <name>exceptionVar</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>The name of the created java.lang.Throwable variable that will hold eventual exceptions raised when trying to compute the attribute. If exceptionVar is missing, any raised exception will stop page execution. If it is present, and AttibuteNotFoundException occurs, the attribute is set to null (so a next request for the attribute will return null)</description>
+      <description>The name of the created java.lang.Throwable variable that will hold eventual exceptions raised when
+        trying to compute the attribute. If exceptionVar is missing, any raised exception will stop page execution. If
+        it is present, and AttibuteNotFoundException occurs, the attribute is set to null (so a next request for the
+        attribute will return null)</description>
       <comments>Fixed</comments>
     </attribute>
 
@@ -426,7 +454,8 @@ for the test expressions: =, !=, <, <=, >, >=
       <name>db</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>The database in which the business logic (if any) will compute the attribute. The default database is normally used.</description>
+      <description>The database in which the business logic (if any) will compute the attribute. The default database is
+        normally used.</description>
       <comments>Fixed</comments>
     </attribute>
   </tag>
@@ -436,16 +465,15 @@ for the test expressions: =, !=, <, <=, >, >=
     <tag-class>org.makumba.forms.tags.FormTagBase</tag-class>
     <body-content>JSP</body-content>
     <display-name>Forms to create new data</display-name>
-    <description>Creates a generic form, that may call a handler method in response. It allows the JSP author to make any kind of form. They are suitable for more complex operations than new, add, edit.</description>
     <see>input, newForm, addForm, editForm, deleteLink, delete</see>
-    
+
     <attribute>
       <name>handler</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
       <description>the Java method that handles the response</description>
-      <comments>Arguments: (Dictionary formFields, Attributes restOfArguments, Database db) 
-Not mandatory. A form without handler will simply set attributes (as makumba objects) for the next page</comments>
+      <comments>Arguments: (Dictionary formFields, Attributes restOfArguments, Database db)
+        Not mandatory. A form without handler will simply set attributes (as makumba objects) for the next page</comments>
     </attribute>
 
     <attribute>
@@ -485,8 +513,8 @@ Not mandatory. A form without handler will simply set attributes (as makumba obj
       <name>db</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>The makumba database to connect to. The format is Host_SQLEngineType_DatabaseName 
-If not present, the default database is used. See database configuration and lookup.</description>
+      <description>The makumba database to connect to. The format is Host_SQLEngineType_DatabaseName
+        If not present, the default database is used. See database configuration and lookup.</description>
       <comments><![CDATA[Fixed, cannot contain attributes, for now. 
 The default database is chosen if this argument is not set. 
 Can only be set for top-level (root) query tags
@@ -514,7 +542,8 @@ Values are none (displayed in <mak:response/>), before (before the input), after
       <name>reloadFormOnError</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Indicates whether the form page shall be reloaded on an error, or the specified form action page will be loaded directly.</description>
+      <description>Indicates whether the form page shall be reloaded on an error, or the specified form action page will
+        be loaded directly.</description>
       <comments>Fixed. Values are true or false; defaults to false.</comments>
     </attribute>
 
@@ -530,7 +559,8 @@ Values are none (displayed in <mak:response/>), before (before the input), after
       <name>multipleSubmitErrorMsg</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Enables multiple form submission prevention, and sets the given value as the error message.</description>
+      <description>Enables multiple form submission prevention, and sets the given value as the error message.
+      </description>
       <comments>Document me please</comments>
     </attribute>
 
@@ -681,9 +711,8 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     <tag-class>org.makumba.forms.tags.NewTag</tag-class>
     <body-content>JSP</body-content>
     <display-name>Forms to create new data</display-name>
-    <description>Makes a form for creating a new object of the indicated type.</description>
     <see>input, form, addForm, editForm, deleteLink, delete</see>
-    
+
     <attribute>
       <name>type</name>
       <required>true</required>
@@ -692,8 +721,8 @@ Values are none (displayed in <mak:response/>), before (before the input), after
       <comments>Fixed, mandatory.</comments>
     </attribute>
 
-    <attribute name="action" specifiedIn="form"/>
-    <attribute name="method" specifiedIn="form"/>
+    <attribute name="action" specifiedIn="form" />
+    <attribute name="method" specifiedIn="form" />
 
     <attribute>
       <name>name</name>
@@ -703,35 +732,35 @@ Values are none (displayed in <mak:response/>), before (before the input), after
       <comments><![CDATA[Fixed. Defaults to __mak__edited__. If set, it is also used for the name of the html form (<form name="..." ...>)]]></comments>
     </attribute>
 
-    <attribute name="message" specifiedIn="form"/>
-    <attribute name="db" specifiedIn="form"/>
-    <attribute name="annotation" specifiedIn="form"/>
-    <attribute name="annotationSeparator" specifiedIn="form"/>
-    <attribute name="reloadFormOnError" specifiedIn="form"/>
-    <attribute name="clientSideValidation" specifiedIn="form"/>
-    <attribute name="multipleSubmitErrorMsg" specifiedIn="form"/>
+    <attribute name="message" specifiedIn="form" />
+    <attribute name="db" specifiedIn="form" />
+    <attribute name="annotation" specifiedIn="form" />
+    <attribute name="annotationSeparator" specifiedIn="form" />
+    <attribute name="reloadFormOnError" specifiedIn="form" />
+    <attribute name="clientSideValidation" specifiedIn="form" />
+    <attribute name="multipleSubmitErrorMsg" specifiedIn="form" />
 
     <!--form specific:-->
-    <attribute name="target" specifiedIn="form"/>
-    <attribute name="onReset" specifiedIn="form"/>
-    <attribute name="onSubmit" specifiedIn="form"/>
+    <attribute name="target" specifiedIn="form" />
+    <attribute name="onReset" specifiedIn="form" />
+    <attribute name="onSubmit" specifiedIn="form" />
 
     <!-- generic: -->
-    <attribute name="styleId" specifiedIn="form"/>
-    <attribute name="styleClass" specifiedIn="form"/>
-    <attribute name="style" specifiedIn="form"/>
+    <attribute name="styleId" specifiedIn="form" />
+    <attribute name="styleClass" specifiedIn="form" />
+    <attribute name="style" specifiedIn="form" />
 
-    <attribute name="title" specifiedIn="form"/>
-    <attribute name="onClick" specifiedIn="form"/>
-    <attribute name="onDblClick" specifiedIn="form"/>
-    <attribute name="onKeyDown" specifiedIn="form"/>
-    <attribute name="onKeyUp" specifiedIn="form"/>
-    <attribute name="onKeyPress" specifiedIn="form"/>
-    <attribute name="onMouseDown" specifiedIn="form"/>
-    <attribute name="onMouseUp" specifiedIn="form"/>
-    <attribute name="onMouseMove" specifiedIn="form"/>
-    <attribute name="onMouseOut" specifiedIn="form"/>
-    <attribute name="onMouseOver" specifiedIn="form"/>
+    <attribute name="title" specifiedIn="form" />
+    <attribute name="onClick" specifiedIn="form" />
+    <attribute name="onDblClick" specifiedIn="form" />
+    <attribute name="onKeyDown" specifiedIn="form" />
+    <attribute name="onKeyUp" specifiedIn="form" />
+    <attribute name="onKeyPress" specifiedIn="form" />
+    <attribute name="onMouseDown" specifiedIn="form" />
+    <attribute name="onMouseUp" specifiedIn="form" />
+    <attribute name="onMouseMove" specifiedIn="form" />
+    <attribute name="onMouseOut" specifiedIn="form" />
+    <attribute name="onMouseOver" specifiedIn="form" />
 
   </tag>
 
@@ -740,9 +769,8 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     <tag-class>org.makumba.forms.tags.EditTag</tag-class>
     <body-content>JSP</body-content>
     <display-name>Forms to edit data</display-name>
-    <description><![CDATA[Makes a form for editing the object indicated by any of the labels of the mandatory enclosing <mak:object> or <mak:list>. Also linked objects can be edited through the same form.]]></description>
     <see>input, newForm, addForm, editForm, deleteLink, delete</see>
-    
+
     <attribute>
       <name>object</name>
       <required>true</required>
@@ -751,38 +779,38 @@ Values are none (displayed in <mak:response/>), before (before the input), after
       <comments>Fixed, mandatory.</comments>
     </attribute>
 
-    <attribute name="handler" specifiedIn="form"/>
-    <attribute name="action" specifiedIn="form"/>
-    <attribute name="method" specifiedIn="form"/>
-    <attribute name="name" specifiedIn="form"/>
-    <attribute name="message" specifiedIn="form"/>
-    <attribute name="annotation" specifiedIn="form"/>
-    <attribute name="annotationSeparator" specifiedIn="form"/>
-    <attribute name="reloadFormOnError" specifiedIn="form"/>
-    <attribute name="clientSideValidation" specifiedIn="form"/>
+    <attribute name="handler" specifiedIn="form" />
+    <attribute name="action" specifiedIn="form" />
+    <attribute name="method" specifiedIn="form" />
+    <attribute name="name" specifiedIn="form" />
+    <attribute name="message" specifiedIn="form" />
+    <attribute name="annotation" specifiedIn="form" />
+    <attribute name="annotationSeparator" specifiedIn="form" />
+    <attribute name="reloadFormOnError" specifiedIn="form" />
+    <attribute name="clientSideValidation" specifiedIn="form" />
 
     <!--form specific:-->
-    <attribute name="target" specifiedIn="form"/>
-    <attribute name="onReset" specifiedIn="form"/>
-    <attribute name="onSubmit" specifiedIn="form"/>
+    <attribute name="target" specifiedIn="form" />
+    <attribute name="onReset" specifiedIn="form" />
+    <attribute name="onSubmit" specifiedIn="form" />
 
     <!-- generic: -->
-    <attribute name="styleId" specifiedIn="form"/>
-    <attribute name="styleClass" specifiedIn="form"/>
-    <attribute name="style" specifiedIn="form"/>
+    <attribute name="styleId" specifiedIn="form" />
+    <attribute name="styleClass" specifiedIn="form" />
+    <attribute name="style" specifiedIn="form" />
 
-    <attribute name="title" specifiedIn="form"/>
-    <attribute name="onClick" specifiedIn="form"/>
-    <attribute name="onDblClick" specifiedIn="form"/>
-    <attribute name="onKeyDown" specifiedIn="form"/>
-    <attribute name="onKeyUp" specifiedIn="form"/>
-    <attribute name="onKeyPress" specifiedIn="form"/>
-    <attribute name="onDblClick" specifiedIn="form"/>
-    <attribute name="onMouseDown" specifiedIn="form"/>
-    <attribute name="onMouseUp" specifiedIn="form"/>
-    <attribute name="onMouseMove" specifiedIn="form"/>
-    <attribute name="onMouseOut" specifiedIn="form"/>
-    <attribute name="onMouseOver" specifiedIn="form"/>
+    <attribute name="title" specifiedIn="form" />
+    <attribute name="onClick" specifiedIn="form" />
+    <attribute name="onDblClick" specifiedIn="form" />
+    <attribute name="onKeyDown" specifiedIn="form" />
+    <attribute name="onKeyUp" specifiedIn="form" />
+    <attribute name="onKeyPress" specifiedIn="form" />
+    <attribute name="onDblClick" specifiedIn="form" />
+    <attribute name="onMouseDown" specifiedIn="form" />
+    <attribute name="onMouseUp" specifiedIn="form" />
+    <attribute name="onMouseMove" specifiedIn="form" />
+    <attribute name="onMouseOut" specifiedIn="form" />
+    <attribute name="onMouseOver" specifiedIn="form" />
   </tag>
 
 
@@ -792,9 +820,8 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     <tag-class>org.makumba.forms.tags.AddTag</tag-class>
     <body-content>JSP</body-content>
     <display-name>Forms to create new data</display-name>
-    <description><![CDATA[Makes a form for creating a sub-object of the mandatory enclosing <mak:object$rt; (e.g. a language of a student, an address for a person).]]></description>
     <see>input, form, newForm, editForm, deleteLink, delete</see>
-    
+
     <attribute>
       <name>object</name>
       <required>true</required>
@@ -811,37 +838,37 @@ Values are none (displayed in <mak:response/>), before (before the input), after
       <comments>Fixed, mandatory.</comments>
     </attribute>
 
-    <attribute name="action" specifiedIn="form"/>
-    <attribute name="method" specifiedIn="form"/>
-    <attribute name="name" specifiedIn="form"/>
-    <attribute name="message" specifiedIn="form"/>
-    <attribute name="annotation" specifiedIn="form"/>
-    <attribute name="annotationSeparator" specifiedIn="form"/>
-    <attribute name="reloadFormOnError" specifiedIn="form"/>
-    <attribute name="clientSideValidation" specifiedIn="form"/>
-    <attribute name="multipleSubmitErrorMsg" specifiedIn="form"/>
+    <attribute name="action" specifiedIn="form" />
+    <attribute name="method" specifiedIn="form" />
+    <attribute name="name" specifiedIn="form" />
+    <attribute name="message" specifiedIn="form" />
+    <attribute name="annotation" specifiedIn="form" />
+    <attribute name="annotationSeparator" specifiedIn="form" />
+    <attribute name="reloadFormOnError" specifiedIn="form" />
+    <attribute name="clientSideValidation" specifiedIn="form" />
+    <attribute name="multipleSubmitErrorMsg" specifiedIn="form" />
 
     <!--form specific:-->
-    <attribute name="target" specifiedIn="form"/>
-    <attribute name="onReset" specifiedIn="form"/>
-    <attribute name="onSubmit" specifiedIn="form"/>
+    <attribute name="target" specifiedIn="form" />
+    <attribute name="onReset" specifiedIn="form" />
+    <attribute name="onSubmit" specifiedIn="form" />
 
     <!-- generic: -->
-    <attribute name="styleId" specifiedIn="form"/>
-    <attribute name="styleClass" specifiedIn="form"/>
-    <attribute name="style" specifiedIn="form"/>
+    <attribute name="styleId" specifiedIn="form" />
+    <attribute name="styleClass" specifiedIn="form" />
+    <attribute name="style" specifiedIn="form" />
 
-    <attribute name="title" specifiedIn="form"/>
-    <attribute name="onClick" specifiedIn="form"/>
-    <attribute name="onDblClick" specifiedIn="form"/>
-    <attribute name="onKeyDown" specifiedIn="form"/>
-    <attribute name="onKeyUp" specifiedIn="form"/>
-    <attribute name="onKeyPress" specifiedIn="form"/>
-    <attribute name="onMouseDown" specifiedIn="form"/>
-    <attribute name="onMouseUp" specifiedIn="form"/>
-    <attribute name="onMouseMove" specifiedIn="form"/>
-    <attribute name="onMouseOut" specifiedIn="form"/>
-    <attribute name="onMouseOver" specifiedIn="form"/>
+    <attribute name="title" specifiedIn="form" />
+    <attribute name="onClick" specifiedIn="form" />
+    <attribute name="onDblClick" specifiedIn="form" />
+    <attribute name="onKeyDown" specifiedIn="form" />
+    <attribute name="onKeyUp" specifiedIn="form" />
+    <attribute name="onKeyPress" specifiedIn="form" />
+    <attribute name="onMouseDown" specifiedIn="form" />
+    <attribute name="onMouseUp" specifiedIn="form" />
+    <attribute name="onMouseMove" specifiedIn="form" />
+    <attribute name="onMouseOut" specifiedIn="form" />
+    <attribute name="onMouseOver" specifiedIn="form" />
   </tag>
 
 
@@ -851,8 +878,7 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     <tag-class>org.makumba.forms.tags.DeleteTag</tag-class>
     <body-content>JSP</body-content>
     <display-name>Forms or links to delete data</display-name>
-    <description><![CDATA[Produces a form or a link to an action page that will delete the object indicated by any of the labels of the mandatory enclosing <mak:object> or <mak:list>]]></description>
-    
+
     <attribute>
       <name>object</name>
       <required>true</required>
@@ -861,8 +887,8 @@ Values are none (displayed in <mak:response/>), before (before the input), after
       <comments>Fixed</comments>
     </attribute>
 
-    <attribute name="action" specifiedIn="form"/>
-    <attribute name="message" specifiedIn="form"/>
+    <attribute name="action" specifiedIn="form" />
+    <attribute name="message" specifiedIn="form" />
 
     <attribute>
       <name>widget</name>
@@ -872,7 +898,7 @@ Values are none (displayed in <mak:response/>), before (before the input), after
       <comments>Fixed, can be one of button or link; defaults to link.</comments>
     </attribute>
 
-    <attribute name="method" specifiedIn="form"/>
+    <attribute name="method" specifiedIn="form" />
 
     <attribute>
       <name>preserveWhitespace</name>
@@ -883,24 +909,24 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     </attribute>
 
     <!--link specific:-->
-    <attribute name="target" specifiedIn="form"/>
-    <attribute name="name" specifiedIn="form"/>
+    <attribute name="target" specifiedIn="form" />
+    <attribute name="name" specifiedIn="form" />
 
     <!-- generic: -->
-    <attribute name="styleId" specifiedIn="form"/>
-    <attribute name="styleClass" specifiedIn="form"/>
-    <attribute name="style" specifiedIn="form"/>
-    <attribute name="title" specifiedIn="form"/>
-    <attribute name="onClick" specifiedIn="form"/>
-    <attribute name="onDblClick" specifiedIn="form"/>
-    <attribute name="onKeyDown" specifiedIn="form"/>
-    <attribute name="onKeyUp" specifiedIn="form"/>
-    <attribute name="onKeyPress" specifiedIn="form"/>
-    <attribute name="onMouseDown" specifiedIn="form"/>
-    <attribute name="onMouseUp" specifiedIn="form"/>
-    <attribute name="onMouseMove" specifiedIn="form"/>
-    <attribute name="onMouseOut" specifiedIn="form"/>
-    <attribute name="onMouseOver" specifiedIn="form"/>
+    <attribute name="styleId" specifiedIn="form" />
+    <attribute name="styleClass" specifiedIn="form" />
+    <attribute name="style" specifiedIn="form" />
+    <attribute name="title" specifiedIn="form" />
+    <attribute name="onClick" specifiedIn="form" />
+    <attribute name="onDblClick" specifiedIn="form" />
+    <attribute name="onKeyDown" specifiedIn="form" />
+    <attribute name="onKeyUp" specifiedIn="form" />
+    <attribute name="onKeyPress" specifiedIn="form" />
+    <attribute name="onMouseDown" specifiedIn="form" />
+    <attribute name="onMouseUp" specifiedIn="form" />
+    <attribute name="onMouseMove" specifiedIn="form" />
+    <attribute name="onMouseOut" specifiedIn="form" />
+    <attribute name="onMouseOver" specifiedIn="form" />
   </tag>
 
 
@@ -910,12 +936,11 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     <tag-class>org.makumba.forms.tags.DeleteTag</tag-class>
     <body-content>JSP</body-content>
     <display-name>Links to delete data</display-name>
-    <description><![CDATA[The usage of <mak:deleteLink> is deprecated, and should be replaced by the equivalent:<mak:delete widget="link">]]></description>
     <see>form, newForm, addForm, editForm, delete</see>
-    
-    <attribute name="object" specifiedIn="delete"/>
-    <attribute name="action" specifiedIn="form"/>
-    <attribute name="message" specifiedIn="form"/>
+
+    <attribute name="object" specifiedIn="delete" />
+    <attribute name="action" specifiedIn="form" />
+    <attribute name="message" specifiedIn="form" />
 
     <attribute>
       <name>widget</name>
@@ -925,29 +950,29 @@ Values are none (displayed in <mak:response/>), before (before the input), after
       <comments>Fixed, can be one of button or link; defaults to link.</comments>
     </attribute>
 
-    <attribute name="method" specifiedIn="form"/>
-    <attribute name="preserveWhitespace" specifiedIn="delete"/>
+    <attribute name="method" specifiedIn="form" />
+    <attribute name="preserveWhitespace" specifiedIn="delete" />
 
     <!--link specific:-->
-    <attribute name="target" specifiedIn="form"/>
-    <attribute name="name" specifiedIn="form"/>
+    <attribute name="target" specifiedIn="form" />
+    <attribute name="name" specifiedIn="form" />
 
     <!-- generic: -->
-    <attribute name="styleId" specifiedIn="form"/>
-    <attribute name="styleClass" specifiedIn="form"/>
-    <attribute name="style" specifiedIn="form"/>
-    <attribute name="title" specifiedIn="form"/>
+    <attribute name="styleId" specifiedIn="form" />
+    <attribute name="styleClass" specifiedIn="form" />
+    <attribute name="style" specifiedIn="form" />
+    <attribute name="title" specifiedIn="form" />
 
-    <attribute name="onClick" specifiedIn="form"/>
-    <attribute name="onDblClick" specifiedIn="form"/>
-    <attribute name="onKeyDown" specifiedIn="form"/>
-    <attribute name="onKeyUp" specifiedIn="form"/>
-    <attribute name="onKeyPress" specifiedIn="form"/>
-    <attribute name="onMouseDown" specifiedIn="form"/>
-    <attribute name="onMouseUp" specifiedIn="form"/>
-    <attribute name="onMouseMove" specifiedIn="form"/>
-    <attribute name="onMouseOut" specifiedIn="form"/>
-    <attribute name="onMouseOver" specifiedIn="form"/>
+    <attribute name="onClick" specifiedIn="form" />
+    <attribute name="onDblClick" specifiedIn="form" />
+    <attribute name="onKeyDown" specifiedIn="form" />
+    <attribute name="onKeyUp" specifiedIn="form" />
+    <attribute name="onKeyPress" specifiedIn="form" />
+    <attribute name="onMouseDown" specifiedIn="form" />
+    <attribute name="onMouseUp" specifiedIn="form" />
+    <attribute name="onMouseMove" specifiedIn="form" />
+    <attribute name="onMouseOut" specifiedIn="form" />
+    <attribute name="onMouseOver" specifiedIn="form" />
   </tag>
 
 
@@ -959,17 +984,6 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     <body-content>JSP</body-content>
     <display-name>Input control for a field</display-name>
     <see>form, newForm, addForm, editForm, deleteLink, delete</see>
-    <description><![CDATA[An input field to be created, depending on the makumba type of the field.
-
-Set and pointer inputs will render as select boxes. Sometimes you may need to use two select boxes whereby the user can move items from one box to the other, which is illustrated in this example.
-
-Date inputs are slightly different than normal inputs, as they are rendered with several input fields (for the day, month, year, hours, minutes and second, depending on the date/time format). Additionally, a JavaScript-based calendar widget can be used, as shown in an example.
-
-The difference between <mak:input > and normal HTML <input> in a makumba form are:
-
-<mak:input> produces objects prepared for setting/comparing makumba fields (e.g. Pointer, Date, Text). 
-the fields produced by <input> will be available as page $attributes but will all be of type String 
-the fields produced by <mak:input> are available separately as a Dictionary to the handler method]]></description>
 
     <attribute>
       <name>field</name>
@@ -1015,7 +1029,8 @@ the fields produced by <mak:input> are available separately as a Dictionary to t
       <name>dataType</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>The makumba type of the data (needed if there is no value, no default expression for the value, or no makumba type associated with an attribute)</description>
+      <description>The makumba type of the data (needed if there is no value, no default expression for the value, or no
+        makumba type associated with an attribute)</description>
       <comments>Fixed. Can be char, char[xx], int, date, text, ptr Type, set Type</comments>
     </attribute>
 
@@ -1031,10 +1046,10 @@ the fields produced by <mak:input> are available separately as a Dictionary to t
       <name>format</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>Format string, according to java.text.SimpleDateFormat 
-Can only countain d, M, y, H, m, s formatting chars, and any kind of separators. Ex: 
-'the day' dd 'of the month' MMMM 'in the year' yyyy. 
-Default is "dd MMMM yyyy"</description>
+      <description>Format string, according to java.text.SimpleDateFormat
+        Can only countain d, M, y, H, m, s formatting chars, and any kind of separators. Ex:
+        'the day' dd 'of the month' MMMM 'in the year' yyyy.
+        Default is "dd MMMM yyyy"</description>
       <comments>Rtexpr. Only for date.</comments>
     </attribute>
 
@@ -1058,7 +1073,8 @@ for file, a file upload box will automatically created, and handling of file nam
       <name>stepSize</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>For int data with type select or radio, the step size defines the steps between each option. The default stepsize is 1.</description>
+      <description>For int data with type select or radio, the step size defines the steps between each option. The
+        default stepsize is 1.</description>
       <comments>Rtexpr. Only for int with type=select/radio.</comments>
     </attribute>
 
@@ -1077,7 +1093,7 @@ for file, a file upload box will automatically created, and handling of file nam
       <description>The formatting that appears on the link to the calendar date-chooser.</description>
       <comments><![CDATA[Only for date types. Defaults to <img border="0" src="_CONTEXT_PATH_/mak-tools/makumbaResources/image/calendar.gif">]]></comments>
     </attribute>
-    
+
     <attribute>
       <name>autoComplete</name>
       <required>false</required>
@@ -1122,7 +1138,9 @@ for file, a file upload box will automatically created, and handling of file nam
       <name>nameVar</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>The name of the java variable in which to store the name of the HTML input. In multiple forms,  there may be more HTML inputs generated by one mak:input, so a suffix is added by makumba to the name to generate unique names for each.</description>
+      <description>The name of the java variable in which to store the name of the HTML input. In multiple forms, there
+        may be more HTML inputs generated by one mak:input, so a suffix is added by makumba to the name to generate
+        unique names for each.</description>
       <comments>Fixed</comments>
     </attribute>
 
@@ -1130,9 +1148,10 @@ for file, a file upload box will automatically created, and handling of file nam
       <name>nullOption</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>A text that would be displayed as the "null option" in drop-down boxes, i.e. to add a null value to the other
-          possible options. May be used to allow a ptr to be set to null, and/or require a deliberate action from the users to
-          select a value, rather leaving the default (first) value selected.</description>
+      <description>A text that would be displayed as the "null option" in drop-down boxes, i.e. to add a null value to
+        the other
+        possible options. May be used to allow a ptr to be set to null, and/or require a deliberate action from the users to
+        select a value, rather leaving the default (first) value selected.</description>
       <comments><![CDATA[Fixed. Only for <code>ptr and intEnum types</code>]]></comments>
     </attribute>
 
@@ -1158,7 +1177,8 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
       <name>clearDefault</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Enable this to hide the default text of an input onFocus and display it again onBlur if nothing has been entered.</description>
+      <description>Enable this to hide the default text of an input onFocus and display it again onBlur if nothing has
+        been entered.</description>
     </attribute>
 
 
@@ -1220,20 +1240,20 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
     </attribute>
 
     <!-- generic -->
-    <attribute name="styleId" specifiedIn="form"/>
-    <attribute name="styleClass" specifiedIn="form"/>
-    <attribute name="style" specifiedIn="form"/>
-    <attribute name="title" specifiedIn="form"/>
-    <attribute name="onClick" specifiedIn="form"/>
-    <attribute name="onDblClick" specifiedIn="form"/>
-    <attribute name="onKeyDown" specifiedIn="form"/>
-    <attribute name="onKeyUp" specifiedIn="form"/>
-    <attribute name="onKeyPress" specifiedIn="form"/>
-    <attribute name="onMouseDown" specifiedIn="form"/>
-    <attribute name="onMouseUp" specifiedIn="form"/>
-    <attribute name="onMouseMove" specifiedIn="form"/>
-    <attribute name="onMouseOut" specifiedIn="form"/>
-    <attribute name="onMouseOver" specifiedIn="form"/>
+    <attribute name="styleId" specifiedIn="form" />
+    <attribute name="styleClass" specifiedIn="form" />
+    <attribute name="style" specifiedIn="form" />
+    <attribute name="title" specifiedIn="form" />
+    <attribute name="onClick" specifiedIn="form" />
+    <attribute name="onDblClick" specifiedIn="form" />
+    <attribute name="onKeyDown" specifiedIn="form" />
+    <attribute name="onKeyUp" specifiedIn="form" />
+    <attribute name="onKeyPress" specifiedIn="form" />
+    <attribute name="onMouseDown" specifiedIn="form" />
+    <attribute name="onMouseUp" specifiedIn="form" />
+    <attribute name="onMouseMove" specifiedIn="form" />
+    <attribute name="onMouseOut" specifiedIn="form" />
+    <attribute name="onMouseOver" specifiedIn="form" />
   </tag>
 
 
@@ -1243,10 +1263,7 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
     <tag-class>org.makumba.forms.tags.SearchTag</tag-class>
     <body-content>JSP</body-content>
     <display-name>Forms to search</display-name>
-    <description>Produces a form to search for records in the database.
     <see>resultList, criterion, matchMode, searchField</see>
-      
-Search forms are in principal related to mak:forms, i.e. attributes allowed there are also allowed in search forms. Additionally, the following attributes are defined.</description>
 
     <attribute>
       <name>in</name>
@@ -1261,7 +1278,8 @@ Search forms are in principal related to mak:forms, i.e. attributes allowed ther
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
       <description>Name of the form</description>
-      <comments>As in mak:forms, but mandatory. Name is used in connection with mak:resultList, and is the prefix for several pageContext attributes set, which can be used to perform searching manually.</comments>
+      <comments>As in mak:forms, but mandatory. Name is used in connection with mak:resultList, and is the prefix for
+        several pageContext attributes set, which can be used to perform searching manually.</comments>
     </attribute>
 
     <attribute>
@@ -1271,31 +1289,31 @@ Search forms are in principal related to mak:forms, i.e. attributes allowed ther
       <description>The message that is displayed in the response page</description>
       <comments>Fixed. Defaults to "Search done!".</comments>
     </attribute>
-    
-    <attribute name="action" specifiedIn="form"/>
-    <attribute name="method" specifiedIn="form"/>
-    <attribute name="db" specifiedIn="form"/>
-    
+
+    <attribute name="action" specifiedIn="form" />
+    <attribute name="method" specifiedIn="form" />
+    <attribute name="db" specifiedIn="form" />
+
     <!--form specific:-->
-    <attribute name="target" specifiedIn="form"/>
-    <attribute name="onReset" specifiedIn="form"/>
-    <attribute name="onSubmit" specifiedIn="form"/>
-    
+    <attribute name="target" specifiedIn="form" />
+    <attribute name="onReset" specifiedIn="form" />
+    <attribute name="onSubmit" specifiedIn="form" />
+
     <!-- generic -->
-    <attribute name="styleId" specifiedIn="form"/>
-    <attribute name="styleClass" specifiedIn="form"/>
-    <attribute name="style" specifiedIn="form"/>
-    <attribute name="title" specifiedIn="form"/>
-    <attribute name="onClick" specifiedIn="form"/>
-    <attribute name="onDblClick" specifiedIn="form"/>
-    <attribute name="onKeyDown" specifiedIn="form"/>
-    <attribute name="onKeyUp" specifiedIn="form"/>
-    <attribute name="onKeyPress" specifiedIn="form"/>
-    <attribute name="onMouseDown" specifiedIn="form"/>
-    <attribute name="onMouseUp" specifiedIn="form"/>
-    <attribute name="onMouseMove" specifiedIn="form"/>
-    <attribute name="onMouseOut" specifiedIn="form"/>
-    <attribute name="onMouseOver" specifiedIn="form"/>
+    <attribute name="styleId" specifiedIn="form" />
+    <attribute name="styleClass" specifiedIn="form" />
+    <attribute name="style" specifiedIn="form" />
+    <attribute name="title" specifiedIn="form" />
+    <attribute name="onClick" specifiedIn="form" />
+    <attribute name="onDblClick" specifiedIn="form" />
+    <attribute name="onKeyDown" specifiedIn="form" />
+    <attribute name="onKeyUp" specifiedIn="form" />
+    <attribute name="onKeyPress" specifiedIn="form" />
+    <attribute name="onMouseDown" specifiedIn="form" />
+    <attribute name="onMouseUp" specifiedIn="form" />
+    <attribute name="onMouseMove" specifiedIn="form" />
+    <attribute name="onMouseOut" specifiedIn="form" />
+    <attribute name="onMouseOver" specifiedIn="form" />
   </tag>
 
 
@@ -1305,9 +1323,8 @@ Search forms are in principal related to mak:forms, i.e. attributes allowed ther
     <tag-class>org.makumba.forms.tags.CriterionTag</tag-class>
     <body-content>JSP</body-content>
     <display-name>Search criterion</display-name>
-    <description><![CDATA[Adds a search criterion to the form. This does not create any inputs, but should be used in combination with <mak:searchField> ]]></description>
     <see>searchForm, resultList, matchMode, searchField</see>
-    
+
     <attribute>
       <name>fields</name>
       <required>true</required>
@@ -1336,7 +1353,8 @@ Search forms are in principal related to mak:forms, i.e. attributes allowed ther
         <li>for date comparisons: 'equals', 'before', 'after'</li>
       </ul>
       ]]></description>
-      <comments>Fixed. Defaults to 'equals' for string, number and date comparisons, and 'betweenInclusive' for range comparisons.</comments>
+      <comments>Fixed. Defaults to 'equals' for string, number and date comparisons, and 'betweenInclusive' for range
+        comparisons.</comments>
     </attribute>
   </tag>
 
@@ -1344,7 +1362,6 @@ Search forms are in principal related to mak:forms, i.e. attributes allowed ther
     <name>matchMode</name>
     <tag-class>org.makumba.forms.tags.MatchModeTag</tag-class>
     <body-content>empty</body-content>
-    <description>create a match-mode input</description>
     <see>searchForm, resultList, criterion, searchField</see>
 
     <attribute>
@@ -1374,7 +1391,8 @@ Search forms are in principal related to mak:forms, i.e. attributes allowed ther
         <li>for date comparisons: 'equals', 'before', 'after'</li>
       </ul>
       ]]></description>
-      <comments>Fixed. Defaults to 'equals' for string, number and date comparisons, and 'betweenInclusive' for range comparisons.</comments>
+      <comments>Fixed. Defaults to 'equals' for string, number and date comparisons, and 'betweenInclusive' for range
+        comparisons.</comments>
     </attribute>
 
     <attribute>
@@ -1385,10 +1403,10 @@ Search forms are in principal related to mak:forms, i.e. attributes allowed ther
       <comments>see 'matchModes' for allowed values</comments>
     </attribute>
 
-    <attribute name="id" specifiedIn="list"/>
+    <attribute name="id" specifiedIn="list" />
 
-    <attribute name="labelSeparator" specifiedIn="input"/>
-    <attribute name="elementSeparator" specifiedIn="input"/>
+    <attribute name="labelSeparator" specifiedIn="input" />
+    <attribute name="elementSeparator" specifiedIn="input" />
   </tag>
 
 
@@ -1399,9 +1417,8 @@ Search forms are in principal related to mak:forms, i.e. attributes allowed ther
     <tei-class>org.makumba.forms.tags.InputTEI</tei-class>
     <body-content>JSP</body-content>
     <display-name>Search input control for a field</display-name>
-    <description><![CDATA[Enclosed inside a <mak:criterion>, generates an input for that criterion. This tag is based on the <mak:input/> tag, and provides additionally the following attributes:]]></description>
     <see>searchForm, resultList, criterion, matchMode</see>
-    
+
     <attribute>
       <name>role</name>
       <required>false</required>
@@ -1410,12 +1427,12 @@ Search forms are in principal related to mak:forms, i.e. attributes allowed ther
       <comments>Only for range searches, values are 'rangeBegin' and 'rangeEnd'. Defaults to 'rangeBegin'.</comments>
     </attribute>
 
-    <attribute name="value" specifiedIn="input"/>
-    <attribute name="id" specifiedIn="list"/>
-    <attribute name="dataType" specifiedIn="input"/>
-    <attribute name="default" specifiedIn="input"/>
-    <attribute name="format" specifiedIn="input"/>
-    <attribute name="type" specifiedIn="input"/>
+    <attribute name="value" specifiedIn="input" />
+    <attribute name="id" specifiedIn="list" />
+    <attribute name="dataType" specifiedIn="input" />
+    <attribute name="default" specifiedIn="input" />
+    <attribute name="format" specifiedIn="input" />
+    <attribute name="type" specifiedIn="input" />
 
     <attribute>
       <name>forceInputStyle</name>
@@ -1428,41 +1445,41 @@ ptr: 'multiple' forces a multiple-select rather than a single-select, and check-
 set: 'single' forces a single-select rather than a multiple-select, and radio-buttons rather than check-boxes. ]]></comments>
     </attribute>
 
-    <attribute name="calendarEditor" specifiedIn="input"/>
-    <attribute name="calendarEditorLink" specifiedIn="input"/>
-    <attribute name="nameVar" specifiedIn="input"/>
-    <attribute name="nullOption" specifiedIn="input"/>
-    <attribute name="labelSeparator" specifiedIn="input"/>
-    <attribute name="elementSeparator" specifiedIn="input"/>
+    <attribute name="calendarEditor" specifiedIn="input" />
+    <attribute name="calendarEditorLink" specifiedIn="input" />
+    <attribute name="nameVar" specifiedIn="input" />
+    <attribute name="nullOption" specifiedIn="input" />
+    <attribute name="labelSeparator" specifiedIn="input" />
+    <attribute name="elementSeparator" specifiedIn="input" />
 
     <!--input specific-->
-    <attribute name="size" specifiedIn="input"/>
-    <attribute name="maxlength" specifiedIn="input"/>
-    <attribute name="rows" specifiedIn="input"/>
-    <attribute name="cols" specifiedIn="input"/>
-    <attribute name="accessKey" specifiedIn="input"/>
-    <attribute name="disabled" specifiedIn="input"/>
-    <attribute name="onChange" specifiedIn="input"/>
-    <attribute name="onBlur" specifiedIn="input"/>
-    <attribute name="onFocus" specifiedIn="input"/>
-    <attribute name="onSelect" specifiedIn="input"/>
-    <attribute name="tabIndex" specifiedIn="input"/>
-    
+    <attribute name="size" specifiedIn="input" />
+    <attribute name="maxlength" specifiedIn="input" />
+    <attribute name="rows" specifiedIn="input" />
+    <attribute name="cols" specifiedIn="input" />
+    <attribute name="accessKey" specifiedIn="input" />
+    <attribute name="disabled" specifiedIn="input" />
+    <attribute name="onChange" specifiedIn="input" />
+    <attribute name="onBlur" specifiedIn="input" />
+    <attribute name="onFocus" specifiedIn="input" />
+    <attribute name="onSelect" specifiedIn="input" />
+    <attribute name="tabIndex" specifiedIn="input" />
+
     <!-- generic -->
-    <attribute name="styleId" specifiedIn="form"/>
-    <attribute name="styleClass" specifiedIn="form"/>
-    <attribute name="style" specifiedIn="form"/>
-    <attribute name="title" specifiedIn="form"/>
-    <attribute name="onClick" specifiedIn="form"/>
-    <attribute name="onDblClick" specifiedIn="form"/>
-    <attribute name="onKeyDown" specifiedIn="form"/>
-    <attribute name="onKeyUp" specifiedIn="form"/>
-    <attribute name="onKeyPress" specifiedIn="form"/>
-    <attribute name="onMouseDown" specifiedIn="form"/>
-    <attribute name="onMouseUp" specifiedIn="form"/>
-    <attribute name="onMouseMove" specifiedIn="form"/>
-    <attribute name="onMouseOut" specifiedIn="form"/>
-    <attribute name="onMouseOver" specifiedIn="form"/>
+    <attribute name="styleId" specifiedIn="form" />
+    <attribute name="styleClass" specifiedIn="form" />
+    <attribute name="style" specifiedIn="form" />
+    <attribute name="title" specifiedIn="form" />
+    <attribute name="onClick" specifiedIn="form" />
+    <attribute name="onDblClick" specifiedIn="form" />
+    <attribute name="onKeyDown" specifiedIn="form" />
+    <attribute name="onKeyUp" specifiedIn="form" />
+    <attribute name="onKeyPress" specifiedIn="form" />
+    <attribute name="onMouseDown" specifiedIn="form" />
+    <attribute name="onMouseUp" specifiedIn="form" />
+    <attribute name="onMouseMove" specifiedIn="form" />
+    <attribute name="onMouseOut" specifiedIn="form" />
+    <attribute name="onMouseOver" specifiedIn="form" />
   </tag>
 
 
@@ -1472,7 +1489,6 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
     <tag-class>org.makumba.forms.tags.ActionTag</tag-class>
     <body-content>JSP</body-content>
     <display-name>set an "action" for a form or deleteLink</display-name>
-    <description>If the action URI of a form or deleteLink is more complex, possibly including other makumba tags, the action parameter of the form tag can be omitted, and the action URI can be indicated in a mak:action, anywhere inside the form tag.</description>
     <see>form, newForm, addForm, editForm</see>
   </tag>
 
@@ -1481,13 +1497,6 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
     <tag-class>org.makumba.forms.tags.OptionTag</tag-class>
     <body-content>JSP</body-content>
     <display-name>Option to describe option lists in an input</display-name>
-    <description>By default, for pointer and set fields, mak:input will show a choser (selector) that includes the title of all possible options, ordered by that title. To change that behavior, the mak:input can include one or more mak:option. Options can be repeated using mak:list, c:foreach, and in general can appear inside any other tag. 
-Text inside mak:option will become an option title. The value attribute will become the option. Text inside the mak:input that is not inside a mak:option amd is not blank (whitespace) will be assumed to separate groups of options and will be rendered. For options that render HTML SELECTs, this is only accepted for multiple SELECTs which will create several SELECT boxes of equal size, one for each option group.
-
-If mak:option doesn't have a value indicated, it will produce a nil option. Such nil options will be ignored at form submission.
-
-If an option value appears many times it will only be shown the first time it occurs.
-    </description>
     <see>input, list</see>
 
     <attribute>
@@ -1497,7 +1506,7 @@ If an option value appears many times it will only be shown the first time it oc
       <description>Value of the option, can be an OQL expression or a $attribute</description>
       <comments>Fixed, if not indicated, nil (null option) is default</comments>
     </attribute>
-    
+
     <attribute>
       <name>selected</name>
       <required>false</required>
@@ -1513,7 +1522,7 @@ If an option value appears many times it will only be shown the first time it oc
       <description>Whether the option will be disabled</description>
       <comments>Fixed</comments>
     </attribute>
-    
+
   </tag>
 
 
@@ -1522,22 +1531,14 @@ If an option value appears many times it will only be shown the first time it oc
     <tag-class>org.makumba.forms.tags.ContextualTag</tag-class>
     <body-content>empty</body-content>
     <display-name></display-name>
-    <description></description>
   </tag>
-  
+
   <tag>
     <name>response</name>
     <tag-class>org.makumba.forms.tags.ResponseTag</tag-class>
     <body-content>empty</body-content>
     <display-name>display response and status from forms or delete</display-name>
-    <description><![CDATA[<mak:response/> prints information about the results of the actions that were performed by the makumba controller (e.g. for a form submit or deleteLink): It either displays the message="..." parameter of the form tag (in green) in case of success, or (in red) the message of a uncaught LogicException resulting from Business Logic. Other exception types will provoke an exception page. 
 
-The unformatted message is available as request-scope attribute makumba.response. The jsp page can get hold of the message using e.g.
-
-<% String s = (String) request.getAttribute("makumba.response") %>Similarly, request-scope attribute makumba.successfulResponse is set only in case of successful action execution.
-
-<% if (null == request.getAttribute("makumba.successfulResponse")) { /* action failed */ } %>(A body-tag style (<mak:response>...</mak:response>) will be added later, to display different messages for different circumstances (errors). It will also be possible to get hold of the actual exception object. )
-]]></description>
     <see>action, form, newForm, addForm, editForm, deleteLink, delete</see>
   </tag>
 
@@ -1548,26 +1549,6 @@ The unformatted message is available as request-scope attribute makumba.response
     <tag-class>org.makumba.controller.jsp.LoginTag</tag-class>
     <body-content>JSP</body-content>
     <display-name>a login form that takes care of passing the existing arguments</display-name>
-    <description><![CDATA[Login is done as a result of a missing attribute (possibly invoked in checkAttributes), when a find{AttributeName} method is called. The missing attribute is the principal that needs to log in. 
-If the attribute cannot be found due to wrong login information, org.makumba.UnauthenticatedException is usually thrown.
-
-The principal (the person who logs in) can have more members (e.g. group, Lbg, Company representatives). E.g. the findCompany() method will check to see if the authentication (email_address and password) corresponds to any company representative of that company. If yes, it will return that company.
-Login can be done in 2 ways:
-
-(Http basic authentication login: will set the attributes $username, $password ) 
-cookie login: done in a page called login.jsp, in the same directory or (if missing) in any of the parents. It should contain at least: 
-The login form will pass further (as hidden arguments) all the http parameters it got. Note that <mak:login> is only needed upon automatic login (a page displayed when the user requested another page, that needs authentication). If you wish to ask for login manually in a startup page, a normal HTML form is enough.
-
-To cancel out a certain attribute, in order to produce a new login, the logout tag is available
-You can remove (cancel-out, logout) multiple attributes from the session by using <mak:logout actor="attribute name"> several times and/or by using the star (*) wildcard, e.g.:
-(Later on, logout request might be done in the business logic, with a method deleteAttributes(param) that can accept either a String (with optional '*') or a String[]. ) 
-(Later: to accomodate servers that don't do session tracking, login can be done by a query condition rather than by doing a query (once per session) to find an attribute. This way, it won't need to do a query (to check the authentication) at every access, but that condition will make sure that authentication is done. )
-
-(<mak:object from="best.Student stud" where ="stud.$login()"> ...</mak:object> 
-then methodBestSudentLogin("stud") will return "stud.auth.email=$username AND stud.auth.password=$password" 
-This can be used for http authentication with no session tracking. )
-(Later: if an attribute has multiple values, a choose{AttributeName}.jsp page is shown. For example, a super user (for that area) can choose to act as any student, Lbg, or company... A student member of more local Vivaldi teams can choose to act for any of the viv teams, etc. )
-]]></description>
     <see>logout, attribute</see>
   </tag>
 
@@ -1578,23 +1559,15 @@ This can be used for http authentication with no session tracking. )
     <tag-class>org.makumba.controller.jsp.LogoutTag</tag-class>
     <body-content>empty</body-content>
     <display-name>remove the reference to the actor logged in</display-name>
-    <description><![CDATA[To cancel out a certain attribute, in order to produce a new login, the logout tag is available
-You can remove (cancel-out, logout) multiple attributes from the session by using <mak:logout actor="attribute name"> several times and/or by using the star (*) wildcard, e.g.:
-(Later on, logout request might be done in the business logic, with a method deleteAttributes(param) that can accept either a String (with optional '*') or a String[]. ) 
-(Later: to accomodate servers that don't do session tracking, login can be done by a query condition rather than by doing a query (once per session) to find an attribute. This way, it won't need to do a query (to check the authentication) at every access, but that condition will make sure that authentication is done. )
-
-(<mak:object from="best.Student stud" where ="stud.$login()"> ...</mak:object> 
-then methodBestSudentLogin("stud") will return "stud.auth.email=$username AND stud.auth.password=$password" 
-This can be used for http authentication with no session tracking. )
-(Later: if an attribute has multiple values, a choose{AttributeName}.jsp page is shown. For example, a super user (for that area) can choose to act as any student, Lbg, or company... A student member of more local Vivaldi teams can choose to act for any of the viv teams, etc. )
-]]></description>
-    <see>login, attribute</see>
     
+    <see>login, attribute</see>
+
     <attribute>
       <name>actor</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>The name of the attribute to be removed from the session. You can remove multiple attributes by using the star (*) wildcard to partially match attributes.</description>
+      <description>The name of the attribute to be removed from the session. You can remove multiple attributes by using
+        the star (*) wildcard to partially match attributes.</description>
       <comments></comments>
     </attribute>
   </tag>
@@ -1606,7 +1579,6 @@ This can be used for http authentication with no session tracking. )
     <tag-class>org.makumba.commons.tags.MakumbaVersionTag</tag-class>
     <body-content>empty</body-content>
     <display-name>Prints Makumba version (a SVN tag)</display-name>
-    <description>Prints the Makumba version</description>
     <see>info</see>
   </tag>
 
@@ -1617,9 +1589,8 @@ This can be used for http authentication with no session tracking. )
     <tag-class>org.makumba.commons.tags.MakumbaInfoTag</tag-class>
     <body-content>empty</body-content>
     <display-name>Prints Makumba and environment information</display-name>
-    <description>Document me please</description>
     <see>version</see>
-    
+
     <attribute>
       <name>applicationProperties</name>
       <required>false</required>
@@ -1663,7 +1634,8 @@ This can be used for http authentication with no session tracking. )
 
   <function>
     <name>maxResults</name>
-    <description>the maximum count of the enclosing mak:list, disregarding potential limit and offset values</description>
+    <description>the maximum count of the enclosing mak:list, disregarding potential limit and offset values
+    </description>
     <function-class>org.makumba.list.tags.QueryTag</function-class>
     <function-signature>int maxResults()</function-signature>
     <see>count,maxCount,lastCount</see>
@@ -1676,10 +1648,8 @@ This can be used for http authentication with no session tracking. )
     <tagclass>org.makumba.list.pagination.PaginationTag</tagclass>
     <bodycontent>EMPTY</bodycontent>
     <display-name>Prints links for pagination navigation</display-name>
-    <description><![CDATA[Provides pagination of the results in an enclosing <mak:list>. The tag provides links to the first, previous, next and last item in the result set, and the page number currently displayed. To achieve this, pagination makes use of the information provided by the enclosing <mak:list>, i.e. the offset and limit, and automatically computes the total of rows that would be returned by the list, if no limit was specified.
-    ]]></description>
     <see>list</see>
-    
+
     <attribute>
       <name>action</name>
       <required>false</required>
@@ -1687,7 +1657,7 @@ This can be used for http authentication with no session tracking. )
       <description>The target page to go to when clicking on a pagination link.</description>
       <comments>Rtexpr.</comments>
     </attribute>
-     <attribute>
+    <attribute>
       <name>showPageTitle</name>
       <required>false</required>
       <rtexprvalue>yes</rtexprvalue>
@@ -1698,26 +1668,29 @@ This can be used for http authentication with no session tracking. )
       <name>paginationLinkTitle</name>
       <required>false</required>
       <rtexprvalue>yes</rtexprvalue>
-      <description>Whether or not to display title="..." elements on the pagination links (i.e. 'first page', 'previous page', 'next page', 'last page'.</description>
+      <description>Whether or not to display title="..." elements on the pagination links (i.e. 'first page', 'previous
+        page', 'next page', 'last page'.</description>
       <comments>Fixed; defaults to true</comments>
     </attribute>
     <attribute>
       <name>paginationLinkTitleText</name>
       <required>false</required>
       <rtexprvalue>yes</rtexprvalue>
-      <description>The test to use for the pagination links. The default is 'page', creating e.g. 'previous page'. The text given in the attribute will be appended to the prefixes 'first', 'previous', 'next', 'last'.</description>
+      <description>The test to use for the pagination links. The default is 'page', creating e.g. 'previous page'. The
+        text given in the attribute will be appended to the prefixes 'first', 'previous', 'next', 'last'.</description>
       <comments>Fixed; defaults to true</comments>
     </attribute>
     <attribute>
       <name>itemName</name>
       <required>false</required>
       <rtexprvalue>yes</rtexprvalue>
-      <description>The name of the items displayed, to be used in the text "Showing 'itemName' x out of y (Page z)".</description>
+      <description>The name of the items displayed, to be used in the text "Showing 'itemName' x out of y (Page z)".
+      </description>
       <comments>Rtexpr.</comments>
     </attribute>
-    
+
     <!-- generic -->
-    <attribute name="styleClass" specifiedIn="form"/>
+    <attribute name="styleClass" specifiedIn="form" />
   </tag>
 
 </taglib>
