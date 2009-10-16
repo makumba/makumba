@@ -251,10 +251,35 @@
         </jar>
     </target>
     
-    <target name="release" if="tag" description="makes a new makumba release with the given tag">
-        <antcall target="makeJar"/>
-        
+    <target name="release" description="makes a new makumba release with the given tag">
+      <condition property="doRelease">
+          <and>
+              <isset property="tag" />
+              <and>
+                  <isset property="user" />
+                  <and>
+                    <isset property="password" />
+                  </and>
+              </and>
+          </and>
+      </condition>
+      
+      <antcall target="doRelease" />
+      <antcall target="releaseHowTo" />
     </target>
+    
+    <target name="doRelease" if ="doRelease">
+        <echo>Making release ${tag} and using sourceforge user ${user} in order to perform upload to FRS.</echo>
+    
+        <antcall target="makeJar" />
+        <antcall target="uploadMadeJar" />
+    </target>
+
+    <target name="releaseHowTo" unless ="doRelease">
+    <echo>In order to make a new relase, you need to provide a release name and a valid sourceforge username and password for the upload</echo>
+    <echo>e.g. ant release -Dtag=makumba-0_8_2_1 -Duser=manuel_gay -Dpassword=XXX</echo>
+    </target>
+
 
     <target name="makeJar" if="tag" description="makes the jar and a src tarball of the given version">
         <antcall target="makeTag" />
@@ -316,7 +341,7 @@
 
 
     <target name="uploadJar" depends="compile, generateTLDs" if="tag"
-        description="makes the jar and a src tarball of the given version, puts it in ./lib and publishes it on the web WITHOUT making it default version">
+        description="makes the jar and a src tarball of the given version, puts it in ./lib and publishes it on the web and makes it the default version">
         <mkdir dir="work/makumba.distrib" />
         <delete dir="work/makumba.distrib/makumba/" />
         <antcall target="makeJar">
@@ -326,22 +351,24 @@
     </target>
 
     <target name="uploadMadeJar"
-        description="uplads a jar, a src tarball and the demo application of the given version (made by a makeJar or a failed uploadJar), puts it in ./lib and publishes it on the web WITHOUT making it default version">
+        description="uplads a jar, a src tarball and the template application of the given version (made by a makeJar or a failed uploadJar), puts it in ./lib and publishes it on the web">
+
+        <echo>make sure you have the necessary libraries to run the FTP and SCP tasks! you can install them by running "ant
+        installAntLibraries" with the right permissions to access your ANT_HOME dir (you might need to use "sudo" on unix environments)</echo>
+        
 
         <antcall target="ftpMadeJar" />
         <antcall target="scpMadeJar" />
 
-        <echo>${tag}.jar, ${tag}-src.zip and ${tag}-template.zip uploaded to sourceforge.net. To make it a release visit:
-            http://sourceforge.net/project/admin/newrelease.php?group_id=25704
-            and create a release with the given tag
-            name (no leading "makumba" in the name)
-	</echo>
+        <echo>${tag}.jar, ${tag}-src.zip and ${tag}-template.zip uploaded to download.makumba.org and sourceforge.net.
+        you should see the files on sourceforge at https://sourceforge.net/projects/makumba/files/ in a couple of hours</echo>
     </target>
 
     <target name="ftpMadeJar">
     
-        <echo>make sure you have the necessary libraries to run the FTP task! you can install them by running "ant
-        installAntFtp" with the right permissions to access your ANT_HOME dir</echo>
+        <mkdir dir="work/" />
+        
+        <copy file="${jar.place}/lib/makumba-${tag}.jar" tofile="work/makumba.jar" />
     
         <ftp server="download.makumba.org" userid="ftp-mak" password="ftp-mak" remotedir="makumba/doc/download"
             binary="yes" verbose="true">
@@ -350,14 +377,15 @@
                 <include name="${tag}-src.zip" />
                 <include name="${tag}-template.zip" />
             </fileset>
+            <fileset dir="work/">
+                <include name="makumba.jar" />
+            </fileset>
         </ftp>
+        
     </target>
 
     <target name="scpMadeJar">
-    
-        <sshexec host="shell.sf.net" username="${user},makumba" password="${password}" command="mkdir /home/frs/project/m/ma/makumba/${tag}"/>
-        
-        <scp todir="${user}:${password}@frs.sourceforge.net:/home/frs/project/m/ma/makumba/${tag}" sftp="true" verbose="true" trust="yes">
+        <scp todir="${user}:${password}@web.sourceforge.net:/home/frs/project/m/ma/makumba/Makumba" sftp="true" verbose="true" trust="yes">
             <fileset dir="lib/">
                 <include name="${tag}.jar" />
                 <include name="${tag}-src.zip" />
@@ -717,11 +745,16 @@
 
 <!-- Miscallaneous targets -->
 
-    <target name="installAntFtp" description="copy required lib to ANT home so the FTP task works and doc can be uploaded">
+    <target name="installAntLibraries" description="copy required lib to ANT home so the FTP and SCP tasks works and doc can be uploaded">
         <echo>Attempting to copy commons-net to your ANT_HOME/lib dir. Make sure you have the right
             permissions when running this task!</echo>
         <copy todir="${ant.home}/lib">
-            <fileset file="lib/commons-net-1.4.1.jar"></fileset>
+            <fileset dir="lib/">
+                <include name="*commons-net-*.jar" />
+                <include name="jsch-0-1.1.42.jar" />
+                <include name="ant-jsch.jar" />
+                
+            </fileset>
         </copy>
     </target>
 
