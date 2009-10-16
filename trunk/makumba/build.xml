@@ -200,7 +200,7 @@
 
 <!-- Targets for creation of the Makumba JAR -->
 
-    <target name="makeManifest">
+    <target name="makeManifest" description="generates manifest file">
         <antcall target="version" />
         <java classname="org.makumba.version" fork="true" output="manifest-replace.properties">
             <classpath>
@@ -217,7 +217,7 @@
         <copy file="manifest.template" tofile="manifest.mf" filtering="on" overwrite="true" />
     </target>
 
-    <target name="makeReleaseManifest">
+    <target name="makeReleaseManifest" description="generates manifest during release creation">
         <antcall target="version" />
         <java classname="org.makumba.version" fork="true" output="work/makumba.distrib/makumba/manifest-replace.properties">
             <classpath>
@@ -354,7 +354,10 @@
     </target>
 
     <target name="scpMadeJar">
-        <scp todir="${user}:${password}@frs.sourceforge.net:/home/frs/project/m/ma/makumba/" sftp="true" verbose="true" trust="yes">
+    
+        <sshexec host="shell.sf.net" username="${user},makumba" password="${password}" command="mkdir /home/frs/project/m/ma/makumba/${tag}"/>
+        
+        <scp todir="${user}:${password}@frs.sourceforge.net:/home/frs/project/m/ma/makumba/${tag}" sftp="true" verbose="true" trust="yes">
             <fileset dir="lib/">
                 <include name="${tag}.jar" />
                 <include name="${tag}-src.zip" />
@@ -508,6 +511,8 @@
 
         <echo>- generating documentation/content/xdocs/apidocs</echo>
 
+        <mkdir dir="documentation/content/xdocs/apidocs" />
+        
         <javadoc destdir="documentation/content/xdocs/apidocs" sourcepath="classes" packagenames="org.makumba" notree="true" noindex="true"
             nohelp="true" windowtitle="Makumba" classpathref="project.class.path" Version="true" Author="true"
             additionalparam="-breakiterator" doctitle="makumba API Documentation" stylesheetfile="documentation/content/xdocs/apidocs/javadoc.css">
