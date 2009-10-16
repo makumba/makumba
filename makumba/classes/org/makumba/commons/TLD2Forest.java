@@ -13,6 +13,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
@@ -43,8 +44,20 @@ public class TLD2Forest {
     private final static int UPDATE = 2;// action is step 2 - merging all tag.xml and tagExample.xml files
 
     private final static int BOTH = 3;// both actions
+    
+    private static enum TagFileType { 
+        
+        EXAMPLE("Example"), DESCRIPTION("Description");
+        
+        String typeName;
+        
+        public String getTypeName() {
+            return typeName;
+        }
+        
+        TagFileType(String name) { this.typeName = name; }
 
-    private final static String EXAMPLE_SECTION_ID = "example";
+    }
 
     private static String errorMsg;
 
@@ -112,11 +125,11 @@ public class TLD2Forest {
         if (action == CREATE || action == BOTH) { // it is step 1, creating separate 2 files
             System.out.println("doing STEP 1");
             generateAllTagFiles(tldFilePath, taglibDirectory);
-            generateAllTagExampleFiles(tldFilePath, exampleDirectory);
+            generateAllTagSpecificFiles(tldFilePath, exampleDirectory);
         }
         if (action == UPDATE || action == BOTH) {
             System.out.println("doing STEP 2");
-            generateAllTagsWithExampleFile2(tldFilePath, taglibDirectory, exampleDirectory);
+            mergeAllTagsWithSpecificFiles(tldFilePath, taglibDirectory, exampleDirectory);
         }
 
     }
@@ -144,11 +157,7 @@ public class TLD2Forest {
         }
     }
 
-    /**
-     * @param tldFileDirectory
-     * @param exampleDirectory
-     */
-    public static void generateAllTagExampleFiles(String tldFileDirectory, String exampleDirectory) {
+    public static void generateAllTagSpecificFiles(String tldFileDirectory, String tagDirectory) {
         SAXReader saxReader = new SAXReader();
         Document document = null;
         try {
@@ -162,16 +171,12 @@ public class TLD2Forest {
         for (Iterator<Element> i = root.elementIterator(); i.hasNext();) {
             Element e = i.next();
             if (e.getName().equals("tag")) {
-                generateTagExampleFile(exampleDirectory, e.elementText("name"));
+                generateTagSpecificFile(tagDirectory, e.elementText("name"), TagFileType.EXAMPLE);
+                generateTagSpecificFile(tagDirectory, e.elementText("name"), TagFileType.DESCRIPTION);
             }
         }
     }
 
-    /**
-     * @param taglibDirectory
-     * @param tagName
-     * @return
-     */
     public static String generateTagFile(String taglibDirectory, Element tag) {
         String tagName = tag.elementText("name");
         String tagFilePath = taglibDirectory + File.separator + "mak" + tagName + ".xml";
@@ -192,9 +197,9 @@ public class TLD2Forest {
 
         // tag description
         Element infoSection = bodyElement.addElement("section");
-        infoSection.addAttribute("id", "description");
+        infoSection.addAttribute("id", TagFileType.DESCRIPTION.toString().toLowerCase());
         Element infoSectionTitle = infoSection.addElement("title");
-        infoSectionTitle.setText("Description");
+        infoSectionTitle.setText(TagFileType.DESCRIPTION.getTypeName());
         Element description = infoSection.addElement("p");
         description.addAttribute("class", "tagDescription");
 
@@ -203,9 +208,6 @@ public class TLD2Forest {
 
         for (Iterator<Element> tagElementIter = tag.elementIterator(); tagElementIter.hasNext();) {
             Element tagElement = tagElementIter.next();
-            if (tagElement.getName().equals("description")) {
-                desc = tagElement.getText();
-            }
             if (tagElement.getName().equals("see")) {
                 see = tagElement.getText();
             }
@@ -259,7 +261,7 @@ public class TLD2Forest {
             }
         }
         Element exampleSection = bodyElement.addElement("section");
-        exampleSection.addAttribute("id", EXAMPLE_SECTION_ID);
+        exampleSection.addAttribute("id", TagFileType.EXAMPLE.toString().toLowerCase());
         exampleSection.addElement("title");
 
         // see also
@@ -441,47 +443,47 @@ public class TLD2Forest {
     }
 
     /**
-     * Method for checking if example file exists if not an example.xml with empty structure is generated. If there
-     * already exists corresponding example file then just the full path file name is returned.
+     * Method for checking if tag-specific file (example, description) exists. If not an XML with empty structure is generated. If there
+     * already exists corresponding tag-specific file then just the full path file name is returned.
      * 
-     * @param exampleDirectory
-     *            - name of the output directory where to put the generated example file
+     * @param directory
+     *            name of the output directory where to put the generated file
      * @param tagName
-     *            - tag for which the example file is generated
+     *            tag for which the file is generated
+     * @param type type of the file that is going to be generated
+     * 
      * @return the name of the example file
      */
-    public static String generateTagExampleFile(String exampleDirectory, String tagName) {
-        String exampleFilePath = exampleDirectory + File.separator + "mak" + tagName + "Example" + ".xml";
-
-        File f = new File(exampleFilePath);
+    public static String generateTagSpecificFile(String directory, String tagName, TagFileType type) {
+        
+        String filePath = directory + File.separator + "mak" + tagName + type.getTypeName() + ".xml";
+            
+        File f = new File(filePath);
         if (!f.exists()) {
-            // empty generated tagExample.xml file
-            Document exampleXML = DocumentHelper.createDocument();
-            Element exampleSection = exampleXML.addElement("section");
-            exampleSection.addAttribute("id", EXAMPLE_SECTION_ID);
-            Element exampleTitle = exampleSection.addElement("title");
-            exampleTitle.setText("Example");
-            Element exampleTextParagraph = exampleSection.addElement("p");
-            exampleTextParagraph.setText("");
-            Element exampleCodeParagraph = exampleSection.addElement("p");
-            Element exampleCode = exampleCodeParagraph.addElement("code");
-            exampleCode.setText("");
+            // empty generated tagExample.xml or tagDescription.xml file
+            Document specificXML = DocumentHelper.createDocument();
+            Element specificSection = specificXML.addElement("section");
+            specificSection.addAttribute("id", type.toString().toLowerCase());
+            Element specificTitle = specificSection.addElement("title");
+            specificTitle.setText(type.getTypeName());
+            Element specificTextParagraph = specificSection.addElement("p");
+            specificTextParagraph.setText(type.getTypeName());
             try {
-                if (!(new File(exampleDirectory)).exists()) {
-                    boolean success = (new File(exampleDirectory)).mkdir();
+                if (!(new File(directory)).exists()) {
+                    boolean success = (new File(directory)).mkdir();
                     if (success) {
-                        System.out.println("Directory: " + exampleDirectory + " created");
+                        System.out.println("Directory: " + directory + " created");
                     }
                 }
-                XMLWriter output = new XMLWriter(new FileWriter(new File(exampleFilePath)),
+                XMLWriter output = new XMLWriter(new FileWriter(new File(filePath)),
                         new OutputFormat("  ", true));
-                output.write(exampleXML);
+                output.write(specificXML);
                 output.close();
             } catch (IOException e1) {
                 System.out.println(e1.getMessage());
             }
         }
-        return exampleFilePath;
+        return filePath;
     }
 
     /**
@@ -489,7 +491,7 @@ public class TLD2Forest {
      * 
      * @return
      */
-    public static String generateAllTagsWithExampleFile2(String tldFilePath, String taglibDirectory,
+    public static String mergeAllTagsWithSpecificFiles(String tldFilePath, String taglibDirectory,
             String exampleDirectory) {
         SAXReader saxReader = new SAXReader();
         Document document = null;
@@ -504,67 +506,94 @@ public class TLD2Forest {
         for (Iterator<Element> i = root.elementIterator(); i.hasNext();) {
             Element e = i.next();
             if (e.getName().equals("tag") || e.getName().equals("function")) {
-                generateTagWithExampleFile(taglibDirectory, exampleDirectory, e);
+
+                SAXReader reader = new SAXReader();
+
+                String tagName = e.elementText("name");
+                String tagFileName = "mak" + tagName + ".xml";
+                String tagFilePath = taglibDirectory + File.separator + tagFileName;
+                
+                try {
+                    Document tagXML = reader.read(new File(tagFilePath));
+                    
+                    mergeTagWithSpecificFile(taglibDirectory, exampleDirectory, e, TagFileType.DESCRIPTION, tagXML);
+                    mergeTagWithSpecificFile(taglibDirectory, exampleDirectory, e, TagFileType.EXAMPLE, tagXML);
+
+                    // finally, add the docType to our finalized XML
+                    tagXML.addDocType("document", "-//MAKUMBA//DTD Documentation V2.0//EN", "document-v20-mak.dtd");
+                    
+                    XMLWriter writer = new XMLWriter(new FileWriter(new File(tagFilePath)), new OutputFormat("  ", false));
+                    writer.write(tagXML);
+                    writer.close();
+
+                    
+                } catch (DocumentException e1) {
+                    System.err.println("Couldn't read tag file");
+                    e1.printStackTrace();
+                } catch (IOException e2) {
+                    System.err.println("Couldn't write tag file");
+                    e2.printStackTrace();
+                }
+                
             }
         }
+        
+
         return null;
     }
 
     /**
-     * Step 2 method that merges separate tag.xml and tagExample.xml file
-     * 
+     * Step 2 method that merges separate tag.xml, tagExample.xml and tagDescription.xml file
+     * @param type TODO
+     * @param tagDocument TODO
      * @return
      */
-    public static void generateTagWithExampleFile(String tagsDir, String exampleDir, Element tag) {
-        String tagName = tag.elementText("name");
+    public static void mergeTagWithSpecificFile(String tagFilePath, String specificDir, Element tag, TagFileType type, Document tagDocument) {
         SAXReader saxReader = new SAXReader();
 
-        String tagFileName = "mak" + tagName + ".xml";
-        String tagFilePath = tagsDir + File.separator + tagFileName;
+        String tagName = tag.elementText("name");
 
-        String exampleFileName = "mak" + tagName + "Example" + ".xml";
-        String exampleFilePath = exampleDir + File.separator + exampleFileName;
+        String specificFileName = "mak" + tagName + type.getTypeName() + ".xml";
+        String specificFilePath = specificDir + File.separator + specificFileName;
 
-        File exampleFile = new File(exampleFilePath);
-        if (exampleFile.exists()) {
-            // find the correct place in tag.xml where to add the tagExample.xml code
+        File specificFile = new File(specificFilePath);
+        if (specificFile.exists()) {
+            // find the correct place in tag.xml where to add the tag-specific XML code
             /*
              * reading the tag.XML file
              */
             try {
-                Document exampleXML = saxReader.read(exampleFile);
-                DefaultElement exampleSection = (DefaultElement) exampleXML.getRootElement().selectObject("//section");
-
-                Document tagXML = saxReader.read(new File(tagFilePath));
-
-                // add the docType
-                tagXML.addDocType("document", "-//MAKUMBA//DTD Documentation V2.0//EN", "document-v20-mak.dtd");
+                Document specificXML = saxReader.read(specificFile);
+                DefaultElement specificSection = (DefaultElement) specificXML.getRootElement().selectObject("//section");
 
                 // Element tagExampleSection = tagXML.elementByID(EXAMPLE_SECTION_ID);
-                Element tagRoot = tagXML.getRootElement();
-                Element tagExampleSection = null;
+                Element tagRoot = tagDocument.getRootElement();
+                Element tagSpecificSection = null;
                 List l = (List) tagRoot.selectObject("//document//body//section");
                 if (l.size() > 0) {
                     for (Iterator iterator = l.iterator(); iterator.hasNext();) {
                         Element el = (Element) iterator.next();
-                        if (EXAMPLE_SECTION_ID.equals(el.attributeValue("id"))) {
-                            System.out.println("writing file " + tagFilePath);
-                            tagExampleSection = el;
-                            Element parent = tagExampleSection.getParent();
-                            parent.remove(tagExampleSection);
-                            // adding the needed part from the exampleXML
-                            parent.add(exampleSection);
-                            XMLWriter writer = new XMLWriter(new FileWriter(new File(tagFilePath)), new OutputFormat(
-                                    "  ", false));
-                            writer.write(tagXML);
-                            writer.close();
+                        if (type.toString().toLowerCase().equals(el.attributeValue("id"))) {
+                            tagSpecificSection = el;
+                            
+                            // remove existing children
+                            for(Iterator it = tagSpecificSection.elementIterator(); it.hasNext(); ) {
+                                tagSpecificSection.remove((Element) it.next());
+                            }
+                            
+                            // add children of the other guy
+                            for(Iterator itNew = specificSection.elementIterator(); itNew.hasNext(); ) {
+                                Element newChild = (Element) itNew.next();
+                                Node n = newChild.detach();
+                                tagSpecificSection.add(n);
+                            }
                         }
                     }
-                    if (tagExampleSection == null) {
-                        System.err.println("There was no section with ID=" + EXAMPLE_SECTION_ID);
+                    if (tagSpecificSection == null) {
+                        System.err.println("There was no section with ID=" + type.toString().toLowerCase());
                     }
                 } else
-                    System.err.println("Couldn't find elementById " + EXAMPLE_SECTION_ID + " from file " + tagFilePath);
+                    System.err.println("Couldn't find elementById " + type.toString() + " from file " + tagFilePath);
 
             } catch (Exception ex) {
                 ex.printStackTrace();
