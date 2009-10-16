@@ -5,14 +5,20 @@
     </header>
     <body>
         <section id="description">
-            <title>Description</title>
-            <p class="tagDescription">Prints the Makumba version</p>
-        </section>
+      
+      
+          <title>Description</title>      <p>Prints the Makumba version</p>    </section>
         <section id="attributes">
             <title>Attributes</title>
             <p>This tag has no attributes</p>
         </section>
-    
+        <section id="example">
+      
+          <title>Example</title>      <source>
+      <![CDATA[
+<mak:version />
+      ]]>
+  </source>    </section>
         <section id="seeAlso">
             <title>See also</title>
             <ul>
@@ -21,12 +27,5 @@
                 </li>
             </ul>
         </section>
-      <section id="example">
-        <title>Example</title>
-        <source>
-      <![CDATA[
-<mak:version />
-      ]]>
-  </source>
-    </section>  </body>
+    </body>
 </document>

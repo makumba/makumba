@@ -295,7 +295,8 @@ happyInLife = rank]]></source>
 				<li><strong>unique</strong> fields have a unique value in the respective object, for
 					the respective type</li>
 			</ul>
-        <p>It is possible to customise the error message that will be displayed:</p>
+        <p>These attributes are used by makumba in order to perform <strong>implicit validation</strong> at form submission time, i.e., the fields of submitted forms will automatically be checked for coherence against the defined field attributes.</p>
+        <p>It is possible to customise the error message that will be displayed in case an implicit field validation fails:</p>
         <source><![CDATA[login.unique = "This login is already taken, please choose another one"
 surname.notEmpty = "Please fill in your surname"
 age.notNull = "Please fill in your age"

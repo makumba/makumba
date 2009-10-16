@@ -5,9 +5,12 @@
     </header>
     <body>
         <section id="description">
-            <title>Description</title>
-            <p class="tagDescription">Adds a search criterion to the form. This does not create any inputs, but should be used in combination with &lt;mak:searchField&gt; </p>
-        </section>
+      
+      
+          <title>Description</title>      <p>
+    Adds a search criterion to the form. This does not create any inputs, but should be used in combination with
+    &lt;mak:searchField&gt;
+  </p>    </section>
         <section id="attributes">
             <title>Attributes</title>
             <table>
@@ -44,11 +47,20 @@
         &lt;li&gt;for date comparisons: 'equals', 'before', 'after'&lt;/li&gt;
       &lt;/ul&gt;
       </td>
-                    <td>Fixed. Defaults to 'equals' for string, number and date comparisons, and 'betweenInclusive' for range comparisons.</td>
+                    <td>Fixed. Defaults to 'equals' for string, number and date comparisons, and 'betweenInclusive' for range
+        comparisons.</td>
                 </tr>
             </table>
         </section>
-    
+        <section id="example">
+      
+          <title>Example</title>      <source>
+      <![CDATA[
+<mak:searchForm in="best.Student" name="searchPerson">
+    <mak:criterion fields="name"> ... </mak:criterion>
+</mak:searchForm>
+      ]]>
+  </source>    </section>
         <section id="seeAlso">
             <title>See also</title>
             <ul>
@@ -66,14 +78,5 @@
                 </li>
             </ul>
         </section>
-      <section id="example">
-        <title>Example</title>
-        <source>
-      <![CDATA[
-<mak:searchForm in="best.Student" name="searchPerson">
-    <mak:criterion fields="name"> ... </mak:criterion>
-</mak:searchForm>
-      ]]>
-  </source>
-    </section>  </body>
+    </body>
 </document>

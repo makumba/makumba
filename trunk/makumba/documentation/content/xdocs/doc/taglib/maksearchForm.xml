@@ -5,12 +5,13 @@
     </header>
     <body>
         <section id="description">
-            <title>Description</title>
-            <p class="tagDescription">Produces a form to search for records in the database.
-    
       
-Search forms are in principal related to mak:forms, i.e. attributes allowed there are also allowed in search forms. Additionally, the following attributes are defined.</p>
-        </section>
+      
+          <title>Description</title>      <p>
+    Produces a form to search for records in the database.</p>      <p>
+    Search forms are in principal related to mak:forms, i.e. attributes allowed there are also allowed in search
+    forms. Additionally, the following attributes are defined.
+</p>    </section>
         <section id="attributes">
             <title>Attributes</title>
             <table>
@@ -33,7 +34,8 @@ Search forms are in principal related to mak:forms, i.e. attributes allowed ther
                     <td class="center required">true</td>
                     <td class="center">true</td>
                     <td>Name of the form</td>
-                    <td>As in mak:forms, but mandatory. Name is used in connection with mak:resultList, and is the prefix for several pageContext attributes set, which can be used to perform searching manually.</td>
+                    <td>As in mak:forms, but mandatory. Name is used in connection with mak:resultList, and is the prefix for
+        several pageContext attributes set, which can be used to perform searching manually.</td>
                 </tr>
                 <tr>
                     <td>message</td>
@@ -60,8 +62,8 @@ Search forms are in principal related to mak:forms, i.e. attributes allowed ther
                     <td>db</td>
                     <td class="center">false</td>
                     <td class="center">true</td>
-                    <td>The makumba database to connect to. The format is Host_SQLEngineType_DatabaseName 
-If not present, the default database is used. See database configuration and lookup.</td>
+                    <td>The makumba database to connect to. The format is Host_SQLEngineType_DatabaseName
+        If not present, the default database is used. See database configuration and lookup.</td>
                     <td>Fixed, cannot contain attributes, for now. 
 The default database is chosen if this argument is not set. 
 Can only be set for top-level (root) query tags
@@ -162,15 +164,31 @@ Can be a Rtexpr &lt;%= ...%&gt;</td>
                 </tr>
             </table>
         </section>
-    
-      <section id="example">
-        <title>Example</title>
-        <source>
+        <section id="example">
+      
+          <title>Example</title>      <source>
       <![CDATA[
 <mak:searchForm in="general.Person" name="searchPerson">
     ....
 </mak:searchForm>
       ]]>
-  </source>
-    </section>  </body>
+  </source>    </section>
+        <section id="seeAlso">
+            <title>See also</title>
+            <ul>
+                <li>
+                    <a href="/doc/taglib/makresultList.html">mak:resultList</a>
+                </li>
+                <li>
+                    <a href="/doc/taglib/makcriterion.html">mak:criterion</a>
+                </li>
+                <li>
+                    <a href="/doc/taglib/makmatchMode.html">mak:matchMode</a>
+                </li>
+                <li>
+                    <a href="/doc/taglib/maksearchField.html">mak:searchField</a>
+                </li>
+            </ul>
+        </section>
+    </body>
 </document>

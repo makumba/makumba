@@ -106,12 +106,14 @@ See http://forrest.apache.org/docs/linking.html for more info
       <makversion label="mak:lastCount()" href="/doc/taglib/maklastCount.html"/>
       <makversion label="mak:maxResults()" href="/doc/taglib/makmaxResults.html"/>
     </taglib>
-    <controller label="Makumba Controller" href="/doc/controller.html" />
-    <bl label="Business Logics" dir="/doc/BL" description="Makumba Business Logics" tab="documentation">
- 		<introduction label="Introduction" href="/doc/BL/introduction.html" description="Business Logics introduction" />
-        <javahandlerclasses label="Java Handler Classes" href="/doc/BL/JavaHandlerClasses.html" description="Java Handler Classes"/>
- 		<login label="Login" href="/doc/BL/login.html" description="Login"/>
- 	</bl>
+    <controller label="Makumba Controller" href="/doc/controller/index.html">
+      <authentication label="Authentication" href="/doc/controller/authentication.html" />
+      <authorization label="Authorization" href="/doc/controller/authorization.html" />
+      <forms label="Form submission" href="/doc/controller/forms.html" />
+      <businessLogicClasses label="Java business logic" href="/doc/controller/businessLogicClasses.html"/>
+      <error label="Error handling" href="/doc/controller/error.html" />
+      <attributes label="Makumba Attributes" href="/doc/controller/attributes.html"/>
+    </controller>
     <api label="Java API" tab="documentation" href="/apidocs/org/makumba/package-summary.html" />
   </documentation>
 
