@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<section id="description">
+  <title>Description</title>
+  <p>
+    Produces a form to search for records in the database.</p>
+  <p>
+    Search forms are in principal related to mak:forms, i.e. attributes allowed there are also allowed in search
+    forms. Additionally, the following attributes are defined.
+</p>
+</section>

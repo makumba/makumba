@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<section id="example">
+  <title>Example</title>
+  <source>
+      <![CDATA[
+<mak:input name="some" dataType="ptr T">
+    <mak:option>Please choose:</mak:option>
+    <mak:list from="T choice" where="someCondition" >
+        <mak:option value="choice"><mak:value expr="choice.someField" /></mak:option>
+    </mak:list>
+    <mak:option> -------- separator----------</mak:option>
+    <mak:list from="T choice" where="someOtherCondition" >
+       <mak:option value="choice"> <mak:value expr="choice.someField /></mak:option>
+    </mak:list>
+</mak:input>
+      ]]>
+  </source>
+</section>

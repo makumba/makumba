@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd"><document>
+    <header>
+        <title>mak:input tag documentation</title>
+    </header>
+    <body>
+        <section id="description">
+      
+      
+          <title>Description</title>      <p>
+    An input field to be created, depending on the makumba type of the field.
+</p>      <p>Set and pointer inputs will render as select boxes. Sometimes you may need to use two select boxes whereby the user
+    can
+    move items from one box to the other, which is illustrated in this example.</p>      <p>Date inputs are slightly different than normal inputs, as they are rendered with several input fields (for the day,
+    month,
+    year, hours, minutes and second, depending on the date/time format). Additionally, a JavaScript-based calendar
+    widget can be used, as shown in an example.</p>      <p>
+    The difference between
+    &lt;mak:input&gt;
+    and normal HTML
+    &lt;input&gt;
+    in a makumba form are:</p>      <ul>
+            <li>&lt;mak:input&gt;
+      produces objects prepared for setting/comparing makumba fields (e.g. Pointer, Date, Text).
+      the fields produced by</li>
+            <li>&lt;input&gt;</li>
+    will be available as page $attributes but will all be of type String
+            <li>the fields produced by
+      &lt;mak:input&gt; are available separately as a Dictionary to the handler method</li>
+        </ul>    </section>
+        <section id="attributes">
+            <title>Attributes</title>
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Required</th>
+                    <th>Request-time</th>
+                    <th>Description</th>
+                    <th>Comments</th>
+                </tr>
+                <tr>
+                    <td>field</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
+                    <td>Makumba field (from the edited record or via base pointers or sub-record pointers)</td>
+                    <td>Fixed, mandatory</td>
+                </tr>
+                <tr>
+                    <td>name</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
+                    <td>Makumba field (from the edited record or via base pointers or sub-record pointers)</td>
+                    <td>Fixed, mandatory</td>
+                </tr>
+                <tr>
+                    <td>value</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
+                    <td>OQL expression relative to enclosing query tags or a $attribute computed previously in the page (with &lt;mak:value var=.../&gt; or pageContext.setAttribute(...)), or read by in the previous page by an &lt;mak:input /&gt;</td>
+                    <td>Fixed</td>
+                </tr>
+                <tr>
+                    <td>default</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                    <td class="missingDoc">FIXME</td>
+                    <td>Rtexpr</td>
+                </tr>
+                <tr>
+                    <td>empty</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                    <td class="missingDoc">FIXME</td>
+                    <td>Rtexpr</td>
+                </tr>
+                <tr>
+                    <td>dataType</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
+                    <td>The makumba type of the data (needed if there is no value, no default expression for the value, or no
+        makumba type associated with an attribute)</td>
+                    <td>Fixed. Can be char, char[xx], int, date, text, ptr Type, set Type</td>
+                </tr>
+                <tr>
+                    <td>display</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                    <td>If "false", it will not show the &lt;input&gt; but it will expect to read it in the next page. This allows the page designer to format the input control manually</td>
+                    <td>Rtexpr.</td>
+                </tr>
+                <tr>
+                    <td>format</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
+                    <td>Format string, according to java.text.SimpleDateFormat
+        Can only countain d, M, y, H, m, s formatting chars, and any kind of separators. Ex:
+        'the day' dd 'of the month' MMMM 'in the year' yyyy.
+        Default is "dd MMMM yyyy"</td>
+                    <td>Rtexpr. Only for date.</td>
+                </tr>
+                <tr>
+                    <td>type</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
+                    <td>HTML INPUT type to be used 
+"hidden" works for all fields 
+for char[] , type can be "text" or "password", default is "text" 
+default type for [set]intEnum, [set]charEnum, ptr and set is "select" (dropdown or scroll list depending on size). Alternative is "tickbox" (checkboxes or radio buttons). Can be forced to a specific type by using "radio" or "checkbox" 
+for set, type can be seteditor, which will create two multiple-select boxes (see an example). 
+for int, spinner creates a spinner input with increase/decrease buttons; if a validation definition defines a range for the field, select and radio are will create select boxes and radio buttons. 
+date is split in 3 inputs, &lt;fieldname&gt;_0 (day), _1 (month), _2 (year), and likewise for time elements 
+for text, default is "textarea"; "file" will create file upload box, and will create supplementary attributes &lt;fieldname&gt;_filename, &lt;fieldname&gt;_contentType and &lt;fieldname&gt;_contentLength that have to be handled separately by the handler method 
+for file, a file upload box will automatically created, and handling of file name, content type and length will be done automatically. </td>
+                    <td>Fixed</td>
+                </tr>
+                <tr>
+                    <td>stepSize</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
+                    <td>For int data with type select or radio, the step size defines the steps between each option. The
+        default stepsize is 1.</td>
+                    <td>Rtexpr. Only for int with type=select/radio.</td>
+                </tr>
+                <tr>
+                    <td>calendarEditor</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
+                    <td>Whether to generate code for a calendar editor.</td>
+                    <td>Only for date types. Defaults to &lt;code&gt;true&lt;/code&gt; resp. the default value specified in the Makumba configuration.</td>
+                </tr>
+                <tr>
+                    <td>calendarEditorLink</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
+                    <td>The formatting that appears on the link to the calendar date-chooser.</td>
+                    <td>Only for date types. Defaults to &lt;img border="0" src="_CONTEXT_PATH_/mak-tools/makumbaResources/image/calendar.gif"&gt;</td>
+                </tr>
+                <tr>
+                    <td>autoComplete</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
+                    <td>Enables auto-completion</td>
+                    <td>Fixed. Works only for char[] and ptr.</td>
+                </tr>
+                <tr>
+                    <td>size</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                    <td>Size of the input control</td>
+                    <td>Rtexpr. Only for char[], int (size of the textbox) and set, ptr (height of the select)</td>
+                </tr>
+                <tr>
+                    <td>maxlength</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                    <td>Max length of a text control</td>
+                    <td>Rtexpr. Only for char[] and int. Defaults to makumba width of the char[]</td>
+                </tr>
+                <tr>
+                    <td>rows</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                    <td>Number of textarea rows and columns</td>
+                    <td>only for text</td>
+                </tr>
+                <tr>
+                    <td>cols</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                    <td>Number of textarea rows and columns</td>
+                    <td>only for text</td>
+                </tr>
+                <tr>
+                    <td>nameVar</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
+                    <td>The name of the java variable in which to store the name of the HTML input. In multiple forms, there
+        may be more HTML inputs generated by one mak:input, so a suffix is added by makumba to the name to generate
+        unique names for each.</td>
+                    <td>Fixed</td>
+                </tr>
+                <tr>
+                    <td>nullOption</td>
+                    <td class="center">false</td>
+                    <td class="center">false</td>
+                    <td>A text that would be displayed as the "null option" in drop-down boxes, i.e. to add a null value to
+        the other
+        possible options. May be used to allow a ptr to be set to null, and/or require a deliberate action from the users to
+        select a value, rather leaving the default (first) value selected.</td>
+                    <td>Fixed. Only for &lt;code&gt;ptr and intEnum types&lt;/code&gt;</td>
+                </tr>
+                <tr>
+                    <td>labelSeparator</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                    <td>The string that separates the tickbox (radio/check) from the label. Default is " " (space). 
+The output will be &lt; tick &gt;&lt; labelSeparator &gt;&lt; label &gt;</td>
+                    <td>Rtexpr. Only for &lt;code&gt;type="tickbox"&lt;/code&gt;</td>
+                </tr>
+                <tr>
+                    <td>elementSeparator</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                    <td>The string that separates the different options. Default is " " (space). 
+The output will be &lt; [x] label &gt;&lt; elementSeparator &gt;&lt; [x] label &gt;</td>
+                    <td>Rtexpr. Only for &lt;code&gt;type="tickbox"&lt;/code&gt;</td>
+                </tr>
+                <tr>
+                    <td>clearDefault</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                    <td>Enable this to hide the default text of an input onFocus and display it again onBlur if nothing has
+        been entered.</td>
+                    <td>FIXME</td>
+                </tr>
+                <tr>
+                    <td>accessKey</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                    <td rowspan="7" class="generic">Input-specific HTML tag attribute</td>
+                    <td rowspan="7" class="generic">The content is copied to the resulting &lt;input...&gt; tag. Careful with (escaping) quotes.</td>
+                </tr>
+                <tr>
+                    <td>disabled</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                </tr>
+                <tr>
+                    <td>onChange</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                </tr>
+                <tr>
+                    <td>onBlur</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                </tr>
+                <tr>
+                    <td>onFocus</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                </tr>
+                <tr>
+                    <td>onSelect</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                </tr>
+                <tr>
+                    <td>tabIndex</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                </tr>
+                <tr>
+                    <td>styleId</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                    <td>Generic HTML tag attribute</td>
+                    <td>results in id="..."</td>
+                </tr>
+                <tr>
+                    <td>styleClass</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                    <td>Generic HTML tag attribute</td>
+                    <td>results in class="..."</td>
+                </tr>
+                <tr>
+                    <td>style</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                    <td rowspan="12" class="generic">Generic HTML tag attribute</td>
+                    <td rowspan="12" class="generic">The content is copied to the resulting html tag. Careful with (escaping) quotes.</td>
+                </tr>
+                <tr>
+                    <td>title</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                </tr>
+                <tr>
+                    <td>onClick</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                </tr>
+                <tr>
+                    <td>onDblClick</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                </tr>
+                <tr>
+                    <td>onKeyDown</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                </tr>
+                <tr>
+                    <td>onKeyUp</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                </tr>
+                <tr>
+                    <td>onKeyPress</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                </tr>
+                <tr>
+                    <td>onMouseDown</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                </tr>
+                <tr>
+                    <td>onMouseUp</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                </tr>
+                <tr>
+                    <td>onMouseMove</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                </tr>
+                <tr>
+                    <td>onMouseOut</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                </tr>
+                <tr>
+                    <td>onMouseOver</td>
+                    <td class="center">false</td>
+                    <td class="center">true</td>
+                </tr>
+            </table>
+        </section>
+        <section id="example">
+      
+          <title>Example</title>      <source>
+      <![CDATA[
+<mak:object from="best.Student s, s.person p" where="s=$student">
+    <mak:editForm object="p" action="studentView.jsp" method="post">
+        name      <mak:input name="name"/>
+        surname   <mak:input name="surname"/>
+        gender    <mak:input name="gender" type="tickbox" />
+        dob       <mak:input name="birthdate" format="yyyy-MM-dd" />
+    </mak:editForm>
+</mak:object>
+      ]]>
+  </source>    </section>
+        <section id="seeAlso">
+            <title>See also</title>
+            <ul>
+                <li>
+                    <a href="/doc/taglib/makform.html">mak:form</a>
+                </li>
+                <li>
+                    <a href="/doc/taglib/maknewForm.html">mak:newForm</a>
+                </li>
+                <li>
+                    <a href="/doc/taglib/makaddForm.html">mak:addForm</a>
+                </li>
+                <li>
+                    <a href="/doc/taglib/makeditForm.html">mak:editForm</a>
+                </li>
+                <li>
+                    <a href="/doc/taglib/makdeleteLink.html">mak:deleteLink</a>
+                </li>
+                <li>
+                    <a href="/doc/taglib/makdelete.html">mak:delete</a>
+                </li>
+            </ul>
+        </section>
+    </body>
+</document>

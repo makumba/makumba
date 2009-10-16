@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<section id="description">
+  <title>Description</title>
+  <p>Like list, but the query can only have zero or one result. A zero value for maxCountVar and countVar indicate that
+    the object does not exist.
+</p>
+</section>
