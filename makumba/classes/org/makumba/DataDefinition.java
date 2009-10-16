@@ -38,7 +38,7 @@ import org.makumba.commons.StringUtils;
 import antlr.collections.AST;
 
 /**
- * Information about a makumba data definition as obtained from an MDD file or the structure of an OQL query result.
+ * Information about a makumba data definition as obtained from an MDD file or the structure of an MQL query result.
  * This class is provided for makumba programs to be able to introspect makumba data structures. Such introspection is
  * not needed usually, as the application programmer knows the makumba data structure.
  */
