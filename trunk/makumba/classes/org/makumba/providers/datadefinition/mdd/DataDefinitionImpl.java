@@ -10,8 +10,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
