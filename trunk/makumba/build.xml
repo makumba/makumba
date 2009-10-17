@@ -484,9 +484,17 @@
     <target name="makeForrestDoc" description="generate forrest documentation and the API based on the documented taglib and the examples in documentation/tag-examples">
         <antcall target="javadoc" />
         <antcall target="generateTagDocAndExamples" />
+        
         <exec executable="forrest">
             <arg value="site" />
         </exec>
+        
+        <!-- We need to copy the javadoc by hand into the rendered site directory -->
+        <mkdir dir="build/site/en/apidocs"/>
+        <copy todir="build/site/en/apidocs">
+            <fileset dir="documentation/content/xdocs/apidocs" includes="**/*.*" />
+        </copy>
+        
     </target>
 
     <target name="generateTagDocAndExamples" depends="compile">
