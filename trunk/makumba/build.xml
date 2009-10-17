@@ -489,27 +489,11 @@
         </exec>
     </target>
 
-    <target name="generateTagDoc" depends="compile" description="generate taglib documentation and examples based on taglib-documented.xml">
-        <java classname="org.makumba.commons.TLD2Forest" fork="true" dir=".">
-            <classpath refid="project.class.path.complete" />
-            <arg value="${basedir}/classes/META-INF/taglib-documented.xml" />
-            <arg value="${basedir}/documentation/tag-examples" />
-            <arg value="${basedir}/documentation/content/xdocs/doc/taglib" />
-            <arg value="1" />
-        </java>
-    </target>
-	
-    <target name="mergeTagDocAndExamples" depends="compile" description="merges the taglib documentation and the tag examples in documentation/tag-examples">
-        <java classname="org.makumba.commons.TLD2Forest" fork="true" dir=".">
-            <classpath refid="project.class.path.complete" />
-            <arg value="${basedir}/classes/META-INF/taglib-documented.xml" />
-            <arg value="${basedir}/documentation/tag-examples" />
-            <arg value="${basedir}/documentation/content/xdocs/doc/taglib" />
-            <arg value="2" />
-        </java>
-    </target>
-
-    <target name="generateTagDocAndExamples" depends="compile" description="generates taglib documentation and merges it with examples in documentation/tag-examples">
+    <target name="generateTagDocAndExamples" depends="compile">
+        
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="documentation/content/xdocs/doc/taglib" includes="*.xml" defaultExcludes="no" />
+        </delete>
         
         <java classname="org.makumba.commons.TLD2Forest" fork="true" dir=".">
             <classpath refid="project.class.path.complete" />

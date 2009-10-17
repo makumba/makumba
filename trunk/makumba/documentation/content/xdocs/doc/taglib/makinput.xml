@@ -15,18 +15,10 @@
     month,
     year, hours, minutes and second, depending on the date/time format). Additionally, a JavaScript-based calendar
     widget can be used, as shown in an example.</p>      <p>
-    The difference between
-    &lt;mak:input&gt;
-    and normal HTML
-    &lt;input&gt;
-    in a makumba form are:</p>      <ul>
-            <li>&lt;mak:input&gt;
-      produces objects prepared for setting/comparing makumba fields (e.g. Pointer, Date, Text).
-      the fields produced by</li>
-            <li>&lt;input&gt;</li>
-    will be available as page $attributes but will all be of type String
-            <li>the fields produced by
-      &lt;mak:input&gt; are available separately as a Dictionary to the handler method</li>
+    The difference between &lt;mak:input&gt; and normal HTML &lt;input&gt; in a makumba form are:</p>      <ul>
+            <li>&lt;mak:input&gt; produces objects prepared for setting/comparing makumba fields (e.g. Pointer, Date, Text).</li>
+            <li>the fields produced by &lt;input&gt; will be available as page $attributes but will all be of type String</li>
+            <li>the fields produced by &lt;mak:input&gt; are available separately as a Dictionary to the handler method</li>
         </ul>    </section>
         <section id="attributes">
             <title>Attributes</title>
