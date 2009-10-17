@@ -172,11 +172,17 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
     @Override
     protected void addSubfield(FieldNode parent, FieldNode field) {
         FieldNode previous = parent.subfield.fields.get(field.name);
+        
+        // we allow subfields that are directly part of the setComplex to override an subfield that comes from an !include definition
         if (previous != null && (previous.wasIncluded || field.wasIncluded || parent.wasIncluded)) {
             parent.subfield.fields.remove(field.name);
             parent.subfield.addField(field);
-        } else if (previous != null && !(previous.wasIncluded || field.wasIncluded || parent.wasIncluded)) {
-            factory.doThrow(typeName, "Duplicated field definition for subfield " + field.name, field);
+            
+        // but if we are overriding a subfield and it was not !include-d, we don't allow this
+        } else if (previous != null && !(previous.wasIncluded || parent.wasIncluded) && !field.wasIncluded) {
+            factory.doThrow(typeName, "Duplicated field definition for subfield '" + field.name + "' of field '" + parent.name + "'" , field);
+        } else if(previous != null && !(previous.wasIncluded || parent.wasIncluded) && field.wasIncluded) {
+            factory.doThrow(typeName, "Field definition for subfield '" + field.name + "' of field '" + parent.name + "' is overriden by an !include-d subfield, however this is not allowed" , field);
         } else {
             parent.subfield.addField(field);
         }
