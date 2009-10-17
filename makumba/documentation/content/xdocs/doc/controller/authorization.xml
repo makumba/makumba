@@ -49,12 +49,14 @@ if(admin.size() == 1) {
 }]]></source>
       
       <p>The example above is complicated on purpose so as to illustrate some of the mechanisms that could be used. Let's have a closer look at it:</p>
-      <ul>the first call <code>a.getAttribute("_sessPtr_company_Employee");</code> tells makumba to try to retrieve the "_sessPtr_company_Employee" attribute.
+      <ul>
+      <li>the first call <code>a.getAttribute("_sessPtr_company_Employee");</code> tells makumba to try to retrieve the "_sessPtr_company_Employee" attribute.
       If this fails, makumba will throw an <code>AttributeNotFoundException</code> which we catch and transform into an UnauthorizedExpcetion. The UnauthorizedException extends the generic LogicException,
-      and is used in order to perform specific error-handling on its</ul>
-      <ul>If the first call passed, we try to figure out whether this employee is an administrator or not. This is not a very good practice since it is not cost-effective, 
-      the better approach would be to set the attribute when the user accesses the site for the first time. In this example, we retrieve the isAdmin field of the MDD company.Employee and if the user is not an admin, we throw an UnauthorizedException.</ul>
-      <ul>We further handle the case where the user was not found in the database, and throw a <code>CompanyPortalException</code>, which is a custom exception for this web-application that extends LogicException.</ul>
+      and is used in order to perform specific error-handling on its</li>
+      <li>If the first call passed, we try to figure out whether this employee is an administrator or not. This is not a very good practice since it is not cost-effective, 
+      the better approach would be to set the attribute when the user accesses the site for the first time. In this example, we retrieve the isAdmin field of the MDD company.Employee and if the user is not an admin, we throw an UnauthorizedException.</li>
+      <li>We further handle the case where the user was not found in the database, and throw a <code>CompanyPortalException</code>, which is a custom exception for this web-application that extends LogicException.</li>
+      </ul>
       </section>
       
       
@@ -64,11 +66,12 @@ if(admin.size() == 1) {
       
       <p>Let's take the following example: we want to ensure that only employees with administrative privileges can access the "admin" section of the site.</p>
       <p>In order to achieve this, let's first define a MDD function that checks for this condition in the <code>company.Employee</code> MDD:</p>
-      <source><![CDATA[isAdmin() { this.isAdmin and this.accountActive }]]></source>
+      <source>
+<![CDATA[isAdmin() { this.isAdmin and this.accountActive }]]></source>
       <p>This MDD function will check whether the isAdmin field is set and the account is active.</p>
       
       <p>Now, we need to define an authorization constraint that will be launched whenever the admin directory is accessed.
-      We do so by defining the following constraint in the <code>[authorization]</code> section of the <a href="/configuration/configuration.html">Makumba.conf file</a></p>:
+      We do so by defining the following constraint in the <code>[authorization]</code> section of the <a href="/configuration/configuration.html">Makumba.conf file</a>:</p>
 <source><![CDATA[[authorization]
 /admin={actor(company.Employee).isAdmin()}
 ]]></source>
