@@ -368,7 +368,7 @@
     
         <mkdir dir="work/" />
         
-        <copy file="${jar.place}/lib/makumba-${tag}.jar" tofile="work/makumba.jar" />
+        <copy file="${jar.place}/lib/${tag}.jar" tofile="work/makumba.jar" />
     
         <ftp server="download.makumba.org" userid="ftp-mak" password="ftp-mak" remotedir="makumba/doc/download"
             binary="yes" verbose="true">
