@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<section id="description">
+  <title>Description</title>
+  <p>
+    An input field to be created, depending on the makumba type of the field.
+</p>
+  <p>Set and pointer inputs will render as select boxes. Sometimes you may need to use two select boxes whereby the user
+    can
+    move items from one box to the other, which is illustrated in this example.</p>
+
+  <p>Date inputs are slightly different than normal inputs, as they are rendered with several input fields (for the day,
+    month,
+    year, hours, minutes and second, depending on the date/time format). Additionally, a JavaScript-based calendar
+    widget can be used, as shown in an example.</p>
+  <p>
+    The difference between &lt;mak:input&gt; and normal HTML &lt;input&gt; in a makumba form are:</p>
+
+  <ul>
+    <li>&lt;mak:input&gt; produces objects prepared for setting/comparing makumba fields (e.g. Pointer, Date, Text).</li>
+    <li>the fields produced by &lt;input&gt; will be available as page $attributes but will all be of type String</li>
+    <li>the fields produced by &lt;mak:input&gt; are available separately as a Dictionary to the handler method</li>
+  </ul>
+</section>

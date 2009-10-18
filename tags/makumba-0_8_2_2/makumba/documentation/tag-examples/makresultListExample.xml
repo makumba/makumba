@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<section id="example">
+  <title>Example</title>
+  <source>
+      <![CDATA[
+<mak:resultList resultsFrom="searchPerson">
+    Name: <mak:value expr="o.name"/> <br/>
+</mak:resultList>
+      ]]>
+  </source>
+</section>
