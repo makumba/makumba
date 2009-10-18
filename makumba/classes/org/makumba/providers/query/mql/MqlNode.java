@@ -197,6 +197,7 @@ public class MqlNode extends CommonAST {
                 if (child.getType() == HqlSqlTokenTypes.ELSE) {
                     return ((MqlNode) getFirstChild().getFirstChild().getNextSibling()).getMakType();
                 }
+                
         }
         return null;
     };
@@ -280,8 +281,11 @@ public class MqlNode extends CommonAST {
         return getType() == HqlSqlTokenTypes.NAMED_PARAM || getType() == HqlSqlTokenTypes.PARAM;
     }
     
+    /**
+     * whether this is a custom MDD function call
+     */
     boolean isFunctionCall() {
-        return getType() == HqlSqlTokenTypes.METHOD_CALL;
+        return getType() == HqlSqlTokenTypes.METHOD_CALL && getText().startsWith("methodCallPlaceholder_");
     }
     
     void checkOperandTypes(MqlNode left, MqlNode right) throws SemanticException {
