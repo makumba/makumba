@@ -152,6 +152,16 @@ input.search:focus {
 	margin-left: -140px;
 }
 
+.pageHeader {
+	color: red;
+    background: #eeeeee;
+    font-size: 120%;
+    text-align: right;
+    margin-top: 0px;
+    margin-left: -140px;
+}
+
+
 /* Tables in specification */
 table.tagParamDef {
 	margin-left: 20px;
