@@ -385,7 +385,7 @@
     </target>
 
     <target name="scpMadeJar">
-        <scp todir="${user}:${password}@web.sourceforge.net:/home/frs/project/m/ma/makumba/Makumba" sftp="true" verbose="true" trust="yes">
+        <scp todir="${user},makumba:${password}@frs.sourceforge.net:/home/frs/project/m/ma/makumba/Makumba" sftp="true" verbose="true" trust="yes">
             <fileset dir="lib/">
                 <include name="${tag}.jar" />
                 <include name="${tag}-src.zip" />
@@ -500,7 +500,7 @@
     <target name="generateTagDocAndExamples" depends="compile">
         
         <delete includeEmptyDirs="true" failonerror="false">
-            <fileset dir="documentation/content/xdocs/doc/taglib" includes="*.xml" defaultExcludes="no" />
+            <fileset dir="documentation/content/xdocs/doc/taglib" includes="*.xml" excludes="index.xml" defaultExcludes="no" />
         </delete>
         
         <java classname="org.makumba.commons.TLD2Forest" fork="true" dir=".">
