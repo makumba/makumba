@@ -32,7 +32,7 @@
     
     <section id="download">
       <title>Download and Eclipse project setup</title>
-        <p>First of all, <a href="site:download">download</a> the Makumba template project in order to get an <a href="http://www.eclipse.org/webtools/">Eclipse WTP project</a> which you can use in order to start working with Makumba.</p>
+        <p>First of all, <a href="/download.html">download</a> the Makumba template project in order to get an <a href="http://www.eclipse.org/webtools/">Eclipse WTP project</a> which you can use in order to start working with Makumba.</p>
         <p>You'll also need to download <a href="http://tomcat.apache.org/download-55.cgi">Apache
           Tomcat 5.5</a> and configure a WTP Server (in Eclipse, go to File -> New -> Other and
           choose "Server").</p>
