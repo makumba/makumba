@@ -179,7 +179,7 @@ description = text]]></source>
           <td>dropdown select of record titles.</td>
           <td>preferably a long (foreign index)</td>
           <td>
-            <a href="api/org/makumba/Pointer.html">org.makumba.Pointer</a>
+            <a href="/apidocs/org/makumba/Pointer.html">org.makumba.Pointer</a>
           </td>
         </tr>
 
@@ -191,7 +191,7 @@ description = text]]></source>
             chooser link</td>
           <td>multiple choice of record titles.</td>
           <td>table with ptrRel to the parent table and ptr to the foreign table</td>
-          <td>java.util.Vector of <a href="api/org/makumba/Pointer.html"
+          <td>java.util.Vector of <a href="/apidocs/org/makumba/Pointer.html"
             >org.makumba.Pointer</a></td>
 
         </tr>
