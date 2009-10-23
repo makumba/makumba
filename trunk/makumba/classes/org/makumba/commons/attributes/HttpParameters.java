@@ -90,7 +90,10 @@ public class HttpParameters {
             }
         }
         
-        if(reloadedParameters != null) {
+        // here we only add reloaded parameters if there is not already some value from the existing session
+        // otherwise we might set a parameter with multiple values whereas it really should have only one
+        // this is especially the case for URL GET parameters
+        if(reloadedParameters != null && param.size() == 0) {
             if(reloadedParameters.get(s) instanceof String) {
                 param.add((String)reloadedParameters.get(s));
             } else if(reloadedParameters.get(s) instanceof String[]) {
