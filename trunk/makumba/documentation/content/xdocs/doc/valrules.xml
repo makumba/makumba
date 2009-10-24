@@ -163,7 +163,7 @@
       pointers.</p>
   
       <p>Multi-field uniqueness can be defined as follows</p>
-      <source>unique() { age, email } : "the combination of age and email must be unique!"</source>
+      <source>unique(age, email) : "the combination of age and email must be unique!"</source>
       
       <note class="internals">If the fields are in the same data definition, the uniqueness definition will
       translate into a database level multi-field key and uniqueness will be enforced there.<br />
