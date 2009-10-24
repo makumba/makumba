@@ -58,10 +58,7 @@ options {
     
     // Add subfield
     protected void addSubfield(FieldNode parent, FieldNode field) { }
-    
-    // Add multi-unique key
-    protected void addMultiUniqueKey(ValidationRuleNode v, AST path) { }
-    
+        
     // create and set validation rule
     protected ValidationRuleNode createSingleFieldValidationRule(AST originAST, String fieldName, ValidationType type, FieldNode subField) { return null; }
     
@@ -251,7 +248,7 @@ comparisonValidationRule[FieldNode subField] returns [ValidationRuleNode v = nul
 	;
 
 multiUniquenessValidationRule[FieldNode subField] returns [ValidationRuleNode v = null;]
-    : #(u:UNIQUE {v = createMultiFieldValidationRule(#u, ValidationType.UNIQUENESS, subField); } (p:PATH {addMultiUniqueKey(v, #p); } )* )
+    : #(u:UNIQUE {v = createMultiFieldValidationRule(#u, ValidationType.UNIQUENESS, subField); } (fn:FUNCTION_ARGUMENT {addValidationRuleArgument(#fn.getText(), v);})* )
     ;
 
 rangeValidationRule[FieldNode subField] returns [ValidationRuleNode v = null; ]

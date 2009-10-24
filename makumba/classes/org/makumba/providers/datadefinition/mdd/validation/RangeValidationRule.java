@@ -2,6 +2,7 @@ package org.makumba.providers.datadefinition.mdd.validation;
 
 import org.makumba.InvalidValueException;
 import org.makumba.Text;
+import org.makumba.Transaction;
 import org.makumba.providers.datadefinition.mdd.FieldNode;
 import org.makumba.providers.datadefinition.mdd.MDDNode;
 import org.makumba.providers.datadefinition.mdd.ValidationRuleNode;
@@ -23,7 +24,7 @@ public class RangeValidationRule extends ValidationRuleNode {
     }
     
     @Override
-    public boolean validate(Object value) throws InvalidValueException {
+    public boolean validate(Object value, Transaction t) throws InvalidValueException {
         
         if(lowerLimit == null || upperLimit == null) {
             

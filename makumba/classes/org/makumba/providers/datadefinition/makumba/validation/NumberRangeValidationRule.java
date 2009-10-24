@@ -4,6 +4,7 @@ import java.util.regex.Pattern;
 
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
+import org.makumba.Transaction;
 import org.makumba.ValidationDefinitionParseError;
 import org.makumba.commons.RegExpUtils;
 
@@ -41,7 +42,7 @@ public class NumberRangeValidationRule extends RangeValidationRule {
         }
     }
 
-    public boolean validate(Object value) throws InvalidValueException {
+    public boolean validate(Object value, Transaction t) throws InvalidValueException {
         if (!(value instanceof Number)) {
             return false;// TODO: think of throwing some "cannot validate exception"
         }

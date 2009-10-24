@@ -206,12 +206,6 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
     }
 
     @Override
-    protected void addMultiUniqueKey(ValidationRuleNode v, AST path) {
-        // we check for validity of the paths during postprocessing, when we have all the fields
-        v.multiUniquenessFields.add(path.getText());
-    }
-
-    @Override
     protected ValidationRuleNode createMultiFieldValidationRule(AST originAST, ValidationType type, FieldNode subField) {
         switch (type) {
             case UNIQUENESS:

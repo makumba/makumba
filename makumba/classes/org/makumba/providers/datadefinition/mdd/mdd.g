@@ -471,10 +471,9 @@ regexValidationRuleDeclaration
 	: MATCHES^ functionArguments functionBody
 	;
 
-// unique() {field1, field2} : These need to be unique
+// unique(field1, field2) : "These need to be unique"
 uniquenessValidationRuleDeclaration
-	: UNIQUE^ LEFT_PAREN! RIGHT_PAREN!
-	parsedExpression
+	: UNIQUE^ functionArguments
 	;
 
 nativeValidationRuleMessage
