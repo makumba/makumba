@@ -189,8 +189,10 @@ public class SQLUpdate implements Update {
                 if (db.isForeignKeyViolationException(se)) {
                     throw new org.makumba.ForeignKeyError(db.parseReadableForeignKeyErrorMessage(se));
                 } else if (db.isDuplicateException(se)) {
-                    // FIXME: should determine the field that produced the error to
-                    throw new org.makumba.NotUniqueError(se);
+                    // FIXME: it would be good to know which fields are affected
+                    // but we can't do this because MySQL won't tell us which one it is
+                    // so we just throw an exception, we will display the error message from the validation rule anyway
+                    throw new org.makumba.NotUniqueException(se.getMessage());
                 }
                 org.makumba.db.makumba.sql.Database.logException(se);
                 throw new DBError(se, debugString);

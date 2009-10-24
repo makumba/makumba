@@ -33,6 +33,10 @@ package org.makumba;
  */
 public class NotUniqueException extends InvalidValueException {
     private static final long serialVersionUID = 1L;
+    
+    public NotUniqueException(String message) {
+        super(message);
+    }
 
     public NotUniqueException(String primaryField, String message) {
         super(message);
