@@ -7,6 +7,10 @@
 
 TO BE RELEASED IMMEDIATELY (No need for more testing)
 -----------------------------------------------
+manu: changing syntax of unique() {field1, field2} :"error" to unique(field1,field2) : "error"
+manu: fixing bug in comparison validation rule: validation rule breaks if an int/real field is left blank
+manu: preparing RecordEditor to allow for advanced validation mechanism, when form is not complete
+      (i.e. validation rule validates on a field that is not in the form)
 
 NOT TO BE RELEASED YET (need more testing)
 manu: auto-complete for mak:input (char and ptr)
@@ -14,9 +18,9 @@ manu, marius: edit-in-place for mak:input and mak:list ("editable" attribute). I
 
 ------------------------------------------
 - add your changes -
+
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
-
 0.8.2.2 18 Oct 2009
 manu: fixing bug with MQL function type analysis
 
