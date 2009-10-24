@@ -5,6 +5,7 @@ import java.util.regex.Pattern;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.Text;
+import org.makumba.Transaction;
 import org.makumba.commons.RegExpUtils;
 
 /**
@@ -41,7 +42,7 @@ public class StringLengthValidationRule extends RangeValidationRule {
         }
     }
 
-    public boolean validate(Object value) throws InvalidValueException {
+    public boolean validate(Object value, Transaction t) throws InvalidValueException {
         if (!(value instanceof String || value instanceof Text)) {
             return false;// TODO: think of throwing some "cannot validate exception"
         }

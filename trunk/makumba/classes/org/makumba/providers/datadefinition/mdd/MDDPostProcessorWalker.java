@@ -11,7 +11,6 @@ import org.makumba.DataDefinition.QueryFragmentFunction;
 import org.makumba.providers.datadefinition.mdd.ComparisonExpressionNode.ComparisonType;
 import org.makumba.providers.datadefinition.mdd.validation.ComparisonValidationRule;
 import org.makumba.providers.datadefinition.mdd.validation.MultiUniquenessValidationRule;
-import org.makumba.providers.query.mql.FunctionInliner;
 import org.makumba.providers.query.mql.HqlParser;
 
 import antlr.collections.AST;
@@ -140,12 +139,12 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
         if(v instanceof MultiUniquenessValidationRule) {
             
             boolean keyOverSubfield = false;
-            for(String path : v.multiUniquenessFields) {
+            for(String path : v.arguments) {
                 checkPathValid(v_in, path, v.mdd);
                 keyOverSubfield = path.indexOf(".") > -1;
             }
             
-            DataDefinition.MultipleUniqueKeyDefinition key = new DataDefinition.MultipleUniqueKeyDefinition(v.multiUniquenessFields.toArray(new String[] {}), v.message);
+            DataDefinition.MultipleUniqueKeyDefinition key = new DataDefinition.MultipleUniqueKeyDefinition(v.arguments.toArray(new String[] {}), v.message);
             key.setKeyOverSubfield(keyOverSubfield);
             mdd.addMultiUniqueKey(key);
             

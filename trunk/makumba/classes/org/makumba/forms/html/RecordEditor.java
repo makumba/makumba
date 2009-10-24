@@ -40,12 +40,15 @@ import org.makumba.CompositeValidationException;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
+import org.makumba.Transaction;
 import org.makumba.ValidationRule;
+import org.makumba.commons.DbConnectionProvider;
 import org.makumba.commons.attributes.HttpParameters;
 import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.RecordFormatter;
 import org.makumba.providers.datadefinition.mdd.validation.ComparisonValidationRule;
+import org.makumba.providers.datadefinition.mdd.validation.MultiUniquenessValidationRule;
 
 
 /**
@@ -166,7 +169,10 @@ public class RecordEditor extends RecordFormatter {
         // on those, we apply the user-defined checks from the validation definition
         
         // TODO once we have more than one multi-field validation rule type, abstract this to ValidationRule
-        LinkedHashMap<ComparisonValidationRule, FieldDefinition> multiFieldValidationRules = new LinkedHashMap<ComparisonValidationRule, FieldDefinition>();
+        LinkedHashMap<ValidationRule, FieldDefinition> multiFieldValidationRules = new LinkedHashMap<ValidationRule, FieldDefinition>();
+        
+        DbConnectionProvider prov = (DbConnectionProvider) req.getAttribute(RequestAttributes.PROVIDER_ATTRIBUTE);
+        Transaction t = prov.getConnectionTo(prov.getTransactionProvider().getDefaultDataSourceName());
         
         // STEP 1: go over all the fields and fetch validation rules
         for (int index = 0; index < validatedFieldsOrdered.size(); index++) {
@@ -202,19 +208,15 @@ public class RecordEditor extends RecordFormatter {
                                 }
                             }
                             if (otherValue != null) {
-                                rule.validate(new Object[] { o, otherValue });
+                                rule.validate(new Object[] { o, otherValue }, t);
                             }
-                        } else if (rule instanceof ComparisonValidationRule) {
-                            
-                            // we just fetch the multi-field validation definitions, do not treat them yet
-                            
-                            ComparisonValidationRule c = (ComparisonValidationRule) rule;
-                            multiFieldValidationRules.put(c, fieldDefinition);
+                        } else if (rule instanceof ComparisonValidationRule || rule instanceof MultiUniquenessValidationRule) {
+                            // we just fetch the multi-field validation rules, do not treat them yet
+                            multiFieldValidationRules.put(rule, fieldDefinition);
 
-                            // STEP 1-b: treat single-field validation rules
-
+                        // STEP 1-b: treat single-field validation rules
                         } else {
-                            rule.validate(o);
+                            rule.validate(o, t);
                         }
                     } catch (InvalidValueException e) {
                         exceptions.add(e);
@@ -255,7 +257,8 @@ public class RecordEditor extends RecordFormatter {
         
         
         // STEP 2 - process multi-field validation rules
-        for(ComparisonValidationRule r : multiFieldValidationRules.keySet()) {
+        for(ValidationRule r : multiFieldValidationRules.keySet()) {
+
             LinkedHashMap<String, Object> values = new LinkedHashMap<String, Object>();
             boolean validate = true;
             // fetch the fields of the rule
@@ -273,15 +276,19 @@ public class RecordEditor extends RecordFormatter {
                     if(o != null) {
                         values.put(fieldName, o);
                     } else {
-                        // TODO what to do in this case? we don't have all the values for the validation rule, so we can't evaluate it.
+                        // FIXME what to do in this case? we don't have all the values for the validation rule, so we can't evaluate it.
                         // we could maybe fetch the value of the field from the DB in some cases, pretty advanced stuff though.
+                        // see also the comment at getUnassignedExceptions()
+                        // basically now that we have a transaction at our disposal, we can fetch the baseObject (__makumba__base__)
+                        // from the request and the type of the object from the responder (__makumba__responder__)
+                        // then, do a query and fetch the other value...
                         validate = false;
                     }
                 }
             }
             if(validate) {
                 try {
-                    r.validate(values);
+                    r.validate(values, t);
                 } catch(InvalidValueException e) {
                     exceptions.add(e);
                 }

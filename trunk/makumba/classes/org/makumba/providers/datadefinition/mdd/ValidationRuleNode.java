@@ -6,6 +6,7 @@ import java.util.Collection;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
+import org.makumba.Transaction;
 import org.makumba.ValidationRule;
 import org.makumba.providers.datadefinition.mdd.validation.ComparisonValidationRule;
 
@@ -38,10 +39,7 @@ public class ValidationRuleNode extends MDDAST implements ValidationRule, Compar
     /** range validation limits **/
     protected String lowerBound;
     protected String upperBound;
-    
-    /** multi-uniqueness constraints **/
-    protected ArrayList<String> multiUniquenessFields = new ArrayList<String>();
-    
+        
     /** arguments of the comparison rule **/
     protected ArrayList<String> arguments = new ArrayList<String>();
 
@@ -102,7 +100,7 @@ public class ValidationRuleNode extends MDDAST implements ValidationRule, Compar
     }
 
     /** should be overridden in extended classes **/
-    public boolean validate(Object value) throws InvalidValueException {
+    public boolean validate(Object value, Transaction t) throws InvalidValueException {
         return false;
     }
     

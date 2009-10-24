@@ -35,11 +35,12 @@ import java.util.Collection;
 public interface ValidationRule extends Comparable<ValidationRule> {
     /**
      * Perform the validation process.
+     * @param t TODO
      * 
      * @throws InvalidValueException
      *             if the validation fails
      */
-    public boolean validate(Object value) throws InvalidValueException;
+    public boolean validate(Object value, Transaction t) throws InvalidValueException;
 
     /** Gets the error message that should be shown for this rule. */
     public String getErrorMessage();

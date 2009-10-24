@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
+import org.makumba.Transaction;
 import org.makumba.ValidationDefinitionParseError;
 import org.makumba.commons.RegExpUtils;
 import org.makumba.forms.html.dateEditor;
@@ -89,7 +90,7 @@ public class ComparisonValidationRule extends BasicValidationRule {
         this.compareToExpression = compareToExpression;
     }
 
-    public boolean validate(Object value) throws InvalidValueException {
+    public boolean validate(Object value, Transaction t) throws InvalidValueException {
         boolean validateAgainstExpression = value instanceof Date && compareToExpression != null;
         boolean validateAgaintsField = value instanceof Object[] && ((Object[]) value).length == 2;
         if (!(validateAgainstExpression || validateAgaintsField)) {

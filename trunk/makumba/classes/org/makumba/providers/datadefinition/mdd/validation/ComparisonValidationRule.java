@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import org.makumba.InvalidValueException;
 import org.makumba.MakumbaError;
 import org.makumba.NullObject;
+import org.makumba.Transaction;
 import org.makumba.providers.datadefinition.mdd.FieldNode;
 import org.makumba.providers.datadefinition.mdd.FieldType;
 import org.makumba.providers.datadefinition.mdd.MDDNode;
@@ -33,7 +34,7 @@ public class ComparisonValidationRule extends ValidationRuleNode {
     }
     
     @Override
-    public boolean validate(Object value) throws InvalidValueException {
+    public boolean validate(Object value, Transaction t) throws InvalidValueException {
         
         LinkedHashMap<String, Object> values = null;
         
@@ -94,9 +95,18 @@ public class ComparisonValidationRule extends ValidationRuleNode {
                 if(left == null) {
                     left = comparisonExpression.getLhs();
                 }
+                if(left instanceof NullObject) {
+                    left = FieldType.INT.getEmptyValue();
+                }
+
                 if(right == null) {
                     right = comparisonExpression.getRhs();
                 }
+                
+                if(right instanceof NullObject) {
+                    left = FieldType.INT.getEmptyValue();
+                }
+                
                 compare = Double.compare(((Number) left).doubleValue(), ((Number) right).doubleValue());
                 break;
                 
