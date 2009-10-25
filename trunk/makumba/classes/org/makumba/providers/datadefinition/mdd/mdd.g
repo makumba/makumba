@@ -9,33 +9,33 @@ options {
     k = 3;
 }
 	    
-LEFT_PAREN: '(';
-RIGHT_PAREN: ')';
-LEFT_CUBR: '{';
-RIGHT_CUBR: '}';
-LEFT_SQBR: '[';
-RIGHT_SQBR: ']';
+LEFT_PAREN options { paraphrase = "'('";}: '(';
+RIGHT_PAREN options { paraphrase = "')'";}: ')';
+LEFT_CUBR options { paraphrase = "'{'";}: '{';
+RIGHT_CUBR options { paraphrase = "'}'";}: '}';
+LEFT_SQBR options { paraphrase = "'['";}: '[';
+RIGHT_SQBR options { paraphrase = "']'";}: ']';
 
-EQ: '=';
-LT: '<';
-GT: '>';
-SQL_NE: "<>";
-NE: "!=" | "^=";
-LE: "<=";
-GE: ">=";
+EQ options { paraphrase = "'='";}: '=';
+LT options { paraphrase = "'<'";}: '<';
+GT options { paraphrase = "'>'";}: '>';
+SQL_NE options { paraphrase = "'<>'";}: "<>";
+NE options { paraphrase = "'!=' or '^='";}: "!=" | "^=";
+LE options { paraphrase = "'<='";}: "<=";
+GE options { paraphrase = "'>='";}: ">=";
 
-PERCENT: '%';
-SEMICOLON: ';';
-COLON: ':';
-COMMA: ',';
-DOT: '.';
-QUOTMARK: '"';
-EXMARK: '!';
-INTMARK: '?';
-MINUS: '-';
-PLUS: '+';
+PERCENT options { paraphrase = "'%'";}: '%';
+SEMICOLON options { paraphrase = "';'";}: ';';
+COLON options { paraphrase = "':'";}: ':';
+COMMA options { paraphrase = "','";}: ',';
+DOT options { paraphrase = "'.'";}: '.';
+QUOTMARK options { paraphrase = "'\"'";}: '"';
+EXMARK options { paraphrase = "'!'";}: '!';
+INTMARK options { paraphrase = "?:'";}: '?';
+MINUS options { paraphrase = "'-'";}: '-';
+PLUS options { paraphrase = "'+'";}: '+';
 
-SUBFIELD
+SUBFIELD options { paraphrase = "'->'";}
     : '-' '>'
     ;
 
