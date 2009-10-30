@@ -38,7 +38,6 @@ options {
 
 expression
 	: range
-	| fieldList
 	| intEnum
 	| charEnum
 	| comparisonExpression
@@ -135,30 +134,28 @@ range
 rangeBound
     : n:POSITIVE_INTEGER | m:INTMARK
     ;
-    
-//////// MISC
-
-fieldList
-	: type (COMMA! type)*
-	;
 
 //////////////// COMMON
 
 // general.Person
 // general.Person->extraData
 type
-    : {String type="";} a:atom {type+=#a.getText();}
-    	(
-    		  (DOT! {type += ".";} | SUBFIELD! {type += "->";})
-    		  (b:atom! {type += #b.getText(); } | k:keyword! {type += #k.getText(); }) 
-    	)*
-    	{ #type.setText(type); #type.setType(PATH); }
+    : {String type="";} (a:atom {type+=#a.getText();} | k:keyword {type+=#k.getText();})
+        (
+              (DOT! {type += ".";} | SUBFIELD! {type += "->";})
+              ( b:atom! {type += #b.getText(); } | ke:keyword! {type += #ke.getText(); }) 
+        )*
+        { #type.setText(type); #type.setType(PATH); }
     ;
     
 keyword
-    : FILE
+    : LENGTH
+    | CHAR
+    | TYPE
+    | FILE
+    | TEXT
+    | TITLE
     ;
-    
 
 number
     : POSITIVE_INTEGER | NEGATIVE_INTEGER
