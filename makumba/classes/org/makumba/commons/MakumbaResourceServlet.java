@@ -72,6 +72,29 @@ public class MakumbaResourceServlet extends HttpServlet {
     public static final String RESOURCE_PATH_IMAGES = "image/";
 
     public static final SimpleDateFormat dfLastModified = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
+    
+    private enum ExternalResource {
+        
+        PROTOTYPE("prototype", "prototype.js"),
+        SCRIPTACULOUS("scriptaculous", "scriptaculous.js");
+        
+        String name, key;
+
+        ExternalResource(String key, String name) {
+            this.name = name;
+            this.key = key;
+        }
+        
+        String getKey() {
+            return this.key;
+        }
+
+        String getName() {
+            return this.name;
+        }
+        
+    }
+    
 
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String servletPath = req.getContextPath() + Configuration.getMakumbaResourcesLocation();
@@ -240,24 +263,34 @@ public class MakumbaResourceServlet extends HttpServlet {
 
     public static void writeResources(StringBuffer sb, String contextPath, Iterable<Object> resources) {
         for (Object object : resources) {
-            String rsc = contextPath + Configuration.getMakumbaResourcesLocation() + "/";
             String o = (String) object;
+            
+            String alternateLocation = Configuration.getResourceLocation(o);
+            // TODO: check if the alternate location is part of the external resources
+            
             if(o.endsWith(".js")) {
-                writeScriptsInHeader(sb, contextPath, o);
+                writeScriptsInHeader(sb, contextPath, o, alternateLocation);
             } else if(o.endsWith(".css")) {
-                writeStylesInHeader(sb, contextPath, o);
+                writeStylesInHeader(sb, contextPath, o, alternateLocation);
             }
+            
     
         }
     }
 
-    public static void writeStylesInHeader(StringBuffer sb, String contextPath, String styleSheet) {
+    public static void writeStylesInHeader(StringBuffer sb, String contextPath, String styleSheet, String alternateLocation) {
         String filerefName = "fileref" + styleSheet.replace(".", "").replace("-", "_");
         sb.append("<script type=\"text/javascript\">\n");
         sb.append("var "+filerefName+" = document.createElement('link');\n");
         sb.append(filerefName+".setAttribute(\"media\",\"all\");\n");
         sb.append(filerefName+".setAttribute(\"type\",\"text/css\");\n");
-        sb.append(filerefName+".setAttribute(\"href\", '"+contextPath + Configuration.getMakumbaResourcesLocation() + "/" + RESOURCE_PATH_CSS + styleSheet + "');\n");
+        String location = "";
+        if(alternateLocation != Configuration.PROPERTY_NOT_SET) {
+            location = contextPath + "/" + alternateLocation;
+        } else {
+            location = contextPath + Configuration.getMakumbaResourcesLocation() + "/" + RESOURCE_PATH_CSS + styleSheet;
+        }
+        sb.append(filerefName+".setAttribute(\"href\", '" + location +  "');\n");
         sb.append(filerefName+".setAttribute(\"rel\",\"StyleSheet\");\n");
         sb.append("if (typeof "+ filerefName +" != \"undefined\")\n");
         sb.append("document.getElementsByTagName(\"head\")[0].appendChild("+filerefName+");\n");
@@ -273,6 +306,9 @@ public class MakumbaResourceServlet extends HttpServlet {
         }
         if(url.getFile().endsWith(".css")) {
             return "text/css";
+        }
+        if(url.getFile().endsWith(".js")) {
+            return "text/javascript";
         }
         return "text/html";
     }
@@ -291,14 +327,22 @@ public class MakumbaResourceServlet extends HttpServlet {
         return isImageType(url);
     }
     
-    public static void writeScriptsInHeader(StringBuffer sb, String contextPath, String script) {
+    public static void writeScriptsInHeader(StringBuffer sb, String contextPath, String script, String alternateLocation) {
         // we write the scripts in the header using JS and DOM rewriting
         String filerefName = "fileref" + script.replace(".", "").replace("-", "_");
         sb.append("<script type=\"text/javascript\">\n");
         sb.append("var "+filerefName+" = document.createElement('script');\n");
         sb.append(filerefName+".setAttribute(\"type\",\"text/javascript\");\n");
+        String location = "";
+        if(alternateLocation != Configuration.PROPERTY_NOT_SET) {
+            location = contextPath + "/" + alternateLocation;
+        } else {
+            location = contextPath + Configuration.getMakumbaResourcesLocation() + "/" + RESOURCE_PATH_JAVASCRIPT + script;
+        }
+        sb.append(filerefName+".setAttribute(\"href\", '" + location +  "');\n");
+        
+        
         sb.append(filerefName+".setAttribute(\"src\", '"+contextPath + Configuration.getMakumbaResourcesLocation() + "/" + RESOURCE_PATH_JAVASCRIPT + script + "');\n");
-        sb.append("if (typeof "+ filerefName +" != \"undefined\")\n");
         sb.append("document.getElementsByTagName(\"head\")[0].appendChild("+filerefName+");\n");
         sb.append("</script>\n");
         
