@@ -60,7 +60,7 @@ ID_LETTER
     ;
     
 POSITIVE_INTEGER options { paraphrase = "a positive integer";}
-    : ('+')? NUMBER
+    : NUMBER
     ;
 
 NEGATIVE_INTEGER options { paraphrase = "a negative integer";}
