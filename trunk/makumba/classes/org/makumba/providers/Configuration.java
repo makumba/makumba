@@ -347,6 +347,19 @@ public class Configuration implements Serializable {
     public static boolean getErrorLog() {
         return applicationConfig.getBooleanProperty("makumbaToolConfig", KEY_DB_ERROR_LOG, defaultConfig);
     }
+    
+    /**
+     * Returns the alternate location of a resource, PROPERTY_NOT_SET if there is none provide.
+     * This makes it possible to configure alternate locations for e.g. javascript libs used by makumba.
+     * @param res the name of the resource, e.g. "prototype.js"
+     * @return the path starting from the context path to the library location, or PROPERTY_NOT_SET
+     */
+    public static String getResourceLocation(String res) {
+        // we use getStringProperty to get null in case the property is not defined
+        return applicationConfig.getProperty("makumbaToolConfig", res + "_location");
+    }
+    
+    
 
     public static String getMakumbaToolsLocation() {
         final String property = applicationConfig.getProperty("makumbaToolPaths", KEY_MAKUMBA_TOOLS);
