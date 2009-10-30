@@ -104,7 +104,7 @@ public class ComparisonValidationRule extends ValidationRuleNode {
                 }
                 
                 if(right instanceof NullObject) {
-                    left = FieldType.INT.getEmptyValue();
+                    right = FieldType.INT.getEmptyValue();
                 }
                 
                 compare = Double.compare(((Number) left).doubleValue(), ((Number) right).doubleValue());
