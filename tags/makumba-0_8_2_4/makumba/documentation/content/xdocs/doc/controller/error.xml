@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
+<document>
+    <header>
+        <title>Error handling</title>
+    </header>
+    <body>
+    
+    <fixme author="manu">Describe error handling mechanism: error pages (customizable, link to conf) and error messages</fixme>
+    
+    </body>
+    
+    
+    
+</document>
+    
+    

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<section id="description">
+  <title>Description</title>
+  <p>
+    Enclosed inside a
+    &lt;mak:criterion&gt;
+      , generates an input for that criterion. This tag is based on the
+      &lt;mak:input /&gt;
+      tag, and provides additionally the following attributes:
+  </p>
+</section>
