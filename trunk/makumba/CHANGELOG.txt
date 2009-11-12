@@ -11,6 +11,7 @@ manu: fix to the fix regarding comparison validation rules in 0.8.2.3
 manu: adding paraphrases in mdd.g to make parser error messages more understandable
 manu: fixed rendering of multiple select inputs: </select> no longer appended if input is empty (no input rendered)
 manu: resolved some lexical non-determinisms in mdd parser
+manu: fixing bug in new mdd parser regarding check of set int enum values
 
 NOT TO BE RELEASED YET (need more testing)
 manu: auto-complete for mak:input (char and ptr)

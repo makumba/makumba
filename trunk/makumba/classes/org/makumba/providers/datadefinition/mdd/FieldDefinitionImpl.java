@@ -542,9 +542,16 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
                 case SETINTENUM:
                     
                     Vector<Object> vect = new Vector<Object>();
-                    // may be just an Integer
-                     
+                    
+                    // may just have one value 
                     if (value != null && value instanceof Integer) {
+                        checkIntEnum(value);
+                        vect.addElement(value);
+                        return vect;
+                    }
+                    
+                    if (value != null && value instanceof String) {
+                        checkIntEnum(value);
                         vect.addElement(value);
                         return vect;
                     }
