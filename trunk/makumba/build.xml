@@ -51,6 +51,8 @@
         <mkdir dir="tomcat/temp" />
         <mkdir dir="work/generated-hibernate-classes" />
         <mkdir dir="work/generated-hibernate-mappings" />
+        
+        <antcall target="makeJSPWikiProperties" />
 
     </target>
 
@@ -193,7 +195,6 @@
             <fileset dir="." includes="manifest-replace.properties,manifest.mf" />
             <fileset dir="." includes="manifest-replace.properties,manifest.mf" />
             <fileset dir="${forrest.plugins-dir}/plugins/org.apache.forrest.plugin.input.wiki" />
-
         </delete>
     </target>
 
@@ -546,6 +547,19 @@
         </javadoc>
     
     </target>
+    
+    <target name="makeJSPWikiProperties" description="generates JSPWiki properties file for local use">
+        
+        <!-- Filters -->
+        <filter token="pageDir" value="${basedir}/doc-jspwiki/wikidoc" />
+        <filter token="workDir" value="${basedir}/work" />
+        <filter filtersfile="doc-jspwiki/JSPWiki/WEB-INF/jspwiki.properties.template" />
+
+        <!-- Copy the template in order to replace the version token filter -->
+        <copy file="doc-jspwiki/JSPWiki/WEB-INF/jspwiki.properties.template" tofile="doc-jspwiki/JSPWiki/WEB-INF/jspwiki.properties" filtering="on" overwrite="true" />
+    </target>
+    
+    
 
 <!-- Targets for modular building (list, forms, commons, ...) -->
 
