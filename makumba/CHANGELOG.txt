@@ -7,11 +7,6 @@
 
 TO BE RELEASED IMMEDIATELY (No need for more testing)
 -----------------------------------------------
-manu: fix to the fix regarding comparison validation rules in 0.8.2.3
-manu: adding paraphrases in mdd.g to make parser error messages more understandable
-manu: fixed rendering of multiple select inputs: </select> no longer appended if input is empty (no input rendered)
-manu: resolved some lexical non-determinisms in mdd parser
-manu: fixing bug in new mdd parser regarding check of set int enum values
 
 NOT TO BE RELEASED YET (need more testing)
 manu: auto-complete for mak:input (char and ptr)
@@ -22,6 +17,13 @@ manu, marius: edit-in-place for mak:input and mak:list ("editable" attribute). I
 
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
+0.8.2.4 12 Nov 2009
+manu: fix to the fix regarding comparison validation rules in 0.8.2.3
+manu: adding paraphrases in mdd.g to make parser error messages more understandable
+manu: fixed rendering of multiple select inputs: </select> no longer appended if input is empty (no input rendered)
+manu: resolved some lexical non-determinisms in mdd parser
+manu: fixing bug in new mdd parser regarding check of set int enum values
+
 0.8.2.3 25 Oct 2009
 manu: changing syntax of unique() {field1, field2} :"error" to unique(field1,field2) : "error"
 manu: fixing bug in comparison validation rule: validation rule breaks if an int/real field is left blank
