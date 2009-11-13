@@ -25,7 +25,7 @@ jspwiki.applicationName = makumba
 #  Example:
 #  jspwiki.baseURL = http://www.jspwiki.org/
 #
-jspwiki.baseURL= http://localhost:9090
+jspwiki.baseURL= http://localhost:9090/JSPWiki/
 
 #
 #  Which page provider class to use.  Possibilities are:
@@ -37,7 +37,7 @@ jspwiki.baseURL= http://localhost:9090
 #  Note that if you're upgrading from JSPWiki 1.x, then you need to remove the
 #  "com.ecyrd.jspwiki." part from the beginning of the path.
 #
-jspwiki.pageProvider = FileSystemProvider
+jspwiki.pageProvider = VersioningFileProvider
 
 #
 #  Set to true, if you want to cache page data into memory.  This is
