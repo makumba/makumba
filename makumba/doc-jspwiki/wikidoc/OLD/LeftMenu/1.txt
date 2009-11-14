@@ -1,6 +1,5 @@
 * [Main page|Main]
 * [About]
-* [Example]
 * [News]
 * [Recent Changes]
 * [WikiEtiquette]
