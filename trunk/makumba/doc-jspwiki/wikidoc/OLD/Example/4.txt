@@ -1,0 +1,46 @@
+!!!Example page
+
+This page contains examples of things that can be done with JSPwiki
+
+!!Text styles
+
+!Strong text
+
+{{{
+__This text is bold__
+}}}
+
+__This text is bold
+
+!Emphasized text
+
+{{{
+''Emphasized text''
+}}}
+
+''Emphasized text''
+
+
+!!Source code
+
+It is possible to format source code using the code plugin:
+
+{{{
+
+[{Code
+
+public static void main(String[] args) {
+  System.out.println("Hello, world!");
+}
+
+}]
+
+}}}
+
+[{Code
+
+public static void main(String[] args) {
+  System.out.println("Hello, world!");
+}
+
+}]

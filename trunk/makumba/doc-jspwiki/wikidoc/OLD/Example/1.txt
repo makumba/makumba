@@ -1,0 +1,8 @@
+!!!Example page
+
+This page contains examples of things that can be done with JSPwiki
+
+!!Text styles
+
+!Strong text
+__This text is bold__

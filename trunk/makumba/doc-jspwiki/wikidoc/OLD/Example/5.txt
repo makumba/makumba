@@ -1,0 +1,59 @@
+!!!Example page
+
+This page contains examples of things that can be done with JSPwiki
+
+!!JSPWiki basics
+
+
+{{{
+
+(empty line)     Make a paragraph break. 
+----             Horizontal ruler
+[link]           Create hyperlink to "link", where "link" can be either an internal 
+                 WikiName or an external link (http://)
+[text|link]      Create a hyperlink where the link text is different from the actual 
+                 hyperlink link.
+[link#heading]   Jumps to that heading on the page.  The heading here needs to be 
+                 written in CamelCase.
+[text|wiki:link] Create a hyperlink where the link text is different from the 
+                 actual hyperlink link, and the hyperlink points to a named Wiki. 
+                 This supports interWiki linking.
+
+*                Make a bulleted list (must be in first column). Use more (**)
+                 for deeper indentations.
+#                Make a numbered list (must be in first column). Use more (##, ###) 
+                 for deeper indentations.
+
+!, !!, !!!       Start a line with an exclamation mark (!) to make a heading. 
+                 More exclamation marks mean bigger headings.
+
+__text__         Makes text bold.
+''text''         Makes text in italics (notice that these are single quotes ('))
+{{text}}         Makes text in monospaced font.
+;term:def        Defines 'term' with 'def'.  Use this with empty 'term' to 
+                  make short comments.
+\\               Forced line break (please use sparingly).
+
+}}}
+
+!!Source code
+
+It is possible to format source code using the code plugin:
+
+{{{
+[{Code
+
+public static void main(String[] args) {
+  System.out.println("Hello, world!");
+}
+
+}]
+}}}
+
+[{Code
+
+public static void main(String[] args) {
+  System.out.println("Hello, world!");
+}
+
+}]

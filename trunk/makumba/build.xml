@@ -22,6 +22,23 @@
         </fileset>
     </path>
     
+    <property file="tomcat.properties" />
+    
+    <!-- classpath for starting the JSPWiki tomcat -->
+    <path id="tomcat.class.path">
+        <fileset dir="${java.home}/lib/">
+            <include name="rt.jar" />
+        </fileset>
+        <fileset dir="${basedir}/lib/">
+            <include name="tomcat-bootstrap.jar" />
+            <include name="servlet-api.jar" />
+            <include name="commons-logging-api.jar" />
+            <include name="ant-1.6.5.jar" />
+            <include name="ant-launcher-1.6.5.jar" />
+        </fileset>
+    </path>
+    
+    
 <!-- Properties and task definitions -->    
 
     <!-- jikes as default compiler
@@ -199,7 +216,7 @@
     </target>
 
 
-<!-- Targets for creation of the Makumba JAR -->
+<!-- Targets for making releases and creating JARs -->
 
     <target name="makeManifest" description="generates manifest file">
         <antcall target="version" />
@@ -411,6 +428,9 @@
         </ftp>
     </target>
 
+
+
+
 <!-- Targets for JUNIT testing -->    
 
     <target name="test" depends="compile" description="run all test cases">
@@ -457,6 +477,9 @@
     </target>
     
     
+    
+    
+    
 <!-- Targets for TLD generation -->
 
     <target name="make12tld">
@@ -480,74 +503,10 @@
         </java>
     </target>
 
-<!-- Targets for documentation with Apache Forrest -->
-
-    <target name="makeForrestDoc" description="generate forrest documentation and the API based on the documented taglib and the examples in documentation/tag-examples">
-        <antcall target="javadoc" />
-        <antcall target="generateTagDocAndExamples" />
-        
-        <exec executable="forrest">
-            <arg value="site" />
-        </exec>
-        
-        <!-- We need to copy the javadoc by hand into the rendered site directory -->
-        <mkdir dir="build/site/en/apidocs"/>
-        <copy todir="build/site/en/apidocs">
-            <fileset dir="documentation/content/xdocs/apidocs" includes="**/*.*" />
-        </copy>
-        
-    </target>
-
-    <target name="generateTagDocAndExamples" depends="compile">
-        
-        <delete includeEmptyDirs="true" failonerror="false">
-            <fileset dir="documentation/content/xdocs/doc/taglib" includes="*.xml" excludes="index.xml" defaultExcludes="no" />
-        </delete>
-        
-        <java classname="org.makumba.commons.TLD2Forest" fork="true" dir=".">
-            <classpath refid="project.class.path.complete" />
-            <arg value="${basedir}/classes/META-INF/taglib-documented.xml" />
-            <arg value="${basedir}/documentation/tag-examples" />
-            <arg value="${basedir}/documentation/content/xdocs/doc/taglib" />
-            <arg value="3" />
-        </java>
-    </target>
-
-    <target name="forrest-build-webapp" description="Generates webapp">
-        <exec executable="forrest">
-            <arg value="run-webapp" />
-        </exec>
-    </target>
-
-    <target name="forrest-validate-xdocs" description="Validates forrest documentation">
-        <exec executable="forrest">
-            <arg value="validate-xdocs" />
-        </exec>
-    </target>
-  
-    <target name="javadoc">
-        <tstamp>
-            <format property="javadoc.startup.time" pattern="yyyy-MM-dd HH:mm" />
-        </tstamp>
-
-        <echo>- generating documentation/content/xdocs/apidocs</echo>
-
-        <mkdir dir="documentation/content/xdocs/apidocs" />
-        
-        <javadoc destdir="documentation/content/xdocs/apidocs" sourcepath="classes" packagenames="org.makumba" notree="true" noindex="true"
-            nohelp="true" windowtitle="Makumba" classpathref="project.class.path" Version="true" Author="true"
-            additionalparam="-breakiterator" doctitle="makumba API Documentation" stylesheetfile="documentation/content/xdocs/apidocs/javadoc.css">
-            <bottom>
-                <![CDATA[
-                <div class='pageFooter'>
-                Docs generated on ${javadoc.startup.time}
-                </div>
-            ]]></bottom>
-            <link href="http://java.sun.com/j2se/1.4.2/docs/api/" />
-        </javadoc>
     
-    </target>
     
+<!-- Targets for documentation with JSPWiki -->
+
     <target name="makeJSPWikiProperties" description="generates JSPWiki properties file for local use">
         
         <!-- Filters -->
@@ -558,6 +517,35 @@
         <!-- Copy the template in order to replace the version token filter -->
         <copy file="doc-jspwiki/JSPWiki/WEB-INF/jspwiki.properties.template" tofile="doc-jspwiki/JSPWiki/WEB-INF/jspwiki.properties" filtering="on" overwrite="true" />
     </target>
+    
+    
+    <target name="tomcat-start" description="start the tomcat to deploy JSPwiki">
+        <echo>Java home in build: ${java.home}</echo>
+        <java classname="org.apache.catalina.startup.Bootstrap" fork="yes" classpathref="tomcat.class.path" append="true">
+            <jvmarg value="-Dcatalina.home=${tomcat.home}" />
+            <jvmarg value="-Dcatalina.base=${basedir}/tomcat-jspwiki" />
+            <jvmarg value="-Xms${tomcat.Xms}" />
+            <jvmarg value="-Xmx${tomcat.Xmx}" />
+            <jvmarg value="-XX:MaxPermSize=${tomcat.Xmx}" />
+            <jvmarg value="-Djava.util.logging.config.file=${basedir}/logging.properties" />
+            <jvmarg value="-client"/>
+            <arg value="start" />
+        </java>
+        <!-- give tomcat time to start up -->
+        <sleep seconds="5" />
+
+    </target>
+
+    <target name="tomcat-stop" description="stops the tomcat that runs JSPwiki">
+        <java classname="org.apache.catalina.startup.Bootstrap" fork="yes" classpathref="tomcat.class.path">
+            <jvmarg value="-Dcatalina.home=${tomcat.home}" />
+            <jvmarg value="-Dcatalina.base=tomcat" />
+            <arg value="stop" />
+        </java>
+        <!-- give tomcat time to shut down -->
+        <sleep seconds="5" />
+    </target>
+    
     
     
 
@@ -957,5 +945,73 @@ package org.makumba]]>
         <target name="checkManifest" depends="compile"> <condition property="meta-inf.ok"> <uptodate
         srcfile="manifest.template" targetfile="manifest.mf" /> </condition> </target>
     -->
+    
+<!-- Targets for documentation with Apache Forrest -->
+
+    <target name="makeForrestDoc" description="generate forrest documentation and the API based on the documented taglib and the examples in documentation/tag-examples">
+        <antcall target="javadoc" />
+        <antcall target="generateTagDocAndExamples" />
+        
+        <exec executable="forrest">
+            <arg value="site" />
+        </exec>
+        
+        <!-- We need to copy the javadoc by hand into the rendered site directory -->
+        <mkdir dir="build/site/en/apidocs"/>
+        <copy todir="build/site/en/apidocs">
+            <fileset dir="documentation/content/xdocs/apidocs" includes="**/*.*" />
+        </copy>
+        
+    </target>
+
+    <target name="generateTagDocAndExamples" depends="compile">
+        
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="documentation/content/xdocs/doc/taglib" includes="*.xml" excludes="index.xml" defaultExcludes="no" />
+        </delete>
+        
+        <java classname="org.makumba.commons.TLD2Forest" fork="true" dir=".">
+            <classpath refid="project.class.path.complete" />
+            <arg value="${basedir}/classes/META-INF/taglib-documented.xml" />
+            <arg value="${basedir}/documentation/tag-examples" />
+            <arg value="${basedir}/documentation/content/xdocs/doc/taglib" />
+            <arg value="3" />
+        </java>
+    </target>
+
+    <target name="forrest-build-webapp" description="Generates webapp">
+        <exec executable="forrest">
+            <arg value="run-webapp" />
+        </exec>
+    </target>
+
+    <target name="forrest-validate-xdocs" description="Validates forrest documentation">
+        <exec executable="forrest">
+            <arg value="validate-xdocs" />
+        </exec>
+    </target>
+  
+    <target name="javadoc">
+        <tstamp>
+            <format property="javadoc.startup.time" pattern="yyyy-MM-dd HH:mm" />
+        </tstamp>
+
+        <echo>- generating documentation/content/xdocs/apidocs</echo>
+
+        <mkdir dir="documentation/content/xdocs/apidocs" />
+        
+        <javadoc destdir="documentation/content/xdocs/apidocs" sourcepath="classes" packagenames="org.makumba" notree="true" noindex="true"
+            nohelp="true" windowtitle="Makumba" classpathref="project.class.path" Version="true" Author="true"
+            additionalparam="-breakiterator" doctitle="makumba API Documentation" stylesheetfile="documentation/content/xdocs/apidocs/javadoc.css">
+            <bottom>
+                <![CDATA[
+                <div class='pageFooter'>
+                Docs generated on ${javadoc.startup.time}
+                </div>
+            ]]></bottom>
+            <link href="http://java.sun.com/j2se/1.4.2/docs/api/" />
+        </javadoc>
+    
+    </target>
     
 </project>
