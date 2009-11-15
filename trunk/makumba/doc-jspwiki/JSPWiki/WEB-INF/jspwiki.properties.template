@@ -37,7 +37,8 @@ jspwiki.baseURL= http://localhost:9090/
 #  Note that if you're upgrading from JSPWiki 1.x, then you need to remove the
 #  "com.ecyrd.jspwiki." part from the beginning of the path.
 #
-jspwiki.pageProvider = VersioningFileProvider
+#jspwiki.pageProvider = VersioningFileProvider
+jspwiki.pageProvider = FileSystemProvider
 
 #
 #  Set to true, if you want to cache page data into memory.  This is
@@ -316,7 +317,6 @@ jspwiki.specialPage.UserPreferences = UserPreferences.jsp
 #  For example, use the following command to add "org.myorganisation.jspwiki.myplugins"
 #  and "com.foobar.myplugins" to the search path.
 #
-#  jspwiki.plugin.searchPath = org.myorganisation.jspwiki.myplugins,com.foobar.myplugins
 #
 #  The default path is "com.ecyrd.jspwiki.plugin", and it will be always
 #  the last item on the path.  This allows you to override JSPWiki default
@@ -332,7 +332,7 @@ jspwiki.specialPage.UserPreferences = UserPreferences.jsp
 #
 #  jspwiki.plugin.searchPath = org.myorganisation.jspwiki.myplugins,com.foobar.myplugins
 #
-jspwiki.plugin.searchPath =
+jspwiki.plugin.searchPath = brushed.jspwiki.tableplugin
 
 #############################################################################
 #

@@ -60,3 +60,29 @@ public static void main(String[] args) {
 }
 
 }]
+
+!!Tables
+
+By default JSPWiki does not offer too many possibilities regarding tables, like no possibilities to merge cells or to give custom styles to rows. This can be circumvented using the [TablePlugin|http://www.jspwiki.org/wiki/TablePlugin]
+
+{{{
+[{Table
+
+|Nr |A |< |C |<
+|#  |a |b |c |(background:yellow;)d
+|#  |^ |b |^ |(background:yellow;)d
+
+
+}]
+}}}
+
+[{Table
+
+|Nr |A |< |C |<
+|#  |a |b |c |(background:yellow;)d
+|#  |^ |b |^ |(background:yellow;)d
+}]
+
+Check out the documentation of the [TablePlugin|http://www.jspwiki.org/wiki/TablePlugin] to find out more.
+
+
