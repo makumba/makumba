@@ -2,3 +2,10 @@
 
 This page will soon reflect the power of this framework!
 
+!!TODO to turn this into a website for makumba
+
+||What||Who||Comments
+|adapt the layout (CSS, template)|Jasper|
+|work on the authentication|Filip|do not enable account creation for everyone\\set up some users, and some as admin
+|generate the taglib wiki pages based on the taglib-documented.xml|manu|figure out how to specify styles for tables (for the attribute tables)\\adapt TLD2JSPWiki
+|copy all the pages from [http://lisbon.best.eu.org:8888/] into the wiki (new.makumba.org is outdated since forrest does not build most of the doc there), __except__ the tag documentation that will be generated|EVERYONE|we don't have replacements yet for the forrest <note> and <code> elements, so we need to find something here
