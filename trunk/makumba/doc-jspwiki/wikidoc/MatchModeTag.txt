@@ -1,0 +1,44 @@
+!!!Taglib documentation for tag mak:matchMode
+
+!!Description
+
+[{InsertPage page=MatchModeTagDescription}]
+
+!!Attributes
+[{Table
+
+||Name||Required||Request-time||Description||Comments
+|type|false|false|{{{
+        HTML input type to be used:
+            <ul>
+              <li>"select" (drop-down).</li>
+              <li>"radio" (radio buttons).</li>
+            </ul>
+        
+      }}}|{{{Fixed. Defaults to 'select'.}}}
+|matchModes|false|false|{{{Defines how the search terms shall be matched. Allowed values depend on the data types:
+      <ul>
+        <li>for string matches, i.e. char and text: 'contains', 'equals', 'begins', 'ends'</li>
+    	<li>for range matches, i.e. int, real and date: 'between', 'betweenInclusive'</li>
+        <li>for number comparisons, i.e. int and real: 'equals', 'lessThan', 'greaterThan'</li>
+        <li>for date comparisons: 'equals', 'before', 'after'</li>
+      </ul>
+      }}}|{{{Fixed. Defaults to 'equals' for string, number and date comparisons, and 'betweenInclusive' for range
+        comparisons.}}}
+|default|false|false|{{{The default match-mode to be selected when the form is first loaded.}}}|{{{see 'matchModes' for allowed values}}}
+|id|false|false|{{{Tag's identifier}}}|{{{Fixed. Can be used to distinguish otherwise identical tags on a page (to avoid confusion by Makumba's
+        JSP analyser)}}}
+|labelSeparator|false|true|{{{The string that separates the tickbox (radio/check) from the label. Default is " " (space). 
+The output will be < tick >< labelSeparator >< label >}}}|{{{Rtexpr. Only for <code>type="tickbox"</code>}}}
+|elementSeparator|false|true|{{{The string that separates the different options. Default is " " (space). 
+The output will be < [x] label >< elementSeparator >< [x] label >}}}|{{{Rtexpr. Only for <code>type="tickbox"</code>}}}
+}]
+
+!!See also
+
+[mak:searchForm|SearchFormTag], [mak:resultList|ResultListTag], [mak:criterion|CriterionTag], [mak:searchField|SearchFieldTag]
+
+!!Examples
+
+[{InsertPage page=MatchModeTagExample}]
+

@@ -1,0 +1,23 @@
+!!!Taglib documentation for tag mak:option
+
+!!Description
+
+[{InsertPage page=OptionTagDescription}]
+
+!!Attributes
+[{Table
+
+||Name||Required||Request-time||Description||Comments
+|value|false|false|{{{Value of the option, can be an OQL expression or a $attribute}}}|{{{Fixed, if not indicated, nil (null option) is default}}}
+|selected|false|false|{{{Whether this option is selected or not}}}|{{{False by default}}}
+|disabled|false|false|{{{Whether the option will be disabled}}}|{{{Fixed}}}
+}]
+
+!!See also
+
+[mak:input|InputTag], [mak:list|ListTag]
+
+!!Examples
+
+[{InsertPage page=OptionTagExample}]
+

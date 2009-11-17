@@ -1,0 +1,42 @@
+!!!Taglib documentation for tag mak:delete
+
+!!Description
+
+[{InsertPage page=DeleteTagDescription}]
+
+!!Attributes
+[{Table
+
+||Name||Required||Request-time||Description||Comments
+|object|true|false|{{{OQL label of the object to delete}}}|{{{Fixed}}}
+|action|false|true|{{{the response page of the form}}}|{{{Mandatory if a <mak:action> is absent}}}
+|message|false|true|{{{the message that is displayed in the response page upon success}}}|{{{Fixed. Defaults to "changes done".}}}
+|widget|false|true|{{{UI element of the delete}}}|{{{Fixed, can be one of button or link; defaults to link.}}}
+|method|false|true|{{{the HTTP method (get or post)}}}|{{{Defaults to get}}}
+|preserveWhitespace|false|true|{{{All white space inside a <mak:delete> will be trimmed, unless specifically preserved.}}}|{{{Fixed, can be one of true or false; defaults to false.}}}
+|target|false|true|{{{Form-specific HTML tag attribute}}}|{{{The content is copied to the resulting <form...> tag. Careful with (escaping) quotes.}}}
+|name|false|true|{{{the name of the form}}}|{{{%%(color:red) DOCUMENT ME PLEASE! %%}}}
+|styleId|false|true|{{{Generic HTML tag attribute}}}|{{{results in id="..."}}}
+|styleClass|false|true|{{{Generic HTML tag attribute}}}|{{{results in class="..."}}}
+|style|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
+|title|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
+|onClick|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
+|onDblClick|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
+|onKeyDown|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
+|onKeyUp|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
+|onKeyPress|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
+|onMouseDown|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
+|onMouseUp|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
+|onMouseMove|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
+|onMouseOut|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
+|onMouseOver|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
+}]
+
+!!See also
+
+
+
+!!Examples
+
+[{InsertPage page=DeleteTagExample}]
+

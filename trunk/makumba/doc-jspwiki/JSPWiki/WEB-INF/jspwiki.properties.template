@@ -377,7 +377,8 @@ jspwiki.plugin.searchPath = brushed.jspwiki.tableplugin
 #
 #jspwiki.urlConstructor = DefaultURLConstructor
 #jspwiki.urlConstructor = ShortViewURLConstructor
-#jspwiki.shortURLConstructor.prefix = wiki/
+jspwiki.urlConstructor = ShortURLConstructor
+jspwiki.ShortURLConstructor.prefix = page/
 
 #############################################################################
 #

@@ -1,0 +1,17 @@
+!!!Taglib documentation for tag mak:version
+
+!!Description
+
+[{InsertPage page=VersionTagDescription}]
+
+!!Attributes
+This tag has no attributes
+
+!!See also
+
+[mak:info|InfoTag]
+
+!!Examples
+
+[{InsertPage page=VersionTagExample}]
+

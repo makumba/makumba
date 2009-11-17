@@ -1,0 +1,60 @@
+!!!Taglib documentation for tag mak:value
+
+!!Description
+
+[{InsertPage page=ValueTagDescription}]
+
+!!Attributes
+[{Table
+
+||Name||Required||Request-time||Description||Comments
+|expr|true|false|{{{OQL SELECT projection expression. It will be displayed if var nor printVar are not specified.
+      }}}|{{{Fixed, Mandatory.}}}
+|var|false|false|{{{The value of the expression is set to a new java.lang.Object variable by this name, as well as to a
+        page-scope attribute, also by the same name (accessible as $attributename).}}}|{{{Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java scope
+        at that point in the JSP.
+        Note: the Java variable must be cast to its specific type (Integer, String, Date, Text, Pointer, Vector) before using it
+        as such.}}}
+|printVar|false|false|{{{The formatted output as it would have been printed, is instead stored in a new java.lang.String
+        variable by this name, as well as to a page-scope attribute by the same name (accessible as $attributename).
+      }}}|{{{Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java scope
+        at that point in the JSP.}}}
+|urlEncode|false|true|{{{Indicates if the expression will be part of an URL or not. If "true", the output is URL-encoded.
+        Default is "false".}}}|{{{Rtexpr.}}}
+|html|false|true|{{{Normal behaviour is to transform character output to its HTML escaped form. If this is "true",
+        content is assumed to be HTML, and is not escaped. If "auto", heuristically checks the content for HTML tags and
+        inhibits escape if there are any; note: only the first 32768 characters are checked (32kB). Default is "false".
+      }}}|{{{Rtexpr. Only char[] and text}}}
+|format|false|true|{{{Format string to specify the formatting of a date value, according to java.text.SimpleDateFormat
+      }}}|{{{Rtexpr. Only for date. Defaults to "dd MMMM yyyy"}}}
+|lineSeparator|false|true|{{{Separator for long lines. If a text consists of short lines only, it will be surrounded by <pre>...</pre>. Default is "<p>".}}}|{{{Rtexpr. Only for text. Current implementation is buggy: separator is added before every long line,
+        instead of between every long line.}}}
+|longLineLength|false|true|{{{The length of a long line. If a text contains long lines, it will be printed differently. See
+        lineSeparator. Default is "30"}}}|{{{Rtexpr. Only for text.}}}
+|maxLength|false|true|{{{The maximum length (number of characters) to print. Longer output is cut off, and an ellipsis is
+        added to indicate the cut. If not set (default), there is no maximum.}}}|{{{Rtexpr. Only applies for char[] AND if it is not already HTML formatted (cfr. html).}}}
+|ellipsis|false|true|{{{The character string to print to indicate that the text extended the maxLength. Default is "...". The
+        final printed string, including the ellipsis, will not exceed maxLength.}}}|{{{Rtexpr}}}
+|ellipsisLength|false|true|{{{The equivalent character length of ellipsis. By default, this is the number of characters in
+        ellipsis. But if ellipsis is e.g. HTML code, then that is not appropriate.}}}|{{{Rtexpr. 
+Example, the ellipsis is an image of approx 3 characters wide. ellipsis="<img src='icon.gif' width='10' height='10'>" ellipsisLength="3"}}}
+|addTitle|false|true|{{{If "true", add an HTML tooltip with the value, to the printed output. If "auto", add tooltip only if
+        the printed output is cut (cfr maxLength). Default is "false". }}}|{{{Rtexpr. Note: implementated by producing as output: <span title="printVar">possibly-cut-printVar</span> }}}
+|default|false|true|{{{The character string to print if the expr results in a NULL value. Default is default="" (i.e.
+        zero-length string)
+        Support not available for: date, "choice" = ptr, set, setCharEnum}}}|{{{Rtexpr}}}
+|empty|false|true|{{{The character string to print if the normal printed output would be empty (i.e. zero-length string).
+        Therefore, this is also used for case expr=NULL and default="".}}}|{{{Rtexpr}}}
+|editable|false|true|{{{Document me please}}}|{{{Document me please}}}
+|logicClass|false|true|{{{Document me please}}}|{{{Document me please}}}
+|editPage|false|true|{{{Document me please}}}|{{{Document me please}}}
+}]
+
+!!See also
+
+[mak:list|ListTag], [mak:object|ObjectTag], [mak:option|OptionTag]
+
+!!Examples
+
+[{InsertPage page=ValueTagExample}]
+

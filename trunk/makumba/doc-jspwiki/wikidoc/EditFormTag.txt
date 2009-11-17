@@ -1,0 +1,53 @@
+!!!Taglib documentation for tag mak:editForm
+
+!!Description
+
+[{InsertPage page=EditFormTagDescription}]
+
+!!Attributes
+[{Table
+
+||Name||Required||Request-time||Description||Comments
+|object|true|false|{{{The label of the OQL object to edit}}}|{{{Fixed, mandatory.}}}
+|handler|false|false|{{{the Java method that handles the response}}}|{{{Arguments: (Dictionary formFields, Attributes restOfArguments, Database db)
+        Not mandatory. A form without handler will simply set attributes (as makumba objects) for the next page}}}
+|action|false|true|{{{the response page of the form}}}|{{{Mandatory if a <mak:action> is absent}}}
+|method|false|true|{{{the HTTP method (get or post)}}}|{{{Defaults to get}}}
+|name|false|true|{{{the name of the form}}}|{{{%%(color:red) DOCUMENT ME PLEASE! %%}}}
+|message|false|true|{{{the message that is displayed in the response page upon success}}}|{{{Fixed. Defaults to "changes done".}}}
+|annotation|false|true|{{{Indicates that validation whether errors should be shown in the form, or be displayed in the <mak:response/>.}}}|{{{Taken into account only if reloadFormOnError is not set to false.
+Values are none (displayed in <mak:response/>), before (before the input), after (after the input) or both (displayed both before and after the input). Defaults to none. }}}
+|annotationSeparator|false|true|{{{Fixed. Prints the given separator between the annotation and the input field.}}}|{{{Also HTML can be used, e.g. printing an error icon.}}}
+|reloadFormOnError|false|true|{{{Indicates whether the form page shall be reloaded on an error, or the specified form action page will
+        be loaded directly.}}}|{{{Fixed. Values are true or false; defaults to false.}}}
+|clientSideValidation|false|true|{{{Controls whether client side validation shall be used.}}}|{{{Rtexpr. Values are false (off), true (on submission) or live (while tpying).}}}
+|target|false|true|{{{Form-specific HTML tag attribute}}}|{{{The content is copied to the resulting <form...> tag. Careful with (escaping) quotes.}}}
+|onReset|false|true|{{{Form-specific HTML tag attribute}}}|{{{The content is copied to the resulting <form...> tag. Careful with
+          (escaping) quotes.}}}
+|onSubmit|false|true|{{{Form-specific HTML tag attribute}}}|{{{The content is copied to the resulting <form...> tag. Careful with
+          (escaping) quotes.}}}
+|styleId|false|true|{{{Generic HTML tag attribute}}}|{{{results in id="..."}}}
+|styleClass|false|true|{{{Generic HTML tag attribute}}}|{{{results in class="..."}}}
+|style|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
+|title|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
+|onClick|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
+|onDblClick|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
+|onKeyDown|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
+|onKeyUp|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
+|onKeyPress|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
+|onDblClick|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
+|onMouseDown|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
+|onMouseUp|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
+|onMouseMove|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
+|onMouseOut|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
+|onMouseOver|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
+}]
+
+!!See also
+
+[mak:input|InputTag], [mak:newForm|NewFormTag], [mak:addForm|AddFormTag], [mak:editForm|EditFormTag], [mak:deleteLink|DeleteLinkTag], [mak:delete|DeleteTag]
+
+!!Examples
+
+[{InsertPage page=EditFormTagExample}]
+
