@@ -1,0 +1,31 @@
+!!!Taglib documentation for tag mak:criterion
+
+!!Description
+
+[{InsertPage page=CriterionTagDescription}]
+
+!!Attributes
+[{Table
+
+||Name||Required||Request-time||Description||Comments
+|fields|true|false|{{{The MDD fields to apply this criterion upon}}}|{{{Fixed, mandatory; for multiple fields, provide a comma-separated list.}}}
+|isRange|false|false|{{{Toggles range searching on the field(s)}}}|{{{Fixed. Values are true or false; defaults to false.}}}
+|matchMode|false|false|{{{Defines how the search terms shall be matched. Allowed values depend on the data types:
+      <ul>
+        <li>for string matches, i.e. char and text: 'contains', 'equals', 'begins', 'ends'</li>
+    	<li>for range matches, i.e. int, real and date: 'between', 'betweenInclusive'</li>
+        <li>for number comparisons, i.e. int and real: 'equals', 'lessThan', 'greaterThan'</li>
+        <li>for date comparisons: 'equals', 'before', 'after'</li>
+      </ul>
+      }}}|{{{Fixed. Defaults to 'equals' for string, number and date comparisons, and 'betweenInclusive' for range
+        comparisons.}}}
+}]
+
+!!See also
+
+[mak:searchForm|SearchFormTag], [mak:resultList|ResultListTag], [mak:matchMode|MatchModeTag], [mak:searchField|SearchFieldTag]
+
+!!Examples
+
+[{InsertPage page=CriterionTagExample}]
+

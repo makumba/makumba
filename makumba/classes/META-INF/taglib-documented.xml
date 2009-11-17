@@ -17,6 +17,8 @@
     <tei-class>org.makumba.list.tags.CountTEI</tei-class>
     <body-content>JSP</body-content>
     <display-name>manipulate lists</display-name>
+    <descriptionPage>ListTagDescription</descriptionPage>
+    <example>ListTagExample</example>
     <see>value, object</see>
 
     <attribute>
@@ -180,6 +182,8 @@ Can be a Rtexpr <%= ...%>]]></comments>
     <tei-class>org.makumba.list.tags.CountTEI</tei-class>
     <body-content>JSP</body-content>
     <display-name>manipulate record</display-name>
+    <descriptionPage>ObjectTagDescription</descriptionPage>
+    <example>ObjectTagExample</example>
     <see>list, value</see>
 
     <attribute name="from" specifiedIn="list" />
@@ -203,6 +207,8 @@ Can be a Rtexpr <%= ...%>]]></comments>
     <tei-class>org.makumba.list.tags.CountTEI</tei-class>
     <body-content>JSP</body-content>
     <display-name>Display result from a search form</display-name>
+    <descriptionPage>ResultListTagDescription</descriptionPage>
+    <example>ResultListTagExample</example>
     <see>searchForm, criterion, matchMode, searchField</see>
 
     <attribute>
@@ -230,6 +236,8 @@ Can be a Rtexpr <%= ...%>]]></comments>
     <tei-class>org.makumba.list.tags.VarTEI</tei-class>
     <body-content>empty</body-content>
     <display-name>Value of an expression</display-name>
+    <descriptionPage>ValueTagDescription</descriptionPage>
+    <example>ValueTagExample</example>
     <see>list, object, option</see>
 
     <attribute>
@@ -398,7 +406,10 @@ Example, the ellipsis is an image of approx 3 characters wide. ellipsis="<img sr
     <tag-class>org.makumba.list.tags.IfTag</tag-class>
     <body-content>JSP</body-content>
     <display-name>Shows body only if the expression is true</display-name>
-
+    <descriptionPage>IfTagDescription</descriptionPage>
+    <example>IfTagExample</example>
+    <see></see>
+    
     <attribute>
       <name>test</name>
       <required>true</required>
@@ -419,13 +430,17 @@ for the test expressions: =, !=, <, <=, >, >=
     <tei-class>org.makumba.list.tags.AttrTEI</tei-class>
     <body-content>empty</body-content>
     <display-name>Value of an expression</display-name>
+    <descriptionPage>AttributeTagDescription</descriptionPage>
+    <example>AttributeTagExample</example>
+    <see></see>
+    
 
     <attribute>
       <name>name</name>
       <required>true</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>the name of the attribute. Will be printed if var is not present and there is no exception when
-        finding the argument. If there is an exception but exceptionVar is indicated, nothing will be printed.
+      <description><![CDATA[the name of the attribute. Will be printed if var is not present and there is no exception when
+        finding the argument. If there is an exception but exceptionVar is indicated, nothing will be printed.]]>
       </description>
       <comments>Fixed, Mandatory.</comments>
     </attribute>
@@ -465,6 +480,8 @@ for the test expressions: =, !=, <, <=, >, >=
     <tag-class>org.makumba.forms.tags.FormTagBase</tag-class>
     <body-content>JSP</body-content>
     <display-name>Forms to create new data</display-name>
+    <descriptionPage>FormTagDescription</descriptionPage>
+    <example>FormTagExample</example>
     <see>input, newForm, addForm, editForm, deleteLink, delete</see>
 
     <attribute>
@@ -711,6 +728,8 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     <tag-class>org.makumba.forms.tags.NewTag</tag-class>
     <body-content>JSP</body-content>
     <display-name>Forms to create new data</display-name>
+    <descriptionPage>NewFormTagDescription</descriptionPage>
+    <example>NewFormTagExample</example>
     <see>input, form, addForm, editForm, deleteLink, delete</see>
 
     <attribute>
@@ -769,6 +788,8 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     <tag-class>org.makumba.forms.tags.EditTag</tag-class>
     <body-content>JSP</body-content>
     <display-name>Forms to edit data</display-name>
+    <descriptionPage>EditFormTagDescription</descriptionPage>
+    <example>EditFormTagExample</example>
     <see>input, newForm, addForm, editForm, deleteLink, delete</see>
 
     <attribute>
@@ -820,6 +841,8 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     <tag-class>org.makumba.forms.tags.AddTag</tag-class>
     <body-content>JSP</body-content>
     <display-name>Forms to create new data</display-name>
+    <descriptionPage>AddFormTagDescription</descriptionPage>
+    <example>AddFormTagExample</example>
     <see>input, form, newForm, editForm, deleteLink, delete</see>
 
     <attribute>
@@ -878,7 +901,10 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     <tag-class>org.makumba.forms.tags.DeleteTag</tag-class>
     <body-content>JSP</body-content>
     <display-name>Forms or links to delete data</display-name>
-
+    <descriptionPage>DeleteTagDescription</descriptionPage>
+    <example>DeleteTagExample</example>
+    <see></see>
+    
     <attribute>
       <name>object</name>
       <required>true</required>
@@ -936,6 +962,8 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     <tag-class>org.makumba.forms.tags.DeleteTag</tag-class>
     <body-content>JSP</body-content>
     <display-name>Links to delete data</display-name>
+    <descriptionPage>DeleteLinkTagDescription</descriptionPage>
+    <example>DeleteLinkTagExample</example>
     <see>form, newForm, addForm, editForm, delete</see>
 
     <attribute name="object" specifiedIn="delete" />
@@ -983,6 +1011,8 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     <tei-class>org.makumba.forms.tags.InputTEI</tei-class>
     <body-content>JSP</body-content>
     <display-name>Input control for a field</display-name>
+    <descriptionPage>InputTagDescription</descriptionPage>
+    <example>InputTagExample</example>
     <see>form, newForm, addForm, editForm, deleteLink, delete</see>
 
     <attribute>
@@ -1179,6 +1209,7 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
       <rtexprvalue>true</rtexprvalue>
       <description>Enable this to hide the default text of an input onFocus and display it again onBlur if nothing has
         been entered.</description>
+      <comments></comments>
     </attribute>
 
 
@@ -1263,6 +1294,8 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
     <tag-class>org.makumba.forms.tags.SearchTag</tag-class>
     <body-content>JSP</body-content>
     <display-name>Forms to search</display-name>
+    <descriptionPage>SearchFormTagDescription</descriptionPage>
+    <example>SearchFormTagExample</example>
     <see>resultList, criterion, matchMode, searchField</see>
 
     <attribute>
@@ -1323,6 +1356,8 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
     <tag-class>org.makumba.forms.tags.CriterionTag</tag-class>
     <body-content>JSP</body-content>
     <display-name>Search criterion</display-name>
+    <descriptionPage>CriterionTagDescription</descriptionPage>
+    <example>CriterionTagExample</example>
     <see>searchForm, resultList, matchMode, searchField</see>
 
     <attribute>
@@ -1362,6 +1397,8 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
     <name>matchMode</name>
     <tag-class>org.makumba.forms.tags.MatchModeTag</tag-class>
     <body-content>empty</body-content>
+    <descriptionPage>MatchModeTagDescription</descriptionPage>
+    <example>MatchModeTagExample</example>
     <see>searchForm, resultList, criterion, searchField</see>
 
     <attribute>
@@ -1417,6 +1454,8 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
     <tei-class>org.makumba.forms.tags.InputTEI</tei-class>
     <body-content>JSP</body-content>
     <display-name>Search input control for a field</display-name>
+    <descriptionPage>SearchFieldTagDescription</descriptionPage>
+    <example>SearchFieldTagExample</example>
     <see>searchForm, resultList, criterion, matchMode</see>
 
     <attribute>
@@ -1489,6 +1528,8 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
     <tag-class>org.makumba.forms.tags.ActionTag</tag-class>
     <body-content>JSP</body-content>
     <display-name>set an "action" for a form or deleteLink</display-name>
+    <descriptionPage>ActionTagDescription</descriptionPage>
+    <example>ActionTagExample</example>
     <see>form, newForm, addForm, editForm</see>
   </tag>
 
@@ -1497,6 +1538,8 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
     <tag-class>org.makumba.forms.tags.OptionTag</tag-class>
     <body-content>JSP</body-content>
     <display-name>Option to describe option lists in an input</display-name>
+    <descriptionPage>OptionTagDescription</descriptionPage>
+    <example>OptionTagExample</example>
     <see>input, list</see>
 
     <attribute>
@@ -1531,6 +1574,10 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
     <tag-class>org.makumba.forms.tags.ContextualTag</tag-class>
     <body-content>empty</body-content>
     <display-name></display-name>
+    <descriptionPage></descriptionPage>
+    <see></see>
+    <example></example>
+    
   </tag>
 
   <tag>
@@ -1538,7 +1585,8 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
     <tag-class>org.makumba.forms.tags.ResponseTag</tag-class>
     <body-content>empty</body-content>
     <display-name>display response and status from forms or delete</display-name>
-
+    <descriptionPage>ResponseTagDescription</descriptionPage>
+    <example>ResponseTagExample</example>
     <see>action, form, newForm, addForm, editForm, deleteLink, delete</see>
   </tag>
 
@@ -1549,6 +1597,8 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
     <tag-class>org.makumba.controller.jsp.LoginTag</tag-class>
     <body-content>JSP</body-content>
     <display-name>a login form that takes care of passing the existing arguments</display-name>
+    <descriptionPage>LoginTagDescription</descriptionPage>
+    <example>LoginTagExample</example>
     <see>logout, attribute</see>
   </tag>
 
@@ -1559,7 +1609,8 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
     <tag-class>org.makumba.controller.jsp.LogoutTag</tag-class>
     <body-content>empty</body-content>
     <display-name>remove the reference to the actor logged in</display-name>
-    
+    <descriptionPage>LogoutTagDescription</descriptionPage>
+    <example>LogoutTagExample</example>
     <see>login, attribute</see>
 
     <attribute>
@@ -1579,6 +1630,8 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
     <tag-class>org.makumba.commons.tags.MakumbaVersionTag</tag-class>
     <body-content>empty</body-content>
     <display-name>Prints Makumba version (a SVN tag)</display-name>
+    <descriptionPage>VersionTagDescription</descriptionPage>
+    <example>VersionTagExample</example>
     <see>info</see>
   </tag>
 
@@ -1589,6 +1642,8 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
     <tag-class>org.makumba.commons.tags.MakumbaInfoTag</tag-class>
     <body-content>empty</body-content>
     <display-name>Prints Makumba and environment information</display-name>
+    <descriptionPage>InfoTagDescription</descriptionPage>
+    <example>InfoTagExample</example>
     <see>version</see>
 
     <attribute>
@@ -1607,6 +1662,7 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
     <description>the count of the enclosing mak:list</description>
     <function-class>org.makumba.list.tags.QueryTag</function-class>
     <function-signature>int count()</function-signature>
+    <example>CountFunctionExample</example>
     <see>maxCount,lastCount,maxResults</see>
   </function>
 
@@ -1617,6 +1673,7 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
     <description>the maximum count of the enclosing mak:list</description>
     <function-class>org.makumba.list.tags.QueryTag</function-class>
     <function-signature>int maxCount()</function-signature>
+    <example>CountFunctionExample</example>
     <see>count,lastCount,maxResults</see>
   </function>
 
@@ -1627,6 +1684,7 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
     <description>the maximum count of the previous mak:list</description>
     <function-class>org.makumba.list.tags.QueryTag</function-class>
     <function-signature>int lastCount()</function-signature>
+    <example>CountFunctionExample</example>
     <see>count,maxCount,maxResults</see>
   </function>
 
@@ -1638,6 +1696,8 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
     </description>
     <function-class>org.makumba.list.tags.QueryTag</function-class>
     <function-signature>int maxResults()</function-signature>
+    <descriptionPage>MaxResultsFunctionDescription</descriptionPage>
+    <example>CountFunctionExample</example>
     <see>count,maxCount,lastCount</see>
   </function>
 
@@ -1648,6 +1708,8 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
     <tagclass>org.makumba.list.pagination.PaginationTag</tagclass>
     <bodycontent>EMPTY</bodycontent>
     <display-name>Prints links for pagination navigation</display-name>
+    <descriptionPage>PaginationTagDescription</descriptionPage>
+    <example>PaginationTagExample</example>
     <see>list</see>
 
     <attribute>

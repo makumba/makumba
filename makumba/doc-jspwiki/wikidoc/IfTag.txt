@@ -1,0 +1,24 @@
+!!!Taglib documentation for tag mak:if
+
+!!Description
+
+[{InsertPage page=IfTagDescription}]
+
+!!Attributes
+[{Table
+
+||Name||Required||Request-time||Description||Comments
+|test|true|false|{{{OQL SELECT  projection expression. It must be a test, resulting in a 'boolean' in SQL : 0 or 1.
+
+for the test expressions: =, !=, <, <=, >, >=
+}}}|{{{Document me please}}}
+}]
+
+!!See also
+
+
+
+!!Examples
+
+[{InsertPage page=IfTagExample}]
+

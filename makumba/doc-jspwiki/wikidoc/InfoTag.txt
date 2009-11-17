@@ -1,0 +1,21 @@
+!!!Taglib documentation for tag mak:info
+
+!!Description
+
+[{InsertPage page=InfoTagDescription}]
+
+!!Attributes
+[{Table
+
+||Name||Required||Request-time||Description||Comments
+|applicationProperties|false|false|{{{Document me please}}}|{{{Document me please}}}
+}]
+
+!!See also
+
+[mak:version|VersionTag]
+
+!!Examples
+
+[{InsertPage page=InfoTagExample}]
+

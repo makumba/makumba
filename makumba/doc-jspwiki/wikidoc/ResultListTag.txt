@@ -1,0 +1,38 @@
+!!!Taglib documentation for tag mak:resultList
+
+!!Description
+
+[{InsertPage page=ResultListTagDescription}]
+
+!!Attributes
+[{Table
+
+||Name||Required||Request-time||Description||Comments
+|resultsFrom|true|false|{{{The name of the search form the results are taken from.}}}|{{{Document me please}}}
+|orderBy|false|false|{{{OQL ORDER BY section}}}|{{{Fixed, can contain #{ JSP EL expressions } label.$fieldname used to be supported, not anymore}}}
+|groupBy|false|false|{{{OQL GROUP BY section}}}|{{{Fixed, can contain #{ JSP EL expressions }}}}
+|offset|false|false|{{{the offset of the result to show (0 for starting from the first result)}}}|{{{Fixed ($attribute allowed). If $attribute is not found, defaults to 0. Only allowed for the outermost
+        mak:list}}}
+|limit|false|false|{{{the maximum numbers of results to show (-1 for all results)}}}|{{{Fixed ($attribute allowed). Only allowed for the outermost mak:list. if $attribute is not found,
+        defaults to the value of defaultLimit, if present, or -1 otherwise.
+        LIMIT can limit the query time dramatically, but the children mak:lists are not yet limited.}}}
+|defaultLimit|false|false|{{{the default value for limit, if the $attribute in limit="$attribute" is not present.}}}|{{{Fixed ($attribute allowed). Only allowed for the outermost mak:list.}}}
+|id|false|false|{{{Tag's identifier}}}|{{{Fixed. Can be used to distinguish otherwise identical tags on a page (to avoid confusion by Makumba's
+        JSP analyser)}}}
+|db|false|true|{{{The makumba database to connect to. The format is Host_SQLEngineType_DatabaseName
+        If not present, the default database is used. See database configuration and lookup.}}}|{{{Fixed, cannot contain attributes, for now. 
+The default database is chosen if this argument is not set. 
+Can only be set for top-level (root) query tags
+Can be a Rtexpr <%= ...%>}}}
+|separator|false|true|{{{Character string as separator between two list elements. It is not included before the first or after
+        the last}}}|{{{Deprecated, use <c:if test="${mak:count<mak:maxCount()}"> instead.}}}
+}]
+
+!!See also
+
+[mak:searchForm|SearchFormTag], [mak:criterion|CriterionTag], [mak:matchMode|MatchModeTag], [mak:searchField|SearchFieldTag]
+
+!!Examples
+
+[{InsertPage page=ResultListTagExample}]
+
