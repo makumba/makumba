@@ -401,3 +401,9 @@ div.coverflow .imgcontainer{position:relative;}
 div.coverflow img{position:absolute;border:none;}
 div.coverflow .slider{position:relative;border:1px solid #bbb;z-index:10001;}
 div.coverflow .knob{background:#fff;width:100px;height:15px;}
+
+
+
+/* added by manu */
+.generic {font-style: italic;}
+

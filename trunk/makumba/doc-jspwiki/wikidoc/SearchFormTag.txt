@@ -5,39 +5,146 @@
 [{InsertPage page=SearchFormTagDescription}]
 
 !!Attributes
+
+%%(display:none) makumba hackers: DO NOT CHANGE THESE ATTRIBUTES HERE since your changes will be lost! You have to edit the taglib-documented.xml file and re-generate the taglib doc! %%
+
 [{Table
 
 ||Name||Required||Request-time||Description||Comments
-|in|true|false|{{{The MDD to search in}}}|{{{Fixed, mandatory}}}
-|name|true|true|{{{Name of the form}}}|{{{As in mak:forms, but mandatory. Name is used in connection with mak:resultList, and is the prefix for
-        several pageContext attributes set, which can be used to perform searching manually.}}}
-|message|false|true|{{{The message that is displayed in the response page}}}|{{{Fixed. Defaults to "Search done!".}}}
-|action|false|true|{{{the response page of the form}}}|{{{Mandatory if a <mak:action> is absent}}}
-|method|false|true|{{{the HTTP method (get or post)}}}|{{{Defaults to get}}}
-|db|false|true|{{{The makumba database to connect to. The format is Host_SQLEngineType_DatabaseName
-        If not present, the default database is used. See database configuration and lookup.}}}|{{{Fixed, cannot contain attributes, for now. 
-The default database is chosen if this argument is not set. 
-Can only be set for top-level (root) query tags
-Can be a Rtexpr <%= ...%>}}}
-|target|false|true|{{{Form-specific HTML tag attribute}}}|{{{The content is copied to the resulting <form...> tag. Careful with (escaping) quotes.}}}
-|onReset|false|true|{{{Form-specific HTML tag attribute}}}|{{{The content is copied to the resulting <form...> tag. Careful with
-          (escaping) quotes.}}}
-|onSubmit|false|true|{{{Form-specific HTML tag attribute}}}|{{{The content is copied to the resulting <form...> tag. Careful with
-          (escaping) quotes.}}}
-|styleId|false|true|{{{Generic HTML tag attribute}}}|{{{results in id="..."}}}
-|styleClass|false|true|{{{Generic HTML tag attribute}}}|{{{results in class="..."}}}
-|style|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
-|title|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
-|onClick|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
-|onDblClick|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
-|onKeyDown|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
-|onKeyUp|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
-|onKeyPress|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
-|onMouseDown|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
-|onMouseUp|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
-|onMouseMove|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
-|onMouseOut|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
-|onMouseOver|false|true|{{{Generic HTML tag attribute}}}|{{{The content is copied to the resulting html tag. Careful with (escaping) quotes.}}}
+
+|in 
+|true 
+|false 
+|The MDD to search in 
+|Fixed, mandatory 
+
+|name 
+|true 
+|true 
+|Name of the form 
+|As in mak:forms, but mandatory. Name is used in connection with mak:resultList, and is the prefix for several pageContext attributes set, which can be used to perform searching manually. 
+
+|message 
+|false 
+|true 
+|The message that is displayed in the response page 
+|Fixed. Defaults to "Search done!". 
+
+|action 
+|false 
+|true 
+|the response page of the form 
+|Mandatory if a <mak:action> is absent 
+
+|method 
+|false 
+|true 
+|the HTTP method (get or post) 
+|Defaults to get 
+
+|db 
+|false 
+|true 
+|The makumba database to connect to. The format is Host_SQLEngineType_DatabaseName If not present, the default database is used. See database configuration and lookup. 
+|Fixed, cannot contain attributes, for now. The default database is chosen if this argument is not set. Can only be set for top-level (root) query tags Can be a Rtexpr <%= ...%> 
+
+|target 
+|false 
+|true 
+|(generic) Form-specific HTML tag attribute 
+|(generic) The content is copied to the resulting <form...> tag. Careful with (escaping) quotes. 
+
+|onReset
+|false
+|true
+|^
+|^
+
+|onSubmit
+|false
+|true
+|^
+|^
+
+|styleClass 
+|false 
+|true 
+|Generic HTML tag attribute 
+|results in class="..." 
+
+|style 
+|false 
+|true 
+|(generic) Generic HTML tag attribute 
+|(generic) The content is copied to the resulting html tag. Careful with (escaping) quotes. 
+
+|title
+|false
+|true
+|^
+|^
+
+|onClick
+|false
+|true
+|^
+|^
+
+|onDblClick
+|false
+|true
+|^
+|^
+
+|onKeyDown
+|false
+|true
+|^
+|^
+
+|onKeyUp
+|false
+|true
+|^
+|^
+
+|onKeyPress
+|false
+|true
+|^
+|^
+
+|onMouseDown
+|false
+|true
+|^
+|^
+
+|onMouseUp
+|false
+|true
+|^
+|^
+
+|onMouseMove
+|false
+|true
+|^
+|^
+
+|onMouseOut
+|false
+|true
+|^
+|^
+
+|onMouseOver
+|false
+|true
+|^
+|^
+
+
 }]
 
 !!See also

@@ -1,10 +1,10 @@
 * [Main page|Main]
 * [About]
 * [Example]
-* [News]
+* [Tags|TagIndex]
 * [Recent Changes]
+----
 * [WikiEtiquette]
-
 * [Find pages|FindPage]
 * [Unused pages|UnusedPages]
 * [Undefined pages|UndefinedPages]

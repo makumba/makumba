@@ -5,12 +5,32 @@
 [{InsertPage page=OptionTagDescription}]
 
 !!Attributes
+
+%%(display:none) makumba hackers: DO NOT CHANGE THESE ATTRIBUTES HERE since your changes will be lost! You have to edit the taglib-documented.xml file and re-generate the taglib doc! %%
+
 [{Table
 
 ||Name||Required||Request-time||Description||Comments
-|value|false|false|{{{Value of the option, can be an OQL expression or a $attribute}}}|{{{Fixed, if not indicated, nil (null option) is default}}}
-|selected|false|false|{{{Whether this option is selected or not}}}|{{{False by default}}}
-|disabled|false|false|{{{Whether the option will be disabled}}}|{{{Fixed}}}
+
+|value 
+|false 
+|false 
+|Value of the option, can be an OQL expression or a $attribute 
+|Fixed, if not indicated, nil (null option) is default 
+
+|selected 
+|false 
+|false 
+|Whether this option is selected or not 
+|False by default 
+
+|disabled 
+|false 
+|false 
+|Whether the option will be disabled 
+|Fixed 
+
+
 }]
 
 !!See also
