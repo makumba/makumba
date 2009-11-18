@@ -1,17 +1,19 @@
 package org.makumba.commons;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -33,6 +35,14 @@ public class TaglibDocGenerator {
     private File outputDir;
 
     private HashMap<String, Element> processedElements = new HashMap<String, Element>();
+    
+    private static final String[][] genericAttributes = {
+        { "Form-specific HTML tag attribute",
+                "The content is copied to the resulting <form...> tag. Careful with (escaping) quotes." },
+        { "Generic HTML tag attribute",
+                "The content is copied to the resulting html tag. Careful with (escaping) quotes." },
+        { "Input-specific HTML tag attribute",
+                "The content is copied to the resulting <input...> tag. Careful with (escaping) quotes." } };
 
     public static void main(String[] args) {
 
@@ -158,31 +168,44 @@ public class TaglibDocGenerator {
             generatedFile.createNewFile();
         }
 
-        PrintStream s = new PrintStream(new FileOutputStream(generatedFile));
-
-        // generate the header
-        if (isTag) {
-            s.println("!!!Taglib documentation for tag mak:" + elementName);
-        } else {
-            s.println("!!!Taglib documentation for EL function mak:" + elementName);
+        // wtf?
+        if(System.getProperty("os.name").startsWith("Mac OS X")) {
+            System.setProperty("line.separator","\r\n");
         }
 
-        s.println();
+        FileOutputStream fos = new FileOutputStream(generatedFile);
+        BufferedWriter s = new BufferedWriter(new OutputStreamWriter(fos, "UTF-8"));
+        
+        // generate the header
+        if (isTag) {
+            s.append("!!!Taglib documentation for tag mak:" + elementName);
+            s.newLine();
+        } else {
+            s.append("!!!Taglib documentation for EL function mak:" + elementName);
+            s.newLine();
+
+        }
+
+        s.newLine();
 
         // generate the description
         generateDescription(element, s);
-        s.println();
+        s.newLine();
 
         // then the attributes
         generateAttributes(element, s);
-        s.println();
+        s.newLine();
 
         // then the "see also" section
         generateSeeAlso(element, s);
-        s.println();
+        s.newLine();
 
         // then the examples
         generateExamples(element, s);
+        
+        s.flush();
+        s.close();
+        fos.close();
 
     }
 
@@ -190,26 +213,30 @@ public class TaglibDocGenerator {
         return elementName.substring(0, 1).toUpperCase() + elementName.substring(1, elementName.length()) + "Tag";
     }
 
-    private void generateExamples(Element element, PrintStream s) {
-        s.println("!!Examples");
-        s.println();
+    private void generateExamples(Element element, BufferedWriter s) throws IOException {
+        s.append("!!Examples");
+        s.newLine();
+        s.newLine();
 
         Node examples = checkNodeExists(element, "example");
         StringTokenizer tk = new StringTokenizer(examples.getText(), ",");
 
         if (tk.countTokens() == 0) {
-            s.println("%%(color:red) No example page provided for this tag!!%%");
+            s.append("%%(color:red) No example page provided for this tag!!%%");
+            s.newLine();
         }
 
         while (tk.hasMoreElements()) {
-            s.println(getPageInsert(tk.nextToken()));
-            s.println();
+            s.append(getPageInsert(tk.nextToken()));
+            s.newLine();
+            s.newLine();
         }
     }
 
-    private void generateSeeAlso(Element element, PrintStream s) {
-        s.println("!!See also");
-        s.println();
+    private void generateSeeAlso(Element element, BufferedWriter s) throws IOException {
+        s.append("!!See also");
+        s.newLine();
+        s.newLine();
 
         Node seeAlso = checkNodeExists(element, "see");
         StringTokenizer tk = new StringTokenizer(seeAlso.getText(), ",");
@@ -227,26 +254,39 @@ public class TaglibDocGenerator {
             String referenceWikiName = reference.substring(0, 1).toUpperCase()
                     + reference.substring(1, reference.length()) + "Tag";
 
-            s.print("[mak:" + reference + "|" + referenceWikiName + "]");
+            s.append("[mak:" + reference + "|" + referenceWikiName + "]");
             if (tk.hasMoreTokens()) {
-                s.print(", ");
+                s.append(", ");
             }
         }
-        s.println();
+        s.newLine();
     }
 
-    private void generateAttributes(Element element, PrintStream s) {
-        s.println("!!Attributes");
+    private void generateAttributes(Element element, BufferedWriter s) throws IOException {
+        s.append("!!Attributes");
+        s.newLine();
 
         List<Element> attributes = element.elements("attribute");
         if (attributes.size() == 0) {
-            s.println("This tag has no attributes");
+            s.append("This tag has no attributes");
+            s.newLine();
         } else {
-
+            s.newLine();
+            s.append("%%(display:none) makumba hackers: DO NOT CHANGE THESE ATTRIBUTES HERE since your changes will be lost! You have to edit the taglib-documented.xml file and re-generate the taglib doc! %%");
+            s.newLine();
+            s.newLine();
+            
             // generate the table header
-            s.println("[{Table");
-            s.println(); // empty line necessary or the plugin doesn't work
-            s.println("||Name||Required||Request-time||Description||Comments");
+            s.append("[{Table");
+            s.newLine();
+            s.newLine(); // empty line necessary or the plugin doesn't work
+            s.append("||Name||Required||Request-time||Description||Comments");
+            s.newLine();
+            s.newLine();
+            
+            // in order not to generate the same content for generic attributes (HTML, form-specific, ...)
+            // we keep the first attribute of the kind and only write out all the rows if another kind of attribute is met
+            GenericAttributeTuple genericAttributeTuple = new GenericAttributeTuple();
 
             for (Element a : attributes) {
 
@@ -255,19 +295,28 @@ public class TaglibDocGenerator {
                     Element includedAttribute = MakumbaTLDGenerator.getReferencedAttributes(this.processedElements,
                         "Error processing attribute " + a.attributeValue("name") + " of tag "
                                 + element.elementText("name") + ": ", element, element.elementText("name"), a);
-                    generateAttributeRow(includedAttribute, s);
+                    generateAttributeRow(includedAttribute, s, genericAttributeTuple);
+                    
                 } else {
-                    generateAttributeRow(a, s);
+                    generateAttributeRow(a, s, genericAttributeTuple);
                 }
             }
-            s.println("}]");
+            
+            // in the end we flush the tuple
+            if(genericAttributeTuple.getGenericAttributeName() != null) {
+                genericAttributeTuple.print(s);
+                genericAttributeTuple.reset();
+            }
+            
+            s.newLine(); // empty line necessary or the plugin chomps one character of each cell
+            s.append("}]");
+            s.newLine();
         }
     }
 
-    private void generateAttributeRow(Element attribute, PrintStream s) {
+    private void generateAttributeRow(Element attribute, BufferedWriter s, GenericAttributeTuple genericAttributeTuple) throws IOException {
 
-        // TODO handle all the case of generic attributes, see TLD2Forest
-        // TODO also handle deprecation etc.
+        // TODO handle special styles for deprecation etc.
 
         String name = attribute.elementText("name");
         String required = attribute.elementText("required");
@@ -276,21 +325,61 @@ public class TaglibDocGenerator {
         String description = getOrInsertElement(attribute, "description");
         String comments = getOrInsertElement(attribute, "comments");
 
-        // FIXME remove line breaks in description and comments
-        // as a workaround we escape them but that's very ugly
-        description = "{{{" + description + "}}}";
-        comments = "{{{" + comments + "}}}";
-
-        s.println("|" + name + "|" + required + "|" + runtimeExpr + "|" + description + "|" + comments);
+        // check if this is a generic attribute
+        boolean isGenericAttribute = false;
+        
+        for(String[] generic : genericAttributes) {
+            
+            // if this is a generic attribute
+            if(description.equals(generic[0]) && comments.equals(generic[1])) {
+                isGenericAttribute = true;
+                
+                if(genericAttributeTuple.getGenericAttributeName() == null) {
+                    // this is the first occurrence of the generic attribute so we build it
+                    genericAttributeTuple.setFirstGenericAttribute(name, required, runtimeExpr, "(generic) " + description, "(generic) " + comments);
+                    genericAttributeTuple.setGenericAttributeName(generic[0]);
+                } else if(genericAttributeTuple.getGenericAttributeName().equals(generic[0])) {
+                    genericAttributeTuple.addAttribute(name, required, runtimeExpr);
+                } else {
+                    // we have a different generic attribute, so we print the previous one, clear the tuple and set the new one
+                    genericAttributeTuple.print(s);
+                    genericAttributeTuple.reset();
+                    genericAttributeTuple.setFirstGenericAttribute(name, required, runtimeExpr, "(generic) " + description, "(generic) " + comments);
+                }
+            }
+        }
+        
+        // if the attribute is no generic attribute process the generic attribute from before
+        if(!isGenericAttribute && genericAttributeTuple.getGenericAttributeName() != null) {
+            genericAttributeTuple.print(s);
+            genericAttributeTuple.reset();
+        } else if(!isGenericAttribute) {
+            s.append("|" + name + " ");
+            s.newLine();
+            s.append("|" + required + " ");
+            s.newLine();
+            s.append("|" + runtimeExpr + " ");
+            s.newLine();
+            s.append("|" + description + " ");
+            s.newLine();
+            s.append("|" + comments + " ");
+            s.newLine();
+            s.newLine(); // empty line, row is over
+        }
+        
     }
 
     /**
      * Generates the description for this document. Checks if the <description> element in taglib-documented exists
+     * @throws IOException 
      */
-    private void generateDescription(Element element, PrintStream s) {
-        s.println("!!Description");
-        s.println();
-        s.println(getOrInsertElement(element, "description"));
+    private void generateDescription(Element element, BufferedWriter s) throws IOException {
+        s.append("!!Description");
+        s.newLine();
+        s.newLine();
+        s.append(getOrInsertElement(element, "description"));
+        s.newLine();
+
     }
 
     /**
@@ -305,7 +394,7 @@ public class TaglibDocGenerator {
         if (elementPage != null && elementPage.hasContent()) {
             return getPageInsert(elementPage.getText());
         } else if (e != null && e.hasContent()) {
-            return e.getText();
+            return e.getTextTrim();
         } else if (e != null && !e.hasContent()) {
             return "%%(color:red) DOCUMENT ME PLEASE! %%";
         } else if (e == null && elementPage == null) {
@@ -326,6 +415,67 @@ public class TaglibDocGenerator {
     private String getPageInsert(String pageName) {
         return "[{InsertPage page=" + pageName + "}]";
 
+    }
+    
+    class GenericAttributeTuple {
+        
+        private String[] firstGenericAttribute;
+        private String genericAttributeName;
+        private List<String[]> attributes = new ArrayList<String[]>();
+        
+        public void addAttribute(String name, String required, String runtimeExpr) {
+            String[] att = new String[3];
+            att[0] = name;
+            att[1] = required;
+            att[2] = runtimeExpr;
+            attributes.add(att);
+        }
+                
+        public void print(BufferedWriter s) throws IOException {
+            for(String str : firstGenericAttribute) {
+                s.append("|"+str + " ");
+                s.newLine();
+            }
+            
+            s.newLine(); //first row is over, new line
+            
+            for(String[] att : attributes) {
+                s.append("|"+att[0]);
+                s.newLine();
+                s.append("|"+att[1]);
+                s.newLine();
+                s.append("|"+att[2]);
+                s.newLine();
+                s.append("|^");
+                s.newLine();
+                s.append("|^");
+                s.newLine();
+                
+                s.newLine();
+            }
+        }
+        
+        public void reset() {
+            firstGenericAttribute = null;
+            genericAttributeName = null;
+            attributes = new ArrayList<String[]>();
+        }
+        
+        public void setFirstGenericAttribute(String name, String required, String runtimeExpr, String description, String comments) {
+            this.firstGenericAttribute = new String[5];
+            this.firstGenericAttribute[0] = name;
+            this.firstGenericAttribute[1] = required;
+            this.firstGenericAttribute[2] = runtimeExpr;
+            this.firstGenericAttribute[3] = description;
+            this.firstGenericAttribute[4] = comments;
+            
+        }
+        public String getGenericAttributeName() {
+            return genericAttributeName;
+        }
+        public void setGenericAttributeName(String genericAttributeName) {
+            this.genericAttributeName = genericAttributeName;
+        }
     }
 
 }

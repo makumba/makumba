@@ -1,0 +1,1 @@
+The usage of %%code <mak:deleteLink>%% is deprecated, and should be replaced by the equivalent: %%code <mak:delete widget="link">%%

@@ -39,6 +39,18 @@ __text__         Makes text bold.
 
 }}}
 
+!!Special formatting
+
+!code inside of text
+
+In order to embed code inside of text, use the ''code'' style:
+
+{{{
+%%code <mak:list>%%
+}}}
+
+%%code <mak:list>%%
+
 !!Source code
 
 It is possible to format source code using the code plugin:

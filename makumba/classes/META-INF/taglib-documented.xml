@@ -244,8 +244,7 @@ Can be a Rtexpr <%= ...%>]]></comments>
       <name>expr</name>
       <required>true</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>OQL SELECT projection expression. It will be displayed if var nor printVar are not specified.
-      </description>
+      <description>OQL SELECT projection expression. It will be displayed if var nor printVar are not specified.</description>
       <comments>Fixed, Mandatory.</comments>
     </attribute>
 
@@ -266,8 +265,7 @@ Can be a Rtexpr <%= ...%>]]></comments>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
       <description>The formatted output as it would have been printed, is instead stored in a new java.lang.String
-        variable by this name, as well as to a page-scope attribute by the same name (accessible as $attributename).
-      </description>
+        variable by this name, as well as to a page-scope attribute by the same name (accessible as $attributename).</description>
       <comments>Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java scope
         at that point in the JSP.</comments>
     </attribute>
@@ -287,8 +285,7 @@ Can be a Rtexpr <%= ...%>]]></comments>
       <rtexprvalue>true</rtexprvalue>
       <description>Normal behaviour is to transform character output to its HTML escaped form. If this is "true",
         content is assumed to be HTML, and is not escaped. If "auto", heuristically checks the content for HTML tags and
-        inhibits escape if there are any; note: only the first 32768 characters are checked (32kB). Default is "false".
-      </description>
+        inhibits escape if there are any; note: only the first 32768 characters are checked (32kB). Default is "false".</description>
       <comments>Rtexpr. Only char[] and text</comments>
     </attribute>
 
@@ -296,8 +293,7 @@ Can be a Rtexpr <%= ...%>]]></comments>
       <name>format</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Format string to specify the formatting of a date value, according to java.text.SimpleDateFormat
-      </description>
+      <description>Format string to specify the formatting of a date value, according to java.text.SimpleDateFormat</description>
       <comments>Rtexpr. Only for date. Defaults to "dd MMMM yyyy"</comments>
     </attribute>
 
@@ -440,8 +436,7 @@ for the test expressions: =, !=, <, <=, >, >=
       <required>true</required>
       <rtexprvalue>false</rtexprvalue>
       <description><![CDATA[the name of the attribute. Will be printed if var is not present and there is no exception when
-        finding the argument. If there is an exception but exceptionVar is indicated, nothing will be printed.]]>
-      </description>
+        finding the argument. If there is an exception but exceptionVar is indicated, nothing will be printed.]]></description>
       <comments>Fixed, Mandatory.</comments>
     </attribute>
 
@@ -576,8 +571,7 @@ Values are none (displayed in <mak:response/>), before (before the input), after
       <name>multipleSubmitErrorMsg</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Enables multiple form submission prevention, and sets the given value as the error message.
-      </description>
+      <description>Enables multiple form submission prevention, and sets the given value as the error message.</description>
       <comments>Document me please</comments>
     </attribute>
 
@@ -1411,8 +1405,7 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
               <li>"select" (drop-down).</li>
               <li>"radio" (radio buttons).</li>
             </ul>
-        ]]>
-      </description>
+        ]]></description>
       <comments>Fixed. Defaults to 'select'.</comments>
     </attribute>
 
@@ -1746,8 +1739,7 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
       <name>itemName</name>
       <required>false</required>
       <rtexprvalue>yes</rtexprvalue>
-      <description>The name of the items displayed, to be used in the text "Showing 'itemName' x out of y (Page z)".
-      </description>
+      <description>The name of the items displayed, to be used in the text "Showing 'itemName' x out of y (Page z)".</description>
       <comments>Rtexpr.</comments>
     </attribute>
 
