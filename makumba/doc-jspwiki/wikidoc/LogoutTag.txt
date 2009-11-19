@@ -12,11 +12,11 @@
 
 ||Name||Required||Request-time||Description||Comments
 
-|actor 
-|true 
-|true 
-|The name of the attribute to be removed from the session. You can remove multiple attributes by using the star (*) wildcard to partially match attributes. 
-|%%(color:red) DOCUMENT ME PLEASE! %% 
+|actor
+|true
+|true
+|The name of the attribute to be removed from the session. You can remove multiple attributes by using the star (*) wildcard to partially match attributes.
+|%%(color:red) DOCUMENT ME PLEASE! %%
 
 
 }]

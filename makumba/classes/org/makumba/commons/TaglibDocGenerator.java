@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -23,9 +22,6 @@ import org.dom4j.io.SAXReader;
 
 /**
  * This class generates the taglib documentation JSPWiki files based on the taglib-documented.xml file
- * 
- * TODO finishing copying tag descs
- * TODO alphabetical order
  * 
  * @author Manuel Gay
  * @version $Id: TaglibDocGenerator.java,v 1.1 Nov 16, 2009 2:57:04 PM manu Exp $
@@ -316,8 +312,6 @@ public class TaglibDocGenerator {
 
     private void generateAttributeRow(Element attribute, BufferedWriter s, GenericAttributeTuple genericAttributeTuple) throws IOException {
 
-        // TODO handle special styles for deprecation etc.
-
         String name = attribute.elementText("name");
         String required = attribute.elementText("required");
         String runtimeExpr = attribute.elementText("rtexprvalue");
@@ -325,6 +319,10 @@ public class TaglibDocGenerator {
         String description = getOrInsertElement(attribute, "description");
         String comments = getOrInsertElement(attribute, "comments");
 
+        String deprecated = attribute.elementText("deprecated");
+        boolean isDeprecated = deprecated != null && deprecated.equals("true");
+        String deprecatedStyle = isDeprecated ? "(deprecated) " : "";
+        
         // check if this is a generic attribute
         boolean isGenericAttribute = false;
         
@@ -354,15 +352,19 @@ public class TaglibDocGenerator {
             genericAttributeTuple.print(s);
             genericAttributeTuple.reset();
         } else if(!isGenericAttribute) {
-            s.append("|" + name + " ");
+            if(isDeprecated) {
+                s.append("|" + deprecatedStyle + name + " (deprecated)");
+            } else {
+                s.append("|" + deprecatedStyle + name);
+            }
             s.newLine();
-            s.append("|" + required + " ");
+            s.append("|" + deprecatedStyle + required);
             s.newLine();
-            s.append("|" + runtimeExpr + " ");
+            s.append("|" + deprecatedStyle + runtimeExpr);
             s.newLine();
-            s.append("|" + description + " ");
+            s.append("|" + deprecatedStyle + description);
             s.newLine();
-            s.append("|" + comments + " ");
+            s.append("|" + deprecatedStyle + comments);
             s.newLine();
             s.newLine(); // empty line, row is over
         }
@@ -433,7 +435,7 @@ public class TaglibDocGenerator {
                 
         public void print(BufferedWriter s) throws IOException {
             for(String str : firstGenericAttribute) {
-                s.append("|"+str + " ");
+                s.append("|"+str);
                 s.newLine();
             }
             

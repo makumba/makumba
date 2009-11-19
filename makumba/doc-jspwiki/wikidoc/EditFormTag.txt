@@ -12,71 +12,71 @@
 
 ||Name||Required||Request-time||Description||Comments
 
-|object 
-|true 
-|false 
-|The label of the OQL object to edit 
-|Fixed, mandatory. 
+|object
+|true
+|false
+|The label of the OQL object to edit
+|Fixed, mandatory.
 
-|handler 
-|false 
-|false 
-|the Java method that handles the response 
-|Arguments: (Dictionary formFields, Attributes restOfArguments, Database db) Not mandatory. A form without handler will simply set attributes (as makumba objects) for the next page 
+|handler
+|false
+|false
+|the Java method that handles the response
+|Arguments: (Dictionary formFields, Attributes restOfArguments, Database db) Not mandatory. A form without handler will simply set attributes (as makumba objects) for the next page
 
-|action 
-|false 
-|true 
-|the response page of the form 
-|Mandatory if a <mak:action> is absent 
+|action
+|false
+|true
+|the response page of the form
+|Mandatory if a <mak:action> is absent
 
-|method 
-|false 
-|true 
-|the HTTP method (get or post) 
-|Defaults to get 
+|method
+|false
+|true
+|the HTTP method (get or post)
+|Defaults to get
 
-|name 
-|false 
-|true 
-|the name of the form 
-|%%(color:red) DOCUMENT ME PLEASE! %% 
+|name
+|false
+|true
+|the name of the form
+|%%(color:red) DOCUMENT ME PLEASE! %%
 
-|message 
-|false 
-|true 
-|the message that is displayed in the response page upon success 
-|Fixed. Defaults to "changes done". 
+|message
+|false
+|true
+|the message that is displayed in the response page upon success
+|Fixed. Defaults to "changes done".
 
-|annotation 
-|false 
-|true 
-|Indicates that validation whether errors should be shown in the form, or be displayed in the <mak:response/>. 
-|Taken into account only if reloadFormOnError is not set to false. Values are none (displayed in <mak:response/>), before (before the input), after (after the input) or both (displayed both before and after the input). Defaults to none. 
+|annotation
+|false
+|true
+|Indicates that validation whether errors should be shown in the form, or be displayed in the <mak:response/>.
+|Taken into account only if reloadFormOnError is not set to false. Values are none (displayed in <mak:response/>), before (before the input), after (after the input) or both (displayed both before and after the input). Defaults to none.
 
-|annotationSeparator 
-|false 
-|true 
-|Fixed. Prints the given separator between the annotation and the input field. 
-|Also HTML can be used, e.g. printing an error icon. 
+|annotationSeparator
+|false
+|true
+|Fixed. Prints the given separator between the annotation and the input field.
+|Also HTML can be used, e.g. printing an error icon.
 
-|reloadFormOnError 
-|false 
-|true 
-|Indicates whether the form page shall be reloaded on an error, or the specified form action page will be loaded directly. 
-|Fixed. Values are true or false; defaults to false. 
+|reloadFormOnError
+|false
+|true
+|Indicates whether the form page shall be reloaded on an error, or the specified form action page will be loaded directly.
+|Fixed. Values are true or false; defaults to false.
 
-|clientSideValidation 
-|false 
-|true 
-|Controls whether client side validation shall be used. 
-|Rtexpr. Values are false (off), true (on submission) or live (while tpying). 
+|clientSideValidation
+|false
+|true
+|Controls whether client side validation shall be used.
+|Rtexpr. Values are false (off), true (on submission) or live (while tpying).
 
-|target 
-|false 
-|true 
-|(generic) Form-specific HTML tag attribute 
-|(generic) The content is copied to the resulting <form...> tag. Careful with (escaping) quotes. 
+|target
+|false
+|true
+|(generic) Form-specific HTML tag attribute
+|(generic) The content is copied to the resulting <form...> tag. Careful with (escaping) quotes.
 
 |onReset
 |false
@@ -90,17 +90,17 @@
 |^
 |^
 
-|styleClass 
-|false 
-|true 
-|Generic HTML tag attribute 
-|results in class="..." 
+|styleClass
+|false
+|true
+|Generic HTML tag attribute
+|results in class="..."
 
-|style 
-|false 
-|true 
-|(generic) Generic HTML tag attribute 
-|(generic) The content is copied to the resulting html tag. Careful with (escaping) quotes. 
+|style
+|false
+|true
+|(generic) Generic HTML tag attribute
+|(generic) The content is copied to the resulting html tag. Careful with (escaping) quotes.
 
 |title
 |false

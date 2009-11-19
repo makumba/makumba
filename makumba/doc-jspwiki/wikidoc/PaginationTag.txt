@@ -12,41 +12,41 @@
 
 ||Name||Required||Request-time||Description||Comments
 
-|action 
-|false 
-|yes 
-|The target page to go to when clicking on a pagination link. 
-|Rtexpr. 
+|action
+|false
+|yes
+|The target page to go to when clicking on a pagination link.
+|Rtexpr.
 
-|showPageTitle 
-|false 
-|yes 
-|Whether or not to show the 'Showing Item x to y out of z (Page a out of b)' header. 
-|Fixed; defaults to true 
+|showPageTitle
+|false
+|yes
+|Whether or not to show the 'Showing Item x to y out of z (Page a out of b)' header.
+|Fixed; defaults to true
 
-|paginationLinkTitle 
-|false 
-|yes 
-|Whether or not to display title="..." elements on the pagination links (i.e. 'first page', 'previous page', 'next page', 'last page'. 
-|Fixed; defaults to true 
+|paginationLinkTitle
+|false
+|yes
+|Whether or not to display title="..." elements on the pagination links (i.e. 'first page', 'previous page', 'next page', 'last page'.
+|Fixed; defaults to true
 
-|paginationLinkTitleText 
-|false 
-|yes 
-|The test to use for the pagination links. The default is 'page', creating e.g. 'previous page'. The text given in the attribute will be appended to the prefixes 'first', 'previous', 'next', 'last'. 
-|Fixed; defaults to true 
+|paginationLinkTitleText
+|false
+|yes
+|The test to use for the pagination links. The default is 'page', creating e.g. 'previous page'. The text given in the attribute will be appended to the prefixes 'first', 'previous', 'next', 'last'.
+|Fixed; defaults to true
 
-|itemName 
-|false 
-|yes 
-|The name of the items displayed, to be used in the text "Showing 'itemName' x out of y (Page z)". 
-|Rtexpr. 
+|itemName
+|false
+|yes
+|The name of the items displayed, to be used in the text "Showing 'itemName' x out of y (Page z)".
+|Rtexpr.
 
-|styleClass 
-|false 
-|true 
-|Generic HTML tag attribute 
-|results in class="..." 
+|styleClass
+|false
+|true
+|Generic HTML tag attribute
+|results in class="..."
 
 
 }]
