@@ -332,7 +332,7 @@ jspwiki.specialPage.UserPreferences = UserPreferences.jsp
 #
 #  jspwiki.plugin.searchPath = org.myorganisation.jspwiki.myplugins,com.foobar.myplugins
 #
-jspwiki.plugin.searchPath = brushed.jspwiki.tableplugin
+jspwiki.plugin.searchPath = brushed.jspwiki.tableplugin,org.makumba.commons.documentation
 
 #############################################################################
 #

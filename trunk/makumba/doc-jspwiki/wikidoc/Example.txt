@@ -73,6 +73,95 @@ public static void main(String[] args) {
 
 }]
 
+!!Boxes
+
+It is possible to have boxes (notes, warnings, fixmes). By default, a Box is a Note and it can contain JSPWiki formatting:
+
+!Notes
+
+{{{
+[{Box
+
+A simple note without a label.
+* Some
+* bulleted
+* content
+}]
+}}}
+
+[{Box
+
+A simple note without a label.
+* Some
+* bulleted
+* content
+}]
+
+{{{
+[{Box label='My custom label'
+
+A note with a custom label
+}]
+}}}
+
+[{Box label='My custom label'
+
+A note with a custom label
+}]
+
+!Warnings
+
+{{{
+[{Box type='warning'
+
+A warning box
+}]
+}}}
+
+[{Box type='warning'
+
+A warning box
+}]
+
+{{{
+[{Box label='Danger' type='warning'
+
+A warning box with a custom label
+}]
+}}}
+
+[{Box label='Danger' type='warning'
+
+A warning box with a custom label
+}]
+
+!Fixme's
+
+{{{
+[{Box type='fixme' author='manu'
+
+A fixme, the author param is required
+}]
+}}}
+
+[{Box type='fixme' author='manu'
+
+A fixme, the author param is required
+}]
+
+{{{
+[{Box label='TODO' type='fixme' author='manu'
+
+A fixme with a custom label
+}]
+}}}
+
+[{Box label='TODO' type='fixme' author='manu'
+
+A fixme with a custom label
+}]
+
+
 !!Tables
 
 By default JSPWiki does not offer too many possibilities regarding tables, like no possibilities to merge cells or to give custom styles to rows. This can be circumvented using the [TablePlugin|http://www.jspwiki.org/wiki/TablePlugin]
