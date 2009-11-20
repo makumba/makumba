@@ -36,7 +36,6 @@
 	<classpathentry kind="lib" path="lib/mssqlserver.jar"/>
 	<classpathentry kind="lib" path="lib/msutil.jar"/>
 	<classpathentry kind="lib" path="lib/hsqldb.jar"/>
-	<classpathentry kind="lib" path="lib/jspwiki.jar"/>
 	<classpathentry kind="lib" path="lib/commons-fileupload-1.1.1.jar" sourcepath="lib-src/commons-fileupload-1.2.1-src.zip"/>
 	<classpathentry kind="lib" path="lib/commons-io-1.1.jar" sourcepath="lib-src/commons-io-1.1-src.zip"/>
 	<classpathentry kind="lib" path="lib/commons-collections-3.2.jar" sourcepath="lib-src/commons-collections-3.2-src.zip"/>
@@ -71,5 +70,6 @@
 	<classpathentry kind="lib" path="lib/selenium-java-client-driver.jar"/>
 	<classpathentry kind="lib" path="lib/selenium-server.jar"/>
 	<classpathentry kind="lib" path="lib/c3p0-0.9.1.jar"/>
+	<classpathentry kind="lib" path="doc-jspwiki/JSPWiki/WEB-INF/lib/JSPWiki.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

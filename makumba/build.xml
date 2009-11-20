@@ -519,6 +519,15 @@
     </target>
     
     
+    <target name="copyBoxPlugin" depends="compile" description="compiles and copies the box plugin to the JSPWiki folder">
+    
+        <copy todir="doc-jspwiki/JSPWiki/WEB-INF/classes/org/makumba/commons/documentation">
+            <fileset dir="classes/org/makumba/commons/documentation/" includes="Box*.class" />
+        </copy>
+    
+    </target>
+    
+    
     <target name="tomcat-start" description="start the tomcat to deploy JSPwiki">
         <echo>Java home in build: ${java.home}</echo>
         <java classname="org.apache.catalina.startup.Bootstrap" fork="yes" classpathref="tomcat.class.path" append="true">
