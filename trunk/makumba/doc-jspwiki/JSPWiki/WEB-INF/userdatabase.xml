@@ -6,4 +6,6 @@
     </user>
     <user uid="480287c2-b0eb-4743-8a08-e9fb86aa25aa" loginName="TestUser" wikiName="TestUser" fullName="Test User" email="" password="{SSHA}ItE/n4y00pcouYtIsXWGBnGQmBZ99onkMOko7A==" created="2009.11.20 at 12:27:33:150 CET" lastModified="2009.11.20 at 12:27:33:150 CET" lockExpiry="" >
     </user>
+    <user uid="2553520a-62b9-4431-935a-4d85f5a69ff3" loginName="manu" wikiName="Manu" fullName="Manu" email="manuel@makumba.org" password="{SSHA}wXYXDfLVOu4Iyp88nwnt3SAnlvEyJiUvNi9YsA==" created="2009.11.20 at 13:00:50:994 CET" lastModified="2009.11.20 at 13:00:50:994 CET" lockExpiry="" >
+    </user>
 </users>
