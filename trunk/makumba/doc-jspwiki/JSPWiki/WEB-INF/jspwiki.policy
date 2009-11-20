@@ -49,8 +49,8 @@ grant principal com.ecyrd.jspwiki.auth.authorize.Role "All" {
 // allow editing only, then replace "modify" with "edit".
 
 grant principal com.ecyrd.jspwiki.auth.authorize.Role "Anonymous" {
-    permission com.ecyrd.jspwiki.auth.permissions.PagePermission "*:*", "modify";
-    permission com.ecyrd.jspwiki.auth.permissions.WikiPermission "*", "createPages";
+    permission com.ecyrd.jspwiki.auth.permissions.PagePermission "*:*", "view";
+//    permission com.ecyrd.jspwiki.auth.permissions.WikiPermission "*", "createPages";
 };
 
 
