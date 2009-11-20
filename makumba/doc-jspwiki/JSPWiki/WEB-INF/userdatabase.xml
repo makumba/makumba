@@ -1,3 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <users>
+    <user uid="36b5dd70-4920-425a-96b7-674297775722" loginName="filip" wikiName="FilipKis" fullName="Filip Kis" email="filip.kis@best.eu.org" password="{SSHA}G6INePw3RwmI4BU+vFKjPjzqWnxcvMmm75XrBA==" created="2009.11.20 at 11:22:53:249 CET" lastModified="2009.11.20 at 11:22:53:249 CET" lockExpiry="" >
+    </user>
+    <user uid="ae6bfbaa-4ff4-4c67-b976-9f87008d36bd" loginName="Admin" wikiName="Admin" fullName="Admin" email="" password="{SSHA}GqUCgqqn8jXsIPkBqp8oVui/ZbloesJSw5sIig==" created="2009.11.20 at 12:04:08:619 CET" lastModified="2009.11.20 at 12:04:08:619 CET" lockExpiry="" >
+    </user>
+    <user uid="480287c2-b0eb-4743-8a08-e9fb86aa25aa" loginName="TestUser" wikiName="TestUser" fullName="Test User" email="" password="{SSHA}ItE/n4y00pcouYtIsXWGBnGQmBZ99onkMOko7A==" created="2009.11.20 at 12:27:33:150 CET" lastModified="2009.11.20 at 12:27:33:150 CET" lockExpiry="" >
+    </user>
 </users>
