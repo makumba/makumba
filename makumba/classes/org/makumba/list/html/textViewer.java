@@ -84,8 +84,6 @@ public class textViewer extends FieldViewer {
                 || (StringUtils.equals(html, "auto") && HtmlUtils.detectHtml(txt))
                 || (StringUtils.equals(format, "auto") && HtmlUtils.detectHtml(txt))) {
             return txt;
-        } else if (StringUtils.equals(html, "wiki") || StringUtils.equals(format, "wiki")) {
-            return MakumbaSystem.getWikiFormatter().wiki2html(txt);
         } else if (StringUtils.equals(format, "urlencode")) {
             return java.net.URLEncoder.encode(txt);
         }

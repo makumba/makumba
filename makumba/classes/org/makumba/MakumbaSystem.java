@@ -29,8 +29,6 @@ import java.net.URL;
 import java.util.jar.Manifest;
 
 import org.hibernate.Hibernate;
-import org.makumba.commons.JspWikiFormatter;
-import org.makumba.commons.WikiFormatter;
 import org.makumba.forms.html.CalendarEditorProvider;
 import org.makumba.forms.html.KruseCalendarEditor;
 import org.makumba.forms.validation.ClientsideValidationProvider;
@@ -317,13 +315,6 @@ public class MakumbaSystem {
             return java.util.TimeZone.getTimeZone(s);
         return java.util.TimeZone.getDefault();
 
-    }
-
-    /**
-     * @return the system's default wiki formatter.
-     */
-    public static WikiFormatter getWikiFormatter() {
-        return JspWikiFormatter.getInstance();
     }
 
     /** Returns the makumba system locale */
