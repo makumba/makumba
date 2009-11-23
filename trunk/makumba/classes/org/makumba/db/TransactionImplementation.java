@@ -217,7 +217,7 @@ public abstract class TransactionImplementation implements Transaction {
         
         if(nue.getFields().size() == 1) {
             // see if we have a custom message for this field
-            FieldDefinition fd = dd.getFieldDefinition(nue.getFields().get(0));
+            FieldDefinition fd = dd.getFieldDefinition(nue.getFields().keySet().iterator().next());
             if(fd.getNotUniqueErrorMessage() == null) {
                 cve.addException(new NotUniqueException(fd, nue.getFields().get(fd.getName())));
             } else {
