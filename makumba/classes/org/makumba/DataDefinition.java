@@ -262,7 +262,7 @@ public interface DataDefinition {
             return line;
         }
 
-        protected String getErrorMessage() {
+        public String getErrorMessage() {
             return errorMessage;
         }
 

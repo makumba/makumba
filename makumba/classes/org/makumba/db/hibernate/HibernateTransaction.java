@@ -468,7 +468,7 @@ public class HibernateTransaction extends TransactionImplementation {
     }
 
     @Override
-    public int insertFromQuery(String type, String OQL, Object parameterValues) {
+    protected int insertFromQueryImpl(String type, String OQL, Object parameterValues) {
         throw new MakumbaError("Not implemented");
     }
 

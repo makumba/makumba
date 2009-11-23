@@ -29,14 +29,18 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
 import java.util.logging.Level;
 
 import org.makumba.DBError;
+import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.commons.NameResolver;
+import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.SQLPointer;
 import org.makumba.db.makumba.DBConnection;
 import org.makumba.db.makumba.DBConnectionWrapper;
@@ -463,6 +467,13 @@ public class Database extends org.makumba.db.makumba.Database {
     public boolean isDuplicateException(SQLException e) {
 		return e.getMessage().toLowerCase().indexOf("duplicate") != -1;
 	}
+	
+	@Override
+	public Map<String, String> getDuplicateFields(SQLException e) {
+	    throw new MakumbaError("Method not implemented for this database driver, please contact the developers");
+	}
+	
+	
 
     public boolean isForeignKeyViolationException(SQLException se) {
         return se.getMessage().toLowerCase().contains("a foreign key constraint fails");

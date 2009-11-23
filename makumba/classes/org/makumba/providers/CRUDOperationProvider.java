@@ -152,7 +152,7 @@ public abstract class CRUDOperationProvider {
             Dictionary<String, Object> fieldsToIgnore, Dictionary<String, Object> allFields);
 
     /**
-     * Checks if a set of values can be updated in the database
+     * Checks if a set of values can be updated in the database.
      * 
      * @param t
      *            the Transaction to be used

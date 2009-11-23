@@ -27,6 +27,7 @@ import java.sql.SQLException;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -132,6 +133,8 @@ public abstract class Database {
     protected abstract DBConnection makeDBConnection();
 
     public abstract boolean isDuplicateException(SQLException e);
+    
+    public abstract Map<String, String> getDuplicateFields(SQLException e);
 
     // ---------------------------------------------------
 

@@ -210,7 +210,7 @@ public abstract class DBConnection extends TransactionImplementation {
         }
     });
     
-    public int insertFromQuery(String type, String OQL, Object args) {
+    protected int insertFromQueryImpl(String type, String OQL, Object args) {
         OQL= QueryProvider.getQueryAnalzyer("oql").inlineFunctions(OQL);
         QueryAndArgs qa= new QueryAndArgs(OQL, args);
         Object[] k = { qa.getQuery(), type };

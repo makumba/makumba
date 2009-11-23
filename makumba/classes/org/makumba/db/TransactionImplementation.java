@@ -22,6 +22,7 @@
 /////////////////////////////////////
 package org.makumba.db;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
@@ -32,7 +33,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.makumba.Attributes;
+import org.makumba.CompositeValidationException;
 import org.makumba.DBError;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
@@ -40,6 +43,7 @@ import org.makumba.InvalidFieldTypeException;
 import org.makumba.LogicException;
 import org.makumba.MakumbaError;
 import org.makumba.NoSuchFieldException;
+import org.makumba.NotUniqueException;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.Transaction;
@@ -48,6 +52,7 @@ import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProvider;
+import org.makumba.providers.datadefinition.mdd.validation.MultiUniquenessValidationRule;
 
 /**
  * @version $Id: TransactionImplementation.java,v 1.1 Jun 15, 2008 3:31:07 PM rudi Exp $
@@ -177,15 +182,56 @@ public abstract class TransactionImplementation implements Transaction {
         }
     }
 
-    public abstract int insertFromQuery(String type, String OQL, Object parameterValues);
+    public int insertFromQuery(String type, String OQL, Object parameterValues) {
+        int i = 0;
+        try {
+            i = insertFromQueryImpl(type, OQL, parameterValues);
+        } catch(NotUniqueException nue) {
+            treatNotUniqueException(type, nue);
+        }
+        return i;
+    }
 
+    protected abstract int insertFromQueryImpl(String type, String OQL, Object parameterValues);
+    
     protected abstract StringBuffer writeReadQuery(Pointer p, Enumeration<String> e);
 
     /** change the record pointed by the given pointer. Only fields indicated are changed to the respective values */
     public int update(Pointer ptr, java.util.Dictionary<String, Object> fieldsToChange) {
         DataHolder dh = new DataHolder(this, fieldsToChange, ptr.getType());
         dh.checkUpdate(ptr);
-        return dh.update(ptr);
+        int updated = 0;
+        
+        try {
+            updated = dh.update(ptr);
+        } catch(NotUniqueException nue) {
+            treatNotUniqueException(ptr.getType(), nue);
+        }
+        
+        return updated;
+    }
+
+    private void treatNotUniqueException(String type, NotUniqueException nue) {
+        DataDefinition dd = ddp.getDataDefinition(type);
+        CompositeValidationException cve = new CompositeValidationException();
+        
+        if(nue.getFields().size() == 1) {
+            // see if we have a custom message for this field
+            FieldDefinition fd = dd.getFieldDefinition(nue.getFields().get(0));
+            if(fd.getNotUniqueErrorMessage() == null) {
+                cve.addException(new NotUniqueException(fd, nue.getFields().get(fd.getName())));
+            } else {
+                cve.addException(new NotUniqueException(fd.getNotUniqueErrorMessage()));
+            }
+        } else {
+            // multi-field uniqueness exception
+            for(DataDefinition.MultipleUniqueKeyDefinition m : dd.getMultiFieldUniqueKeys()) {
+                if(CollectionUtils.isEqualCollection(Arrays.asList(m.getFields()), nue.getFields().keySet())) {
+                    cve.addException(new NotUniqueException(m.getErrorMessage()));
+                }
+            }
+        }
+        throw cve;
     }
 
     /**

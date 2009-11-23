@@ -23,6 +23,10 @@
 
 package org.makumba;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Not-unique is a special case of an {@link InvalidValueException} - the value is syntactically correct, but is
  * restricted to only one usage. This exception can be used for single-field and multi-field uniqueness with the
@@ -33,6 +37,8 @@ package org.makumba;
  */
 public class NotUniqueException extends InvalidValueException {
     private static final long serialVersionUID = 1L;
+    
+    private Map<String, String> fields;
     
     public NotUniqueException(String message) {
         super(message);
@@ -47,6 +53,15 @@ public class NotUniqueException extends InvalidValueException {
     public NotUniqueException(FieldDefinition fd, Object value) {
         super(fd, "Allows only unique values - an entry with the value " + getValueForMessage(fd, value)
                 + " already exists!");
+    }
+    
+    /** gets the field-value pairs for the conflicting fields **/
+    public Map<String, String> getFields() {
+        return this.fields;
+    }
+    
+    public void setFields(Map<String, String> fields) {
+        this.fields = fields;
     }
 
     private static Object getValueForMessage(FieldDefinition fd, Object value) {

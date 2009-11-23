@@ -26,10 +26,13 @@ package org.makumba.db.makumba.sql;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import org.makumba.CompositeValidationException;
 import org.makumba.DBError;
 import org.makumba.InvalidValueException;
 import org.makumba.MakumbaError;
+import org.makumba.NotUniqueException;
 import org.makumba.OQLParseError;
+import org.makumba.db.makumba.Table;
 import org.makumba.db.makumba.Update;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
@@ -43,9 +46,12 @@ public class SQLUpdate implements Update {
 
     String updateCommand;
     
+    String type;
+    
     QueryAnalysisProvider qP = QueryProvider.getQueryAnalzyer("oql");
 
     SQLUpdate(Database db, String from, String setWhere, String DELIM) {
+        type = from;
         int whereMark = setWhere.indexOf(DELIM);
         String set = setWhere.substring(0, whereMark);
         String where = setWhere.substring(whereMark + DELIM.length());
@@ -189,10 +195,11 @@ public class SQLUpdate implements Update {
                 if (db.isForeignKeyViolationException(se)) {
                     throw new org.makumba.ForeignKeyError(db.parseReadableForeignKeyErrorMessage(se));
                 } else if (db.isDuplicateException(se)) {
-                    // FIXME: it would be good to know which fields are affected
-                    // but we can't do this because MySQL won't tell us which one it is
-                    // so we just throw an exception, we will display the error message from the validation rule anyway
-                    throw new org.makumba.NotUniqueException(se.getMessage());
+                    
+                    NotUniqueException nue = new NotUniqueException(se.getMessage());
+                    nue.setFields(db.getDuplicateFields(se));
+                    throw nue;
+                    
                 }
                 org.makumba.db.makumba.sql.Database.logException(se);
                 throw new DBError(se, debugString);

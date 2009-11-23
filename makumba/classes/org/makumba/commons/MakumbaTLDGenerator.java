@@ -32,6 +32,7 @@ import java.util.List;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
+import org.dom4j.QName;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
@@ -79,6 +80,7 @@ public class MakumbaTLDGenerator {
                 String tagName = name.getText();
 
                 for (Element tagContent : (List<Element>) tag.elements()) {
+                    
                     if (tagContent.getName().equals("attribute")) {
                         if (tagContent.attributeValue("name") != null
                                 || tagContent.attributeValue("specifiedIn") != null) { // have a referring attribute
@@ -91,14 +93,22 @@ public class MakumbaTLDGenerator {
                         } else { // normal attribute
                             for (Element attributeContent : (List<Element>) tagContent.elements()) {
                                 // remove all the <comments> tags inside <attribute> elements
-                                if (StringUtils.equalsAny(attributeContent.getName(), "comments", "deprecated")) {
+                                if (StringUtils.equalsAny(attributeContent.getName(), "comments", "deprecated", "descriptionPage", "commentsPage")) {
                                     attributeContent.getParent().remove(attributeContent);
                                 }
                             }
                         }
-                    } if (tagContent.getName().equals("see")) {
-                        // remove all the <comments> tags inside <attribute> elements
+                    }
+
+                    // remove the invalid tags
+                    if (StringUtils.equalsAny(tagContent.getName(), "see", "example")) {
                         tagContent.getParent().remove(tagContent);
+                    }
+                    
+                    // if we have a descriptionPage instead of a raw text, make the description tag, or the TLD is invalid
+                    if(tagContent.getName().equals("descriptionPage")) {
+                        tagContent.setQName(new QName("description"));
+                        tagContent.setText("See " + tagContent.getText());
                     }
                 }
                 processedTags.put(tagName, tag);
