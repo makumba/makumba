@@ -140,7 +140,8 @@ public class DataHolder {
     }
 
     /**
-     * Checks if it is possible to insert data for all subrecords
+     * Checks if it is possible to insert data for all subrecords.<br>
+     * Does not check if same-table duplicate exists; duplicate errors are to be dealt with after an insertion attempt has been made by the implementation of {@link #insert()}
      */
     public void checkInsert() {
         for (Enumeration e = others.elements(); e.hasMoreElements();) {
@@ -150,7 +151,8 @@ public class DataHolder {
     }
 
     /**
-     * Checks if it is possible to update for all subrecords
+     * Checks if it is possible to update for all subrecords.<br>
+     * Does not check if same-table duplicate exists; duplicate errors are to be dealt with after an update attempt has been made by the implementation of {@link #update(Pointer)}
      * 
      * @param pointer
      *            the pointer to the record to be updated

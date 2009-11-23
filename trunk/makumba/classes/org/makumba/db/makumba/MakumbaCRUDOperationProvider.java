@@ -35,7 +35,6 @@ public class MakumbaCRUDOperationProvider extends CRUDOperationProvider {
 
         DataDefinition dd = checkUpdate(type, fieldsToCheck, fieldsToIgnore);
 
-        // we check the multi-field key uniqueness that span over more than one table
         Table table = (((DBConnection) t).db.getTable(dd.getName()));
         table.checkUpdate(pointer, allFields);
     }

@@ -671,8 +671,9 @@ public class TableManager extends Table {
                 }
             }
             // exec closes ps
+            // here if we have an error, we enrich it by finding the duplicates (which we assume is the only error one can get at this stage of the insert)
             if (getSQLDatabase().exec(ps) == -1)
-                throw findDuplicates((SQLDBConnection) dbc, d);
+                findDuplicates((SQLDBConnection) dbc, d);
 
             if (!wasIndex && getSQLDatabase().isAutoIncrement()) {
                 ps = (PreparedStatement) ((SQLDBConnection) dbc).getPreparedStatement("SELECT LAST_INSERT_ID()");
@@ -709,7 +710,7 @@ public class TableManager extends Table {
         }
     }
 
-    protected CompositeValidationException findDuplicates(SQLDBConnection dbc, Dictionary<String, Object> d) {
+    public void findDuplicates(DBConnection dbc, Dictionary<String, Object> d) {
         CompositeValidationException notUnique = new CompositeValidationException();
 
         // first we check all fields of the data definition
@@ -742,7 +743,10 @@ public class TableManager extends Table {
                 }
             }
         }
-        return notUnique;
+        
+        if (notUnique.getExceptions().size() > 0) {
+            throw notUnique;
+        }
     }
 
     protected String prepareDelete() {
@@ -768,6 +772,7 @@ public class TableManager extends Table {
         }
     }
 
+    @Deprecated
     public void updateRecord(DBConnection dbc, Pointer uid, Dictionary<String, Object> d) {
         if (dbc instanceof DBConnectionWrapper)
             dbc = ((DBConnectionWrapper) dbc).getWrapped();
@@ -808,7 +813,7 @@ public class TableManager extends Table {
 
             // exec closes the st
             if (getSQLDatabase().exec(st) == -1)
-                throw findDuplicates((SQLDBConnection) dbc, d);
+                findDuplicates((SQLDBConnection) dbc, d);
             return;
         }// catch(ReconnectedException re) { continue; }
         catch (SQLException se) {
@@ -1805,21 +1810,22 @@ public class TableManager extends Table {
     /**
      * return whether there was a duplicate for this field when inserting the given data
      */
-    public boolean checkDuplicate(String fieldName, SQLDBConnection dbc, Dictionary<String, Object> data) {
+    public boolean checkDuplicate(String fieldName, DBConnection dbc, Dictionary<String, Object> data) {
         if (!getFieldDefinition(fieldName).isUnique())
             return false;
         Object val = data.get(fieldName);
+        SQLDBConnection sqlDbc = (SQLDBConnection) dbc;
         PreparedStatement ps;
         if (val == null)
-            ps = dbc.getPreparedStatement(checkNullDuplicate.get(fieldName));
+            ps = sqlDbc.getPreparedStatement(checkNullDuplicate.get(fieldName));
         else
-            ps = dbc.getPreparedStatement(checkDuplicate.get(fieldName));
+            ps = sqlDbc.getPreparedStatement(checkDuplicate.get(fieldName));
         try {
             if (val != null)
                 setUpdateArgument(fieldName, ps, 1, val);
             return ps.executeQuery().next();
         } catch (SQLException se) {
-            Database.logException(se, dbc);
+            Database.logException(se, sqlDbc);
             throw new org.makumba.DBError(se, checkDuplicate.get(fieldName));
         } finally {
             try {
@@ -1833,7 +1839,10 @@ public class TableManager extends Table {
     /**
      * return whether there was a duplicate entry for this multi-field combination when inserting the given data
      */
-    public boolean checkDuplicate(String[] fields, Object values[], SQLDBConnection dbc) {
+    public boolean checkDuplicate(String[] fields, Object values[], DBConnection dbc) {
+        
+        SQLDBConnection sqlDbc = (SQLDBConnection) dbc;
+        
         String query = "SELECT 1 FROM " + getDBName() + " WHERE ";
         for (int j = 0; j < fields.length; j++) {
             query += getFieldDBName(fields[j]) + "=?";
@@ -1842,7 +1851,7 @@ public class TableManager extends Table {
             }
         }
 
-        PreparedStatement ps = dbc.getPreparedStatement(query);
+        PreparedStatement ps = sqlDbc.getPreparedStatement(query);
         try {
             for (int i = 0; i < values.length; i++) {
                 if (values[i] != null) {
@@ -1853,7 +1862,7 @@ public class TableManager extends Table {
             }
             return ps.executeQuery().next();
         } catch (SQLException se) {
-            Database.logException(se, dbc);
+            Database.logException(se, sqlDbc);
             throw new org.makumba.DBError(se, StringUtils.toString(fields));
         } finally {
             try {

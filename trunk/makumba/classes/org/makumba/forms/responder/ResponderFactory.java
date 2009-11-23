@@ -249,8 +249,8 @@ public class ResponderFactory {
 
     /**
      * Returns the first responder object found fitting the request. It can be used to retrieve information about the
-     * form which is valid for all nested forms, and is used e.g. in {@link ResponseControllerHandler} to find out the value of
-     * {@link #getReloadFormOnError()}.
+     * form which is valid for all nested forms, and is used e.g. in {@link ResponseControllerHandler} to find out the
+     * value of {@link #getReloadFormOnError()}.
      * 
      * @param req
      *            the current request

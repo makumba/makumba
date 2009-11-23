@@ -262,4 +262,7 @@ public abstract class Table // extends RecordHandler
             Dictionary<String, Object> fieldsToIgnore, Dictionary<String, Object> allFields);
 
     public abstract void checkUpdate(Pointer pointer, Dictionary<String, Object> allFields);
+    
+    /** finds duplicates in the database, given a dictionary of data to insert/update **/
+    public abstract void findDuplicates(DBConnection c, Dictionary<String, Object> d);
 }

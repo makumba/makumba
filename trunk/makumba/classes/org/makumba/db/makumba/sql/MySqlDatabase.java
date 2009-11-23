@@ -24,6 +24,10 @@
 package org.makumba.db.makumba.sql;
 
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -64,6 +68,24 @@ public class MySqlDatabase extends org.makumba.db.makumba.sql.Database {
         } else {
             return se.getMessage();
         }
+    }
+    
+    @Override
+    public Map<String, String> getDuplicateFields(SQLException e) {
+        // we get an error message of the kind
+        // Duplicate entry '11-a@b.com' for key 'age_email'
+        
+        Map<String, String> res = new HashMap<String, String>();
+
+        String[] error = e.getMessage().split("'");
+        String[] values = error[1].split("-");
+        String[] fields = error[3].split("_");
+
+        for(int i = 0; i < fields.length; i++) {
+            res.put(fields[i], values[i]);
+        }
+        
+        return res;
     }
 
     public static String getMddName(String referingTableName) {
