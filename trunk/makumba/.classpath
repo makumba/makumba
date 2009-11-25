@@ -63,7 +63,6 @@
 	<classpathentry kind="lib" path="lib/mime-util.jar" sourcepath="lib-src/mime-util-src.zip"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/prefuse.jar"/>
-	<classpathentry kind="lib" path="lib/inieditor.jar" sourcepath="lib-src/inieditor-src.zip"/>
 	<classpathentry kind="var" path="ANTLR_HOME/antlr.jar" sourcepath="ANTLR_HOME/antlrsrc.zip"/>
 	<classpathentry kind="lib" path="lib/hibernate-annotations.jar"/>
 	<classpathentry kind="lib" path="lib/hibernate-commons-annotations.jar"/>
@@ -71,5 +70,6 @@
 	<classpathentry kind="lib" path="lib/selenium-server.jar"/>
 	<classpathentry kind="lib" path="lib/c3p0-0.9.1.jar"/>
 	<classpathentry kind="lib" path="doc-jspwiki/JSPWiki/WEB-INF/lib/JSPWiki.jar"/>
+	<classpathentry kind="lib" path="lib/commons-configuration-1.6.jar" sourcepath="lib-src/commons-configuration-1.6-sources.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

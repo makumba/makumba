@@ -148,9 +148,9 @@ public class Configuration implements Serializable {
 
     private static Map<String, ConfiguredDataSource> configuredDataSources = new HashMap<String, ConfiguredDataSource>();
 
-    private static MakumbaINIFileReader defaultConfig;
+    private static MakumbaINIConfiguration defaultConfig;
 
-    private static MakumbaINIFileReader applicationConfig;
+    private static MakumbaINIConfiguration applicationConfig;
     
     private static Object loadLock = new Object();
 
@@ -161,14 +161,14 @@ public class Configuration implements Serializable {
             // the internal default configuration
             URL path = org.makumba.commons.ClassResource.get(MAKUMBA_CONF_DEFAULT);
             logger.info("Loading internal default configuration from " + path);
-            defaultConfig = new MakumbaINIFileReader(path);
+            defaultConfig = new MakumbaINIConfiguration(path);
 
             // application-specific configuration
             URL url = org.makumba.commons.ClassResource.get(MAKUMBA_CONF);
             if (url != null) {
                 logger.info("Loading application configuration from " + url);
                 synchronized (loadLock) {
-                    applicationConfig = new MakumbaINIFileReader(url, defaultConfig);
+                    applicationConfig = new MakumbaINIConfiguration(url, defaultConfig);
                 }
                 
             } else { // if we did not find any configuration, we shout. we need an application configuration for the
@@ -179,13 +179,12 @@ public class Configuration implements Serializable {
             }
 
             defaultReloadFormOnError = applicationConfig.getBooleanProperty("controllerConfig",
-                KEY_RELOAD_FORM_ON_ERROR, defaultConfig);
+                KEY_RELOAD_FORM_ON_ERROR);
             // FIXME: check if the value in the file is ok, throw an exception otherwise
-            defaultClientSideValidation = applicationConfig.getStringProperty("controllerConfig",
-                KEY_CLIENT_SIDE_VALIDATION, defaultConfig);
+            defaultClientSideValidation = applicationConfig.getProperty("controllerConfig",
+                KEY_CLIENT_SIDE_VALIDATION);
             // FIXME: check if the value in the file is ok, throw an exception otherwise
-            defaultFormAnnotation = applicationConfig.getStringProperty("controllerConfig", KEY_FORM_ANNOTATION,
-                defaultConfig);
+            defaultFormAnnotation = applicationConfig.getProperty("controllerConfig", KEY_FORM_ANNOTATION);
 
             buildConfiguredDataSources();
 
@@ -196,7 +195,7 @@ public class Configuration implements Serializable {
 
     /** builds the data sources for the configuration. **/
     private static void buildConfiguredDataSources() {
-        for (Iterator<String> iterator = applicationConfig.sectionNames().iterator(); iterator.hasNext();) {
+        for (Iterator<String> iterator = applicationConfig.getSections().iterator(); iterator.hasNext();) {
             String section = iterator.next();
 
             // expect something like
@@ -257,7 +256,7 @@ public class Configuration implements Serializable {
 
         String[] globalDatabaseConfigurationProperties = { "foreignKeys", "defaultDataSource" };
 
-        Map<String, String> globalProperties = applicationConfig.getProperties("dataSourceConfig");
+        Map<String, String> globalProperties = applicationConfig.getPropertiesAsMap("dataSourceConfig");
 
         Map<String, String> dataSourceConfiguration = new Hashtable<String, String>();
         for (String globalProperty : globalDatabaseConfigurationProperties) {
@@ -266,7 +265,7 @@ public class Configuration implements Serializable {
             }
         }
         try {
-            dataSourceConfiguration.putAll(applicationConfig.getProperties(section));
+            dataSourceConfiguration.putAll(applicationConfig.getPropertiesAsMap(section));
         } catch (ConfigurationError ce) {
             throw new ConfigurationError("DataSource [" + section + "] is not configured in Makumba.conf");
         }
@@ -283,7 +282,7 @@ public class Configuration implements Serializable {
      * @param value the value of the property
      */
     public static void setPropery(String section, String key, String value) {
-        applicationConfig.set(section, key, value);
+        applicationConfig.getSection(section).setProperty(key, value);
     }
     
     /**
@@ -292,11 +291,11 @@ public class Configuration implements Serializable {
      * @return a String containing the class name of the data definition provider implementation
      */
     public static String getDataDefinitionProvider() {
-        return applicationConfig.getStringProperty("dataSourceConfig", KEY_DATADEFINITIONPROVIDER, defaultConfig);
+        return applicationConfig.getProperty("dataSourceConfig", KEY_DATADEFINITIONPROVIDER);
     }
     
     public static String getQueryInliner() {
-        return applicationConfig.getStringProperty("dataSourceConfig", KEY_QUERYFUNCTIONINLINER, defaultConfig);
+        return applicationConfig.getProperty("dataSourceConfig", KEY_QUERYFUNCTIONINLINER);
     }
     
 
@@ -307,7 +306,7 @@ public class Configuration implements Serializable {
      */
     public static String getDefaultDatabaseLayer() {
         synchronized (loadLock) {
-            return applicationConfig.getStringProperty("dataSourceConfig", KEY_DEFAULT_DATABASE_LAYER, defaultConfig);
+            return applicationConfig.getProperty("dataSourceConfig", KEY_DEFAULT_DATABASE_LAYER);
         }
     }
 
@@ -324,15 +323,15 @@ public class Configuration implements Serializable {
     }
 
     public static boolean getUseDefaultResponseStyles() {
-        return applicationConfig.getBooleanProperty("controllerConfig", KEY_USE_DEFAULT_RESPONSE_STYLES, defaultConfig);
+        return applicationConfig.getBooleanProperty("controllerConfig", KEY_USE_DEFAULT_RESPONSE_STYLES);
     }
 
     public static boolean getCalendarEditorDefault() {
-        return applicationConfig.getBooleanProperty("inputStyleConfig", KEY_CALENDAR_EDITOR, defaultConfig);
+        return applicationConfig.getBooleanProperty("inputStyleConfig", KEY_CALENDAR_EDITOR);
     }
 
     public static String getDefaultCalendarEditorLink(String contextPath) {
-        return applicationConfig.getStringProperty("inputStyleConfig", KEY_CALENDAR_EDITOR_LINK, defaultConfig).replaceAll(
+        return applicationConfig.getProperty("inputStyleConfig", KEY_CALENDAR_EDITOR_LINK).replaceAll(
             PLACEHOLDER_CONTEXT_PATH, contextPath);
     }
 
@@ -345,7 +344,7 @@ public class Configuration implements Serializable {
     }
     
     public static boolean getErrorLog() {
-        return applicationConfig.getBooleanProperty("makumbaToolConfig", KEY_DB_ERROR_LOG, defaultConfig);
+        return applicationConfig.getBooleanProperty("makumbaToolConfig", KEY_DB_ERROR_LOG);
     }
     
     /**
@@ -436,15 +435,15 @@ public class Configuration implements Serializable {
     }
 
     public static Map<String, String> getJavaViewerSyntaxStyles() {
-        return applicationConfig.getProperties("javaViewerSyntaxStyles", defaultConfig);
+        return applicationConfig.getPropertiesAsMap("javaViewerSyntaxStyles", defaultConfig);
     }
 
     public static Map<String, String> getJspViewerSyntaxStyles() {
-        return applicationConfig.getProperties("jspViewerSyntaxStyles", defaultConfig);
+        return applicationConfig.getPropertiesAsMap("jspViewerSyntaxStyles", defaultConfig);
     }
 
     public static Map<String, String> getJspViewerSyntaxStylesTags() {
-        return applicationConfig.getProperties("jspViewerSyntaxStylesTags", defaultConfig);
+        return applicationConfig.getPropertiesAsMap("jspViewerSyntaxStylesTags", defaultConfig);
     }
 
     public static Map<String, Map<String, String>> getInternalCodeGeneratorTemplates() {
@@ -456,11 +455,11 @@ public class Configuration implements Serializable {
     }
 
     public static Map<String, String> getLogicPackages() {
-        return applicationConfig.getProperties("businessLogicPackages");
+        return applicationConfig.getPropertiesAsMap("businessLogicPackages");
     }
 
     public static Map<String, String> getAuthorizationDefinitions() {
-        return applicationConfig.getProperties("authorization");
+        return applicationConfig.getPropertiesAsMap("authorization");
     }
 
     public static String getApplicationConfigurationSource() {
@@ -517,7 +516,7 @@ public class Configuration implements Serializable {
     private static ConfiguredDataSource getDefaultDataSource() {
 
         if (defaultDataSource == null) {
-            Map<String, String> globalProperties = applicationConfig.getProperties("dataSourceConfig");
+            Map<String, String> globalProperties = applicationConfig.getPropertiesAsMap("dataSourceConfig");
             String defaultDataSourceName = globalProperties.get("defaultDataSource");
 
             if (defaultDataSourceName != null) {
@@ -541,7 +540,7 @@ public class Configuration implements Serializable {
             int count = 0;
             String lastSection = "";
             HashMap<String, Boolean> toLookUp = new HashMap<String, Boolean>();
-            for (Object sectionObject : applicationConfig.sectionNames()) {
+            for (Object sectionObject : applicationConfig.getSections()) {
                 String section = (String) sectionObject;
                 if (section.startsWith("dataSource:")) {
                     count++;
