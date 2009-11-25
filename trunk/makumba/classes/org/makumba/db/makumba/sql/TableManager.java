@@ -720,7 +720,12 @@ public class TableManager extends Table {
             if (getFieldDefinition(fieldName).getType().startsWith("set"))
                 continue;
             if (checkDuplicate(fieldName, dbc, d)) {
-                notUnique.addException(new NotUniqueException(getFieldDefinition(fieldName), val));
+                FieldDefinition fd = dd.getFieldDefinition(fieldName);
+                if(fd.getNotUniqueErrorMessage() == null) {
+                    notUnique.addException(new NotUniqueException(getFieldDefinition(fieldName), val));
+                } else {
+                    notUnique.addException(new NotUniqueException(fd.getNotUniqueErrorMessage()));
+                }
             }
         }
 
