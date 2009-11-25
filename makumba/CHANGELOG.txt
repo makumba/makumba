@@ -7,6 +7,11 @@
 
 TO BE RELEASED IMMEDIATELY (No need for more testing)
 -----------------------------------------------
+manu: fix for a bug with multi-key uniqueness constraints and uniqueness constraints: the error message was not treated correctly
+manu: JSPWiki configuration for makumba, and TLD documentation generator for JSPWiki markup
+manu: replacing inieditor with commons-configurations. ==> REQUIRES JAR UPDATE IN ALL APPLICATIONS THAT USE MAKUMBA
+manu: hack (i.e. needs proper solution, like eclipse plugin): making it possible to specify webapp root via the JVM property 'makumba.project.path'.
+      useful in the case of eclipse WTP where the webapp is deployed in a temp dir.
 
 NOT TO BE RELEASED YET (need more testing)
 manu: auto-complete for mak:input (char and ptr)

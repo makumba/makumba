@@ -203,7 +203,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     public void setOnSubmit(String s) {
         checkNoParent("onSubmit");
-        if (clientSideValidation != null) {
+        if (clientSideValidation != Configuration.PROPERTY_NOT_SET) {
             throw new ProgrammerError(
                     "Forms specifying a 'clientSideValidation' attribute cannot provide an 'onSubmit' attribute");
         }
