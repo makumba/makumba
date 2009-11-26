@@ -1,0 +1,132 @@
+!!!Congress Copenhagen 2009
+
+!!Preparation
+
+Here are some links to useful resources and things to read
+
+!To read
+* web 2.0 paper [http://papers.ssrn.com/sol3/papers.cfm?abstract_id=1008839&amp;download=yes%22]
+
+!Strategy elements
+* reducing amount of BL code in K!
+** [http://bugs.makumba.org/show_bug.cgi?id=1052]
+** [http://bugs.makumba.org/show_bug.cgi?id=1054]
+* query fragments: [http://www.makumba.org/makumba-spec.html#tab_queryFragments]
+* implicit authorisation, session
+** [http://bugs.makumba.org/show_bug.cgi?id=1059]
+** [http://bugs.makumba.org/show_bug.cgi?id=1061]
+** [http://bugs.makumba.org/show_bug.cgi?id=1060]
+* validation rules
+** [http://lisbon.best.eu.org:8888/doc/valrules.html]
+** [http://bugs.makumba.org/show_bug.cgi?id=1100]
+
+!Existing web 2.0 efforts in mak
+* [http://bugs.makumba.org/show_bug.cgi?id=1047]
+* [http://bugs.makumba.org/show_bug.cgi?id=1043]
+
+!Content management systems
+* [http://www.smashingmagazine.com/2009/11/08/getting-started-with-content-management-systems/]
+
+!Other frameworks
+* Apache Trinidad (JSD): [http://myfaces.apache.org/trinidad/devguide/index.html]
+
+!Rich UI components
+* JQuery examples [http://docs.jquery.com/Tutorials:Live_Examples_of_jQuery]
+* a JQuery based date picker: [http://jqueryui.com/demos/datepicker/]
+* a JQuery plugin that helps fill in content (from Stefan, can be combined with date picker): [http://digitalbush.com/projects/masked-input-plugin/]
+
+
+!Makumba history
+* Cristi presenting the makumba history [http://picasaweb.google.com/simons.bram/Makumba#5363235376316876258]
+
+
+!! Sessions
+
+[{Table
+
+||Session||Responsible||Description||Time
+
+|Introduction
+|manu
+|Introduction to the congress, presentation round, setting up rules
+|15'
+
+|Short overview of the strategy
+|manu, support from cristi
+|Strategic guidelines (not reinventing sex, query centricity), short overview of the new or planned features that were developed since the 2007 congresses
+|45'
+
+|Status of the documentation / makumba website
+|manu
+|Short history, current status
+|10'
+
+|Recent development
+|manu
+|What has been hacked in the past year
+|10'
+
+|Financing
+|cristi,manu?
+|Short discussion on how to get funds for mak dev. Brief summary of what worked in the past, ideas for the future and hopefully a plan
+|30'
+
+|Web 2.0 input
+|Jasper
+|* How web 2.0 feats are done now (using servlets, iframes,...)
+* What ideas popped up in the thread on ITC@
+* Other ideas gathered in the last years.
+|60' or more
+
+|Web 2.0 discussion
+|?
+|Discussing web 2.0 features, design, ability to use external components (e.g. OpenID authentication) (goes together with modularity)...
+|?
+
+|Web 2.0 CMS
+|cristi
+|presentation of required features, demo of a CMS (who can present that?)
+|30'?
+
+|Templating, modularity
+|?
+|Discussion/design for templating, and modularity in mak
+|?
+
+|Technology overview
+|manu, Raul, Viktor, Jasper
+|* Adobe Flex
+* Prototype
+* JQuery
+* LINQ
+* ...
+|80'
+
+|Developer tools
+|manu?
+|brainstorming about nice-to-have dev tools, Eclipse plugin, code generator features, scaffolding (see RoR): come up with a list of things that we can do in this direction, that could help Filip (he might do that for his thesis, the Eclipse plugin etc.)
+|60'
+
+|Documentation hacking
+|manu
+|Everyone helps converting doc to JSPWiki
+|60'
+
+|ParaDe KT
+|manu, cristi, viktor
+|hands on parade/aether KT
+|60'
+
+|Hacking session
+|everyone who likes to
+|hacking
+|?
+
+|Cristi's workshop
+|cristi
+|workshop
+|?
+
+
+}]
+
