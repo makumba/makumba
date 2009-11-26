@@ -106,9 +106,9 @@ footer=
 beforeFormEnd=</fieldset>
 beforeFieldName=
 afterFormBegin=
-beforePageHeader=<fieldset style="text-align:right;">\n  <legend>
+beforePageHeader=<fieldset style="text-align:right;">  <legend>
 afterPageHeader=</legend>
-beforePageHeaderLevel2=<fieldset style="text-align:right;">\n  <legend>
+beforePageHeaderLevel2=<fieldset style="text-align:right;">  <legend>
 afterPageHeaderLevel2=</legend>
 
 [codeGeneratorTemplate:tabular]
@@ -116,7 +116,7 @@ beforeFieldTag=    <td>
 afterFieldName=    </th>
 afterField=  </tr>
 beforeField=  <tr>
-header=<%@ taglib uri\="http://java.sun.com/jstl/core_rt" prefix="c" %>
+header=<%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c" %>
 afterFieldTag=    </td>
 footer=
 beforeFormEnd=</table>
@@ -135,10 +135,10 @@ beforeField=  <tr>
 header=<%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c" %>
 afterFieldTag=</td>
 footer=
-beforeFormEnd=</table>\n</fieldset>
+beforeFormEnd=</table></fieldset>
 beforeFieldName=    <th>
 afterFormBegin=<table>
-beforePageHeader=<fieldset style="text-align:right;">\n  <legend>
+beforePageHeader=<fieldset style="text-align:right;">  <legend>
 afterPageHeader=</legend>
-beforePageHeaderLevel2=<fieldset style="text-align:right;">\n  <legend>
+beforePageHeaderLevel2=<fieldset style="text-align:right;">  <legend>
 afterPageHeaderLevel2=</legend>
