@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+import org.apache.commons.cli.CommandLine;
 import org.makumba.analyser.PageCache;
 import org.makumba.analyser.engine.JspParseData;
 import org.makumba.commons.ArgumentReplacer;
@@ -26,8 +27,6 @@ import org.makumba.devel.relations.JavaMDDParser;
 import org.makumba.devel.relations.JspRelationsAnalyzer;
 import org.makumba.devel.relations.RelationParseStatus;
 import org.makumba.list.engine.ComposedQuery;
-
-import com.martiansoftware.jsap.JSAPResult;
 
 /**
  * Analyses all JSP pages of a webapp and writes the queries found in the pages to a file. Inspired from
@@ -53,15 +52,16 @@ public class WebappJSPQueryCrawler {
     public static final FileFilter javaFilter = new JavaFileFilter();
 
     public static void main(String[] args) throws FileNotFoundException {
-        JSAPResult result = WebappJSPAnalysisCrawler.parseCrawlParams(args);
+        CommandLine line = WebappJSPAnalysisCrawler.parseCrawlParams(args, WebappJSPAnalysisCrawler.class.getName());
 
-        String webappRoot = result.getString("webappRoot");
-        String[] skipPaths = result.getString("skipPaths") != null ? result.getString("skipPaths").split(",")
-                : new String[] {};
-        String analysisOutputFile = "queries.txt";
-        if (result.getString("queryOutputFile") != null) {
-            analysisOutputFile = result.getString("queryOutputFile");
+        String webappRoot = line.getOptionValue("w");
+        String[] skipPaths = line.getOptionValues("s");
+        
+        // this seems to be a bug in commons CLI
+        if(skipPaths == null) {
+            skipPaths = new String[] {};
         }
+        String analysisOutputFile = line.getOptionValue("q", "queries.txt");
 
         System.out.println("Starting query crawler, config:");
         System.out.println("\twebappRoot: " + webappRoot);

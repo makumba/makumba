@@ -12,6 +12,8 @@ manu: JSPWiki configuration for makumba, and TLD documentation generator for JSP
 manu: replacing inieditor with commons-configurations. ==> REQUIRES JAR UPDATE IN ALL APPLICATIONS THAT USE MAKUMBA
 manu: hack (i.e. needs proper solution, like eclipse plugin): making it possible to specify webapp root via the JVM property 'makumba.project.path'.
       useful in the case of eclipse WTP where the webapp is deployed in a temp dir.
+manu: replacing JSAP with commons-cli ==> REQUIRES JAR UPDATE IN ALL APPLICATIONS THAT USE MAKUMBA (or at least its relation crawling classes)
+
 
 NOT TO BE RELEASED YET (need more testing)
 manu: auto-complete for mak:input (char and ptr)
