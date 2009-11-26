@@ -207,7 +207,7 @@
             <fileset dir="doc/api/org" />
             <fileset dir="doc/hacking/javadoc" />
             <fileset dir="META-INF" />
-            <fileset dir="lib" includes="makumba.jar" />
+            <fileset dir="lib" includes="makumba.jar,makumba-*-template.zip" />
             <fileset dir="work" />
             <fileset dir="." includes="manifest-replace.properties,manifest.mf" />
             <fileset dir="." includes="manifest-replace.properties,manifest.mf" />
