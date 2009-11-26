@@ -12,11 +12,17 @@ import java.util.Date;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
 import org.makumba.MakumbaError;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
@@ -26,13 +32,6 @@ import org.makumba.commons.ReadableFormatter;
 import org.makumba.devel.relations.FileRelations.RelationOrigin;
 import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.datadefinition.makumba.RecordInfo;
-
-import com.martiansoftware.jsap.FlaggedOption;
-import com.martiansoftware.jsap.JSAP;
-import com.martiansoftware.jsap.JSAPException;
-import com.martiansoftware.jsap.JSAPResult;
-import com.martiansoftware.jsap.Switch;
-import com.martiansoftware.jsap.UnflaggedOption;
 
 /**
  * This crawler looks for relations between Makumba files and stores them in a database table.<br>
@@ -226,48 +225,56 @@ public class RelationCrawler {
      *            </ul>
      */
     public static void main(String[] args) {
-
-        JSAP jsap = new JSAP();
+        
+        // create CLI options
+        Options options = new Options();
+        
+        Option webappRootOption = new Option("w", "root", true, "the root of the makumba webapp to crawl");
+        Option targetDb = new Option("d", "database", true, "the name of the target database where the relations should be stored");
+        targetDb.setRequired(true);
+        Option forceDb = new Option("f", "forceDb", false, "indicates whether the target database should be forced: if set to true, even if relations were previously written to another database, this will force writing them to the indicated database");
+        Option urlPrefix = new Option("p", "urlPrefix", true, "the prefix given to the file URL, e.g. \"file://\"");
+        Option urlRoot = new Option("u", "urlRoot", true, "the root of the URL, e.g. the name of the crawled webapp");
+        Option skipPathsOption = new Option("s", "skipPaths", true, "a list of paths to be skipped during the crawling, separated by a comma");
+        skipPathsOption.setValueSeparator(',');
+        Option typeDetail = new Option("t", "relationTypeDetail", false, "whether or not to save the detailed type of the relation, if set to false, 'dependsOn' is used");
+        
+        options.addOption(webappRootOption);
+        options.addOption(targetDb);
+        options.addOption(forceDb);
+        options.addOption(urlPrefix);
+        options.addOption(urlRoot);
+        options.addOption(skipPathsOption);
+        options.addOption(typeDetail);
+        
+        HelpFormatter formatter = new HelpFormatter();
+        
+        CommandLineParser parser = new PosixParser();
+        CommandLine line = null;
+        
         try {
-            jsap.registerParameter(new FlaggedOption("webappRoot", JSAP.STRING_PARSER, ".", false, 'w', "root"));
-            jsap.registerParameter(new FlaggedOption("targetDatabase", JSAP.STRING_PARSER, null, true, 'd', "database"));
-            jsap.registerParameter(new Switch("forceDatabase", 'f', "forceDB"));
-            jsap.registerParameter(new FlaggedOption("urlPrefix", JSAP.STRING_PARSER, null, false, 'p', "urlPrefix"));
-            jsap.registerParameter(new FlaggedOption("urlRoot", JSAP.STRING_PARSER, null, false, 'u', "urlRoot"));
-            jsap.registerParameter(new FlaggedOption("skipPaths", JSAP.STRING_PARSER, null, false, 's', "skipPaths"));
-            jsap.registerParameter(new UnflaggedOption("path", JSAP.STRING_PARSER, null, false, true));
-            jsap.registerParameter(new Switch("relationTypeDetail", 't', "relationTypeDetail"));
-            
-        } catch (JSAPException e) {
-            e.printStackTrace();
-        }
-        JSAPResult result = jsap.parse(args);
-        if (!result.success()) {
-            // print out specific error messages describing the problems
-            // with the command line, THEN print usage, THEN print full
-            // help. This is called "beating the user with a clue stick."
-            System.err.println();
-            for (Iterator<?> errs = result.getErrorMessageIterator(); errs.hasNext();) {
-                System.err.println("Error: " + errs.next());
-            }
-            System.err.println();
-            System.err.println("Usage: java " + RelationCrawler.class.getName());
-            System.err.println("                " + jsap.getUsage());
-            System.err.println();
-            System.err.println(jsap.getHelp());
+            line = parser.parse(options, args);
+        } catch(ParseException p) {
+            System.out.println("Error while executing the relation crawler: " + p.getMessage());
+            System.out.println();
+            formatter.printHelp("java " + RelationCrawler.class.getName() + " [OPTION]... [FILE]...", options);
             System.exit(-1);
         }
-
-        String webappRoot = result.getString("webappRoot");
-        String targetDatabase = result.getString("targetDatabase");
-        boolean forceDatabase = result.getBoolean("forceDatabase");
-        String URLprefix = result.getString("urlPrefix");
-        String URLroot = result.getString("urlRoot");
-        String[] skipPaths = result.getString("skipPaths") != null ? result.getString("skipPaths").split(",")
-                : new String[] {};
-        boolean relationTypeDetail = result.getBoolean("relationTypeDetail");
-        String[] files = result.getString("path") != null ? result.getString("path").split(",") : new String[] {};
-
+        
+        String webappRoot = line.getOptionValue("w", ".");
+        String targetDatabase = line.getOptionValue("d");
+        boolean forceDatabase = Boolean.parseBoolean(line.getOptionValue("f", "false"));
+        String URLprefix = line.getOptionValue("p", "");
+        String URLroot = line.getOptionValue("u", "");
+        String[] skipPaths = line.getOptionValues("s");
+        
+        // this seems to be a bug in commons CLI
+        if(skipPaths == null) {
+            skipPaths = new String[] {};
+        }
+        boolean relationTypeDetail = Boolean.parseBoolean(line.getOptionValue("t", "false"));
+        String[] files = line.getArgs();
+        
         System.out.println("Starting relation crawler, config:");
         System.out.println("\twebappRoot: " + webappRoot);
         System.out.println("\ttargetDatabase: " + targetDatabase);

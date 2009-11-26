@@ -7,21 +7,21 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.logging.Logger;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
 import org.makumba.analyser.engine.JspParseData;
 import org.makumba.commons.FileUtils;
 import org.makumba.commons.ReadableFormatter;
 import org.makumba.devel.relations.JspRelationsAnalyzer;
 import org.makumba.devel.relations.RelationCrawler;
 import org.makumba.devel.relations.RelationParseStatus;
-
-import com.martiansoftware.jsap.FlaggedOption;
-import com.martiansoftware.jsap.JSAP;
-import com.martiansoftware.jsap.JSAPException;
-import com.martiansoftware.jsap.JSAPResult;
-import com.martiansoftware.jsap.UnflaggedOption;
 
 /**
  * Analyses all JSP pages of a webapp and writes the found erorrs to a file. Inspired from {@link RelationCrawler}, but
@@ -45,15 +45,17 @@ public class WebappJSPAnalysisCrawler {
     public static final FileFilter filter = new JSPFileFilter();
 
     public static void main(String[] args) {
-        JSAPResult result = parseCrawlParams(args);
+        
+        CommandLine line = parseCrawlParams(args, WebappJSPAnalysisCrawler.class.getName());
 
-        String webappRoot = result.getString("webappRoot");
-        String[] skipPaths = result.getString("skipPaths") != null ? result.getString("skipPaths").split(",")
-                : new String[] {};
-        String analysisOutputFile = "analysis-errors.txt";
-        if (result.getString("analysisOutputFile") != null) {
-            analysisOutputFile = result.getString("analysisOutputFile");
+        String webappRoot = line.getOptionValue("w");
+        String[] skipPaths = line.getOptionValues("s");
+        
+        // this seems to be a bug in commons CLI
+        if(skipPaths == null) {
+            skipPaths = new String[] {};
         }
+        String analysisOutputFile = line.getOptionValue("o", "analysis-errors.txt");
 
         System.out.println("Starting relation crawler, config:");
         System.out.println("\twebappRoot: " + webappRoot);
@@ -81,33 +83,37 @@ public class WebappJSPAnalysisCrawler {
         System.out.println("\n\nCrawling finished, took: "
                 + ReadableFormatter.readableAge(System.currentTimeMillis() - beginDate.getTime()));
     }
-
-    public static JSAPResult parseCrawlParams(String[] args) {
-        JSAP jsap = new JSAP();
+    
+    public static CommandLine parseCrawlParams(String[] args, String name) {
+        Options options = new Options();
+        
+        Option webappRootOption = new Option("w", "root", true, "the root of the makumba webapp to crawl");
+        Option skipPathsOption = new Option("s", "skipPaths", true, "a list of paths to be skipped during the crawling, separated by a comma");
+        skipPathsOption.setValueSeparator(',');
+        Option analysisOutput = new Option("o", "output", true, "the file in which the output of the analysis should be written");
+        Option queryOutput = new Option("q", "queryOutputFile", true, "the file in which the crawled queries should be written");
+        
+        options.addOption(webappRootOption);
+        options.addOption(skipPathsOption);
+        options.addOption(analysisOutput);
+        options.addOption(queryOutput);
+        
+        HelpFormatter formatter = new HelpFormatter();
+        
+        CommandLineParser parser = new PosixParser();
+        CommandLine line = null;
+        
         try {
-            jsap.registerParameter(new FlaggedOption("webappRoot", JSAP.STRING_PARSER, ".", false, 'w', "root"));
-            jsap.registerParameter(new FlaggedOption("skipPaths", JSAP.STRING_PARSER, null, false, 's', "skipPaths"));
-            jsap.registerParameter(new FlaggedOption("analysisOutputFile", JSAP.STRING_PARSER, null, false, 'o',
-                    "output"));
-            jsap.registerParameter(new FlaggedOption("queryOutputFile", JSAP.STRING_PARSER, null, false, 'q', "queryOutputFile"));
-            jsap.registerParameter(new UnflaggedOption("path", JSAP.STRING_PARSER, null, false, true));
-        } catch (JSAPException e) {
-            e.printStackTrace();
-        }
-        JSAPResult result = jsap.parse(args);
-        if (!result.success() || args.length == 0) {
-            System.err.println();
-            for (Iterator<?> errs = result.getErrorMessageIterator(); errs.hasNext();) {
-                System.err.println("Error: " + errs.next());
-            }
-            System.err.println();
-            System.err.println("Usage: java " + RelationCrawler.class.getName());
-            System.err.println("                " + jsap.getUsage());
-            System.err.println();
-            System.err.println(jsap.getHelp());
+            line = parser.parse(options, args);
+        } catch(ParseException p) {
+            System.out.println("Error while executing the crawler: " + p.getMessage());
+            System.out.println();
+            formatter.printHelp("java " + name + "[OPTION]... [FILE]...", options);
             System.exit(-1);
         }
-        return result;
+        
+        return line;
+        
     }
 
 }
