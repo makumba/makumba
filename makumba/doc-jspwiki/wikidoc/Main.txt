@@ -16,7 +16,7 @@ This page will soon reflect the power of this framework!
 |Filip
 |* do not enable account creation for everyone
 * set up some users, and some as admin
-||not started
+||completed
 
 |generate the taglib wiki pages based on the taglib-documented.xml
 |manu
