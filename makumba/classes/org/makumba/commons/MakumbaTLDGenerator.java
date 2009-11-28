@@ -29,9 +29,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.tools.ant.helper.ProjectHelper2.ElementHandler;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
+import org.dom4j.Node;
 import org.dom4j.QName;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
@@ -107,8 +109,9 @@ public class MakumbaTLDGenerator {
                     
                     // if we have a descriptionPage instead of a raw text, make the description tag, or the TLD is invalid
                     if(tagContent.getName().equals("descriptionPage")) {
-                        tagContent.setQName(new QName("description"));
-                        tagContent.setText("See " + tagContent.getText());
+                        Element e = tagContent.getParent().addElement("description");
+                        e.setText("See " + tagContent.getText());
+                        tagContent.getParent().remove(tagContent);
                     }
                 }
                 processedTags.put(tagName, tag);
