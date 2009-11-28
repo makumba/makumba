@@ -136,7 +136,10 @@ public class TaglibDocGenerator {
             for(String f : functionNames) {
                 s.println("* [mak:" + f + "()|" + getWikiTagName(f) + "]");
             }
-
+            
+            s.println();
+            s.println("----");
+            s.println("[Category Documentation]");
 
         } catch (IOException io) {
             throw new RuntimeException("Cannot create index file", io);
@@ -199,6 +202,12 @@ public class TaglibDocGenerator {
         // then the examples
         generateExamples(element, s);
         
+        // finally append the category
+        s.newLine();
+        s.append("----");
+        s.newLine();
+        s.append("[Category Documentation]");
+
         s.flush();
         s.close();
         fos.close();
