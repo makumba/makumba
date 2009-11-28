@@ -17,6 +17,9 @@
             <include name="**/*.jar" />
             <exclude name="**/makumba*.jar" />
         </fileset>
+        <fileset dir="${basedir}/doc-jspwiki/JSPWiki/WEB-INF/lib">
+            <include name="JSPWiki.jar" />
+        </fileset>
         <fileset dir="${basedir}">
             <include name="webapps/tests/WEB-INF/classes/Makumba.conf" />
         </fileset>
@@ -519,10 +522,10 @@
     </target>
     
     
-    <target name="copyBoxPlugin" depends="compile" description="compiles and copies the box plugin to the JSPWiki folder">
+    <target name="copyWikiPlugins" depends="compile" description="compiles and copies the plugins to the JSPWiki folder">
     
         <copy todir="doc-jspwiki/JSPWiki/WEB-INF/classes/org/makumba/commons/documentation">
-            <fileset dir="classes/org/makumba/commons/documentation/" includes="Box*.class" />
+            <fileset dir="classes/org/makumba/commons/documentation/" includes="Box*.class,Insert*.class" />
         </copy>
     
     </target>
