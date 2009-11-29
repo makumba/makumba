@@ -37,6 +37,9 @@ __text__         Makes text bold.
 %%stylename %%   Uses custom CSS style. Also possible to add styles inline,
                  e.g. %%(color:red)This text is red.%%
 
+~{               Escapes a curly brace
+~|               Escapes a '|' (e.g. in a table)
+
 }}}
 
 !!Special formatting
@@ -185,4 +188,6 @@ By default JSPWiki does not offer too many possibilities regarding tables, like 
 
 Check out the documentation of the [TablePlugin|http://www.jspwiki.org/wiki/TablePlugin] to find out more.
 
+----
+[Category Main]
 

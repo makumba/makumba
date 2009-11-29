@@ -1,0 +1,146 @@
+[{TableOfContents}]
+
+!!!Introduction
+This guide will help you getting started with Makumba using the [Eclipse|http://www.eclipse.org/] IDE. It explains the notion of Makumba Data Definitions, and shows you how to make a simple site where you can display and create data.
+
+We'll take the example of a company management site, where you can manage the employees, departments and projects of a company.
+
+!!!Download and Eclipse project setup
+First of all, [download|http://10.42.43.10:8888/download.html] the Makumba template project in order to get an [Eclipse WTP project|http://www.eclipse.org/webtools/] which you can use in order to start working with Makumba.
+
+You'll also need to download [Apache Tomcat 5.5|http://tomcat.apache.org/download-55.cgi] and configure a WTP Server (in Eclipse, go to File -> New -> Other and choose "Server").
+
+Optionally, you can also download [MySQL|http://dev.mysql.com/downloads/mysql/5.1.html] as a database engine. For this introduction however, the template project comes with the HSQLDB database engine, so you don't need to install anything in that regard.
+
+The project imported in Eclipse has the following structure:
+[{Code
+/src
+    /dataDefinitions
+/build
+/WebContent
+           /META-INF
+           /WEB-INF
+                   /lib
+                   web.xml
+           index.jsp
+}]
+This is the standard WTP project structure. The resulting web-application structure (according to the Servlet Standard 2.4) is as follows:
+[{Code
+/META-INF
+/WEB-INF
+        /lib
+        /classes
+                /dataDefinitions
+        web.xml
+index.jsp
+}]
+!!!Describing the data
+Makumba uses so-called Makumba Data Definitions (further described [here|Model.html]).
+
+MDDs are simple text files that contain the description of an entity, i.e. its fields but also validation rules and query functions. These files are kept in the {{dataDefinitions}} directory in the classpath of the web-application.
+
+Start by creating a new company package in the {{src/dataDefinitions}} directory and create the file {{Employee.mdd}} with the following content:
+[{Code
+
+name = char[200]
+surname = char[200]
+gender = int{"Male" = 10, "Female" = 20}
+birthdate = date
+salary = real
+
+fullName() { name || (' ' || surname) }
+}]
+''name, surname, gender, birthdate and salary'' are __field definitions__, while ''fullName()'' is a so-called __query-function__
+
+[{Box
+Makumba automatically generates the database schema based on MDDs. If you modify a MDD, you will need to reload your webapp for the changes to be taken into account.
+}]
+!!!Entering new data
+Let's make it possible to feed some data to our webapp.
+
+For this, let's create a page that contains a {{mak:newForm}}, which enables us to enter new data. Create the file {{WebContent/employeeNew.jsp}} with following content:
+[{Code
+<%@ taglib uri="http://www.makumba.org/presentation" prefix="mak" %>
+<html>
+<head>
+<title>Create new employee record</title>
+</head>
+<body>
+
+<mak:newForm type="company.Employee" method="post" action="index.jsp">
+  <table>
+    <tr>
+      <th>Name</th>
+      <td><mak:input field="name" /></td>
+    </tr>
+    <tr>
+      <th>Surname</th>
+      <td><mak:input field="surname" /></td>
+    </tr>
+    <tr>
+      <th>Birthdate</th>
+      <td><mak:input field="birthdate" /></td>
+    </tr>
+    <tr>
+      <th>Salary</th>
+      <td><mak:input field="salary" /></td>
+    </tr>
+    <tr>
+      <td><input type="submit" value="Add"> <input type="reset" value="Cancel" onClick="javascript:back();"></td>
+    </tr>
+  </table>
+</mak:newForm>
+
+</body>
+</html>        
+}]      
+This will generate the following form:
+
+
+
+When you submit the form, the data is directly saved into the database, without any additional effort. Let's explain a bit each of the elements:
+
+* the {{mak:newForm}} tag generates the form for a given __type__ (in our case, the type is {{company.Employee}}). The __action__ attribute specifies the page to show after the form is submitted.
+* the {{mak:input}} tags generate the inputs, depending on their type (for instance, the birthdate field is automatically shown as a date input). The __field__ attribute corresponds to the field name in the MDD.
+!!!Displaying data
+Let's now see how to display data using the {{mak:list}} tag. For this we will edit the {{WebContent/index.jsp}} to display the list of all Employees:
+[{Code
+
+<%@ taglib uri="http://www.makumba.org/presentation" prefix="mak" %>
+<html>
+  <head>
+    <title>Makumba template welcome page</title>
+  </head>
+  <body>
+    
+    <h1>List of employees</h1>
+    <mak:list from="company.Employee e">
+      <em><mak:value expr="e.fullName()" /></em> born on <mak:value expr="e.birthdate" /><br />
+    </mak:list>
+    
+  </body>
+</html>
+}]      
+This will generate the following output:
+
+
+
+* the {{mak:list}} tag generates a query. In our case, the query's from section is {{employee.Employee e}}.
+* the {{mak:input}} tags represent the projections of the query. The __expr__ attribute can contain a field, an MQL expression or a query function name.
+[{Box
+
+{{mak:list}} tags can be nested, so as to display the content of sets.
+}]
+!!!Modifying existing data
+[{Box label='Fixme (manu)'
+
+editForm
+}]
+!!!Deleting data
+[{Box label='Fixme (manu)'
+
+deleteForm
+}]
+
+----
+[Category Documentation]
