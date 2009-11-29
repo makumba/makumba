@@ -12,11 +12,10 @@ This page will soon reflect the power of this framework!
 |we need a ''code'' style element
 ||not started
 
-|work on the authentication
-|Filip
-|* do not enable account creation for everyone
-* set up some users, and some as admin
-||completed
+|fix the plugin stuff so that it does not make a newline
+|manu
+|
+|
 
 |generate the taglib wiki pages based on the taglib-documented.xml
 |manu
@@ -29,6 +28,12 @@ This page will soon reflect the power of this framework!
 |EVERYONE
 |we don't have replacements yet for the forrest <note> and <code> elements, so we need to find something here
 ||not started
+
+|work on the authentication
+|Filip
+|* do not enable account creation for everyone
+* set up some users, and some as admin
+||completed
 
 }]
 

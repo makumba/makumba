@@ -1,9 +1,1 @@
-%%someStyle
-
-* special li
-* li
-** lili
-
-%%
-
-%%some [link]%%
+[{ReferringPagesPlugin page='UID with 24 bits'}]
