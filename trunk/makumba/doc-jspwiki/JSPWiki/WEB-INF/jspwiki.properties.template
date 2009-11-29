@@ -600,6 +600,9 @@ jspwiki.interWikiRef.Google = http://www.google.com/search?q=%s
 #  JSPWiki documentation (for this release)
 jspwiki.interWikiRef.Doc = http://doc.jspwiki.org/2.8/wiki/%s
 
+# Bugzilla
+jspwiki.interWikiRef.bug = http://bugs.makumba.org/show_bug.cgi?%s
+
 ############################################################################
 #
 # Define which image types are inlined.
