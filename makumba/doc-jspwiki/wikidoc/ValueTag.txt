@@ -125,3 +125,6 @@
 
 [{InsertPage page=ValueTagExample}]
 
+
+----
+[Category Documentation]

@@ -29,3 +29,6 @@
 * [mak:lastCount()|LastCountTag]
 * [mak:maxCount()|MaxCountTag]
 * [mak:maxResults()|MaxResultsTag]
+
+----
+[Category Documentation]

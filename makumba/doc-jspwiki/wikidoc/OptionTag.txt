@@ -41,3 +41,6 @@
 
 [{InsertPage page=OptionTagExample}]
 
+
+----
+[Category Documentation]

@@ -95,3 +95,6 @@
 
 [{InsertPage page=ObjectTagExample}]
 
+
+----
+[Category Documentation]
