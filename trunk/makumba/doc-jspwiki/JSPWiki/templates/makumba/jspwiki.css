@@ -522,7 +522,7 @@ img.outlink {
   min-height:100%;
   float:left;
 }
-#sidemenu .title{
+#sidemenu h1{
   text-align:center;
   background:url('images/sidemenu_title_back.png') 0px 0px repeat-x;
   height:36px;
@@ -531,18 +531,27 @@ img.outlink {
   font-size:17px;
   font-family: Trebuchet MS, Tahoma, Sans;
   font-weight:bold;
+  border:none;
+  padding:0px;
+  margin:0px;
 }
-#sidemenu span {
-  width: 161px;
+#sidemenu ul {
+	margin:0px;
+	padding:0px;
+ 
+}
+#sidemenu ul ul {
+	margin-left:10px;
+}
+#sidemenu li {
   display:block;
   height:35px;
   line-height:35px;
   border-bottom:1px solid black;
-  margin: 0px auto;
+  margin: 0px 10px;
 }
-#sidemenu span.active {
+#sidemenu li.MenuTreeSelected {
   padding-left: 18px;
-  width: 143px;
   background: url('images/sidemenu_selector.png') 2px 12px no-repeat;
 }
 #sidemenu a {
