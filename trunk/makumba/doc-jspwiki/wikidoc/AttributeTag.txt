@@ -47,3 +47,6 @@
 
 [{InsertPage page=AttributeTagExample}]
 
+
+----
+[Category Documentation]

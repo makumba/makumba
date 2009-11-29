@@ -155,3 +155,6 @@
 
 [{InsertPage page=SearchFormTagExample}]
 
+
+----
+[Category Documentation]

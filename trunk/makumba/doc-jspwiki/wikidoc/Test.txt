@@ -1,0 +1,9 @@
+%%someStyle
+
+* special li
+* li
+** lili
+
+%%
+
+%%some [link]%%

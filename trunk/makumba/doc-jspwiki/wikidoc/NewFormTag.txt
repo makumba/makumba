@@ -185,3 +185,6 @@
 
 [{InsertPage page=NewFormTagExample}]
 
+
+----
+[Category Documentation]

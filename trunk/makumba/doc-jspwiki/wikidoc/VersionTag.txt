@@ -15,3 +15,6 @@ This tag has no attributes
 
 [{InsertPage page=VersionTagExample}]
 
+
+----
+[Category Documentation]

@@ -29,3 +29,6 @@
 
 [{InsertPage page=LogoutTagExample}]
 
+
+----
+[Category Documentation]

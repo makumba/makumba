@@ -56,10 +56,42 @@ Here are some links to useful resources and things to read
 |Strategic guidelines (not reinventing sex, query centricity), short overview of the new or planned features that were developed since the 2007 congresses
 |45'
 
+|Principles discussion
+|everyone
+| use web 2.0 paper
+|?
+
+|Web 2.0 input
+|Jasper
+|* How web 2.0 feats are done now (using servlets, iframes,...)
+* What ideas popped up in the thread on ITC@
+* Other ideas gathered in the last years.
+|60' or more
+
+|Web 2.0 CMS / CMSes - workshops
+|cristi
+|presentation of required features, demo of a CMS (who can present that?)
+|30'?
+
 |Status of the documentation / makumba website
 |manu
 |Short history, current status
 |10'
+
+
+|Technology overview
+|manu, Raul, Viktor, Jasper
+|* Adobe Flex
+* Prototype
+* JQuery
+* LINQ
+* JSF 2.0
+* Java FX
+* ...
+|80'
+
+
+
 
 |Recent development
 |manu
@@ -71,36 +103,16 @@ Here are some links to useful resources and things to read
 |Short discussion on how to get funds for mak dev. Brief summary of what worked in the past, ideas for the future and hopefully a plan
 |30'
 
-|Web 2.0 input
-|Jasper
-|* How web 2.0 feats are done now (using servlets, iframes,...)
-* What ideas popped up in the thread on ITC@
-* Other ideas gathered in the last years.
-|60' or more
-
 |Web 2.0 discussion
 |?
 |Discussing web 2.0 features, design, ability to use external components (e.g. OpenID authentication) (goes together with modularity)...
 |?
-
-|Web 2.0 CMS
-|cristi
-|presentation of required features, demo of a CMS (who can present that?)
-|30'?
 
 |Templating, modularity
 |?
 |Discussion/design for templating, and modularity in mak
 |?
 
-|Technology overview
-|manu, Raul, Viktor, Jasper
-|* Adobe Flex
-* Prototype
-* JQuery
-* LINQ
-* ...
-|80'
 
 |Developer tools
 |manu?

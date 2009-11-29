@@ -15,3 +15,6 @@ This tag has no attributes
 
 [{InsertPage page=ResponseTagExample}]
 
+
+----
+[Category Documentation]
