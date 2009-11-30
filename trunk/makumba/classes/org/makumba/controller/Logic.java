@@ -41,6 +41,7 @@ import org.makumba.Attributes;
 import org.makumba.CompositeValidationException;
 import org.makumba.DataDefinition;
 import org.makumba.Database;
+import org.makumba.InvalidValueException;
 import org.makumba.LogicException;
 import org.makumba.LogicInvocationError;
 import org.makumba.LogicNotFoundException;
@@ -978,6 +979,12 @@ public class Logic {
             Throwable g = f.getTargetException();
             if (g instanceof LogicException) {
                 throw (LogicException) g;
+            } else if (g instanceof InvalidValueException) {
+                // pack the exception in a CompositeValidationException, cause that will be treated later on
+                throw new CompositeValidationException((InvalidValueException) g);
+            } else if (g instanceof CompositeValidationException) {
+                // just propagate the exception, will be treated later on
+                throw (CompositeValidationException) g;
             }
             throw new LogicInvocationError(g);
         }
