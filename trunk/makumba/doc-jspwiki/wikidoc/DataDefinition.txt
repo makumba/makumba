@@ -1,0 +1,318 @@
+[{TableOfContents}]
+
+!!!Types, objects, databases
+
+Data definitions describe __data types (or classes)__. They are placed in files contained in directory hierarchies, and the directory name is part of the type name (similar to Java packages). For example the __file company/Employee.mdd__ describes the __type general.Person__. Type names can contain letters, digits, underscores and dashes and cannot contain slashes and dots. Usually, the directories are used to separate organisations and projects.
+
+Current Java implementation finds the data definition files as follows:
+
+* the designated file extension is .mdd (Makumba Data Definition)
+* relative to CLASSPATH (e.g. classes/company/Employee.mdd)
+* in a directory called "__dataDefinitions/__" in the CLASSPATH (e.g. classes/dataDefinitions/company/Employee.mdd)
+
+__Data objects (records)__ are stored in __databases__.
+
+__Data can be copied and/or replicated between different databases__, even between different DB engine types.
+
+[{Box
+
+Replication is not yet implemented, but the design is prepared for it. Copying works.
+}]
+
+!!!Fields
+
+Every data definition file contains __field definitions__, separated by newline.
+
+A field definition looks like:
+[{Code
+
+fieldname= [attributes] fieldtype [parameters] [; description]
+}]
+
+[{Box
+
+Default values are supported internally, but not by the MDD parser
+}]
+
+
+As an implementation guideline, field names tend to stay approximately the same in:
+* HTTP requests
+* Record instances (java.util.Dictionary in the current Java API)
+* Database columns
+* etc
+
+The field description is used by the code generator at interface levels to present that field. It is typically shown at the left of, or somewhere near to, the input control (text box, radio button, chooser, etc) that allows for data input in that field. If a field description is not present, its field name stands for its description by default.
+
+__Comment lines__ can be inserted in the data definition files as follows:
+
+[{Code
+
+# your comment... 
+}]
+
+!!!Default fields
+
+Every datatype has some additional fields by default, as follows:
+
+* __Primary Key field__. When using the Makumba database layer, it consists of two parts [[]DBSV with 8 bits | UID with 24 bits]:
+** Database identifier (DBSV). It is unique (within the webapp) per database. All objects created thru that webapp and in that database get the same value. It is set by property dbsv in the database config file.
+** Object identifier (UID): unique id for the object in the given database.
+
+      This combination ensures that no two objects of one type have the same primary key field. See [how to configure this].
+      The name of the primary key field is the same with the last part of the type name. If another field by that name is defined by the makumba user, this field will be renamed in the database.
+* __Object creation time__ Can be accessed as TS_create.
+* __Last modification time__. Updates whenever the object is changed. The initicial value is TS_create. Can be accessed as TS_modify.
+
+!!!Simple field types
+__int__
+
+A 32-bit integer. For example
+
+[{Code
+
+code shoeSize= int; Shoe size
+}]
+
+If the int can have a limited number of values, it can be described as follows
+
+[{Code
+
+gender = int{ "Male" = 10, "Female" = 20 }
+}]
+
+This will help the presentation layer to present a suitable input control.
+
+[{Box type='fixme' author='manu'
+
+Render html within JSPWiki
+}]
+
+[{Box
+
+"deprecated" can be used in this way to denote a deprecated option:
+userType = int{"type1"=10, "type2"=10,"old"=0 deprecated}
+}]
+
+[{Box
+
+In the present implementation, this type is called "intEnum" internally.
+Negative numbers are supported (e.g. int { "aa"=5, "bb"=2, "cc"=-10}).
+}]
+
+__real__
+
+A real number with double precision with (2-2-52)·21023 as max value and 2-1074 as min value. For example:
+
+[{Code
+
+turnover = real; turnover of the company
+}]
+
+__char__
+
+A char field contains a number of characters. Maximal width must be specified and is limited to 255. (Optionally a minimal number of characters (lesser than max) can be indicated). Both must be positive integers. For example:
+
+[{Code
+
+fieldName= char[maxWidth];
+name= unique char[80];
+}]
+
+unique is a [field attribute], explained below.
+[{Box
+
+Pay close attention to the character set (charset) for encoding the characters. In Java the charset is Unicode, but the JSP/HTML pages have their own encoding settings, as well as the database, etc.
+}]
+
+__boolean__
+
+A boolean, that can take as values true or false. For example:
+[{Code
+
+currentlyEmployed= true; whether this employee is currently employed
+}]
+
+__text__
+
+An unlimited-length string of characters. This type is designed to accommodate large text content. It is implemented with LONGTEXT or its counterparts, depending on the underlying DB engine. The text data-type is ready for accepting data in UTF-8 encoding.
+ 
+[{Code
+
+description=text ; Description of the project
+}]
+
+__binary__
+
+An unlimited-length field designed for binary content. In contrast to the text data type, binary will always be of 8 bit length. It is implemented with LONGTEXT or its counterparts, depending on the underlying DB engine. This type is meant for storing only raw binary data, for storing files along with meta-data like a file name, content type, etc., you should rather use the file data type.
+
+[{Code
+
+signature= binary ; a binary digital signature 
+}]
+
+__date__
+
+A date and/or time.
+
+[{Code
+
+birthdate = date; Date of birth
+arrivalTime = date; Arrival time
+}]
+
+!!!Structural (relational) types
+__ptr__
+
+Pointers define a reference to an object of a certain type. For example
+
+[{Code
+
+manager = ptr company.Employee; The manager of the department
+}]
+
+__set__
+
+Sets define a number of references to multiple objects of a certain type. For example:
+
+[{Code
+
+suppliers= set company.Company; Suppliers of this company
+}]
+
+This type accomodates sets, bags and lists. The set and list constraints (sets have to contain only one element of a certain value and lists have to be ordered) have to be cared for by the programmer. Lists are easy to represent, just having an integer field, for the order.
+
+The type which the set is made of can be defined on the spot:
+
+[{Code
+
+projects = set
+projects->project = ptr company.Project
+projects->timePercentage = int ;percentage assigned
+}]
+
+[{Box
+
+The main difference between sets of external types and internal sets is that when the host object (e.g. Employee.mdd that has the above field "address") is deleted from the database (DB), also all elements of the set (addresses) are deleted automatically, so there is no orphans (addresses) in the DB. Elements (addresses) of an internal set of some host object (Person X) also can't be used in a set of some other host object (Company Y).
+}]
+
+[{Box
+
+This type is known internally as setComplex
+}]
+
+The set can contain enumerated int values :
+
+[{Code
+
+place= set int {"home"=1, "away"=0} ; Home or away 
+}] 
+
+[{Box
+
+This is currently known internally as setintEnum
+}]  
+
+!!!file
+
+A file data-type is a kind-of record containing several fields needed when wanting to store files. These fields are:
+
+* content (binary): the actual binary data of the file.
+* name (char): the file name.
+* originalName (char): the original file name.
+* contentType (char): the MIME content-type of the file.
+* contentLength (int): the content length in byte.
+* imageWidth (int): (only for images) the image width.
+* imageHeight (int): (only for images) the image height.
+
+[{Box
+
+logo = file ; Picture attachment
+}] 
+  
+All fields are automatically set by Makumba, all needed to do is to make a <mak:input> on the field name.
+
+This type should be used in favour of the [binary data type] when you don't want to store only the raw binary data, but also meta-data as in the fields above.
+
+!!!Macro types
+
+A name can be defined for a more complex type and it can be reused in the file. This can be done with a !type directive
+
+[{Code
+
+!type.rank = int{"Neutral"=0, "Very good"=5, "Very bad"=-5}
+
+happyInLife = rank
+}] 
+
+!!!Field attributes
+
+* fixed fields can only set during the record's insertion in the database. The subsequent updates will not update the field
+* not null fields will produce a exception if an attempt is made to insert/update without them being initialized
+* not empty fields will produce a exception if an attempt is made to insert/update an empty string value
+* unique fields have a unique value in the respective object, for the respective type
+
+These attributes are used by makumba in order to perform implicit validation at form submission time, i.e., the fields of submitted forms will automatically be checked for coherence against the defined field attributes.
+
+It is possible to customise the error message that will be displayed in case an implicit field validation fails:
+
+[{Code
+
+login.unique = "This login is already taken, please choose another one"
+surname.notEmpty = "Please fill in your surname"
+age.notNull = "Please fill in your age"
+age.NaN = "Please enter a valid number"
+age.notInt = "Please enter a valid integer"
+amount.notReal = "Please enter a valid real"
+}] 
+
+[{Box
+
+The NaN (Not A Number), notInt (not an integer) and notReal (not a real) error message is part of implicit, type-dependent validation and is performed by makumba automatically, without the need of adding a field attribute.
+}] 
+
+!!!Object title
+[{Box
+
+The object title is used for set and ptr choosers
+}] 
+
+One of the fields is always the object title, and is normally presented differently from other fields in user interface. For example, when you have a field that is a set and you use a mak:input on that field, Makumba will automatically create a list with all the items in the set and it will use the object title to know what field to display. The default is the field called "name" if that exists, otherwise it is the first non-pointer field in the record description. If another field needs to be title, it can be specified like
+
+[{Code
+
+!title=gender
+}] 
+
+[{Box
+
+for the on-the spot types in the current implementation, the following notation works:
+address->!title= street
+}] 
+
+!!!Include mechanism
+
+A record description can include text from one or more files. This is declared as
+
+[{Code
+
+!include=name_of_included_type
+}]  
+
+The included file has the idd extension and is found in a similar way like the data definitions.
+
+The included file is inserted instead of the !include line. There can be more include lines in a record description file. If a field is defined that exists also in the included metadata, the defined field takes precedence.
+
+[{Code
+
+fieldname =
+}]  
+
+If it means that it does not actually exist. This can be used to cancel an included field.
+
+[{Box
+
+Include might be replaced by more advanced concepts such as inheritance and type inclusion (rather than reference in foreign table)
+}]  
+
+----
+[Category Documentation]
