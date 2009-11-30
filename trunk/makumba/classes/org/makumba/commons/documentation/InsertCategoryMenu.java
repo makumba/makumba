@@ -1,7 +1,11 @@
 package org.makumba.commons.documentation;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 
 import com.ecyrd.jspwiki.ReferenceManager;
@@ -80,10 +84,31 @@ public class InsertCategoryMenu extends AbstractReferralPlugin implements WikiPl
             return toBeInserted;
         } else {
             String wikiMarkup = "[{MenuTreePlugin menuPage='" + toBeInserted + "Menu" + "'}]";
-            return context.getEngine().textToHTML(context, wikiMarkup);
+            String html = context.getEngine().textToHTML(context, wikiMarkup);
+            
+            // FIXME make this either a param or a jspwiki.properties param
+            if(toBeInserted.equals("CategoryDocumentation")) {
+                // generate a file that can be used by the API docs
+                // TODO make this configurable
+                File f = new File(new File(".").getAbsolutePath() + "/doc-jspwiki/JSPWiki/api/leftMenu.html");
+                if(!f.exists() || (f.exists() && (new Date(f.lastModified()).before(context.getEngine().getPage(toBeInserted).getLastModified())))) {
+                    try {
+                        f.getParentFile().mkdirs();
+                        f.createNewFile();
+                        FileWriter fw = new FileWriter(f);
+                        fw.write(html);
+                        fw.flush();
+                        fw.close();
+                        
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    
+                }
+            }
+            
+            return html;
         }
-        
-        
 
     }
 }
