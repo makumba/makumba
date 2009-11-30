@@ -12,8 +12,7 @@ import com.ecyrd.jspwiki.plugin.PluginException;
 import com.ecyrd.jspwiki.plugin.WikiPlugin;
 
 /**
- * Plugin that will insert the appropriate menu for the page according to its category<br>
- * TODO caching!!
+ * Plugin that will insert the appropriate menu for the page according to its category, or just display the category<br>
  * 
  * @author Manuel Gay
  * @version $Id: InsertCategoryMenu.java,v 1.1 Nov 27, 2009 9:07:54 AM manu Exp $
@@ -22,6 +21,8 @@ public class InsertCategoryMenu extends AbstractReferralPlugin implements WikiPl
 
     private final static String PARAM_PAGE = "page";
 
+    private final static String PARAM_CURRENTCATEGORY = "showCurrentCategory";
+    
     private final static String[] DEFAULT_CATEGORIES = new String[] { "CategoryMain", "CategoryQuickStart", "CategoryConfiguration", "CategoryUsage",
             "CategoryDocumentation", "CategoryShowcase", "CategoryDownload" };
 
@@ -75,7 +76,14 @@ public class InsertCategoryMenu extends AbstractReferralPlugin implements WikiPl
             return "Page " + page.getName() + " is in none of the categories " + Arrays.toString(categories) + " hence its menu cannot be found.";
         }
         
-        String wikiMarkup = "[{MenuTreePlugin menuPage='" + toBeInserted + "Menu" + "'}]";
-        return context.getEngine().textToHTML(context, wikiMarkup);
+        if(params.get(PARAM_CURRENTCATEGORY) != null && ((String)params.get(PARAM_CURRENTCATEGORY)).equals("true")) {
+            return toBeInserted;
+        } else {
+            String wikiMarkup = "[{MenuTreePlugin menuPage='" + toBeInserted + "Menu" + "'}]";
+            return context.getEngine().textToHTML(context, wikiMarkup);
+        }
+        
+        
+
     }
 }
