@@ -137,30 +137,31 @@ public class Logic {
             String defa = "";
             String maxKey = "";
 
-            // FIXME: maybe unify code with public static String findPackageName(String)            
+            // FIXME: maybe unify code with public static String findPackageName(String)
             if (Configuration.getLogicPackages() != null) {
-                msg += "\nfollowing rules from " + Configuration.MAKUMBA_CONF + " found at:\n\t" + Configuration.getApplicationConfigurationSource();
+                msg += "\nfollowing rules from " + Configuration.MAKUMBA_CONF + " found at:\n\t"
+                        + Configuration.getApplicationConfigurationSource();
                 if (Configuration.getLogicPackages() != null) {
-                for (String k : Configuration.getLogicPackages().keySet()) {
-                    if (k.equals("default") && maxKey.length() == 0) {
-                        defa = Configuration.getLogicPackages().get(k);
-                        continue;
-                    }
-                    if (path.startsWith(k) && k.length() > maxKey.length()) {
-                        maxKey = k;
-                        className = Configuration.getLogicPackages().get(k);
-                        if (className.length() > 0 && className.lastIndexOf(".") != className.length() - 1) {
-                            className += ".";
+                    for (String k : Configuration.getLogicPackages().keySet()) {
+                        if (k.equals("default") && maxKey.length() == 0) {
+                            defa = Configuration.getLogicPackages().get(k);
+                            continue;
+                        }
+                        if (path.startsWith(k) && k.length() > maxKey.length()) {
+                            maxKey = k;
+                            className = Configuration.getLogicPackages().get(k);
+                            if (className.length() > 0 && className.lastIndexOf(".") != className.length() - 1) {
+                                className += ".";
+                            }
                         }
                     }
-                }
                 }
                 if (maxKey.length() == 0 && defa.length() > 0) {
                     msg += "\nfollowing default rule from " + Configuration.MAKUMBA_CONF;
                     className = defa + ".";
                 } else if (maxKey.length() > 0) {
-                    msg += "\nfollowing rule based on longest matching key from " + Configuration.MAKUMBA_CONF + "\n\tkey is: \""
-                            + maxKey + "\"";
+                    msg += "\nfollowing rule based on longest matching key from " + Configuration.MAKUMBA_CONF
+                            + "\n\tkey is: \"" + maxKey + "\"";
                 }
                 path = path.substring(maxKey.length());
             } else {
@@ -360,6 +361,7 @@ public class Logic {
     }
 
     static Class<?>[] argDbOld = { Attributes.class, Database.class };
+
     static Class<?>[] argDb = { Attributes.class, Transaction.class };
 
     public static Object getAttribute(Object controller, String attname, Attributes a, String db,
@@ -382,8 +384,8 @@ public class Logic {
                     "The use of Database is deprecated. Use Transaction instead.");
             }
         }
-        //This doesn't seem to work. 
-        //m = getMethod("find" + firstUpper(attname), argDb, argDbOld, controller);
+        // This doesn't seem to work.
+        // m = getMethod("find" + firstUpper(attname), argDb, argDbOld, controller);
         Transaction d = dbcp.getConnectionTo(db);
         Object[] args = { a, d };
         try {
@@ -503,8 +505,8 @@ public class Logic {
         param.put("x", p);
         for (DataDefinition.QueryFragmentFunction g : dd.getSessionFunctions()) {
             StringBuffer fc = new StringBuffer();
-            fc.append("SELECT x.").append(g.getName()).append("() AS col1 FROM ").append(type).append(
-                " x WHERE x=").append(qap.getParameterSyntax()).append("x");
+            fc.append("SELECT x.").append(g.getName()).append("() AS col1 FROM ").append(type).append(" x WHERE x=").append(
+                qap.getParameterSyntax()).append("x");
             Object result;
             try {
                 result = connection.executeQuery(fc.toString(), param).elementAt(0).get("col1");
@@ -539,9 +541,11 @@ public class Logic {
     }
 
     static Class<?>[] editArgsOld = { Pointer.class, Dictionary.class, Attributes.class, Database.class };
+
     static Class<?>[] editArgs = { Pointer.class, Dictionary.class, Attributes.class, Transaction.class };
 
     static Class<?>[] opArgsOld = { Dictionary.class, Attributes.class, Database.class };
+
     static Class<?>[] opArgs = { Dictionary.class, Attributes.class, Transaction.class };
 
     static Class<?>[] noClassArgs = {};
@@ -581,22 +585,23 @@ public class Logic {
             return null;
         }
     }
+
     public static Method getMethod(String name, Class<?>[] args, Class<?>[] argsOld, Object controller) {
         /*
          * This version of getMethod was introduced to look up methods for which an argument type changed/deprecated
-         * (More specifically: org.makumba.Database got replaced by org.makumba.Transaction), but to allow
-         * backward compatibility at the same time.
+         * (More specifically: org.makumba.Database got replaced by org.makumba.Transaction), but to allow backward
+         * compatibility at the same time.
          */
         Method m = getMethod(name, args, controller);
-        if (m==null) {
+        if (m == null) {
             m = getMethod(name, argsOld, controller);
             java.util.logging.Logger.getLogger("org.makumba.controller").fine(
-            "In " + controller.getClass().getName() + "." + name + ": The use of Database is deprecated. Use Transaction instead.");
+                "In " + controller.getClass().getName() + "." + name
+                        + ": The use of Database is deprecated. Use Transaction instead.");
         }
         return m;
     }
-    
-    
+
     public static void doInit(String path, Attributes a, String dbName, DbConnectionProvider dbcp)
             throws LogicException {
         Object o = getAuthorizationConstraint(path);
@@ -612,18 +617,19 @@ public class Logic {
             // we have no FROM and WHERE section, this leads in a hard-to-analyze query
             // so we try a parameter
             String q1;
-            
+
             String constraintQuery = constraint.rule;
             if (constraint.rule.startsWith("actor(")) {
                 // try to fetch the type from the actor
-                constraintQuery = "select " + constraint.rule + " from " + constraint.rule.substring(6, constraint.rule.indexOf(")"));
+                constraintQuery = "select " + constraint.rule + " from "
+                        + constraint.rule.substring(6, constraint.rule.indexOf(")"));
             }
             try {
                 q1 = qap.inlineFunctions(constraintQuery).trim();
-            } catch(RuntimeWrappedException rwe) {
-                if(rwe.getCause() instanceof MakumbaError) {
+            } catch (RuntimeWrappedException rwe) {
+                if (rwe.getCause() instanceof MakumbaError) {
                     throw new ProgrammerError("Error while checking authorization constraint " + constraint.key
-                        + " during inlining of query " + constraint.rule + " " + rwe.getMessage());
+                            + " during inlining of query " + constraint.rule + " " + rwe.getMessage());
                 } else {
                     throw rwe;
                 }
@@ -678,7 +684,7 @@ public class Logic {
         }
 
         Transaction db = dbcp.getConnectionTo(dbName);
-        Method init = getMethod("checkAttributes", argDb,argDbOld, controller);
+        Method init = getMethod("checkAttributes", argDb, argDbOld, controller);
         Method oldInit = getMethod("requiredAttributes", noClassArgs, controller);
         if (init == null && oldInit == null) {
             return;
@@ -744,7 +750,7 @@ public class Logic {
             if (transactionProviderClass == null) {
                 return TransactionProvider.getInstance();
             }
-            
+
             Method getInstance = Class.forName(transactionProviderClass).getDeclaredMethod("getInstance", null);
             return (TransactionProvider) getInstance.invoke(null, null);
 
@@ -770,12 +776,11 @@ public class Logic {
         op = getMethod(opName, opArgs, opArgsOld, controller);
         if (op == null) {
             return null;
-            /*
-            throw new ProgrammerError("Class " + controller.getClass().getName() + " (" + getControllerFile(controller)
-                    + ")\n" + "does not define the method\n" + HANDLER_METHOD_HEAD + opName
-                    + "(Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n"
-                    + "The method is declared as a makumba form handler, so it has to be defined");
-            */
+            // throw new ProgrammerError("Class " + controller.getClass().getName() + " (" +
+            // getControllerFile(controller)
+            // + ")\n" + "does not define the method\n" + HANDLER_METHOD_HEAD + opName
+            // + "(Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n"
+            // + "The method is declared as a makumba form handler, so it has to be defined");
         }
 
         try {
@@ -802,20 +807,18 @@ public class Logic {
         Object[] editArg = { p, data, a, db };
         Method edit = null;
         Method afterEdit = null;
-        
-        
+
         if (!(controller instanceof LogicNotFoundException)) {
             edit = getMethod(handlerName, editArgs, editArgsOld, controller);
             afterEdit = getMethod(afterHandlerName, editArgs, editArgsOld, controller);
-            /*if (edit == null) {
-                throw new ProgrammerError("Class " + controller.getClass().getName() + " ("
-                        + getControllerFile(controller) + ")\n" + "does not define the method\n" + HANDLER_METHOD_HEAD
-                        + handlerName + "(Pointer p, Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END
-                        + "\n" + "so it does not allow EDIT operations on the type " + typename
-                        + "\nDefine that method (even with an empty body) to allow such operations.");
-            }*/
+            // if (edit == null) {
+            // throw new ProgrammerError("Class " + controller.getClass().getName() + " ("
+            // + getControllerFile(controller) + ")\n" + "does not define the method\n" + HANDLER_METHOD_HEAD
+            // + handlerName + "(Pointer p, Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END
+            // + "\n" + "so it does not allow EDIT operations on the type " + typename
+            // + "\nDefine that method (even with an empty body) to allow such operations.");
+            // }
         }
-        
 
         try {
             if (edit != null) {
@@ -839,6 +842,7 @@ public class Logic {
     }
 
     static Class<?>[] deleteArgsOld = { Pointer.class, Attributes.class, Database.class };
+
     static Class<?>[] deleteArgs = { Pointer.class, Attributes.class, Transaction.class };
 
     public static Pointer doDelete(Object controller, String typename, Pointer p, Attributes a, String dbName,
@@ -849,21 +853,19 @@ public class Logic {
         Method afterDelete = null;
         String upper = upperCase(typename);
 
-        
         if (!(controller instanceof LogicNotFoundException)) {
             delete = getMethod("on_delete" + upper, deleteArgs, deleteArgsOld, controller);
             afterDelete = getMethod("after_delete" + upper, deleteArgs, deleteArgsOld, controller);
-            /*if (delete == null) {
-                throw new ProgrammerError("Class " + controller.getClass().getName() + " ("
-                        + getControllerFile(controller) + ")\n" + "does not define any of the methods\n"
-                        + HANDLER_METHOD_HEAD + "on_delete" + upper + "(Pointer p, Attributes a, Database db)"
-                        + HANDLER_METHOD_END + "\n" + HANDLER_METHOD_HEAD + "after_delete" + upper
-                        + "(Pointer p, Attributes a, Database db)" + HANDLER_METHOD_END + "\n"
-                        + "so it does not allow DELETE operations on the type " + typename
-                        + "\nDefine that method (even with an empty body) to allow such operations.");
-            }*/
+            // if (delete == null) {
+            // throw new ProgrammerError("Class " + controller.getClass().getName() + " ("
+            // + getControllerFile(controller) + ")\n" + "does not define any of the methods\n"
+            // + HANDLER_METHOD_HEAD + "on_delete" + upper + "(Pointer p, Attributes a, Database db)"
+            // + HANDLER_METHOD_END + "\n" + HANDLER_METHOD_HEAD + "after_delete" + upper
+            // + "(Pointer p, Attributes a, Database db)" + HANDLER_METHOD_END + "\n"
+            // + "so it does not allow DELETE operations on the type " + typename
+            // + "\nDefine that method (even with an empty body) to allow such operations.");
+            // }
         }
-        
 
         try {
             if (delete != null) {
@@ -897,26 +899,25 @@ public class Logic {
         String field = typename.substring(n + 2);
         typename = typename.substring(0, n);
 
-        
         if (!(controller instanceof LogicNotFoundException)) {
             on = getMethod(handlerName, editArgs, editArgsOld, controller);
             after = getMethod(afterHandlerName, editArgs, editArgsOld, controller);
 
-            /*if (on == null && after == null) {
-                throw new ProgrammerError("Class " + controller.getClass().getName() + " ("
-                        + getControllerFile(controller) + ")\n" + "does not define neither of the methods\n"
-                        + HANDLER_METHOD_HEAD + handlerName + "(Pointer p, Dictionary d, Attributes a, Database db)"
-                        + HANDLER_METHOD_END + "\n" + HANDLER_METHOD_HEAD + afterHandlerName
-                        + "(Pointer p, Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n"
-                        + "so it does not allow ADD operations on the type " + typename + ", field " + field
-                        + "\nDefine any of the methods (even with an empty body) to allow such operations.");
-            }*/
+            // if (on == null && after == null) {
+            // throw new ProgrammerError("Class " + controller.getClass().getName() + " ("
+            // + getControllerFile(controller) + ")\n" + "does not define neither of the methods\n"
+            // + HANDLER_METHOD_HEAD + handlerName + "(Pointer p, Dictionary d, Attributes a, Database db)"
+            // + HANDLER_METHOD_END + "\n" + HANDLER_METHOD_HEAD + afterHandlerName
+            // + "(Pointer p, Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n"
+            // + "so it does not allow ADD operations on the type " + typename + ", field " + field
+            // + "\nDefine any of the methods (even with an empty body) to allow such operations.");
+            // }
         }
-        
+
         try {
             if (on != null) {
                 on.invoke(controller, addArg);
-             }
+            }
             addArg[0] = db.insert(p, field, data);
             if (after != null) {
                 after.invoke(controller, addArg);
@@ -935,6 +936,7 @@ public class Logic {
     }
 
     static Class<?>[] newArgsOld = { Dictionary.class, Attributes.class, Database.class };
+
     static Class<?>[] newArgs = { Dictionary.class, Attributes.class, Transaction.class };
 
     public static Pointer doNew(Object controller, String handlerName, String afterHandlerName, String typename,
@@ -945,21 +947,21 @@ public class Logic {
         Object[] afterArgs = { null, data, a, db };
         Method on = null;
         Method after = null;
-        
+
         if (!(controller instanceof LogicNotFoundException)) {
             on = getMethod(handlerName, newArgs, newArgsOld, controller);
             after = getMethod(afterHandlerName, editArgs, editArgsOld, controller);
-            /*if (on == null && after == null) {
-                throw new ProgrammerError("Class " + controller.getClass().getName() + " ("
-                        + getControllerFile(controller) + ")\n" + "does not define neither of the methods\n"
-                        + HANDLER_METHOD_HEAD + handlerName + "(Dictionary d, Attributes a, Database db)"
-                        + HANDLER_METHOD_END + "\n" + HANDLER_METHOD_HEAD + afterHandlerName
-                        + "(Pointer p, Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n"
-                        + "so it does not allow NEW operations on the type " + typename
-                        + ".\nDefine any of the methods (even with an empty body) to allow such operations.");
-            }*/
+            // if (on == null && after == null) {
+            // throw new ProgrammerError("Class " + controller.getClass().getName() + " ("
+            // + getControllerFile(controller) + ")\n" + "does not define neither of the methods\n"
+            // + HANDLER_METHOD_HEAD + handlerName + "(Dictionary d, Attributes a, Database db)"
+            // + HANDLER_METHOD_END + "\n" + HANDLER_METHOD_HEAD + afterHandlerName
+            // + "(Pointer p, Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n"
+            // + "so it does not allow NEW operations on the type " + typename
+            // + ".\nDefine any of the methods (even with an empty body) to allow such operations.");
+            // }
         }
-        
+
         try {
             if (on != null) {
                 on.invoke(controller, onArgs);
