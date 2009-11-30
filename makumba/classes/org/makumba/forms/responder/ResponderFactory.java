@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.makumba.AttributeNotFoundException;
-import org.makumba.providers.Configuration;
 import org.makumba.CompositeValidationException;
 import org.makumba.InvalidValueException;
 import org.makumba.LogicException;
@@ -25,7 +24,9 @@ import org.makumba.Transaction;
 import org.makumba.commons.DbConnectionProvider;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.attributes.RequestAttributes;
-import org.makumba.controller.http.ControllerFilter;
+import org.makumba.providers.Configuration;
+
+import test.tags.FormsOQLTest;
 
 /**
  * This factory handles the creation, caching and retrieval of Responder objects.
@@ -412,11 +413,17 @@ public class ResponderFactory {
                 // we do nothing, cause we will treat that from the ControllerFilter.doFilter
                 return e;
             } catch (LogicException e) {
-                java.util.logging.Logger.getLogger("org.makumba.logic.error").log(Level.INFO, "error", e);
+                java.util.logging.Logger.getLogger("org.makumba.logic.error").log(Level.INFO, "Caught a logic exception on form response.", e);
                 message = Responder.errorMessage(e);
                 formattedMessage = Responder.errorMessageFormatter(message);
+
+                // if we have a logic exception, and we are in an inner form, we need to set the message
                 req.setAttribute(responder.resultAttribute, Pointer.Null);
                 req.setAttribute(resultNamePrefix + suffix, Pointer.Null);
+                req.removeAttribute(MAKUMBA_SUCCESSFUL_RESPONSE);
+                req.setAttribute(RESPONSE_STRING_NAME, message);
+                req.setAttribute(RESPONSE_FORMATTED_STRING_NAME, formattedMessage);
+                return e;
             } catch (Throwable t) {
                 // all included error types should be considered here
                 throw new RuntimeWrappedException(t);
