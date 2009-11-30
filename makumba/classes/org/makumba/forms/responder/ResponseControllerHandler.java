@@ -22,6 +22,9 @@ import org.makumba.commons.ControllerHandler;
 import org.makumba.commons.ServletObjects;
 import org.makumba.commons.StringUtils;
 
+/**
+ * @version $Id: ResponseControllerHandler.java,v 1.1 Nov 30, 2009 3:02:45 AM rudi Exp $
+ */
 public class ResponseControllerHandler extends ControllerHandler {
 
     public static final String MAKUMBA_FORM_VALIDATION_ERRORS = "__makumba__formValidationErrors__";
@@ -29,7 +32,7 @@ public class ResponseControllerHandler extends ControllerHandler {
     public static final String MAKUMBA_FORM_RELOAD = "__makumba__formReload__";
 
     public static final String MAKUMBA_FORM_RELOAD_PARAMS = "__makumba__formReload__parameters__";
-    
+
     private ResponderFactory factory = ResponderFactory.getInstance();
 
     final Logger logger = java.util.logging.Logger.getLogger("org.makumba.controller");
@@ -51,17 +54,16 @@ public class ResponseControllerHandler extends ControllerHandler {
             // Check if we shall reload the form page
             logger.fine("Caught a CompositeValidationException, reloading form page: "
                     + responder.getReloadFormOnError());
-            
+
             final HttpServletRequest httpServletRequest = (HttpServletRequest) req;
             final String absoluteAction = httpServletRequest.getRequestURI();
             final boolean shallReload = shallReload(responder.getReloadFormOnError(), responder.getAction(),
-            absoluteAction, responder.getOriginatingPageName());
+                absoluteAction, responder.getOriginatingPageName());
             logger.fine("Form submission failed, operation: " + responder.operation + ", reloadForm: "
-            + responder.getReloadFormOnError() + ", will reload: " + shallReload);
-            
+                    + responder.getReloadFormOnError() + ", will reload: " + shallReload);
 
             if (shallReload) {
-                
+
                 logger.fine("CompositeValidationException: annotating form: " + responder.getShowFormAnnotated());
 
                 if (responder.getShowFormAnnotated()) {
@@ -85,47 +87,46 @@ public class ResponseControllerHandler extends ControllerHandler {
             } else { // we do not change the target page
                 message = v.toString();
             }
-            
+
             req.setAttribute(ResponderFactory.RESPONSE_STRING_NAME, message);
             req.setAttribute(ResponderFactory.RESPONSE_FORMATTED_STRING_NAME, Responder.errorMessageFormatter(message));
 
-            
             // now we redirect to the original page
-           
+
             if (shallReload) {
-                
+
                 // store the response attributes in the session, to be able to retrieve it later in RequestAttributes
                 HttpSession session = httpServletRequest.getSession();
-           
+
                 // strip the query string, so that we can re-build the suffix in the requestAttributes later on
                 String originatingPageName = responder.getOriginatingPageName();
                 int k = originatingPageName.indexOf("?");
-                if(k > -1) {
+                if (k > -1) {
                     originatingPageName = originatingPageName.substring(0, k);
                 }
-                
+
                 final String suffix = "_" + originatingPageName;
                 String[] attributes = ResponderFactory.RESPONSE_ATTRIBUTE_NAMES;
                 attributes = (String[]) ArrayUtils.add(attributes, MAKUMBA_FORM_VALIDATION_ERRORS);
                 attributes = (String[]) ArrayUtils.add(attributes, MAKUMBA_FORM_RELOAD);
-                
+
                 for (String attr : attributes) {
                     session.setAttribute(attr + suffix, req.getAttribute(attr));
                     logger.fine("Setting '" + attr + suffix + "' value: '" + req.getAttribute(attr) + "'.");
                 }
-                
+
                 // we also need to store the parameters, i.e. what was already filled in the form
                 Map<Object, Object> paramMap = new HashMap<Object, Object>();
                 paramMap.putAll(req.getParameterMap());
                 paramMap.remove(Responder.responderName);
-                
+
                 session.setAttribute(MAKUMBA_FORM_RELOAD_PARAMS + suffix, paramMap);
                 // redirecting
-                
+
                 logger.fine("Sending redirect from '" + httpServletRequest.getRequestURI() + "' to '"
-                + responder.getOriginatingPageName() + "'.");
+                        + responder.getOriginatingPageName() + "'.");
                 ((HttpServletResponse) resp).sendRedirect(responder.getOriginatingPageName());
-            
+
             }
 
         }
