@@ -91,7 +91,7 @@ public class InsertCategoryMenu extends AbstractReferralPlugin implements WikiPl
                 // generate a file that can be used by the API docs
                 // TODO make this configurable
                 File f = new File(new File(".").getAbsolutePath() + "/doc-jspwiki/JSPWiki/api/leftMenu.html");
-                if(!f.exists() || (f.exists() && (new Date(f.lastModified()).before(context.getEngine().getPage(toBeInserted).getLastModified())))) {
+                if(!f.exists() || (f.exists() && (new Date(f.lastModified()).before(context.getEngine().getPage(toBeInserted + "Menu").getLastModified())))) {
                     try {
                         f.getParentFile().mkdirs();
                         f.createNewFile();
