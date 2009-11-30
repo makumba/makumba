@@ -1,8 +1,0 @@
-[{Box label='Fixme (manu)'
-
-Describe error handling mechanism: error pages (customizable, link to conf) and error messages
-}]
-
-
-----
-[Category Documentation]
