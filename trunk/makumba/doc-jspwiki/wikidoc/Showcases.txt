@@ -59,3 +59,5 @@ A collection of famous antique maps.
 
 [{Image src='Showcases/maps_t.jpg' link='Showcases/maps.jpg'}] 
 
+----
+[Category Showcase]

@@ -1,15 +1,18 @@
-!Introduction
+!!!Introduction
 
 One of the most common operations in database-driven websites is to display information to the user. Makumba provides a query-based approach to this through its [mak:object|MakumbaObject] and [mak:list|MakumbaList] tags.
 
-!Displaying data through queries
+!!!Displaying data through queries
 
-Both [mak:object|MakumbaObject] and [mak:list|MakumbaList] use the same general principles for displaying data. [mak:object|MakumbaObject] is meant to handle only one object, while [mak:list|MakumbaList] handles multiple objects. In the following introductionnary examples, we will use [mak:object|MakumbaObject] in order to explain the general mechanism.
+Both [<mak:object>|ObjectTag] and [<mak:list>|ListTag] use the same general principles for displaying data. [<mak:object>|ObjectTag] is meant to handle only one object, while [<mak:list>|ListTag] handles multiple objects. In the following introductory examples, we will use [<mak:object>|ObjectTag] in order to explain the general mechanism.
 
 Let's say that we want to ...
 
-!Attributes
+!!!Attributes
 
 Deprecated. Explain parameters, pointers, $ and stuff with JSTL. Lots of JSTL here.
 
-!Makumba EL functions
+!!!Makumba EL functions
+
+----
+[Category Usage]
