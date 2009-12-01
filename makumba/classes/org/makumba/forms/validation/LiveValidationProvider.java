@@ -57,27 +57,34 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
         if (fieldDefinition.isNotNull() && !fieldDefinition.isDateType()) {
             // FIXME: not-null check for dates needed
             // FIXME: fix for checkboxes (and radio buttons?) needed?
-            validations.append(getValidationLine(inputVarName, "Validate.Presence", fieldDefinition.getNotNullErrorMessage() != null ? fieldDefinition.getNotNullErrorMessage() : FieldDefinition.ERROR_NOT_NULL));
+            validations.append(getValidationLine(inputVarName, "Validate.Presence",
+                fieldDefinition.getNotNullErrorMessage() != null ? fieldDefinition.getNotNullErrorMessage()
+                        : FieldDefinition.ERROR_NOT_NULL));
         } else if (fieldDefinition.isNotEmpty()) { // add a length validation, minimum length 1
-            validations.append(getValidationLine(inputVarName, "Validate.Length", fieldDefinition.getNotEmptyErrorMessage() != null ? fieldDefinition.getNotEmptyErrorMessage() : FieldDefinition.ERROR_NOT_EMPTY,
-                getRangeLimits("1", "?")));
+            validations.append(getValidationLine(inputVarName, "Validate.Length",
+                fieldDefinition.getNotEmptyErrorMessage() != null ? fieldDefinition.getNotEmptyErrorMessage()
+                        : FieldDefinition.ERROR_NOT_EMPTY, getRangeLimits("1", "?")));
         }
 
         if (fieldDefinition.isIntegerType()) {
-            validations.append(getValidationLine(inputVarName, "Validate.Numericality", fieldDefinition.getNotIntErrorMessage() != null ? fieldDefinition.getNotIntErrorMessage() : FieldEditor.ERROR_NO_INT,
-                "onlyInteger: true,"));
+            validations.append(getValidationLine(inputVarName, "Validate.Numericality",
+                fieldDefinition.getNotIntErrorMessage() != null ? fieldDefinition.getNotIntErrorMessage()
+                        : FieldEditor.ERROR_NO_INT, "onlyInteger: true,"));
         } else if (fieldDefinition.isRealType()) {
-            validations.append(getValidationLine(inputVarName, "Validate.Numericality", fieldDefinition.getNotRealErrorMessage() != null ? fieldDefinition.getNotRealErrorMessage() : FieldEditor.ERROR_NO_REAL));
+            validations.append(getValidationLine(inputVarName, "Validate.Numericality",
+                fieldDefinition.getNotRealErrorMessage() != null ? fieldDefinition.getNotRealErrorMessage()
+                        : FieldEditor.ERROR_NO_REAL));
         }
-        
+
         if (validationRules != null) {
             addValidationRules(formIdentifier, validationRules, validations, inputVarName);
         }
-        
+
         if (fieldDefinition.isUnique() && !fieldDefinition.isDateType()) {
-            validations.append(getValidationLine(inputVarName, "MakumbaValidate.Uniqueness", fieldDefinition.getNotUniqueErrorMessage() != null ? fieldDefinition.getNotUniqueErrorMessage() :
-                FieldDefinition.ERROR_NOT_UNIQUE, "table: \"" + fieldDefinition.getDataDefinition().getName() + "\", "
-                        + "field: \"" + fieldDefinition.getName() + "\", "));
+            validations.append(getValidationLine(inputVarName, "MakumbaValidate.Uniqueness",
+                fieldDefinition.getNotUniqueErrorMessage() != null ? fieldDefinition.getNotUniqueErrorMessage()
+                        : FieldDefinition.ERROR_NOT_UNIQUE, "table: \"" + fieldDefinition.getDataDefinition().getName()
+                        + "\", " + "field: \"" + fieldDefinition.getName() + "\", "));
         }
 
         if (validations.length() > 0) {
@@ -91,11 +98,10 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
 
     protected void addValidationRules(String formIdentifier, Collection<ValidationRule> validationRules,
             StringBuffer validations, String inputVarName) {
-        
+
         for (ValidationRule validationRule : validationRules) {
             ValidationRule rule = validationRule;
-            
-            
+
             if (rule instanceof StringLengthValidationRule) {
                 validations.append(getValidationLine(inputVarName, "Validate.Length", rule,
                     getRangeLimits((RangeValidationRule) rule)));
@@ -125,8 +131,8 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
                 } else if (c.getFieldDefinition().isStringType()) {
                     if (c.getFunctionName() != null && c.getFunctionName().length() > 0) {
                         arguments += "functionToApply: \"" + c.getFunctionName() + "\", ";
-                        validations.append(getValidationLine(inputVarName, "MakumbaValidate.StringComparison",
-                            rule, arguments));
+                        validations.append(getValidationLine(inputVarName, "MakumbaValidate.StringComparison", rule,
+                            arguments));
                     }
                 }
             }
@@ -183,7 +189,8 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
         return getValidationLine(inputVarName, validationType, failureMessage, "");
     }
 
-    protected String getValidationLine(String inputVarName, String validationType, String failureMessage, String arguments) {
+    protected String getValidationLine(String inputVarName, String validationType, String failureMessage,
+            String arguments) {
         return inputVarName + ".add( " + validationType + " , { " + arguments + " failureMessage: \"" + failureMessage
                 + "\" } );\n";
     }
