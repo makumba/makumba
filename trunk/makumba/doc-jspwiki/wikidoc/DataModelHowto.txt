@@ -143,13 +143,13 @@ alter#=true
 
 will allow Makumba to alter all the types in the database.
 
-[{Warning
+[{Box type='warning'
 
 Make sure you allow Makumba to modify a type after creating or updating it, or these changes won't reflect in the database and you will get an error.
 }]
 
 
-[{Note
+[{Box
 
 Changes in the MDD structure require a webapp restart in order to reflect in the database.
 }]
@@ -161,10 +161,8 @@ When using the Hibernate database layer, the parameter makumba.schemaUpdate=true
 Makumba generates table and field names in a specific manner:
 * company.Employee will be kept in the table company_Employee_
 * the primitive field company.Employee#name will be called name_ in the database
-* the internal set company.Employee#projects will be hold in the table company_Employee__projects_
-* the external set company.Company#suppliers will be hold in the table company_Company_ (since it is a set of companies) and the intermediary table general_Company__suppliers_ will hold the references to its members
-
-FIXME: __ is interpreted as bold!
+* the internal set company.Employee#projects will be hold in the table company_Employee~_~_projects_
+* the external set company.Company#suppliers will be hold in the table company_Company_ (since it is a set of companies) and the intermediary table general_Company~_~_suppliers_ will hold the references to its members
 
 This mechanism can be modified to some extent by using a number of parameters in the data source configuration in Makumba.conf:
 * company.Company = company means that Makumba will look for the type company.Company in the database table company instead of company_Company_
