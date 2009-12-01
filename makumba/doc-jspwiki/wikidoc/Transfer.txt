@@ -2,15 +2,38 @@
 
 [{Table
 
-||Who||Old page||New page
-|Raul|[http://10.42.43.10:8888/configuration/webapp.html]|[Makumba web-app configuration|WebappConfiguration]
-|Rudi|[http://10.42.43.10:8888/configuration/configuration.html]|[Makumba Configuration|MakumbaConfiguration]
-|Gwen|[http://10.42.43.10:8888/doc/datadef.html]|[Data definitions|DataDefinition]
-|Viktor|[http://10.42.43.10:8888/doc/valrules.html]|[Validation rules|ValidationRules]
-|^|[http://10.42.43.10:8888/manifesto.html]|[MakumbaManifesto]
-|^|[http://10.42.43.10:8888/usage/index.html]|[Usage]
-|^|[http://10.42.43.10:8888/usage/list.html]|[List]
-|^|[http://10.42.43.10:8888/doc/taglib/index.html]|[Taglib]
-|Cristi|[http://10.42.43.10:8888/doc/querylang.html]|[Query language|QueryLanguages]
+||Status||Who||Old page||New page|TODO
+|CheckMe|Raul|[http://localhost:8888/quickstart.html]|[QuickStart]|Insert images
+|DoMe|?|[http://localhost:8888/configuration/index.html]|[Configuration]
+|CheckMe|Raul|[http://localhost:8888/configuration/webapp.html]|[Makumba web-app configuration|WebappConfiguration]
+|CheckMe|Rudi|[http://localhost:8888/configuration/configuration.html]|[Makumba Configuration|MakumbaConfiguration]
+|DoMe|?|[http://localhost:8888/configuration/libraries.html]|[Libraries]
+|CheckMe|Viktor|[http://localhost:8888/usage/index.html]|[Usage]
+|CheckMe|Viktor|[http://localhost:8888/manifesto.html]|[MakumbaManifesto]
+|DoMe|?|[http://localhost:8888/usage/model.html]|[DataModelHowto]
+
+|CheckMe|Viktor|[http://localhost:8888/usage/list.html]|[DisplayingDataHowto]
+|DoMe|?|[http://localhost:8888/usage/forms.html]|[Creating and editing data|CreatingEditingHowto]
+|DocumentMe|?|[http://localhost:8888/usage/multiple.html]|[Multiple forms and lists|MultipleFormsHowto]
+|DocumentMe|?|[http://localhost:8888/usage/advanced.html]|[Advanced features|AdvancedFeaturesHowto]
+|DocumentMe|?|[http://localhost:8888/usage/search.html]|[Search forms|SearchFormsHowto]
+|DocumentMe|?|[http://localhost:8888/usage/mddfunct.html]|[MDD functions|MDDFunctionsHowto]
+|DocumentMe|?|[http://localhost:8888/usage/auth.html]|[Authentication and authorisation|AuthenticationAuthorizationHowto]
+|DocumentMe|?|[http://localhost:8888/usage/structure.html]|[Layout and navigation|LayoutHowto]
+|DoMe|?|[http://localhost:8888/doc/index.html]|[Documentation]
+|CheckMe|Gwen|[http://1 localhost:8888/doc/datadef.html]|[Data definitions|DataDefinition]
+|CheckMe|Viktor|[http://localhost 0:8888/doc/valrules.html]|[Validation rules|ValidationRules]
+|CheckMe|Cristi|[http://localhost:8888/doc/querylang.html]|[Query language|QueryLanguages]
+|CheckMe|Cristi|[http://localhost:8888/doc/queryfrag.html]|[QueryFragments]
+|CheckMe|Viktor|[http://localhost:8888/doc/taglib/index.html]|[Taglib]
+|CheckMe|Rudi|[http://localhost:8888/doc/controller/index.html]|[Controller]
+|CheckMe|Rudi|[http://localhost:8888/doc/controller/authentication.html]|[Authentication]
+|CheckMe|Rudi|[http://localhost:8888/doc/controller/authorization.html]|[Authorisation]
+|CheckMe|Rudi|[http://localhost:8888/doc/controller/forms.html]|[FormSubmissionHandling]
+|CheckMe|Rudi|[http://localhost:8888/doc/controller/businessLogicClasses.html]|[JavaBusinessLogic]
+|CheckMe|Rudi|[http://localhost:8888/doc/controller/error.html]|[ErrorHandling]
+|CheckMe|Rudi|[http://localhost:8888/doc/controller/attributes.html]|[MakumbaAttributes]
+|DoMe|?|[http://localhost:8888/showcases.html]|[Showcases]
+|CheckMe|Manu|[http://localhost:8888/download.html]|[Download]
 
 }]

@@ -1,6 +1,6 @@
-!!! [Usage]
+!!! Usage
 
-* [Overview]
+* [Overview|Usage]
 * [Makumba manifesto|MakumbaManifesto]
 * [Defining the data model|DataModelHowto]
 * [Displaying data|DisplayingDataHowto]
