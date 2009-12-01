@@ -25,9 +25,9 @@ This page will soon reflect the power of this framework!
 ||in progress
 
 |copy all the pages from [http://lisbon.best.eu.org:8888/] into the wiki (new.makumba.org is outdated since forrest does not build most of the doc there), __except__ the tag documentation that will be generated
-|EVERYONE
-|we don't have replacements yet for the forrest <note> and <code> elements, so we need to find something here
-||not started
+|EVERYONE - details on the tasks on the [Transfer] page.
+|we don't have replacements yet for the forrest <note> and <code> elements, so we need to find something here. We need a template for warning as well.
+||started
 
 |work on the authentication
 |Filip
