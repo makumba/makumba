@@ -850,7 +850,7 @@ package org.makumba]]>
 
     <target name="zipdoc" description="makes the documentation and zips it">
         <delete file="${temp.dir}/makumbadoc.zip" />
-        <antcall target="doc" />
+        <antcall target="javadoc" />
         <fileset id="wwwdocs" dir="..">
             <include name="makumba/CHANGELOG.txt" />
             <include name="makumba/COPYING.txt" />
@@ -870,7 +870,7 @@ package org.makumba]]>
 
     </target>
 
-    <target name="doc" depends="compile" description="generates documentation">
+    <target name="javadoc" description="generates documentation">
         <tstamp>
             <format property="javadoc.startup.time" pattern="yyyy-MM-dd HH:mm" />
         </tstamp>
@@ -879,26 +879,28 @@ package org.makumba]]>
         <copy file="${jar.place}/classes/makumbaResources/javaScript/kruseCalendarPopup_combined.js" tofile="${jar.place}/doc/scripts/kruseCalendarPopup_combined.js" />
         <copy file="${jar.place}/classes/makumbaResources/javaScript/makumbaDateFunctions.js" tofile="${jar.place}/doc/scripts/makumbaDateFunctions.js" />
         <echo>- generating doc/api</echo>
-        <javadoc destdir="doc/api" sourcepath="classes" packagenames="org.makumba" notree="true" noindex="true"
+    	<loadfile property="leftMenuContent" srcfile="doc-jspwiki/JSPWiki/api/leftMenu.html"/>
+    	<echo>Left menu: ${leftMenuContent}</echo> 
+
+    	<javadoc destdir="doc-jspwiki/JSPWiki/api" sourcepath="classes" packagenames="org.makumba" notree="true" noindex="true"
             nohelp="true" windowtitle="Makumba" classpathref="project.class.path" Version="true" Author="true"
-            additionalparam="-breakiterator" doctitle="Makumba API Documentation" stylesheetfile="doc/api/javadoc.css">
+            additionalparam="-breakiterator" doctitle="Makumba API Documentation" stylesheetfile="doc-jspwiki/JSPWiki/templates/makumba/jspwiki.css">
             <bottom>
                 <![CDATA[
                 <div class='pageFooter'>
                 Docs generated on ${javadoc.startup.time}
                 </div>
+            	<div class='leftmenu'>${leftMenuContent}</div>  
+            	<br><br>
 
-            <script type='text/javascript' src='../../../main.js'>
-            </script>
-            <script type='text/javascript'>makeNavBar('../../../');</script>
             ]]></bottom>
             <link href="http://java.sun.com/j2se/1.4.2/docs/api/" />
         </javadoc>
 
-        <echo>- generating doc/hacking/javadoc</echo>
-        <javadoc destdir="doc/hacking/javadoc" sourcepath="classes" packagenames="*" windowtitle="Makumba [hacking docs]"
+        <echo>- generating doc-jspwiki/JSPWiki/api-full-doc/</echo>
+        <javadoc destdir="doc-jspwiki/JSPWiki/api-developer/" sourcepath="classes" packagenames="*" windowtitle="Makumba [hacking docs]"
             classpathref="project.class.path" Version="true" Author="true" additionalparam="-breakiterator" access="package"
-            use="true" doctitle="Documentation of Makumba classes for Makumba developers" stylesheetfile="doc/hacking/javadoc.css">
+            use="true" doctitle="Documentation of Makumba classes for Makumba developers" stylesheetfile="doc-jspwiki/JSPWiki/templates/makumba/jspwiki.css">
             <bottom>
             <![CDATA[
                 <div class='pageFooter'>
@@ -907,37 +909,37 @@ package org.makumba]]>
             ]]></bottom>
             <header>
         <![CDATA[
-                <TABLE BORDER='0' CELLPADDING='3' CELLSPACING='3'>
-        <TD aCLASS='NavBarCell1' valign=top>
-            <a href='http://www.makumba.org' target='_top'>
-                <img src='http://www.makumba.org/makumba-logo-small.gif' border='0'>
-                </a>
-            </TD>
-            <TR>
-                <TD VALIGN='top' CLASS='NavBarCell3'>
-                    <FONT SIZE='-2'>
-                        <script type='text/javascript'>
-                   url=document.location.href;
-                   clas=url.substring(url.indexOf('/javadoc/'));
-                   clas=clas.substring(9);
-                   clas=clas.substring(0, clas.indexOf('.html') );
-                   clasUrl='';
-                   if((clas.indexOf('org/makumba')==0||clas.indexOf('test/')==0) && clas.indexOf('package-use')<=0 && clas.indexOf('class-use')<=0)
-           {
+            <TABLE BORDER='0' CELLPADDING='3' CELLSPACING='3'>
+              <tr>
+      	        <TD aCLASS='NavBarCell1' valign=top>
+      	          <a href='http://www.makumba.org' target='_top'> <img src='http://www.makumba.org/makumba-logo-small.gif' border='0'> </a>
+      	        </TD>
+              </tr>
+    	      <tr>
+    	        <TD VALIGN='top' CLASS='NavBarCell3'>
+    	          <FONT SIZE='-2'>
+                    <script type='text/javascript'>
+            	      apiPath='/api-full-doc/';
+                      url=document.location.href;
+                      clas=url.substring(url.indexOf(apiPath));
+                      clas=clas.substring(apiPath.length());
+                      clas=clas.substring(0, clas.indexOf('.html') );
+                      clasUrl='';
+                      if ( (clas.indexOf('org/makumba') == 0 || clas.indexOf('test/') == 0) && clas.indexOf('package-use') <= 0 && clas.indexOf('class-use') <= 0) {
                         svnLink='';
-            if(clas.indexOf('package-summary')<0 && clas.indexOf('package-tree')<=0) 
-            {
-                clasUrl=clasUrl.concat('',clas,'.java');
-                svnLink=svnLink.concat('<a href=http://makumba.svn.sourceforge.net/viewvc/makumba/trunk/makumba/classes/',clasUrl,'?revision=HEAD&view=markup>SOURCE</a> in ');
-            } else {
-                clasUrl=clas.substring(0, clas.lastIndexOf('/') );
-            }
+                        if (clas.indexOf('package-summary') < 0 && clas.indexOf('package-tree') <= 0) {
+                          clasUrl=clasUrl.concat('',clas,'.java');
+                          svnLink=svnLink.concat('<a href=http://makumba.svn.sourceforge.net/viewvc/makumba/trunk/makumba/classes/',clasUrl,'?revision=HEAD&view=markup>SOURCE</a> in ');
+                        } else {
+                          clasUrl=clas.substring(0, clas.lastIndexOf('/') );
+                        }
                         svnLink=svnLink.concat('<a href=http://makumba.svn.sourceforge.net/viewvc/makumba/trunk/makumba/classes/',clasUrl,'>SVN</a>');
-            document.write(svnLink);
-           } 
-                </script>
-                    </font>
+                        document.write(createSVNLink(document.location.href));
+                      } 
+                    </script>
+                  </font>
                 </td>
+              </tr>
             </table>
             ]]></header>
             <link href="http://java.sun.com/j2se/1.4.2/docs/api/" />
@@ -961,7 +963,7 @@ package org.makumba]]>
 <!-- Targets for documentation with Apache Forrest -->
 
     <target name="makeForrestDoc" description="generate forrest documentation and the API based on the documented taglib and the examples in documentation/tag-examples">
-        <antcall target="javadoc" />
+        <antcall target="javadocForrest" />
         <antcall target="generateTagDocAndExamples" />
         
         <exec executable="forrest">
@@ -1003,7 +1005,7 @@ package org.makumba]]>
         </exec>
     </target>
   
-    <target name="javadoc">
+    <target name="javadocForrest">
         <tstamp>
             <format property="javadoc.startup.time" pattern="yyyy-MM-dd HH:mm" />
         </tstamp>
