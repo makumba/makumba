@@ -7,3 +7,6 @@ __Everything is a query.__ There's a lot of information you want to store and sh
 Developing a webapp should be __simple.__ Knowing complicated programming languages is good, but it shouldn't be required to create advanced sites. You can learn to use makumba in only a couple of hours, and its advanced developer support will help you do many things without much hussle. With the code generator you can even create entire parts of a site in no time, without coding anything.
 
 Your webapps should be fast. Today's Internet users are expecting __performance__ and this is what Makumba delivers. It doesn't matter if your page is complex, makumba optimises the operations it has to do so that surfing your sites will feel smooth.
+
+----
+[Category Documentation]

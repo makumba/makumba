@@ -5,15 +5,15 @@ This part of the site is aimed at explaining how to use Makumba. In contrary to 
 In order to get started, read further on the following topics:
 
 * [Makumba manifesto|MakumbaManifesto]
-* [Defining the data model: Makumba Data Definitions|DataDefinitions]
-* [Displaying data: Makumba list|MakumbaList]
-* [Creating and editing data: Makumba forms|MakumbaForms]
-* [Multiple forms and lists|Multiple]
-* [Advanced features|Advanced]
-* [Search forms|Search]
-* [MDD functions|MDDFunction]
-* [Authentication and authorisation|Auth]
-* [Layout and navigation|Structure]
+* [Defining the data model|DataModelHowto]
+* [Displaying data|DisplayingDataHowto]
+* [Creating and editing data|CreatingEditingHowto]
+* [Multiple forms and lists|MultipleFormsHowto]
+* [Advanced features|AdvancedFeaturesHowto]
+* [Search forms|SearchFormsHowto]
+* [MDD functions|MDDFunctionsHowto]
+* [Authentication and authorisation|AuthenticationAuthorizationHowto]
+* [Layout and navigation|LayoutHowto]
 
 ----
 [Usage]

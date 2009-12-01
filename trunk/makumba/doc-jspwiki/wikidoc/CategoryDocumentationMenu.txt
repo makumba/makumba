@@ -1,6 +1,6 @@
-!! [Documentation]
+!!! Documentation
 
-* [Overview]
+* [Overview|Documentation]
 * [Data Definitions|DataDefinitions]
 * [Validation Rules|ValidationRules]
 * [Query Languages|QueryLanguages]
@@ -38,7 +38,7 @@
 * [Makumba Controller|Controller]
 ** [Authentication]
 ** [Authorisation]
-** [Form submission|FormHandling]
+** [Form submission|FormSubmissionHandling]
 ** [Java business logic|JavaBusinessLogic]
 ** [Error handling|ErrorHandling]
 ** [Makumba Attributes|MakumbaAttributes]
