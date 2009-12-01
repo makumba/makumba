@@ -29,6 +29,9 @@ __text__         Makes text bold.
 
 %%stylename %%   Uses custom CSS style. Also possible to add styles inline,
                  e.g. %%(color:red)This text is red.%%
+                 
+~                escape character. ~_~_ escapes the bold underline __,
+                 ~\ escapes backslash, etc.
 
 }}}
 
