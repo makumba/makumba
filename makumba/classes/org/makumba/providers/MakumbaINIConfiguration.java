@@ -9,6 +9,7 @@ import java.util.Set;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalINIConfiguration;
 import org.apache.commons.configuration.SubnodeConfiguration;
+import org.apache.commons.configuration.tree.DefaultExpressionEngine;
 import org.apache.commons.lang.StringUtils;
 import org.makumba.ConfigurationError;
 
@@ -35,6 +36,10 @@ public class MakumbaINIConfiguration extends HierarchicalINIConfiguration {
         super(u);
         setAutoSave(false);
         this.u = u;
+
+        // we need this or Apache CLI will thing that the spaces in section names means we address more than one node
+        setListDelimiter('+');
+        ((DefaultExpressionEngine) getExpressionEngine()).setPropertyDelimiter("+");
         load();
     }
 
@@ -103,6 +108,7 @@ public class MakumbaINIConfiguration extends HierarchicalINIConfiguration {
         }
         return res;
     }
+    
 
     public String getProperty(String section, String property) {
         String s = getSection(section).getString(property);
