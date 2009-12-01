@@ -16,4 +16,4 @@ In order to get started, read further on the following topics:
 * [Layout and navigation|LayoutHowto]
 
 ----
-[Usage]
+[Category Usage]
