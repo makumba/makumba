@@ -81,12 +81,13 @@ public class ComparisonExpressionNode extends MDDAST {
         return op == MDDTokenTypes.EQ || op == MDDTokenTypes.NE || op == MDDTokenTypes.SQL_NE;
     }
 
-    public String invertOperator() {
+    public String getInvertedOperator() {
         switch (op) {
             case MDDTokenTypes.EQ:
+                return getOperator(MDDTokenTypes.NE);
             case MDDTokenTypes.SQL_NE:
             case MDDTokenTypes.NE:
-                return getOperator(op);
+                return getOperator(MDDTokenTypes.EQ);
             case MDDTokenTypes.LT:
                 return getOperator(MDDTokenTypes.GT);
             case MDDTokenTypes.GT:
