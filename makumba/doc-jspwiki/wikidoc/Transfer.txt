@@ -14,7 +14,7 @@
 
 |CheckMe|Viktor|[http://localhost:8888/usage/list.html]|[DisplayingDataHowto]
 |DoMe|?|[http://localhost:8888/usage/forms.html]|[Creating and editing data|CreatingEditingHowto]
-|DocumentMe|?|[http://localhost:8888/usage/multiple.html]|[Multiple forms and lists|MultipleFormsHowto]
+|CheckMe|Rudi|[http://localhost:8888/usage/multiple.html]|[Multiple forms and lists|MultipleListsAndFormsHowto]
 |DocumentMe|?|[http://localhost:8888/usage/advanced.html]|[Advanced features|AdvancedFeaturesHowto]
 |DocumentMe|?|[http://localhost:8888/usage/search.html]|[Search forms|SearchFormsHowto]
 |DocumentMe|?|[http://localhost:8888/usage/mddfunct.html]|[MDD functions|MDDFunctionsHowto]
@@ -33,7 +33,7 @@
 |CheckMe|Rudi|[http://localhost:8888/doc/controller/businessLogicClasses.html]|[JavaBusinessLogic]
 |CheckMe|Rudi|[http://localhost:8888/doc/controller/error.html]|[ErrorHandling]
 |CheckMe|Rudi|[http://localhost:8888/doc/controller/attributes.html]|[MakumbaAttributes]
-|DoMe|?|[http://localhost:8888/showcases.html]|[Showcases]
+|CheckMe|Rudi|[http://localhost:8888/showcases.html]|[Showcases]
 |CheckMe|Manu|[http://localhost:8888/download.html]|[Download]
 
 }]

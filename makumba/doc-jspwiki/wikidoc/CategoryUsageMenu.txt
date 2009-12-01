@@ -5,7 +5,7 @@
 * [Defining the data model|DataModelHowto]
 * [Displaying data|DisplayingDataHowto]
 * [Creating and editing data|CreatingEditingHowto]
-* [Multiple forms and lists|MultipleFormsHowto]
+* [Multiple forms and lists|MultipleListsAndFormsHowto]
 * [Advanced features|AdvancedFeaturesHowto]
 * [Search forms|SearchFormsHowto]
 * [MDD functions|MDDFunctionsHowto]
