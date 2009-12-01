@@ -20,8 +20,8 @@ public class MDDLiveValidationProvider extends LiveValidationProvider {
     private static final long serialVersionUID = -1887449782752264509L;
 
     @Override
-    protected void addValidationRules(String formIdentifier, Collection<ValidationRule> validationRules,
-            StringBuffer validations, String inputVarName) {
+    protected void addValidationRules(String inputName, String formIdentifier,
+            Collection<ValidationRule> validationRules, StringBuffer validations, String inputVarName) {
 
         for (ValidationRule validationRule : validationRules) {
             ValidationRuleNode rule = (ValidationRuleNode) validationRule;
@@ -43,10 +43,23 @@ public class MDDLiveValidationProvider extends LiveValidationProvider {
                 case COMPARISON:
 
                     ComparisonValidationRule c = (ComparisonValidationRule) rule;
+                    String lhs = c.getComparisonExpression().getLhs();
+                    String rhs = c.getComparisonExpression().getRhs();
+                    String operator = c.getComparisonExpression().getOperator();
 
-                    String arguments = "element1: \"" + c.getComparisonExpression().getLhs() + formIdentifier
-                            + "\", element2: \"" + c.getComparisonExpression().getRhs() + formIdentifier
-                            + "\", comparisonOperator: \"" + c.getComparisonExpression().getOperator() + "\", ";
+                    // For comparison rules, if we do a greater / less than comparison, we have to check whether we are
+                    // adding the live validation for the first or the second argument in the rule
+                    // Depending on this, we have to invert the rule for the live validation provider by swapping the
+                    // variable names & inverting the comparison operator
+                    if (!(lhs + formIdentifier).equals(inputName) && !c.getComparisonExpression().isEqualityOperator()) {
+                        String temp = lhs;
+                        lhs = rhs;
+                        rhs = temp;
+                        operator = c.getComparisonExpression().getInvertedOperator();
+                    }
+
+                    String arguments = "element1: \"" + lhs + formIdentifier + "\", element2: \"" + rhs
+                            + formIdentifier + "\", comparisonOperator: \"" + operator + "\", ";
 
                     switch (c.getComparisonExpression().getComparisonType()) {
 

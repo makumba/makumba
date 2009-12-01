@@ -77,7 +77,7 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
         }
 
         if (validationRules != null) {
-            addValidationRules(formIdentifier, validationRules, validations, inputVarName);
+            addValidationRules(inputName, formIdentifier, validationRules, validations, inputVarName);
         }
 
         if (fieldDefinition.isUnique() && !fieldDefinition.isDateType()) {
@@ -96,8 +96,8 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
         }
     }
 
-    protected void addValidationRules(String formIdentifier, Collection<ValidationRule> validationRules,
-            StringBuffer validations, String inputVarName) {
+    protected void addValidationRules(String inputName, String formIdentifier,
+            Collection<ValidationRule> validationRules, StringBuffer validations, String inputVarName) {
 
         for (ValidationRule validationRule : validationRules) {
             ValidationRule rule = validationRule;
@@ -122,6 +122,9 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
                 String arguments = "element1: \"" + c.getFieldName() + formIdentifier + "\", element2: \""
                         + c.getOtherFieldName() + formIdentifier + "\", comparisonOperator: \""
                         + c.getCompareOperator() + "\", ";
+
+                // FIXME: implement a modification for comparison rules with greater / less than comparison as in
+                // MDDLiveValidationProvider
 
                 if (c.getFieldDefinition().isNumberType()) {
                     validations.append(getValidationLine(inputVarName, "MakumbaValidate.NumberComparison", rule,
