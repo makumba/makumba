@@ -7,6 +7,9 @@
             <include name="**/*.jar" />
             <exclude name="**/makumba*.jar" />
         </fileset>
+        <fileset dir="${basedir}/doc-jspwiki/JSPWiki/WEB-INF/lib">
+            <include name="**/JSPWiki.jar" />
+        </fileset>
     </path>
 	
     <path id="project.class.path.complete">
@@ -19,7 +22,6 @@
         </fileset>
         <fileset dir="${basedir}">
             <include name="webapps/tests/WEB-INF/classes/Makumba.conf" />
-            <include name="doc-jspwiki/JSPWiki/WEB-INF/lib/JSPWiki.jar" />
         </fileset>
     </path>
     
