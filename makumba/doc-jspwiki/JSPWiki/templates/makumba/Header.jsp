@@ -19,7 +19,7 @@
     <div id="top_nav">
     
     
-      <a href="<wiki:LinkTo format="url" page="QuickSart"/>"     class="menu_item item1<c:if test="${currentCategory =='CategoryQuickStart'}"> active</c:if>"><span>         quick start    </span></a>
+      <a href="<wiki:LinkTo format="url" page="QuickStart"/>"     class="menu_item item1<c:if test="${currentCategory =='CategoryQuickStart'}"> active</c:if>"><span>         quick start    </span></a>
       <a href="<wiki:LinkTo format="url" page="Configuration"/>" class="menu_item item2<c:if test="${currentCategory =='CategoryConfiguration'}"> active</c:if>"><span>  configuration  </span></a>
       <a href="<wiki:LinkTo format="url" page="Usage"/>"         class="menu_item item3<c:if test="${currentCategory =='CategoryUsage'}"> active</c:if>"><span>         usage          </span></a>
       <a href="<wiki:LinkTo format="url" page="Documentation"/>" class="menu_item item4<c:if test="${currentCategory =='CategoryDocumentation'}"> active</c:if>"><span>         documentation  </span></a>
