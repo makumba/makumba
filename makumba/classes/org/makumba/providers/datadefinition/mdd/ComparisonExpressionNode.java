@@ -54,8 +54,11 @@ public class ComparisonExpressionNode extends MDDAST {
     }
 
     public String getOperator() {
-        
-        switch(op) {
+        return getOperator(op);
+    }
+
+    private String getOperator(int operator) {
+        switch (operator) {
             case MDDTokenTypes.EQ:
                 return "=";
             case MDDTokenTypes.LT:
@@ -72,7 +75,28 @@ public class ComparisonExpressionNode extends MDDAST {
                 return ">=";
         }
         throw new RuntimeException("invalid value for operator");
-        
+    }
+
+    public boolean isEqualityOperator() {
+        return op == MDDTokenTypes.EQ || op == MDDTokenTypes.NE || op == MDDTokenTypes.SQL_NE;
+    }
+
+    public String invertOperator() {
+        switch (op) {
+            case MDDTokenTypes.EQ:
+            case MDDTokenTypes.SQL_NE:
+            case MDDTokenTypes.NE:
+                return getOperator(op);
+            case MDDTokenTypes.LT:
+                return getOperator(MDDTokenTypes.GT);
+            case MDDTokenTypes.GT:
+                return getOperator(MDDTokenTypes.LT);
+            case MDDTokenTypes.LE:
+                return getOperator(MDDTokenTypes.GE);
+            case MDDTokenTypes.GE:
+                return getOperator(MDDTokenTypes.LE);
+        }
+        throw new RuntimeException("invalid value for operator");
     }
 
     public void setOperatorType(int op) {
