@@ -1,3 +1,6 @@
+[{TableOfContents}]\\
+
+!!!Overview
 Validation rules are defined inside a data definition, and allow Makumba to automatically validated form data input.
 
 The general syntax of a validation rule definition is as follows:
@@ -7,7 +10,7 @@ ruleType(arg1, arg2, ...) { rule definition } : "error message"
 
 }]
 
-!Validation rule types
+!!!Validation rule types
 
 There are different kind of validation rules, each with a specific name:
 
@@ -18,7 +21,8 @@ There are different kind of validation rules, each with a specific name:
 * uniqueness (''unique'')
 
 The arguments depend on the type, as we'll see later.
-__Number range rule__
+
+!!Number range rule
 
 The range definition rule applies for {{Number}} types, i.e. {{int}} and {{real}}. The validation rule is defined as:
 [{Code
@@ -39,7 +43,7 @@ To define that we need to be at least 5 year old, but without any upper limit:
 range(age) {5..? } : "Age must be at least 5!"
 }]
 
-__String length rule__
+!!String length rule
 
 The length definition rule is very similar to the range definition, but applies for {{string}} types, i.e. {{char}} and {{text}}. The validation rule is defined as:
 [{Code
@@ -54,7 +58,7 @@ To define that the CV needs to be at least 100 characters, define:
 length(cv) { 100..? } : "CV must be of decent length!"
 }]
     
-__Regular expression rule__
+!!Regular expression rule
 
 The string regular expression rule applies for {{string}} types, primarily for {{char}}, but also for {{text}}. The validation rule is defined as:
 [{Code
@@ -69,7 +73,7 @@ To compare if a field contains a valid e-mail address, define:
 matches(email) { .+@.+\.[a-z\.]+ } : "Email address is not valid!"
 }]
 
-__Comparison rule__    
+!!Comparison rule
 
 This rule allows to compare a field to a constant value or simple function calls.
 
@@ -126,7 +130,7 @@ Two fields can be compared in a similar way
 compare(birthdate, graduationDate) { birthdate < graduationDate } : "You cannot finish school before your birthdate!"
 }]
 
-__Multi-field uniqueness definition__
+!!Multi-field uniqueness definition
 
 Similar to the [unique field attribute|DataDefinition#FieldAttributes], you can also define multi-field uniqueness contraints. These constraints can even span over several data definitions, if they are related via pointers.
 
@@ -135,15 +139,24 @@ Multi-field uniqueness can be defined as follows
 
 unique(age, email) : "the combination of age and email must be unique!"
 }]
+
 [{Box
 
 If the fields are in the same data definition, the uniqueness definition will translate into a database level multi-field key and uniqueness will be enforced there.
 Otherwise, Makumba will issue a query checking the uniqueness before new or edit operations.
 }]
 
-!Error message
+!!!Error message
 
 The error message that will be displayed if the validation fails.
+
+
+!!!Implicit validation rules
+[{Box type='fixme' author='rudi'
+
+Add a paragraph about implicit validation rules for int, real, not null, etc..
+then also link that paragraph from [DataModelHowto#ValidationRules]
+}]
 
 ----
 [Category Documentation]
