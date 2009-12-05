@@ -40,6 +40,8 @@ public class InsertCategoryMenu extends AbstractReferralPlugin implements WikiPl
         } else {
             categories = categoriesConf.split(",");
         }
+        
+        boolean showCurrentCategory = params.get(PARAM_CURRENTCATEGORY) != null && ((String)params.get(PARAM_CURRENTCATEGORY)).equals("true");
 
         ReferenceManager refmgr = context.getEngine().getReferenceManager();
         String pageName = (String) params.get(PARAM_PAGE);
@@ -76,12 +78,12 @@ public class InsertCategoryMenu extends AbstractReferralPlugin implements WikiPl
             }
         }
         
-        if(toBeInserted == null) {
-            return "Page " + page.getName() + " is in none of the categories " + Arrays.toString(categories) + " hence its menu cannot be found.";
+        if(toBeInserted == null && !showCurrentCategory) {
+            return "Warning: you should add the page " + page.getName() + " to one of the following categories " + Arrays.toString(categories) + " so that it gets a side menu";
         }
         
-        if(params.get(PARAM_CURRENTCATEGORY) != null && ((String)params.get(PARAM_CURRENTCATEGORY)).equals("true")) {
-            return toBeInserted;
+        if(showCurrentCategory) {
+            return toBeInserted != null ? toBeInserted : "";
         } else {
             String wikiMarkup = "[{MenuTreePlugin menuPage='" + toBeInserted + "Menu" + "'}]";
             String html = context.getEngine().textToHTML(context, wikiMarkup);
