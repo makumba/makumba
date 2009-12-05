@@ -21,14 +21,16 @@
                 title="<fmt:message key='actions.comment.title' />"><fmt:message key="actions.comment" />
         </a>
       </wiki:PageType>
-      <hr />
     </wiki:Permission>
     <%-- / changed by rudi: show a "add your comment" link --%>
+
+    <hr />
 
     <a href="#top" 
       class="action quick2top" 
       title="<fmt:message key='actions.gototop'/>" >&laquo;</a>
 
+    <wiki:UserCheck status="authenticated"> <%-- changed by rudi: only show revision details to authenticated users --%>
     <wiki:CheckVersion mode="latest">
        <fmt:message key="info.lastmodified">
           <fmt:param><wiki:PageVersion /></fmt:param>
@@ -43,6 +45,12 @@
          <fmt:param><wiki:Author /></fmt:param>
       </fmt:message>
     </wiki:CheckVersion>
+    </wiki:UserCheck>
+    
+    <wiki:UserCheck status="notAuthenticated"> <%-- changed by rudi: to non-authenticated users, just show the last change date --%>
+      This page was last updated on <wiki:PageDate format='MMMM d yyyy'/>
+      
+    </wiki:UserCheck>
 
    <wiki:RSSImageLink mode="wiki" />
 
