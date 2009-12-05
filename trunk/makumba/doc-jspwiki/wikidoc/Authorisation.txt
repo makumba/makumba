@@ -65,7 +65,7 @@ The example above is complicated on purpose so as to illustrate some of the mech
 !!!Actor-based authorization
 In order to deal with authentication in a more effective manner, actor-based authentication was introduced. It uses the concept of roles, but in a flexible manner: there is no need to define a clear set of roles, instead, roles can be made up and defined using query fragments
 
-At this point, it is necessary to read the [reference documentation on query fragments|QueryFramgents], especially the [actor functions|QueryFragments#ActorFunctions| and [explicit authorization|QueryFragments#Explicit Authorisation].
+At this point, it is necessary to read the [reference documentation on query fragments|QueryFragments], especially the [actor functions|QueryFragments#ActorFunctions| and [explicit authorization|QueryFragments#Explicit Authorisation].
 
 Let's take the following example: we want to ensure that only employees with administrative privileges can access the "admin" section of the site.
 
