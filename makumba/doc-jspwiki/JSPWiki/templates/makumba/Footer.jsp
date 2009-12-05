@@ -4,11 +4,4 @@
 <%@ page import="javax.servlet.jsp.jstl.fmt.*" %>
 <fmt:setLocale value="${prefs.Language}" />
 <fmt:setBundle basename="templates.default"/>
-<%
-  WikiContext c = WikiContext.findContext(pageContext);
-  String frontpage = c.getEngine().getFrontPage(); 
-%> 
-</div>
-
-</body>
 
