@@ -134,12 +134,12 @@ This will generate the following output:
 {{mak:list}} tags can be nested, so as to display the content of sets.
 }]
 !!!Modifying existing data
-[{Box label='Fixme (manu)'
+[{Box type='fixme' author='manu'
 
 editForm
 }]
 !!!Deleting data
-[{Box label='Fixme (manu)'
+[{Box type='fixme' author='manu'
 
 deleteForm
 }]
