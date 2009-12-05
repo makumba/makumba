@@ -62,3 +62,6 @@ SvenskWebb is a meeting place for teachers in Swedish at universities abroad.
 A collection of famous antique maps.
 
 [{Img src='Showcases/maps_t.jpg' link='Showcases/maps.jpg'}] 
+
+----
+[Category Showcase]

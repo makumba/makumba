@@ -64,7 +64,7 @@ Every datatype has some additional fields by default, as follows:
 * __Last modification time__. Updates whenever the object is changed. The initicial value is TS_create. Can be accessed as TS_modify.
 
 !!!Simple field types
-__int__
+!int
 
 A 32-bit integer. For example
 
@@ -99,7 +99,7 @@ In the present implementation, this type is called "intEnum" internally.
 Negative numbers are supported (e.g. int { "aa"=5, "bb"=2, "cc"=-10}).
 }]
 
-__real__
+!real
 
 A real number with double precision with (2-2-52)·21023 as max value and 2-1074 as min value. For example:
 
@@ -108,7 +108,7 @@ A real number with double precision with (2-2-52)·21023 as max value and 2-1074
 turnover = real; turnover of the company
 }]
 
-__char__
+!char
 
 A char field contains a number of characters. Maximal width must be specified and is limited to 255. (Optionally a minimal number of characters (lesser than max) can be indicated). Both must be positive integers. For example:
 
@@ -124,7 +124,7 @@ unique is a [field attribute], explained below.
 Pay close attention to the character set (charset) for encoding the characters. In Java the charset is Unicode, but the JSP/HTML pages have their own encoding settings, as well as the database, etc.
 }]
 
-__boolean__
+!boolean
 
 A boolean, that can take as values true or false. For example:
 [{Code
@@ -132,7 +132,7 @@ A boolean, that can take as values true or false. For example:
 currentlyEmployed= true; whether this employee is currently employed
 }]
 
-__text__
+!text
 
 An unlimited-length string of characters. This type is designed to accommodate large text content. It is implemented with LONGTEXT or its counterparts, depending on the underlying DB engine. The text data-type is ready for accepting data in UTF-8 encoding.
  
@@ -141,7 +141,7 @@ An unlimited-length string of characters. This type is designed to accommodate l
 description=text ; Description of the project
 }]
 
-__binary__
+!binary
 
 An unlimited-length field designed for binary content. In contrast to the text data type, binary will always be of 8 bit length. It is implemented with LONGTEXT or its counterparts, depending on the underlying DB engine. This type is meant for storing only raw binary data, for storing files along with meta-data like a file name, content type, etc., you should rather use the file data type.
 
@@ -150,7 +150,7 @@ An unlimited-length field designed for binary content. In contrast to the text d
 signature= binary ; a binary digital signature 
 }]
 
-__date__
+!date
 
 A date and/or time.
 
@@ -161,7 +161,7 @@ arrivalTime = date; Arrival time
 }]
 
 !!!Structural (relational) types
-__ptr__
+!ptr
 
 Pointers define a reference to an object of a certain type. For example
 
@@ -170,7 +170,7 @@ Pointers define a reference to an object of a certain type. For example
 manager = ptr company.Employee; The manager of the department
 }]
 
-__set__
+!set
 
 Sets define a number of references to multiple objects of a certain type. For example:
 
@@ -212,7 +212,7 @@ place= set int {"home"=1, "away"=0} ; Home or away
 This is currently known internally as setintEnum
 }]  
 
-!!!file
+!file
 
 A file data-type is a kind-of record containing several fields needed when wanting to store files. These fields are:
 
