@@ -32,14 +32,3 @@
   </ul>
 </div>
 </wiki:UserCheck>  <%-- changed by rudi: only show to authenticated users --%>
-
-<wiki:UserCheck status="notAuthenticated"> <%-- changed by rudi: to non-authenticated users, just show a "comment" link --%>
-  <wiki:Permission permission="comment">
-    <wiki:PageType type="page">
-      <a class="action comment" 
-               href="<wiki:CommentLink format='url' />" 
-              title="<fmt:message key='actions.comment.title' />"><fmt:message key="actions.comment" />
-      </a>
-    </wiki:PageType>
-  </wiki:Permission>
-</wiki:UserCheck>
