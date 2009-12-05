@@ -85,6 +85,12 @@ public class InsertCategoryMenu extends AbstractReferralPlugin implements WikiPl
         if(showCurrentCategory) {
             return toBeInserted != null ? toBeInserted : "";
         } else {
+            
+            // check if the menu page exists, if not, return silently
+            if(!context.getEngine().pageExists(toBeInserted + "Menu")) {
+                return "";
+            }
+            
             String wikiMarkup = "[{MenuTreePlugin menuPage='" + toBeInserted + "Menu" + "'}]";
             String html = context.getEngine().textToHTML(context, wikiMarkup);
             
