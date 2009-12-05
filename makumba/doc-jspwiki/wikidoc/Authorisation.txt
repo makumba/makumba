@@ -5,7 +5,7 @@ Makumba has two mechanisms through which it can trigger authorization mechanisms
 
 !!!Attributes-based authorization
 
-[{Note
+[{Box
 
 This mechanism is the legacy mechanism that was in Makumba since the very beginning. Since it brings some limitations and demands quite some work in order to be used properly, the second mechanism was implemented in order to ease the task of handling webapp-wide authentication. We hence recommend using the second mechanism.
 }]
@@ -23,7 +23,7 @@ public void checkAttributes(Attributes a, Transaction t) throws LogicException
 
 It makes it possible to check whether a specific [Makumba attribute|MakumbaAttributes] is set, look up data in the database, and if necessary, throw a [org.makumba.UnauthorizedException]
 
-[{Note
+[{Box
 
 When using this mechanism, it is highly recommended to build the business logic classes in such a way that they extend a common super-class that handles authentication. In this way, specific pages can add additional checks by overwriting the checkAttributes method, but the overall method stays the same.
 }]
