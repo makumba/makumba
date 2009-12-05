@@ -28,6 +28,9 @@
     </div>
   </div>
   
+  <%-- manu: if the page has no category, then the menu content is not generated --%>
+  <c:if test="${not empty currentCategory}">
   <div id="sidemenu">
      <wiki:InsertPage page="LeftMenu" />
   </div>
+  </c:if>
