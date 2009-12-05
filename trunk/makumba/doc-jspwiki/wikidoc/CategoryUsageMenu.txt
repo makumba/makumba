@@ -9,5 +9,5 @@
 * [Advanced features|AdvancedFeaturesHowto]
 * [Search forms|SearchFormsHowto]
 * [MDD functions|MDDFunctionsHowto]
-* [Authentication and authorisation|AuthenticationAuthorizationHowto]
+* [Authentication & authorisation|AuthenticationAuthorizationHowto]
 * [Layout and navigation|LayoutHowto]
