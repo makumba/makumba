@@ -5,7 +5,11 @@ This page shows just a few examples of web applications that are using the Makum
 BEST - Board of European Students of Technology is a European student organisation located in over 70 universities in 30 European countries.
 The public website found at [http://www.BEST.eu.org] includes a vast application system serving tens of thousands students is running on Makumba technology.
 
-[{Image src='Showcases/bestpub1_t.jpg' link='Showcases/bestpub1.png'}] [{Image src='Showcases/bestpub2_t.jpg' link='Showcases/bestpub2.png'}] [{Image src='Showcases/bestpub3_t.jpg' link='Showcases/bestpub3.png'}] 
+
+[{Img src='Showcases/bestpub1_t.jpg' link='Showcases/bestpub1.png'}]
+[{Img src='Showcases/bestpub2_t.jpg' link='Showcases/bestpub2.png'}]
+[{Img src='Showcases/bestpub3_t.jpg' link='Showcases/bestpub3.png'}] 
+
 
 And check out www.BEST.eu.org
 
@@ -19,7 +23,7 @@ BEST - Board of European Students of Technology is a European student organisati
 
 A vast developed intranet offers a platform for virtual collaboration. Thousands of members have an account there and it offers various features for working online: a wiki, archives, personal profiles, project management, mailing lists, a survey centre and more.
 
-[{Image src='Showcases/best1_t.jpg' link='Showcases/best1.png'}] [{Image src='Showcases/best2_t.jpg' link='Showcases/best2.png'}] [{Image src='Showcases/best3_t.jpg' link='Showcases/best3.png'}] [{Image src='Showcases/best4_t.jpg' link='Showcases/best4.png'}]
+[{Img src='Showcases/best1_t.jpg' link='Showcases/best1.png'}] [{Img src='Showcases/best2_t.jpg' link='Showcases/best2.png'}] [{Img src='Showcases/best3_t.jpg' link='Showcases/best3.png'}] [{Img src='Showcases/best4_t.jpg' link='Showcases/best4.png'}]
 
 !! Statistics
 * Around 2,500 JSP pages, including more than 1,400 dynamic pages using Makumba.
@@ -36,28 +40,25 @@ Together with the BEST Public Website:
 !!!SuperStavka.ru
 A cent auction website for the Russian market.
 
-[{Image src='Showcases/stavka1_t.png' link='Showcases/stavka1.png'}] [{Image src='Showcases/stavka2_t.png' link='Showcases/stavka2.png'}] [{Image src='Showcases/stavka3_t.png' link='Showcases/stavka3.png'}] 
+[{Img src='Showcases/stavka1_t.png' link='Showcases/stavka1.png'}] [{Img src='Showcases/stavka2_t.png' link='Showcases/stavka2.png'}] [{Img src='Showcases/stavka3_t.png' link='Showcases/stavka3.png'}] 
 
 !!!Project Online Communicator
 A website for the coordination of an international building project.
 
-[{Image src='Showcases/poc_t.jpg' link='Showcases/poc.jpg'}] 
+[{Img src='Showcases/poc_t.jpg' link='Showcases/poc.jpg'}] 
 
 
 !!!Key to the Future
 A website for the jobfair organised by the local BEST group in Tallinn University of Technology.
-[{Image src='Showcases/jobfairTallinn1_t.png' link='Showcases/jobfairTallinn1.png'}]   [{Image src='Showcases/jobfairTallinn2_t.png' link='Showcases/jobfairTallinn2.png'}]
+[{Img src='Showcases/jobfairTallinn1_t.png' link='Showcases/jobfairTallinn1.png'}]   [{Img src='Showcases/jobfairTallinn2_t.png' link='Showcases/jobfairTallinn2.png'}]
 
 
 !!!SvenskWebb
 SvenskWebb is a meeting place for teachers in Swedish at universities abroad.
-[{Image src='Showcases/svenskwebb_t.jpg' link='Showcases/svenskwebb.jpg'}] 
+[{Img src='Showcases/svenskwebb_t.jpg' link='Showcases/svenskwebb.jpg'}] 
 
 
 !!!Map Collection
 A collection of famous antique maps.
 
-[{Image src='Showcases/maps_t.jpg' link='Showcases/maps.jpg'}] 
-
-----
-[Category Showcase]
+[{Img src='Showcases/maps_t.jpg' link='Showcases/maps.jpg'}] 
