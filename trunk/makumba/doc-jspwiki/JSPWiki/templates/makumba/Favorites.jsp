@@ -5,6 +5,8 @@
 <fmt:setBundle basename="templates.default"/>
 <%@ page import="com.ecyrd.jspwiki.*" %>
 
+<wiki:UserCheck status="authenticated"> <%-- changed by rudi: only show to authenticated users --%>
+
 <div id="favorites">
 
   <div id="hiddenmorepopup">
@@ -67,6 +69,7 @@
       </li>
   </ul>
   </div>
+</wiki:UserCheck> <%-- changed by rudi: only show to authenticated users --%>
   
   <wiki:CheckRequestContext context='!login'>
 
