@@ -27,7 +27,7 @@
       <a href="<wiki:LinkTo format="url" page="Download"/>"      class="menu_item item6<c:if test="${currentCategory =='CategoryDownload'}"> active</c:if>"><span>         download       </span></a>
     </div>
   </div>
-  
+
   <%-- manu: if the page has no category, then the menu content is not generated --%>
   <c:if test="${not empty currentCategory}">
   <div id="sidemenu">

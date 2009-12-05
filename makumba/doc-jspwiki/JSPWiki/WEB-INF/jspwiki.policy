@@ -88,8 +88,8 @@ grant principal com.ecyrd.jspwiki.auth.authorize.Role "Authenticated" {
 // and the container role "Admin" (managed by the web container).
 
 grant principal com.ecyrd.jspwiki.auth.GroupPrincipal "Admin" {
-    permission com.ecyrd.jspwiki.auth.permissions.AllPermission "*";
+    permission com.ecyrd.jspwiki.auth.permissions.AllPermission "makumba";
 };
 grant principal com.ecyrd.jspwiki.auth.authorize.Role "Admin" {
-    permission com.ecyrd.jspwiki.auth.permissions.AllPermission "*";
+    permission com.ecyrd.jspwiki.auth.permissions.AllPermission "makumba";
 };

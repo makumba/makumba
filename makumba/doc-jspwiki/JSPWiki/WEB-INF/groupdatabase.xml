@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <groups>
-  <group name="Admin" creator="Admin" created="2009.11.20 at 12:04:26:430 CET" modifier="Admin" lastModified="2009.11.20 at 12:09:43:720 CET">
+  <group name="Admin" creator="Admin" created="2009.11.20 at 12:04:26:430 CET" modifier="Admin" lastModified="2009.12.05 at 23:12:19:781 CET">
+    <member principal="manu" />
+    <member principal="jasper" />
+    <member principal="rudi" />
     <member principal="Admin" />
     <member principal="filip" />
   </group>
