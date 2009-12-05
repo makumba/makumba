@@ -15,10 +15,9 @@ a.footnote{vertical-align:super;color:#04A;}
 .invisible{display:none;}
 .additinfo{background-color:#e0e0ff;}
 a.createpage{color:red;text-decoration:none;border-bottom:1px dashed red;}
-.diffnote,.information,.warning,.error{display:block;clear:both;margin:1em .5em;padding:1em 1em 1em 3em;background-position:.8em .9em;background-repeat:no-repeat;}
+.diffnote,.information,.error{display:block;clear:both;margin:1em .5em;padding:1em 1em 1em 3em;background-position:.8em .9em;background-repeat:no-repeat;}
 td .information,td .warning,td .error{margin:0;}
 .diffnote,.information{background-image:url(images/information.gif);background-color:#e0e0ff;}
-.warning{background-image:url(images/exclamation.gif);background-color:#ffff80;}
 .error{background-image:url(images/error.gif);background-color:#ffe0e0;color:#c00000;}
 .error * li{margin-left:0;padding-left:0;}
 .commentbox{display:block;float:right;clear:right;width:35%;overflow:hidden;border:1px solid #ddd;background:#f9f9f9;padding:0 .5em;margin:0 0 1em .5em;font-size:90%;}
@@ -388,6 +387,7 @@ a {
 img {
   float:right;
   margin-left:5px;
+  border:0px;
 }
 img.outlink {
   float: none;
@@ -402,12 +402,10 @@ img.outlink {
 
 code,tt,pre, .code
 {
-  font-size:11px;
-	font: Monaco,"Courier New",Courier,monospace;
+	font-family: Monaco,"Courier New",Courier,monospace;
 	overflow:auto;
 	line-height:1.3em;
 }
-.code { font-size: 13px;}
 
 .hashlink {display:none;}
 /* NOT SHOWING THESE HASHLINKS FOR NOW
@@ -676,6 +674,13 @@ div.fixme {
 }
 div.fixme .label {
   background: #e84200;
+}
+
+div.warning {
+  border-color: #f2ae0c;
+}
+div.warning .label {
+  background: #f2ae0c;
 }
 
 #wikibody{margin:0px;padding:0px;}
