@@ -251,7 +251,7 @@
         <filter token="user" value="${user.name}" />
         <filter filtersfile="work/makumba.distrib/makumba/manifest-replace.properties" />
 
-        <!-- Copy the manifest in order to replace the version token filter -->
+        <!-- the manifest in order to replace the version token filter -->
         <copy file="work/makumba.distrib/makumba/manifest.template" tofile="work/makumba.distrib/makumba/manifest.mf" filtering="on" overwrite="true" />
     </target>
 
@@ -525,12 +525,20 @@
     <target name="copyWikiPlugins" depends="compile" description="compiles and copies the plugins to the JSPWiki folder">
     
         <copy todir="doc-jspwiki/JSPWiki/WEB-INF/classes/org/makumba/commons/documentation">
-            <fileset dir="classes/org/makumba/commons/documentation/" includes="Box*.class,Insert*.class" />
+            <fileset dir="classes/org/makumba/commons/documentation/" includes="Box*.class,Insert*.class,Img*.class" />
         </copy>
     
     </target>
     
+    <target name="copyWikiPluginsEclipse" description="compiles and copies the plugins to the JSPWiki folder, for eclipse">
     
+        <copy todir="doc-jspwiki/JSPWiki/WEB-INF/classes/org/makumba/commons/documentation">
+            <fileset dir="classes/org/makumba/commons/documentation/" includes="Box*.class,Insert*.class,Img*.class" />
+        </copy>
+    
+    </target>
+
+	
     <target name="tomcat-start" description="start the tomcat to deploy JSPwiki">
         <echo>Java home in build: ${java.home}</echo>
         <java classname="org.apache.catalina.startup.Bootstrap" fork="yes" classpathref="tomcat.class.path" append="true">
