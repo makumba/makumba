@@ -53,6 +53,7 @@ fullName() { name || (' ' || surname) }
 ''name, surname, gender, birthdate and salary'' are __field definitions__, while ''fullName()'' is a so-called __query-function__
 
 [{Box
+
 Makumba automatically generates the database schema based on MDDs. If you modify a MDD, you will need to reload your webapp for the changes to be taken into account.
 }]
 !!!Entering new data
@@ -60,6 +61,7 @@ Let's make it possible to feed some data to our webapp.
 
 For this, let's create a page that contains a {{mak:newForm}}, which enables us to enter new data. Create the file {{WebContent/employeeNew.jsp}} with following content:
 [{Code
+
 <%@ taglib uri="http://www.makumba.org/presentation" prefix="mak" %>
 <html>
 <head>
