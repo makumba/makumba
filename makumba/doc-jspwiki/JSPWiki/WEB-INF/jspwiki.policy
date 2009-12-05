@@ -60,7 +60,7 @@ grant principal com.ecyrd.jspwiki.auth.authorize.Role "Anonymous" {
 // They can also view the membership list of groups.
 
 grant principal com.ecyrd.jspwiki.auth.authorize.Role "Asserted" {
-//    permission com.ecyrd.jspwiki.auth.permissions.PagePermission "*:*", "modify";
+//    permission com.ecyrd.jspwiki.auth.permissions.PagePermission "*:*", "modify,comment";
     permission com.ecyrd.jspwiki.auth.permissions.WikiPermission "*"; //, "createPages"
     permission com.ecyrd.jspwiki.auth.permissions.GroupPermission "*:*", "view";
 };
