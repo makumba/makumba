@@ -1,6 +1,6 @@
 !!!Configuration
 
 * [Overview|Configuration]
-* [Makumba web-app configuration|WebappConfiguration]
+* [Web-app Configuration|WebappConfiguration]
 * [Makumba Configuration|MakumbaConfiguration]
 * [Libraries]
