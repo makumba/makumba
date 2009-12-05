@@ -1,9 +1,5 @@
 table{border-collapse:collapse;border-spacing:0;empty-cells:show;}
 .hr{display:block;border-bottom:1px solid #ddd;}
-h2 .editsection,h2 .hashlink{font-size:67%;}
-h3 .editsection,h3 .hashlink{font-size:76%;}
-h4 .editsection,h4 .hashlink{font-size:86%;}
-code,tt,pre{font:110% Monaco,"Courier New",Courier,monospace;overflow:auto;}
 pre{clear:both;white-space:pre;margin:1em 2.5%;padding:.5em;background:#f9f9f9;border:1px solid #ddd;}
 a.footnoteref{vertical-align:super;font-size:85%;}
 a.footnote{vertical-align:super;color:#04A;}
@@ -375,8 +371,9 @@ div.coverflow .knob{background:#fff;width:100px;height:15px;}
 
 html,body {
   font-family: Trebuchet MS, sans;
-  font-size: 12px;
+  font-size: 13px;
   background: #fff;
+  line-height:1.5em;
   margin:0px;
   height:100%;
 }
@@ -402,6 +399,22 @@ img.outlink {
   margin: 0px auto;
   min-height:100%;
 }
+
+code,tt,pre, .code
+{
+  font-size:11px;
+	font: Monaco,"Courier New",Courier,monospace;
+	overflow:auto;
+	line-height:1.3em;
+}
+.code { font-size: 13px;}
+
+.hashlink {display:none;}
+/* NOT SHOWING THESE HASHLINKS FOR NOW
+h2 .editsection,h2 .hashlink{font-size:67%;}
+h3 .editsection,h3 .hashlink{font-size:76%;}
+h4 .editsection,h4 .hashlink{font-size:86%;}
+*/
 
 /* 
   HEADER
@@ -573,6 +586,7 @@ img.outlink {
   line-height:35px;
   border-bottom:1px solid black;
   margin: 0px 10px;
+  font-size:12px
 }
 #sidemenu li.MenuTree,
 #sidemenu li.MenuTreeLeafSelected, 
@@ -607,8 +621,9 @@ img.outlink {
   float:left;
   min-height:100%;
 }
+#content .noSidemenu
 
-h2 {
+h1 {
   border-top:2px solid #000;
   border-bottom:2px solid #000;
   background: #f2ae0c;
@@ -620,11 +635,18 @@ h2 {
   font-family: Trebuchet MS, Tahoma, Sans;
 }
 
-h3 {
+h2 {
   border-top:1px solid #000;
   border-bottom:1px solid #000;
   font-family: tahoma, Trebuchet MS, sans;
-  font-size:11px;
+  font-size:15px;
+  line-height:24px;
+  width:50%;
+}
+
+h3 {
+  font-family: tahoma, Trebuchet MS, sans;
+  font-size:inherit;
   line-height:24px;
   width:50%;
 }
@@ -632,25 +654,27 @@ h3 {
 div.note {
   background: #f2f1e4;
   border:1px solid #c4db16;
+  margin-bottom:10px;
+  padding:0px;
 }
 
 
-div.note .title {
+div.note .label {
   display:block;
   font-weight:bold;
   background: #c4db16;
   padding:2px 6px;
 }
-div.note .content {
+div.note  .content {
   display:block;
-  padding:10px 12px;
+  padding:0px 12px;
 }
 
 
-div.note.fixme {
+div.fixme {
   border-color: #e84200;
 }
-div.note.fixme .title {
+div.fixme .label {
   background: #e84200;
 }
 

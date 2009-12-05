@@ -10,7 +10,7 @@
 
   <input id="searchbox" onblur="if( this.value == '' ) { this.value = this.defaultValue }; return true; "
         onfocus="if( this.value == this.defaultValue ) { this.value = ''}; return true; "
-           type="text" value="<fmt:message key='sbox.search.submit'/>"
+           type="text" value="search"
            name="query" id="query"
       accesskey="f" />
 </form>

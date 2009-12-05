@@ -844,3 +844,6 @@ log4j.rootCategory=INFO,FileLog
 jspwiki.approver.workflow.createUserProfile=Admin
 
 ### End of configuration file.
+box.note.styleName=note
+box.fixme.styleName=note fixme
+box.warning.styleName=note warning
