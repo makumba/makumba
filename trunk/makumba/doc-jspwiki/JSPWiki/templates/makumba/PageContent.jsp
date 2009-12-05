@@ -12,6 +12,8 @@
   if( attCount != 0 ) attTitle += " (" + attCount + ")";
 %>
 
+<wiki:UserCheck status="authenticated"> <%-- changed by rudi: only show to authenticated users --%>
+
 <wiki:TabbedSection defaultTab='${param.tab}' >
 
   <wiki:Tab id="pagecontent" title='<%=LocaleSupport.getLocalizedMessage(pageContext, "view.tab")%>' accesskey="v">
@@ -44,3 +46,18 @@
   </wiki:PageExists>
 
 </wiki:TabbedSection>
+</wiki:UserCheck>
+
+<wiki:UserCheck status="notAuthenticated"> <%-- changed by rudi: to non-authenticated users, just show a "comment" link --%>
+    <wiki:Include page="PageTab.jsp"/>
+    <wiki:PageType type="attachment">
+      <div class="information">
+      <fmt:message key="info.backtoparentpage" >
+        <fmt:param><wiki:LinkToParent><wiki:ParentPageName/></wiki:LinkToParent></fmt:param>
+        </fmt:message>
+      </div>
+      <div style="overflow:hidden;">
+        <wiki:Translate>[<%= c.getPage().getName()%>]</wiki:Translate>
+      </div>
+    </wiki:PageType>   
+</wiki:UserCheck>
