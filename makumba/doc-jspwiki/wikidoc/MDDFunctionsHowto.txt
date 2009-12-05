@@ -76,6 +76,22 @@ Today's birthdays:
 </mak:list>
 }]  
 
+When we want to display all employees that are ready for retirement, we could do this like follows:
 
+__company.Employee (company/Employee.mdd)__
+[{Code
+
+shallRetire() { year(birthday - current_date()) > 65 } 
+}]
+
+and then use it as:
+
+[{Code
+
+The following employees should retire:
+<mak:list from="company.Employee e" where="e.shallRetire()">
+  <mak:value expr="e.nameSurname()"/> <br/>
+</mak:list>
+}]  
 ----
 [Category Usage]

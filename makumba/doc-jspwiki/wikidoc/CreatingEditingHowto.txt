@@ -92,8 +92,70 @@ Note that in this example, we assume that the where-condition in the <mak:object
 
 When we have fetched the record, we have to specify that we want to add a sub-record to that very same object in the <mak:addForm> by using the attribute %%code object%%, and specify which set to add to, using the %%code field%% attribute.
 !!Deleting data: delete and deleteLink
+Deleting requires a similar approach as editing
+* first, the object that is supposed to be deleted has to be fetched via a [<mak:object|ObjectTag] or [<mak:list>|ListTag] tag.
+* then, in the delete tag, you have to specify that object.
 
+Let's say we want to delete employees from the data base that are ready for retirement (see the [MDD functions example|MDDFunctionsHowto] for the function definition)
+
+[{Code
+
+<mak:list from="company.employee e" where="e.shallRetire()">
+  <mak:value expr="e.nameSurname()"/> 
+  <mak:delete object="e" action="employeeList.jsp" >delete from the database</mak:delete> <br/>
+</mak:list>  
+}]
+
+will render us a page with all the names of the employees fulfilling the retirement criterion, printing their name and a __link__ with the text "delete from the database".
+
+Note that data can be deleted by two different input controls, a link or a form button. 
+
+[{Box type='warning'
+
+Deleting via a link is the legacy approach in Makumba, and has the major disadvantage that the in the resulting URL, the parameters such as the object deleted, are visible. Further, using a link is not a familiar concept in other user interfaces, where mostly buttons are used.
+}]
+
+If we want to use a form rather than a button, we need to specify this explicitely:
+
+[{Code
+
+<mak:list from="company.employee e" where="e.shallRetire()">
+  <mak:value expr="e.nameSurname()"/> 
+  <mak:delete widget="form" object="e" action="employeeList.jsp" >delete from the database</mak:delete> <br/>
+</mak:list>  
+}]
+
+[{Box
+
+In the future, the default for __widget__ will change from "link" to "form".
+}]
+
+[{Box
+
+<mak:deleteLink ...> is a legacy notation that is equivalent to <mak:delete widget="link" ...>
+}]
 !!Generic forms: form
+
+Sometimes, you want the user to input information into a form, but you don't necessarily want to store it in your database, but maybe do some other action, such as storing a user-dependent setting in your website.
+
+!Changing the website skin
+
+Consider we want to store the skin to be used for rendering the pages. You can achieve this by using a generic [<mak:form>|FormTag].
+
+So, let's assume your website has a set of different skins to chose from, called "green", "geeky" and "funky", and you want a non-logged in the user to change that for his session only.
+
+[{Code
+
+<mak:form action="" handler="changeSkin">
+  Skin: <mak:input tydataType="set int{1='green', 2='geeky', 3='funky'}" value="$currentSkin" />
+  <input type="submit" value="change!"/>
+</mak:form>
+}]
+
+when the form is submitted, a [handler method|JavaBusinessLogic#Custom handler methods] "changeSkin" will be called, in which you can alter the value of the session attribute of ''currentSkin'' to the newly chosen one.
+
+!E-Mail sending
+Another example when you might want to use generic forms is when we want to send an e-mail, e.g. when we want to allow users to send referral mails to their friends, which would contain a link to the page the user is currently looking at.
 
 !!Combining forms: multiple forms
 Makumba allows to combine several forms into each other, enabling the user to edit several objects at the same time. For example, one can edit the assignment of several employees to projects at the same time. More details can be found in the [multiple forms documentation|MultipleListsAndFormsHowto]
