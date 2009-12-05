@@ -8,7 +8,7 @@ In order to get started, read further on the following topics:
 * [Defining the data model|DataModelHowto]
 * [Displaying data|DisplayingDataHowto]
 * [Creating and editing data|CreatingEditingHowto]
-* [Multiple forms and lists|MultipleFormsHowto]
+* [Multiple lists and forms|MultipleListsAndFormsHowto]
 * [Advanced features|AdvancedFeaturesHowto]
 * [Search forms|SearchFormsHowto]
 * [MDD functions|MDDFunctionsHowto]
