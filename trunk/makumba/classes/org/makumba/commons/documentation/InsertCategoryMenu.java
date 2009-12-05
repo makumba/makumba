@@ -83,13 +83,11 @@ public class InsertCategoryMenu extends AbstractReferralPlugin implements WikiPl
         }
         
         if(showCurrentCategory) {
-            return toBeInserted != null ? toBeInserted : "";
+            // if there is no category found or if the menu to be included is not found, return nothing
+            boolean menuExists = context.getEngine().pageExists(toBeInserted + "Menu");
+            boolean categoryFound = toBeInserted != null;
+            return categoryFound && menuExists ? toBeInserted : "";
         } else {
-            
-            // check if the menu page exists, if not, return silently
-            if(!context.getEngine().pageExists(toBeInserted + "Menu")) {
-                return "";
-            }
             
             String wikiMarkup = "[{MenuTreePlugin menuPage='" + toBeInserted + "Menu" + "'}]";
             String html = context.getEngine().textToHTML(context, wikiMarkup);
