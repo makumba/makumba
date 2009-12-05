@@ -18,6 +18,7 @@ a.footnote{vertical-align:super;color:#04A;}
 .rtl{direction:rtl;}
 .invisible{display:none;}
 .additinfo{background-color:#e0e0ff;}
+a.createpage{color:red;text-decoration:none;border-bottom:1px dashed red;}
 .diffnote,.information,.warning,.error{display:block;clear:both;margin:1em .5em;padding:1em 1em 1em 3em;background-position:.8em .9em;background-repeat:no-repeat;}
 td .information,td .warning,td .error{margin:0;}
 .diffnote,.information{background-image:url(images/information.gif);background-color:#e0e0ff;}
