@@ -132,7 +132,7 @@ compare(birthdate, graduationDate) { birthdate < graduationDate } : "You cannot 
 
 !!Multi-field uniqueness definition
 
-Similar to the [unique field attribute|DataDefinition#FieldAttributes], you can also define multi-field uniqueness contraints. These constraints can even span over several data definitions, if they are related via pointers.
+Similar to the [unique field attribute|DataDefinitions#FieldAttributes], you can also define multi-field uniqueness contraints. These constraints can even span over several data definitions, if they are related via pointers.
 
 Multi-field uniqueness can be defined as follows
 [{Code

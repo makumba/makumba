@@ -83,7 +83,7 @@ Actors are a special type of function that, when mentioned in queries or functio
 actor(MDDName) 
 }]
 
-i.e. it indicates which type ([MDD|DataDefinition]) is the entity representing the actor. A query invoking an actor:
+i.e. it indicates which type ([MDD|DataDefinitions]) is the entity representing the actor. A query invoking an actor:
 
 [{Code
 

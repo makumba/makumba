@@ -2,7 +2,7 @@
 
 Makumba uses so-called Makumba Data Definitions (MDDs) in order to represent objects. These definitions are also referred to as type of an object. This section provides a short overview of MDDs and illustrates them with some examples, check the reference documentation for more details on MDDs.
 
-[{Note
+[{Box
 
 This documentation does not give any guidelines regarding data model design. We assume that you already has some knowledge of general data model design concepts.
 }]
@@ -109,7 +109,7 @@ birthdate%compare = birthdate <= date($now, $now, $now - 16, 0, 0, 0) : An emplo
 Additionally to these explicit validation rules, the type of a field and/or the field attributes generate automatic checks that reflect on validation. For example %%Code name = not null char[255]%% will lead to a client and server-side check that makes sure this field is not empty, and %%Code salary=real%% will trigger a check for the input actually containing a number.
 
 !!MDD functions
-[MDD functions|QueryFragments#MDDFunctions] are functions defined in a [Makumba Data Definition|DataDefinition] and can be used in all kind of Makumba queries (in business logic, on the JSP level or in other functions).
+[MDD functions|QueryFragments#MDDFunctions] are functions defined in a [Makumba Data Definition|DataDefinitions] and can be used in all kind of Makumba queries (in business logic, on the JSP level or in other functions).
 
 If we want to often print the name and surname of one employee, we can define the following function in company.Employee:
 

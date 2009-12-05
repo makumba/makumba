@@ -40,7 +40,7 @@ projects->timePercentage = int ;percentage assigned
 
 
 !!Entering new data: newForm
-In order to create new data of a specific type ([Makumba Data Definition|DataDefinition]). The fields in the form must be defined in the data definition specified, otherwise a [NoSuchFieldException] will be thrown.
+In order to create new data of a specific type ([Makumba Data Definition|DataDefinitions]). The fields in the form must be defined in the data definition specified, otherwise a [NoSuchFieldException] will be thrown.
 
 To make a new record of the type %%code Employee%%, one could do a form as follows:
 
@@ -73,7 +73,7 @@ When we have fetched the record to edit, we have to specify that we want to edit
 
 !!Adding data to sets: addForm
 
-The [<mak:addForm>|AddFormTag] allows to add a new record to a so-called [internal set|DataDefinition#StructuralRelationalTypes], e.g. the %%code projects%% set from the example [data model|DataModelHowto]:
+The [<mak:addForm>|AddFormTag] allows to add a new record to a so-called [internal set|DataDefinitions#StructuralRelationalTypes], e.g. the %%code projects%% set from the example [data model|DataModelHowto]:
 
 If we want to add a new %%code projects%% record to an existing employee record, we have to first, similar to the [<mak:editForm>|EditFormtTag], fetch the employee record by a <mak:object> or <mak:list>.
 
@@ -121,3 +121,6 @@ The annotation message will be put inside a <span class="formAnnotation">; this 
 Reloading the form page on errors can be triggered by the attribute reloadFormOnError, the location of the annotation message by the attribute annotation.
 
 Additionally, form validation can be done also on the client-side, i.e. in the browser. Client-side validation can be either live, i.e. on entering data in an input, or before form submission; this is controlled by the attribute clientSideValidation.
+
+----
+[Category Usage]

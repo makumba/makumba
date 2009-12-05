@@ -5,7 +5,7 @@ Search forms provide an easy way to perform searches on data in your application
 
 !!!Search Forms
 Makumba search forms build on the familiar concepts of other Makumba forms, such as the [<mak:newForm>|NewFormTag], and help you to rapidly build your input mask. 
-First, you need to specify the [data definition|DataDefinition] you want to search in, and specify a name identifier, to which you can refer to in your result display page.
+First, you need to specify the [data definition|DataDefinitions] you want to search in, and specify a name identifier, to which you can refer to in your result display page.
 
 !!The form stub
 [{Code
@@ -39,7 +39,7 @@ Finally, you need to tell Makumba how you want to render the input control, so l
 </mak:searchForm>
 }]
 
-This tells Makumba that we want a standard input control for the name, and from the given [data definition|DataDefinition], it will render a %%Code input box%%. For the projects criterion, which is a %%Code set%%, Makumba would normally create a multiple-select box. However in this case, we want to select only one project, and thus we can force the input style to be a 'single' select. 
+This tells Makumba that we want a standard input control for the name, and from the given [data definition|DataDefinitions], it will render a %%Code input box%%. For the projects criterion, which is a %%Code set%%, Makumba would normally create a multiple-select box. However in this case, we want to select only one project, and thus we can force the input style to be a 'single' select. 
 
 The [<mak:searchField>|SearchFieldTag] builds on top of the [<mak:input|InputTag>], and accepts the attributes defined there. For more details on this, please see the [<mak:searchField|SearchFieldTag>] documentation.
 
