@@ -17,9 +17,9 @@ First, you need to specify the [data definition|DataDefinitions] you want to sea
 
 This just provides the stub of the form, to actually have the user select options or input search terms, you have to provide search criteria on which field(s) to search on:
 
+!!Search criteria
 [{Code
 
-!!Search criteria
 <mak:searchForm in="company.Employee" name="searchPerson">
   <mak:criterion fields="name"> ... </mak:criterion>
   <mak:criterion fields="projects"> ... </mak:criterion>  

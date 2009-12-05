@@ -1,7 +1,7 @@
 !!!Authentication
 In order to handle the authentication of a user, it is recommended to use standard authentication approaches enforced by the servlet container.
 
-[{Note
+[{Box
 
 Support for container-specific authentication, such as Tomcat Realms, might be developed in the future.
 }]

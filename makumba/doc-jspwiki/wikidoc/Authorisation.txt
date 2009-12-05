@@ -87,32 +87,6 @@ Now, we need to define an authorization constraint that will be launched wheneve
 }]
 
 We could of course have skipped the creation of the %%source isAdmin()%% function, but this way ensures that we can re-use the query in other places.
-!!!Actor-based authorization
-
-In order to deal with authentication in a more effective manner, actor-based authentication was introduced. It uses the concept of roles, but in a flexible manner: there is no need to define a clear set of roles, instead, roles can be made up and defined using query fragments
-
-At this point, it is necessary to read the reference documentation on [query fragments|QueryFragments], especially the [actor functions|QueryFragments#ActorFunctions] and [explicit authorization|QueryFragments#ExplicitAuthorization].
-
-Let's take the following example: we want to ensure that only employees with administrative privileges can access the "admin" section of the site.
-
-In order to achieve this, let's first define a MDD function that checks for this condition in the company.Employee MDD:
-
-[{Code
-
-isAdmin() { this.isAdmin and this.accountActive }
-}]
-
-This MDD function will check whether the isAdmin field is set and the account is active.
-
-Now, we need to define an authorization constraint that will be launched whenever the admin directory is accessed. We do so by defining the following constraint in the [authorization|MakumbaConfiguration#AuthorizationAuthorization] section of the Makumba.conf file:
-
-[{Code
-
-[authorization]
-/admin={actor(company.Employee).isAdmin()}
-}]
-
-We could of course have skipped the creation of the %%code isAdmin()%% function, but this way ensures that we can re-use the query in other places.
 
 
 ----
