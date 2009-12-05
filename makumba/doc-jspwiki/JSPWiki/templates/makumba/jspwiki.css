@@ -196,7 +196,7 @@ html>body #previewcontent,html>body #info,html>body #pagecontent,html>body #atta
 .index .body{margin-top:.5ex;}
 .index .section{color:red;font-size:1.4em;display:block;border-bottom:2px solid silver;margin-top:1.5ex;}
 
-div.toc{width:60%;float:left;clear:left;}
+div.toc{width:60%;}
 a.toc{color:grey;padding:.25em;}
 a.toc:hover{background:#eee;}
 #favorites .toc{width:100%;}
@@ -276,7 +276,6 @@ div.collapse li{list-style-type:none;}
 .collapse .collapsebody,.collapsebox .collapse .collapsebody{padding-left:1.5em;}
 *:first-child+html .collapse .collapsebody,*:first-child+html .collapsebox .collapse .collapsebody{float:left;padding-left:.5em;}
 * html .collapse .collapsebody,* html .collapsebox .collapse .collapsebody{float:left;padding-left:.5em;}
-.collapseBullet,.collapseOpen,.collapseClose{clear:left;float:left;text-align:center;text-decoration:none;color:blue;font:bold small Monaco,"Courier New",Courier,monospace;width:1.2em;height:1em;}
 .collapseOpen,.collapseClose{cursor:pointer;}
 .collapsebox{clear:right;border:1px solid #ddd;margin:0 0 .5em 0;}
 .collapsetitle{margin:0;padding:.25em 0;border:2px solid white;}
@@ -406,7 +405,7 @@ code,tt,pre, .code
 	overflow:auto;
 	line-height:1.3em;
 }
-
+ 
 .hashlink {display:none;}
 /* NOT SHOWING THESE HASHLINKS FOR NOW
 h2 .editsection,h2 .hashlink{font-size:67%;}
@@ -611,17 +610,23 @@ h4 .editsection,h4 .hashlink{font-size:86%;}
   THE CONTENT
 
 */
-
+.noSideMenu
+{
+  width: 1011px !important; width: 1011px;
+}
+.sideMenu
+{
+  width: 815px !important; width: 834px;
+}
 #content {
   border-left:2px solid #000;
-  width: 815px !important; width: 834px;
   padding-left:18px;
   float:left;
   min-height:100%;
 }
-#content .noSidemenu
 
-h1 {
+
+h2 {
   border-top:2px solid #000;
   border-bottom:2px solid #000;
   background: #f2ae0c;
@@ -633,7 +638,7 @@ h1 {
   font-family: Trebuchet MS, Tahoma, Sans;
 }
 
-h2 {
+h3 {
   border-top:1px solid #000;
   border-bottom:1px solid #000;
   font-family: tahoma, Trebuchet MS, sans;
@@ -642,11 +647,30 @@ h2 {
   width:50%;
 }
 
-h3 {
+h4 {
   font-family: tahoma, Trebuchet MS, sans;
   font-size:inherit;
   line-height:24px;
   width:50%;
+}
+
+.collapseBullet,.collapseOpen,.collapseClose
+{
+   clear:left;
+   float:left;
+   text-align:center;
+   text-decoration:none;
+   color:#fff;
+   background-color:#c4db16;
+   font-weight:bold;
+   font-family:monospace;
+   font-size:13px;
+   width:1.2em;
+   height:1.2em;
+   line-height:1.1em;
+   padding:0px;
+   margin:2px;
+   
 }
 
 div.note {
