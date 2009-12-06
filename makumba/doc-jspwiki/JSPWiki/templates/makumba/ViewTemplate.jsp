@@ -34,7 +34,8 @@
 
 <%-- manu: different class for the content div if there is no menu for the page (i.e. if it is not in a category) --%>
 <c:set var="currentCategory"><wiki:Plugin plugin="InsertCategoryMenu" args="showCurrentCategory='true'"/></c:set>
-<c:set var="contentDivClass"><c:choose><c:when test="${empty currentCategory}">noSideMenu</c:when><c:otherwise>sideMenu</c:otherwise></c:choose></c:set>
+<c:set var="currentCategoryMenu"><wiki:Plugin plugin="InsertCategoryMenu" args="showCurrentCategoryMenu='true'"/></c:set>
+<c:set var="contentDivClass"><c:choose><c:when test="${empty currentCategoryMenu}">noSideMenu</c:when><c:otherwise>sideMenu</c:otherwise></c:choose></c:set>
 
   <div id="content" class="${contentDivClass}">
 

@@ -851,4 +851,4 @@ box.note.styleName=note
 box.fixme.styleName=note fixme
 box.warning.styleName=note warning
 
-navigation.categories=CategoryMain,CategoryConfiguration,CategoryUsage,CategoryDocumentation,CategoryMeta
+navigation.categories=CategoryMain,CategoryConfiguration,CategoryUsage,CategoryDocumentation,CategoryMeta,CategoryQuickStart,CategoryDownload,CategoryShowcase

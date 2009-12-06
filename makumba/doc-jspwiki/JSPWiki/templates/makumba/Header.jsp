@@ -9,6 +9,7 @@
   String frontpage = c.getEngine().getFrontPage(); 
 %>
 <c:set var="currentCategory"><wiki:Plugin plugin="InsertCategoryMenu" args="showCurrentCategory='true'"/></c:set>
+<c:set var="currentCategoryMenu"><wiki:Plugin plugin="InsertCategoryMenu" args="showCurrentCategoryMenu='true'"/></c:set>
 
 <div id="site">
   <div id="header">
@@ -27,9 +28,8 @@
       <a href="<wiki:LinkTo format="url" page="Download"/>"      class="menu_item item6<c:if test="${currentCategory =='CategoryDownload'}"> active</c:if>"><span>         download       </span></a>
     </div>
   </div>
-
   <%-- manu: if the page has no category, then the menu content is not generated --%>
-  <c:if test="${not empty currentCategory}">
+  <c:if test="${not empty currentCategory && not empty currentCategoryMenu}">
   <div id="sidemenu">
      <wiki:InsertPage page="LeftMenu" />
   </div>
