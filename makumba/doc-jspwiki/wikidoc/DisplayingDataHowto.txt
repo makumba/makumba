@@ -1,6 +1,6 @@
 !!!Introduction
 
-One of the most common operations in database-driven websites is to display information to the user. Makumba provides a query-based approach to this through its [mak:object|MakumbaObject] and [mak:list|MakumbaList] tags.
+One of the most common operations in database-driven websites is to display information to the user. Makumba provides a query-based approach to this through its [mak:object|ObjectTag] and [mak:list|ListTag] tags.
 
 !!!Displaying data through queries
 

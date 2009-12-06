@@ -5,15 +5,10 @@ Makumba supports mainly two query languages: the native Makumba Query Language (
 
 !!!MQL
 
-[{Box type='fixme' author='ManuelGay'
-
-Put a link to the Pointer once we have the doc
-}]
-
 MQL was developed as a sum of the most useful aspects of OQL and HQL. As such is it based on HQL in many regards (see the [reference documentation|http://www.hibernate.org/hib_docs/reference/en/html/queryhql.html]), except following:
 
 * it accepts boolean projections: SELECT a=1 AS col1 ... etc
-* selecting an object will lead in selecting the external form of its Makumba pointer
+* selecting an object will lead in selecting the external form of its [Makumba pointer|api:Pointer]
 * it works with Makumba [DataDefinitions] instead of Hibernate mappings
 * like HQL, it supports subqueries in the style of e.g. [MySQL|http://dev.mysql.com/doc/refman/5.0/en/subqueries.html]
 * since Makumba only has set (equivalent of Hibernate bag), some of the HQL constructs like indices() don't make sense.
