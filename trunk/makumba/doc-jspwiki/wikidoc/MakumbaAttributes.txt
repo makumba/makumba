@@ -2,7 +2,7 @@ Java Server Pages use attributes to keep the state of the application.
 
 Makumba builds upon that its own notion of Attributes that keep the read-only state of a Makumba task. They represent the "environment" of that Makumba task.
 
-The typical example is a JSP page during execution, with its HTTP and session parameters as attributes. Since other kinds of attributes are possible, the attribute specification is kept HTTP-independent. [Makumba Business Logics|JavaBusinessLogics] code sees the attributes as an [org.makumba.Attributes|Attributes] object.
+The typical example is a JSP page during execution, with its HTTP and session parameters as attributes. Since other kinds of attributes are possible, the attribute specification is kept HTTP-independent. [Makumba Business Logics|JavaBusinessLogics] code sees the attributes as an [org.makumba.Attributes|api:Attributes] object.
 
 ----
 [Category Documentation]

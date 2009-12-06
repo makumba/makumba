@@ -21,7 +21,7 @@ The method has following signature:
 public void checkAttributes(Attributes a, Transaction t) throws LogicException
 }]
 
-It makes it possible to check whether a specific [Makumba attribute|MakumbaAttributes] is set, look up data in the database, and if necessary, throw a [org.makumba.UnauthorizedException]
+It makes it possible to check whether a specific [Makumba attribute|MakumbaAttributes] is set, look up data in the database, and if necessary, throw a [UnauthorizedException|api:UnauthorizedException]
 
 [{Box
 
@@ -56,9 +56,9 @@ if(admin.size() == 1) {
 
 The example above is complicated on purpose so as to illustrate some of the mechanisms that could be used. Let's have a closer look at it:
 
-* the first call a.getAttribute("_sessPtr_company_Employee"); tells makumba to try to retrieve the "_sessPtr_company_Employee" attribute. If this fails, makumba will throw an AttributeNotFoundException which we catch and transform into an [UnauthorizedExpcetion]. The [UnauthorizedException] extends the generic [LogicException], and is used in order to perform specific error-handling on its
-* If the first call passed, we try to figure out whether this employee is an administrator or not. This is not a very good practice since it is not cost-effective, the better approach would be to set the attribute when the user accesses the site for the first time. In this example, we retrieve the %%code isAdmin%% field of the MDD %%code company.Employee%% and if the user is not an admin, we throw an [UnauthorizedException].
-* We further handle the case where the user was not found in the database, and throw a %%code CompanyPortalException%%, which is a custom exception for this web-application that extends [LogicException].
+* the first call a.getAttribute("_sessPtr_company_Employee"); tells makumba to try to retrieve the "_sessPtr_company_Employee" attribute. If this fails, makumba will throw an AttributeNotFoundException which we catch and transform into an [UnauthorizedException|api:UnauthorizedException]. The [UnauthorizedException|api:UnauthorizedException] extends the generic [LogicException|api:LogicException], and is used in order to perform specific error-handling on its
+* If the first call passed, we try to figure out whether this employee is an administrator or not. This is not a very good practice since it is not cost-effective, the better approach would be to set the attribute when the user accesses the site for the first time. In this example, we retrieve the %%code isAdmin%% field of the MDD %%code company.Employee%% and if the user is not an admin, we throw an [UnauthorizedException|api:UnauthorizedException].
+* We further handle the case where the user was not found in the database, and throw a %%code CompanyPortalException%%, which is a custom exception for this web-application that extends [LogicException|api:LogicException].
 
 
 

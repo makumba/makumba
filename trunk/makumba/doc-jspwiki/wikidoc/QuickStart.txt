@@ -14,6 +14,7 @@ Optionally, you can also download [MySQL|http://dev.mysql.com/downloads/mysql/5.
 
 The project imported in Eclipse has the following structure:
 [{Code
+
 /src
     /dataDefinitions
 /build
@@ -35,7 +36,7 @@ This is the standard WTP project structure. The resulting web-application struct
 index.jsp
 }]
 !!!Describing the data
-Makumba uses so-called Makumba Data Definitions (further described [here|Model.html]).
+Makumba uses so-called Makumba Data Definitions (further described [here|DataDefinitions]).
 
 MDDs are simple text files that contain the description of an entity, i.e. its fields but also validation rules and query functions. These files are kept in the {{dataDefinitions}} directory in the classpath of the web-application.
 
@@ -145,4 +146,4 @@ deleteForm
 }]
 
 ----
-[Category Main]
+[Category QuickStart]
