@@ -267,7 +267,7 @@ logo = file ; Picture attachment
   
 All fields are automatically set by Makumba, all needed to do is to make a [<mak:input>|InputTag] on the field name.
 
-This type should be used in favour of the [binary data type|] when you don't want to store only the raw binary data, but also meta-data as in the fields above.
+This type should be used in favour of the [binary data type|DataDefinitions#Binary] when you don't want to store only the raw binary data, but also meta-data as in the fields above.
 
 !!!Macro types
 

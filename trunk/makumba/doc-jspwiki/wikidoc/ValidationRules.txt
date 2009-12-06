@@ -152,11 +152,17 @@ The error message that will be displayed if the validation fails.
 
 
 !!!Implicit validation rules
-[{Box type='fixme' author='rudi'
+From the types defined in the [Data Definition|DataDefinitions], as well as from the [field attributes|DataDefinitions#FieldAttributes], Makumba can automatically infer validation rules as follows:
 
-Add a paragraph about implicit validation rules for int, real, not null, etc..
-then also link that paragraph from [DataModelHowto#ValidationRules]
-}]
+|| field type || field attribute || validation rule || default message
+| int | | check for an integer number | invalid integer
+| real | | check for a real number | invalid real
+| boolean | | check for boolean value | invalid boolean
+| | unique | | This field needs to be unique. Try another value 
+| | not null | | A non-null value is required for this field 
+| | not empty | | A non-empty value is required for this field 
+
+The default messages can be redefined in the MDD, as detailed in the [field attributes section|DataDefinitions#FieldAttributes] section of the MDD documentation.
 
 ----
 [Category Documentation]
