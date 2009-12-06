@@ -129,7 +129,7 @@ fieldName= char[maxWidth];
 name= unique char[80];
 }]
 
-unique is a [field attribute], explained below.
+unique is a [field attribute|DataDefinitions#FieldAttributes], explained below.
 [{Box
 
 Pay close attention to the character set (charset) for encoding the characters. In Java the charset is Unicode, but the JSP/HTML pages have their own encoding settings, as well as the database, etc.

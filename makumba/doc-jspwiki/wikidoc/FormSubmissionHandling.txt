@@ -7,7 +7,7 @@ When a form is submitted with Makumba, the following things happen:
 * the action-specific changes are written to the database (depending on new, edit, delete)
 * the response message is displayed on the action page
 
-If at any point of this process, a validation constraint fails or a [LogicException] is thrown by the business logic, the submission stops. If a validation constraint fails, Makumba can deal with this in several ways:
+If at any point of this process, a validation constraint fails or a [LogicException|api:LogicException] is thrown by the business logic, the submission stops. If a validation constraint fails, Makumba can deal with this in several ways:
 
 * forward to the action page and display the error using [mak:response|ResponseTag]: in this case, the action page is displayed, and if used, the error message is displayed
 * reload the form and display errors using [mak:response|ResponseTag]: in this case, the form page is displayed, and all errors are displayed together using the [mak:response|ResponseTag] tag
