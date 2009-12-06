@@ -63,7 +63,18 @@ Every datatype has some additional fields by default, as follows:
 * __Object creation time__ Can be accessed as TS_create.
 * __Last modification time__. Updates whenever the object is changed. The initicial value is TS_create. Can be accessed as TS_modify.
 
-!!!Simple field types
+!!!Primitive field types
+
+!Overview
+|| Field definition type || Description || Default edit user interface || Relational database type (orientative) || Java type (orientative)
+| int | a simple integer | text field | integer | java.lang.Integer
+| int{} | Integer enumeration, allowing for a set of predefined values | dropdown choice or radio button
+| real | a real number | text field | double | java.lang.Double
+| date | a date | date | date and time | java.util.Date
+| char[] | a limited text (maximum length is 255) | text field | limited char | java.lang.String
+| text | an unlimited text | text area | unlimited characters | org.makumba.Text
+| binary | a binary content, e.g. an image | binary area | unlimited byte | org.makumba.Text
+
 !int
 
 A 32-bit integer. For example
@@ -160,7 +171,32 @@ birthdate = date; Date of birth
 arrivalTime = date; Arrival time
 }]
 
-!!!Structural (relational) types
+!!!Structural (relational) types and collections
+
+!Overview
+[{Table
+
+|| Field definition type || Description || Default edit user interface || Relational database type (orientative) || Java type (orientative)
+
+| ptr | a pointer to another type record | dropdown select of record titles. | preferably a long (foreign index) | org.makumba.Pointer
+| set | a set of records of another type (which could be re-used in another type) TODO: set chooser link | multiple choice of record titles. | table with ptrRel to the parent table and ptr to the foreign table | java.util.Vector of org.makumba.Pointer
+
+| fieldName=set\\
+fieldName-> ... 
+| 
+| an internal set that relates to one specific record 
+|  
+| table with ptrRel to the parent table, and the rest of the fields
+
+| set int{} | a set of predefined values | multiple choice from values | table with ptrRel to the parent table, and an int field | java.util.Vector of java.lang.Integer
+
+|file
+|a file including its meta-data (content type, size, ...)
+|file upload
+|preferably a long (foreign index)
+
+}]
+
 !ptr
 
 Pointers define a reference to an object of a certain type. For example

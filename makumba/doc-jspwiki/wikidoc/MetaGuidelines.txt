@@ -1,0 +1,6 @@
+!!!Guidlines
+
+* only create meta pages starting with 'Meta' in their name, so they can be matched by a wildcard security rule and not displayed to the rest of the world
+
+----
+[Category Meta]
