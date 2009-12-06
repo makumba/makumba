@@ -1,9 +1,5 @@
-!!!Example page
-
-This page contains examples of things that can be done with JSPwiki
-
-!!JSPWiki basics
-
+%%tabbedSection 
+%%tab-Basics
 
 {{{
 
@@ -17,7 +13,10 @@ This page contains examples of things that can be done with JSPwiki
                  written in CamelCase.
 [text|wiki:link] Create a hyperlink where the link text is different from the 
                  actual hyperlink link, and the hyperlink points to a named Wiki. 
-                 This supports interWiki linking.
+                 This supports interWiki linking, for instance:
+                 
+                 [Bug:bug:123]                         Link to Bugzilla entry 123
+                 [DataDefinition|api:DataDefinition]   Link to the javadoc
 
 *                Make a bulleted list (must be in first column). Use more (**)
                  for deeper indentations.
@@ -41,10 +40,10 @@ __text__         Makes text bold.
 ~|               Escapes a '|' (e.g. in a table)
 
 }}}
+/%
+%%tab-Code
 
-!!Special formatting
-
-!code inside of text
+!Code inside of text
 
 In order to embed code inside of text, use the ''code'' style:
 
@@ -54,7 +53,7 @@ In order to embed code inside of text, use the ''code'' style:
 
 %%code <mak:list>%%
 
-!!Source code
+!Source code
 
 It is possible to format source code using the code plugin:
 
@@ -75,7 +74,8 @@ public static void main(String[] args) {
 }
 }]
 
-!!Boxes
+/%
+%%tab-Boxes
 
 It is possible to have boxes (notes, warnings, fixmes). By default, a Box is a Note and it can contain JSPWiki formatting:
 
@@ -163,8 +163,8 @@ A fixme with a custom label
 A fixme with a custom label
 }]
 
-
-!!Tables
+/%
+%%tab-Tables
 
 By default JSPWiki does not offer too many possibilities regarding tables, like no possibilities to merge cells or to give custom styles to rows. This can be circumvented using the [TablePlugin|http://www.jspwiki.org/wiki/TablePlugin]
 
@@ -188,6 +188,12 @@ By default JSPWiki does not offer too many possibilities regarding tables, like 
 
 Check out the documentation of the [TablePlugin|http://www.jspwiki.org/wiki/TablePlugin] to find out more.
 
+
+/%
+
+/%
+
+
+
 ----
 [Category Main]
-

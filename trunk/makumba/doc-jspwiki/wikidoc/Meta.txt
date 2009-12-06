@@ -1,0 +1,9 @@
+!!!Meta
+
+This is the meta-makumba site, where we talk about the documentation itself: guidelines, howto, etc...
+
+* [MetaGuidelines]
+* [{WeblogEntryPlugin page='Blog' entrytext='Create new blog post'}]
+* [Documentation TODO|MetaDocumentationTodo]
+----
+[Category Meta|CategoryMeta]

@@ -850,3 +850,5 @@ jspwiki.approver.workflow.createUserProfile=Admin
 box.note.styleName=note
 box.fixme.styleName=note fixme
 box.warning.styleName=note warning
+
+navigation.categories=CategoryMain,CategoryConfiguration,CategoryUsage,CategoryDocumentation,CategoryMeta

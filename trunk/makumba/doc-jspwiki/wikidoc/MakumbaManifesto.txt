@@ -1,4 +1,4 @@
-!Makumba manifesto
+!!!Makumba manifesto
 
 When developing a webapp, coding should go __directly to the most important things.__ Reducing the amount of time necessary to develop a dynamic website is crucial - complicated DAO objects are nice, but in 99% of the case you won't need them in for a small/medium site. makumba cuts off the redundant and not important code and lets you focus on what matters: bringing information to the user.
 

@@ -1,11 +1,5 @@
+!!!Main
+
+* [Home|Main]
+* [Blog]
 * [About]
-* [Example]
-* [Tags|TagIndex]
-* [Recent Changes]
-----
-* [WikiEtiquette]
-* [Find pages|FindPage]
-* [Unused pages|UnusedPages]
-* [Undefined pages|UndefinedPages]
-* [Page Index]
-* [SystemInfo]

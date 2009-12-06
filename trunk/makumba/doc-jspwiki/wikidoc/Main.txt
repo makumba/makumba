@@ -1,41 +1,16 @@
 !!!Welcome to makumba!
 
-This page will soon reflect the power of this framework!
+Makumba is a framework for rapid and sustainable web-app development.
 
-!!TODO to turn this into a website for makumba
+The core ideas are:
 
-[{ Table
+* __creating web-apps should be simple__ and there should not be a need to have a deep technical background. For this, Makumba relies on simple languages such as HTML markup and MQL (a SQL-like query language).
 
-||What||Who||Comments||Status
-|adapt the layout (CSS, template)
-|Jasper
-|we need a ''code'' style element
-||not started
+* __code should be sustainable__. Makumba ensures this by relying on simple languages and a set of best practices that make the code understandable also for someone who did not write it.
 
-|fix the plugin stuff so that it does not make a newline
-|manu
-|
-|
+* __everything is a query-fragment__. Displaying and modifying data is made simple especially through powerful features such as the makumba list and makumba forms.
 
-|generate the taglib wiki pages based on the taglib-documented.xml
-|manu
-|* work on taglib-documented.xml to make it look nicer (line-breaks, styles)
-* fix generic table attributes
-* generate special table styles for deprecated etc.
-||in progress
-
-|copy all the pages from [http://lisbon.best.eu.org:8888/] into the wiki (new.makumba.org is outdated since forrest does not build most of the doc there), __except__ the tag documentation that will be generated
-|EVERYONE - details on the tasks on the [Transfer] page.
-|we don't have replacements yet for the forrest <note> and <code> elements, so we need to find something here. We need a template for warning as well.
-||started
-
-|work on the authentication
-|Filip
-|* do not enable account creation for everyone
-* set up some users, and some as admin
-||completed
-
-}]
+* __breaking MVC is cool__. Makumba does not strictly follow MVC, because its design makes it possible to write highly maintainable code without this pattern and all the indirection it brings in.
 
 ----
 [Category Main]

@@ -187,10 +187,11 @@ html>body #previewcontent,html>body #info,html>body #pagecontent,html>body #atta
 #searchboxMenu div{margin:.5em 0;}
 #searchTools{text-align:left;}
 
-.imageplugin{margin:.5em 0;}
-.imageplugin img{border:0;}
+.imageplugin {margin:.5em 0;}
+.imageplugin img{ border:none; border-style:none; float: none; }
 .imageplugin caption{font-size:90%;}
 .imageplugin *{padding:0;margin:0;}
+.imageplugin a {list-style: none; text-decoration: none; border-style: none;}
 
 .index .header{padding:4px;background:#f9f9f9;border:1px solid #ddd;text-align:center;font-size:1.4em;}
 .index .body{margin-top:.5ex;}

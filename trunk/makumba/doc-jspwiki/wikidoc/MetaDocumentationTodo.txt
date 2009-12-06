@@ -1,0 +1,34 @@
+!!!TODO documentation
+
+[{Table
+
+||What
+||Who
+||Comments
+||Status
+
+|Find a way to have comments posted on a different page than the to-be-commented page
+|?
+| 
+|__Not started__
+
+|Permissions for Meta
+|Filip?
+|Wildcard permission to hide Meta pages from the rest of the world. It would be good if only people in the group Documentation (and Admin) can see the Meta* pages
+|__Not started__
+
+|Style for IMG
+|Jasper
+|Images inserted with the Img plugin render like shit, there should be a way to have them nicely aligned by default
+|__Not started__
+
+|Logo
+|Filip
+|Hack logo into layout
+|__Started__
+
+
+}]
+
+----
+[Category Meta]

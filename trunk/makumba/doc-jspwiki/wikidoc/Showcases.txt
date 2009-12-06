@@ -50,11 +50,14 @@ A website for the coordination of an international building project.
 
 !!!Key to the Future
 A website for the jobfair organised by the local BEST group in Tallinn University of Technology.
-[{Img src='Showcases/jobfairTallinn1_t.png' link='Showcases/jobfairTallinn1.png'}]   [{Img src='Showcases/jobfairTallinn2_t.png' link='Showcases/jobfairTallinn2.png'}]
+
+[{Img src='Showcases/jobfairTallinn1_t.png' link='Showcases/jobfairTallinn1.png'}]
+[{Img src='Showcases/jobfairTallinn2_t.png' link='Showcases/jobfairTallinn2.png'}]
 
 
 !!!SvenskWebb
 SvenskWebb is a meeting place for teachers in Swedish at universities abroad.
+
 [{Img src='Showcases/svenskwebb_t.jpg' link='Showcases/svenskwebb.jpg'}] 
 
 
