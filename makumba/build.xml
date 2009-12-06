@@ -891,13 +891,11 @@ package org.makumba]]>
         <copy file="${jar.place}/classes/makumbaResources/javaScript/makumbaDateFunctions.js" tofile="${jar.place}/doc/scripts/makumbaDateFunctions.js" />
         <echo>- generating doc/api</echo>
     	<loadfile property="leftMenuContent" srcfile="doc-jspwiki/JSPWiki/api/leftMenu.html"/>
-    	<echo>Left menu: ${leftMenuContent}</echo> 
 
     	<javadoc destdir="doc-jspwiki/JSPWiki/api" sourcepath="classes" packagenames="org.makumba" notree="true" noindex="true"
             nohelp="true" windowtitle="Makumba" classpathref="project.class.path" Version="true" Author="true"
             additionalparam="-breakiterator" doctitle="Makumba API Documentation" stylesheetfile="doc-jspwiki/JSPWiki/templates/makumba/jspwiki-api.css">
     		<doclet name="net.sourceforge.xhtmldoclet.Doclet" path="${basedir}/lib/XHTML_Doclet_2009-12-06.jar"/>
-    		<!-- path="${basedir}/lib/XHTML_Doclet_2009-12-06.jar" -->
             <bottom>
                 <![CDATA[
             	<div id='sidemenu'>${leftMenuContent}</div>  
