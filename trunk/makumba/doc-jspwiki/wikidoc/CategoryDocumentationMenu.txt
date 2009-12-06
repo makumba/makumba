@@ -42,4 +42,4 @@
 ** [Java business logic|JavaBusinessLogic]
 ** [Error handling|ErrorHandling]
 ** [Makumba Attributes|MakumbaAttributes]
-* [API Documentation|http://wiki.makumba.org/api/index.html]
+* [API Documentation|http://wiki.makumba.org/api/org/makumba/package-summary.html]
