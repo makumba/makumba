@@ -895,14 +895,15 @@ package org.makumba]]>
 
     	<javadoc destdir="doc-jspwiki/JSPWiki/api" sourcepath="classes" packagenames="org.makumba" notree="true" noindex="true"
             nohelp="true" windowtitle="Makumba" classpathref="project.class.path" Version="true" Author="true"
-            additionalparam="-breakiterator" doctitle="Makumba API Documentation" stylesheetfile="doc-jspwiki/JSPWiki/templates/makumba/jspwiki.css">
+            additionalparam="-breakiterator" doctitle="Makumba API Documentation" stylesheetfile="doc-jspwiki/JSPWiki/templates/makumba/jspwiki-api.css">
+    		<doclet name="net.sourceforge.xhtmldoclet.Doclet" path="${basedir}/lib/XHTML_Doclet_2009-12-06.jar"/>
+    		<!-- path="${basedir}/lib/XHTML_Doclet_2009-12-06.jar" -->
             <bottom>
                 <![CDATA[
+            	<div id='sidemenu'>${leftMenuContent}</div>  
                 <div class='pageFooter'>
                 Docs generated on ${javadoc.startup.time}
                 </div>
-            	<div class='leftmenu'>${leftMenuContent}</div>  
-            	<br><br>
 
             ]]></bottom>
             <link href="http://java.sun.com/j2se/1.4.2/docs/api/" />
