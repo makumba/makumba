@@ -138,7 +138,7 @@ public class TaglibDocGenerator {
             }
             
             s.println();
-            s.println("%%(display:block;)[Category Documentation]%%");
+            s.println("%%(display:none;)[Category Documentation]%%");
 
         } catch (IOException io) {
             throw new RuntimeException("Cannot create index file", io);
@@ -203,7 +203,7 @@ public class TaglibDocGenerator {
         
         // finally append the category
         s.newLine();
-        s.append("%%(display:block;)[Category Documentation]%%");
+        s.append("%%(display:none;)[Category Documentation]%%");
         s.flush();
         s.close();
         fos.close();
