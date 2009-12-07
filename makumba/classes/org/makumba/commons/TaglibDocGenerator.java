@@ -339,7 +339,7 @@ public class TaglibDocGenerator {
                 
                 if(genericAttributeTuple.getGenericAttributeName() == null) {
                     // this is the first occurrence of the generic attribute so we build it
-                    genericAttributeTuple.setFirstGenericAttribute(name, required, runtimeExpr, "(generic) " + description, "(generic) " + comments);
+                    genericAttributeTuple.setFirstGenericAttribute(name, required, runtimeExpr, description + " (generic)", comments + " (generic)");
                     genericAttributeTuple.setGenericAttributeName(generic[0]);
                 } else if(genericAttributeTuple.getGenericAttributeName().equals(generic[0])) {
                     genericAttributeTuple.addAttribute(name, required, runtimeExpr);
@@ -347,7 +347,7 @@ public class TaglibDocGenerator {
                     // we have a different generic attribute, so we print the previous one, clear the tuple and set the new one
                     genericAttributeTuple.print(s);
                     genericAttributeTuple.reset();
-                    genericAttributeTuple.setFirstGenericAttribute(name, required, runtimeExpr, "(generic) " + description, "(generic) " + comments);
+                    genericAttributeTuple.setFirstGenericAttribute(name, required, runtimeExpr, description + " (generic)", comments + " (generic)");
                 }
             }
         }
