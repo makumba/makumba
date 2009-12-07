@@ -26,6 +26,8 @@ public class InsertCategoryMenu extends AbstractReferralPlugin implements WikiPl
     private final static String PARAM_PAGE = "page";
 
     private final static String PARAM_CURRENTCATEGORY = "showCurrentCategory";
+
+    private final static String PARAM_MENUPAGE = "showCurrentCategoryMenu";
     
     private final static String[] DEFAULT_CATEGORIES = new String[] { "CategoryMain", "CategoryQuickStart", "CategoryConfiguration", "CategoryUsage",
             "CategoryDocumentation", "CategoryShowcase", "CategoryDownload" };
@@ -42,6 +44,7 @@ public class InsertCategoryMenu extends AbstractReferralPlugin implements WikiPl
         }
         
         boolean showCurrentCategory = params.get(PARAM_CURRENTCATEGORY) != null && ((String)params.get(PARAM_CURRENTCATEGORY)).equals("true");
+        boolean showCurrentCategoryMenu = params.get(PARAM_MENUPAGE) != null && ((String)params.get(PARAM_MENUPAGE)).equals("true");
 
         ReferenceManager refmgr = context.getEngine().getReferenceManager();
         String pageName = (String) params.get(PARAM_PAGE);
@@ -83,10 +86,11 @@ public class InsertCategoryMenu extends AbstractReferralPlugin implements WikiPl
         }
         
         if(showCurrentCategory) {
-            // if there is no category found or if the menu to be included is not found, return nothing
-            boolean menuExists = context.getEngine().pageExists(toBeInserted + "Menu");
             boolean categoryFound = toBeInserted != null;
-            return categoryFound && menuExists ? toBeInserted : "";
+            return categoryFound ? toBeInserted : "";
+        } else if(showCurrentCategoryMenu) {
+            boolean menuExists = context.getEngine().pageExists(toBeInserted + "Menu");
+            return menuExists ? toBeInserted + "Menu" : "";
         } else {
             
             String wikiMarkup = "[{MenuTreePlugin menuPage='" + toBeInserted + "Menu" + "'}]";
