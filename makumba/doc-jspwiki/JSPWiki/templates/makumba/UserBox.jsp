@@ -19,9 +19,10 @@
   </wiki:UserCheck>
   
   <wiki:UserCheck status="authenticated">
-   <a href="<wiki:Link jsp='Logout.jsp' format='url' />" 
+    <%-- manu: link to meta category for authenticated users --%>
+    <wiki:LinkTo page="Meta" >mak:meta</wiki:LinkTo> - 
+    <a href="<wiki:Link jsp='Logout.jsp' format='url' />" 
      title="<fmt:message key='actions.logout.title'/>"><fmt:message key="actions.logout"/></a> -
-    
     <%-- manu: show my prefs only to logged-in users --%>
     <wiki:CheckRequestContext context='!prefs'>
     <wiki:CheckRequestContext context='!preview'>
