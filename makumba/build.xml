@@ -540,7 +540,21 @@
         </copy>
     
     </target>
-
+	
+	<target name="generateTaglibDoc" description="generates the taglib documentation wiki files">
+        <java classname="org.makumba.commons.TaglibDocGenerator" fork="true">
+        	<classpath>
+                <pathelement path="classes/" />
+                <pathelement path="${java.class.path}" />
+                <fileset dir="${basedir}/lib">
+                    <include name="**/*.jar" />
+                    <exclude name="**/makumba*.jar" />
+                </fileset>
+            </classpath>
+        	<arg value="./classes/META-INF/taglib-documented.xml" />
+        	<arg value="./doc-jspwiki/wikidoc"/>
+        </java>
+	</target>
 	
     <target name="tomcat-start" description="start the tomcat to deploy JSPwiki">
         <echo>Java home in build: ${java.home}</echo>
