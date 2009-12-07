@@ -440,7 +440,7 @@ public class TaglibDocGenerator {
                 
         public void print(BufferedWriter s) throws IOException {
             for(String str : firstGenericAttribute) {
-                s.append("|"+str);
+                s.append("|"+str+" ");
                 s.newLine();
             }
             
