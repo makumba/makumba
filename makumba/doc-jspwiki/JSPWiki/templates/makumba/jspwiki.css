@@ -486,10 +486,10 @@ h4 .editsection,h4 .hashlink{font-size:86%;}
 #top_nav .item0
 {
    position:absolute;
-	 top:-82px;
+   top:-82px;
    height:82px;
-   left:170px;
-	 width:230px;
+   left:20px;
+   width:270px;
 }
 /* ITEM 1 - Quick_start */
 #top_nav .item1 {
