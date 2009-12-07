@@ -203,10 +203,7 @@ public class TaglibDocGenerator {
         
         // finally append the category
         s.newLine();
-        s.append("----");
-        s.newLine();
-        s.append("[Category Documentation]");
-
+        s.append("%%(display:block;)[Category Documentation]%%");
         s.flush();
         s.close();
         fos.close();
