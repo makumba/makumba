@@ -1,4 +1,8 @@
+[{TableOfContents}]
+
 This page shows just a few examples of web applications that are using the Makumba JSP tag library.
+
+Share with us if you are using Makumba too!
 
 !!!BEST public website
 
