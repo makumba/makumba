@@ -138,8 +138,7 @@ public class TaglibDocGenerator {
             }
             
             s.println();
-            s.println("----");
-            s.println("[Category Documentation]");
+            s.println("%%(display:block;)[Category Documentation]%%");
 
         } catch (IOException io) {
             throw new RuntimeException("Cannot create index file", io);
