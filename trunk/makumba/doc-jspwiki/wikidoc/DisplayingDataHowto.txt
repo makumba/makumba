@@ -2,12 +2,163 @@
 
 One of the most common operations in database-driven websites is to display information to the user. Makumba provides a query-based approach to this through its [mak:object|ObjectTag] and [mak:list|ListTag] tags.
 
+[{TableOfContents }]
+
 !!!Displaying data through queries
 
-Both [<mak:object>|ObjectTag] and [<mak:list>|ListTag] use the same general principles for displaying data. [<mak:object>|ObjectTag] is meant to handle only one object, while [<mak:list>|ListTag] handles multiple objects. In the following introductory examples, we will use [<mak:object>|ObjectTag] in order to explain the general mechanism.
+Both [<mak:object>|ObjectTag] and [<mak:list>|ListTag] use the same general principles for displaying data. [<mak:object>|ObjectTag] is meant to view one record, e.g. an employee's profile or the details of a project, while [<mak:list>|ListTag] handles multiple objects, and would be used to display a list of employees or projects.
 
-Let's say that we want to ...
+Let's say that we want to display the profile of an employee - we want to give details on the person, such as the name, as well as on the role in the company, such as the department, projects, etc.. 
 
+!!Listing data
+First, we need to select which employee we want to display - for this, we first create a page showing basic information of all employees, linking to the page with detailed profiles for a specific employee.
+
+We can list data by using the [<mak:list>|ListTag] tag, and by specifying which data type to list, using the "from" attribute of the tag.
+
+[{Code
+
+<mak:list from="company.Employee e">
+</mak:list>
+}]
+
+Note that ''e'' is a ''label'' we need to give to the objects we are fetching.
+[{Box
+
+This is similar to SQL, where you can do "SELECT ... FROM table t WHERE ....". While in SQL such a label is optional, in Makumba, it is mandatory.
+}]
+
+A page with this list will tell Makumba to get all data from the %%code company.Employee%% type, and to iterate in the list over each record retrieved. Besides this, the page will not yet show anything - we need to specifically tell which fields we want to display. For this purpose, we can use the [<mak:value>|ValueTag] tag, which prints data from one field in the data definition. Thus, we can extend our page:
+
+[{Code
+
+<mak:list from="company.Employee e">
+  Name: <mak:value expr="e.name"/> <mak:value expr="e.surname"/> <br/>
+</mak:list>
+}]
+
+This will print us the name and surnames of all employees, one per line. 
+
+[{Box
+
+The [<mak:value>|ValueTag] tag expects to receive the name of a field in the data definition that is represented by the label in the %%code expr%% attribute. If you provide an unknown field, you will get an error message showing a [NoSuchFieldException|api:NoSuchFieldException].
+}]
+
+[{Box
+
+Note that we can freely mix HTML and Makumba. While Makumba is responsible for displaying data from the database, HTML is mainly used for formatting.
+}]
+
+!Limiting the list
+In many cases, you wouldn't want to display all the records from a specific data type, as they might be simply to many. Then, you can use the %%code where%% attribute of the [<mak:list>|ListTag] to limit the records you will retrieve from the database. Let's say we want to display only the employees that have a salary over 2.000 (euro per month):
+
+[{Code 
+
+<mak:list from="company.Employee e" where="e.salaray > 2000">
+  Name: <mak:value expr="e.name"/> <mak:value expr="e.surname"/> <br/>
+</mak:list>
+}]
+
+In the %%code where%% attribute, we can specify simple query language expressions, but also more complex conditions. As such, we can also logically combine conditions - if we want to show only female employees with a high salary, we can do
+
+[{Code 
+
+<mak:list from="company.Employee e" where="e.salaray > 2000 AND e.gender='Female'">
+  Name: <mak:value expr="e.name"/> <mak:value expr="e.surname"/> <br/>
+</mak:list>
+}]
+
+In the example above, we made a comparison on the field %%code gender%%, which is an [enumeration|DataDefinitions#Int] type. We can do the comparison both on the textual value ('Male' or 'Female'), as well as on the internal numerical representation (10 or 20), i.e. %%code e.gender='Female'%% and %%code e.gender='20%% or equivalent.
+
+The %%code where%% attribute can accept really complex conditions, involving e.g. sub-queries. Basically, the limitation is set by the [query language|QueryLanguages] used.
+!Creating links with object identifiers
+When we want to display details on a specific data record, let's say an employee's profile, we need to know in the page showing that profile ''which'' employee to display. Each record in the data base has a unique identifier - thus, we need to pass on the identifier for that specific employee to the profile page. We can do this by mixing HTML links with a [<mak:value>|ValueTag] tag:
+
+
+[{Code
+
+<mak:list from="company.Employee e">
+  Name: <mak:value expr="e.name"/> <mak:value expr="e.surname"/> 
+  <a href="employeeProfile.jsp?employee=<mak:value expr='e'/>">[Details]</a> <br/>
+</mak:list>
+}]
+
+This will display us, next to the names of each employee, a link to the page for showing the profile, e.g. %%code employeeProfile.jsp?employee=hhi4xw7%%. The text that will appear on the link is the same as if the link was constructed in HTML, i.e. %%[[Details]%%.
+
+!!Displaying single records
+
+Displaying a single record from the database requires us to limit our selection. This can be done with the %%code where%% attribute of the [<mak:object>|ObjectTag]. If we have constructed a link to our employee profile page as described [above|DisplayingDataHowto#], i.e. we are on a page employeeProfile.jsp?employee=hhi4xw7, we can do the following page:
+
+[{Code
+
+<mak:object from="company.employee e" where="e=$employee">
+</mak:object>
+}]
+
+Instead of having a constant value in the equality comparison for ''e'', we use a parameter present in the current page. %%code $employee%% will indicated Makumba to search for a parameter with the name ''employee'' in the page parameters (and subsequently in all the [Makumba attributes|MakumbaAttributes]).
+
+We can thus extend our page, and display all of the employees details:
+
+[{Code
+
+<mak:object from="company.employee e" where="e=$employee">
+  <h1> Profile page of <mak:value expr="e.name"/> <mak:value expr="e.surname"/> </h1>
+  Title: 
+  <mak:if test="e.gender='Male'"/>Mr.</mak:if><mak:if test="e.gender='Female'"/>Mrs.</mak:if>
+  <br/>
+  Birthday: <mak:value expr="e.birthdate"/> <br/>
+  Department: <mak:value expr="e.department"/> <br/>  
+</mak:object>
+}]
+
+[{Box
+
+We can use the [<mak:if>|IfTag] to do conditional processing. There is no <mak:else> tag available, thus if we have several options, we need to repeatedly use <mak:if>.
+}]
+
+[{Box
+
+If we use a [relational type|DataDefinitions#StructuralRelationalTypesAndCollections] in the expression of a <mak:value>, such as the ''pointer'' to %%code company.Department%% in the example above, not the all details of the record, but just the value of the [title field|DataDefinitions#ObjectTitle] will be displayed.
+}]
+
+!!Displaying sub-records
+Let's consider still the employee profile from [above|DisplayingDataHowto#DisplayingSingleRecords]. In the profile page, we might also want to display all the projects a person is involved in, maybe in a tabular way. We can thus extend our example:
+
+[{Code
+
+<mak:object from="company.employee e" where="e=$employee">
+  <h1> Profile page of <mak:value expr="e.name"/> <mak:value expr="e.surname"/> </h1>
+  Title: 
+  <mak:if test="e.gender='Male'"/>Mr.</mak:if><mak:if test="e.gender='Female'"/>Mrs.</mak:if>
+  <br/>
+  Birthday: <mak:value expr="e.birthdate"/> <br/>
+  Department: <mak:value expr="e.department"/> <br/>
+  <h2>Projects</h2>
+  <table>
+    <tr> <th>Name</th> <th>Leader</th> <th>% Emplyoyed</th> </tr>
+    <mak:list from="e.projects p">
+    <tr>
+      <td> <mak:value expr="e.project"/> </td>
+      <td> 
+        <mak:value expr="e.project.leader.name"/> 
+        <mak:value expr="e.project.leader.surname"/>
+      </td>
+      <td> <mak:value expr="e.timePercentage"/> </td>
+    </tr>
+    </mak:list>
+  </table>
+</mak:object>
+
+}]
+
+[{Box
+
+We can nest [<mak:list>|ListTag] and [<mak:object>|ObjectTag] tags inside each other. Read more on this in the section on [multiple lists|MultipleListsAndFormsHowto].
+}]
+
+[{Box
+
+When displaying relational types, we can traverse over several pointer relations at once. In the example above, ''e.project'' is a record of type %%code company.Project%%, and ''e.project.leader'' a record of type %%code company.Employee%%. Thus, we can access the fields ''name'' and surname'' of this type by using the expression %%code e.project.leader.name%% and %%code e.project.leader.surname%%.
+}]
 !!!Attributes
 
 Deprecated. Explain parameters, pointers, $ and stuff with JSTL. Lots of JSTL here.
