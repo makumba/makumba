@@ -281,7 +281,7 @@ public class TaglibDocGenerator {
             s.append("[{Table");
             s.newLine();
             s.newLine(); // empty line necessary or the plugin doesn't work
-            s.append("||Name||Required||Request-time||Description||Comments");
+            s.append("||Name||Required||Request-time||Description||Comments ");
             s.newLine();
             s.newLine();
             
@@ -358,18 +358,18 @@ public class TaglibDocGenerator {
             genericAttributeTuple.reset();
         } else if(!isGenericAttribute) {
             if(isDeprecated) {
-                s.append("|" + deprecatedStyle + name + " (deprecated)");
+                s.append("|" + deprecatedStyle + name + " (deprecated) ");
             } else {
-                s.append("|" + deprecatedStyle + name);
+                s.append("|" + deprecatedStyle + name+" ");
             }
             s.newLine();
-            s.append("|" + deprecatedStyle + required);
+            s.append("|" + deprecatedStyle + required+" ");
             s.newLine();
-            s.append("|" + deprecatedStyle + runtimeExpr);
+            s.append("|" + deprecatedStyle + runtimeExpr+" ");
             s.newLine();
-            s.append("|" + deprecatedStyle + description);
+            s.append("|" + deprecatedStyle + description+" ");
             s.newLine();
-            s.append("|" + deprecatedStyle + comments);
+            s.append("|" + deprecatedStyle + comments+" ");
             s.newLine();
             s.newLine(); // empty line, row is over
         }
