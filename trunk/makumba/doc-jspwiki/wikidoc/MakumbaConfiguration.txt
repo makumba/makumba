@@ -126,5 +126,5 @@ Configuration of input properties (e.g. mak:input).
 |calendarEditor | Whether the calendar editor for date fields should be active | false
 |calendarEditorLink | The content of the link to the calendar editor | <img border="0" src="_CONTEXT_PATH_/mak-tools/makumbaResources/image/calendar.gif"> 
 
-----
-[Category Configuration]
+
+%%(display:none;)[Category Configuration]%%

@@ -350,5 +350,5 @@ If it means that it does not actually exist. This can be used to cancel an inclu
 Include might be replaced by more advanced concepts such as inheritance and type inclusion (rather than reference in foreign table)
 }]  
 
-----
-[Category Documentation]
+
+%%(display:none;)[Category Documentation]%%

@@ -72,5 +72,4 @@ In order to use HQL in Makumba JSPs pages, the following TLD declaration should 
 }]
 
 
-----
-[Category Documentation]
+%%(display:none;)[Category Documentation]%%

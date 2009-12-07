@@ -145,5 +145,4 @@ editForm
 deleteForm
 }]
 
-----
-[Category QuickStart]
+%%(display:none;)[Category QuickStart]%%

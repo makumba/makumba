@@ -4,5 +4,4 @@ Describe error handling mechanism: error pages (customizable, link to conf) and 
 }]
 
 
-----
-[Category Documentation]
+%%(display:none;)[Category Documentation]%%

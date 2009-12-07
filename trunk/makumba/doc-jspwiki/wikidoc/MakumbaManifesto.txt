@@ -8,5 +8,5 @@ Developing a webapp should be __simple.__ Knowing complicated programming langua
 
 Your webapps should be fast. Today's Internet users are expecting __performance__ and this is what Makumba delivers. It doesn't matter if your page is complex, makumba optimises the operations it has to do so that surfing your sites will feel smooth.
 
-----
-[Category Usage]
+
+%%(display:none;)[Category Usage]%%

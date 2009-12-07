@@ -171,6 +171,6 @@ Here are some links to useful resources and things to read
 
 }]
 
-----
-[Category Meeting]
+
+%%(display:none;)[Category Meeting]%%
 

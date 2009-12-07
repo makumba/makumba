@@ -1,5 +1,4 @@
 !!! About makumba
 
 
-----
-[Category Main]
+%%(display:none;)[Category Main]%%

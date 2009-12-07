@@ -12,5 +12,5 @@ The core ideas are:
 
 * __breaking MVC is cool__. Makumba does not strictly follow MVC, because its design makes it possible to write highly maintainable code without this pattern and all the indirection it brings in.
 
-----
-[Category Main]
+
+%%(display:none;)[Category Main]%%

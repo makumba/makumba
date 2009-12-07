@@ -2,5 +2,5 @@
 
 This is the Makumba Reference Documentation. In contrary to the [Usage] documentation, it contains the technical aspects and reference of Makumba tags and Makumba's way of working.
 
-----
-[Category Documentation]
+
+%%(display:none;)[Category Documentation]%%

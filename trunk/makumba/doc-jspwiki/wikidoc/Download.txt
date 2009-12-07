@@ -4,4 +4,5 @@ Makumba is [open source software|http://www.opensource.org/]. Both source code a
 
 You can __[download Makumba at Sourceforge|http://sourceforge.net/project/showfiles.php?group_id=25704]__
 
-[Category Download]
+
+%%(display:none;)[Category Download]%%

@@ -115,5 +115,4 @@ The %%Code <mak:value expr="p" />%% will also print this string, whereas the sec
 !!Transaction
 
 
-----
-[Category Documentation]
+%%(display:none;)[Category Documentation]%%

@@ -46,5 +46,5 @@ If you need to pass a literal __backslash__ (\) you have to escape it with a pre
 
 Unfortunately the idea to use a sequence of escapes, eg writing ~\\\' in the JSP page to set the tag attribute to \', which could be handy for javascript tag attributes, is confusing the Tomcat servlet container.
 
-----
-[Category Documentation]
+
+%%(display:none;)[Category Documentation]%%

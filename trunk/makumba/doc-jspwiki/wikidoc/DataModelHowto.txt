@@ -207,5 +207,5 @@ This mechanism can be modified to some extent by using a number of parameters in
 * company.Company->name = companyName means that Makumba will look for the field name in the database field companyName instead of name_
 * the parameter addUnderscore=true|false makes it possible to control whether underscores are appended to the database name of tables and fields
 
-----
-[Category Usage]
+
+%%(display:none;)[Category Usage]%%
