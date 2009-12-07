@@ -93,5 +93,6 @@ The following employees should retire:
   <mak:value expr="e.nameSurname()"/> <br/>
 </mak:list>
 }]  
-----
-[Category Usage]
+
+
+%%(display:none;)[Category Usage]%%

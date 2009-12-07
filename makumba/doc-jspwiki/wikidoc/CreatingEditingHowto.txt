@@ -184,5 +184,5 @@ Reloading the form page on errors can be triggered by the attribute reloadFormOn
 
 Additionally, form validation can be done also on the client-side, i.e. in the browser. Client-side validation can be either live, i.e. on entering data in an input, or before form submission; this is controlled by the attribute clientSideValidation.
 
-----
-[Category Usage]
+
+%%(display:none;)[Category Usage]%%

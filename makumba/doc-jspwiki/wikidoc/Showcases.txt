@@ -70,5 +70,4 @@ A collection of famous antique maps.
 
 [{Img src='Showcases/maps_t.jpg' link='Showcases/maps.jpg'}] 
 
-----
-[Category Showcase]
+%%(display:none;)[Category Showcase]%%

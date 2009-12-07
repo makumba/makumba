@@ -19,5 +19,5 @@ When an org.makumba.UnauthenticatedException is thrown, Makumba will look for a 
 
 the [mak:login|LoginTag] and [mak:logout|LogoutTag] tags can be used in order to set and remove Makumba attributes.
 
-----
-[Category Documentation]
+
+%%(display:none;)[Category Documentation]%%

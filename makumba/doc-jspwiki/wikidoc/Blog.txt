@@ -2,5 +2,5 @@
 
 [{INSERT WeblogPlugin}]
 
-----
-[Category Main]
+
+%%(display:none;)[Category Main]%%

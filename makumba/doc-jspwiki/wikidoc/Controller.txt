@@ -9,5 +9,5 @@ The Makumba controller is a component running in the 'servlet container'. When a
 * [error handling|ErrorHandling]: if an error occurs (be it a programmer error or an internal error), handle the error by e.g. displaying the appropriate page
 * [Makumba attributes|MakumbaAttributes]
 
-----
-[Category Documentation]
+
+%%(display:none;)[Category Documentation]%%

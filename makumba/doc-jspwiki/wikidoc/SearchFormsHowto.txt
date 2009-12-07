@@ -96,5 +96,4 @@ When a search form is submitted, Makumba will respond with creating several [att
 | <searchFormName>Where | The filter conditions for the matching records, will be used by mak:resultList in the where=".." attribute.
 
 
-----
-[Category Usage]
+%%(display:none;)[Category Usage]%%

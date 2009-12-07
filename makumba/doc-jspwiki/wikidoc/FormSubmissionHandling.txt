@@ -19,5 +19,4 @@ Business logic exceptions are displayed using the [mak:response|ResponseTag] tag
 If everything goes fine, the request is forwarded to the action page, where a message might be displayed (see the message attribute).
 
 
-----
-[Category Documentation]
+%%(display:none;)[Category Documentation]%%

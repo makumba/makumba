@@ -89,5 +89,4 @@ Now, we need to define an authorization constraint that will be launched wheneve
 We could of course have skipped the creation of the %%source isAdmin()%% function, but this way ensures that we can re-use the query in other places.
 
 
-----
-[Category Documentation]
+%%(display:none;)[Category Documentation]%%

@@ -192,5 +192,5 @@ A query execution context is a set of known attributes. In the case of JSP this 
 
 Actor functions define a special type of session attributes that are computed based on other attributes from the query context.
 
-----
-[CategoryDocumentation]
+
+%%(display:none;)[CategoryDocumentation]%%

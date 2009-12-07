@@ -62,5 +62,5 @@ Some properties of multiple forms are:
 </mak:form>
 }]
 
-----
-[Category Usage]
+
+%%(display:none;)[Category Usage]%%

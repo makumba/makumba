@@ -15,5 +15,5 @@ In order to get started, read further on the following topics:
 * [Authentication and authorisation|AuthenticationAuthorizationHowto]
 * [Layout and navigation|LayoutHowto]
 
-----
-[Category Usage]
+
+%%(display:none;)[Category Usage]%%

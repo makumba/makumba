@@ -164,5 +164,5 @@ From the types defined in the [Data Definition|DataDefinitions], as well as from
 
 The default messages can be redefined in the MDD, as detailed in the [field attributes section|DataDefinitions#FieldAttributes] section of the MDD documentation.
 
-----
-[Category Documentation]
+
+%%(display:none;)[Category Documentation]%%
