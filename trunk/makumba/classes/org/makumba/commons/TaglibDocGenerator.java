@@ -447,15 +447,15 @@ public class TaglibDocGenerator {
             s.newLine(); //first row is over, new line
             
             for(String[] att : attributes) {
-                s.append("| "+att[0]);
+                s.append("|"+att[0]+" ");
                 s.newLine();
-                s.append("| "+att[1]);
+                s.append("|"+att[1]+" ");
                 s.newLine();
-                s.append("| "+att[2]);
+                s.append("|"+att[2]+" ");
                 s.newLine();
-                s.append("| ^");
+                s.append("|^ ");
                 s.newLine();
-                s.append("| ^");
+                s.append("|^ ");
                 s.newLine();
                 
                 s.newLine();
