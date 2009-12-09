@@ -11,8 +11,8 @@ public enum ValidationType {
     COMPARISON("comparison rule"), //
     UNIQUENESS("uniqueness rule", FieldType.CHAR, FieldType.BOOLEAN, FieldType.DATE, FieldType.INT, FieldType.PTR,
             FieldType.TEXT), //
-    RANGE("range rule", FieldType.INT, FieldType.REAL), //
-    LENGTH("length rule", FieldType.CHAR, FieldType.TEXT), //
+    RANGE("number range rule", FieldType.INT, FieldType.REAL), //
+    LENGTH("string length rule", FieldType.CHAR, FieldType.TEXT), //
     REGEX("regular expression rule", FieldType.CHAR, FieldType.TEXT); //
 
     ValidationType(String description, FieldType... fieldType) {
