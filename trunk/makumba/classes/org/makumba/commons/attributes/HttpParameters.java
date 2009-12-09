@@ -24,7 +24,6 @@
 package org.makumba.commons.attributes;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -33,8 +32,6 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.ArrayUtils;
-
 /**
  * Helper class to work with http parameters
  * 
@@ -42,13 +39,13 @@ import org.apache.commons.lang.ArrayUtils;
  * @version $Id: HttpParameters.java 1402 2007-07-25 11:52:28Z manuel_gay $
  */
 public class HttpParameters {
-    
+
     HttpServletRequest request;
 
     Hashtable<Object, Object> atStart;
 
     Map<Object, Object> reloadedParameters = null;
-    
+
     public boolean knownAtStart(String s) {
         return atStart.get(s) != null;
     }
@@ -57,7 +54,7 @@ public class HttpParameters {
         request = req;
         computeAtStart();
     }
-    
+
     public HttpParameters(HttpServletRequest req, Map<Object, Object> additionalParams) {
         request = req;
         reloadedParameters = additionalParams;
@@ -68,8 +65,9 @@ public class HttpParameters {
     void computeAtStart() {
         atStart = new Hashtable<Object, Object>();
         Object dummy = new Object();
-        for (Enumeration e = request.getParameterNames(); e.hasMoreElements();)
+        for (Enumeration e = request.getParameterNames(); e.hasMoreElements();) {
             atStart.put(e.nextElement(), dummy);
+        }
     }
 
     /**
@@ -82,40 +80,41 @@ public class HttpParameters {
     public Object getParameter(String s) {
         Object value = null;
         ArrayList<String> param = new ArrayList<String>();
-        
+
         String[] params = request.getParameterValues(s);
-        if(params != null) {
-            for(String p : params) {
+        if (params != null) {
+            for (String p : params) {
                 param.add(p);
             }
         }
-        
+
         // here we only add reloaded parameters if there is not already some value from the existing session
         // otherwise we might set a parameter with multiple values whereas it really should have only one
         // this is especially the case for URL GET parameters
-        if(reloadedParameters != null && param.size() == 0) {
-            if(reloadedParameters.get(s) instanceof String) {
-                param.add((String)reloadedParameters.get(s));
-            } else if(reloadedParameters.get(s) instanceof String[]) {
+        if (reloadedParameters != null && param.size() == 0) {
+            if (reloadedParameters.get(s) instanceof String) {
+                param.add((String) reloadedParameters.get(s));
+            } else if (reloadedParameters.get(s) instanceof String[]) {
                 String[] paramValues = (String[]) reloadedParameters.get(s);
-                for(String v : paramValues) {
+                for (String v : paramValues) {
                     param.add(v);
                 }
             }
-            
+
         }
-        
-        if(param.size() == 0) {
+
+        if (param.size() == 0) {
             return null;
         }
 
-        if (param.size() == 1)
+        if (param.size() == 1) {
             value = param.get(0);
-        else {
+        } else {
             Vector<String> v = new java.util.Vector<String>();
             value = v;
-            for (int i = 0; i < param.size(); i++)
+            for (int i = 0; i < param.size(); i++) {
                 v.addElement(param.get(i));
+            }
         }
         // request.setAttribute(s, value);
 
@@ -127,25 +126,25 @@ public class HttpParameters {
         Enumeration<String> parameterNames = request.getParameterNames();
 
         while (parameterNames.hasMoreElements()) {
-            String param = (String) parameterNames.nextElement();
+            String param = parameterNames.nextElement();
         }
-        
-        if(reloadedParameters != null) {
+
+        if (reloadedParameters != null) {
             Iterator<Object> i = reloadedParameters.keySet().iterator();
-            while(i.hasNext()) {
-                String param = (String)i.next();
+            while (i.hasNext()) {
+                String param = (String) i.next();
                 if (param.startsWith(s)) {
                     result.add(param);
                 }
             }
         }
 
-        
         return result;
     }
 
+    @Override
     public String toString() {
-        if(reloadedParameters == null) {
+        if (reloadedParameters == null) {
             return request.getParameterMap().toString();
         }
         return request.getParameterMap().toString() + reloadedParameters.toString();
