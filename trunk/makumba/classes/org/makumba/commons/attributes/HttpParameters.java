@@ -36,6 +36,8 @@ import javax.servlet.http.HttpServletRequest;
  * Helper class to work with http parameters
  * 
  * @author Cristian Bogdan
+ * @author Rudolf Mayer
+ * @author Manuel Gay
  * @version $Id: HttpParameters.java 1402 2007-07-25 11:52:28Z manuel_gay $
  */
 public class HttpParameters {
@@ -149,7 +151,8 @@ public class HttpParameters {
         if (reloadedParameters == null) {
             return request.getParameterMap().toString();
         }
-        return request.getParameterMap().toString() + reloadedParameters.toString();
+        return "page parameters: " + request.getParameterMap().toString() + ", reloaded parameters: "
+                + reloadedParameters.toString();
     }
 
 }
