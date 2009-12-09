@@ -42,7 +42,7 @@ public class RangeValidationRule extends ValidationRuleNode {
         }
 
         switch (type) {
-            case LENGTH:
+            case RANGE:
                 if (!(value instanceof Number)) {
                     return false;// TODO: think of throwing some "cannot validate exception"
                 }
@@ -53,7 +53,7 @@ public class RangeValidationRule extends ValidationRuleNode {
                     return false;
                 }
 
-            case RANGE:
+            case LENGTH:
                 if (!(value instanceof String || value instanceof Text)) {
                     return false;// TODO: think of throwing some "cannot validate exception"
                 }
