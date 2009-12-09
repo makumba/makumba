@@ -127,6 +127,8 @@ public class HttpParameters {
 
         while (parameterNames.hasMoreElements()) {
             String param = parameterNames.nextElement();
+            // FIXME: rudi: guess something was lost here when manu was adding the reloaded parameters..
+            // either we also check parameterNames (and add it to results), or skip this loop
         }
 
         if (reloadedParameters != null) {
