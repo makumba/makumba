@@ -105,7 +105,7 @@ toys=set
 groupMembers = set test.Person
 
 # comparison validation rules spanning over more than one field
-compare(weight, age) { weight < age } : "You should not be more heavy than you're old!" ; comment
+compare(weight, age) { weight < age } : "Your weight can't be higher than your age!" ; comment
 compare(firstSex, birthdate) { firstSex >= birthdate } : "Can't have sex before you'are born!"
 compare(email) { lower(email) = email } : "E-mail address must be all lower case!"
 compare(indiv.name) { lower(indiv.name) != indiv.name } : "Your name can't be all lower cases!"
@@ -130,4 +130,9 @@ fullName() { indiv.fullName() } ; comment
 
 actor(char[] username, char[] password) { myapp_username=username AND this.password=password }
 actor2(char[] username, char[] password) { indiv.someusername=username AND this.password=password }
-principal%actor3(char[] username) { indiv.someusername=username }
+
+score(char term) { scoreMatch(term, this.indiv.name)  }
+
+# a generic function assigning weights to pattern matches
+scoreMatch(char term, char value) { case when term=value then 1 else case when term like 'value%' then 0.8 else case when term like '%value' then 0.6 else case when term like '%value%' then 0.5 end end end end }
+ 
