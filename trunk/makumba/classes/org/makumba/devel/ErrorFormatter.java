@@ -249,8 +249,8 @@ public class ErrorFormatter {
                 if (req.getAttribute("makumba.parameters") != null) {
                     d.put("makumbaParameters", req.getAttribute("makumba.parameters").toString());
                 }
-                if (req.getAttribute("makumba.attributes") != null) {
-                    d.put("makumbaAttributes", req.getAttribute("makumba.attributes").toString());
+                if (req.getAttribute(RequestAttributes.ATTRIBUTES_NAME) != null) {
+                    d.put("makumbaAttributes", req.getAttribute(RequestAttributes.ATTRIBUTES_NAME).toString());
                 }
                 if (req.getAttribute("makumba.controller") != null) {
                     d.put("makumbaController", req.getAttribute("makumba.controller").toString());
