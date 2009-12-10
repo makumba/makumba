@@ -78,9 +78,14 @@ public class MenuTreePlugin implements WikiPlugin {
             
             ret += getMenuHtml(context.getPage().getName(), engine);
             
-            while(i > MenuTree.endMenu && it.hasNext()) {
+            boolean done = false;
+            while(i > MenuTree.endMenu && !done) {
                 ret += "<h1>" + engine.textToHTML(context, headers.get(i)) + "</h1>\n";
-                i = it.next();
+                if(it.hasNext()) {
+                    i = it.next();
+                } else {
+                    done = true;
+                }
             }
             
         } catch (Exception e) {
