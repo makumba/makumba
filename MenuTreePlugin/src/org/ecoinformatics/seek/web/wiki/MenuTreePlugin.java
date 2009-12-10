@@ -5,8 +5,10 @@
  */
 package org.ecoinformatics.seek.web.wiki;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -64,9 +66,23 @@ public class MenuTreePlugin implements WikiPlugin {
 
             String menuText = engine.getPureText(menuPage, WikiPageProvider.LATEST_VERSION);
             MenuTree.compute(menuText);
-            ret = getMenuHeader(menuText) + "\n";
+            
+            LinkedHashMap<Integer, String> headers = getMenuHeaders(menuText);
+            
+            Iterator<Integer> it = headers.keySet().iterator();
+            Integer i = it.next();
+            while(i < MenuTree.startMenu && it.hasNext()) {
+                ret += "<h1>" + engine.textToHTML(context, headers.get(i)) + "</h1>\n";
+                i = it.next();
+            }
             
             ret += getMenuHtml(context.getPage().getName(), engine);
+            
+            while(i > MenuTree.endMenu && it.hasNext()) {
+                ret += "<h1>" + engine.textToHTML(context, headers.get(i)) + "</h1>\n";
+                i = it.next();
+            }
+            
         } catch (Exception e) {
             ret = e.toString();
             e.printStackTrace(System.err);
@@ -78,19 +94,20 @@ public class MenuTreePlugin implements WikiPlugin {
     /**
      * Scans the menu page and fetches the first header element in order to generate a h1 header
      */
-    private String getMenuHeader(String menuText) {
+    private LinkedHashMap<Integer, String> getMenuHeaders(String menuText) {
         
-        Matcher m = Pattern.compile("^!!! *(.*)").matcher(menuText);
+        LinkedHashMap<Integer, String> headers = new LinkedHashMap<Integer, String>();
         
-        String headerText = "";
+        Matcher m = Pattern.compile("^!!! *(.*)$", Pattern.MULTILINE).matcher(menuText);
         
+        // fetch the first one
         while(m.find()) {
-            headerText = m.group(1);
+            headers.put(m.start(), m.group(1));
         }
-        
-        return "<h1>" + headerText + "</h1>";
-    }
 
+        return headers;
+    }
+    
     /**
      * Generates the HTML for the menu
      * 
@@ -133,8 +150,6 @@ public class MenuTreePlugin implements WikiPlugin {
         if (!node.children.isEmpty()) {
             if (node.getLinkText().equals("ROOT")) {
                 sb.append("<ul class=\"MenuTreeRoot\">\n");
-            } else if (node.getLinkText().equals("JASPER"))  {
-                sb.append("<h1>"+node.getDisplayText()+"</h1>\n");
             } else {
                 sb.append("<ul class=\"MenuTree\">\n");
             }
@@ -144,29 +159,35 @@ public class MenuTreePlugin implements WikiPlugin {
             while (iter.hasNext()) {
                 childNode = (MenuTreeNode) iter.next();
 
+                String linkText = childNode.getLinkText();
+                String url = engine.getURL(WikiContext.VIEW, linkText, null, true);
+                if(linkText.startsWith("http://")) {
+                    url = linkText;
+                }
+                
                 if (childNode == selectedNode && !childNode.children.isEmpty()) {
                     sb.append("<a class=\"MenuTreeSelected\" href=\""
-                            + engine.getURL(WikiContext.VIEW, childNode.getLinkText(), null, true) + "\">"
+                            + url + "\">"
                             + "<li class=\"MenuTreeSelected\">"
                             + childNode.getDisplayText() + "</li></a>\n");
                 } else if (childNode == selectedNode) {
                     sb.append("<a class=\"MenuTreeSelected\" href=\""
-                            + engine.getURL(WikiContext.VIEW, childNode.getLinkText(), null, true) + "\">"
+                            + url + "\">"
                             + "<li class=\"MenuTreeLeafSelected\">"
                             + childNode.getDisplayText() + "</li></a>\n");
                 } else if (!nodesInPath.contains(childNode) && childNode.children.isEmpty()) {
                     sb.append("<a href=\""
-                            + engine.getURL(WikiContext.VIEW, childNode.getLinkText(), null, true) + "\">"
+                            + url + "\">"
                             + "<li class=\"MenuTreeLeaf\">"
                             + childNode.getDisplayText() + "</li></a>\n");
                 } else if (nodesInPath.contains(childNode) && !childNode.children.isEmpty()) {
                     sb.append("<a href=\""
-                            + engine.getURL(WikiContext.VIEW, childNode.getLinkText(), null, true) + "\">"
+                            + url + "\">"
                             + "<li class=\"MenuTreeExpanded\">"
                             + childNode.getDisplayText() + "</li></a>\n");
                 } else {
                     sb.append("<a href=\""
-                            + engine.getURL(WikiContext.VIEW, childNode.getLinkText(), null, true) + "\">"
+                            + url + "\">"
                             + "<li class=\"MenuTree\">"
                             + childNode.getDisplayText() + "</li></a>\n");
                 }

@@ -21,6 +21,10 @@ public class MenuTree {
     static public HashMap<String, MenuTreeNode> MenuTreeNodes = new HashMap<String, MenuTreeNode>();
 
     static public MenuTreeNode root = new MenuTreeNode("ROOT");
+    
+    static public int startMenu = -1;
+    
+    static public int endMenu = -1;
 
     public static MenuTreeNode put(String key, MenuTreeNode node) {
         return MenuTreeNodes.put(key, node);
@@ -53,8 +57,19 @@ public class MenuTree {
 
             Matcher m = Pattern.compile("(?m)^(\\**)\\s*\\[(\\s*(.+)\\s*\\|)?\\s*(\\S+)\\s*\\]\\s*$").matcher(
                     wikiMenuText);
+            
+            boolean foundStart = false;
+            int end = -1;
 
             while (m.find()) {
+                
+                if(!foundStart) {
+                    foundStart = true;
+                    startMenu = m.start();
+                }
+                
+                end = m.end();
+                
                 levelNum = m.group(1).length();
                 displayName = m.group(3);
                 pageName = m.group(4);
@@ -84,6 +99,9 @@ public class MenuTree {
                 prevNode = node;
                 prevLevelNum = levelNum;
             }
+            
+            endMenu = end;
+            
         } else { // null wikiMenuText
             node = new MenuTreeNode("MenuTree", "Create a MenuTree");
             root.addChild(node);
