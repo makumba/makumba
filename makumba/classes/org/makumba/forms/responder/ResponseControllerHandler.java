@@ -63,6 +63,8 @@ public class ResponseControllerHandler extends ControllerHandler {
                     + responder.getReloadFormOnError() + ", will reload: " + shallReload);
 
             if (shallReload) {
+                // FIXME bug 1145: we should do this step of resolving exceptions also when the form action page is the
+                // same as the form origin page, i.e. when we do an implicit form "reload"
 
                 logger.fine("CompositeValidationException: annotating form: " + responder.getShowFormAnnotated());
 
