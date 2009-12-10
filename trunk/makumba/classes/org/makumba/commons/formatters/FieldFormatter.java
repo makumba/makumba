@@ -29,6 +29,7 @@ import java.util.Hashtable;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.makumba.ProgrammerError;
+import org.makumba.forms.html.FieldEditor;
 
 /**
  * Formats a specific field. Subclasses of this class are handling the different kind of fields.
@@ -167,7 +168,7 @@ public class FieldFormatter {
         try {
             return Integer.parseInt(s);
         } catch (NumberFormatException e) {
-            throw new InvalidValueException(rf.expr[fieldIndex], "invalid integer for " + name + ": " + s);
+            throw new InvalidValueException(rf.expr[fieldIndex], FieldEditor.ERROR_NO_INT + " for " + name + ": " + s);
         }
     }
 
