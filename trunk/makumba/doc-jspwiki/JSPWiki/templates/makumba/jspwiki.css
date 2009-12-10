@@ -586,23 +586,38 @@ h4 .editsection,h4 .hashlink{font-size:86%;}
   margin: 0px 10px;
   font-size:12px
 }
+/*
 #sidemenu li.MenuTree,
-#sidemenu li.MenuTreeLeafSelected, 
 #sidemenu li.MenuTreeSelected,
-#sidemenu li.MenuTreeExpanded     { padding-left: 18px; }
-#sidemenu li.MenuTree             { background: url('images/sidemenu_tree.png') 2px 12px no-repeat; }
+#sidemenu li.MenuTreeExpanded
+*/
+
+#sidemenu li.MenuTreeLeaf,
+#sidemenu li.MenuTreeLeafSelected {
+	padding-left: 18px;
+}
+
+#sidemenu li.MenuTree a {
+    background: url('images/sidemenu_tree.png');
+    background-position: 2px 12px;
+    background-repeat: no-repeat;
+    padding-left: 18px;
+}
+#sidemenu li.MenuTreeSelected a,
+#sidemenu li.MenuTreeExpanded a { 
+    background: url('images/sidemenu_tree_expanded.png');
+    background-position: 2px 12px;
+    background-repeat: no-repeat;
+    padding-left: 18px;
+}
 
 #sidemenu li.MenuTreeSelected,
 #sidemenu li.MenuTreeExpanded,
 #sidemenu li.MenuTreeLeafSelected { font-weight: bold; }
 
-#sidemenu li.MenuTreeExpanded,
-#sidemenu li.MenuTreeSelected     { background: url('images/sidemenu_tree_expanded.png') 2px 12px no-repeat; }
-
-#sidemenu li.MenuTreeLeafSelected { background: url('images/sidemenu_selector.png') 2px 12px no-repeat; }
-
 #sidemenu a {
   text-decoration:none;
+  display:block;
   color: #000;
 }
 
