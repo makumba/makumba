@@ -62,9 +62,9 @@ public class ResponseControllerHandler extends ControllerHandler {
             logger.fine("Form submission failed, operation: " + responder.operation + ", reloadForm: "
                     + responder.getReloadFormOnError() + ", will reload: " + shallReload);
 
-            if (shallReload) {
-                // FIXME bug 1145: we should do this step of resolving exceptions also when the form action page is the
-                // same as the form origin page, i.e. when we do an implicit form "reload"
+            // we resolving exceptions when we are going to reload the form, and also when the form action page is the
+            // same as the form origin page, i.e. when we do an implicit form "reload" (solves bug 1145)
+            if (shallReload || submittingToSamePage(responder.getOriginatingPageName(), absoluteAction)) {
 
                 logger.fine("CompositeValidationException: annotating form: " + responder.getShowFormAnnotated());
 
@@ -150,7 +150,7 @@ public class ResponseControllerHandler extends ControllerHandler {
         resp = new HttpServletResponseWrapper((HttpServletResponse) resp) {
             @Override
             public void sendRedirect(String s) throws java.io.IOException {
-                if (root != null && s.startsWith(root)) {
+                if (root != null && submittingToSamePage(root, s)) {
                     s = s.substring(root.length());
                 }
                 ((HttpServletResponse) getResponse()).sendRedirect(s);
@@ -178,7 +178,7 @@ public class ResponseControllerHandler extends ControllerHandler {
                 HttpServletRequest httpServletRequest = ((HttpServletRequest) getRequest());
                 String originatingPage = responder.getOriginatingPageName();
                 String contextPath = httpServletRequest.getContextPath();
-                if (originatingPage.startsWith(contextPath)) {
+                if (submittingToSamePage(contextPath, originatingPage)) {
                     originatingPage = originatingPage.substring(contextPath.length());
                 }
                 if (originatingPage.indexOf("?") > 0) {
@@ -203,7 +203,11 @@ public class ResponseControllerHandler extends ControllerHandler {
     public static boolean shallReload(boolean reloadFormOnError, String action, String absoluteAction,
             String originatingPageName) {
         return reloadFormOnError && org.apache.commons.lang.StringUtils.isNotBlank(action)
-                && !originatingPageName.startsWith(absoluteAction);
+                && !submittingToSamePage(absoluteAction, originatingPageName);
+    }
+
+    private static boolean submittingToSamePage(String absoluteAction, String originatingPageName) {
+        return originatingPageName.startsWith(absoluteAction);
     }
 
     public static void main(String[] args) throws IOException {
