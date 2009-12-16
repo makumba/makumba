@@ -313,6 +313,9 @@ public interface FieldDefinition {
     /** returns whether this field is a binary type. */
     public boolean isBinaryType();
 
+    /** returns whether this field is a boolean type */
+    public boolean isBooleanType();
+    
     /** returns whether this field is a file type. */
     public boolean isFileType();
 
@@ -372,5 +375,8 @@ public interface FieldDefinition {
     
     /** gets the error message for the not a boolean field constraint, if specified **/
     public String getNotBooleanErrorMessage();
+    
+    /** gets the language of this field **/
+//    public String getLanguage();
     
 }

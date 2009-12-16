@@ -341,6 +341,10 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
     public boolean isBinaryType() {
         return type == FieldType.BINARY;
     }
+    
+    public boolean isBooleanType() {
+        return type == FieldType.BOOLEAN;
+    }
 
     public boolean isComplexSet() {
         return type == FieldType.SETCOMPLEX;
