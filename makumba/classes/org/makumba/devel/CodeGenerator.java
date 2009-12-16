@@ -705,7 +705,13 @@ public class CodeGenerator {
         if (type == TYPE_NEWFORM || type == TYPE_EDITFORM) {
             writeInput(sb, template, fd, indent);
         } else if (type == TYPE_OBJECT) {
-            appendJSPLine(sb, indent, template.beforeFieldName + fd.getName() + template.afterFieldName);
+            
+            String fieldName = fd.getName();
+            if (fd.getDescription() != null && !fd.getDescription().equals("")) {
+                fieldName = fd.getDescription();
+            }
+            
+            appendJSPLine(sb, indent, template.beforeFieldName + fieldName + template.afterFieldName);
             appendJSP(sb, indent, template.beforeFieldTag);
             append(sb, "<mak:value expr=\"" + labelName + "." + fd.getName() + "\"/>");
         }
