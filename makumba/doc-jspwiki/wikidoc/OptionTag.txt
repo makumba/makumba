@@ -10,25 +10,25 @@
 
 [{Table
 
-||Name||Required||Request-time||Description||Comments
+||Name||Required||Request-time||Description||Comments 
 
-|value
-|false
-|false
-|Value of the option, can be an OQL expression or a $attribute
-|Fixed, if not indicated, nil (null option) is default
+|value 
+|false 
+|false 
+|Value of the option, can be an OQL expression or a $attribute 
+|Fixed, if not indicated, nil (null option) is default 
 
-|selected
-|false
-|false
-|Whether this option is selected or not
-|False by default
+|selected 
+|false 
+|false 
+|Whether this option is selected or not 
+|False by default 
 
-|disabled
-|false
-|false
-|Whether the option will be disabled
-|Fixed
+|disabled 
+|false 
+|false 
+|Whether the option will be disabled 
+|Fixed 
 
 
 }]
@@ -42,5 +42,4 @@
 [{InsertPage page=OptionTagExample}]
 
 
-----
-[Category Documentation]
+%%(display:none;)[Category Documentation]%%

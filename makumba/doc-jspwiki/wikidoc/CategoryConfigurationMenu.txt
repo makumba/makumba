@@ -1,6 +1,10 @@
-!!!Configuration
-
-* [Overview|Configuration]
-* [Web-app Configuration|WebappConfiguration]
-* [Makumba Configuration|MakumbaConfiguration]
-* [Libraries]
+!!![home|Main]
+!!![quick start]
+!!![configuration]
+* [web-app configuration|WebappConfiguration]
+* [makumba configuration|MakumbaConfiguration]
+* [libraries]
+!!![usage]
+!!![documentation]
+!!![showcase]
+!!![download]

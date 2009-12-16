@@ -1,4 +1,4 @@
-!!!Welcome to makumba!
+!!!Welcome to makumba! 
 
 Makumba is a framework for rapid and sustainable web-app development.
 

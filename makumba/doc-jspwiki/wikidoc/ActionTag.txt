@@ -16,5 +16,4 @@ This tag has no attributes
 [{InsertPage page=ActionTagExample}]
 
 
-----
-[Category Documentation]
+%%(display:none;)[Category Documentation]%%

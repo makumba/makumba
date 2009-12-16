@@ -10,13 +10,13 @@
 
 [{Table
 
-||Name||Required||Request-time||Description||Comments
+||Name||Required||Request-time||Description||Comments 
 
-|applicationProperties
-|false
-|false
-|Document me please
-|Document me please
+|applicationProperties 
+|false 
+|false 
+|Document me please 
+|Document me please 
 
 
 }]
@@ -30,5 +30,4 @@
 [{InsertPage page=InfoTagExample}]
 
 
-----
-[Category Documentation]
+%%(display:none;)[Category Documentation]%%
