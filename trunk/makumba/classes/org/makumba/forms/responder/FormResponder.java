@@ -154,7 +154,9 @@ public class FormResponder extends Responder {
 
     protected String action;
 
-    protected String method = "GET";
+    protected boolean methodDefault = true;
+    
+    protected String method = "POST";
 
     protected boolean multipart;
 
@@ -181,6 +183,7 @@ public class FormResponder extends Responder {
     }
 
     public void setMethod(String method) {
+        this.methodDefault = false;
         this.method = method;
     }
 
@@ -216,12 +219,14 @@ public class FormResponder extends Responder {
         }
 
         else if (operation.equals("deleteForm")) {
+            
             sb.append("<form action=").append("\"").append(actionBase).append(actionAnchor).append("\"");
 
             sb.append(" method=").append("\"").append(method).append("\"");
             if (multipart) {
                 sb.append(" enctype=\"multipart/form-data\" ");
             }
+            sb.append("style = \"display: inline; \"" ); // FIXME should merge this if another style is given in extra formatting
             sb.append(extraFormatting);
             sb.append(">");
 
@@ -229,6 +234,12 @@ public class FormResponder extends Responder {
 
         } else {
             // a root form, translates into an HTML form
+            
+            // if we have a search form we by default give it a GET method because the search string is useful to have
+            if(operation.equals("search") && methodDefault) {
+                method = "GET";
+            }
+            
             sb.append("<form action=");
             sb.append("\"" + targetPage + "\"");
             sb.append(" method=");
