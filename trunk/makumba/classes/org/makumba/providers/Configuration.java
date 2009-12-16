@@ -122,6 +122,11 @@ public class Configuration implements Serializable {
     // error logging to the database
     
     public static final String KEY_DB_ERROR_LOG = "logErrors";
+    
+    // i18n
+    public static final String KEY_DEFAULT_LANG = "defaultLanguage";
+    public static final String KEY_LANG_PARAM = "languageParameterName";
+    public static final String KEY_LANG_ATTRIBUTE = "languageAttributeName";
 
     // makumba servlets
     public static final String KEY_MAKUMBA_VALUE_EDITOR = "makumbaValueEditor";
@@ -465,7 +470,19 @@ public class Configuration implements Serializable {
     public static String getApplicationConfigurationSource() {
         return applicationConfig != null ? applicationConfig.getSource() : null;
     }
+    
+    public static String getDefaultLanguage() {
+        return applicationConfig.getProperty("internationalization", KEY_DEFAULT_LANG);
+    }
 
+    public static String getLanguageParameterName() {
+        return applicationConfig.getProperty("internationalization", KEY_LANG_PARAM);
+    }
+
+    public static String getLanguageAttributeName() {
+        return applicationConfig.getProperty("internationalization", KEY_LANG_ATTRIBUTE);
+    }
+    
     private static String getCompletePath(String path) {
         return StringUtils.isBlank(path) || path.equals(PROPERTY_NOT_SET) ? PROPERTY_NOT_SET
                 : getMakumbaToolsLocation() + path;
@@ -590,6 +607,12 @@ public class Configuration implements Serializable {
 
     private static Map<String, ConfiguredDataSource> resolvedConfiguredDataSources = new HashMap<String, ConfiguredDataSource>();
 
+    private static String remoteDataSourceConfigurationPath = "";
+    
+    public static String getRemoteDataSourceConfigurationPath() {
+        return remoteDataSourceConfigurationPath;
+    }
+    
     /**
      * Looks up the right {@link ConfiguredDataSource} based on host and path.<br>
      * Tries to match all configured data sources against the local version of<br>
@@ -607,7 +630,7 @@ public class Configuration implements Serializable {
 
             try {
 
-                String host = InetAddress.getLocalHost().toString();
+                String host = InetAddress.getLocalHost().getCanonicalHostName();
                 String path = System.getProperty("user.dir");
                 java.net.URL u = ClassResource.get("/");
                 String alternatePath = u != null ? u.toString() : null;
@@ -618,6 +641,8 @@ public class Configuration implements Serializable {
 
                 String thisConfiguration1 = "dataSource:" + dataSourceName + " host:" + host + " path:" + path;
                 String thisConfiguration2 = "dataSource:" + dataSourceName + " host:" + host + " path:" + alternatePath;
+                
+                remoteDataSourceConfigurationPath = thisConfiguration1;
 
                 // we go over all the data sources and compare them to those we have
                 String maxKey = "";
