@@ -80,8 +80,8 @@ public class NamedResources implements java.io.Serializable {
             ((java.lang.ref.WeakReference) allCaches.elementAt(i)).clear();
         }
         allCaches.clear();
-        staticCaches = null;
-        allCaches = null;
+        staticCaches = new ArrayList<NamedResources>();
+        allCaches = new Vector<WeakReference<NamedResources>>();
     }
 
     public static void cleanCaches() {
@@ -90,6 +90,7 @@ public class NamedResources implements java.io.Serializable {
         cleanStaticCache("MQL parsed queries (soft cache)");
         cleanStaticCache("Hibernate HQL parsed queries (soft cache)");
         cleanStaticCache("Data definitions parsed");
+        cleanStaticCache("MDDs parsed");
         cleanStaticCache("Inlined queries by MqlQueryAnalysisProvider (soft cache)");
         cleanStaticCache("Makumba resources (soft cache)");
     }
@@ -100,7 +101,7 @@ public class NamedResources implements java.io.Serializable {
      * @param name
      *            the name of the cache
      * @param fact
-     *            the {@link NamdedResourceFactory} used to create the cache
+     *            the {@link NamedResourceFactory} used to create the cache
      * @param soft
      *            <code>true</code> if this should be a soft cache
      * @return The identifier of this cache
