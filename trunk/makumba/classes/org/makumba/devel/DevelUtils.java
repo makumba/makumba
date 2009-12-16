@@ -3,6 +3,7 @@ package org.makumba.devel;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.util.Map;
 
 import javax.servlet.ServletResponse;
@@ -25,9 +26,8 @@ public class DevelUtils {
 
     /** Write the page footer to the given writer. */
     public static void printDeveloperSupportFooter(PrintWriter w) throws IOException {
-        w.println("<hr><font size=\"-1\"><a href=\"http://www.makumba.org\">Makumba</a> developer support, version: "
-                + org.makumba.MakumbaSystem.getVersion() + "; using database "
-                + TransactionProvider.getInstance().getDefaultDataSourceName() + "</font>");
+        w.println("<hr><font size=\"-1\"><a href=\"http://www.makumba.org\">Makumba</a> developer support; version:"
+                + org.makumba.MakumbaSystem.getVersion() + " " + Configuration.getRemoteDataSourceConfigurationPath() + "</font>");
     }
 
     public static void writeScripts(PrintWriter w, String contextPath) {
