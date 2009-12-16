@@ -10,79 +10,79 @@
 
 [{Table
 
-||Name||Required||Request-time||Description||Comments
+||Name||Required||Request-time||Description||Comments 
 
-|from
-|true
-|false
-|OQL FROM section. If the query is nested, the keys from the parent's query are added to this FROM section in the resulting query
-|Fixed, Mandatory.
+|from 
+|true 
+|false 
+|OQL FROM section. If the query is nested, the keys from the parent's query are added to this FROM section in the resulting query 
+|Fixed, Mandatory. 
 
-|variableFrom
-|false
-|false
-|supplementary, variable OQL FROM section.
-|Fixed, can contain #{ JSP EL expressions }
+|variableFrom 
+|false 
+|false 
+|supplementary, variable OQL FROM section. 
+|Fixed, can contain #{ JSP EL expressions } 
 
-|where
-|false
-|false
-|OQL WHERE section. If the query is nested, the WHERE section from the parent's query, is added to this in the resulting query
-|Fixed, can contain #{ JSP EL expressions }
+|where 
+|false 
+|false 
+|OQL WHERE section. If the query is nested, the WHERE section from the parent's query, is added to this in the resulting query 
+|Fixed, can contain #{ JSP EL expressions } 
 
-|groupBy
-|false
-|false
-|OQL GROUP BY section
-|Fixed, can contain #{ JSP EL expressions }
+|groupBy 
+|false 
+|false 
+|OQL GROUP BY section 
+|Fixed, can contain #{ JSP EL expressions } 
 
-|id
-|false
-|false
-|Tag's identifier
-|Fixed. Can be used to distinguish otherwise identical tags on a page (to avoid confusion by Makumba's JSP analyser)
+|id 
+|false 
+|false 
+|Tag's identifier 
+|Fixed. Can be used to distinguish otherwise identical tags on a page (to avoid confusion by Makumba's JSP analyser) 
 
-|db
-|false
-|true
-|The makumba database to connect to. The format is Host_SQLEngineType_DatabaseName If not present, the default database is used. See database configuration and lookup.
-|Fixed, cannot contain attributes, for now. The default database is chosen if this argument is not set. Can only be set for top-level (root) query tags Can be a Rtexpr <%= ...%>
+|db 
+|false 
+|true 
+|The makumba database to connect to. The format is Host_SQLEngineType_DatabaseName If not present, the default database is used. See database configuration and lookup. 
+|Fixed, cannot contain attributes, for now. The default database is chosen if this argument is not set. Can only be set for top-level (root) query tags Can be a Rtexpr <%= ...%> 
 
-|authorize
-|false
-|false
-|Document me please
-|Document me please
+|authorize 
+|false 
+|false 
+|Document me please 
+|Document me please 
 
-|editable
-|false
-|true
-|Document me please
-|Document me please
+|editable 
+|false 
+|true 
+|Document me please 
+|Document me please 
 
-|logicClass
-|false
-|true
-|Document me please
-|Document me please
+|logicClass 
+|false 
+|true 
+|Document me please 
+|Document me please 
 
-|editPage
-|false
-|true
-|Document me please
-|Document me please
+|editPage 
+|false 
+|true 
+|Document me please 
+|Document me please 
 
-|(deprecated) countVar (deprecated)
-|(deprecated) false
-|(deprecated) false
-|(deprecated) The java.lang.Integer variable that will contain the number of the current iteration.
-|(deprecated) Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java scope at that point in the JSP. Deprecated: Use mak:count() expression language function instead
+|(deprecated) countVar (deprecated) 
+|(deprecated) false 
+|(deprecated) false 
+|(deprecated) The java.lang.Integer variable that will contain the number of the current iteration. 
+|(deprecated) Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java scope at that point in the JSP. Deprecated: Use mak:count() expression language function instead 
 
-|(deprecated) maxCountVar (deprecated)
-|(deprecated) false
-|(deprecated) false
-|(deprecated) The java.lang.Integer variable that will contain the total number of iterations.
-|(deprecated) Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java scope at that point in the JSP. Deprecated: use mak:maxCount() expression language function instead
+|(deprecated) maxCountVar (deprecated) 
+|(deprecated) false 
+|(deprecated) false 
+|(deprecated) The java.lang.Integer variable that will contain the total number of iterations. 
+|(deprecated) Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java scope at that point in the JSP. Deprecated: use mak:maxCount() expression language function instead 
 
 
 }]
@@ -96,5 +96,4 @@
 [{InsertPage page=ObjectTagExample}]
 
 
-----
-[Category Documentation]
+%%(display:none;)[Category Documentation]%%

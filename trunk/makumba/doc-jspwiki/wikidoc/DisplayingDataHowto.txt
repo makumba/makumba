@@ -53,7 +53,7 @@ In many cases, you wouldn't want to display all the records from a specific data
 
 [{Code 
 
-<mak:list from="company.Employee e" where="e.salaray > 2000">
+<mak:list from="company.Employee e" where="e.salary > 2000">
   Name: <mak:value expr="e.name"/> <mak:value expr="e.surname"/> <br/>
 </mak:list>
 }]
@@ -62,7 +62,7 @@ In the %%code where%% attribute, we can specify simple query language expression
 
 [{Code 
 
-<mak:list from="company.Employee e" where="e.salaray > 2000 AND e.gender='Female'">
+<mak:list from="company.Employee e" where="e.salary > 2000 AND e.gender='Female'">
   Name: <mak:value expr="e.name"/> <mak:value expr="e.surname"/> <br/>
 </mak:list>
 }]

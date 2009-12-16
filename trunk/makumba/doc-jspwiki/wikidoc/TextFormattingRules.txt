@@ -26,7 +26,7 @@ When you've figured out how the editor works, then you should read [WikiEtiquett
 ''text''   = print 'text' in italic.
 __text__   = print 'text' in bold.
 {{text}}   = print 'text' in monospaced font.
-[text|]    = print 'text' underscored (dummy hyperlink)
+[text]    = print 'text' underscored (dummy hyperlink)
 * text     = make a bulleted list item with 'text'
 # text     = make a numbered list item with 'text'
 ;term:ex   = make a definition for 'term' with the explanation 'ex'
@@ -50,7 +50,7 @@ creates a footnote[1]. To make the actual footnote, you just put a {{[[#1]}}
 where you want that footnote to point at. Look below to find the footnote.
 You can also make a named footnote, just as if you were doing a normal hyperlink, such as {{[[Footnote name|1]}} as another way of referring to the first footnote[Footnote name|1]. Or you can put the custom name at the footnote itself[2].
 ![InterWiki|http://www.jspwiki.org/wiki/InterWiki] links
-You can also do links between different Wikis without knowing the URL. Just use a link in the form {{[[Wiki:WikiPage]}} and JSPWiki will create a link for you. For example, this link points to the [JSPWiki TextFormatting rules|JSPWiki:TextFormattingRules]. Check the [SystemInfo] page for more information on which Wiki links are available.
+You can also do links between different Wikis without knowing the URL. Just use a link in the form {{[[Wiki:WikiPage]}} and JSPWiki will create a link for you. For example, this link points to the [JSPWiki TextFormatting rules|JSPWiki:TextFormattingRules]. Check the [MetaSystemInfo] page for more information on which Wiki links are available.
 If an [InterWiki|http://www.jspwiki.org/wiki/InterWiki] link is not supported, you'll get a notification of it on the page when
 you save your page.
 !Adding pictures
@@ -58,7 +58,7 @@ You can embed
 any image in the wiki code by putting the image available somewhere on the web in one of the allowed formats, and then just linking to it.
 If you specify a link text ({{[[this one here|http://example.com/example.png]}}) it becomes
 the ALT text for those who either can't or don't want to view images.
-The list of accepted image types depends on the Wiki. See the [SystemInfo]
+The list of accepted image types depends on the Wiki. See the [MetaSystemInfo]
 page for a list of the different image types.
 It is also possible to use the [Image plugin|http://www.jspwiki.org/wiki/Image] to gain more control over the image placement and attributes.
 To force a flush after an image, use \ \ \ (that is, three consecutive backslashes instead of two).
@@ -119,7 +119,7 @@ Which would be seen as
 ;:''Comment here.''
 !Text effects
 You may use __bold__ text or ''italic'' text, by using two underscores (_) and two single quotes ('), respectively. If you're on a Windows computer, make sure that you are using the correct quote sign, as there is one that looks the same, but really isn't.
-A [underscore|] effect can be produced by using a hyperlink to nowhere, [[like this|]
+A [underscore] effect can be produced by using a hyperlink to nowhere, [[like this|]
 !Preformatted text
 If you want to add preformatted text (like code) just use three consecutive braces ({) to open a block, and three consecutive braces (}) to close a block. Edit this page for an example.
 !Tables

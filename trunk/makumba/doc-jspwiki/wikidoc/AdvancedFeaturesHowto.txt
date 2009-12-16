@@ -42,10 +42,56 @@ In this case, we now also control the %%code limit%% by a changeable value. As b
 If the value for $limit is __not__ defined, the <mak:list> will instead default to the value given by %%code defaultLimit%%.
 !!!Different input controls for [<mak:input>|InputTag]
 
+[{Box type='fixme' author='rudi'
+
+Rewrite text, and add some previews how that will work
+}]
+
 for sets: multi select list vs. checkbox
 for enums: single select list vs. radio buttons
 for integer: spinner, ..
 
+copy from http://old.makumba.org/makumba-spec.html#input
+
+HTML INPUT type to be used
+
+* "hidden" works for all fields
+* for char[] , type can be "text" or "password", default is "text"
+* default type for [set]intEnum, [set]charEnum, ptr and set is "select" (dropdown or scroll list depending on size). Alternative is "tickbox" (checkboxes or radio buttons). Can be forced to a specific type by using "radio" or "checkbox"
+* for set, type can be seteditor, which will create two multiple-select boxes (see an example).
+* for int, spinner creates a spinner input with increase/decrease buttons; if a validation definition defines a range for the field, select and radio are will create select boxes and radio buttons.
+* date is split in 3 inputs, <fieldname>_0 (day), _1 (month), _2 (year), and likewise for time elements
+* for text, default is "textarea"; "file" will create file upload box, and will create supplementary attributes <fieldname>_filename, <fieldname>_contentType and <fieldname>_contentLength that have to be handled separately by the handler method
+* for file, a file upload box will automatically created, and handling of file name, content type and length will be done automatically.
+
+
+!!!Controlling the values displayed in ptr/set inputs
+
+[{Box type='fixme' author='rudi'
+
+Rewrite text, and add some previews how that will work
+}]
+
+From http://old.makumba.org/makumba-spec.html#choiceDisplay
+
+By default, for pointer and set fields, mak:input will show a choser (selector) that includes the title of all possible options, ordered by that title. To change that behavior, the mak:input can include one or more mak:option. Options can be repeated using mak:list, c:foreach, and in general can appear inside any other tag.
+
+Text inside mak:option will become an option title. The value attribute will become the option. Text inside the mak:input that is not inside a mak:option amd is not blank (whitespace) will be assumed to separate groups of options and will be rendered. For options that render HTML SELECTs, this is only accepted for multiple SELECTs which will create several SELECT boxes of equal size, one for each option group.
+
+If mak:option doesn't have a value indicated, it will produce a nil option. Such nil options will be ignored at form submission.
+
+If an option value appears many times it will only be shown the first time it occurs.
+
+<mak:input name="some" dataType="ptr T">
+<mak:option>Please choose:</mak:option>
+<mak:list from="T choice" where="someCondition" >
+    <mak:option value="choice"><mak:value expr="choice.someField" /></mak:option>
+</mak:list>
+<mak:option> -------- separator----------</mak:option>
+<mak:list from="T choice" where="someOtherCondition" >
+   <mak:option value="choice"> <mak:value expr="choice.someField /></mak:option>
+</mak:list>
+</mak:input>
 !!!Form validation
 Explain how to write [validation rules|ValidationRules]
 

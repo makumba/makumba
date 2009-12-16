@@ -1,5 +1,9 @@
-!!!Main
-
-* [Home|Main]
-* [Blog]
-* [About]
+!!![home|Main]
+* [blog]
+* [about]
+!!![quick start]
+!!![configuration]
+!!![usage]
+!!![documentation]
+!!![showcase]
+!!![download]

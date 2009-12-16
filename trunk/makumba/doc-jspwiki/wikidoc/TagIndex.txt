@@ -30,5 +30,4 @@
 * [mak:maxCount()|MaxCountTag]
 * [mak:maxResults()|MaxResultsTag]
 
-----
-[Category Documentation]
+%%(display:none;)[Category Documentation]%%
