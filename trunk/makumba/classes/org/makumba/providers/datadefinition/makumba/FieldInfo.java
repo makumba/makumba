@@ -1191,6 +1191,10 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     public boolean isBinaryType() {
         return getIntegerType() == _binary;
     }
+    
+    public boolean isBooleanType() {
+        return getIntegerType() == _boolean;
+    }
 
     public boolean isFileType() {
         return extra1 != null && extra1 instanceof FileRecordInfo;
