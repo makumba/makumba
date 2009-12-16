@@ -176,19 +176,6 @@ public class FieldEditor extends org.makumba.commons.formatters.FieldFormatter {
             throw new InvalidValueException(rf.expr[fieldIndex], ERROR_NO_INT+": " + o);
 		}
 	}
-	
-	protected Boolean toBoolean(RecordFormatter rf, int fieldIndex, Object o) {
-        if (o == null) {
-            return null;
-        }
-        if(o.toString().equalsIgnoreCase("true") || o.toString().equalsIgnoreCase("yes") || o.toString().equalsIgnoreCase("1")) {
-            return true;
-        } else if(o.toString().equalsIgnoreCase("false") || o.toString().equalsIgnoreCase("no") || o.toString().equalsIgnoreCase("0")) {
-            return false;
-        } else {
-            throw new InvalidValueException(rf.expr[fieldIndex], ERROR_NO_BOOLEAN+": " + o);
-        }
-    }
 
 	protected Double toReal(RecordFormatter rf, int fieldIndex, Object o) {
 		if (o == null) {

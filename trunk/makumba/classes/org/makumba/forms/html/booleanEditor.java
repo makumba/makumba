@@ -1,4 +1,4 @@
- // /////////////////////////////
+// /////////////////////////////
 //  Makumba, Makumba tag library
 //  Copyright (C) 2000-2003 http://www.makumba.org
 //
@@ -29,18 +29,18 @@ import org.makumba.commons.formatters.InvalidValueException;
 import org.makumba.commons.formatters.RecordFormatter;
 
 /**
- * Boolean choice editor
- * 
+ * Boolean choice editor, capable of rendering either as a complex choice (tickbox, dropdown) or simple choice
+ * (checkbox). Renders as checkbox by default.<br>
  * TODO we should be able to choose what to display & select by default (Yes or No) and what is the text to display.
  * 
  * @author Manuel Gay
  * @version $Id: booleanEditor.java,v 1.1 May 11, 2008 9:22:57 PM manu Exp $
  */
 public class booleanEditor extends choiceEditor {
-    
+
     private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
         static FieldEditor singleton = new booleanEditor();
-        
+
         public void release() {
             singleton = null;
         }
@@ -51,15 +51,16 @@ public class booleanEditor extends choiceEditor {
     }
 
     /** Don't use this, use getInstance() */
-    protected booleanEditor() {}
+    protected booleanEditor() {
+    }
 
     public static FieldFormatter getInstance() {
         return SingletonHolder.singleton;
     }
 
-    static String[] __params = { "default" };
+    static String[] __params = { "default", "type" };
 
-    static String[][] __paramValues = { null };
+    static String[][] __paramValues = { null, { "hidden", "checkbox", "tickbox", "dropdown" } };
 
     @Override
     public String[] getAcceptedParams() {
@@ -75,7 +76,7 @@ public class booleanEditor extends choiceEditor {
     @Override
     public String formatValue(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
 
-        String s = (o == null) ? null : (((Boolean)o) ? "Yes" : "No");
+        String s = (o == null) ? null : (((Boolean) o) ? "Yes" : "No");
         return resetValueFormat(rf, fieldIndex, s, formatParams);
     }
 
@@ -85,25 +86,84 @@ public class booleanEditor extends choiceEditor {
         Object o = par.getParameter(getInputName(rf, fieldIndex, suffix));
 
         if (o instanceof java.util.Vector) {
-            throw new InvalidValueException(rf.expr[fieldIndex],
-                    "multiple value not accepted for boolean: " + o);
+            throw new InvalidValueException(rf.expr[fieldIndex], "multiple value not accepted for boolean: " + o);
         }
-        return toBoolean(rf, fieldIndex, o);
+
+        if (par.getParameter("type") == null || par.getParameter("type").equals("checkbox")) {
+            // a HTML checkbox is not submitted if it is not checked, resulting in a null value
+            // we allow it only in this case
+            if (o == null) {
+                o = false;
+            }
+        }
+
+        return booleanValue(o, rf, fieldIndex);
     }
 
     @Override
     public String formatOptionTitle(RecordFormatter rf, int fieldIndex, Object options, int i) {
-        return (i==0 ? "Yes" : "No");
+        return (i == 0 ? "Yes" : "No");
+    }
+
+    @Override
+    public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
+
+        // if we don't specify a type as format param, use "tickbox" as default
+        if (formatParams.get("type") == null || formatParams.get("type").equals("checkbox")) {
+
+            if (o == null) {
+                // ckeckbox off
+                o = false;
+            }
+
+            return "<INPUT name=\"" + getInputName(rf, fieldIndex, formatParams) + "\" type=\"checkbox\" "
+                    + getExtraFormatting(rf, fieldIndex, formatParams)
+                    + (booleanValue(o, rf, fieldIndex) ? " checked " : "") + " >";
+        }
+
+        return super.format(rf, fieldIndex, o, formatParams);
     }
 
     @Override
     public String formatOptionValue(RecordFormatter rf, int fieldIndex, Object opts, int i, Object val) {
-        return ((Boolean)val) ? "true" : "false";
+        return formatBoolean(val, rf, fieldIndex);
     }
 
     @Override
     public String formatOptionValue(RecordFormatter rf, int fieldIndex, Object val) {
-        return ((Boolean)val) ? "true" : "false";
+        return formatBoolean(val, rf, fieldIndex);
+    }
+
+    private String formatBoolean(Object val, RecordFormatter rf, int fieldIndex) {
+        return booleanValue(val, rf, fieldIndex) ? "true" : "false";
+    }
+
+    private boolean booleanValue(Object val, RecordFormatter rf, int fieldIndex) {
+        if (val instanceof Boolean) {
+            return ((Boolean) val);
+        } else if (val instanceof String) {
+            String v = (String) val;
+            if (v.equals("true") || v.equals("yes") || v.equals("on")) {
+                return true;
+            } else if (v.equals("false") || v.equals("no")) {
+                return false;
+            } else {
+                throw new InvalidValueException(val.toString(),
+                        "boolean can only have 'true' or 'false' as String value");
+            }
+        } else if (val instanceof Integer) {
+            Integer i = (Integer) val;
+            if (i == 0) {
+                return false;
+            } else if (i == 1) {
+                return true;
+            } else {
+                throw new InvalidValueException(val.toString(), "boolean can only have '1' or '0' as int value");
+            }
+        }
+
+        throw new InvalidValueException(rf.expr[fieldIndex], ERROR_NO_BOOLEAN + ": " + val);
+
     }
 
     @Override
@@ -113,7 +173,7 @@ public class booleanEditor extends choiceEditor {
 
     @Override
     public Object getOptionValue(RecordFormatter rf, int fieldIndex, Object options, int i) {
-        return (i==0 ? true : false);
+        return (i == 0 ? true : false);
     }
 
     @Override
