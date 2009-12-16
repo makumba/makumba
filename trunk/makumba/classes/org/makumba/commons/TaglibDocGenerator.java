@@ -235,12 +235,13 @@ public class TaglibDocGenerator {
     }
 
     private void generateSeeAlso(Element element, BufferedWriter s) throws IOException {
-        s.append("!!See also");
-        s.newLine();
-        s.newLine();
-
         Node seeAlso = checkNodeExists(element, "see");
         StringTokenizer tk = new StringTokenizer(seeAlso.getText(), ",");
+        if(tk.countTokens() > 0) {
+            s.append("!!See also");
+            s.newLine();
+            s.newLine();
+        }
         while (tk.hasMoreElements()) {
 
             String reference = tk.nextToken().trim();
@@ -260,7 +261,9 @@ public class TaglibDocGenerator {
                 s.append(", ");
             }
         }
-        s.newLine();
+        if(tk.countTokens() > 0) {
+            s.newLine();
+        }
     }
 
     private void generateAttributes(Element element, BufferedWriter s) throws IOException {
