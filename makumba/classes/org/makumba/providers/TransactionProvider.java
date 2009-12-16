@@ -27,8 +27,8 @@ public abstract class TransactionProvider implements SingletonHolder {
     static {
         for (int i = 0; i < transactionProviders.length; i += 2)
             try {
-                Method getInstance = Class.forName(transactionProviders[i + 1]).getDeclaredMethod("getInstance", null);
-                TransactionProvider tp = (TransactionProvider) getInstance.invoke(null, null);
+                Method getInstance = Class.forName(transactionProviders[i + 1]).getDeclaredMethod("getInstance", new Class<?>[] {});
+                TransactionProvider tp = (TransactionProvider) getInstance.invoke(null, new Object[] {});
                 providerInstances.put(transactionProviders[i], tp);
             } catch (Throwable t) {
                 t.printStackTrace();

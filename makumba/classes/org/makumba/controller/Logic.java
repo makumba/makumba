@@ -752,8 +752,8 @@ public class Logic {
                 return TransactionProvider.getInstance();
             }
 
-            Method getInstance = Class.forName(transactionProviderClass).getDeclaredMethod("getInstance", null);
-            return (TransactionProvider) getInstance.invoke(null, null);
+            Method getInstance = Class.forName(transactionProviderClass).getDeclaredMethod("getInstance", new Class<?>[] {});
+            return (TransactionProvider) getInstance.invoke(null, new Object[] {});
 
         } catch (Throwable e) {
             LogicException le = new LogicException("Could not instantiate transaction provider "

@@ -34,8 +34,8 @@ public abstract class DataDefinitionProvider implements SingletonHolder {
     static {
         for (int i = 0; i < dataDefinitionProviders.length; i += 2)
             try {
-                Method getInstance = Class.forName(dataDefinitionProviders[i + 1]).getDeclaredMethod("getInstance", null);
-                DataDefinitionProvider tp = (DataDefinitionProvider) getInstance.invoke(null, null);
+                Method getInstance = Class.forName(dataDefinitionProviders[i + 1]).getDeclaredMethod("getInstance", new Class<?>[] {});
+                DataDefinitionProvider tp = (DataDefinitionProvider) getInstance.invoke(null, new Object[] {});
                 providerInstances.put(dataDefinitionProviders[i], tp);
             } catch (Throwable t) {
                 t.printStackTrace();
