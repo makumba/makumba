@@ -19,6 +19,8 @@ manu: fixing compiler warnings for reflection API
 manu: re-arranging items on the mak-tools page
 manu: fix for mak:delete - can now have a body if the widget is a form
 manu: BEHAVIORAL CHANGE: FORMS ARE NOW POST BY DEFAULT (except searchForm)
+manu: fixing a bug that leads to wrong set queries for types that point to types that have the same short name
+manu: new behavior for the title field: if no suitable title field is found, return ptrIndex by default (instead of e.g. a set field name, as the old parser was doing)
 
 NOT TO BE RELEASED YET (need more testing)
 manu: auto-complete for mak:input (char and ptr)
