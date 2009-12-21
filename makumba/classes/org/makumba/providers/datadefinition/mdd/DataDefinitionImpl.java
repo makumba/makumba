@@ -272,23 +272,32 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
      */
     private String addPointerToForeign(FieldDefinitionImpl subField) {
         
-        // FIXME this is a hack in order to create the right names for the pointer to the parent field in case of types that point to
+        // LEGACY this is a hack in order to create the right names for the pointer to the parent field in case of types that point to
         // themselves. this was the behavior in the old parser and somehow not having it messes up the behavior of other parts of mak
         // probably the order of creation of some types is different, i.e. those pointers were added first before any other fields
         // but this is not the case anymore
         String pointed = null;
+        
         if(subField.getPointedType() == this) {
             pointed = getPointerName(subField.pointedType, subField);
-        } else {
+        } else if(subField.getPointedType() != this) {
             pointed = subField.pointedType;
         }
+        
+        // if the name of the foreign type is the same as the name of the parent type, we have to avoid name collision
+        if(shortName(pointed).equals(shortName(this.name))) {
+            pointed += "_";
+            // not sure if this is the original behavior of the old parser, as it would not make sense to have a field name with a _ in a subfield...
+            while (subField.getSubtable().getFieldDefinition(pointed) != null) {
+                pointed = pointed + "_";
+            }
+        }
+        
         int s = pointed.indexOf("->");
         if(s != -1)
             pointed = pointed.substring(s+2);
-        int n = pointed.lastIndexOf('.');
-        if (n != -1) {
-            pointed = pointed.substring(n + 1);
-        }
+
+        pointed = shortName(pointed);
         
         FieldDefinitionImpl ptr = new FieldDefinitionImpl(pointed, "ptrRel");
         subField.subfield.addField(ptr);
@@ -303,7 +312,10 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
         
         return pointed;
     }
-
+    
+    private String shortName(String t) {
+        return t.indexOf(".") > 0 ? t.substring(t.lastIndexOf(".") + 1) : t;
+    }
     /**
      * Computes the name for a pointer field in a subfield, so as not to collide with existing fields
      * @param typeName the original name of the type
@@ -314,10 +326,8 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
         int s = typeName.indexOf("->");
         if(s != -1)
             typeName = typeName.substring(s+2);
-        int n = typeName.lastIndexOf('.');
-        if (n != -1) {
-            typeName = typeName.substring(n + 1);
-        }
+        
+        typeName = shortName(typeName);
         
         while (subField.getSubtable().getFieldDefinition(typeName) != null) {
             typeName = typeName + "_";
@@ -333,9 +343,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
     private void addStandardFields(String name) {
         FieldDefinitionImpl fi;
         
-        int k = name.lastIndexOf(".");
-        if(k > -1)
-            name = name.substring(k+1);
+        name = shortName(name);
         int j = name.lastIndexOf("->");
         if(j > -1)
             name = name.substring(j+2);
@@ -403,26 +411,40 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
      * <li>for paths, checks the path and sets the title to the path</li>
      * <li>for functions, sets the title to the function expression</li>
      * <li>if no title indicated, take the "name" field, if none exists, take the first field in the DD that is not a ptr or set as title</li>
+     * <li>if no title alternative found (e.g. a type with only a set or pointer), set the title field to the ptrIndex of this type</li>
      * </ul>
      * all the checking has already been done in {@link TitleFieldNode}
      * TODO add support for function calls in !title and for use of expressions
      */
     private void evaluateTitle() {
         if(titleFieldExpr == null) {
+            String ptrIndexName = (String) (Arrays.asList(fields.keySet().toArray())).get(0);
+
             // check if we have a "name" field
             if(fields.containsKey("name")) {
                 titleField = "name";
-            } else if(fields.keySet().size() > 3) { // we have TS_create, TS_modify and the PtrIndex
+            } else if(fields.keySet().size() > 3) { // we have PtrIndex, TS_create, TS_modify
             
                 // the title field is the first non-ptr field in the MDD
                 // but not the PtrIndex
                 titleField = getFirstNonPointerFieldName(3);
+                
+                if(titleField == null) {
+                    // there was no non-pointer or non-set field in the MDD, so we take the ptrIndex
+                    titleField = fields.get(ptrIndexName).getName();
+                }
 
             // if this happens to be an MDD which points to itself we may have to use the following trick to get the right title
             } else if(fields.keySet().size() == 3 && postponedFields.keySet().size() > 0) {
                 titleField = (String) (Arrays.asList(postponedFields.keySet().toArray())).get(0);
             } else {
                 titleField = getFirstNonPointerFieldName(0);
+                
+                if(titleField == null) {
+                    // there was no non-pointer or non-set field in the MDD, so we take the ptrIndex
+                    titleField = fields.get(ptrIndexName).getName();
+                }
+                
             }
         } else if(titleFieldType == TitleFieldType.FUNCTION) {
             QueryFragmentFunction f = functions.get(titleFieldExpr);
@@ -447,9 +469,12 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
             }
             field = titleDef.getName();
         }
-        
-        if(field == null) {
-            field = (String) (Arrays.asList(fields.keySet().toArray())).get(initial);
+        String initialName = (String) (Arrays.asList(fields.keySet().toArray())).get(initial);
+        boolean isPtrOrSet = fields.get(initialName).isPointer() || fields.get(initialName).isSetType();
+        if(field == null && !isPtrOrSet) {
+            field = initialName;
+        } else if(field == null && isPtrOrSet) {
+            return null;
         }
         
         return field;
@@ -459,7 +484,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
     /** base methods **/
     
     public String getName() {
-        return (parent != null ? parent.getName() : name ) + ptrSubfield;
+        return (parent != null ? parent.getName() : name ) + (ptrSubfield == null ? "" : ptrSubfield);
     }
     
     public String getTitleFieldName() {
@@ -470,7 +495,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
         return origin == null;
     }
 
-    // FIXME for now we keep the old behaviour but we may want to be more robust here
+    // FIXME for now we keep the old behavior but we may want to be more robust here
     public long lastModified() {
         return new java.io.File(this.origin.getFile()).lastModified();
     }
