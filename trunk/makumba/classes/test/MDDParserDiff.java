@@ -16,7 +16,7 @@ public class MDDParserDiff {
     public static void main(String[] args) {
         
         Configuration.setPropery("dataSourceConfig", "dataDefinitionProvider", "recordinfo");
-        DataDefinition dd = DataDefinitionProvider.getInstance().getDataDefinition("ParserComparison");
+        DataDefinition dd = DataDefinitionProvider.getInstance().getDataDefinition("test.subpackage.ParserComparison");
         
         
         String old = ((RecordInfo)dd).getStructure();
@@ -28,7 +28,7 @@ public class MDDParserDiff {
         }
         
         Configuration.setPropery("dataSourceConfig", "dataDefinitionProvider", "mdd");
-        DataDefinition dd1 = MDDProvider.getMDD("ParserComparison");
+        DataDefinition dd1 = MDDProvider.getMDD("test.subpackage.ParserComparison");
         
 
         String newDD = ((DataDefinitionImpl)dd1).getStructure();
