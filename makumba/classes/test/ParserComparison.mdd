@@ -13,5 +13,10 @@ address=set          ;Addresses
   address->sth=ptr
   address->homepage=char[50]
   address->sth->aaa=char[20]
-  address->sth->someSuperNestedFunction() { 1 + 2 } : "Some nested nested message"
+#  address->sth->someSuperNestedFunction() { 1 + 2 } : "Some nested nested message"
   address->languages = set test.Language ; languages spoken in that address
+
+name = char[255]
+supergroup = set test.ParserComparison
+
+myFunct() { name + ' ' + name }
