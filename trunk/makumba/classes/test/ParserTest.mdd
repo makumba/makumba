@@ -47,12 +47,27 @@ unique() { name2, name } : "these need to be unique!"
 
 compare(name) { lower(name) = name } : "Name must not have capital letters"
 
-myFunction(char[] cdcd) { text + this.name }
+myFunction(char[] arg, char[] arg2) { actor() }
 
+subquery() { SELECT o.name FROM other o }
+
+myOtherFunction(char[] arg) { name4 + arg }
+
+yetAnotherFunction() { name4 + ' and ' + name4 }
+
+actor() { name4 = name4 }
+
+# from POC
+#actor(char[] user) {username=user}
+#actor(char[] admin) {username=admin}
+#actor(char[] user, char[] pass) {username=user AND this.passowrd=pass}
+
+anInt() {  4 + 3 }
+
+other = ptr ParserComparison
 
 education=set
   education->!title=faculty
-  education->file = ptr general.archive.Person
   education->typeofstud=char{"Undergraduate", "Postgraduate"} ;Type
   education->startdate=date           ;Starting date
   education->finishdate=date              ;Finishing date
