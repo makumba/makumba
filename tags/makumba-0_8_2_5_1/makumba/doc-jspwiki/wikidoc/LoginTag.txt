@@ -1,0 +1,19 @@
+!!!Taglib documentation for tag mak:login
+
+!!Description
+
+[{InsertPage page=LoginTagDescription}]
+
+!!Attributes
+This tag has no attributes
+
+!!See also
+
+[mak:logout|LogoutTag], [mak:attribute|AttributeTag]
+
+!!Examples
+
+[{InsertPage page=LoginTagExample}]
+
+
+%%(display:none;)[Category Documentation]%%

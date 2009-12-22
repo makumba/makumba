@@ -1,0 +1,17 @@
+In order to make a new makumba release, run the following ant targets:
+
+ant release -Duser=<your SF user> -Dpassword=<your SF password> -Dtag=makumba-0_8_2_1 (or whatever the release number is)
+
+in order to have ANT working with the FTP and SCP tasks, run
+
+ant installAntLibraries
+
+the required libs are:
+- ant-apache-oro.jar
+- ant-commons-net.jar
+- ant-jsch.jar
+
+- jsch.jar: http://www.jcraft.com/jsch/
+- commons-net.jar: http://commons.apache.org/downloads/download_net.cgi
+- oro.jar: http://jakarta.apache.org/site/downloads/downloads_oro.cgi
+
