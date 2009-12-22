@@ -204,7 +204,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         validationRules = ((FieldDefinitionImpl)fi).validationRules;
 
         // store names of original field definition and data definition; see getOriginalFieldDefinition() for details
-        if (fi.getDataDefinition() != null) {
+        if (fi.getDataDefinition() != null && !fi.getDataDefinition().isTemporary()) {
             originalFieldDefinitionParent = fi.getDataDefinition().getName();
             originalFieldDefinitionName = fi.getName();
         }
@@ -247,7 +247,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         this.validationRules = f.validationRules;
         
         // store names of original field definition and data definition; see getOriginalFieldDefinition() for details
-        if (getDataDefinition() != null) {
+        if (getDataDefinition() != null && !getDataDefinition().isTemporary()) {
             originalFieldDefinitionParent = getDataDefinition().getName();
             originalFieldDefinitionName = getName();
         }
@@ -937,16 +937,15 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         }
     }
     
-    // TODO understand this
-    FieldDefinition pointerToForeign() {
-        return getSubtable().getFieldDefinition((String) getSubtable().getFieldNames().elementAt(4));
-    }
-
     public FieldDefinition getOriginalFieldDefinition() {
         // we can't store a reference to the original field definition, otherwise it will be serialised in the form
         // responder, and in turn will serialise it's data definition, which might cause issues like locking..
         // thus, we do a lookup here
         DataDefinition dataDefinition = null;
+        
+        if(originalFieldDefinitionParent == null) {
+            return null;
+        }
         
         try {
             dataDefinition = DataDefinitionProvider.getInstance().getDataDefinition(originalFieldDefinitionParent);

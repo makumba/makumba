@@ -7,6 +7,18 @@
 
 TO BE RELEASED IMMEDIATELY (No need for more testing)
 -----------------------------------------------
+
+NOT TO BE RELEASED YET (need more testing)
+manu: auto-complete for mak:input (char and ptr)
+manu, marius: edit-in-place for mak:input and mak:list ("editable" attribute). Is yet to be finished.
+
+------------------------------------------
+- add your changes -
+
+<!-- ============================================================================= -->
+<!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
+
+0.8.2.5 22 Dec 2009
 manu: fix for a bug with multi-key uniqueness constraints and uniqueness constraints: the error message was not treated correctly
 manu: JSPWiki configuration for makumba, and TLD documentation generator for JSPWiki markup
 manu: replacing inieditor with commons-configurations. ==> REQUIRES JAR UPDATE IN ALL APPLICATIONS THAT USE MAKUMBA
@@ -23,16 +35,10 @@ manu: fixing a bug that leads to wrong set queries for types that point to types
 manu: new behavior for the title field: if no suitable title field is found, return ptrIndex by default (instead of e.g. a set field name, as the old parser was doing)
 manu: making the relation crawler display a bit more robust in case of ConfigurationError being thrown due to non-existant webapp database stored in db
 manu: fixing bug in query logging, now taking the initial toString() of prepared statements instead of printing the c3p0 proxy object string
+manu: fixing a bug with the original field definition / data definition: when the DD is a temporary/virtual one (like from a query projection)
+      we can't do a lookup later on so we don't even attempt to do so
 
-NOT TO BE RELEASED YET (need more testing)
-manu: auto-complete for mak:input (char and ptr)
-manu, marius: edit-in-place for mak:input and mak:list ("editable" attribute). Is yet to be finished.
 
-------------------------------------------
-- add your changes -
-
-<!-- ============================================================================= -->
-<!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
 0.8.2.4 12 Nov 2009
 manu: fix to the fix regarding comparison validation rules in 0.8.2.3
 manu: adding paraphrases in mdd.g to make parser error messages more understandable
