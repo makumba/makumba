@@ -1422,7 +1422,7 @@ public class TableManager extends Table {
 
     // moved from FieldManager
     /**
-     * ask this field to write write its argumment value in a prepared SQL statement for copying
+     * ask this field to write write its argument value in a prepared SQL statement for copying
      */
     public void setCopyArgument(String fieldName, PreparedStatement ps, int n, Dictionary<String, Object> d)
             throws SQLException {
