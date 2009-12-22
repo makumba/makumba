@@ -321,7 +321,7 @@ public abstract class LineViewer implements SourceViewer {
                         writer.println("No relations found for this file!");
                     }
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 writer.println("Could not crawl relations, error: " + e.getMessage());
                 Logger.getLogger("").log(Level.SEVERE, e.getMessage(), e);
             }
