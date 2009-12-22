@@ -82,7 +82,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
     /** make a virtual data definition **/
     public DataDefinitionImpl(String name) {
         this.name = name;
-        this.origin = null;
+        this.origin = null; // this is explicit, as we use the origin being null to say that we have a temporary data definition
     }
     
     /** constructor for virtual subfield data definitions, like file **/
