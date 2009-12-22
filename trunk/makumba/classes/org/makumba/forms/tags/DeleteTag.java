@@ -65,7 +65,7 @@ public class DeleteTag extends EditTag {
     
     @Override
     protected boolean allowEmptyBody() {
-        return widget.equals("deleteForm");
+        return (widget != null && widget.equals("deleteForm"));
     }
 
     public void setWidget(String w) {

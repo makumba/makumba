@@ -18,6 +18,9 @@ manu, marius: edit-in-place for mak:input and mak:list ("editable" attribute). I
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
 
+0.8.2.5.1 23 Dec 2009
+manu: fixing NPE in DeleteTag
+
 0.8.2.5 22 Dec 2009
 manu: fix for a bug with multi-key uniqueness constraints and uniqueness constraints: the error message was not treated correctly
 manu: JSPWiki configuration for makumba, and TLD documentation generator for JSPWiki markup
