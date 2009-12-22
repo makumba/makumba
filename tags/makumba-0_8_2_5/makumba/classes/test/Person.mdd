@@ -1,0 +1,138 @@
+# temporary file, should be removed once new parser works
+
+!type.yesNo=int{"No"=0, "Yes"=1}
+!type.genTyp=int{"Female"=0, "Male"=1}
+!title= fullName()
+
+indiv = unique fixed not null ptr test.Individual ;lala
+
+birthdate=date		 ;Birthdate
+compare(birthdate) { birthdate <= date($now, $now, $now - 15, 0, 0, 0) } : "You have to be at least 15 years old!"
+compare(birthdate) { birthdate >= date($now, $now, $now - 105, 0, 0, 0) } : "Maximum age is 105!"
+
+firstSex = date
+
+myapp_username=char[80] ; username for this user
+
+password=char[80] ; password for this user
+
+beginDate = date;
+
+#beginDate%compare = beginDate >= $now : "Begin date can't be in the past!"
+#beginDate%compare = beginDate >= date($now,$now,$now - 5) : "Begin date can't be longer than 5 years ago!"
+
+gender=genTyp		 ;Gender
+all=char[25]             ;test a reserved word
+field=char[80]           ;another reserved word
+
+militarySucksAndEverybodyKnowsItButDoesNotSpeakOutLoudAboutIt=yesNo           ;A very long fieldname
+driver=yesNo		 ;Driving Licence
+
+age=int				;Age
+range(age) {12..99} : "Age must be between 12 and 99!"
+
+makumbaTillDeath = not null yesNo   ; makumbian or not
+designer = yesNo    ; are you a designer?
+
+weight=real ; weight in kilos
+
+# test some QL functions as field names
+length=int ; height in cm
+max=int ; max value
+
+hobbies=text             ;Hobbies
+length(hobbies) {1..?} : "Hobbies must not be empty!"
+
+comment=text         ;Comments
+
+picture=binary      ;Picture of the person
+
+someAttachment=file
+
+favouriteToy= ptr test.AllTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers  ;Favourite toy in a long tablename
+
+brother= ptr test.Person
+
+extraData=ptr
+extraData->something=char[20]
+extraData->what=int
+
+range(length) { 0..200 } : "You can't be taller than 2 meters"
+
+
+#for uniqness tests:
+uniqInt=unique int		            ;test int uniqness
+uniqChar=unique char[33]	        ;test char uniqness
+uniqDate=unique date		        ;test date uniqness
+uniqPtr=unique ptr test.Language    ;test ptr uniqness
+
+uniqChar.unique = "There can only be a unique char"
+
+speaks=set test.Language
+intSet= set int {"a"=0, "b"=1, "c"=2 }
+
+charSet=set char{ "d", "e", "f" }
+
+email = char[40]
+matches(email) { .+@.+\.[a-z]+|^[ ]*$ } : "Email address is not valid!"
+
+address=set			 ;Addresses
+  address->!title=description
+  address->description=char[30]	;Description (home address, study-time address, ...)
+  address->streetno=char[100]	      ;Street  
+  address->zipcode=char[10]		;Zipcode
+  address->city=char[40]		;City
+  address->country=char[20]             ;Country
+  address->phone=char[20]		;Phone
+  address->fax=char[20]			;Fax
+  address->email=char[40]		;E-Mail
+  address->usagestart=date		;Use from
+  address->usageend=date		;Use till
+  address->homepage=char[50]
+  address->sth=ptr
+  address->sth->aaa=char[20]
+  address->sth->someSuperNestedFunction() { 1 + 2 } : "Some nested nested message"
+  address->languages = set test.Language ; languages spoken in that address
+  address->length(description) {3..?} : "Description must be at least 3 letters long!"
+  address->someFunction() { 1 + 2 } : "Some nested message"
+  address->matches(homepage) { http://.+ } : "the homepage must start with http://"
+  address->compare(description) { lower(description) != description } : "Description cannot all be lower case!"
+
+
+toys=set
+  toys->name=char[30]
+  
+groupMembers = set test.Person
+
+# comparison validation rules spanning over more than one field
+compare(weight, age) { weight < age } : "Your weight can't be higher than your age!" ; comment
+compare(firstSex, birthdate) { firstSex >= birthdate } : "Can't have sex before you'are born!"
+compare(email) { lower(email) = email } : "E-mail address must be all lower case!"
+compare(indiv.name) { lower(indiv.name) != indiv.name } : "Your name can't be all lower cases!"
+
+# multi-field uniqueness keys
+unique(age, email) : "these need to be unique!" ;comment
+unique(indiv.name, indiv.surname) : "these too!"
+
+
+someFunction(char[] b) { count(address) > 0 } : "You need to specify an address" ; comment
+someOtherFunction(int age, char[] b) { this.age > age } : "You are too young!"
+functionWithPointer(ptr test.Individual i, int age, char[] b) { this.age > age } : "You are too young!"
+someFunctionWithParams(int param, int param2, int param3) { age+param > 20 } : "You are too young!"
+nameMin2CharsLong() { character_length(indiv.name) > 2 } : "Your name is not long enough!"
+nameMin4CharsLong() { character_length(indiv.name) > 4 } : "Your name is not long enough!"
+nameMin3CharsLong() { indiv.nameMin3CharsLong() } : "Your name is not long enough!"
+someTest(){ actor(test.Person) }
+allNamesMin2CharsLong() { character_length(indiv.name) > 2 AND character_length(indiv.surname) > 2 } : "Your name or surname is not long enough!"
+oneNameMin2CharsLong() { character_length(indiv.name) > 2 OR character_length(indiv.surname) > 2 } : "Your name and surname is not long enough!"
+
+fullName() { indiv.fullName() } ; comment
+
+actor(char[] username, char[] password) { myapp_username=username AND this.password=password }
+actor2(char[] username, char[] password) { indiv.someusername=username AND this.password=password }
+
+score(char term) { scoreMatch(term, this.indiv.name)  }
+
+# a generic function assigning weights to pattern matches
+scoreMatch(char term, char value) { case when term=value then 1 else case when term like 'value%' then 0.8 else case when term like '%value' then 0.6 else case when term like '%value%' then 0.5 end end end end }
+ 
