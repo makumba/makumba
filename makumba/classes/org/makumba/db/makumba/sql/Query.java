@@ -59,6 +59,8 @@ public class Query implements org.makumba.db.makumba.Query {
     boolean supportsLimitInQuery;
 
     String insertIn;
+    
+    Database db;
 
     TableManager insertHandler;
 
@@ -68,6 +70,7 @@ public class Query implements org.makumba.db.makumba.Query {
 
     public Query(Database db, String OQLQuery, String insertIn) {
         QueryAnalysisProvider qap= null;
+        this.db = db;
         query=OQLQuery;
         try {
            qap=(QueryAnalysisProvider) Class.forName(OQLQueryProvider.OQLQUERY_ANALYSIS_PROVIDER).newInstance();
@@ -123,7 +126,7 @@ public class Query implements org.makumba.db.makumba.Query {
                 throw new InvalidValueException("Errors while trying to assign arguments to query:\n" + com + "\n" + s);
             }
 
-            java.util.logging.Logger.getLogger("org.makumba.db.query.execution").fine("" + ps);
+            java.util.logging.Logger.getLogger("org.makumba.db.query.execution").fine("" + db.getWrappedStatementToString(ps));
             java.util.Date d = new java.util.Date();
             ResultSet rs = null;
             try {
@@ -133,7 +136,7 @@ public class Query implements org.makumba.db.makumba.Query {
                 throw new DBError(se, com);
             }
             long diff = new java.util.Date().getTime() - d.getTime();
-            java.util.logging.Logger.getLogger("org.makumba.db.query.performance").fine("" + diff + " ms " + ps);
+            java.util.logging.Logger.getLogger("org.makumba.db.query.performance").fine("" + diff + " ms " + db.getWrappedStatementToString(ps));
             return goThru(rs, resultHandler);
         } catch (SQLException e) {
             throw new org.makumba.DBError(e);
@@ -220,4 +223,6 @@ public class Query implements org.makumba.db.makumba.Query {
             throw new org.makumba.DBError(e);
         }
     }
+
+    
 }

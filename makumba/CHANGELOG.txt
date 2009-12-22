@@ -21,6 +21,8 @@ manu: fix for mak:delete - can now have a body if the widget is a form
 manu: BEHAVIORAL CHANGE: FORMS ARE NOW POST BY DEFAULT (except searchForm)
 manu: fixing a bug that leads to wrong set queries for types that point to types that have the same short name
 manu: new behavior for the title field: if no suitable title field is found, return ptrIndex by default (instead of e.g. a set field name, as the old parser was doing)
+manu: making the relation crawler display a bit more robust in case of ConfigurationError being thrown due to non-existant webapp database stored in db
+manu: fixing bug in query logging, now taking the initial toString() of prepared statements instead of printing the c3p0 proxy object string
 
 NOT TO BE RELEASED YET (need more testing)
 manu: auto-complete for mak:input (char and ptr)

@@ -23,13 +23,13 @@
 
 package org.makumba.db.makumba.sql;
 
+import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
@@ -40,13 +40,13 @@ import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
 import org.makumba.commons.NameResolver;
-import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.SQLPointer;
 import org.makumba.db.makumba.DBConnection;
 import org.makumba.db.makumba.DBConnectionWrapper;
 import org.makumba.db.makumba.MakumbaTransactionProvider;
 import org.makumba.db.makumba.Update;
 
+import com.mchange.v2.c3p0.C3P0ProxyStatement;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.mysql.jdbc.CommunicationsException;
 
@@ -104,7 +104,7 @@ public class Database extends org.makumba.db.makumba.Database {
 			return new SQLDBConnection(this, tp, pooledDataSource);
 		} catch(CommunicationsException ce) {
 		    // it may be that a connection returned by the pooledDataSource is in fact stale
-		    // in that case we prevent the user that there is a problem
+		    // in that case we warn the user that there is a problem
 		    // TODO in fact we should try to get another connection or figure out if the connection given by the pool is valid
 		    // but this should be done by the pool...
 		    logException(ce);
@@ -446,7 +446,7 @@ public class Database extends org.makumba.db.makumba.Database {
 	protected int exec(PreparedStatement ps) {
 		try {
 			java.util.logging.Logger.getLogger("org.makumba.db.update.execution").fine(
-					ps.toString());
+					getWrappedStatementToString(ps));
 			ps.execute();
 			int n = ps.getUpdateCount();
             ps.close();
@@ -532,6 +532,29 @@ public class Database extends org.makumba.db.makumba.Database {
     public NameResolver getNameResolverHook() {
         return nrh;
     }
+    
+    /**
+     * Since we use c3p0 for connection pooling we don't get the raw prepared statement anymore but a proxy.
+     * This method fetches the toString() result of the wrapped prepared statement
+     */
+    public String getWrappedStatementToString(PreparedStatement ps) {
+        String sql = "";
+        try {
+          C3P0ProxyStatement c3p0Stmt = (C3P0ProxyStatement) ps;
+          Method toStringMethod = Object.class.getMethod("toString", new Class[] {});
+          Object toStr = c3p0Stmt.rawStatementOperation(toStringMethod,
+              C3P0ProxyStatement.RAW_STATEMENT, new Object[] {});
+          if (sql instanceof String) {
+            sql = (String) toStr;
+            sql = sql.substring(sql.indexOf('-') + 1).trim() + ";";
+            return sql;
+          }
+        } catch (Throwable e) {
+          return "Exception extracting SQL: " + e.getMessage();
+        } 
+        return null;
+    }
+    
 
 
 }
