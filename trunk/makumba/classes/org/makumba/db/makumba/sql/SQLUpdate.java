@@ -48,10 +48,13 @@ public class SQLUpdate implements Update {
     
     String type;
     
+    Database db;
+    
     QueryAnalysisProvider qP = QueryProvider.getQueryAnalzyer("oql");
 
     SQLUpdate(Database db, String from, String setWhere, String DELIM) {
         type = from;
+        this.db = db;
         int whereMark = setWhere.indexOf(DELIM);
         String set = setWhere.substring(0, whereMark);
         String where = setWhere.substring(whereMark + DELIM.length());
@@ -185,7 +188,7 @@ public class SQLUpdate implements Update {
 
             // org.makumba.db.sql.Database db=(org.makumba.db.sql.Database)dbc.getHostDatabase();
 
-            java.util.logging.Logger.getLogger("org.makumba.db.update.execution").fine("" + ps);
+            java.util.logging.Logger.getLogger("org.makumba.db.update.execution").fine("" + db.getWrappedStatementToString(ps));
             java.util.Date d = new java.util.Date();
             int rez;
             try {
