@@ -40,7 +40,12 @@ manu: making the relation crawler display a bit more robust in case of Configura
 manu: fixing bug in query logging, now taking the initial toString() of prepared statements instead of printing the c3p0 proxy object string
 manu: fixing a bug with the original field definition / data definition: when the DD is a temporary/virtual one (like from a query projection)
       we can't do a lookup later on so we don't even attempt to do so
-
+rudi: fixing bug 1145
+rudi: correcting range validation rule
+rudi: javadoc for jspwiki site
+rudi: correct behaviour on equality operators for comparison rule
+rudi: throwing on invalid value exceptions that the application developer throws in the BL
+rudi: fixing a bug that prevents showing errors originating in a nested form
 
 0.8.2.4 12 Nov 2009
 manu: fix to the fix regarding comparison validation rules in 0.8.2.3
