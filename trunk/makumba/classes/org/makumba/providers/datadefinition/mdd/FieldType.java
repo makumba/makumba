@@ -35,7 +35,10 @@ public enum FieldType {
     SETINTENUM("setintEnum", 17, java.util.Vector.class, Pointer.NullSet, null, "setint"),
     BINARY("binary", 18, org.makumba.Text.class, Pointer.NullText, "", "binary"),
     BOOLEAN("boolean", 19, java.lang.Boolean.class, Pointer.NullBoolean, false, "boolean"),
-    FILE("file", 20, null, Pointer.NullText, null, null);
+    FILE("file", 20, null, Pointer.NullText, null, null),
+    
+    // this is not a real type, it's needed for the HQL layer to work 
+    PARAMETER("parameter", 100, Object.class, Pointer.Null, null, "parameter");
     
     private int type = -1;
 
