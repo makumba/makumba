@@ -24,21 +24,21 @@
 package org.makumba.devel;
 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Vector;
 
 import javax.swing.JFrame;
 
-import org.jdom.Element;
-import org.jdom.Namespace;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.Namespace;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionParseError;
 import org.makumba.FieldDefinition;
-import org.makumba.MakumbaSystem;
 import org.makumba.providers.DataDefinitionProvider;
 
 import prefuse.Constants;
@@ -82,24 +82,25 @@ public class MDDRelationVisualiser {
         Vector<String> mdds = DataDefinitionProvider.getInstance().getDataDefinitionsInDefaultLocations();
         File tmp = new File("/tmp/graph.ml"); // File.createTempFile("graph_", ".ml");
 
-        Namespace ns = Namespace.getNamespace("http://graphml.graphdrawing.org/xmlns");
-        Element graphml_tag = new Element("graphml").setNamespace(ns);
-
-        Element root = new Element(tree).setAttribute("edgedefault", "directed");
-        graphml_tag.addContent(root);
-
-        Element incoming = new Element("key");
-        incoming.setAttribute("id", "name");
-        incoming.setAttribute("for", "node");
-        incoming.setAttribute("attr.name", "name");
-        incoming.setAttribute("attr.type", "string");
-        root.addContent(incoming);
-
-        ArrayList<Element> edges2Add = new ArrayList<Element>();
-
+        Document d = DocumentHelper.createDocument();
+        Element graphml_tag = d.addElement("graphml");
+        
+        
+        Element root = graphml_tag.addElement(tree);
+        root.addAttribute("edgedefault", "directed");
+        
+        Namespace ns = Namespace.get("", "http://graphml.graphdrawing.org/xmlns");
+        d.getRootElement().add(ns);
+        
+        Element incoming = root.addElement("key");
+        incoming.addAttribute("id", "name");
+        incoming.addAttribute("for", "node");
+        incoming.addAttribute("attr.name", "name");
+        incoming.addAttribute("attr.type", "string");
+        
         for (String mdd : mdds) {
             try {
-                DataDefinition dd = MakumbaSystem.getDataDefinition(mdd);
+                DataDefinition dd = DataDefinitionProvider.getInstance().getDataDefinition(mdd);
                 System.out.println(dd);
                 addNode(root, dd.getName());
                 final Vector<String> fieldNames = dd.getFieldNames();
@@ -107,10 +108,10 @@ public class MDDRelationVisualiser {
                     FieldDefinition fd = dd.getFieldDefinition(name);
                     if (fd.isPointer()) {
                         final String name2 = fd.getPointedType().getName();
-                        edges2Add.add(addEdge(root, dd.getName(), name2, 9));
+                        addEdge(root, dd.getName(), name2, 9);
                     } else if (fd.getIntegerType() == FieldDefinition._set) {
                         final String name2 = fd.getPointedType().getName();
-                        edges2Add.add(addEdge(root, dd.getName(), name2, 9));
+                        addEdge(root, dd.getName(), name2, 9);
                     }
                 }
             } catch (DataDefinitionParseError e) {
@@ -118,13 +119,9 @@ public class MDDRelationVisualiser {
             }
         }
 
-        for (Element element : edges2Add) {
-            root.addContent(element);
-        }
-
-        XMLOutputter serializer = new XMLOutputter();
-        serializer.setFormat(Format.getPrettyFormat());
-        serializer.output(graphml_tag, new FileOutputStream(tmp));
+        XMLWriter serializer = new XMLWriter(new FileWriter(tmp), new OutputFormat("", false));
+        serializer.write(d);
+        serializer.close();
 
         Graph graph = null;
         try {
@@ -204,17 +201,16 @@ public class MDDRelationVisualiser {
     }
 
     private static void addNode(Element root, String name) {
-        Element elem = new Element("node").setAttribute("id", "" + name);
-        elem.addContent(new Element("data").setAttribute("key", "name").setText(name));
-        root.addContent(elem);
+        Element elem = root.addElement("node").addAttribute("id", "" + name);
+        elem.addElement("data").addAttribute("key", "name").setText(name);
     }
 
     private static Element addEdge(Element root, String from, String to, Integer count) {
-        Element elem = new Element("edge");
+        Element elem = root.addElement("edge");
 
-        elem.setAttribute("source", "" + (from));
-        elem.setAttribute("target", "" + (to));
-        elem.setAttribute("directed", "true");
+        elem.addAttribute("source", "" + (from));
+        elem.addAttribute("target", "" + (to));
+        elem.addAttribute("directed", "true");
 
         return elem;
     }
