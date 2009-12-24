@@ -5,8 +5,8 @@ package org.makumba.providers.query.mql;
 /** Makumba adaptation of the Hibernate sql-gen.g 
  * The few changes are marked with ********* Mql addition	
  * */
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 }
 /**
@@ -30,7 +30,7 @@ options {
 }
 
 {
-	private static Log log = LogFactory.getLog(MqlSqlGeneratorBase .class);
+    private static Logger log = Logger.getLogger("org.makumba.db.query.compilation");
 
    /** the buffer resulting SQL statement is written to */
 	private StringBuffer buf = new StringBuffer();
