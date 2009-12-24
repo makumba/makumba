@@ -26,13 +26,11 @@ package org.makumba.db.makumba.sql;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.makumba.CompositeValidationException;
 import org.makumba.DBError;
 import org.makumba.InvalidValueException;
 import org.makumba.MakumbaError;
 import org.makumba.NotUniqueException;
 import org.makumba.OQLParseError;
-import org.makumba.db.makumba.Table;
 import org.makumba.db.makumba.Update;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
