@@ -114,7 +114,7 @@ public class table extends TestCase {
 
     static InputStream getExampleData() {
         try {
-            return new BufferedInputStream(new FileInputStream("lib/antlr-2.7.6.jar".replace('/', File.separatorChar)));
+            return new BufferedInputStream(new FileInputStream("lib/core/antlr-2.7.6.jar".replace('/', File.separatorChar)));
         } catch (IOException e) {
             e.printStackTrace();
             return null;
