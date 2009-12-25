@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.makumba.commons.ControllerHandler;
 import org.makumba.commons.ServletObjects;
+import org.makumba.providers.Configuration;
 
 public class FilterConditionControllerHandler extends ControllerHandler {
 
@@ -18,8 +19,9 @@ public class FilterConditionControllerHandler extends ControllerHandler {
         String uri = req.getRequestURI();
 
         // accesses to the source viewer are not filtered
-        // FIXME: update this with getting the paths from the configuration, maybe even generally to the mak-tools path
-        if (uri.startsWith("/dataDefinitions") || uri.startsWith("/logic") || uri.startsWith("/classes")) {
+        if (uri.startsWith(Configuration.getMakumbaToolsLocation() + Configuration.getMddViewerLocation())
+                || uri.startsWith(Configuration.getMakumbaToolsLocation() + Configuration.getLogicDiscoveryViewerLocation())
+                || uri.startsWith(Configuration.getMakumbaToolsLocation() + Configuration.getJavaViewerLocation())) {
             return false;
         }
         String file = null;
