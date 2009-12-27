@@ -24,10 +24,13 @@
 package org.makumba.analyser;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.collections.set.ListOrderedSet;
 
 /**
@@ -41,8 +44,10 @@ import org.apache.commons.collections.set.ListOrderedSet;
  */
 public class PageCache {
 
-    private HashMap<String, HashMap<Object, Object>> caches = new HashMap<String, HashMap<Object, Object>>();
+    private HashMap<String, LinkedHashMap<Object, Object>> caches = new HashMap<String, LinkedHashMap<Object, Object>>();
 
+    private HashMap<String, MultiValueMap> multiValueCaches = new HashMap<String, MultiValueMap>();
+    
     private HashMap<String, ListOrderedSet> setCaches = new HashMap<String, ListOrderedSet>();
 
     /**
@@ -56,9 +61,9 @@ public class PageCache {
      *            the value of the object to be cached
      */
     public void cache(String cacheName, Object key, Object value) {
-        HashMap<Object, Object> cache = caches.get(cacheName);
+        LinkedHashMap<Object, Object> cache = caches.get(cacheName);
         if (cache == null) {
-            cache = new HashMap<Object, Object>();
+            cache = new LinkedHashMap<Object, Object>();
             caches.put(cacheName, cache);
         }
         cache.put(key, value);
@@ -74,7 +79,7 @@ public class PageCache {
      * @return the object corresponding to the cache entry, <code>null</code> if no entry exists
      */
     public Object retrieve(String cacheName, Object key) {
-        HashMap<Object, Object> cache = caches.get(cacheName);
+        LinkedHashMap<Object, Object> cache = caches.get(cacheName);
         if (cache == null) {
             return null;
         }
@@ -82,7 +87,7 @@ public class PageCache {
     }
 
     /**
-     * Gets a whole cache
+     * Gets a whole cache of simple values (does not apply for multi-value caches)
      * 
      * @param cacheName
      *            the name of the cache
@@ -91,7 +96,55 @@ public class PageCache {
     public Map<Object, Object> retrieveCache(String cacheName) {
         return caches.get(cacheName);
     }
+    
+    /**
+     * Caches an object in a cache capable of handling multiple values for one key
+     * @param cacheName the name of the cache
+     * @param key the key of the object to cache
+     * @param value the value of the object to cache, can be a single value or a collection
+     */
+    public void cacheMultiple(String cacheName, Object key, Object value) {
+        MultiValueMap cache = multiValueCaches.get(cacheName);
+        if (cache == null) {
+            cache = new MultiValueMap();
+            multiValueCaches.put(cacheName, cache);
+        }
+        
+        if(value instanceof Collection) {
+            cache.putAll(key, (Collection) value);
+        } else {
+            cache.put(key, value);
+        }
+    }
+    
+    /**
+     * Retrieves the values of a multivalue cache
+     * 
+     * @param cacheName the name of the cache
+     * @param key the key of the object to retrieve
+     * @return a {@link Collection} of values
+     */
+    public Collection<Object> retrieveMultiple(String cacheName, Object key) {
+        MultiValueMap cache = multiValueCaches.get(cacheName);
+        if (cache == null) {
+            return null;
+        }
+        return cache.getCollection(key);
+    }
+    
 
+    /**
+     * Gets a whole multivalue cache
+     * 
+     * @param cacheName
+     *            the name of the cache
+     * @return a {@link MultiValueMap} with the content of the cache
+     */
+    public MultiValueMap retrieveMultiCache(String cacheName) {
+        return multiValueCaches.get(cacheName);
+    }
+        
+    
     /**
      * Caches several objects in a specific cache, using sets, i.e. not keeping duplicate values.
      */
