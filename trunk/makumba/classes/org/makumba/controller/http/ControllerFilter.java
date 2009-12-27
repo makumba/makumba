@@ -49,7 +49,8 @@ public class ControllerFilter implements Filter {
 
     private FilterConfig conf;
 
-    private String handlerClasses = "org.makumba.devel.SourceViewControllerHandler,"
+    private String handlerClasses = "org.makumba.controller.SectionDataControllerHandler,"
+            + "org.makumba.devel.SourceViewControllerHandler,"
             + "org.makumba.devel.DataToolsControllerHandler,"
             + "org.makumba.commons.MakumbaToolsControllerHandler,"
             + "org.makumba.devel.ErrorControllerHandler,"

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <taglib xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd" version="2.0">
 
-  <description>Makumba devel-20091112173531 http://www.makumba.org</description>
+  <description>Makumba devel-20091226170437 http://www.makumba.org</description>
   <tlib-version>2.0</tlib-version>
   <short-name>mak</short-name>
   <uri>http://www.makumba.org/presentation</uri>
@@ -17,12 +17,14 @@
     <body-content>JSP</body-content>
     <display-name>manipulate lists</display-name>
     
+    
+    
 
     <attribute>
       <name>from</name>
       <required>true</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>OQL FROM section. If the query is nested, the keys from the parent's query are added to this FROM
+      <description>MQL FROM section. If the query is nested, the keys from the parent's query are added to this FROM
         section in the resulting query</description>
       
     </attribute>
@@ -31,7 +33,7 @@
       <name>variableFrom</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>supplementary, variable OQL FROM section.</description>
+      <description>supplementary, variable MQL FROM section.</description>
       
     </attribute>
 
@@ -39,7 +41,7 @@
       <name>where</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>OQL WHERE section. If the query is nested, the WHERE section from the parent's query, is added to
+      <description>MQL WHERE section. If the query is nested, the WHERE section from the parent's query, is added to
         this in the resulting query</description>
       
     </attribute>
@@ -48,7 +50,7 @@
       <name>orderBy</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>OQL ORDER BY section</description>
+      <description>MQL ORDER BY section</description>
       
     </attribute>
 
@@ -56,7 +58,7 @@
       <name>groupBy</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>OQL GROUP BY section</description>
+      <description>MQL GROUP BY section</description>
       
     </attribute>
 
@@ -161,7 +163,7 @@
       
     </attribute>
 
-  </tag>
+  <description>See ListTagDescription</description></tag>
 
 
   <tag>
@@ -171,13 +173,15 @@
     <body-content>JSP</body-content>
     <display-name>manipulate record</display-name>
     
+    
+    
 
-    <attribute><name>from</name><required>true</required><rtexprvalue>false</rtexprvalue><description>OQL FROM section. If the query is nested, the keys from the parent's query are added to this FROM
+    <attribute><name>from</name><required>true</required><rtexprvalue>false</rtexprvalue><description>MQL FROM section. If the query is nested, the keys from the parent's query are added to this FROM
         section in the resulting query</description></attribute>
-    <attribute><name>variableFrom</name><required>false</required><rtexprvalue>false</rtexprvalue><description>supplementary, variable OQL FROM section.</description></attribute>
-    <attribute><name>where</name><required>false</required><rtexprvalue>false</rtexprvalue><description>OQL WHERE section. If the query is nested, the WHERE section from the parent's query, is added to
+    <attribute><name>variableFrom</name><required>false</required><rtexprvalue>false</rtexprvalue><description>supplementary, variable MQL FROM section.</description></attribute>
+    <attribute><name>where</name><required>false</required><rtexprvalue>false</rtexprvalue><description>MQL WHERE section. If the query is nested, the WHERE section from the parent's query, is added to
         this in the resulting query</description></attribute>
-    <attribute><name>groupBy</name><required>false</required><rtexprvalue>false</rtexprvalue><description>OQL GROUP BY section</description></attribute>
+    <attribute><name>groupBy</name><required>false</required><rtexprvalue>false</rtexprvalue><description>MQL GROUP BY section</description></attribute>
     <attribute><name>id</name><required>false</required><rtexprvalue>false</rtexprvalue><description>Tag's identifier</description></attribute>
     <attribute><name>db</name><required>false</required><rtexprvalue>true</rtexprvalue><description>The makumba database to connect to. The format is Host_SQLEngineType_DatabaseName
         If not present, the default database is used. See database configuration and lookup.</description></attribute>
@@ -187,7 +191,7 @@
     <attribute><name>editPage</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Document me please</description></attribute>
     <attribute><name>countVar</name><required>false</required><rtexprvalue>false</rtexprvalue><description>The java.lang.Integer variable that will contain the number of the current iteration.</description></attribute>
     <attribute><name>maxCountVar</name><required>false</required><rtexprvalue>false</rtexprvalue><description>The java.lang.Integer variable that will contain the total number of iterations.</description></attribute>
-  </tag>
+  <description>See ObjectTagDescription</description></tag>
 
 
   <tag>
@@ -196,6 +200,8 @@
     <tei-class>org.makumba.list.tags.CountTEI</tei-class>
     <body-content>JSP</body-content>
     <display-name>Display result from a search form</display-name>
+    
+    
     
 
     <attribute>
@@ -206,8 +212,8 @@
       
     </attribute>
 
-    <attribute><name>orderBy</name><required>false</required><rtexprvalue>false</rtexprvalue><description>OQL ORDER BY section</description></attribute>
-    <attribute><name>groupBy</name><required>false</required><rtexprvalue>false</rtexprvalue><description>OQL GROUP BY section</description></attribute>
+    <attribute><name>orderBy</name><required>false</required><rtexprvalue>false</rtexprvalue><description>MQL ORDER BY section</description></attribute>
+    <attribute><name>groupBy</name><required>false</required><rtexprvalue>false</rtexprvalue><description>MQL GROUP BY section</description></attribute>
     <attribute><name>offset</name><required>false</required><rtexprvalue>false</rtexprvalue><description>the offset of the result to show (0 for starting from the first result)</description></attribute>
     <attribute><name>limit</name><required>false</required><rtexprvalue>false</rtexprvalue><description>the maximum numbers of results to show (-1 for all results)</description></attribute>
     <attribute><name>defaultLimit</name><required>false</required><rtexprvalue>false</rtexprvalue><description>the default value for limit, if the $attribute in limit="$attribute" is not present.</description></attribute>
@@ -216,7 +222,7 @@
         If not present, the default database is used. See database configuration and lookup.</description></attribute>
     <attribute><name>separator</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Character string as separator between two list elements. It is not included before the first or after
         the last</description></attribute>
-  </tag>
+  <description>See ResultListTagDescription</description></tag>
 
 
   <tag>
@@ -226,13 +232,14 @@
     <body-content>empty</body-content>
     <display-name>Value of an expression</display-name>
     
+    
+    
 
     <attribute>
       <name>expr</name>
       <required>true</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>OQL SELECT projection expression. It will be displayed if var nor printVar are not specified.
-      </description>
+      <description>MQL SELECT projection expression. It will be displayed if var nor printVar are not specified.</description>
       
     </attribute>
 
@@ -250,8 +257,7 @@
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
       <description>The formatted output as it would have been printed, is instead stored in a new java.lang.String
-        variable by this name, as well as to a page-scope attribute by the same name (accessible as $attributename).
-      </description>
+        variable by this name, as well as to a page-scope attribute by the same name (accessible as $attributename).</description>
       
     </attribute>
 
@@ -270,8 +276,7 @@
       <rtexprvalue>true</rtexprvalue>
       <description>Normal behaviour is to transform character output to its HTML escaped form. If this is "true",
         content is assumed to be HTML, and is not escaped. If "auto", heuristically checks the content for HTML tags and
-        inhibits escape if there are any; note: only the first 32768 characters are checked (32kB). Default is "false".
-      </description>
+        inhibits escape if there are any; note: only the first 32768 characters are checked (32kB). Default is "false".</description>
       
     </attribute>
 
@@ -279,8 +284,7 @@
       <name>format</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Format string to specify the formatting of a date value, according to java.text.SimpleDateFormat
-      </description>
+      <description>Format string to specify the formatting of a date value, according to java.text.SimpleDateFormat</description>
       
     </attribute>
 
@@ -380,27 +384,74 @@
       
     </attribute>
 
-  </tag>
+  <description>See ValueTagDescription</description></tag>
 
   <tag>
     <name>if</name>
     <tag-class>org.makumba.list.tags.IfTag</tag-class>
     <body-content>JSP</body-content>
     <display-name>Shows body only if the expression is true</display-name>
-
+    
+    
+    
+    
     <attribute>
       <name>test</name>
       <required>true</required>
       <rtexprvalue>false</rtexprvalue>
-      <description><![CDATA[OQL SELECT  projection expression. It must be a test, resulting in a 'boolean' in SQL : 0 or 1.
+      <description><![CDATA[MQL SELECT  projection expression. It must be a test, resulting in a 'boolean' in SQL : 0 or 1.
 
 for the test expressions: =, !=, <, <=, >, >=
 ]]></description>
       
     </attribute>
 
-  </tag>
+  <description>See IfTagDescription</description></tag>
 
+  <tag>
+    <name>section</name>
+    <tag-class>org.makumba.list.tags.SectionTag</tag-class>
+    <body-content>JSP</body-content>
+    <display-name>Event-driven section</display-name>
+    
+    
+    
+
+    <attribute>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description><![CDATA[The name of the section, must be unique for the page]]></description>
+      
+    </attribute>
+    
+    <attribute>
+      <name>show</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description><![CDATA[The name of the event that causes this section to be displayed]]></description>
+      
+    </attribute>
+    
+    <attribute>
+      <name>hide</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description><![CDATA[The name of the event that causes this section to be hidden]]></description>
+      
+    </attribute>
+    
+    
+    <attribute>
+      <name>reload</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description><![CDATA[The name of the event that causes this section to be reloaded via partial post-back]]></description>
+      
+    </attribute>
+    
+    
+  <description>See SectionTagDescription</description></tag>
 
   <tag>
     <name>attribute</name>
@@ -408,14 +459,17 @@ for the test expressions: =, !=, <, <=, >, >=
     <tei-class>org.makumba.list.tags.AttrTEI</tei-class>
     <body-content>empty</body-content>
     <display-name>Value of an expression</display-name>
+    
+    
+    
+    
 
     <attribute>
       <name>name</name>
       <required>true</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>the name of the attribute. Will be printed if var is not present and there is no exception when
-        finding the argument. If there is an exception but exceptionVar is indicated, nothing will be printed.
-      </description>
+      <description><![CDATA[the name of the attribute. Will be printed if var is not present and there is no exception when
+        finding the argument. If there is an exception but exceptionVar is indicated, nothing will be printed.]]></description>
       
     </attribute>
 
@@ -447,13 +501,15 @@ for the test expressions: =, !=, <, <=, >, >=
         normally used.</description>
       
     </attribute>
-  </tag>
+  <description>See AttributeTagDescription</description></tag>
 
   <tag>
     <name>form</name>
     <tag-class>org.makumba.forms.tags.FormTagBase</tag-class>
     <body-content>JSP</body-content>
     <display-name>Forms to create new data</display-name>
+    
+    
     
 
     <attribute>
@@ -543,8 +599,7 @@ for the test expressions: =, !=, <, <=, >, >=
       <name>multipleSubmitErrorMsg</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Enables multiple form submission prevention, and sets the given value as the error message.
-      </description>
+      <description>Enables multiple form submission prevention, and sets the given value as the error message.</description>
       
     </attribute>
 
@@ -685,7 +740,7 @@ for the test expressions: =, !=, <, <=, >, >=
       <description>Generic HTML tag attribute</description>
       
     </attribute>
-  </tag>
+  <description>See FormTagDescription</description></tag>
 
 
   <tag>
@@ -694,12 +749,14 @@ for the test expressions: =, !=, <, <=, >, >=
     <body-content>JSP</body-content>
     <display-name>Forms to create new data</display-name>
     
+    
+    
 
     <attribute>
       <name>type</name>
       <required>true</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>Makumba type for record creation, or OQL label for subrecord creation</description>
+      <description>Makumba type for record creation, or MQL label for subrecord creation</description>
       
     </attribute>
 
@@ -722,8 +779,7 @@ for the test expressions: =, !=, <, <=, >, >=
     <attribute><name>reloadFormOnError</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Indicates whether the form page shall be reloaded on an error, or the specified form action page will
         be loaded directly.</description></attribute>
     <attribute><name>clientSideValidation</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Controls whether client side validation shall be used.</description></attribute>
-    <attribute><name>multipleSubmitErrorMsg</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Enables multiple form submission prevention, and sets the given value as the error message.
-      </description></attribute>
+    <attribute><name>multipleSubmitErrorMsg</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Enables multiple form submission prevention, and sets the given value as the error message.</description></attribute>
 
     <!--form specific:-->
     <attribute><name>target</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Form-specific HTML tag attribute</description></attribute>
@@ -747,7 +803,7 @@ for the test expressions: =, !=, <, <=, >, >=
     <attribute><name>onMouseOut</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
     <attribute><name>onMouseOver</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
 
-  </tag>
+  <description>See NewFormTagDescription</description></tag>
 
   <tag>
     <name>editForm</name>
@@ -755,12 +811,14 @@ for the test expressions: =, !=, <, <=, >, >=
     <body-content>JSP</body-content>
     <display-name>Forms to edit data</display-name>
     
+    
+    
 
     <attribute>
       <name>object</name>
       <required>true</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>The label of the OQL object to edit</description>
+      <description>The label of the MQL object to edit</description>
       
     </attribute>
 
@@ -797,7 +855,7 @@ for the test expressions: =, !=, <, <=, >, >=
     <attribute><name>onMouseMove</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
     <attribute><name>onMouseOut</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
     <attribute><name>onMouseOver</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
-  </tag>
+  <description>See EditFormTagDescription</description></tag>
 
 
 
@@ -806,6 +864,8 @@ for the test expressions: =, !=, <, <=, >, >=
     <tag-class>org.makumba.forms.tags.AddTag</tag-class>
     <body-content>JSP</body-content>
     <display-name>Forms to create new data</display-name>
+    
+    
     
 
     <attribute>
@@ -833,8 +893,7 @@ for the test expressions: =, !=, <, <=, >, >=
     <attribute><name>reloadFormOnError</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Indicates whether the form page shall be reloaded on an error, or the specified form action page will
         be loaded directly.</description></attribute>
     <attribute><name>clientSideValidation</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Controls whether client side validation shall be used.</description></attribute>
-    <attribute><name>multipleSubmitErrorMsg</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Enables multiple form submission prevention, and sets the given value as the error message.
-      </description></attribute>
+    <attribute><name>multipleSubmitErrorMsg</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Enables multiple form submission prevention, and sets the given value as the error message.</description></attribute>
 
     <!--form specific:-->
     <attribute><name>target</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Form-specific HTML tag attribute</description></attribute>
@@ -857,7 +916,7 @@ for the test expressions: =, !=, <, <=, >, >=
     <attribute><name>onMouseMove</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
     <attribute><name>onMouseOut</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
     <attribute><name>onMouseOver</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
-  </tag>
+  <description>See AddFormTagDescription</description></tag>
 
 
 
@@ -866,12 +925,15 @@ for the test expressions: =, !=, <, <=, >, >=
     <tag-class>org.makumba.forms.tags.DeleteTag</tag-class>
     <body-content>JSP</body-content>
     <display-name>Forms or links to delete data</display-name>
-
+    
+    
+    
+    
     <attribute>
       <name>object</name>
       <required>true</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>OQL label of the object to delete</description>
+      <description>MQL label of the object to delete</description>
       
     </attribute>
 
@@ -915,7 +977,7 @@ for the test expressions: =, !=, <, <=, >, >=
     <attribute><name>onMouseMove</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
     <attribute><name>onMouseOut</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
     <attribute><name>onMouseOver</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
-  </tag>
+  <description>See DeleteTagDescription</description></tag>
 
 
 
@@ -925,8 +987,10 @@ for the test expressions: =, !=, <, <=, >, >=
     <body-content>JSP</body-content>
     <display-name>Links to delete data</display-name>
     
+    
+    
 
-    <attribute><name>object</name><required>true</required><rtexprvalue>false</rtexprvalue><description>OQL label of the object to delete</description></attribute>
+    <attribute><name>object</name><required>true</required><rtexprvalue>false</rtexprvalue><description>MQL label of the object to delete</description></attribute>
     <attribute><name>action</name><required>false</required><rtexprvalue>true</rtexprvalue><description>the response page of the form</description></attribute>
     <attribute><name>message</name><required>false</required><rtexprvalue>true</rtexprvalue><description>the message that is displayed in the response page upon success</description></attribute>
 
@@ -961,7 +1025,7 @@ for the test expressions: =, !=, <, <=, >, >=
     <attribute><name>onMouseMove</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
     <attribute><name>onMouseOut</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
     <attribute><name>onMouseOver</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
-  </tag>
+  <description>See DeleteLinkTagDescription</description></tag>
 
 
 
@@ -971,6 +1035,8 @@ for the test expressions: =, !=, <, <=, >, >=
     <tei-class>org.makumba.forms.tags.InputTEI</tei-class>
     <body-content>JSP</body-content>
     <display-name>Input control for a field</display-name>
+    
+    
     
 
     <attribute>
@@ -993,7 +1059,7 @@ for the test expressions: =, !=, <, <=, >, >=
       <name>value</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description><![CDATA[OQL expression relative to enclosing query tags or a $attribute computed previously in the page (with <mak:value var=.../> or pageContext.setAttribute(...)), or read by in the previous page by an <mak:input />]]></description>
+      <description><![CDATA[MQL expression relative to enclosing query tags or a $attribute computed previously in the page (with <mak:value var=.../> or pageContext.setAttribute(...)), or read by in the previous page by an <mak:input />]]></description>
       
     </attribute>
 
@@ -1167,6 +1233,7 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
       <rtexprvalue>true</rtexprvalue>
       <description>Enable this to hide the default text of an input onFocus and display it again onBlur if nothing has
         been entered.</description>
+      
     </attribute>
 
 
@@ -1242,7 +1309,7 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
     <attribute><name>onMouseMove</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
     <attribute><name>onMouseOut</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
     <attribute><name>onMouseOver</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
-  </tag>
+  <description>See InputTagDescription</description></tag>
 
 
 
@@ -1251,6 +1318,8 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
     <tag-class>org.makumba.forms.tags.SearchTag</tag-class>
     <body-content>JSP</body-content>
     <display-name>Forms to search</display-name>
+    
+    
     
 
     <attribute>
@@ -1302,7 +1371,7 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
     <attribute><name>onMouseMove</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
     <attribute><name>onMouseOut</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
     <attribute><name>onMouseOver</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
-  </tag>
+  <description>See SearchFormTagDescription</description></tag>
 
 
 
@@ -1311,6 +1380,8 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
     <tag-class>org.makumba.forms.tags.CriterionTag</tag-class>
     <body-content>JSP</body-content>
     <display-name>Search criterion</display-name>
+    
+    
     
 
     <attribute>
@@ -1343,12 +1414,14 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
       ]]></description>
       
     </attribute>
-  </tag>
+  <description>See CriterionTagDescription</description></tag>
 
   <tag>
     <name>matchMode</name>
     <tag-class>org.makumba.forms.tags.MatchModeTag</tag-class>
     <body-content>empty</body-content>
+    
+    
     
 
     <attribute>
@@ -1361,8 +1434,7 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
               <li>"select" (drop-down).</li>
               <li>"radio" (radio buttons).</li>
             </ul>
-        ]]>
-      </description>
+        ]]></description>
       
     </attribute>
 
@@ -1395,7 +1467,7 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
 The output will be < tick >< labelSeparator >< label >]]></description></attribute>
     <attribute><name>elementSeparator</name><required>false</required><rtexprvalue>true</rtexprvalue><description><![CDATA[The string that separates the different options. Default is " " (space). 
 The output will be < [x] label >< elementSeparator >< [x] label >]]></description></attribute>
-  </tag>
+  <description>See MatchModeTagDescription</description></tag>
 
 
 
@@ -1406,6 +1478,8 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
     <body-content>JSP</body-content>
     <display-name>Search input control for a field</display-name>
     
+    
+    
 
     <attribute>
       <name>role</name>
@@ -1415,7 +1489,7 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
       
     </attribute>
 
-    <attribute><name>value</name><required>false</required><rtexprvalue>false</rtexprvalue><description><![CDATA[OQL expression relative to enclosing query tags or a $attribute computed previously in the page (with <mak:value var=.../> or pageContext.setAttribute(...)), or read by in the previous page by an <mak:input />]]></description></attribute>
+    <attribute><name>value</name><required>false</required><rtexprvalue>false</rtexprvalue><description><![CDATA[MQL expression relative to enclosing query tags or a $attribute computed previously in the page (with <mak:value var=.../> or pageContext.setAttribute(...)), or read by in the previous page by an <mak:input />]]></description></attribute>
     <attribute><name>id</name><required>false</required><rtexprvalue>false</rtexprvalue><description>Tag's identifier</description></attribute>
     <attribute><name>dataType</name><required>false</required><rtexprvalue>false</rtexprvalue><description>The makumba type of the data (needed if there is no value, no default expression for the value, or no
         makumba type associated with an attribute)</description></attribute>
@@ -1484,7 +1558,7 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
     <attribute><name>onMouseMove</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
     <attribute><name>onMouseOut</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
     <attribute><name>onMouseOver</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
-  </tag>
+  <description>See SearchFieldTagDescription</description></tag>
 
 
 
@@ -1494,7 +1568,9 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
     <body-content>JSP</body-content>
     <display-name>set an "action" for a form or deleteLink</display-name>
     
-  </tag>
+    
+    
+  <description>See ActionTagDescription</description></tag>
 
   <tag>
     <name>option</name>
@@ -1502,12 +1578,14 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
     <body-content>JSP</body-content>
     <display-name>Option to describe option lists in an input</display-name>
     
+    
+    
 
     <attribute>
       <name>value</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>Value of the option, can be an OQL expression or a $attribute</description>
+      <description>Value of the option, can be an MQL expression or a $attribute</description>
       
     </attribute>
 
@@ -1527,7 +1605,7 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
       
     </attribute>
 
-  </tag>
+  <description>See OptionTagDescription</description></tag>
 
 
   <tag>
@@ -1535,16 +1613,21 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
     <tag-class>org.makumba.forms.tags.ContextualTag</tag-class>
     <body-content>empty</body-content>
     <display-name/>
-  </tag>
+    
+    
+    
+    
+  <description>See </description></tag>
 
   <tag>
     <name>response</name>
     <tag-class>org.makumba.forms.tags.ResponseTag</tag-class>
     <body-content>empty</body-content>
     <display-name>display response and status from forms or delete</display-name>
-
     
-  </tag>
+    
+    
+  <description>See ResponseTagDescription</description></tag>
 
 
 
@@ -1554,7 +1637,9 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
     <body-content>JSP</body-content>
     <display-name>a login form that takes care of passing the existing arguments</display-name>
     
-  </tag>
+    
+    
+  <description>See LoginTagDescription</description></tag>
 
 
 
@@ -1563,6 +1648,7 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
     <tag-class>org.makumba.controller.jsp.LogoutTag</tag-class>
     <body-content>empty</body-content>
     <display-name>remove the reference to the actor logged in</display-name>
+    
     
     
 
@@ -1574,7 +1660,7 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
         the star (*) wildcard to partially match attributes.</description>
       
     </attribute>
-  </tag>
+  <description>See LogoutTagDescription</description></tag>
 
 
 
@@ -1584,7 +1670,9 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
     <body-content>empty</body-content>
     <display-name>Prints Makumba version (a SVN tag)</display-name>
     
-  </tag>
+    
+    
+  <description>See VersionTagDescription</description></tag>
 
 
 
@@ -1594,6 +1682,8 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
     <body-content>empty</body-content>
     <display-name>Prints Makumba and environment information</display-name>
     
+    
+    
 
     <attribute>
       <name>applicationProperties</name>
@@ -1602,7 +1692,7 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
       <description>Document me please</description>
       
     </attribute>
-  </tag>
+  <description>See InfoTagDescription</description></tag>
 
 
 
@@ -1611,6 +1701,7 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
     <description>the count of the enclosing mak:list</description>
     <function-class>org.makumba.list.tags.QueryTag</function-class>
     <function-signature>int count()</function-signature>
+    
     
   </function>
 
@@ -1622,6 +1713,7 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
     <function-class>org.makumba.list.tags.QueryTag</function-class>
     <function-signature>int maxCount()</function-signature>
     
+    
   </function>
 
 
@@ -1631,6 +1723,7 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
     <description>the maximum count of the previous mak:list</description>
     <function-class>org.makumba.list.tags.QueryTag</function-class>
     <function-signature>int lastCount()</function-signature>
+    
     
   </function>
 
@@ -1643,7 +1736,9 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
     <function-class>org.makumba.list.tags.QueryTag</function-class>
     <function-signature>int maxResults()</function-signature>
     
-  </function>
+    
+    
+  <description>See MaxResultsFunctionDescription</description></function>
 
 
 
@@ -1652,6 +1747,8 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
     <tagclass>org.makumba.list.pagination.PaginationTag</tagclass>
     <bodycontent>EMPTY</bodycontent>
     <display-name>Prints links for pagination navigation</display-name>
+    
+    
     
 
     <attribute>
@@ -1688,13 +1785,12 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
       <name>itemName</name>
       <required>false</required>
       <rtexprvalue>yes</rtexprvalue>
-      <description>The name of the items displayed, to be used in the text "Showing 'itemName' x out of y (Page z)".
-      </description>
+      <description>The name of the items displayed, to be used in the text "Showing 'itemName' x out of y (Page z)".</description>
       
     </attribute>
 
     <!-- generic -->
     <attribute><name>styleClass</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
-  </tag>
+  <description>See PaginationTagDescription</description></tag>
 
 </taglib>

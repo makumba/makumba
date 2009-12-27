@@ -25,7 +25,7 @@
       <name>from</name>
       <required>true</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>OQL FROM section. If the query is nested, the keys from the parent's query are added to this FROM
+      <description>MQL FROM section. If the query is nested, the keys from the parent's query are added to this FROM
         section in the resulting query</description>
       <comments>Fixed, Mandatory.</comments>
     </attribute>
@@ -34,7 +34,7 @@
       <name>variableFrom</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>supplementary, variable OQL FROM section.</description>
+      <description>supplementary, variable MQL FROM section.</description>
       <comments>Fixed, can contain #{ JSP EL expressions }</comments>
     </attribute>
 
@@ -42,7 +42,7 @@
       <name>where</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>OQL WHERE section. If the query is nested, the WHERE section from the parent's query, is added to
+      <description>MQL WHERE section. If the query is nested, the WHERE section from the parent's query, is added to
         this in the resulting query</description>
       <comments>Fixed, can contain #{ JSP EL expressions }</comments>
     </attribute>
@@ -51,7 +51,7 @@
       <name>orderBy</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>OQL ORDER BY section</description>
+      <description>MQL ORDER BY section</description>
       <comments>Fixed, can contain #{ JSP EL expressions } label.$fieldname used to be supported, not anymore</comments>
     </attribute>
 
@@ -59,7 +59,7 @@
       <name>groupBy</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>OQL GROUP BY section</description>
+      <description>MQL GROUP BY section</description>
       <comments>Fixed, can contain #{ JSP EL expressions }</comments>
     </attribute>
 
@@ -244,7 +244,7 @@ Can be a Rtexpr <%= ...%>]]></comments>
       <name>expr</name>
       <required>true</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>OQL SELECT projection expression. It will be displayed if var nor printVar are not specified.</description>
+      <description>MQL SELECT projection expression. It will be displayed if var nor printVar are not specified.</description>
       <comments>Fixed, Mandatory.</comments>
     </attribute>
 
@@ -410,7 +410,7 @@ Example, the ellipsis is an image of approx 3 characters wide. ellipsis="<img sr
       <name>test</name>
       <required>true</required>
       <rtexprvalue>false</rtexprvalue>
-      <description><![CDATA[OQL SELECT  projection expression. It must be a test, resulting in a 'boolean' in SQL : 0 or 1.
+      <description><![CDATA[MQL SELECT  projection expression. It must be a test, resulting in a 'boolean' in SQL : 0 or 1.
 
 for the test expressions: =, !=, <, <=, >, >=
 ]]></description>
@@ -419,6 +419,50 @@ for the test expressions: =, !=, <, <=, >, >=
 
   </tag>
 
+  <tag>
+    <name>section</name>
+    <tag-class>org.makumba.list.tags.SectionTag</tag-class>
+    <body-content>JSP</body-content>
+    <display-name>Event-driven section</display-name>
+    <descriptionPage>SectionTagDescription</descriptionPage>
+    <example>SectionTagExample</example>
+    <see>list</see>
+
+    <attribute>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description><![CDATA[The name of the section, must be unique for the page]]></description>
+      <comments>Fixed, Mandatory.</comments>
+    </attribute>
+    
+    <attribute>
+      <name>show</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description><![CDATA[The name of the event that causes this section to be displayed]]></description>
+      <comments>Fixed</comments>
+    </attribute>
+    
+    <attribute>
+      <name>hide</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description><![CDATA[The name of the event that causes this section to be hidden]]></description>
+      <comments>Fixed</comments>
+    </attribute>
+    
+    
+    <attribute>
+      <name>reload</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description><![CDATA[The name of the event that causes this section to be reloaded via partial post-back]]></description>
+      <comments>Fixed</comments>
+    </attribute>
+    
+    
+  </tag>
 
   <tag>
     <name>attribute</name>
@@ -446,7 +490,7 @@ for the test expressions: =, !=, <, <=, >, >=
       <rtexprvalue>false</rtexprvalue>
       <description>The name of the java.lang.Object variable where to store the attribute value. Note that you will have
         to cast it to its specific type.</description>
-      <comments>Fixed, Mandatory.</comments>
+      <comments>Fixed</comments>
     </attribute>
 
     <attribute>
@@ -730,7 +774,7 @@ Values are none (displayed in <mak:response/>), before (before the input), after
       <name>type</name>
       <required>true</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>Makumba type for record creation, or OQL label for subrecord creation</description>
+      <description>Makumba type for record creation, or MQL label for subrecord creation</description>
       <comments>Fixed, mandatory.</comments>
     </attribute>
 
@@ -790,7 +834,7 @@ Values are none (displayed in <mak:response/>), before (before the input), after
       <name>object</name>
       <required>true</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>The label of the OQL object to edit</description>
+      <description>The label of the MQL object to edit</description>
       <comments>Fixed, mandatory.</comments>
     </attribute>
 
@@ -903,7 +947,7 @@ Values are none (displayed in <mak:response/>), before (before the input), after
       <name>object</name>
       <required>true</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>OQL label of the object to delete</description>
+      <description>MQL label of the object to delete</description>
       <comments>Fixed</comments>
     </attribute>
 
@@ -1029,7 +1073,7 @@ Values are none (displayed in <mak:response/>), before (before the input), after
       <name>value</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description><![CDATA[OQL expression relative to enclosing query tags or a $attribute computed previously in the page (with <mak:value var=.../> or pageContext.setAttribute(...)), or read by in the previous page by an <mak:input />]]></description>
+      <description><![CDATA[MQL expression relative to enclosing query tags or a $attribute computed previously in the page (with <mak:value var=.../> or pageContext.setAttribute(...)), or read by in the previous page by an <mak:input />]]></description>
       <comments>Fixed</comments>
     </attribute>
 
@@ -1539,7 +1583,7 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
       <name>value</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
-      <description>Value of the option, can be an OQL expression or a $attribute</description>
+      <description>Value of the option, can be an MQL expression or a $attribute</description>
       <comments>Fixed, if not indicated, nil (null option) is default</comments>
     </attribute>
 
