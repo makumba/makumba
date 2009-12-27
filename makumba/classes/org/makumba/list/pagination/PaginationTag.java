@@ -12,6 +12,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
 import org.apache.commons.lang.StringUtils;
+import org.makumba.LogicException;
 import org.makumba.MakumbaError;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.AnalysableTag;
@@ -84,7 +85,8 @@ public class PaginationTag extends GenericMakumbaTag {
         // TODO: get images from Makumba Config
     }
 
-    public int doEndTag() {
+    @Override
+    public int doAnalyzedEndTag(PageCache pageCache) throws LogicException, JspException {
         return EVAL_PAGE;
     }
 
@@ -108,8 +110,9 @@ public class PaginationTag extends GenericMakumbaTag {
         super.doStartAnalyze(pageCache);
     }
 
-    public int doStartTag() {
-
+    @Override
+    public int doAnalyzedStartTag(PageCache pageCache) throws LogicException, JspException {
+    
         if (!navigationStylesInitialised) {
             try {
                 initLinkStyle();
