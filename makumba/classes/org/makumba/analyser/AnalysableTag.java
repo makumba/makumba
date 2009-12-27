@@ -43,7 +43,13 @@ import org.makumba.commons.MultipleKey;
 import org.makumba.commons.RuntimeWrappedException;
 
 /**
- * Extend this class in order to get analysis support for your tag.
+ * Extend this class in order to get analysis support for your tag.<br/>
+ * Do make sure that:
+ * <ul>
+ * <li>you make setters and getters for all the tag attributes</li>
+ * <li>if attributes should have default values, these should be set in the initialiseState(), not directly in the class</li>
+ * <li>you implement the setTagKey method so as to be able to retrieve {@link TagData} from the cache if you need it</li>
+ * </ul>
  * 
  * @author Cristian Bogdan
  * @author Manuel Gay
