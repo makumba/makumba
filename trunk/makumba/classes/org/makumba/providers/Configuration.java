@@ -66,8 +66,6 @@ public class Configuration implements Serializable {
 
     public static final String PLACEHOLDER_CONTEXT_PATH = "_CONTEXT_PATH_";
     
-    public static final String PLACEHOLDER_UNIQUENESS_SERVLET_PATH = "_UNIQUENESS_SERVLET_PATH_";
-
     private static String defaultClientSideValidation = "live";
 
     private static boolean defaultReloadFormOnError = true;
