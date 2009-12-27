@@ -32,6 +32,8 @@ import org.makumba.providers.Configuration;
  * <li>Not connected to a specific mak:list: specify limit, offset and totalCount attributes</li>
  * </ul>
  * 
+ * FIXME implement setTagKey or this doesn't work properly
+ * 
  * @author Rudolf Mayer
  * @version $Id: PaginationTag.java,v 1.1 23.12.2007 21:41:04 Rudi Exp $
  */
