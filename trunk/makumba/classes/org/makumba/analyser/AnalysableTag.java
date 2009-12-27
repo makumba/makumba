@@ -49,6 +49,9 @@ import org.makumba.commons.RuntimeWrappedException;
  * <li>you make setters and getters for all the tag attributes</li>
  * <li>if attributes should have default values, these should be set in the initialiseState(), not directly in the class</li>
  * <li>you implement the setTagKey method so as to be able to retrieve {@link TagData} from the cache if you need it</li>
+ * <li>you use the doAnalyzedStartTag() and doAnalyzedEndTag() instead of doStartTag() and doEndTag() methods</li>
+ * <li>you cleanup all resources by overriding doAnalyzedCleanup(), without forgetting to call the super() method</li>
+ * <li>you correctly describe the behavior of the tag by overriding the canHaveBody() and allowsIdenticalKey()</li>
  * </ul>
  * 
  * @author Cristian Bogdan
