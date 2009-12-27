@@ -65,6 +65,8 @@
         <pathelement location="lib/optional/hibernate/hibernate-annotations.jar"/>
         <pathelement location="lib/common/commons-logging-api.jar"/>
         <pathelement location="lib/test/selenium-java-client-driver.jar"/>
+        <pathelement location="lib/db/mysql-connector-java-5.1.6-bin.jar"/>
+          
 
     	<fileset dir="${basedir}">
             <include name="webapps/tests/WEB-INF/classes/Makumba.conf" />
@@ -110,6 +112,7 @@
     		<fileset dir="${basedir}/lib/building/">
     		  <include name="svnant.jar"/>
               <include name="svnClientAdapter.jar"/>
+              <include name="svnjavahl.jar"/>
    	        </fileset>
     	</classpath>
     </taskdef>
@@ -407,19 +410,22 @@
 
         <!-- make the template application archive: -->
 
-        <!-- first copy the new makumba.jar (just to be sure): -->
-        <copy file="${jar.place}/lib/makumba.jar" tofile="work/makumba.distrib/makumba-template/WebContent/WEB-INF/lib/makumba.jar" overwrite="true" />
-
-        <zip zipfile="lib/${tag}-template.zip">
-            <fileset dir="work/makumba.distrib/">
-                <include name="makumba-template/**" />
-            </fileset>
-        </zip>
-
+        <antcall target="makeTemplate" />
         <delete dir="work/makumba.distrib" />
         <copy file="${jar.place}/lib/makumba.jar" tofile="${jar.place}/lib/${tag}.jar" />
     </target>
 
+    <target name="makeTemplate">
+      <!-- first copy the new makumba.jar (just to be sure): -->
+      <copy file="${jar.place}/lib/makumba.jar" tofile="work/makumba.distrib/makumba-template/WebContent/WEB-INF/lib/makumba.jar" overwrite="true" />
+
+      <zip zipfile="lib/${tag}-template.zip">
+          <fileset dir="work/makumba.distrib/">
+              <include name="makumba-template/**" />
+              <exclude name="**/SVN/**" />
+          </fileset>
+      </zip>
+    </target>
 
     <target name="uploadJar" depends="compile, generateTLDs" if="tag"
         description="makes the jar and a src tarball of the given version, puts it in ./lib and publishes it on the web and makes it the default version">
