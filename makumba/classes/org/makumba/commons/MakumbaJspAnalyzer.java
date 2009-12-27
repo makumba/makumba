@@ -75,10 +75,18 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
     public static final String PROJECTION_ORIGIN_CACHE = "org.makumba.projectionOrigin";
 
     public static final String ADD_FORM_DATA_TYPE = "org.makumba.addFormDataType";
+    
+    public static final String SECTION_EVENT_TO_ID = "org.makumba.sectionsEventToId";
 
+    public static final String SECTION_IDEVENT_TO_TYPE = "org.makumba.sectionsEventToType";
+    
+    public static final String SECTION_DATA = "org.makumba.sectionData";
+
+    
     static String[] listTags = { "value", "org.makumba.list.tags.ValueTag", "list", "org.makumba.list.tags.QueryTag",
             "object", "org.makumba.list.tags.ObjectTag", "if", "org.makumba.list.tags.IfTag", "resultList",
-            "org.makumba.list.tags.ResultListTag", "pagination", "org.makumba.list.pagination.PaginationTag" };
+            "org.makumba.list.tags.ResultListTag", "pagination", "org.makumba.list.pagination.PaginationTag",
+            "section", "org.makumba.list.tags.SectionTag" };
 
     static String[] oldFormTags = { "form", "org.makumba.forms.tags.FormTagBase", "newForm",
             "org.makumba.forms.tags.NewTag", "addForm", "org.makumba.forms.tags.AddTag", "editForm",
