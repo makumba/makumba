@@ -19,6 +19,7 @@ import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.ClassResource;
 import org.makumba.commons.MakumbaJspAnalyzer;
+import org.makumba.commons.MultipleKey;
 import org.makumba.commons.tags.GenericMakumbaTag;
 import org.makumba.list.tags.QueryTag;
 import org.makumba.providers.Configuration;
@@ -31,8 +32,6 @@ import org.makumba.providers.Configuration;
  * <li>Outside a mak:list: specify the list using the 'forList' attribute</li>
  * <li>Not connected to a specific mak:list: specify limit, offset and totalCount attributes</li>
  * </ul>
- * 
- * FIXME implement setTagKey or this doesn't work properly
  * 
  * @author Rudolf Mayer
  * @version $Id: PaginationTag.java,v 1.1 23.12.2007 21:41:04 Rudi Exp $
@@ -65,21 +64,21 @@ public class PaginationTag extends GenericMakumbaTag {
 
     private String forList;
 
-    private String itemName = "Items";
+    private String itemName;
 
     private String limit;
 
     private String offset;
 
-    private String styleClass = "makumbaPagination";
+    private String styleClass;
 
-    private String paginationLinkTitle = "true";
+    private String paginationLinkTitle;
 
     private String totalCount;
 
     private String action;
 
-    private String paginationLinkTitleText = "page";
+    private String paginationLinkTitleText;
 
     private boolean showPageTitle = true;
 
@@ -361,6 +360,20 @@ public class PaginationTag extends GenericMakumbaTag {
         this.action = action;
     }
 
+    @Override
+    public void setTagKey(PageCache pageCache) {
+        tagKey = new MultipleKey(new Object[] {action, getParentListTag().tagKey, itemName, limit, offset, paginationLinkTitle, paginationLinkTitleText});
+    }
+    
+    @Override
+    public void initialiseState() {
+        super.initialiseState();
+        itemName = "Items";
+        styleClass = "makumbaPagination";
+        paginationLinkTitle = "true";
+        paginationLinkTitleText = "page";
+    }
+    
     @Override
     protected void doAnalyzedCleanup() {
         super.doAnalyzedCleanup();
