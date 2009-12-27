@@ -5,9 +5,10 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 
 /**
+ * Generateds file org/makumba/db/hibernate/hql/HqlTokenTypes.txt<br/>
+ * The file is needed for HQL analysis
+ *
  * @author Cristian Bogdan
- * Generateds file org/makumba/db/hibernate/hql/HqlTokenTypes.txt.
- * The file is needed for HQL analysis");
  */
 public class DetectHQLTokenTypes {
 
