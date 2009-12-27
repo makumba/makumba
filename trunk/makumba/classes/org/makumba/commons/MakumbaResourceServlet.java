@@ -70,6 +70,10 @@ public class MakumbaResourceServlet extends HttpServlet {
     public static final String RESOURCE_PATH_CSS = "css/";
 
     public static final String RESOURCE_PATH_IMAGES = "image/";
+    
+    public static final String PLACEHOLDER_UNIQUENESS_SERVLET_PATH = "_UNIQUENESS_SERVLET_PATH_";
+
+    public static final String PLACEHOLDER_RESOURCE_PATH = "_RESOURCE_PATH_";
 
     public static final SimpleDateFormat dfLastModified = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
     
@@ -94,7 +98,7 @@ public class MakumbaResourceServlet extends HttpServlet {
         }
         
     }
-    
+
 
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String servletPath = req.getContextPath() + Configuration.getMakumbaResourcesLocation();
@@ -233,15 +237,25 @@ public class MakumbaResourceServlet extends HttpServlet {
                         outputStream.write(((byte[]) cachedResource)[i]);
                     }
                 } else {
-                    if (cachedResource.toString().contains(Configuration.PLACEHOLDER_CONTEXT_PATH)) {
-                        // exchange placeholders with dynamic values
-                        outputStream.print(cachedResource.toString().replaceAll(Configuration.PLACEHOLDER_CONTEXT_PATH, req.getContextPath()));
-                    } else if(cachedResource.toString().contains(Configuration.PLACEHOLDER_UNIQUENESS_SERVLET_PATH)) {
-                        String uniquenessPath = req.getContextPath() + Configuration.getMakumbaUniqueLocation();
-                        outputStream.print(cachedResource.toString().replaceAll(Configuration.PLACEHOLDER_UNIQUENESS_SERVLET_PATH, uniquenessPath));
-                    } else {
-                        outputStream.print(cachedResource.toString());
+                    
+                    // exchange placeholders with dynamic values
+                    String output = cachedResource.toString();
+                    
+                    if (output.contains(Configuration.PLACEHOLDER_CONTEXT_PATH)) {
+                        output = output.replaceAll(Configuration.PLACEHOLDER_CONTEXT_PATH, req.getContextPath());
                     }
+                    
+                    if(cachedResource.toString().contains(MakumbaResourceServlet.PLACEHOLDER_UNIQUENESS_SERVLET_PATH)) {
+                        String uniquenessPath = req.getContextPath() + Configuration.getMakumbaUniqueLocation();
+                        output = output.replaceAll(MakumbaResourceServlet.PLACEHOLDER_UNIQUENESS_SERVLET_PATH, uniquenessPath);
+                    }
+                    
+                    if(cachedResource.toString().contains(PLACEHOLDER_RESOURCE_PATH)) {
+                        output = output.replaceAll(PLACEHOLDER_RESOURCE_PATH, Configuration.getMakumbaResourcesLocation());
+                    }
+                    
+                    outputStream.print(output);
+                    
                 }
             }
         } catch (URISyntaxException e) {
