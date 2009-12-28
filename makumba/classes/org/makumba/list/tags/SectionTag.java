@@ -204,11 +204,11 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
                     eventName = show;
                 }
 
-                // store all the stuff in a map in the page context
-                Map<String, String> sectionData = (Map<String, String>) pageContext.getSession().getAttribute(MAKUMBA_EVENT + "###" + eventName);
+                // store all the stuff in a map in the request context
+                Map<String, String> sectionData = (Map<String, String>) pageContext.getRequest().getAttribute(MAKUMBA_EVENT + "###" + eventName);
                 if(sectionData == null) {
                     sectionData = new LinkedHashMap<String, String>();
-                    pageContext.getSession().setAttribute(MAKUMBA_EVENT + "###" + eventName, sectionData);
+                    pageContext.getRequest().setAttribute(MAKUMBA_EVENT + "###" + eventName, sectionData);
                 }
                 
                 StringWriter sw = new StringWriter();
