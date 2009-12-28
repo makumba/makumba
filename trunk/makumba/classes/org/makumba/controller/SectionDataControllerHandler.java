@@ -50,8 +50,8 @@ public class SectionDataControllerHandler extends ControllerHandler {
             response.reset();
             response.setContentType("application/json");
             
-            // fetch data from pageContext
-            Map<String, String> data = (Map<String, String>) req.getSession().getAttribute(SectionTag.MAKUMBA_EVENT + "###" + event);
+            // fetch data from request context
+            Map<String, String> data = (Map<String, String>) req.getAttribute(SectionTag.MAKUMBA_EVENT + "###" + event);
             try {
                 response.getWriter().append(new JSONObject(data).toString());
                 response.getWriter().flush();
