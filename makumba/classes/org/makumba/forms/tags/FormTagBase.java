@@ -65,6 +65,12 @@ import org.makumba.providers.FormDataProvider;
 public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     private static final long serialVersionUID = 1L;
+    
+    public static final String __MAKUMBA__FORM__COUNTER__ = "__makumba__form__counter__";
+
+    private static final String[] validAnnotationParams = { "none", "before", "after", "both" };
+
+    private static final String[] validClientSideValidationParams = { "true", "false", "live" };
 
     // the tag attributes
     public String baseObject = null;
@@ -81,33 +87,22 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     String formMessage = null;
 
-    FormResponder responder = null;
-
-    long starttime;
-
-    String basePointer = null;
-
-    BodyContent bodyContent = null;
-
-    String annotation = Configuration.getDefaultFormAnnotation();
-
-    private static final String[] validAnnotationParams = { "none", "before", "after", "both" };
-
-    private static final String[] validClientSideValidationParams = { "true", "false", "live" };
+    String annotation = null;
 
     String annotationSeparator;
+    
+    private String clientSideValidation = null;
 
+    
+    // derived tag data
+    FormResponder responder = null;
+    
+    String basePointer = null;
+    
     Boolean reloadFormOnError = null;
 
-    private String clientSideValidation = Configuration.getClientSideValidationDefault();
-
-    protected FormDataProvider fdp;
-
-    private ResponderFactory responderFactory = ResponderFactory.getInstance();
-
-    // TODO we should be able to specify the DataDefinitionProvider used at the form level or so
-    protected DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
-
+    BodyContent bodyContent = null;
+    
     private Map<MultipleKey, String> responders; // all the form responders in a nested form; only in the root form
 
     /**
@@ -116,7 +111,16 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
      */
     HashMap<String, String> lazyEvaluatedInputs = new HashMap<String, String>();
 
-    public static final String __MAKUMBA__FORM__COUNTER__ = "__makumba__form__counter__";
+    
+
+    long starttime;
+
+    
+    protected FormDataProvider fdp;
+
+    private ResponderFactory responderFactory = ResponderFactory.getInstance();
+
+    protected DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
 
     public FormTagBase() {
         // TODO move this somewhere else
@@ -138,11 +142,11 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         bodyContent = bc;
     }
 
-    protected boolean allowEmptyBody() {
-        return true;
+    public void doInitBody() {
     }
 
-    public void doInitBody() {
+    protected boolean allowEmptyBody() {
+        return true;
     }
 
     // for add, edit, delete
@@ -283,7 +287,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
     }
 
     /**
-     * {@inheritDoc} FIXME QueryExecutionProvider should tell us the syntax for the primary key name
+     * FIXME QueryExecutionProvider should tell us the syntax for the primary key name
      */
     @Override
     public void doStartAnalyze(PageCache pageCache) {
@@ -304,6 +308,37 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         }
 
         fdp.onFormStartAnalyze(this, pageCache, baseObject);
+    }
+    
+    @Override
+    public void doEndAnalyze(PageCache pageCache) {
+        fdp.onFormEndAnalyze(getTagKey(), pageCache);
+
+        // form action is not needed for search tags
+        if (formAction == null && findParentForm() == null && !getOperation().equals("search")) {
+            throw new ProgrammerError(
+                    "Forms must have either action= defined, or an enclosed <mak:action>...</mak:action>");
+        }
+        if (findParentForm() != null) {
+            if (formAction != null) {
+                throw new ProgrammerError(
+                        "Forms included in other forms cannot have action= defined, or an enclosed <mak:action>...</mak:action>");
+            }
+        }
+        // add needed resources, stored in cache for this page
+        if (StringUtils.equalsAny(clientSideValidation, new String[] { "true", "live" })) {
+            pageCache.cacheSetValues(NEEDED_RESOURCES,
+                MakumbaSystem.getClientsideValidationProvider().getNeededJavaScriptFileNames());
+        }
+
+        pageCache.cache(MakumbaJspAnalyzer.LAZY_EVALUATED_INPUTS, tagKey, lazyEvaluatedInputs);
+
+        if (!shouldComputeBasePointer()) {
+            return;
+        }
+
+        pageCache.cache(MakumbaJspAnalyzer.BASE_POINTER_TYPES, tagKey,
+            fdp.getTypeOnEndAnalyze(getTagKey(), pageCache).getPointedType().getName());
     }
 
     /**
@@ -341,46 +376,11 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void doEndAnalyze(PageCache pageCache) {
-        fdp.onFormEndAnalyze(getTagKey(), pageCache);
-
-        // form action is not needed for search tags
-        if (formAction == null && findParentForm() == null && !getOperation().equals("search")) {
-            throw new ProgrammerError(
-                    "Forms must have either action= defined, or an enclosed <mak:action>...</mak:action>");
-        }
-        if (findParentForm() != null) {
-            if (formAction != null) {
-                throw new ProgrammerError(
-                        "Forms included in other forms cannot have action= defined, or an enclosed <mak:action>...</mak:action>");
-            }
-        }
-        // add needed resources, stored in cache for this page
-        if (StringUtils.equalsAny(clientSideValidation, new String[] { "true", "live" })) {
-            pageCache.cacheSetValues(NEEDED_RESOURCES,
-                MakumbaSystem.getClientsideValidationProvider().getNeededJavaScriptFileNames());
-        }
-
-        pageCache.cache(MakumbaJspAnalyzer.LAZY_EVALUATED_INPUTS, tagKey, lazyEvaluatedInputs);
-
-        if (!shouldComputeBasePointer()) {
-            return;
-        }
-
-        pageCache.cache(MakumbaJspAnalyzer.BASE_POINTER_TYPES, tagKey,
-            fdp.getTypeOnEndAnalyze(getTagKey(), pageCache).getPointedType().getName());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialiseState() {
         super.initialiseState();
+        
+        clientSideValidation = Configuration.getClientSideValidationDefault();
 
         responder = responderFactory.createResponder();
         if (formName != null) {
@@ -429,6 +429,15 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         }
     }
 
+    @Override
+    protected void doAnalyzedCleanup() {
+        super.doAnalyzedCleanup();
+        afterHandler = annotation = annotationSeparator = baseObject = basePointer = formAction = formMethod = formMessage = formName = handler = clientSideValidation = null;
+        responder = null;
+        bodyContent = null;
+        responders = null;
+    }
+    
     /**
      * Sets the responder elements, computes the base pointer if needed
      * 
@@ -449,7 +458,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
         starttime = new java.util.Date().getTime();
 
-        /** we compute the base pointer */
+        // we compute the base pointer
         if (shouldComputeBasePointer()) {
             basePointer = fdp.computeBasePointer(getTagKey(), pageContext);
         }
@@ -550,7 +559,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
                 responder.setResponderOrder(responderOrder);
                 // we need to save the responder again to the disc, cause the new fields were not persisted yet
                 // FIXME: this might be sub-optimal, but i guess it can only be fixed when the form/responder order
-                // detection is done at analysis time, before the responder gets saved to the disc in
+                // detection is done at analysis time, before the responder gets saved to the disk in
                 // org.makumba.forms.responder.ResponderCacheManager.NamedResources.makeResource
                 // responder.saveResponderToDisc();
             }
@@ -602,15 +611,6 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
             return null;
         }
     };
-
-    @Override
-    protected void doAnalyzedCleanup() {
-        super.doAnalyzedCleanup();
-        afterHandler = annotation = annotationSeparator = baseObject = basePointer = formAction = formMethod = formMessage = formName = handler = null;
-        responder = null;
-        bodyContent = null;
-        responders = null;
-    }
 
     public HashMap<String, MultipleKey> getNestedFormNames(PageCache pageCache) {
         return (HashMap<String, MultipleKey>) pageCache.retrieve(MakumbaJspAnalyzer.NESTED_FORM_NAMES,
