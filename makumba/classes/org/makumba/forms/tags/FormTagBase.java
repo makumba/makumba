@@ -137,7 +137,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
     public void setBodyContent(BodyContent bc) {
         bodyContent = bc;
     }
-    
+
     protected boolean allowEmptyBody() {
         return true;
     }
@@ -488,11 +488,11 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
                     pageContext.setAttribute("firstFormPassed", Boolean.TRUE);
                 }
             }
-            
+
             // check if the bodyContent is null
             // if yes, we need to check if that's allowed
-            if(!allowEmptyBody() && bodyContent == null) {
-                throw new ProgrammerError("Tag "+this.getRunningTag().name + " must have a non-empty body");
+            if (!allowEmptyBody() && bodyContent == null) {
+                throw new ProgrammerError("Tag " + this.getRunningTag().name + " must have a non-empty body");
             }
 
             responder.writeFormPreamble(sb, basePointer, (HttpServletRequest) pageContext.getRequest());
