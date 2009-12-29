@@ -362,6 +362,20 @@ public class QueryTag extends GenericListTag implements IterationTag {
             pageContext.setAttribute(maxCountVar, cnt);
         pageContext.getRequest().setAttribute(standardMaxCountVar, cnt);
     }
+    
+    /**
+     * Gets the number of iterations of this list
+     */
+    public int getNumberOfIterations() {
+        return (Integer) pageContext.getRequest().getAttribute(standardMaxCountVar);
+    }
+    
+    /**
+     * Gets the number of the current iteration
+     */
+    public int getCurrentIterationNumber() {
+        return (Integer) pageContext.getRequest().getAttribute(standardCountVar);
+    }
 
     /**
      * Decides whether to do further iterations. Checks if we got to the end of the iterationGroup.
