@@ -1,24 +1,44 @@
-makEvent = function(name) {
+Mak = function() {
+  addMethod(this, "event", function(name) {
+    makEvent(name, null);
+  });
+  addMethod(this, "event", function(name, exprValue) {
+    makEvent(name, exprValue);
+  });
+}
+
+makEvent = function(name, exprValue) {
 
 	var eventToId = $H(_mak_event_to_id_);
 	var idEventToType = $H(_mak_idevent_to_type_);
 	var pageParameters = $H(_mak_page_params_);
 	var toReload = new Array();
 	
-	var eventParam = $H({__mak_event__: name});
+	var eventName;
+	
+	if(exprValue == null) {
+		eventName = name;
+	} else {
+		eventName = name + "___" + exprValue;
+	}
+	
+	var eventParam = $H({__mak_event__: eventName});
 	
 	//eventParam.each(function(pair) {alert(pair.key + ' ' + pair.value)});
 	//pageParameters.each(function(pair) {alert(pair.key + ' ' + pair.value)});
 	
 	pageParameters = pageParameters.merge(eventParam);
 	
+
 	// fetch the sections we have to process
-	var sections = eventToId.get(name);
+	var sections = eventToId.get(eventName);
+	
+
 	
 	// for each section, hide it, show it, or schedule it for refresh
 	sections.each(function(id) {
 		//alert(id);
-		var action = idEventToType.get(id + '___'+ name);
+		var action = idEventToType.get(id + '___'+ eventName);
 		//alert("key: " + id + '___'+ name + " action:" + action);
 		if(action == 'show') {
 			$(id).show();
@@ -51,4 +71,15 @@ makEvent = function(name) {
 		 	});
 		   }
 	});	
+}
+
+//addMethod - By John Resig (MIT Licensed)
+function addMethod(object, name, fn) {
+    var old = object[ name ];
+    object[ name ] = function(){
+        if ( fn.length == arguments.length )
+            return fn.apply( this, arguments );
+        else if ( typeof old == 'function' )
+            return old.apply( this, arguments );
+    };
 }
