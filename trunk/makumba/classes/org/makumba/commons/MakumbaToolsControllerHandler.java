@@ -99,11 +99,11 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
                 Configuration.getMddViewerLocation(), request.getContextPath());
             writeDescr(w, "Java Viewer", "View Java Business Logics", Configuration.KEY_JAVA_VIEWER,
                 Configuration.getJavaViewerLocation(), request.getContextPath());
-            writeDescr(w, "Code generator", "Generate forms & lists from data definitions",
-                Configuration.KEY_CODE_GENERATOR, Configuration.getCodeGeneratorLocation(), request.getContextPath());
             writeDescr(w, "Logic Discovery", "View Business Logics associated with a certain page",
                 Configuration.KEY_LOGIC_DISCOVERY, Configuration.getLogicDiscoveryViewerLocation(),
                 request.getContextPath());
+            writeDescr(w, "Code generator", "Generate forms & lists from data definitions",
+                Configuration.KEY_CODE_GENERATOR, Configuration.getCodeGeneratorLocation(), request.getContextPath());
             writeDescr(w, "Data query", "Free-form OQL queries", Configuration.KEY_DATA_QUERY_TOOL,
                 Configuration.getDataQueryLocation(), request.getContextPath());
             writeDescr(w, "Data lister", "List data from a certain type", Configuration.KEY_DATA_LISTER,
