@@ -152,6 +152,11 @@ public class SearchTag extends FormTagBase {
 
         private static final long serialVersionUID = 1L;
 
+        @Override
+        public FormOperationType getOperationType() {
+            return FormOperationType.SEARCH;
+        }
+        
         private boolean notEmpty(Object value) {
             if (value instanceof Vector) {
                 return ((Vector<?>) value).size() > 0;

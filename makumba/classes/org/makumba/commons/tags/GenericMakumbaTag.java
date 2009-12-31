@@ -222,4 +222,8 @@ public class GenericMakumbaTag extends AnalysableTag {
         extraFormattingParams.clear();
         extraFormatting = null;
     }
+
+    protected boolean isAttribute(String expression) {
+        return expression != null && expression.startsWith("$");
+    }
 }

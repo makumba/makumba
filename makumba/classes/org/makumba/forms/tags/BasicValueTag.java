@@ -116,10 +116,6 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
         return isAttribute(expr);
     }
 
-    boolean isAttribute(String expression) {
-        return expression != null && expression.startsWith("$");
-    }
-
     /**
      * Determines the ValueComputer and associates it with the tagKey
      * 
