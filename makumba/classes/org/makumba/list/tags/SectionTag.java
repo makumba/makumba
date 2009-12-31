@@ -32,7 +32,7 @@ import org.makumba.list.engine.valuecomputer.ValueComputer;
  * TODO special effects for show/hide/reload <br>
  * TODO detection of "toggle"/"update" situation (i.e. two sections next to one another that hide/show on the same
  * event)?<br>
- * 8
+ * 
  * 
  * @author Manuel Gay
  * @version $Id: SectionTag.java,v 1.1 Dec 25, 2009 6:47:43 PM manu Exp $
@@ -194,7 +194,7 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
             throw new ProgrammerError(
                     "A mak:section must have at least a 'show', 'hide' or 'reload' attribute specified");
         }
-
+        
         // check if this section does not handle the same event in two different ways
         if (show != null && hide != null && show.equals(hide)) {
             throw new ProgrammerError("Cannot show and hide a section for the same event");
@@ -205,6 +205,10 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
         if (show != null && reload != null && show.equals(reload)) {
             throw new ProgrammerError("Cannot show and reload a section for the same event");
         }
+        
+        // request needed resources
+        pageCache.cacheSetValues(NEEDED_RESOURCES, new String[] { "makumba.css", "prototype.js",
+                "scriptaculous.js", "makumba-sections.js" });
 
         // check if we are in a mak:list and if we want to uniquely identify sections of the list via an iterationLabel
         QueryTag parentList = getParentListTag();
@@ -388,19 +392,25 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
         StringBuilder sb = new StringBuilder();
         sb.append("<script type=\"text/javascript\">\n");
 
-        // we cache the section data for the page
-        // if the JSP is modified, pageCache is discarded by the analyzer engine
+        // FIXME we cannot cache the section data because if the data changes, then we would have to discard the cache
+        // which is not done yet because there is no mechanism for that
+        String eventToId = getEventToId(pageCache);
+        /*
         String eventToId = (String) pageCache.retrieve(MakumbaJspAnalyzer.SECTION_DATA, "event_to_id#" + pagePath);
         if (eventToId == null) {
             eventToId = getEventToId(pageCache);
             pageCache.cache(MakumbaJspAnalyzer.SECTION_DATA, "event_to_id#" + pagePath, eventToId);
         }
+        */
+        String idEventToType = getIdEventToType(pageCache);
+        /*
         String idEventToType = (String) pageCache.retrieve(MakumbaJspAnalyzer.SECTION_DATA, "idevent_to_type#"
                 + pagePath);
         if (idEventToType == null) {
             idEventToType = getIdEventToType(pageCache);
             pageCache.cache(MakumbaJspAnalyzer.SECTION_DATA, "idevent_to_type#" + pagePath, idEventToType);
         }
+        */
         sb.append("var mak = new Mak();\n");
         sb.append("var _mak_event_to_id_ = " + eventToId + ";\n");
         sb.append("var _mak_idevent_to_type_ = " + idEventToType + ";\n");
