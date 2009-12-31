@@ -27,6 +27,8 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
+import org.makumba.controller.http.ControllerFilter;
+
 /**
  * This is an abstraction of the filter mechanism. It emulates the behaviour of a filter so that different handlers can
  * be defined which perform specific operations, without having to create real filters.
@@ -46,6 +48,11 @@ public abstract class ControllerHandler {
         return true;
     }
 
+    /**
+     * Performs an operation before the doFilterChain() method is called, but after all
+     * {@link #beforeFilter(ServletRequest, ServletResponse, FilterConfig, ServletObjects)} methods of all controller
+     * handlers registered in {@link ControllerFilter} have been called
+     */
     public void afterBeforeFilter(ServletRequest request, ServletResponse response, FilterConfig conf) throws Exception {
     }
 
