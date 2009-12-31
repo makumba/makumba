@@ -44,11 +44,9 @@ import org.makumba.commons.MakumbaResourceServlet;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.StringUtils;
-import org.makumba.commons.attributes.RequestAttributes;
+import org.makumba.commons.attributes.PageAttributes;
 import org.makumba.commons.tags.GenericMakumbaTag;
-import org.makumba.controller.Logic;
 import org.makumba.forms.responder.FormResponder;
-import org.makumba.forms.responder.Responder;
 import org.makumba.forms.responder.ResponderFactory;
 import org.makumba.forms.responder.ResponderOperation;
 import org.makumba.providers.Configuration;
@@ -56,7 +54,8 @@ import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.FormDataProvider;
 
 /**
- * mak:form base tag
+ * mak:form base tag<br>
+ * Provides generic methods for makumba forms and is itself an implementation of the generic mak:form<br>
  * 
  * @author Cristian Bogdan
  * @author Rudolf Mayer
@@ -72,7 +71,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     private static final String[] validClientSideValidationParams = { "true", "false", "live" };
 
-    // the tag attributes
+    /** the tag attributes */
     public String baseObject = null;
 
     String handler = null;
@@ -92,11 +91,20 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
     String annotationSeparator;
     
     private String clientSideValidation = null;
+    
+    protected String multipleSubmitErrorMsg = null;
+    
+    protected String field = null;
+    
+    protected String operation = null;
+
 
     
-    // derived tag data
+    /** derived tag data */
     FormResponder responder = null;
     
+    protected DataDefinition type = null;
+
     String basePointer = null;
     
     Boolean reloadFormOnError = null;
@@ -110,8 +118,6 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
      * where one wants to store the result of the new operation of the other.
      */
     HashMap<String, String> lazyEvaluatedInputs = new HashMap<String, String>();
-
-    
 
     long starttime;
 
@@ -153,6 +159,21 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
     public void setObject(String s) {
         baseObject = s;
     }
+    
+    // for new
+    public void setType(String s) {
+        type = ddp.getDataDefinition(s);
+    }
+
+    // for add
+    public void setField(String s) {
+        field = s;
+    }
+    
+    public void setOperation(String o) {
+        operation = o;
+    }
+
 
     public void setAction(String s) {
         formAction = s;
@@ -194,7 +215,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         }
     }
 
-    // additional html attributes:
+    /** additional html attributes: */
     public void setTarget(String s) {
         checkNoParent("target");
         extraFormattingParams.put("target", s);
@@ -242,25 +263,50 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
             reloadFormOnError = true;
         }
     }
-
+    
+    public void setMultipleSubmitErrorMsg(String s) {
+        checkNoParent("multipleSubmitErrorMsg");
+        multipleSubmitErrorMsg = s;
+    }
+    
     /**
      * Gets the name of the operation of the tag based on its class name
      * 
      * @return The name of the operation: Edit, Input, ...
      */
     String getOperation() {
-        String classname = getClass().getName();
+        
+        if(operation == null) {
+            // do business as usual, i.e. default Form tag behavior
+            String classname = getClass().getName();
 
-        if (classname.endsWith("FormTagBase")) {
-            return "simple";
+            if (classname.endsWith("FormTagBase")) {
+                return "simple";
+            }
+            int n = classname.lastIndexOf("Tag");
+            if (n != classname.length() - 3) {
+                throw new RuntimeException("the tag class name was expected to end with \'Tag\': " + classname);
+            }
+            classname = classname.substring(0, n);
+            int m = classname.lastIndexOf(".");
+            return classname.substring(m + 1).toLowerCase();
+            
+        } else {
+            if(isAttribute(operation)) {
+                try {
+                    operation = (String) PageAttributes.getAttributes(pageContext).getAttribute(operation.substring(1));
+                } catch(LogicException le) {
+                    throw new RuntimeException("Error while trying to resolve operation of form", le);
+                }
+            }
+            
+            // TODO custom operations
+            if(StringUtils.equalsAny(operation, "new", "edit")) {
+                return operation;
+            } else {
+                throw new ProgrammerError("mak:form only support 'new' and 'edit' operations");
+            }
         }
-        int n = classname.lastIndexOf("Tag");
-        if (n != classname.length() - 3) {
-            throw new RuntimeException("the tag class name was expected to end with \'Tag\': " + classname);
-        }
-        classname = classname.substring(0, n);
-        int m = classname.lastIndexOf(".");
-        return classname.substring(m + 1).toLowerCase();
     }
 
     /**
@@ -427,13 +473,32 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         if (findParentForm() == null) { // initialise only for the root form!
             responders = new HashMap<MultipleKey, String>();
         }
+        
+        switch(getResponderOperation(getOperation()).getOperationType()) {
+            case NEW:
+                if (type != null)
+                    responder.setNewType(type);
+                if (multipleSubmitErrorMsg != null)
+                    responder.setMultipleSubmitErrorMsg(multipleSubmitErrorMsg);
+                break;
+            case ADD:
+                if (multipleSubmitErrorMsg != null)
+                    responder.setMultipleSubmitErrorMsg(multipleSubmitErrorMsg);
+                if (field != null)
+                    responder.setAddField(field);
+                if (!"add".equals(getOperation()))
+                    responder.setNewType(((FormTagBase) findParentForm()).type);
+
+                break;
+        }
     }
 
     @Override
     protected void doAnalyzedCleanup() {
         super.doAnalyzedCleanup();
-        afterHandler = annotation = annotationSeparator = baseObject = basePointer = formAction = formMethod = formMessage = formName = handler = clientSideValidation = null;
+        afterHandler = annotation = annotationSeparator = baseObject = basePointer = formAction = formMethod = formMessage = formName = handler = clientSideValidation = field = multipleSubmitErrorMsg = operation = null;
         responder = null;
+        type = null;
         bodyContent = null;
         responders = null;
     }
@@ -572,12 +637,31 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     /** The default expression for an input tag, if none is indicated */
     public String getDefaultExpr(String fieldName) {
-        return null;
+        
+        switch(getResponderOperation(getOperation()).getOperationType()) {
+            case EDIT:
+                return baseObject + "." + fieldName;
+            default:
+                return null;
+                    
+        }
     }
 
     /** The basic data type inside the form. null for generic forms */
     public DataDefinition getDataTypeAtAnalysis(PageCache pageCache) {
-        return null;
+        
+        switch(getResponderOperation(getOperation()).getOperationType()) {
+
+            case NEW:
+                return type;
+            
+            case EDIT:
+                return fdp.getBasePointerType(this, pageCache, baseObject);
+            
+            default:
+                return null;
+                
+        }
     }
 
     /**
@@ -589,28 +673,10 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
      */
     public ResponderOperation getResponderOperation(String operation) {
         if (operation.equals("simple")) {
-            return simepleOp;
+            return ResponderOperation.simepleOp;
         }
         throw new RuntimeException("Houston, problem");
     }
-
-    private final static ResponderOperation simepleOp = new ResponderOperation() {
-
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
-                throws LogicException {
-            return Logic.doOp(resp.getController(), resp.getHandler(), resp.getHttpData(req, suffix),
-                new RequestAttributes(resp.getController(), req, resp.getDatabase()), resp.getDatabase(),
-                getConnectionProvider(req, resp.getController()));
-        }
-
-        @Override
-        public String verify(Responder resp) {
-            return null;
-        }
-    };
 
     public HashMap<String, MultipleKey> getNestedFormNames(PageCache pageCache) {
         return (HashMap<String, MultipleKey>) pageCache.retrieve(MakumbaJspAnalyzer.NESTED_FORM_NAMES,
@@ -631,5 +697,6 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         pageContext.setAttribute(FormTagBase.__MAKUMBA__FORM__COUNTER__, formCount);
         return formCount;
     }
+
 
 }

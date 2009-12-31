@@ -206,7 +206,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
             // set the input type as the form type
             TagData t = (TagData) pageCache.retrieve(MakumbaJspAnalyzer.TAG_DATA_CACHE, getForm().getNestedFormNames(
                 pageCache).get(expr));
-            DataDefinition type = ((NewTag) t.tagObject).type;
+            DataDefinition type = ((FormTagBase) t.tagObject).type;
             pageCache.cache(MakumbaJspAnalyzer.INPUT_TYPES, tagKey,
                 type.getFieldDefinition(type.getIndexPointerFieldName()));
             return;
