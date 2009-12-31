@@ -103,6 +103,8 @@ public class TaglibDocGenerator {
                     
                     // we keep a reference to the processed attributes because we need this for the attribute referer resolution
                     processedElements.put(e.elementText("name"), e);
+                } else if(e.getName().equals("function")) {
+                    generateTagFile(e, false);
                 }
             } catch (FileNotFoundException io) {
                 throw new RuntimeException("Cannot find generated file", io);
