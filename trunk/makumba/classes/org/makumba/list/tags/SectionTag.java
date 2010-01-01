@@ -13,6 +13,7 @@ import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTag;
 
 import org.apache.commons.collections.map.MultiValueMap;
+import org.apache.commons.lang.StringUtils;
 import org.makumba.LogicException;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
@@ -25,7 +26,6 @@ import org.makumba.list.engine.valuecomputer.ValueComputer;
 
 /**
  * mak:section tag, capable of rendering its content dynamically and reloading it via AJAX callbacks <br>
- * TODO require needed resources<br>
  * TODO enhance makumba-sections.js to use class instead of icon for wheel, and make a makumba.css containing the icon<br>
  * TODO handle forms inside of section (submit via partial post-back?)<br>
  * TODO support for multiple events: <mak:section reload="event1, event2"><br>
@@ -33,6 +33,7 @@ import org.makumba.list.engine.valuecomputer.ValueComputer;
  * TODO detection of "toggle"/"update" situation (i.e. two sections next to one another that hide/show on the same
  * event)?<br>
  * 
+ * FIXME there is a problem with mak:section in a list without expression label, it should refresh all the items
  * 
  * @author Manuel Gay
  * @version $Id: SectionTag.java,v 1.1 Dec 25, 2009 6:47:43 PM manu Exp $
@@ -174,11 +175,25 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
 
     private boolean matches(String event, String exprValue) {
         boolean matches = false;
-        if (reload != null) {
-            matches = event != null && (reload + exprValue).equals(event);
-        } else if (show != null) {
-            matches = event != null && (show + exprValue).equals(event);
+        
+        if(event != null) {
+            boolean invokesIteration = event.indexOf("---") > -1;
+            if (reload != null) {
+                
+                if(invokesIteration) {
+                    matches = (reload + exprValue).equals(event);
+                } else {
+                    matches = (reload + exprValue).startsWith(event);
+                }                
+            } else if (show != null) {
+                if(invokesIteration) {
+                    matches = (show + exprValue).equals(event);
+                } else {
+                    matches = (show + exprValue).startsWith(event);
+                }
+            }
         }
+        
         return matches;
     }
     
@@ -263,7 +278,7 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
                     }
                 }
 
-                out.print("<div id=\"" + getSectionID(exprValue) + "\">");
+                out.print("<div id=\"" + getSectionID(exprValue) + "\"" + (show != null?" style=\"display:none;\"":"") + ">");
             }
 
         } catch (IOException e) {
@@ -333,16 +348,19 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
                     throw new ProgrammerError("Invalid event name '" + events[i]
                             + "', '___' is not allowed in event names");
                 }
+                if (events[i].indexOf("---") > -1) {
+                    throw new ProgrammerError("Invalid event name '" + events[i]
+                            + "', '---' is not allowed in event names");
+                }
 
                 // cache our invocation in the map event -> section id
                 pageCache.cacheMultiple(MakumbaJspAnalyzer.SECTION_EVENT_TO_ID, events[i], getSectionID(exprValue));
 
                 // we can have several types of event per section depending on the event
                 // we need a mapping (section id, event) -> type
-                pageCache.cache(MakumbaJspAnalyzer.SECTION_IDEVENT_TO_TYPE, getSectionID(exprValue) + "___"
-                        + events[i], eventAction[i]);
+                pageCache.cache(MakumbaJspAnalyzer.SECTION_IDEVENT_TO_TYPE, getSectionID(exprValue) + "___" + events[i], eventAction[i]);
                 
-                if(iterationIdentifiable) {
+                if(iterationIdentifiable && !StringUtils.isEmpty(exprValue)) {
                     pageCache.cacheMultiple(MakumbaJspAnalyzer.SECTION_EVENT_TO_ID, events[i] + exprValue, getSectionID(exprValue));
                     pageCache.cache(MakumbaJspAnalyzer.SECTION_IDEVENT_TO_TYPE, getSectionID(exprValue) + "___"
                         + events[i] + exprValue, eventAction[i]);
@@ -360,14 +378,14 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
         String exprValue = "";
         if (parentList != null && iterationExpr != null) {
             try {
-                exprValue = "___"
+                exprValue = "---"
                         + ((ValueComputer) pageCache.retrieve(MakumbaJspAnalyzer.VALUE_COMPUTERS, tagKey)).getValue(
                             getPageContext()).toString();
             } catch (LogicException le) {
                 le.printStackTrace();
             }
         } else if (parentList != null && iterationExpr == null) {
-            exprValue = "___" + parentList.getCurrentIterationNumber();
+            exprValue = "---" + parentList.getCurrentIterationNumber();
         }
         return exprValue;
 
@@ -377,7 +395,7 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
      * Gets the unique section ID
      */
     private String getSectionID(String iterationIdentifier) {
-        return name + (iterationIdentifier == null ? "" : iterationIdentifier);
+        return name + iterationIdentifier;
     }
 
 
@@ -415,9 +433,7 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
         sb.append("var _mak_event_to_id_ = " + eventToId + ";\n");
         sb.append("var _mak_idevent_to_type_ = " + idEventToType + ";\n");
         sb.append("var _mak_page_url_ = '" + pagePath + "';\n");
-
         sb.append("var _mak_page_params_ = " + getQueryParameters(req) + ";\n");
-
         sb.append("</script>\n");
 
         return sb.toString();
