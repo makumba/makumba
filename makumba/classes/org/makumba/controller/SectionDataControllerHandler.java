@@ -1,6 +1,9 @@
 package org.makumba.controller;
 
 import java.io.IOException;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.servlet.FilterConfig;
@@ -51,7 +54,15 @@ public class SectionDataControllerHandler extends ControllerHandler {
             response.setContentType("application/json");
             
             // fetch data from request context
-            Map<String, String> data = (Map<String, String>) req.getAttribute(SectionTag.MAKUMBA_EVENT + "###" + event);
+            Map<String, String> data = new HashMap<String, String>();
+            Enumeration<String> keys = req.getAttributeNames();
+            while(keys.hasMoreElements()) {
+                String key = keys.nextElement();
+                if(key.startsWith(SectionTag.MAKUMBA_EVENT + "###" + event)) {
+                    data.putAll((Map<String, String>) req.getAttribute(key));
+                }
+            }
+
             try {
                 response.getWriter().append(new JSONObject(data).toString());
                 response.getWriter().flush();
