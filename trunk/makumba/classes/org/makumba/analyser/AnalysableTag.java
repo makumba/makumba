@@ -47,7 +47,8 @@ import org.makumba.commons.RuntimeWrappedException;
  * Do make sure that:
  * <ul>
  * <li>you make setters and getters for all the tag attributes</li>
- * <li>if attributes should have default values, these should be set in the initialiseState(), not directly in the class</li>
+ * <li>if attributes should have default values, these should be set in the initialiseState(), not directly in the class
+ * </li>
  * <li>you implement the setTagKey method so as to be able to retrieve {@link TagData} from the cache if you need it</li>
  * <li>you use the doAnalyzedStartTag() and doAnalyzedEndTag() instead of doStartTag() and doEndTag() methods</li>
  * <li>you cleanup all resources by overriding doAnalyzedCleanup(), without forgetting to call the super() method</li>
@@ -64,7 +65,7 @@ public abstract class AnalysableTag extends TagSupport {
 
     /** Commonly used Attribute values. */
     public static final String[] ATTRIBUTE_VALUES_TRUE_FALSE = { "true", "false" };
-    
+
     /** Cache names, for PageCache of analysis */
     public static final String TYPES = "org.makumba.types";
 
@@ -107,11 +108,12 @@ public abstract class AnalysableTag extends TagSupport {
      * 
      * @param pageContext
      *            The PageContext object of the current page
-     * @param analyzer the JSP analyzer
+     * @param analyzer
+     *            the JSP analyzer
      */
     public static PageCache getPageCache(PageContext pageContext, JspAnalyzer analyzer) {
         PageCache pageCache = (PageCache) pageContext.getAttribute("makumba.parse.cache");
-    
+
         // if there is no PageCache stored in the PageContext, we run the analysis and store the result in the
         // PageContext
         if (pageCache == null) {
@@ -119,9 +121,8 @@ public abstract class AnalysableTag extends TagSupport {
             // initializeThread();
             Object result = JspParseData.getParseData(
                 pageContext.getServletConfig().getServletContext().getRealPath("/"),
-                TomcatJsp.getJspURI((HttpServletRequest) pageContext.getRequest()), analyzer).getAnalysisResult(
-                null);
-    
+                TomcatJsp.getJspURI((HttpServletRequest) pageContext.getRequest()), analyzer).getAnalysisResult(null);
+
             if ((result instanceof Throwable)) {
                 if (result instanceof MakumbaError) {
                     throw (MakumbaError) result;
@@ -186,7 +187,7 @@ public abstract class AnalysableTag extends TagSupport {
      */
     public void setTagKey(PageCache pageCache) {
     }
-    
+
     /**
      * Starts the analysis of the tag, without knowing what tags follow it in the page. Typically this method will
      * allocate initial data structures, that are then completed at doEndAnalyze()
@@ -205,7 +206,7 @@ public abstract class AnalysableTag extends TagSupport {
      */
     public void doEndAnalyze(PageCache pageCache) {
     }
-    
+
     /**
      * Prints the page data collected during analysis in readable format
      * 
@@ -216,8 +217,7 @@ public abstract class AnalysableTag extends TagSupport {
             return "";
         try {
             return tagData.getSourceSyntaxPoints().getFile().getCanonicalPath() + ":" + tagData.getStartLine() + ":"
-                    + tagData.getStartColumn() + ":" + tagData.getEndLine() + ":"
-                    + tagData.getEndColumn();
+                    + tagData.getStartColumn() + ":" + tagData.getEndLine() + ":" + tagData.getEndColumn();
         } catch (java.io.IOException e) {
             throw new MakumbaError(e.toString());
         }
@@ -233,7 +233,7 @@ public abstract class AnalysableTag extends TagSupport {
     public int doAnalyzedStartTag(PageCache pageCache) throws LogicException, JspException {
         return SKIP_BODY;
     }
-    
+
     /**
      * makumba-specific endTag
      * 
@@ -255,9 +255,8 @@ public abstract class AnalysableTag extends TagSupport {
     }
 
     /**
-     * Handles exceptions, initialises state and calls {@link doAnalyzedStartTag}
-     * 
-     * FIXME some of the exception handling should not be here
+     * Handles exceptions, initialises state and calls {@link doAnalyzedStartTag} FIXME some of the exception handling
+     * should not be here
      * 
      * @throws JspException
      */
@@ -270,24 +269,24 @@ public abstract class AnalysableTag extends TagSupport {
         if ("yes".equals(getRequest().getAttribute("org.makumba.wasException"))
                 && !(pageContext.getAttribute(PageContext.EXCEPTION, PageContext.REQUEST_SCOPE) instanceof CompositeValidationException))
             return SKIP_PAGE;
-            if (needPageCache())
-                pageCache = getPageCache(pageContext, MakumbaJspAnalyzer.getInstance());
-            setTagKey(pageCache);
-            if (pageCache != null) {
-                tagData = (TagData) pageCache.retrieve(MakumbaJspAnalyzer.TAG_DATA_CACHE, tagKey);
-                runningTag.set(tagData);
-            }
-            int n;
-            try {
-                n = doAnalyzedStartTag(pageCache);
-            } catch (LogicException e) {
-                throw new RuntimeWrappedException(e);
-            }
-            if (tagData != null) {
-                runningTag.set(null);
-                getThreadTagStack().push(tagData);
-            }
-            return n;
+        if (needPageCache())
+            pageCache = getPageCache(pageContext, MakumbaJspAnalyzer.getInstance());
+        setTagKey(pageCache);
+        if (pageCache != null) {
+            tagData = (TagData) pageCache.retrieve(MakumbaJspAnalyzer.TAG_DATA_CACHE, tagKey);
+            runningTag.set(tagData);
+        }
+        int n;
+        try {
+            n = doAnalyzedStartTag(pageCache);
+        } catch (LogicException e) {
+            throw new RuntimeWrappedException(e);
+        }
+        if (tagData != null) {
+            runningTag.set(null);
+            getThreadTagStack().push(tagData);
+        }
+        return n;
     }
 
     /**
@@ -314,14 +313,14 @@ public abstract class AnalysableTag extends TagSupport {
         }
     }
 
-    /** 
-     * Called by doEndTag in its finally block. 
-     * Use it to clean references that will not be used next time the servlet container uses the tag object.
+    /**
+     * Called by doEndTag in its finally block. Use it to clean references that will not be used next time the servlet
+     * container uses the tag object.
      */
     protected void doAnalyzedCleanup() {
         runningTag.set(null);
         tagKey = null;
-        tagData=null;
+        tagData = null;
     }
 
     /**
@@ -332,7 +331,7 @@ public abstract class AnalysableTag extends TagSupport {
     public MultipleKey getTagKey() {
         return tagKey;
     }
-    
+
     private HttpServletRequest getRequest() {
         return (HttpServletRequest) pageContext.getRequest();
     }
@@ -346,11 +345,11 @@ public abstract class AnalysableTag extends TagSupport {
     public boolean allowsIdenticalKey() {
         return true;
     }
-    
+
     /**
      * Determines whether this tag can have a body or not.
-     * @return <code>true</code> if the tag is allowed to have a body, <code>false</code>
-     *         otherwise
+     * 
+     * @return <code>true</code> if the tag is allowed to have a body, <code>false</code> otherwise
      */
     public boolean canHaveBody() {
         return false;
@@ -359,8 +358,8 @@ public abstract class AnalysableTag extends TagSupport {
     protected void onlyInt(String s, String value) throws JspException {
         value = value.trim();
         if (value.startsWith("$")) {
-			return;
-		} else if (!StringUtils.isNumeric(value)) {
+            return;
+        } else if (!StringUtils.isNumeric(value)) {
             throw new ProgrammerError("The attribute '" + s + "' can only be an $attribute or an int");
         }
     }
