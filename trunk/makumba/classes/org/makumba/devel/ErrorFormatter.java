@@ -33,7 +33,6 @@ import org.makumba.providers.Configuration;
  * unknown exceptions) also indented for intercepting lack of authorization and show login pages. Most of the code was
  * copied from the TagExceptionServlet.<br>
  * FIXME the exception hierarchy needs to be reviewed.<br>
- * FIXME: this class should extend the Filter class (part of refactoring)
  * 
  * @author Cristian Bogdan
  * @author Stefan Baebler
@@ -124,7 +123,6 @@ public class ErrorFormatter {
         logError(t, req);
 
         if (t.getClass().getName().startsWith(org.makumba.analyser.engine.TomcatJsp.getJspCompilerPackage())) {
-            // TODO: use the interface once this is a provider after mak:refactoring finished
             boolean jspSpecificError = treatJspException(original, t, wr, req, this.servletContext, printHeaderFooter,
                 title);
 
@@ -193,7 +191,22 @@ public class ErrorFormatter {
                 }
                 t = t1;
             }
+            
+            // FIXME this is duplicated code from above to get this working with Jetty.
+            // the problem is that tomcat has a specific way of wrapping exceptions, which jetty does not because it direclty uses Jasper
+            if(isRuntimeJspErrors((ServletException)original)) {
+                treatJspRuntimeException(original, t, wr, req, this.servletContext,
+                    printHeaderFooter);
+                return;
+
+            }
+            
+        } else if(isRuntimeJspErrors(t)) {
+            // Jetty throws Runtime Exceptions in a different way thant Tomcat
+            treatJspRuntimeException(original, t, wr, req, this.servletContext, printHeaderFooter);
+            return;
         }
+        
 
         for (Object[] element : errors) {
             if ((((Class<?>) element[0])).isInstance(t) || t1 != null && (((Class<?>) element[0])).isInstance(t = t1)) {
@@ -205,14 +218,26 @@ public class ErrorFormatter {
         unknownError(original, t, wr, req);
     }
 
-    private boolean isRuntimeJspErrors(ServletException t) {
-        if (t.getRootCause() != null) {
+    private boolean isRuntimeJspErrors(Throwable e) {
+        
+        if(e instanceof ServletException) {
+            ServletException t1 = (ServletException) e;
+            if (t1.getRootCause() != null) {
+                for (Class<?> element : knownJSPruntimeErrors) {
+                    if (t1.getRootCause().getClass().isAssignableFrom(element)) {
+                        return true;
+                    }
+                }
+            }
+
+        } else {
             for (Class<?> element : knownJSPruntimeErrors) {
-                if (t.getRootCause().getClass().isAssignableFrom(element)) {
+                if (e.getClass().isAssignableFrom(element)) {
                     return true;
                 }
             }
         }
+        
         return false;
     }
 
@@ -603,10 +628,18 @@ public class ErrorFormatter {
 
     public static ArrayList<String> jspReservedWordList = new ArrayList<String>(Arrays.asList(jspReservedWords));
 
-    boolean treatJspRuntimeException(Throwable original, ServletException t, PrintWriter wr, HttpServletRequest req,
+    boolean treatJspRuntimeException(Throwable original, Throwable t, PrintWriter wr, HttpServletRequest req,
             ServletContext servletContext, boolean printHeaderFooter) {
 
-        Throwable rootCause = t.getRootCause();
+        
+        
+        Throwable rootCause = null;
+        
+        if(t instanceof ServletException) {
+            rootCause = ((ServletException)t).getRootCause();
+        } else {
+            rootCause = t;
+        }
 
         String title = rootCause.getClass().getSimpleName();
         String message = rootCause.getMessage();
