@@ -5,14 +5,14 @@
 
   <taglib>
     <taglib-uri>http://www.makumba.org/presentation</taglib-uri>
-    <taglib-location>../../../classes/META-INF/taglib.tld</taglib-location>
+    <taglib-location>taglib.tld</taglib-location>
   </taglib>
 
   <taglib>
     <taglib-uri>http://www.makumba.org/view-hql</taglib-uri>
-    <taglib-location>../../../classes/META-INF/taglib-hibernate.tld</taglib-location>
+    <taglib-location>taglib-hibernate.tld</taglib-location>
   </taglib>
-
+ 
   <filter>
     <filter-name>makumba_controller</filter-name>
     <filter-class>org.makumba.controller.http.ControllerFilter</filter-class>
@@ -35,6 +35,7 @@
     <url-pattern>/mak-tools/*</url-pattern>
   </filter-mapping>
   
+  <!-- Commented out as not needed, and not working for Jetty, might be removed later on
   <servlet>
     <servlet-name>invoker</servlet-name>
     <servlet-class>org.apache.catalina.servlets.InvokerServlet</servlet-class>
@@ -49,6 +50,7 @@
     <servlet-name>invoker</servlet-name>
     <url-pattern>/servlet/*</url-pattern>
   </servlet-mapping>
+-->
 
   <servlet>
     <servlet-name>JspRedirector</servlet-name>

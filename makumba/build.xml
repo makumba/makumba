@@ -570,6 +570,10 @@
             <classpath refid="project.class.path.complete" />
             <arg value="${basedir}/classes/META-INF" />
         </java>
+      
+        <!-- for the tests webapp to work also with jetty, we copy the TLD files into the WEB-INF dir of the test webapp -->
+        <copy file="classes/META-INF/taglib.tld" tofile="webapps/tests/WEB-INF/taglib.tld" overwrite="true" />
+        <copy file="classes/META-INF/taglib-hibernate.tld" tofile="webapps/tests/WEB-INF/taglib-hibernate.tld" overwrite="true" />
     </target>
 
     
