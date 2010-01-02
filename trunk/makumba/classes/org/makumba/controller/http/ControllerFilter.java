@@ -29,6 +29,8 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import java.util.ArrayList;
 import java.util.StringTokenizer;
@@ -36,6 +38,7 @@ import java.util.StringTokenizer;
 import org.makumba.commons.ControllerHandler;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.ServletObjects;
+import org.makumba.controller.MakumbaResponseWrapper;
 
 /**
  * The filter that controls each makumba HTTP access. Performs login, form response, exception handling. This filter
@@ -61,7 +64,6 @@ public class ControllerFilter implements Filter {
             + "org.makumba.commons.attributes.AttributesControllerHandler,"
             + "org.makumba.forms.responder.ResponseControllerHandler";
 
-
     private ArrayList<ControllerHandler> handlers = new ArrayList<ControllerHandler>();
 
     public void init(FilterConfig c) {
@@ -83,6 +85,10 @@ public class ControllerFilter implements Filter {
 
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws ServletException,
             java.io.IOException {
+        // replace the response by the MakumbaResponseWrapper, which modifies the output to inject links to CSS/JS files
+        // TODO: consider using a ControllerHandler; then, however, we can only work with ServletObjects in all methods
+        resp = new MakumbaResponseWrapper((HttpServletResponse) resp, (HttpServletRequest) req);
+
         int i = 0;
         int imax = -1;
         ServletObjects servletObjects = new ServletObjects(req, resp);

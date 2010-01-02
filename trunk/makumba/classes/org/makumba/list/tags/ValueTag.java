@@ -28,7 +28,6 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 
-import org.apache.commons.collections.set.ListOrderedSet;
 import org.apache.commons.lang.StringUtils;
 import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
@@ -38,7 +37,6 @@ import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.MakumbaJspAnalyzer;
-import org.makumba.commons.MakumbaResourceServlet;
 import org.makumba.commons.MultipleKey;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.valuecomputer.ValueComputer;
@@ -268,15 +266,6 @@ public class ValueTag extends GenericListTag {
             if(fd.getIntegerType() == FieldDefinition._char || fd.getIntegerType() == FieldDefinition._int || fd.getIntegerType() == FieldDefinition._text) {
             
                 HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
-                // if we are at the first value
-                if (pageContext.getAttribute("firstValuePassed") == null) {
-                    // included needed resources
-                    ListOrderedSet resources = pageCache.retrieveSetValues(NEEDED_RESOURCES);
-                    if (resources != null) {
-                        MakumbaResourceServlet.writeResources(sb, (request).getContextPath(), resources);
-                        pageContext.setAttribute("firstValuePassed", Boolean.TRUE);
-                    }
-                }
     
                 Integer counter = (Integer) pageContext.getAttribute("org.makumba.valueCounter");
                 if (counter == null) {
