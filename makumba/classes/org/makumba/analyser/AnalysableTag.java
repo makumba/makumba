@@ -117,25 +117,29 @@ public abstract class AnalysableTag extends TagSupport {
         // if there is no PageCache stored in the PageContext, we run the analysis and store the result in the
         // PageContext
         if (pageCache == null) {
-            // FIXME: perhaps this should be back in the Filter? check where it is used
-            // initializeThread();
-            Object result = JspParseData.getParseData(
-                pageContext.getServletConfig().getServletContext().getRealPath("/"),
-                TomcatJsp.getJspURI((HttpServletRequest) pageContext.getRequest()), analyzer).getAnalysisResult(null);
-
-            if ((result instanceof Throwable)) {
-                if (result instanceof MakumbaError) {
-                    throw (MakumbaError) result;
-                }
-                if (result instanceof RuntimeException) {
-                    throw (RuntimeException) result;
-                } else {
-                    throw new RuntimeException((Throwable) result);
-                }
-            }
-            pageContext.setAttribute("makumba.parse.cache", pageCache = (PageCache) result);
+            pageCache = getPageCache((HttpServletRequest) pageContext.getRequest(),
+                pageContext.getServletConfig().getServletContext().getRealPath("/"), analyzer);
+            pageContext.setAttribute("makumba.parse.cache", pageCache);
         }
         return pageCache;
+    }
+
+    public static PageCache getPageCache(HttpServletRequest request, String realPath, JspAnalyzer analyzer)
+            throws MakumbaError {
+        Object result = JspParseData.getParseData(realPath, TomcatJsp.getJspURI(request), analyzer).getAnalysisResult(
+            null);
+
+        if ((result instanceof Throwable)) {
+            if (result instanceof MakumbaError) {
+                throw (MakumbaError) result;
+            }
+            if (result instanceof RuntimeException) {
+                throw (RuntimeException) result;
+            } else {
+                throw new RuntimeException((Throwable) result);
+            }
+        }
+        return (PageCache) result;
     }
 
     /**
