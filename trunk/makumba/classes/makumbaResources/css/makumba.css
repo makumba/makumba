@@ -25,3 +25,15 @@ div.autocomplete ul li {
   height: 32px;
   cursor: pointer;
 }
+
+.mak_tolink {
+  cursor: pointer;
+}
+
+.mak_onedit {
+  display: none;
+}
+
+form.mak_edit {
+  display: inline;
+}
