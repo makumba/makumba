@@ -98,7 +98,7 @@ public class PageCache {
     }
     
     /**
-     * Caches an object in a cache capable of handling multiple values for one key
+     * Caches an object in a cache capable of handling multiple unique values for one key
      * @param cacheName the name of the cache
      * @param key the key of the object to cache
      * @param value the value of the object to cache, can be a single value or a collection
@@ -110,10 +110,12 @@ public class PageCache {
             multiValueCaches.put(cacheName, cache);
         }
         
-        if(value instanceof Collection) {
-            cache.putAll(key, (Collection) value);
-        } else {
-            cache.put(key, value);
+        if(! cache.containsValue(key, value)) {
+            if(value instanceof Collection) {
+                cache.putAll(key, (Collection) value);
+            } else {
+                cache.put(key, value);
+            }
         }
     }
     
