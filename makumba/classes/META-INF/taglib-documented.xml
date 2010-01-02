@@ -437,7 +437,7 @@ for the test expressions: =, !=, <, <=, >, >=
     </attribute>
     
     <attribute>
-      <name>show</name>
+      <name>showOn</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
       <description><![CDATA[The name of the event that causes this section to be displayed]]></description>
@@ -445,7 +445,7 @@ for the test expressions: =, !=, <, <=, >, >=
     </attribute>
     
     <attribute>
-      <name>hide</name>
+      <name>hideOn</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
       <description><![CDATA[The name of the event that causes this section to be hidden]]></description>
@@ -454,11 +454,19 @@ for the test expressions: =, !=, <, <=, >, >=
     
     
     <attribute>
-      <name>reload</name>
+      <name>reloadOn</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
       <description><![CDATA[The name of the event that causes this section to be reloaded via partial post-back]]></description>
       <comments>Fixed</comments>
+    </attribute>
+    
+    <attribute>
+      <name>iterationExpr</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description><![CDATA[A MQL expression used to identify the section uniquely inside of a mak:list]]></description>
+      <comments>Fixed.</comments>
     </attribute>
     
     
@@ -616,8 +624,26 @@ Values are none (displayed in <mak:response/>), before (before the input), after
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <description>Enables multiple form submission prevention, and sets the given value as the error message.</description>
-      <comments>Document me please</comments>
+      <comments>Rtexpr.</comments>
     </attribute>
+
+    <attribute>
+      <name>triggerEvent</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Name of the event to be raised after successful AJAX submission of the form</description>
+      <comments>Rtexpr. In case of a successful response, the event is fired.</comments>
+    </attribute>
+    
+    <attribute>
+      <name>operation</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Used to specify a form operation, as an alternative to using mak:newForm and mak:editForm</description>
+      <comments>Rtexpr. Values are 'new' and 'edit', $attributes are allowed</comments>
+    </attribute>
+
+
 
     <!--form specific:-->
     <attribute>
@@ -759,6 +785,32 @@ Values are none (displayed in <mak:response/>), before (before the input), after
       <comments>The content is copied to the resulting html tag. Careful with (escaping) quotes.</comments>
     </attribute>
   </tag>
+  
+  
+  <tag>
+    <name>submit</name>
+    <tag-class>org.makumba.forms.tags.SubmitTag</tag-class>
+    <body-content>JSP</body-content>
+    <display-name>Submit widget to submit forms</display-name>
+    <descriptionPage>SubmitTagDescription</descriptionPage>
+    <example>SubmitTagExample</example>
+    <see>form, newForm, addForm, editForm</see>
+    
+    <attribute>
+      <name>widget</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Widget to be used for the submission.</description>
+      <comments>Fixed. Can have as values 'button' or 'link', defaults to 'button'.</comments>
+    </attribute>
+    
+    <!-- generic: -->
+    <attribute name="styleId" specifiedIn="form" />
+    <attribute name="styleClass" specifiedIn="form" />
+    <attribute name="style" specifiedIn="form" />
+    
+    
+  </tag>
 
 
   <tag>
@@ -790,6 +842,7 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     </attribute>
 
     <attribute name="message" specifiedIn="form" />
+    <attribute name="triggerEvent" specifiedIn="form" />
     <attribute name="db" specifiedIn="form" />
     <attribute name="annotation" specifiedIn="form" />
     <attribute name="annotationSeparator" specifiedIn="form" />
@@ -843,6 +896,7 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     <attribute name="method" specifiedIn="form" />
     <attribute name="name" specifiedIn="form" />
     <attribute name="message" specifiedIn="form" />
+    <attribute name="triggerEvent" specifiedIn="form" />
     <attribute name="annotation" specifiedIn="form" />
     <attribute name="annotationSeparator" specifiedIn="form" />
     <attribute name="reloadFormOnError" specifiedIn="form" />

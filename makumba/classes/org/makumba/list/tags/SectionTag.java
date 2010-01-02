@@ -33,7 +33,7 @@ import org.makumba.list.engine.valuecomputer.ValueComputer;
  * TODO detection of "toggle"/"update" situation (i.e. two sections next to one another that hide/show on the same
  * event)?<br>
  * 
- * FIXME there is a problem with mak:section in a list without expression label, it should refresh all the items
+ * TODO reload -> reloadOn, hide -> hideOn, show -> showOn
  * 
  * @author Manuel Gay
  * @version $Id: SectionTag.java,v 1.1 Dec 25, 2009 6:47:43 PM manu Exp $
@@ -46,11 +46,11 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
 
     private String name;
 
-    private String show;
+    private String showOn;
 
-    private String hide;
+    private String hideOn;
 
-    private String reload;
+    private String reloadOn;
 
     private String iterationExpr;
 
@@ -68,28 +68,28 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
         this.name = name;
     }
 
-    public String getShow() {
-        return show;
+    public String getShowOn() {
+        return showOn;
     }
 
-    public void setShow(String show) {
-        this.show = show;
+    public void setShowOn(String show) {
+        this.showOn = show;
     }
 
-    public String getHide() {
-        return hide;
+    public String getHideOn() {
+        return hideOn;
     }
 
-    public void setHide(String hide) {
-        this.hide = hide;
+    public void setHideOn(String hide) {
+        this.hideOn = hide;
     }
 
-    public String getReload() {
-        return reload;
+    public String getReloadOn() {
+        return reloadOn;
     }
 
-    public void setReload(String reload) {
-        this.reload = reload;
+    public void setReloadOn(String reload) {
+        this.reloadOn = reload;
     }
 
     public String getIterationExpr() {
@@ -131,7 +131,7 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
     protected void doAnalyzedCleanup() {
         super.doAnalyzedCleanup();
         isFirstSection = isLastSection = false;
-        name = reload = show = hide = iterationExpr = null;
+        name = reloadOn = showOn = hideOn = iterationExpr = null;
         events = null;
         bodyContent = null;
     }
@@ -178,18 +178,18 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
         
         if(event != null) {
             boolean invokesIteration = event.indexOf("---") > -1;
-            if (reload != null) {
+            if (reloadOn != null) {
                 
                 if(invokesIteration) {
-                    matches = (reload + exprValue).equals(event);
+                    matches = (reloadOn + exprValue).equals(event);
                 } else {
-                    matches = (reload + exprValue).startsWith(event);
+                    matches = (reloadOn + exprValue).startsWith(event);
                 }                
-            } else if (show != null) {
+            } else if (showOn != null) {
                 if(invokesIteration) {
-                    matches = (show + exprValue).equals(event);
+                    matches = (showOn + exprValue).equals(event);
                 } else {
-                    matches = (show + exprValue).startsWith(event);
+                    matches = (showOn + exprValue).startsWith(event);
                 }
             }
         }
@@ -202,22 +202,22 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
     @Override
     public void doStartAnalyze(PageCache pageCache) {
 
-        events = new String[] { show, hide, reload };
+        events = new String[] { showOn, hideOn, reloadOn };
 
         // check if this section handles at least one event
-        if (show == null && hide == null && reload == null) {
+        if (showOn == null && hideOn == null && reloadOn == null) {
             throw new ProgrammerError(
                     "A mak:section must have at least a 'show', 'hide' or 'reload' attribute specified");
         }
         
         // check if this section does not handle the same event in two different ways
-        if (show != null && hide != null && show.equals(hide)) {
+        if (showOn != null && hideOn != null && showOn.equals(hideOn)) {
             throw new ProgrammerError("Cannot show and hide a section for the same event");
         }
-        if (reload != null && hide != null && reload.equals(hide)) {
+        if (reloadOn != null && hideOn != null && reloadOn.equals(hideOn)) {
             throw new ProgrammerError("Cannot reload and hide a section for the same event");
         }
-        if (show != null && reload != null && show.equals(reload)) {
+        if (showOn != null && reloadOn != null && showOn.equals(reloadOn)) {
             throw new ProgrammerError("Cannot show and reload a section for the same event");
         }
         
@@ -256,7 +256,7 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
             isInvoked = true;
         }
 
-        events = new String[] { show, hide, reload };
+        events = new String[] { showOn, hideOn, reloadOn };
 
         if (exprValue.length() > 0) {
             cacheSectionResolution(pageCache, exprValue, parentList != null && iterationExpr != null);
@@ -278,7 +278,7 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
                     }
                 }
 
-                out.print("<div id=\"" + getSectionID(exprValue) + "\"" + (show != null?" style=\"display:none;\"":"") + ">");
+                out.print("<div id=\"" + getSectionID(exprValue) + "\"" + (showOn != null?" style=\"display:none;\"":"") + ">");
             }
 
         } catch (IOException e) {
@@ -300,10 +300,10 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
                 String exprValue = getIterationExpressionValue(pageCache, parentList);
                 
                 String eventName = "";
-                if (reload != null) {
-                    eventName = reload;
-                } else if (show != null) {
-                    eventName = show;
+                if (reloadOn != null) {
+                    eventName = reloadOn;
+                } else if (showOn != null) {
+                    eventName = showOn;
                 }
 
                 // store all the stuff in a map in the request context
