@@ -70,25 +70,24 @@ public class MakumbaResourceServlet extends HttpServlet {
     public static final String RESOURCE_PATH_CSS = "css/";
 
     public static final String RESOURCE_PATH_IMAGES = "image/";
-    
+
     public static final String PLACEHOLDER_UNIQUENESS_SERVLET_PATH = "_UNIQUENESS_SERVLET_PATH_";
 
     public static final String PLACEHOLDER_RESOURCE_PATH = "_RESOURCE_PATH_";
 
     public static final SimpleDateFormat dfLastModified = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
-    
+
     private enum ExternalResource {
-        
-        PROTOTYPE("prototype", "prototype.js"),
-        SCRIPTACULOUS("scriptaculous", "scriptaculous.js");
-        
+
+        PROTOTYPE("prototype", "prototype.js"), SCRIPTACULOUS("scriptaculous", "scriptaculous.js");
+
         String name, key;
 
         ExternalResource(String key, String name) {
             this.name = name;
             this.key = key;
         }
-        
+
         String getKey() {
             return this.key;
         }
@@ -96,9 +95,8 @@ public class MakumbaResourceServlet extends HttpServlet {
         String getName() {
             return this.name;
         }
-        
-    }
 
+    }
 
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String servletPath = req.getContextPath() + Configuration.getMakumbaResourcesLocation();
@@ -237,36 +235,38 @@ public class MakumbaResourceServlet extends HttpServlet {
                         outputStream.write(((byte[]) cachedResource)[i]);
                     }
                 } else {
-                    
+
                     // exchange placeholders with dynamic values
                     String output = cachedResource.toString();
-                    
+
                     if (output.contains(Configuration.PLACEHOLDER_CONTEXT_PATH)) {
                         output = output.replaceAll(Configuration.PLACEHOLDER_CONTEXT_PATH, req.getContextPath());
                     }
-                    
-                    if(cachedResource.toString().contains(MakumbaResourceServlet.PLACEHOLDER_UNIQUENESS_SERVLET_PATH)) {
+
+                    if (cachedResource.toString().contains(MakumbaResourceServlet.PLACEHOLDER_UNIQUENESS_SERVLET_PATH)) {
                         String uniquenessPath = req.getContextPath() + Configuration.getMakumbaUniqueLocation();
-                        output = output.replaceAll(MakumbaResourceServlet.PLACEHOLDER_UNIQUENESS_SERVLET_PATH, uniquenessPath);
+                        output = output.replaceAll(MakumbaResourceServlet.PLACEHOLDER_UNIQUENESS_SERVLET_PATH,
+                            uniquenessPath);
                     }
-                    
-                    if(cachedResource.toString().contains(PLACEHOLDER_RESOURCE_PATH)) {
-                        output = output.replaceAll(PLACEHOLDER_RESOURCE_PATH, Configuration.getMakumbaResourcesLocation());
+
+                    if (cachedResource.toString().contains(PLACEHOLDER_RESOURCE_PATH)) {
+                        output = output.replaceAll(PLACEHOLDER_RESOURCE_PATH,
+                            Configuration.getMakumbaResourcesLocation());
                     }
-                    
+
                     outputStream.print(output);
-                    
+
                 }
             }
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
     }
-    
+
     private void printLineBreaks(String s, OutputStream o) throws IOException {
         byte[] bytes = s.getBytes();
         for (int i = 0; i < bytes.length; i++) {
-            if(bytes[i] != '\n') {
+            if (bytes[i] != '\n') {
                 o.write(bytes[i]);
             } else {
                 o.write('\n');
@@ -278,38 +278,38 @@ public class MakumbaResourceServlet extends HttpServlet {
     public static void writeResources(StringBuffer sb, String contextPath, Iterable<Object> resources) {
         for (Object object : resources) {
             String o = (String) object;
-            
+
             String alternateLocation = Configuration.getResourceLocation(o);
             // TODO: check if the alternate location is part of the external resources
-            
-            if(o.endsWith(".js")) {
+
+            if (o.endsWith(".js")) {
                 writeScriptsInHeader(sb, contextPath, o, alternateLocation);
-            } else if(o.endsWith(".css")) {
+            } else if (o.endsWith(".css")) {
                 writeStylesInHeader(sb, contextPath, o, alternateLocation);
             }
-            
-    
+
         }
     }
 
-    public static void writeStylesInHeader(StringBuffer sb, String contextPath, String styleSheet, String alternateLocation) {
+    public static void writeStylesInHeader(StringBuffer sb, String contextPath, String styleSheet,
+            String alternateLocation) {
         String filerefName = "fileref" + styleSheet.replace(".", "").replace("-", "_");
         sb.append("<script type=\"text/javascript\">\n");
-        sb.append("var "+filerefName+" = document.createElement('link');\n");
-        sb.append(filerefName+".setAttribute(\"media\",\"all\");\n");
-        sb.append(filerefName+".setAttribute(\"type\",\"text/css\");\n");
+        sb.append("var " + filerefName + " = document.createElement('link');\n");
+        sb.append(filerefName + ".setAttribute(\"media\",\"all\");\n");
+        sb.append(filerefName + ".setAttribute(\"type\",\"text/css\");\n");
         String location = "";
-        if(alternateLocation != Configuration.PROPERTY_NOT_SET) {
+        if (alternateLocation != Configuration.PROPERTY_NOT_SET) {
             location = contextPath + "/" + alternateLocation;
         } else {
             location = contextPath + Configuration.getMakumbaResourcesLocation() + "/" + RESOURCE_PATH_CSS + styleSheet;
         }
-        sb.append(filerefName+".setAttribute(\"href\", '" + location +  "');\n");
-        sb.append(filerefName+".setAttribute(\"rel\",\"StyleSheet\");\n");
-        sb.append("if (typeof "+ filerefName +" != \"undefined\")\n");
-        sb.append("document.getElementsByTagName(\"head\")[0].appendChild("+filerefName+");\n");
+        sb.append(filerefName + ".setAttribute(\"href\", '" + location + "');\n");
+        sb.append(filerefName + ".setAttribute(\"rel\",\"StyleSheet\");\n");
+        sb.append("if (typeof " + filerefName + " != \"undefined\")\n");
+        sb.append("document.getElementsByTagName(\"head\")[0].appendChild(" + filerefName + ");\n");
         sb.append("</script>\n");
-        
+
     }
 
     public static String getContentType(URL url) {
@@ -318,10 +318,10 @@ public class MakumbaResourceServlet extends HttpServlet {
                 return "image / " + imageContentTypes[i];
             }
         }
-        if(url.getFile().endsWith(".css")) {
+        if (url.getFile().endsWith(".css")) {
             return "text/css";
         }
-        if(url.getFile().endsWith(".js")) {
+        if (url.getFile().endsWith(".js")) {
             return "text/javascript";
         }
         return "text/html";
@@ -340,28 +340,28 @@ public class MakumbaResourceServlet extends HttpServlet {
         // TODO: this should be capable of detecting other types. A solution would be to check for "not text type"
         return isImageType(url);
     }
-    
+
     public static void writeScriptsInHeader(StringBuffer sb, String contextPath, String script, String alternateLocation) {
         // we write the scripts in the header using JS and DOM rewriting
         String filerefName = "fileref" + script.replace(".", "").replace("-", "_");
         sb.append("<script type=\"text/javascript\">\n");
-        sb.append("var "+filerefName+" = document.createElement('script');\n");
-        sb.append(filerefName+".setAttribute(\"type\",\"text/javascript\");\n");
+        sb.append("var " + filerefName + " = document.createElement('script');\n");
+        sb.append(filerefName + ".setAttribute(\"type\",\"text/javascript\");\n");
         String location = "";
-        if(alternateLocation != Configuration.PROPERTY_NOT_SET) {
+        if (alternateLocation != Configuration.PROPERTY_NOT_SET) {
             location = contextPath + "/" + alternateLocation;
         } else {
-            location = contextPath + Configuration.getMakumbaResourcesLocation() + "/" + RESOURCE_PATH_JAVASCRIPT + script;
+            location = contextPath + Configuration.getMakumbaResourcesLocation() + "/" + RESOURCE_PATH_JAVASCRIPT
+                    + script;
         }
-        sb.append(filerefName+".setAttribute(\"href\", '" + location +  "');\n");
-        
-        
-        sb.append(filerefName+".setAttribute(\"src\", '"+contextPath + Configuration.getMakumbaResourcesLocation() + "/" + RESOURCE_PATH_JAVASCRIPT + script + "');\n");
-        sb.append("document.getElementsByTagName(\"head\")[0].appendChild("+filerefName+");\n");
+        sb.append(filerefName + ".setAttribute(\"href\", '" + location + "');\n");
+
+        sb.append(filerefName + ".setAttribute(\"src\", '" + contextPath + Configuration.getMakumbaResourcesLocation()
+                + "/" + RESOURCE_PATH_JAVASCRIPT + script + "');\n");
+        sb.append("document.getElementsByTagName(\"head\")[0].appendChild(" + filerefName + ");\n");
         sb.append("</script>\n");
-        
+
     }
-    
 
     public static int makumbaResources = NamedResources.makeStaticCache("Makumba resources",
         new NamedResourceFactory() {
