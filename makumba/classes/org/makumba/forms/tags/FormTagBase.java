@@ -33,14 +33,12 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTag;
 
-import org.apache.commons.collections.set.ListOrderedSet;
 import org.makumba.DataDefinition;
 import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.MakumbaJspAnalyzer;
-import org.makumba.commons.MakumbaResourceServlet;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.StringUtils;
@@ -551,17 +549,6 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
         try {
             StringBuffer sb = new StringBuffer();
-
-            HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
-            // if we are at the first form
-            if (findParentForm() == null && pageContext.getAttribute("firstFormPassed") == null) {
-                // included needed resources
-                ListOrderedSet resources = pageCache.retrieveSetValues(NEEDED_RESOURCES);
-                if (resources != null) {
-                    MakumbaResourceServlet.writeResources(sb, request.getContextPath(), resources);
-                    pageContext.setAttribute("firstFormPassed", Boolean.TRUE);
-                }
-            }
 
             // check if the bodyContent is null
             // if yes, we need to check if that's allowed
