@@ -217,19 +217,19 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
             setType(pageCache, nameVar, ddp.makeFieldOfType(nameVar, "char"));
 
         FieldDefinition contextType = getTypeFromContext(pageCache);
-        
+
         boolean dataTypeIsDate = dataType != null && ddp.makeFieldDefinition("dummyName", dataType) != null
                 && ddp.makeFieldDefinition("dummyName", dataType).isDateType();
-        
+
         boolean contextTypeIsDate = contextType != null && contextType.isDateType();
-        
-        // if we have a date type and the calendarEditor is requested, request the inclusion of calendar editor resources
+
+        // if we have a date type and the calendarEditor is requested, request the inclusion of the needed resources
         if ((dataTypeIsDate || contextTypeIsDate) && calendarEditor
                 && !StringUtils.equals(params.get("type"), "hidden")) {
             pageCache.cacheSetValues(NEEDED_RESOURCES,
                 MakumbaSystem.getCalendarProvider().getNeededJavaScriptFileNames());
         }
-        
+
         // if we use the JS set editor, request the inclusion of its resources
         if (StringUtils.equals(params.get("type"), "seteditor")) {
             pageCache.cacheSetValues(NEEDED_RESOURCES, new String[] { "makumbaSetChooser.js" });
@@ -238,7 +238,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
                         "For using 'seteditor' input types, you have to give the encosing form a name, using name=\"  \"!");
             }
         }
-        
+
         // if we use auto-complete, request the inclusion of its resources
         if (this.autoComplete != null && this.autoComplete.equals("true")) {
             pageCache.cacheSetValues(NEEDED_RESOURCES, new String[] { "makumbaAutoComplete.css", "prototype.js",
