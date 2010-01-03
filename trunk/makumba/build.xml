@@ -584,8 +584,13 @@
         
     	<echo>Generating jspwiki.properties file. Edit build.properties if you want to change the base URL, for instance for deployment on a remote server</echo>
         <!-- Filters -->
-        <filter token="pageDir" value="${basedir}/doc-jspwiki/wikidoc" />
-        <filter token="workDir" value="${basedir}/work" />
+    	<pathconvert property="basedirConverted" dirsep="/">
+    		<path>
+    			<pathelement location="${basedir}"/>
+    		</path>
+    	</pathconvert>
+    	<filter token="pageDir" value="${basedirConverted}/doc-jspwiki/wikidoc" />
+        <filter token="workDir" value="${basedirConverted}/work" />
     	<filter token="baseURL" value="${jspwiki.baseURL}" />
     	        
         <filter filtersfile="doc-jspwiki/JSPWiki/WEB-INF/jspwiki.properties.template" />
