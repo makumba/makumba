@@ -32,7 +32,6 @@ import org.makumba.list.engine.valuecomputer.ValueComputer;
  * TODO special effects for show/hide/reload <br>
  * TODO detection of "toggle"/"update" situation (i.e. two sections next to one another that hide/show on the same
  * event)?<br>
- * 
  * TODO reload -> reloadOn, hide -> hideOn, show -> showOn
  * 
  * @author Manuel Gay
@@ -135,7 +134,7 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
         events = null;
         bodyContent = null;
     }
-    
+
     private boolean isInvoked = false;
 
     private boolean isFirstSection = false;
@@ -156,8 +155,8 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
         MultipleKey lastSection = null;
         while (tagDataIterator.hasNext()) {
             MultipleKey key = (MultipleKey) tagDataIterator.next();
-            Object o = ((TagData)tags.get(key)).getTagObject();
-            if(!(o instanceof SectionTag)) {
+            Object o = ((TagData) tags.get(key)).getTagObject();
+            if (!(o instanceof SectionTag)) {
                 continue;
             }
 
@@ -165,7 +164,7 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
                 isFirstSection = true;
             }
             lastSection = key;
-            
+
             firstTag = false;
         }
         if (lastSection.equals(getTagKey(pageCache))) {
@@ -175,29 +174,27 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
 
     private boolean matches(String event, String exprValue) {
         boolean matches = false;
-        
-        if(event != null) {
+
+        if (event != null) {
             boolean invokesIteration = event.indexOf("---") > -1;
             if (reloadOn != null) {
-                
-                if(invokesIteration) {
+
+                if (invokesIteration) {
                     matches = (reloadOn + exprValue).equals(event);
                 } else {
                     matches = (reloadOn + exprValue).startsWith(event);
-                }                
+                }
             } else if (showOn != null) {
-                if(invokesIteration) {
+                if (invokesIteration) {
                     matches = (showOn + exprValue).equals(event);
                 } else {
                     matches = (showOn + exprValue).startsWith(event);
                 }
             }
         }
-        
+
         return matches;
     }
-    
-    
 
     @Override
     public void doStartAnalyze(PageCache pageCache) {
@@ -209,7 +206,7 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
             throw new ProgrammerError(
                     "A mak:section must have at least a 'show', 'hide' or 'reload' attribute specified");
         }
-        
+
         // check if this section does not handle the same event in two different ways
         if (showOn != null && hideOn != null && showOn.equals(hideOn)) {
             throw new ProgrammerError("Cannot show and hide a section for the same event");
@@ -220,10 +217,10 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
         if (showOn != null && reloadOn != null && showOn.equals(reloadOn)) {
             throw new ProgrammerError("Cannot show and reload a section for the same event");
         }
-        
+
         // request needed resources
-        pageCache.cacheSetValues(NEEDED_RESOURCES, new String[] { "makumba.css", "prototype.js",
-                "scriptaculous.js", "makumba-sections.js" });
+        pageCache.cacheSetValues(NEEDED_RESOURCES, new String[] { "makumba.css", "prototype.js", "scriptaculous.js",
+                "makumba-sections.js" });
 
         // check if we are in a mak:list and if we want to uniquely identify sections of the list via an iterationLabel
         QueryTag parentList = getParentListTag();
@@ -235,11 +232,10 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
                     pageCache), iterationExpr, pageCache);
                 pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, tagKey, vc);
             }
-        } else if(parentList == null) {
+        } else if (parentList == null) {
             cacheSectionResolution(pageCache, "", false);
         }
     }
-
 
     @Override
     public int doAnalyzedStartTag(PageCache pageCache) throws LogicException, JspException {
@@ -250,7 +246,6 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
         QueryTag parentList = getParentListTag();
         String exprValue = getIterationExpressionValue(pageCache, parentList);
 
-        
         // check if we are invoked, i.e. if an event has been "fired" that requires us to do stuff
         if (matches(getPageContext().getRequest().getParameter(MAKUMBA_EVENT), exprValue)) {
             isInvoked = true;
@@ -269,16 +264,18 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
 
                 // we print the section data only in the end, after all the iterations have been done
                 if (isLastSection) {
-                    
-                    if(parentList != null && parentList.getCurrentIterationNumber() == parentList.getNumberOfIterations()) {
+
+                    if (parentList != null
+                            && parentList.getCurrentIterationNumber() == parentList.getNumberOfIterations()) {
                         // print the javascript that contains the data about sections to event mappings
                         out.print(getSectionDataScript(pageCache));
-                    } else if(parentList == null) {
+                    } else if (parentList == null) {
                         out.print(getSectionDataScript(pageCache));
                     }
                 }
 
-                out.print("<div id=\"" + getSectionID(exprValue) + "\"" + (showOn != null?" style=\"display:none;\"":"") + ">");
+                out.print("<div id=\"" + getSectionID(exprValue) + "\""
+                        + (showOn != null ? " style=\"display:none;\"" : "") + ">");
             }
 
         } catch (IOException e) {
@@ -287,7 +284,7 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
 
         return EVAL_BODY_BUFFERED;
     }
-    
+
     @Override
     public int doAnalyzedEndTag(PageCache pageCache) throws LogicException, JspException {
         JspWriter out = getPageContext().getOut();
@@ -295,10 +292,10 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
         try {
 
             if (isInvoked) {
-                
+
                 QueryTag parentList = getParentListTag();
                 String exprValue = getIterationExpressionValue(pageCache, parentList);
-                
+
                 String eventName = "";
                 if (reloadOn != null) {
                     eventName = reloadOn;
@@ -330,7 +327,6 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
 
         return super.doAnalyzedEndTag(pageCache);
     }
-    
 
     /**
      * Caches the section resolution:
@@ -339,7 +335,8 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
      * <li>(event, section ID) -> action type (hide, show, reload)</li>
      * </ul>
      */
-    private void cacheSectionResolution(PageCache pageCache, String exprValue, boolean iterationIdentifiable) throws ProgrammerError {
+    private void cacheSectionResolution(PageCache pageCache, String exprValue, boolean iterationIdentifiable)
+            throws ProgrammerError {
 
         for (int i = 0; i < events.length; i++) {
             if (events[i] != null) {
@@ -358,12 +355,14 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
 
                 // we can have several types of event per section depending on the event
                 // we need a mapping (section id, event) -> type
-                pageCache.cache(MakumbaJspAnalyzer.SECTION_IDEVENT_TO_TYPE, getSectionID(exprValue) + "___" + events[i], eventAction[i]);
-                
-                if(iterationIdentifiable && !StringUtils.isEmpty(exprValue)) {
-                    pageCache.cacheMultiple(MakumbaJspAnalyzer.SECTION_EVENT_TO_ID, events[i] + exprValue, getSectionID(exprValue));
+                pageCache.cache(MakumbaJspAnalyzer.SECTION_IDEVENT_TO_TYPE,
+                    getSectionID(exprValue) + "___" + events[i], eventAction[i]);
+
+                if (iterationIdentifiable && !StringUtils.isEmpty(exprValue)) {
+                    pageCache.cacheMultiple(MakumbaJspAnalyzer.SECTION_EVENT_TO_ID, events[i] + exprValue,
+                        getSectionID(exprValue));
                     pageCache.cache(MakumbaJspAnalyzer.SECTION_IDEVENT_TO_TYPE, getSectionID(exprValue) + "___"
-                        + events[i] + exprValue, eventAction[i]);
+                            + events[i] + exprValue, eventAction[i]);
                 }
             }
         }
@@ -374,7 +373,7 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
      * generated one if no expression label is provided. Returns an empty string otherwise.
      */
     private String getIterationExpressionValue(PageCache pageCache, QueryTag parentList) {
-        
+
         String exprValue = "";
         if (parentList != null && iterationExpr != null) {
             try {
@@ -398,8 +397,6 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
         return name + iterationIdentifier;
     }
 
-
-
     /**
      * Generates the javascript containing the data (arrays) with section information
      */
@@ -414,21 +411,16 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
         // which is not done yet because there is no mechanism for that
         String eventToId = getEventToId(pageCache);
         /*
-        String eventToId = (String) pageCache.retrieve(MakumbaJspAnalyzer.SECTION_DATA, "event_to_id#" + pagePath);
-        if (eventToId == null) {
-            eventToId = getEventToId(pageCache);
-            pageCache.cache(MakumbaJspAnalyzer.SECTION_DATA, "event_to_id#" + pagePath, eventToId);
-        }
-        */
+         * String eventToId = (String) pageCache.retrieve(MakumbaJspAnalyzer.SECTION_DATA, "event_to_id#" + pagePath);
+         * if (eventToId == null) { eventToId = getEventToId(pageCache);
+         * pageCache.cache(MakumbaJspAnalyzer.SECTION_DATA, "event_to_id#" + pagePath, eventToId); }
+         */
         String idEventToType = getIdEventToType(pageCache);
         /*
-        String idEventToType = (String) pageCache.retrieve(MakumbaJspAnalyzer.SECTION_DATA, "idevent_to_type#"
-                + pagePath);
-        if (idEventToType == null) {
-            idEventToType = getIdEventToType(pageCache);
-            pageCache.cache(MakumbaJspAnalyzer.SECTION_DATA, "idevent_to_type#" + pagePath, idEventToType);
-        }
-        */
+         * String idEventToType = (String) pageCache.retrieve(MakumbaJspAnalyzer.SECTION_DATA, "idevent_to_type#" +
+         * pagePath); if (idEventToType == null) { idEventToType = getIdEventToType(pageCache);
+         * pageCache.cache(MakumbaJspAnalyzer.SECTION_DATA, "idevent_to_type#" + pagePath, idEventToType); }
+         */
         sb.append("var mak = new Mak();\n");
         sb.append("var _mak_event_to_id_ = " + eventToId + ";\n");
         sb.append("var _mak_idevent_to_type_ = " + idEventToType + ";\n");
