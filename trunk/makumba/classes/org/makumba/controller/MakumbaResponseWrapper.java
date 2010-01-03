@@ -61,8 +61,7 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
 
     @Override
     public PrintWriter getWriter() throws IOException {
-        // we do this only for .jsp files
-        System.out.println(request.getRequestURI());
+        // we do the header modifications only for .jsp files
         if (request.getRequestURI().endsWith(".jsp")) {
             if (makumbaWriter == null) {
                 originalWriter = super.getWriter();
@@ -229,6 +228,7 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
         }
 
         private String injectJavaScriptsResources(String s) {
+            // we add the JavaScripts just before the </head>
             return s.replace("</head>", javaScriptResources + "</head>");
         }
 
