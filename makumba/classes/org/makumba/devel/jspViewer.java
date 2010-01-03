@@ -122,6 +122,7 @@ public class jspViewer extends LineViewer {
         reader = new FileReader(realPath);
     }
 
+    @Override
     public void intro(PrintWriter w) throws IOException {
         w.println("<td align=\"right\" style=\"color: darkblue; padding: 5px; padding-top: 10px\">");
         printFileRelations(w);
@@ -138,7 +139,7 @@ public class jspViewer extends LineViewer {
         if (lg != null) {
             w.println("&nbsp;&nbsp;&nbsp;<a href=\"" + contextPath + lg + "x\">login page</a>&nbsp;&nbsp;&nbsp;");
         }
-        
+
         w.println("&nbsp;&nbsp;&nbsp;");
         DevelUtils.writeDevelUtilLinks(w, "", contextPath);
 
@@ -169,6 +170,7 @@ public class jspViewer extends LineViewer {
      * Known problems: when hiding parts of the code (e.g. HTML, JSTL,..) nested tags work only up to one level (i.e. a
      * tag nested in a tag nested in a tag might not be hidden/shown as expected)
      */
+    @Override
     public void parseText(PrintWriter writer) throws IOException {
         // if we have no syntaxpoints, maybe due to an exception, we just display the text w/o highlighting
         if (sourceSyntaxPoints == null) {
@@ -202,7 +204,7 @@ public class jspViewer extends LineViewer {
                 continue;
             }
             if (type.equals("TextLine") && currentSyntaxPoint.isBegin()) { // begin of line found - we just move the
-                                                                           // last point marker
+                // last point marker
                 lastSyntaxPoint = currentSyntaxPoint;
             } else if (type.equals("TextLine") && !currentSyntaxPoint.isBegin()) { // end of line found
 
@@ -215,7 +217,7 @@ public class jspViewer extends LineViewer {
                 }
 
                 // if the current line contained any text to write or we are outside a tag & shall write html
-                if ((!currentText.toString().trim().equals("") || (inTag < 1 && !hideHTML) || (inTag > 0 && shallWrite))
+                if ((!currentText.toString().trim().equals("") || inTag < 1 && !hideHTML || inTag > 0 && shallWrite)
                         && printLineNumbers) {
                     writer.print("\n");
                     if (!hideLineNumbers) {
@@ -237,12 +239,12 @@ public class jspViewer extends LineViewer {
                                 currentSyntaxPoint.getOriginalColumn(currentLineLength) - 1))));
                         }
                     } else if (currentSyntaxPoint.getOriginalColumn(currentLineLength) > 1 && !hideHTML && shallWrite) { // not
-                                                                                                                         // in
-                                                                                                                         // a
-                                                                                                                         // tag
-                                                                                                                         // ,
-                                                                                                                         // but
-                                                                                                                         // maybe
+                        // in
+                        // a
+                        // tag
+                        // ,
+                        // but
+                        // maybe
                         // there was HTMl before?
                         currentText.append(parseLine(htmlEscape(lineText.substring(
                             lastSyntaxPoint.getOriginalColumn(currentLineLength) - 1,
@@ -269,17 +271,17 @@ public class jspViewer extends LineViewer {
                     } else if (type.equals("ExpressionLanguage")) { // we have JSP EL ($...})
                         currentText.append("<span style=\"" + SystemStyleProperties.get("ExpressionLanguage") + "; \">");
                     } else {// we have any other taglib tag
-                        if (((tagType.startsWith("mak") || tagType.startsWith("/mak")) && hideMakumba)
-                                || ((tagType.startsWith("c") || tagType.startsWith("/c")) && hideJSTLCore)
-                                || ((tagType.startsWith("fmt") || tagType.startsWith("/fmt")) && hideJSTLFormat)) {
+                        if ((tagType.startsWith("mak") || tagType.startsWith("/mak")) && hideMakumba
+                                || (tagType.startsWith("c") || tagType.startsWith("/c")) && hideJSTLCore
+                                || (tagType.startsWith("fmt") || tagType.startsWith("/fmt")) && hideJSTLFormat) {
                             shallWrite = false;
                         }
 
                         if (shallWrite) { // do the defined highlighting
-                            for (int i = 0; i < syntaxElements.length; i++) {
-                                if (tagType.startsWith(String.valueOf(syntaxElements[i]))
-                                        || tagType.startsWith(String.valueOf("/" + syntaxElements[i]))) {
-                                    currentText.append("<span style=\"" + taglibgSytleProperties.get(syntaxElements[i])
+                            for (Object syntaxElement : syntaxElements) {
+                                if (tagType.startsWith(String.valueOf(syntaxElement))
+                                        || tagType.startsWith(String.valueOf("/" + syntaxElement))) {
+                                    currentText.append("<span style=\"" + taglibgSytleProperties.get(syntaxElement)
                                             + "; \">");
                                     break;
                                 }
@@ -289,9 +291,9 @@ public class jspViewer extends LineViewer {
                     lastSyntaxPoint = currentSyntaxPoint; // move pointers and set flage
                 } else { // we have an end-tag
                     if (shallWrite) {// write content & end of highlighting?
-                        currentText.append((parseLine(htmlEscape(lineText.substring(
+                        currentText.append(parseLine(htmlEscape(lineText.substring(
                             lastSyntaxPoint.getOriginalColumn(currentLineLength) - 1,
-                            currentSyntaxPoint.getOriginalColumn(currentLineLength) - 1)))));
+                            currentSyntaxPoint.getOriginalColumn(currentLineLength) - 1))));
                         currentText.append("</span>");
                     }
                     if (inTag > 1) { // in a nested tag?
@@ -308,7 +310,7 @@ public class jspViewer extends LineViewer {
         printPageEnd(writer);
         double time = new Date().getTime() - begin.getTime();
         java.util.logging.Logger.getLogger("org.makumba.org.makumba.devel.sourceViewer").finer(
-            "Sourcecode viewer took :" + (time / 1000) + " seconds");
+            "Sourcecode viewer took :" + time / 1000 + " seconds");
     }
 
     /**
@@ -323,7 +325,7 @@ public class jspViewer extends LineViewer {
     private boolean isSystemtag(String type) {
         return type.equals("JspComment") || type.equals("JspScriptlet") || type.equals("JSPSystemTag");
     }
-    
+
     @Override
     protected void printPageBeginAdditional(PrintWriter writer) throws IOException {
         super.printPageBeginAdditional(writer);

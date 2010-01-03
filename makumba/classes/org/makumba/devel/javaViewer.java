@@ -209,8 +209,8 @@ public class javaViewer extends LineViewer {
                             String object = null;
                             String method = null;
                             String[] parts = null;
-                            if (beforeSyntaxPoint.indexOf(".") != -1) { // we actually do have a "." inside the syntax
-                                                                        // point
+                            if (beforeSyntaxPoint.indexOf(".") != -1) {
+                                // we actually do have a "." inside the syntax point
                                 parts = beforeSyntaxPoint.split("\\.");
                             } else { // we need to go back one more syntax point
                                 parts = syntaxPoints.getLineText(currentLine).substring(
@@ -256,17 +256,19 @@ public class javaViewer extends LineViewer {
                                 String mddName = findMddNameFromHandler(parts[1]);
                                 try {
                                     dd = ddp.getDataDefinition(mddName);
-                                    writer.print(parts[0] + "<a href=\"" + contextPath + Configuration.getMddViewerLocation()
-                                            + dd.getName() + "\" title=\"'" + parts[2] + "'-handler for "
-                                            + dd.getName() + "\" class=\"classLink\">" + parts[1] + "</a>");
+                                    writer.print(parts[0] + "<a href=\"" + contextPath
+                                            + Configuration.getMddViewerLocation() + dd.getName() + "\" title=\"'"
+                                            + parts[2] + "'-handler for " + dd.getName() + "\" class=\"classLink\">"
+                                            + parts[1] + "</a>");
                                 } catch (DataDefinitionNotFoundError e) {
                                     mddName = findMddNameFromHandler(parts[1], true);
                                     try {
                                         dd = ddp.getDataDefinition(mddName);
                                         DataDefinition parentDd = dd.getParentField().getDataDefinition();
-                                        writer.print(parts[0] + "<a href=\"" + contextPath + Configuration.getMddViewerLocation() + "/"
-                                                + parentDd.getName() + "\" title=\"'" + parts[2] + "'-handler for "
-                                                + dd.getName() + "\" class=\"classLink\">" + parts[1] + "</a>");
+                                        writer.print(parts[0] + "<a href=\"" + contextPath
+                                                + Configuration.getMddViewerLocation() + "/" + parentDd.getName()
+                                                + "\" title=\"'" + parts[2] + "'-handler for " + dd.getName()
+                                                + "\" class=\"classLink\">" + parts[1] + "</a>");
                                     } catch (DataDefinitionNotFoundError e1) {
                                         // do nothing, just don't use this possible MDD
                                     } catch (NullPointerException e1) {
@@ -294,7 +296,7 @@ public class javaViewer extends LineViewer {
         printPageEnd(writer);
         double timeTaken = System.currentTimeMillis() - begin;
         java.util.logging.Logger.getLogger("org.makumba.org.makumba.devel.sourceViewer").info(
-            "Java sourcecode viewer took :" + (timeTaken / 1000.0) + " seconds");
+            "Java sourcecode viewer took :" + timeTaken / 1000.0 + " seconds");
     }
 
     private String findMddNameFromHandler(String encodedMddName) {

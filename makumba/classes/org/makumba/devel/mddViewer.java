@@ -63,13 +63,14 @@ public class mddViewer extends LineViewer {
         contextPath = req.getContextPath();
         virtualPath = DevelUtils.getVirtualPath(req, Configuration.getMddViewerLocation());
         java.net.URL u = RecordParser.findDataDefinitionOrDirectory(virtualPath, "mdd");
-        if (u == null)
+        if (u == null) {
             u = RecordParser.findDataDefinitionOrDirectory(virtualPath, "idd");
+        }
         readFromURL(u);
         virtualPath = virtualPath.substring(1);
 
         try {
-            dd = (DataDefinitionProvider.getInstance()).getDataDefinition(virtualPath);
+            dd = DataDefinitionProvider.getInstance().getDataDefinition(virtualPath);
         } catch (DataDefinitionNotFoundError nf) {
             // FIXME: this is probably an include, we ignore it alltogether
         } catch (MakumbaError pe) {
@@ -77,12 +78,15 @@ public class mddViewer extends LineViewer {
         }
     }
 
+    @Override
     public void footer(PrintWriter pw) throws IOException {
-        if (err != null)
+        if (err != null) {
             pw.println("<hr><a name=\"errors\"></a><pre>" + err.getMessage() + "</pre>");
+        }
         super.footer(pw);
     }
 
+    @Override
     public String getLineTag(String s) {
         String ln = s.trim();
         int eq;
@@ -92,6 +96,7 @@ public class mddViewer extends LineViewer {
         return null;
     }
 
+    @Override
     public void printLine(PrintWriter w, String s, String toPrint) throws IOException {
         if (err != null) {
             // we go thru the error text, if we find this particular line, we display its error message
@@ -102,8 +107,9 @@ public class mddViewer extends LineViewer {
             while (true) {
                 before = e;
                 e = lr.readLine();
-                if (e == null)
+                if (e == null) {
                     break;
+                }
                 if (e.length() > 0 && e.equals(s)) {
                     w.print("<span style=\"background-color: pink;\">");
                     super.printLine(w, s, e);
@@ -116,6 +122,7 @@ public class mddViewer extends LineViewer {
         super.printLine(w, s, toPrint);
     }
 
+    @Override
     public void intro(PrintWriter w) {
         if (err != null) {
             w.print("<td align=\"center\" style=\"color: red;\">errors!<br><a href=\"#errors\">details</a></td>");
@@ -143,7 +150,7 @@ public class mddViewer extends LineViewer {
         // link to code generator
         if (dd != null) {
             w.print("<a style=\"color: darkblue;\" href=\""
-                    + (contextPath + Configuration.getCodeGeneratorLocation() + "/" + virtualPath)
+                    + contextPath + Configuration.getCodeGeneratorLocation() + "/" + virtualPath
                     + "\">code generator</a>&nbsp;&nbsp;&nbsp;");
         } else if (dir.getName().endsWith(".idd")) { // we don't have a BL for for idd's
             w.print("<span style=\"color:gray;\" title=\"There's no code to be generated for .idd files!\">code generator</span>&nbsp;&nbsp;&nbsp;");
@@ -182,6 +189,7 @@ public class mddViewer extends LineViewer {
         }
     }
 
+    @Override
     public String parseLine(String s) {
         StringBuffer result = new StringBuffer();
         String closeLine = "";
@@ -248,11 +256,11 @@ public class mddViewer extends LineViewer {
             // if the mdd wasn't parsed (due to an error), we cannot get details on the validation definition
             return "<span name=\"validationRule\" class=\"mddValidationLine\">" + s + "</span>";
         }
-        
-        if(Configuration.getDataDefinitionProvider().equals(Configuration.MDD_DATADEFINITIONPROVIDER)) {
+
+        if (Configuration.getDataDefinitionProvider().equals(Configuration.MDD_DATADEFINITIONPROVIDER)) {
             return parseNewValidationLine(s);
         }
-        
+
         StringBuffer result = new StringBuffer();
         result.append("<span name=\"validationRule\" class=\"mddValidationLine\">");
         boolean endsWithComment = false;
@@ -275,7 +283,7 @@ public class mddViewer extends LineViewer {
                         ValidationRule rule = vd.getValidationRule(ruleName);
                         if (rule != null && rule instanceof ComparisonValidationRule
                                 && ((ComparisonValidationRule) rule).isCompareToExpression()) {
-                            value = (((ComparisonValidationRule) rule).evaluateExpression());
+                            value = ((ComparisonValidationRule) rule).evaluateExpression();
                         }
                     }
                     String id = "validationRule" + validationRuleCounter;
@@ -305,7 +313,7 @@ public class mddViewer extends LineViewer {
     }
 
     private String parseNewValidationLine(String s) {
-        
+
         StringBuffer result = new StringBuffer();
         result.append("<span name=\"validationRule\" class=\"mddValidationLine\">");
         boolean endsWithComment = false;
@@ -328,7 +336,7 @@ public class mddViewer extends LineViewer {
                         ValidationRule rule = vd.getValidationRule(ruleName);
                         if (rule != null && rule instanceof ComparisonValidationRule
                                 && ((ComparisonValidationRule) rule).isCompareToExpression()) {
-                            value = (((ComparisonValidationRule) rule).evaluateExpression());
+                            value = ((ComparisonValidationRule) rule).evaluateExpression();
                         }
                     }
                     String id = "validationRule" + validationRuleCounter;
@@ -356,7 +364,6 @@ public class mddViewer extends LineViewer {
         result.append("</span>");
         return super.parseLine(result.toString());
 
-        
     }
 
     @Override
