@@ -70,7 +70,7 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
             }
             return makumbaWriter;
         } else {
-            return originalWriter;
+            return super.getWriter();
         }
     }
 
