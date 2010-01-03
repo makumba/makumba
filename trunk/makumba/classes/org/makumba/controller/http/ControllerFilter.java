@@ -52,7 +52,7 @@ public class ControllerFilter implements Filter {
 
     private FilterConfig conf;
 
-    private String handlerClasses = "org.makumba.controller.SectionDataControllerHandler,"
+    private String handlerClasses = "org.makumba.controller.AJAXDataControllerHandler,"
             + "org.makumba.devel.SourceViewControllerHandler,"
             + "org.makumba.devel.DataToolsControllerHandler,"
             + "org.makumba.commons.MakumbaToolsControllerHandler,"

@@ -113,7 +113,7 @@ public class FormResponder extends Responder {
         FieldEditor.setSuffix(paramCopy, storedSuffix);
         FieldEditor.setExtraFormatting(paramCopy, extraFormatting);
         FieldEditor.setFormName(paramCopy, formName);
-
+        
         boolean display = (formatParams.get("org.makumba.noDisplay") == null);
         Integer i = indexes.get(fname);
         if (i != null) {
@@ -196,17 +196,31 @@ public class FormResponder extends Responder {
             // no preamble for non-root forms (forms included in other forms)
             return;
         }
-        String targetPage = action;
-        
-        String sep = targetPage.indexOf('?') >= 0 ? "&" : "?";
-        // handle anchors in actions (bla.jsp?person=hg34bw#employment)
-        String actionBase = targetPage;
+        String targetPage = "";
+        String actionBase = "";
         String actionAnchor = "";
-        int actionHashPos = targetPage.indexOf('#');
-        if (actionHashPos > -1) {
-            actionBase = targetPage.substring(0, actionHashPos);
-            actionAnchor = targetPage.substring(actionHashPos);
+        String sep = "";
+        
+        // if we have an action defined, we process it to handle anchors
+        // if we are in a partial postback, we don't have an action page
+        // however we want an URL in order to do stuff
+        // TODO: not sure if this is good, fix me later
+        if(triggerEvent != null && action == null) {
+            targetPage = request.getContextPath() + request.getServletPath();
+            actionBase = targetPage;
+            sep = "?";
+        } else {
+            targetPage = action;
+            actionBase = targetPage;
+            sep = targetPage.indexOf('?') >= 0 ? "&" : "?";
+            // handle anchors in actions (bla.jsp?person=hg34bw#employment)
+            int actionHashPos = targetPage.indexOf('#');
+            if (actionHashPos > -1) {
+                actionBase = targetPage.substring(0, actionHashPos);
+                actionAnchor = targetPage.substring(actionHashPos);
+            }
         }
+        
 
         if (operation.equals("deleteLink")) {
 
@@ -219,9 +233,13 @@ public class FormResponder extends Responder {
         }
 
         else if (operation.equals("deleteForm")) {
-            
-            sb.append("<form action=").append("\"").append(actionBase).append(actionAnchor).append("\"");
 
+            sb.append("<form");
+            if(triggerEvent == null) {
+                sb.append(" action=").append("\"").append(actionBase).append(actionAnchor).append("\"");
+                sb.append("\"" + targetPage + "\"");
+            }
+            sb.append(" id=").append("\"").append(formId).append("\"");
             sb.append(" method=").append("\"").append(method).append("\"");
             if (multipart) {
                 sb.append(" enctype=\"multipart/form-data\" ");
@@ -240,8 +258,12 @@ public class FormResponder extends Responder {
                 method = "GET";
             }
             
-            sb.append("<form action=");
-            sb.append("\"" + targetPage + "\"");
+            sb.append("<form");
+            if(triggerEvent == null) {
+                sb.append(" action=");
+                sb.append("\"" + targetPage + "\"");
+            }
+            sb.append(" id=").append("\"").append(formId).append("\"");
             sb.append(" method=");
             sb.append("\"" + method + "\"");
             if (multipart) {
@@ -260,6 +282,7 @@ public class FormResponder extends Responder {
                     sb.append("\"");
                 }
             }
+            
             sb.append(extraFormatting);
             sb.append(">");
         }

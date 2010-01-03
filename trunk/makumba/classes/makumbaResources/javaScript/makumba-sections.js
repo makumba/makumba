@@ -1,9 +1,12 @@
-Mak = function() {
+	Mak = function() {
   addMethod(this, "event", function(name) {
     makEvent(name, null);
   });
   addMethod(this, "event", function(name, exprValue) {
     makEvent(name, exprValue);
+  });
+  addMethod(this, "sendForm", function(formName) {
+	    makSubmit(formName);
   });
 }
 
@@ -19,7 +22,7 @@ makEvent = function(name, exprValue) {
 	if(exprValue == null) {
 		eventName = name;
 	} else {
-		eventName = name + "___" + exprValue;
+		eventName = name + "---" + exprValue;
 	}
 	
 	var eventParam = $H({__mak_event__: eventName});
@@ -70,6 +73,29 @@ makEvent = function(name, exprValue) {
 		    	}
 		 	});
 		   }
+	});	
+}
+
+makSubmit = function(formName) {
+	alert('request for ' + formName);
+	alert('serialize: ' + $(formName).serialize())
+	var formData = $(formName).serialize(true);
+	// FIXME generate _mak_page_url_ also for non-sections, i.e. for forms...
+	new Ajax.Request(_mak_page_url_, {
+		  method:'get',
+		  requestHeaders: {Accept: 'application/json'},
+		  parameters: formData,
+		  onSuccess: function(transport) {
+			  var events = $H(transport.responseText.evalJSON());
+			  alert('events ' + events);
+			  events.each(function(event) {
+				  // TODO support for forms inside of a list that have a projection expression
+				  makEvent(event, null);
+			  });
+		  },
+		  onFailure: function(transport) {
+			  
+		  }
 	});	
 }
 

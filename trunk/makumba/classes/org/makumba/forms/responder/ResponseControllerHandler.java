@@ -2,7 +2,10 @@ package org.makumba.forms.responder;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -21,6 +24,8 @@ import org.makumba.InvalidValueException;
 import org.makumba.commons.ControllerHandler;
 import org.makumba.commons.ServletObjects;
 import org.makumba.commons.StringUtils;
+import org.makumba.commons.json.JSONArray;
+import org.makumba.commons.json.JSONObject;
 
 /**
  * @version $Id: ResponseControllerHandler.java,v 1.1 Nov 30, 2009 3:02:45 AM rudi Exp $
@@ -30,6 +35,8 @@ public class ResponseControllerHandler extends ControllerHandler {
     public static final String MAKUMBA_FORM_VALIDATION_ERRORS = "__makumba__formValidationErrors__";
 
     public static final String MAKUMBA_FORM_RELOAD = "__makumba__formReload__";
+    
+    public static final String MAKUMBA_FORM_PARTIAL_POSTBACK_EVENT = "__makumba__formPartialPostbackEvent__";
 
     public static final String MAKUMBA_FORM_RELOAD_PARAMS = "__makumba__formReload__parameters__";
 
@@ -43,6 +50,10 @@ public class ResponseControllerHandler extends ControllerHandler {
 
         Exception e = factory.getResponse((HttpServletRequest) req, (HttpServletResponse) resp);
         FormResponder responder = (FormResponder) factory.getFirstResponder(req);
+        final boolean ajaxFormSubmission = responder != null && responder.triggerEvent != null;
+        if(ajaxFormSubmission) {
+            req.setAttribute(MAKUMBA_FORM_PARTIAL_POSTBACK_EVENT, responder.triggerEvent);
+        }
 
         if (e instanceof CompositeValidationException) {
             CompositeValidationException v = (CompositeValidationException) e;
@@ -58,13 +69,13 @@ public class ResponseControllerHandler extends ControllerHandler {
             final HttpServletRequest httpServletRequest = (HttpServletRequest) req;
             final String absoluteAction = httpServletRequest.getRequestURI();
             final boolean shallReload = shallReload(responder.getReloadFormOnError(), responder.getAction(),
-                absoluteAction, responder.getOriginatingPageName());
+                absoluteAction, responder.getOriginatingPageName(), responder.getTriggerEvent());
             logger.fine("Form submission failed, operation: " + responder.operation + ", reloadForm: "
                     + responder.getReloadFormOnError() + ", will reload: " + shallReload);
 
             // we resolving exceptions when we are going to reload the form, and also when the form action page is the
             // same as the form origin page, i.e. when we do an implicit form "reload" (solves bug 1145)
-            if (shallReload || submittingToSamePage(responder.getOriginatingPageName(), absoluteAction)) {
+            if (shallReload || submittingToSamePage(responder.getOriginatingPageName(), absoluteAction) || ajaxFormSubmission) {
 
                 logger.fine("CompositeValidationException: annotating form: " + responder.getShowFormAnnotated());
 
@@ -130,7 +141,6 @@ public class ResponseControllerHandler extends ControllerHandler {
                 ((HttpServletResponse) resp).sendRedirect(responder.getOriginatingPageName());
 
             }
-
         }
         return true;
     }
@@ -201,9 +211,9 @@ public class ResponseControllerHandler extends ControllerHandler {
     }
 
     public static boolean shallReload(boolean reloadFormOnError, String action, String absoluteAction,
-            String originatingPageName) {
+            String originatingPageName, String triggerEvent) {
         return reloadFormOnError && org.apache.commons.lang.StringUtils.isNotBlank(action)
-                && !submittingToSamePage(absoluteAction, originatingPageName);
+                && !submittingToSamePage(absoluteAction, originatingPageName) && org.apache.commons.lang.StringUtils.isBlank(triggerEvent);
     }
 
     private static boolean submittingToSamePage(String absoluteAction, String originatingPageName) {
