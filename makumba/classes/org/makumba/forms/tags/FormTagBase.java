@@ -33,6 +33,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTag;
 
+import org.apache.commons.collections.set.ListOrderedSet;
 import org.makumba.DataDefinition;
 import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
@@ -88,13 +89,17 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     String annotationSeparator;
     
-    private String clientSideValidation = null;
+    private String clientSideValidation = Configuration.getClientSideValidationDefault();
     
     protected String multipleSubmitErrorMsg = null;
     
     protected String field = null;
     
     protected String operation = null;
+    
+    protected String triggerEvent = null;
+    
+    protected String styleId = null;
 
 
     
@@ -152,11 +157,18 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
     protected boolean allowEmptyBody() {
         return true;
     }
-
+    
     // for add, edit, delete
     public void setObject(String s) {
         baseObject = s;
     }
+    
+    @Override
+    public void setStyleId(String s) {
+        // we override this here, otherwise the ID gets appended twice to the form
+        this.styleId = s;
+    }
+
     
     // for new
     public void setType(String s) {
@@ -171,7 +183,10 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
     public void setOperation(String o) {
         operation = o;
     }
-
+    
+    public void setTriggerEvent(String e) {
+        this.triggerEvent = e;
+    }
 
     public void setAction(String s) {
         formAction = s;
@@ -359,10 +374,14 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         fdp.onFormEndAnalyze(getTagKey(), pageCache);
 
         // form action is not needed for search tags
-        if (formAction == null && findParentForm() == null && !getOperation().equals("search")) {
+        if (formAction == null && findParentForm() == null && !getOperation().equals("search") && triggerEvent == null) {
             throw new ProgrammerError(
-                    "Forms must have either action= defined, or an enclosed <mak:action>...</mak:action>");
+                    "Forms must have either action= defined, or an enclosed <mak:action>...</mak:action>, or be submitted via partial postback by defining an event='...' to be fired upon submission");
         }
+        if(triggerEvent != null && formAction != null) {
+            throw new ProgrammerError("Forms cannot define both an action and a triggerEvent, as triggerEvent leads to partial post-back.");
+        }
+        
         if (findParentForm() != null) {
             if (formAction != null) {
                 throw new ProgrammerError(
@@ -424,12 +443,11 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
     public void initialiseState() {
         super.initialiseState();
         
-        clientSideValidation = Configuration.getClientSideValidationDefault();
-
         responder = responderFactory.createResponder();
         if (formName != null) {
             responder.setResultAttribute(formName);
         }
+        
         if (handler != null) {
             responder.setHandler(handler);
         }
@@ -445,8 +463,13 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         if (formMessage != null) {
             responder.setMessage(formMessage);
         }
-        responder.setFormName(formName);
+        if (triggerEvent != null) {
+            responder.setTriggerEvent(triggerEvent);
+        }
 
+        responder.setFormName(formName);
+        responder.setFormId(getFormIdentifier());
+        
         if (reloadFormOnError == null) {
             reloadFormOnError = getOperation().equals("search") ? false : Configuration.getReloadFormOnErrorDefault();
         }
@@ -494,7 +517,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
     @Override
     protected void doAnalyzedCleanup() {
         super.doAnalyzedCleanup();
-        afterHandler = annotation = annotationSeparator = baseObject = basePointer = formAction = formMethod = formMessage = formName = handler = clientSideValidation = field = multipleSubmitErrorMsg = operation = null;
+        afterHandler = annotation = annotationSeparator = baseObject = basePointer = formAction = formMethod = formMessage = formName = handler = field = multipleSubmitErrorMsg = operation = triggerEvent = null;
         responder = null;
         type = null;
         bodyContent = null;
@@ -553,7 +576,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
             // check if the bodyContent is null
             // if yes, we need to check if that's allowed
             if (!allowEmptyBody() && bodyContent == null) {
-                throw new ProgrammerError("Tag " + this.getRunningTag().name + " must have a non-empty body");
+                throw new ProgrammerError("Tag " + getRunningTag().name + " must have a non-empty body");
             }
 
             responder.writeFormPreamble(sb, basePointer, (HttpServletRequest) pageContext.getRequest());
@@ -669,8 +692,24 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         return (HashMap<String, MultipleKey>) pageCache.retrieve(MakumbaJspAnalyzer.NESTED_FORM_NAMES,
             findRootForm().getTagKey());
     }
+    
+    /** the HTML ID of the form */
+    public String getFormIdentifier() {
+        if(styleId != null) {
+            return styleId + getFormSuffixIdentifier();
+        } else {
+            // generate one, we use the name of the form
+            return formName + getFormSuffixIdentifier();
+        }
+    }
 
-    public Object getFormIdentifier() {
+    /** the suffix of the form identifier, used to uniquely identify the form on the page **/
+    public Object getFormSuffixIdentifier() {
+        Object count = pageContext.getAttribute(FormTagBase.__MAKUMBA__FORM__COUNTER__);
+        if(count == null) {
+            // we are at the first iteration, before starting to update the form id (see #updateFormId())
+            return "_form1";
+        }
         return "_form" + pageContext.getAttribute(FormTagBase.__MAKUMBA__FORM__COUNTER__);
     }
 

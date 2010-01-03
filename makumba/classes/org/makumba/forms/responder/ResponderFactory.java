@@ -410,7 +410,7 @@ public class ResponderFactory {
             } catch (CompositeValidationException e) {
                 req.setAttribute(responder.resultAttribute, Pointer.Null);
                 req.setAttribute(resultNamePrefix + suffix, Pointer.Null);
-                // we do nothing, cause we will treat that from the ControllerFilter.doFilter
+                // we do nothing, cause we will treat that from the ResponseControllerHandler
                 return e;
             } catch (LogicException e) {
                 java.util.logging.Logger.getLogger("org.makumba.logic.error").log(Level.INFO, "Caught a logic exception on form response.", e);

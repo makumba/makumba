@@ -122,6 +122,9 @@ public abstract class Responder implements java.io.Serializable {
 
     /** new and add responders set their result to a result attribute */
     protected String resultAttribute = anonymousResult;
+    
+    /** HTML ID of the form **/
+    protected String formId;
 
     /** the business logic handler, for all types of forms */
     protected String handler;
@@ -148,6 +151,9 @@ public abstract class Responder implements java.io.Serializable {
 
     /** the operation name: add, edit, delete, new, simple */
     protected String operation;
+    
+    /** the event to be fired when the responder responds **/
+    protected String triggerEvent;
 
     /** the operation handler, computed from the operation */
     protected ResponderOperation op;
@@ -222,6 +228,11 @@ public abstract class Responder implements java.io.Serializable {
     public void setMessage(String message) {
         this.message = message;
     }
+    
+    /** pass the event to be fired after form submission */
+    public void setTriggerEvent(String e) {
+        this.triggerEvent = e;
+    }
 
     /** pass the multiple submit response message */
     public void setMultipleSubmitErrorMsg(String multipleSubmitErrorMsg) {
@@ -251,6 +262,10 @@ public abstract class Responder implements java.io.Serializable {
     public boolean getShowFormAnnotated() {
         return showFormAnnotated;
     }
+    
+    public String getTriggerEvent() {
+        return triggerEvent;
+    }
 
     public void setClientSideValidation(String clientSideValidation) {
         this.clientSideValidation = clientSideValidation;
@@ -275,6 +290,12 @@ public abstract class Responder implements java.io.Serializable {
     public void setResultAttribute(String resultAttribute) {
         this.resultAttribute = resultAttribute;
     }
+    
+    /** passes the HTML ID of the form, either generated or provided by the user, enriched with form iteration **/
+    public void setFormId(String id) {
+        this.formId = id;
+    }
+
 
     /** pass the field to which the add operation is made */
     public void setAddField(String s) {
