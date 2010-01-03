@@ -25,7 +25,6 @@ package org.makumba.forms.tags;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -85,6 +84,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     // a body and will generate a choser (because it has <mak:option > inside)
     boolean isChoser;
 
+    @Override
     public String toString() {
         return "INPUT name=" + name + " value=" + valueExprOriginal + " dataType=" + dataType + "\n";
     }
@@ -149,6 +149,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setTagKey(PageCache pageCache) {
         if (calendarEditorLink == null && pageContext != null) { // initialise default calendar link text
             calendarEditorLink = Configuration.getDefaultCalendarEditorLink(((HttpServletRequest) pageContext.getRequest()).getContextPath());
@@ -159,12 +160,14 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         if (getForm() == null) {
             throw new ProgrammerError("input tag must be enclosed by a form tag");
         }
-        if (expr == null)
+        if (expr == null) {
             expr = getForm().getDefaultExpr(name);
+        }
         Object[] keyComponents = { name, getForm().tagKey };
         tagKey = new MultipleKey(keyComponents);
     }
 
+    @Override
     FieldDefinition getTypeFromContext(PageCache pageCache) {
         return fdp.getInputTypeAtAnalysis(this, getForm().getDataTypeAtAnalysis(pageCache), name, pageCache);
     }
@@ -175,9 +178,11 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
      * @param pageCache
      *            the page cache of the current page
      */
+    @Override
     public void doStartAnalyze(PageCache pageCache) {
-        if (name == null)
+        if (name == null) {
             throw new ProgrammerError("name attribute is required");
+        }
         if (getForm() == null) {
             throw new ProgrammerError("input tag must be enclosed by a form tag!");
         }
@@ -201,6 +206,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
      * @param pageCache
      *            the page cache of the current page
      */
+    @Override
     public void doEndAnalyze(PageCache pageCache) {
         if (getForm().lazyEvaluatedInputs.containsKey(expr)) {
             // set the input type as the form type
@@ -213,8 +219,9 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         }
 
         // if we use printVar="xxx", set the type to char
-        if (nameVar != null)
+        if (nameVar != null) {
             setType(pageCache, nameVar, ddp.makeFieldOfType(nameVar, "char"));
+        }
 
         FieldDefinition contextType = getTypeFromContext(pageCache);
 
@@ -251,6 +258,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     /**
      * {@inheritDoc}
      */
+    @Override
     public void initialiseState() {
         super.initialiseState();
 
@@ -269,6 +277,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     public void doInitBody() {
     }
 
+    @Override
     public int doAnalyzedStartTag(PageCache pageCache) {
         // we do everything in doMakumbaEndTag, to give a chance to the body to set more attributes, etc
         return EVAL_BODY_BUFFERED;
@@ -366,14 +375,17 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
      * @throws JspException
      * @throws {@link LogicException}
      */
+    @Override
     int computedValue(Object val, FieldDefinition type) throws JspException, LogicException {
         checkBodyContentForNonWhitespace();
 
-        if (choiceSet != null)
+        if (choiceSet != null) {
             params.put(org.makumba.forms.html.ChoiceSet.PARAMNAME, choiceSet);
+        }
 
-        if ("false".equals(display))
+        if ("false".equals(display)) {
             params.put("org.makumba.noDisplay", "dummy");
+        }
 
         if (nullOption != null) {
             // nullOption is only applicable for charEnum and intEnum types
@@ -423,8 +435,8 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
                 // if requested, do annotation before the field
                 if (StringUtils.equalsAny(getForm().annotation, new String[] { "before", "both" })
                         && exceptions != null) {
-                    for (Iterator<InvalidValueException> iter = exceptions.iterator(); iter.hasNext();) {
-                        printAnnotation(fieldName, (InvalidValueException) iter.next());
+                    for (InvalidValueException invalidValueException : exceptions) {
+                        printAnnotation(fieldName, invalidValueException);
                         if (getForm().annotationSeparator != null) {// print the separator, if existing
                             pageContext.getOut().print(getForm().annotationSeparator);
                         }
@@ -434,11 +446,11 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
                 pageContext.getOut().print(formatted);
                 // if requested, do annotation after the field
                 if (StringUtils.equalsAny(getForm().annotation, new String[] { "after", "both" }) && exceptions != null) {
-                    for (Iterator<InvalidValueException> iter = exceptions.iterator(); iter.hasNext();) {
+                    for (InvalidValueException invalidValueException : exceptions) {
                         if (getForm().annotationSeparator != null) {// print the separator, if existing
                             pageContext.getOut().print(getForm().annotationSeparator);
                         }
-                        printAnnotation(fieldName, (InvalidValueException) iter.next());
+                        printAnnotation(fieldName, invalidValueException);
                     }
                 }
             } catch (java.io.IOException e) {
