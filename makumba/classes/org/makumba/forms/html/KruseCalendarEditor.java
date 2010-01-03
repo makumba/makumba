@@ -22,13 +22,14 @@ public class KruseCalendarEditor implements CalendarEditorProvider {
         String yearInput = "document.getElementById('" + inputName + "_2" + formIdentifier + "')";
 
         String dateString = "getDateString(" + yearInput + ", " + monthInput + ", " + dayInput + ")";
-        String linkText = calendarLinkFormatting != null ? calendarLinkFormatting : " ";
+        String linkText = calendarLinkFormatting != null ? calendarLinkFormatting : "";
 
         // append the link
         // TODO: this will default to 1/1/1900, maybe we should default to today?
         sb.append("<a class=\"" + calendarEditorClass + "\" href=\"#\" onClick=\"" + calendarName + ".showCalendar('"
-                + anchorname + "', " + dateString + "); return false;\" title=\"Pick date in calendar\" name=\""
-                + anchorname + "\" ID=\"" + anchorname + "\">" + linkText + "</a>\n");
+                + anchorname + "', " + dateString + "); return false;\""
+                + " title=\"Pick date in calendar\" alt=\"Calendar\" name=\"" + anchorname + "\" ID=\"" + anchorname
+                + "\">" + linkText + "</a>\n");
 
         // make the div
         sb.append("<div id=\""

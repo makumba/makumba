@@ -1,3 +1,10 @@
+.calendarEditor {
+  background: url('../image/calendar.gif') left center no-repeat;
+  padding-left: 18px;
+  height: 17px;
+  text-decoration: none;
+}
+
 div.autocomplete {
   position: absolute;
   width: 250px;
