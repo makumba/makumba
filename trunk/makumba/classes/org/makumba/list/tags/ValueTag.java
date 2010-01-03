@@ -236,8 +236,7 @@ public class ValueTag extends GenericListTag {
 
         // add needed resources, stored in cache for this page
         if (StringUtils.equals(editable, "true")) {
-            pageCache.cacheSetValues(NEEDED_RESOURCES, new String[] { "makumba-editinplace.js",
-                    "makumbaEditInPlace.css" });
+            pageCache.cacheSetValues(NEEDED_RESOURCES, new String[] { "makumba-editinplace.js" });
         }
 
     }

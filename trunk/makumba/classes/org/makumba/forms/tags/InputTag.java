@@ -241,8 +241,8 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
 
         // if we use auto-complete, request the inclusion of its resources
         if (this.autoComplete != null && this.autoComplete.equals("true")) {
-            pageCache.cacheSetValues(NEEDED_RESOURCES, new String[] { "makumbaAutoComplete.css", "prototype.js",
-                    "scriptaculous.js", "makumba-autocomplete.js" });
+            pageCache.cacheSetValues(NEEDED_RESOURCES, new String[] { "prototype.js", "scriptaculous.js",
+                    "makumba-autocomplete.js" });
         }
 
         super.doEndAnalyze(pageCache);
