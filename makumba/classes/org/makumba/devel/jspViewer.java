@@ -27,8 +27,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
-import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -48,11 +46,6 @@ import org.makumba.providers.Configuration;
  * @author Rudolf Mayer
  */
 public class jspViewer extends LineViewer {
-    private static Map<String, String> taglibgSytleProperties = Configuration.getJspViewerSyntaxStylesTags();
-
-    private static Map<String, String> SystemStyleProperties = Configuration.getJspViewerSyntaxStyles();
-
-    private static Set<String> syntaxKeys = taglibgSytleProperties.keySet();
 
     boolean hasLogic;
 
@@ -111,8 +104,8 @@ public class jspViewer extends LineViewer {
             sourceSyntaxPoints = jspParseData.getSyntaxPointArray(null);
 
             // set background colour for hibernate code
-            if (jspParseData.isUsingHibernate() && SystemStyleProperties.get("HibernatePage") != null) {
-                codeBackgroundStyle = SystemStyleProperties.get("HibernatePage");
+            if (jspParseData.isUsingHibernate()) {
+                additionalCodeStyleClasses = "hibernatePage";
             }
 
             syntaxPoints = jspParseData.getSyntaxPoints();
@@ -178,7 +171,6 @@ public class jspViewer extends LineViewer {
             return;
         }
         Date begin = new Date();
-        Object[] syntaxElements = syntaxKeys.toArray();
         printPageBegin(writer);
 
         SyntaxPoint lastSyntaxPoint = null;
@@ -258,18 +250,18 @@ public class jspViewer extends LineViewer {
                         if (hideJava) { // check whether show or hide
                             shallWrite = false;
                         } else {
-                            currentText.append("<span style=\"" + SystemStyleProperties.get("JspScriptlet") + "; \">");
+                            currentText.append("<span class=\"jspScriptlet\">");
                         }
                     } else if (type.equals("JspComment")) { // we have a JSP comment (<%-- ... --%>)
                         if (hideComments) { // check whether show or hide
                             shallWrite = false;
                         } else {
-                            currentText.append("<span style=\"" + SystemStyleProperties.get("JspComment") + "; \">");
+                            currentText.append("<span class=\".jspComment\">");
                         }
                     } else if (type.equals("JSPSystemTag")) { // we have a JSP system tag (<%@ .. %>)
-                        currentText.append("<span style=\"" + SystemStyleProperties.get("JSPSystemTag") + "; \">");
+                        currentText.append("<span class=\".jspSystemTag\">");
                     } else if (type.equals("ExpressionLanguage")) { // we have JSP EL ($...})
-                        currentText.append("<span style=\"" + SystemStyleProperties.get("ExpressionLanguage") + "; \">");
+                        currentText.append("<span class=\".expressionLanguage\">");
                     } else {// we have any other taglib tag
                         if ((tagType.startsWith("mak") || tagType.startsWith("/mak")) && hideMakumba
                                 || (tagType.startsWith("c") || tagType.startsWith("/c")) && hideJSTLCore
@@ -278,14 +270,14 @@ public class jspViewer extends LineViewer {
                         }
 
                         if (shallWrite) { // do the defined highlighting
-                            for (Object syntaxElement : syntaxElements) {
-                                if (tagType.startsWith(String.valueOf(syntaxElement))
-                                        || tagType.startsWith(String.valueOf("/" + syntaxElement))) {
-                                    currentText.append("<span style=\"" + taglibgSytleProperties.get(syntaxElement)
-                                            + "; \">");
-                                    break;
-                                }
+                            String tagClass = tagType;
+                            if (tagClass.contains(":")) {
+                                tagClass = tagClass.substring(0, tagType.indexOf(":")) + "Tag";
                             }
+                            if (tagClass.startsWith("/")) {
+                                tagClass = tagClass.substring(1);
+                            }
+                            currentText.append("<span class=\"" + tagClass + "\">");
                         }
                     }
                     lastSyntaxPoint = currentSyntaxPoint; // move pointers and set flage
