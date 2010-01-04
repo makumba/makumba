@@ -10,11 +10,14 @@ TO BE RELEASED IMMEDIATELY (No need for more testing)
 manu: fixing FIXME in FilterConditionControllerHandler: using configuration paths so as not to filter the MDD viewers etc.
 manu: using default page analysis doAnalyzedStartTag, doAnalyzedEndTag in PaginationTag
 manu: ordering entries in simple page cache for easier usage of analysis
+manu: refactoring form code, pulling operations in FormTagBase for generic re-use (bug 1131)
+manu: tests running with jetty
 
 NOT TO BE RELEASED YET (need more testing)
 manu: auto-complete for mak:input (char and ptr)
 manu, marius: edit-in-place for mak:input and mak:list ("editable" attribute). Is yet to be finished.
-manu: mak:section tag for partial post-back, needs more design & functionality
+manu: mak:section tag for partial post-back
+manu: ajax-submitted forms
 
 ------------------------------------------
 - add your changes -
