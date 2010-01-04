@@ -105,7 +105,7 @@ public abstract class LineViewer implements SourceViewer {
 
     protected String logicPath;
 
-    protected String codeBackgroundStyle = "";
+    protected String additionalCodeStyleClasses = "";
 
     protected boolean hideLineNumbers = false;
 
@@ -232,13 +232,6 @@ public abstract class LineViewer implements SourceViewer {
         if (printHeaderFooter) {
             DevelUtils.writePageBegin(writer);
             DevelUtils.writeStylesAndScripts(writer, contextPath);
-            if (printLineNumbers && !hideLineNumbers) {
-                writer.println("<style type=\"text/css\">");
-                writer.println("A.lineNo {color:navy; background-color:lightblue; text-decoration:none; cursor:default;}");
-                writer.println("pre.code {margin-top:0; " + codeBackgroundStyle + "}");
-                writer.println("a.classLink {border-bottom:thin dotted; text-decoration: none; color: #000066}");
-                writer.println("</style>\n");
-            }
             DevelUtils.writeTitleAndHeaderEnd(writer, title);
             DevelUtils.printPageHeader(writer, title, virtualPath, realPath, printVersionControlLink());
             printPageBeginAdditional(writer);
@@ -283,7 +276,7 @@ public abstract class LineViewer implements SourceViewer {
             writer.println("</tr>");
             writer.println("</table>");
         }
-        writer.print("<pre class=\"code\">");
+        writer.print("<pre class=\"code " + additionalCodeStyleClasses + "\">");
     }
 
     protected void printFileRelations(PrintWriter writer) {
@@ -733,8 +726,8 @@ public abstract class LineViewer implements SourceViewer {
             classNameTrial = className.substring(0, className.lastIndexOf("."));
             // methodName = token.substring(methodBegin + 1);
             try {
-                for (int i = 0; i < importedPackages.length; i++) {
-                    classNameTrial = importedPackages[i] + classNameTrial;
+                for (String importedPackage : importedPackages) {
+                    classNameTrial = importedPackage + classNameTrial;
                     c = Class.forName(classNameTrial);
                     return c;
                 }

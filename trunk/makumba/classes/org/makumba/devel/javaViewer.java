@@ -132,12 +132,11 @@ public class javaViewer extends LineViewer {
         if (compiledJSP) {
             return result;
         }
-        for (String keyWord : javaSyntaxProperties.keySet()) {
+        for (String keyWord : JavaParseData.AllHighlightableTokens) {
             // we highlight the word if we have a style defined for this syntax point type
             final String substitute = keyWord + " ";
-            if (javaSyntaxProperties.get(keyWord) != null && result.contains(substitute)) {
-                result = result.replaceAll(substitute, "<span style=\"" + javaSyntaxProperties.get(keyWord) + "\">"
-                        + keyWord + "</span> ");
+            if (JavaParseData.shallHighlight(keyWord) && result.contains(substitute)) {
+                result = result.replaceAll(substitute, "<span class=\"" + keyWord + "\">" + keyWord + "</span> ");
             }
         }
         return result;
@@ -161,8 +160,8 @@ public class javaViewer extends LineViewer {
                 if (printLineNumbers) {
                     writer.print("\n");
                     if (!hideLineNumbers) {
-                        writer.print("<a style=\"font-style: normal; \" name=\"" + currentLine + "\" href=\"#"
-                                + currentLine + "\" class=\"lineNo\">" + currentLine + ":\t</a>");
+                        writer.print("<a name=\"" + currentLine + "\" href=\"#" + currentLine + "\" class=\"lineNo\">"
+                                + currentLine + ":\t</a>");
                     }
                 }
             } else {
@@ -179,9 +178,8 @@ public class javaViewer extends LineViewer {
                         // we treat class imports at the end of the syntax point
                         if (!JavaParseData.isClassUsageSyntaxPoint(currentSyntaxPoint.getType())) {
                             // we don't highlight literals inside comments
-                            if (!(insideComment > 0 && currentSyntaxPoint.getType().equals("JavaStringLiteral"))
-                                    && javaSyntaxProperties.get(type) != null) {
-                                writer.print("<span style=\"" + javaSyntaxProperties.get(type) + "; \">");
+                            if (!(insideComment > 0 && type.equals(JavaParseData.JAVA_STRING_LITERAL) && JavaParseData.shallHighlight(type))) {
+                                writer.print("<span class=\"" + type + "\">");
                             }
                         }
 
@@ -282,8 +280,9 @@ public class javaViewer extends LineViewer {
                         } else {
                             writer.print(parseLine(htmlEscape(beforeSyntaxPoint)));
                             // we don't highlight literals inside comments
-                            if (!(insideComment > 0 && currentSyntaxPoint.getType().equals("JavaStringLiteral"))
-                                    && javaSyntaxProperties.get(type) != null) {
+                            if (!(insideComment > 0 && currentSyntaxPoint.getType().equals(
+                                JavaParseData.JAVA_STRING_LITERAL))
+                                    && JavaParseData.shallHighlight(type)) {
                                 writer.print("</span>");
                             }
                         }
