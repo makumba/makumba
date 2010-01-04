@@ -1,4 +1,4 @@
-	Mak = function() {
+Mak = function() {
   addMethod(this, "event", function(name) {
     makEvent(name, null);
   });
@@ -10,6 +10,12 @@
   });
 }
 
+/**
+ * makumba event - client-to-server-side event firing
+ * - shows / hides / reloads sections depending on the event type
+ * - when necessary makes an ajax request to the server with the given event and the page parameters,
+ *   then updates the affected sections with the data
+ */
 makEvent = function(name, exprValue) {
 
 	var eventToId = $H(_mak_event_to_id_);
@@ -76,30 +82,54 @@ makEvent = function(name, exprValue) {
 	});	
 }
 
+/**
+ * form submit via partial postback
+ * - submits the form in an ajax request
+ * - "fires" the returned event if everything went ok
+ * - displays the form annotation errors if there were errors
+ */
 makSubmit = function(formName) {
-	alert('request for ' + formName);
-	alert('serialize: ' + $(formName).serialize())
-	var formData = $(formName).serialize(true);
-	// FIXME generate _mak_page_url_ also for non-sections, i.e. for forms...
-	new Ajax.Request(_mak_page_url_, {
-		  method:'get',
+	$(formName).request({
 		  requestHeaders: {Accept: 'application/json'},
-		  parameters: formData,
-		  onSuccess: function(transport) {
-			  var events = $H(transport.responseText.evalJSON());
-			  alert('events ' + events);
-			  events.each(function(event) {
+		  onComplete: function(transport) {
+			  var response = transport.responseText.evalJSON();
+
+			  // clear previous error messages
+			  $$('span.makumba_field_annotation').each(function(e) {$(e).remove()});
+
+			  if(response.event != undefined) {
 				  // TODO support for forms inside of a list that have a projection expression
-				  makEvent(event, null);
-			  });
-		  },
-		  onFailure: function(transport) {
-			  
+				  makEvent(response.event, null);
+				  $(formName).reset();
+			  } else {
+				  var message = response.message;
+				  var fieldErrors = $H(response.fieldErrors);
+				  
+				  // TODO insert normal message, if not empty
+				  fieldErrors.each(function(pair) {
+					  var key = pair.key;
+					  var errors = pair.value;
+					  // TODO use separator from InputTag
+					  // TODO use position from FormTagBase
+					  var inputSpan = new Element('span', {'class':'makumba_field_annotation'});
+					  for(var index = 0; index < errors.length; ++index) {
+						  var message = errors[index];
+						  var span = new Element('span', {'class':'LV_validation_message LV_invalid'}).update(message);
+						  $(inputSpan).insert({ bottom: span});
+						  if(index + 1 < errors.length) {
+							  $(span).insert({after: '<br>'});
+						  }
+					  }
+					  $(key).insert({after: inputSpan});
+				  });
+			  }
 		  }
 	});	
 }
 
-//addMethod - By John Resig (MIT Licensed)
+/**
+ * addMethod - By John Resig (MIT Licensed)
+ */
 function addMethod(object, name, fn) {
     var old = object[ name ];
     object[ name ] = function(){

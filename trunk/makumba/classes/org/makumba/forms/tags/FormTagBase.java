@@ -600,6 +600,13 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
             sb = new StringBuffer();
             responder.writeFormPostamble(sb, basePointer, (HttpServletRequest) pageContext.getRequest());
+            
+            // if this is a partial-postback, watch the form submission to intercept it and do a custom mak:submit
+            if(triggerEvent != null) {
+                sb.append("<script type=\"text/javascript\">Event.observe('" + getFormIdentifier() + "', 'submit', function(event) {" +
+                		"mak.sendForm('" + getFormIdentifier() + "'); Event.stop(event); });</script>");
+            }
+            
 
             bodyContent.getEnclosingWriter().print(sb.toString());
             if (findParentForm() != null) {

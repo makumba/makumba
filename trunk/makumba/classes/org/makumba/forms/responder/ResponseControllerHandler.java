@@ -24,8 +24,6 @@ import org.makumba.InvalidValueException;
 import org.makumba.commons.ControllerHandler;
 import org.makumba.commons.ServletObjects;
 import org.makumba.commons.StringUtils;
-import org.makumba.commons.json.JSONArray;
-import org.makumba.commons.json.JSONObject;
 
 /**
  * @version $Id: ResponseControllerHandler.java,v 1.1 Nov 30, 2009 3:02:45 AM rudi Exp $
@@ -35,6 +33,8 @@ public class ResponseControllerHandler extends ControllerHandler {
     public static final String MAKUMBA_FORM_VALIDATION_ERRORS = "__makumba__formValidationErrors__";
 
     public static final String MAKUMBA_FORM_RELOAD = "__makumba__formReload__";
+    
+    public static final String MAKUMBA_FORM_ID = "__makumba__formName__";
     
     public static final String MAKUMBA_FORM_PARTIAL_POSTBACK_EVENT = "__makumba__formPartialPostbackEvent__";
 
@@ -53,6 +53,7 @@ public class ResponseControllerHandler extends ControllerHandler {
         final boolean ajaxFormSubmission = responder != null && responder.triggerEvent != null;
         if(ajaxFormSubmission) {
             req.setAttribute(MAKUMBA_FORM_PARTIAL_POSTBACK_EVENT, responder.triggerEvent);
+            req.setAttribute(MAKUMBA_FORM_ID, responder.formId);
         }
 
         if (e instanceof CompositeValidationException) {

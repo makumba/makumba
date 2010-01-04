@@ -1,5 +1,4 @@
 <%@ taglib uri="http://www.makumba.org/presentation" prefix="mak" %>
-
 <html>
 <head>
 <title>Forms</title>
@@ -15,11 +14,13 @@
 <br/>
 
 <h1>New person</h1>
-<mak:newForm name="newForm" type="test.Person" triggerEvent="personCreated" styleId="newForm" clientSideValidation="live" annotation="after">
+<mak:newForm name="newForm" type="test.Person" method="get" triggerEvent="personCreated" clientSideValidation="false" annotation="after">
   <mak:input field="indiv.name" /><br/>
   <mak:input field="indiv.surname" /><br/>
-  <a href="" onClick="mak.sendForm('newForm_form1')">Lala</a>
+  
+<input type="submit" value="submit"></input>  
+  
 </mak:newForm>
-</body>
 
+</body>
 </html>

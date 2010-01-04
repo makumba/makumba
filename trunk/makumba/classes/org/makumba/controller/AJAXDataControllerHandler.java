@@ -6,6 +6,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletRequest;
@@ -18,6 +19,7 @@ import org.makumba.InvalidValueException;
 import org.makumba.MakumbaError;
 import org.makumba.commons.ControllerHandler;
 import org.makumba.commons.ServletObjects;
+import org.makumba.commons.json.JSONArray;
 import org.makumba.commons.json.JSONException;
 import org.makumba.commons.json.JSONObject;
 import org.makumba.forms.responder.ResponderFactory;
@@ -27,10 +29,15 @@ import org.makumba.list.tags.SectionTag;
 /**
  * ControllerHandler that handles AJAX-related data writing
  * 
+ * FIXME this does not work, the response is not submitted as AJAX, or it is but then the whole thing gets reloaded for some reason
+ * we need to figure out why
+ * 
  * @author Manuel Gay
  * @version $Id: ResponseModifierControllerHandler.java,v 1.1 Dec 25, 2009 10:05:55 PM manu Exp $
  */
 public class AJAXDataControllerHandler extends ControllerHandler {
+
+    final Logger logger = java.util.logging.Logger.getLogger("org.makumba.controller");
 
     @Override
     public boolean beforeFilter(ServletRequest request, ServletResponse response, FilterConfig conf,
@@ -78,10 +85,12 @@ public class AJAXDataControllerHandler extends ControllerHandler {
     private void handleFormPostback(HttpServletRequest req, HttpServletResponse response) {
         String partialPostback = (String) req.getAttribute(ResponseControllerHandler.MAKUMBA_FORM_PARTIAL_POSTBACK_EVENT);
         if (partialPostback != null) {
+            logger.fine("partial form postback");
 
             CompositeValidationException v = (CompositeValidationException) req.getAttribute(ResponseControllerHandler.MAKUMBA_FORM_VALIDATION_ERRORS);
             String message = (String) req.getAttribute(ResponderFactory.RESPONSE_STRING_NAME);
             String formattedMessage = (String) req.getAttribute(ResponderFactory.RESPONSE_FORMATTED_STRING_NAME);
+            String formName = (String) req.getAttribute(ResponseControllerHandler.MAKUMBA_FORM_ID);
 
             try {
 
@@ -101,9 +110,13 @@ public class AJAXDataControllerHandler extends ControllerHandler {
                         String param = params.nextElement();
                         if (v.getExceptions(param) != null) {
                             Collection<InvalidValueException> paramFieldErrors = v.getExceptions(param);
+                            JSONArray errors = new JSONArray();
+                            // store the message with the input ID as key
+                            // TODO not sure if this works with multiple forms
+                            fieldErrors.put(param + formName, errors);
                             for (Iterator<InvalidValueException> it = paramFieldErrors.iterator(); it.hasNext();) {
                                 InvalidValueException ive = (InvalidValueException) it.next();
-                                fieldErrors.put(param, ive.getShortMessage());
+                                errors.put(ive.getShortMessage());
                             }
                         }
                     }
@@ -112,9 +125,10 @@ public class AJAXDataControllerHandler extends ControllerHandler {
                     // TODO we might want to pass something more elaborate than the message, e.g. a collection of errors
                     o.put("message", message);
                     response.reset();
-                    response.setStatus(500);
                     response.setContentType("application/json");
+                    logger.fine("writing error information: " + o.toString());
                     response.getWriter().print(o.toString());
+                    response.getWriter().flush();
                 } else {
                     // respond by giving the name of the event
                     JSONObject o = new JSONObject();
@@ -122,13 +136,14 @@ public class AJAXDataControllerHandler extends ControllerHandler {
                     response.reset();
                     response.setContentType("application/json");
                     response.getWriter().print(o.toString());
+                    logger.fine("writing event: " + o.toString());
+                    response.getWriter().flush();
                 }
             } catch (JSONException je) {
                 throw new MakumbaError(je);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
     }
 }
