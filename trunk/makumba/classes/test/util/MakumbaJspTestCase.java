@@ -119,7 +119,8 @@ public class MakumbaJspTestCase extends JspTestCase {
                 DiffPrint.NormalPrint p = new DiffPrint.NormalPrint(a, b);
                 p.setOutput(stringWriter);
                 p.print_script(script);
-                System.out.println("**** '>' marks lines added in the test result, '<' lines in the expected result *****");
+                System.out.println("**** '>' marks lines added in the test result, '<' lines in the expected result (in file "
+                        + "classes/test/expected/" + testName + EXPECTED_RESULT_EXTENSION + ") *****");
                 System.out.println(stringWriter.toString());
             } catch (Exception e) { // if there is an error in the Diff calculation, we fall back to the old display
                 System.out.println("======================== Expected ========================");
