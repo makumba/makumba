@@ -52,33 +52,6 @@ calendarEditor=false
 calendarEditorLink=
 
 
-[javaViewerSyntaxStyles]
-# styles are roughly the same as the Eclipse standards
-JavaLineComment=color: #1BA55F; font-family: monospace;
-JavaBlockComment=color: #1BA55F; font-family: monospace; 
-JavaDocComment=color: #3F5FBF; font-family: monospace;
-JavaReservedWord=color: #7F0055; font-weight: bold; font-family: monospace;
-JavaModifier=color: blue; font-weight: bold; font-family: monospace;
-JavaStringLiteral=color: #FF0000; font-style: italic; font-family: monospace;
-
-
-[jspViewerSyntaxStyles]
-JspScriptlet=background:gold;color:green; border:red thin; font-weight: bold;
-JspComment=color:gray;
-JSPSystemTag=background:lightcyan; color:green; border:red thin; font-weight: bold;
-ExpressionLanguage=font-style:italic;
-HibernatePage=background-color: #CCFFCC;
-
-[jspViewerSyntaxStylesTags]
-# Usage: put the beginning of the tag-name as key, and the style-info you want for the created span around that tag.
-# both 'key' and /'key' will be matched - if you want a different colouring for /'key', put that as an own entry, 
-# and make sure it is put <b>before </b> the 'key' entry - otherwise it will get matched twice.
-mak=background:#eecccc; color:green; border:red thin; font-weight: bold;
-jsp=background:lightcyan; color:green; border:red thin; font-weight: bold;
-fmt=background::chartreuse; color:green; border:red thin; font-weight: bold;
-c=background:lightblue; color:green; border:red thin; font-weight: bold;
-
-
 [codeGeneratorTemplate:simple]
 beforeFieldTag=&nbsp;
 afterFieldName=
