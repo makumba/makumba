@@ -192,11 +192,11 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         assertTrue(compareTest(output));
     }
 
-    public void testFormMultipleForms() throws ServletException, IOException, SAXException {
-        pageContext.include("forms-oql/testMakMultipleForms.jsp");
+    public void testFormRepeatedForms() throws ServletException, IOException, SAXException {
+        pageContext.include("forms-oql/testMakRepeatedForms.jsp");
     }
 
-    public void endFormMultipleForms(WebResponse response) throws Exception {
+    public void endFormRepeatedForms(WebResponse response) throws Exception {
         try {
             output = response.getText();
             fetchValidTestResult(output, record);
