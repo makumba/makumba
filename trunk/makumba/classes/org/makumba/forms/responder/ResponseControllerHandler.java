@@ -2,10 +2,7 @@ package org.makumba.forms.responder;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -34,7 +31,7 @@ public class ResponseControllerHandler extends ControllerHandler {
 
     public static final String MAKUMBA_FORM_RELOAD = "__makumba__formReload__";
     
-    public static final String MAKUMBA_FORM_ID = "__makumba__formName__";
+    public static final String MAKUMBA_FORM_ID = "__makumba__formId__";
     
     public static final String MAKUMBA_FORM_PARTIAL_POSTBACK_EVENT = "__makumba__formPartialPostbackEvent__";
 
