@@ -34,6 +34,7 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.makumba.analyser.interfaces.JavaAnalyzer;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
@@ -44,6 +45,27 @@ import org.makumba.commons.NamedResources;
  * @author Rudolf Mayer
  */
 public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
+
+    private static final String JAVA_BLOCK_COMMENT = "javaBlockComment";
+
+    private static final String JAVA_DOC_COMMENT = "javaDocComment";
+
+    private static final String JAVA_LINE_COMMENT = "javaLineComment";
+
+    public static final String JAVA_STRING_LITERAL = "javaStringLiteral";
+
+    private static final String JAVA_MODIFIER = "javaModifier";
+
+    private static final String JAVA_RESERVED_WORD = "javaReservedWord";
+
+    private static String[] JavaCommentPatternNames = { JAVA_BLOCK_COMMENT, JAVA_DOC_COMMENT, JAVA_LINE_COMMENT };
+
+    public static String[] AllHighlightableTokens = (String[]) ArrayUtils.addAll(new String[] { JAVA_STRING_LITERAL,
+            JAVA_MODIFIER, JAVA_RESERVED_WORD }, JavaCommentPatternNames);
+
+    public static boolean shallHighlight(String keyWord) {
+        return ArrayUtils.contains(AllHighlightableTokens, keyWord);
+    }
 
     private class DefinitionPoint implements Comparable<DefinitionPoint> {
         String className;
@@ -94,8 +116,6 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
         }
     }, true);
 
-    private static String[] JavaCommentPatternNames = { "JavaBlockComment", "JavaDocComment", "JavaLineComment" };
-
     private static Pattern[] JavaCommentPatterns;
 
     private static String[] JavaClassUsagePatternNames = { "JavaVariableDefinition", "JavaNewInstance",
@@ -138,7 +158,7 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
         JavaBlockCommentPattern = Pattern.compile("/\\*[^\\*]*\\*/", Pattern.DOTALL);
         JavaLineCommentPattern = Pattern.compile("//.*$", Pattern.MULTILINE);
 
-        JavaModifierPattern = Pattern.compile("(public )|(private )|(protected )|(transient )|(static )|(void )");
+        JavaModifierPattern = Pattern.compile("(public )|(private )|(protected )|(transient )|(static )|(void )|(final )");
         JavaReservedWordPattern = Pattern.compile("(class )|(int )|(boolean )|(double )|(float )|(short )|(long )|(byte )|(for )|(for\\()|(do )|(do\\{)|(while )|(while\\()|(switch )|(case )|(return )|(if )|(if\\()|(else )|(import\\s)|(package\\s)|(super\\.)|(super \\()|(super )|(inner\\.)|(outer\\.)|(extends )|(throws )");
         JavaImportPackage = Pattern.compile("(package" + minOneSpaces + "\\w[\\w\\d\\.]*" + spaces + ";)|(import"
                 + minOneSpaces + "\\w[\\w\\d\\.]*" + "[\\.\\*]?" + spaces + ";)");
@@ -267,7 +287,7 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
     }
 
     public String[] getLiteralPatternNames() {
-        return new String[] { "JavaStringLiteral" };
+        return new String[] { JAVA_STRING_LITERAL };
     }
 
     public Pattern[] getLiteralPatterns() {
@@ -381,7 +401,7 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
     void treatReservedWords(String content, JavaAnalyzer an) {
         Matcher m = JavaReservedWordPattern.matcher(content);
         while (m.find()) {
-            syntaxPoints.addSyntaxPoints(m.start(), m.end(), "JavaReservedWord", null);
+            syntaxPoints.addSyntaxPoints(m.start(), m.end(), JAVA_RESERVED_WORD, null);
             String s = content.substring(m.start(), m.end()).trim();
             if (s.equals("class") && viewedClass == null) {
                 String c = content.substring(m.start()).trim();
@@ -463,12 +483,12 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
 
     /** Go thru the java String Literals in the class. */
     void treatJavaStringLiterals(String content, JavaAnalyzer an) {
-        treatSimplePattern(content, an, JavaStringLiteral, "JavaStringLiteral");
+        treatSimplePattern(content, an, JavaStringLiteral, JAVA_STRING_LITERAL);
     }
 
     /** Go thru the java modifiers in the class. */
     void treatJavaModifiers(String content, JavaAnalyzer an) {
-        treatSimplePattern(content, an, JavaModifierPattern, "JavaModifier");
+        treatSimplePattern(content, an, JavaModifierPattern, JAVA_MODIFIER);
     }
 
     void treatMethodUsage(String content, JavaAnalyzer an) {
