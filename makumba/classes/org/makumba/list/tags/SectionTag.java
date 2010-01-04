@@ -402,7 +402,7 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
      */
     private String getSectionDataScript(PageCache pageCache) {
         HttpServletRequest req = (HttpServletRequest) pageContext.getRequest();
-        String pagePath = req.getContextPath() + "/" + req.getServletPath();
+        String pagePath = req.getContextPath() + req.getServletPath();
 
         StringBuilder sb = new StringBuilder();
         sb.append("<script type=\"text/javascript\">\n");

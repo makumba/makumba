@@ -791,7 +791,7 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     <name>submit</name>
     <tag-class>org.makumba.forms.tags.SubmitTag</tag-class>
     <body-content>JSP</body-content>
-    <display-name>Submit widget to submit forms</display-name>
+    <display-name>Submit tag to submit forms</display-name>
     <descriptionPage>SubmitTagDescription</descriptionPage>
     <example>SubmitTagExample</example>
     <see>form, newForm, addForm, editForm</see>
@@ -803,6 +803,16 @@ Values are none (displayed in <mak:response/>), before (before the input), after
       <description>Widget to be used for the submission.</description>
       <comments>Fixed. Can have as values 'button' or 'link', defaults to 'button'.</comments>
     </attribute>
+    
+    <!-- later
+    <attribute>
+      <name>form</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>The name of the form to submit</description>
+      <comments>Fixed. Can be used if the tag is not enclosed in the form to submit.</comments>
+    </attribute>
+    -->
     
     <!-- generic: -->
     <attribute name="styleId" specifiedIn="form" />

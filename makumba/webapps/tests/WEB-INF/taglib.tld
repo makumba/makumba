@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <taglib xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd" version="2.0">
 
-  <description>Makumba devel-20100102132317 http://www.makumba.org</description>
+  <description>Makumba devel-20100104114959 http://www.makumba.org</description>
   <tlib-version>2.0</tlib-version>
   <short-name>mak</short-name>
   <uri>http://www.makumba.org/presentation</uri>
@@ -773,7 +773,7 @@ for the test expressions: =, !=, <, <=, >, >=
     <name>submit</name>
     <tag-class>org.makumba.forms.tags.SubmitTag</tag-class>
     <body-content>JSP</body-content>
-    <display-name>Submit widget to submit forms</display-name>
+    <display-name>Submit tag to submit forms</display-name>
     
     
     
@@ -785,6 +785,16 @@ for the test expressions: =, !=, <, <=, >, >=
       <description>Widget to be used for the submission.</description>
       
     </attribute>
+    
+    <!-- later
+    <attribute>
+      <name>form</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>The name of the form to submit</description>
+      <comments>Fixed. Can be used if the tag is not enclosed in the form to submit.</comments>
+    </attribute>
+    -->
     
     <!-- generic: -->
     <attribute><name>styleId</name><required>false</required><rtexprvalue>true</rtexprvalue><description>Generic HTML tag attribute</description></attribute>
