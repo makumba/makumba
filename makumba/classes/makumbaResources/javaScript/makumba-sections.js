@@ -106,6 +106,7 @@ makSubmit = function(formName) {
 				  var fieldErrors = $H(response.fieldErrors);
 				  
 				  // TODO insert normal message, if not empty
+				  // TODO if live validation is enabled, remove all live validation spans
 				  fieldErrors.each(function(pair) {
 					  var key = pair.key;
 					  var errors = pair.value;
