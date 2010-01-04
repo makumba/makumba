@@ -326,7 +326,8 @@ public abstract class Responder implements java.io.Serializable {
     public String responderKey() {
         return basePointerType + message + multipleSubmitErrorMsg + resultAttribute + database + operation
                 + controller.getClass().getName() + handler + addField + newType + reloadFormOnError
-                + originatingPageName + showFormAnnotated + clientSideValidation + defaultMatchModes;
+                + originatingPageName + showFormAnnotated + clientSideValidation + defaultMatchModes
+                + triggerEvent;
     }
 
     /** get the integer key of this form, and register it if not already registered */
