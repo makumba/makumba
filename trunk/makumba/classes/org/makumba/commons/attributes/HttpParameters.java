@@ -90,7 +90,7 @@ public class HttpParameters {
             }
         }
 
-        // here we only add reloaded parameters if there is not already some value from the existing session
+        // we add the reloaded parameters only if there is no value for it in the existing session
         // otherwise we might set a parameter with multiple values whereas it really should have only one
         // this is especially the case for URL GET parameters
         if (reloadedParameters != null && param.size() == 0) {
@@ -129,15 +129,19 @@ public class HttpParameters {
 
         while (parameterNames.hasMoreElements()) {
             String param = parameterNames.nextElement();
-            // FIXME: rudi: guess something was lost here when manu was adding the reloaded parameters..
-            // either we also check parameterNames (and add it to results), or skip this loop
+            if (param.startsWith(s)) {
+                result.add(param);
+            }
         }
 
+        // we add the reloaded parameters only if there is no value for it in the existing session
+        // otherwise we might set a parameter with multiple values whereas it really should have only one
+        // this is especially the case for URL GET parameters
         if (reloadedParameters != null) {
             Iterator<Object> i = reloadedParameters.keySet().iterator();
             while (i.hasNext()) {
                 String param = (String) i.next();
-                if (param.startsWith(s)) {
+                if (param.startsWith(s) && !result.contains(param)) {
                     result.add(param);
                 }
             }
