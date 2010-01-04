@@ -58,33 +58,36 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
         public int compareTo(DefinitionPoint arg0) {
             return new Integer(position).compareTo(arg0.position);
         }
-        
+
+        @Override
         public String toString() {
             return position + ":" + className;
         }
     }
 
     public static boolean isCommentSyntaxPoint(String type) {
-        return (Arrays.asList(JavaCommentPatternNames).contains(type));
+        return Arrays.asList(JavaCommentPatternNames).contains(type);
     }
 
     public static boolean isClassUsageSyntaxPoint(String type) {
-        return (Arrays.asList(JavaClassUsagePatternNames).contains(type));
+        return Arrays.asList(JavaClassUsagePatternNames).contains(type);
     }
-    
+
     public static boolean isPrimitiveType(String type) {
         return primitiveTypes.contains(type);
     }
 
     /** Cache of all page analyses. */
     public static int analyzedPages = NamedResources.makeStaticCache("Java page analyses", new NamedResourceFactory() {
-		private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = 1L;
 
-		public Object getHashObject(Object o) {
+        @Override
+        public Object getHashObject(Object o) {
             Object[] o1 = (Object[]) o;
-            return ((String) o1[0]) + o1[1].getClass().getName();
+            return (String) o1[0] + o1[1].getClass().getName();
         }
 
+        @Override
         public Object makeResource(Object o, Object hashName) throws Throwable {
             Object[] o1 = (Object[]) o;
             return new JavaParseData((String) o1[0], (JavaAnalyzer) o1[1], (String) o1[2]);
@@ -96,7 +99,7 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
     private static Pattern[] JavaCommentPatterns;
 
     private static String[] JavaClassUsagePatternNames = { "JavaVariableDefinition", "JavaNewInstance",
-        "JavaParameter", "JavaClassCast", "JavaMethodReturn", "JavaThrows", "JavaCatch", "JavaExtends" };
+            "JavaParameter", "JavaClassCast", "JavaMethodReturn", "JavaThrows", "JavaCatch", "JavaExtends" };
 
     private static Pattern[] JavaClassUsagePatterns;
 
@@ -107,7 +110,7 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
 
     private static Pattern JavaStringLiteral;
 
-    private static Pattern JavaVariableDefinition, JavaNewInstance, JavaParameter, JavaClassCast, JavaMethodReturn,  
+    private static Pattern JavaVariableDefinition, JavaNewInstance, JavaParameter, JavaClassCast, JavaMethodReturn,
             JavaThrows, JavaCatch, JavaExtends;
 
     private static Pattern JavaImportPackage;
@@ -115,8 +118,9 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
     private static Pattern JavaMethodInvocation;
 
     private static Pattern MakumbaFormHandler;
-    
-    private static List<String> primitiveTypes = Arrays.asList(new String[] {"char", "byte", "short", "int", "long", "boolean", "float", "double", "void"});
+
+    private static List<String> primitiveTypes = Arrays.asList(new String[] { "char", "byte", "short", "int", "long",
+            "boolean", "float", "double", "void" });
 
     /** Initialiser for the class variables. */
     static {
@@ -151,20 +155,20 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
         JavaThrows = Pattern.compile("throws" + spaces + identifier);
         JavaCatch = Pattern.compile("catch" + spaces + identifier);
         JavaExtends = Pattern.compile("extends" + spaces + identifier);
-        
+
         JavaMethodInvocation = Pattern.compile(identifier + spaces + "\\." + spaces + identifier + "\\(");
 
         MakumbaFormHandler = Pattern.compile("on_(new|add|edit|delete)\\w+\\(");
-        
+
         JavaCommentPatterns = new Pattern[] { JavaBlockCommentPattern, JavaDocCommentPattern, JavaLineCommentPattern };
         JavaClassUsagePatterns = new Pattern[] { JavaVariableDefinition, JavaNewInstance, JavaParameter, JavaClassCast,
                 JavaMethodReturn, JavaThrows, JavaCatch, JavaExtends };
-        
+
     }
 
     /**
-     * Return the pageData of the class at the given path in the given webapp. This is the only way for clients of this class to obtain instances of
-     * JavaPageData
+     * Return the pageData of the class at the given path in the given webapp. This is the only way for clients of this
+     * class to obtain instances of JavaPageData
      */
     static public JavaParseData getParseData(String webappRoot, String path, JavaAnalyzer an) {
         Object arg[] = { webappRoot + path, an, path };
@@ -192,9 +196,9 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
     private Hashtable<String, String> importedClasses = new Hashtable<String, String>();
 
     private String viewedClass = null;
-    
+
     private String superClass = null;
-    
+
     private Hashtable<String, ArrayList<DefinitionPoint>> definedObjects = new Hashtable<String, ArrayList<DefinitionPoint>>();
 
     /** Private constructor, construction can only be made by getParseData(). */
@@ -206,14 +210,15 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
     }
 
     /**
-     * This method will perform the analysis if not performed already, or if the file has changed. the method is synchronized, so other accesses are
-     * blocked if the current access determines that an analysis needs be performed
+     * This method will perform the analysis if not performed already, or if the file has changed. the method is
+     * synchronized, so other accesses are blocked if the current access determines that an analysis needs be performed
      * 
      * @param initStatus
-     *            an initial status to be passed to the JavaAnalyzer. for example, the pageContext for an example-based analyzer
+     *            an initial status to be passed to the JavaAnalyzer. for example, the pageContext for an example-based
+     *            analyzer
      */
     public synchronized Object getAnalysisResult(Object initStatus) {
-        if (getSyntaxPoints() == null || !getSyntaxPoints().unchanged())
+        if (getSyntaxPoints() == null || !getSyntaxPoints().unchanged()) {
             try {
                 parse(initStatus);
             } catch (Error e) {
@@ -223,10 +228,11 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
                 holder = re;
                 throw re;
             }
+        }
         return holder;
     }
 
-    public synchronized SyntaxPoint[] getSyntaxPointArray(Object initStatus){
+    public synchronized SyntaxPoint[] getSyntaxPointArray(Object initStatus) {
         try {
             parse(initStatus);
             return syntaxPoints.getSyntaxPoints();
@@ -239,7 +245,6 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
         }
     }
 
-    
     /**
      * Gets the imported packages found in this java class.
      * 
@@ -282,7 +287,7 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
         DefinitionPoint maxPoint = null;
         if (points != null) {
             for (int i = 0; i < points.size(); i++) {
-                DefinitionPoint current = (DefinitionPoint) points.get(i);
+                DefinitionPoint current = points.get(i);
                 if (current.position < position) {
                     maxPoint = current;
                 } else {
@@ -325,7 +330,7 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
         // 
         treatJavaImports(syntaxPoints.getContent(), analyzer);
 
-        // treat sting literals  
+        // treat sting literals
         treatJavaStringLiterals(syntaxPoints.getContent(), analyzer);
 
         // treat Java Modifiers
@@ -335,18 +340,19 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
         treatReservedWords(syntaxPoints.getContent(), analyzer);
 
         treatClassUsage(syntaxPoints.getContent(), analyzer);
-        
+
         treatMethodUsage(syntaxPoints.getContent(), analyzer);
-        
+
         treatMakumbaHandler(syntaxPoints.getContent(), analyzer);
-        
+
         holder = analyzer.endPage(holder);
 
         java.util.logging.Logger.getLogger("org.makumba.javaparser.time").info(
-                "analysis of " + uri + " took " + (new java.util.Date().getTime() - start) + " ms");
+            "analysis of " + uri + " took " + (new java.util.Date().getTime() - start) + " ms");
     }
 
-    public void treatInclude(int position, String includeDirective, SyntaxPoint start, SyntaxPoint end, SourceSyntaxPoints host) {
+    public void treatInclude(int position, String includeDirective, SyntaxPoint start, SyntaxPoint end,
+            SourceSyntaxPoints host) {
     }
 
     /** Go thru the java import statments in the class. */
@@ -375,18 +381,18 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
     void treatReservedWords(String content, JavaAnalyzer an) {
         Matcher m = JavaReservedWordPattern.matcher(content);
         while (m.find()) {
-             syntaxPoints.addSyntaxPoints(m.start(), m.end(), "JavaReservedWord", null);
+            syntaxPoints.addSyntaxPoints(m.start(), m.end(), "JavaReservedWord", null);
             String s = content.substring(m.start(), m.end()).trim();
-            if (s.equals("class") && viewedClass==null) {
-                String c = content.substring(m.start()).trim();                
+            if (s.equals("class") && viewedClass == null) {
+                String c = content.substring(m.start()).trim();
                 c = c.substring(c.indexOf(" ")).trim();
                 c = c.substring(0, c.indexOf(" "));
                 viewedClass = c;
             } else if (s.equals("extends") && superClass == null) {
-                String c = content.substring(m.start()).trim();                
+                String c = content.substring(m.start()).trim();
                 c = c.substring(c.indexOf(" ")).trim();
                 int n = c.indexOf(" ");
-                if(n == -1) {
+                if (n == -1) {
                     n = c.indexOf("{");
                 }
                 c = c.substring(0, n);
@@ -400,7 +406,7 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
             Matcher m = JavaClassUsagePatterns[i].matcher(content);
             while (m.find()) {
                 String substring = content.substring(m.start(), m.end());
-                if (JavaClassUsagePatterns[i] != JavaMethodReturn || !(substring.trim().startsWith("new"))) {
+                if (JavaClassUsagePatterns[i] != JavaMethodReturn || !substring.trim().startsWith("new")) {
                     String className = extractClassName(substring, JavaClassUsagePatterns[i]);
                     int beginIndex = content.indexOf(className, m.start());
                     int endIndex = beginIndex + className.length();
@@ -468,15 +474,15 @@ public class JavaParseData implements SourceSyntaxPoints.PreprocessorClient {
     void treatMethodUsage(String content, JavaAnalyzer an) {
         treatSimplePattern(content, an, JavaMethodInvocation, "JavaMethodInvocation");
     }
-    
+
     void treatMakumbaHandler(String content, JavaAnalyzer an) {
         treatSimplePattern(content, an, MakumbaFormHandler, "MakumbaFormHandler");
     }
-    
+
     private void treatSimplePattern(String content, JavaAnalyzer an, Pattern pattern, String SyntaxPointName) {
         Matcher m = pattern.matcher(content);
         while (m.find()) {
-            syntaxPoints.addSyntaxPoints(m.start(), m.end()-1, SyntaxPointName, null);
+            syntaxPoints.addSyntaxPoints(m.start(), m.end() - 1, SyntaxPointName, null);
         }
     }
 
