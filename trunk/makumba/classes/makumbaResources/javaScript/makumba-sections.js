@@ -5,7 +5,7 @@ Mak = function() {
   addMethod(this, "event", function(name, exprValue) {
     makEvent(name, exprValue);
   });
-  addMethod(this, "sendForm", function(formName) {
+  addMethod(this, "submit", function(formName) {
 	    makSubmit(formName);
   });
 }

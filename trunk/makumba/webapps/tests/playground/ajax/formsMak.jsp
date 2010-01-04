@@ -18,7 +18,12 @@
   <mak:input field="indiv.name" /><br/>
   <mak:input field="indiv.surname" /><br/>
   
-<input type="submit" value="submit"></input>  
+  Simple: <mak:submit /><br/>
+  Simple widget button: <mak:submit widget="button"/><br/>
+  Simple widget link: <mak:submit widget="link"/><br/>
+  Custom widget button: <mak:submit widget="button">Custom text</mak:submit><br/>
+  Custom widget link: <mak:submit widget="link">Custom text</mak:submit><br/>
+  
   
 </mak:newForm>
 
