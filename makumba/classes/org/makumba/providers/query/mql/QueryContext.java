@@ -211,7 +211,7 @@ public class QueryContext {
                 return ret;
             } 
         }
-        if (fi.getType().equals("ptr"))
+        if (fi.getType().equals("ptr") || fi.getType().equals("ptrRel"))
             return addJoin(label, field, label2, foreign.getIndexPointerFieldName(), foreign, joinType, location);
         else if (fi.getType().equals("ptrOne"))
             return addJoin(label, field, label2, sub.getIndexPointerFieldName(), sub, joinType, location);
