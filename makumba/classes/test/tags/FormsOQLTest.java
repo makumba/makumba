@@ -40,6 +40,7 @@ import junit.framework.TestSuite;
 
 import org.apache.cactus.Request;
 import org.apache.commons.collections.CollectionUtils;
+import org.makumba.commons.NamedResources;
 import org.makumba.forms.responder.ResponderFactory;
 import org.xml.sax.SAXException;
 
@@ -84,6 +85,11 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         return setup;
     }
 
+    public void testDbReset(){
+        System.err.println("cleaning caches");
+        NamedResources.cleanStaticCache("Databases open");
+    }
+    
     public void beginTomcat(Request request) {
         WebConversation wc = new WebConversation();
         WebRequest req = new GetMethodWebRequest(System.getProperty("cactus.contextURL"));
