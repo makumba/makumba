@@ -84,6 +84,15 @@ public class NamedResources implements java.io.Serializable {
         allCaches = new Vector<WeakReference<NamedResources>>();
     }
 
+	/** Clean all static caches, so their content will be re-initialized when needed.
+	  * This method is a possible alternative to cleanCaches() which beaks separation of concerns
+	*/
+    static public void cleanupStaticCaches() {
+        for (int i = 0; i < staticCaches.size(); i++) {
+            staticCaches.get(i).close();
+        }
+    }
+
     public static void cleanCaches() {
         cleanStaticCache("Authorization constraints");
         cleanStaticCache("JSP page analyses");
@@ -148,7 +157,8 @@ public class NamedResources implements java.io.Serializable {
     public static void cleanStaticCache(String name) {
         for (NamedResources r : staticCaches) {
             if (r.getName().equals(name)) {
-                r.values.clear();
+                // r.values.clear();
+                r.close();
                 java.util.logging.Logger.getLogger("org.makumba.system").fine("Cleaned '" + name + "' cache.");
             }
         }
@@ -285,8 +295,7 @@ public class NamedResources implements java.io.Serializable {
             try {
                 m = o.getClass().getMethod("close", ((java.lang.Class[]) null));
             } catch (NoSuchMethodException e) {
-                // we assume homogenous caches
-                return;
+                continue;
             }
             try {
                 m.invoke(o, ((java.lang.Object[]) null));
