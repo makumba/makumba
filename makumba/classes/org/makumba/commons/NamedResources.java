@@ -272,7 +272,7 @@ public class NamedResources implements java.io.Serializable {
     /**
      * Closes each contained object by calling its close() method, if any
      */
-    public void close() {
+    void closeContent() {
         for (Iterator i = values.keySet().iterator(); i.hasNext();) {
             Object nvo = values.get(i.next());
             if (nvo instanceof java.lang.ref.Reference) {
@@ -295,7 +295,8 @@ public class NamedResources implements java.io.Serializable {
             try {
                 m = o.getClass().getMethod("close", ((java.lang.Class[]) null));
             } catch (NoSuchMethodException e) {
-                continue;
+                // we assume homogeneous caches
+                return;
             }
             try {
                 m.invoke(o, ((java.lang.Object[]) null));
@@ -303,6 +304,14 @@ public class NamedResources implements java.io.Serializable {
                 t.printStackTrace();
             }
         }
+    }
+    
+    /**
+     * Closes each contained object by calling its close() method, if any, 
+     * then de-references all contained objects so they can be garbage collected. 
+     */
+    public void close(){
+        closeContent();
         values.clear();
     }
 }
