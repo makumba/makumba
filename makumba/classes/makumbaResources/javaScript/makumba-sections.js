@@ -6,8 +6,11 @@ Mak = function() {
     makEvent(name, exprValue);
   });
   addMethod(this, "submit", function(formName) {
-	    makSubmit(formName);
+	    makSubmit(formName, null, null);
   });
+  addMethod(this, "submit", function(formName, annotation, annotationSeparator) {
+	    makSubmit(formName, annotation, annotationSeparator);
+});
 }
 
 /**
@@ -60,8 +63,7 @@ makEvent = function(name, exprValue) {
 	
 	// for each section we have to reload, display the waiting widget
 	toReload.each(function(id) {
-		// TODO this should be a class in the makumba.css and hence made configurable
-		$(id).update('<img src="_CONTEXT_PATH__RESOURCE_PATH_/image/ajax-loader.gif"></img>');
+		$(id).update('<span class="sectionReload" ></span>');
 	});
 	
 	
@@ -86,42 +88,64 @@ makEvent = function(name, exprValue) {
  * form submit via partial postback
  * - submits the form in an ajax request
  * - "fires" the returned event if everything went ok
- * - displays the form annotation errors if there were errors
+ * - displays the form errors if there were errors (annotations and message)
  */
-makSubmit = function(formName) {
+makSubmit = function(formName, annotation, annotationSeparator) {
 	$(formName).request({
 		  requestHeaders: {Accept: 'application/json'},
 		  onComplete: function(transport) {
 			  var response = transport.responseText.evalJSON();
 
 			  // clear previous error messages
-			  $$('span.makumba_field_annotation').each(function(e) {$(e).remove()});
+			  $(formName).select('span.makumba_field_annotation').each(function(e) {$(e).remove()});
+			  $(formName).select('span.makumba_form_message').each(function(e) {$(e).remove()});
 
 			  if(response.event != undefined) {
 				  // TODO support for forms inside of a list that have a projection expression
 				  makEvent(response.event, null);
 				  $(formName).reset();
 			  } else {
-				  var message = response.message;
+				  var message = new String(response.message);
 				  var fieldErrors = $H(response.fieldErrors);
 				  
-				  // TODO insert normal message, if not empty
-				  // TODO if live validation is enabled, remove all live validation spans
+				  if(!message.blank()) {
+					  var messageSpan = new Element('span', {'class':'makumba_form_message'});
+					  $(messageSpan).update(message);
+					  $(formName).insert({top: messageSpan});
+				  }
+				  
 				  fieldErrors.each(function(pair) {
 					  var key = pair.key;
 					  var errors = pair.value;
-					  // TODO use separator from InputTag
-					  // TODO use position from FormTagBase
+					  var sep = '<br>';
+					  if(annotationSeparator != undefined) {
+						  sep = annotationSeparator;
+					  }
 					  var inputSpan = new Element('span', {'class':'makumba_field_annotation'});
 					  for(var index = 0; index < errors.length; ++index) {
 						  var message = errors[index];
 						  var span = new Element('span', {'class':'LV_validation_message LV_invalid'}).update(message);
 						  $(inputSpan).insert({ bottom: span});
 						  if(index + 1 < errors.length) {
-							  $(span).insert({after: '<br>'});
+							  $(span).insert({after: sep});
 						  }
 					  }
-					  $(key).insert({after: inputSpan});
+					  
+					  var annotationPosition;
+					  if(annotation != undefined) {
+						  annotationPosition = annotation;
+					  } else {
+						  annotationPosition = 'after';
+					  }
+					  if(annotationPosition == 'before') {
+						  $(key).insert({before: inputSpan});
+					  } else if(annotationPosition == 'after') {
+						  $(key).insert({after: inputSpan});
+					  } else if(annotationPosition == 'both') {
+						  $(key).insert({before: inputSpan});
+						  $(key).insert({after: inputSpan});
+					  }
+					  
 				  });
 			  }
 		  }

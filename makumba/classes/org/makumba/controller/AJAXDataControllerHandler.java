@@ -29,9 +29,6 @@ import org.makumba.list.tags.SectionTag;
 /**
  * ControllerHandler that handles AJAX-related data writing
  * 
- * FIXME this does not work, the response is not submitted as AJAX, or it is but then the whole thing gets reloaded for some reason
- * we need to figure out why
- * 
  * @author Manuel Gay
  * @version $Id: ResponseModifierControllerHandler.java,v 1.1 Dec 25, 2009 10:05:55 PM manu Exp $
  */
@@ -100,8 +97,7 @@ public class AJAXDataControllerHandler extends ControllerHandler {
                     // - the composite validation exception
                     // - the form message
                     // for the first one we do something a bit hackish, i.e. we use the parameters of the serialized
-                    // forms
-                    // to get all the inputs
+                    // forms to get all the inputs
 
                     JSONObject o = new JSONObject();
                     JSONObject fieldErrors = new JSONObject();
@@ -123,7 +119,7 @@ public class AJAXDataControllerHandler extends ControllerHandler {
 
                     o.put("fieldErrors", fieldErrors);
                     // TODO we might want to pass something more elaborate than the message, e.g. a collection of errors
-                    o.put("message", message);
+                    o.put("message", formattedMessage);
                     response.reset();
                     response.setContentType("application/json");
                     logger.fine("writing error information: " + o.toString());

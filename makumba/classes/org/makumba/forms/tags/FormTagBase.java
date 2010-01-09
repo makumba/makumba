@@ -587,8 +587,9 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
             }
 
             // write client side validation, but only for edit operations (not search) & not delete links
-            if (!getOperation().equals("search") && !(this instanceof DeleteTag)
-                    && StringUtils.equalsAny(clientSideValidation, new String[] { "true", "live" })) {
+            boolean isClientSideValidation = StringUtils.equalsAny(clientSideValidation, new String[] { "true", "live" });
+            
+            if (!getOperation().equals("search") && !(this instanceof DeleteTag) && isClientSideValidation) {
                 sb = new StringBuffer();
                 responder.writeClientsideValidation(sb);
                 bodyContent.getEnclosingWriter().print(sb.toString());
@@ -597,11 +598,20 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
             sb = new StringBuffer();
             responder.writeFormPostamble(sb, basePointer, (HttpServletRequest) pageContext.getRequest());
 
-            // if this is a partial-postback, watch the form submission to intercept it and do a custom mak:submit
+            // if this is a partial postback, watch the form submission to intercept it and do a custom mak:submit
             if (triggerEvent != null) {
                 sb.append("<script type=\"text/javascript\">Event.observe('" + getFormIdentifier()
-                        + "', 'submit', function(event) {" + "mak.submit('" + getFormIdentifier()
-                        + "'); Event.stop(event); });</script>");
+                        + "', 'submit', function(event) {");
+                if(isClientSideValidation) {
+                    sb.append("if(document.getElementById('" + getFormIdentifier() + "').onsubmit()) {");
+                }
+                sb.append("mak.submit('" + getFormIdentifier() + "', " + (annotation == null ? "undefined" : "'" + annotation + "'")
+                        + ", " + (annotationSeparator == null ? "undefined" : "'" + annotationSeparator + "'") + ");");
+                sb.append("Event.stop(event);");
+                if(isClientSideValidation) {
+                    sb.append("}");
+                }
+                sb.append("});</script>");
             }
 
             bodyContent.getEnclosingWriter().print(sb.toString());
