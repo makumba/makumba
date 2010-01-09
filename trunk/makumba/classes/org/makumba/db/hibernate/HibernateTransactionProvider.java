@@ -93,6 +93,10 @@ public class HibernateTransactionProvider extends TransactionProvider {
     public Object getHibernateSessionFactory(String name) {
         return HibernateSFManager.getSF(name);
     }
+    
+    @Override
+    public void closeDataSource(String dataSourceName) {
+    }
 
 
 }

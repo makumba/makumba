@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
 
+import org.makumba.ConfigurationError;
 import org.makumba.DBError;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
@@ -190,7 +191,13 @@ public abstract class Database {
                 throw new org.makumba.ConfigurationError("Either dbsv or autoIncrement can be specified");
             }
             if (config.get("dbsv") != null) {
-                dbsv = new Integer((String) config.get("dbsv")).intValue();
+                
+                Long dbsvTest = new Long(config.getProperty("dbsv"));
+                if(dbsvTest > 127) {
+                    throw new ConfigurationError("The DBSV cannot be larger than 127, provided value is " + config.getProperty("dbsv"));
+                }
+                
+                dbsv = new Integer(config.getProperty("dbsv")).intValue();
             } else if (config.get("autoIncrement") != null) {
                 autoIncrement = true;
             } else {
@@ -533,6 +540,10 @@ public abstract class Database {
 
     public NameResolver getNameResolver() {
         return nr;
+    }
+
+    public void initialiseTables(String name) {
+        tables = new NamedResources("Database tables for " + name, tableFactory);        
     }
 
 }

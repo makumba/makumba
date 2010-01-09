@@ -149,6 +149,13 @@ public class TableManager extends Table {
             makeKeyIndex();
 
     }
+    
+    @Override
+    public void close() {
+        // FIXME we should maybe do more things here, for now, we only reset the primary key index
+        resetPrimaryKey();
+        
+    }
 
     /** the SQL table opening. might call create() or alter() */
     protected void setTableAndFieldNames(NameResolver nr) {
@@ -1550,8 +1557,9 @@ public class TableManager extends Table {
                             + ">=" + primaryKeyCurrentIndex + " AND " + getFieldDBName(fieldName) + "<="
                             + getSQLDatabase().getMaxPointerValue());
                     rs.next();
-                    if (rs.getLong(2) > 0)
+                    if (rs.getLong(2) > 0) {
                         primaryKeyCurrentIndex = rs.getLong(1);
+                    }
                     // System.out.println("\t\t\tprimaryKeyCurrentIndex: " + primaryKeyCurrentIndex);
                     rs.close();
                     st.close();
