@@ -37,7 +37,7 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
 
     /**
      * Gathers all the names of the validation variables defined. this is needed to make mass validation in
-     * {@link #getOnSubmitValidation(boolean)}.
+     * {@link #getOnSubmitValidation()}.
      */
     private LinkedHashSet<String> definitionVarNames = new LinkedHashSet<String>();
 
@@ -170,7 +170,7 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
      * returns the call for the onSubmit validation, e.g.:<br>
      * <code>function(e) { return LiveValidation.massValidate( [emailValidation, weightValidation, hobbiesValidation, ageValidation] );</code>
      */
-    public StringBuffer getOnSubmitValidation(boolean validateLive) {
+    public StringBuffer getOnSubmitValidation() {
         if (definitionVarNames.size() > 0) {
             StringBuffer sb = new StringBuffer(getValidationFunction()).append(";");
             return sb;

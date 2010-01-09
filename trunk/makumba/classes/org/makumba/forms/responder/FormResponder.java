@@ -30,7 +30,6 @@ import java.util.Hashtable;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
 import org.makumba.CompositeValidationException;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
@@ -237,7 +236,6 @@ public class FormResponder extends Responder {
             sb.append("<form");
             if(triggerEvent == null) {
                 sb.append(" action=").append("\"").append(actionBase).append(actionAnchor).append("\"");
-                sb.append("\"" + targetPage + "\"");
             }
             sb.append(" id=").append("\"").append(formId).append("\"");
             sb.append(" method=").append("\"").append(method).append("\"");
@@ -260,8 +258,8 @@ public class FormResponder extends Responder {
             
             sb.append("<form");
             if(triggerEvent == null) {
-                sb.append(" action=");
-                sb.append("\"" + targetPage + "\"");
+                // also allowing anchors and query parameters in the actions of common forms (bug 1143)
+                sb.append(" action=").append("\"").append(actionBase).append(actionAnchor).append("\"");
             }
             sb.append(" id=").append("\"").append(formId).append("\"");
             sb.append(" method=");
@@ -273,8 +271,7 @@ public class FormResponder extends Responder {
             // but, do it only for edit operations (not search)
             if (!operation.equals("search")
                     && org.makumba.commons.StringUtils.equalsAny(clientSideValidation, new String[] { "true", "live" })) {
-                StringBuffer onSubmitValidation = provider.getOnSubmitValidation(StringUtils.equals(
-                    clientSideValidation, "live"));
+                StringBuffer onSubmitValidation = provider.getOnSubmitValidation();
                 // we append it only if we actually have data
                 if (onSubmitValidation != null && onSubmitValidation.length() > 0) {
                     sb.append(" onsubmit=\"return ");

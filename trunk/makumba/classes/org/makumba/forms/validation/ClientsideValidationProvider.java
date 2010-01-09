@@ -15,14 +15,14 @@ public interface ClientsideValidationProvider {
 
     /**
      * This method shall initialise the client side validations for the given field. After all fields are initialised,
-     * {@link #getClientValidation(boolean)} and {@link #getOnSubmitValidation(boolean)} shall be able to provide their
+     * {@link #getClientValidation(boolean)} and {@link #getOnSubmitValidation()} shall be able to provide their
      * validation mechanism, i.e. by having a java-script code prepared. <br>
      * This method is called from the {@link RecordEditor} and the {@link FormResponder}.
      */
     public void initField(String inputName, String formIdentifier, FieldDefinition fieldDefinition, boolean liveValidation);
 
     /** Shall provide the calls needed for doing validation on e.g. form submission. */
-    public StringBuffer getOnSubmitValidation(boolean validateLive);
+    public StringBuffer getOnSubmitValidation();
 
     /** Shall return all calls needed for client side validation, e.g. providing some java-script code. */
     public StringBuffer getClientValidation(boolean validateLive);
