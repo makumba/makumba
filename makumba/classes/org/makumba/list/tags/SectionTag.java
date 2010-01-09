@@ -32,7 +32,6 @@ import org.makumba.list.engine.valuecomputer.ValueComputer;
  * TODO special effects for show/hide/reload <br>
  * TODO detection of "toggle"/"update" situation (i.e. two sections next to one another that hide/show on the same
  * event)?<br>
- * TODO reload -> reloadOn, hide -> hideOn, show -> showOn
  * 
  * @author Manuel Gay
  * @version $Id: SectionTag.java,v 1.1 Dec 25, 2009 6:47:43 PM manu Exp $
@@ -249,6 +248,8 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
         // check if we are invoked, i.e. if an event has been "fired" that requires us to do stuff
         if (matches(getPageContext().getRequest().getParameter(MAKUMBA_EVENT), exprValue)) {
             isInvoked = true;
+        } else {
+            isInvoked = false;
         }
 
         events = new String[] { showOn, hideOn, reloadOn };
