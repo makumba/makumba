@@ -124,6 +124,8 @@ public abstract class TransactionProvider implements SingletonHolder {
 
     public abstract String getQueryLanguage();
     
+    public abstract void closeDataSource(String dataSourceName);
+    
     public TransactionProvider() {
         org.makumba.commons.SingletonReleaser.register(this);
     }

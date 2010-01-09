@@ -250,6 +250,8 @@ public abstract class Table // extends RecordHandler
             }
         }
     }
+    
+    public abstract void close();
 
     /** insert a record, return the pointer to it */
     public Pointer insertRecord(DBConnection c, Dictionary<String, Object> d) {

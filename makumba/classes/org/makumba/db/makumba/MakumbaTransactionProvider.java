@@ -211,7 +211,7 @@ public class MakumbaTransactionProvider extends TransactionProvider {
                 try {
                     Database d = (Database) Class.forName(dbclass).getConstructor(theProp).newInstance(pr);
                     d.dataSourceName = (String) name;
-                    d.tables = new NamedResources("Database tables for " + name, d.tableFactory);
+                    d.initialiseTables(name);
 
                     // TODO: need to check if hibernate schema update is authorized. If yes, drop/adjust indexes from
                     // all tables so that hibernate can create its foreign keys at schema update.
@@ -303,6 +303,12 @@ public class MakumbaTransactionProvider extends TransactionProvider {
     @Override
     protected void setLastConnectionType(DataSourceType type) {
         this.lastConnectionType = type;
+    }
+    
+    @Override
+    public void closeDataSource(String dataSourceName) {
+        getDatabase(dataSourceName);
+        
     }
 
 }
