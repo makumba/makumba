@@ -62,7 +62,7 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
     @Override
     public PrintWriter getWriter() throws IOException {
         // we do the header modifications only for .jsp files
-        if (request.getRequestURI().endsWith(".jsp")) {
+        if (request.getRequestURI().endsWith(".jsp") && request.getAttribute(javax.servlet.jsp.PageContext.EXCEPTION) == null) {
             if (makumbaWriter == null) {
                 originalWriter = super.getWriter();
                 makumbaWriter = new MakumbaPrintWriter(originalWriter);
