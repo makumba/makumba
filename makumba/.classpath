@@ -43,5 +43,5 @@
 	<classpathentry kind="lib" path="lib/optional/prefuse.jar"/>
 	<classpathentry kind="lib" path="lib/test/cactus.jar"/>
 	<classpathentry kind="lib" path="lib/building/ant-1.6.5.jar"/>
-	<classpathentry kind="output" path="classes"/>
+	<classpathentry kind="output" path="build"/>
 </classpath>
