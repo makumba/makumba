@@ -111,8 +111,9 @@ compare(email) { lower(email) = email } : "E-mail address must be all lower case
 compare(indiv.name) { lower(indiv.name) != indiv.name } : "Your name can't be all lower cases!"
 
 # multi-field uniqueness keys
-unique(age, email) : "these need to be unique!" ;comment
-unique(indiv.name, indiv.surname) : "these too!"
+unique(age, email) : "age and email need to be unique!" ;comment
+unique(indiv.name, indiv.surname) : "name and surname need to be unique!"
+#unique(age, indiv) : "can't have the same age and be the same person!"
 
 
 someFunction(char[] b) { count(address) > 0 } : "You need to specify an address" ; comment
