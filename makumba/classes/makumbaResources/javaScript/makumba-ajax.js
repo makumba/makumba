@@ -125,17 +125,12 @@ makSubmitAjax = function(formName, annotation, annotationSeparator) {
 			  if(response.event != undefined) {
 				  // TODO support for forms inside of a list that have a projection expression
 				  makEvent(response.event, null);
+				  insertMessage(formName, response.message);
 				  $(formName).reset();
 			  } else {
-				  var message = new String(response.message);
+				  insertMessage(formName, response.message);
+				  
 				  var fieldErrors = $H(response.fieldErrors);
-				  
-				  if(!message.blank()) {
-					  var messageSpan = new Element('span', {'class':'makumba_form_message'});
-					  $(messageSpan).update(message);
-					  $(formName).insert({top: messageSpan});
-				  }
-				  
 				  fieldErrors.each(function(pair) {
 					  var key = pair.key;
 					  var errors = pair.value;
@@ -172,6 +167,19 @@ makSubmitAjax = function(formName, annotation, annotationSeparator) {
 			  }
 		  }
 	});	
+}
+
+/**
+ * inserts the form submission message as first element inside of the form
+ */
+insertMessage = function(formName, message) {
+	  var message = new String(message);
+	  if(!message.blank()) {
+		  var messageDiv = new Element('div', {'class':'makumba_form_message'});
+		  $(messageDiv).update(message);
+		  $(formName).insert({top: messageDiv});
+	  }
+
 }
 
 /**
