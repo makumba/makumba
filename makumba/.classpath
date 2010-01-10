@@ -35,7 +35,7 @@
 	<classpathentry kind="lib" path="lib/core/commons-configuration-1.6.jar" sourcepath="lib-src/commons-configuration-1.6-sources.jar"/>
 	<classpathentry kind="lib" path="lib/test/diff-bmsi.jar"/>
 	<classpathentry kind="lib" path="lib/core/commons-cli-1.2.jar" sourcepath="lib-src/commons-cli-1.2-sources.jar"/>
-	<classpathentry kind="lib" path="lib/test/junit-3.8.1.jar" sourcepath="lib-src/junit-3.8.1-src.jar"/>
+	<classpathentry kind="lib" path="lib/test/junit.jar" sourcepath="lib-src/junit-3.8.1-src.jar"/>
 	<classpathentry kind="lib" path="lib/test/httpunit.jar"/>
 	<classpathentry kind="lib" path="lib/optional/hibernate/hibernate-annotations.jar"/>
 	<classpathentry kind="lib" path="lib/common/commons-logging-api.jar"/>
