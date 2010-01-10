@@ -20,6 +20,9 @@ import test.util.MakumbaJspTestCase;
 
 /**
  * Tests for the way makumba handles expcetions
+ * 
+ * FIXME this appears to be broken, cactus does not proceed the page but instead interrupts execution
+ * 
  * @author Manuel Gay
  * @version $Id: ExceptionTest.java,v 1.1 May 11, 2008 3:25:44 AM manu Exp $
  */

@@ -57,6 +57,7 @@ import org.makumba.providers.FormDataProvider;
  * 
  * @author Cristian Bogdan
  * @author Rudolf Mayer
+ * @author Manuel Gay
  * @version $Id$
  */
 public class FormTagBase extends GenericMakumbaTag implements BodyTag {
@@ -118,6 +119,8 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
      * where one wants to store the result of the new operation of the other.
      */
     HashMap<String, String> lazyEvaluatedInputs = new HashMap<String, String>();
+    
+    protected String formIdentifier = null;
 
     long starttime;
 
@@ -385,11 +388,18 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
             }
         }
         // add needed resources, stored in cache for this page
+        //pageCache.cacheSetValues(NEEDED_RESOURCES, new String[] { "makumba.css" });
+        
         if (StringUtils.equalsAny(clientSideValidation, new String[] { "true", "live" })) {
             pageCache.cacheSetValues(NEEDED_RESOURCES,
                 MakumbaSystem.getClientsideValidationProvider().getNeededJavaScriptFileNames());
         }
+        
+        if(triggerEvent != null) {
+            pageCache.cacheSetValues(NEEDED_RESOURCES, new String[] { "makumba-ajax.js" });
+        }
 
+        
         pageCache.cache(MakumbaJspAnalyzer.LAZY_EVALUATED_INPUTS, tagKey, lazyEvaluatedInputs);
 
         if (!shouldComputeBasePointer()) {
@@ -530,8 +540,15 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
      */
     @Override
     public int doAnalyzedStartTag(PageCache pageCache) throws JspException, LogicException {
+        // reset the form identifier
+        this.formIdentifier = null;
+        
         // increase the form ID
         updateFormId();
+        
+        // call getFormIdentifier() in order to remember the identifier of this tag
+        getFormIdentifier();
+        
         fdp.onFormStartTag(getTagKey(), pageCache, pageContext);
 
         responder.setOperation(getOperation(), getResponderOperation(getOperation()));
@@ -599,19 +616,16 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
             responder.writeFormPostamble(sb, basePointer, (HttpServletRequest) pageContext.getRequest());
 
             // if this is a partial postback, watch the form submission to intercept it and do a custom mak:submit
+            // also catch the onSubmit as its needed for live validation
             if (triggerEvent != null) {
-                sb.append("<script type=\"text/javascript\">Event.observe('" + getFormIdentifier()
-                        + "', 'submit', function(event) {");
-                if(isClientSideValidation) {
-                    sb.append("if(document.getElementById('" + getFormIdentifier() + "').onsubmit()) {");
-                }
-                sb.append("mak.submit('" + getFormIdentifier() + "', " + (annotation == null ? "undefined" : "'" + annotation + "'")
-                        + ", " + (annotationSeparator == null ? "undefined" : "'" + annotationSeparator + "'") + ");");
-                sb.append("Event.stop(event);");
-                if(isClientSideValidation) {
-                    sb.append("}");
-                }
-                sb.append("});</script>");
+                sb
+                .append("<script type=\"text/javascript\">")
+        		.append("Event.observe('")
+        		.append(getFormIdentifier())
+                .append("', 'submit', function(event) {")
+                .append(getSubmitJavascriptCall("event", true))
+                .append("});")
+                .append("</script>");
             }
 
             bodyContent.getEnclosingWriter().print(sb.toString());
@@ -657,7 +671,26 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         }
         return EVAL_PAGE;
     }
+    
+    /** builds the javascript call necessary to submit a form via partial post-back **/
+    protected String getSubmitJavascriptCall(String event, boolean ajax) {
+        StringBuilder sb = new StringBuilder();
+        sb
+        .append("mak.submit('")
+        .append(getFormIdentifier())
+        .append("', '")
+        .append(ajax ? "true" : "false")
+        .append("', ")
+        .append(event == null ? "null" : event)
+        .append(", ")
+        .append(annotation == null ? "null" : "'" + annotation + "'")
+        .append(", ")
+        .append(annotationSeparator == null ? "null" : "'" + annotationSeparator + "'")
+        .append(");");
+        return sb.toString();
+    }
 
+    
     /** The default expression for an input tag, if none is indicated */
     public String getDefaultExpr(String fieldName) {
 
@@ -708,11 +741,14 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     /** the HTML ID of the form */
     public String getFormIdentifier() {
-        if (styleId != null) {
-            return styleId + getFormSuffixIdentifier();
-        } else {
-            return getFormSuffixIdentifier().toString();
+        if(formIdentifier == null) {
+            if (styleId != null) {
+                formIdentifier = styleId + getFormSuffixIdentifier();
+            } else {
+                formIdentifier = getFormSuffixIdentifier().toString();
+            }
         }
+        return formIdentifier;
     }
 
     /** the suffix of the form identifier, used to uniquely identify the form on the page **/
@@ -733,6 +769,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
             formCount += 1;
         }
         pageContext.setAttribute(FormTagBase.__MAKUMBA__FORM__COUNTER__, formCount);
+        
         return formCount;
     }
 

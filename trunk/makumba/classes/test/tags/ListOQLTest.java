@@ -338,5 +338,45 @@ public class ListOQLTest extends MakumbaJspTestCase {
         }
         assertTrue(compareTest(output));
     }
+    
+    public void testSectionSimple() throws ServletException, IOException {
+        pageContext.include("list-oql/testMakSectionSimple.jsp");
+    }
 
+    public void endSectionSimple(WebResponse response) throws Exception {
+        try {
+            output = response.getText(); fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
+    }
+
+    public void testSectionList() throws ServletException, IOException {
+        pageContext.include("list-oql/testMakSectionList.jsp");
+    }
+
+    public void endSectionList(WebResponse response) throws Exception {
+        try {
+            output = response.getText(); fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
+    }
+
+    public void testSectionListExpr() throws ServletException, IOException {
+        pageContext.include("list-oql/testMakSectionListExpr.jsp");
+    }
+
+    public void endSectionListExpr(WebResponse response) throws Exception {
+        try {
+            output = response.getText(); fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
+    }
+
+    
 }
