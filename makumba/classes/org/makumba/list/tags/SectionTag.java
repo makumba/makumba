@@ -26,7 +26,7 @@ import org.makumba.list.engine.valuecomputer.ValueComputer;
 
 /**
  * mak:section tag, capable of rendering its content dynamically and reloading it via AJAX callbacks <br>
- * TODO enhance makumba-sections.js to use class instead of icon for wheel, and make a makumba.css containing the icon<br>
+ * TODO enhance makumba-ajax.js to use class instead of icon for wheel, and make a makumba.css containing the icon<br>
  * TODO handle forms inside of section (submit via partial post-back?)<br>
  * TODO support for multiple events: <mak:section reload="event1, event2"><br>
  * TODO special effects for show/hide/reload <br>
@@ -170,7 +170,6 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
             isLastSection = true;
         }
     }
-
     private boolean matches(String event, String exprValue) {
         boolean matches = false;
 
@@ -219,7 +218,7 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
 
         // request needed resources
         pageCache.cacheSetValues(NEEDED_RESOURCES, new String[] { "makumba.css", "prototype.js", "scriptaculous.js",
-                "makumba-sections.js" });
+                "makumba-ajax.js" });
 
         // check if we are in a mak:list and if we want to uniquely identify sections of the list via an iterationLabel
         QueryTag parentList = getParentListTag();

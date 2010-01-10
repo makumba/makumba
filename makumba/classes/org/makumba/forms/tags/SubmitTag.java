@@ -24,16 +24,17 @@ public class SubmitTag extends GenericMakumbaTag implements BodyTag {
     private static final long serialVersionUID = -5459766319927481205L;
 
     private static final String BUTTON = "button";
+
     private static final String LINK = "link";
 
     private BodyContent bc;
-    
+
     private String form;
-    
+
     private String widget;
-    
+
     private boolean hasBody = false;
-    
+
     public void setForm(String form) {
         this.form = form;
     }
@@ -46,7 +47,7 @@ public class SubmitTag extends GenericMakumbaTag implements BodyTag {
     public boolean canHaveBody() {
         return true;
     }
-    
+
     public void doInitBody() throws JspException {
         this.hasBody = true;
     }
@@ -58,45 +59,46 @@ public class SubmitTag extends GenericMakumbaTag implements BodyTag {
     private FormTagBase getForm() {
         return (FormTagBase) TagSupport.findAncestorWithClass(this, FormTagBase.class);
     }
-    
+
     @Override
     public void doStartAnalyze(PageCache pageCache) {
-        if(getForm() == null) {
+        if (getForm() == null) {
             throw new ProgrammerError("mak:submit has to be inside of a form tag");
         }
-        if(widget != null && !(widget.equals(LINK) || widget.equals(BUTTON))) {
+        if (widget != null && !(widget.equals(LINK) || widget.equals(BUTTON))) {
             throw new ProgrammerError("the 'widget' attribute only takes the values 'link' and 'button'");
         }
     }
-    
+
     @Override
     public int doAnalyzedStartTag(PageCache pageCache) throws LogicException, JspException {
         return EVAL_BODY_BUFFERED;
     }
-    
+
     @Override
     public int doAnalyzedEndTag(PageCache pageCache) throws LogicException, JspException {
-        String formId = getForm().getFormIdentifier();
-        if(widget == null) {
+
+        if (widget == null) {
             widget = BUTTON;
         }
-        
+
         // FIXME internationalization
         String text = "Submit";
-        if(hasBody) {
+        if (hasBody) {
             text = bc.getString();
         }
 
         try {
-            if(widget.equals(BUTTON)) {
-                pageContext.getOut().append("<input class=\"makSubmitButton\" type=\"submit\" value=\"").append(text).append("\" />");
-            } else if(widget.equals(LINK)) {
-                pageContext.getOut().append("<a class=\"makSubmitLink\" href=\"#\" onClick=\"mak.submit('").append(formId).append("\');\">").append(text).append("</a>");
+            if (widget.equals(BUTTON)) {
+                pageContext.getOut().append("<input class=\"makSubmitButton\" type=\"submit\" value=\"").append(text).append(
+                    "\" />");
+            } else if (widget.equals(LINK)) {
+                pageContext.getOut().append("<a class=\"makSubmitLink\" href=\"#\" onClick=\"").append(
+                    getForm().getSubmitJavascriptCall(null, getForm().triggerEvent != null)).append("\">").append(text).append("</a>");
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
 
         return super.doAnalyzedStartTag(pageCache);
     }

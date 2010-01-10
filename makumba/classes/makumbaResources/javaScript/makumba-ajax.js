@@ -6,11 +6,14 @@ Mak = function() {
     makEvent(name, exprValue);
   });
   addMethod(this, "submit", function(formName) {
-	    makSubmit(formName, null, null);
+	  makCheckOnSubmitAndSubmit(formName, 'false', null, null, null);
   });
-  addMethod(this, "submit", function(formName, annotation, annotationSeparator) {
-	    makSubmit(formName, annotation, annotationSeparator);
-});
+  addMethod(this, "submit", function(formName, ajax, annotation, annotationSeparator) {
+	  makCheckOnSubmitAndSubmit(formName, ajax, null, annotation, annotationSeparator);
+  });
+  addMethod(this, "submit", function(formName, ajax, event, annotation, annotationSeparator) {
+	  makCheckOnSubmitAndSubmit(formName, ajax, event, annotation, annotationSeparator);
+  });
 }
 
 /**
@@ -90,7 +93,7 @@ makEvent = function(name, exprValue) {
  * - "fires" the returned event if everything went ok
  * - displays the form errors if there were errors (annotations and message)
  */
-makSubmit = function(formName, annotation, annotationSeparator) {
+makSubmitAjax = function(formName, annotation, annotationSeparator) {
 	$(formName).request({
 		  requestHeaders: {Accept: 'application/json'},
 		  onComplete: function(transport) {
@@ -118,7 +121,7 @@ makSubmit = function(formName, annotation, annotationSeparator) {
 					  var key = pair.key;
 					  var errors = pair.value;
 					  var sep = '<br>';
-					  if(annotationSeparator != undefined) {
+					  if(annotationSeparator != null) {
 						  sep = annotationSeparator;
 					  }
 					  var inputSpan = new Element('span', {'class':'makumba_field_annotation'});
@@ -132,7 +135,7 @@ makSubmit = function(formName, annotation, annotationSeparator) {
 					  }
 					  
 					  var annotationPosition;
-					  if(annotation != undefined) {
+					  if(annotation != null) {
 						  annotationPosition = annotation;
 					  } else {
 						  annotationPosition = 'after';
@@ -142,14 +145,30 @@ makSubmit = function(formName, annotation, annotationSeparator) {
 					  } else if(annotationPosition == 'after') {
 						  $(key).insert({after: inputSpan});
 					  } else if(annotationPosition == 'both') {
-						  $(key).insert({before: inputSpan});
-						  $(key).insert({after: inputSpan});
+						  // FIXME doesn't actually work
+						  $(key).insert({before: inputSpan, after:inputSpan});
 					  }
 					  
 				  });
 			  }
 		  }
 	});	
+}
+
+makCheckOnSubmitAndSubmit = function(formId, ajax, event, annotation, annotationSeparator) {
+	var partialPostback = ajax != null && ajax == 'true';
+	if(event != null && partialPostback) {
+	    Event.stop(event);
+	}		
+    var onSubmitOk = true;
+    if($(formId).onsubmit instanceof Function) {
+    	onSubmitOk = $(formId).onsubmit();
+    }
+    if(onSubmitOk && partialPostback) {
+    	makSubmitAjax(formId, annotation, annotationSeparator);
+    } else if(onSubmitOk && !partialPostback) {
+    	$(formId).submit();
+    }
 }
 
 /**

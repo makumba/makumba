@@ -1,0 +1,28 @@
+
+
+
+<html>
+<head>
+<title>Section - simple</title>
+</head>
+
+<body>
+<button onClick="mak.event('myEvent1')">event1</button>
+<button onClick="mak.event('myEvent2')">event2</button>
+<button onClick="mak.event('myEvent3')">event3</button>
+<br/><br/>
+
+Div1: <div id="div1">div1 content</div><br/>
+Div2: <div id="div2" style="display:none;">div2 content</div><br/>
+Div3: <div id="div3">div3 content</div><br/>
+Div4: <script type="text/javascript">
+var mak = new Mak();
+var _mak_event_to_id_ = {"myEvent2":["div2"],"myEvent3":["div3","div4"],"myEvent1":["div1"]};
+var _mak_idevent_to_type_ = {"div1___myEvent1":"reload","div2___myEvent2":"show","div3___myEvent3":"hide","div4___myEvent3":"reload"};
+var _mak_page_url_ = '/tests/JspRedirector';
+var _mak_page_params_ = {"Cactus_TestMethod":["testSectionSimple"],"Cactus_AutomaticSession":["true"],"Cactus_Service":["CALL_TEST"],"Cactus_TestClass":["test.tags.ListOQLTest"]};
+</script>
+<div id="div4"> bart john</div><br/>
+
+</body>
+</html>

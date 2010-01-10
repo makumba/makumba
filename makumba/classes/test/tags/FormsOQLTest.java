@@ -667,7 +667,36 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     public void testMakNestedNewAndEditFormsSimple() throws ServletException, IOException {
         // we need to have this method, even if it is empty; otherwise, the test is not run
     }
+    
+    public void testMakSubmit() throws ServletException, IOException {
+        pageContext.include("forms-oql/testMakSubmit.jsp");
+    }
 
+    public void endMakSubmit(WebResponse response) throws Exception {
+        try {
+            output = response.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
+    }
+    
+    /** TODO this is not a real test, we should test for the result of the response of the partial postback **/
+    public void testMakFormAjax() throws ServletException, IOException {
+        pageContext.include("forms-oql/testMakFormAjax.jsp");
+    }
+
+    public void endMakFormAjax(WebResponse response) throws Exception {
+        try {
+            output = response.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
+    }
+    
     public void endMakNestedNewAndEditFormsSimple(WebResponse response) throws Exception {
         try {
             output = submissionResponse.getText();
