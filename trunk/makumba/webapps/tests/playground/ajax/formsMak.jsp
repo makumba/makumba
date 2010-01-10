@@ -8,13 +8,13 @@
 
 <mak:section name="persons" reloadOn="personCreated">
   <mak:list from="test.Person p">
-    <mak:value expr="p.indiv.name"/> <mak:value expr="p.indiv.surname"/>
+    <mak:value expr="p.indiv.name"/> <mak:value expr="p.indiv.surname"/><br/>
   </mak:list>
 </mak:section>
 <br/>
 
 <h1>New person</h1>
-<mak:newForm name="newForm" type="test.Person" method="get" triggerEvent="personCreated" clientSideValidation="false" annotation="after">
+<mak:newForm name="newForm" type="test.Person" triggerEvent="personCreated" clientSideValidation="live" annotation="both" annotationSeparator="<hr>">
   <mak:input field="indiv.name" /><br/>
   <mak:input field="indiv.surname" /><br/>
   
