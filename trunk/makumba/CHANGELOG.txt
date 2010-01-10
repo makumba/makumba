@@ -12,12 +12,15 @@ manu: using default page analysis doAnalyzedStartTag, doAnalyzedEndTag in Pagina
 manu: ordering entries in simple page cache for easier usage of analysis
 manu: refactoring form code, pulling operations in FormTagBase for generic re-use (bug 1131)
 manu: tests running with jetty
+manu: fixing a bug that was causing searchForms not to have the original query string after form submission
+manu: test case for bug 1115, was already fixed previously
+manu: mak:section tag for partial post-back, including automated tests
+manu: ajax-submitted forms (not working for multiple forms yet), including automated tests
+manu: mak:submit tag for easing generation of submit button/link, including automated tests
 
 NOT TO BE RELEASED YET (need more testing)
 manu: auto-complete for mak:input (char and ptr)
 manu, marius: edit-in-place for mak:input and mak:list ("editable" attribute). Is yet to be finished.
-manu: mak:section tag for partial post-back
-manu: ajax-submitted forms
 
 ------------------------------------------
 - add your changes -
