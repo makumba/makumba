@@ -24,7 +24,7 @@
         <pathelement location="lib/core/commons-configuration-1.6.jar"/>
         <pathelement location="lib/test/diff-bmsi.jar"/>
         <pathelement location="lib/core/commons-cli-1.2.jar"/>
-        <pathelement location="lib/test/junit-3.8.1.jar"/>
+        <pathelement location="lib/test/junit.jar"/>
         <pathelement location="lib/test/httpunit.jar"/>
         <pathelement location="lib/optional/hibernate/hibernate-annotations.jar"/>
         <pathelement location="lib/common/commons-logging-api.jar"/>
@@ -60,7 +60,7 @@
         <pathelement location="lib/core/commons-configuration-1.6.jar"/>
         <pathelement location="lib/test/diff-bmsi.jar"/>
         <pathelement location="lib/core/commons-cli-1.2.jar"/>
-        <pathelement location="lib/test/junit-3.8.1.jar"/>
+        <pathelement location="lib/test/junit.jar"/>
         <pathelement location="lib/test/httpunit.jar"/>
         <pathelement location="lib/optional/hibernate/hibernate-annotations.jar"/>
         <pathelement location="lib/common/commons-logging-api.jar"/>
