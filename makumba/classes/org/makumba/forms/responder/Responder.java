@@ -377,14 +377,12 @@ public abstract class Responder implements java.io.Serializable {
 
     /** formats an error message */
     public static String errorMessageFormatter(String message) {
-        return "<span class=\"makumbaResponder makumbaError\""
-                + (useDefaultResponseStyles ? " style=\"color:red\"" : "") + ">" + message + "</span>";
+        return "<span class=\"makumbaResponder makumbaError\">" + message + "</span>";
     }
 
     /** formats a successful message */
     public static String successFulMessageFormatter(String message) {
-        return "<span class=\"makumbaResponder makumbaSuccess\""
-                + (useDefaultResponseStyles ? " style=\"color:green\"" : "") + ">" + message + "</span>";
+        return "<span class=\"makumbaResponder makumbaSuccess\">" + message + "</span>";
     }
 
     /** reads the HTTP base pointer */
