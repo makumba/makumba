@@ -1,1 +1,2 @@
 subSet = set test.ParserComparison
+subPtr = ptr test.ParserComparison
