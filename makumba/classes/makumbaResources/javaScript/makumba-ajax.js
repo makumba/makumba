@@ -43,12 +43,12 @@ makEvent = function(name, exprValue) {
 	//pageParameters.each(function(pair) {alert(pair.key + ' ' + pair.value)});
 	
 	pageParameters = pageParameters.merge(eventParam);
-	
 
 	// fetch the sections we have to process
 	var sections = eventToId.get(eventName);
-	
-
+	if(sections == undefined) {
+		sections = new Array();
+	}
 	
 	// for each section, hide it, show it, or schedule it for refresh
 	sections.each(function(id) {
@@ -85,6 +85,25 @@ makEvent = function(name, exprValue) {
 		 	});
 		   }
 	});	
+}
+
+/**
+ * submits a form, after checking its onSubmit method, either via partial postback or direct postback
+ */
+makCheckOnSubmitAndSubmit = function(formId, ajax, event, annotation, annotationSeparator) {
+	var partialPostback = ajax != null && ajax == 'true';
+	if(event != null && partialPostback) {
+	    Event.stop(event);
+	}		
+    var onSubmitOk = true;
+    if($(formId).onsubmit instanceof Function) {
+    	onSubmitOk = $(formId).onsubmit();
+    }
+    if(onSubmitOk && partialPostback) {
+    	makSubmitAjax(formId, annotation, annotationSeparator);
+    } else if(onSubmitOk && !partialPostback) {
+    	$(formId).submit();
+    }
 }
 
 /**
@@ -153,22 +172,6 @@ makSubmitAjax = function(formName, annotation, annotationSeparator) {
 			  }
 		  }
 	});	
-}
-
-makCheckOnSubmitAndSubmit = function(formId, ajax, event, annotation, annotationSeparator) {
-	var partialPostback = ajax != null && ajax == 'true';
-	if(event != null && partialPostback) {
-	    Event.stop(event);
-	}		
-    var onSubmitOk = true;
-    if($(formId).onsubmit instanceof Function) {
-    	onSubmitOk = $(formId).onsubmit();
-    }
-    if(onSubmitOk && partialPostback) {
-    	makSubmitAjax(formId, annotation, annotationSeparator);
-    } else if(onSubmitOk && !partialPostback) {
-    	$(formId).submit();
-    }
 }
 
 /**
