@@ -15,7 +15,7 @@ manu: tests running with jetty
 manu: fixing a bug that was causing searchForms not to have the original query string after form submission
 manu: test case for bug 1115, was already fixed previously
 manu: mak:section tag for partial post-back, including automated tests
-manu: ajax-submitted forms (not working for multiple forms yet), including automated tests
+manu: ajax-submitted forms, including automated tests
 manu: mak:submit tag for easing generation of submit button/link, including automated tests
 
 NOT TO BE RELEASED YET (need more testing)
