@@ -26,8 +26,6 @@ import org.makumba.list.engine.valuecomputer.ValueComputer;
 
 /**
  * mak:section tag, capable of rendering its content dynamically and reloading it via AJAX callbacks <br>
- * TODO enhance makumba-ajax.js to use class instead of icon for wheel, and make a makumba.css containing the icon<br>
- * TODO handle forms inside of section (submit via partial post-back?)<br>
  * TODO support for multiple events: <mak:section reload="event1, event2"><br>
  * TODO special effects for show/hide/reload <br>
  * TODO detection of "toggle"/"update" situation (i.e. two sections next to one another that hide/show on the same
