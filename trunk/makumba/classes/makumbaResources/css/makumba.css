@@ -77,6 +77,21 @@ button.makSubmitButton {
 
 }
 
+.makumbaResponder {
+  
+}
+
+.makumbaError {
+  color: red;
+}
+
+.makumbaSuccess {
+  color: green;
+}
+button.makSubmitButton {
+
+}
+
 /** MAK:PAGINATION STYLES **/
 
 .makumbaPagination {
