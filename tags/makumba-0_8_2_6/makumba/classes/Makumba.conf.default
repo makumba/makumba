@@ -1,0 +1,122 @@
+[dataSourceConfig]
+foreignKeys=true
+defaultDatabaseLayer=makumba
+dataDefinitionProvider=mdd
+queryFunctionInliner=normal
+
+[businessLogicPackages]
+default=
+
+
+[authorization]
+
+
+[controllerConfig]
+reloadFormOnError=false
+clientSideValidation=false
+useDefaultResponseStyles=true
+formAnnotation=none
+
+
+[makumbaToolPaths]
+path=/mak-tools
+
+makumbaValueEditor=/makumbaValueEditor
+makumbaUniquenessValidator=/makumbaUnique
+makumbaAutoComplete=/makumbaAutoComplete
+makumbaResources=/makumbaResources
+makumbaDownload=/makumbaDownload
+
+mddViewer=/dataDefinitions
+blMethods=/blMethods
+javaViewer=/classes
+logicDiscovery=/logic
+dataQueryTool=/dataQuery
+referenceChecker=/referenceChecker
+codeGenerator=/codeGenerator
+dataObjectViewer=/dataObjectViewer
+dataLister=/dataLister
+objectIdConverter=/dataValueConverter
+relationCrawler=/relationCrawler
+makumbaCacheCleaner=/makumbaCacheCleaner
+
+
+[makumbaToolConfig]
+repositoryURL=http://makumba.svn.sourceforge.net/viewvc/makumba/trunk/makumba/webapps/tests/
+repositoryLinkText=SVN
+logErrors=false
+
+
+[inputStyleConfig]
+calendarEditor=false
+calendarEditorLink=
+
+[internationalization]
+defaultLanguage=en
+languageParameterName=lang
+languageAttributeName=makumba.lang
+
+
+[codeGeneratorTemplate:simple]
+beforeFieldTag=&nbsp;
+afterFieldName=
+afterField=<br/>
+beforeField=
+header=<%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c" %>
+afterFieldTag=
+footer=
+beforeFormEnd=
+beforeFieldName=
+afterFormBegin=
+beforePageHeader=<h1>
+afterPageHeader=</h1>
+beforePageHeaderLevel2=<h2>
+afterPageHeaderLevel2=</h2>
+
+[codeGeneratorTemplate:fieldSet]
+beforeFieldTag=
+afterFieldName=
+afterField=<br/>
+beforeField=
+header=<%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c" %>
+afterFieldTag=
+footer=
+beforeFormEnd=</fieldset>
+beforeFieldName=
+afterFormBegin=
+beforePageHeader=<fieldset style="text-align:right;">  <legend>
+afterPageHeader=</legend>
+beforePageHeaderLevel2=<fieldset style="text-align:right;">  <legend>
+afterPageHeaderLevel2=</legend>
+
+[codeGeneratorTemplate:tabular]
+beforeFieldTag=    <td>
+afterFieldName=    </th>
+afterField=  </tr>
+beforeField=  <tr>
+header=<%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c" %>
+afterFieldTag=    </td>
+footer=
+beforeFormEnd=</table>
+beforeFieldName=    <th>
+afterFormBegin=<table>
+beforePageHeader=<h1>
+afterPageHeader=</h1>
+beforePageHeaderLevel2=<h2>
+afterPageHeaderLevel2=</h2>
+
+[codeGeneratorTemplate:tabular-fieldset]
+beforeFieldTag=    <td>
+afterFieldName=</th>
+afterField=  </tr>
+beforeField=  <tr>
+header=<%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c" %>
+afterFieldTag=</td>
+footer=
+beforeFormEnd=</table></fieldset>
+beforeFieldName=    <th>
+afterFormBegin=<table>
+beforePageHeader=<fieldset style="text-align:right;">  <legend>
+afterPageHeader=</legend>
+beforePageHeaderLevel2=<fieldset style="text-align:right;">  <legend>
+afterPageHeaderLevel2=</legend>

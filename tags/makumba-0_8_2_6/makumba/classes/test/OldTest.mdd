@@ -1,0 +1,39 @@
+# this is a single line comment
+
+!title = name
+!type.genTyp=int{"Female"=0, "Male"=1}
+
+testSetInt = set int{"Female"=0, "Male"=1}
+
+testSet = set OldTest
+
+# included data definition
+!include = validMdds.Included
+
+#overrideIt=char[22]
+#removeIt=
+
+# here come the field
+name = not null unique char[233] ; comment very long
+  
+name2 = ptr OldTest
+
+# now we have a setComplex!
+name3 = set
+name3->subname1 = unique char[232] ; subcomment1
+name3->subname2 = genTyp ; subcomment2
+name3->!include = validMdds.Included
+name3->image = file
+
+name4 = char[255] ;comment4
+name5 = int {"Male" = 10, "Female" = 20, "Shemale" = 30 deprecated}
+
+age = int ; age of someone
+
+image = file
+
+# simple validation rules
+name4%matches = "http://.+" : the homepage must start with http://
+
+nameLower%compare = lower(name) = name : Name must not have capital letters
+

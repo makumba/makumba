@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<section id="example">
+  <title>Example</title>
+  <source>
+      <![CDATA[
+<mak:list from="best.Student s" where="s.person.birthdate <> nil" orderBy="s.name">
+    <mak:value expr="s.person.name"/>
+    <mak:if test="s.person.hideAge = 0">
+        was born on <mak:value expr="s.person.birthdate" />
+    </mak:if>
+</mak:list>
+      ]]>
+  </source>
+</section>
