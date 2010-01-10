@@ -51,6 +51,11 @@ logErrors=false
 calendarEditor=false
 calendarEditorLink=
 
+[internationalization]
+defaultLanguage=en
+languageParameterName=lang
+languageAttributeName=makumba.lang
+
 
 [codeGeneratorTemplate:simple]
 beforeFieldTag=&nbsp;
