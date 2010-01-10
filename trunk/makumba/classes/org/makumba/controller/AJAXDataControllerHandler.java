@@ -131,6 +131,7 @@ public class AJAXDataControllerHandler extends ControllerHandler {
                     // respond by giving the name of the event
                     JSONObject o = new JSONObject();
                     o.put("event", partialPostback);
+                    o.put("message", formattedMessage);
                     // FIXME this does not seem to work for certain form submissions such as multiple forms, the response seems to have been
                     // partly written already before we could do anything
                     response.reset();
