@@ -29,6 +29,8 @@ import org.makumba.list.tags.SectionTag;
 /**
  * ControllerHandler that handles AJAX-related data writing
  * 
+ * FIXME does not seem to work for multiple forms
+ * 
  * @author Manuel Gay
  * @version $Id: ResponseModifierControllerHandler.java,v 1.1 Dec 25, 2009 10:05:55 PM manu Exp $
  */
@@ -129,6 +131,8 @@ public class AJAXDataControllerHandler extends ControllerHandler {
                     // respond by giving the name of the event
                     JSONObject o = new JSONObject();
                     o.put("event", partialPostback);
+                    // FIXME this does not seem to work for certain form submissions such as multiple forms, the response seems to have been
+                    // partly written already before we could do anything
                     response.reset();
                     response.setContentType("application/json");
                     response.getWriter().print(o.toString());
