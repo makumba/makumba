@@ -14,7 +14,6 @@ default=
 [controllerConfig]
 reloadFormOnError=false
 clientSideValidation=false
-useDefaultResponseStyles=true
 formAnnotation=none
 
 

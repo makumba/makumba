@@ -44,7 +44,6 @@ import org.makumba.MakumbaError;
 import org.makumba.Pointer;
 import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.controller.http.ControllerFilter;
-import org.makumba.providers.Configuration;
 
 /**
  * A responder is created for each form and stored internally, to respond when the form is submitted. To reduce memory
@@ -78,8 +77,6 @@ public abstract class Responder implements java.io.Serializable {
 
     /** the name of the CGI parameter that passes the base pointer, see {@link #basePointerType}, "__makumba__base__" */
     public final static String basePointerName = "__makumba__base__";
-
-    protected static boolean useDefaultResponseStyles = Configuration.getUseDefaultResponseStyles();
 
     protected transient ResponderFactory factory;
 
