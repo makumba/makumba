@@ -43,7 +43,7 @@ import org.makumba.commons.CollectionUtils;
 /**
  * This class knows how to read Makumba configuration and is used internally by different classes that need specific
  * services. It can be seen as a service dispatcher in a way.
- * 
+ *
  * @author Manuel Gay
  * @author Rudolf Mayer
  * @version $Id: Configuration.java,v 1.1 28.09.2007 11:15:00 Manuel Exp $
@@ -65,7 +65,7 @@ public class Configuration implements Serializable {
     private static final String MAKUMBA_CONF_DEFAULT = MAKUMBA_CONF + ".default";
 
     public static final String PLACEHOLDER_CONTEXT_PATH = "_CONTEXT_PATH_";
-    
+
     private static String defaultClientSideValidation = "live";
 
     private static boolean defaultReloadFormOnError = true;
@@ -75,13 +75,13 @@ public class Configuration implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private static final String KEY_DATADEFINITIONPROVIDER = "dataDefinitionProvider";
-    
+
     private static final String KEY_QUERYFUNCTIONINLINER = "queryFunctionInliner";
-    
+
     public static final String MDD_DATADEFINITIONPROVIDER = "mdd";
-    
+
     public static final String RECORDINFO_DATADEFINITIONPROVIDER = "recordinfo";
-    
+
     // calendar editor
     public static final String KEY_CALENDAR_EDITOR = "calendarEditor";
 
@@ -116,14 +116,16 @@ public class Configuration implements Serializable {
     public static final String KEY_REPOSITORY_LINK_TEXT = "repositoryLinkText";
 
     public static final String KEY_USE_DEFAULT_RESPONSE_STYLES = "useDefaultResponseStyles";
-    
+
     // error logging to the database
-    
+
     public static final String KEY_DB_ERROR_LOG = "logErrors";
-    
+
     // i18n
     public static final String KEY_DEFAULT_LANG = "defaultLanguage";
+
     public static final String KEY_LANG_PARAM = "languageParameterName";
+
     public static final String KEY_LANG_ATTRIBUTE = "languageAttributeName";
 
     // makumba servlets
@@ -154,7 +156,7 @@ public class Configuration implements Serializable {
     private static MakumbaINIConfiguration defaultConfig;
 
     private static MakumbaINIConfiguration applicationConfig;
-    
+
     private static Object loadLock = new Object();
 
     static Logger logger = Logger.getLogger("org.makumba.config");
@@ -173,7 +175,7 @@ public class Configuration implements Serializable {
                 synchronized (loadLock) {
                     applicationConfig = new MakumbaINIConfiguration(url, defaultConfig);
                 }
-                
+
             } else { // if we did not find any configuration, we shout. we need an application configuration for the
                 // dataSource config.
                 logger.severe("No application configuration found!");
@@ -184,8 +186,7 @@ public class Configuration implements Serializable {
             defaultReloadFormOnError = applicationConfig.getBooleanProperty("controllerConfig",
                 KEY_RELOAD_FORM_ON_ERROR);
             // FIXME: check if the value in the file is ok, throw an exception otherwise
-            defaultClientSideValidation = applicationConfig.getProperty("controllerConfig",
-                KEY_CLIENT_SIDE_VALIDATION);
+            defaultClientSideValidation = applicationConfig.getProperty("controllerConfig", KEY_CLIENT_SIDE_VALIDATION);
             // FIXME: check if the value in the file is ok, throw an exception otherwise
             defaultFormAnnotation = applicationConfig.getProperty("controllerConfig", KEY_FORM_ANNOTATION);
 
@@ -277,34 +278,37 @@ public class Configuration implements Serializable {
         c.setProperties(dataSourceConfiguration);
         return c;
     }
-    
+
     /**
      * Sets a given property, for a specific section
-     * @param section the name of the configuration section
-     * @param key the key of the property
-     * @param value the value of the property
+     *
+     * @param section
+     *            the name of the configuration section
+     * @param key
+     *            the key of the property
+     * @param value
+     *            the value of the property
      */
     public static void setPropery(String section, String key, String value) {
         applicationConfig.getSection(section).setProperty(key, value);
     }
-    
+
     /**
      * Gives the data definition provider implementation to use
-     * 
+     *
      * @return a String containing the class name of the data definition provider implementation
      */
     public static String getDataDefinitionProvider() {
         return applicationConfig.getProperty("dataSourceConfig", KEY_DATADEFINITIONPROVIDER);
     }
-    
+
     public static String getQueryInliner() {
         return applicationConfig.getProperty("dataSourceConfig", KEY_QUERYFUNCTIONINLINER);
     }
-    
 
     /**
      * Gives the default database layer to use
-     * 
+     *
      * @return "makumba" or "hibernate"
      */
     public static String getDefaultDatabaseLayer() {
@@ -345,23 +349,23 @@ public class Configuration implements Serializable {
     public static String getRepositoryLinkText() {
         return applicationConfig.getProperty("makumbaToolConfig", KEY_REPOSITORY_LINK_TEXT);
     }
-    
+
     public static boolean getErrorLog() {
         return applicationConfig.getBooleanProperty("makumbaToolConfig", KEY_DB_ERROR_LOG);
     }
-    
+
     /**
-     * Returns the alternate location of a resource, PROPERTY_NOT_SET if there is none provide.
-     * This makes it possible to configure alternate locations for e.g. javascript libs used by makumba.
-     * @param res the name of the resource, e.g. "prototype.js"
+     * Returns the alternate location of a resource, PROPERTY_NOT_SET if there is none provide. This makes it possible
+     * to configure alternate locations for e.g. javascript libs used by makumba.
+     *
+     * @param res
+     *            the name of the resource, e.g. "prototype.js"
      * @return the path starting from the context path to the library location, or PROPERTY_NOT_SET
      */
     public static String getResourceLocation(String res) {
         // we use getStringProperty to get null in case the property is not defined
         return applicationConfig.getProperty("makumbaToolConfig", res + "_location");
     }
-    
-    
 
     public static String getMakumbaToolsLocation() {
         final String property = applicationConfig.getProperty("makumbaToolPaths", KEY_MAKUMBA_TOOLS);
@@ -468,7 +472,7 @@ public class Configuration implements Serializable {
     public static String getApplicationConfigurationSource() {
         return applicationConfig != null ? applicationConfig.getSource() : null;
     }
-    
+
     public static String getDefaultLanguage() {
         return applicationConfig.getProperty("internationalization", KEY_DEFAULT_LANG);
     }
@@ -480,7 +484,7 @@ public class Configuration implements Serializable {
     public static String getLanguageAttributeName() {
         return applicationConfig.getProperty("internationalization", KEY_LANG_ATTRIBUTE);
     }
-    
+
     private static String getCompletePath(String path) {
         return StringUtils.isBlank(path) || path.equals(PROPERTY_NOT_SET) ? PROPERTY_NOT_SET
                 : getMakumbaToolsLocation() + path;
@@ -514,7 +518,7 @@ public class Configuration implements Serializable {
      * directory, ...), the one that matches the machine on which it runs is used</li>
      * <li>The defaultDataSource named in the dataSourceConfig section is used</li>
      * </ol>
-     * 
+     *
      * @return the name of the dataSource to use by default
      */
     public static String getDefaultDataSourceName() {
@@ -606,18 +610,18 @@ public class Configuration implements Serializable {
     private static Map<String, ConfiguredDataSource> resolvedConfiguredDataSources = new HashMap<String, ConfiguredDataSource>();
 
     private static String remoteDataSourceConfigurationPath = "";
-    
+
     public static String getRemoteDataSourceConfigurationPath() {
         return remoteDataSourceConfigurationPath;
     }
-    
+
     /**
      * Looks up the right {@link ConfiguredDataSource} based on host and path.<br>
      * Tries to match all configured data sources against the local version of<br>
      * dataSource:<dataSourceName> host:<hostName> path:<workingDirPath> or of<br>
      * dataSource:<dataSourceName> host:<hostName> path:<webappPath><br>
      * If no match is found, tries to retrieve dataSource:<dataSourceName>
-     * 
+     *
      * @throws ConfigurationError
      *             if no match is found
      */
@@ -632,14 +636,14 @@ public class Configuration implements Serializable {
                 String path = System.getProperty("user.dir");
                 java.net.URL u = ClassResource.get("/");
                 String alternatePath = u != null ? u.toString() : null;
-                if(alternatePath != null && alternatePath.startsWith("file:")) {
+                if (alternatePath != null && alternatePath.startsWith("file:")) {
                     alternatePath = alternatePath.substring("file:".length());
-                    
+
                 }
 
                 String thisConfiguration1 = "dataSource:" + dataSourceName + " host:" + host + " path:" + path;
                 String thisConfiguration2 = "dataSource:" + dataSourceName + " host:" + host + " path:" + alternatePath;
-                
+
                 remoteDataSourceConfigurationPath = thisConfiguration1;
 
                 // we go over all the data sources and compare them to those we have
@@ -652,9 +656,9 @@ public class Configuration implements Serializable {
                         result = configuredDataSources.get(k);
                     }
                 }
-                
-                if(result == null) {
-                    
+
+                if (result == null) {
+
                     for (String k : configuredDataSources.keySet()) {
                         if (thisConfiguration2.startsWith(k) && k.length() > maxKey.length()
                                 && k.startsWith("dataSource:" + dataSourceName + " ")) {
@@ -663,14 +667,15 @@ public class Configuration implements Serializable {
                         }
                     }
 
-                    if(result == null) {
-                        
+                    if (result == null) {
+
                         // there was no dataSource:<name> path: ... found
                         // we fall back to the simple one
                         result = configuredDataSources.get("dataSource:" + dataSourceName);
 
                         if (result == null) {
-                            throw new ConfigurationError("No DataSource " + dataSourceName + " configured in Makumba.conf");
+                            throw new ConfigurationError("No DataSource " + dataSourceName
+                                    + " configured in Makumba.conf");
                         }
                     }
                 }
