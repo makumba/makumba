@@ -24,7 +24,6 @@ import org.makumba.Transaction;
 import org.makumba.commons.DbConnectionProvider;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.attributes.RequestAttributes;
-import org.makumba.providers.Configuration;
 
 import test.tags.FormsOQLTest;
 
@@ -35,8 +34,6 @@ import test.tags.FormsOQLTest;
  * @version $Id: ResponderFactory.java,v 1.1 12.10.2007 13:17:45 Manuel Exp $
  */
 public class ResponderFactory {
-
-    protected boolean useDefaultResponseStyles = Configuration.getUseDefaultResponseStyles();
 
     private ResponderCacheManager cacheManager = ResponderCacheManager.getInstance();
 

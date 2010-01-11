@@ -43,7 +43,7 @@ import org.makumba.commons.CollectionUtils;
 /**
  * This class knows how to read Makumba configuration and is used internally by different classes that need specific
  * services. It can be seen as a service dispatcher in a way.
- *
+ * 
  * @author Manuel Gay
  * @author Rudolf Mayer
  * @version $Id: Configuration.java,v 1.1 28.09.2007 11:15:00 Manuel Exp $
@@ -114,8 +114,6 @@ public class Configuration implements Serializable {
     public static final String KEY_REPOSITORY_URL = "repositoryURL";
 
     public static final String KEY_REPOSITORY_LINK_TEXT = "repositoryLinkText";
-
-    public static final String KEY_USE_DEFAULT_RESPONSE_STYLES = "useDefaultResponseStyles";
 
     // error logging to the database
 
@@ -281,7 +279,7 @@ public class Configuration implements Serializable {
 
     /**
      * Sets a given property, for a specific section
-     *
+     * 
      * @param section
      *            the name of the configuration section
      * @param key
@@ -295,7 +293,7 @@ public class Configuration implements Serializable {
 
     /**
      * Gives the data definition provider implementation to use
-     *
+     * 
      * @return a String containing the class name of the data definition provider implementation
      */
     public static String getDataDefinitionProvider() {
@@ -308,7 +306,7 @@ public class Configuration implements Serializable {
 
     /**
      * Gives the default database layer to use
-     *
+     * 
      * @return "makumba" or "hibernate"
      */
     public static String getDefaultDatabaseLayer() {
@@ -327,10 +325,6 @@ public class Configuration implements Serializable {
 
     public static String getDefaultFormAnnotation() {
         return defaultFormAnnotation;
-    }
-
-    public static boolean getUseDefaultResponseStyles() {
-        return applicationConfig.getBooleanProperty("controllerConfig", KEY_USE_DEFAULT_RESPONSE_STYLES);
     }
 
     public static boolean getCalendarEditorDefault() {
@@ -357,7 +351,7 @@ public class Configuration implements Serializable {
     /**
      * Returns the alternate location of a resource, PROPERTY_NOT_SET if there is none provide. This makes it possible
      * to configure alternate locations for e.g. javascript libs used by makumba.
-     *
+     * 
      * @param res
      *            the name of the resource, e.g. "prototype.js"
      * @return the path starting from the context path to the library location, or PROPERTY_NOT_SET
@@ -518,7 +512,7 @@ public class Configuration implements Serializable {
      * directory, ...), the one that matches the machine on which it runs is used</li>
      * <li>The defaultDataSource named in the dataSourceConfig section is used</li>
      * </ol>
-     *
+     * 
      * @return the name of the dataSource to use by default
      */
     public static String getDefaultDataSourceName() {
@@ -621,7 +615,7 @@ public class Configuration implements Serializable {
      * dataSource:<dataSourceName> host:<hostName> path:<workingDirPath> or of<br>
      * dataSource:<dataSourceName> host:<hostName> path:<webappPath><br>
      * If no match is found, tries to retrieve dataSource:<dataSourceName>
-     *
+     * 
      * @throws ConfigurationError
      *             if no match is found
      */
