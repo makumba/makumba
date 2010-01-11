@@ -122,7 +122,7 @@ public abstract class Responder implements java.io.Serializable {
 
     /** new and add responders set their result to a result attribute */
     protected String resultAttribute = anonymousResult;
-    
+
     /** HTML ID of the form **/
     protected String formId;
 
@@ -151,7 +151,7 @@ public abstract class Responder implements java.io.Serializable {
 
     /** the operation name: add, edit, delete, new, simple */
     protected String operation;
-    
+
     /** the event to be fired when the responder responds **/
     protected String triggerEvent;
 
@@ -228,7 +228,7 @@ public abstract class Responder implements java.io.Serializable {
     public void setMessage(String message) {
         this.message = message;
     }
-    
+
     /** pass the event to be fired after form submission */
     public void setTriggerEvent(String e) {
         this.triggerEvent = e;
@@ -262,7 +262,7 @@ public abstract class Responder implements java.io.Serializable {
     public boolean getShowFormAnnotated() {
         return showFormAnnotated;
     }
-    
+
     public String getTriggerEvent() {
         return triggerEvent;
     }
@@ -290,12 +290,11 @@ public abstract class Responder implements java.io.Serializable {
     public void setResultAttribute(String resultAttribute) {
         this.resultAttribute = resultAttribute;
     }
-    
+
     /** passes the HTML ID of the form, either generated or provided by the user, enriched with form iteration **/
     public void setFormId(String id) {
         this.formId = id;
     }
-
 
     /** pass the field to which the add operation is made */
     public void setAddField(String s) {
@@ -326,8 +325,7 @@ public abstract class Responder implements java.io.Serializable {
     public String responderKey() {
         return basePointerType + message + multipleSubmitErrorMsg + resultAttribute + database + operation
                 + controller.getClass().getName() + handler + addField + newType + reloadFormOnError
-                + originatingPageName + showFormAnnotated + clientSideValidation + defaultMatchModes
-                + triggerEvent;
+                + originatingPageName + showFormAnnotated + clientSideValidation + defaultMatchModes + triggerEvent;
     }
 
     /** get the integer key of this form, and register it if not already registered */
