@@ -26,7 +26,6 @@ package org.makumba.analyser.engine;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-
 //
 // import javax.servlet.http.HttpServlet;
 // import javax.servlet.http.HttpServletResponse;
@@ -48,7 +47,8 @@ public class TomcatJsp /* extends HttpServlet */{
     /**
      * Computes the URI to the current JSP
      * 
-     * @param request the Http request associated with the JSP
+     * @param request
+     *            the Http request associated with the JSP
      * @return A String containing the URI to the JSP
      */
     public static String getJspURI(HttpServletRequest request) {
@@ -71,7 +71,8 @@ public class TomcatJsp /* extends HttpServlet */{
     /**
      * Computes the path to the directory in which the compiled JSP is
      * 
-     * @param context the ServletContext of the running tomcat
+     * @param context
+     *            the ServletContext of the running tomcat
      * @return A String containing the path to the directory where JSPs are being compiled
      */
     public static String getContextCompiledJSPDir(ServletContext context) {
@@ -82,7 +83,6 @@ public class TomcatJsp /* extends HttpServlet */{
         return "org.apache.jasper";
     }
 
-    
     //
     // when uncommenting the line below, add jasper-compiler.jar to the compilation classpath
     // 
