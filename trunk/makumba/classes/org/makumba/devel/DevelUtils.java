@@ -3,7 +3,6 @@ package org.makumba.devel;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.InetAddress;
 import java.util.Map;
 
 import javax.servlet.ServletResponse;
@@ -14,7 +13,6 @@ import org.apache.commons.lang.StringUtils;
 import org.makumba.Pointer;
 import org.makumba.commons.MakumbaResourceServlet;
 import org.makumba.providers.Configuration;
-import org.makumba.providers.TransactionProvider;
 
 /**
  * This class combines some methods to print pages used by various developer support tools in package org.makumba.devel.
@@ -27,8 +25,7 @@ public class DevelUtils {
     /** Write the page footer to the given writer. */
     public static void printDeveloperSupportFooter(PrintWriter w) throws IOException {
         w.println("<hr><font size=\"-1\"><a href=\"http://www.makumba.org\">Makumba</a> developer support; version:"
-                + org.makumba.MakumbaSystem.getVersion() + " " + Configuration.getRemoteDataSourceConfigurationPath()
-                + "</font>");
+                + org.makumba.MakumbaSystem.getVersion() + " " + Configuration.getRemoteDataSourceConfigurationPath() + "</font>");
     }
 
     public static void writeScripts(PrintWriter w, String contextPath) {
@@ -89,10 +86,10 @@ public class DevelUtils {
     }
 
     public static void printPageHeader(PrintWriter w, String title) throws IOException {
-        printPageHeader(w, title, null, null, null);
+        printPageHeader(w, title, null, null,null, null);
     }
 
-    public static void printPageHeader(PrintWriter w, String title, String virtualPath, String realPath,
+    public static void printPageHeader(PrintWriter w, String title, String virtualPath, String realPath, String otherHeaderInfo,
             String repositoryLink) throws IOException {
         w.println("<body bgcolor=white>");
         w.println("<table width=\"100%\" bgcolor=\"lightblue\">");
@@ -111,6 +108,9 @@ public class DevelUtils {
         if (realPath != null) {
             w.println("<font size=\"-1\"><br>" + new File(realPath).getCanonicalPath() + "</font>");
         }
+        if (otherHeaderInfo != null) {
+            w.println(otherHeaderInfo);
+        }
     }
 
     public static void writeDevelUtilLinks(PrintWriter w, String toolKey, String contextPath) {
@@ -124,8 +124,8 @@ public class DevelUtils {
                             + ": disabled </span><br/>");
                 } else {
                     w.print("<a href=\"" + contextPath + Configuration.getMakumbaToolsLocation()
-                            + Configuration.getMakumbaToolsPathConfigProperty(key) + "\">"
-                            + allGenericDeveloperToolsMap.get(key) + "</a><br/>");
+                            + Configuration.getMakumbaToolsPathConfigProperty(key) + "\">" + allGenericDeveloperToolsMap.get(key)
+                            + "</a><br/>");
                 }
             }
         }

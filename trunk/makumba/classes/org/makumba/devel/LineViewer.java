@@ -74,6 +74,9 @@ public abstract class LineViewer implements SourceViewer {
 
     protected String realPath;
 
+    /** Store other info to be displayed in the header */
+    protected String additionalHeaderInfo;
+
     protected String virtualPath;
 
     protected String contextPath;
@@ -233,7 +236,7 @@ public abstract class LineViewer implements SourceViewer {
             DevelUtils.writePageBegin(writer);
             DevelUtils.writeStylesAndScripts(writer, contextPath);
             DevelUtils.writeTitleAndHeaderEnd(writer, title);
-            DevelUtils.printPageHeader(writer, title, virtualPath, realPath, printVersionControlLink());
+            DevelUtils.printPageHeader(writer, title, virtualPath, realPath, additionalHeaderInfo, printVersionControlLink());
             printPageBeginAdditional(writer);
 
             if (printLineNumbers) {
@@ -658,6 +661,7 @@ public abstract class LineViewer implements SourceViewer {
         return null;
     }
 
+    /** Find the path to the compiled JSP file from the name of a compiled JSP class */
     public String findCompiledJSP(String s) {
         if (jspClasspath != null && s.indexOf("_jsp") != -1) {
             try {
@@ -673,6 +677,31 @@ public abstract class LineViewer implements SourceViewer {
                 return null;
             }
         } else {
+            return null;
+        }
+    }
+
+    /** Find the path to the compiled JSP file from the name of the original JSP page */
+    public String findCompiledJSPClassName(String compiledJSPDirectory, String jspPageName) {
+        if (jspPageName.indexOf(".jsp") == -1) {
+            return null;
+        }
+        try {
+            jspPageName = jspPageName.substring(0, jspPageName.indexOf(".jsp"));
+            String completeClassFileName = compiledJSPDirectory + jspPageName + "_jsp.java";
+            File file = new File(completeClassFileName);
+            if (file.exists()) {
+                // return only the part relative to the context working directory
+                completeClassFileName = completeClassFileName.replace(jspClasspath, "").replace(".java", "");
+                if (completeClassFileName.startsWith("/")) {
+                    completeClassFileName = completeClassFileName.substring(1);
+                }
+                completeClassFileName.replace("/", ".");
+                return completeClassFileName;
+            } else {
+                return null;
+            }
+        } catch (Throwable t) {
             return null;
         }
     }
