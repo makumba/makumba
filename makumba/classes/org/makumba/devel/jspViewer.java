@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
@@ -86,6 +87,9 @@ public class jspViewer extends LineViewer {
         hideMakumba = Boolean.valueOf(String.valueOf(req.getParameter("hideMakumba"))).booleanValue();
         hideJava = Boolean.valueOf(String.valueOf(req.getParameter("hideJava"))).booleanValue();
 
+        ServletContext servletContext = request.getSession().getServletContext();
+
+        // compute the physical path of the currently viewed page on the webserver
         String thisFile = TomcatJsp.getJspURI(req);
         thisFile = thisFile.substring(0, thisFile.length() - 1);
 
@@ -93,13 +97,14 @@ public class jspViewer extends LineViewer {
         String _servletPath = req.getServletPath();
         virtualPath = _servletPath.substring(0, _servletPath.length() - extraLength());
         jspSourceViewExtension = _servletPath.substring(_servletPath.length() - extraLength());
-        realPath = request.getSession().getServletContext().getRealPath(virtualPath);
+        realPath = servletContext.getRealPath(virtualPath);
         _servletPath = _servletPath.substring(0, _servletPath.indexOf(".")) + ".jsp";
         logicPath = contextPath + Configuration.getLogicDiscoveryViewerLocation() + _servletPath;
         hasLogic = !(org.makumba.controller.Logic.getLogic(_servletPath) instanceof org.makumba.LogicNotFoundException);
+        jspClasspath = TomcatJsp.getContextCompiledJSPDir(servletContext);
 
-        JspParseData jspParseData = new JspParseData(request.getSession().getServletContext().getRealPath("/"),
-                thisFile, JspxJspAnalyzer.getInstance());
+        JspParseData jspParseData = new JspParseData(servletContext.getRealPath("/"), thisFile,
+                JspxJspAnalyzer.getInstance());
         try {
             sourceSyntaxPoints = jspParseData.getSyntaxPointArray(null);
 
@@ -112,6 +117,13 @@ public class jspViewer extends LineViewer {
         } catch (ProgrammerError e) {
             caughtError = e;
         }
+
+        String compiledJSPFile = findCompiledJSPClassName(TomcatJsp.getFullCompiledJSPDir(servletContext), virtualPath);
+        if (compiledJSPFile != null) {
+            additionalHeaderInfo = "<a style=\"font-size:smaller;\" href=\"" + request.getContextPath()
+                    + Configuration.getJavaViewerLocation() + "/" + compiledJSPFile + "\">[Compiled Version]</a>";
+        }
+
         reader = new FileReader(realPath);
     }
 

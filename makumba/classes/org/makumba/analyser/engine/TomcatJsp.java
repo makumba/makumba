@@ -79,6 +79,16 @@ public class TomcatJsp /* extends HttpServlet */{
         return String.valueOf(context.getAttribute("javax.servlet.context.tempdir"));
     }
 
+    /**
+     * Computes the directory where the compiled JSPs resides, which is for Tomact in
+     * &lt;javax.servlet.context.tempdir&gt;/org/apache/jsp
+     */
+    public static String getFullCompiledJSPDir(ServletContext context) {
+        String compiledJSPDir = getContextCompiledJSPDir(context);
+        compiledJSPDir += "/org/apache/jsp";
+        return compiledJSPDir;
+    }
+
     public static String getJspCompilerPackage() {
         return "org.apache.jasper";
     }
