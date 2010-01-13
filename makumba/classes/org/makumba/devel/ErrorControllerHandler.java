@@ -106,16 +106,28 @@ public class ErrorControllerHandler extends ControllerHandler {
                 ioe.printStackTrace();
                 throw new MakumbaError(ioe);
             } catch (java.lang.IllegalStateException ise) { // we get an java.lang.IllegalStateException
-                // most likely due to not being able to redirect the page to the error page due to already flushed
-                // buffers
-                // ==> we display a warning, and display the error message as it would have been on the page
-                java.util.logging.Logger.getLogger("org.makumba.controller").severe(
-                    "Page execution breaks on page '"
-                            + req.getServletPath()
-                            + "' but the error page can't be displayed due to too small buffer size.\n"
-                            + "==> Try increasing the page buffer size by manually increasing the buffer to 16kb (or more) using <%@ page buffer=\"16kb\"%> in the .jsp page\n"
-                            + "The makumba error message would have been:\n"
-                            + new ErrorFormatter().getErrorMessage(req));
+                // FIXME: most probably this message is tomcat specific
+                if (ise.getMessage().startsWith("getOutputStream() has already been called for this response")) {
+                    // we have called response.getOutputStream(), or similar, in the JSP page
+                    // however, we still have some output in the page, even if it is just a space
+                    java.util.logging.Logger.getLogger("org.makumba.controller").severe(
+                        "There is an error on page '"
+                                + req.getServletPath()
+                                + "'. You have called 'response.getOutputStream()' or 'response.getWriter()' in the page, maybe to write a binary response, but you still have some non-Java-scriplet code, e.g. HTML, or even just a single whitespace.\n"
+                                + "Remove all of these to get rid of this error message"
+                                + new ErrorFormatter().getErrorMessage(req));
+                } else {
+                    // most likely due to not being able to redirect the page to the error page due to already flushed
+                    // buffers
+                    // ==> we display a warning, and display the error message as it would have been on the page
+                    java.util.logging.Logger.getLogger("org.makumba.controller").severe(
+                        "Page execution breaks on page '"
+                                + req.getServletPath()
+                                + "' but the error page can't be displayed due to too small buffer size.\n"
+                                + "==> Try increasing the page buffer size by manually increasing the buffer to 16kb (or more) using <%@ page buffer=\"16kb\"%> in the .jsp page\n"
+                                + "The makumba error message would have been:\n"
+                                + new ErrorFormatter().getErrorMessage(req));
+                }
             }
         }
         setWasException(req);
