@@ -13,7 +13,7 @@
   <wiki:PageExists>  
 
     <%-- changed by rudi: show a "add your comment" link --%>
-    <wiki:Permission permission="comment">
+    <%-- changed by manu: show the link for all users, even if they're not allowed to (will force login) --%>
       <hr />
       <wiki:PageType type="page">
         <a class="action comment" 
@@ -21,7 +21,6 @@
                 title="<fmt:message key='actions.comment.title' />"><fmt:message key="actions.comment" />
         </a>
       </wiki:PageType>
-    </wiki:Permission>
     <%-- / changed by rudi: show a "add your comment" link --%>
 
     <hr />
