@@ -1,0 +1,460 @@
+This is pdfTeXk, Version 3.141592-1.40.3 (Web2C 7.5.6) (format=pdflatex 2009.11.4)  18 JAN 2010 15:24
+entering extended mode
+ %&-line parsing enabled.
+**eics2010-makumba.tex
+(./eics2010-makumba.tex
+LaTeX2e <2005/12/01>
+Babel <v3.8h> and hyphenation patterns for english, usenglishmax, dumylang, noh
+yphenation, german, ngerman, loaded.
+(./chi2009.cls (/usr/share/texmf-texlive/tex/latex/graphics/epsfig.sty
+Package: epsfig 1999/02/16 v1.7a (e)psfig emulation (SPQR)
+
+(/usr/share/texmf-texlive/tex/latex/graphics/graphicx.sty
+Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texmf-texlive/tex/latex/graphics/keyval.sty
+Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
+\KV@toks@=\toks14
+)
+(/usr/share/texmf-texlive/tex/latex/graphics/graphics.sty
+Package: graphics 2006/02/20 v1.0o Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texmf-texlive/tex/latex/graphics/trig.sty
+Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
+)
+(/etc/texmf/tex/latex/config/graphics.cfg
+File: graphics.cfg 2007/01/18 v1.5 graphics configuration of teTeX/TeXLive
+)
+Package graphics Info: Driver file: pdftex.def on input line 90.
+
+(/usr/share/texmf-texlive/tex/latex/pdftex-def/pdftex.def
+File: pdftex.def 2007/01/08 v0.04d Graphics/color for pdfTeX
+\Gread@gobject=\count79
+))
+\Gin@req@height=\dimen102
+\Gin@req@width=\dimen103
+)
+\epsfxsize=\dimen104
+\epsfysize=\dimen105
+)
+(/usr/share/texmf-texlive/tex/latex/amsfonts/amssymb.sty
+Package: amssymb 2002/01/22 v2.2d
+
+(/usr/share/texmf-texlive/tex/latex/amsfonts/amsfonts.sty
+Package: amsfonts 2001/10/25 v2.2f
+\@emptytoks=\toks15
+\symAMSa=\mathgroup4
+\symAMSb=\mathgroup5
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 132.
+))
+(/usr/share/texmf-texlive/tex/latex/amsmath/amsmath.sty
+Package: amsmath 2000/07/18 v2.13 AMS math features
+\@mathmargin=\skip41
+
+For additional information on amsmath, use the `?' option.
+(/usr/share/texmf-texlive/tex/latex/amsmath/amstext.sty
+Package: amstext 2000/06/29 v2.01
+
+(/usr/share/texmf-texlive/tex/latex/amsmath/amsgen.sty
+File: amsgen.sty 1999/11/30 v2.0
+\@emptytoks=\toks16
+\ex@=\dimen106
+))
+(/usr/share/texmf-texlive/tex/latex/amsmath/amsbsy.sty
+Package: amsbsy 1999/11/29 v1.2d
+\pmbraise@=\dimen107
+)
+(/usr/share/texmf-texlive/tex/latex/amsmath/amsopn.sty
+Package: amsopn 1999/12/14 v2.01 operator names
+)
+\inf@bad=\count80
+LaTeX Info: Redefining \frac on input line 211.
+\uproot@=\count81
+\leftroot@=\count82
+LaTeX Info: Redefining \overline on input line 307.
+\classnum@=\count83
+\DOTSCASE@=\count84
+LaTeX Info: Redefining \ldots on input line 379.
+LaTeX Info: Redefining \dots on input line 382.
+LaTeX Info: Redefining \cdots on input line 467.
+\Mathstrutbox@=\box26
+\strutbox@=\box27
+\big@size=\dimen108
+LaTeX Font Info:    Redeclaring font encoding OML on input line 567.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 568.
+\macc@depth=\count85
+\c@MaxMatrixCols=\count86
+\dotsspace@=\muskip10
+\c@parentequation=\count87
+\dspbrk@lvl=\count88
+\tag@help=\toks17
+\row@=\count89
+\column@=\count90
+\maxfields@=\count91
+\andhelp@=\toks18
+\eqnshift@=\dimen109
+\alignsep@=\dimen110
+\tagshift@=\dimen111
+\tagwidth@=\dimen112
+\totwidth@=\dimen113
+\lineht@=\dimen114
+\@envbody=\toks19
+\multlinegap=\skip42
+\multlinetaggap=\skip43
+\mathdisplay@stack=\toks20
+LaTeX Info: Redefining \[ on input line 2666.
+LaTeX Info: Redefining \] on input line 2667.
+)
+Document Class 'chi2009' <23rd July '04>.
+Shamelessly copied from Document Class 'chiproceedings' <7th Sep. '00>. Modifie
+d by Jan O. Borchers
+And also based on Document Class 'acm_proc_article-sp' <2nd. October '02>. Modi
+fied by G.K.M. Tobin
+Based in part upon document Style `acmconf' <22 May 89>. Hacked 4/91 by
+shivers@cs.cmu.edu, 4/93 by theobald@cs.mcgill.ca
+Excerpts were taken from (Journal Style) 'esub2acm.cls'.
+\footheight=\dimen115
+\@maxsep=\dimen116
+\@dblmaxsep=\dimen117
+\aucount=\count92
+\originalaucount=\count93
+\auwidth=\dimen118
+\auskip=\dimen119
+\auskipcount=\count94
+\auskip=\dimen120
+\allauboxes=\dimen121
+\addauthors=\toks21
+\addauflag=\count95
+\subtitletext=\toks22
+\savesection=\count96
+\sectioncntr=\count97
+\c@figure=\count98
+\c@table=\count99
+\titleboxnotes=\toks23
+\titleboxnoteflag=\count100
+Document Class: chi2009 2003/9/22 - V0.12
+(/usr/share/texmf-texlive/tex/latex/base/latexsym.sty
+Package: latexsym 1998/08/17 v2.2e Standard LaTeX package (lasy symbols)
+\symlasy=\mathgroup6
+LaTeX Font Info:    Overwriting symbol font `lasy' in version `bold'
+(Font)                  U/lasy/m/n --> U/lasy/b/n on input line 47.
+)
+\@acmtitlebox=\box28
+\titlenotecount=\count101
+\tntoks=\toks24
+\tntokstwo=\toks25
+\tntoksthree=\toks26
+\tntoksfour=\toks27
+\tntoksfive=\toks28
+\catcount=\count102
+\copyrightnotice=\toks29
+\conf=\toks30
+\confinfo=\toks31
+\c@part=\count103
+\c@section=\count104
+\c@subsection=\count105
+\c@subsubsection=\count106
+\c@paragraph=\count107
+
+Using 'Abbrev' bibliography style
+\bibindent=\dimen122
+\colcntr=\count108
+\savebox=\box29
+\copyrtyr=\toks32
+\acmcopyr=\toks33
+\boilerplate=\toks34
+\copyrightetc=\toks35
+) (/usr/share/texmf-texlive/tex/latex/ltxmisc/url.sty
+\Urlmuskip=\muskip11
+Package: url 2005/06/27  ver 3.2  Verb mode for urls, etc.
+)
+(/usr/share/texmf-texlive/tex/latex/subfigure/subfigure.sty
+Package: subfigure 2002/03/15 v2.1.5 subfigure package
+
+
+Package subfigure Warning: Your document class has a bad definition
+ of \endfigure, most likely
+ \let\endfigure=\end@float
+ which has now been changed to
+ \def\endfigure{\end@float}
+ because otherwise subsequent changes to \end@float
+ (like done by several packages changing float behaviour)
+ can't take effect on \endfigure.
+ Please complain to your document class author.
+
+
+Package subfigure Warning: Your document class has a bad definition
+ of \endtable, most likely
+ \let\endtable=\end@float
+ which has now been changed to
+ \def\endtable{\end@float}
+ because otherwise subsequent changes to \end@float
+ (like done by several packages changing float behaviour)
+ can't take effect on \endtable.
+ Please complain to your document class author.
+
+\subfigtopskip=\skip44
+\subfigcapskip=\skip45
+\subfigcaptopadj=\dimen123
+\subfigbottomskip=\skip46
+\subfigcapmargin=\dimen124
+\subfiglabelskip=\skip47
+\c@subfigure=\count109
+\c@lofdepth=\count110
+\c@subtable=\count111
+\c@lotdepth=\count112
+****************************************
+* Local config file subfigure.cfg used *
+****************************************
+(/usr/share/texmf-texlive/tex/latex/subfigure/subfigure.cfg)
+\subfig@top=\skip48
+\subfig@bottom=\skip49
+)
+(/usr/share/texmf-texlive/tex/latex/listings/listings.sty
+\lst@mode=\count113
+\lst@gtempboxa=\box30
+\lst@token=\toks36
+\lst@length=\count114
+\lst@currlwidth=\dimen125
+\lst@column=\count115
+\lst@pos=\count116
+\lst@lostspace=\dimen126
+\lst@width=\dimen127
+\lst@newlines=\count117
+\lst@lineno=\count118
+\c@lstlisting=\count119
+\abovecaptionskip=\skip50
+\belowcaptionskip=\skip51
+\lst@maxwidth=\dimen128
+
+(/usr/share/texmf-texlive/tex/latex/listings/lstpatch.sty
+File: lstpatch.sty 2004/10/17 1.3b (Carsten Heinz)
+)
+(/usr/share/texmf-texlive/tex/latex/listings/lstmisc.sty
+File: lstmisc.sty 2004/09/07 1.3 (Carsten Heinz)
+\c@lstnumber=\count120
+\lst@skipnumbers=\count121
+\lst@framebox=\box31
+)
+(/usr/share/texmf-texlive/tex/latex/listings/listings.cfg
+File: listings.cfg 2004/09/05 1.3 listings configuration
+))
+Package: listings 2004/10/17 1.3b (Carsten Heinz)
+
+(./eics2010-makumba.aux)
+\openout1 = `eics2010-makumba.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 6.
+LaTeX Font Info:    ... okay on input line 6.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 6.
+LaTeX Font Info:    ... okay on input line 6.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 6.
+LaTeX Font Info:    ... okay on input line 6.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 6.
+LaTeX Font Info:    ... okay on input line 6.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 6.
+LaTeX Font Info:    ... okay on input line 6.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 6.
+LaTeX Font Info:    ... okay on input line 6.
+ (/usr/share/texmf/tex/context/base/supp-pdf.tex
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count122
+\scratchdimen=\dimen129
+\scratchbox=\box32
+\nofMPsegments=\count123
+\nofMParguments=\count124
+\everyMPshowfont=\toks37
+\MPscratchCnt=\count125
+\MPscratchDim=\dimen130
+\MPnumerator=\count126
+\everyMPtoPDFconversion=\toks38
+)
+LaTeX Font Info:    Try loading font information for U+msa on input line 25.
+ (/usr/share/texmf-texlive/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2002/01/19 v2.2g AMS font definitions
+)
+LaTeX Font Info:    Try loading font information for U+msb on input line 25.
+
+(/usr/share/texmf-texlive/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2002/01/19 v2.2g AMS font definitions
+)
+LaTeX Font Info:    Try loading font information for U+lasy on input line 25.
+
+(/usr/share/texmf-texlive/tex/latex/base/ulasy.fd
+File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
+)
+Overfull \hbox (4.22269pt too wide) in paragraph at lines 39--40
+\OT1/cmr/m/n/10 vel-op-ing data-intensive web-applications, that might well
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}
+
+
+]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
+Overfull \hbox (7.27824pt too wide) in paragraph at lines 50--51
+\OT1/cmr/m/n/10 ex-ten-sion of SQL. Makumba can work to-wards Hibernate-
+ []
+
+[2]
+Overfull \hbox (13.88934pt too wide) in paragraph at lines 85--86
+\OT1/cmr/m/n/10 We will il-lus-trate the con-straints that shaped the Makumba
+ []
+
+
+Overfull \hbox (25.27832pt too wide) in paragraph at lines 89--90
+\OT1/cmr/m/n/10 open-source pro-gram-ming set-ting, de-vel-op-ers us-ing Makumb
+a
+ []
+
+[3]
+Overfull \hbox (13.97276pt too wide) in paragraph at lines 98--99
+[]\OT1/cmr/m/n/10 Additionally to defin-ing the mere data struc-ture, Makumba
+ []
+
+LaTeX Font Info:    Try loading font information for OML+cmr on input line 107.
+
+(/usr/share/texmf-texlive/tex/latex/base/omlcmr.fd
+File: omlcmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OML/cmr/m/n' in size <8> not available
+(Font)              Font shape `OML/cmm/m/it' tried instead on input line 107.
+
+Overfull \hbox (11.51907pt too wide) in paragraph at lines 131--132
+\OT1/cmr/m/n/10 learn-ing. List-ing 3[] shows the mak:editForm and mak:input
+ []
+
+
+Overfull \hbox (4.80542pt too wide) in paragraph at lines 135--136
+[][][][][][][][][][][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (4.80542pt too wide) in paragraph at lines 138--139
+[][][][][][][][][][][][][][][][][][][][][] 
+ []
+
+[4]
+Overfull \hbox (81.30711pt too wide) in paragraph at lines 143--144
+[][][][][][][][][][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (60.90666pt too wide) in paragraph at lines 144--145
+[][][][][][][][][][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (8.44493pt too wide) in paragraph at lines 154--155
+[]\OT1/cmr/m/n/10 Unlike a few other tech-nolo-gies pro-posed to-day, Makumba
+ []
+
+
+Overfull \hbox (3.15791pt too wide) in paragraph at lines 154--155
+\OT1/cmr/m/n/10 does not em-ploy a nav-i-ga-tion model. In-stead, the HTML
+ []
+
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 170.
+
+(/usr/share/texmf-texlive/tex/latex/base/omscmr.fd
+File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <8> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 170.
+
+Overfull \hbox (50.70644pt too wide) in paragraph at lines 170--171
+[][][][][][][][][][][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (10.72269pt too wide) in paragraph at lines 175--176
+\OT1/cmr/m/n/10 cates quan-ti-ta-tively the project size af-forded by Makumba,
+ []
+
+[5] <figures/SizeChart.png, id=30, 979.66pt x 599.23875pt>
+File: figures/SizeChart.png Graphic file (type png)
+
+<use figures/SizeChart.png>
+<figures/learning-technologies.png, id=31, 803.0pt x 501.875pt>
+File: figures/learning-technologies.png Graphic file (type png)
+
+<use figures/learning-technologies.png>
+Underfull \vbox (badness 6412) has occurred while \output is active []
+
+ [6 <./figures/SizeChart.png (PNG copy)> <./figures/learning-technologies.png>]
+
+Overfull \hbox (1.11145pt too wide) in paragraph at lines 318--319
+[]\OT1/cmr/m/n/10 Overall, the per-year self-assessment re-sults sug-gest that
+ []
+
+
+Overfull \hbox (15.97916pt too wide) in paragraph at lines 334--336
+\OT1/cmr/m/n/10 level of Makumba), \OT1/cmr/m/it/10 code leg-i-bil-ity \OT1/cmr
+/m/n/10 is an im-por-tant Makumba
+ []
+
+
+Overfull \hbox (1.02818pt too wide) in paragraph at lines 343--344
+[]\OT1/cmr/m/n/10 As shown by this ex-pe-ri-ence, Makumba al-lows the build-
+ []
+
+
+Overfull \hbox (2.9437pt too wide) in paragraph at lines 343--344
+\OT1/cmr/m/n/10 tems such as En-ter-prise Java Beans J2EE sys-tems, which
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [7]
+Overfull \hbox (4.69484pt too wide) in paragraph at lines 346--347
+\OT1/cmr/m/n/10 Based on the Makumba ex-pe-ri-ence we be-lieve that query-
+ []
+
+(./eics2010-makumba.bbl
+Missing character: There is no Â in font cmti10!
+Missing character: There is no · in font cmti10!
+Missing character: There is no Â in font cmti10!
+Missing character: There is no · in font cmti10!
+Missing character: There is no Â in font cmti10!
+Missing character: There is no · in font cmti10!
+Missing character: There is no Â in font cmti10!
+Missing character: There is no · in font cmti10!
+Missing character: There is no Â in font cmti10!
+Missing character: There is no · in font cmti10!
+Missing character: There is no Â in font cmti10!
+Missing character: There is no · in font cmti10!
+Missing character: There is no Â in font cmti10!
+Missing character: There is no · in font cmti10!
+) [8] (./eics2010-makumba.aux) ) 
+Here is how much of TeX's memory you used:
+ 3416 strings out of 95070
+ 44060 string characters out of 1182680
+ 111583 words of memory out of 1500000
+ 6534 multiletter control sequences out of 10000+50000
+ 26900 words of font info for 70 fonts, out of 1200000 for 2000
+ 28 hyphenation exceptions out of 8191
+ 39i,10n,32p,1636b,1451s stack positions out of 5000i,500n,6000p,200000b,5000s
+{/usr/share/texmf-texlive/fonts/enc/dvips/base/
+8r.enc}</usr/share/texmf-texlive/fonts/type1/bluesky/cm/cmbx8.pfb></usr/share/t
+exmf-texlive/fonts/type1/bluesky/cm/cmmi8.pfb></usr/share/texmf-texlive/fonts/t
+ype1/bluesky/cm/cmr10.pfb></usr/share/texmf-texlive/fonts/type1/bluesky/cm/cmr6
+.pfb></usr/share/texmf-texlive/fonts/type1/bluesky/cm/cmr7.pfb></usr/share/texm
+f-texlive/fonts/type1/bluesky/cm/cmr8.pfb></usr/share/texmf-texlive/fonts/type1
+/bluesky/cm/cmr9.pfb></usr/share/texmf-texlive/fonts/type1/bluesky/cm/cmsy8.pfb
+></usr/share/texmf-texlive/fonts/type1/bluesky/cm/cmti10.pfb></usr/share/texmf-
+texlive/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/share/texmf-texlive/fonts/typ
+e1/urw/times/utmb8a.pfb></usr/share/texmf-texlive/fonts/type1/urw/times/utmr8a.
+pfb></usr/share/texmf-texlive/fonts/type1/urw/times/utmri8a.pfb>
+Output written on eics2010-makumba.pdf (8 pages, 196180 bytes).
+PDF statistics:
+ 85 PDF objects out of 1000 (max. 8388607)
+ 0 named destinations out of 1000 (max. 131072)
+ 11 words of extra memory for PDF output out of 10000 (max. 10000000)
+

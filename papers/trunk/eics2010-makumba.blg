@@ -1,0 +1,50 @@
+This is BibTeX, Version 0.99c (Web2C 7.5.6)
+The top-level auxiliary file: eics2010-makumba.aux
+The style file: abbrv.bst
+Database file #1: eics2010-makumba.bib
+Warning--I'm ignoring acerbis2004wit's extra "pages" field
+--line 49 of file eics2010-makumba.bib
+Warning--I'm ignoring acerbis2004wit's extra "year" field
+--line 50 of file eics2010-makumba.bib
+You've used 7 entries,
+            2118 wiz_defined-function locations,
+            547 strings with 5374 characters,
+and the built_in function-call counts, 3136 in all, are:
+= -- 321
+> -- 155
+< -- 4
++ -- 61
+- -- 54
+* -- 221
+:= -- 494
+add.period$ -- 25
+call.type$ -- 7
+change.case$ -- 48
+chr.to.int$ -- 0
+cite$ -- 7
+duplicate$ -- 127
+empty$ -- 230
+format.name$ -- 54
+if$ -- 683
+int.to.chr$ -- 0
+int.to.str$ -- 7
+missing$ -- 7
+newline$ -- 38
+num.names$ -- 14
+pop$ -- 56
+preamble$ -- 1
+purify$ -- 41
+quote$ -- 0
+skip$ -- 95
+stack$ -- 0
+substring$ -- 188
+swap$ -- 44
+text.length$ -- 4
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 28
+warning$ -- 0
+while$ -- 28
+width$ -- 8
+write$ -- 86
+(There were 2 warnings)

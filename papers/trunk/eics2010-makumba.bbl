@@ -1,0 +1,48 @@
+\begin{thebibliography}{1}
+
+\bibitem{acerbis2004wit}
+R.~Acerbis, A.~Bongio, S.~Butti, S.~Ceri, F.~Ciapessoni, C.~Conserva,
+  P.~Fraternali, and G.~Toffetti.
+\newblock {WebRatio, an Innovative Technology for Web Application Development}.
+\newblock In {\em Proceedings of 4th International Conference on Web
+  Engineering ({ICWE} 2004)}, pages 137--157, Munich, 2004. Springer.
+
+\bibitem{bogdan_mayer09}
+C.~Bogdan and R.~Mayer.
+\newblock Makumba: the role of technology or the sustainability of amateur
+  programming practice and community.
+\newblock In {\em Proceedings of the 4th Communities and Technologies
+  Conference (C\&T 2009)}, Penn State, USA, June 2009. ACM.
+
+\bibitem{Ceri00webmodeling}
+S.~Ceri, P.~Fraternali, and A.~Bongio.
+\newblock Web modeling language ({WebML}): a modeling language for designing
+  web sites.
+\newblock In {\em Proceedings of 9th International World Wide Web Conference},
+  pages 137--157, Amsterdam, 2000.
+
+\bibitem{johnson2005jdf}
+R.~Johnson.
+\newblock {J2EE Development Frameworks}.
+\newblock {\em Computer}, 38(1), January 2005.
+
+\bibitem{Kiczales97aspect-orientedprogramming}
+G.~Kiczales, J.~Lamping, A.~Mendhekar, C.~Maeda, C.~Lopes, J.~marc Loingtier,
+  and J.~Irwin.
+\newblock Aspect-oriented programming.
+\newblock In {\em
+  Proceedings·of·the·European·Conference·on·Object-Oriented·Programming%
+}, pages 220--242. Springer-Verlag, 1997.
+
+\bibitem{schwabe1998ooa}
+D.~Schwabe and G.~Ross.
+\newblock {An object oriented approach to web-based applications design}.
+\newblock {\em Theory and Practice of Object Systems}, 4(4):207--225, 1998.
+
+\bibitem{yamauchi00}
+Y.~Yamauchi, M.~Yokozawa, T.~Shinohara, and T.~Ishida.
+\newblock Collaboration with lean media: how open-source software succeeds.
+\newblock In {\em CSCW '00: Proceedings of the 2000 ACM conference on Computer
+  supported cooperative work}, pages 329--338, New York, NY, USA, 2000. ACM.
+
+\end{thebibliography}
