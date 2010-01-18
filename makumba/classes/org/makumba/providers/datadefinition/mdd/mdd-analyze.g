@@ -109,7 +109,7 @@ fieldDeclaration { FieldType fieldType = null; }
     
 // we remove the subField definition from the tree after it was processed
 subFieldDeclaration!
-    : #(SUBFIELD p:PARENTFIELDNAME {FieldNode field = getParentField(#p); } subField[field] )
+    : #(sf:SUBFIELD p:PARENTFIELDNAME {FieldNode field = getParentField(#p); } subField[field, ((MDDAST)#sf_in).wasIncluded] )
     ;
 
 
@@ -119,7 +119,7 @@ subFieldDeclaration!
 // cars->name = char[255]
 // cars->name%length=[1..?] : A car must have a non-empty name
 // cars->niceName() { upper(name) }
-subField[FieldNode field]
+subField[FieldNode field, boolean included]
 	: (
 		// TITLE DECLARATION
 		t:titleDeclaration
@@ -137,7 +137,7 @@ subField[FieldNode field]
 			{
     			FieldType subFieldType = null;
       		}
-			sfn:SUBFIELDNAME { FieldNode subField = new FieldNode(field.subfield, #sfn.getText(), #sfn); subField.wasIncluded = ((MDDAST)#sfn_in).wasIncluded; }
+			sfn:SUBFIELDNAME { FieldNode subField = new FieldNode(field.subfield, #sfn.getText(), #sfn); subField.wasIncluded = included; }
 			(sm:MODIFIER { addModifier(subField, #sm.getText());} )*
 			subFieldType=sft:fieldType[subField] { checkSubFieldType(#sft, subField); subField.makumbaType = subFieldType; }
 			(sfc:FIELDCOMMENT { subField.description = #sfc.getText(); })?

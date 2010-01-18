@@ -59,7 +59,8 @@ public class MDDParser extends MDDBaseParser {
     @Override
     protected AST includeSubField(AST type, AST parentField) {
         AST included = include(type);
-        return transformToSubfield(parentField, included);
+        AST transformed = transformToSubfield(parentField, included);
+        return transformed;
     }
     
     private AST transformToSubfield(AST parentField, AST included) {
@@ -89,11 +90,13 @@ public class MDDParser extends MDDBaseParser {
             subfield.setText("->!");
             subfield.setType(MDDTokenTypes.SUBFIELD);
             subfield.setLine(parentField.getLine());
+            subfield.wasIncluded = true;
             
             MDDAST parentFieldName = new MDDAST();
             parentFieldName.setText(parentField.getText());
             parentFieldName.setType(MDDTokenTypes.PARENTFIELDNAME);
             parentFieldName.setLine(parentField.getLine());
+            parentFieldName.wasIncluded = true;
             
             subfield.setFirstChild(parentFieldName);
             
