@@ -316,14 +316,18 @@ public class TableManager extends Table {
                         "Extra indexes on " + getDataDefinition().getName() + ": " + extraList);
             }
 
+        // initialises list of fields with primary key (pointer index)
         StringBuffer sb = new StringBuffer();
         fieldList(sb, dd.getFieldNames().elements());
         handlerList = sb.toString();
+        
+        // initialises list of fields without PK as we have auto-increment
         sb = new StringBuffer();
         Enumeration<String> e = dd.getFieldNames().elements();
         e.nextElement();
         fieldList(sb, e);
         handlerListAutoIncrement = sb.toString();
+        
         indexField = dd.getIndexPointerFieldName();
         indexDBField = getFieldDBName(indexField);
     }
@@ -553,20 +557,6 @@ public class TableManager extends Table {
             create(dbc, tbname, alter);
     }
 
-    /** for odbc */
-    protected void indexCreated(SQLDBConnection dbc) {
-    }
-
-    /** for mysql */
-    protected String createDbSpecific(String command) {
-        return command;
-    }
-
-    /** mysql needs to have it adjustable */
-    protected String getTableMissingStateName(SQLDBConnection dbc) {
-        return "tableMissing";
-    }
-
     /** a table creation, from this table's RecordInfo */
     protected void create(SQLDBConnection dbc, String tblname, boolean really) throws SQLException {
         Statement st = dbc.createStatement();
@@ -683,7 +673,7 @@ public class TableManager extends Table {
                 findDuplicates((SQLDBConnection) dbc, d);
 
             if (!wasIndex && getSQLDatabase().isAutoIncrement()) {
-                ps = (PreparedStatement) ((SQLDBConnection) dbc).getPreparedStatement("SELECT LAST_INSERT_ID()");
+                ps = (PreparedStatement) ((SQLDBConnection) dbc).getPreparedStatement(getQueryAutoIncrementSyntax());
                 ResultSet rs = ps.executeQuery();
                 rs.next();
                 d.put(indexField, new SQLPointer(getDataDefinition().getName(), rs.getInt(1)));
@@ -2019,7 +2009,7 @@ public class TableManager extends Table {
     private String in_primaryKeyCreate(String fieldName, Database d) {
         // FIXME: primary keys will have to be made in another step, before hibernate schema update
         if (getSQLDatabase().isAutoIncrement() || getDatabase().usesHibernateIndexes())
-            return base_inCreate(fieldName, d) + " auto_increment primary key";
+            return base_inCreate(fieldName, d) + " " + getCreateAutoIncrementSyntax();
         else
             return base_inCreate(fieldName, d);
     }
@@ -2209,6 +2199,42 @@ public class TableManager extends Table {
             dbcw.close();
         }
 
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /**
+     * DBMS-specific syntax
+     * 
+     * useful resource: http://www.troels.arvin.dk/db/rdbms/
+     **/
+    
+    /** for odbc */
+    protected void indexCreated(SQLDBConnection dbc) {
+    }
+
+    /** for mysql */
+    protected String createDbSpecific(String command) {
+        return command;
+    }
+
+    /** mysql needs to have it adjustable */
+    protected String getTableMissingStateName(SQLDBConnection dbc) {
+        return "tableMissing";
+    }
+    
+    protected String getQueryAutoIncrementSyntax() {
+        return null;
+    }
+    
+    protected String getCreateAutoIncrementSyntax() {
+        return null;
     }
 
 }
