@@ -96,5 +96,15 @@ public class MysqlTableManager extends org.makumba.db.makumba.sql.TableManager {
                 return super.getSQLType(fieldName);
         }
     }
+    
+    @Override
+    protected String getQueryAutoIncrementSyntax() {
+        return "SELECT LAST_INSERT_ID()";
+    }
+    
+    @Override
+    protected String getCreateAutoIncrementSyntax() {
+        return "AUTO_INCREMENT PRIMARY KEY";
+    }
 
 }
