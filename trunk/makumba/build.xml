@@ -84,8 +84,8 @@
         <fileset dir="${java.home}/lib/">
             <include name="rt.jar" />
         </fileset>
-        <fileset dir="${basedir}/lib/test">
-            <include name="tomcat-bootstrap.jar" />
+        <fileset dir="${tomcat.home}/bin/">
+            <include name="bootstrap.jar" />
     	</fileset>
         <fileset dir="${basedir}/lib/common">
             <include name="servlet-api.jar" />
