@@ -163,6 +163,7 @@ th.changenote,td.changenote{width:30%;overflow:hidden;}
 .pageactions a.action{display:block;}
 #morebutton a:hover,a.action:hover,#sectiontoc a:hover .userbox a.action:hover,a.action.quick2bottom:hover,a.action.quick2top:hover{background-color:#eee!important;}
 #searchTools a.action,.userbox a.action,a.action.edit,a.action.more{padding:.25em .5em;text-decoration:none;line-height:normal;border:1px solid #ddd;background:#f9f9f9;white-space:nowrap;}
+a.feed{background-image:url(../../images/jspwiki-strip.gif);background-repeat:no-repeat;background-position:0 0;text-indent:16px;margin:0 .5em;width:16px;height:16px;text-decoration:none;overflow:hidden;display:block;float:right;}
 a.action.edit,a.action.more{margin-left:4px;border-bottom:none;}
 a.action.more{padding-right:1.5em;background:#f9f9f9 url(images/arrdownsmall.gif) 95% center no-repeat;}
 a.action.quick2top,a.action.quick2bottom{overflow:hidden;padding:0;text-indent:20px;width:20px;margin:0 0 0 2px;}
