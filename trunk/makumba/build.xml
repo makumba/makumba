@@ -87,6 +87,9 @@
         <fileset dir="${tomcat.home}/bin/">
             <include name="bootstrap.jar" />
     	</fileset>
+        <fileset dir="${tomcat.home}/lib/">
+            <include name="*.jar" />
+        </fileset>
         <fileset dir="${basedir}/lib/common">
             <include name="servlet-api.jar" />
             <include name="commons-logging-api.jar" />
