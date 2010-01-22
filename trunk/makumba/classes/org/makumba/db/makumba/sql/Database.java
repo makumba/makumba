@@ -60,8 +60,6 @@ public class Database extends org.makumba.db.makumba.Database {
 
 	protected static String eng; //
 
-	Properties types = new Properties();
-
 	boolean addUnderscore = true;
 
 	Hashtable<String, Vector<Hashtable<String, Object>>> catalog = null;
@@ -545,7 +543,7 @@ public class Database extends org.makumba.db.makumba.Database {
           Method toStringMethod = Object.class.getMethod("toString", new Class[] {});
           Object toStr = c3p0Stmt.rawStatementOperation(toStringMethod,
               C3P0ProxyStatement.RAW_STATEMENT, new Object[] {});
-          if (sql instanceof String) {
+          if (toStr instanceof String) {
             sql = (String) toStr;
             sql = sql.substring(sql.indexOf('-') + 1).trim() + ";";
             return sql;
