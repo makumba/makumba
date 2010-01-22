@@ -12,7 +12,7 @@ import org.makumba.ProgrammerError;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 
-public class GenericMakumbaTag extends AnalysableTag {
+public abstract class GenericMakumbaTag extends AnalysableTag {
     
     public static final String NEEDED_RESOURCES = "org.makumba.neededResources";
     
