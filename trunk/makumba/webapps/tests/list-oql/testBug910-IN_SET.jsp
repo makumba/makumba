@@ -15,7 +15,7 @@
 
 <% Vector ptrs = new Vector(); %>
 
-<h2> mak:list that gets all persons, and builds the vector</h2>
+<h4> mak:list that gets all persons, and builds the vector</h4>
 <mak:list from="test.Person p">
   <mak:value expr="p.indiv.name"/><br/>
   <mak:value expr="p" var="personPtr"/> <% ptrs.add(personPtr); %>
@@ -23,12 +23,12 @@
 
 <% pageContext.setAttribute("ptrs", ptrs); %>
 
-<h2> mak:list that gets all persons that are IN SET of the previously built vector </h2>
+<h4> mak:list that gets all persons that are IN SET of the previously built vector </h4>
 <mak:list from="test.Person p" where="p IN SET ($ptrs)">
   <mak:value expr="p.indiv.name"/><br/>
 </mak:list>
 
-<h2> Transaction.executeQuery that gets all persons that are IN SET of the previously built vector </h2>
+<h4> Transaction.executeQuery that gets all persons that are IN SET of the previously built vector, accessing the vector as $1 </h4>
 <% 
   Transaction t = TransactionProvider.getInstance().getConnectionTo(TransactionProvider.getInstance().getDefaultDataSourceName());  
   Vector<Dictionary<String, Object>> v = t.executeQuery("SELECT p.indiv.name as name from test.Person p WHERE p IN SET ($1)", ptrs);
@@ -37,9 +37,17 @@
   }
 %>
 
-<h2> Transaction.executeQuery that gets all persons that are IN SET of the previously built vector </h2>
+<h4> Transaction.executeQuery that gets all persons that are IN SET of the previously built vector, using $1 and $2, passing the whole vector </h4>
 <% 
   v = t.executeQuery("SELECT p.indiv.name as name from test.Person p WHERE p IN SET ($1, $2)", new Object[] {ptrs, ptrs});
+  for (Dictionary<String, Object> dic : v) {
+     out.println(dic.get("name") + "<br/>");
+  }
+%>
+
+<h4> Transaction.executeQuery that gets all persons that are IN SET of the previously built vector, using $1 and $2, passing just the respective vector elements </h4>
+<% 
+  v = t.executeQuery("SELECT p.indiv.name as name from test.Person p WHERE p IN SET ($1, $2)", new Object[] {ptrs.elementAt(0), ptrs.elementAt(1)});
   for (Dictionary<String, Object> dic : v) {
      out.println(dic.get("name") + "<br/>");
   }
