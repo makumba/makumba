@@ -172,12 +172,10 @@ public class MDDParser extends MDDBaseParser {
                 factory.doThrow(e, expression, typeName);
             }   
             if(parser.error != null) {
-                if(parser.error instanceof RecognitionException) {
-                    RecognitionException e = (RecognitionException) parser.error;
-                    e.column = expression.getColumn() + e.column;
-                    e.line = expression.getLine();
-                    factory.doThrow(e, expression, typeName);
-                }
+                RecognitionException e = (RecognitionException) parser.error;
+                e.column = expression.getColumn() + e.column;
+                e.line = expression.getLine();
+                factory.doThrow(e, expression, typeName);
             }
             
             AST tree = parser.getAST();
