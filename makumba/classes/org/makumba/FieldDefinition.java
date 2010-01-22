@@ -117,6 +117,7 @@ public interface FieldDefinition {
      * <li>ptrOne: pointer to type defined on-the-spot</li>
      * <li>ptrIndex: primary key, automatically added</li>
      * <li>int: normal integer</li>
+     * <li>real: a double value</li>
      * <li>intEnum: integer defined by enumeration</li>
      * <li>char: normal character</li>
      * <li>charEnum: character defined by enumeration</li>
@@ -127,9 +128,9 @@ public interface FieldDefinition {
      * <li>set: normal set in another table</li>
      * <li>setComplex: set of type defined on-the-spot</li>
      * <li>binary: binary data type (images, documents...)</li>
+     * <li>file: binary data enriched with meta-data (size, mime type, ...)</li>
      * <li>boolean: boolean, can only take two values</li>
      * </ul>
-     * TODO nil and real and timeStamp need to be added???
      */
     public String getType();
     
