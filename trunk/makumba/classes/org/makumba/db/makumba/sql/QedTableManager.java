@@ -17,7 +17,8 @@ import org.makumba.FieldDefinition;
 public class QedTableManager extends org.makumba.db.makumba.sql.TableManager {
 
 	//	  moved from qed.textManager
-	protected String getfieldDBType(String fieldName) {
+    @Override
+	protected String getFieldDBType(String fieldName) {
 		switch (getFieldDefinition(fieldName).getIntegerType()) {
 		case FieldDefinition._text:
 			return "TEXT";
