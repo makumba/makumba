@@ -173,7 +173,7 @@ public class ptrEditor extends choiceEditor {
                 && formatParams.get("autoComplete").equals("true");
 
         // we have to check whether we are not a setEditor
-        if (autoComplete && this instanceof ptrEditor) {
+        if (autoComplete && !(this instanceof setEditor)) {
             return formatAutoComplete(rf, fieldIndex, o, formatParams);
         } else {
             return super.format(rf, fieldIndex, o, formatParams);
