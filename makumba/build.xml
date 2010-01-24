@@ -129,6 +129,31 @@
             <fileset dir="lib/building/" includes="ant-contrib-*.jar" />
         </classpath>
     </taskdef>
+  
+    <taskdef resource="net/sf/antcontrib/antlib.xml">
+        <classpath>
+            <fileset dir="lib/building/" includes="ant-contrib-*.jar" />
+        </classpath>
+    </taskdef>
+
+    <!-- it's normal that this taskdef issues a warning, see the doMavenDeploy task for more info -->
+    <taskdef resource="org/apache/commons/openpgp/ant/antlib.xml" uri="antlib:org.apache.commons.openpgp.ant">
+      <classpath>
+        <fileset dir="lib/building/">
+          <include name="commons-openpgp-1.0-SNAPSHOT.jar" />
+        </fileset>
+      </classpath>
+    </taskdef>
+
+  
+    <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant">
+      <classpath>
+        <fileset dir="lib/building/" includes="maven-ant-tasks-2.1.0.jar" />
+      </classpath>
+    </typedef>
+  
+  
+
     
     
 <!-- Targets for Eclipse workspace set-up -->    
@@ -367,8 +392,8 @@
     </target>
 
     <target name="releaseHowTo" unless ="doRelease">
-    <echo>In order to make a new relase, you need to provide a release name and a valid sourceforge username and password for the upload</echo>
-    <echo>e.g. ant release -Dtag=makumba-0_8_2_1 -Duser=manuel_gay -Dpassword=XXX</echo>
+      <echo>In order to make a new relase, you need to provide a release name and a valid sourceforge username and password for the upload</echo>
+      <echo>e.g. ant release -Dtag=makumba-0_8_2_1 -Duser=manuel_gay -Dpassword=XXX</echo>
     </target>
 
 
@@ -487,25 +512,120 @@
             </fileset>
         </scp>
     </target>
+  
+<!-- Targets for deployment to maven repository -->
+  
+    <target name="mavenDeploy">
+      
+      <condition property="doDeploy">
+        <and>
+          <isset property="tag" />
+            <and> 
+              <isset property="keyphrase" />
+              <and>
+                <isset property="username" />
+                <and>
+                  <isset property="password" />
+                </and>
+              </and>
+            </and>
+        </and>
+      </condition>
 
-    <target name="publishJar" depends="compile, generateTLDs" if="tag"
-        description="makes the jar and a src tarball of the given version, puts it in ./lib and publishes it on the web">
-        <mkdir dir="work/makumba.distrib" />
-        <delete dir="work/makumba.distrib/makumba/" />
-        <echo>Warning! publishJar changed semantics. You have to tag the version manually</echo>
-        <antcall target="uploadJar">
-        </antcall>
-
-        <ftp server="download.makumba.org" userid="ftp-mak" password="ftp-mak" remotedir="makumba/doc/download"
-            binary="yes">
-            <fileset dir="lib/">
-                <include name="makumba.jar" />
-            </fileset>
-        </ftp>
+      <antcall target="doMavenDeploy" />
+      <antcall target="mavenDeployHowTo" />
+      
     </target>
+  
+    <target name="mavenDeployHowTo" unless="doDeploy">
+      <echo>In order to deploy the release to the maven repository at sonatype.org, you need to provide:
+        - the tag to release (make sure the JAR was built before)
+        - the keyphrase for the PGP key
+        - the username for the sonatype repository
+        - the password for the sonatype repository
+        
+        Additionally, you need to have the makumba-secring.gpg and makumba-pubring.gpg key files in the root directory of this project.
+      </echo>
+      <echo>Example: ant mavenDeploy -Dtag=makumba-0_8_2_6 -Dkeyphrase=secret -Dusername=manu -Dpassword=myPassword</echo>
+    </target>
+  
+    <target name="doMavenDeploy" if="doDeploy" xmlns:artifact="urn:maven-artifact-ant" xmlns:openpgp="antlib:org.apache.commons.openpgp.ant" >
+      
+      <copy file="${jar.place}/lib/${tag}.jar" tofile="work/makumba.jar" />
+      
+      <artifact:remoteRepository id="sonatype.release" url="http://oss.sonatype.org/service/local/staging/deploy/maven2/">
+        <releases enabled="true"/>
+        <snapshots enabled="false"/>
+        <authentication username="${username}" password="${password}"/>
+      </artifact:remoteRepository> 
 
+      <!-- compute the version from the tag -->
+      <propertyregex
+        property="release.version"
+        input="${tag}"
+        regexp="makumba-*"
+        replace=""
+        casesensitive="false" />
+      
+      <propertyregex
+        property="release.version"
+        input="${release.version}"
+        regexp="_"
+        replace="."
+        global="true"
+        override="true"
+        casesensitive="false" />
 
+      
+      <!-- in-memory POM definition -->
+      <artifact:pom
+        id="makumba-memory.project" groupId="org.makumba" artifactId="makumba" version="${release.version}" name="makumba"
+        description="A framework for rapid and sustainable web-development" packaging="jar" url="http://www.makumba.org">
+        
+        <!-- <dependency groupId="junit" artifactId="junit" version="4.1"/> -->
+        <license name="LGPL" url="http://www.gnu.org/copyleft/lesser.html"/>
+        <scm url="http://svn.makumba.sourceforge.net/" connection="http://svn.makumba.sourceforge.net/" />
+      </artifact:pom>
+      
+      <!-- write the POM on disk -->
+      <artifact:writepom file="work/release-pom.xml" pomrefid="makumba-memory.project" />
+      
+      <artifact:pom file="work/release-pom.xml" id="makumba.project" />
+      
+      <echo>Signing makumba.jar and release-pom.xml</echo>
+      <echo>This may fail if you didn't set up your JVM correctly, make sure you read the comments in build.xml!</echo>
+      
+      <!--
+      ANT support for signature is not mature yet, but it works.
+      - you need to have the public and private key files for this (makumba-secring.gpg, makumba-pubring.gpg)
+      - additionally, you need to set up the BouncyCastle provider in your JVM:
+        (from http://www.randombugs.com/java/javalangsecurityexception-jce-authenticate-provider-bc.html)
+        - Find java.security in /path_to_your_jvm/jre/lib/security
+        - Add security.provider.9=org.bouncycastle.jce.provider.BouncyCastleProvider (or .10, or .11, ...)
+        - Add the bcprov-jdk16-145.jar and bcpg-jdk16-145.jar to /path_to_your_jvm/jre/lib/ext (they're in lib/building/)
+      -->
+      <openpgp:signer
+        secring="${basedir}/makumba-secring.gpg"
+        pubring="${basedir}/makumba-pubring.gpg"
+        password="${keyphrase}"
+        keyid="BA693BED"
+        asciiarmor="true">
+        <fileset dir="${basedir}/work/">
+          <include name="release-pom.xml" />
+          <include name="makumba.jar" />
+        </fileset>
+      </openpgp:signer>
 
+      
+      <!-- deploy makumba.jar file -->
+      <artifact:deploy file="work/makumba.jar">
+        <remoteRepository refid="sonatype.release"/>
+        <!-- <remoteRepository refid="local.snapshot"/> -->
+        <pom refid="makumba.project"/> 
+      </artifact:deploy>
+      
+
+    </target>
 
 <!-- Targets for JUNIT testing -->    
 
@@ -861,7 +981,6 @@
                 <include name="ant-jsch.jar" />
             	<include name="ant-commons-net.jar" />
             	<include name="ant-contrib-1.0b2.jar" />
-                
             </fileset>
         </copy>
     </target>
