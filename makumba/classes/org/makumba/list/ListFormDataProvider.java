@@ -11,6 +11,7 @@ import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
+import org.makumba.analyser.AnalysableElement;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 import org.makumba.analyser.TagData;
@@ -23,8 +24,8 @@ import org.makumba.forms.tags.SearchFieldTag;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.QueryExecution;
 import org.makumba.list.engine.valuecomputer.ValueComputer;
-import org.makumba.list.tags.GenericListTag;
 import org.makumba.list.tags.QueryTag;
+import org.makumba.list.tags.ValueTag;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.FormDataProvider;
 
@@ -93,8 +94,11 @@ public class ListFormDataProvider implements FormDataProvider {
                         + "' to be used as base object for the addForm");
             }
         } else { // enclosed in list or form
+            
+            boolean isValue = tag instanceof ValueTag;
+            
             pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, tag.getTagKey(),
-                ValueComputer.getValueComputerAtAnalysis(tag, parentListKey, ptrExpr, pageCache));
+                ValueComputer.getValueComputerAtAnalysis(isValue, parentListKey, ptrExpr, pageCache));
         }
     }
 
@@ -108,8 +112,10 @@ public class ListFormDataProvider implements FormDataProvider {
             PageCache pageCache, String ptrExpr) {
         MultipleKey parentListKey = getBasicValueParentListKey(tag, isNull, parentFormKey, pageCache);
 
+        boolean isValue = tag instanceof ValueTag;
+        
         pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, tag.getTagKey(), ValueComputer.getValueComputerAtAnalysis(
-            tag, parentListKey, ptrExpr, pageCache));
+            isValue, parentListKey, ptrExpr, pageCache));
     }
 
     private MultipleKey getBasicValueParentListKey(AnalysableTag tag, boolean isNull, MultipleKey parentFormKey,
@@ -141,8 +147,10 @@ public class ListFormDataProvider implements FormDataProvider {
                 && ValueComputer.isPointer(pageCache, parentListKey, expr) && !expr.endsWith(".id"))
             expr += ".id";
 
+        boolean isValue = tag instanceof ValueTag;
+        
         pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, tag.getTagKey(), ValueComputer.getValueComputerAtAnalysis(
-            tag, parentListKey, expr, pageCache));
+            isValue, parentListKey, expr, pageCache));
     }
 
     /*
@@ -233,7 +241,7 @@ public class ListFormDataProvider implements FormDataProvider {
      *      javax.servlet.jsp.PageContext)
      */
     public String computeBasePointer(MultipleKey tagKey, PageContext pageContext) throws LogicException {
-        PageCache pageCache = GenericListTag.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance());
+        PageCache pageCache = AnalysableElement.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance());
         if (retrieveBaseObjectInputInfo(tagKey, pageCache) != null) {
             return "valueOf_" + retrieveBaseObjectInputInfo(tagKey, pageCache)[1];
         }

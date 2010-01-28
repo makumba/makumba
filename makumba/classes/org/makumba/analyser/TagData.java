@@ -26,16 +26,17 @@ package org.makumba.analyser;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.makumba.analyser.engine.SourceSyntaxPoints;
 import org.makumba.analyser.engine.SyntaxPoint;
 
 /**
  * A composite object passed to the analyzers.
  * 
  * @author Cristian Bogdan
+ * @author Manuel Gay
  * @version $Id$
  */
-public class TagData implements Serializable {
+public class TagData extends ElementData implements Serializable {
+   
     private static final long serialVersionUID = 1L;
 
     /** Name of the tag */
@@ -50,10 +51,6 @@ public class TagData implements Serializable {
     /** Tag object, if one is created by the analyzer */
     public Object tagObject;
 
-    int startLine, startColumn, endLine, endColumn;
-
-    protected SourceSyntaxPoints sourceSyntaxPoints;
-
     public TagData(String name, SyntaxPoint start, SyntaxPoint end, Map<String, String> attributes) {
         this.name = name;
         this.sourceSyntaxPoints = start.getSourceSyntaxPoints();
@@ -66,26 +63,6 @@ public class TagData implements Serializable {
 
     public Object getTagObject() {
         return tagObject;
-    }
-
-    public int getStartLine() {
-        return startLine;
-    }
-
-    public int getStartColumn() {
-        return startColumn;
-    }
-
-    public int getEndLine() {
-        return endLine;
-    }
-
-    public int getEndColumn() {
-        return endColumn;
-    }
-
-    public SourceSyntaxPoints getSourceSyntaxPoints() {
-        return sourceSyntaxPoints;
     }
 
     @Override

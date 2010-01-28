@@ -632,7 +632,7 @@ public abstract class LineViewer implements SourceViewer {
             // needed e.g. for files like /usr/local/cvsroot/karamba/public_html/general/survey/user/viewStatistics.jsp
             s = s.substring(s.lastIndexOf("/") + 1);
         }
-        if (!s.startsWith("/") && realPath != null) { // relative reference
+        if (!s.startsWith("/") && realPath != null && !s.equals(".")) { // relative reference, except simple dot
             File file = new File(realPath.substring(0, realPath.lastIndexOf(File.separatorChar)) + File.separatorChar
                     + s.replace('/', File.separatorChar));
             if (file.exists()) {

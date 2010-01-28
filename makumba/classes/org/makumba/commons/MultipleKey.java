@@ -68,7 +68,7 @@ public class MultipleKey extends Vector<Object> implements Serializable {
         setAt(o, v.size());
     }
 
-    public MultipleKey(Object o[]) {
+    public MultipleKey(Object... o) {
         this(o, o.length);
     }
 

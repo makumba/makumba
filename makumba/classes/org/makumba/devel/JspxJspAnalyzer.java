@@ -23,6 +23,7 @@
 
 package org.makumba.devel;
 
+import org.makumba.analyser.ELData;
 import org.makumba.analyser.TagData;
 import org.makumba.analyser.engine.JspParseData;
 import org.makumba.analyser.interfaces.JspAnalyzer;
@@ -80,6 +81,10 @@ public class JspxJspAnalyzer implements JspAnalyzer {
 
     /** a system tag, like <%@ ...%> */
     public void systemTag(TagData td, Object status) {
+    }
+    
+    /** an EL expression, either ${...} or #{...} **/
+    public void elExpression(ELData ed, Object status) {
     }
 
     /**

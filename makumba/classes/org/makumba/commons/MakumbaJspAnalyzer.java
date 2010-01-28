@@ -28,7 +28,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.el.Expression;
+
+import org.makumba.analyser.AnalysableElement;
+import org.makumba.analyser.AnalysableExpression;
 import org.makumba.analyser.AnalysableTag;
+import org.makumba.analyser.ELData;
 import org.makumba.analyser.PageCache;
 import org.makumba.analyser.TagData;
 import org.makumba.analyser.interfaces.JspAnalyzer;
@@ -49,7 +54,11 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
     // cache keys, centralised in one place to have an overview of what is cached
 
     public static final String TAG_CACHE = "org.makumba.tags";
+    
+    public static final String EL_CACHE = "org.makumba.el";
 
+    public static final String EL_DATA_CACHE = "org.makumba.elData";
+    
     public static final String TAG_DATA_CACHE = "org.makumba.tagData";
 
     public static final String FORM_TAGS_DEPENDENCY_CACHE = "org.makumba.dependency";
@@ -107,6 +116,10 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
 
     static String[] formTagNames = { "form", "newForm", "addForm", "editForm", "deleteLink", "delete", "searchForm",
             "new", "add", "edit", "submit" };
+    
+    static String[] elExpressions = { "expr", "org.makumba.list.tags.ValueExpression" };
+    
+    static String[] elExpressionNames = { "expr"};
 
     static final Map<String, Class<?>> tagClasses = new HashMap<String, Class<?>>();
 
@@ -133,6 +146,13 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
         for (int i = 0; i < formTags.length; i += 2) {
             try {
                 tagClasses.put(formTags[i], Class.forName(formTags[i + 1]));
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        }
+        for (int i = 0; i < elExpressions.length; i += 2) {
+            try {
+                tagClasses.put(elExpressions[i], Class.forName(elExpressions[i + 1]));
             } catch (Throwable t) {
                 t.printStackTrace();
             }
@@ -248,7 +268,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
             if (c == null) {
                 return;
             }
-            AnalysableTag.analyzedTag.set(td);
+            AnalysableElement.setAnalyzedElementData(td);
             AnalysableTag t = null;
             try {
                 t = (AnalysableTag) c.newInstance();
@@ -259,8 +279,45 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
             td.tagObject = t;
             t.setTagDataAtAnalysis(td);
             ((ParseStatus) status).addTag(t, td);
-            AnalysableTag.analyzedTag.set(null);
+            AnalysableElement.setAnalyzedElementData(null);
         }
+    }
+    
+    /**
+     * Performs analysis for a EL expression (see {@link Expression})
+     * 
+     *  @param td
+     *            the TagData holding the information
+     * @param status
+     *            the status of the parsing
+     */
+    public void elExpression(ELData ed, Object status) {
+        // we accept only makumba EL stuff
+        
+        if(!StringUtils.startsWith(ed.getExpression(), elExpressionNames)) {
+            return;
+        }
+        
+        // find the type of the expression / method
+        String type = StringUtils.getStartsWith(ed.getExpression(), elExpressionNames);
+        
+        Class<?> c = tagClasses.get(type);
+        if (c == null) {
+            return;
+        }
+        AnalysableElement.setAnalyzedElementData(ed);
+        AnalysableExpression e = null;
+        try {
+            e = (AnalysableExpression) c.newInstance();
+        } catch (Throwable thr) {
+            thr.printStackTrace();
+        }
+        
+        e.setELDataAtAnalysis(ed);
+        e.treatELExpressionAtAnalysis(ed.getExpression());
+        
+        ((ParseStatus) status).addExpression(e, ed);
+        AnalysableElement.setAnalyzedElementData(null);
     }
 
     /**
@@ -308,9 +365,9 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
      *            the status of the parsing
      */
     public void endTag(TagData td, Object status) {
-        AnalysableTag.analyzedTag.set(td);
+        AnalysableElement.setAnalyzedElementData(td);
         ((ParseStatus) status).end(td);
-        AnalysableTag.analyzedTag.set(null);
+        AnalysableElement.setAnalyzedElementData(null);
     }
 
     public Object makeStatusHolder(Object initialStatus) {

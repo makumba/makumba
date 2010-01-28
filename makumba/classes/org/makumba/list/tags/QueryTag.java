@@ -32,6 +32,7 @@ import org.apache.commons.lang.StringUtils;
 import org.makumba.LogicException;
 import org.makumba.MakumbaError;
 import org.makumba.ProgrammerError;
+import org.makumba.analyser.AnalysableElement;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.MakumbaJspAnalyzer;
@@ -384,7 +385,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
      * @throws JspException
      */
     public int doAfterBody() throws JspException {
-        runningTag.set(tagData);
+        setRunningElementData(tagData);
         try {
 
             int n = execution.nextGroupIteration();
@@ -405,7 +406,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
             }
             return SKIP_BODY;
         } finally {
-            runningTag.set(null);
+            setRunningElementData(null);
         }
     }
 
@@ -549,7 +550,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
         if (total == Integer.MIN_VALUE) { // we still need to evaluate this total count
             PageContext pageContext = (PageContext) servletRequest.getAttribute(standardMaxResultsContext);
             MultipleKey keyMaxResults = (MultipleKey) servletRequest.getAttribute(standardMaxResultsKey);
-            PageCache pageCache = getPageCache(pageContext, MakumbaJspAnalyzer.getInstance());
+            PageCache pageCache = AnalysableElement.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance());
             try {
                 QueryExecution exec = QueryExecution.getFor(keyMaxResults, pageContext, null, null);
                 int dataSize = exec.getIterationGroupData();

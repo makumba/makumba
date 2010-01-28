@@ -35,6 +35,8 @@ import java.util.regex.Pattern;
 
 import javax.servlet.jsp.tagext.Tag;
 
+import org.makumba.analyser.ElementData;
+import org.makumba.analyser.ELData;
 import org.makumba.analyser.TagData;
 import org.makumba.analyser.interfaces.JspAnalyzer;
 import org.makumba.commons.NamedResourceFactory;
@@ -71,7 +73,8 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
 
     /** The patterns used to parse the page. */
     static private Pattern JspSystemTagPattern, JspTagPattern, JspCommentPattern, JspScriptletPattern,
-            JspIncludePattern, JspTagAttributePattern, JspExpressionLanguagePattern, Word, TagName;
+            JspIncludePattern, JspTagAttributePattern, JspExpressionLanguagePattern, JsfExpressionLanguagePattern, Word, TagName,
+            MapExpression, DotExpression;
 
     static private String[] JspCommentPatternNames = { "JspComment", "JspScriptlet" };
 
@@ -132,8 +135,10 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
             JspCommentPattern = Pattern.compile("<%--.*?[^-]--%>", Pattern.DOTALL);
             JspScriptletPattern = Pattern.compile("<%[^@].*?%>", Pattern.DOTALL);
             JspExpressionLanguagePattern = Pattern.compile("\\$\\{[^\\}]*\\}");
+            JsfExpressionLanguagePattern = Pattern.compile("\\#\\{[^\\}]*\\}");
             Pattern[] cp = { JspCommentPattern, JspScriptletPattern };
             JspCommentPatterns = cp;
+            MapExpression = Pattern.compile("[A-Za-z]\\w*\\[[^]]*\\]");
             Word = Pattern.compile("\\w+");
             TagName = Pattern.compile("\\w+:\\w+");
         } catch (Throwable t) {
@@ -141,6 +146,13 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
         }
     }
 
+    /**
+     * Releases parsing data that is useful during analysis and for error handling, but not needed anymore afterwards
+     */
+    public synchronized void discardParsingData() {
+        syntaxPoints.discardPoints();
+    }
+    
     /**
      * Performs the analysis if not performed already, or if the file has changed. The method is synchronized, so other
      * accesses are blocked if the current access determines that an analysis needs be performed
@@ -150,16 +162,10 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
      *            analyzer
      */
     public synchronized Object getAnalysisResult(Object initStatus) {
-        try {
-            if (getSyntaxPoints() == null || !getSyntaxPoints().unchanged()) {
-                getSyntaxPointArray(initStatus);
-            }
-            return holder;
-        } finally {
-            if(syntaxPoints!=null) {
-                syntaxPoints.discardPoints();
-            }
+        if (getSyntaxPoints() == null || !getSyntaxPoints().unchanged()) {
+            getSyntaxPointArray(initStatus);
         }
+        return holder;
     }
 
     public synchronized SyntaxPoint[] getSyntaxPointArray(Object initStatus){
@@ -228,12 +234,8 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
         holder = analyzer.makeStatusHolder(initStatus);
         syntaxPoints = new SourceSyntaxPoints(file, this);
 
-
-        // treat JSP Expression Language
-        treatEL(syntaxPoints.getContent(), analyzer);
-
-        // the page analysis as such:
-        treatTags(syntaxPoints.getContent(), analyzer);
+        // handles the page elements, i.e. tags and expression language
+        treatPageContent(syntaxPoints.getContent(), analyzer);
 
         holder = analyzer.endPage(holder);
 
@@ -328,34 +330,24 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
         return "JspInclude";
     }
 
+    
     /**
-     * Go through the expression language in the page.
+     * Goes through the page and matches tags, system tags, and EL expressions in such a way
+     * that the calls to the handling methods happen in sequential order.
      * 
-     * @param content
-     *            the content of the page
-     * @param an
-     *            the JspAnalyzer used to analyze the page
-     */
-    void treatEL(String content, JspAnalyzer an) {
-        Matcher m = JspExpressionLanguagePattern.matcher(content);
-        while (m.find()) {
-            SyntaxPoint end = syntaxPoints.addSyntaxPoints(m.start(), m.end(), "ExpressionLanguage", null);
-            end.getOtherInfo();
-        }
-    }
-
-    /**
-     * Go through the tags in the page.
+     * TODO add support for JSF EL expressions
      * 
-     * @param content
-     *            the content of the page
-     * @param an
-     *            the JspAnalyzer used to analyze the page
+     * @param content the content of the page
+     * @param an a {@link JspAnalyzer} implementation
      */
-    void treatTags(String content, JspAnalyzer an) {
+    void treatPageContent(String content, JspAnalyzer an) {
+        
         Matcher tags = JspTagPattern.matcher(content);
         Matcher systemTags = JspSystemTagPattern.matcher(content);
+        Matcher jspELExpressions = JspExpressionLanguagePattern.matcher(content);
+        Matcher jsfELExpressions = JsfExpressionLanguagePattern.matcher(content);
 
+        
         int tagStart = Integer.MAX_VALUE;
         if (tags.find()) {
             tagStart = tags.start();
@@ -364,27 +356,72 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
         if (systemTags.find()) {
             systemStart = systemTags.start();
         }
-
+        int jspELExpressionStart = Integer.MAX_VALUE;
+        if (jspELExpressions.find()) {
+            jspELExpressionStart = jspELExpressions.start();
+        }
+        
         while (true) {
-            if (tagStart < systemStart) {
+            if (tagStart < systemStart && tagStart < jspELExpressionStart) {
                 treatTag(tags, content, an);
                 tagStart = Integer.MAX_VALUE;
                 if (tags.find()) {
                     tagStart = tags.start();
                 }
-            } else if (systemStart < tagStart) {
+            } else if (systemStart < tagStart && systemStart < jspELExpressionStart) {
                 treatSystemTag(systemTags, content, an);
                 systemStart = Integer.MAX_VALUE;
                 if (systemTags.find()) {
                     systemStart = systemTags.start();
                 }
+            } else if (jspELExpressionStart < tagStart && jspELExpressionStart < systemStart) {
+                treatELExpression(jspELExpressions, content, an, false);
+                jspELExpressionStart = Integer.MAX_VALUE;
+                if (jspELExpressions.find()) {
+                    jspELExpressions.start();
+                }
             }
-            if (tagStart == Integer.MAX_VALUE && systemStart == Integer.MAX_VALUE) {
+            if (tagStart == Integer.MAX_VALUE && systemStart == Integer.MAX_VALUE && jspELExpressionStart == Integer.MAX_VALUE) {
                 break;
             }
         }
+        
+        
     }
+    
+    /**
+     * Treats a single EL expression, extracts all the maps of the kind Expr[...]
+     * 
+     * TODO also parse Expr.some.thing
+     * TODO parse attributes for methods, if these exist
+     * 
+     * @param m
+     *            the Matcher used to parse the expression
+     * @param content
+     *            the content of the page
+     * @param an
+     *            the JspAnalyzer used to analyze the page
+     * @param isJsf
+     *            whether this is a JSP EL value ${...} or a JSF method #{...}
+     */
+    void treatELExpression(Matcher m, String content, JspAnalyzer an, boolean isJsf) {
+        
+        SyntaxPoint end = syntaxPoints.addSyntaxPoints(m.start(), m.end(), "ExpressionLanguage", null);
+        SyntaxPoint start = (SyntaxPoint) end.getOtherInfo();
+        String elContent = content.substring(m.start() + 2, m.end() - 1);
+        Matcher map = MapExpression.matcher(elContent);
+        while(map.find()) {
+            SyntaxPoint mapEnd = syntaxPoints.addSyntaxPoints(m.start() + map.start(), m.start() + map.end(), "ExpressionLanguageMap", null);
+            SyntaxPoint mapStart = (SyntaxPoint) mapEnd.getOtherInfo();
+            
+            String mapContent = elContent.substring(map.start(), map.end());
 
+            ELData elData = new ELData(mapContent, mapStart, mapEnd);
+            an.elExpression(elData, holder);
+        }
+        
+    }
+    
     /**
      * Treats a jsp or taglib tag: parses its different parts and stores the analysis.
      * 
@@ -453,6 +490,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
 
         TagData td = new TagData(tag.substring(m1.start(), m1.end()), start, end, parseAttributes(tag, m.start()) );
 
+        // FIXME this should be in the analyzer and not in here
         if (td.name.equals("taglib")) { // find out whether we have a taglib tag
             if (td.attributes.get("uri") != null
                     && td.attributes.get("uri").toString().startsWith("http://www.makumba.org/")) {
@@ -502,7 +540,6 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
         an.systemTag(td, holder); // change?
     }
 
-
     /**
      * Prints the line of a tag and points the beginning of the tag. Seems to be a nice illustration for parse-error
      * messages.
@@ -512,7 +549,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
      * @param sb
      *            the StringBuffer used to print out
      */
-    public static void tagDataLine(TagData td, StringBuffer sb) {
+    public static void tagDataLine(ElementData td, StringBuffer sb) {
         sb.append("\n").append(td.getSourceSyntaxPoints().getLineText(td.getStartLine())).append('\n');
         for (int i = 1; i < td.getStartColumn(); i++) {
             sb.append(' ');

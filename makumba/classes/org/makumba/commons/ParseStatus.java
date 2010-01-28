@@ -29,7 +29,10 @@ import java.util.List;
 import javax.servlet.jsp.tagext.BodyTag;
 
 import org.makumba.ProgrammerError;
+import org.makumba.analyser.AnalysableElement;
+import org.makumba.analyser.AnalysableExpression;
 import org.makumba.analyser.AnalysableTag;
+import org.makumba.analyser.ELData;
 import org.makumba.analyser.PageCache;
 import org.makumba.analyser.TagData;
 import org.makumba.analyser.engine.JspParseData;
@@ -43,7 +46,6 @@ import org.makumba.list.tags.QueryTag;
  */
 public class ParseStatus {
 
-
     public ParseStatus() {
 
     }
@@ -56,18 +58,16 @@ public class ParseStatus {
 
     String formMakumbaURI; // for makumba forms
 
-    List<AnalysableTag> tags = new ArrayList<AnalysableTag>();
+    List<AnalysableElement> elements = new ArrayList<AnalysableElement>();
 
     List<AnalysableTag> parents = new ArrayList<AnalysableTag>();
 
     protected PageCache pageCache = new PageCache();
-    
+
     GraphTS formGraph = new GraphTS();
-    
-    
 
     /**
-     * Caches useful information for a tag in its TagData object and caches it in the pageCache. 
+     * Caches useful information for a tag in its TagData object and caches it in the pageCache.
      * 
      * @param t
      *            the tag to be added
@@ -102,45 +102,74 @@ public class ParseStatus {
                 pageCache.cache(MakumbaJspAnalyzer.TAG_CACHE, t.getId(), t);
             }
         }
-        
+
         // we also want to cache the dependencies between form tags
-        if(MakumbaJspAnalyzer.formTagNamesList.contains(getTagName(t.tagData.name))) {
-            
+        if (MakumbaJspAnalyzer.formTagNamesList.contains(getTagName(t.tagData.name))) {
+
             // fetch the parent
-            if(t.getParent() instanceof AnalysableTag) {
-                
+            if (t.getParent() instanceof AnalysableTag) {
+
                 AnalysableTag parent = (AnalysableTag) t.getParent();
-                
+
                 // if the parent is a form tag
                 // maybe not needed, but who knows
-                if(MakumbaJspAnalyzer.formTagNamesList.contains(getTagName(parent.tagData.name))) {
-                    
+                if (MakumbaJspAnalyzer.formTagNamesList.contains(getTagName(parent.tagData.name))) {
+
                     // we add this tag to the form graph
                     td.nodeNumber = formGraph.addVertex(t.getTagKey());
-                    
+
                     // we also add the dependency
                     formGraph.addEdge(td.nodeNumber, parent.tagData.nodeNumber);
-                    
+
                 } else {
                     // we are a root form
                     // we simply add it
                     td.nodeNumber = formGraph.addVertex(t.getTagKey());
                 }
-                
-            } else if(t.getParent() == null) {
+
+            } else if (t.getParent() == null) {
                 // this form tag has no parent
                 // we simply add it
                 td.nodeNumber = formGraph.addVertex(t.getTagKey());
             }
         }
-        
+
         pageCache.cache(MakumbaJspAnalyzer.TAG_DATA_CACHE, t.getTagKey(), td);
 
         t.doStartAnalyze(pageCache);
-        tags.add(t);
+
+        // check if the registered attribute values are correct
+        t.checkAttributeValues();
+
+        elements.add(t);
+    }
+
+    /**
+     * Caches useful information for an EL expression in the page cache, for later re-use
+     * 
+     * @param e
+     *            the {@link AnalysableExpression}
+     * @param ed
+     *            the {@link ELData}
+     */
+    void addExpression(AnalysableExpression e, ELData ed) {
         
+        // what's important for a makumba EL expression is to know its parent tag
+        if (!parents.isEmpty()) {
+            e.setParent(parents.get(parents.size() - 1));
+        } else {
+            e.setParent(null);
+        }
         
+        e.setKey(pageCache);
         
+        pageCache.cache(MakumbaJspAnalyzer.EL_CACHE, e.getKey(), e);
+        pageCache.cache(MakumbaJspAnalyzer.EL_DATA_CACHE, e.getKey(), ed);
+        
+        e.analyze(pageCache);
+        
+        elements.add(e);
+
     }
 
     /**
@@ -201,7 +230,9 @@ public class ParseStatus {
 
     /**
      * Gets the short name of a tag, without the prefix
-     * @param tagName the inital name of the tak, e.g. mak:newForm
+     * 
+     * @param tagName
+     *            the inital name of the tak, e.g. mak:newForm
      * @return the short version of the name, e.g. newForm
      */
     private String getTagName(String tagName) {
@@ -217,14 +248,17 @@ public class ParseStatus {
      * Ends the analysis when the end of the page is reached.
      */
     public void endPage() {
-        for (AnalysableTag analysableTag : tags) {
-            AnalysableTag t = analysableTag;
-            AnalysableTag.analyzedTag.set(t.tagData);
-            t.doEndAnalyze(pageCache);
-            AnalysableTag.analyzedTag.set(null);
+        for (AnalysableElement analysableElement : elements) {
+            if (analysableElement instanceof AnalysableTag) {
+                AnalysableTag t = (AnalysableTag) analysableElement;
+                AnalysableElement.setAnalyzedElementData(t.tagData);
+                t.doEndAnalyze(pageCache);
+                AnalysableElement.setAnalyzedElementData(null);
+            }
         }
         // additionally to the tags, we also store the dependency graph in the pageCache after sorting it
-        formGraph.topo();            
-        pageCache.cache(MakumbaJspAnalyzer.FORM_TAGS_DEPENDENCY_CACHE, MakumbaJspAnalyzer.FORM_TAGS_DEPENDENCY_CACHE, formGraph.getSortedKeys());
+        formGraph.topo();
+        pageCache.cache(MakumbaJspAnalyzer.FORM_TAGS_DEPENDENCY_CACHE, MakumbaJspAnalyzer.FORM_TAGS_DEPENDENCY_CACHE,
+            formGraph.getSortedKeys());
     }
 }

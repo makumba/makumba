@@ -9,6 +9,7 @@ import javax.servlet.jsp.JspException;
 
 import org.makumba.FieldDefinition;
 import org.makumba.ProgrammerError;
+import org.makumba.analyser.AnalysableElement;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 
@@ -203,13 +204,13 @@ public abstract class GenericMakumbaTag extends AnalysableTag {
             return;
         }
     
-        AnalysableTag.analyzedTag.set(tagData);
+        AnalysableElement.setAnalyzedElementData(tagData);
         if (fd != null && !value.isAssignableFrom(fd)) {
             throw new ProgrammerError("Attribute type changing within the page: in tag\n"
                     + ((AnalysableTag) val1[1]).getTagText() + " attribute " + key + " was determined to have type " + fd
                     + " and the from this tag results the incompatible type " + value);
         }
-        AnalysableTag.analyzedTag.set(null);
+        AnalysableElement.setAnalyzedElementData(null);
     
         Object[] val2 = { value, this };
         pc.cache(TYPES, key, val2);
