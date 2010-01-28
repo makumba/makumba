@@ -19,7 +19,9 @@ import org.makumba.LogicInvocationError;
 import org.makumba.MakumbaError;
 import org.makumba.OQLParseError;
 import org.makumba.Transaction;
-import org.makumba.analyser.AnalysableTag;
+import org.makumba.analyser.AnalysableElement;
+import org.makumba.analyser.ELData;
+import org.makumba.analyser.ElementData;
 import org.makumba.analyser.TagData;
 import org.makumba.analyser.engine.JspParseData;
 import org.makumba.commons.DbConnectionProvider;
@@ -56,10 +58,11 @@ public class ErrorFormatter {
             { org.makumba.InvalidFieldTypeException.class, "invalid field type" },
             { org.makumba.NoSuchFieldException.class, "no such field" },
             { org.makumba.NoSuchLabelException.class, "no such label" },
-            { org.makumba.LogicException.class, "business logic" } };
+            { org.makumba.LogicException.class, "business logic" },
+            { org.makumba.list.tags.MakumbaELException.class, "expression language"} };
 
     static final Class<?>[] knownJSPruntimeErrors = { ArrayIndexOutOfBoundsException.class,
-            NumberFormatException.class, ClassCastException.class };
+            NumberFormatException.class, ClassCastException.class, javax.el.ELException.class };
 
     protected ServletContext servletContext;
 
@@ -324,7 +327,11 @@ public class ErrorFormatter {
             body = "Exception occured at " + t.getStackTrace()[i].getClassName() + "."
                     + t.getStackTrace()[i].getMethodName() + ":" + t.getStackTrace()[i].getLineNumber() + "\n\n" + body;
         } else {
-            body = formatTagData(req) + body;
+            
+            // TODO we could improve the error message for specific errors, e.g. if a MakumbaQueryError occurs during analysis of a mak:value
+            // or a EL value expr, we could also display the query tag in order to help the developer
+            
+            body = formatElementData(req) + body;
         }
 
         if (original instanceof LogicInvocationError || trcOrig.indexOf("at org.makumba.abstr.Logic") != -1) {
@@ -359,24 +366,43 @@ public class ErrorFormatter {
     }
 
     /**
-     * Displays information about the tag in which the error occurs in a nice way
+     * Displays information about the element (tag or EL expression) in which the error occurs in a nice way
      * 
      * @param req
      *            the http request corresponding to the current access
-     * @return The tag error, nicely displayed
+     * @return The element error, nicely displayed
      */
-    String formatTagData(HttpServletRequest req) {
-        String tagExpl = "During analysis of the following tag (and possibly tags inside it):";
-        TagData tagData = AnalysableTag.getAnalyzedTag();
-        if (tagData == null) {
-            tagExpl = "During running of: ";
-            tagData = AnalysableTag.getRunningTag();
+    String formatElementData(HttpServletRequest req) {
+        
+        String explanation = new String();
+        ElementData data = null;
+        
+        // try to figure out where we are
+        // first try analysis, then running, then body tag
+        
+        // analysis
+        data = AnalysableElement.getAnalyzedElementData();
+        if(data != null) {
+            if(data instanceof TagData) {
+                explanation = "During analysis of the following tag (and possibly tags around or inside it):";
+            } else if(data instanceof ELData) {
+                explanation = "During analysis of the following EL expression (and possibly tags around it):";
+            }
+        } else {
+            // runtime
+            data = AnalysableElement.getRunningElementData();
+            if(data != null) {
+                explanation = "During running of:";
+            } else {
+                // body tag - fetch the data of the first surrounding tag
+                data = AnalysableElement.getCurrentBodyTagData();
+                if(data != null) {
+                    explanation = "While executing inside this body tag, but most probably *not* due to the tag:";
+                }
+            }
         }
-        if (tagData == null) {
-            tagExpl = "While executing inside this body tag, but most probably *not* due to the tag:";
-            tagData = AnalysableTag.getCurrentBodyTag();
-        }
-        if (tagData == null) {
+        
+        if (data == null) {
             String filePath = req.getRequestURL().toString();
             try {
                 String serverName = req.getLocalName() + ":" + req.getLocalPort() + req.getContextPath();
@@ -386,25 +412,27 @@ public class ErrorFormatter {
             } catch (Exception e) { // if some error occurs during the string parsing
                 filePath = req.getRequestURL().toString(); // --> we just present the whole request URL
             }
-            return tagExpl = "While executing page " + filePath + "\n\n";
+            return explanation = "While executing page " + filePath + "\n\n";
         }
+        
         StringBuffer sb = new StringBuffer();
         try {
-            JspParseData.tagDataLine(tagData, sb);
+            JspParseData.tagDataLine(data, sb);
         } catch (Throwable t) {
             // ignore source code retrieving bugs
             t.printStackTrace();
         }
+        String tagLine = sb.toString();
         String filePath;
         try {
             filePath = "/"
-                    + tagData.getSourceSyntaxPoints().getFile().getAbsolutePath().substring(
+                    + data.getSourceSyntaxPoints().getFile().getAbsolutePath().substring(
                         req.getSession().getServletContext().getRealPath("/").length());
         } catch (Exception e) { // we might not have a servlet context available
-            filePath = tagData.getSourceSyntaxPoints().getFile().getAbsolutePath();
+            filePath = data.getSourceSyntaxPoints().getFile().getAbsolutePath();
         }
-        return tagExpl + filePath + ":" + tagData.getStartLine() + ":" + tagData.getStartColumn() + ":"
-                + tagData.getEndLine() + ":" + tagData.getEndColumn() + "\n" + sb.toString() + "\n\n";
+        return explanation + filePath + ":" + data.getStartLine() + ":" + data.getStartColumn() + ":"
+                + data.getEndLine() + ":" + data.getEndColumn() + "\n" + tagLine + "\n\n";
 
     }
 
@@ -501,7 +529,7 @@ public class ErrorFormatter {
                     + "Please check the configuration of your webapp and SQL server.\n" + body;
         }
         // if (!(traced instanceof NullPointerException)) {
-        body = formatTagData(req) + body + shortTrace(trace(traced));
+        body = formatElementData(req) + body + shortTrace(trace(traced));
 
         try {
             SourceViewer sw = new errorViewer(req, servletContext, title, body, trace(traced), printeHeaderFooter);
@@ -514,7 +542,7 @@ public class ErrorFormatter {
     }
 
     /**
-     * Returns a string describing the error that occured.
+     * Returns a string describing the error that occurred.
      * 
      * @param req
      * @return the described error
@@ -552,11 +580,11 @@ public class ErrorFormatter {
         logError(t, req);
 
         if (t.getClass().getName().startsWith(org.makumba.analyser.engine.TomcatJsp.getJspCompilerPackage())) {
-            return "JSP compilation error:\n" + formatTagData(req) + t.getMessage();
+            return "JSP compilation error:\n" + formatElementData(req) + t.getMessage();
         }
         for (Object[] element : errors) {
             if ((((Class<?>) element[0])).isInstance(t) || t1 != null && (((Class<?>) element[0])).isInstance(t = t1)) {
-                return "Makumba " + element[1] + " error:\n" + formatTagData(req) + t.getMessage();
+                return "Makumba " + element[1] + " error:\n" + formatElementData(req) + t.getMessage();
             }
         }
         return unknownErrorMessage(original, t, req);
@@ -598,7 +626,7 @@ public class ErrorFormatter {
                     + "\n\n" + "Refer to your SQL server\'s documentation for error explanation.\n"
                     + "Please check the configuration of your webapp and SQL server.\n" + body;
         }
-        return title + ":\n" + formatTagData(req) + body + shortTrace(trace(traced), 10);
+        return title + ":\n" + formatElementData(req) + body + shortTrace(trace(traced), 10);
     }
 
     /**
@@ -646,7 +674,7 @@ public class ErrorFormatter {
         String body = "A " + rootCause.getClass().getName()
                 + " occured (most likely because of a programming error in the JSP):\n\n" + message;
 
-        if (t != null && original.getStackTrace() != null && !original.getStackTrace().equals(t.getStackTrace())) {
+        if (t != null && original.getStackTrace() != null && !java.util.Arrays.equals(original.getStackTrace(), t.getStackTrace())) {
             body += "\n\n" + trace(rootCause);
         }
 

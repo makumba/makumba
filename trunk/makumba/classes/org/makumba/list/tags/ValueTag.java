@@ -127,7 +127,7 @@ public class ValueTag extends GenericListTag {
      */
     public void doStartAnalyze(PageCache pageCache) {
 
-        pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, tagKey, ValueComputer.getValueComputerAtAnalysis(this,
+        pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, tagKey, ValueComputer.getValueComputerAtAnalysis(true,
             QueryTag.getParentListKey(this, pageCache), expr, pageCache));
 
         inheritInPlaceEditAttributes();
@@ -158,7 +158,7 @@ public class ValueTag extends GenericListTag {
                 Object check = pageCache.retrieve(MakumbaJspAnalyzer.VALUE_COMPUTERS, parentObjectKey);
                 if (check == null) {
 
-                    ValueComputer vc = ValueComputer.getValueComputerAtAnalysis(this, QueryTag.getParentListKey(this,
+                    ValueComputer vc = ValueComputer.getValueComputerAtAnalysis(true, QueryTag.getParentListKey(this,
                         pageCache), parentExpr, pageCache);
                     pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, parentObjectKey, vc);
 
@@ -225,7 +225,7 @@ public class ValueTag extends GenericListTag {
                 parentObjectKey.add(parentExpr);
                 ((ValueComputer) pageCache.retrieve(MakumbaJspAnalyzer.VALUE_COMPUTERS, parentObjectKey)).doEndAnalyze(pageCache);
             }
-
+            pageCache.cacheSetValues(NEEDED_RESOURCES, new String[] { "makumba-editinplace.js" });
         }
 
         if (var != null)
@@ -233,11 +233,6 @@ public class ValueTag extends GenericListTag {
 
         if (printVar != null)
             setType(pageCache, printVar, MakumbaSystem.makeFieldOfType(printVar, "char"));
-
-        // add needed resources, stored in cache for this page
-        if (StringUtils.equals(editable, "true")) {
-            pageCache.cacheSetValues(NEEDED_RESOURCES, new String[] { "makumba-editinplace.js" });
-        }
 
     }
 

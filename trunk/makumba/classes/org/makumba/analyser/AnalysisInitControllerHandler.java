@@ -26,6 +26,8 @@ package org.makumba.analyser;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.makumba.commons.ControllerHandler;
 import org.makumba.commons.ServletObjects;
@@ -37,18 +39,38 @@ import org.makumba.commons.ServletObjects;
  * @version $Id$
  */
 public class AnalysisInitControllerHandler extends ControllerHandler {
+    
+    private boolean hadError = false;
 
     @Override
     public boolean beforeFilter(ServletRequest request, ServletResponse response, FilterConfig conf, ServletObjects httpServletObjects) {
 
-        AnalysableTag.initializeThread();
+        AnalysableElement.initializeThread(((HttpServletRequest)request).getSession());
         return true;
     }
     
     @Override
     public boolean onError(ServletRequest request, ServletResponse response, Throwable e, FilterConfig conf) {
-        AnalysableTag.initializeThread();
+        hadError = true;
         return true;
     }
-    
+
+    @Override
+    public void finalize(ServletRequest request, ServletResponse response) {
+        HttpSession session = ((HttpServletRequest)request).getSession();
+        if(hadError) {
+            // keep the state of the previous analysis so we can display errors even when reloading the page
+            AnalysableElement.keepAnalysisState(session);
+        } else {
+            // first remove the state object from the session
+            if(session.getServletContext().getAttribute(AnalysableElement.ANALYSIS_STATE + session.getId()) != null) {
+                session.getServletContext().removeAttribute(AnalysableElement.ANALYSIS_STATE + session.getId());
+            }
+            // then initialize the thread, it won't reload the state this time
+            AnalysableElement.initializeThread(session);
+            
+            // finally discard the parsing data
+            AnalysableElement.discardJSPParsingData();
+        }
+    }
 }

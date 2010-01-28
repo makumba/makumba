@@ -22,6 +22,7 @@ import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.json.JSONObject;
 import org.makumba.commons.tags.GenericMakumbaTag;
+import org.makumba.forms.responder.Responder;
 import org.makumba.list.engine.valuecomputer.ValueComputer;
 
 /**
@@ -224,7 +225,7 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
             // add the iterationLabel to the projections if it's not there
             Object check = pageCache.retrieve(MakumbaJspAnalyzer.VALUE_COMPUTERS, tagKey);
             if (check == null) {
-                ValueComputer vc = ValueComputer.getValueComputerAtAnalysis(this, QueryTag.getParentListKey(this,
+                ValueComputer vc = ValueComputer.getValueComputerAtAnalysis(false, QueryTag.getParentListKey(this,
                     pageCache), iterationExpr, pageCache);
                 pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, tagKey, vc);
             }
@@ -430,14 +431,15 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
 
     }
 
+    /**
+     * Serializes the page parameters. If there's a _mak_responder_ parameter indicating the submission of a form, we don't return the parameters.<br>
+     * TODO make this smarter, i.e. detect which parameters come from a form
+     */
     private String getQueryParameters(HttpServletRequest req) {
-        /*
-         * String query = ""; for (Iterator<String> i = req.getParameterMap().keySet().iterator(); i.hasNext();) {
-         * String el = i.next(); String[] vals = (String[]) req.getParameterMap().get(el); for (int k = 0; k <
-         * vals.length; k++) { query += el + ": '" + vals[k] + "'"; if (k < vals.length - 1) { query += ","; } } if
-         * (i.hasNext()) { query += ","; } else { query = "{" + query + "}"; } } if (query.length() == 0) query =
-         * "new Hash()"; return query;
-         */
+        
+        if(req.getParameter(Responder.responderName) != null) {
+            return new JSONObject().toString();
+        }
         return new JSONObject(req.getParameterMap()).toString();
     }
 

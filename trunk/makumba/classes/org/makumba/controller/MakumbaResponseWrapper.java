@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
 import org.apache.commons.collections.set.ListOrderedSet;
-import org.makumba.analyser.AnalysableTag;
+import org.makumba.analyser.AnalysableElement;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MakumbaResourceServlet;
@@ -77,7 +77,7 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
     /** Process the requested resources, and split them into CSS and JavaScript resources */
     public void initResourceReplacements() {
         // TODO: maybe do some clever checking which resources are actually already in the header, and skip those...
-        PageCache pageCache = AnalysableTag.getPageCache(request, request.getSession().getServletContext().getRealPath(
+        PageCache pageCache = AnalysableElement.getPageCache(request, request.getSession().getServletContext().getRealPath(
             "/"), MakumbaJspAnalyzer.getInstance());
         if (pageCache != null) {
             ListOrderedSet resources = pageCache.retrieveSetValues(FormTagBase.NEEDED_RESOURCES);

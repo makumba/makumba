@@ -23,12 +23,12 @@
 
 package org.makumba.analyser;
 
-import java.util.Stack;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
-import javax.servlet.jsp.tagext.TagSupport;
 
 import org.apache.commons.lang.StringUtils;
 import org.makumba.CompositeValidationException;
@@ -36,8 +36,6 @@ import org.makumba.LogicException;
 import org.makumba.MakumbaError;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.engine.JspParseData;
-import org.makumba.analyser.engine.TomcatJsp;
-import org.makumba.analyser.interfaces.JspAnalyzer;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.RuntimeWrappedException;
@@ -60,7 +58,7 @@ import org.makumba.commons.RuntimeWrappedException;
  * @version $Id$
  */
 
-public abstract class AnalysableTag extends TagSupport {
+public abstract class AnalysableTag extends AnalysableElement {
     private static final long serialVersionUID = 1L;
 
     /** Commonly used Attribute values. */
@@ -69,84 +67,18 @@ public abstract class AnalysableTag extends TagSupport {
     /** Cache names, for PageCache of analysis */
     public static final String TYPES = "org.makumba.types";
 
-    public static ThreadLocal<TagData> analyzedTag = new ThreadLocal<TagData>();
-
-    public static ThreadLocal<TagData> runningTag = new ThreadLocal<TagData>();
-
-    static ThreadLocal<Stack<TagData>> tagStack = new ThreadLocal<Stack<TagData>>();
-
-    static public TagData getRunningTag() {
-        return runningTag.get();
-    }
-
-    static public TagData getAnalyzedTag() {
-        return analyzedTag.get();
-    }
-
-    static public TagData getCurrentBodyTag() {
-        if (getThreadTagStack().isEmpty())
-            return null;
-        return (TagData) getThreadTagStack().peek();
-    }
-
-    static public void initializeThread() {
-        getThreadTagStack().clear();
-        runningTag.set(null);
-        analyzedTag.set(null);
-    }
-
-    public static Stack<TagData> getThreadTagStack() {
-        Stack<TagData> s = tagStack.get();
-        if (s == null)
-            tagStack.set(s = new Stack<TagData>());
-        return s;
-    }
-
-    /**
-     * Static method to get the PageCache object for the current page. Constructs a new one if none found. We put this
-     * as static, as we may have to export it to packages like org.makumba.controller.jsp
-     * 
-     * @param pageContext
-     *            The PageContext object of the current page
-     * @param analyzer
-     *            the JSP analyzer
-     */
-    public static PageCache getPageCache(PageContext pageContext, JspAnalyzer analyzer) {
-        PageCache pageCache = (PageCache) pageContext.getAttribute("makumba.parse.cache");
-
-        // if there is no PageCache stored in the PageContext, we run the analysis and store the result in the
-        // PageContext
-        if (pageCache == null) {
-            pageCache = getPageCache((HttpServletRequest) pageContext.getRequest(),
-                pageContext.getServletConfig().getServletContext().getRealPath("/"), analyzer);
-            pageContext.setAttribute("makumba.parse.cache", pageCache);
-        }
-        return pageCache;
-    }
-
-    public static PageCache getPageCache(HttpServletRequest request, String realPath, JspAnalyzer analyzer)
-            throws MakumbaError {
-        Object result = JspParseData.getParseData(realPath, TomcatJsp.getJspURI(request), analyzer).getAnalysisResult(
-            null);
-
-        if ((result instanceof Throwable)) {
-            if (result instanceof MakumbaError) {
-                throw (MakumbaError) result;
-            }
-            if (result instanceof RuntimeException) {
-                throw (RuntimeException) result;
-            } else {
-                throw new RuntimeException((Throwable) result);
-            }
-        }
-        return (PageCache) result;
-    }
-
+    private HashMap<String, String[]> attributeValues = new LinkedHashMap<String, String[]>();
+    
     /**
      * The TagData object holding the composite data collected by the analysis. It is set by the tag parser at analysis
      * time. It is set at runtime after the key is computed
      */
     public TagData tagData;
+    
+    @Override
+    public ElementData getElementData() {
+        return this.tagData;
+    }
 
     public void setTagDataAtAnalysis(TagData tagData) {
         this.tagData = tagData;
@@ -274,11 +206,11 @@ public abstract class AnalysableTag extends TagSupport {
                 && !(pageContext.getAttribute(PageContext.EXCEPTION, PageContext.REQUEST_SCOPE) instanceof CompositeValidationException))
             return SKIP_PAGE;
         if (needPageCache())
-            pageCache = getPageCache(pageContext, MakumbaJspAnalyzer.getInstance());
+            pageCache = AnalysableElement.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance());
         setTagKey(pageCache);
         if (pageCache != null) {
             tagData = (TagData) pageCache.retrieve(MakumbaJspAnalyzer.TAG_DATA_CACHE, tagKey);
-            runningTag.set(tagData);
+            setRunningElementData(tagData);
         }
         int n;
         try {
@@ -287,8 +219,8 @@ public abstract class AnalysableTag extends TagSupport {
             throw new RuntimeWrappedException(e);
         }
         if (tagData != null) {
-            runningTag.set(null);
-            getThreadTagStack().push(tagData);
+            setRunningElementData(null);
+            getThreadElementStack().push(tagData);
         }
         return n;
     }
@@ -304,16 +236,17 @@ public abstract class AnalysableTag extends TagSupport {
                 return SKIP_PAGE;
             PageCache pageCache = null;
             if (needPageCache())
-                pageCache = getPageCache(pageContext, MakumbaJspAnalyzer.getInstance());
+                pageCache = AnalysableElement.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance());
             if (tagData != null) {
-                runningTag.set(tagData);
-                getThreadTagStack().pop();
+                setRunningElementData(tagData);
+                getThreadElementStack().pop();
             }
             return doAnalyzedEndTag(pageCache);
         } catch (LogicException e) {
             throw new RuntimeWrappedException(e);
         } finally {
             doAnalyzedCleanup();
+            attributeValues.clear();
         }
     }
 
@@ -322,7 +255,7 @@ public abstract class AnalysableTag extends TagSupport {
      * container uses the tag object.
      */
     protected void doAnalyzedCleanup() {
-        runningTag.set(null);
+        setRunningElementData(null);
         tagKey = null;
         tagData = null;
     }
@@ -367,13 +300,38 @@ public abstract class AnalysableTag extends TagSupport {
             throw new ProgrammerError("The attribute '" + s + "' can only be an $attribute or an int");
         }
     }
-
-    protected void checkValidAttributeValues(String attributeName, String value, String[] allowedAttributeValues)
-            throws ProgrammerError {
-        if (!org.makumba.commons.StringUtils.equalsAny(value, allowedAttributeValues)) {
-            throw new ProgrammerError("Invalid value for attribute '" + attributeName + "': <" + value
-                    + ">. Allowed values are " + org.makumba.commons.StringUtils.toString(allowedAttributeValues));
+    
+    /**
+     * Override this in order to register possible attribute values using {@link #registerAttributeValues(String, String...)}.
+     * The registered attributes are checked before {@link #doStartAnalyze(PageCache)} and throw a {@link ProgrammerError} is
+     * thrown if the provided value is not allowed.
+     */
+    protected void registerPossibleAttributeValues() {
+    }
+    
+    /**
+     * Registers one attribute and several possible values
+     * @param attributeName the name of the attribute
+     * @param values a number of possible values the attribute can take
+     */
+    protected final void registerAttributeValues(String attributeName, String... values) {
+        attributeValues.put(attributeName, values);
+    }
+    
+    /**
+     * Checks if the provided attribute values are correct. Called before {@link #doStartAnalyze(PageCache)}
+     */
+    public void checkAttributeValues() {
+        registerPossibleAttributeValues();
+        
+        for(String attributeName : attributeValues.keySet()) {
+            String value = tagData.attributes.get(attributeName);
+            if(value != null) {
+                if(!org.makumba.commons.StringUtils.equalsAny(value, attributeValues.get(attributeName))) {
+                    throw new ProgrammerError("Invalid value for attribute '" + attributeName + "': '" + value
+                        + "'. Allowed values are " + org.makumba.commons.StringUtils.toString(attributeValues.get(attributeName)));
+                }
+            }
         }
     }
-
 }

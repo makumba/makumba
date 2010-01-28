@@ -247,7 +247,6 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
     }
 
     public void setClientSideValidation(String clientSideValidation) {
-        checkValidAttributeValues("clientSideValidation", clientSideValidation, validClientSideValidationParams);
         if (extraFormattingParams.get("onSubmit") != null) {
             throw new ProgrammerError(
                     "Forms specifying a 'clientSideValidation' attribute cannot provide an 'onSubmit' attribute");
@@ -257,7 +256,6 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     public void setAnnotation(String s) {
         checkNoParent("annotation");
-        checkValidAttributeValues("annotation", s, validAnnotationParams);
         annotation = s;
     }
 
@@ -348,6 +346,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
      */
     @Override
     public void doStartAnalyze(PageCache pageCache) {
+        
         if (findParentForm() == null) { // only for the root form
             pageCache.cache(MakumbaJspAnalyzer.NESTED_FORM_NAMES, getTagKey(), new HashMap<String, MultipleKey>());
         }
@@ -365,6 +364,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         }
 
         fdp.onFormStartAnalyze(this, pageCache, baseObject);
+
     }
 
     @Override
@@ -530,6 +530,13 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         responders = null;
     }
 
+    
+    @Override
+    protected void registerPossibleAttributeValues() {
+        registerAttributeValues("clientSideValidation", validClientSideValidationParams);
+        registerAttributeValues("annotation", validAnnotationParams);
+    }
+
     /**
      * Sets the responder elements, computes the base pointer if needed
      * 
@@ -589,7 +596,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
             // check if the bodyContent is null
             // if yes, we need to check if that's allowed
             if (!allowEmptyBody() && bodyContent == null) {
-                throw new ProgrammerError("Tag " + getRunningTag().name + " must have a non-empty body");
+                throw new ProgrammerError("Tag " + tagData.name + " must have a non-empty body");
             }
 
             responder.writeFormPreamble(sb, basePointer, (HttpServletRequest) pageContext.getRequest());

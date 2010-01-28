@@ -126,7 +126,6 @@ public class MatchModeTag extends GenericMakumbaTag {
 
     @Override
     public void setType(String s) {
-        checkValidAttributeValues("type", s, allowedTypes);
         super.setType(s);
     }
 
@@ -218,6 +217,11 @@ public class MatchModeTag extends GenericMakumbaTag {
     @Override
     public void setTagKey(PageCache pageCache) {
         tagKey = new MultipleKey(new Object[] { getCriterionTag().tagKey, id, matchModes, getClass() });
+    }
+    
+    @Override
+    protected void registerPossibleAttributeValues() {
+        registerAttributeValues("type", allowedTypes);
     }
 
     @Override

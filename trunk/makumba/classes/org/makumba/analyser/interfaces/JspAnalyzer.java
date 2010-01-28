@@ -23,12 +23,16 @@
 
 package org.makumba.analyser.interfaces;
 
+import javax.el.Expression;
+
+import org.dom4j.Element;
+import org.makumba.analyser.ELData;
 import org.makumba.analyser.TagData;
 
 /**
  * The interface of a JSP analyzer.
  * 
- * @author 
+ * @author
  * @version $Id$
  */
 public interface JspAnalyzer {
@@ -76,11 +80,20 @@ public interface JspAnalyzer {
      * A system tag, like <%@ ...%>
      * 
      * @param td
-     *            the TagData holdking the parsed data
+     *            the TagData holding the parsed data
      * @param status
      *            the status of the parsing
      */
     void systemTag(TagData td, Object status);
+
+    /**
+     * A EL expression (see {@link Expression})
+     * 
+     * @param td
+     * @param status
+     *            the status of the parsing
+     */
+    void elExpression(ELData ed, Object status);
 
     /**
      * The end of the page

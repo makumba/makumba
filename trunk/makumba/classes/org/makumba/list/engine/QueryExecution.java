@@ -32,6 +32,7 @@ import javax.servlet.jsp.PageContext;
 
 import org.makumba.AttributeNotFoundException;
 import org.makumba.LogicException;
+import org.makumba.analyser.AnalysableElement;
 import org.makumba.commons.ArrayMap;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
@@ -149,8 +150,8 @@ public class QueryExecution {
      */
     private QueryExecution(MultipleKey key, PageContext pageContext, String offset, String limit) throws LogicException {
         currentDataSet = (Stack<Dictionary<String, Object>>) pageContext.getAttribute(CURRENT_DATA_SET);
-        ComposedQuery cq = QueryTag.getQuery(GenericListTag.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance()), key);
-        QueryProvider qep = QueryProvider.makeQueryRunner(GenericListTag.getDataSourceName(pageContext), MakumbaJspAnalyzer.getQueryLanguage(GenericListTag.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance())),
+        ComposedQuery cq = QueryTag.getQuery(AnalysableElement.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance()), key);
+        QueryProvider qep = QueryProvider.makeQueryRunner(GenericListTag.getDataSourceName(pageContext), MakumbaJspAnalyzer.getQueryLanguage(AnalysableElement.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance())),
             PageAttributes.getAttributes(pageContext));
         
         try {
@@ -168,9 +169,9 @@ public class QueryExecution {
             throws LogicException {
         currentDataSet = (Stack<Dictionary<String, Object>>) pageContext.getAttribute(CURRENT_DATA_SET);
         ComposedQuery cq = QueryTag.getQuery(
-            GenericListTag.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance()), key);
+            AnalysableElement.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance()), key);
         QueryProvider qep = QueryProvider.makeQueryRunner(GenericListTag.getDataSourceName(pageContext),
-            MakumbaJspAnalyzer.getQueryLanguage(GenericListTag.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance())), 
+            MakumbaJspAnalyzer.getQueryLanguage(AnalysableElement.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance())), 
             PageAttributes.getAttributes(pageContext));
         try {
             //Attributes.MA args = new Attributes.MA(PageAttributes.getAttributes(pageContext));

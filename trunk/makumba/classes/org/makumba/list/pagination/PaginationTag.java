@@ -338,12 +338,10 @@ public class PaginationTag extends GenericMakumbaTag {
     }
 
     public void setShowPageTitle(String showPageTitle) {
-        checkValidAttributeValues("showPageTitle", showPageTitle, ATTRIBUTE_VALUES_TRUE_FALSE);
         this.showPageTitle = StringUtils.equals(showPageTitle, "true");
     }
 
     public void setPaginationLinkTitle(String paginationLinkTitle) {
-        checkValidAttributeValues("paginationLinkTitle", paginationLinkTitle, ATTRIBUTE_VALUES_TRUE_FALSE);
         this.paginationLinkTitle = paginationLinkTitle.trim();
     }
 
@@ -372,6 +370,12 @@ public class PaginationTag extends GenericMakumbaTag {
         styleClass = "makumbaPagination";
         paginationLinkTitle = "true";
         paginationLinkTitleText = "page";
+    }
+    
+    @Override
+    protected void registerPossibleAttributeValues() {
+        registerAttributeValues("showPageTitle", ATTRIBUTE_VALUES_TRUE_FALSE);
+        registerAttributeValues("paginationLinkTitle", ATTRIBUTE_VALUES_TRUE_FALSE);
     }
     
     @Override

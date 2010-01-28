@@ -33,8 +33,8 @@ public class SetValueComputer extends QueryValueComputer {
      * Makes a query that has an extra FROM: the set requested. As projections, add the key of the set type and, if we
      * are in a value tag, the title field.
      * 
-     * @param analyzed
-     *            the tag that is analyzed
+     * @param isValue
+     *            whether this is a value computation (mak:value, value EL expression)
      * @param parentListKey
      *            the key of the parent list
      * @param set
@@ -44,7 +44,7 @@ public class SetValueComputer extends QueryValueComputer {
      * @param pageCache
      *            the page cache of the current page
      */
-    SetValueComputer(AnalysableTag analyzed, MultipleKey parentListKey, FieldDefinition set, String setExpr, PageCache pageCache) {
+    SetValueComputer(boolean isValue, MultipleKey parentListKey, FieldDefinition set, String setExpr, PageCache pageCache) {
         boolean hql= MakumbaJspAnalyzer.getQueryLanguage(pageCache).equals("hql");
         
         type = set;
@@ -52,7 +52,7 @@ public class SetValueComputer extends QueryValueComputer {
         String queryProps[] = new String[5];
         queryProps[ComposedQuery.FROM] = (hql?"JOIN ":"")+ setExpr + " " + label;
 
-        if (analyzed instanceof ValueTag) {
+        if (isValue) {
             if(set.getType().equals("set"))
                 name = label + "." + set.getForeignTable().getTitleFieldName();
             else // setintEnum or setcharEnum
@@ -62,7 +62,7 @@ public class SetValueComputer extends QueryValueComputer {
 
         makeQueryAtAnalysis(parentListKey, set.getName(), queryProps, label+(hql?".id":""), pageCache);
 
-        if (analyzed instanceof ValueTag)
+        if (isValue)
             QueryTag.getQuery(pageCache, queryKey).checkProjectionInteger(name);
     }
 

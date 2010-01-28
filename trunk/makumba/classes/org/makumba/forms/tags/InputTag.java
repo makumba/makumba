@@ -37,6 +37,7 @@ import org.makumba.InvalidValueException;
 import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
+import org.makumba.analyser.AnalysableElement;
 import org.makumba.analyser.PageCache;
 import org.makumba.analyser.TagData;
 import org.makumba.commons.MakumbaJspAnalyzer;
@@ -389,7 +390,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
 
         if (nullOption != null) {
             // nullOption is only applicable for charEnum and intEnum types
-            FieldDefinition fd = getTypeFromContext(getPageCache(pageContext, MakumbaJspAnalyzer.getInstance()));
+            FieldDefinition fd = getTypeFromContext(AnalysableElement.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance()));
             if (!fd.isEnumType()
                     && !fd.isPointer()
                     && !(this instanceof SearchFieldTag && org.apache.commons.lang.StringUtils.equals(

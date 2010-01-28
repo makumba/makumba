@@ -64,7 +64,6 @@ public class SearchFieldTag extends InputTag {
         if (!getForm().getOperation().equals("search")) {
             throw new ProgrammerError("'forceInputStyle' attribute is only valid inside Makumba Search Forms!");
         }
-        checkValidAttributeValues("forceInputStyle", forceInputStyle, allowedSelectTypes);
         this.forceInputStyle = forceInputStyle;
         params.put("forceInputStyle", forceInputStyle);
     }
@@ -128,7 +127,6 @@ public class SearchFieldTag extends InputTag {
     }
 
     public void setRole(String role) {
-        checkValidAttributeValues("role", role, allowedRoles);
         // role can be used only within a range type criterion tag
         if (!getCriterionTag().isRange()) {
             throw new ProgrammerError("'role' can only be specified if the criterion specified range='true'! ");
@@ -140,5 +138,10 @@ public class SearchFieldTag extends InputTag {
     public boolean allowsIdenticalKey() {
         return false;
     }
-
+    
+    @Override
+    protected void registerPossibleAttributeValues() {
+        registerAttributeValues("forceInputStyle", allowedSelectTypes);
+        registerAttributeValues("role", allowedRoles);
+    }
 }

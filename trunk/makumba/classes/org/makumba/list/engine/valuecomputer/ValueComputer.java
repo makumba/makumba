@@ -49,8 +49,9 @@ public class ValueComputer {
     /**
      * Determines if 'analyzed' is a queryMak:value or a nonQueryMak:value
      * 
-     * @param analyzed
-     *            the analyzed tag
+     * @param isValue
+     *            whether this value computer is called from a value evaluator (mak:value expr, EL Value)
+     * 
      * @param parentListKey
      *            the key of the parent list
      * @param expr
@@ -58,7 +59,7 @@ public class ValueComputer {
      * @param pageCache
      *            the page cache of the page
      */
-    public static ValueComputer getValueComputerAtAnalysis(AnalysableTag analyzed, MultipleKey parentListKey,
+    public static ValueComputer getValueComputerAtAnalysis(boolean isValue, MultipleKey parentListKey,
             String expr, PageCache pageCache) {
         expr = expr.trim();
         Object check = QueryTag.getQuery(pageCache, parentListKey).checkExprSetOrNullable(expr);
@@ -73,15 +74,15 @@ public class ValueComputer {
             set = (FieldDefinition) check;
         
         if(set != null) {
-            return new SetValueComputer(analyzed, parentListKey, set, expr, pageCache);
+            return new SetValueComputer(isValue, parentListKey, set, expr, pageCache);
         }
         
         // nullable queries are handled via LEFT JOIN in MQL, but not in HQL
         if(MakumbaJspAnalyzer.isHQLPage(pageCache) && nullableExpr != null) {
-            return new NullableValueComputer(analyzed, parentListKey, nullableExpr, expr, pageCache);
+            return new NullableValueComputer(parentListKey, nullableExpr, expr, pageCache);
         }
         
-        return new ValueComputer(analyzed, parentListKey, expr, pageCache);
+        return new ValueComputer(parentListKey, expr, pageCache);
     }
 
     /** The key of the parentList */
@@ -116,20 +117,6 @@ public class ValueComputer {
         this.expr = expr;
         QueryTag.getQuery(pageCache, parentKey).checkProjectionInteger(expr);
 
-    }
-
-    /**
-     * A nonQueryMak:value value computer
-     * 
-     * @param analyzed
-     *            the analyzed tag
-     * @param expr
-     *            the expression of the tag
-     * @param pageCache
-     *            the page cache
-     */
-    ValueComputer(AnalysableTag analyzed, MultipleKey parentListKey, String expr, PageCache pageCache) {
-        this(parentListKey, expr, pageCache);
     }
 
     /**

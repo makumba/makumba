@@ -3,7 +3,6 @@ package org.makumba.list.engine.valuecomputer;
 import javax.servlet.jsp.PageContext;
 
 import org.makumba.LogicException;
-import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.MultipleKey;
 import org.makumba.list.engine.QueryExecution;
@@ -19,9 +18,6 @@ class NullableValueComputer extends QueryValueComputer {
 
     /**
      * Makes a query that is identical to the parentQuery, but has expr as projection.
-     * 
-     * @param analyzed
-     *            the tag that is analyzed
      * @param parentListKey
      *            the key of the parent list
      * @param nullableExpr
@@ -31,8 +27,7 @@ class NullableValueComputer extends QueryValueComputer {
      * @param pageCache
      *            the page cache of the current page
      */
-    NullableValueComputer(AnalysableTag analyzed, MultipleKey parentListKey, String nullableExpr, String expr,
-            PageCache pageCache) {
+    NullableValueComputer(MultipleKey parentListKey, String nullableExpr, String expr, PageCache pageCache) {
         makeQueryAtAnalysis(parentListKey, nullableExpr.trim(), emptyQueryProps, expr, pageCache);
     }
 

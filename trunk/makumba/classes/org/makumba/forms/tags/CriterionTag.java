@@ -231,7 +231,6 @@ public class CriterionTag extends GenericMakumbaTag implements BodyTag {
     }
 
     public void setIsRange(String isRange) {
-        checkValidAttributeValues("isRange", isRange, allowedRanges);
         this.isRange = isRange;
     }
 
@@ -239,6 +238,12 @@ public class CriterionTag extends GenericMakumbaTag implements BodyTag {
         this.matchMode = matchMode;
     }
 
+    @Override
+    protected void registerPossibleAttributeValues() {
+        registerAttributeValues("isRange", allowedRanges);
+    }
+    
+    
     @Override
     protected void doAnalyzedCleanup() {
         super.doAnalyzedCleanup();
