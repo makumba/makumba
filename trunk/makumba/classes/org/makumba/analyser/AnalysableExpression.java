@@ -1,6 +1,5 @@
 package org.makumba.analyser;
 
-import javax.el.ELResolver;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.Tag;
 
