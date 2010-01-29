@@ -28,8 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.el.Expression;
-
 import org.makumba.analyser.AnalysableElement;
 import org.makumba.analyser.AnalysableExpression;
 import org.makumba.analyser.AnalysableTag;

@@ -23,9 +23,6 @@
 
 package org.makumba.analyser.interfaces;
 
-import javax.el.Expression;
-
-import org.dom4j.Element;
 import org.makumba.analyser.ELData;
 import org.makumba.analyser.TagData;
 
