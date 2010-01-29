@@ -59,10 +59,10 @@ public class ErrorFormatter {
             { org.makumba.NoSuchFieldException.class, "no such field" },
             { org.makumba.NoSuchLabelException.class, "no such label" },
             { org.makumba.LogicException.class, "business logic" },
-            { org.makumba.list.tags.MakumbaELException.class, "expression language"} };
+            /*{ org.makumba.list.tags.MakumbaELException.class, "expression language"} */ };
 
     static final Class<?>[] knownJSPruntimeErrors = { ArrayIndexOutOfBoundsException.class,
-            NumberFormatException.class, ClassCastException.class, javax.el.ELException.class };
+            NumberFormatException.class, ClassCastException.class /*, javax.el.ELException.class */ };
 
     protected ServletContext servletContext;
 
