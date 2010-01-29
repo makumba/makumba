@@ -1,0 +1,39 @@
+
+
+<html>
+<head><title>mak:submit</title></head>
+<body>
+
+
+
+
+
+<form action="testMakSubmit.jsp" id="_form1" method="POST" name="newForm" >
+  <input name="indiv.name" type="text" value="" maxlength="40" id="indiv.name_form1" ><br/>
+  <input name="indiv.surname" type="text" value="" maxlength="40" id="indiv.surname_form1" ><br/>
+  
+  Simple: <input class="makSubmitButton" type="submit" value="Submit" /><br/>
+  Simple widget button: <input class="makSubmitButton" type="submit" value="Submit" /><br/>
+  Simple widget link: <a class="makSubmitLink" href="#" onClick="mak.submit('_form1', 'false', null, 'none', null);">Submit</a><br/>
+  Custom widget button: <input class="makSubmitButton" type="submit" value="Custom text in button" /><br/>
+  Custom widget link: <a class="makSubmitLink" href="#" onClick="mak.submit('_form1', 'false', null, 'none', null);">Custom text in link</a><br/>
+  
+<input type="hidden" name="__makumba__responder__" value="-1274810456">
+</form>
+
+<form id="_form1" method="POST" name="newForm" >
+  <input name="indiv.name" type="text" value="" maxlength="40" id="indiv.name_form2" ><br/>
+  <input name="indiv.surname" type="text" value="" maxlength="40" id="indiv.surname_form2" ><br/>
+  
+  Simple: <input class="makSubmitButton" type="submit" value="Submit" /><br/>
+  Simple widget button: <input class="makSubmitButton" type="submit" value="Submit" /><br/>
+  Simple widget link: <a class="makSubmitLink" href="#" onClick="mak.submit('_form2', 'true', null, 'none', null);">Submit</a><br/>
+  Custom widget button: <input class="makSubmitButton" type="submit" value="Custom text in button" /><br/>
+  Custom widget link: <a class="makSubmitLink" href="#" onClick="mak.submit('_form2', 'true', null, 'none', null);">Custom text in link</a><br/>
+  
+<input type="hidden" name="__makumba__responder__" value="-305231739">
+</form><script type="text/javascript">Event.observe('_form2', 'submit', function(event) {mak.submit('_form2', 'true', event, 'none', null);});</script>
+
+
+</body>
+</html>

@@ -1,0 +1,16 @@
+[{ALLOW view Documentation,Admin}]
+
+!!!Guidlines
+
+* only create meta pages starting with 'Meta' in their name, so we can maintain easy overview of these pages
+* add following lines of code to the top of the meta pages so they are not displayed to the rest of the world:
+{{{
+[{ALLOW view Documentation,Admin}]
+}}}
+* add following lines of code to the bottom of the meta pages so that the Meta menu is shown on the left side:
+{{{
+%%(display:none;)[Category Meta|CategoryMeta]%%
+}}}
+
+
+%%(display:none;)[Category Meta|CategoryMeta]%%
