@@ -64,11 +64,12 @@ makEvent = function(name, exprValue) {
 		}
 	});
 	
+	/*
 	// for each section we have to reload, display the waiting widget
 	toReload.each(function(id) {
 		$(id).update('<span class="sectionReload" ></span>');
 	});
-	
+	*/
 	
 	// AJAX callback on the page to fetch the new data
 	new Ajax.Request(_mak_page_url_, {
@@ -118,9 +119,9 @@ makSubmitAjax = function(formName, annotation, annotationSeparator) {
 		  onComplete: function(transport) {
 			  var response = transport.responseText.evalJSON();
 
-			  // clear previous error messages
+			  // clear previous messages
 			  $(formName).select('span.makumba_field_annotation').each(function(e) {$(e).remove()});
-			  $(formName).select('span.makumba_form_message').each(function(e) {$(e).remove()});
+			  $(formName).select('div.makumba_form_message').each(function(e) {$(e).remove()});
 
 			  if(response.event != undefined) {
 				  // TODO support for forms inside of a list that have a projection expression
