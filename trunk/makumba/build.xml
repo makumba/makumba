@@ -140,8 +140,8 @@
       <classpath>
         <fileset dir="lib/building/">
           <include name="commons-openpgp-1.0-SNAPSHOT.jar" />
-          <include name="bcpg-jdk16-145.jar"/>
-          <include name="bcprov-jdk16-145.jar"/>
+          <include name="bcpg-jdk15-145.jar"/>
+          <include name="bcprov-jdk15-145.jar"/>
         </fileset>
       </classpath>
     </taskdef>
