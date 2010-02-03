@@ -1,0 +1,5 @@
+!!!New makumba website
+
+After over one year of efforts, including a failed attempt to adopt Apache Forrest as a documentation framework, we are now proud to present a brand new version of the makumba website built on top of [JSPWiki|http//www.jspwiki.org].
+
+Soon you will find here a number of examples that will help you create cool makumba web-apps. Stay tuned!
