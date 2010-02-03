@@ -115,7 +115,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
     static String[] formTagNames = { "form", "newForm", "addForm", "editForm", "deleteLink", "delete", "searchForm",
             "new", "add", "edit", "submit" };
     
-    static String[] elExpressions = { "expr", "org.makumba.list.tags.ValueExpression" };
+    static String[] elExpressions = { };
     
     static String[] elExpressionNames = { "expr"};
 
