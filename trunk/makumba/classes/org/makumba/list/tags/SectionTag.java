@@ -37,6 +37,8 @@ import org.makumba.list.engine.valuecomputer.ValueComputer;
  */
 public class SectionTag extends GenericMakumbaTag implements BodyTag {
 
+    private static final String EXPR_SEPARATOR = "---";
+
     private static final long serialVersionUID = 1L;
 
     public static final String MAKUMBA_EVENT = "__mak_event__";
@@ -169,11 +171,18 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
             isLastSection = true;
         }
     }
+    
+    /**
+     * Whether this section matches a specific event (only for 'reloadOn' and 'showOn' events)
+     * @param event the name of the event that the JSP page is being called with
+     * @param exprValue the expression value used to uniquely identify the section in multiple iterations of the list
+     * @return <code>true</code> if this section is concerned by the called event, <code>false</code> otherwise
+     */
     private boolean matches(String event, String exprValue) {
         boolean matches = false;
 
         if (event != null) {
-            boolean invokesIteration = event.indexOf("---") > -1;
+            boolean invokesIteration = event.indexOf(EXPR_SEPARATOR) > -1;
             if (reloadOn != null) {
 
                 if (invokesIteration) {
@@ -252,6 +261,14 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
 
         events = new String[] { showOn, hideOn, reloadOn };
 
+        if(isInvoked && showOn != null) {
+            
+            // FIXME here we skip the evaluation of the body but if the body contains forms, the form ID won't be increased
+            // which will lead to problems when the form will be finally shown
+            
+            return SKIP_BODY;
+        }
+        
         if (exprValue.length() > 0) {
             cacheSectionResolution(pageCache, exprValue, parentList != null && iterationExpr != null);
         }
@@ -344,7 +361,7 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
                     throw new ProgrammerError("Invalid event name '" + events[i]
                             + "', '___' is not allowed in event names");
                 }
-                if (events[i].indexOf("---") > -1) {
+                if (events[i].indexOf(EXPR_SEPARATOR) > -1) {
                     throw new ProgrammerError("Invalid event name '" + events[i]
                             + "', '---' is not allowed in event names");
                 }
@@ -376,14 +393,14 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
         String exprValue = "";
         if (parentList != null && iterationExpr != null) {
             try {
-                exprValue = "---"
+                exprValue = EXPR_SEPARATOR
                         + ((ValueComputer) pageCache.retrieve(MakumbaJspAnalyzer.VALUE_COMPUTERS, tagKey)).getValue(
                             getPageContext()).toString();
             } catch (LogicException le) {
                 le.printStackTrace();
             }
         } else if (parentList != null && iterationExpr == null) {
-            exprValue = "---" + parentList.getCurrentIterationNumber();
+            exprValue = EXPR_SEPARATOR + parentList.getCurrentIterationNumber();
         }
         return exprValue;
 
