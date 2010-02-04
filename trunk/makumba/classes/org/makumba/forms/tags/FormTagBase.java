@@ -120,8 +120,6 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
      */
     HashMap<String, String> lazyEvaluatedInputs = new HashMap<String, String>();
     
-    protected String formIdentifier = null;
-
     long starttime;
 
     protected FormDataProvider fdp;
@@ -474,8 +472,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         }
 
         responder.setFormName(formName);
-        responder.setFormId(getFormIdentifier());
-
+        
         if (reloadFormOnError == null) {
             reloadFormOnError = getOperation().equals("search") ? false : Configuration.getReloadFormOnErrorDefault();
         }
@@ -547,14 +544,10 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
      */
     @Override
     public int doAnalyzedStartTag(PageCache pageCache) throws JspException, LogicException {
-        // reset the form identifier
-        this.formIdentifier = null;
-        
         // increase the form ID
         updateFormId();
-        
-        // call getFormIdentifier() in order to remember the identifier of this tag
-        getFormIdentifier();
+
+        responder.setFormId(getFormIdentifier());
         
         fdp.onFormStartTag(getTagKey(), pageCache, pageContext);
 
@@ -748,27 +741,24 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     /** the HTML ID of the form */
     public String getFormIdentifier() {
-        if(formIdentifier == null) {
-            if (styleId != null) {
-                formIdentifier = styleId + getFormSuffixIdentifier();
-            } else {
-                formIdentifier = getFormSuffixIdentifier().toString();
-            }
+        if (styleId != null) {
+            return styleId + getFormSuffixIdentifier();
+        } else {
+            return getFormSuffixIdentifier().toString();
         }
-        return formIdentifier;
     }
 
     /** the suffix of the form identifier, used to uniquely identify the form on the page **/
     public Object getFormSuffixIdentifier() {
         Object count = pageContext.getAttribute(FormTagBase.__MAKUMBA__FORM__COUNTER__);
-        if (count == null) {
-            // we are at the first iteration, before starting to update the form id (see #updateFormId())
-            return "_form1";
+        if(count == null) {
+            System.out.println("HECK!");
         }
         return "_form" + pageContext.getAttribute(FormTagBase.__MAKUMBA__FORM__COUNTER__);
     }
 
     private Integer updateFormId() {
+        System.out.println("*********************** UPDATING FORM ID");
         Integer formCount = (Integer) pageContext.getAttribute(FormTagBase.__MAKUMBA__FORM__COUNTER__);
         if (formCount == null) {
             formCount = 1;
