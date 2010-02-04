@@ -605,6 +605,12 @@ jspwiki.interWikiRef.bug = http://bugs.makumba.org/show_bug.cgi?%s
 # API docs
 jspwiki.interWikiRef.api = @baseURL@api/org/makumba/%s.html
 
+# Devel API
+jspwiki.interWikiRef.devel = @baseURL@api-full-doc/org/makumba/%s.html
+
+# Java API
+jspwiki.interWikiRef.devel = http://java.sun.com/javaee/6/docs/api/%s.html
+
 ############################################################################
 #
 # Define which image types are inlined.
@@ -851,3 +857,7 @@ box.fixme.styleName=note fixme
 box.warning.styleName=note warning
 
 navigation.categories=CategoryMain,CategoryConfiguration,CategoryUsage,CategoryDocumentation,CategoryMeta,CategoryQuickStart,CategoryDownload,CategoryShowcase
+
+api.simple.path=api/
+api.devel.path=api-developer/
+api.java.path=http://java.sun.com/j2se/1.5.0/docs/api/
