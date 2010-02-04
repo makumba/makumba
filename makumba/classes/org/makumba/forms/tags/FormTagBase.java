@@ -750,15 +750,10 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     /** the suffix of the form identifier, used to uniquely identify the form on the page **/
     public Object getFormSuffixIdentifier() {
-        Object count = pageContext.getAttribute(FormTagBase.__MAKUMBA__FORM__COUNTER__);
-        if(count == null) {
-            System.out.println("HECK!");
-        }
         return "_form" + pageContext.getAttribute(FormTagBase.__MAKUMBA__FORM__COUNTER__);
     }
 
     private Integer updateFormId() {
-        System.out.println("*********************** UPDATING FORM ID");
         Integer formCount = (Integer) pageContext.getAttribute(FormTagBase.__MAKUMBA__FORM__COUNTER__);
         if (formCount == null) {
             formCount = 1;
