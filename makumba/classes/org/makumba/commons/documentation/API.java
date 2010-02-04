@@ -29,9 +29,10 @@ public class API implements WikiPlugin {
         
         if(apiPath.startsWith("http")) {
              url = apiPath + url;
+        } else {
+            url = context.getEngine().getBaseURL() + apiPath + url;
+            
         }
-        
-        url = context.getEngine().getBaseURL() + apiPath + url;
         
         return "<a href=\"" + url + "\">" + clazz + "</a>";
     }
