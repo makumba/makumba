@@ -136,6 +136,7 @@
         </classpath>
     </taskdef>
 
+    <!-- it's normal that this taskdef issues a warning, see the doMavenDeploy task for more info -->
     <taskdef resource="org/apache/commons/openpgp/ant/antlib.xml" uri="antlib:org.apache.commons.openpgp.ant">
       <classpath>
         <fileset dir="lib/building/">
@@ -388,6 +389,7 @@
     <target name="doRelease" if ="doRelease">
         <echo>Making release ${tag} and using sourceforge user ${user} in order to perform upload to FRS.</echo>
     
+        <antcall target="generateTLDs" />
         <antcall target="makeJar" />
         <antcall target="uploadMadeJar" />
     </target>
@@ -581,14 +583,32 @@
       <!-- in-memory POM definition -->
       <artifact:pom
         id="makumba-memory.project" groupId="org.makumba" artifactId="makumba" version="${release.version}" name="makumba"
-        description="A framework for rapid and sustainable web-development" packaging="jar" url="http://www.makumba.org">
+        description="A framework for rapid and sustainable web-development" url="http://www.makumba.org">
+    
+        <dependency groupid="antlr" artifactid="antlr" version="2.7.6" />
+        <dependency groupid="commons-collections" artifactid="commons-collections" version="3.2" />
+        <dependency groupid="commons-configuration" artifactid="commons-configuration" version="1.6"/>
+        <dependency groupid="commons-io" artifactid="commons-io" version="1.1"/>
+        <dependency groupid="commons-cli" artifactid="commons-cli" version="1.2"/>
+        <dependency groupid="commons-lang" artifactid="commons-lang" version="2.3"/>
+        <dependency groupid="c3p0" artifactid="c3p0" version="0.9.1.2"/>
+        <dependency groupid="eu.medsea.mimeutil" artifactid="mime-util" version="2.1.3" />
         
-        <!-- <dependency groupId="junit" artifactId="junit" version="4.1"/> -->
         <license name="LGPL" url="http://www.gnu.org/copyleft/lesser.html"/>
         <scm url="http://svn.makumba.sourceforge.net/" connection="http://svn.makumba.sourceforge.net/" />
+        
+        <!-- Developers, for contact purposes -->
+        <developer id="manu" name="Manuel" email="manuel@makumba.org" />
+        <developer id="rudi" name="Rudolf" email="mayer@ifs.tuwien.ac.at" />
+        <developer id="cristi" name="Cristian" email="cristi@csc.kth.se" />
+                
       </artifact:pom>
       
       <!-- write the POM on disk -->
+      <delete file="work/release-pom.xml" />
+      <delete file="work/makumba.jar.asc" />
+      <delete file="work/release-pom.xml.asc" />
+            
       <artifact:writepom file="work/release-pom.xml" pomrefid="makumba-memory.project" />
       
       <artifact:pom file="work/release-pom.xml" id="makumba.project" />
@@ -616,16 +636,15 @@
           <include name="makumba.jar" />
         </fileset>
       </openpgp:signer>
-
       
-      <!-- deploy makumba.jar file -->
+      <!-- deploy makumba.jar file including signatures -->
       <artifact:deploy file="work/makumba.jar">
+        <attach file="work/makumba.jar.asc" type="jar.asc" />
+        <attach file="work/release-pom.xml.asc" type="pom.asc" />
         <remoteRepository refid="sonatype.release"/>
-        <!-- <remoteRepository refid="local.snapshot"/> -->
         <pom refid="makumba.project"/> 
       </artifact:deploy>
       
-
     </target>
 
 <!-- Targets for JUNIT testing -->    
@@ -729,8 +748,9 @@
     
     
     <target name="copyWikiPlugins" description="compiles and copies the plugins to the JSPWiki folder">
+    
         <copy todir="doc-jspwiki/JSPWiki/WEB-INF/classes/org/makumba/commons/documentation">
-            <fileset dir="classes/org/makumba/commons/documentation/" includes="Box*.class,Insert*.class,Img*.class,API*.class,DEV*.class,JAVA*.class" />
+            <fileset dir="build/org/makumba/commons/documentation/" includes="Box*.class,Insert*.class,Img*.class,API*.class,DEV*.class,JAVA*.class" />
         </copy>
     
     </target>
