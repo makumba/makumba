@@ -51,6 +51,7 @@ import org.makumba.commons.RuntimeWrappedException;
  * <li>you use the doAnalyzedStartTag() and doAnalyzedEndTag() instead of doStartTag() and doEndTag() methods</li>
  * <li>you cleanup all resources by overriding doAnalyzedCleanup(), without forgetting to call the super() method</li>
  * <li>you correctly describe the behavior of the tag by overriding the canHaveBody() and allowsIdenticalKey()</li>
+ * <li>you check for the validity of attributes by overriding the registerPossibleAttributeValues() method, and registering possile attribute values using the registerAttributeValues(String attributeName, String... values) method.</li>
  * </ul>
  * 
  * @author Cristian Bogdan
