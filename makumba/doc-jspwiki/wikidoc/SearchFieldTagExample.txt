@@ -1,10 +1,10 @@
 [{Code
 
-<mak:searchForm in="best.Student" name="searchPerson">
+<mak:searchForm in="company.Company" name="searchCompany">
     <mak:criterion fields="name"> 
         <mak:searchField />
     </mak:criterion>
-    <mak:criterion fields="place">
+    <mak:criterion fields="targetMarkets">
         <mak:searchField forceInputStyle="single" /> 
     </mak:criterion>  
 </mak:searchForm>

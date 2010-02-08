@@ -2,7 +2,7 @@ To cancel out a certain attribute, specify the exact name:
 
 [{Code
       
-<mak:logout actor="student"/>
+<mak:logout actor="employee"/>
 }]
 
 You can remove (cancel-out, logout) multiple attributes from the session by using <mak:logout actor="attribute name"> several times and/or by using the star (*) wildcard, e.g.:

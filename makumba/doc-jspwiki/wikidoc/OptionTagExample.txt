@@ -1,14 +1,20 @@
 [{Code
 
-<mak:input name="some" dataType="ptr T">
-    <mak:option>Please choose:</mak:option>
-    <mak:list from="T choice" where="someCondition" >
-        <mak:option value="choice"><mak:value expr="choice.someField" /></mak:option>
-    </mak:list>
-    <mak:option> -------- separator----------</mak:option>
-    <mak:list from="T choice" where="someOtherCondition" >
-       <mak:option value="choice"> <mak:value expr="choice.someField /></mak:option>
-    </mak:list>
-</mak:input>
+<mak:object from="company.Project p" where="p=$project">
+  <mak:editForm object="p">
+    <mak:input name="leader">
+    
+      <mak:option>Please choose:</mak:option>
+      <mak:list from="company.Employee e" where="e.gender=10" >
+        <mak:option value="e"><mak:value expr="e.name"/> <mak:value expr="e.surname"/></mak:option>
+      </mak:list>
+      <mak:option> -------- separator----------</mak:option>
+      <mak:list from="company.Employee e" where="e.gender=20" >
+         <mak:option value="e"><mak:value expr="e.name"/> <mak:value expr="e.surname"/></mak:option>
+      </mak:list>
+      
+    </mak:input>
+  </mak:editForm>
+</mak:object>
 
 }]

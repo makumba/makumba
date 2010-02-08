@@ -1,6 +1,6 @@
 [{Code
 
-<mak:resultList resultsFrom="searchPerson">
-    Name: <mak:value expr="o.name"/> <br/>
+<mak:resultList resultsFrom="searchEmployee">
+    Name: <mak:value expr="o.name"/> <mak:value expr="o.surname"/><br/>
 </mak:resultList>
 }]

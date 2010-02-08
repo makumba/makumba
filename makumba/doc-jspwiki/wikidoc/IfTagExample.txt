@@ -1,9 +1,9 @@
 [{Code
 
-<mak:list from="best.Student s" where="s.person.birthdate <> nil" orderBy="s.name">
-    <mak:value expr="s.person.name"/>
-    <mak:if test="s.person.hideAge = 0">
-        was born on <mak:value expr="s.person.birthdate" />
+<mak:list from="copmany.Employee e" where="e.department.company=$company" orderBy="e.department, e.surname">
+    <mak:value expr="e.department"/> - <mak:value expr="e.surname"/>, <mak:value expr="e.name"/> 
+    <mak:if test="e.birthdate <> nil">
+        (born on <mak:value expr="e.birthdate" />)
     </mak:if>
 </mak:list>
 

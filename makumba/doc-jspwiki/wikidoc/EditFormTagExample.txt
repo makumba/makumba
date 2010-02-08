@@ -1,10 +1,14 @@
 [{Code
 
-<mak:object from="best.Student s, s.person p" where="s=$student">
-    <mak:editForm object="s" action="studentView.jsp" method="post">
-        <mak:input name="person.name"/>
-        <mak:input name="person.surname"/>
-        <mak:input name="graduated"/>
+<mak:object from="company.Employee e" where="e=$employee">
+    <mak:editForm object="e" action="employeeView.jsp" method="post">
+        <mak:input name="name"/>
+        <mak:input name="surname"/>
+        <mak:input name="gender"/>
+        <mak:input name="birthdate"/>
+        <mak:input name="salary"/>
+        <mak:input name="department"/>
+        <input type=submit value="Save changes">
     </mak:editForm>
 </mak:object>
 }]

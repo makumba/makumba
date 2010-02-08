@@ -1,4 +1,4 @@
-[{ALLOW view Documentation,Admin}]
+[{ALLOW edit Documentation}]
 
 %%tabbedSection 
 %%tab-Basics
@@ -189,6 +189,33 @@ By default JSPWiki does not offer too many possibilities regarding tables, like 
 }]
 
 Check out the documentation of the [TablePlugin|http://www.jspwiki.org/wiki/TablePlugin] to find out more.
+
+
+/%
+
+%%tab-API
+
+It is possible to quickly link to the API using the API, DEV and JAVA plugins:
+
+{{{
+[{API class='org.makumba.Transaction'}]
+}}}
+
+[{API class='org.makumba.Transaction'}]
+
+
+{{{
+[{DEV class='org.makumba.analyser.AnalysableTag'}]
+}}}
+
+[{DEV class='org.makumba.analyser.AnalysableTag'}]
+
+
+{{{
+[{JAVA class='java.lang.String'}]
+}}}
+
+[{JAVA class='java.lang.String'}]
 
 
 /%

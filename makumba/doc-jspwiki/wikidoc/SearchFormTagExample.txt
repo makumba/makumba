@@ -1,7 +1,7 @@
 [{Code
 
-<mak:searchForm in="general.Person" name="searchPerson">
-    ....
+<mak:searchForm in="company.Company" name="searchCompany">
+    ...
 </mak:searchForm>
 
 }]

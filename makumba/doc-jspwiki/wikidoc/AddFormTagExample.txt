@@ -1,10 +1,10 @@
 [{Code
 
-<mak:object from="best.Student s" where="s=$student">
-    <mak:addForm object="s" field="languages" action="studentView.jsp" method="post">
-        <mak:value expr="s.name"/>
-        <mak:input name="level"/>
-        <mak:input name="comments"/>
+<mak:object from="company.Employee e" where="e=$employee">
+    <mak:addForm object="e" field="projects" action="employeeView.jsp" method="post">
+        <mak:value expr="e.name"/>
+        <mak:input name="project"/>
+        <mak:input name="timePercentage"/>
     </mak:addForm>
 </mak:object>
 
