@@ -3,7 +3,7 @@
 <mak:list ...>
    <c:if test="${mak:count()==1}">These are the list elements: </c:if>
    <tr bgcolor="${mak:count()%2==1?"white":"grey"}">
-        <td>this shows in alternative colors</td>
+        <td>this shows in alternate colors</td>
         ...
    </tr>
    <c:if test="${mak:count()!=mak:maxCount()}">

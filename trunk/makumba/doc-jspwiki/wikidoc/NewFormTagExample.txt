@@ -1,8 +1,8 @@
 [{Code
 
-<mak:newForm type="general.Person" action="personList.jsp" method="post">
+<mak:newForm type="company.Employee" action="employeeList.jsp" method="post">
     <mak:input name="name"/>
     <mak:input name="surname"/>
-    <input type="submit">
+    <input type="submit" value="Create new employee">
 </mak:newForm>
 }]

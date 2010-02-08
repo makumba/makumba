@@ -1,14 +1,8 @@
 [{Code
 
-  <mak:list from="best.Student s, s.person p" where="p.gender=\"male\"" orderBy="p.name">
-      <mak:value expr="p.name"/>
-      <mak:value expr="p.surname"/>
-      <mak:value expr="p.birthdate" var="birth" printVar="printBirth"/>
-      <% // we only print the birthdate if it's after some date
-           if ( ((java.util.Date)birth).after(new java.util.Date(1980, 0, 1)) ) {
-               out.print(printBirth);
-           }
-      %>
-      <mak:value expr="s.person.favoriteQuote" maxLength="60" addTitle="auto" />
+  <mak:list from="general.Employee e>
+      <mak:value expr="e.name"/>
+      <mak:value expr="e.surname"/>
+      <mak:value expr="e.department.name" maxLength="40" addTitle="auto" />
   </mak:list>
 }]

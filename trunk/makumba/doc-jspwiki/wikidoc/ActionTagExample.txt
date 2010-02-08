@@ -1,7 +1,7 @@
 [{Code
 
-<mak:editForm object="ins" method="post">
-    <mak:action>memberView.jsp?person=<mak:value expr="p"/></mak:action>
+<mak:editForm object="employee" method="post">
+    <mak:action>employeeView.jsp?employee=<mak:value expr="employee"/></mak:action>
     ...
 </mak:editForm>
 

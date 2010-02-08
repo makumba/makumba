@@ -1,9 +1,9 @@
 [{Code
     
-<mak:object from="best.Student s" where="s=$student">
-    <mak:form handler="doSomething" action="studentView.jsp" method="post">
-        <mak:input name="xxx" value="s.person.name"/>
-        <input type=submit>
+<mak:object from="company.Employee e" where="e=$employee">
+    <mak:form handler="doSomething" action="employeeView.jsp" method="post">
+        <mak:input name="xxx" value="e.salary"/>
+        <input type=submit value="Do something">
     </mak:form>
 </mak:object>
 }]

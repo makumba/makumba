@@ -1,8 +1,8 @@
 [{Code
 
-<mak:object from="best.Student s, s.languages l" where="s=$student AND l.lang.name=$langname">
-    <mak:deleteLink object="l" action="studentView.jsp">
-        Delete <mak:value expr="l.lang.name"/>
+<mak:object from="company.Employee e, e.projects p" where="e=$employee AND p.project.name=$projectName">
+    <mak:deleteLink object="p" action="employeeView.jsp">
+        Delete <mak:value expr="p.project.name"/>
     </mak:deleteLink>
 </mak:object>
 }]

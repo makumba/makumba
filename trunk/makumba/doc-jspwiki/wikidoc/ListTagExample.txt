@@ -1,19 +1,15 @@
 [{Code
 
-<mak:list from="best.Student s, s.person p" where="p.gender=\"male\"" orderBy="p.name">
-
+<mak:list from="copmany.Employee e" where="e.department.company=$company AND p.gender=\"male\"" orderBy="e.surname, e.name">
     <c:if test="${mak:count()==1}">
-        <p> There are ${mak:maxCount()} male students:
+        <p> There are ${mak:maxCount()} male employees:
     </c:if>
-
-    <br> <%= counter %>.
-    <mak:value expr="p.name"/>
-    <mak:value expr="p.surname"/> <br>
-    <mak:list from="p.addresses a">
-        <mak:value expr="a.streetno"/> <mak:value expr="a.city"/>
+    <mak:value expr="e.surname"/>, <mak:value expr="e.name"/> -
+    <mak:list from="e.projects p">
+        <mak:value expr="p.name"/>
     </mak:list>
 </mak:list>
 
-<c:if test="${mak:lastCount()==0}"> There are no male students. </c:if>
+<c:if test="${mak:lastCount()==0}"> There are no male employees. </c:if>
 
 }]
