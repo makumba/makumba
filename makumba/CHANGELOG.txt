@@ -19,7 +19,7 @@ manu, marius: edit-in-place for mak:input and mak:list ("editable" attribute). I
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
 
-0.8.2.7.3 09 Feb 2010
+0.8.2.7.2 09 Feb 2010
 manu: fixing bug 1163
 
 0.8.2.7.1 03 Feb 2010
