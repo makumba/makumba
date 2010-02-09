@@ -1807,7 +1807,7 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
   <tag>
     <name>pagination</name>
     <tagclass>org.makumba.list.pagination.PaginationTag</tagclass>
-    <bodycontent>EMPTY</bodycontent>
+    <body-content>empty</body-content>
     <display-name>Prints links for pagination navigation</display-name>
     <descriptionPage>PaginationTagDescription</descriptionPage>
     <example>PaginationTagExample</example>
