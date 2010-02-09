@@ -851,7 +851,10 @@ log4j.rootCategory=INFO,FileLog
 # Uncomment the next line to require the Admin group to approve new user profiles
 jspwiki.approver.workflow.createUserProfile=Admin
 
-### End of configuration file.
+###### PLUGINS
+
+codeplugin.defaultLang=jsp
+
 box.note.styleName=note
 box.fixme.styleName=note fixme
 box.warning.styleName=note warning
