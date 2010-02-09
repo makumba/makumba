@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+  version="2.4">
+
+  <display-name>Makumba Demo Application</display-name>
+
+
+   <filter>
+      <filter-name>Security Filter</filter-name>
+      <filter-class>org.securityfilter.filter.SecurityFilter</filter-class>
+      <!-- Configuration file location (this is the default value) -->
+      <init-param>
+         <param-name>config</param-name>
+         <param-value>/WEB-INF/securityfilter-config.xml</param-value>
+      </init-param>
+      <!-- Validate config file if set to true -->
+      <init-param>
+         <param-name>validate</param-name>
+         <param-value>true</param-value>
+      </init-param>
+      <!-- 
+      As an example a login form can define "logMeIn" as it action in place of the standard
+      "j_security_check" which is a special flag user by app servers for container managed security.
+      -->
+      <init-param>
+         <param-name>loginSubmitPattern</param-name>
+         <param-value>/logMeIn</param-value>
+      </init-param>
+   </filter>
+ <!-- map all requests to the SecurityFilter, control what it does with configuration settings -->
+   <filter-mapping>
+      <filter-name>Security Filter</filter-name>
+      <url-pattern>/*</url-pattern>
+   </filter-mapping>
+
+  <filter>
+    <filter-name>makumba_controller</filter-name>
+    <filter-class> org.makumba.controller.http.ControllerFilter 
+    </filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>makumba_controller</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  
+
+  
+  
+  <welcome-file-list>
+    <welcome-file>welcome.jsp</welcome-file>
+  </welcome-file-list>
+  
+  <servlet>
+    <servlet-name>invoker</servlet-name>
+    <servlet-class> org.apache.catalina.servlets.InvokerServlet 
+    </servlet-class>
+    <init-param>
+      <param-name>debug</param-name>
+      <param-value>0</param-value>
+    </init-param>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>invoker</servlet-name>
+    <url-pattern>/servlet/*</url-pattern>
+  </servlet-mapping>
+<!--  <servlet>-->
+<!--    <servlet-name>codeGenerator</servlet-name>-->
+<!--    <servlet-class>org.makumba.devel.CodeGenerator</servlet-class>-->
+<!--  </servlet>-->
+</web-app>
