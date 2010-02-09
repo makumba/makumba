@@ -1,55 +1,79 @@
 body {
-	background:white;
+	background: white;
 }
-.tag{
-	color:blue;
+
+.tag {
+	color: #5a7302;
 }
-.endtag{
-	color:blue;
+
+.endtag {
+	color: blue;
 }
-.reference{
-	color:black;
+
+.reference {
+	color: black;
 }
-.name{
-	font-weight:bold;
-	color:maroon;
+
+.name {
+	font-weight: bold;
+	color: maroon;
 }
-.value{
+
+.value {
 	font-style: italic;
-	color:maroon;
+	color: maroon;
 }
-.text{
-	font-weight:bold;
-	color:black;
+
+.text {
+	font-weight: bold;
+	color: black;
 }
-.reservedWord{
-	color:#0054E3;
-	font-weight:bold;
+
+.reservedWord {
+	color: #0054E3;
+	font-weight: bold;
 }
-.identifier{
-	color:black;
+
+.identifier {
+	color: black;
 }
-.literal{
-	color:orange;
-	font-weight:bold;	
+
+.literal {
+	color: green;
 }
-.separator{
-	color:navy;
+
+.separator {
+	color: navy;
 }
-.operator{
-    color:#FF00FF;
+
+.operator {
+	color: navy;
 }
-.comment{
-	color:green;
+
+.comment {
+	color: green;
 }
-.preprocessor{
-	color:purple;
+
+.preprocessor {
+	color: purple;
 }
-.whitespace{
+
+.whitespace {
+	
 }
-.error{
-	color:red;
+
+.error {
+	color: red;
 }
-.unknown{
-	color:orange;
+
+.unknown {
+	color: orange;
+}
+
+.function {
+	color: navy;
+}
+
+.markup {
+	color: darkgreen;
 }
