@@ -19,6 +19,25 @@ manu, marius: edit-in-place for mak:input and mak:list ("editable" attribute). I
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
 
+0.8.2.7.3 09 Feb 2010
+manu: fixing bug 1163
+
+0.8.2.7.1 03 Feb 2010
+manu: fixing broken reference to JSP 2.1 API
+
+0.8.2.7 29 Jan 2010
+manu: form submission message also shown for successful response
+manu: fixing bug in MDD parser that would prevent overriding of IDD fields in sub-tables (setComplex, ptrOne)
+manu: enhancing analysis engine: reporting invalid values for tag attributes can now be handled through AnalysableTag#registerAttributeValues()
+manu: improving error reporting: when an error occurs during the analysis or execution of a tag, we fetch the exact line of that tag and display it to the user.
+      we keep the analysis status in the servlet context (as attribute) until the error does not occur anymore, so that we can keep on displaying
+      the error message on successive requests (page reloads).
+manu: extending/refactoring page analysis: introducing AnalysableElement and ElementData to abstract from Tag,
+      and allow for another kind of element (EL expression).
+      moving all the code required for accurate error handling into AnalysableElement
+manu: small fixes reported by bug detection plugin
+manu: fixing small bug in error viewer: removing generation of a link to the current directory in error pages when encountering a '.'
+
 0.8.2.6 10 Jan 2010
 manu: fixing FIXME in FilterConditionControllerHandler: using configuration paths so as not to filter the MDD viewers etc.
 manu: using default page analysis doAnalyzedStartTag, doAnalyzedEndTag in PaginationTag
