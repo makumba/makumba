@@ -187,7 +187,33 @@ By default JSPWiki does not offer too many possibilities regarding tables, like 
 }]
 
 Check out the documentation of the [TablePlugin|http://www.jspwiki.org/wiki/TablePlugin] to find out more.
+/%
 
+%%tab-API
+
+It is possible to easily generate links to the API:
+
+__Public API__
+{{{
+[{API class='org.makumba.Transaction'}]
+}}}
+
+[{API class='org.makumba.Transaction'}]
+
+__Developer API__
+{{{
+[{DEV class='org.makumba.analyser.AnalysableTag'}]
+}}}
+
+[{DEV class='org.makumba.analyser.AnalysableTag'}]
+
+__Java API__
+
+{{{
+[{JAVA class='java.lang.String'}]
+}}}
+
+[{JAVA class='java.lang.String'}]
 
 /%
 
