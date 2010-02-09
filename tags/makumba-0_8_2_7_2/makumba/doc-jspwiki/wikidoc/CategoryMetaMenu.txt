@@ -1,0 +1,14 @@
+!!!Meta
+
+* [Overview|Meta]
+* [Example|MetaExample]
+* [TODO|MetaDocumentationTodo]
+* [Recent Changes|RecentChanges]
+* [Find pages|FindPage]
+* [Unused pages|MetaUnusedPages]
+* [Undefined pages|MetaUndefinedPages]
+* [Page Index|PageIndex]
+* [System Info|MetaSystemInfo]
+
+[{ALLOW view Documentation,Admin}]
+

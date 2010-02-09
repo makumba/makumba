@@ -1,0 +1,16 @@
+Proposed content by rudi
+
+[{TableOfContents }]
+
+!!!Pagination of results ([<mak:list>|ListTag], [<mak:resultList>|ResultListTag])
+
+Show how pagination works
+
+!!!Different input controls for [<mak:input>|InputTag]
+
+for sets: multi select list vs. checkbox
+for enums: single select list vs. radio buttons
+for integer: spinner, ..
+
+!!!Form validation
+Explain how to write [validation rules|ValidationRules]

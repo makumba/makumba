@@ -1,0 +1,7 @@
+forum = not null ptr forum.Forum           ;
+topic = not null ptr forum.Topic           ;
+parent = ptr forum.Post                    ;
+
+author = fixed not null ptr user.User      ;
+contents = text not null                   ; 
+hidden = int{ "false"=0, "true"=1 }        ;

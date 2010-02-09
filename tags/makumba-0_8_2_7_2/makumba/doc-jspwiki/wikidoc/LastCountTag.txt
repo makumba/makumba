@@ -1,0 +1,17 @@
+!!!Taglib documentation for EL function mak:lastCount
+
+!!Description
+
+the maximum count of the previous mak:list
+
+!!Attributes
+No attributes defined.
+
+!!See also
+
+[mak:count|CountTag], [mak:maxCount|MaxCountTag], [mak:maxResults|MaxResultsTag]
+
+!!Examples
+
+[{InsertPage page=CountFunctionExample}]
+

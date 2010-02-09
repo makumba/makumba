@@ -1,0 +1,19 @@
+!!!Taglib documentation for tag mak:response
+
+!!Description
+
+[{InsertPage page=ResponseTagDescription}]
+
+!!Attributes
+This tag has no attributes
+
+!!See also
+
+[mak:action|ActionTag], [mak:form|FormTag], [mak:newForm|NewFormTag], [mak:addForm|AddFormTag], [mak:editForm|EditFormTag], [mak:deleteLink|DeleteLinkTag], [mak:delete|DeleteTag]
+
+!!Examples
+
+[{InsertPage page=ResponseTagExample}]
+
+
+%%(display:none;)[Category Documentation]%%

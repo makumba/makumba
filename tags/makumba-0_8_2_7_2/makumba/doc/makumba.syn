@@ -1,0 +1,61 @@
+; TextPad syntax definitions for ; Makumba Data Definition files
+; Copyright (C) 2001, www.makumba.org
+
+C=1
+
+[Syntax]
+Namespace1 = 3
+IgnoreCase = Yes
+KeyWordLength =
+BracketChars = {[()]}
+;FakeOpera//torChars = -+*/<>!~%^&|=
+OperatorChars = =->
+PreprocStart = !
+SyntaxStart =
+SyntaxEnd =
+HexPrefix = 
+CommentStart = 
+CommentEnd = 
+CommentStartAlt =
+CommentEndAlt =
+SingleComment = #
+SingleCommentCol =
+SingleCommentAlt = 
+SingleCommentColAlt =
+SingleCommentEsc =
+StringsSpanLines = No
+StringStart = ;
+StringEnd = 
+StringAlt = "
+StringEsc = \
+CharStart = '
+CharEnd = '
+CharEsc = \
+
+[Preprocessor keywords]
+!type
+!title
+!include
+
+[Keywords 1]
+char
+text
+int
+date
+ptr
+set
+
+[Keywords 2]
+fixed
+encrypted
+not null
+notnull
+unique
+
+[Keywords 3]
+extends
+
+[Keywords 4]
+!type
+!title
+!include

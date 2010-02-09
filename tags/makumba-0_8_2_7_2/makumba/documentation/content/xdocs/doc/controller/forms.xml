@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
+<document>
+    <header>
+        <title>Form submission handling</title>
+    </header>
+    <body>
+    
+      <p>When a form is submitted with makumba, the following things happen:</p>
+      <ul>
+      <li>makumba constructs (or loads from cache) a so-called form responder, that will take care of responding to the submission to the form.
+      </li>
+      <li>the implicit validation takes place, using the <a href="/doc/datadef.html#FieldAttributes">field attributes</a> of the fields used in the form</li>
+      <li>the explicit validation takes place, defined using <a href="/doc/valrules.html">validation rules</a></li>
+      <li>additional, form-specific <a href="businessLogicClasses.html">business logic</a> handler methods are executed</li>
+      <li>the action-specific changes are written to the database (depending on new, edit, delete)</li>
+      <li>the response message is displayed on the action page</li>
+      </ul>
+      
+      <p>If at any point of this process, a validation constraint fails or a LogicException is thrown by the business logic, the submission stops.
+      If a validation constraint fails, makumba can deal with this in several ways:</p>
+      <ul>
+          <li>forward to the action page and display the error using <a href="/doc/taglib/makresponse.html">mak:response</a>: in this case, the action page is displayed, and if used, the error message is displayed</li>
+          <li>reload the form and display errors using <a href="/doc/taglib/makresponse.html">mak:response</a>: in this case, the form page is displayed, and all errors are displayed together using the mak:response tag</li>
+          <li>reload the form and display errors using annotations: in this case, the form page is displayed and errors are displayed next to the fields containing errors. Validation errors that span over more than one field are displayed before the form</li>
+          <li>validate the form as the user fills it in using live validation: in this case, the validity of the data entered by the user is checked on the fly and errors displayed next to the field when it is left.</li>
+      </ul>
+      <p>Business logic exceptions are displayed using the <a href="/doc/taglib/makresponse.html">mak:response</a> tag.</p>
+      <p>If everything goes fine, the request is forwarded to the action page, where a message might be displayed (see the <a href="/doc/taglib/makform.html#attributes">message attribute</a>).</p>
+    
+        
+    </body>
+</document>
