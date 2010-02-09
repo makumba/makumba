@@ -1,8 +1,0 @@
-[Recent Changes]\\
-[Page Index]\\
-[About]\\
-[System Info|MetaSystemInfo]\\
-
-[Unused Pages|MetaUnusedPages]\\
-[Undefined Pages|MetaUndefinedPages]\\
-
