@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <taglib xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd" version="2.0">
 
-  <description>Makumba devel-20100104114959 http://www.makumba.org</description>
+  <description>Makumba devel-20100209160016 http://www.makumba.org</description>
   <tlib-version>2.0</tlib-version>
   <short-name>mak</short-name>
   <uri>http://www.makumba.org/presentation</uri>
@@ -1809,7 +1809,7 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
   <tag>
     <name>pagination</name>
     <tagclass>org.makumba.list.pagination.PaginationTag</tagclass>
-    <bodycontent>EMPTY</bodycontent>
+    <body-content>empty</body-content>
     <display-name>Prints links for pagination navigation</display-name>
     
     
