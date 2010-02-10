@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.makumba</groupId>
+  <artifactId>makumba-archetype</artifactId>
+  <version>1.1</version>
+  <packaging>maven-archetype</packaging>
+  <name>makumba-archetype</name>
+  <description>Archetype for a makumba web-application</description>
+  <url>http://www.makumba.org</url>
+
+  <scm>
+    <connection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/trunk</connection>
+    <developerConnection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/trunk</developerConnection>
+  </scm>
+
+  <build>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.archetype</groupId>
+        <artifactId>archetype-packaging</artifactId>
+        <version>2.0-alpha-3</version>
+      </extension>
+    </extensions>
+    <plugins>
+      <plugin>
+        <artifactId>maven-archetype-plugin</artifactId>
+        <version>2.0-alpha-3</version>
+        <extensions>true</extensions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.0-beta-7</version>
+        <configuration>
+          <tagBase>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags</tagBase>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <distributionManagement>
+    <repository>
+      <id>sonatype</id>
+      <name>Nexus Staging Repo</name>
+      <url>http://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+    <snapshotRepository>
+      <id>sonatype-nexus-snapshots</id>
+      <name>Sonatype Nexus Snapshots</name>
+      <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <licenses>
+    <license>
+      <name>LGPL</name>
+      <url>http://www.gnu.org/copyleft/lesser.html</url>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <id>manu</id>
+      <name>Manuel</name>
+      <email>manuel@makumba.org</email>
+    </developer>
+    <developer>
+      <id>rudi</id>
+      <name>Rudolf</name>
+      <email>mayer@ifs.tuwien.ac.at</email>
+    </developer>
+    <developer>
+      <id>cristi</id>
+      <name>Cristian</name>
+      <email>cristi@csc.kth.se</email>
+    </developer>
+  </developers>
+
+  <profiles>
+    <profile>
+      <id>release-sign-artifacts</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.0-alpha-4</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+
+</project>
