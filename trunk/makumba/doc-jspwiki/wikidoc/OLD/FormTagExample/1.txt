@@ -1,0 +1,9 @@
+[{Code
+    
+<mak:object from="best.Student s" where="s=$student">
+    <mak:form handler="doSomething" action="studentView.jsp" method="post">
+        <mak:input name="xxx" value="s.person.name"/>
+        <input type=submit>
+    </mak:form>
+</mak:object>
+}]

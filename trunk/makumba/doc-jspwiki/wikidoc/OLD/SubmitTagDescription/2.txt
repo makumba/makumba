@@ -1,0 +1,4 @@
+The mak:submit tag simplifies the creation of a submit widget, which can be either a button or a link (the default is a button with the text "Submit"). It should be placed inside of a [mak:form|FormTag] (or [mak:newForm|NewFormTag] or [mak:editForm|EditFormTag]) and will trigger the submission of the form. If the form has a %%code triggerEvent%% attribute set, it will lead to a partial postback of the form via AJAX.
+
+mak:submit checks for the existance of a %%code onSubmit%% javascript handler method before doing the actual submission, and only submits if the method returns true.
+

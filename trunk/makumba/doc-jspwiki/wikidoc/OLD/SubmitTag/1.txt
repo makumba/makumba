@@ -1,0 +1,50 @@
+!!!Taglib documentation for tag mak:submit
+
+!!Description
+
+[{InsertPage page=SubmitTagDescription}]
+
+!!Attributes
+
+%%(display:none) makumba hackers: DO NOT CHANGE THESE ATTRIBUTES HERE since your changes will be lost! You have to edit the taglib-documented.xml file and re-generate the taglib doc! %%
+
+[{Table
+
+||Name||Required||Request-time||Description||Comments 
+
+|widget 
+|false 
+|false 
+|Widget to be used for the submission. 
+|Fixed. Can have as values 'button' or 'link', defaults to 'button'. 
+
+|styleId 
+|false 
+|true 
+|Generic HTML tag attribute 
+|results in id="..." 
+
+|styleClass 
+|false 
+|true 
+|Generic HTML tag attribute 
+|results in class="..." 
+
+|style 
+|false 
+|true 
+|Generic HTML tag attribute (generic) 
+|The content is copied to the resulting html tag. Careful with (escaping) quotes. (generic) 
+
+
+}]
+
+!!See also
+
+[mak:form|FormTag], [mak:newForm|NewFormTag], [mak:addForm|AddFormTag], [mak:editForm|EditFormTag]
+!!Examples
+
+[{InsertPage page=SubmitTagExample}]
+
+
+%%(display:none;)[Category Documentation]%%
