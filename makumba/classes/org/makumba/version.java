@@ -48,7 +48,7 @@ import java.util.Properties;
 public class version {
 
     /** @see MakumbaSystem#getVersion() */
-    static String getVersion() {
+    public static String getVersion() {
         String vs = "$HeadURL$";
         
         // HeadURL will return something like
