@@ -584,15 +584,15 @@
       <artifact:pom
         id="makumba-memory.project" groupId="org.makumba" artifactId="makumba" version="${release.version}" name="makumba"
         description="A framework for rapid and sustainable web-development" url="http://www.makumba.org">
-    
-        <dependency groupid="antlr" artifactid="antlr" version="2.7.6" />
-        <dependency groupid="commons-collections" artifactid="commons-collections" version="3.2" />
-        <dependency groupid="commons-configuration" artifactid="commons-configuration" version="1.6"/>
-        <dependency groupid="commons-io" artifactid="commons-io" version="1.1"/>
-        <dependency groupid="commons-cli" artifactid="commons-cli" version="1.2"/>
-        <dependency groupid="commons-lang" artifactid="commons-lang" version="2.3"/>
-        <dependency groupid="c3p0" artifactid="c3p0" version="0.9.1.2"/>
-        <dependency groupid="eu.medsea.mimeutil" artifactid="mime-util" version="2.1.3" />
+        
+        <dependency groupid="antlr" artifactid="antlr" version="2.7.6" scope="runtime"/>
+        <dependency groupid="commons-collections" artifactid="commons-collections" version="3.2" scope="runtime"/>
+        <dependency groupid="commons-configuration" artifactid="commons-configuration" version="1.6" scope="runtime"/>
+        <dependency groupid="commons-io" artifactid="commons-io" version="1.1" scope="runtime"/>
+        <dependency groupid="commons-cli" artifactid="commons-cli" version="1.2" scope="runtime"/>
+        <dependency groupid="commons-lang" artifactid="commons-lang" version="2.3" scope="runtime"/>
+        <dependency groupid="c3p0" artifactid="c3p0" version="0.9.1.2" scope="runtime"/>
+        <dependency groupid="eu.medsea.mimeutil" artifactid="mime-util" version="2.1.3" scope="runtime"/>
         
         <license name="LGPL" url="http://www.gnu.org/copyleft/lesser.html"/>
         <scm url="http://svn.makumba.sourceforge.net/" connection="http://svn.makumba.sourceforge.net/" />
@@ -716,6 +716,7 @@
         <java classname="org.makumba.commons.MakumbaTLDGenerator" fork="true" dir=".">
             <classpath refid="project.class.path.complete" />
             <arg value="${basedir}/classes/META-INF" />
+            <arg value="${basedir}/doc-jspwiki/wikidoc/" />
         </java>
       
         <!-- for the tests webapp to work also with jetty, we copy the TLD files into the WEB-INF dir of the test webapp -->
