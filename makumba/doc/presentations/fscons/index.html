@@ -9,11 +9,8 @@
 <div class="background"><img alt="" src="slideshow_files/makumba-logo.gif" align="right"/></div>
 
 <div style="border-style: none; display: block; visibility: visible; position: absolute;" class="slide cover"><img src="slideshow_files/makumba-logo.gif" alt="Cover page image" class="cover"><br clear="all">
-<h1>Makumba: query-centric web-applications for NGOs</h1>
-<p>FSCONS Gothenburg, 07-09 December 2007</p>
+<h1>Makumba: rapid application development made simple</h1>
 
-<p>Manuel Gay</p>,
-&lt;<a href="mailto:manuel@makumba.org">manuel@makumba.org</a>&gt;</p>
 <br><br></div>
 
 <!-- 
@@ -35,16 +32,10 @@
 <h1>Introduction</h1>
 
 <ul>
-<li>framework for <strong>web-development</strong>, spanning from the data to the interface (JSP)</li>
-<li>developed since 2001, currently version 0.7 (revision 2153)</li>
+<li>integrated framework for <strong>web-development</strong>, spanning from the data layer until the UI (JSP technology)</li>
+<li>developed since 2001, currently version 0.8.2.6</li>
 <li><strong>basic training takes 2h</strong></li>
-<li>NGO BEST (Board of European Students of Technology)</li>
-<li>textual replacement for Lotus Notes</li>
-<li>BEST IT group:
-<ul>
-<li>approx. 20 amateur developers, high turnover of members (10 new / year)</li>
-<li>loosely coupled group (spread everywhere over Europe)</li>
-</ul>
+<li>origin: NGO BEST (Board of European Students of Technology), where it was developed as textual replacement for Lotus Notes</li>
 </ul>
 <br><br></div>
 
@@ -55,8 +46,8 @@
 <li>be <strong>easy</strong> to learn, yet <strong>powerful</strong> for advanced users</li>
 <li>have easily readable and understandable code</li>
 <li>be <strong>simple</strong> to configure</li>
-<li><strong>query-centric</strong>: SQL-like language, easy to read</li>
-<li><strong>HTML</strong> as a simple language, <strong>familiar</strong> to many
+<li><strong>query-centric</strong>: SQL-like language, close to english</li>
+<li><strong>HTML</strong> and HTML-like markup as a simple language, <strong>familiar</strong> to many
 <li><strong>scale</strong> for large applications and large developement teams
 <ul>
 <li>Karamba! webapp: 2800+ JSPs, 200+ Java Business Logic files, 100+ data structures
@@ -91,13 +82,14 @@
 </pre>
 <br><br></div>
 
+
 <div style="border-style: none; display: none; visibility: hidden; position: absolute;" class="slide">
 <h1>Displaying data: Makumba List</h1>
 
 <ul>
 <li>query-based iteration</li>
 <li>can be nested and <strong>optimal queries</strong> will be composed</li>
-<li>query languages: OQL (Object Query Language), HQL (Hibernate Query Language)</li>
+<li>query languages: MQL (Makumba Query Language), HQL (Hibernate Query Language)</li>
 </ul>
 <h3>Example:</h3>
 <pre>
@@ -197,11 +189,57 @@
 </div>
 
 <div style="border-style: none; display: none; visibility: hidden; position: absolute;" class="slide">
+<h1>Validation Rules</h1>
+<ul>
+<li>part of the MDD</li>
+<li>can be seen as declarative business logic</li>
+<li>different rule types: number range, string length, regular expression, comparison, multi-field uniqueness</li>
+</ul>
+<h3>Example:</h3>
+<pre>
+  range(age) { 12..99 } : "Age must be between 12 and 99!"
+  compare(birthdate, graduationDate) { birthdate < graduationDate } : "You cannot finish school before your birthdate!"
+  unique(age, email) : "the combination of age and email must be unique!"
+</pre>
+<br><br></div>
+
+
+<div style="border-style: none; display: none; visibility: hidden; position: absolute;" class="slide">
+<h1>Query fragments</h1>
+<h2>MDD functions</h2>
+<ul>
+  <li>part of the MDD</li>
+  <li>as a means to reduce code duplication and increase code readability</li>
+</ul>
+<ul>
+<p>query functions in the MDD:</p>
+<pre>
+  cars = set Car ;cars of this person
+  numberOfRedCars() = count(c) from cars c where c.color = 'Red'
+</pre>
+<p>used in the JSP:</p>
+<pre>
+&lt;<font color='blue'>mak:list</font> from="<font style="color:red;">Person p</font>"&gt;
+  &lt;<font color='blue'>mak:value</font> expr="<font style="color:red;">p.name</font>" /&gt; - &lt;<font color='blue'>mak:value</font> expr="<font style="color:red;">p.numberOfRedCars()</font>" /&gt;
+&lt;<font color='blue'>/mak:list</font>&gt;
+</pre>
+</ul>
+
+<h2>Per-object authorisation</h2>
+<ul>
+<pre>
+canEdit(Person p)= p.age > 18 AND p.numberOfCars() > 0
+</pre>
+</ul>
+<br><br></div>
+
+<div style="border-style: none; display: none; visibility: hidden; position: absolute;" class="slide">
 <h1>Makumba Developer Support</h1>
 <ul>
-<li>Source Viewer</li>
-<li><a href="http://tequila.best.eu.org/rudi-k/dataDefinitions/general.Person">Code Generator</a></li>
+<li>Source Viewer for JSPs, MDDs and Java Business Logic files</li>
+<li>Code Generator based on MDDs</li>
 <li>Query interface</li>
+<li>Eclipse developer plugin planned</li>
 
 </ul>
 <br><br></div>
@@ -213,7 +251,7 @@
 <ul>
 <li>based on java</li>
 <li>at the moment, "per page" business logic</li>
-<li>makes it possible to perform <strong>validation</strong>, <strong>response actions</strong> (e.g. e-mail sending) and advanced <strong>processing</strong> before and after an object is created/modified/deleted</li>
+<li>makes it possible to perform advanced validation, <strong>response actions</strong> (e.g. e-mail sending) and advanced <strong>processing</strong> before and after an object is created/modified/deleted</li>
 </ul>
 <br>
 <h2>Controller:</h2>
@@ -224,37 +262,6 @@
 </ul>
 
 <br><br></div>
-
-<div style="border-style: none; display: none; visibility: hidden; position: absolute;" class="slide">
-<h1>Future</h1>
-
-<ul>
-<li>Per-object Business Logic</li>
-<li>Hibernate / POJO-based business logic</li>
-<li><strong>Query Fragments</strong><br>
-<ul><em>query functions</em> in the MDD:<br>
-<pre>
-cars = set Car ;cars of this person
-numberOfRedCars() = count(c) from cars c where c.color = 'Red'
-</pre>
-used in the JSP:<br>
-<pre>
-&lt;<font color='blue'>mak:list</font> from="<font style="color:red;">Person p</font>"&gt;
-  &lt;<font color='blue'>mak:value</font> expr="<font style="color:red;">p.name</font>" /&gt; - &lt;<font color='blue'>mak:value</font> expr="<font style="color:red;">p.numberOfRedCars()</font>" /&gt;
-&lt;<font color='blue'>/mak:list</font>&gt;
-</pre>
-</ul>
-</li>
-<li><strong>Per-object authorisation</strong>
-<ul>
-<pre>
-canEdit(Person p)= p.age > 18 AND p.numberOfCars() > 0
-</pre>
-</li>
-</ul>
-</li>
-
-<li>further integration with Hibernate and Struts</li>
 
 </ul>
 <br><br></div>
