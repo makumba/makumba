@@ -1,4 +1,6 @@
-[{ALLOW edit Documentation,Admin}]
+[{ALLOW view Documentation}]
+[{ALLOW edit Documentation}]
+%%invisible [Category Meta]%%
 
 !!!Guidelines for the Meta part
 
@@ -6,9 +8,7 @@
 * add following lines of code to the bottom of the meta pages so they are not displayed to the rest of the world and get a left menu:
 
 {{{
-[{ALLOW view Documentation,Admin}]
-%%(display:none;)[Category Meta|CategoryMeta]%%
+[{ALLOW view Documentation}]
+[{ALLOW edit Documentation}]
+%%invisible [Category Meta]%%
 }}}
-
-
-%%(display:none;)[Category Meta|CategoryMeta]%%

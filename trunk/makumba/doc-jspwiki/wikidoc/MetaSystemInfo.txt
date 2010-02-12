@@ -1,4 +1,4 @@
-[{ALLOW view Documentation,Admin}]
+[{ALLOW view Documentation}]
 
 Here are some strategical figures and other interesting things about this particular Wiki.  All this information is available in [WikiVariables|http://www.jspwiki.org/wiki/WikiVariables] as well, if you want to use them on some other page.
 

@@ -12,7 +12,7 @@ Makumba allows for several <mak:list> and <mak:object> tags to be nested inside 
                     <li> <mak:value expr="e.name"> <mak:value expr="e.surname"> (<mak:value expr="e.department.name") </li>>
                 </mak:list>
             </ul>
-        </li>>
+        </li>
     </mak:list>
 </ul>
 }]
@@ -34,7 +34,7 @@ Some properties of multiple forms are:
 [{Code 
       
 <mak:form action="blabla">
-    <%-- the topmost form, will result in a HTML form --%>
+    <%-- the topmost form, will result in a HTML form --!>
 
     <mak:input name="first" /> <%-- the topmost form can have fields of its own --%>
 
@@ -58,8 +58,33 @@ Some properties of multiple forms are:
         ...
     </mak:list>
     
-    <input type=submit> <%-- it's easy to add a submit button anywhere --%>
+    <input type="submit"> <%-- it's easy to add a submit button anywhere --%>
 </mak:form>
+}]
+
+!Having an <mak:addForm> inside a <mak:newForm>
+
+To insert to a set of an object being created, use code similar to the following
+
+[{Code
+
+<mak:newForm type="bla.Bla" name="b" method="post" action="page.jsp">
+
+    <%-- a regular textfield inside bla.Bla --%>
+    <mak:input name="textField" /><br/>
+   
+    <%-- object="b" refers to the name given to the newForm --%>
+    <mak:addForm object="b" field="setOfThings" />
+        <%-- these are all fields of the set entry which will be created on submit --%>
+        <mak:input name="fieldInsideTheSet" /><br/> 
+        <mak:input name="anotherFieldInsideTheSet" /><br/>
+    </mak:addForm>
+    
+    <input type="submit" value="submit" /> <%-- a regular submit button --%>
+
+</mak:newForm>
+
+
 }]
 
 

@@ -1,3 +1,5 @@
+%%invisible [Category Meta]%%
+
 %%tabbedSection 
 %%tab-Basics
 
@@ -34,7 +36,9 @@ __text__         Makes text bold.
 \\               Forced line break (please use sparingly).
 
 %%stylename %%   Uses custom CSS style. Also possible to add styles inline,
-                 e.g. %%(color:red)This text is red.%%
+                 e.g. %%(color:red;)This text is red.%%
+                 
+                 %%invisible %%  makes text invisible                 
 
 ~{               Escapes a curly brace
 ~|               Escapes a '|' (e.g. in a table)
@@ -218,8 +222,3 @@ __Java API__
 /%
 
 /%
-
-
-
-----
-[Category Main]

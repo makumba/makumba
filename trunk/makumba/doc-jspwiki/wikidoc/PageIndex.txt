@@ -1,4 +1,4 @@
-[{ALLOW view Documentation,Admin}]
+[{ALLOW view Documentation}]
 
 This is an alphabetical list of all pages in this Wiki.
 

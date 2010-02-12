@@ -1,4 +1,4 @@
-[{ALLOW view Documentation,Admin}]
+[{ALLOW edit Documentation}]
 
 These are the changes made to these pages during the last 30 days.  Check the [FullRecentChanges] for a complete list of all changed pages.
 
