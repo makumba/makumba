@@ -611,6 +611,9 @@ jspwiki.interWikiRef.devel = @baseURL@api-full-doc/org/makumba/%s.html
 # Java API
 jspwiki.interWikiRef.devel = http://java.sun.com/javaee/6/docs/api/%s.html
 
+# Edit link
+jspwiki.interWikiRef.edit = @baseURL@page/%s?do=Edit
+
 ############################################################################
 #
 # Define which image types are inlined.
