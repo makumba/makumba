@@ -6,7 +6,7 @@ This guide will help you getting started with Makumba using the [Eclipse|http://
 We'll take the example of a company management site, where you can manage the employees, departments and projects of a company.
 
 !!!Download and Eclipse project setup
-First of all, [download|http://10.42.43.10:8888/download.html] the Makumba template project in order to get an [Eclipse WTP project|http://www.eclipse.org/webtools/] which you can use in order to start working with Makumba.
+First of all, [download|Download] the Makumba template project in order to get an [Eclipse WTP project|http://www.eclipse.org/webtools/] which you can use in order to start working with Makumba.
 
 You'll also need to download [Apache Tomcat 5.5|http://tomcat.apache.org/download-55.cgi] and configure a WTP Server (in Eclipse, go to File -> New -> Other and choose "Server").
 

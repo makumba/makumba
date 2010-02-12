@@ -1,4 +1,4 @@
-[{ALLOW view Documentation,Admin}]
+[{ALLOW view Documentation}]
 
 Here are the pages that have not yet been created.  Why don't you go and create
 a few?

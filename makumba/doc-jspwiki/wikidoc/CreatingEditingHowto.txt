@@ -40,7 +40,7 @@ projects->timePercentage = int ;percentage assigned
 
 
 !!Entering new data: newForm
-In order to create new data of a specific type ([Makumba Data Definition|DataDefinitions]). The fields in the form must be defined in the data definition specified, otherwise a [NoSuchFieldException] will be thrown.
+In order to create new data of a specific type ([Makumba Data Definition|DataDefinitions]). The fields in the form must be defined in the data definition specified, otherwise a [{API class='org.makumba.NoSuchFieldException'}] will be thrown.
 
 To make a new record of the type %%code Employee%%, one could do a form as follows:
 
@@ -67,7 +67,7 @@ The [<mak:editForm>|EditFormTag] allows to edit existing records in the database
 </mak:object>
 }]
 
-Note that in this example, we assume that the where-condition in the [<mak:object>|ObjectTag] is constructed by comparing the [Pointer] to a parameter passed in the URL, e.g. in a page %%code employeeEdit.jsp?employee=hhiwx47%%.
+Note that in this example, we assume that the where-condition in the [<mak:object>|ObjectTag] is constructed by comparing the [{API class='org.makumba.Pointer'}] to a parameter passed in the URL, e.g. in a page %%code employeeEdit.jsp?employee=hhiwx47%%.
 
 When we have fetched the record to edit, we have to specify that we want to edit that very same object in the <mak:editForm> by using the attribute %%code object%%.
 
@@ -75,7 +75,7 @@ When we have fetched the record to edit, we have to specify that we want to edit
 
 The [<mak:addForm>|AddFormTag] allows to add a new record to a so-called [internal set|DataDefinitions#StructuralRelationalTypes], e.g. the %%code projects%% set from the example [data model|DataModelHowto]:
 
-If we want to add a new %%code projects%% record to an existing employee record, we have to first, similar to the [<mak:editForm>|EditFormtTag], fetch the employee record by a <mak:object> or <mak:list>.
+If we want to add a new %%code projects%% record to an existing employee record, we have to first, similar to the [<mak:editForm>|EditFormTag], fetch the employee record by a <mak:object> or <mak:list>.
 
 [{Code
 
@@ -115,19 +115,19 @@ Note that data can be deleted by two different input controls, a link or a form 
 Deleting via a link is the legacy approach in Makumba, and has the major disadvantage that the in the resulting URL, the parameters such as the object deleted, are visible. Further, using a link is not a familiar concept in other user interfaces, where mostly buttons are used.
 }]
 
-If we want to use a form rather than a button, we need to specify this explicitely:
+If we want to use a form button rather than a link, we need to specify this explicitely:
 
 [{Code
 
 <mak:list from="company.employee e" where="e.shallRetire()">
   <mak:value expr="e.nameSurname()"/> 
-  <mak:delete widget="form" object="e" action="employeeList.jsp" >delete from the database</mak:delete> <br/>
+  <mak:delete widget="button" object="e" action="employeeList.jsp" >delete from the database</mak:delete> <br/>
 </mak:list>  
 }]
 
 [{Box
 
-In the future, the default for __widget__ will change from "link" to "form".
+In the future, the default for __widget__ will change from "link" to "button".
 }]
 
 [{Box
@@ -163,7 +163,7 @@ Makumba allows to combine several forms into each other, enabling the user to ed
 !!!Form submission: form actions, validation and business logics
 After the form is submitted, a series of steps are executed:
 * The data submitted in the form is validated, i.e. the values for each field are checked against the implicit and explicitly defined [validation rules|ValidationRules]. Possible errors in this stage will collected.
-* If the validation is successful, the [business Logics handler method|JavaBusinessLogic] for the form submitted will be executed. If the form is a [multiple form|MultipleListsAndFormsHowto], a business logics handler method will be executed for each of them. In the handler method, the application programmer might throw a [validation error|InvalidValueException] if some data fails to validate, or a [logic error|LogicException], e.g. if the user is not allowed to do a certain operation.
+* If the validation is successful, the [business Logics handler method|JavaBusinessLogic] for the form submitted will be executed. If the form is a [multiple form|MultipleListsAndFormsHowto], a business logics handler method will be executed for each of them. In the handler method, the application programmer might throw a [{API class='org.makumba.InvalidValueException'}] if some data fails to validate, or a [{API class='org.makumba.LogicException'}], e.g. if the user is not allowed to do a certain operation.
 * Depending on the two previous steps, the flow of execution will be different
 ** If no error was thrown:
 *** Makumba will do the needed database operations, i.e. create, update or delete the records.

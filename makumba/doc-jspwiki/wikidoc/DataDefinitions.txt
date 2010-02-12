@@ -24,7 +24,7 @@ Replication is not yet implemented, but the design is prepared for it. Copying w
 Every data definition file contains __field definitions__, separated by newline.
 
 A field definition looks like:
-[{Code
+[{Code lang='properties'
 
 fieldname= [attributes] fieldtype [parameters] [; description]
 }]
@@ -45,7 +45,7 @@ The field description is used by the code generator at interface levels to prese
 
 __Comment lines__ can be inserted in the data definition files as follows:
 
-[{Code
+[{Code lang='properties'
 
 # your comment... 
 }]
@@ -79,14 +79,14 @@ Every datatype has some additional fields by default, as follows:
 
 A 32-bit integer. For example
 
-[{Code
+[{Code lang='properties'
 
-code shoeSize= int; Shoe size
+shoeSize= int; Shoe size
 }]
 
 If the int can have a limited number of values, it can be described as follows
 
-[{Code
+[{Code lang='properties'
 
 gender = int{ "Male" = 10, "Female" = 20 }
 }]
@@ -114,7 +114,7 @@ Negative numbers are supported (e.g. int { "aa"=5, "bb"=2, "cc"=-10}).
 
 A real number with double precision with (2-2-52)·21023 as max value and 2-1074 as min value. For example:
 
-[{Code
+[{Code lang='properties'
 
 turnover = real; turnover of the company
 }]
@@ -123,7 +123,7 @@ turnover = real; turnover of the company
 
 A char field contains a number of characters. Maximal width must be specified and is limited to 255. (Optionally a minimal number of characters (lesser than max) can be indicated). Both must be positive integers. For example:
 
-[{Code
+[{Code lang='properties'
 
 fieldName= char[maxWidth];
 name= unique char[80];
@@ -138,16 +138,16 @@ Pay close attention to the character set (charset) for encoding the characters. 
 !boolean
 
 A boolean, that can take as values true or false. For example:
-[{Code
+[{Code lang='properties'
 
-currentlyEmployed= true; whether this employee is currently employed
+currentlyEmployed= boolean; whether this employee is currently employed
 }]
 
 !text
 
 An unlimited-length string of characters. This type is designed to accommodate large text content. It is implemented with LONGTEXT or its counterparts, depending on the underlying DB engine. The text data-type is ready for accepting data in UTF-8 encoding.
  
-[{Code
+[{Code lang='properties'
 
 description=text ; Description of the project
 }]
@@ -156,7 +156,7 @@ description=text ; Description of the project
 
 An unlimited-length field designed for binary content. In contrast to the text data type, binary will always be of 8 bit length. It is implemented with LONGTEXT or its counterparts, depending on the underlying DB engine. This type is meant for storing only raw binary data, for storing files along with meta-data like a file name, content type, etc., you should rather use the file data type.
 
-[{Code
+[{Code lang='properties'
 
 signature= binary ; a binary digital signature 
 }]
@@ -165,7 +165,7 @@ signature= binary ; a binary digital signature
 
 A date and/or time.
 
-[{Code
+[{Code lang='properties'
 
 birthdate = date; Date of birth
 arrivalTime = date; Arrival time
@@ -201,7 +201,7 @@ fieldName-> ...
 
 Pointers define a reference to an object of a certain type. For example
 
-[{Code
+[{Code lang='properties'
 
 manager = ptr company.Employee; The manager of the department
 }]
@@ -210,7 +210,7 @@ manager = ptr company.Employee; The manager of the department
 
 Sets define a number of references to multiple objects of a certain type. For example:
 
-[{Code
+[{Code lang='properties'
 
 suppliers= set company.Company; Suppliers of this company
 }]
@@ -219,7 +219,7 @@ This type accomodates sets, bags and lists. The set and list constraints (sets h
 
 The type which the set is made of can be defined on the spot:
 
-[{Code
+[{Code lang='properties'
 
 projects = set
 projects->project = ptr company.Project
@@ -238,7 +238,7 @@ This type is known internally as setComplex
 
 The set can contain enumerated int values :
 
-[{Code
+[{Code lang='properties'
 
 place= set int {"home"=1, "away"=0} ; Home or away 
 }] 
@@ -273,7 +273,7 @@ This type should be used in favour of the [binary data type|DataDefinitions#Bina
 
 A name can be defined for a more complex type and it can be reused in the file. This can be done with a !type directive
 
-[{Code
+[{Code lang='properties'
 
 !type.rank = int{"Neutral"=0, "Very good"=5, "Very bad"=-5}
 
@@ -291,7 +291,7 @@ These attributes are used by makumba in order to perform implicit validation at 
 
 It is possible to customise the error message that will be displayed in case an implicit field validation fails:
 
-[{Code
+[{Code lang='properties'
 
 login.unique = "This login is already taken, please choose another one"
 surname.notEmpty = "Please fill in your surname"
@@ -314,7 +314,7 @@ The object title is used for set and ptr choosers
 
 One of the fields is always the object title, and is normally presented differently from other fields in user interface. For example, when you have a field that is a set and you use a mak:input on that field, Makumba will automatically create a list with all the items in the set and it will use the object title to know what field to display. The default is the field called "name" if that exists, otherwise it is the first non-pointer field in the record description. If another field needs to be title, it can be specified like
 
-[{Code
+[{Code lang='properties'
 
 !title=gender
 }] 
@@ -329,7 +329,7 @@ address->!title= street
 
 A record description can include text from one or more files. This is declared as
 
-[{Code
+[{Code lang='properties'
 
 !include=name_of_included_type
 }]  
@@ -338,7 +338,7 @@ The included file has the idd extension and is found in a similar way like the d
 
 The included file is inserted instead of the !include line. There can be more include lines in a record description file. If a field is defined that exists also in the included metadata, the defined field takes precedence.
 
-[{Code
+[{Code lang='properties'
 
 fieldname =
 }]  

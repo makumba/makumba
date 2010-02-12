@@ -10,5 +10,6 @@
 * [Page Index|PageIndex]
 * [System Info|MetaSystemInfo]
 
-[{ALLOW view Documentation,Admin}]
+[{ALLOW view Documentation}]
+[{ALLOW edit Documentation}]
 

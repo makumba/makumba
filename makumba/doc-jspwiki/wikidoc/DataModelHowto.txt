@@ -23,7 +23,7 @@ We will further explain those type of fields by using the following example of a
 Let's take a look at the Makumba Data Definitions that fit this example:
 
 __company.Company (company/Company.mdd)__        
-[{Code
+[{Code lang='properties'
 
 name = char[50]
 turnover = real
@@ -33,14 +33,15 @@ logo = file
 }]
 
 __company.Department (company/Department.mdd)__        
-[{Code
+[{Code lang='properties'
 
 name = char[50]
+company = ptr company.Company
 manager = ptr company.Employee
 }]
 
 __company.Employee (company/Employee.mdd)__        
-[{Code
+[{Code lang='properties'
 
 name = char[200]
 surname = char[200]
@@ -55,7 +56,7 @@ projects->timePercentage = int ;percentage assigned
 }]
 
 __company.Project (company/Project.mdd)__        
-[{Code
+[{Code lang='properties'
 
 name = char[255]
 leader = ptr company.Employee

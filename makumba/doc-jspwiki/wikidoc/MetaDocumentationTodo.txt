@@ -1,4 +1,6 @@
-[{ALLOW view Documentation,Admin}]
+[{ALLOW view Documentation}]
+[{ALLOW edit Documentation}]
+%%(display:none;)[Category Meta|CategoryMeta]%%
 
 !!TODO documentation - content
 
@@ -11,14 +13,39 @@
 ||Comments
 ||Status
 
-|Port the status from the old forrest site
+|CSS documentation
 |?
-|Check [http://lisbon.best.eu.org:8888/status.html] and import the TODOs that are still not done
+|Document how styles are handled in makumba, for various tags (mak:response, ...)
 |''__Not started__''
 
-|Port the supporters page
+|split query functions reference
 |?
-| [http://lisbon.best.eu.org:8888/supporters.html]
+|split in several parts: MDD functions, authentication, authorization
+|''__Not started__''
+
+|add link to bugzilla
+|?
+|
+|''__Not started__''
+
+|developer doc
+|?
+|port developer doc, see what's outdated (old.makumba.org)
+|''__Not started__''
+
+|Improve the BL documentation (give API examples)
+|?
+|
+|''__Not started__''
+
+|better doc for mak:attributes
+|?
+|
+|''__Not started__''
+
+|Examples for nested mak:addForm, nested mak:newForm
+|?
+|
 |''__Not started__''
 
 |About page
@@ -26,6 +53,31 @@
 |Write something about mak, it's history and so forth
 |''__Not started__''
 
+|Finish quickstart
+|?
+|Finish the [Quick Start] page, document the Maven archetypes
+|''__Not started__''
+
+|Configuration - Installation - Libraries
+|manu?
+|Give an example of a makumba.conf file, instructions for installation (MySQL), List of core libraries
+|''__Not started__''
+
+| UTF8 configuration
+| ?
+| see [bug:503]
+|''__Not started__''
+
+
+|Port the status from the old forrest site
+|manu
+|Check [http://lisbon.best.eu.org:8888/status.html] and import the TODOs that are still not done
+|''__Done__''
+
+|Port the supporters page
+|manu
+| [http://lisbon.best.eu.org:8888/supporters.html]
+|''__Done__''
 
 
 }]
@@ -34,12 +86,7 @@
 
 [{Table
 
-|Make the expandable sections in the left menu clickable
-|manu
-|
-|''__Not started__''
-
-|for quick start, download, showcase, have an empty menu displayed with just the section title
+|Trash the forrest documentation
 |manu
 |
 |''__Not started__''
@@ -53,6 +100,11 @@
 |?
 |
 |''__Not started__'
+
+|Fix the RSS icon
+|Manu
+|There's an RSS icon at the bottom of each page but it's not really there, only the link is there
+|''__Done__''
 
 |Style for IMG
 |manu
@@ -75,9 +127,14 @@
 |''__Done__''
 
 
+|Make the expandable sections in the left menu clickable
+|manu
+|
+|''__Done__''
+
+|for quick start, download, showcase, have an empty menu displayed with just the section title
+|manu
+|
+|''__Done__''
+
 }]
-
-
-
-----
-%%(display:none;)[Category Meta|CategoryMeta]%%
