@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<section id="description">
-  <title>Description</title>
-  <p>
-    Makes a form for editing the object indicated by any of the labels of the mandatory enclosing &lt;mak:object&gt; or &lt;mak:list&gt;. Also linked objects can be edited through the same form.
-  </p>
-</section>

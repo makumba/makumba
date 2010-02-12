@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<section id="description">
-  <title>Description</title>
-  <p>
-    Creates a generic form, that may call a handler method in response. It allows the JSP author to make any kind of
-    form. They are suitable for more complex operations than new, add, edit.
-  </p>
-</section>
