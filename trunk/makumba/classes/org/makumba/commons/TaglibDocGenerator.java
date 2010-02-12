@@ -136,11 +136,11 @@ public class TaglibDocGenerator {
 
             for (String el : tagNames) {
                 String tagName = processedElements.get(el).elementText("name");
-                s.println("* [mak:" + tagName + "|" + getWikiTagName(tagName) + "]");
+                s.println("* [mak:" + tagName + "|" + getWikiTagName(tagName, true) + "]");
             }
 
             for (String f : functionNames) {
-                s.println("* [mak:" + f + "()|" + getWikiTagName(f) + "]");
+                s.println("* [mak:" + f + "()|" + getWikiTagName(f, false) + "]");
             }
 
             s.println();
@@ -165,7 +165,7 @@ public class TaglibDocGenerator {
     private void generateTagFile(Element element, boolean isTag) throws IOException {
 
         String elementName = element.elementText("name");
-        String generatedFileName = getWikiTagName(elementName);
+        String generatedFileName = getWikiTagName(elementName, isTag);
 
         File generatedFile = new File(this.outputDir.getAbsoluteFile() + File.separator + generatedFileName + ".txt");
         if (!generatedFile.exists()) {
@@ -236,8 +236,8 @@ public class TaglibDocGenerator {
 
     }
 
-    private String getWikiTagName(String elementName) {
-        return elementName.substring(0, 1).toUpperCase() + elementName.substring(1, elementName.length()) + "Tag";
+    private String getWikiTagName(String elementName, boolean isTag) {
+        return elementName.substring(0, 1).toUpperCase() + elementName.substring(1, elementName.length()) + (isTag?"Tag":"Function");
     }
 
     private void generateExamples(Element element, BufferedWriter s) throws IOException {
