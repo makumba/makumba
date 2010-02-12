@@ -4,16 +4,20 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -31,14 +35,14 @@ public class TaglibDocGenerator {
     private File outputDir;
 
     private HashMap<String, Element> processedElements = new HashMap<String, Element>();
-    
+
     private static final String[][] genericAttributes = {
-        { "Form-specific HTML tag attribute",
-                "The content is copied to the resulting <form...> tag. Careful with (escaping) quotes." },
-        { "Generic HTML tag attribute",
-                "The content is copied to the resulting html tag. Careful with (escaping) quotes." },
-        { "Input-specific HTML tag attribute",
-                "The content is copied to the resulting <input...> tag. Careful with (escaping) quotes." } };
+            { "Form-specific HTML tag attribute",
+                    "The content is copied to the resulting <form...> tag. Careful with (escaping) quotes." },
+            { "Generic HTML tag attribute",
+                    "The content is copied to the resulting html tag. Careful with (escaping) quotes." },
+            { "Input-specific HTML tag attribute",
+                    "The content is copied to the resulting <input...> tag. Careful with (escaping) quotes." } };
 
     public static void main(String[] args) {
 
@@ -83,27 +87,28 @@ public class TaglibDocGenerator {
         Element root = document.getRootElement();
         List<String> tagNames = new ArrayList<String>();
         List<String> functionNames = new ArrayList<String>();
-        
+
         // get all the tag and function elements
         for (Iterator<Element> i = root.elementIterator(); i.hasNext();) {
             Element e = i.next();
-            
+
             // keep names in separate places
-            if(e.getName().equals("tag") && !e.elementText("name").equals("rickroll")) {
+            if (e.getName().equals("tag") && !e.elementText("name").equals("rickroll")) {
                 tagNames.add(e.elementText("name"));
             }
-            if(e.getName().equals("function")) {
+            if (e.getName().equals("function")) {
                 functionNames.add(e.elementText("name"));
             }
-            
+
             // generate tag doc
             try {
-                if(e.getName().equals("tag") && !e.elementText("name").equals("rickroll")) {
+                if (e.getName().equals("tag") && !e.elementText("name").equals("rickroll")) {
                     generateTagFile(e, true);
-                    
-                    // we keep a reference to the processed attributes because we need this for the attribute referer resolution
+
+                    // we keep a reference to the processed attributes because we need this for the attribute referrer
+                    // resolution
                     processedElements.put(e.elementText("name"), e);
-                } else if(e.getName().equals("function")) {
+                } else if (e.getName().equals("function")) {
                     generateTagFile(e, false);
                 }
             } catch (FileNotFoundException io) {
@@ -113,11 +118,10 @@ public class TaglibDocGenerator {
 
             }
         }
-        
-        
+
         Collections.sort(tagNames);
         Collections.sort(functionNames);
-        
+
         // generate index page for all tags
         File taglibIndexFile = new File(this.outputDir.getAbsolutePath() + File.separator + "TagIndex.txt");
 
@@ -129,16 +133,16 @@ public class TaglibDocGenerator {
             PrintStream s = new PrintStream(new FileOutputStream(taglibIndexFile));
             s.println("!!!makumba tag library");
             s.println();
-            
+
             for (String el : tagNames) {
                 String tagName = processedElements.get(el).elementText("name");
                 s.println("* [mak:" + tagName + "|" + getWikiTagName(tagName) + "]");
             }
 
-            for(String f : functionNames) {
+            for (String f : functionNames) {
                 s.println("* [mak:" + f + "()|" + getWikiTagName(f) + "]");
             }
-            
+
             s.println();
             s.println("%%(display:none;) [Category Documentation]%%");
 
@@ -167,15 +171,35 @@ public class TaglibDocGenerator {
         if (!generatedFile.exists()) {
             generatedFile.createNewFile();
         }
+        
+        // create properties file so JSPWiki is not confused about the author
+        File props = new File(this.outputDir.getAbsoluteFile() + File.separator + generatedFileName + ".properties");
+        if(!props.exists()) {
+            props.createNewFile();
+        }
+        PrintWriter propWriter = new PrintWriter(new FileWriter(props, false));
+        propWriter.append("#JSPWiki page properties for page " + generatedFileName + "\n");
+        propWriter.append("#" + (new Date()).toString() + "\n");
+        propWriter.append("author=TaglibReferenceGenerator");
+        propWriter.flush();
+        propWriter.close();
+
+        
 
         // wtf?
-        if(System.getProperty("os.name").startsWith("Mac OS X")) {
-            System.setProperty("line.separator","\r\n");
+        if (System.getProperty("os.name").startsWith("Mac OS X")) {
+            System.setProperty("line.separator", "\r\n");
         }
 
         FileOutputStream fos = new FileOutputStream(generatedFile);
         BufferedWriter s = new BufferedWriter(new OutputStreamWriter(fos, "UTF-8"));
-        
+
+        // generate the generated page warning
+        s.newLine();
+        s.append("%%(display:none) makumba hackers: this page is generated, don't edit it! Instead edit the text in the included pages. %%");
+        s.newLine();
+        s.newLine();
+
         // generate the header
         if (isTag) {
             s.append("!!!Taglib documentation for tag mak:" + elementName);
@@ -193,7 +217,7 @@ public class TaglibDocGenerator {
         s.newLine();
 
         // then the attributes
-        generateAttributes(element, s);
+        generateAttributes(element, s, elementName + (isTag?"Tag":"Function"));
         s.newLine();
 
         // then the "see also" section
@@ -202,7 +226,7 @@ public class TaglibDocGenerator {
 
         // then the examples
         generateExamples(element, s);
-        
+
         // finally append the category
         s.newLine();
         s.append("%%(display:none;) [Category Documentation]%%");
@@ -230,7 +254,9 @@ public class TaglibDocGenerator {
         }
 
         while (tk.hasMoreElements()) {
-            s.append(getPageInsert(tk.nextToken()));
+            String e = tk.nextToken();
+            s.append(getPageInsert(e));
+            s.append("[.|edit:" + e + "]");
             s.newLine();
             s.newLine();
         }
@@ -239,7 +265,7 @@ public class TaglibDocGenerator {
     private void generateSeeAlso(Element element, BufferedWriter s) throws IOException {
         Node seeAlso = checkNodeExists(element, "see");
         StringTokenizer tk = new StringTokenizer(seeAlso.getText(), ",");
-        if(tk.countTokens() > 0) {
+        if (tk.countTokens() > 0) {
             s.append("!!See also");
             s.newLine();
             s.newLine();
@@ -263,12 +289,12 @@ public class TaglibDocGenerator {
                 s.append(", ");
             }
         }
-        if(tk.countTokens() > 0) {
+        if (tk.countTokens() > 0) {
             s.newLine();
         }
     }
 
-    private void generateAttributes(Element element, BufferedWriter s) throws IOException {
+    private void generateAttributes(Element element, BufferedWriter s, String typedElementName) throws IOException {
         s.append("!!Attributes");
         s.newLine();
 
@@ -277,11 +303,6 @@ public class TaglibDocGenerator {
             s.append("This tag has no attributes");
             s.newLine();
         } else {
-            s.newLine();
-            s.append("%%(display:none) makumba hackers: DO NOT CHANGE THESE ATTRIBUTES HERE since your changes will be lost! You have to edit the taglib-documented.xml file and re-generate the taglib doc! %%");
-            s.newLine();
-            s.newLine();
-            
             // generate the table header
             s.append("[{Table");
             s.newLine();
@@ -289,9 +310,10 @@ public class TaglibDocGenerator {
             s.append("||Name||Required||Request-time||Description||Comments ");
             s.newLine();
             s.newLine();
-            
+
             // in order not to generate the same content for generic attributes (HTML, form-specific, ...)
-            // we keep the first attribute of the kind and only write out all the rows if another kind of attribute is met
+            // we keep the first attribute of the kind and only write out all the rows if another kind of attribute is
+            // met
             GenericAttributeTuple genericAttributeTuple = new GenericAttributeTuple();
 
             for (Element a : attributes) {
@@ -301,95 +323,121 @@ public class TaglibDocGenerator {
                     Element includedAttribute = MakumbaTLDGenerator.getReferencedAttributes(this.processedElements,
                         "Error processing attribute " + a.attributeValue("name") + " of tag "
                                 + element.elementText("name") + ": ", element, element.elementText("name"), a);
-                    generateAttributeRow(includedAttribute, s, genericAttributeTuple);
-                    
+                    generateAttributeRow(includedAttribute, s, genericAttributeTuple, typedElementName);
+
                 } else {
-                    generateAttributeRow(a, s, genericAttributeTuple);
+                    generateAttributeRow(a, s, genericAttributeTuple, typedElementName);
                 }
             }
-            
+
             // in the end we flush the tuple
-            if(genericAttributeTuple.getGenericAttributeName() != null) {
+            if (genericAttributeTuple.getGenericAttributeName() != null) {
                 genericAttributeTuple.print(s);
                 genericAttributeTuple.reset();
             }
-            
+
             s.newLine(); // empty line necessary or the plugin chomps one character of each cell
             s.append("}]");
             s.newLine();
         }
     }
 
-    private void generateAttributeRow(Element attribute, BufferedWriter s, GenericAttributeTuple genericAttributeTuple) throws IOException {
+    private void generateAttributeRow(Element attribute, BufferedWriter s, GenericAttributeTuple genericAttributeTuple, String typedElementName)
+            throws IOException {
 
         String name = attribute.elementText("name");
         String required = attribute.elementText("required");
         String runtimeExpr = attribute.elementText("rtexprvalue");
+        
+        // was this one included?
+        String inheritedFrom = attribute.attributeValue("inheritedFrom");
 
-        String description = getOrInsertElement(attribute, "description");
-        String comments = getOrInsertElement(attribute, "comments");
+        String inherited = "";
+        if(inheritedFrom != null) {
+            inherited = "\\\\ %%(font-size:smaller;) (from [mak:"+inheritedFrom+"|" + StringUtils.capitalize(inheritedFrom) + (typedElementName.endsWith("Tag")?"Tag":"Function") + "])%%";
+        }
+        
+        String attributePageSuffix = "Attribute" + StringUtils.capitalize(name) + "Attribute";
+        String attributePageName = "";
+        
+        if(inheritedFrom != null) {
+            attributePageName += StringUtils.capitalize(inheritedFrom) +  (typedElementName.endsWith("Tag")?"Tag":"Function") + attributePageSuffix;
+        } else {
+            attributePageName += StringUtils.capitalize(typedElementName) + attributePageSuffix;
+            
+        }
+        
+        String description = getPageInsert(attributePageName+"Description");
+        String comments = getPageInsert(attributePageName+"Comments");
 
+        String descriptionText = MakumbaTLDGenerator.readFileAsString(outputDir.getAbsolutePath() + File.separator + attributePageName+"Description.txt");
+        String commentsText = MakumbaTLDGenerator.readFileAsString(outputDir.getAbsolutePath() + File.separator + attributePageName+"Comments.txt");
+        
+        
         String deprecated = attribute.elementText("deprecated");
         boolean isDeprecated = deprecated != null && deprecated.equals("true");
         String deprecatedStyle = isDeprecated ? "(deprecated) " : "";
-        
+
         // check if this is a generic attribute
         boolean isGenericAttribute = false;
-        
-        for(String[] generic : genericAttributes) {
-            
+
+        for (String[] generic : genericAttributes) {
+
             // if this is a generic attribute
-            if(description.equals(generic[0]) && comments.equals(generic[1])) {
+            if (descriptionText.startsWith(generic[0]) && commentsText.startsWith(generic[1])) {
                 isGenericAttribute = true;
-                
-                if(genericAttributeTuple.getGenericAttributeName() == null) {
+
+                if (genericAttributeTuple.getGenericAttributeName() == null) {
                     // this is the first occurrence of the generic attribute so we build it
-                    genericAttributeTuple.setFirstGenericAttribute(name, required, runtimeExpr, description + " (generic)", comments + " (generic)");
+                    genericAttributeTuple.setFirstGenericAttribute(name + inherited, required, runtimeExpr, description + " (generic)", comments + " (generic)");
                     genericAttributeTuple.setGenericAttributeName(generic[0]);
-                } else if(genericAttributeTuple.getGenericAttributeName().equals(generic[0])) {
-                    genericAttributeTuple.addAttribute(name, required, runtimeExpr);
+                } else if (genericAttributeTuple.getGenericAttributeName().equals(generic[0])) {
+                    genericAttributeTuple.addAttribute(name + inherited, required, runtimeExpr);
                 } else {
                     // we have a different generic attribute, so we print the previous one, clear the tuple and set the new one
                     genericAttributeTuple.print(s);
                     genericAttributeTuple.reset();
-                    genericAttributeTuple.setFirstGenericAttribute(name, required, runtimeExpr, description + " (generic)", comments + " (generic)");
+                    genericAttributeTuple.setFirstGenericAttribute(name + inherited, required, runtimeExpr, description + " (generic)", comments + " (generic)");
                 }
             }
         }
-        
+
         // if the attribute is no generic attribute process the generic attribute from before
-        if(!isGenericAttribute && genericAttributeTuple.getGenericAttributeName() != null) {
+        if (!isGenericAttribute && genericAttributeTuple.getGenericAttributeName() != null) {
             genericAttributeTuple.print(s);
             genericAttributeTuple.reset();
-        } else if(!isGenericAttribute) {
-            if(isDeprecated) {
-                s.append("|" + deprecatedStyle + name + " (deprecated) ");
+        } else if (!isGenericAttribute) {
+            
+            if (isDeprecated) {
+                s.append("|" + deprecatedStyle + name + " (deprecated) " +  inherited + " ");
             } else {
-                s.append("|" + deprecatedStyle + name+" ");
+                s.append("|" + deprecatedStyle + name  + inherited + " ");
             }
             s.newLine();
-            s.append("|" + deprecatedStyle + required+" ");
+            s.append("|" + deprecatedStyle + required + " ");
             s.newLine();
-            s.append("|" + deprecatedStyle + runtimeExpr+" ");
+            s.append("|" + deprecatedStyle + runtimeExpr + " ");
             s.newLine();
-            s.append("|" + deprecatedStyle + description+" ");
+            s.append("|" + deprecatedStyle + description + "[.|edit:" + attributePageName + "Description]" + " ");
             s.newLine();
-            s.append("|" + deprecatedStyle + comments+" ");
+            s.append("|" + deprecatedStyle + comments + "[.|edit:" + attributePageName + "Comments]" + " ");
             s.newLine();
             s.newLine(); // empty line, row is over
         }
-        
+
     }
 
     /**
      * Generates the description for this document. Checks if the <description> element in taglib-documented exists
-     * @throws IOException 
+     * 
+     * @throws IOException
      */
     private void generateDescription(Element element, BufferedWriter s) throws IOException {
         s.append("!!Description");
         s.newLine();
         s.newLine();
-        s.append(getOrInsertElement(element, "description"));
+        s.append(getPageInsert(element.elementText("descriptionPage")));
+        s.append("[.|edit:" + element.elementText("descriptionPage") + "]");
         s.newLine();
 
     }
@@ -399,18 +447,68 @@ public class TaglibDocGenerator {
      * If not, checks if there is a normal version of the element and inserts its content. If none of both are provided,
      * throws an exception.
      */
-    private String getOrInsertElement(Element element, String elementName) {
-        Element e = element.element(elementName);
-        Element elementPage = element.element(elementName + "Page");
+    private String getOrInsertElement(Element element, String elementName, boolean export, String exportName) {
+        if (export) {
+            
+            String result = "";
+            
+            // export the element text into a separate file
+            Element e = element.element(elementName);
+            if (e == null) {
+                return null;
+            }
 
-        if (elementPage != null && elementPage.hasContent()) {
-            return getPageInsert(elementPage.getText());
-        } else if (e != null && e.hasContent()) {
-            return e.getTextTrim();
-        } else if (e != null && !e.hasContent()) {
-            return "%%(color:red) DOCUMENT ME PLEASE! %%";
-        } else if (e == null && elementPage == null) {
-            throw new RuntimeException("No " + elementName + " for element " + element.elementText("name"));
+            PrintWriter pw = null;
+            File f = new File(outputDir, StringUtils.capitalize(exportName) + ".txt");
+            try {
+
+                if (!f.exists()) {
+                    f.createNewFile();
+                }
+                
+                File props = new File(outputDir, StringUtils.capitalize(exportName) + ".properties");
+                props.createNewFile();
+                PrintWriter propWriter = new PrintWriter(new FileWriter(props, false));
+                propWriter.append("#JSPWiki page properties for page " + StringUtils.capitalize(exportName) + "\n");
+                propWriter.append("#" + (new Date()).toString() + "\n");
+                propWriter.append("author=TaglibReferenceGenerator" + "\n");
+
+                propWriter.flush();
+                propWriter.close();
+                
+                pw = new PrintWriter(new FileWriter(f, false));
+                
+                if (e != null && e.hasContent()) {
+                    pw.println(e.getTextTrim());
+                    result = e.getTextTrim();
+                } else if (e != null && !e.hasContent()) {
+                    pw.println("%%(color:red) DOCUMENT ME PLEASE! %%");
+                    result = "%%(color:red) DOCUMENT ME PLEASE! %%";
+                }
+
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            } finally {
+                pw.flush();
+                pw.close();
+            }
+            
+            return result;
+
+        } else {
+            Element e = element.element(elementName);
+            Element elementPage = element.element(elementName + "Page");
+
+            if (elementPage != null && elementPage.hasContent()) {
+                return getPageInsert(elementPage.getText());
+            } else if (e != null && e.hasContent()) {
+                return e.getTextTrim();
+            } else if (e != null && !e.hasContent()) {
+                return "%%(color:red) DOCUMENT ME PLEASE! %%";
+            } else if (e == null && elementPage == null) {
+                throw new RuntimeException("No " + elementName + " for element " + element.elementText("name"));
+            }
         }
         return null;
     }
@@ -425,16 +523,18 @@ public class TaglibDocGenerator {
     }
 
     private String getPageInsert(String pageName) {
-        return "[{InsertPage page=" + pageName + "}]";
+        return "[{InsertPage style='display: inline;' page=" + pageName + "}]";
 
     }
-    
+
     class GenericAttributeTuple {
-        
+
         private String[] firstGenericAttribute;
+
         private String genericAttributeName;
+
         private List<String[]> attributes = new ArrayList<String[]>();
-        
+
         public void addAttribute(String name, String required, String runtimeExpr) {
             String[] att = new String[3];
             att[0] = name;
@@ -442,49 +542,52 @@ public class TaglibDocGenerator {
             att[2] = runtimeExpr;
             attributes.add(att);
         }
-                
+
         public void print(BufferedWriter s) throws IOException {
-            for(String str : firstGenericAttribute) {
-                s.append("|"+str+" ");
+            for (String str : firstGenericAttribute) {
+                s.append("|" + str + " ");
                 s.newLine();
             }
-            
-            s.newLine(); //first row is over, new line
-            
-            for(String[] att : attributes) {
-                s.append("|"+att[0]+" ");
+
+            s.newLine(); // first row is over, new line
+
+            for (String[] att : attributes) {
+                s.append("|" + att[0] + " ");
                 s.newLine();
-                s.append("|"+att[1]+" ");
+                s.append("|" + att[1] + " ");
                 s.newLine();
-                s.append("|"+att[2]+" ");
-                s.newLine();
-                s.append("|^ ");
+                s.append("|" + att[2] + " ");
                 s.newLine();
                 s.append("|^ ");
                 s.newLine();
-                
+                s.append("|^ ");
+                s.newLine();
+
                 s.newLine();
             }
         }
-        
+
         public void reset() {
             firstGenericAttribute = null;
             genericAttributeName = null;
             attributes = new ArrayList<String[]>();
         }
-        
-        public void setFirstGenericAttribute(String name, String required, String runtimeExpr, String description, String comments) {
+
+        public void setFirstGenericAttribute(String name, String required, String runtimeExpr, String description,
+                String comments) {
             this.firstGenericAttribute = new String[5];
             this.firstGenericAttribute[0] = name;
             this.firstGenericAttribute[1] = required;
             this.firstGenericAttribute[2] = runtimeExpr;
             this.firstGenericAttribute[3] = description;
             this.firstGenericAttribute[4] = comments;
-            
+
         }
+
         public String getGenericAttributeName() {
             return genericAttributeName;
         }
+
         public void setGenericAttributeName(String genericAttributeName) {
             this.genericAttributeName = genericAttributeName;
         }

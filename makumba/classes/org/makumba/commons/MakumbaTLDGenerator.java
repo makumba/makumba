@@ -23,7 +23,9 @@
 
 package org.makumba.commons;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
@@ -36,6 +38,7 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 import org.makumba.MakumbaSystem;
+import org.makumba.version;
 
 /**
  * This class generates the Makumba TLD files based on the documented TLD XML file.
@@ -60,6 +63,7 @@ public class MakumbaTLDGenerator {
         SAXReader saxReader = new SAXReader();
         Document document = null;
         final String sourcePath = new File(args[0]) + File.separator + TAGLIB_DOCUMENTED_XML;
+        final String documentationPath = new File(args[1]).getAbsolutePath();
         try {
             document = saxReader.read(sourcePath);
         } catch (DocumentException e) {
@@ -71,9 +75,10 @@ public class MakumbaTLDGenerator {
         for (Element tag : (List<Element>) root.elements()) {
             if (tag.getName().equals("description")) {
                 // update makumba version place-holder
-                tag.setText(tag.getText().replace("@version@", MakumbaSystem.getVersion()));
+                tag.setText(tag.getText().replace("@version@", version.getVersion()));
             }
-            if (tag.getName().equals("tag") || tag.getName().equals("function")) {
+            boolean isTag = false;
+            if (isTag = tag.getName().equals("tag") || tag.getName().equals("function")) {
 
                 Element name = tag.element("name");
                 String tagName = name.getText();
@@ -91,9 +96,38 @@ public class MakumbaTLDGenerator {
                             }
                         } else { // normal attribute
                             for (Element attributeContent : (List<Element>) tagContent.elements()) {
+                                String inheritedFrom = null;
+                                if(attributeContent.getName().equals("inheritedFrom")) {
+                                    inheritedFrom = attributeContent.getText();
+                                }
+                                
                                 // remove all the <comments> tags inside <attribute> elements
-                                if (StringUtils.equalsAny(attributeContent.getName(), "comments", "deprecated", "descriptionPage", "commentsPage")) {
+                                if (StringUtils.equalsAny(attributeContent.getName(), "comments", "deprecated", "descriptionPage", "commentsPage", "inheritedFrom")) {
                                     attributeContent.getParent().remove(attributeContent);
+                                }
+                                
+                                if(attributeContent.getName().equals("description")) {
+                                    // insert the description
+                                    String descriptionFileName = "";
+                                    if(inheritedFrom != null) {
+                                        descriptionFileName += org.apache.commons.lang.StringUtils.capitalize(inheritedFrom) + (isTag?"Tag":"Function");
+                                    } else {
+                                        descriptionFileName += org.apache.commons.lang.StringUtils.capitalize(tagName) + (isTag?"Tag":"Function");
+                                    }
+                                    descriptionFileName += "Attribute" + org.apache.commons.lang.StringUtils.capitalize(tagContent.elementText("name")) + "AttributeDescription";
+                                    
+                                    File d = new File(documentationPath + File.separator + descriptionFileName + ".txt");
+                                    if(!d.exists()) {
+                                        throw new RuntimeException("Could not find attribute description file " + d);
+                                    }
+                                    String desc = "";
+                                    try {
+                                        desc = readFileAsString(d.getAbsolutePath());
+                                    } catch (IOException e) {
+                                        System.err.println("Could not read attribute description file " + d);
+                                    }
+                                    attributeContent.setText(desc.trim());
+                                    
                                 }
                             }
                         }
@@ -104,10 +138,20 @@ public class MakumbaTLDGenerator {
                         tagContent.getParent().remove(tagContent);
                     }
                     
-                    // if we have a descriptionPage instead of a raw text, make the description tag, or the TLD is invalid
+                    // if we have a descriptionPage instead of a raw text, use the content of that page
                     if(tagContent.getName().equals("descriptionPage")) {
-                        Element e = tagContent.getParent().addElement("description");
-                        e.setText("See " + tagContent.getText());
+                        String descriptionFileName = org.apache.commons.lang.StringUtils.capitalize(tagName) + (isTag?"Tag":"Function") + "Description";
+                        String desc = "";
+                        try {
+                            desc = readFileAsString(documentationPath + File.separator + descriptionFileName + ".txt");
+                        } catch (IOException e1) {
+                            System.err.println("Could not read tag description file " + documentationPath + File.separator + descriptionFileName + ".txt"); 
+                        }
+                        Element d = null;
+                        if((d = tagContent.getParent().element("description")) == null) {
+                            d = tagContent.getParent().addElement("description");
+                        }
+                        d.setText(desc.trim());
                         tagContent.getParent().remove(tagContent);
                     }
                 }
@@ -166,6 +210,12 @@ public class MakumbaTLDGenerator {
                     + attribute + "' to copy from tag '" + specifiedIn + "'!");
             System.exit(-1);
         }
+        
+       
+        // enrich the element so it knows where it was copied from
+        element.addAttribute("inheritedFrom", specifiedIn);
+    
+        
         return element;
     }
 
@@ -179,5 +229,13 @@ public class MakumbaTLDGenerator {
         }
         return null;
     }
+    
+    public static String readFileAsString(String filePath) throws java.io.IOException{
+        byte[] buffer = new byte[(int) new File(filePath).length()];
+        BufferedInputStream f = new BufferedInputStream(new FileInputStream(filePath));
+        f.read(buffer);
+        return new String(buffer);
+    }
+
 
 }
