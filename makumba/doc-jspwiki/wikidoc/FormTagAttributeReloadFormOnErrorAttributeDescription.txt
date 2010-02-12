@@ -1,0 +1,1 @@
+Indicates whether the form page shall be reloaded on an error, or the specified form action page will be loaded directly.
