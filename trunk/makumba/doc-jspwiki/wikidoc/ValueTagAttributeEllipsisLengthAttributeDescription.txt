@@ -1,0 +1,1 @@
+The equivalent character length of ellipsis. By default, this is the number of characters in ellipsis. But if ellipsis is e.g. HTML code, then that is not appropriate.

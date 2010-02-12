@@ -1,0 +1,1 @@
+the maximum numbers of results to show (-1 for all results)
