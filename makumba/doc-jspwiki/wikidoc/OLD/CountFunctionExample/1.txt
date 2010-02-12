@@ -1,0 +1,16 @@
+[{Code
+
+<mak:list ...>
+   <c:if test="${mak:count()==1}">These are the list elements: </c:if>
+   <tr bgcolor="${mak:count()%2==1?"white":"grey"}">
+        <td>this shows in alternative colors</td>
+        ...
+   </tr>
+   <c:if test="${mak:count()!=mak:maxCount()}">
+       a separator where we can have any <b>tag</b> 
+       we don't want separators to be shown after the last element 
+   </c:if>
+</mak:list>
+<c:if test="${mak:lastCount()==0}">These are no elements </c:if>
+
+}]
