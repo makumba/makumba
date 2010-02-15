@@ -9,8 +9,8 @@
   <url>http://www.makumba.org</url>
 
   <scm>
-    <connection>scm:svn:scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/makumba-archetype-1.1</connection>
-    <developerConnection>scm:svn:scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/makumba-archetype-1.1</developerConnection>
+    <connection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/makumba-archetype-1.1</connection>
+    <developerConnection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/makumba-archetype-1.1</developerConnection>
   </scm>
 
   <build>
@@ -39,7 +39,7 @@
           </dependency>
         </dependencies>
         <configuration>
-          <tagBase>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags</tagBase>
+          <tagBase>https://makumba.svn.sf.net/svnroot/makumba/tags</tagBase>
           <providerImplementations>
             <svn>javasvn</svn>
           </providerImplementations>
