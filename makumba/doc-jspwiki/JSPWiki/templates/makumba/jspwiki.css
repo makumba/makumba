@@ -465,86 +465,48 @@ h4 .editsection,h4 .hashlink{font-size:86%;}
 */
 
 #top_nav {
-  padding-left:204px;
+  margin-left: 205px; 
+  width:824px;
   position:absolute;
   left:0px;
   top:82px;
-/*  background:url('images/header_back2.png') no-repeat;
-*/
-  height:63px;
+  background: #c5e82c;
+  border-top: 2px solid #031200;
+  border-right: 2px solid #031200;
+  border-bottom: 2px solid #031200;
+  height:59px;
 }
 
 #top_nav .menu_item {
-  height:63px;
+  height:19px;
   display:block;
   float:left;
 }
-#top_nav .menu_item span{
-  display:none;
-  
-}
-/* ITEM 0 - The home button on the logo */
-#top_nav .item0
-{
-   position:absolute;
-   top:-82px;
-   height:82px;
-   left:20px;
-   width:270px;
-}
-/* ITEM 1 - Quick_start */
-#top_nav .item1 {
-  width: 142px;
-  background: url('images/menu_quickstart.png') no-repeat;
-}
-#top_nav .item1:hover, #top_nav .item1.active {
-  background: url('images/menu_quickstart_active.png') no-repeat;
+
+#top_nav a {
+  color: #000000;
+  font: 16px Trebuchet MS, Verdana, Arial;
+  text-decoration: none;
+  padding: 20px 15px;
 }
 
-/* ITEM 2 - configuration */
-#top_nav .item2 {
-  width: 162px;
-  background: url('images/menu_configuration.png') no-repeat;
-}
-#top_nav .item2:hover, #top_nav .item2.active {
-  background: url('images/menu_configuration_active.png') no-repeat;
-}
-
-/* ITEM 3 - usage */
-#top_nav .item3 {
-  width: 98px;
-  background: url('images/menu_usage.png') no-repeat;
-}
-#top_nav .item3:hover, #top_nav .item3.active {
-  background: url('images/menu_usage_active.png') no-repeat;
+#top_nav a:hover {
+  color: #ffffff;
+  font: 16px Trebuchet MS, Verdana, Arial;
+  text-decoration: none;
+  padding: 20px 15px;
+  background: #587200;
 }
 
-/* ITEM 4 - documentation */
-#top_nav .item4 {
-  width: 169px;
-  background: url('images/menu_documentation.png') no-repeat;
-}
-#top_nav .item4:hover, #top_nav .item4.active {
-  background: url('images/menu_documentation_active.png') no-repeat;
+#top_nav .menu_item.active {
+  color: #ffffff;
+  font: 16px Trebuchet MS, Verdana, Arial;
+  text-decoration: none;
+  padding: 20px 15px;
+  background: #587200;
+
 }
 
-/* ITEM 5 - showcase */
-#top_nav .item5 {
-  width: 125px;
-  background: url('images/menu_showcase.png') no-repeat;
-}
-#top_nav .item5:hover, #top_nav .item5.active {
-  background: url('images/menu_showcase_active.png') no-repeat;
-}
-
-/* ITEM 6 - download */
-#top_nav .item6 {
-  width: 131px;
-  background: url('images/menu_download.png') no-repeat;
-}
-#top_nav .item6:hover, #top_nav .item6.active  {
-  background: url('images/menu_download_active.png') no-repeat;
-}
 
 /*
 

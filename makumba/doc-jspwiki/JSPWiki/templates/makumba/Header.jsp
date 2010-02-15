@@ -19,13 +19,13 @@
     </div>
     <div id="top_nav">
     
-      <a href="<wiki:LinkTo format="url" page="Main"/>"          class="menu_item item0<c:if test="${currentCategory =='Main'}"> active</c:if>"><span>home</span></a>
-      <a href="<wiki:LinkTo format="url" page="QuickStart"/>"    class="menu_item item1<c:if test="${currentCategory =='CategoryQuickStart'}"> active</c:if>"><span>         quick start    </span></a>
-      <a href="<wiki:LinkTo format="url" page="Configuration"/>" class="menu_item item2<c:if test="${currentCategory =='CategoryConfiguration'}"> active</c:if>"><span>  configuration  </span></a>
-      <a href="<wiki:LinkTo format="url" page="Usage"/>"         class="menu_item item3<c:if test="${currentCategory =='CategoryUsage'}"> active</c:if>"><span>         usage          </span></a>
-      <a href="<wiki:LinkTo format="url" page="Documentation"/>" class="menu_item item4<c:if test="${currentCategory =='CategoryDocumentation'}"> active</c:if>"><span>         documentation  </span></a>
-      <a href="<wiki:LinkTo format="url" page="Showcase"/>"      class="menu_item item5<c:if test="${currentCategory =='CategoryShowcase'}"> active</c:if>"><span>         showcase       </span></a>
-      <a href="<wiki:LinkTo format="url" page="Download"/>"      class="menu_item item6<c:if test="${currentCategory =='CategoryDownload'}"> active</c:if>"><span>         download       </span></a>
+      <a href="<wiki:LinkTo format="url" page="Main"/>"          class="menu_item<c:if test="${currentCategory =='CategoryMain'}"> active</c:if>">home</a>
+      <a href="<wiki:LinkTo format="url" page="QuickStart"/>"    class="menu_item<c:if test="${currentCategory =='CategoryQuickStart'}"> active</c:if>">quick start</a>
+      <a href="<wiki:LinkTo format="url" page="Configuration"/>" class="menu_item<c:if test="${currentCategory =='CategoryConfiguration'}"> active</c:if>">configuration</a>
+      <a href="<wiki:LinkTo format="url" page="Usage"/>"         class="menu_item<c:if test="${currentCategory =='CategoryUsage'}"> active</c:if>">usage</a>
+      <a href="<wiki:LinkTo format="url" page="Documentation"/>" class="menu_item<c:if test="${currentCategory =='CategoryDocumentation'}"> active</c:if>">documentation</a>
+      <a href="<wiki:LinkTo format="url" page="Showcase"/>"      class="menu_item<c:if test="${currentCategory =='CategoryShowcase'}"> active</c:if>">showcase</a>
+      <a href="<wiki:LinkTo format="url" page="Download"/>"      class="menu_item<c:if test="${currentCategory =='CategoryDownload'}"> active</c:if>">download</a>
     </div>
   </div>
   <%-- manu: if the page has no category, then the menu content is not generated --%>
