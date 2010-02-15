@@ -2,15 +2,15 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.makumba</groupId>
   <artifactId>makumba-archetype</artifactId>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.1</version>
   <packaging>maven-archetype</packaging>
   <name>makumba-archetype</name>
   <description>Archetype for a makumba web-application</description>
   <url>http://www.makumba.org</url>
 
   <scm>
-    <connection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/makumba-archetype-1.1</connection>
-    <developerConnection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/makumba-archetype-1.1</developerConnection>
+    <connection>scm:svn:scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/makumba-archetype-1.1</connection>
+    <developerConnection>scm:svn:scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/makumba-archetype-1.1</developerConnection>
   </scm>
 
   <build>
@@ -34,6 +34,23 @@
         <configuration>
           <tagBase>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags</tagBase>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-scm-plugin</artifactId>
+        <version>1.3</version>
+        <configuration>
+          <providerImplementations>
+            <svn>javasvn</svn>
+          </providerImplementations>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>com.google.code.maven-scm-provider-svnjava</groupId>
+            <artifactId>maven-scm-provider-svnjava</artifactId>
+            <version>1.9</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>
