@@ -1,1 +1,0 @@
-The length of a long line. If a text contains long lines, it will be printed differently. See lineSeparator. Default is "30"

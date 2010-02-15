@@ -1,1 +1,0 @@
-For int data with type select or radio, the step size defines the steps between each option. The default stepsize is 1.

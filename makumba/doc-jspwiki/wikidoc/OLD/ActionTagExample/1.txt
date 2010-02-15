@@ -1,8 +1,0 @@
-[{Code
-
-<mak:editForm object="ins" method="post">
-    <mak:action>memberView.jsp?person=<mak:value expr="p"/></mak:action>
-    ...
-</mak:editForm>
-
-}]

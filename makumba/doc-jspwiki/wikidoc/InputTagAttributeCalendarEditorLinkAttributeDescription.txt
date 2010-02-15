@@ -1,1 +1,0 @@
-The formatting that appears on the link to the calendar date-chooser.

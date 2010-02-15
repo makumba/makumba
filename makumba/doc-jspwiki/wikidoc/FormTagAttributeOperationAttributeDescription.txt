@@ -1,1 +1,0 @@
-Used to specify a form operation, as an alternative to using mak:newForm and mak:editForm
