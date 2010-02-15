@@ -1,16 +1,17 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.makumba</groupId>
   <artifactId>makumba-archetype</artifactId>
-  <version>1.1</version>
+  <version>1.1-SNAPSHOT</version>
   <packaging>maven-archetype</packaging>
   <name>makumba-archetype</name>
   <description>Archetype for a makumba web-application</description>
   <url>http://www.makumba.org</url>
 
   <scm>
-    <connection>scm:svn:scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/makumba-archetype-1.1</connection>
-    <developerConnection>scm:svn:scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/makumba-archetype-1.1</developerConnection>
+    <connection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/makumba-archetype-1.1</connection>
+    <developerConnection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/makumba-archetype-1.1</developerConnection>
   </scm>
 
   <build>
@@ -31,26 +32,19 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
         <version>2.0-beta-9</version>
-        <configuration>
-          <tagBase>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags</tagBase>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-scm-plugin</artifactId>
-        <version>1.3</version>
-        <configuration>
-          <providerImplementations>
-            <svn>javasvn</svn>
-          </providerImplementations>
-        </configuration>
         <dependencies>
           <dependency>
             <groupId>com.google.code.maven-scm-provider-svnjava</groupId>
             <artifactId>maven-scm-provider-svnjava</artifactId>
-            <version>1.9</version>
+            <version>1.10</version>
           </dependency>
         </dependencies>
+        <configuration>
+          <tagBase>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags</tagBase>
+          <providerImplementations>
+            <svn>javasvn</svn>
+          </providerImplementations>
+        </configuration>
       </plugin>
     </plugins>
   </build>
