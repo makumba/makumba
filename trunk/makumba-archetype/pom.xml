@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.makumba</groupId>
   <artifactId>makumba-archetype</artifactId>
-  <version>1.2-SNAPSHOT</version>
+  <version>1.1-SNAPSHOT</version>
   <packaging>maven-archetype</packaging>
   <name>makumba-archetype</name>
   <description>Archetype for a makumba web-application</description>
@@ -11,6 +11,7 @@
   <scm>
     <connection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/trunk/makumba-archetype</connection>
     <developerConnection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/trunk/makumba-archetype</developerConnection>
+    <url>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/trunk/makumba-archetype</url>
   </scm>
 
   <build>
