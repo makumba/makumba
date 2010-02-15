@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.makumba</groupId>
   <artifactId>makumba-archetype</artifactId>
-  <version>1.1</version>
+  <version>1.1-SNAPSHOT</version>
   <packaging>maven-archetype</packaging>
   <name>makumba-archetype</name>
   <description>Archetype for a makumba web-application</description>
