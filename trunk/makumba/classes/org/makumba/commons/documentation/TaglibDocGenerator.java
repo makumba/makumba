@@ -1,4 +1,4 @@
-package org.makumba.commons;
+package org.makumba.commons.documentation;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -23,6 +23,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
+import org.makumba.commons.MakumbaTLDGenerator;
 
 /**
  * This class generates the taglib documentation JSPWiki files based on the taglib-documented.xml file
