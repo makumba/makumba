@@ -307,7 +307,7 @@ public class TaglibDocGenerator {
             s.append("[{Table");
             s.newLine();
             s.newLine(); // empty line necessary or the plugin doesn't work
-            s.append("||Name||Required||Request-time||Description||Comments ");
+            s.append("||Name||Required||Runtime expression||Description||Comments ");
             s.newLine();
             s.newLine();
 
