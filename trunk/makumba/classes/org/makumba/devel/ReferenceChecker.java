@@ -56,25 +56,32 @@ public class ReferenceChecker extends HttpServlet {
     }
 
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        DBConnection connection = MakumbaTransactionProvider.getDatabase(dbName).getDBConnection();
-        if (connection instanceof DBConnectionWrapper) {
-            connection = ((DBConnectionWrapper) connection).getWrapped();
-        }
-        SQLDBConnection sqlConnection = ((SQLDBConnection) connection);
-        String contextPath = req.getContextPath();
-        resp.setContentType("text/html");
-        PrintWriter w = resp.getWriter();
-        DevelUtils.writePageBegin(w);
-        DevelUtils.writeStylesAndScripts(w, contextPath);
+        DBConnection connection = null;
+        try {
+            connection = MakumbaTransactionProvider.getDatabase(dbName).getDBConnection();
+            if (connection instanceof DBConnectionWrapper) {
+                connection = ((DBConnectionWrapper) connection).getWrapped();
+            }
+            SQLDBConnection sqlConnection = ((SQLDBConnection) connection);
+            String contextPath = req.getContextPath();
+            resp.setContentType("text/html");
+            PrintWriter w = resp.getWriter();
+            DevelUtils.writePageBegin(w);
+            DevelUtils.writeStylesAndScripts(w, contextPath);
 
-        String param = req.getParameter("mdd");
-        if (param != null) { // check a specific MDD
-            String field = req.getParameter("field");
-            printBrokenRefsInTable(sqlConnection, contextPath, w, param, field);
-        } else {
-            printAllBrokenRefs(sqlConnection, contextPath, w);
+            String param = req.getParameter("mdd");
+            if (param != null) { // check a specific MDD
+                String field = req.getParameter("field");
+                printBrokenRefsInTable(sqlConnection, contextPath, w, param, field);
+            } else {
+                printAllBrokenRefs(sqlConnection, contextPath, w);
+            }
+            DevelUtils.writePageEnd(w);
+        } finally {
+            if (connection != null) {
+                connection.close();
+            }
         }
-        DevelUtils.writePageEnd(w);
     }
 
     private int executeIntQuery(SQLDBConnection sqlConnection, String query) {
