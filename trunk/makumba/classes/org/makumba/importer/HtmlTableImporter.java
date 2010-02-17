@@ -35,7 +35,6 @@ import java.util.Vector;
 import org.makumba.DataDefinition;
 import org.makumba.Transaction;
 import org.makumba.InvalidValueException;
-import org.makumba.commons.HtmlTagEnumerator;
 import org.makumba.db.makumba.MakumbaTransactionProvider;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;

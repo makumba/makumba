@@ -52,7 +52,6 @@ import org.makumba.MakumbaError;
 import org.makumba.ValidationDefinitionParseError;
 import org.makumba.ValidationRule;
 import org.makumba.DataDefinition.QueryFragmentFunction;
-import org.makumba.commons.OrderedProperties;
 import org.makumba.commons.RegExpUtils;
 import org.makumba.commons.ReservedKeywords;
 import org.makumba.providers.DataDefinitionProvider;

@@ -21,7 +21,7 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.commons;
+package org.makumba.importer;
 
 import java.io.FileReader;
 import java.io.IOException;
