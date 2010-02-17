@@ -34,7 +34,6 @@ import java.net.MalformedURLException;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Properties;
@@ -63,8 +62,6 @@ import org.makumba.providers.datadefinition.makumba.validation.RegExpValidationR
 import org.makumba.providers.datadefinition.makumba.validation.StringLengthValidationRule;
 import org.makumba.providers.query.mql.HqlParser;
 
-import antlr.RecognitionException;
-import antlr.TokenStreamException;
 import antlr.collections.AST;
 
 public class RecordParser {
@@ -401,6 +398,7 @@ public class RecordParser {
                 u = getResource("dataDefinitions/" + s.replace('.', '/') + "." + ext);
                 
             // this is maybe a directory?
+            // FIXME: this doesn't work if the MDDs are not in the dataDefinitions directory, but in the classes folder directly 
             if(u == null)
                 u = getResource("dataDefinitions" + (s.length() == 0 ? "" : "/") + s);
                 
