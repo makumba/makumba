@@ -36,6 +36,9 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
+import org.makumba.db.makumba.DBConnectionWrapper;
+import org.makumba.db.makumba.Database;
+import org.makumba.db.makumba.sql.SQLDBConnection;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
@@ -50,7 +53,7 @@ import org.makumba.providers.TransactionProvider;
 public class DataObjectViewerServlet extends DataServlet {
 
     private static final long serialVersionUID = 1L;
-    
+
     public DataObjectViewerServlet() {
         toolLocation = Configuration.getDataViewerLocation();
     }
@@ -80,6 +83,12 @@ public class DataObjectViewerServlet extends DataServlet {
             Transaction t = tp.getConnectionTo(tp.getDefaultDataSourceName());
 
             try {
+                if (t instanceof DBConnectionWrapper) {
+                    t = ((DBConnectionWrapper) t).getWrapped();
+                }
+                SQLDBConnection sqlConnection = (SQLDBConnection) t;
+                Database hostDatabase = sqlConnection.getHostDatabase();
+
                 String dataBaseName = t.getName();
                 writePageContentHeader(type, writer, dataBaseName, MODE_LIST);
                 writer.println("<br/>");
@@ -94,7 +103,8 @@ public class DataObjectViewerServlet extends DataServlet {
                         if (OQL.trim().length() > 0) {
                             OQL += ", ";
                         }
-                        OQL += "o." + fd.getName() + " AS " + fd.getName();
+                        // use hostDatabase.getFieldNameInSource() to avoid problems when the field name is a reserved
+                        OQL += "o." + fd.getName() + " AS " + hostDatabase.getFieldNameInSource(dd, fd.getName());
                     }
                 }
                 OQL = "SELECT " + OQL + " FROM " + type + " o WHERE o=$1";
@@ -147,7 +157,9 @@ public class DataObjectViewerServlet extends DataServlet {
                                 writer.print("<span style=\"color:grey;font-style:italic;font-size:smaller\">SET COMPLEX</span>");
                             }
                         } else {
-                            Object value = values.get(fd.getName());
+                            // use hostDatabase.getFieldNameInSource() to avoid problems when the field name is a
+                            // reserved
+                            Object value = values.get(hostDatabase.getFieldNameInSource(dd, fd.getName()));
                             if (value instanceof Pointer) {
                                 writer.print(" "
                                         + DevelUtils.writePointerValueLink(contextPath, (Pointer) value, null, false)
@@ -155,7 +167,8 @@ public class DataObjectViewerServlet extends DataServlet {
                             } else {
                                 writer.print(value);
                                 if (fd.isEnumType() && value != null) {
-                                    writer.print(" <i>(=" + fd.getNameFor((Integer.parseInt(String.valueOf(value)))) + ")</i>");
+                                    writer.print(" <i>(=" + fd.getNameFor((Integer.parseInt(String.valueOf(value))))
+                                            + ")</i>");
                                 }
                             }
                         }
