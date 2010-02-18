@@ -25,15 +25,15 @@ package org.makumba.devel;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Dictionary;
-import java.util.Enumeration;
+import java.util.LinkedHashSet;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.EnumerationUtils;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.commons.RuntimeWrappedException;
@@ -134,25 +134,32 @@ public class DataQueryServlet extends DataServlet {
                     // Query q = session.createQuery(query);
                 }
 
-                ArrayList<String> keys = new ArrayList<String>();
+                // we need to figure out all the projection names used in the query
+                // the projection names are only present if that row also has a non-null value
+                // thus, let's search over all rows, and merge the keys together
+
+                LinkedHashSet<String> projections = new LinkedHashSet<String>();
+                for (int i = 0; i < results.size(); i++) {
+                    Dictionary<String, Object> d = results.get(i);
+                    projections.addAll(EnumerationUtils.toList(d.keys()));
+                }
+
+                // now iterate over all results
                 for (int i = 0; i < results.size(); i++) {
                     Dictionary<String, Object> d = results.get(i);
                     if (i == 0) {
                         writer.println("<table cellpadding=\"5\">");
                         writer.println("<tr>");
                         writer.println("<th>#</th>");
-                        Enumeration<String> e = d.keys();
-                        while (e.hasMoreElements()) {
-                            String key = e.nextElement();
-                            keys.add(key);
-                            writer.println("<th>" + key + "</th>");
+                        for (String projection : projections) {
+                            writer.println("<th>" + projection + "</th>");
                         }
                         writer.println("</tr>");
                     }
                     writer.println("<tr class=\"" + (i % 2 == 0 ? "even" : "odd") + "\">");
                     writer.println("<td>" + (i + 1) + "</td>");
-                    for (int j = 0; j < keys.size(); j++) {
-                        Object value = d.get(keys.get(j));
+                    for (String projection : projections) {
+                        Object value = d.get(projection);
                         if (value instanceof Pointer) {
                             writer.println("<td>" + DevelUtils.writePointerValueLink(contextPath, (Pointer) value)
                                     + "</td>");
@@ -165,6 +172,12 @@ public class DataQueryServlet extends DataServlet {
                         writer.println("</table>");
                     }
                 }
+                if (results.size() > 0) {
+                    writer.println("<span style=\"color: red; font-size: smaller; \"><i>Note that only projections that have at least one value not null will be shown</i></span>");
+                } else {
+                    writer.println("<span style=\"color: red \"><i>No results found!</i></span>");
+                }
+
             } catch (RuntimeWrappedException e) {
                 writer.println("<span style=\"color: red\"><i>" + e.getMessage() + "</i></span>");
                 writer.println("");
