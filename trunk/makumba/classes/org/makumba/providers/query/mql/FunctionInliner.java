@@ -18,12 +18,14 @@ import antlr.collections.AST;
 
 /**
  * Function inliner based on the 2nd pass MQL query analysis. Performs tree transformation on the original AST necessary
- * to pass it on to the regular 2nd pass analysis
+ * to pass it on to the regular 2nd pass analysis.
  * 
  * @author Manuel Gay
  * @version $Id: FunctionInliner.java,v 1.1 Aug 3, 2009 1:06:27 PM manu Exp $
  */
 public class FunctionInliner {
+    
+    private final boolean debug = true;
 
     private String query;
     
@@ -47,7 +49,9 @@ public class FunctionInliner {
     
     private String inline(String query, QueryAnalysisProvider qp) {
         
-        //System.out.println("===== inlining query " + query);
+        if(debug) {
+            System.out.println("===== inlining query " + query);
+        }
         
         String originalQuery = query;
         
@@ -91,11 +95,12 @@ public class FunctionInliner {
             return originalQuery;
         }
         
-        //System.out.println("*** inlined ast");
-        //v.visit(ast);
+        if(debug) {
+            System.out.println("===== inlined ast");
+            v.visit(ast);
+        }
         
         String res = printer.printTree(ast);
-        //System.out.println("********* "+res);
         
         return res;
     }
@@ -142,8 +147,10 @@ public class FunctionInliner {
         }
 
 
-        //System.out.println("** inlining tree of function " + printer.printTree(ast));
-        //v.visit(ast);
+        if(debug) {
+            System.out.println("** inlining tree of " + (root?"query ":"function ") + printer.printTree(ast));
+            v.visit(ast);
+        }
 
         // let's analyze this function with a magic analyzer that accepts function calls
         // FIXME in case of SemanticExceptions, fetch them and append meaningful text
@@ -209,7 +216,9 @@ public class FunctionInliner {
                 
                 inlined = true;
 
-                //System.out.println("Iterating over function call " + c);
+                if(debug) {
+                    System.out.println("*** Iterating over function call " + c);
+                }
                 
                 // if this is an actor function, we need to inline it differently than other functions
                 if (c.isActorFunction()) {
@@ -223,12 +232,17 @@ public class FunctionInliner {
                     MqlQueryAnalysisProvider.transformOQLParameters(queryFragmentTree, parameterOrder);
                     MqlQueryAnalysisProvider.transformOQL(queryFragmentTree);
     
-                    //System.out.println("QF tree before args");
-                    //v.visit(queryFragmentTree);
+                    if(debug) {
+                        System.out.println("*** query fragment tree before replacing arguments");
+                        v.visit(queryFragmentTree);
+                    }
+                    
                     replaceArgsAndThis(queryFragmentTree, queryFragmentTree, c, null, null, mqlAnalyzer, false, null, null);
                     
-                    //System.out.println("QF tree after args");
-                    //v.visit(queryFragmentTree);
+                    if(debug) {
+                        System.out.println("*** query fragment after replacing arguments");
+                        v.visit(queryFragmentTree);
+                    }
     
                     // now we inline all the functions of the resulting tree
                     inline(queryFragmentTree, false);
@@ -236,6 +250,13 @@ public class FunctionInliner {
                     // replace method call in original tree
                     // here we use the 1st pass method calls and rely on the fact that the order with the function calls is the same
                     replaceMethodCall(methodCalls.get(index), fact.dupTree(queryFragmentTree), methodCalls, c);
+                    
+                    if(debug) {
+                        System.out.println("*** query tree after method call inlining");
+                        v.visit(ast);
+                    }
+
+                    
                 }
 
                 //System.out.println("*** inlined query tree");
@@ -262,6 +283,13 @@ public class FunctionInliner {
                 }
                 originalRange = originalRange.getNextSibling();
             }
+            
+            if(debug) {
+                System.out.println("*** query tree after remvoing unused labels");
+                v.visit(ast);
+
+            }
+            
             
             return inlined;
         }
@@ -637,23 +665,30 @@ public class FunctionInliner {
             
             if (additionalFrom != null) {
                 
+                if(debug) {
+                    System.out.println("FROM tree to add");
+                    v.visit(additionalFrom);
+                }
+                
                 if(functionCall != null && functionCall.getPath() != null) {
                     
                     String label = functionCall.getPath().substring(0, functionCall.getPath().indexOf(".") > 0 ? functionCall.getPath().indexOf(".") : functionCall.getPath().length());
                     
                     // if we have a constraint on the label of the function, we will not re-use the label
-                    if(methodCall.getWhere() != null) {
-                        boolean hasConstraint = false;
-                        findIdentifier(methodCall.getWhere(), label, hasConstraint);
-                        
+                    // UNLESS the function call is part of the WHERE in which case we don't really care about having a constraint on the label
+                    // e.g. SELECT p.indiv.name AS col1,character_length(p.indiv.name) AS col2 FROM test.Person p WHERE p.nameMin3CharsLong()
+                    if(methodCall.getWhere() != null && !functionCall.isInWhere()) {
+                        if(debug) {
+                            System.out.println("Checking if label " + label + " has a constraint in WHERE tree");
+                            v.visit(methodCall.getWhere());
+                        }
+                        Boolean hasConstraint = hasIdentifier(methodCall.getWhere(), label, false);
                         if(hasConstraint) {
                             join(methodCall.getFrom(), fact.dupTree(additionalFrom), inlinedFunction, null);
                         }
-                        
                     } else {
                         join(methodCall.getFrom(), fact.dupTree(additionalFrom), inlinedFunction, label);
                     }
-                    
                 } else {
                     join(methodCall.getFrom(), fact.dupTree(additionalFrom), inlinedFunction, null);
                 }
@@ -682,7 +717,9 @@ public class FunctionInliner {
 
             // TODO also take care of ORDER BY
         }
-                
+        
+        
+        
         // if we have two method calls that are siblings in a tree, the second one will have as parent the first call
         // when the first call will get replaced, and then the second one will want to be replaced
         // the reference to the parent of the 2nd method call won't be valid anymore
@@ -844,17 +881,26 @@ public class FunctionInliner {
         return labels;
     }
     
-    private void findIdentifier(AST tree, String identifier, boolean found) {
+    /**
+     * Searches for a given identifier in a tree and returns true if it does
+     */
+    private Boolean hasIdentifier(AST tree, String identifier, Boolean found) {
         if(tree == null) {
-            return;
+            return found;
+        }
+        if(found) {
+            return found;
         }
         
         if(tree.getType() == HqlTokenTypes.IDENT && tree.getText().equals(identifier)) {
             found = true;
-            return;
+            return true;
         } else {
-            findIdentifier(tree.getFirstChild(), identifier, found);
-            findIdentifier(tree.getNextSibling(), identifier, found);
+            found = hasIdentifier(tree.getFirstChild(), identifier, found);
+            if(found) {
+                return found;
+            }
+            return hasIdentifier(tree.getNextSibling(), identifier, found);
         }
     }
     

@@ -15,6 +15,8 @@ public class FunctionCall {
 
     private boolean isFunctionArgument;
     
+    private boolean isInWhere;
+    
     private Vector<Node> orderedArgumentOrigins;
     
     private Vector<MqlNode> orderedArguments;
@@ -23,7 +25,7 @@ public class FunctionCall {
     
     private String path;
     
-    public FunctionCall(QueryFragmentFunction function, Vector<MqlNode> orderedArguments, Vector<Node> orderedArgumentsOrigins, DataDefinition parentType, String path, boolean isFunctionArgument, boolean isMQLFunction, boolean isActorFunction) {
+    public FunctionCall(QueryFragmentFunction function, Vector<MqlNode> orderedArguments, Vector<Node> orderedArgumentsOrigins, DataDefinition parentType, String path, boolean isFunctionArgument, boolean isMQLFunction, boolean isActorFunction, boolean isInWhere) {
         super();
         this.function = function;
         this.orderedArguments = orderedArguments;
@@ -33,6 +35,7 @@ public class FunctionCall {
         this.isFunctionArgument = isFunctionArgument;
         this.isMQLFunction = isMQLFunction;
         this.isActorFunction = isActorFunction;
+        this.isInWhere = isInWhere;
     }
 
     public DataDefinition.QueryFragmentFunction getFunction() {
@@ -40,7 +43,7 @@ public class FunctionCall {
     }
 
     public String getKey() {
-        return function == null ? null : function.getName() + "_" + orderedArguments + "_" + parentType + "_" + path + "_" + isFunctionArgument() + "_" + isMQLFunction + "_" + isActorFunction;
+        return function == null ? null : function.getName() + "_" + orderedArguments + "_" + parentType + "_" + path + "_" + isFunctionArgument() + "_" + isMQLFunction + "_" + isActorFunction + "_" + isInWhere;
     }
 
     public Vector<Node> getOrderedArgumentOrigins() {
@@ -74,10 +77,15 @@ public class FunctionCall {
         return isActorFunction;
     }
     
+    public boolean isInWhere() {
+        return isInWhere;
+    }
+    
     @Override
     public String toString() {
         return "FunctionCall [function=" + function + ", orderedArguments=" + orderedArguments + ", parentType="
-                + parentType + ", path=" + path + ", isFunctionArgument="+isFunctionArgument+ ", isMQLFunction="+isMQLFunction+ ", isActorFunction="+isActorFunction+"]";
+                + parentType + ", path=" + path + ", isFunctionArgument="+isFunctionArgument+ ", isMQLFunction="+isMQLFunction
+                + ", isActorFunction="+isActorFunction+", isInWhere=" + isInWhere + "]";
     }
     
 
