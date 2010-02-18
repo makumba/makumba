@@ -150,7 +150,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
             processFunction(functionCall);
             
             // we still make a dummy function call because we need it to have the right index in the inliner
-            FunctionCall c = new FunctionCall(null, null, null, null, additionalPath, false, true, false);
+            FunctionCall c = new FunctionCall(null, null, null, null, additionalPath, false, true, false, getCurrentClauseType() == WHERE);
             orderedFunctionCalls.put(c.getKey(), c);
             return c.getKey();
         }       
@@ -163,7 +163,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
             paramNode = (MqlNode) paramNode.getNextSibling();
         }
         
-        FunctionCall c = new FunctionCall(funct, args, null, type, path, inFunctionCall, false, additionalPath.startsWith("actor"));
+        FunctionCall c = new FunctionCall(funct, args, null, type, path, inFunctionCall, false, additionalPath.startsWith("actor"), getCurrentClauseType() == WHERE);
         orderedFunctionCalls.put(c.getKey(), c);
         return c.getKey();
     }
