@@ -7,7 +7,8 @@
 
 TO BE RELEASED IMMEDIATELY (No need for more testing)
 -----------------------------------------------
-
+rudi: fixing a bug in the reference checker, closing the DB connection
+rudi: fixed a bug in the data query servlet - not all columns were displayed correctly; now, displaying all columns that have at least one non-null value
 
 NOT TO BE RELEASED YET (need more testing)
 manu: auto-complete for mak:input (char and ptr)
