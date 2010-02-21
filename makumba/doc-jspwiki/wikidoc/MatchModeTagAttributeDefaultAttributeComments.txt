@@ -1,1 +1,1 @@
-see 'matchModes' for allowed values
+See 'matchModes' for allowed values

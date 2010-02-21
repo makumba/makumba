@@ -1,1 +1,1 @@
-Fixed, if not indicated, nil (null option) is default
+If not indicated, nil (null option) is default

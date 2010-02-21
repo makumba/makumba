@@ -68,6 +68,12 @@
 | see [bug:503]
 |''__Not started__''
 
+|Adapt datadefinition model
+|rudi
+|Update needed in DataModelHowto/example-eer.png:\\
+ - relation between "Company" and "Country" is n to n\\
+ - relation "leader" between "Project" and "Employee" appears missing
+|''__Done__''
 
 |Port the status from the old forrest site
 |manu
@@ -85,11 +91,6 @@
 !!TODO documentation - setup
 
 [{Table
-
-|Trash the forrest documentation
-|manu
-|
-|''__Not started__''
 
 |Find a way to have comments posted on a different page than the to-be-commented page
 |?
@@ -126,7 +127,6 @@
 |
 |''__Done__''
 
-
 |Make the expandable sections in the left menu clickable
 |manu
 |
@@ -136,5 +136,10 @@
 |manu
 |
 |''__Done__''
+
+|Trash the forrest documentation
+|manu
+|
+|''done''
 
 }]

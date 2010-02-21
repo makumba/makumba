@@ -1,1 +1,1 @@
-Rtexpr. Only for <code>type="tickbox"</code>
+Only for %%code type="tickbox"

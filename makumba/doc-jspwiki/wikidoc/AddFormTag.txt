@@ -1,0 +1,188 @@
+
+%%(display:none) makumba hackers: this page is generated, don't edit it! Instead edit the text in the included pages. %%
+
+!!!Taglib documentation for tag mak:addForm
+
+!!Description
+
+[{InsertPage style='display: inline;' page=AddFormTagDescription}][.|edit:AddFormTagDescription]
+
+!!Attributes
+[{Table
+
+||Name||Required||Request-time||Description||Comments 
+
+|object 
+|true 
+|false 
+|[{InsertPage style='display: inline;' page=AddFormTagAttributeObjectAttributeDescription}][.|edit:AddFormTagAttributeObjectAttributeDescription] 
+|[{InsertPage style='display: inline;' page=AddFormTagAttributeObjectAttributeComments}][.|edit:AddFormTagAttributeObjectAttributeComments] 
+
+|field 
+|true 
+|false 
+|[{InsertPage style='display: inline;' page=AddFormTagAttributeFieldAttributeDescription}][.|edit:AddFormTagAttributeFieldAttributeDescription] 
+|[{InsertPage style='display: inline;' page=AddFormTagAttributeFieldAttributeComments}][.|edit:AddFormTagAttributeFieldAttributeComments] 
+
+|action\\ %%(font-size:smaller;) (from [mak:form|FormTag])%% 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=FormTagAttributeActionAttributeDescription}][.|edit:FormTagAttributeActionAttributeDescription] 
+|[{InsertPage style='display: inline;' page=FormTagAttributeActionAttributeComments}][.|edit:FormTagAttributeActionAttributeComments] 
+
+|method\\ %%(font-size:smaller;) (from [mak:form|FormTag])%% 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=FormTagAttributeMethodAttributeDescription}][.|edit:FormTagAttributeMethodAttributeDescription] 
+|[{InsertPage style='display: inline;' page=FormTagAttributeMethodAttributeComments}][.|edit:FormTagAttributeMethodAttributeComments] 
+
+|name\\ %%(font-size:smaller;) (from [mak:form|FormTag])%% 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=FormTagAttributeNameAttributeDescription}][.|edit:FormTagAttributeNameAttributeDescription] 
+|[{InsertPage style='display: inline;' page=FormTagAttributeNameAttributeComments}][.|edit:FormTagAttributeNameAttributeComments] 
+
+|message\\ %%(font-size:smaller;) (from [mak:form|FormTag])%% 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=FormTagAttributeMessageAttributeDescription}][.|edit:FormTagAttributeMessageAttributeDescription] 
+|[{InsertPage style='display: inline;' page=FormTagAttributeMessageAttributeComments}][.|edit:FormTagAttributeMessageAttributeComments] 
+
+|annotation\\ %%(font-size:smaller;) (from [mak:form|FormTag])%% 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=FormTagAttributeAnnotationAttributeDescription}][.|edit:FormTagAttributeAnnotationAttributeDescription] 
+|[{InsertPage style='display: inline;' page=FormTagAttributeAnnotationAttributeComments}][.|edit:FormTagAttributeAnnotationAttributeComments] 
+
+|annotationSeparator\\ %%(font-size:smaller;) (from [mak:form|FormTag])%% 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=FormTagAttributeAnnotationSeparatorAttributeDescription}][.|edit:FormTagAttributeAnnotationSeparatorAttributeDescription] 
+|[{InsertPage style='display: inline;' page=FormTagAttributeAnnotationSeparatorAttributeComments}][.|edit:FormTagAttributeAnnotationSeparatorAttributeComments] 
+
+|reloadFormOnError\\ %%(font-size:smaller;) (from [mak:form|FormTag])%% 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=FormTagAttributeReloadFormOnErrorAttributeDescription}][.|edit:FormTagAttributeReloadFormOnErrorAttributeDescription] 
+|[{InsertPage style='display: inline;' page=FormTagAttributeReloadFormOnErrorAttributeComments}][.|edit:FormTagAttributeReloadFormOnErrorAttributeComments] 
+
+|clientSideValidation\\ %%(font-size:smaller;) (from [mak:form|FormTag])%% 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=FormTagAttributeClientSideValidationAttributeDescription}][.|edit:FormTagAttributeClientSideValidationAttributeDescription] 
+|[{InsertPage style='display: inline;' page=FormTagAttributeClientSideValidationAttributeComments}][.|edit:FormTagAttributeClientSideValidationAttributeComments] 
+
+|multipleSubmitErrorMsg\\ %%(font-size:smaller;) (from [mak:form|FormTag])%% 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=FormTagAttributeMultipleSubmitErrorMsgAttributeDescription}][.|edit:FormTagAttributeMultipleSubmitErrorMsgAttributeDescription] 
+|[{InsertPage style='display: inline;' page=FormTagAttributeMultipleSubmitErrorMsgAttributeComments}][.|edit:FormTagAttributeMultipleSubmitErrorMsgAttributeComments] 
+
+|target\\ %%(font-size:smaller;) (from [mak:form|FormTag])%% 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=FormTagAttributeTargetAttributeDescription}] (generic) 
+|[{InsertPage style='display: inline;' page=FormTagAttributeTargetAttributeComments}] (generic) 
+
+|onReset\\ %%(font-size:smaller;) (from [mak:form|FormTag])%% 
+|false 
+|true 
+|^ 
+|^ 
+
+|onSubmit\\ %%(font-size:smaller;) (from [mak:form|FormTag])%% 
+|false 
+|true 
+|^ 
+|^ 
+
+|styleClass\\ %%(font-size:smaller;) (from [mak:form|FormTag])%% 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=FormTagAttributeStyleClassAttributeDescription}][.|edit:FormTagAttributeStyleClassAttributeDescription] 
+|[{InsertPage style='display: inline;' page=FormTagAttributeStyleClassAttributeComments}][.|edit:FormTagAttributeStyleClassAttributeComments] 
+
+|style\\ %%(font-size:smaller;) (from [mak:form|FormTag])%% 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=FormTagAttributeStyleAttributeDescription}] (generic) 
+|[{InsertPage style='display: inline;' page=FormTagAttributeStyleAttributeComments}] (generic) 
+
+|title\\ %%(font-size:smaller;) (from [mak:form|FormTag])%% 
+|false 
+|true 
+|^ 
+|^ 
+
+|onClick\\ %%(font-size:smaller;) (from [mak:form|FormTag])%% 
+|false 
+|true 
+|^ 
+|^ 
+
+|onDblClick\\ %%(font-size:smaller;) (from [mak:form|FormTag])%% 
+|false 
+|true 
+|^ 
+|^ 
+
+|onKeyDown\\ %%(font-size:smaller;) (from [mak:form|FormTag])%% 
+|false 
+|true 
+|^ 
+|^ 
+
+|onKeyUp\\ %%(font-size:smaller;) (from [mak:form|FormTag])%% 
+|false 
+|true 
+|^ 
+|^ 
+
+|onKeyPress\\ %%(font-size:smaller;) (from [mak:form|FormTag])%% 
+|false 
+|true 
+|^ 
+|^ 
+
+|onMouseDown\\ %%(font-size:smaller;) (from [mak:form|FormTag])%% 
+|false 
+|true 
+|^ 
+|^ 
+
+|onMouseUp\\ %%(font-size:smaller;) (from [mak:form|FormTag])%% 
+|false 
+|true 
+|^ 
+|^ 
+
+|onMouseMove\\ %%(font-size:smaller;) (from [mak:form|FormTag])%% 
+|false 
+|true 
+|^ 
+|^ 
+
+|onMouseOut\\ %%(font-size:smaller;) (from [mak:form|FormTag])%% 
+|false 
+|true 
+|^ 
+|^ 
+
+|onMouseOver\\ %%(font-size:smaller;) (from [mak:form|FormTag])%% 
+|false 
+|true 
+|^ 
+|^ 
+
+
+}]
+
+!!See also
+
+[mak:input|InputTag], [mak:form|FormTag], [mak:newForm|NewFormTag], [mak:editForm|EditFormTag], [mak:deleteLink|DeleteLinkTag], [mak:delete|DeleteTag]
+!!Examples
+
+[{InsertPage style='display: inline;' page=AddFormTagExample}][.|edit:AddFormTagExample]
+
+
+%%(display:none;) [Category Documentation]%%

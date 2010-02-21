@@ -1,1 +1,1 @@
-Fixed. A new Java variable is created, so no other variable by the same name can exist in the Java scope at that point in the JSP. Note: the Java variable must be cast to its specific type (Integer, String, Date, Text, Pointer, Vector) before using it as such.
+A new Java variable is created, so no other variable by the same name can exist in the Java scope at that point in the JSP. Note: the Java variable must be cast to its specific type (Integer, String, Date, Text, Pointer, Vector) before using it as such.

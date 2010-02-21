@@ -1,1 +1,3 @@
-HTML input type to be used: <ul> <li>"select" (drop-down).</li> <li>"radio" (radio buttons).</li> </ul>
+HTML input type to be used: 
+* "select" (drop-down)
+* "radio" (radio buttons)

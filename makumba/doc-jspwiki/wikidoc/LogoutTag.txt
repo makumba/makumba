@@ -1,0 +1,32 @@
+
+%%(display:none) makumba hackers: this page is generated, don't edit it! Instead edit the text in the included pages. %%
+
+!!!Taglib documentation for tag mak:logout
+
+!!Description
+
+[{InsertPage style='display: inline;' page=LogoutTagDescription}][.|edit:LogoutTagDescription]
+
+!!Attributes
+[{Table
+
+||Name||Required||Request-time||Description||Comments 
+
+|actor 
+|true 
+|true 
+|[{InsertPage style='display: inline;' page=LogoutTagAttributeActorAttributeDescription}][.|edit:LogoutTagAttributeActorAttributeDescription] 
+|[{InsertPage style='display: inline;' page=LogoutTagAttributeActorAttributeComments}][.|edit:LogoutTagAttributeActorAttributeComments] 
+
+
+}]
+
+!!See also
+
+[mak:login|LoginTag], [mak:attribute|AttributeTag]
+!!Examples
+
+[{InsertPage style='display: inline;' page=LogoutTagExample}][.|edit:LogoutTagExample]
+
+
+%%(display:none;) [Category Documentation]%%

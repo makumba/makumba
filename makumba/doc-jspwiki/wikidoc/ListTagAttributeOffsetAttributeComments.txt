@@ -1,1 +1,1 @@
-Fixed ($attribute allowed). If $attribute is not found, defaults to 0. Only allowed for the outermost mak:list
+$attribute allowed. If $attribute is not found, defaults to 0. Only allowed for the outermost mak:list

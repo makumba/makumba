@@ -1,1 +1,1 @@
-Fixed, cannot contain attributes, for now. The default database is chosen if this argument is not set. Can only be set for top-level (root) query tags Can be a Rtexpr <%= ...%>
+Cannot contain attributes, for now. The default database is chosen if this argument is not set. Can only be set for top-level (root) query tags Can be a Rtexpr <%= ...%>

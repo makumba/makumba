@@ -1,0 +1,98 @@
+
+%%(display:none) makumba hackers: this page is generated, don't edit it! Instead edit the text in the included pages. %%
+
+!!!Taglib documentation for tag mak:object
+
+!!Description
+
+[{InsertPage style='display: inline;' page=ObjectTagDescription}][.|edit:ObjectTagDescription]
+
+!!Attributes
+[{Table
+
+||Name||Required||Request-time||Description||Comments 
+
+|from\\ %%(font-size:smaller;) (from [mak:list|ListTag])%% 
+|true 
+|false 
+|[{InsertPage style='display: inline;' page=ListTagAttributeFromAttributeDescription}][.|edit:ListTagAttributeFromAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ListTagAttributeFromAttributeComments}][.|edit:ListTagAttributeFromAttributeComments] 
+
+|variableFrom\\ %%(font-size:smaller;) (from [mak:list|ListTag])%% 
+|false 
+|false 
+|[{InsertPage style='display: inline;' page=ListTagAttributeVariableFromAttributeDescription}][.|edit:ListTagAttributeVariableFromAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ListTagAttributeVariableFromAttributeComments}][.|edit:ListTagAttributeVariableFromAttributeComments] 
+
+|where\\ %%(font-size:smaller;) (from [mak:list|ListTag])%% 
+|false 
+|false 
+|[{InsertPage style='display: inline;' page=ListTagAttributeWhereAttributeDescription}][.|edit:ListTagAttributeWhereAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ListTagAttributeWhereAttributeComments}][.|edit:ListTagAttributeWhereAttributeComments] 
+
+|groupBy\\ %%(font-size:smaller;) (from [mak:list|ListTag])%% 
+|false 
+|false 
+|[{InsertPage style='display: inline;' page=ListTagAttributeGroupByAttributeDescription}][.|edit:ListTagAttributeGroupByAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ListTagAttributeGroupByAttributeComments}][.|edit:ListTagAttributeGroupByAttributeComments] 
+
+|id\\ %%(font-size:smaller;) (from [mak:list|ListTag])%% 
+|false 
+|false 
+|[{InsertPage style='display: inline;' page=ListTagAttributeIdAttributeDescription}][.|edit:ListTagAttributeIdAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ListTagAttributeIdAttributeComments}][.|edit:ListTagAttributeIdAttributeComments] 
+
+|db\\ %%(font-size:smaller;) (from [mak:list|ListTag])%% 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=ListTagAttributeDbAttributeDescription}][.|edit:ListTagAttributeDbAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ListTagAttributeDbAttributeComments}][.|edit:ListTagAttributeDbAttributeComments] 
+
+|authorize\\ %%(font-size:smaller;) (from [mak:list|ListTag])%% 
+|false 
+|false 
+|[{InsertPage style='display: inline;' page=ListTagAttributeAuthorizeAttributeDescription}][.|edit:ListTagAttributeAuthorizeAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ListTagAttributeAuthorizeAttributeComments}][.|edit:ListTagAttributeAuthorizeAttributeComments] 
+
+|editable\\ %%(font-size:smaller;) (from [mak:list|ListTag])%% 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=ListTagAttributeEditableAttributeDescription}][.|edit:ListTagAttributeEditableAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ListTagAttributeEditableAttributeComments}][.|edit:ListTagAttributeEditableAttributeComments] 
+
+|logicClass\\ %%(font-size:smaller;) (from [mak:list|ListTag])%% 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=ListTagAttributeLogicClassAttributeDescription}][.|edit:ListTagAttributeLogicClassAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ListTagAttributeLogicClassAttributeComments}][.|edit:ListTagAttributeLogicClassAttributeComments] 
+
+|editPage\\ %%(font-size:smaller;) (from [mak:list|ListTag])%% 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=ListTagAttributeEditPageAttributeDescription}][.|edit:ListTagAttributeEditPageAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ListTagAttributeEditPageAttributeComments}][.|edit:ListTagAttributeEditPageAttributeComments] 
+
+|(deprecated) countVar (deprecated) \\ %%(font-size:smaller;) (from [mak:list|ListTag])%% 
+|(deprecated) false 
+|(deprecated) false 
+|(deprecated) [{InsertPage style='display: inline;' page=ListTagAttributeCountVarAttributeDescription}][.|edit:ListTagAttributeCountVarAttributeDescription] 
+|(deprecated) [{InsertPage style='display: inline;' page=ListTagAttributeCountVarAttributeComments}][.|edit:ListTagAttributeCountVarAttributeComments] 
+
+|(deprecated) maxCountVar (deprecated) \\ %%(font-size:smaller;) (from [mak:list|ListTag])%% 
+|(deprecated) false 
+|(deprecated) false 
+|(deprecated) [{InsertPage style='display: inline;' page=ListTagAttributeMaxCountVarAttributeDescription}][.|edit:ListTagAttributeMaxCountVarAttributeDescription] 
+|(deprecated) [{InsertPage style='display: inline;' page=ListTagAttributeMaxCountVarAttributeComments}][.|edit:ListTagAttributeMaxCountVarAttributeComments] 
+
+
+}]
+
+!!See also
+
+[mak:list|ListTag], [mak:value|ValueTag]
+!!Examples
+
+[{InsertPage style='display: inline;' page=ObjectTagExample}][.|edit:ObjectTagExample]
+
+
+%%(display:none;) [Category Documentation]%%

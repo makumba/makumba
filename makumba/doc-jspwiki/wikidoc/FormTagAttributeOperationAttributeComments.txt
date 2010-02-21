@@ -1,1 +1,1 @@
-Rtexpr. Values are 'new' and 'edit', $attributes are allowed
+Values are 'new' and 'edit', $attributes are allowed

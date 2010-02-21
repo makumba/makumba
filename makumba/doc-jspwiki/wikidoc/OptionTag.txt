@@ -1,0 +1,44 @@
+
+%%(display:none) makumba hackers: this page is generated, don't edit it! Instead edit the text in the included pages. %%
+
+!!!Taglib documentation for tag mak:option
+
+!!Description
+
+[{InsertPage style='display: inline;' page=OptionTagDescription}][.|edit:OptionTagDescription]
+
+!!Attributes
+[{Table
+
+||Name||Required||Request-time||Description||Comments 
+
+|value 
+|false 
+|false 
+|[{InsertPage style='display: inline;' page=OptionTagAttributeValueAttributeDescription}][.|edit:OptionTagAttributeValueAttributeDescription] 
+|[{InsertPage style='display: inline;' page=OptionTagAttributeValueAttributeComments}][.|edit:OptionTagAttributeValueAttributeComments] 
+
+|selected 
+|false 
+|false 
+|[{InsertPage style='display: inline;' page=OptionTagAttributeSelectedAttributeDescription}][.|edit:OptionTagAttributeSelectedAttributeDescription] 
+|[{InsertPage style='display: inline;' page=OptionTagAttributeSelectedAttributeComments}][.|edit:OptionTagAttributeSelectedAttributeComments] 
+
+|disabled 
+|false 
+|false 
+|[{InsertPage style='display: inline;' page=OptionTagAttributeDisabledAttributeDescription}][.|edit:OptionTagAttributeDisabledAttributeDescription] 
+|[{InsertPage style='display: inline;' page=OptionTagAttributeDisabledAttributeComments}][.|edit:OptionTagAttributeDisabledAttributeComments] 
+
+
+}]
+
+!!See also
+
+[mak:input|InputTag], [mak:list|ListTag]
+!!Examples
+
+[{InsertPage style='display: inline;' page=OptionTagExample}][.|edit:OptionTagExample]
+
+
+%%(display:none;) [Category Documentation]%%

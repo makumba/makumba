@@ -1,1 +1,1 @@
-Rtexpr. Only char[] and text
+Only char[] and text

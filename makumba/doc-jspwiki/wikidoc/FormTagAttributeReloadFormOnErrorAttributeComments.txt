@@ -1,1 +1,1 @@
-Fixed. Values are true or false; defaults to false.
+Values are true or false; defaults to false.

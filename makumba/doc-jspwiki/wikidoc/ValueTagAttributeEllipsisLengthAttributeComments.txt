@@ -1,1 +1,1 @@
-Rtexpr. Example, the ellipsis is an image of approx 3 characters wide. ellipsis="<img src='icon.gif' width='10' height='10'>" ellipsisLength="3"
+Example, the ellipsis is an image of approx 3 characters wide. ellipsis="<img src='icon.gif' width='10' height='10'>" ellipsisLength="3"

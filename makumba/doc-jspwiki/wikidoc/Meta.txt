@@ -1,7 +1,7 @@
 [{ALLOW view Documentation}]
 [{ALLOW edit Documentation}]
 
-!!!Meta
+!!![Meta]
 
 [{Box label='Never forget'
 

@@ -1,0 +1,44 @@
+
+%%(display:none) makumba hackers: this page is generated, don't edit it! Instead edit the text in the included pages. %%
+
+!!!Taglib documentation for tag mak:criterion
+
+!!Description
+
+[{InsertPage style='display: inline;' page=CriterionTagDescription}][.|edit:CriterionTagDescription]
+
+!!Attributes
+[{Table
+
+||Name||Required||Request-time||Description||Comments 
+
+|fields 
+|true 
+|false 
+|[{InsertPage style='display: inline;' page=CriterionTagAttributeFieldsAttributeDescription}][.|edit:CriterionTagAttributeFieldsAttributeDescription] 
+|[{InsertPage style='display: inline;' page=CriterionTagAttributeFieldsAttributeComments}][.|edit:CriterionTagAttributeFieldsAttributeComments] 
+
+|isRange 
+|false 
+|false 
+|[{InsertPage style='display: inline;' page=CriterionTagAttributeIsRangeAttributeDescription}][.|edit:CriterionTagAttributeIsRangeAttributeDescription] 
+|[{InsertPage style='display: inline;' page=CriterionTagAttributeIsRangeAttributeComments}][.|edit:CriterionTagAttributeIsRangeAttributeComments] 
+
+|matchMode 
+|false 
+|false 
+|[{InsertPage style='display: inline;' page=CriterionTagAttributeMatchModeAttributeDescription}][.|edit:CriterionTagAttributeMatchModeAttributeDescription] 
+|[{InsertPage style='display: inline;' page=CriterionTagAttributeMatchModeAttributeComments}][.|edit:CriterionTagAttributeMatchModeAttributeComments] 
+
+
+}]
+
+!!See also
+
+[mak:searchForm|SearchFormTag], [mak:resultList|ResultListTag], [mak:matchMode|MatchModeTag], [mak:searchField|SearchFieldTag]
+!!Examples
+
+[{InsertPage style='display: inline;' page=CriterionTagExample}][.|edit:CriterionTagExample]
+
+
+%%(display:none;) [Category Documentation]%%
