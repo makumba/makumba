@@ -391,7 +391,7 @@ img {
   border:0px;
 }
 img.outlink {
-  float: none;
+  display: none;
   margin:none;
 }
 
