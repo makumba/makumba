@@ -1,1 +1,1 @@
-Fixed. Defaults to 'equals' for string, number and date comparisons, and 'betweenInclusive' for range comparisons.
+Defaults to 'equals' for string, number and date comparisons, and 'betweenInclusive' for range comparisons.

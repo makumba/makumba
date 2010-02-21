@@ -1,1 +1,1 @@
-Fixed, mandatory
+Either name or field attribute mandatory

@@ -1,0 +1,21 @@
+
+%%(display:none) makumba hackers: this page is generated, don't edit it! Instead edit the text in the included pages. %%
+
+!!!Taglib documentation for EL function mak:maxCount
+
+!!Description
+
+[{InsertPage style='display: inline;' page=MaxCountFunctionDescription}][.|edit:MaxCountFunctionDescription]
+
+!!Attributes
+This tag has no attributes
+
+!!See also
+
+[mak:count|CountTag], [mak:lastCount|LastCountTag], [mak:maxResults|MaxResultsTag]
+!!Examples
+
+[{InsertPage style='display: inline;' page=CountFunctionExample}][.|edit:CountFunctionExample]
+
+
+%%(display:none;) [Category Documentation]%%

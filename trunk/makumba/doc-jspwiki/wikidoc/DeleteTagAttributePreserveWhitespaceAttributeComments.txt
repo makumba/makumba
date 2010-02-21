@@ -1,1 +1,1 @@
-Fixed, can be one of true or false; defaults to false.
+Can be one of true or false; defaults to false.

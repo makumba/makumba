@@ -5,42 +5,80 @@ This guide will help you getting started with Makumba using the [Eclipse|http://
 
 We'll take the example of a company management site, where you can manage the employees, departments and projects of a company.
 
-!!!Download and Eclipse project setup
-First of all, [download|Download] the Makumba template project in order to get an [Eclipse WTP project|http://www.eclipse.org/webtools/] which you can use in order to start working with Makumba.
+!!!Download and installation
 
-You'll also need to download [Apache Tomcat 5.5|http://tomcat.apache.org/download-55.cgi] and configure a WTP Server (in Eclipse, go to File -> New -> Other and choose "Server").
+You can use [Maven|http://maven.apache.org/] in order to create a new template project for makumba.
 
-Optionally, you can also download [MySQL|http://dev.mysql.com/downloads/mysql/5.1.html] as a database engine. For this introduction however, the template project comes with the HSQLDB database engine, so you don't need to install anything in that regard.
+On the command line, type:
 
-The project imported in Eclipse has the following structure:
 [{Code
 
-/src
-    /dataDefinitions
-/build
-/WebContent
-           /META-INF
-           /WEB-INF
-                   /lib
-                   web.xml
-           index.jsp
-}]
-This is the standard WTP project structure. The resulting web-application structure (according to the Servlet Standard 2.4) is as follows:
+mvn archetype:generate \
+  -DarchetypeCatalog=http://www.makumba.org \
+  -DgroupId=myorganisation
+  -DartifactId=myWebapp
+  -Dversion=1.0-SNAPSHOT
+  -Dpackage=org.myorganisation}]
+
+This will create a new makumba project with a pre-configured HSQLDB database and a sample page. Next, you can run
+
 [{Code
-/META-INF
-/WEB-INF
-        /lib
-        /classes
-                /dataDefinitions
-        web.xml
+
+mvn jetty:run}]
+
+in order to run the web-app in Jetty, or
+
+[{Code
+
+mvn tomcat:run}]
+
+in order to run the web-app using Tomcat.
+
+Type
+
+[{Code
+
+mvn eclipse:eclipse}]
+
+in order to set up the project so that it can be imported into eclipse.
+
+Alternatively, you can directly create the project in Eclipse using e.g. the [m2eclipse plugin|http://m2eclipse.sonatype.org]. In this case you can directly look for the archetype group "org.makumba" in the archetype catalog assembled by the Nexus Indexer.
+
+The project has then following structure
+[{Code
+
+src
+  main/
+    resources/
+      Makumba.conf
+      dataDefinitions/
+        general/
+          Person.mdd
+    webapp/
+     index.jsp
+     META-INF/
+     WEB-INF/
+       web.xml}]
+This is the standard Maven project structure. The resulting web-application structure (according to the Servlet Standard 2.4) is as follows:
+
+[{Code
+
 index.jsp
-}]
+META-INF/
+WEB-INF/
+  web.xml
+  lib/
+  classes/
+    dataDefinitions/
+      general/
+        Person.mdd}]
+
 !!!Describing the data
 Makumba uses so-called Makumba Data Definitions (further described [here|DataDefinitions]).
 
 MDDs are simple text files that contain the description of an entity, i.e. its fields but also validation rules and query functions. These files are kept in the {{dataDefinitions}} directory in the classpath of the web-application.
 
-Start by creating a new company package in the {{src/dataDefinitions}} directory and create the file {{Employee.mdd}} with the following content:
+Start by creating a new company directory in the {{src/main/resources/dataDefinitions}} directory and create the file {{Employee.mdd}} with the following content:
 [{Code
 
 name = char[200]
@@ -60,7 +98,7 @@ Makumba automatically generates the database schema based on MDDs. If you modify
 !!!Entering new data
 Let's make it possible to feed some data to our webapp.
 
-For this, let's create a page that contains a {{mak:newForm}}, which enables us to enter new data. Create the file {{WebContent/employeeNew.jsp}} with following content:
+For this, let's create a page that contains a {{mak:newForm}}, which enables us to enter new data. Create the file {{employeeNew.jsp}} with following content:
 [{Code
 
 <%@ taglib uri="http://www.makumba.org/presentation" prefix="mak" %>
@@ -96,17 +134,14 @@ For this, let's create a page that contains a {{mak:newForm}}, which enables us 
 
 </body>
 </html>        
-}]      
-This will generate the following form:
-
-
+}]
 
 When you submit the form, the data is directly saved into the database, without any additional effort. Let's explain a bit each of the elements:
 
 * the {{mak:newForm}} tag generates the form for a given __type__ (in our case, the type is {{company.Employee}}). The __action__ attribute specifies the page to show after the form is submitted.
 * the {{mak:input}} tags generate the inputs, depending on their type (for instance, the birthdate field is automatically shown as a date input). The __field__ attribute corresponds to the field name in the MDD.
 !!!Displaying data
-Let's now see how to display data using the {{mak:list}} tag. For this we will edit the {{WebContent/index.jsp}} to display the list of all Employees:
+Let's now see how to display data using the {{mak:list}} tag. For this we will edit the {{index.jsp}} to display the list of all Employees:
 [{Code
 
 <%@ taglib uri="http://www.makumba.org/presentation" prefix="mak" %>
@@ -123,10 +158,7 @@ Let's now see how to display data using the {{mak:list}} tag. For this we will e
     
   </body>
 </html>
-}]      
-This will generate the following output:
-
-
+}]
 
 * the {{mak:list}} tag generates a query. In our case, the query's from section is {{employee.Employee e}}.
 * the {{mak:input}} tags represent the projections of the query. The __expr__ attribute can contain a field, an MQL expression or a query function name.

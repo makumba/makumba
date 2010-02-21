@@ -1,1 +1,1 @@
-Fixed. Only for <code>ptr and intEnum types</code>
+Only for %%code ptr %% and %%code intEnum %% types

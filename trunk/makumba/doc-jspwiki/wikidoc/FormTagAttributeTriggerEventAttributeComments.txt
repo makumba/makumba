@@ -1,1 +1,1 @@
-Rtexpr. In case of a successful response, the event is fired.
+In case of a successful response, the event is fired.

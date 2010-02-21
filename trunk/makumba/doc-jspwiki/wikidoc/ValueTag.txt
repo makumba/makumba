@@ -1,0 +1,128 @@
+
+%%(display:none) makumba hackers: this page is generated, don't edit it! Instead edit the text in the included pages. %%
+
+!!!Taglib documentation for tag mak:value
+
+!!Description
+
+[{InsertPage style='display: inline;' page=ValueTagDescription}][.|edit:ValueTagDescription]
+
+!!Attributes
+[{Table
+
+||Name||Required||Request-time||Description||Comments 
+
+|expr 
+|true 
+|false 
+|[{InsertPage style='display: inline;' page=ValueTagAttributeExprAttributeDescription}][.|edit:ValueTagAttributeExprAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ValueTagAttributeExprAttributeComments}][.|edit:ValueTagAttributeExprAttributeComments] 
+
+|var 
+|false 
+|false 
+|[{InsertPage style='display: inline;' page=ValueTagAttributeVarAttributeDescription}][.|edit:ValueTagAttributeVarAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ValueTagAttributeVarAttributeComments}][.|edit:ValueTagAttributeVarAttributeComments] 
+
+|printVar 
+|false 
+|false 
+|[{InsertPage style='display: inline;' page=ValueTagAttributePrintVarAttributeDescription}][.|edit:ValueTagAttributePrintVarAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ValueTagAttributePrintVarAttributeComments}][.|edit:ValueTagAttributePrintVarAttributeComments] 
+
+|urlEncode 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=ValueTagAttributeUrlEncodeAttributeDescription}][.|edit:ValueTagAttributeUrlEncodeAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ValueTagAttributeUrlEncodeAttributeComments}][.|edit:ValueTagAttributeUrlEncodeAttributeComments] 
+
+|html 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=ValueTagAttributeHtmlAttributeDescription}][.|edit:ValueTagAttributeHtmlAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ValueTagAttributeHtmlAttributeComments}][.|edit:ValueTagAttributeHtmlAttributeComments] 
+
+|format 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=ValueTagAttributeFormatAttributeDescription}][.|edit:ValueTagAttributeFormatAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ValueTagAttributeFormatAttributeComments}][.|edit:ValueTagAttributeFormatAttributeComments] 
+
+|lineSeparator 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=ValueTagAttributeLineSeparatorAttributeDescription}][.|edit:ValueTagAttributeLineSeparatorAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ValueTagAttributeLineSeparatorAttributeComments}][.|edit:ValueTagAttributeLineSeparatorAttributeComments] 
+
+|longLineLength 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=ValueTagAttributeLongLineLengthAttributeDescription}][.|edit:ValueTagAttributeLongLineLengthAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ValueTagAttributeLongLineLengthAttributeComments}][.|edit:ValueTagAttributeLongLineLengthAttributeComments] 
+
+|maxLength 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=ValueTagAttributeMaxLengthAttributeDescription}][.|edit:ValueTagAttributeMaxLengthAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ValueTagAttributeMaxLengthAttributeComments}][.|edit:ValueTagAttributeMaxLengthAttributeComments] 
+
+|ellipsis 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=ValueTagAttributeEllipsisAttributeDescription}][.|edit:ValueTagAttributeEllipsisAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ValueTagAttributeEllipsisAttributeComments}][.|edit:ValueTagAttributeEllipsisAttributeComments] 
+
+|ellipsisLength 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=ValueTagAttributeEllipsisLengthAttributeDescription}][.|edit:ValueTagAttributeEllipsisLengthAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ValueTagAttributeEllipsisLengthAttributeComments}][.|edit:ValueTagAttributeEllipsisLengthAttributeComments] 
+
+|addTitle 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=ValueTagAttributeAddTitleAttributeDescription}][.|edit:ValueTagAttributeAddTitleAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ValueTagAttributeAddTitleAttributeComments}][.|edit:ValueTagAttributeAddTitleAttributeComments] 
+
+|default 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=ValueTagAttributeDefaultAttributeDescription}][.|edit:ValueTagAttributeDefaultAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ValueTagAttributeDefaultAttributeComments}][.|edit:ValueTagAttributeDefaultAttributeComments] 
+
+|empty 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=ValueTagAttributeEmptyAttributeDescription}][.|edit:ValueTagAttributeEmptyAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ValueTagAttributeEmptyAttributeComments}][.|edit:ValueTagAttributeEmptyAttributeComments] 
+
+|editable 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=ValueTagAttributeEditableAttributeDescription}][.|edit:ValueTagAttributeEditableAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ValueTagAttributeEditableAttributeComments}][.|edit:ValueTagAttributeEditableAttributeComments] 
+
+|logicClass 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=ValueTagAttributeLogicClassAttributeDescription}][.|edit:ValueTagAttributeLogicClassAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ValueTagAttributeLogicClassAttributeComments}][.|edit:ValueTagAttributeLogicClassAttributeComments] 
+
+|editPage 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=ValueTagAttributeEditPageAttributeDescription}][.|edit:ValueTagAttributeEditPageAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ValueTagAttributeEditPageAttributeComments}][.|edit:ValueTagAttributeEditPageAttributeComments] 
+
+
+}]
+
+!!See also
+
+[mak:list|ListTag], [mak:object|ObjectTag], [mak:option|OptionTag]
+!!Examples
+
+[{InsertPage style='display: inline;' page=ValueTagExample}][.|edit:ValueTagExample]
+
+
+%%(display:none;) [Category Documentation]%%

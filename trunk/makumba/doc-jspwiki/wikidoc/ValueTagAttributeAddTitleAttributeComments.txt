@@ -1,1 +1,1 @@
-Rtexpr. Note: implementated by producing as output: <span title="printVar">possibly-cut-printVar</span>
+Note: implementated by producing as output: <span title="printVar">possibly-cut-printVar</span>

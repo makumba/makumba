@@ -1,0 +1,48 @@
+
+%%(display:none) makumba hackers: this page is generated, don't edit it! Instead edit the text in the included pages. %%
+
+!!!Taglib documentation for tag mak:attribute
+
+!!Description
+
+[{InsertPage style='display: inline;' page=AttributeTagDescription}][.|edit:AttributeTagDescription]
+
+!!Attributes
+[{Table
+
+||Name||Required||Request-time||Description||Comments 
+
+|name 
+|true 
+|false 
+|[{InsertPage style='display: inline;' page=AttributeTagAttributeNameAttributeDescription}][.|edit:AttributeTagAttributeNameAttributeDescription] 
+|[{InsertPage style='display: inline;' page=AttributeTagAttributeNameAttributeComments}][.|edit:AttributeTagAttributeNameAttributeComments] 
+
+|var 
+|false 
+|false 
+|[{InsertPage style='display: inline;' page=AttributeTagAttributeVarAttributeDescription}][.|edit:AttributeTagAttributeVarAttributeDescription] 
+|[{InsertPage style='display: inline;' page=AttributeTagAttributeVarAttributeComments}][.|edit:AttributeTagAttributeVarAttributeComments] 
+
+|exceptionVar 
+|false 
+|false 
+|[{InsertPage style='display: inline;' page=AttributeTagAttributeExceptionVarAttributeDescription}][.|edit:AttributeTagAttributeExceptionVarAttributeDescription] 
+|[{InsertPage style='display: inline;' page=AttributeTagAttributeExceptionVarAttributeComments}][.|edit:AttributeTagAttributeExceptionVarAttributeComments] 
+
+|db 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=AttributeTagAttributeDbAttributeDescription}][.|edit:AttributeTagAttributeDbAttributeDescription] 
+|[{InsertPage style='display: inline;' page=AttributeTagAttributeDbAttributeComments}][.|edit:AttributeTagAttributeDbAttributeComments] 
+
+
+}]
+
+
+!!Examples
+
+[{InsertPage style='display: inline;' page=AttributeTagExample}][.|edit:AttributeTagExample]
+
+
+%%(display:none;) [Category Documentation]%%

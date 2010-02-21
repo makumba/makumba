@@ -1,1 +1,1 @@
-Fixed. Defaults to "Search done!".
+Defaults to "Search done!".

@@ -1,3 +1,5 @@
+Note that the label of result objects is assumed to be "o" by default!
+
 [{Code
 
 <mak:resultList resultsFrom="searchEmployee">

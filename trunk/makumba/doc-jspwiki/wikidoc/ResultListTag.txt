@@ -1,0 +1,80 @@
+
+%%(display:none) makumba hackers: this page is generated, don't edit it! Instead edit the text in the included pages. %%
+
+!!!Taglib documentation for tag mak:resultList
+
+!!Description
+
+[{InsertPage style='display: inline;' page=ResultListTagDescription}][.|edit:ResultListTagDescription]
+
+!!Attributes
+[{Table
+
+||Name||Required||Request-time||Description||Comments 
+
+|resultsFrom 
+|true 
+|false 
+|[{InsertPage style='display: inline;' page=ResultListTagAttributeResultsFromAttributeDescription}][.|edit:ResultListTagAttributeResultsFromAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ResultListTagAttributeResultsFromAttributeComments}][.|edit:ResultListTagAttributeResultsFromAttributeComments] 
+
+|orderBy\\ %%(font-size:smaller;) (from [mak:list|ListTag])%% 
+|false 
+|false 
+|[{InsertPage style='display: inline;' page=ListTagAttributeOrderByAttributeDescription}][.|edit:ListTagAttributeOrderByAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ListTagAttributeOrderByAttributeComments}][.|edit:ListTagAttributeOrderByAttributeComments] 
+
+|groupBy\\ %%(font-size:smaller;) (from [mak:list|ListTag])%% 
+|false 
+|false 
+|[{InsertPage style='display: inline;' page=ListTagAttributeGroupByAttributeDescription}][.|edit:ListTagAttributeGroupByAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ListTagAttributeGroupByAttributeComments}][.|edit:ListTagAttributeGroupByAttributeComments] 
+
+|offset\\ %%(font-size:smaller;) (from [mak:list|ListTag])%% 
+|false 
+|false 
+|[{InsertPage style='display: inline;' page=ListTagAttributeOffsetAttributeDescription}][.|edit:ListTagAttributeOffsetAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ListTagAttributeOffsetAttributeComments}][.|edit:ListTagAttributeOffsetAttributeComments] 
+
+|limit\\ %%(font-size:smaller;) (from [mak:list|ListTag])%% 
+|false 
+|false 
+|[{InsertPage style='display: inline;' page=ListTagAttributeLimitAttributeDescription}][.|edit:ListTagAttributeLimitAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ListTagAttributeLimitAttributeComments}][.|edit:ListTagAttributeLimitAttributeComments] 
+
+|defaultLimit\\ %%(font-size:smaller;) (from [mak:list|ListTag])%% 
+|false 
+|false 
+|[{InsertPage style='display: inline;' page=ListTagAttributeDefaultLimitAttributeDescription}][.|edit:ListTagAttributeDefaultLimitAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ListTagAttributeDefaultLimitAttributeComments}][.|edit:ListTagAttributeDefaultLimitAttributeComments] 
+
+|id\\ %%(font-size:smaller;) (from [mak:list|ListTag])%% 
+|false 
+|false 
+|[{InsertPage style='display: inline;' page=ListTagAttributeIdAttributeDescription}][.|edit:ListTagAttributeIdAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ListTagAttributeIdAttributeComments}][.|edit:ListTagAttributeIdAttributeComments] 
+
+|db\\ %%(font-size:smaller;) (from [mak:list|ListTag])%% 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=ListTagAttributeDbAttributeDescription}][.|edit:ListTagAttributeDbAttributeDescription] 
+|[{InsertPage style='display: inline;' page=ListTagAttributeDbAttributeComments}][.|edit:ListTagAttributeDbAttributeComments] 
+
+|(deprecated) separator (deprecated) \\ %%(font-size:smaller;) (from [mak:list|ListTag])%% 
+|(deprecated) false 
+|(deprecated) true 
+|(deprecated) [{InsertPage style='display: inline;' page=ListTagAttributeSeparatorAttributeDescription}][.|edit:ListTagAttributeSeparatorAttributeDescription] 
+|(deprecated) [{InsertPage style='display: inline;' page=ListTagAttributeSeparatorAttributeComments}][.|edit:ListTagAttributeSeparatorAttributeComments] 
+
+
+}]
+
+!!See also
+
+[mak:searchForm|SearchFormTag], [mak:criterion|CriterionTag], [mak:matchMode|MatchModeTag], [mak:searchField|SearchFieldTag]
+!!Examples
+
+[{InsertPage style='display: inline;' page=ResultListTagExample}][.|edit:ResultListTagExample]
+
+
+%%(display:none;) [Category Documentation]%%
