@@ -226,16 +226,14 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
     
     @Override
     protected void analyzeFunction(FunctionNode f) {
-        
-        preProcessFunction(f);
-        
+        compileFunction(f);
     }
     
     
     
     private static final Pattern ident = Pattern.compile("[a-zA-Z]\\w*");
     
-    private void preProcessFunction(FunctionNode funct) {
+    private void compileFunction(FunctionNode funct) {
         
         QueryFragmentFunction f = funct.function;
         StringBuffer sb = new StringBuffer();
@@ -263,8 +261,8 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
                 break;
             }
 
-            if (before == '.' || id.equals("this") /* || id.equals("actor") */
-                    || funct.parameters.getFieldDefinition(id) != null) {
+            // if we have an actor we don't append "this"
+            if (before == '.' || id.equals("this") || id.equals("actor") || funct.parameters.getFieldDefinition(id) != null) {
                 continue;
             }
             if (mdd.fields.get(id) != null || after == '(' && mdd.functions.get(id) != null) {
@@ -277,20 +275,17 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
             java.util.logging.Logger.getLogger("org.makumba.db.query.inline").fine(queryFragment + " -> " + sb.toString());
             
             // we have to parse the query again now that we added this. and so forth
-            // not very efficient, but what the heck, we want to throw good errors
+            // not very efficient as we already do it on first pass, but what the heck, we want to throw good errors
             // another way would be to defer the "this." appending to the FunctionInliner, but this is good code
-            
             
             boolean subquery = sb.toString().toUpperCase().startsWith("SELECT ");
             
             String query = "SELECT " + (subquery?"(":"") + sb.toString() + (subquery?")":"") + " FROM " + typeName + " makumbaGeneratedAlias";
 
             HqlParser parser = null;
-//            FunctionInliner inliner = new FunctionInliner(query);
             try {
                 parser = HqlParser.getInstance(query);
                 parser.statement();
-//                inliner.inlineFunctions(parser.getAST(), true);
             } catch (Throwable t) {
                 // in theory this should never happen because this process is already done at MDD parsing time
                 // where errors are being handled nicely
