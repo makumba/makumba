@@ -209,6 +209,15 @@ public class MqlNode extends CommonAST {
         if (functionDef != null) {
             type = functionDef.getReturnType();
         }
+        
+        // actors
+        if(name.equals("actor")) {
+            // TODO for cristi
+            // here we need to handle actor(some.Type) and actor()
+            // or maybe not directly here but at some point in the node type recognition
+            // I think the resulting type is of the kind "ptr some.Type"
+        }
+        
         if (type != null) {
             child.setType(HqlSqlTokenTypes.METHOD_NAME);
             return walker.currentContext.ddp.makeFieldDefinition("x", type);
