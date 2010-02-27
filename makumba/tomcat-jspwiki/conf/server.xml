@@ -50,7 +50,7 @@ port="9090"               maxThreads="150" minSpareThreads="5" maxSpareThreads="
       <Host name="localhost" debug="0" 
        unpackWARs="true" autoDeploy="true"
        xmlValidation="false" xmlNamespaceAware="false" appBase="temp">
-       <Context path="" docBase="${catalina.base}/../doc-jspwiki/JSPWiki" debug="0" reload="true" />
+       <Context path="" docBase="${catalina.base}/../doc-jspwiki/JSPWiki" debug="0" reload="false" />
     
       </Host>
 
