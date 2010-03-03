@@ -8,13 +8,9 @@ import com.ecyrd.jspwiki.plugin.WikiPlugin;
 
 public class API implements WikiPlugin {
     
-    private static final String BODY = "_body";
-
-    private String clazz;
-    
     public String execute(WikiContext context, Map parameters) throws PluginException {
         
-        clazz = (String) parameters.get("class");
+        String clazz = (String) parameters.get("class");
         
         if(clazz == null) {
             throw new PluginException("Must provide a value for the 'class' parameter!");
