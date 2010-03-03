@@ -226,7 +226,7 @@ public interface DataDefinition {
             }
             s += "";
             return (org.apache.commons.lang.StringUtils.isNotBlank(sessionVariableName) ? sessionVariableName + "%"
-                            : "") + getName() + "(" + s + ") { " + queryFragment.trim() + " } " + errorMessage != null ? ":\""+errorMessage+"\"" : "";
+                            : "") + getName() + "(" + s + ") { " + queryFragment.trim() + " } " + (org.apache.commons.lang.StringUtils.isNotBlank(errorMessage) ? ":\""+errorMessage+"\"" : "");
         }
 
     }
