@@ -240,6 +240,8 @@ tokens
 	protected String inlineFunction(AST a, boolean inSelect) throws SemanticException { return null; }
 	
 	protected void setBooleanType(AST a) { }
+	
+	protected void setActorType(AST a) { }
 }
 
 // The main statement rule.
@@ -607,6 +609,11 @@ functionCall
 	: #(METHOD_CALL {boolean wasInFunctionCall = inFunctionCall; inFunctionCall=true;} p:pathAsIdent ( #(EXPR_LIST (expr)* ) )? )
 	    // MQL addition: entry point for function inlining
 		{
+		    // if this is an actor set the actor type
+            if(#p.getText().equals("actor")) {
+              setActorType(#functionCall);
+		    }
+		    
 		    if(functionAsInliner) {
 		          String key = inlineFunction(#functionCall, wasInFunctionCall);
 		          if(key == null) {
