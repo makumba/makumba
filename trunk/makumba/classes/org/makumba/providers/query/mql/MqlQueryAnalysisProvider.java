@@ -59,6 +59,7 @@ public class MqlQueryAnalysisProvider extends QueryAnalysisProvider {
     public static void transformOQLParameters(AST a, List<String> parameterOrder) {
         if (a == null)
             return;
+        // MQL allows $some.param
         if(a.getType() == HqlTokenTypes.DOT && a.getFirstChild().getText().startsWith("$")) {
             a.setType(HqlTokenTypes.IDENT);
             a.setText(a.getFirstChild().getText() + "." + a.getFirstChild().getNextSibling().getText());
