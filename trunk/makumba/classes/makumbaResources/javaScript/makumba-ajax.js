@@ -28,6 +28,7 @@ makEvent = function(name, exprValue) {
 	var idEventToType = $H(_mak_idevent_to_type_);
 	var pageParameters = $H(_mak_page_params_);
 	var toReload = new Array();
+	var toShow = new Array();
 	
 	var eventName;
 	
@@ -56,7 +57,7 @@ makEvent = function(name, exprValue) {
 		var action = idEventToType.get(id + '___'+ eventName);
 		//alert("key: " + id + '___'+ name + " action:" + action);
 		if(action == 'show') {
-			$(id).show();
+			toShow.push(id);
 		} else if(action == 'hide') {
 			$(id).hide();
 		} else if(action == 'reload') {
@@ -82,6 +83,9 @@ makEvent = function(name, exprValue) {
 		    newContent.each(function(pair) {
 		    	if(sections.indexOf(pair.key) != -1) {
 			 		$(pair.key).update(pair.value);
+			 		if(toShow.indexOf(pair.key) != -1) {
+			 			$(pair.key).show();
+			 		}
 		    	}
 		 	});
 		   }
