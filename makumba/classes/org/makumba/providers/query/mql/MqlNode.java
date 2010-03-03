@@ -202,20 +202,16 @@ public class MqlNode extends CommonAST {
         return null;
     };
 
+    /**
+     * Computes the type of function, based on their path. Note that MDD functions are inlined so their type doesn't need to be computed.
+     * For actor functions, computation happens after the complete sub-tree is built, in the grammar.
+     */
     private FieldDefinition getFunctionType(MqlNode child) {
         String type = null;
         String name = child.getText();
         MQLFunctionDefinition functionDef = MQLFunctionDefinition.getByName(mqlFunctions, name);
         if (functionDef != null) {
             type = functionDef.getReturnType();
-        }
-        
-        // actors
-        if(name.equals("actor")) {
-            // TODO for cristi
-            // here we need to handle actor(some.Type) and actor()
-            // or maybe not directly here but at some point in the node type recognition
-            // I think the resulting type is of the kind "ptr some.Type"
         }
         
         if (type != null) {
