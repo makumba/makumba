@@ -10,7 +10,6 @@ import java.util.Vector;
 import org.hibernate.hql.antlr.HqlTokenTypes;
 import org.makumba.FieldDefinition;
 import org.makumba.OQLParseError;
-import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.datadefinition.mdd.MakumbaDumpASTVisitor;
 
 import antlr.RecognitionException;
@@ -25,46 +24,36 @@ import antlr.collections.AST;
  */
 public class FunctionInliner {
 
+    private static final String TEMPORARY_LABEL = "_x_temp_gen_";
+
+    private static final String GENERATED_LABEL = "_x_gen_";
+
     private final boolean debug = false;
 
     private String query;
 
     private MqlTreePrinter printer;
-
+    
     private HqlASTFactory fact = new HqlASTFactory();
-
-    private List<String> parameterOrder = new ArrayList<String>();
 
     private MakumbaDumpASTVisitor v = new MakumbaDumpASTVisitor(false);
 
-    public FunctionInliner(String query, QueryAnalysisProvider qp) {
+    public FunctionInliner(String query) {
         this.query = query;
-        this.printer = new MqlTreePrinter(qp);
+        this.printer = new MqlTreePrinter();
     }
-
-    public static String inlineQuery(String query, QueryAnalysisProvider qp) {
-        FunctionInliner inliner = new FunctionInliner(query, qp);
-        return inliner.inline(query, qp);
+    
+    public static AST inlineQueryTree(String query) {
+        FunctionInliner inliner = new FunctionInliner(query);
+        return inliner.inline(query);
     }
+    
+    
 
-    private String inline(String query, QueryAnalysisProvider qp) {
+    private AST inline(String query) {
 
         if (debug) {
             System.out.println("===== inlining query " + query);
-        }
-
-        String originalQuery = query;
-
-        if (qp instanceof MqlQueryAnalysisProvider) {
-
-            if (query.startsWith("###")) {
-                query = query.substring(query.indexOf('#', 3) + 3);
-            }
-            query = MqlQueryAnalysis.preProcess(query);
-
-            if (query.toLowerCase().indexOf("from") == -1) {
-                query += " FROM org.makumba.db.makumba.Catalog c";
-            }
         }
 
         HqlParser parser = null;
@@ -78,10 +67,10 @@ public class FunctionInliner {
 
         AST ast = parser.getAST();
 
-        if (qp instanceof MqlQueryAnalysisProvider) {
-            MqlQueryAnalysisProvider.transformOQLParameters(ast, parameterOrder);
-            MqlQueryAnalysisProvider.transformOQL(ast);
-        }
+//        if (mqlProcessing) {
+//            MqlQueryAnalysisProvider.transformOQLParameters(ast, parameterOrder);
+//            MqlQueryAnalysisProvider.transformOQL(ast);
+//        }
 
         boolean inlined = false;
 
@@ -92,7 +81,7 @@ public class FunctionInliner {
         }
 
         if (!inlined) {
-            return originalQuery;
+            return ast;
         }
 
         if (debug) {
@@ -100,9 +89,7 @@ public class FunctionInliner {
             v.visit(ast);
         }
 
-        String res = printer.printTree(ast);
-
-        return res;
+        return ast;
     }
 
     protected void doThrow(Throwable t, AST debugTree, String query) {
@@ -131,7 +118,7 @@ public class FunctionInliner {
         throw new OQLParseError("\r\nin " + errorLocationNumber + " query (during inlining of functions):\r\n" + query
                 + errorLocation + errorLocation + errorLocation, t);
     }
-
+    
     private boolean inline(AST ast, boolean root) throws Throwable {
 
         boolean inlined = false;
@@ -166,48 +153,19 @@ public class FunctionInliner {
             throw new Throwable(mqlAnalyzer.error);
         }
 
-        // for(MethodCall m : methodCalls) {
-        // System.out.println(m);
-        // }
-
         // now we traverse all the function calls
         if (mqlAnalyzer.orderedFunctionCalls.isEmpty()) {
             return false;
         } else {
 
-            // the analyser inverts the function calls of functions that are arguments of another function
-            // but we don't have this in the first-pass method calls
-            // so we re-order these calls here
-            LinkedHashMap<String, FunctionCall> orderedFunctionCalls = new LinkedHashMap<String, FunctionCall>();
-            ArrayList<FunctionCall> f = new ArrayList<FunctionCall>();
-            for (String key : mqlAnalyzer.orderedFunctionCalls.keySet()) {
-                FunctionCall c = mqlAnalyzer.orderedFunctionCalls.get(key);
-                if (c.isFunctionArgument()) {
-                    f.add(c);
-                    mqlAnalyzer.orderedFunctionCalls.remove(c);
-                } else {
-                    orderedFunctionCalls.put(key, c);
-                    if (!f.isEmpty()) {
-                        // add the function calls back again, in reverse order
-                        for (int i = f.size() - 1; i >= 0; i--) {
-                            orderedFunctionCalls.put(f.get(i).getKey(), f.get(i));
-                        }
-                    }
-                }
-            }
-
-            mqlAnalyzer.orderedFunctionCalls = orderedFunctionCalls;
-
-            // for(FunctionCall c : orderedFunctionCalls.values()) {
-            // System.out.println(c);
-            // }
+            // re-order function calls
+            mqlAnalyzer.orderedFunctionCalls = getOrderedFunctionCalls(mqlAnalyzer);
 
             int index = 0;
             for (FunctionCall c : mqlAnalyzer.orderedFunctionCalls.values()) {
                 if (c.isFunctionArgument() || c.isMQLFunction()) {
                     // we don't do anything here because we either inline this function when we process the parent
-                    // function,
-                    // or don't care about it because it is a native MQL function
+                    // function, or don't care about it because it is a native MQL function
                     index++;
                     continue;
                 }
@@ -218,17 +176,17 @@ public class FunctionInliner {
                     System.out.println("*** Iterating over function call " + c);
                 }
 
-                // if this is an actor function, we need to inline it differently than other functions
-                if (c.isActorFunction()) {
+                // if this is an actor function call (and not an inlining call), we need to inline it differently than other functions
+                if (c.isActorFunction() && c.getPath().equals("actor")) {
                     processActorFunction(c, ast, methodCalls.get(index));
                 } else {
                     AST queryFragmentTree = fact.dupTree(c.getFunction().getParsedQueryFragment());
-                    // v.visit(queryFragmentTree);
 
                     // apply oql-specific tree transformations on the function tree
+                    // FIXME not sure if this is needed or not at this point
                     List<String> parameterOrder = new ArrayList<String>();
-                    MqlQueryAnalysisProvider.transformOQLParameters(queryFragmentTree, parameterOrder);
-                    MqlQueryAnalysisProvider.transformOQL(queryFragmentTree);
+//                    MqlQueryAnalysisProvider.transformOQLParameters(queryFragmentTree, parameterOrder);
+//                    MqlQueryAnalysisProvider.transformOQL(queryFragmentTree);
 
                     if (debug) {
                         System.out.println("*** query fragment tree before replacing arguments");
@@ -246,6 +204,11 @@ public class FunctionInliner {
                     // now we inline all the functions of the resulting tree
                     inline(queryFragmentTree, false);
 
+                    if (debug) {
+                        System.out.println("*** query fragment after inlining its functions");
+                        v.visit(queryFragmentTree);
+                    }
+                    
                     // replace method call in original tree
                     // here we use the 1st pass method calls and rely on the fact that the order with the function calls
                     // is the same
@@ -258,13 +221,10 @@ public class FunctionInliner {
 
                 }
 
-                // System.out.println("*** inlined query tree");
-                // v.visit(ast);
-
                 index++;
             }
 
-            // finally, go over the tree and remove unused labels
+            // finally, go over the tree and remove unused and temporary labels
             Hashtable<String, String> usedLabels = new Hashtable<String, String>();
             collectUsedLabels(ast, usedLabels);
 
@@ -273,7 +233,12 @@ public class FunctionInliner {
             AST parent = null;
             while (originalRange != null) {
                 String path = getPath(originalRange.getFirstChild().getNextSibling());
-                if (!usedLabels.containsKey(path)) {
+                
+                // is this a temporary RANGE or JOIN?
+                boolean isTemporary = (originalRange.getType() == HqlSqlTokenTypes.JOIN && getPath(originalRange.getFirstChild()).startsWith(TEMPORARY_LABEL))
+                                        || (originalRange.getType() == HqlSqlTokenTypes.RANGE && path.startsWith(TEMPORARY_LABEL));
+                
+                if (!usedLabels.containsKey(path) || isTemporary) {
                     if (parent != null) {
                         parent.setNextSibling(originalRange.getNextSibling());
                     }
@@ -284,7 +249,7 @@ public class FunctionInliner {
             }
 
             if (debug) {
-                System.out.println("*** query tree after remvoing unused labels");
+                System.out.println("*** query tree after removing unused labels");
                 v.visit(ast);
 
             }
@@ -295,8 +260,35 @@ public class FunctionInliner {
     }
 
     /**
-     * walks the query fragment tree and:
+     * The analyser inverts the function calls of functions that are arguments of another function,
+     * but as this doesn't happen in the first-pass method-calls we re-order them here
+     */
+    private LinkedHashMap<String, FunctionCall> getOrderedFunctionCalls(MqlSqlWalker mqlAnalyzer) {
+        LinkedHashMap<String, FunctionCall> orderedFunctionCalls = new LinkedHashMap<String, FunctionCall>();
+        ArrayList<FunctionCall> f = new ArrayList<FunctionCall>();
+        for (String key : mqlAnalyzer.orderedFunctionCalls.keySet()) {
+            FunctionCall c = mqlAnalyzer.orderedFunctionCalls.get(key);
+            if (c.isFunctionArgument()) {
+                f.add(c);
+                mqlAnalyzer.orderedFunctionCalls.remove(c);
+            } else {
+                orderedFunctionCalls.put(key, c);
+                if (!f.isEmpty()) {
+                    // add the function calls back again, in reverse order
+                    for (int i = f.size() - 1; i >= 0; i--) {
+                        orderedFunctionCalls.put(f.get(i).getKey(), f.get(i));
+                    }
+                }
+            }
+        }
+
+        return orderedFunctionCalls;
+    }
+
+    /**
+     * Walks the query fragment tree and:
      * <ul>
+     * <li>puts the query fragment in context, i.e. generates the FROM tree</li>
      * <li>replaces "this" with the fitting label</li>
      * <li>replaces function arguments with their values</li>
      * <li>inlines arguments that are function calls</li>
@@ -320,38 +312,9 @@ public class FunctionInliner {
             }
         }
 
-        // we set the last alias of the FROM to be able to replace the "this" declarations in the query fragment
+        // create the function context (FROM) if we don't already have one
         if (lastAlias == null) {
-            AST range = findFrom(tree).getFirstChild();
-
-            // try to fetch the first FROM alias and if it's generated, replace it with something meaningful.
-            // we get generated aliases because of the fake query we build in order to analyse the query fragments
-            AST l = range.getFirstChild();
-            AST a = l.getNextSibling();
-
-            if (a != null && a.getText().equals("makumbaGeneratedAlias")) {
-                String path = c.getPath();
-
-                // we have a path that refers to pointed types so we have to expand the FROM section to account for
-                // those pointed types
-                if (path.indexOf(".") > -1) {
-                    // replace the RANGE elements: first the type, then the alias
-                    l = ASTUtil.makeNode(HqlTokenTypes.IDENT, c.getParentType().getName());
-                    a = ASTUtil.makeNode(HqlTokenTypes.ALIAS, path.substring(0, path.indexOf(".")));
-                    range.setFirstChild(l);
-                    l.setNextSibling(a);
-
-                    if (lastAlias == null) {
-                        lastAlias = expandRangeElement(c.getPath(), a, range);
-                    }
-                    path = path.substring(0, path.indexOf("."));
-                } else {
-                    lastAlias = c.getPath();
-                    a.setText(c.getPath());
-                }
-            } else {
-                lastAlias = a.getText();
-            }
+            lastAlias = createFunctionContext(tree, c);
         }
 
         switch (tree.getType()) {
@@ -364,14 +327,15 @@ public class FunctionInliner {
 
                 FieldDefinition argument = c.getFunction().getParameters().getFieldDefinition(tree.getText());
 
+                // replace this.field with the fitting label of the outer context
                 if (tree.getText().equals("this")) {
-
-                    if (c.getPath().indexOf(".") > -1 && lastAlias != null) {
-                        tree.setText(lastAlias);
-                    } else {
+                    
+                    if(c.getParentType().getParentField() != null) {
                         tree.setText(c.getPath());
+                    } else {
+                        tree.setText(lastAlias);
                     }
-
+                    
                 } else if (argument != null) {
                     int argumentIndex = c.getFunction().getParameters().getFieldNames().indexOf(tree.getText());
 
@@ -437,6 +401,85 @@ public class FunctionInliner {
         replaceArgsAndThis(tree.getFirstChild(), root, c, parentCall, tree, mqlAnalyzer, true, lastAlias, currentFrom);
         replaceArgsAndThis(tree.getNextSibling(), root, c, parentCall, tree, mqlAnalyzer, false, lastAlias, currentFrom);
 
+    }
+
+    /**
+     * Place the fragment in context, to do this we need to:
+     * <ul>
+     * <li>expand the RANGE for constructs of the kind a.b.c</li>
+     * <li>remember the last alias that will be used in order to replace "this"</li>
+     * </ul>
+     * 
+     * The resulting tree looks like
+     * <pre>
+     * FROM [22] 
+     *   RANGE [84] 
+     *      . [15] 
+     *         projman [120] 
+     *         Message [120] 
+     *      m [69]
+     * </pre>
+     *
+     * @param tree the query fragment tree
+     * @param c the {@link FunctionCall} we're inlining into
+     * @return the name of the last alias in the FROM path, i.e. the one pointing to the type of the function
+     */
+    private String createFunctionContext(AST tree, FunctionCall c) {
+        String lastAlias = "";
+        AST range = findFrom(tree).getFirstChild();
+
+        // try to fetch the first FROM alias and if it's generated, replace it with something meaningful.
+        // we get generated aliases because of the fake query we build in order to analyse the query fragments
+        AST l = range.getFirstChild();
+        AST a = l.getNextSibling();
+
+        if (a != null && a.getText().equals("makumbaGeneratedAlias")) {
+            String path = c.getPath();
+
+            final boolean isInSubfield = c.getParentType().getParentField() != null;
+            final boolean hasComplexPath = path.indexOf(".") > -1;
+            
+            String joinAlias = "";
+            String firstAlias = hasComplexPath ? path.substring(0, path.indexOf(".")) : c.getPath();
+            
+            // if we have a QF in a subfield we use the original path for the JOIN label and create a temporary label
+            // this is necessary because we don't really need the JOIN in the final query
+            if(isInSubfield) {
+                joinAlias = firstAlias;
+                firstAlias = createLabel(true);
+            }
+            
+            String parentType = isInSubfield ? c.getParentType().getParentField().getDataDefinition().getName() : c.getParentType().getName();
+            
+            // generate the first RANGE element(s) from the type
+            AST newLabel = ASTUtil.makeNode(HqlTokenTypes.IDENT, parentType);
+            AST newAlias = ASTUtil.makeNode(HqlTokenTypes.ALIAS, firstAlias);
+            newLabel.setNextSibling(newAlias);
+            range.setFirstChild(newLabel);
+            
+            lastAlias = firstAlias;
+            
+            
+            // generate a JOIN when the parent type of the QF is a subfield
+            // this is necessary in order to have our QF tree accepted by the analyser on potential further inlinings
+            if(isInSubfield) {
+                // JOIN with the subfield type
+                lastAlias = expandRangeElement(lastAlias + "." + c.getParentType().getParentField().getName(), range, true, joinAlias);
+            }
+            
+            
+            if(hasComplexPath) {
+                // expand the ranges according to the path
+                lastAlias = expandRangeElement(c.getPath(), range, false, null);
+                path = path.substring(0, path.indexOf("."));
+            }
+            
+        } else {
+            // the alias was not generated so we simply return this alias
+            lastAlias = a.getText();
+        }
+        
+        return lastAlias;
     }
 
     /** replaces a function that is argument of another function in the query fragment tree */
@@ -536,7 +579,7 @@ public class FunctionInliner {
      *   x0 [69]
      * </pre>
      */
-    private String expandRangeElement(String path, AST tree, AST range) {
+    private String expandRangeElement(String path, AST range, boolean isJoin, String label) {
 
         String lastLabel = "";
         StringTokenizer tk = new StringTokenizer(path, ".");
@@ -544,9 +587,17 @@ public class FunctionInliner {
 
             String a = tk.nextToken();
             String b = tk.nextToken();
-            String label = createLabel();
+            
+            if(label == null) {
+                label = createLabel(false);
+            }
 
-            Node r = ASTUtil.makeNode(HqlTokenTypes.RANGE, "RANGE");
+            Node r = null;
+            if(isJoin) {
+                r = ASTUtil.makeNode(HqlTokenTypes.JOIN, "JOIN");
+            } else {
+                r = ASTUtil.makeNode(HqlTokenTypes.RANGE, "RANGE");
+            }
             Node dot = ASTUtil.makeNode(HqlTokenTypes.DOT, ".");
             Node aNode = ASTUtil.makeNode(HqlTokenTypes.IDENT, a);
             Node bNode = ASTUtil.makeNode(HqlTokenTypes.IDENT, b);
@@ -598,7 +649,7 @@ public class FunctionInliner {
             a.getFirstChild().setFirstChild(ASTUtil.makeNode(HqlTokenTypes.FROM, "FROM"));
             a.getFirstChild().getFirstChild().setFirstChild(ASTUtil.makeNode(HqlTokenTypes.RANGE, "RANGE"));
             a.getFirstChild().getFirstChild().getFirstChild().setFirstChild(ASTUtil.makeNode(HqlTokenTypes.IDENT, type));
-            String alias = createLabel();
+            String alias = createLabel(false);
             a.getFirstChild().getFirstChild().getFirstChild().getFirstChild().setNextSibling(
                 ASTUtil.makeNode(HqlTokenTypes.ALIAS, alias));
 
@@ -621,20 +672,22 @@ public class FunctionInliner {
             // finally we replace the actor method call with the new tree
             replaceMethodCall(methodCall, a, null, null);
 
-        } else {
-            v.visit(methodCall.getRoot());
+        } else if(c.getPath().equals("actor")) {
+            
+            if(debug) {
+    	        System.out.println("FunctionInliner.processActorFunction(): we have the following actor function, path is '" + c.getPath() + "'");
+	            v.visit(methodCall.getRoot());
+        	}
             // we have actor(Type)
             // SELECT actor(test.Person) --> $actor_test_Person
 
             String type = getActorType(c);
-
-            // param tree looks like
-            // : [116]
-            // parameter###0 [120]
-            AST actorParamNode = ASTUtil.makeNode(HqlTokenTypes.COLON, ":");
-            AST actorParamChild = ASTUtil.makeNode(HqlTokenTypes.IDENT, "actor_" + type.replaceAll("\\.", "_") + "###"
-                    + parameterNumber());
-            actorParamNode.setFirstChild(actorParamChild);
+            if(debug) {
+                System.out.println("FunctionInliner.processActorFunction(): actor type is " + type);
+			}
+            
+            // replace the actor call with a param
+            AST actorParamNode = ASTUtil.makeNode(HqlTokenTypes.IDENT, "$" + "actor_" + type.replaceAll("\\.", "_") );
             methodCall.replace(actorParamNode);
         }
 
@@ -646,7 +699,14 @@ public class FunctionInliner {
             // call on the actor of the current type, i.e. actor()
             type = c.getParentType().getName();
         } else {
-            type = c.getOrderedArguments().firstElement().getText();
+            
+            AST a = c.getOrderedArguments().firstElement();
+            if(a.getType() == HqlSqlTokenTypes.DOT) {
+                type = getPath(a);
+            } else {
+                type = c.getOrderedArguments().firstElement().getText();
+            }
+            
         }
         return type;
     }
@@ -667,17 +727,10 @@ public class FunctionInliner {
 
             if (additionalFrom != null) {
 
-                if (debug) {
-                    System.out.println("FROM tree to add");
-                    v.visit(additionalFrom);
-                }
-
                 if (functionCall != null && functionCall.getPath() != null) {
 
-                    String label = functionCall.getPath().substring(
-                        0,
-                        functionCall.getPath().indexOf(".") > 0 ? functionCall.getPath().indexOf(".")
-                                : functionCall.getPath().length());
+                    int dot = functionCall.getPath().indexOf(".");
+                    String label = functionCall.getPath().substring(0, dot > 0 ? dot : functionCall.getPath().length());
 
                     // if we have a constraint on the label of the function, we will not re-use the label
                     // UNLESS the function call is part of the WHERE in which case we don't really care about having a
@@ -752,7 +805,7 @@ public class FunctionInliner {
     }
 
     /**
-     * joins the elements of the first FROM with the second one, avoiding label collision. in some cases, we might not
+     * Joins the elements of the first FROM with the second one, avoiding label collision. in some cases, we might not
      * want to avoid label collision but instead have label re-usage in that case we replace the to-be-reused label in
      * the additionalFrom before joining
      */
@@ -770,7 +823,7 @@ public class FunctionInliner {
         Hashtable<String, String> collisions = new Hashtable<String, String>();
         for (String l : newLabels.keySet()) {
             if (existingLabels.containsKey(l) && !l.equals(labelToReuse)) {
-                String r = createLabel();
+                String r = createLabel(false);
                 collisions.put(l, r);
                 // replace the label in the tree we want to join the existing FROM with
                 newLabels.get(l).getFirstChild().getNextSibling().setText(r);
@@ -804,7 +857,7 @@ public class FunctionInliner {
                     String t = path;
                     t = t.substring(c.length());
                     t = collisions.get(c) + t;
-                    newLabels.get(l).setFirstChild(constructPath(t));
+                    newLabels.get(l).setFirstChild(ASTUtil.constructPath(fact, t));
                     newLabels.get(l).getFirstChild().setNextSibling(type.getNextSibling());
                 }
             }
@@ -841,7 +894,7 @@ public class FunctionInliner {
                     String t = ast.getText();
                     t = t.substring(c.length());
                     t = collisions.get(c) + t;
-                    ast = constructPath(t);
+                    ast = ASTUtil.constructPath(fact, t);
                 }
             }
 
@@ -1011,55 +1064,24 @@ public class FunctionInliner {
      */
     private String getPath(AST t) {
         if (t.getType() == HqlTokenTypes.DOT) {
-            return constructPath(t);
+            return ASTUtil.constructPath(t);
         } else {
             return t.getText();
         }
     }
 
-    /**
-     * Given a DOT tree, construct the path as String
-     */
-    private String constructPath(AST type) {
-        String a_text = "", b_text = "";
-        AST a = type.getFirstChild();
-        AST b = a.getNextSibling();
-        if (a.getType() == HqlTokenTypes.DOT) {
-            a_text = constructPath(a);
-        } else {
-            a_text = a.getText();
-        }
-        if (b.getType() == HqlTokenTypes.DOT) {
-            b_text = constructPath(b);
-        } else {
-            b_text = b.getText();
-        }
-        return a_text + "." + b_text;
-    }
-
-    /**
-     * Given a path of the kind a.b.c, constructs a DOT tree AST
-     */
-    private AST constructPath(String path) {
-        if (path.indexOf(".") > -1) {
-            String a = path.substring(0, path.indexOf("."));
-            AST d = ASTUtil.create(fact, HqlTokenTypes.DOT, ".");
-            AST i = ASTUtil.create(fact, HqlTokenTypes.IDENT, a);
-            d.setFirstChild(i);
-            i.setNextSibling(constructPath(path.substring(path.indexOf(".") + 1)));
-            return d;
-
-        } else {
-            return ASTUtil.create(fact, HqlTokenTypes.IDENT, path);
-        }
-    }
+    
 
     private int labelCounter = 0;
 
     private Vector<String> generatedLabels = new Vector<String>();
 
-    public String createLabel() {
-        String l = "_x_gen_" + labelCounter++;
+    /**
+     * Generates a label
+     * @param temporary whether the FROM elements (RANGE, JOIN) of this label should be discarded on cleanup
+     */
+    private String createLabel(boolean temporary) {
+        String l = temporary ? TEMPORARY_LABEL : GENERATED_LABEL + labelCounter++;
         generatedLabels.add(l);
         return l;
     }
