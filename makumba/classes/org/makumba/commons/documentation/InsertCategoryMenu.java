@@ -31,16 +31,19 @@ public class InsertCategoryMenu extends AbstractReferralPlugin implements WikiPl
     
     private final static String[] DEFAULT_CATEGORIES = new String[] { "CategoryMain", "CategoryQuickStart", "CategoryConfiguration", "CategoryUsage",
             "CategoryDocumentation", "CategoryShowcase", "CategoryDownload" };
+    
+    private static String[] categories = null;
 
     public String execute(WikiContext context, Map params) throws PluginException {
 
         // fetch categories from jspwiki config
-        String[] categories = null;
-        String categoriesConf = (String) (String) context.getEngine().getWikiProperties().get("navigation.categories");
-        if (categoriesConf == null) {
-            categories = DEFAULT_CATEGORIES;
-        } else {
-            categories = categoriesConf.split(",");
+        if(categories == null) {
+            String categoriesConf = (String) (String) context.getEngine().getWikiProperties().get("navigation.categories");
+            if (categoriesConf == null) {
+                categories = DEFAULT_CATEGORIES;
+            } else {
+                categories = categoriesConf.split(",");
+            }
         }
         
         boolean showCurrentCategory = params.get(PARAM_CURRENTCATEGORY) != null && ((String)params.get(PARAM_CURRENTCATEGORY)).equals("true");
