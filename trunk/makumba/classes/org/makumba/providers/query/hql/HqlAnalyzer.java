@@ -191,6 +191,10 @@ public class HqlAnalyzer implements QueryAnalysis {
     public int parameterAt(int index) {
         throw new UnsupportedOperationException("parameterAt");
     }
+    
+    public java.util.List<String> getOrderedParameterNames() {
+        throw new UnsupportedOperationException("parameterAt");
+    }
 
     String getTypeName(int i) {
         return (String) integerTypeMap.get(new Integer(i));

@@ -23,6 +23,7 @@
 
 package org.makumba.providers;
 
+import java.util.List;
 import java.util.Map;
 
 import org.makumba.DataDefinition;
@@ -75,6 +76,11 @@ public interface QueryAnalysis {
      * Each mentioning of a parameter new will get a new field in this DataDefinition!  
      */
     DataDefinition getParameterTypes();
+    
+    /**
+     * Gets the ordered list of parameter names, in order of appearance in the query
+     */
+    List<String> getOrderedParameterNames();
 
     /**
      * Gets the total number of parameters in the query; like $1, $2 etc. Note that if for example. $1 appears twice it will
