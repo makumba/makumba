@@ -623,7 +623,7 @@ public class Logic {
             if (constraint.rule.startsWith("actor(")) {
                 // try to fetch the type from the actor
                 constraintQuery = "select " + constraint.rule + " from "
-                        + constraint.rule.substring(6, constraint.rule.indexOf(")"));
+                        + constraint.rule.substring(6, constraint.rule.indexOf(")")) + " mak_actor";
             }
             try {
                 q1 = qap.inlineFunctions(constraintQuery).trim();
