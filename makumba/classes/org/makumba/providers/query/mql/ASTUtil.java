@@ -322,5 +322,42 @@ public final class ASTUtil {
         node.setText(string);
         return node;
     }
+    
+    /**
+     * Given a DOT tree, construct the path as String
+     */
+    public static String constructPath(AST type) {
+        String a_text = "", b_text = "";
+        AST a = type.getFirstChild();
+        AST b = a.getNextSibling();
+        if (a.getType() == HqlSqlTokenTypes.DOT) {
+            a_text = constructPath(a);
+        } else {
+            a_text = a.getText();
+        }
+        if (b.getType() == HqlSqlTokenTypes.DOT) {
+            b_text = constructPath(b);
+        } else {
+            b_text = b.getText();
+        }
+        return a_text + "." + b_text;
+    }
+
+    /**
+     * Given a path of the kind a.b.c, constructs a DOT tree AST
+     */
+    public static AST constructPath(ASTFactory fact, String path) {
+        if (path.indexOf(".") > -1) {
+            String a = path.substring(0, path.indexOf("."));
+            AST d = ASTUtil.create(fact, HqlSqlTokenTypes.DOT, ".");
+            AST i = ASTUtil.create(fact, HqlSqlTokenTypes.IDENT, a);
+            d.setFirstChild(i);
+            i.setNextSibling(constructPath(fact, path.substring(path.indexOf(".") + 1)));
+            return d;
+
+        } else {
+            return ASTUtil.create(fact, HqlSqlTokenTypes.IDENT, path);
+        }
+    }
 
 }
