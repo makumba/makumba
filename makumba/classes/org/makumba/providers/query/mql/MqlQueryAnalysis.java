@@ -13,16 +13,16 @@ import java.util.regex.Pattern;
 import org.hibernate.hql.antlr.HqlTokenTypes;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
+import org.makumba.MakumbaError;
 import org.makumba.OQLParseError;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.NameResolver;
 import org.makumba.commons.RegExpUtils;
-import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.NameResolver.TextList;
+import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryProvider;
-import org.makumba.providers.datadefinition.mdd.MakumbaDumpASTVisitor;
 
 import antlr.RecognitionException;
 import antlr.collections.AST;
@@ -82,29 +82,39 @@ public class MqlQueryAnalysis implements QueryAnalysis {
             noFrom = true;
             query += " FROM org.makumba.db.makumba.Catalog c";
         }
-
-        HqlParser parser=null;
-        try{
-            parser = HqlParser.getInstance(query);
-            parser.statement();
-        }catch(Throwable t){
-            doThrow(t, parser!=null?parser.getAST():null);
+        
+        AST parsed = null;
+        
+        if(!Configuration.getQueryInliner().equals("tree")) {
+            HqlParser parser=null;
+            try{
+                parser = HqlParser.getInstance(query);
+                parser.statement();
+            }catch(Throwable t){
+                doThrow(t, parser!=null?parser.getAST():null);
+            }
+            doThrow(parser.error, parser.getAST());
+            
+            parsed = parser.getAST();
+            
+        } else {
+            parsed = FunctionInliner.inlineQueryTree(query);
         }
-        doThrow(parser.error, parser.getAST());
+
         
         // we need to do the transformation first so the second-pass parser will accept the query
-        MqlQueryAnalysisProvider.transformOQLParameters(parser.getAST(), parameterOrder);
-        MqlQueryAnalysisProvider.transformOQL(parser.getAST());
+        MqlQueryAnalysisProvider.transformOQLParameters(parsed, parameterOrder);
+        MqlQueryAnalysisProvider.transformOQL(parsed);
 
         
         
         MqlSqlWalker mqlAnalyzer = new MqlSqlWalker(query, insertIn, optimizeJoins, autoLeftJoin, false);
         try {
-            mqlAnalyzer.statement(parser.getAST());
+            mqlAnalyzer.statement(parsed);
         } catch (Throwable e) {
-            doThrow(e, parser.getAST());
+            doThrow(e, parsed);
         }
-        doThrow(mqlAnalyzer.error, parser.getAST());
+        doThrow(mqlAnalyzer.error, parsed);
         
         labels = mqlAnalyzer.rootContext.labels;
         aliases = mqlAnalyzer.rootContext.aliases;
@@ -121,10 +131,19 @@ public class MqlQueryAnalysis implements QueryAnalysis {
             if (fd == null && ! mqlAnalyzer.multiTypeParams.contains(parameterOrder.get(i)))
                 fd = mqlAnalyzer.paramInfoByName.getFieldDefinition(parameterOrder.get(i));
 
-            if (fd != null)
+            // if we still don't know who this guy is, maybe it's an actor parameter that we generated on the fly
+            if(parameterOrder.get(i).startsWith("actor_")) {
+                // bingo
+                String type = parameterOrder.get(i).substring(6).replaceAll("_", ".");
+                fd = mqlAnalyzer.ddp.getDataDefinition(type).getFieldDefinition(0);
+            }
+            
+            if (fd != null) {
                 paramInfo.addField(DataDefinitionProvider.getInstance().makeFieldWithName("param" + i, fd));
-            // FIXME: throw an exception if a type of a parameter cannot be determined
-            // most probably the clients of QueryAnalysis do throw one
+            } else {
+                throw new MakumbaError("Panic: could not compute type of parameter at position " + i + " with name '" + parameterOrder.get(i) + "' of query " + getQuery());
+            }
+            
         }
         // if(mqlAnalyzer.hasSubqueries)
         // System.out.println(mqlDebug);
@@ -246,6 +265,7 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         }
     }
     
+    
     public int parameterAt(int index) {
         String s = parameterOrder.get(index);
         if (!s.startsWith(MAKUMBA_PARAM))
@@ -256,6 +276,10 @@ public class MqlQueryAnalysis implements QueryAnalysis {
 
     public int parameterNumber() {
         return parameterOrder.size();
+    }
+    
+    public List<String> getOrderedParameterNames() {
+        return parameterOrder;
     }
 
     public static String showAst(AST ast) {
