@@ -194,7 +194,7 @@ public class MDDParser extends MDDBaseParser {
     protected AST parseFunctionBody(AST expression) {
         
         // here we parse the function to see if it's okay
-        // when the expression is a subquery, i.e. starts with SELECT, we add paranthesis around it
+        // when the expression is a subquery, i.e. starts with SELECT, we add parenthesis around it
         boolean subquery = expression.getText().toUpperCase().startsWith("SELECT ");
         
         int offset = "SELECT ".length();
