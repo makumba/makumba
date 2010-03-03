@@ -298,7 +298,12 @@ functionDeclaration[FieldNode subField]
 	    (s:SESSIONVAR_NAME {sessionVar = #s.getText();})?
 	    fn:FUNCTION_NAME
 	    {
-	    	FunctionNode funct = new FunctionNode(mdd, fn);
+	    	FunctionNode funct = null;
+	    	if(subField != null) {
+	    		funct = new FunctionNode(subField.mdd, fn);
+	    	} else {
+	    		funct = new FunctionNode(mdd, fn);
+	    	}
 	    	funct.sessionVariableName = sessionVar;
 	    }
 	    functionArgumentDeclaration[funct]
