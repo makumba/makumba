@@ -111,6 +111,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         DataDefinition type;
         
         // we get a.b.c.functionName, resolve type of the path so we can retrieve the DD
+        // TODO I think this will work only on for a.b.c but not further
         String path = name;
         String additionalPath = name;
         int d = name.lastIndexOf(".");
@@ -128,7 +129,13 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
                 additionalPath = "";
             }
             
+            // first we try in the root FROM
             type = rootContext.labels.get(label);
+            
+            // let's see if we are in a subquery
+            if(type == null && currentContext != null) {
+                type = currentContext.labels.get(label);
+            }
             
             additionalPath = additionalPath + (additionalPath.length() == 0 ? "" : ".") + name;
             
@@ -136,7 +143,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
             type = rootContext.labels.get(name);
         }
         
-        // FIXME not sure if that's okay
+        // we take the first FROM element we find
         if(type == null) {
             type = rootContext.labels.values().iterator().next();
         }
@@ -370,7 +377,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
             FieldDefinition fd1 = paramInfoByName.getFieldDefinition(paramName);
 
             // if we already have a type for that name and the types are not compatible
-            if (fd1 != null && !fd1.isAssignableFrom(fd))
+            if (fd1 != null && !fd1.isAssignableFrom(fd)) {
                 // FIXME: if(fd.isAssignableFrom(fd1) we are still ok
                 // so we should not declare the param as multitype
                 // but then we'd have to replace fd1 with fd in paramInfoByName
@@ -378,10 +385,10 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
                 
                 // we register the parameter as multi-type
                 multiTypeParams.add(paramName);
-            else
-                if(fd1==null)
+            } else if(fd1==null) {
                     // we register the type if we don't have any for this name
                     paramInfoByName.addField(fd);
+            }
         }
 
         // we now register the type for this position. 
@@ -415,11 +422,10 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
                 String paramName = mqlNode.getOriginalText();
                 paramName = paramName.substring(0, paramName.indexOf("###"));
                 
-                // if we are an actor param, we can infer the type from the actor type
-                // TODO check if this works
+                // if we are an actor param, we can infer the type from the parameter name
                 if(paramName.startsWith("actor_")) {
-                    String type = paramName.substring("actor_".length());
-                    makType = DataDefinitionProvider.getInstance().getDataDefinition(type).getFieldDefinition(type);
+                    String type = paramName.substring("actor_".length()).replace("_", ".");
+                    makType = DataDefinitionProvider.getInstance().getDataDefinition(type).getFieldDefinition(0);
                     mqlNode.setMakType(makType);
                     
                 } else {
@@ -438,9 +444,6 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
                 if(makType!=null && mqlNode.isParam())
                     setParameterType((MqlNode)a, makType);
             }
-            /*
-             * FIXME if we have a named parameter from the query context, we might be able to determine the type from the actor type
-             */
              
             if(makType==null)
                 throw new IllegalStateException("no type set for projection " + name + " "
@@ -458,4 +461,18 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         return select.getFirstChild().getNextSibling() == null
                 && select.getFirstChild().getType() == HqlSqlTokenTypes.NUM_INT;
     }
+    
+    @Override
+    protected void setActorType(AST a) {
+        // ( [78] 
+        //   actor [120] 
+        //   exprList [72] 
+        //      . [15] 
+        //         some [120] 
+        //         Type [120] 
+        String type = ASTUtil.constructPath(a.getFirstChild().getNextSibling().getFirstChild());
+        DataDefinition typeDD = ddp.getDataDefinition(type);
+        ((MqlNode)a).setMakType(typeDD.getFieldDefinition(0));
+    }
+    
 }
