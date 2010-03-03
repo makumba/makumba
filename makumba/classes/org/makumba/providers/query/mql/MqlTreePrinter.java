@@ -19,12 +19,9 @@ public class MqlTreePrinter {
     
     StringBuffer sb = new StringBuffer();
     
-    QueryAnalysisProvider qp;
-    
     MakumbaDumpASTVisitor v = new MakumbaDumpASTVisitor(false);
     
-    public MqlTreePrinter(QueryAnalysisProvider qp) {
-        this.qp = qp;
+    public MqlTreePrinter() {
     }
 
     
@@ -115,6 +112,9 @@ public class MqlTreePrinter {
             case HqlTokenTypes.IN:
                 handleIn(a);
                 break;
+            case HqlTokenTypes.IN_LIST:
+                handleInList(a);
+                break;
             case HqlTokenTypes.NOT_IN:
                 handleNotIn(a);
                 break;
@@ -198,13 +198,12 @@ public class MqlTreePrinter {
             case HqlTokenTypes.SOME:
             case HqlTokenTypes.EXISTS:
             case HqlTokenTypes.NOT:
-            case HqlTokenTypes.IN_LIST:
                 printOperator(a);
                 out("(");
                 handleAST(a.getFirstChild());
                 out(")");
                 break;
-                
+
             // starting operators without parentheses
                 
             case HqlTokenTypes.ESCAPE:
@@ -278,7 +277,7 @@ public class MqlTreePrinter {
 
     private void handleColon(AST a) {
         int sep = a.getFirstChild().getText().indexOf("###");
-        out(qp.getParameterSyntax() + a.getFirstChild().getText().substring(0, sep));
+        out("$" + a.getFirstChild().getText().substring(0, sep));
     }
     
     private void handleCount(AST a) {
@@ -317,6 +316,17 @@ public class MqlTreePrinter {
         handleAST(a.getFirstChild());
         out(" in ");
         if(a.getFirstChild().getNextSibling().getType() == HqlTokenTypes.QUERY) {
+            handleQuery(a.getFirstChild().getNextSibling());
+        } else {
+            a = a.getFirstChild().getNextSibling();
+            handleList(a);
+        }
+    }
+    
+    private void handleInList(AST a) {
+        out(" in ");
+        if(a.getFirstChild().getNextSibling().getType() == HqlTokenTypes.QUERY) {
+            out(a.getFirstChild().getNextSibling().getText() + " ");
             handleQuery(a.getFirstChild().getNextSibling());
         } else {
             a = a.getFirstChild().getNextSibling();
