@@ -25,6 +25,7 @@ package org.makumba.db.makumba.sql;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Map;
 
 import org.makumba.DBError;
 import org.makumba.InvalidValueException;
@@ -35,6 +36,7 @@ import org.makumba.db.makumba.Update;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
+import org.makumba.providers.SQLQueryGenerator;
 
 public class SQLUpdate implements Update {
     
@@ -46,13 +48,25 @@ public class SQLUpdate implements Update {
     
     String type;
     
+    String setWhere;
+    
+    String DELIM;
+    
     Database db;
     
     QueryAnalysisProvider qP = QueryProvider.getQueryAnalzyer("oql");
+    
+    SQLQueryGenerator qG;
 
     SQLUpdate(Database db, String from, String setWhere, String DELIM) {
-        type = from;
+        this.type = from;
         this.db = db;
+        this.setWhere = setWhere;
+        this.DELIM = DELIM;
+    }
+
+    
+    private void compileUpdateCommand(Database db, String from, String setWhere, String DELIM, Map<String, Object> args) throws OQLParseError, MakumbaError {
         int whereMark = setWhere.indexOf(DELIM);
         String set = setWhere.substring(0, whereMark);
         String where = setWhere.substring(whereMark + DELIM.length());
@@ -83,24 +97,28 @@ public class SQLUpdate implements Update {
             throw new org.makumba.OQLParseError("Invalid delete/update 'type' section: " + from);
         }
 
-        // to get the right SQL, we compil an imaginary OQL command made as follows:
+        // to get the right SQL, we compile an imaginary MQL command made as follows:
         String OQLQuery = "SELECT " + (set == null ? label : set) + " FROM " + from;
         if (where != null) {
             OQLQuery += " WHERE " + where;
         }
 
         QueryAnalysis qA = qP.getQueryAnalysis(OQLQuery);
+        qG = (SQLQueryGenerator) qA;
+        qG.setArguments(args);
+        
         try {
             // FIXME: we should make sure here that the tree contains one single type!
-            assigner = new ParameterAssigner(db, qA);
+            assigner = new ParameterAssigner(db, qA, qG);
         } catch (OQLParseError e) {
             throw new org.makumba.OQLParseError(e.getMessage() + "\r\nin " + debugString + "\n" + OQLQuery, e);
         }
 
+        
         String fakeCommand;
         String fakeCommandUpper;
         try {
-            fakeCommand = qA.writeInSQLQuery(db.getNameResolverHook());
+            fakeCommand = qG.getSQLQuery(db.getNameResolverHook());
         } catch (RuntimeException e) {
             throw new MakumbaError(e, debugString + "\n" + OQLQuery);
         }
@@ -175,10 +193,13 @@ public class SQLUpdate implements Update {
         updateCommand = command.toString();
     }
 
-    public int execute(org.makumba.db.makumba.DBConnection dbc, Object[] args) {
+    public int execute(org.makumba.db.makumba.DBConnection dbc, Map<String, Object> args) {
+        
+        compileUpdateCommand(db, type, setWhere, DELIM, args);
+        
         PreparedStatement ps = ((SQLDBConnection) dbc).getPreparedStatement(updateCommand);
         try {
-            String s = assigner.assignParameters(ps, args);
+            String s = assigner.assignParameters(ps, qG.getSQLQueryArguments());
             if (s != null) {
                 throw new InvalidValueException("Errors while trying to assign arguments to update:\n" + debugString
                         + "\n" + s);

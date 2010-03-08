@@ -28,12 +28,12 @@ public class FunctionInliner {
 
     private static final String GENERATED_LABEL = "_x_gen_";
 
-    private final boolean debug = false;
+    private final boolean debug = true;
 
     private String query;
 
     private MqlTreePrinter printer;
-    
+
     private HqlASTFactory fact = new HqlASTFactory();
 
     private MakumbaDumpASTVisitor v = new MakumbaDumpASTVisitor(false);
@@ -42,13 +42,11 @@ public class FunctionInliner {
         this.query = query;
         this.printer = new MqlTreePrinter();
     }
-    
+
     public static AST inlineQueryTree(String query) {
         FunctionInliner inliner = new FunctionInliner(query);
         return inliner.inline(query);
     }
-    
-    
 
     private AST inline(String query) {
 
@@ -66,11 +64,6 @@ public class FunctionInliner {
         doThrow(parser.error, parser.getAST(), query);
 
         AST ast = parser.getAST();
-
-//        if (mqlProcessing) {
-//            MqlQueryAnalysisProvider.transformOQLParameters(ast, parameterOrder);
-//            MqlQueryAnalysisProvider.transformOQL(ast);
-//        }
 
         boolean inlined = false;
 
@@ -118,7 +111,7 @@ public class FunctionInliner {
         throw new OQLParseError("\r\nin " + errorLocationNumber + " query (during inlining of functions):\r\n" + query
                 + errorLocation + errorLocation + errorLocation, t);
     }
-    
+
     private boolean inline(AST ast, boolean root) throws Throwable {
 
         boolean inlined = false;
@@ -136,16 +129,24 @@ public class FunctionInliner {
             v.visit(ast);
         }
 
+        // as we will need to treat the parameters again before normal analysis
+        // we perform the analsysis on a duplicaed tree where we process the OQL parameters
+
+        AST analysisAST = fact.dupTree(ast);
+
+        MqlQueryAnalysisProvider.transformOQLParameters(analysisAST, new ArrayList<String>());
+        MqlQueryAnalysisProvider.transformOQL(analysisAST);
+
         // let's analyze this function with a magic analyzer that accepts function calls
         // FIXME in case of SemanticExceptions, fetch them and append meaningful text
-        MqlSqlWalker mqlAnalyzer = new MqlSqlWalker(printer.printTree(ast), null, true, true, true);
+        MqlSqlWalker mqlAnalyzer = new MqlSqlWalker(query, null, true, true, true);
 
         try {
-            mqlAnalyzer.statement(ast);
+            mqlAnalyzer.statement(analysisAST);
         } catch (Throwable t) {
             t.printStackTrace();
             System.out.println("in AST");
-            v.visit(ast);
+            v.visit(analysisAST);
         }
 
         if (mqlAnalyzer.error != null) {
@@ -160,6 +161,12 @@ public class FunctionInliner {
 
             // re-order function calls
             mqlAnalyzer.orderedFunctionCalls = getOrderedFunctionCalls(mqlAnalyzer);
+            if (debug) {
+                System.out.println("Function calls:");
+                for (FunctionCall f : mqlAnalyzer.orderedFunctionCalls.values()) {
+                    System.out.println(f.getKey());
+                }
+            }
 
             int index = 0;
             for (FunctionCall c : mqlAnalyzer.orderedFunctionCalls.values()) {
@@ -176,17 +183,12 @@ public class FunctionInliner {
                     System.out.println("*** Iterating over function call " + c);
                 }
 
-                // if this is an actor function call (and not an inlining call), we need to inline it differently than other functions
+                // if this is an actor function call (and not an inlining call), we need to inline it differently than
+                // other functions
                 if (c.isActorFunction() && c.getPath().equals("actor")) {
                     processActorFunction(c, ast, methodCalls.get(index));
                 } else {
                     AST queryFragmentTree = fact.dupTree(c.getFunction().getParsedQueryFragment());
-
-                    // apply oql-specific tree transformations on the function tree
-                    // FIXME not sure if this is needed or not at this point
-                    List<String> parameterOrder = new ArrayList<String>();
-//                    MqlQueryAnalysisProvider.transformOQLParameters(queryFragmentTree, parameterOrder);
-//                    MqlQueryAnalysisProvider.transformOQL(queryFragmentTree);
 
                     if (debug) {
                         System.out.println("*** query fragment tree before replacing arguments");
@@ -208,7 +210,7 @@ public class FunctionInliner {
                         System.out.println("*** query fragment after inlining its functions");
                         v.visit(queryFragmentTree);
                     }
-                    
+
                     // replace method call in original tree
                     // here we use the 1st pass method calls and rely on the fact that the order with the function calls
                     // is the same
@@ -233,11 +235,12 @@ public class FunctionInliner {
             AST parent = null;
             while (originalRange != null) {
                 String path = getPath(originalRange.getFirstChild().getNextSibling());
-                
+
                 // is this a temporary RANGE or JOIN?
-                boolean isTemporary = (originalRange.getType() == HqlSqlTokenTypes.JOIN && getPath(originalRange.getFirstChild()).startsWith(TEMPORARY_LABEL))
-                                        || (originalRange.getType() == HqlSqlTokenTypes.RANGE && path.startsWith(TEMPORARY_LABEL));
-                
+                boolean isTemporary = (originalRange.getType() == HqlSqlTokenTypes.JOIN && getPath(
+                    originalRange.getFirstChild()).startsWith(TEMPORARY_LABEL))
+                        || (originalRange.getType() == HqlSqlTokenTypes.RANGE && path.startsWith(TEMPORARY_LABEL));
+
                 if (!usedLabels.containsKey(path) || isTemporary) {
                     if (parent != null) {
                         parent.setNextSibling(originalRange.getNextSibling());
@@ -260,8 +263,8 @@ public class FunctionInliner {
     }
 
     /**
-     * The analyser inverts the function calls of functions that are arguments of another function,
-     * but as this doesn't happen in the first-pass method-calls we re-order them here
+     * The analyser inverts the function calls of functions that are arguments of another function, but as this doesn't
+     * happen in the first-pass method-calls we re-order them here
      */
     private LinkedHashMap<String, FunctionCall> getOrderedFunctionCalls(MqlSqlWalker mqlAnalyzer) {
         LinkedHashMap<String, FunctionCall> orderedFunctionCalls = new LinkedHashMap<String, FunctionCall>();
@@ -325,24 +328,30 @@ public class FunctionInliner {
 
             case HqlTokenTypes.IDENT:
 
-                FieldDefinition argument = c.getFunction().getParameters().getFieldDefinition(tree.getText());
+                FieldDefinition argument = null;
+
+                // avoid infinite recursion in case of already replaced arguments
+                if (parent.getType() != HqlSqlTokenTypes.COLON) {
+                    argument = c.getFunction().getParameters().getFieldDefinition(tree.getText());
+                }
 
                 // replace this.field with the fitting label of the outer context
                 if (tree.getText().equals("this")) {
-                    
-                    if(c.getParentType().getParentField() != null) {
+
+                    if (c.getParentType().getParentField() != null) {
                         tree.setText(c.getPath());
                     } else {
                         tree.setText(lastAlias);
                     }
-                    
+
                 } else if (argument != null) {
                     int argumentIndex = c.getFunction().getParameters().getFieldNames().indexOf(tree.getText());
 
                     MqlNode arg = c.getOrderedArguments().get(argumentIndex);
 
                     boolean isParameter = arg.getType() == HqlSqlTokenTypes.NAMED_PARAM
-                            || arg.getType() == HqlSqlTokenTypes.PARAM;
+                            || arg.getType() == HqlSqlTokenTypes.PARAM
+                            || (arg.getType() == HqlSqlTokenTypes.IDENT && arg.getText().startsWith("$"));
 
                     // if this is a function call itself we will need to inline it
                     if (arg.getText().startsWith("methodCallPlaceholder_")) {
@@ -358,11 +367,14 @@ public class FunctionInliner {
                             // pass analysis
                             // so we re-build our parameter node...
                             n = ASTUtil.makeNode(HqlTokenTypes.COLON, ":");
-                            Node paramChild = ASTUtil.makeNode(HqlTokenTypes.IDENT, arg.getOriginalText());
+                            Node paramChild = ASTUtil.makeNode(HqlTokenTypes.IDENT, arg.getOriginalText().startsWith(
+                                "$") ? arg.getOriginalText().substring(1) : arg.getOriginalText());
                             n.setFirstChild(paramChild);
                             n.setNextSibling(tree.getNextSibling());
                             n.setCol(tree.getColumn());
                             n.setLine(tree.getLine());
+
+                            System.out.println("==================== PARAMETER " + arg.getOriginalText());
 
                         } else if (!isParameter) {
                             // we have an argument of the function call that we need to replace with the value passed in
@@ -409,8 +421,8 @@ public class FunctionInliner {
      * <li>expand the RANGE for constructs of the kind a.b.c</li>
      * <li>remember the last alias that will be used in order to replace "this"</li>
      * </ul>
-     * 
      * The resulting tree looks like
+     * 
      * <pre>
      * FROM [22] 
      *   RANGE [84] 
@@ -419,9 +431,11 @@ public class FunctionInliner {
      *         Message [120] 
      *      m [69]
      * </pre>
-     *
-     * @param tree the query fragment tree
-     * @param c the {@link FunctionCall} we're inlining into
+     * 
+     * @param tree
+     *            the query fragment tree
+     * @param c
+     *            the {@link FunctionCall} we're inlining into
      * @return the name of the last alias in the FROM path, i.e. the one pointing to the type of the function
      */
     private String createFunctionContext(AST tree, FunctionCall c) {
@@ -438,47 +452,47 @@ public class FunctionInliner {
 
             final boolean isInSubfield = c.getParentType().getParentField() != null;
             final boolean hasComplexPath = path.indexOf(".") > -1;
-            
+
             String joinAlias = "";
             String firstAlias = hasComplexPath ? path.substring(0, path.indexOf(".")) : c.getPath();
-            
+
             // if we have a QF in a subfield we use the original path for the JOIN label and create a temporary label
             // this is necessary because we don't really need the JOIN in the final query
-            if(isInSubfield) {
+            if (isInSubfield) {
                 joinAlias = firstAlias;
                 firstAlias = createLabel(true);
             }
-            
-            String parentType = isInSubfield ? c.getParentType().getParentField().getDataDefinition().getName() : c.getParentType().getName();
-            
+
+            String parentType = isInSubfield ? c.getParentType().getParentField().getDataDefinition().getName()
+                    : c.getParentType().getName();
+
             // generate the first RANGE element(s) from the type
             AST newLabel = ASTUtil.makeNode(HqlTokenTypes.IDENT, parentType);
             AST newAlias = ASTUtil.makeNode(HqlTokenTypes.ALIAS, firstAlias);
             newLabel.setNextSibling(newAlias);
             range.setFirstChild(newLabel);
-            
+
             lastAlias = firstAlias;
-            
-            
+
             // generate a JOIN when the parent type of the QF is a subfield
             // this is necessary in order to have our QF tree accepted by the analyser on potential further inlinings
-            if(isInSubfield) {
+            if (isInSubfield) {
                 // JOIN with the subfield type
-                lastAlias = expandRangeElement(lastAlias + "." + c.getParentType().getParentField().getName(), range, true, joinAlias);
+                lastAlias = expandRangeElement(lastAlias + "." + c.getParentType().getParentField().getName(), range,
+                    true, joinAlias);
             }
-            
-            
-            if(hasComplexPath) {
+
+            if (hasComplexPath) {
                 // expand the ranges according to the path
                 lastAlias = expandRangeElement(c.getPath(), range, false, null);
                 path = path.substring(0, path.indexOf("."));
             }
-            
+
         } else {
             // the alias was not generated so we simply return this alias
             lastAlias = a.getText();
         }
-        
+
         return lastAlias;
     }
 
@@ -488,7 +502,10 @@ public class FunctionInliner {
 
         String key = arg.getText().substring("methodCallPlaceholder_".length());
         FunctionCall cArg = mqlAnalyzer.orderedFunctionCalls.get(key);
-        // System.out.println("Argument is function call on " + cArg);
+
+        if (debug) {
+            System.out.println("Argument is function call on " + cArg);
+        }
 
         AST inlinedFunction = inlineArgument(cArg, mqlAnalyzer, c);
 
@@ -587,13 +604,13 @@ public class FunctionInliner {
 
             String a = tk.nextToken();
             String b = tk.nextToken();
-            
-            if(label == null) {
+
+            if (label == null) {
                 label = createLabel(false);
             }
 
             Node r = null;
-            if(isJoin) {
+            if (isJoin) {
                 r = ASTUtil.makeNode(HqlTokenTypes.JOIN, "JOIN");
             } else {
                 r = ASTUtil.makeNode(HqlTokenTypes.RANGE, "RANGE");
@@ -672,22 +689,23 @@ public class FunctionInliner {
             // finally we replace the actor method call with the new tree
             replaceMethodCall(methodCall, a, null, null);
 
-        } else if(c.getPath().equals("actor")) {
-            
-            if(debug) {
-    	        System.out.println("FunctionInliner.processActorFunction(): we have the following actor function, path is '" + c.getPath() + "'");
-	            v.visit(methodCall.getRoot());
-        	}
+        } else if (c.getPath().equals("actor")) {
+
+            if (debug) {
+                System.out.println("FunctionInliner.processActorFunction(): we have the following actor function, path is '"
+                        + c.getPath() + "'");
+                v.visit(methodCall.getRoot());
+            }
             // we have actor(Type)
             // SELECT actor(test.Person) --> $actor_test_Person
 
             String type = getActorType(c);
-            if(debug) {
+            if (debug) {
                 System.out.println("FunctionInliner.processActorFunction(): actor type is " + type);
-			}
-            
+            }
+
             // replace the actor call with a param
-            AST actorParamNode = ASTUtil.makeNode(HqlTokenTypes.IDENT, "$" + "actor_" + type.replaceAll("\\.", "_") );
+            AST actorParamNode = ASTUtil.makeNode(HqlTokenTypes.IDENT, "$" + "actor_" + type.replaceAll("\\.", "_"));
             methodCall.replace(actorParamNode);
         }
 
@@ -699,14 +717,14 @@ public class FunctionInliner {
             // call on the actor of the current type, i.e. actor()
             type = c.getParentType().getName();
         } else {
-            
+
             AST a = c.getOrderedArguments().firstElement();
-            if(a.getType() == HqlSqlTokenTypes.DOT) {
+            if (a.getType() == HqlSqlTokenTypes.DOT) {
                 type = getPath(a);
             } else {
                 type = c.getOrderedArguments().firstElement().getText();
             }
-            
+
         }
         return type;
     }
@@ -1070,15 +1088,15 @@ public class FunctionInliner {
         }
     }
 
-    
-
     private int labelCounter = 0;
 
     private Vector<String> generatedLabels = new Vector<String>();
 
     /**
      * Generates a label
-     * @param temporary whether the FROM elements (RANGE, JOIN) of this label should be discarded on cleanup
+     * 
+     * @param temporary
+     *            whether the FROM elements (RANGE, JOIN) of this label should be discarded on cleanup
      */
     private String createLabel(boolean temporary) {
         String l = temporary ? TEMPORARY_LABEL : GENERATED_LABEL + labelCounter++;

@@ -32,6 +32,7 @@ import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.Pointer;
 import org.makumba.providers.QueryAnalysis;
+import org.makumba.providers.SQLQueryGenerator;
 
 /**
  * this class takes parameters passed to an OQL query and transmits them to the corresponding PreparedStatement. The
@@ -40,34 +41,39 @@ import org.makumba.providers.QueryAnalysis;
  */
 public class ParameterAssigner {
     TableManager paramHandler;
+    org.makumba.db.makumba.Database db;
+    QueryAnalysis qA;
+    SQLQueryGenerator qG;
 
-    QueryAnalysis tree;
-
-    ParameterAssigner(org.makumba.db.makumba.Database db, QueryAnalysis qA) {
-        this.tree = qA;
-        if (qA.parameterNumber() > 0) {
-            paramHandler = (TableManager) db.makePseudoTable(qA.getParameterTypes());
-        }
+    ParameterAssigner(org.makumba.db.makumba.Database db, QueryAnalysis qA, SQLQueryGenerator qG) {
+        this.qA = qA;
+        this.qG = qG;
+        this.db = db;
     }
 
     static final Object[] empty = new Object[0];
 
     public String assignParameters(PreparedStatement ps, Object[] args) throws SQLException {
-        if (tree.parameterNumber() == 0) {
+        if (qG.getSQLArgumentNumber() == 0) {
             return null;
         }
+        
+        if (qG.getSQLArgumentNumber() > 0) {
+            paramHandler = (TableManager) db.makePseudoTable(qG.getSQLQueryArgumentTypes());
+        }
+
+        
         try {
             Hashtable<String, Integer> correct = new Hashtable<String, Integer>();
             Hashtable<String, InvalidValueException> errors = new Hashtable<String, InvalidValueException>();
-            for (int i = 0; i < tree.parameterNumber(); i++) {
-                FieldDefinition fd = paramHandler.getDataDefinition().getFieldDefinition("param" + i);
+            for (int i = 0; i < qG.getSQLArgumentNumber(); i++) {
+                FieldDefinition fd = qG.getSQLQueryArgumentTypes().getFieldDefinition(i);
                 if (fd == null) {
-                    throw new IllegalStateException("No type assigned for param" + i + " of query " + tree.getQuery());
+                    throw new IllegalStateException("No type assigned for param" + i + " of query " + qA.getQuery());
                 }
 
-                Integer para = new Integer(tree.parameterAt(i));
-                String spara = "$" + para;
-                Object value = args[para.intValue() - 1];
+                String spara = "$" + i;
+                Object value = args[i];
                 if (value == Pointer.Null) {
                     value = fd.getNull();
                 }
@@ -79,19 +85,13 @@ public class ParameterAssigner {
                     if (correct.get(spara) == null) {
                         errors.put(spara, e);
                     }
-                    // if(value==Pointer.Null || value==Pointer.NullInteger ||value==Pointer.NullString ||
-                    // value==Pointer.NullText ||value==Pointer.NullSet ||value== Pointer.NullDate)
-                    paramHandler.setNullArgument("param" + i, ps, i + 1);
-                    // else
-                    // there is a bug here, manifests when the value is not serializable...
-                    // maybe one should insert just a dummy
-                    // ps.setObject(i+1, value);
+                    paramHandler.setNullArgument(fd.getName(), ps, i + 1);
                     continue;
                 }
-                correct.put(spara, para);
+                correct.put(spara, i);
                 errors.remove(spara);
 
-                paramHandler.setUpdateArgument("param" + i, ps, i + 1, value);
+                paramHandler.setUpdateArgument(fd.getName(), ps, i + 1, value);
             }
             if (errors.size() > 0) {
                 String s = "";

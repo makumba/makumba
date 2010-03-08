@@ -72,6 +72,10 @@ public class MqlNode extends CommonAST {
     public void setFather(MqlNode node) {
         father = node;
     }
+    
+    public MqlNode getFather() {
+        return father;
+    }
 
     /** we analyze the tree as it is built, we call oneMoreChild() to see whether we are ready for analysis */
     @Override
@@ -342,7 +346,11 @@ public class MqlNode extends CommonAST {
 
     protected boolean checkAndRewriteOperand(MqlNode left, MqlNode right) throws SemanticException {
         if (right.getType() == HqlSqlTokenTypes.QUOTED_STRING && !left.isParam()) {
-
+            
+            if(right.getText().startsWith("methodCallPlaceholder_")) {
+                return true;
+            }
+            
             String s = right.getText();
             String arg1 = s.substring(1, s.length() - 1);
             Object o = null;

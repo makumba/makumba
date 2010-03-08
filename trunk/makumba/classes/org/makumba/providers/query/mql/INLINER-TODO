@@ -1,5 +1,6 @@
 functionality:
 
+- actors
 - complete the mql tree printer
 - better error handling
 - static functions

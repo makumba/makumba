@@ -33,17 +33,12 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.makumba.DataDefinition;
-import org.makumba.LogicException;
 import org.makumba.MakumbaError;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.Transaction;
-import org.makumba.commons.NamedResourceFactory;
-import org.makumba.commons.NamedResources;
-import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.db.TransactionImplementation;
 import org.makumba.providers.DataDefinitionProvider;
-import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProvider;
 
 /**
@@ -166,55 +161,20 @@ public abstract class DBConnection extends TransactionImplementation {
         throw new MakumbaError("Not implemented");
     }
  
-    class QueryAndArgs{
-        String query;
-        Object[] args;
-        protected Object[] getArgs() {
-            return args;
-        }
-        protected String getQuery() {
-            return query;
-        }
-        QueryAndArgs(String OQL, Object a){
-            Map<String, Object>  args1=paramsToMap(a);
-            MultipleAttributeParametrizer mpa= ((MultipleAttributeParametrizer) queries.getResource(OQL));
-            try {
-                query=mpa.getTransformedQuery(args1);
-                args= mpa.getTransformedParams(args1);
-            } catch (LogicException e) {
-                throw new RuntimeWrappedException(e);
-            }
-
-
-        }
-    }
     /**
      * Execute a parametrized OQL query.
      * 
      * @return a Vector of Dictionaries
      */
     public Vector<Dictionary<String, Object>> executeQuery(String OQL, Object args, int offset, int limit) {
-        OQL= QueryProvider.getQueryAnalzyer("oql").inlineFunctions(OQL);
-        QueryAndArgs qa= new QueryAndArgs(OQL, args);
-        Object[] k = { qa.getQuery(), "" };
-        return ((Query) getHostDatabase().queries.getResource(k)).execute(qa.getArgs(), this, offset, limit);
+        Object[] k = { OQL, "" };
+        return ((Query) getHostDatabase().queries.getResource(k)).execute(paramsToMap(args), this, offset, limit);
 
     }
-    NamedResources queries = new NamedResources("OQL query multiple-parametrizers", new NamedResourceFactory() {
-
-        private static final long serialVersionUID = 1L;
-
-        protected Object makeResource(Object nm, Object hashName) {
-
-            return new MultipleAttributeParametrizer((String) nm, db.getConfiguration("acceptColonParams"));
-        }
-    });
     
     protected int insertFromQueryImpl(String type, String OQL, Object args) {
-        OQL= QueryProvider.getQueryAnalzyer("oql").inlineFunctions(OQL);
-        QueryAndArgs qa= new QueryAndArgs(OQL, args);
-        Object[] k = { qa.getQuery(), type };
-        return ((Query) getHostDatabase().queries.getResource(k)).insert(qa.getArgs(), this);
+        Object[] k = { OQL, type };
+        return ((Query) getHostDatabase().queries.getResource(k)).insert(paramsToMap(args), this);
     }
 
     public Vector<Dictionary<String, Object>> executeQuery(String OQL, Object args) {
@@ -237,10 +197,10 @@ public abstract class DBConnection extends TransactionImplementation {
         if (where != null && where.trim().length() == 0) {
             where = null;
         }
-        QueryAndArgs qa= new QueryAndArgs((set==null?"":set)+whereDelim+(where==null?"":where), args);
-        Object[] multi = { type, qa.getQuery(), whereDelim };
+        
+        Object[] multi = { type, (set==null?"":set)+whereDelim+(where==null?"":where), whereDelim };
 
-        return ((Update) getHostDatabase().updates.getResource(multi)).execute(this, qa.getArgs());
+        return ((Update) getHostDatabase().updates.getResource(multi)).execute(this, paramsToMap(args));
     }
     
     public Query getQuery(String OQL) {
@@ -261,5 +221,21 @@ public abstract class DBConnection extends TransactionImplementation {
     // FIXME should be done at construction time, but due to nature of how DB is now it's not possible
     public void setDataSource(String dataSource) {
         this.dataSource = dataSource;
+    }
+
+    protected Object[] treatParam(Object args) {
+        if (args == null) {
+            return new Object[] {};
+        } else if (args instanceof Vector) {
+            Vector v = (Vector) args;
+            Object[] param = new Object[v.size()];
+            v.copyInto(param);
+            return param;
+        } else if (args instanceof Object[]) {
+            return (Object[]) args;
+        } else {
+            Object p[] = { args };
+            return p;
+        }
     }
 }

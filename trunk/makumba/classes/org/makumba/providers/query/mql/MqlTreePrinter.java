@@ -277,7 +277,12 @@ public class MqlTreePrinter {
 
     private void handleColon(AST a) {
         int sep = a.getFirstChild().getText().indexOf("###");
-        out("$" + a.getFirstChild().getText().substring(0, sep));
+        if(sep > 0) {
+            out("$" + a.getFirstChild().getText().substring(0, sep));
+        } else {
+            out("$" + a.getFirstChild().getText());
+
+        }
     }
     
     private void handleCount(AST a) {

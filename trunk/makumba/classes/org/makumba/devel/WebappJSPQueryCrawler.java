@@ -9,9 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 import java.util.logging.Logger;
@@ -19,7 +17,6 @@ import java.util.logging.Logger;
 import org.apache.commons.cli.CommandLine;
 import org.makumba.analyser.PageCache;
 import org.makumba.analyser.engine.JspParseData;
-import org.makumba.commons.ArgumentReplacer;
 import org.makumba.commons.FileUtils;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.ReadableFormatter;
@@ -88,12 +85,13 @@ public class WebappJSPQueryCrawler {
                         for (Object key : cache.keySet()) {
                             ComposedQuery query = (ComposedQuery) cache.get(key);
                             String s= query.getTypeAnalyzerQuery();
-                            ArgumentReplacer ar = new ArgumentReplacer(s, false);
-                            Map<String, Object> d = new HashMap<String, Object>();
-                            int j = 1;
-                            for (Iterator<String> e = ar.getArgumentNames(); e.hasNext();)
-                                d.put(e.next(), "$" + (j++));
-                            pw.println(ar.replaceValues(d));
+                            // FIXME this won't work until we implement a method to print back to MQL analyzed query trees
+//                            ArgumentReplacer ar = new ArgumentReplacer(s, false);
+//                            Map<String, Object> d = new HashMap<String, Object>();
+//                            int j = 1;
+//                            for (Iterator<String> e = ar.getArgumentNames(); e.hasNext();)
+//                                d.put(e.next(), "$" + (j++));
+//                            pw.println(ar.replaceValues(d));
                         }
                     }
                 }
