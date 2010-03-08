@@ -9,7 +9,7 @@ import java.util.Vector;
 import org.apache.commons.lang.ArrayUtils;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
-import org.makumba.OQLParseError;
+import org.makumba.MakumbaError;
 import org.makumba.ProgrammerError;
 import org.makumba.commons.NameResolver.TextList;
 import org.makumba.providers.DataDefinitionProvider;
@@ -158,7 +158,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
             
             // we still make a dummy function call because we need it to have the right index in the inliner
             FunctionCall c = new FunctionCall(null, null, null, null, additionalPath, false, true, false, getCurrentClauseType() == WHERE);
-            orderedFunctionCalls.put(c.getKey(), c);
+            addFunctionCall(c);
             return c.getKey();
         }       
         
@@ -171,8 +171,16 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         }
         
         FunctionCall c = new FunctionCall(funct, args, null, type, path, inFunctionCall, false, additionalPath.startsWith("actor"), getCurrentClauseType() == WHERE);
-        orderedFunctionCalls.put(c.getKey(), c);
+        addFunctionCall(c);
         return c.getKey();
+    }
+    
+    /** makes sure we don't override another function call with the same signature but in a different place **/
+    private void addFunctionCall(FunctionCall c) {
+        while(orderedFunctionCalls.get(c.getKey()) != null) {
+            c = c.incrementId();
+        }
+        orderedFunctionCalls.put(c.getKey(), c);
     }
     
     @Override
@@ -366,8 +374,16 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     void setParameterType(MqlNode param, FieldDefinition likewise) {
         String paramName = param.getOriginalText();
         
+        System.out.println("--------------------paramName: " + paramName);
+        
+        // FIXME if paramName is '?' throw exception, we don't support this syntax here
+        
         // we separate the parameter position from the name, as both are registered in the same string
         int paramPositionIndex = paramName.indexOf("###");
+        if(paramPositionIndex < -1) {
+            throw new MakumbaError("Untreated parameter " + paramName + " in query analysis");
+        }
+        
         int paramPosition = Integer.parseInt(paramName.substring(paramPositionIndex + 3));
         paramName = paramName.substring(0, paramPositionIndex);
 

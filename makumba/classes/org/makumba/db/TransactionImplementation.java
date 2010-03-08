@@ -30,7 +30,6 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -54,6 +53,8 @@ import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProvider;
 
 /**
+ * Abstract {@link Transaction}, with helper methods for both concrete implementations
+ * 
  * @version $Id: TransactionImplementation.java,v 1.1 Jun 15, 2008 3:31:07 PM rudi Exp $
  */
 public abstract class TransactionImplementation implements Transaction {
@@ -350,11 +351,19 @@ public abstract class TransactionImplementation implements Transaction {
         return ",";
     }
 
+    /**
+     * Takes a heterogeneous argument object (coming from the BL API or the view layer) and transforms it into a Map<String, Object>,
+     * taking into account possible context attributes (session, request, and other bundled makumba {@link Attributes})
+     */
     protected Map<String, Object> paramsToMap(Object args) {
         final Map<String, Object> m= paramsToMap1(args);
         if(contextAttributes==null)
             return m;
-        return new EasyMap<String, Object>(){
+        return new HashMap<String, Object>() {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
             public Object get(Object key) {
                 Object o= m.get(key);
                 if(o!=null)
@@ -396,22 +405,6 @@ public abstract class TransactionImplementation implements Transaction {
         return ret;
     }
 
-    protected Object[] treatParam(Object args) {
-        if (args == null) {
-            return new Object[] {};
-        } else if (args instanceof Vector) {
-            Vector v = (Vector) args;
-            Object[] param = new Object[v.size()];
-            v.copyInto(param);
-            return param;
-        } else if (args instanceof Object[]) {
-            return (Object[]) args;
-        } else {
-            Object p[] = { args };
-            return p;
-        }
-    }
-
     public String transformTypeName(String name) {
         return name;
     }
@@ -434,55 +427,5 @@ public abstract class TransactionImplementation implements Transaction {
 
     public void setContext(Attributes a) {
         contextAttributes = a;
-    }
-    
-    static class EasyMap<K, V>implements Map<K,V>{
-
-        public void clear() {            
-        }
-
-        public boolean containsKey(Object key) {
-            return false;
-        }
-
-        public boolean containsValue(Object value) {
-            return false;
-        }
-
-        public Set<java.util.Map.Entry<K, V>> entrySet() {
-            return null;
-        }
-
-        public V get(Object key) {
-            return null;
-        }
-
-        public boolean isEmpty() {
-            return false;
-        }
-
-        public Set<K> keySet() {
-            return null;
-        }
-
-        public V put(K key, V value) {
-            return null;
-        }
-
-        public void putAll(Map<? extends K, ? extends V> t) {            
-        }
-
-        public V remove(Object key) {
-            return null;
-        }
-
-        public int size() {
-            return 0;
-        }
-
-        public Collection<V> values() {
-            return null;
-        }
-        
     }
 }

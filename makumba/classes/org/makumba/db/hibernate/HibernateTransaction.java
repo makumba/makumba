@@ -510,4 +510,20 @@ public class HibernateTransaction extends TransactionImplementation {
     public org.hibernate.Transaction beginTransaction() {
         return this.t = s.beginTransaction();
     }
+
+    protected Object[] treatParam(Object args) {
+        if (args == null) {
+            return new Object[] {};
+        } else if (args instanceof Vector) {
+            Vector v = (Vector) args;
+            Object[] param = new Object[v.size()];
+            v.copyInto(param);
+            return param;
+        } else if (args instanceof Object[]) {
+            return (Object[]) args;
+        } else {
+            Object p[] = { args };
+            return p;
+        }
+    }
 }

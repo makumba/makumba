@@ -23,11 +23,9 @@
 
 package org.makumba.providers;
 
-import java.util.List;
 import java.util.Map;
 
 import org.makumba.DataDefinition;
-import org.makumba.commons.NameResolver;
 
 /**
  * This interface describes the result of a query analysis.
@@ -76,34 +74,4 @@ public interface QueryAnalysis {
      * Each mentioning of a parameter new will get a new field in this DataDefinition!  
      */
     DataDefinition getParameterTypes();
-    
-    /**
-     * Gets the ordered list of parameter names, in order of appearance in the query
-     */
-    List<String> getOrderedParameterNames();
-
-    /**
-     * Gets the total number of parameters in the query; like $1, $2 etc. Note that if for example. $1 appears twice it will
-     * be counted twice.
-     * 
-     * @see #parameterAt(int)
-     */
-    int parameterNumber();
-
-    /**
-     * Gets the number of the parameter mentioned at the position indicated by the given index. query parameters may not
-     * get mentioned in the order of their $number, for example $1 may not appear first in the query, $2 may not appear second
-     * in the query, etc.
-     * 
-     * @see #parameterNumber()
-     */
-    public int parameterAt(int index);
-    
-    /**
-     * generate SQL
-     * @param nr the NameResolver that maps DataDefinition names to database names
-     * @return a SQL string
-     */
-    public String writeInSQLQuery(NameResolver nr);
-    
 }

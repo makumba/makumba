@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Dictionary;
+import java.util.Map;
 import java.util.Vector;
 
 import org.makumba.DBError;
@@ -40,15 +41,18 @@ import org.makumba.db.makumba.OQLQueryProvider;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
+import org.makumba.providers.SQLQueryGenerator;
 
 /** SQL implementation of a OQL query */
 public class Query implements org.makumba.db.makumba.Query {
-    
+
     String query;
 
     TableManager resultHandler;
 
-    String command;
+    QueryAnalysis qA;
+    
+    SQLQueryGenerator qG;
 
     ParameterAssigner assigner;
 
@@ -59,38 +63,40 @@ public class Query implements org.makumba.db.makumba.Query {
     boolean supportsLimitInQuery;
 
     String insertIn;
-    
+
     Database db;
 
     TableManager insertHandler;
 
+    /**
+     * Gets the raw SQL query to be executed
+     * @return the SQL query string to be sent to the database, assuming no multiple arguments
+     */
     public String getCommand() {
-        return command;
+        return qG.getSQLQuery(db.getNameResolverHook());
     }
 
-    public Query(Database db, String OQLQuery, String insertIn) {
-        QueryAnalysisProvider qap= null;
+    public Query(Database db, String MQLQuery, String insertIn) {
+        QueryAnalysisProvider qap = null;
         this.db = db;
-        query=OQLQuery;
+        query = MQLQuery;
         try {
-           qap=(QueryAnalysisProvider) Class.forName(OQLQueryProvider.OQLQUERY_ANALYSIS_PROVIDER).newInstance();
+            qap = (QueryAnalysisProvider) Class.forName(OQLQueryProvider.OQLQUERY_ANALYSIS_PROVIDER).newInstance();
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-  
-        QueryAnalysis qA= (insertIn != null && insertIn.length() > 0)?
-                qap.getQueryAnalysis(OQLQuery, insertIn):qap.getQueryAnalysis(OQLQuery);
+
+        qA = (insertIn != null && insertIn.length() > 0) ? qap.getQueryAnalysis(MQLQuery, insertIn)
+                : qap.getQueryAnalysis(MQLQuery);
         
-        command = qA.writeInSQLQuery(db.getNameResolverHook());
-            
+        // this is a bit of a hack, we know that the MQLQueryAnalysis is also a generator
+        qG = (SQLQueryGenerator) qA;
 
         resultHandler = (TableManager) db.makePseudoTable(qA.getProjectionType());
-        assigner = new ParameterAssigner(db, qA);
         limitSyntax = db.getLimitSyntax();
         offsetFirst = db.isLimitOffsetFirst();
         supportsLimitInQuery = db.supportsLimitInQuery();
@@ -100,25 +106,29 @@ public class Query implements org.makumba.db.makumba.Query {
         }
     }
 
-    public Vector<Dictionary<String, Object>> execute(Object[] args, DBConnection dbc, int offset, int limit) {
-        String com = command;
+    public Vector<Dictionary<String, Object>> execute(Map<String, Object> args, DBConnection dbc, int offset, int limit) {
+        
+        qG.setArguments(args);
+        assigner = new ParameterAssigner(db, qA, qG);
+        
+        String com = getCommand();
         if (supportsLimitInQuery) {
             com += " " + limitSyntax; // TODO: it might happen that it should be in other places than at the end.
         }
         PreparedStatement ps = ((SQLDBConnection) dbc).getPreparedStatement(com);
 
         try {
-            String s = assigner.assignParameters(ps, args);
+            String s = assigner.assignParameters(ps, qG.getSQLQueryArguments());
 
             if (supportsLimitInQuery) {
                 int limit1 = limit == -1 ? Integer.MAX_VALUE : limit;
 
                 if (offsetFirst) {
-                    ps.setInt(assigner.tree.parameterNumber() + 1, offset);
-                    ps.setInt(assigner.tree.parameterNumber() + 2, limit1);
+                    ps.setInt(assigner.qG.getSQLArgumentNumber() + 1, offset);
+                    ps.setInt(assigner.qG.getSQLArgumentNumber() + 2, limit1);
                 } else {
-                    ps.setInt(assigner.tree.parameterNumber() + 1, limit1);
-                    ps.setInt(assigner.tree.parameterNumber() + 2, offset);
+                    ps.setInt(assigner.qG.getSQLArgumentNumber() + 1, limit1);
+                    ps.setInt(assigner.qG.getSQLArgumentNumber() + 2, offset);
                 }
             }
 
@@ -126,7 +136,8 @@ public class Query implements org.makumba.db.makumba.Query {
                 throw new InvalidValueException("Errors while trying to assign arguments to query:\n" + com + "\n" + s);
             }
 
-            java.util.logging.Logger.getLogger("org.makumba.db.query.execution").fine("" + db.getWrappedStatementToString(ps));
+            java.util.logging.Logger.getLogger("org.makumba.db.query.execution").fine(
+                "" + db.getWrappedStatementToString(ps));
             java.util.Date d = new java.util.Date();
             ResultSet rs = null;
             try {
@@ -136,15 +147,15 @@ public class Query implements org.makumba.db.makumba.Query {
                 throw new DBError(se, com);
             }
             long diff = new java.util.Date().getTime() - d.getTime();
-            java.util.logging.Logger.getLogger("org.makumba.db.query.performance").fine("" + diff + " ms " + db.getWrappedStatementToString(ps));
+            java.util.logging.Logger.getLogger("org.makumba.db.query.performance").fine(
+                "" + diff + " ms " + db.getWrappedStatementToString(ps));
             return goThru(rs, resultHandler);
         } catch (SQLException e) {
             throw new org.makumba.DBError(e);
-        }catch (RuntimeException e) {
-            System.out.println(query);
+        } catch (RuntimeException e) {
+            // System.out.println(query);
             throw e;
-        }
-        finally{
+        } finally {
             try {
                 ps.close();
             } catch (SQLException e) {
@@ -153,7 +164,7 @@ public class Query implements org.makumba.db.makumba.Query {
         }
     }
 
-    Vector<Dictionary<String, Object>> goThru(ResultSet rs, TableManager rm) {
+    private Vector<Dictionary<String, Object>> goThru(ResultSet rs, TableManager rm) {
         // TODO: if(!supportsLimitInQuery) { do slower limit & offset in java}
         int size = rm.keyIndex.size();
 
@@ -171,7 +182,7 @@ public class Query implements org.makumba.db.makumba.Query {
         return ret;
     }
 
-    void analyzeInsertIn(DataDefinition proj, org.makumba.db.makumba.Database db) {
+    private void analyzeInsertIn(DataDefinition proj, org.makumba.db.makumba.Database db) {
         DataDefinition insert = DataDefinitionProvider.getInstance().getDataDefinition(insertIn);
         for (String string : proj.getFieldNames()) {
             if (insert.getFieldDefinition(string) == null) {
@@ -181,7 +192,11 @@ public class Query implements org.makumba.db.makumba.Query {
         insertHandler = (TableManager) db.getTable(insert);
     }
 
-    public int insert(Object[] args, DBConnection dbc) {
+    public int insert(Map<String, Object> args, DBConnection dbc) {
+        
+        qG.setArguments(args);
+        assigner = new ParameterAssigner(db, qA, qG);
+        
         String comma = "";
         StringBuffer fieldList = new StringBuffer();
         for (String string : resultHandler.getDataDefinition().getFieldNames()) {
@@ -192,19 +207,19 @@ public class Query implements org.makumba.db.makumba.Query {
 
         String tablename = "temp_" + (int) (Math.random() * 10000.0);
 
-        String com = "INSERT INTO " + tablename + " ( " + fieldList + ") " + command;
+        String com = "INSERT INTO " + tablename + " ( " + fieldList + ") " + getCommand();
         try {
             SQLDBConnection sqldbc = (SQLDBConnection) dbc;
             resultHandler.create(sqldbc, tablename, true);
             PreparedStatement ps = sqldbc.getPreparedStatement(com);
-            String s = assigner.assignParameters(ps, args);
+            String s = assigner.assignParameters(ps, qG.getSQLQueryArguments());
             if (s != null) {
                 throw new InvalidValueException("Errors while trying to assign arguments to query:\n" + com + "\n" + s);
             }
 
             int n = ps.executeUpdate();
             ps.close();
-            
+
             com = "INSERT INTO " + insertHandler.getDBName() + " (" + fieldList + ") SELECT " + fieldList + " FROM "
                     + tablename;
             ps = sqldbc.getPreparedStatement(com);
@@ -223,6 +238,4 @@ public class Query implements org.makumba.db.makumba.Query {
             throw new org.makumba.DBError(e);
         }
     }
-
-    
 }

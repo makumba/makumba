@@ -25,6 +25,8 @@ public class FunctionCall {
     
     private String path;
     
+    private int id = 0;
+    
     public FunctionCall(QueryFragmentFunction function, Vector<MqlNode> orderedArguments, Vector<Node> orderedArgumentsOrigins, DataDefinition parentType, String path, boolean isFunctionArgument, boolean isMQLFunction, boolean isActorFunction, boolean isInWhere) {
         super();
         this.function = function;
@@ -43,9 +45,14 @@ public class FunctionCall {
     }
 
     public String getKey() {
-        return function == null ? null : function.getName() + "_" + orderedArguments + "_" + parentType + "_" + path + "_" + isFunctionArgument() + "_" + isMQLFunction + "_" + isActorFunction + "_" + isInWhere;
+        return (function == null ? null : function.getName()) + "_" + orderedArguments + "_" + parentType + "_" + path + "_" + isFunctionArgument() + "_" + isMQLFunction + "_" + isActorFunction + "_" + isInWhere + "_" + id;
     }
-
+    
+    public FunctionCall incrementId() {
+        this.id = id + 1;
+        return this;
+    }
+    
     public Vector<Node> getOrderedArgumentOrigins() {
         return orderedArgumentOrigins;
     }

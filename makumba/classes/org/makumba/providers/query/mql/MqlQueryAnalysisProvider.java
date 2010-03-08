@@ -65,7 +65,7 @@ public class MqlQueryAnalysisProvider extends QueryAnalysisProvider {
             a.setText(a.getFirstChild().getText() + "." + a.getFirstChild().getNextSibling().getText());
             a.setFirstChild(null);
         }
-        if (a.getType() == HqlTokenTypes.IDENT && a.getText().startsWith("$")) {
+        if (a.getType() == HqlTokenTypes.IDENT && a.getText().startsWith("$") && a.getText().indexOf("###") < 0) {
             // replacement of $n with (: makumbaParam n)
             a.setType(HqlTokenTypes.COLON);
             AST para = new Node();
@@ -90,7 +90,10 @@ public class MqlQueryAnalysisProvider extends QueryAnalysisProvider {
 
             // we append in the tree to the parameter name the parameter position, 
             // to be able to retrieve the position, and thus identify the parameter at type analysis
-            a.getFirstChild().setText(a.getFirstChild().getText() + "###" + (parameterOrder.size() - 1));
+            // unless this is a "valid" : param (result of function inlining)
+            if(a.getFirstChild().getText().indexOf("###") < 0 && !a.getFirstChild().getText().startsWith(MqlQueryAnalysis.MAKUMBA_PARAM)) {
+                a.getFirstChild().setText(a.getFirstChild().getText() + "###" + (parameterOrder.size() - 1));
+            }
         }
         if(a.getType()==HqlTokenTypes.SELECT_FROM){
            // first the SELECT part

@@ -23,6 +23,8 @@
 
 package org.makumba.db.makumba;
 
+import java.util.Map;
+
 /**
  * A delete, or update, prepared for execution
  *
@@ -31,5 +33,5 @@ package org.makumba.db.makumba;
 public interface Update {
     
     /** Executes the query with the given arguments */
-    public int execute(DBConnection dbc, Object[] args);
+    public int execute(DBConnection dbc, Map<String, Object> args);
 }

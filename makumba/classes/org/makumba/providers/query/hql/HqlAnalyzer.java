@@ -193,7 +193,7 @@ public class HqlAnalyzer implements QueryAnalysis {
     }
     
     public java.util.List<String> getOrderedParameterNames() {
-        throw new UnsupportedOperationException("parameterAt");
+        throw new UnsupportedOperationException("getOrderedParameterNames");
     }
 
     String getTypeName(int i) {

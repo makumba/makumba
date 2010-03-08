@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Vector;
@@ -14,8 +13,7 @@ import org.makumba.FieldDefinition;
 import org.makumba.OQLParseError;
 import org.makumba.commons.ClassResource;
 import org.makumba.commons.NameResolver;
-import org.makumba.providers.QueryAnalysisProvider;
-import org.makumba.providers.query.hql.HQLQueryAnalysisProvider;
+import org.makumba.providers.SQLQueryGenerator;
 
 import antlr.collections.AST;
 
@@ -104,10 +102,13 @@ public class ParserTest {
         String mql_sql = null; 
 
         MqlQueryAnalysis mq = null;
+        SQLQueryGenerator qG = null;
         Throwable mqlThr=null;
         try {
             mq = new MqlQueryAnalysis(query, false, automaticLeftJoin);
-            mql_sql = mq.writeInSQLQuery(nr).toLowerCase();
+            qG = (SQLQueryGenerator) qG;
+            
+            mql_sql = qG.getSQLQuery(nr).toLowerCase();
         } catch (Throwable t) {
             mqlThr=t;
         }

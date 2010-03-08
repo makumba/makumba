@@ -55,7 +55,8 @@ public abstract class QueryAnalysisProvider {
             return (String) inlinedQueries.getResource(query);
         } catch (NullPointerException e) {
             initializeCache(query, e);
-            return (String) inlinedQueries.getResource(query);
+            String inlined = (String) inlinedQueries.getResource(query);
+            return inlined;
         }
     }
 
@@ -215,11 +216,16 @@ public abstract class QueryAnalysisProvider {
 
                     protected Object makeResource(Object nm, Object hashName) throws Exception {
                         
+                        String result = "";
+                        
                         if(!Configuration.getQueryInliner().equals("tree")) {
-                            return FunctionInliner.inline((String) nm, QueryAnalysisProvider.this);
+                            result = FunctionInliner.inline((String) nm, QueryAnalysisProvider.this);
                         } else {
-                            return org.makumba.providers.query.mql.FunctionInliner.inlineQuery((String) nm, QueryAnalysisProvider.this);
+                            // don't inline here, inline directly during processing
+                            result = (String)nm;
+
                         }
+                        return result;
                         
                     }
                 }, true));
