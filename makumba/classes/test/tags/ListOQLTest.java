@@ -377,6 +377,31 @@ public class ListOQLTest extends MakumbaJspTestCase {
         }
         assertTrue(compareTest(output));
     }
+    
+    public void testNotInSet() throws ServletException, IOException {
+        pageContext.include("list-oql/testNotIn.jsp");
+    }
+    
+    public void endNotInSet(WebResponse response) throws Exception {
+        try {
+            output = response.getText(); fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
+    }
 
+    public void testMultiParam() throws ServletException, IOException {
+        pageContext.include("list-oql/testMultiParam.jsp");
+    }
+    
+    public void endMultiParam(WebResponse response) throws Exception {
+        try {
+            output = response.getText(); fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
+    }    
     
 }
