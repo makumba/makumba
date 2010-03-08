@@ -152,6 +152,11 @@ a.classLink {
   font-weight: bold;
 }
 
+.errorLine {
+	background:orange;
+	color:white;
+}
+
 /* Styles for the Java viewer 
    Styles are roughly the same as the Eclipse standards */
 .javaLineComment {
