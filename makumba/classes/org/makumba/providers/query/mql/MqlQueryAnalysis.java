@@ -28,7 +28,6 @@ import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.SQLQueryGenerator;
-import org.makumba.providers.datadefinition.mdd.MakumbaDumpASTVisitor;
 
 import antlr.RecognitionException;
 import antlr.collections.AST;
@@ -158,17 +157,6 @@ public class MqlQueryAnalysis implements QueryAnalysis, SQLQueryGenerator {
         
         long diff = new java.util.Date().getTime() - d.getTime();
         java.util.logging.Logger.getLogger("org.makumba.db.query.compilation").fine("MQL analysis: " + diff + " ms: " + query);
-
-        
-       System.out.println("ANALYZED QUERY TREE");
-       MakumbaDumpASTVisitor v = new MakumbaDumpASTVisitor(false);
-       v.visit(mqlAnalyzer.getAST());
-       
-       System.out.println("paramInfo: " + paramInfo);
-       for(String n : paramInfo.getFieldNames()) {
-           System.out.println(paramInfo.getFieldDefinition(n));
-       }
-       
        
     }
 
