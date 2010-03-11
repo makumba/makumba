@@ -60,8 +60,10 @@ public class MqlQueryAnalysis implements QueryAnalysis, SQLQueryGenerator {
 
     private DataDefinition paramInfo;
     
-    private AST analyserTree;
-
+    private AST analyserTreeOriginal;
+    
+    private AST analyserTreeSQL;
+    
     private TextList text;
     
     private MqlSqlWalker analyser;
@@ -124,7 +126,7 @@ public class MqlQueryAnalysis implements QueryAnalysis, SQLQueryGenerator {
         }
         doThrow(mqlAnalyzer.error, parsed);
         
-        analyserTree = mqlAnalyzer.getAST();
+        analyserTreeOriginal = mqlAnalyzer.getAST();
         labels = mqlAnalyzer.rootContext.labels;
         aliases = mqlAnalyzer.rootContext.aliases;
         paramInfo = DataDefinitionProvider.getInstance().getVirtualDataDefinition("Parameters for " + query);
@@ -319,9 +321,11 @@ public class MqlQueryAnalysis implements QueryAnalysis, SQLQueryGenerator {
     public void setArguments(java.util.Map<String, Object> arguments) {
         this.arguments = arguments;
         
-        if(expandedParamInfo == null) {
-            expandMultipleParameters();
-        }
+        // get a fresh copy of the analysis tree, that we'll modify
+        
+        analyserTreeSQL = analyser.fact.dupTree(analyserTreeOriginal);
+        
+        expandMultipleParameters();
         
     }
     
@@ -349,11 +353,11 @@ public class MqlQueryAnalysis implements QueryAnalysis, SQLQueryGenerator {
         
         MqlSqlGenerator mg = new MqlSqlGenerator();
         try {
-            mg.statement(analyserTree);
+            mg.statement(analyserTreeSQL);
         } catch (Throwable e) {
-            doThrow(e, analyserTree);
+            doThrow(e, analyserTreeSQL);
         }
-        doThrow(mg.error, analyserTree);
+        doThrow(mg.error, analyserTreeSQL);
 
         text = mg.text;
 
@@ -374,7 +378,7 @@ public class MqlQueryAnalysis implements QueryAnalysis, SQLQueryGenerator {
         if(arguments == null) {
             throw new MakumbaError("Error: arguments should have been set before calling getSQLQueryArguments using setArguments");
         }
-
+        
         ArrayList<Object> res = new ArrayList<Object>();
 
         for (Iterator<String> e = parameterOrder.iterator(); e.hasNext();) {
@@ -402,8 +406,7 @@ public class MqlQueryAnalysis implements QueryAnalysis, SQLQueryGenerator {
         
         expandedParamInfo = DataDefinitionProvider.getInstance().getVirtualDataDefinition("SQL parameters for " + query);
         
-        ArrayList<AST> queryParams = findQueryParameters(analyserTree, new ArrayList<AST>());
-        
+        ArrayList<AST> queryParams = findQueryParameters(analyserTreeSQL, new ArrayList<AST>());
        // expand multiple params (vectors, lists) into multiple parameter entries
         for(int i = 0; i < parameterOrder.size(); i++) {
             Object val = getArgumentValue(parameterOrder.get(i), arguments);
@@ -417,6 +420,7 @@ public class MqlQueryAnalysis implements QueryAnalysis, SQLQueryGenerator {
                 // we have to append as n - 1 parameters to the tree
                 for (int j = 0; j < v.size() - 1; j++) {
                     // expand tree
+                    
                     qp.setNextSibling(ASTUtil.create(analyser.fact, HqlSqlTokenTypes.NAMED_PARAM, "?"));
                     qp = qp.getNextSibling();
                     if(j == v.size() - 1) {
@@ -439,7 +443,7 @@ public class MqlQueryAnalysis implements QueryAnalysis, SQLQueryGenerator {
      * Gets the value of a given argument, applies name transformation if necessary, and checks if the value is not null
      */
     private Object getArgumentValue(String argumentName, Map<String, Object> arguments) throws ProgrammerError {
-        
+
         if(arguments == null) {
             throw new MakumbaError("Empty arguments provided");
         }
