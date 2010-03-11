@@ -37,7 +37,7 @@ import org.makumba.InvalidValueException;
 import org.makumba.MakumbaError;
 import org.makumba.NoSuchFieldException;
 import org.makumba.db.makumba.DBConnection;
-import org.makumba.db.makumba.OQLQueryProvider;
+import org.makumba.db.makumba.MQLQueryProvider;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
@@ -81,7 +81,7 @@ public class Query implements org.makumba.db.makumba.Query {
         this.db = db;
         query = MQLQuery;
         try {
-            qap = (QueryAnalysisProvider) Class.forName(OQLQueryProvider.OQLQUERY_ANALYSIS_PROVIDER).newInstance();
+            qap = (QueryAnalysisProvider) Class.forName(MQLQueryProvider.MQLQUERY_ANALYSIS_PROVIDER).newInstance();
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
