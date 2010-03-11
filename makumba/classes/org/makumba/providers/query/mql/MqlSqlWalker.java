@@ -374,8 +374,6 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     void setParameterType(MqlNode param, FieldDefinition likewise) {
         String paramName = param.getOriginalText();
         
-        System.out.println("--------------------paramName: " + paramName);
-        
         // FIXME if paramName is '?' throw exception, we don't support this syntax here
         
         // we separate the parameter position from the name, as both are registered in the same string
