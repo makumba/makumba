@@ -29,6 +29,7 @@ import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
 import org.makumba.commons.NameResolver;
 import org.makumba.commons.NameResolver.TextList;
+import org.makumba.providers.DataDefinitionProvider;
 
 import antlr.CommonAST;
 import antlr.SemanticException;
@@ -113,7 +114,7 @@ public class MqlNode extends CommonAST {
     }
 
     protected void oneMoreChild(MqlNode child) {
-        if (walker.error != null) {
+        if (walker.error != null || child == null) {
             return;
         }
         FieldDefinition tp = findMakType(child);
@@ -191,7 +192,7 @@ public class MqlNode extends CommonAST {
             case HqlSqlTokenTypes.UNARY_MINUS:
             case HqlSqlTokenTypes.UNARY_PLUS:
                 if (child.isParam()) {
-                    child.setMakType(walker.currentContext.ddp.makeFieldDefinition("x", "int"));
+                    child.setMakType(DataDefinitionProvider.getInstance().makeFieldDefinition("x", "int"));
                 }
                 return child.getMakType();
             case HqlSqlTokenTypes.CASE:
@@ -220,14 +221,14 @@ public class MqlNode extends CommonAST {
         
         if (type != null) {
             child.setType(HqlSqlTokenTypes.METHOD_NAME);
-            return walker.currentContext.ddp.makeFieldDefinition("x", type);
+            return DataDefinitionProvider.getInstance().makeFieldDefinition("x", type);
         }
         return null;
     }
 
     protected void setMakType(FieldDefinition fd) {
         if (fd.getType().equals("ptrIndex")) {
-            fd = walker.ddp.makeFieldDefinition("x", "ptr " + fd.getPointedType().getName());
+            fd = DataDefinitionProvider.getInstance().makeFieldDefinition("x", "ptr " + fd.getPointedType().getName());
         }
         makType = fd;
     }
@@ -249,7 +250,21 @@ public class MqlNode extends CommonAST {
         super.setType(type);
         String def = knownType();
         if (def != null) {
-            setMakType(walker.currentContext.ddp.makeFieldDefinition("x", def));
+            setMakType(DataDefinitionProvider.getInstance().makeFieldDefinition("x", def));
+        }
+    }
+    
+    @Override
+    public void initialize(AST t) {
+        super.initialize(t);
+        if(t instanceof MqlNode) {
+            MqlNode n = (MqlNode)t;
+            makType = n.makType;
+            father = n.father;
+            originalText = n.originalText;
+            textList = n.textList;
+            checkAsIds = n.checkAsIds;
+            walker = n.walker;
         }
     }
 
@@ -391,7 +406,7 @@ public class MqlNode extends CommonAST {
     }
 
     protected FieldDefinition makeBooleanFieldDefinition() {
-        return walker.currentContext.ddp.makeFieldDefinition("x", "boolean");
+        return DataDefinitionProvider.getInstance().makeFieldDefinition("x", "boolean");
     }
 
     public static ArrayList<MQLFunctionDefinition> mqlFunctions = new ArrayList<MQLFunctionDefinition>();
