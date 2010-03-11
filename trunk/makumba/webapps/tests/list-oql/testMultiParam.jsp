@@ -26,9 +26,18 @@
 <% pageContext.setAttribute("languages", languages); %>
 
 <b>Test IN SET, with all languages in parameter $languages</b><br/>
+<mak:list from="test.Language l" where="l IN SET ($languages)" id="1">
+  <mak:value expr="l" />: <mak:value expr="l.name" /> <mak:value expr="l.isoCode" /> <br/>
+</mak:list>
+
+<% languages.remove(0); %>
+
+<b>Test IN SET, with all languages in parameter $languages but one</b><br/>
 <mak:list from="test.Language l" where="l IN SET ($languages)">
   <mak:value expr="l" />: <mak:value expr="l.name" /> <mak:value expr="l.isoCode" /> <br/>
 </mak:list>
+
+
 <br/>
 
 </body>
