@@ -18,7 +18,7 @@ import org.makumba.commons.SingletonHolder;
  */
 public abstract class QueryProvider implements SingletonHolder {
 
-    private static String[] queryProviders = { "oql", "org.makumba.db.makumba.OQLQueryProvider", "hql",
+    private static String[] queryProviders = { "oql", "org.makumba.db.makumba.MQLQueryProvider", "hql",
             "org.makumba.db.hibernate.HQLQueryProvider" };
 
     static final Map<String, QueryAnalysisProvider> analyzersByClass = new HashMap<String, QueryAnalysisProvider>();
@@ -27,6 +27,10 @@ public abstract class QueryProvider implements SingletonHolder {
 
     static final Map<String, Class<?>> providerClasses = new HashMap<String, Class<?>>();
 
+    private String dataSource;
+
+    private QueryAnalysisProvider qap;
+    
     public QueryProvider() {
         org.makumba.commons.SingletonReleaser.register(this);
         
@@ -101,9 +105,12 @@ public abstract class QueryProvider implements SingletonHolder {
      *            the source on which the query should be run
      * @param a 
      */
+    
     protected void init(String dataSource, Attributes a) {
         this.dataSource = dataSource;
     }
+
+    protected abstract Vector<Dictionary<String, Object>> executeRaw(String query, Map args, int offset, int limit);
 
     /**
      * Executes a query with a given set of parameters
@@ -118,8 +125,6 @@ public abstract class QueryProvider implements SingletonHolder {
      *            until which record should results be returned
      * @return a Vector holding Dictionaries corresponding to a result
      */
-    public abstract Vector<Dictionary<String, Object>> executeRaw(String query, Map args, int offset, int limit);
-
     public Vector<Dictionary<String, Object>> execute(String query, Map args, int offset, int limit){
         return executeRaw(qap.inlineFunctions(query), args, offset, limit);
     }
@@ -128,10 +133,6 @@ public abstract class QueryProvider implements SingletonHolder {
      * Closes the environment, when all queries were executed
      */
     public abstract void close();
-
-    private String dataSource;
-
-    private QueryAnalysisProvider qap;
 
     /**
      * Gets the data source of the QueryProvider.
