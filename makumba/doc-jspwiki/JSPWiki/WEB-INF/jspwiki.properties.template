@@ -854,8 +854,6 @@ jspwiki.approver.workflow.createUserProfile=Admin
 
 ###### PLUGINS
 
-codeplugin.defaultLang=jsp
-
 box.note.styleName=note
 box.fixme.styleName=note fixme
 box.warning.styleName=note warning
