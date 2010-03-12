@@ -751,7 +751,7 @@
     <target name="copyWikiPlugins" description="compiles and copies the plugins to the JSPWiki folder">
     
         <copy todir="doc-jspwiki/JSPWiki/WEB-INF/classes/org/makumba/commons/documentation">
-            <fileset dir="${build.path}/org/makumba/commons/documentation/" includes="Box*.class,Insert*.class,Img*.class,API*.class,DEV*.class,JAVA*.class" />
+            <fileset dir="${build.path}/org/makumba/commons/documentation/" includes="Box*.class,Insert*.class,Img*.class,API*.class,DEV*.class,JAVA*.class,HTML*.class" />
         </copy>
     
     </target>
