@@ -212,6 +212,7 @@
         from index.html anymore.  Yay! -->
    <welcome-file-list>
        <welcome-file>Wiki.jsp</welcome-file>
+       <welcome-file>index.html</welcome-file>
    </welcome-file-list>
    
    <!-- Error pages -->
