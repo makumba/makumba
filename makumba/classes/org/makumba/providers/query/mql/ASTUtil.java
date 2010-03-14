@@ -1,6 +1,8 @@
 // $Id: ASTUtil.java 10000 2006-06-08 21:04:45Z steve.ebersole@jboss.com $
 package org.makumba.providers.query.mql;
 
+import org.hibernate.hql.antlr.HqlTokenTypes;
+
 import antlr.ASTFactory;
 import antlr.collections.AST;
 import antlr.collections.impl.ASTArray;
@@ -325,15 +327,21 @@ public final class ASTUtil {
     
     /**
      * Given a DOT tree, construct the path as String
+     * @param onlyFirstChild TODO
      */
     public static String constructPath(AST type) {
         String a_text = "", b_text = "";
         AST a = type.getFirstChild();
+        
         AST b = a.getNextSibling();
+        
         if (a.getType() == HqlSqlTokenTypes.DOT) {
             a_text = constructPath(a);
         } else {
             a_text = a.getText();
+        }
+        if(b == null) {
+            return a_text;
         }
         if (b.getType() == HqlSqlTokenTypes.DOT) {
             b_text = constructPath(b);
@@ -357,6 +365,17 @@ public final class ASTUtil {
 
         } else {
             return ASTUtil.create(fact, HqlSqlTokenTypes.IDENT, path);
+        }
+    }
+
+    /**
+     * Given an AST, return the path, by concatenating all child ASTs that have dots
+     */
+    public static String getPath(AST t) {
+        if (t.getType() == HqlTokenTypes.DOT) {
+            return constructPath(t);
+        } else {
+            return t.getText();
         }
     }
 

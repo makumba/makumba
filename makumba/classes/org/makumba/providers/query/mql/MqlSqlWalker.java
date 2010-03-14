@@ -172,6 +172,15 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         
         FunctionCall c = new FunctionCall(funct, args, null, type, path, inFunctionCall, false, additionalPath.startsWith("actor"), getCurrentClauseType() == WHERE);
         addFunctionCall(c);
+        
+        // if this is an actor with path, set the type
+        // FIXME maybe not necessary
+        if(c.isActorFunction() && c.getPath().startsWith("actor")) {
+            setActorType(functionCall);
+        } else if(c.isActorFunction() && !c.getPath().startsWith("actor")) {
+            // do something different
+        }
+        
         return c.getKey();
     }
     
@@ -484,7 +493,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         //      . [15] 
         //         some [120] 
         //         Type [120] 
-        String type = ASTUtil.constructPath(a.getFirstChild().getNextSibling().getFirstChild());
+        String type = ASTUtil.getPath(a.getFirstChild().getNextSibling().getFirstChild());
         DataDefinition typeDD = ddp.getDataDefinition(type);
         ((MqlNode)a).setMakType(typeDD.getFieldDefinition(0));
     }
