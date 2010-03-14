@@ -45,7 +45,22 @@ public class FunctionCall {
     }
 
     public String getKey() {
-        return (function == null ? null : function.getName()) + "_" + orderedArguments + "_" + parentType + "_" + path + "_" + isFunctionArgument() + "_" + isMQLFunction + "_" + isActorFunction + "_" + isInWhere + "_" + id;
+        String actorType = "";
+        if(isActorFunction && orderedArguments.size() > 0) {
+            actorType = ASTUtil.getPath(orderedArguments.firstElement());
+        }
+        return (function == null ? null : function.getName()) + "_" + orderedArguments + "_" + parentType + "_" + path + "_" + isFunctionArgument() + "_" + isMQLFunction + "_" + "isActorFunction:" + isActorFunction + "####" + actorType + "_" + isInWhere + "_" + id;
+    }
+    
+    public static String getActorType(String key) {
+        if(key.indexOf("isActorFunction:true") < 0) {
+            return null;
+        } else {
+            int i = key.indexOf("####") + 4;
+            String t = key.substring(i);
+            t = t.substring(0, t.indexOf("_"));
+            return t;
+        }
     }
     
     public FunctionCall incrementId() {

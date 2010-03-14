@@ -681,7 +681,9 @@ addrExpr! [ boolean root ]
 
 addrExprLhs
 	: addrExpr [ false ]
-	;
+	   // ****** MQL addition: accept function calls for actors, to be able to have actor(Type).field
+    | f:functionCall
+    ;
 
 propertyName
 	: identifier

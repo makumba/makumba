@@ -230,14 +230,18 @@ public class FunctionInliner {
             Hashtable<String, String> usedLabels = new Hashtable<String, String>();
             collectUsedLabels(ast, usedLabels);
 
+            // also try to remove duplicate paths (FROM some.Type t, some.Type _x_gen_0) introduced during the inlining process
+            // we need to remove only those generated labels that result from putting QFs back into context
+            
+
             AST originalRange = findFrom(ast).getFirstChild();
 
             AST parent = null;
             while (originalRange != null) {
-                String path = getPath(originalRange.getFirstChild().getNextSibling());
+                String path = ASTUtil.getPath(originalRange.getFirstChild().getNextSibling());
 
                 // is this a temporary RANGE or JOIN?
-                boolean isTemporary = (originalRange.getType() == HqlSqlTokenTypes.JOIN && getPath(
+                boolean isTemporary = (originalRange.getType() == HqlSqlTokenTypes.JOIN && ASTUtil.getPath(
                     originalRange.getFirstChild()).startsWith(TEMPORARY_LABEL))
                         || (originalRange.getType() == HqlSqlTokenTypes.RANGE && path.startsWith(TEMPORARY_LABEL));
 
@@ -364,8 +368,7 @@ public class FunctionInliner {
 
                         if (isParameter) {
                             // we can't replace the node with the parameter node because it is transformed by the 2nd
-                            // pass analysis
-                            // so we re-build our parameter node...
+                            // pass analysis, so we re-build our parameter node...
                             n = ASTUtil.makeNode(HqlTokenTypes.COLON, ":");
                             Node paramChild = ASTUtil.makeNode(HqlTokenTypes.IDENT, arg.getOriginalText().startsWith(
                                 "$") ? arg.getOriginalText().substring(1) : arg.getOriginalText());
@@ -373,8 +376,6 @@ public class FunctionInliner {
                             n.setNextSibling(tree.getNextSibling());
                             n.setCol(tree.getColumn());
                             n.setLine(tree.getLine());
-
-                            System.out.println("==================== PARAMETER " + arg.getOriginalText());
 
                         } else if (!isParameter) {
                             // we have an argument of the function call that we need to replace with the value passed in
@@ -474,18 +475,18 @@ public class FunctionInliner {
 
             lastAlias = firstAlias;
 
+            if (hasComplexPath) {
+                // expand the ranges according to the path
+                lastAlias = expandRangeElement(c.getPath(), range, false, null);
+                path = path.substring(0, path.indexOf("."));
+            }
+            
             // generate a JOIN when the parent type of the QF is a subfield
             // this is necessary in order to have our QF tree accepted by the analyser on potential further inlinings
             if (isInSubfield) {
                 // JOIN with the subfield type
                 lastAlias = expandRangeElement(lastAlias + "." + c.getParentType().getParentField().getName(), range,
                     true, joinAlias);
-            }
-
-            if (hasComplexPath) {
-                // expand the ranges according to the path
-                lastAlias = expandRangeElement(c.getPath(), range, false, null);
-                path = path.substring(0, path.indexOf("."));
             }
 
         } else {
@@ -720,7 +721,7 @@ public class FunctionInliner {
 
             AST a = c.getOrderedArguments().firstElement();
             if (a.getType() == HqlSqlTokenTypes.DOT) {
-                type = getPath(a);
+                type = ASTUtil.getPath(a);
             } else {
                 type = c.getOrderedArguments().firstElement().getText();
             }
@@ -749,6 +750,10 @@ public class FunctionInliner {
 
                     int dot = functionCall.getPath().indexOf(".");
                     String label = functionCall.getPath().substring(0, dot > 0 ? dot : functionCall.getPath().length());
+                    
+                    if(debug) {
+                        System.out.println("replacing method call, FROM segment found to merge with, found label " + label);
+                    }
 
                     // if we have a constraint on the label of the function, we will not re-use the label
                     // UNLESS the function call is part of the WHERE in which case we don't really care about having a
@@ -762,13 +767,13 @@ public class FunctionInliner {
                         }
                         Boolean hasConstraint = hasIdentifier(methodCall.getWhere(), label, false);
                         if (hasConstraint) {
-                            join(methodCall.getFrom(), fact.dupTree(additionalFrom), inlinedFunction, null);
+                            join(methodCall.getFrom(), fact.dupTree(additionalFrom), inlinedFunction, null, false);
                         }
                     } else {
-                        join(methodCall.getFrom(), fact.dupTree(additionalFrom), inlinedFunction, label);
+                        join(methodCall.getFrom(), fact.dupTree(additionalFrom), inlinedFunction, label, true);
                     }
                 } else {
-                    join(methodCall.getFrom(), fact.dupTree(additionalFrom), inlinedFunction, null);
+                    join(methodCall.getFrom(), fact.dupTree(additionalFrom), inlinedFunction, null, true);
                 }
             }
 
@@ -826,11 +831,15 @@ public class FunctionInliner {
      * Joins the elements of the first FROM with the second one, avoiding label collision. in some cases, we might not
      * want to avoid label collision but instead have label re-usage in that case we replace the to-be-reused label in
      * the additionalFrom before joining
+     * 
+     * @param mergeSameRange whether or not to replace JOIN labels of the new tree with the labels of the same joins in the first tree
      */
-    private void join(AST from, AST additionalFrom, AST tree, String labelToReuse) {
+    private void join(AST from, AST additionalFrom, AST tree, String labelToReuse, boolean mergeSameRange) {
 
         Hashtable<String, AST> existingLabels = getLabels(from);
         Hashtable<String, AST> newLabels = getLabels(additionalFrom);
+        
+        Hashtable<String, String> newLabelPaths = new Hashtable<String, String>();
 
         // we need to avoid label collision, i.e. if the same label is used in the additional FROM
         // we will replace it, as well as at the calls to it
@@ -838,51 +847,66 @@ public class FunctionInliner {
         // - replace the label itself in the RANGE element
         // - scan all the further range elements, if they contain a reference to that label, replace it too
         // - scan all the identifiers in the query (a.b.c), if they contain a reference to the label (a), replace it too
-        Hashtable<String, String> collisions = new Hashtable<String, String>();
+        Hashtable<String, String> labelsToReplace = new Hashtable<String, String>();
         for (String l : newLabels.keySet()) {
             if (existingLabels.containsKey(l) && !l.equals(labelToReuse)) {
                 String r = createLabel(false);
-                collisions.put(l, r);
+                labelsToReplace.put(l, r);
                 // replace the label in the tree we want to join the existing FROM with
                 newLabels.get(l).getFirstChild().getNextSibling().setText(r);
             } else if (existingLabels.containsKey(l) && l.equals(labelToReuse)) {
                 // remove the duplicate RANGE element from the additionalFrom so we don't have it twice in the end
-                AST additionalRange = additionalFrom.getFirstChild();
-                AST parent = additionalRange;
-                while (!additionalRange.getFirstChild().getNextSibling().getText().equals(
-                    newLabels.get(l).getFirstChild().getNextSibling().getText())) {
-                    additionalRange = additionalRange.getNextSibling();
-                    parent = additionalRange;
-                }
-                if (additionalRange.getNextSibling() != null && additionalRange != parent) {
-                    parent.setNextSibling(additionalRange.getNextSibling());
-                } else if (additionalRange.getNextSibling() != null && additionalRange == parent) {
-                    // we are at the beginning of the tree
-                    additionalFrom.setFirstChild(additionalRange.getNextSibling());
-                } else {
-                    // we only have one RANGE element
-                    // so we completely remove it from the FROM
-                    additionalFrom.setFirstChild(null);
-                }
-
+                removeRange(additionalFrom, newLabels, l);
+            } else if(newLabels.get(l) != null && newLabels.get(l).getFirstChild() != null && !l.startsWith(TEMPORARY_LABEL)){
+                // for all these labels that we couldn't treat earlier, keep them so that if they happen to be duplicated
+                // we can merge them later on
+                String path = ASTUtil.getPath(newLabels.get(l).getFirstChild());
+                newLabelPaths.put(l, path);
             }
 
             // t.x.y.z (where t collides)
-            for (String c : collisions.keySet()) {
+            for (String c : labelsToReplace.keySet()) {
                 AST type = newLabels.get(l).getFirstChild();
-                String path = getPath(type);
+                String path = ASTUtil.getPath(type);
                 if (path.startsWith(c + ".")) {
                     String t = path;
                     t = t.substring(c.length());
-                    t = collisions.get(c) + t;
+                    t = labelsToReplace.get(c) + t;
                     newLabels.get(l).setFirstChild(ASTUtil.constructPath(fact, t));
                     newLabels.get(l).getFirstChild().setNextSibling(type.getNextSibling());
                 }
             }
         }
+        
+        
+        if(mergeSameRange) {
+            
+            // merge stuff like
+            //
+            // JOIN [32] 
+            //    . [15] 
+            //       m [120] 
+            //       item [120] 
+            //    it [69] 
+            // RANGE [84] 
+            //    . [15] 
+            //       m [120] 
+            //       item [120] 
+            //    _x_gen_0 [69] 
+            
+            for(String nl : newLabelPaths.keySet()) {
+                for (String el : existingLabels.keySet()) {
+                    String path = ASTUtil.getPath(existingLabels.get(el).getFirstChild());
+                    if(newLabelPaths.get(nl).equals(path)) {
+                        removeRange(additionalFrom, newLabels, nl);
+                        labelsToReplace.put(nl, el);
+                    }
+                }
+            }
+        }
 
         // now that we are done with processing the RANGE elements, do the replacement in the rest of the tree
-        replaceLabels(tree, collisions);
+        replaceLabels(tree, tree, false, labelsToReplace);
 
         // finally, append the RANGE elements from the new tree to the existing one, if there is one to append
         AST endFrom = ASTUtil.getLastChild(from);
@@ -891,35 +915,63 @@ public class FunctionInliner {
         }
     }
 
+    private void removeRange(AST additionalFrom, Hashtable<String, AST> newLabels, String l) {
+        AST additionalRange = additionalFrom.getFirstChild();
+        AST parent = additionalRange;
+        while (!additionalRange.getFirstChild().getNextSibling().getText().equals(
+            newLabels.get(l).getFirstChild().getNextSibling().getText()) && additionalRange.getNextSibling() != null) {
+            additionalRange = additionalRange.getNextSibling();
+            parent = additionalRange;
+        }
+        if (additionalRange.getNextSibling() != null && additionalRange != parent) {
+            parent.setNextSibling(additionalRange.getNextSibling());
+        } else if (additionalRange.getNextSibling() != null && additionalRange == parent) {
+            // we are at the beginning of the tree
+            additionalFrom.setFirstChild(additionalRange.getNextSibling());
+        } else {
+            // we only have one RANGE element
+            // so we completely remove it from the FROM
+            additionalFrom.setFirstChild(null);
+        }
+    }
+
     /**
      * Walks through the query function tree and replaces all colliding labels
      */
-    private void replaceLabels(AST ast, Hashtable<String, String> collisions) {
+    private void replaceLabels(AST ast, AST parent, boolean firstChild, Hashtable<String, String> labelsToReplace) {
         if (ast == null) {
             return;
         }
 
         // we skip the FROM tree since we already processed it
         if (ast.getType() == HqlTokenTypes.FROM) {
-            replaceLabels(ast.getNextSibling(), collisions);
+            replaceLabels(ast.getNextSibling(), ast, false, labelsToReplace);
         }
 
         if (ast.getType() == HqlTokenTypes.IDENT) {
 
-            for (String c : collisions.keySet()) {
-                String path = getPath(ast);
+            for (String c : labelsToReplace.keySet()) {
+                String path = ASTUtil.getPath(ast);
                 if (path.startsWith(c + ".") || path.equals(c)) {
                     String t = ast.getText();
                     t = t.substring(c.length());
-                    t = collisions.get(c) + t;
-                    ast = ASTUtil.constructPath(fact, t);
+                    t = labelsToReplace.get(c) + t;
+
+                    AST sibling = ast.getNextSibling();
+                    AST newAST = ASTUtil.constructPath(fact, t);
+                    newAST.setNextSibling(sibling);
+                    if(firstChild) {
+                        parent.setFirstChild(newAST);
+                    } else {
+                        parent.setNextSibling(newAST);
+                    }
                 }
             }
 
         }
 
-        replaceLabels(ast.getFirstChild(), collisions);
-        replaceLabels(ast.getNextSibling(), collisions);
+        replaceLabels(ast.getFirstChild(), ast, true, labelsToReplace);
+        replaceLabels(ast.getNextSibling(), ast, false, labelsToReplace);
     }
 
     /**
@@ -1075,17 +1127,6 @@ public class FunctionInliner {
 
         return result;
 
-    }
-
-    /**
-     * Given an AST, return the path, by concatenating all child ASTs that have dots
-     */
-    private String getPath(AST t) {
-        if (t.getType() == HqlTokenTypes.DOT) {
-            return ASTUtil.constructPath(t);
-        } else {
-            return t.getText();
-        }
     }
 
     private int labelCounter = 0;

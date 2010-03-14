@@ -1,7 +1,10 @@
+TODO:
+- check all places where inlineFunctions() is called and treat those places
+- check if inlining of actor(Type).field works
+
 functionality:
 
 - actors
-- complete the mql tree printer
 - better error handling
 - static functions
 
