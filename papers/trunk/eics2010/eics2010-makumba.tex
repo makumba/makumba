@@ -31,9 +31,9 @@ Such figures would not be surprising for a professional international organizati
 The figures are however unusual for a voluntary student organization, whose IT crew (referred to as the Tech Committee) is made of amateur voluntary student programmers who often do not study Computer Science or related subjects, or are at the early stages of their education. 
 Since 2002, the Tech Committee had over 10 active members at any given time, and the Intranet was extended with more and more subsystems even if about one third of the Tech Committee membership was renewed each year. Reflection and analysis from a technology design perspective on this {\it sustainability}  is the subject matter of this paper. We assert that the design of the technology used to build the Intranet, called Makumba, is a determining factor in this sustainability. We also assert that since a technology worked well in a setting with so little development skill, its relevance for the web development community appears promising.
 
-With the steady rise in importance of web-based applications, the process and tools available for such web-based applications development has been studied intensively. A number of models for the (web-) development process has been proposed, trying to formalize the process with the goal of improving the quality of such web applications. Earlier models include the \textit{Object-Oriented Hypermedia Design Model} (OOHDM) \cite{schwabe1998ooa}, which introduces five different activities in the development process (requirements gathering, conceptual design, navigational design, abstract interface design and implementation), each of which is supported by a set of formalisms and methods, and yields a specific product. The \textit{Web Modeling Language} (WebML) \cite{Ceri00webmodeling} provides a visual notation for web-application design. It defines several different models as different steps in the process, mainly the structural model defining the data, the composition model specifying the content units, and the navigation model establishing the connection between those units. Tool-support for the development process is provided for example with WebRatio \cite{acerbis2004wit}, which is based on the Eclipse framework. As well as Makumba, WebML allows the user to specify certain queries in the form of the Object Query Language OQL, which significantly simplifies multi-table queries as compared to SQL. Further, WebML allows to define so-called \textit{derived} attributes, which are basically fragments of OQL queries, similar as Makumba supports it via so-called MDD-functions.
+With the steady rise in importance of web-based applications, the processes and tools available for such web-based applications development has been studied intensively. A number of models for the (web-) development process has been proposed, trying to formalize the process with the goal of improving the quality of such web applications. Earlier models include the \textit{Object-Oriented Hypermedia Design Model} (OOHDM) \cite{schwabe1998ooa}, which introduces five different activities in the development process (requirements gathering, conceptual design, navigational design, abstract interface design and implementation), each of which is supported by a set of formalisms and methods, and yields a specific product. The \textit{Web Modeling Language} (WebML) \cite{Ceri00webmodeling} provides a visual notation for web-application design. It defines several different models as different steps in the process, mainly the structural model defining the data, the composition model specifying the content units, and the navigation model establishing the connection between those units. Tool-support for the development process is provided for example with WebRatio \cite{acerbis2004wit}. As well as Makumba, WebML allows the user to specify certain queries in the form of the Object Query Language OQL, which significantly simplifies multi-table queries as compared to SQL. Further, WebML allows to define so-called \textit{derived} attributes, which are basically fragments of OQL queries, similar as Makumba supports it via so-called MDD-functions.
 
-While especially WebML provides great support for developing data-intensive web-applications, that might well suit professional settings, the situation is different for voluntary or amateur organizations. In such settings, and especially in the distributed development setting detailed below, one major aspect is that in many ways, it is unfeasible to enforce a strict set of processes and work-flows to follow, and specific tools to use, as the amount and timing of work done depends entirely on the motivation and availability of the individual members of the organization. In many cases, applying to strict formalisms might in fact be counter-productive, as it might be perceived as a demotivating restriction on the development work. Also, installation effort required to start contributing should be kept to a minimum, especially considering that a lot of the members of the organization often change their working platform, using their home computer, university equipment, or other systems available while traveling.
+While especially WebML might well suit professional settings, the situation is different for voluntary or amateur organizations, especially in distributed development settings. As the amount and timing of work done depends entirely on the motivation and availability of the individual members of the organization, it is unfeasible in many ways to enforce a strict set of processes and work-flows to follow and specific tools to use. Applying too strict formalisms might in fact be counter-productive, as it might be perceived as a demotivating restriction on the development work. Also, installation effort required to start contributing should be kept to a minimum, especially when the contributor often change their working platform, using their home computer, university equipment, or other systems available while traveling.
 
 We therefore designed a web application development framework which is relaxed in its constraints on formalization, but still enforces a certain development process by it's very own design, and results in web-application which are based on well-known software and web engineering concepts (such as aspect-oriented programming and MVC) by its very nature. Further, we put a specific emphasize on the code-base of the application to be in plain text rather than in visual models or bound to a specific CASE tool or IDE, and thus being allowed to be modified very easily from different operating systems with any kind of text-editing tool available. For the most basic beginners, we also developed a specific browser based tool that provides editing and revision control support, and can be accessed ubiquitously.
 
@@ -46,7 +46,7 @@ The technological base of Makumba is J2EE\footnote{http://java.sun.com/javaee/},
 
 Hibernate\footnote{http://www.hibernate.org/} is a object persistence framework, and provides an alternative to the complex Enterprise Java Beans (EJB) framework, which is a part of the J2EE specification. Hibernate is built on idiomatic, transparent persistence of Java objects, and allows to express queries in its own Hibernate Query Language (HQL), an extension of SQL. Makumba can work towards Hibernate-managed databases but it can also work without Hibernate (as it does in its largest application, the Intranet), using a subset of HQL.
 
-Among other popular web application frameworks related to the design of Makumba, but not based on the Java programming language, is for example Ruby on Rails (RoR)\footnote{http://rubyonrails.org/}. RoR is intended for the agile software development method, focused on rapid application development and short iteration cycles.
+%Among other popular web application frameworks related to the design of Makumba, but not based on the Java programming language, is for example Ruby on Rails (RoR)\footnote{http://rubyonrails.org/}. RoR is intended for the agile software development method, focused on rapid application development and short iteration cycles.
 
 In this paper we will  reflect on why our design ended up being different from the state of the art, yet still it was successful in this particular setting. We will first introduce the student organization, its group of web application (Intranet) programmers, and the applications they develop and maintain. A presentation of Makumba design follows, with the constraints that shaped it. We then present an evaluation of the technology done with the developers, focusing especially on learning. In the discussion we compare various aspects of Makumba design, learning and use with the corresponding aspects of widely used technologies and patterns for data-driven web development today. We also discuss how some widely used patterns and principles, like Data Access Object, are not used in Makumba applications, and consider the benefits of this "common practice amendment".
 
@@ -103,6 +103,7 @@ hobbies = text
 education = set
 education->name = char[50]
 education->university = ptr University
+education->graduation
 \end{lstlisting}
 
 \subsection{JSP Level}
@@ -111,15 +112,15 @@ The \textit{JSP level} is primarily the user-interface level, and is technically
 \lstset{basicstyle=\small, captionpos=b, caption=Example of viewing data with the Makumba JSP tag library, label=list:mak, frame=shadowbox}
 \begin{lstlisting}
 <mak:list from="Student s">
-  Name: <mak:value expr="s.name"/> <br/>
-  Born on: <mak:value expr="s.birthdate"/><br/>
-  Completed studies:
-  <mak:list from="s.education e"
-  	    where="e.graduationDate < now()">
-    <mak:value expr="e.name"/>
-    (<mak:value expr="e.university.name"/>),
-  </mak:list>
-  <br/>
+ Name: <mak:value expr="s.name"/> <br/>
+ Born on <mak:value expr="s.birthdate"/><br/>
+ Completed studies:
+ <mak:list from="s.education e"
+      where="e.gradDate < now()">
+  <mak:value expr="e.name"/>
+  (<mak:value expr="e.university.name"/>),
+ </mak:list>
+ <br/>
 </mak:list>
 \end{lstlisting}
 
@@ -131,17 +132,17 @@ Editing objects is done via forms, on a familiar note with HTML, thus helping th
 \begin{lstlisting}
 <mak:object from="Student s" where="s=:student">
 <mak:editForm object="s" action="somePage" >
-  Name: <mak:input field="s.name"/> <br/>
-  Born on: <mak:input field="s.birthdate"/><br/>
-  Edit  studies:
-   <mak:list from="s.education e"> 
-   	<mak:editForm object="e">
-   	  name: <mak:input field="e.name"/><br>      
-	  graduation: <mak:input field="e.graduationDate"/><br>      
-	  university: <mak:input field="e.university"/><br>
-       </mak:editForm>
-   <mak:list>
-  <input type="submit">
+ Name: <mak:input field="s.name"/> <br/>
+ Born on: <mak:input field="s.birthdate"/><br/>
+ Edit  studies:
+ <mak:list from="s.education e"> 
+  <mak:editForm object="e">
+   name <mak:input field="e.name"/> <br>      
+   graduation <mak:input field="e.graduation"/>
+   university <mak:input field="e.university"/>
+   </mak:editForm>
+ <mak:list>
+ <input type="submit">
 <mak:editForm>
 </mak:object>
 \end{lstlisting}
@@ -164,7 +165,8 @@ The \textit{business logic} (BL) describes, in the Java programming language, "b
 Having a complex language like Java to express business logic was however regarded as a shortcoming in relation to the simpler programming languages used at the JSP level. To capitalize on the apparent easiness with which the developers approached query fragments at the JSP level, we decided to attempt to describe as much as possible of business logics using query fragments, directly in MDDs, facilitating code navigation in the process. For example, we recently introduced an \textit{implicit data access layer} that analyzes the queries which require data in the JSPs (through tags such as mak:list) and apply MDD-defined query language functions that are appended (through in-lining)  to the generated queries to determine whether the user logged in has access to the respective data. This will replace a lot of Business Logics code that is currently doing the same job at the Java level. Listing \ref{qfauth:mak} shows an example that, once added to the Student MDD in Listing \ref{list:mdd}. would make the Student object only readable by their owner, or by administrator students. The current Java BL code achieving the same is much more verbose, due to the need of managing a transaction, retrieving an object, preparing a query and its parameters, retrieving its result set, etc.
 \lstset{basicstyle=\small, captionpos=b, caption= query fragment authorization rule, label=qfauth:mak, frame=shadowbox}
 \begin{lstlisting}
-canRead(){actor(Student)=this OR actor(Student).admin=1 }
+canRead() {actor(Student)=this 
+                 OR actor(Student).admin=1 }
 \end{lstlisting}
 This query fragment will then be added transparently to all mak:lists attempting to fetch Student data. In such mak:lists, the programmer can define the default behavior of the containing page, which can be either to filter results which a user is not authorized to view, most suitable for a listing of several data records such as a list of all students, or showing an error message, which is especially useful when showing only one specific account, e.g. a specific member profile.
 
