@@ -10,17 +10,17 @@
 Query-Centric Approach}
 
 % TODO camera-ready: add reference to our own C&T work! 
-\numberofauthors{2}
-\author{
-  \alignauthor Cristian Bogdan\\
-    \affaddr{School of Computer Science and Communication}\\
-    \affaddr{Royal Institute of Technology, Stockholm, Sweden}\\
-    \email{cristi@csc.kth.se}
-  \alignauthor Rudolf Mayer\\
-    \affaddr{Institute of Software Technology and Interactive Systems}\\
-    \affaddr{Vienna University of Technology, Austria}\\
-    \email{mayer@ifs.tuwien.ac.at}
-}
+% \numberofauthors{2}
+% \author{
+%   \alignauthor Cristian Bogdan\\
+%     \affaddr{School of Computer Science and Communication}\\
+%     \affaddr{Royal Institute of Technology, Stockholm, Sweden}\\
+%     \email{cristi@csc.kth.se}
+%   \alignauthor Rudolf Mayer\\
+%     \affaddr{Institute of Software Technology and Interactive Systems}\\
+%     \affaddr{Vienna University of Technology, Austria}\\
+%     \email{mayer@ifs.tuwien.ac.at}
+% }
 
 \maketitle
 \begin{abstract}
@@ -102,14 +102,14 @@ The MVC has been widely adopted in software engineering, and is also considered 
 
 %Much industrial web development projects are written around procedural or object-oriented languages like  Java. While written in Java and its applications employing some Java code, Makumba programming code is mostly constituted by database queries, hence we call it a \textit{query-centric} technology. As we will show in this paper, we regard this ingredient as very important for the success of the Makumba-based Intranet and we are currently building up on this Makumba aspect.
 
-We will illustrate the constraints that shaped the Makumba design during the development of a large Intranet within an international student organization.  Some of the constraints became apparent when they attempted to port previously existing applications to Lotus Notes and Domino, in a bid to reduce the number of technologies that the student developers have to master in order to maintain and develop the Intranet. % This aim was highly motivated given the high change of members actively developing, and the relative short time they stay in the student organization and the Tech Committee.
+We will illustrate the constraints that shaped the Makumba design during the development of a large Intranet within an international student organization.  Some of the constraints became apparent when they attempted to port previously existing applications to Lotus Notes and Domino, in a bid to reduce the number of technologies that the student developers have to master in order to maintain and develop their working platform, the Intranet. % This aim was highly motivated given the high change of members actively developing, and the relative short time they stay in the student organization and the Tech Committee.
 A framework was needed that can be used by a \textit{highly distributed team}. Most developers work alone, as they are not co-located with other developers. They meet face-to-face a few times a year, but most communication and coordination are carried out online. In this context, the Lotus Notes experience has quickly revealed that graphical modeling and programming techniques are difficult to work with in such a setting: questions that the novice members may have are hard to answer by other developers; communication needs to involve screen-shots or textual descriptions of graphical modeling elements. The use of plain text in other highly distributed programming settings, such as open source projects, is considered as an important factor contributing to the success of these communities \cite{yamauchi00}. 
 
 Unlike in a professional development shop, or in an open-source programming setting, developers using Makumba have a wide variety of programming skill levels, some of them not having formal programming training at all. \textit{Accommodating novice programmers} was thus another important design constraint.
 % Makumba needed to assume very little initial knowledge of the developers, sometimes limited to very basic HTML knowledge. 
-A consequence of this has been the important focus on a natural-language inspired programming language, the Structured Query Language (SQL), which can be learned by new members by simply relying on their English. It is possible to build large parts of Makumba systems with only HTML and SQL knowledge. Makumba is thus a \textit{query-centric} framework in its design, i.e. most of its definitions, rules and instructions can be defined in queries. Thus, common to all levels is the usage of a query language, which can either be the Hibernate\footnote{http://www.hibernate.org/}  Query Language (HQL), or Makumba's own Query Language (MQL) which is a HQL subset. % Both query languages provide an object-oriented extension to the Structured Query Language, where MQL is explicitly simplifying the syntax for joins between different database tables.
+A consequence of this has been the important focus on a natural-language inspired programming language, the Structured Query Language (SQL), which can be learned by new members by simply relying on their English. It is possible to build large parts of Makumba systems with only HTML and SQL knowledge. Makumba is thus a \textit{query-centric} framework in its design, i.e. most of its definitions, rules and instructions can be defined in queries. Thus, common to all levels is the usage of a query language, which can either be the Hibernate\footnote{http://www.hibernate.org/}  Query Language (HQL), or Makumba's own Query Language (MQL), which is a HQL subset. % Both query languages provide an object-oriented extension to the Structured Query Language, where MQL is explicitly simplifying the syntax for joins between different database tables.
 
-Another consequence of the `novice programmer' constraint became visible when working with Lotus Notes, which provides developers with long lists of features, in which novice  voluntary developers easily got lost. \textit{Providing a small feature set} was thus another principle adopted, which resulted in e.g. a small number of data types offered to  Makumba developers. Besides providing a low entry point for novice programmers, it is known that novices often learn by looking at existing code, so it became important to ensure good \textit{code legibility} in a programming unit (JSP page) as well as \textit{easy code navigation} to facilitate finding scripts of interest in a large system as the Intranet.
+Another consequence of the `novice programmer' constraint became visible when working with Lotus Notes, which provides developers with long lists of features, in which novice,  voluntary developers easily got lost. \textit{Providing a small feature set} was thus another principle adopted, which resulted in e.g. a small number of data types offered to  Makumba developers. Besides providing a low entry point for novice programmers, it is known that novices often learn by looking at existing code, so it became important to ensure good \textit{code legibility} in a programming unit (JSP page) as well as \textit{easy code navigation} to facilitate finding scripts of interest in a large system as the Intranet.
 
 In the context of the unexperienced developer group, it was not  to be expected that many in the developer team would have knowledge of architectural principles for large (web) applications. Therefore there was a need for the framework to ensure (or even enforce) a certain degree of \textit{separation of concerns} as recommended by the MVC pattern.
 %  in the Aspect-oriented Programming (AOP) \cite{Kiczales97aspect-orientedprogramming} perspective. 
