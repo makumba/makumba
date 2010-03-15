@@ -187,7 +187,7 @@ canRead() {actor(Student)=this
 This query fragment will then be added transparently to all mak:lists attempting to fetch Student data. In such mak:lists, the programmer can define the default behavior of the containing page, which can be either to filter results which a user is not authorized to view, most suitable for a listing of several data records such as a list of all students, or showing an error message, which is especially useful when showing only one specific account, e.g. a specific member profile.
 
 \subsection{A large Makumba system: the Intranet}
-Table~\ref{tab:intranet-size} shows the evolution of the size of The Intranet since its launch seven years ago, detailed for the different technological levels MDD, JSP and BL. Additionally, the total number of code files is shown, along with the total lines of code (LOC).  Figure \ref{fig:intranet-size} shows the evolution of the code figures graphically. This data indicates quantitatively the project size afforded by Makumba, and the kind of `healthy' project growth that we argue Makumba can facilitate. The data also illustrates typical proportions of code types in a Makumba project: most code is in JSP scripts made predominantly of HTML and SQL-like code snippets, and there are 6-8 times fewer Java BL (business logic) files, and data definition (MDD) files are less than half the number of BLs, and are growing slower in number than JSPs and BLs. There was a rather high amount of MDD files defined in the beginning of the Intranet, representing data types used already in the ancestor systems. Even though more data definitions have been added over time, a certain saturation level with only minor additions was reached in the last years. It is not unexpected that the data definitions of an organization (its "domain model") change seldom after an initial development time. 
+Table~\ref{tab:intranet-size} shows the evolution of the size of The Intranet since its launch seven years ago, detailed for the different technological levels MDD, JSP and BL. Additionally, the total number of code files is shown, along with the total lines of code (LOC). This data indicates quantitatively the project size afforded by Makumba, and the kind of `healthy' project growth that we argue Makumba can facilitate. The data also illustrates typical proportions of code types in a Makumba project: most code is in JSP scripts made predominantly of HTML and SQL-like code snippets, and there are 6-8 times fewer Java BL (business logic) files, and data definition (MDD) files are less than half the number of BLs, and are growing slower in number than JSPs and BLs. There was a rather high amount of MDD files defined in the beginning of the Intranet, representing data types used already in the ancestor systems. Even though more data definitions have been added over time, a certain saturation level with only minor additions was reached in the last years. It is not unexpected that the data definitions of an organization (its "domain model") change seldom after an initial development time. 
 
 \begin{table}[t]
 	\centering
@@ -264,19 +264,6 @@ We designed a questionnaire where 30 out of the 45 past (since 2003) and present
 %
 % *** BL: 287 (~12%)
 
-\begin{figure}[t]
-  	\centering
-	\subfigure{
-   		\includegraphics[width=0.47\columnwidth]{figures/SizeChart}
-		\label{fig:intranet-size}
-	}
-  	\subfigure{
-   		\includegraphics[width=0.47\columnwidth]{figures/learning-technologies}
-  		\label{fig:learning-technologies}
-	}
-   \caption{Size of the Intranet (a), learning curve for different aspects of Makumba (b)}
-\end{figure} 
-
 % TODO: describe why `active' column might have smaller numbers than others..
 %Table~\ref{tab:itd-members} illustrates the number of active members in the Tech Committee since 2003, differentiated on the different levels of Makumba, and on their activity in newcomer (`peripheral') and old-timer (`core') members. This data was  extracted on the one hand from the latest questionnaire filled in by the members, and then refined and amended by some of the committee coordinators (for the year 2003, only the total number of active core and peripheral members could be estimated). It is interesting to note that while the overall number of active members increased over the years and stabilized in the last years, the (relative) number of members working on data definitions (MDD) was rather decreasing; this might be explained with the arrival at data maturity level as described above, and thus less work and challenges to take for the Tech Committee members, while plenty of challenge is left at other levels. An important sign of sustainability as we characterized it earlier is the sufficient number of members at both novice (peripheral) and expert (core) members active at all the Makumba usage levels at all times. The "learning paths" are thus well populated with community members.
 
@@ -322,6 +309,13 @@ To attempt an understanding of the learning aspect of Makumba in the context of 
 %	\caption{Members in the Tech Committee}
 %	\label{tab:itd-members}
 %\end{table} 
+
+\begin{figure}[t]
+  \label{fig:learning-technologies}
+  \centering
+  \includegraphics[width=0.47\columnwidth]{figures/learning-technologies}
+  \caption{Learning curve for different aspects of Makumba}
+\end{figure} 
 
 Figure \ref{fig:learning-technologies} shows the averaged skill levels of all the members at different points in time, separated for three Makumba usage aspects: JSP for viewing data, JSP for modifying data, and BL. The data suggests that learning to view and display data at the JSP level is faster than handling forms to create, edit, and delete data. 
 Since 64 \% of the Intranet files are viewing data, even medium level of Makumba JSP knowledge will give `access' to approximately two thirds of the Intranet programming units. 
