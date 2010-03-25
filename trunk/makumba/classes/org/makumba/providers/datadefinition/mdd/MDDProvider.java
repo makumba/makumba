@@ -101,7 +101,7 @@ public class MDDProvider extends DataDefinitionProvider {
         return dd;
     }
 
-    public static synchronized DataDefinition getSimpleMDD(String path) {
+    public static DataDefinition getSimpleMDD(String path) {
         // this is to avoid a stupid error if path is "..."
         boolean dot = false;
         for (int i = 0; i < path.length(); i++) {
