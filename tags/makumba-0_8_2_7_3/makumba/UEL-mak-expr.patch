@@ -1,0 +1,421 @@
+Index: classes/org/makumba/devel/ErrorFormatter.java
+===================================================================
+--- classes/org/makumba/devel/ErrorFormatter.java   (revision 4489)
++++ classes/org/makumba/devel/ErrorFormatter.java   (working copy)
+@@ -59,10 +59,10 @@
+             { org.makumba.NoSuchFieldException.class, "no such field" },
+             { org.makumba.NoSuchLabelException.class, "no such label" },
+             { org.makumba.LogicException.class, "business logic" },
+-            /*{ org.makumba.list.tags.MakumbaELException.class, "expression language"} */ };
++            { org.makumba.list.tags.MakumbaELException.class, "expression language"} };
+ 
+     static final Class<?>[] knownJSPruntimeErrors = { ArrayIndexOutOfBoundsException.class,
+-            NumberFormatException.class, ClassCastException.class /*, javax.el.ELException.class */ };
++            NumberFormatException.class, ClassCastException.class, javax.el.ELException.class };
+ 
+     protected ServletContext servletContext;
+ 
+Index: classes/org/makumba/commons/MakumbaJspAnalyzer.java
+===================================================================
+--- classes/org/makumba/commons/MakumbaJspAnalyzer.java (revision 4495)
++++ classes/org/makumba/commons/MakumbaJspAnalyzer.java (working copy)
+@@ -115,9 +115,9 @@
+     static String[] formTagNames = { "form", "newForm", "addForm", "editForm", "deleteLink", "delete", "searchForm",
+             "new", "add", "edit", "submit" };
+     
+-    static String[] elExpressions = { };
++    static String[] elExpressions = { "expr", "org.makumba.list.tags.ValueExpression" };
+     
+-    static String[] elExpressionNames = { "expr"};
++    static String[] elExpressionNames = { "expr" };
+ 
+     static final Map<String, Class<?>> tagClasses = new HashMap<String, Class<?>>();
+ 
+Index: classes/org/makumba/list/tags/MakumbaELException.java
+===================================================================
+--- classes/org/makumba/list/tags/MakumbaELException.java   (revision 0)
++++ classes/org/makumba/list/tags/MakumbaELException.java   (revision 0)
+@@ -0,0 +1,20 @@
++package org.makumba.list.tags;
++
++import javax.el.ELException;
++
++/**
++ * A Makumba wrapper for an EL expression, for improved error handling
++ * 
++ * @author Manuel Gay
++ * 
++ * @version $Id: MakumbaELException.java,v 1.1 Jan 27, 2010 10:02:50 AM manu Exp $
++ */
++public class MakumbaELException extends ELException {
++
++    private static final long serialVersionUID = 1L;
++    
++    public MakumbaELException(String message) {
++        super(message);
++    }
++
++}
+Index: classes/org/makumba/list/tags/ValueExpression.java
+===================================================================
+--- classes/org/makumba/list/tags/ValueExpression.java  (revision 0)
++++ classes/org/makumba/list/tags/ValueExpression.java  (revision 0)
+@@ -0,0 +1,111 @@
++package org.makumba.list.tags;
++
++import javax.servlet.jsp.PageContext;
++
++import org.makumba.LogicException;
++import org.makumba.ProgrammerError;
++import org.makumba.analyser.AnalysableExpression;
++import org.makumba.analyser.PageCache;
++import org.makumba.commons.MakumbaJspAnalyzer;
++import org.makumba.commons.MultipleKey;
++import org.makumba.list.engine.valuecomputer.ValueComputer;
++
++/**
++ * A value EL expression #{Value['p.name']}
++ * 
++ * @author Manuel Gay
++ * @version $Id: ValueExpression.java,v 1.1 Jan 22, 2010 6:57:57 PM manu Exp $
++ */
++public class ValueExpression extends AnalysableExpression {
++
++    private static final long serialVersionUID = 1L;
++
++    public final static String PREFIX = "expr";
++    
++    @Override
++    public String getPrefix() {
++        return PREFIX;
++    }
++    
++    @Override
++    public String treatExpressionAtAnalysis(String expression) {
++        
++        // at this point we know that we start with PREFIX
++        
++        String original = expression;
++        
++        // we get something like
++        // Value.expr
++        // Value['expr']
++        // Value["expr"]
++        expression = expression.substring(PREFIX.length());
++        if(expression.startsWith("[")) {
++            expression = trimExpression(expression, "[", "]", original);
++            if(expression.startsWith("\"")) {
++                expression = trimExpression(expression, "\"", "\"", original);
++            } else if(expression.startsWith("'")) {
++                expression = trimExpression(expression, "'", "'", original);
++            }
++        } else if(expression.startsWith(".")) {
++            expression = expression.substring(1);
++        } else {
++            
++        }
++        // TODO treat the Value.expr, and treat wrong cases
++        return expression;
++        
++    }
++    
++    private String trimExpression(String expr, String open, String close, String original) {
++        if(expr.startsWith(open)) {
++            if(expr.indexOf(close) == -1) {
++                throw new ProgrammerError("Unbalanced EL expression '" + original + "': missing closing '" + close + "]'");
++            }
++            expr = expr.substring(1);
++            expr = expr.substring(0, expr.indexOf(close));
++        }
++        return expr;
++    }
++    
++    @Override
++    public void setKey(PageCache pageCache) {
++        
++        
++        // we set the key for the expression, which is made out of the expression
++        
++        // FIXME we lack context in the MakumbaELResolver so we can only identify the expression using itself
++        // this can lead to problems if two EL expressions running in different tags are called, because only the second one will be cached
++        // so we need to figure out a way to retrieve the parent key tag in the ELResolver, in order to pin-point a bit better which expression we are talking about
++        
++//        if(e.getParent() != null) {
++//            setKey(new MultipleKey(elData.getExpression(), getParent().tagKey));
++//        } else {
++
++
++        
++        this.key = new MultipleKey(expression);
++    }
++    
++    @Override
++    public void analyze(PageCache pageCache) {
++        
++        QueryTag parentListTag = (QueryTag) findParentWithClass(QueryTag.class);
++        
++        if(parentListTag != null) {
++            pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, key, ValueComputer.getValueComputerAtAnalysis(true,
++                parentListTag.tagKey, expression, pageCache));
++        } else {
++            throw new ProgrammerError("makumba Value expression " + elData.getExpression() + " cannot be used outside of a <mak:list> or <mak:object>");
++        }
++
++    }
++
++    @Override
++    public Object resolve(PageContext pc, PageCache pageCache) throws LogicException {
++        
++        Object value = ((ValueComputer) pageCache.retrieve(MakumbaJspAnalyzer.VALUE_COMPUTERS, key)).getValue(pc);
++        return value;
++
++    }
++
++}
+Index: classes/org/makumba/list/tags/ExprELResolver.java
+===================================================================
+--- classes/org/makumba/list/tags/ExprELResolver.java   (revision 0)
++++ classes/org/makumba/list/tags/ExprELResolver.java   (revision 0)
+@@ -0,0 +1,30 @@
++package org.makumba.list.tags;
++
++import java.beans.FeatureDescriptor;
++
++/**
++ * An EL expression resolver for ${expr["expression"]}
++ * 
++ * @author Manuel Gay
++ * @version $Id: ExprELResolver.java,v 1.1 Jan 27, 2010 10:58:11 AM manu Exp $
++ */
++public class ExprELResolver extends MakumbaELResolver {
++
++    @Override
++    protected String getPrefix() {
++        return ValueExpression.PREFIX;
++    }
++
++    @Override
++    protected FeatureDescriptor getFeatureDescriptor() {
++        FeatureDescriptor desc = new FeatureDescriptor();
++        desc.setName("expr");
++        desc.setDisplayName("expr");
++        desc.setShortDescription("makumba MQL expression, inside of a mak:list or mak:object");
++        desc.setValue(RESOLVABLE_AT_DESIGN_TIME, false);
++        desc.setValue(TYPE, String.class);
++
++        return desc;
++    }
++
++}
+Index: classes/org/makumba/list/tags/MakumbaELResolver.java
+===================================================================
+--- classes/org/makumba/list/tags/MakumbaELResolver.java    (revision 0)
++++ classes/org/makumba/list/tags/MakumbaELResolver.java    (revision 0)
+@@ -0,0 +1,174 @@
++package org.makumba.list.tags;
++
++import java.beans.FeatureDescriptor;
++import java.util.Arrays;
++import java.util.Iterator;
++
++import javax.el.ELContext;
++import javax.el.ELException;
++import javax.el.ELResolver;
++import javax.el.PropertyNotFoundException;
++import javax.el.PropertyNotWritableException;
++import javax.servlet.jsp.JspContext;
++import javax.servlet.jsp.PageContext;
++
++import org.makumba.LogicException;
++import org.makumba.analyser.AnalysableElement;
++import org.makumba.analyser.AnalysableExpression;
++import org.makumba.analyser.ELData;
++import org.makumba.analyser.PageCache;
++import org.makumba.commons.MakumbaJspAnalyzer;
++import org.makumba.commons.MultipleKey;
++import org.makumba.commons.RuntimeWrappedException;
++
++/**
++ * Resolver for Makumba EL expressions that can resolve Prefix["expression"]. Subclass this class if you want to make a
++ * new Makumba EL expression.<br>
++ * <br>
++ * See http://java.sun.com/products/jsp/reference/techart/unifiedEL.html<br>
++ * See http://fisheye5.cenqua.com/browse/javaserverfaces-sources/jsf-demo/webtier-sample/src/java/webtiersample/
++ * ColorELResolver.java?r=1.6<br>
++ * 
++ * @author Manuel Gay
++ * @version $Id: MakumbaELResolver.java,v 1.1 Jan 25, 2010 3:37:50 PM manu Exp $
++ */
++public abstract class MakumbaELResolver extends ELResolver {
++
++    /** the prefix of the expression **/
++    protected abstract String getPrefix();
++
++    /** the {@link FeatureDescriptor} for this expression **/
++    protected abstract FeatureDescriptor getFeatureDescriptor();
++
++    private boolean isMakumbaELExpression(Object base) {
++        return base != null && base instanceof String && base.equals(getPrefix());
++    }
++
++    @Override
++    public Class<?> getCommonPropertyType(ELContext context, Object base) {
++        return String.class;
++    }
++
++    @Override
++    public Iterator<FeatureDescriptor> getFeatureDescriptors(ELContext context, Object base) {
++        return Arrays.asList(new FeatureDescriptor[] { getFeatureDescriptor() }).iterator();
++    }
++
++    @Override
++    public Object getValue(ELContext context, Object base, Object property) throws NullPointerException,
++            PropertyNotFoundException, ELException {
++
++        if (context == null) {
++            throw new NullPointerException();
++        }
++
++        PageContext pageContext = (PageContext) context.getContext(JspContext.class);
++        PageCache pageCache = AnalysableElement.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance());
++        
++        Object result = null;
++
++        if (base == null) {
++            // Resolving first variable (e.g. ${Prefix}).
++            String propertyName = (String) property;
++            if (getPrefix().equals(propertyName)) {
++                result = new String(getPrefix());
++                context.setPropertyResolved(true);
++            }
++        } else if (isMakumbaELExpression(base)) {
++
++            // Resolving a property on ${Prefix}
++            String expr = property.toString();
++
++            result = resolveExpression(pageContext, pageCache, expr);
++            context.setPropertyResolved(true);
++        }
++
++        return result;
++    }
++
++    /** resolves the expression **/
++    protected Object resolveExpression(PageContext pageContext, PageCache pageCache, String expr) {
++        Object res = null;
++
++        MultipleKey exprKey = new MultipleKey(expr);
++        
++        // here we start "running" the expression, or at least, its resolution
++        // so we set the currently running element to this expression
++        ELData elData = null;
++        if(pageCache != null) {
++            elData = (ELData) pageCache.retrieve(MakumbaJspAnalyzer.EL_DATA_CACHE, exprKey);
++        }
++        
++        // add the expression data to the currently running element stack, for error analysis
++        if(elData != null) {
++            AnalysableElement.getThreadElementStack().push(elData);
++            AnalysableElement.setRunningElementData(elData);
++        }
++    
++        // retrieve the actual resolver implementation
++        AnalysableExpression ae = (AnalysableExpression) pageCache.retrieve(MakumbaJspAnalyzer.EL_CACHE, exprKey);
++        
++        if (ae == null) {
++            // we couldn't retrieve the resolver! panic!
++            throw new MakumbaELException("Expression '" + expr + "' could not be computed");
++        } else {
++            try {
++                res = ae.resolve(pageContext, pageCache);
++            } catch (LogicException le) {
++                throw new RuntimeWrappedException(le);
++            }
++        }
++
++        // remove the expression from the currently running element stack
++        AnalysableElement.setRunningElementData(null);
++        if(elData != null) {
++            AnalysableElement.getThreadElementStack().pop();
++        }
++
++        return res;
++    
++        
++    }
++
++    @Override
++    public boolean isReadOnly(ELContext context, Object base, Object property) throws NullPointerException,
++            PropertyNotFoundException, ELException {
++
++        if (context == null) {
++            throw new NullPointerException();
++        }
++
++        return true;
++    }
++
++    @Override
++    public void setValue(ELContext context, Object base, Object property, Object value) throws NullPointerException,
++            PropertyNotFoundException, PropertyNotWritableException, ELException {
++
++        if (context == null) {
++            throw new NullPointerException();
++        }
++
++        if (base == null && getPrefix().equals(property)) {
++            throw new PropertyNotFoundException();
++        } else if (isMakumbaELExpression(base)) {
++            throw new PropertyNotFoundException();
++        }
++    }
++
++    @Override
++    public Class<?> getType(ELContext context, Object base, Object property) throws NullPointerException,
++            PropertyNotFoundException, ELException {
++
++        if (context == null) {
++            throw new NullPointerException();
++        }
++
++        // this method is useful only if the expression is writable
++        if (isMakumbaELExpression(base)) {
++            context.setPropertyResolved(true);
++        }
++
++        return null;
++    }
++}
+\ No newline at end of file
+Index: .classpath
+===================================================================
+--- .classpath  (revision 4469)
++++ .classpath  (working copy)
+@@ -43,5 +43,6 @@
+    <classpathentry kind="lib" path="lib/optional/prefuse.jar"/>
+    <classpathentry kind="lib" path="lib/test/cactus.jar"/>
+    <classpathentry kind="lib" path="lib/building/ant-1.6.5.jar"/>
++   <classpathentry kind="lib" path="lib/common/el-api.jar"/>
+    <classpathentry kind="output" path="build"/>
+ </classpath>
+Index: build.xml
+===================================================================
+--- build.xml   (revision 4508)
++++ build.xml   (working copy)
+@@ -8,6 +8,7 @@
+         <pathelement location="lib/optional/hibernate/javassist-3.4.GA.jar"/>
+         <pathelement location="lib/optional/prefuse.jar"/>
+         <pathelement location="lib/common/jsp-api.jar"/>
++        <pathelement location="lib/common/el-api.jar"/>
+         <pathelement location="lib/common/servlet-api.jar"/>
+         <pathelement location="lib/core/commons-fileupload-1.1.1.jar"/>
+         <pathelement location="lib/core/commons-io-1.1.jar"/>
+@@ -41,7 +42,7 @@
+         <pathelement path="${java.class.path}" />
+         <pathelement location="classes" />
+         <pathelement location="webapps/tests/WEB-INF/classes/" />
+-       
++        <pathelement location="lib/common/el-api.jar"/>
+         <pathelement location="lib/test/cactus.jar"/>
+         <pathelement location="lib/optional/hibernate/hibernate3.jar"/>
+         <pathelement location="lib/optional/hibernate/javassist-3.4.GA.jar"/>

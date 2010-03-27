@@ -1,0 +1,1 @@
+The makumba database to connect to. The format is Host_SQLEngineType_DatabaseName If not present, the default database is used. See database configuration and lookup.
