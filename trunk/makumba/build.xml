@@ -31,7 +31,9 @@
         <pathelement location="lib/test/selenium-java-client-driver.jar"/>
         <pathelement location="lib/test/jetty/jetty-6.1.3.jar"/>
         <pathelement location="lib/test/jetty/jetty-util-6.1.3.jar"/>
-          
+
+        <pathelement location="build"/>
+    	
     	<fileset dir="${basedir}/doc-jspwiki/JSPWiki/WEB-INF/lib">
             <include name="**/JSPWiki.jar" />
         </fileset>
@@ -287,21 +289,26 @@
     </target>
 
     <target name="compileDebug" depends="ANTLRParserGeneration" description="compile all java files with full debug info">
-        <javac srcdir="classes" source="1.5" target="1.5" debug="on" debuglevel="lines, vars, source">
+        <javac srcdir="classes" destdir="build"  source="1.5" target="1.5" debug="on" debuglevel="lines, vars, source">
             <classpath refid="project.class.path" />
         </javac>
     </target>
 
     <target name="compile" depends="ANTLRParserGeneration" description="compile all java files">
-        <javac srcdir="classes" source="1.5" target="1.5" debug="on">
+        <javac srcdir="classes" destdir="build" source="1.5" target="1.5" debug="on">
             <classpath refid="project.class.path" />
         </javac>
     </target>
+	
+	<target name="run" depends="" description="Run a java class">
+		<java classname="${class}" >
+            <classpath refid="project.class.path" />
+		</java>
+	</target>
 
     <target name="clean" description="delete all generated files and backups">
         <delete includeEmptyDirs="true" failonerror="false">
-            <fileset dir="classes" includes="**/*.class,**/*.*~"
-                defaultExcludes="no" />
+            <fileset dir="build" />
             <fileset dir="doc/api" includes="**/*.html,**/package-list" excludes="API_users_guide.html"
                 defaultExcludes="no" />
             <fileset dir="doc/api/org" />
@@ -313,6 +320,7 @@
             <fileset dir="." includes="manifest-replace.properties,manifest.mf" />
             <fileset dir="${forrest.plugins-dir}/plugins/org.apache.forrest.plugin.input.wiki" />
         </delete>
+    	<mkdir dir="build"/>
     </target>
 
 
@@ -362,7 +370,10 @@
         <antcall target="makeManifest" />
         <jar jarfile="${jar.place}/lib/makumba.jar" manifest="manifest.mf">
             <fileset dir="classes"
-                includes="makumbaResources/javaScript/*.js, makumbaResources/css/*.css, makumbaResources/image/*.*, org/makumba/**/*.mdd, org/**/*.class, Makumba.conf.default, org/**/*.properties, org/makumba/devel/codeTemplates/*.properties"
+                includes="makumbaResources/javaScript/*.js, makumbaResources/css/*.css, makumbaResources/image/*.*, org/makumba/**/*.mdd, Makumba.conf.default, org/**/*.properties, org/makumba/devel/codeTemplates/*.properties"
+                defaultExcludes="no" excludes="**/**/SEED.txt" />
+            <fileset dir="build"
+                includes="org/**/*.class"
                 defaultExcludes="no" excludes="**/**/SEED.txt" />
             <fileset dir="." includes="COPYING.txt" defaultExcludes="no" excludes="queries.txt" />
             <metainf dir="classes/META-INF" includes="**/*.tld" defaultExcludes="no" />
@@ -804,39 +815,39 @@
 <!-- Targets for modular building (list, forms, commons, ...) -->
 
     <target name="compileList" depends="ANTLRParserGeneration" description="compile all java files for list">
-        <javac srcdir="classes" source="1.5" target="1.5" debug="on" includes="org/makumba/list/**/*.java">
+        <javac srcdir="classes" destdir="build"  source="1.5" target="1.5" debug="on" includes="org/makumba/list/**/*.java">
             <classpath refid="project.class.path" />
         </javac>
     </target>
 
     <target name="compileForms" depends="ANTLRParserGeneration" description="compile all java files for forms">
-        <javac srcdir="classes" source="1.5" target="1.5" debug="on" includes="org/makumba/forms/**/*.java">
+        <javac srcdir="classes" destdir="build"  source="1.5" target="1.5" debug="on" includes="org/makumba/forms/**/*.java">
             <classpath refid="project.class.path" />
         </javac>
     </target>
 
     <target name="compileAnalyser" depends="ANTLRParserGeneration" description="compile all java files for analyser">
-        <javac srcdir="classes" source="1.5" target="1.5" debug="on" includes="org/makumba/analyser/**/*.java">
+        <javac srcdir="classes" destdir="build"  source="1.5" target="1.5" debug="on" includes="org/makumba/analyser/**/*.java">
             <classpath refid="project.class.path" />
         </javac>
     </target>
 
     <target name="compileMDDProvider" depends="ANTLRParserGeneration" description="compile all java files for MDDProvider">
-        <javac srcdir="classes" source="1.5" target="1.5" debug="on"
+        <javac srcdir="classes" destdir="build"  source="1.5" target="1.5" debug="on"
             includes="org/makumba/providers/datadefinition/makumba/**/*.java">
             <classpath refid="project.class.path" />
         </javac>
     </target>
 
     <target name="compileCommons" depends="ANTLRParserGeneration" description="compile all java files for commons">
-        <javac srcdir="classes" source="1.5" target="1.5" debug="on"
+        <javac srcdir="classes" destdir="build"  source="1.5" target="1.5" debug="on"
             includes="org/makumba/*.java, org/makumba/commons/**/*.java, org/makumba/providers/*.java, org.makumba.controller/**/*.java">
             <classpath refid="project.class.path" />
         </javac>
     </target>
 
     <target name="compileRest" depends="ANTLRParserGeneration" description="compile all java files for list">
-        <javac srcdir="classes" source="1.5" target="1.5" debug="on"
+        <javac srcdir="classes" destdir="build"  source="1.5" target="1.5" debug="on"
             excludes="org/makumba/list/**/*.java, org/makumba/forms/**/*.java, org/makumba/analyser/**/*.java, org/makumba/providers/datadefinition/makumba/**/*.java">
             <classpath refid="project.class.path" />
         </javac>
