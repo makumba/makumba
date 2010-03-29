@@ -71,28 +71,40 @@ public class ParameterAssigner {
                 if (fd == null) {
                     throw new IllegalStateException("No type assigned for param" + i + " of query " + qA.getQuery());
                 }
-
+                
                 String spara = "$" + i;
                 Object value = args[i];
                 if (value == Pointer.Null) {
                     value = fd.getNull();
                 }
-                try {
-                    value = fd.checkValue(value);
-                } catch (InvalidValueException e) {
-                    // we have a wrong value, we pass something instead and we remember that there is a problem.
-                    // if there is no correct value for this argument, we'll throw an exception later
-                    if (correct.get(spara) == null) {
-                        errors.put(spara, e);
-                    }
+                
+                // special treatment for multi-type parameters (that have different types at different positions)
+                // if we have an argument of wrong type we set a null argument instead
+                boolean isMultiTypeParam = fd.getDescription().equals("true");
+                boolean isChar = fd.isStringType() && !(value instanceof String);
+                boolean isPointer = fd.isPointer() && !(value instanceof Pointer);
+                boolean isNumber = (fd.isIntegerType() || fd.isRealType()) && !(value instanceof Number);
+                if(isMultiTypeParam && (isChar || isPointer || isNumber)) {
                     paramHandler.setNullArgument(fd.getName(), ps, i + 1);
-                    continue;
-                }
-                correct.put(spara, i);
-                errors.remove(spara);
+                } else {
+                    try {
+                        value = fd.checkValue(value);
+                    } catch (InvalidValueException e) {
+                        // we have a wrong value, we pass something instead and we remember that there is a problem.
+                        // if there is no correct value for this argument, we'll throw an exception later
+                        if (correct.get(spara) == null) {
+                            errors.put(spara, e);
+                        }
+                        paramHandler.setNullArgument(fd.getName(), ps, i + 1);
+                        continue;
+                    }
+                    correct.put(spara, i);
+                    errors.remove(spara);
 
-                paramHandler.setUpdateArgument(fd.getName(), ps, i + 1, value);
+                    paramHandler.setUpdateArgument(fd.getName(), ps, i + 1, value);
+                }
             }
+            
             if (errors.size() > 0) {
                 String s = "";
                 for (Enumeration<String> e = errors.keys(); e.hasMoreElements();) {
