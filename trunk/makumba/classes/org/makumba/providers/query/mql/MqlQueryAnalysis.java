@@ -150,7 +150,7 @@ public class MqlQueryAnalysis implements QueryAnalysis, SQLQueryGenerator {
             }
             
             if (fd != null) {
-                paramInfo.addField(DataDefinitionProvider.getInstance().makeFieldWithName("param" + i, fd));
+                paramInfo.addField(DataDefinitionProvider.getInstance().makeFieldWithName("param" + i, fd, String.valueOf(mqlAnalyzer.multiTypeParams.contains(parameterOrder.get(i)))));
             } else {
                 throw new MakumbaError("Panic: could not compute type of parameter at position " + i + " with name '" + parameterOrder.get(i) + "' of query " + getQuery());
             }
@@ -407,7 +407,8 @@ public class MqlQueryAnalysis implements QueryAnalysis, SQLQueryGenerator {
         expandedParamInfo = DataDefinitionProvider.getInstance().getVirtualDataDefinition("SQL parameters for " + query);
         
         ArrayList<AST> queryParams = findQueryParameters(analyserTreeSQL, new ArrayList<AST>());
-       // expand multiple params (vectors, lists) into multiple parameter entries
+
+        // expand multiple params (vectors, lists) into multiple parameter entries
         for(int i = 0; i < parameterOrder.size(); i++) {
             Object val = getArgumentValue(parameterOrder.get(i), arguments);
 
@@ -419,8 +420,8 @@ public class MqlQueryAnalysis implements QueryAnalysis, SQLQueryGenerator {
                 
                 // we have to append as n - 1 parameters to the tree
                 for (int j = 0; j < v.size() - 1; j++) {
-                    // expand tree
                     
+                    // expand tree
                     qp.setNextSibling(ASTUtil.create(analyser.fact, HqlSqlTokenTypes.NAMED_PARAM, "?"));
                     qp = qp.getNextSibling();
                     if(j == v.size() - 1) {
@@ -495,7 +496,7 @@ public class MqlQueryAnalysis implements QueryAnalysis, SQLQueryGenerator {
     
     public static void main(String[] args) {
         
-        MqlQueryAnalysis qA = new MqlQueryAnalysis("SELECT i.name, $actor_test_Individual FROM test.Individual i WHERE i.surname=$surname and i.name = $2", false, true);
+        MqlQueryAnalysis qA = new MqlQueryAnalysis("SELECT i.name, $actor_test_Individual FROM test.Individual i WHERE i.surname=$surname OR i = $surname", false, true);
         
         Map<String, Object> arguments = new HashMap<String, Object>();
         
@@ -521,6 +522,9 @@ public class MqlQueryAnalysis implements QueryAnalysis, SQLQueryGenerator {
         for(String n : qA.getSQLQueryArgumentTypes().getFieldNames()) {
           System.out.println(qA.getSQLQueryArgumentTypes().getFieldDefinition(n));
         }
+        
+        System.out.println("PARM ORDER:");
+        Arrays.toString(qA.parameterOrder.toArray());
         
     }
     
