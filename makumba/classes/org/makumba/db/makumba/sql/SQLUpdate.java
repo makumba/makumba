@@ -37,6 +37,8 @@ import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.SQLQueryGenerator;
+import org.makumba.providers.query.mql.MqlQueryAnalysis;
+import org.makumba.providers.query.mql.MqlSQLQueryGenerator;
 
 public class SQLUpdate implements Update {
     
@@ -54,10 +56,10 @@ public class SQLUpdate implements Update {
     
     Database db;
     
+    SQLQueryGenerator qG;
+    
     QueryAnalysisProvider qP = QueryProvider.getQueryAnalzyer("oql");
     
-    SQLQueryGenerator qG;
-
     SQLUpdate(Database db, String from, String setWhere, String DELIM) {
         this.type = from;
         this.db = db;
@@ -104,8 +106,7 @@ public class SQLUpdate implements Update {
         }
 
         QueryAnalysis qA = qP.getQueryAnalysis(OQLQuery);
-        qG = (SQLQueryGenerator) qA;
-        qG.setArguments(args);
+        qG = MqlSQLQueryGenerator.getSQLQueryGenerator((MqlQueryAnalysis)qA, args);
         
         try {
             // FIXME: we should make sure here that the tree contains one single type!
@@ -199,7 +200,7 @@ public class SQLUpdate implements Update {
         
         PreparedStatement ps = ((SQLDBConnection) dbc).getPreparedStatement(updateCommand);
         try {
-            String s = assigner.assignParameters(ps, qG.getSQLQueryArguments());
+            String s = assigner.assignParameters(ps, qG.getSQLQueryArguments(args));
             if (s != null) {
                 throw new InvalidValueException("Errors while trying to assign arguments to update:\n" + debugString
                         + "\n" + s);

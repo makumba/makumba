@@ -83,6 +83,7 @@ public class MakumbaTestData {
         p.put("indiv.name", namePersonIndivName_Bart);
         p.put("indiv.surname", namePersonIndivSurname_Bart);
         p.put("birthdate", birthdateBart);
+        p.put("gender", new Integer(1));
         Pointer brother = t.insert("test.Person", p);
 
         p.clear();

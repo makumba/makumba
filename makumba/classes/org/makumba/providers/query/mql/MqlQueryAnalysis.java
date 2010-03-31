@@ -1,11 +1,8 @@
 package org.makumba.providers.query.mql;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,17 +15,14 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.OQLParseError;
-import org.makumba.ProgrammerError;
 import org.makumba.commons.MakumbaJspAnalyzer;
-import org.makumba.commons.NameResolver;
 import org.makumba.commons.RegExpUtils;
-import org.makumba.commons.NameResolver.TextList;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryProvider;
-import org.makumba.providers.SQLQueryGenerator;
 
+import antlr.ASTFactory;
 import antlr.RecognitionException;
 import antlr.collections.AST;
 
@@ -40,7 +34,7 @@ import antlr.collections.AST;
  * @author Manuel Gay
  * @version $Id: MqlQueryAnalysis.java,v 1.1 Apr 29, 2009 8:54:20 PM manu Exp $
  */
-public class MqlQueryAnalysis implements QueryAnalysis, SQLQueryGenerator {
+public class MqlQueryAnalysis implements QueryAnalysis {
 
     public static final String MAKUMBA_PARAM = "param";
 
@@ -61,10 +55,6 @@ public class MqlQueryAnalysis implements QueryAnalysis, SQLQueryGenerator {
     private DataDefinition paramInfo;
     
     private AST analyserTreeOriginal;
-    
-    private AST analyserTreeSQL;
-    
-    private TextList text;
     
     private MqlSqlWalker analyser;
     
@@ -204,7 +194,7 @@ public class MqlQueryAnalysis implements QueryAnalysis, SQLQueryGenerator {
     }
 
     public DataDefinition getParameterTypes() {
-        return expandedParamInfo;
+        return paramInfo;
     }
 
     public DataDefinition getProjectionType() {
@@ -302,230 +292,19 @@ public class MqlQueryAnalysis implements QueryAnalysis, SQLQueryGenerator {
         return l;
     }
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    /**
-     * What follows is the implementation of the {@link SQLQueryGenerator}
-     */
-    
-    private Map<String, Object> arguments;
-    
-    public void setArguments(java.util.Map<String, Object> arguments) {
-        this.arguments = arguments;
-        
-        // get a fresh copy of the analysis tree, that we'll modify
-        
-        analyserTreeSQL = analyser.fact.dupTree(analyserTreeOriginal);
-        
-        expandMultipleParameters();
-        
+    public AST getAnalyserTree() {
+        return analyser.fact.dupTree(analyserTreeOriginal);
     }
     
-    public int getSQLArgumentNumber() {
-        if(expandedParamInfo == null) {
-            throw new MakumbaError("Can't call this method without having set the arguments with setArguments!");
-        } else {
-            return expandedParamInfo.getFieldNames().size();
-        }
+    public ASTFactory getAnalyserFactory() {
+        return analyser.fact;
     }
     
-    public DataDefinition getSQLQueryArgumentTypes() {
-        return expandedParamInfo;
+    public boolean getNoFrom() {
+        return noFrom;
     }
     
-    DataDefinition expandedParamInfo = null;
-
-    public String getSQLQuery(NameResolver nr) {
-        
-        // FIXME add the acceptColons thingie?
-        
-        if(arguments == null && expandedParamInfo != null) {
-            throw new MakumbaError("Error: you cannot ask for the unexpanded SQL query after having already called it when providing arguments");
-        }
-        
-        MqlSqlGenerator mg = new MqlSqlGenerator();
-        try {
-            mg.statement(analyserTreeSQL);
-        } catch (Throwable e) {
-            doThrow(e, analyserTreeSQL);
-        }
-        doThrow(mg.error, analyserTreeSQL);
-
-        text = mg.text;
-
-        
-        // TODO: we can cache these SQL results by the key of the NameResolver
-        // still we should first check if this is needed, maybe the generated SQL (or processing of it)
-        // is cached already somewhere else
-        String sql = text.toString(nr);
-        if (noFrom)
-            return sql.substring(0, sql.toLowerCase().indexOf("from")).trim();
-        return sql;
+    public List<String> getParameterOrder() {
+        return parameterOrder;
     }
-
-    
-    
-    public Object[] getSQLQueryArguments() {
-        
-        if(arguments == null) {
-            throw new MakumbaError("Error: arguments should have been set before calling getSQLQueryArguments using setArguments");
-        }
-        
-        ArrayList<Object> res = new ArrayList<Object>();
-
-        for (Iterator<String> e = parameterOrder.iterator(); e.hasNext();) {
-            
-            Object o = getArgumentValue(e.next(), arguments);
-            
-            if (o instanceof List<?>) {
-                List<?> v = (List<?>) o;
-                for (int i = 1; i <= v.size(); i++)
-                    res.add(v.get(i - 1));
-            } else {
-                res.add(o);
-            }
-        }
-        return res.toArray();
-    }
-    
-    
-    /**
-     * Expands multiple parameters, i.e. parameters that are vectors or lists. This is necessary for execution of the SQL query.
-     * This method expands the analyser tree and multiplies the parameters according the size of the multiple parameters,
-     * and sets the expandedParamInfo so that clients of the {@link SQLQueryGenerator} can use it to do type checking on the SQL query parameters.
-     */
-    private void expandMultipleParameters() throws ProgrammerError {
-        
-        expandedParamInfo = DataDefinitionProvider.getInstance().getVirtualDataDefinition("SQL parameters for " + query);
-        
-        ArrayList<AST> queryParams = findQueryParameters(analyserTreeSQL, new ArrayList<AST>());
-
-        // expand multiple params (vectors, lists) into multiple parameter entries
-        for(int i = 0; i < parameterOrder.size(); i++) {
-            Object val = getArgumentValue(parameterOrder.get(i), arguments);
-
-            // now expand the query tree from one list to a number of elements
-            if (val instanceof List<?>) {
-                List<?> v = (List<?>) val;
-                AST qp = queryParams.get(i);
-                AST next = qp.getNextSibling();
-                
-                // we have to append as n - 1 parameters to the tree
-                for (int j = 0; j < v.size() - 1; j++) {
-                    
-                    // expand tree
-                    qp.setNextSibling(ASTUtil.create(analyser.fact, HqlSqlTokenTypes.NAMED_PARAM, "?"));
-                    qp = qp.getNextSibling();
-                    if(j == v.size() - 1) {
-                        qp.setNextSibling(next);
-                    }
-                 }
-                
-                // build expanded parameter types definition
-                for(int k = 0; k < v.size(); k++) {
-                    FieldDefinition fd = paramInfo.getFieldDefinition(i);
-                    expandedParamInfo.addField(DataDefinitionProvider.getInstance().makeFieldWithName(fd.getName() + "_" + k, fd));
-                }
-            } else {
-                expandedParamInfo.addField(paramInfo.getFieldDefinition(i));
-            }
-        }
-    }   
-    
-    /**
-     * Gets the value of a given argument, applies name transformation if necessary, and checks if the value is not null
-     */
-    private Object getArgumentValue(String argumentName, Map<String, Object> arguments) throws ProgrammerError {
-
-        if(arguments == null) {
-            throw new MakumbaError("Empty arguments provided");
-        }
-        
-        if(argumentName == null) {
-            throw new MakumbaError("Empty argumentName provided");
-
-        }
-        
-        // if we have a makumba parameter (translated by MqlAnalysisProvider#transformOQLParameters) we need to recover the original argument index to get it in the map
-        // indeed in the map of arguments we get, unnamed parameters like $1, $2, ... are registered with their name
-        if(argumentName.startsWith(MAKUMBA_PARAM)) {
-            argumentName = argumentName.substring(MAKUMBA_PARAM.length());
-            int n = Integer.parseInt(argumentName);
-            argumentName = "" + (n+1);
-        }
-        if(argumentName.indexOf("###") > 0) {
-            argumentName = argumentName.substring(0, argumentName.indexOf("###"));
-        }
-        
-        Object val = arguments.get(argumentName);
-        if(val == null) { 
-            throw new ProgrammerError("The parameter '"+argumentName+"' should not be null");
-        }
-        return val;
-    }
-    
-    /**
-     * Find all the named parameters in the analysis tree and puts them in a list
-     */
-    private ArrayList<AST> findQueryParameters(AST tree, ArrayList<AST> result) {
-        
-        if(tree == null) {
-            return result;
-        }
-        
-        // we only look for named params since those are the ones MQL uses
-        if(tree.getType() == HqlSqlTokenTypes.NAMED_PARAM) {
-            result.add(tree);
-        }
-
-        // recursive-descent traversal, first the children, then the siblings
-        findQueryParameters(tree.getFirstChild(), result);
-        findQueryParameters(tree.getNextSibling(), result);
-        
-        return result;
-    }
-
-    
-    public static void main(String[] args) {
-        
-        MqlQueryAnalysis qA = new MqlQueryAnalysis("SELECT i.name, $actor_test_Individual FROM test.Individual i WHERE i.surname=$surname OR i = $surname", false, true);
-        
-        Map<String, Object> arguments = new HashMap<String, Object>();
-        
-        Vector<String> test = new Vector<String>();
-        test.add("la");
-        test.add("la");
-        test.add("la");
-        arguments.put("actor_test_Individual", test);
-        arguments.put("surname", "john");
-        arguments.put("2", "stuff");
-        
-        qA.setArguments(arguments);
-        
-        String sql = qA.getSQLQuery(new NameResolver());
-        System.out.println("QUERY: " + sql);
-        
-        Object[] arg = qA.getSQLQueryArguments();
-        System.out.println("ARGS: " + Arrays.toString(arg));
-        
-        System.out.println("SIZE: " + qA.getSQLArgumentNumber());
-        
-        System.out.println("TYPES: + " + qA.getSQLQueryArgumentTypes());
-        for(String n : qA.getSQLQueryArgumentTypes().getFieldNames()) {
-          System.out.println(qA.getSQLQueryArgumentTypes().getFieldDefinition(n));
-        }
-        
-        System.out.println("PARM ORDER:");
-        Arrays.toString(qA.parameterOrder.toArray());
-        
-    }
-    
 }
