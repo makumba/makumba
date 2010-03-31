@@ -1,4 +1,0 @@
-#$Id$
-id=char[2];
-someSet = set
-someSet->char = char[2];

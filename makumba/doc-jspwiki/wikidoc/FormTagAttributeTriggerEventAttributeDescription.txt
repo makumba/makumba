@@ -1,1 +1,0 @@
-Name of the event to be raised after successful AJAX submission of the form

@@ -1,6 +1,0 @@
-[{Code
-
-<mak:resultList resultsFrom="searchPerson">
-    Name: <mak:value expr="o.name"/> <br/>
-</mak:resultList>
-}]

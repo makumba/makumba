@@ -1,1 +1,0 @@
-Makumba type for record creation, or MQL label for subrecord creation

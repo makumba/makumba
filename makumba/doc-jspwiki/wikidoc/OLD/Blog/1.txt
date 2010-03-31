@@ -1,6 +1,0 @@
-!!!Blog
-
-[{INSERT WeblogPlugin}]
-
-
-%%(display:none;)[Category Main]%%

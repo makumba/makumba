@@ -1,1 +1,0 @@
-MQL expression relative to enclosing query tags or a $attribute computed previously in the page (with <mak:value var=.../>, pageContext.setAttribute(...), or read by in the previous page by an <mak:input />)

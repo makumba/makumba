@@ -1,2 +1,0 @@
-#another testcase for bug 661
-bla=fixedint ;should fail

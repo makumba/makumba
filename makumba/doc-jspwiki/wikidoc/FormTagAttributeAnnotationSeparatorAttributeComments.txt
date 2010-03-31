@@ -1,1 +1,0 @@
-Also HTML can be used, e.g. printing an error icon.
