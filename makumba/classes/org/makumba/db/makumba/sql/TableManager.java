@@ -1027,7 +1027,7 @@ public class TableManager extends Table {
 
     // moved from FieldManager
     /**
-     * ask this field to write write its argumment value in a prepared UPDATE SQL statement
+     * ask this field to write write its argument value in a prepared UPDATE SQL statement
      */
     public void setUpdateArgument(String fieldName, PreparedStatement ps, int n, Object o) throws SQLException {
         if (o == getFieldDefinition(fieldName).getNull())
