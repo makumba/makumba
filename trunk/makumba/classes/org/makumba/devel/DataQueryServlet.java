@@ -26,6 +26,7 @@ package org.makumba.devel;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Vector;
 
@@ -121,7 +122,7 @@ public class DataQueryServlet extends DataServlet {
                     if (oqlQuery instanceof org.makumba.db.makumba.sql.Query) {
                         writer.println("<hr>");
                         org.makumba.db.makumba.sql.Query sqlQuery = (org.makumba.db.makumba.sql.Query) ((DBConnection) t).getQuery(query);
-                        writer.println("SQL query: " + sqlQuery.getCommand() + ";<br>");
+                        writer.println("SQL query: " + sqlQuery.getCommand(new HashMap<String, Object>()) + ";<br>");
                         writer.println("<hr>");
                     }
                 } else {

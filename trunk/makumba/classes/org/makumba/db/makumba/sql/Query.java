@@ -42,6 +42,8 @@ import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.SQLQueryGenerator;
+import org.makumba.providers.query.mql.MqlQueryAnalysis;
+import org.makumba.providers.query.mql.MqlSQLQueryGenerator;
 
 /** SQL implementation of a OQL query */
 public class Query implements org.makumba.db.makumba.Query {
@@ -52,8 +54,6 @@ public class Query implements org.makumba.db.makumba.Query {
 
     QueryAnalysis qA;
     
-    SQLQueryGenerator qG;
-
     ParameterAssigner assigner;
 
     String limitSyntax;
@@ -70,10 +70,10 @@ public class Query implements org.makumba.db.makumba.Query {
 
     /**
      * Gets the raw SQL query to be executed
-     * @return the SQL query string to be sent to the database, assuming no multiple arguments
+     * @return the SQL query string to be sent to the database, given a set of arguments
      */
-    public String getCommand() {
-        return qG.getSQLQuery(db.getNameResolverHook());
+    public String getCommand(Map<String, Object> arguments) {
+        return MqlSQLQueryGenerator.getSQLQueryGenerator((MqlQueryAnalysis)qA, arguments).getSQLQuery(db.getNameResolverHook());
     }
 
     public Query(Database db, String MQLQuery, String insertIn) {
@@ -92,9 +92,6 @@ public class Query implements org.makumba.db.makumba.Query {
 
         qA = (insertIn != null && insertIn.length() > 0) ? qap.getQueryAnalysis(MQLQuery, insertIn)
                 : qap.getQueryAnalysis(MQLQuery);
-        
-        // this is a bit of a hack, we know that the MQLQueryAnalysis is also a generator
-        qG = (SQLQueryGenerator) qA;
 
         resultHandler = (TableManager) db.makePseudoTable(qA.getProjectionType());
         limitSyntax = db.getLimitSyntax();
@@ -108,17 +105,18 @@ public class Query implements org.makumba.db.makumba.Query {
 
     public Vector<Dictionary<String, Object>> execute(Map<String, Object> args, DBConnection dbc, int offset, int limit) {
         
-        qG.setArguments(args);
+        MqlSQLQueryGenerator qG = MqlSQLQueryGenerator.getSQLQueryGenerator((MqlQueryAnalysis)qA, args);
+        
         assigner = new ParameterAssigner(db, qA, qG);
         
-        String com = getCommand();
+        String com = qG.getSQLQuery(db.getNameResolverHook());
         if (supportsLimitInQuery) {
             com += " " + limitSyntax; // TODO: it might happen that it should be in other places than at the end.
         }
         PreparedStatement ps = ((SQLDBConnection) dbc).getPreparedStatement(com);
 
         try {
-            String s = assigner.assignParameters(ps, qG.getSQLQueryArguments());
+            String s = assigner.assignParameters(ps, qG.getSQLQueryArguments(args));
 
             if (supportsLimitInQuery) {
                 int limit1 = limit == -1 ? Integer.MAX_VALUE : limit;
@@ -193,8 +191,9 @@ public class Query implements org.makumba.db.makumba.Query {
     }
 
     public int insert(Map<String, Object> args, DBConnection dbc) {
-        
-        qG.setArguments(args);
+
+        MqlSQLQueryGenerator qG = MqlSQLQueryGenerator.getSQLQueryGenerator((MqlQueryAnalysis)qA, args);
+
         assigner = new ParameterAssigner(db, qA, qG);
         
         String comma = "";
@@ -207,12 +206,12 @@ public class Query implements org.makumba.db.makumba.Query {
 
         String tablename = "temp_" + (int) (Math.random() * 10000.0);
 
-        String com = "INSERT INTO " + tablename + " ( " + fieldList + ") " + getCommand();
+        String com = "INSERT INTO " + tablename + " ( " + fieldList + ") " + qG.getSQLQuery(db.getNameResolverHook());
         try {
             SQLDBConnection sqldbc = (SQLDBConnection) dbc;
             resultHandler.create(sqldbc, tablename, true);
             PreparedStatement ps = sqldbc.getPreparedStatement(com);
-            String s = assigner.assignParameters(ps, qG.getSQLQueryArguments());
+            String s = assigner.assignParameters(ps, qG.getSQLQueryArguments(args));
             if (s != null) {
                 throw new InvalidValueException("Errors while trying to assign arguments to query:\n" + com + "\n" + s);
             }

@@ -19,6 +19,7 @@ public class MakumbaTestSetup extends TestSetup {
         this.transactionProviderType = transactionProviderType;
     }
     
+    @Override
     protected void setUp() {
         
         TransactionProvider tp = null;
@@ -46,7 +47,7 @@ public class MakumbaTestSetup extends TestSetup {
     }
 
     
-
+    @Override
     public void tearDown() {
         
         // do your one-time tear down here!

@@ -19,13 +19,10 @@ import org.makumba.commons.NameResolver;
 public interface SQLQueryGenerator {
 
     /**
-     * Sets the arguments this generator should work with
-     * 
-     * @param arguments
-     *            a Map<String, Object> of named arguments
+     * Initialises the SQLQueryGenerator. Called at resource configuration time
      */
-    public void setArguments(Map<String, Object> arguments);
-
+    public void init(Map<String, Object> arguments);
+    
     /**
      * Provides the SQL query to be executed on the DBMS, with expanded and transformed parameters
      * 
@@ -41,7 +38,7 @@ public interface SQLQueryGenerator {
      * 
      * @return an object array containing the ordered parameter values
      */
-    public Object[] getSQLQueryArguments();
+    public Object[] getSQLQueryArguments(Map<String, Object> arguments);
     
     /**
      * Gets the types of the arguments
@@ -54,7 +51,5 @@ public interface SQLQueryGenerator {
      * The number of arguments of the query
      */
     public int getSQLArgumentNumber();
-    
-    
 
 }

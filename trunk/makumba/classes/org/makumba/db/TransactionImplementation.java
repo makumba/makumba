@@ -362,6 +362,8 @@ public abstract class TransactionImplementation implements Transaction {
         return new HashMap<String, Object>() {
 
             private static final long serialVersionUID = 1L;
+            
+            private Attributes contextAttributesCopy;
 
             @Override
             public Object get(Object key) {
@@ -369,8 +371,13 @@ public abstract class TransactionImplementation implements Transaction {
                 if(o!=null)
                     return o;
                 try{
-                    o= contextAttributes.getAttribute((String)key);
-                    if(o==null && contextAttributes.hasAttribute(""+key+"_null"))
+                    
+                    if(contextAttributesCopy == null) {
+                        contextAttributesCopy = contextAttributes;
+                    }
+                    
+                    o= contextAttributesCopy.getAttribute((String)key);
+                    if(o==null && contextAttributesCopy.hasAttribute(""+key+"_null"))
                         o=Pointer.Null;
                     return o;
                 } catch (UnauthenticatedException e) {

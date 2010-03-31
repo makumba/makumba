@@ -7,6 +7,8 @@
 
 TO BE RELEASED IMMEDIATELY (No need for more testing)
 -----------------------------------------------
+manu: fixing bug: multi-type parameters are accepted again
+manu: optimising new query generation
 
 NOT TO BE RELEASED YET (need more testing)
 manu: auto-complete for mak:input (char and ptr)
