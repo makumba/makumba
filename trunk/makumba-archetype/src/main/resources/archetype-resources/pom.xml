@@ -1,14 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>${groupId}</groupId>
   <artifactId>${artifactId}</artifactId>
   <packaging>war</packaging>
   <version>${version}</version>
-  <name>makumba-archetype</name>
+  <name>${artifactId}</name>
   <url>http://maven.apache.org</url>
-  
-   <repositories>
+
+  <properties>
+    <!--
+      Explicitly declaring the source encoding eliminates the following message: [WARNING] Using platform encoding
+      (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+    -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <repositories>
     <repository>
       <id>central</id>
       <name>Maven Repository Switchboard</name>
@@ -19,13 +28,13 @@
       </snapshots>
     </repository>
   </repositories>
-  
-  
+
+
   <dependencies>
     <dependency>
       <groupId>org.makumba</groupId>
       <artifactId>makumba</artifactId>
-      <version>0.8.2.7.2</version>
+      <version>[0.8.2.7.2,)</version>
     </dependency>
     <dependency>
       <groupId>hsqldb</groupId>
@@ -47,7 +56,7 @@
   </dependencies>
 
   <build>
-    <finalName>makumba-archetype</finalName>
+    <finalName>${artifactId}</finalName>
     <sourceDirectory>src/java</sourceDirectory>
     <outputDirectory>target/classes</outputDirectory>
     <plugins>
@@ -79,6 +88,11 @@
           <path>/${project.build.finalName}</path>
           <!-- Embedded port -->
           <port>8080</port>
+          <!--
+            The default authentication credentials for remote deployment are username "admin" with no password To
+            override credentials, define a server in settings.xml and activate it using the <server> element
+          -->
+          <url>http://localhost:8080/manager</url>
         </configuration>
       </plugin>
     </plugins>
