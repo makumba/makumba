@@ -68,6 +68,10 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         else return query;
     }
     
+    public MqlQueryAnalysis(AST pass1){
+        init(false, false, pass1);
+        
+    }
     public MqlQueryAnalysis(String queryAndInsert, boolean optimizeJoins, boolean autoLeftJoin) {
         Date d = new Date();
 
@@ -107,6 +111,15 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         MqlQueryAnalysisProvider.transformOQLParameters(parsed, parameterOrder);
         MqlQueryAnalysisProvider.transformOQL(parsed);
                 
+        init(optimizeJoins, autoLeftJoin, parsed);
+        
+        long diff = new java.util.Date().getTime() - d.getTime();
+        java.util.logging.Logger.getLogger("org.makumba.db.query.compilation").fine("MQL analysis: " + diff + " ms: " + query);
+       
+    }
+
+
+    private void init(boolean optimizeJoins, boolean autoLeftJoin, AST parsed) throws MakumbaError {
         MqlSqlWalker mqlAnalyzer = new MqlSqlWalker(query, insertIn, optimizeJoins, autoLeftJoin, false);
         analyser = mqlAnalyzer;
         try {
@@ -146,10 +159,6 @@ public class MqlQueryAnalysis implements QueryAnalysis {
             }
             
         }
-        
-        long diff = new java.util.Date().getTime() - d.getTime();
-        java.util.logging.Logger.getLogger("org.makumba.db.query.compilation").fine("MQL analysis: " + diff + " ms: " + query);
-       
     }
 
     protected void doThrow(Throwable t, AST debugTree) {
