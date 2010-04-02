@@ -32,7 +32,7 @@ import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.Pointer;
 import org.makumba.providers.QueryAnalysis;
-import org.makumba.providers.SQLQueryGenerator;
+import org.makumba.providers.SQLParameterTransformer;
 
 /**
  * this class takes parameters passed to an OQL query and transmits them to the corresponding PreparedStatement. The
@@ -43,9 +43,9 @@ public class ParameterAssigner {
     TableManager paramHandler;
     org.makumba.db.makumba.Database db;
     QueryAnalysis qA;
-    SQLQueryGenerator qG;
+    SQLParameterTransformer qG;
 
-    ParameterAssigner(org.makumba.db.makumba.Database db, QueryAnalysis qA, SQLQueryGenerator qG) {
+    ParameterAssigner(org.makumba.db.makumba.Database db, QueryAnalysis qA, SQLParameterTransformer qG) {
         this.qA = qA;
         this.qG = qG;
         this.db = db;
@@ -54,11 +54,11 @@ public class ParameterAssigner {
     static final Object[] empty = new Object[0];
 
     public String assignParameters(PreparedStatement ps, Object[] args) throws SQLException {
-        if (qG.getSQLArgumentNumber() == 0) {
+        if (qG.getArgumentCount() == 0) {
             return null;
         }
         
-        if (qG.getSQLArgumentNumber() > 0) {
+        if (qG.getArgumentCount() > 0) {
             paramHandler = (TableManager) db.makePseudoTable(qG.getSQLQueryArgumentTypes());
         }
 
@@ -66,7 +66,7 @@ public class ParameterAssigner {
         try {
             Hashtable<String, Integer> correct = new Hashtable<String, Integer>();
             Hashtable<String, InvalidValueException> errors = new Hashtable<String, InvalidValueException>();
-            for (int i = 0; i < qG.getSQLArgumentNumber(); i++) {
+            for (int i = 0; i < qG.getArgumentCount(); i++) {
                 FieldDefinition fd = qG.getSQLQueryArgumentTypes().getFieldDefinition(i);
                 if (fd == null) {
                     throw new IllegalStateException("No type assigned for param" + i + " of query " + qA.getQuery());

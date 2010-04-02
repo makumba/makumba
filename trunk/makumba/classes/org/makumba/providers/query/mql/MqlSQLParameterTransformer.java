@@ -18,16 +18,16 @@ import org.makumba.commons.NamedResources;
 import org.makumba.commons.NameResolver.TextList;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
-import org.makumba.providers.SQLQueryGenerator;
+import org.makumba.providers.SQLParameterTransformer;
 
 import antlr.collections.AST;
 
 /**
- * MQL implementation of the {@link SQLQueryGenerator}, which generates SQL based on a {@link QueryAnalysis}
+ * MQL implementation of the {@link SQLParameterTransformer}, which generates SQL based on a {@link QueryAnalysis}
  * @author Manuel Gay
  * @version $Id: MqlSQLQueryGenerator.java,v 1.1 Mar 30, 2010 4:17:00 PM manu Exp $
  */
-public class MqlSQLQueryGenerator implements SQLQueryGenerator {
+public class MqlSQLParameterTransformer implements SQLParameterTransformer {
     
     private MqlQueryAnalysis qA;
     
@@ -39,7 +39,7 @@ public class MqlSQLQueryGenerator implements SQLQueryGenerator {
 
 
     
-    public MqlSQLQueryGenerator(MqlQueryAnalysis qA) {
+    public MqlSQLParameterTransformer(MqlQueryAnalysis qA) {
         this.qA = qA;
         this.analyserTreeSQL = qA.getAnalyserTree();
     }
@@ -51,7 +51,7 @@ public class MqlSQLQueryGenerator implements SQLQueryGenerator {
         }
     }
     
-    public int getSQLArgumentNumber() {
+    public int getArgumentCount() {
         if(expandedParamInfo == null) {
             throw new MakumbaError("Can't call this method without having set the arguments with setArguments!");
         } else {
@@ -87,7 +87,7 @@ public class MqlSQLQueryGenerator implements SQLQueryGenerator {
 
     
     
-    public Object[] getSQLQueryArguments(Map<String, Object> arguments) {
+    public Object[] toArgumentArray(Map<String, Object> arguments) {
         
         if(arguments == null) {
             throw new MakumbaError("Error: arguments shouldn't be null");
@@ -114,7 +114,7 @@ public class MqlSQLQueryGenerator implements SQLQueryGenerator {
     /**
      * Expands multiple parameters, i.e. parameters that are vectors or lists. This is necessary for execution of the SQL query.
      * This method expands the analyser tree and multiplies the parameters according the size of the multiple parameters,
-     * and sets the expandedParamInfo so that clients of the {@link SQLQueryGenerator} can use it to do type checking on the SQL query parameters.
+     * and sets the expandedParamInfo so that clients of the {@link SQLParameterTransformer} can use it to do type checking on the SQL query parameters.
      */
     private void expandMultipleParameters(Map<String, Object> arguments) throws ProgrammerError {
         
@@ -249,26 +249,26 @@ public class MqlSQLQueryGenerator implements SQLQueryGenerator {
             MqlQueryAnalysis qA = (MqlQueryAnalysis) multi[0];
             Map<String, Object> args = (Map<String, Object>) multi[1];
 
-            return new MqlSQLQueryGenerator(qA);
+            return new MqlSQLParameterTransformer(qA);
         }
         
         protected void configureResource(Object name, Object hashName, Object resource) throws Throwable {
             Object[] multi = (Object[]) name;
             Map<String, Object> args = (Map<String, Object>) multi[1];
             
-            ((MqlSQLQueryGenerator)resource).init(args);
+            ((MqlSQLParameterTransformer)resource).init(args);
             
         }
     });
     
-    public static MqlSQLQueryGenerator getSQLQueryGenerator(MqlQueryAnalysis qA, Map<String, Object> args) {
+    public static MqlSQLParameterTransformer getSQLQueryGenerator(MqlQueryAnalysis qA, Map<String, Object> args) {
         
         // FIXME this doesn't work
         // the key is the combination of mql query + parameter cardinality
         // but this is not enough because we don't have the parameter values always being the same (i.e. 2 queries with same cardinality but different values)
         // call configure resource, set arguments
         
-        return (MqlSQLQueryGenerator) NamedResources.getStaticCache(generators).getResource(new Object[] {qA, args});
+        return (MqlSQLParameterTransformer) NamedResources.getStaticCache(generators).getResource(new Object[] {qA, args});
         
     }
     
@@ -286,16 +286,16 @@ public class MqlSQLQueryGenerator implements SQLQueryGenerator {
         arguments.put("surname", "john");
         arguments.put("2", "stuff");
         
-        MqlSQLQueryGenerator qG = new MqlSQLQueryGenerator(qA);
+        MqlSQLParameterTransformer qG = new MqlSQLParameterTransformer(qA);
         qG.init(arguments);
         
         String sql = qG.getSQLQuery(new NameResolver());
         System.out.println("QUERY: " + sql);
         
-        Object[] arg = qG.getSQLQueryArguments(arguments);
+        Object[] arg = qG.toArgumentArray(arguments);
         System.out.println("ARGS: " + Arrays.toString(arg));
         
-        System.out.println("SIZE: " + qG.getSQLArgumentNumber());
+        System.out.println("SIZE: " + qG.getArgumentCount());
         
         System.out.println("TYPES: + " + qG.getSQLQueryArgumentTypes());
         for(String n : qG.getSQLQueryArgumentTypes().getFieldNames()) {
