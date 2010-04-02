@@ -16,7 +16,7 @@ import org.makumba.commons.NameResolver;
  * @author Manuel Gay
  * @version $Id: SQLQueryGenerator.java,v 1.1 Mar 3, 2010 6:50:10 PM manu Exp $
  */
-public interface SQLQueryGenerator {
+public interface SQLParameterTransformer {
 
     /**
      * Initialises the SQLQueryGenerator. Called at resource configuration time
@@ -38,7 +38,7 @@ public interface SQLQueryGenerator {
      * 
      * @return an object array containing the ordered parameter values
      */
-    public Object[] getSQLQueryArguments(Map<String, Object> arguments);
+    public Object[] toArgumentArray(Map<String, Object> arguments);
     
     /**
      * Gets the types of the arguments
@@ -50,6 +50,6 @@ public interface SQLQueryGenerator {
     /**
      * The number of arguments of the query
      */
-    public int getSQLArgumentNumber();
+    public int getArgumentCount();
 
 }

@@ -13,7 +13,7 @@ import org.makumba.FieldDefinition;
 import org.makumba.OQLParseError;
 import org.makumba.commons.ClassResource;
 import org.makumba.commons.NameResolver;
-import org.makumba.providers.SQLQueryGenerator;
+import org.makumba.providers.SQLParameterTransformer;
 
 import antlr.collections.AST;
 
@@ -102,11 +102,11 @@ public class ParserTest {
         String mql_sql = null; 
 
         MqlQueryAnalysis mq = null;
-        SQLQueryGenerator qG = null;
+        SQLParameterTransformer qG = null;
         Throwable mqlThr=null;
         try {
             mq = new MqlQueryAnalysis(query, false, automaticLeftJoin);
-            qG = (SQLQueryGenerator) qG;
+            qG = (SQLParameterTransformer) qG;
             
             mql_sql = qG.getSQLQuery(nr).toLowerCase();
         } catch (Throwable t) {
