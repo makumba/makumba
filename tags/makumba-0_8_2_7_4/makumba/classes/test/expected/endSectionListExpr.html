@@ -1,0 +1,29 @@
+
+
+
+<html>
+<head>
+<title>Section - list with iteration expression</title>
+</head>
+
+<body>
+
+<button onClick="mak.event('myEvent1')">event1</button>
+<br/><br/>
+
+<button onClick="mak.event('myEvent1', 'bart')">event5 iteration bart</button>
+<div id="divListId---bart">bart</div>
+
+<button onClick="mak.event('myEvent1', 'john')">event5 iteration john</button>
+<script type="text/javascript">
+var mak = new Mak();
+var _mak_event_to_id_ = {"myEvent1":["divListId---bart","divListId---john"],"myEvent1---john":["divListId---john"],"myEvent1---bart":["divListId---bart"]};
+var _mak_idevent_to_type_ = {"divListId---bart___myEvent1":"reload","divListId---bart___myEvent1---bart":"reload","divListId---john___myEvent1":"reload","divListId---john___myEvent1---john":"reload"};
+var _mak_page_url_ = '/tests/JspRedirector';
+var _mak_page_params_ = {"Cactus_TestMethod":["testSectionListExpr"],"Cactus_AutomaticSession":["true"],"Cactus_Service":["CALL_TEST"],"Cactus_TestClass":["test.tags.ListOQLTest"]};
+</script>
+<div id="divListId---john">john</div>
+
+
+</body>
+</html>

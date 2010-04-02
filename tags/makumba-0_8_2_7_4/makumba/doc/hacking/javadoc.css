@@ -1,0 +1,9 @@
+/* $Id$ */
+
+/* inherit all from public javadoc */
+@import url("../../api/javadoc.css");
+
+/* override margin as we don't show navbar in internal javadoc */
+body {margin-left:10px; }
+
+H1, H2, H3, H4 { margin-left:0;}

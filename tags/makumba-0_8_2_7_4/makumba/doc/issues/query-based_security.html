@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+  <title>query-based security</title>
+  <link rel="stylesheet" type="text/css" media="all" href="../main.css">
+  <script type="text/javascript" src="../main.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+   makeNavBar("../");
+</script>
+<h1>Query-Based Security (QBS)<br>
+</h1>
+(formerly known as Timisoara Ticket Definition)<br>
+<br>
+Nowadays the majority of web tools provide security per resource, i.e.
+the object to be secured is some sort of a directory in the site. <br>
+<br>
+It seems to be mathematically possible to compute the credentials
+needed based on the <span style="font-style: italic;">queries used in
+a page</span> rather than based on the<span style="font-style: italic;">
+page path</span>! For example given a
+type (MDD), it should be possible to write <a
+ href="query_fragment_methods.html">Query Fragment Methods</a> that
+define access rights to the CRUD (create-read-update-delete) operations
+on the respective type and
+on related types. Instead of being defined near the page/folder, the
+query based security (QBS) would be defined somewhere near the data
+types (model)<br>
+<br>
+Query analysis for QBS should be done at page (or whatever other
+module) analysis. It should only be done once. Its results should be
+query fragments to execute (appended to other queries or separately) <br>
+<br>
+Brief:<br>
+<ul>
+  <li>try to imagine how the query-based-security would look like for
+several concrete examples of security constraints in an existing
+application<br>
+  </li>
+  <li>consider the overhead that the checking of QBS credentials will
+add<br>
+  </li>
+  <li>consider whether such security credentials, once obtained, can be
+stored in a session</li>
+  <li>instead of blocking access to the whole page, it may be possible
+to add some QBS qurery fragments to a given query and filter out the
+results that the principal does not have the right to see!</li>
+  <li>the framework should also allow for hiding parts of a page if
+some QBS for only that part of the page fails.</li>
+  <li>look into security theories</li>
+  <li>look into the mathematics of query analysis for QBS <br>
+  </li>
+</ul>
+<br>
+</body>
+</html>

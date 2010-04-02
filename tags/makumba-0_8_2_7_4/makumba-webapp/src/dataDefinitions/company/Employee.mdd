@@ -1,0 +1,16 @@
+name = not null char[200]
+surname = not null char[200]
+birthdate = date
+salary = real
+department = ptr company.Department
+
+projects = set
+projects->project = ptr company.Project
+projects->timePercentage = int ; percentage assigned
+
+
+# MDD functions
+nameSurname() { concat(name, ' ', surname)
+
+# Validation rules
+birthdate%compare = birthdate <= date($now, $now, $now - 16, 0, 0, 0) : An employee has to be at least 16 years old!

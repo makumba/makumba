@@ -1,0 +1,44 @@
+
+
+<html>
+<head><title>Form with partial postback</title></head>
+<body>
+
+
+
+
+<script type="text/javascript">
+var mak = new Mak();
+var _mak_event_to_id_ = {"personCreated":["persons"]};
+var _mak_idevent_to_type_ = {"persons___personCreated":"reload"};
+var _mak_page_url_ = '/tests/JspRedirector';
+var _mak_page_params_ = {"Cactus_TestMethod":["testMakFormAjax"],"Cactus_AutomaticSession":["true"],"Cactus_Service":["CALL_TEST"],"Cactus_TestClass":["test.tags.FormsOQLTest"]};
+</script>
+<div id="persons">
+  
+    bart van Vandervanden<br/>
+  
+    john von Neumann<br/>
+  
+    addToNewPerson <br/>
+  
+    firstBrother Person<br/>
+  
+    secondBrother Person<br/>
+  
+    stepBrother Makumbian<br/>
+  
+</div>
+<br/>
+
+<h1>New person</h1>
+<form id="_form1" method="POST" name="newForm" >
+  <input name="indiv.name" type="text" value="" maxlength="40" id="indiv.name_form1" ><br/>
+  <input name="indiv.surname" type="text" value="" maxlength="40" id="indiv.surname_form1" ><br/>
+  <br/>
+  <input class="makSubmitButton" type="submit" value="Submit" />
+<input type="hidden" name="__makumba__responder__" value="1540352806">
+</form><script type="text/javascript">Event.observe('_form1', 'submit', function(event) {mak.submit('_form1', 'true', event, 'none', null);});</script>
+
+</body>
+</html>

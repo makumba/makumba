@@ -1,0 +1,1 @@
+The name of the java.lang.Object variable where to store the attribute value. Note that you will have to cast it to its specific type.

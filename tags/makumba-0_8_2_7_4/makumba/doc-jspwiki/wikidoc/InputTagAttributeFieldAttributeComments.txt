@@ -1,0 +1,1 @@
+Either name or field attribute mandatory

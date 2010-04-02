@@ -1,0 +1,1 @@
+Defaults to __mak__edited__. If set, it is also used for the name of the html form (<form name="..." ...>)
