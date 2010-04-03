@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
@@ -88,6 +89,8 @@ public class Pass1FunctionInliner {
         return inlineAST(parsed);
     }
 
+    static Logger logger= Logger.getLogger("org.makumba.db.query.inline");
+    
     public static AST inlineAST(AST parsed) {
         // new MakumbaDumpASTVisitor(false).visit(parsed);
 
@@ -99,9 +102,8 @@ public class Pass1FunctionInliner {
         // FIXME: for now they are added to the root query. adding them to other subqueries may be required
         addFromWhere(ret, state);
 
-        if (java.util.logging.Logger.getLogger("org.makumba.db.query.inline").getLevel().intValue() >= java.util.logging.Level.FINE.intValue())
-            java.util.logging.Logger.getLogger("org.makumba.db.query.inline").fine(
-                parsed.toStringList() + " \n-> " + ret.toStringList());
+        if (logger.getLevel()!=null && logger.getLevel().intValue() >= java.util.logging.Level.FINE.intValue())
+            logger.fine(parsed.toStringList() + " \n-> " + ret.toStringList());
 
         return ret;
     }
