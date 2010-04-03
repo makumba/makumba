@@ -58,7 +58,7 @@ public class Pass1FunctionInliner {
         state.path.add(current);
         current.setFirstChild(traverse(state, current.getFirstChild(), v));
         state.path.remove(state.path.size() - 1);
-        
+
         current.setNextSibling(traverse(state, current.getNextSibling(), v));
 
         return current;
@@ -85,17 +85,25 @@ public class Pass1FunctionInliner {
         // FIXME: the parser may be in error, in that case we should throw the error further
 
         AST parsed = parser.getAST();
+        return inlineAST(parsed);
+    }
 
-        //new MakumbaDumpASTVisitor(false).visit(parsed);
+    public static AST inlineAST(AST parsed) {
+        // new MakumbaDumpASTVisitor(false).visit(parsed);
 
         // inlining is a simple question of traversal with the inliner visitor
         TraverseState state = new TraverseState();
-        parsed = traverse(state, parsed, InlineVisitor.singleton);
+        AST ret = traverse(state, parsed, InlineVisitor.singleton);
 
-        addFromWhere(parsed, state);
+        // and of adding the from and where sections discovered during inlining
+        // FIXME: for now they are added to the root query. adding them to other subqueries may be required
+        addFromWhere(ret, state);
 
-        // normally we would return the parsed AST, here we return its debug line for test purposes
-        return parsed;
+        if (java.util.logging.Logger.getLogger("org.makumba.db.query.inline").getLevel().intValue() >= java.util.logging.Level.FINE.intValue())
+            java.util.logging.Logger.getLogger("org.makumba.db.query.inline").fine(
+                parsed.toStringList() + " \n-> " + ret.toStringList());
+
+        return ret;
     }
 
     static class InlineVisitor implements ASTVisitor {
@@ -176,7 +184,7 @@ public class Pass1FunctionInliner {
                     return node;
                 }
             });
-            //new MakumbaDumpASTVisitor(false).visit(ret);
+            // new MakumbaDumpASTVisitor(false).visit(ret);
 
             return ret;
 
@@ -251,7 +259,7 @@ public class Pass1FunctionInliner {
 
     }
 
-    /** Add to a query the ranges and the where conditions that were found. The AST is assumed to be the root of a query*/
+    /** Add to a query the ranges and the where conditions that were found. The AST is assumed to be the root of a query */
     private static void addFromWhere(AST root, TraverseState state) {
         for (AST range : state.extraFrom) {
             ASTUtil.appendSibling(root.getFirstChild().getFirstChild().getFirstChild(), range);
@@ -272,7 +280,7 @@ public class Pass1FunctionInliner {
             }
         }
     }
-    
+
     /** make a copy of an AST, with the same first child, but with no next sibling */
     private static AST makeASTCopy(AST current1) {
         Node current2 = ASTUtil.makeNode(current1.getType(), current1.getText());

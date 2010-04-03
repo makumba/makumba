@@ -21,6 +21,7 @@ import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryProvider;
+import org.makumba.providers.query.Pass1FunctionInliner;
 
 import antlr.ASTFactory;
 import antlr.RecognitionException;
@@ -103,6 +104,9 @@ public class MqlQueryAnalysis implements QueryAnalysis {
             
             parsed = parser.getAST();
 
+            if(Configuration.getQueryInliner().equals("pass1"))
+                parsed= Pass1FunctionInliner.inlineAST(parsed);
+            
         } else {
             parsed = FunctionInliner.inlineQueryTree(query);
         }

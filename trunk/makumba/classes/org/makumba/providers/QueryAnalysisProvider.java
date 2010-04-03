@@ -218,7 +218,7 @@ public abstract class QueryAnalysisProvider {
                         
                         String result = "";
                         
-                        if(!Configuration.getQueryInliner().equals("tree")) {
+                        if(!Configuration.getQueryInliner().equals("tree") && !Configuration.getQueryInliner().equals("pass1")) {
                             result = FunctionInliner.inline((String) nm, QueryAnalysisProvider.this);
                         } else {
                             // don't inline here, inline directly during processing
