@@ -184,7 +184,7 @@ public class MakumbaTestData {
         MakumbaTestData testData = new MakumbaTestData();
         Transaction t = TransactionProvider.getInstance().getConnectionTo(
             TransactionProvider.getInstance().getDefaultDataSourceName());
-        if (args[0].equals("create")) {
+        if (args == null || args.length == 0 ||  args[0].equals("create")) {
             testData.insertLanguages(t);
             testData.insertPerson(t);
         } else if (args[0].equals("delete")) {
