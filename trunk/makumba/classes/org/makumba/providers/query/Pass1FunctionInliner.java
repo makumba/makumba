@@ -130,6 +130,8 @@ public class Pass1FunctionInliner {
             // we do a new function body parsing rather than using the AST stored in the MDD,
             // because we will heavily change the tree
             // FIXME: the MDD function body rewriting to add "this" should also be done with ASTs using traverse()
+            // then the function tree should be duplicated here, also using traverse()
+            // not sure whether MDDs need to return the rewritten function as text? 
             // TODO: separate traverse() in a commons utility class
             // TODO: use traversal in mql to rewrite parameters, IN SET, etc
             // the from FROM doesn't matter really
