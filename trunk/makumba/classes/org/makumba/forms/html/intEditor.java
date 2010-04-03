@@ -35,12 +35,14 @@ import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.InvalidValueException;
 import org.makumba.commons.formatters.RecordFormatter;
 import org.makumba.providers.datadefinition.makumba.validation.NumberRangeValidationRule;
+import org.makumba.providers.datadefinition.mdd.ValidationType;
+import org.makumba.providers.datadefinition.mdd.validation.RangeValidationRule;
 
 public class intEditor extends charEditor {
 
     private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
         static FieldEditor singleton = new intEditor();
-        
+
         public void release() {
             singleton = null;
         }
@@ -129,9 +131,21 @@ public class intEditor extends charEditor {
         } else if (StringUtils.equalsAny(formatParams.get("type"), "select", "radio")) {
             Collection<ValidationRule> validationRules = rf.dd.getFieldDefinition(fieldIndex).getValidationRules();
             for (ValidationRule validationRule : validationRules) {
-                if (validationRule instanceof NumberRangeValidationRule) {
-                    int lower = ((NumberRangeValidationRule) validationRule).getLowerLimit().intValue();
-                    int upper = ((NumberRangeValidationRule) validationRule).getUpperLimit().intValue();
+                // FIXME: there should be an interface indicating range validation rules, so this could work generically
+                // for all MDD providers.
+                // right now, we check manually for the old and new MDD parsers
+                if (validationRule instanceof NumberRangeValidationRule // old MDD parser
+                        || (validationRule instanceof RangeValidationRule // new MDD parser
+                        && ((RangeValidationRule) validationRule).getValidationType() == ValidationType.RANGE)) {
+                    int lower;
+                    int upper;
+                    if (validationRule instanceof NumberRangeValidationRule) {// old MDD parser
+                        lower = ((NumberRangeValidationRule) validationRule).getLowerLimit().intValue();
+                        upper = ((NumberRangeValidationRule) validationRule).getUpperLimit().intValue();
+                    } else {// new MDD parser
+                        lower = Integer.parseInt(((RangeValidationRule) validationRule).getLowerBound());
+                        upper = Integer.parseInt(((RangeValidationRule) validationRule).getUpperBound());
+                    }
                     HtmlChoiceWriter writer = new HtmlChoiceWriter(getInputName(rf, fieldIndex, formatParams));
                     ArrayList<String> values = new ArrayList<String>();
                     for (int i = lower; i <= upper; i += stepSize) {
@@ -149,10 +163,11 @@ public class intEditor extends charEditor {
                             : writer.getRadioSelect();
                 }
             }
-            throw new ProgrammerError("");
+            // FIXME: this should be done at an earlier level
+            throw new ProgrammerError(
+                    "An int input can only be formatted as select box or radio buttons if there is an associated range validation rule");
         } else {
             return super.formatNotNull(rf, fieldIndex, o, formatParams);
         }
     }
-
 }
