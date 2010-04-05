@@ -146,6 +146,10 @@ public class FieldEditor extends org.makumba.commons.formatters.FieldFormatter {
 		return rf.expr[fieldIndex] + suffix;
 	}
 
+    public static String getInputID(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
+        return getInputName(rf, fieldIndex, getSuffix(rf, fieldIndex, formatParams)) + rf.getFormIdentifier();
+    }
+
 	public static final String extraFormattingParam = "makumba.extraFormatting";
 
 	public static String getExtraFormatting(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
