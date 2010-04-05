@@ -13,9 +13,11 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.DataDefinition.QueryFragmentFunction;
-import org.makumba.commons.ClassResource;
-import org.makumba.providers.datadefinition.mdd.MakumbaDumpASTVisitor;
+import org.makumba.commons.ClassResource; //import org.makumba.providers.datadefinition.mdd.MakumbaDumpASTVisitor;
+import org.makumba.providers.QueryAnalysisProvider;
+import org.makumba.providers.QueryProvider;
 import org.makumba.providers.query.mql.ASTUtil;
+import org.makumba.providers.query.mql.HqlASTFactory;
 import org.makumba.providers.query.mql.HqlParser;
 import org.makumba.providers.query.mql.HqlSqlTokenTypes;
 import org.makumba.providers.query.mql.MqlQueryAnalysis;
@@ -24,6 +26,8 @@ import org.makumba.providers.query.mql.Node;
 import antlr.collections.AST;
 
 public class Pass1FunctionInliner {
+
+    static final HqlASTFactory fact = new HqlASTFactory();
 
     public static interface ASTVisitor {
         public AST visit(TraverseState state, AST a);
@@ -76,6 +80,11 @@ public class Pass1FunctionInliner {
     // do{ if(stack.isEmpty()) break root; a= stack.remove( stack.size() - 1).getNextSibling(); } while(a==null);
     // }
     public static AST inlineQuery(String query) {
+        AST parsed = parseQuery(query);
+        return inlineAST(parsed);
+    }
+
+    private static AST parseQuery(String query) {
         HqlParser parser = HqlParser.getInstance(query);
         try {
             parser.statement();
@@ -86,7 +95,7 @@ public class Pass1FunctionInliner {
         // FIXME: the parser may be in error, in that case we should throw the error further
 
         AST parsed = parser.getAST();
-        return inlineAST(parsed);
+        return parsed;
     }
 
     static Logger logger= Logger.getLogger("org.makumba.db.query.inline");
@@ -137,7 +146,7 @@ public class Pass1FunctionInliner {
             // TODO: separate traverse() in a commons utility class
             // TODO: use traversal in mql to rewrite parameters, IN SET, etc
             // the from FROM doesn't matter really
-            HqlParser funcParser = HqlParser.getInstance("SELECT " + func.getQueryFragment() + "FROM "
+            HqlParser funcParser = HqlParser.getInstance("SELECT " + func.getQueryFragment() + " FROM "
                     + calleeType.getName() + " this");
 
             try {
@@ -150,6 +159,9 @@ public class Pass1FunctionInliner {
 
             // we go from query-> SELECT_FROM -> FROM-> SELELECT -> 1st projection
             AST funcAST = funcParser.getAST().getFirstChild().getFirstChild().getNextSibling().getFirstChild();
+
+            // new
+            // HqlASTFactory().dupTree(func.getParsedQueryFragment()).getFirstChild().getFirstChild().getNextSibling();
 
             DataDefinition para = func.getParameters();
             AST exprList = current.getFirstChild().getNextSibling();
@@ -208,7 +220,7 @@ public class Pass1FunctionInliner {
             if (state.path.get(state.path.size() - 1).getType() == HqlSqlTokenTypes.DOT) {
                 AST range = ASTUtil.makeNode(HqlSqlTokenTypes.RANGE, "RANGE");
                 range.setFirstChild(makeASTCopy(actorType));
-                range.getFirstChild().setNextSibling(ASTUtil.makeNode(HqlSqlTokenTypes.IDENT, rt));
+                range.getFirstChild().setNextSibling(ASTUtil.makeNode(HqlSqlTokenTypes.ALIAS, rt));
 
                 AST equal = ASTUtil.makeNode(HqlSqlTokenTypes.EQ, "=");
                 equal.setFirstChild(ASTUtil.makeNode(HqlSqlTokenTypes.IDENT, rt));
@@ -274,9 +286,12 @@ public class Pass1FunctionInliner {
             ASTUtil.appendSibling(root.getFirstChild().getFirstChild().getFirstChild(), range);
         }
         for (AST condition : state.extraWhere) {
+            if (condition == null)
+                continue;
+
             AST where = root.getFirstChild().getNextSibling();
 
-            if (where.getType() == HqlSqlTokenTypes.WHERE) {
+            if (where != null && where.getType() == HqlSqlTokenTypes.WHERE) {
                 AST and = ASTUtil.makeNode(HqlSqlTokenTypes.AND, "AND");
                 and.setFirstChild(condition);
                 condition.setNextSibling(where.getFirstChild());
@@ -311,37 +326,42 @@ public class Pass1FunctionInliner {
             BufferedReader rd = new BufferedReader(new InputStreamReader((InputStream) ClassResource.get(
                 "org/makumba/providers/query/inlinerCorpus.txt").getContent()));
             String query = null;
-            String lastQuery = null;
-            String processedQuery = null;
-            int line = 1;
-            int lastQueryLine = -1;
-            ArrayList<String> possible = new ArrayList<String>();
+            int line = 0;
 
             while ((query = rd.readLine()) != null) {
+                line++;
+
                 if (query.trim().startsWith("#"))
                     continue;
-                if (query.trim().startsWith("->")) {
-                    if (query.trim().substring(3).equals(processedQuery.trim()))
-                        processedQuery = null;
-                    else
-                        possible.add(query);
-                    // else maybe there is another version which matches
-                    continue;
-                }
-                if (processedQuery != null) {
-                    System.err.println(lastQueryLine + ": no match for:\n" + lastQuery + "\n->" + processedQuery);
-                    for (String s : possible)
-                        System.err.println(s);
-                }
-                possible.clear();
-                lastQueryLine = line;
-                lastQuery = query;
-                processedQuery = inlineQuery(query).toStringList();
-                line++;
+                AST processedAST = inlineQuery(query);
+                if (!compare(new ArrayList<AST>(), processedAST, parseQuery(FunctionInliner.inline(query,
+                    QueryProvider.getQueryAnalzyer("oql")))))
+                    System.err.println(line + ": " + query);
             }
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        }
+    }
+
+    static boolean compare(List<AST> path, AST t1, AST t2) {
+        if (t1 == null)
+            if (t2 != null) {
+                System.out.println(path + " t1 null, t2 not null");
+                return false;
+            } else
+                return true;
+        if (!t1.equals(t2)) {
+            System.out.println(path + " [" + t1.getType() + " " + t1 + "] <> [" + t2.getType() + " " + t2 + "]");
+            return false;
+        }
+        if (!compare(path, t1.getNextSibling(), t2.getNextSibling()))
+            return false;
+        path.add(t1);
+        try {
+            return compare(path, t1.getFirstChild(), t2.getFirstChild());
+        } finally {
+            path.remove(path.size() - 1);
         }
     }
 
