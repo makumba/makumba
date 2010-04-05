@@ -53,6 +53,8 @@ public class DataPointerValueConverter extends DataServlet {
 
     public final static int FROM_EXTERNAL = 20;
 
+    public final static int FROM_DBSV = 30;
+    
     public DataPointerValueConverter() {
         toolLocation = Configuration.getObjectIdConverterLocation();
     }
@@ -73,7 +75,10 @@ public class DataPointerValueConverter extends DataServlet {
         if (paramFromType != null && paramFromType.equals("db")) {
             mode = FROM_DB;
         }
-
+        if (paramFromType != null && paramFromType.equals("dbsv")) {
+            mode = FROM_DBSV;
+        }
+        
         PrintWriter writer = response.getWriter();
         DevelUtils.writePageBegin(writer);
         DevelUtils.writeStylesAndScripts(writer, contextPath);
@@ -87,10 +92,12 @@ public class DataPointerValueConverter extends DataServlet {
         writer.println("  <tr>");
         writer.println("    <th>From</th>");
         writer.println("    <td>");
-        writer.print("      Database value <input type=\"radio\" name=\"fromType\" value=\"db\""
-                + (mode == FROM_DB ? " checked" : "") + ">");
+        writer.println("      Database value <input type=\"radio\" name=\"fromType\" value=\"db\""
+                + (mode == FROM_DB ? " checked" : "") + ">&nbsp;");
         writer.println("      External form <input type=\"radio\" name=\"fromType\" value=\"external\""
-                + (mode == FROM_EXTERNAL ? " checked" : "") + ">");
+                + (mode == FROM_EXTERNAL ? " checked" : "") + ">&nbsp;");
+        writer.println("      DBSV form <input type=\"radio\" name=\"fromType\" value=\"dbsv\""
+                + (mode == FROM_DBSV ? " checked" : "") + ">&nbsp;");
         writer.println("    </td>");
         writer.println("  </tr>");
         writer.println("  <tr>");
@@ -125,13 +132,24 @@ public class DataPointerValueConverter extends DataServlet {
                 } catch (InvalidValueException e) {
                     writer.println("<span style=\"color: red;\">" + e.getMessage() + "</span>");
                 }
-            } else {
+            } else if (paramFromType.equals("db")) {
                 try {
                     pointer = new SQLPointer(paramDataType, Long.parseLong(paramValue));
                 } catch (NumberFormatException e) {
                     writer.println("<span style=\"color: red;\">The Database Pointer value given is not a number!</span>");
                     e.printStackTrace();
                 }
+            } else if (paramFromType.equals("dbsv")) {
+                try {
+                    Integer dbsv = Integer.parseInt(paramValue.split(":")[0]);
+                    Integer uid =  Integer.parseInt(paramValue.split(":")[1]);
+                    pointer = new SQLPointer(paramDataType, dbsv, uid);
+                } catch (NumberFormatException e) {
+                    writer.println("<span style=\"color: red;\">The Pointer value given is not in DBSV format ('DBSV:UID')!</span>");
+                    e.printStackTrace();
+                }  
+            } else {
+                writer.println("<span style=\"color: red;\">Invalid form type param!</span>");
             }
             if (pointer != null) {
                 writer.println("<hr/>");
