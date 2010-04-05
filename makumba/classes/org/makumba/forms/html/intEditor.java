@@ -114,7 +114,7 @@ public class intEditor extends charEditor {
             // spinnerCode.append("<div style=\"float: left;\">\n");
             // spinner.append("<div style=\"top: 0\">");
             spinner.append("<table valign=\"top\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"display: inline;\">\n<tr><td>");
-            String inputValue = "document.getElementById('" + getInputName(rf, fieldIndex, formatParams) + "').value";
+            String inputValue = "document.getElementById('" + getInputID(rf, fieldIndex, formatParams) + "').value";
             spinner.append("<input type=\"button\" value=\"+\" onclick=\"" + inputValue + " = " + inputValue + "==''? "
                     + stepSize + ":parseInt(" + inputValue + ") + " + stepSize
                     + ";\" style=\"font-size:5px;margin:0;padding:0;width:15px;height:12px;\">");
