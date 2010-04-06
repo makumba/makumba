@@ -3,40 +3,36 @@
 <!-- Path definitions -->
 
     <path id="project.class.path">
-    	<pathelement location="lib/test/cactus.jar"/>
-        <pathelement location="lib/optional/hibernate/hibernate3.jar"/>
-        <pathelement location="lib/optional/hibernate/javassist-3.4.GA.jar"/>
-        <pathelement location="lib/optional/prefuse.jar"/>
-        <pathelement location="lib/common/jsp-api.jar"/>
-        <pathelement location="lib/common/servlet-api.jar"/>
         <pathelement location="lib/core/commons-fileupload-1.1.1.jar"/>
         <pathelement location="lib/core/commons-io-1.1.jar"/>
         <pathelement location="lib/core/commons-collections-3.2.jar"/>
-        <pathelement location="lib/common/jstl-standard.jar"/>
-        <pathelement location="lib/common/jstl.jar"/>
         <pathelement location="lib/core/commons-lang-2.3.jar"/>
-        <pathelement location="lib/core/antlr-2.7.6.jar"/>
-        <pathelement location="lib/common/dom4j-1.6.1.jar"/>
-        <pathelement location="lib/optional/hibernate/cglib-2.1.3.jar"/>
         <pathelement location="lib/core/mime-util.jar"/>
         <pathelement location="lib/core/c3p0-0.9.1.jar"/>
-        <pathelement location="doc-jspwiki/JSPWiki/WEB-INF/lib/JSPWiki.jar"/>
         <pathelement location="lib/core/commons-configuration-1.6.jar"/>
-        <pathelement location="lib/test/diff-bmsi.jar"/>
         <pathelement location="lib/core/commons-cli-1.2.jar"/>
-        <pathelement location="lib/test/junit.jar"/>
-        <pathelement location="lib/test/httpunit.jar"/>
-        <pathelement location="lib/optional/hibernate/hibernate-annotations.jar"/>
+        <pathelement location="lib/core/antlr-2.7.6.jar"/>
+        <pathelement location="lib/common/jsp-api.jar"/>
+        <pathelement location="lib/common/servlet-api.jar"/>
+        <pathelement location="lib/common/jstl-standard.jar"/>
+        <pathelement location="lib/common/jstl.jar"/>
+        <pathelement location="lib/common/dom4j-1.6.1.jar"/>
         <pathelement location="lib/common/commons-logging-api.jar"/>
+        <pathelement location="lib/optional/hibernate/hibernate-annotations.jar"/>
+        <pathelement location="lib/optional/hibernate/cglib-2.1.3.jar"/>
+        <pathelement location="lib/optional/hibernate/hibernate3.jar"/>
+        <pathelement location="lib/optional/hibernate/javassist-3.4.GA.jar"/>
+        <pathelement location="lib/optional/prefuse.jar"/>
+        <pathelement location="doc-jspwiki/JSPWiki/WEB-INF/lib/JSPWiki.jar"/>
+        <pathelement location="lib/test/diff-bmsi.jar"/>
+        <pathelement location="lib/test/junit.jar"/>
+        <pathelement location="lib/test/cactus.jar"/>
+        <pathelement location="lib/test/httpunit.jar"/>
         <pathelement location="lib/test/selenium-java-client-driver.jar"/>
         <pathelement location="lib/test/jetty/jetty-6.1.3.jar"/>
         <pathelement location="lib/test/jetty/jetty-util-6.1.3.jar"/>
 
-        <pathelement location="build"/>
-    	
-    	<fileset dir="${basedir}/doc-jspwiki/JSPWiki/WEB-INF/lib">
-            <include name="**/JSPWiki.jar" />
-        </fileset>
+        <pathelement location="${basedir}/build"/>
     </path>
 	
     <path id="project.class.path.complete">
@@ -74,6 +70,8 @@
         <pathelement location="lib/test/jetty/jetty-6.1.3.jar"/>
         <pathelement location="lib/test/jetty/jetty-util-6.1.3.jar"/>
   
+        <pathelement location="${basedir}/build"/>
+      
     	<fileset dir="${basedir}">
             <include name="webapps/tests/WEB-INF/classes/Makumba.conf" />
         </fileset>
@@ -162,7 +160,7 @@
     
 <!-- Targets for Eclipse workspace set-up -->    
 
-    <target name="install" depends="version">
+    <target name="install">
         <mkdir dir="work/temp" />
         <mkdir dir="tomcat/temp" />
         <mkdir dir="work/generated-hibernate-classes" />
@@ -206,29 +204,29 @@
     <target name="checkAntlr">
         <condition property="antlr.notRequired">
             <and>
-                <uptodate targetfile="classes/org/makumba/providers/query/hql/HqlAnalyzeBaseWalker.java">
-                    <srcfiles dir="classes/org/makumba/providers/query/hql" includes="**/hql-analyze.g" />
+                <uptodate targetfile="${basedir}/classes/org/makumba/providers/query/hql/HqlAnalyzeBaseWalker.java">
+                    <srcfiles dir="${basedir}/classes/org/makumba/providers/query/hql" includes="**/hql-analyze.g" />
                 </uptodate>
-                <uptodate targetfile="classes/org/makumba/providers/query/mql/MqlSqlBaseWalker.java">
-                    <srcfiles dir="classes/org/makumba/providers/query/mql" includes="**/hql.g" />
+                <uptodate targetfile="${basedir}/classes/org/makumba/providers/query/mql/MqlSqlBaseWalker.java">
+                    <srcfiles dir="${basedir}/classes/org/makumba/providers/query/mql" includes="**/hql.g" />
                 </uptodate>
-                <uptodate targetfile="classes/org/makumba/providers/query/mql/MqlSqlBaseWalker.java">
-                    <srcfiles dir="classes/org/makumba/providers/query/mql" includes="**/mql-sql.g" />
+                <uptodate targetfile="${basedir}/classes/org/makumba/providers/query/mql/MqlSqlBaseWalker.java">
+                    <srcfiles dir="${basedir}/classes/org/makumba/providers/query/mql" includes="**/mql-sql.g" />
                 </uptodate>
-                <uptodate targetfile="classes/org/makumba/providers/query/mql/MqlSqlGeneratorBase.java">
-                    <srcfiles dir="classes/org/makumba/providers/query/mql" includes="**/mql-sql-gen.g" />
+                <uptodate targetfile="${basedir}/classes/org/makumba/providers/query/mql/MqlSqlGeneratorBase.java">
+                    <srcfiles dir="${basedir}/classes/org/makumba/providers/query/mql" includes="**/mql-sql-gen.g" />
                 </uptodate>
-                <uptodate targetfile="classes/org/makumba/providers/datadefinition/mdd/MDDExpressionBaseParser.java">
-                    <srcfiles dir="classes/org/makumba/providers/datadefinition/mdd" includes="**/mdd-expression.g" />
+                <uptodate targetfile="${basedir}/classes/org/makumba/providers/datadefinition/mdd/MDDExpressionBaseParser.java">
+                    <srcfiles dir="${basedir}/classes/org/makumba/providers/datadefinition/mdd" includes="**/mdd-expression.g" />
                 </uptodate>
-                <uptodate targetfile="classes/org/makumba/providers/datadefinition/mdd/MDDBaseParser.java">
-                    <srcfiles dir="classes/org/makumba/providers/datadefinition/mdd" includes="**/mdd.g" />
+                <uptodate targetfile="${basedir}/classes/org/makumba/providers/datadefinition/mdd/MDDBaseParser.java">
+                    <srcfiles dir="${basedir}/classes/org/makumba/providers/datadefinition/mdd" includes="**/mdd.g" />
                 </uptodate>
-                <uptodate targetfile="classes/org/makumba/providers/datadefinition/mdd/MDDAnalyzeBaseWalker.java">
-                    <srcfiles dir="classes/org/makumba/providers/datadefinition/mdd" includes="**/mdd-analyze.g" />
+                <uptodate targetfile="${basedir}/classes/org/makumba/providers/datadefinition/mdd/MDDAnalyzeBaseWalker.java">
+                    <srcfiles dir="${basedir}/classes/org/makumba/providers/datadefinition/mdd" includes="**/mdd-analyze.g" />
                 </uptodate>
-                <uptodate targetfile="classes/org/makumba/providers/datadefinition/mdd/MDDBuildBaseWalker.java">
-                    <srcfiles dir="classes/org/makumba/providers/datadefinition/mdd" includes="**/mdd-postprocess.g" />
+                <uptodate targetfile="${basedir}/classes/org/makumba/providers/datadefinition/mdd/MDDPostProcessorBaseWalker.java">
+                    <srcfiles dir="${basedir}/classes/org/makumba/providers/datadefinition/mdd" includes="**/mdd-postprocess.g" />
                 </uptodate>
                 
             </and>
@@ -237,7 +235,7 @@
     
 
     <!-- if the HQL/MQL/MDD grammar has changed, call antlr to re-generate the parser -->
-    <target name="ANTLRParserGeneration" depends="checkAntlr, install, version, detectHqlTokens" unless="antlr.notRequired">
+    <target name="ANTLRParserGeneration" depends="checkAntlr, install, detectHqlTokens" unless="antlr.notRequired">
 
         <java classname="antlr.Tool" fork="true" dir="classes/org/makumba/providers/query/hql" failonerror="true"
             taskname="antlr">
@@ -326,7 +324,7 @@
 
 <!-- Targets for making releases and creating JARs -->
 
-    <target name="makeManifest" description="generates manifest file">
+    <target name="makeManifest" description="generates manifest file" unless="release">
         <antcall target="version" />
         <java classname="org.makumba.version" fork="true" output="manifest-replace.properties">
             <classpath>
@@ -345,10 +343,13 @@
 
     <target name="makeReleaseManifest" description="generates manifest during release creation">
         <antcall target="version" />
+
+        <delete file="work/makumba.distrib/makumba/manifest-replace.properties" />
+      
         <java classname="org.makumba.version" fork="true" output="work/makumba.distrib/makumba/manifest-replace.properties">
             <classpath>
-                <pathelement path="work/makumba.distrib/makumba/classes/" />
-                <pathelement path="${java.class.path}" />
+              <pathelement path="work/makumba.distrib/makumba/build/" />
+              <pathelement path="${java.class.path}" />
             </classpath>
         </java>
 
@@ -361,23 +362,18 @@
     </target>
 
 
-    <target name="jar" description="make a jar in ./lib" depends="compile, generateTLDs">
-        <antcall target="jarOnly" />
-    </target>
+    <target name="jar" depends="compile, generateTLDs" description="make a jar in ./lib">
+      <mkdir dir="${jar.place}/lib" />
 
-    <target name="jarOnly" description="make a jar in ./lib w/o compiling">
-        <mkdir dir="${jar.place}/lib" />
         <antcall target="makeManifest" />
         <jar jarfile="${jar.place}/lib/makumba.jar" manifest="manifest.mf">
-            <fileset dir="classes"
-                includes="makumbaResources/javaScript/*.js, makumbaResources/css/*.css, makumbaResources/image/*.*, org/makumba/**/*.mdd, Makumba.conf.default, org/**/*.properties, org/makumba/devel/codeTemplates/*.properties"
-                defaultExcludes="no" excludes="**/**/SEED.txt" />
-            <fileset dir="build"
-                includes="org/**/*.class"
-                defaultExcludes="no" excludes="**/**/SEED.txt" />
-            <fileset dir="." includes="COPYING.txt" defaultExcludes="no" excludes="queries.txt" />
-            <metainf dir="classes/META-INF" includes="**/*.tld" defaultExcludes="no" />
-        </jar>
+        <fileset dir="classes"
+          includes="makumbaResources/javaScript/*.js, makumbaResources/css/*.css, makumbaResources/image/*.*, org/makumba/**/*.mdd, Makumba.conf.default, org/**/*.properties, org/makumba/devel/codeTemplates/*.properties"
+          defaultExcludes="no" excludes="**/**/SEED.txt" />
+        <fileset dir="build" includes="org/**/*.class" defaultExcludes="no" excludes="**/**/SEED.txt" />
+        <fileset dir="." includes="COPYING.txt" defaultExcludes="no" excludes="queries.txt" />
+        <metainf dir="classes/META-INF" includes="**/*.tld" defaultExcludes="no" />
+      </jar>
     </target>
     
     <target name="release" description="makes a new makumba release with the given tag">
@@ -400,7 +396,9 @@
     <target name="doRelease" if ="doRelease">
         <echo>Making release ${tag} and using sourceforge user ${user} in order to perform upload to FRS.</echo>
     
-        <antcall target="generateTLDs" />
+        <antcall target="generateTLDs">
+          <property name="release" value="true" />
+        </antcall>
         <antcall target="makeJar" />
         <antcall target="uploadMadeJar" />
     </target>
@@ -414,6 +412,8 @@
     <target name="makeJar" if="tag" description="makes the jar and a src tarball of the given version">
         <antcall target="makeTag" />
         <antcall target="checkoutJar" />
+        <antcall target="packageJar" />
+        <delete dir="work/makumba.distrib" />
     </target>
 
     <target name="makeTag" if="tag" description="makes a new tag from HEAD">
@@ -422,8 +422,8 @@
                 destUrl="https://makumba.svn.sourceforge.net/svnroot/makumba/tags/${tag}/" />
         </svn>
     </target>
-
-    <target name="checkoutJar" if="tag" description="Checks out a tag and makes the JAR and the source zip">
+    
+    <target name="checkoutJar" if="tag" description="Checks out a tag">
         <mkdir dir="work/makumba.distrib" />
         <delete dir="work/makumba.distrib/makumba/" />
 
@@ -431,8 +431,11 @@
             <export force="true" srcUrl="https://makumba.svn.sourceforge.net/svnroot/makumba/tags/${tag}"
                 destPath="work/makumba.distrib/" />
         </svn>
+    </target>
 
+    <target name="packageJar" if="tag" description="Makes the JAR from the checked-out sources and the source zip">
         <mkdir dir="${jar.place}/lib" />
+        <mkdir dir="work/makumba.distrib/makumba/build/" />
 
         <!-- make the source tarball: -->
         <zip zipfile="lib/${tag}-src.zip">
@@ -441,23 +444,28 @@
             </fileset>
         </zip>
 
-        <!--  make the manifest -->
+        <!-- compile files necessary for making the release --> 
+        <javac srcdir="work/makumba.distrib/makumba/classes" destdir="work/makumba.distrib/makumba/build" source="1.5" target="1.5" debug="on"
+          includes="org/makumba/version.java">
+            <classpath>
+              <pathelement path="work/makumba.distrib/makumba/build/" />
+              <pathelement path="${java.class.path}" />
+            </classpath>
+        </javac>
+      
+        <!--  make the manifest. this needs to be here, even though a "makeManifest" is called by the "jar" target, because otherwise the version is not written correctly -->
         <antcall target="makeReleaseManifest" />
         
         <!-- make the jar: -->
         <java classname="org.apache.tools.ant.Main" fork="true" dir="work/makumba.distrib/makumba/" taskname="buildingJar">
-            <classpath>
-                <pathelement path="${project.class.path}" />
-                <pathelement path="${java.class.path}" />
-            </classpath>
+            <classpath refid="project.class.path.complete" />
             <sysproperty key="jar.place" path="${jar.place}" />
+            <sysproperty key="release" value="true"/>
             <arg value="jar" />
         </java>
 
         <!-- make the template application archive: -->
-
         <antcall target="makeTemplate" />
-        <delete dir="work/makumba.distrib" />
         <copy file="${jar.place}/lib/makumba.jar" tofile="${jar.place}/lib/${tag}.jar" />
     </target>
 
@@ -488,7 +496,6 @@
 
         <echo>make sure you have the necessary libraries to run the FTP and SCP tasks! you can install them by running "ant
         installAntLibraries" with the right permissions to access your ANT_HOME dir (you might need to use "sudo" on unix environments)</echo>
-        
 
         <antcall target="ftpMadeJar" />
         <antcall target="scpMadeJar" />
@@ -723,16 +730,16 @@
         </replace>
     </target>
 
-    <target name="generateTLDs" depends="compile">
-        <java classname="org.makumba.commons.MakumbaTLDGenerator" fork="true" dir=".">
-            <classpath refid="project.class.path.complete" />
-            <arg value="${basedir}/classes/META-INF" />
-            <arg value="${basedir}/doc-jspwiki/wikidoc/" />
-        </java>
-      
-        <!-- for the tests webapp to work also with jetty, we copy the TLD files into the WEB-INF dir of the test webapp -->
-        <copy file="classes/META-INF/taglib.tld" tofile="webapps/tests/WEB-INF/taglib.tld" overwrite="true" />
-        <copy file="classes/META-INF/taglib-hibernate.tld" tofile="webapps/tests/WEB-INF/taglib-hibernate.tld" overwrite="true" />
+    <target name="generateTLDs" description="generates the TLD files, should be called before making a JAR file">
+      <java classname="org.makumba.commons.MakumbaTLDGenerator" fork="true" dir=".">
+        <classpath refid="project.class.path.complete" />
+        <arg value="${basedir}/classes/META-INF" />
+        <arg value="${basedir}/doc-jspwiki/wikidoc/" />
+      </java>
+
+      <!-- for the tests webapp to work also with jetty, we copy the TLD files into the WEB-INF dir of the test webapp -->
+      <copy file="classes/META-INF/taglib.tld" tofile="webapps/tests/WEB-INF/taglib.tld" overwrite="true" />
+      <copy file="classes/META-INF/taglib-hibernate.tld" tofile="webapps/tests/WEB-INF/taglib-hibernate.tld" overwrite="true" />
     </target>
 
     
