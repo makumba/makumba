@@ -458,6 +458,10 @@ public class ComposedQuery {
     public String toString() {
         return "Composed query: " + typeAnalyzerOQL;
     }
+    
+    public String getComputedQuery() {
+        return getClass().getSimpleName() + ": " + computeQuery(derivedSections, false);
+    }    
 
     /**
      * Gets the query string.
