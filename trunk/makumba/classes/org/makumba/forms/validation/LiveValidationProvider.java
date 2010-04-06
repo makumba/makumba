@@ -3,6 +3,7 @@ package org.makumba.forms.validation;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.makumba.FieldDefinition;
 import org.makumba.ValidationRule;
@@ -39,7 +40,7 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
      * Gathers all the names of the validation variables defined. this is needed to make mass validation in
      * {@link #getOnSubmitValidation()}.
      */
-    private LinkedHashSet<String> definitionVarNames = new LinkedHashSet<String>();
+    private Set<String> definitionVarNames = new LinkedHashSet<String>();
 
     /** Initialises a field, basically does create the variables and calls for this field. */
     public void initField(String inputName, String formIdentifier, FieldDefinition fieldDefinition, boolean validateLive) {
@@ -162,8 +163,7 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
     }
 
     private StringBuffer getValidationFunction() {
-        return new StringBuffer("validateForm_").append(
-            StringUtils.concatAsString(definitionVarNames.toArray(new Object[definitionVarNames.size()]))).append("()");
+        return new StringBuffer("validateForm_").append(StringUtils.concatAsString(definitionVarNames)).append("()");
     }
 
     /**

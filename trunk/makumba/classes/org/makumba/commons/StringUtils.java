@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.Iterator;
 
 import org.apache.commons.collections.EnumerationUtils;
 
@@ -99,9 +100,24 @@ public class StringUtils {
         return toString(collection, true);
     }
 
+    public static String concatAsString(Collection<?> collection) {
+        return concatAsString(collection, "_");
+    }
+
+    public static String concatAsString(Collection<?> collection, String delim) {
+        StringBuffer b = new StringBuffer();
+        Iterator<?> iterator = collection.iterator();
+        while (iterator.hasNext()) {
+            b.append(iterator.next());
+            if (iterator.hasNext()) {
+                b.append(delim);
+            }
+        }
+        return b.toString();
+    }
+
     public static String concatAsString(Object[] array) {
         return concatAsString(array, "_");
-
     }
 
     public static String concatAsString(Object[] array, String delim) {
