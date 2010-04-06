@@ -161,6 +161,7 @@
 <!-- Targets for Eclipse workspace set-up -->    
 
     <target name="install">
+        <mkdir dir="build/" />
         <mkdir dir="work/temp" />
         <mkdir dir="tomcat/temp" />
         <mkdir dir="work/generated-hibernate-classes" />
