@@ -158,18 +158,20 @@ public class jspViewer extends LineViewer {
 
         // get only query tags from all the tags in the page
         final Map<Object, Object> tempTagDataCache = pageCache.retrieveCache(MakumbaJspAnalyzer.TAG_DATA_CACHE);
-        final Set<Object> keySet = tempTagDataCache.keySet();
-        for (Object key : keySet) {
-            final Object value = tempTagDataCache.get(key);
-            if (key instanceof MultipleKey && value instanceof TagData) {
-                TagData td = (TagData) value;
-                final Object tagObject = td.getTagObject();
-                if (tagObject instanceof QueryTag) {
-                    tagDataCache.put((MultipleKey) key, (TagData) value);
+        if (tempTagDataCache != null) {
+            final Set<Object> keySet = tempTagDataCache.keySet();
+            for (Object key : keySet) {
+                final Object value = tempTagDataCache.get(key);
+                if (key instanceof MultipleKey && value instanceof TagData) {
+                    TagData td = (TagData) value;
+                    final Object tagObject = td.getTagObject();
+                    if (tagObject instanceof QueryTag) {
+                        tagDataCache.put((MultipleKey) key, (TagData) value);
+                    }
+                } else { // shouldn't happen
+                    logger.warning("Unexpected contents in " + MakumbaJspAnalyzer.TAG_DATA_CACHE + " cache: " + key
+                            + " => " + value);
                 }
-            } else { // shouldn't happen
-                logger.warning("Unexpected contents in " + MakumbaJspAnalyzer.TAG_DATA_CACHE + " cache: " + key
-                        + " => " + value);
             }
         }
         queryCache = pageCache.retrieveCache(MakumbaJspAnalyzer.QUERY);
@@ -333,7 +335,7 @@ public class jspViewer extends LineViewer {
                             // if we have a mak:list or mak:object tag, annotate the query
                             MultipleKey tagKey = getTagDataKey(currentSyntaxPoint);
                             String titleAnnotation = "";
-                            if (tagKey != null && queryCache.get(tagKey) != null) {
+                            if (tagKey != null && queryCache != null && queryCache.get(tagKey) != null) {
                                 ComposedQuery cq = (ComposedQuery) queryCache.get(tagKey);
                                 titleAnnotation = "title=\"" + cq.getComputedQuery() + "\"";
                             }
