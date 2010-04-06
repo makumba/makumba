@@ -369,7 +369,7 @@ public abstract class LineViewer implements SourceViewer {
 
     private String getPath(String fileName, String fileType) {
         if (fileType.equals(TYPE_JSP)) {
-            return contextPath + "/" + fileName + "x";
+            return contextPath + "/" + fileName + jspSourceViewExtension;
         } else if (fileType.equals(TYPE_MDD)) {
             fileName = removeFilenamePrefixes(fileName);
             return contextPath + Configuration.getMddViewerLocation() + "/"
