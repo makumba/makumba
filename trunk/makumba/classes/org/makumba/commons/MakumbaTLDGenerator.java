@@ -37,8 +37,8 @@ import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
-import org.makumba.MakumbaSystem;
 import org.makumba.version;
+import org.makumba.commons.StringUtils;
 
 /**
  * This class generates the Makumba TLD files based on the documented TLD XML file.
