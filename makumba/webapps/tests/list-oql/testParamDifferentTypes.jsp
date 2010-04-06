@@ -29,6 +29,13 @@
   <mak:value expr="p.indiv.name" /> <mak:value expr="p.indiv.surname" /> <mak:value expr="p.indiv" var="indivPtr" />
 </mak:list>
 
+<br/>
+
+<!--  shitty karamba behaviour -->
+<mak:list from="test.Person p" where="p = $indiv OR p.indiv = $indiv" id="2">
+  <mak:value expr="p.indiv.name" /> <mak:value expr="p.indiv.surname" /> <mak:value expr="p.indiv" var="indivPtr" />
+</mak:list>
+
 
 </body>
 </html>
