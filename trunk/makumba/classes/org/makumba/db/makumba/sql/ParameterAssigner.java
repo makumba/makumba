@@ -83,8 +83,9 @@ public class ParameterAssigner {
                 boolean isMultiTypeParam = fd.getDescription().equals("true");
                 boolean isChar = fd.isStringType() && !(value instanceof String);
                 boolean isPointer = fd.isPointer() && !(value instanceof Pointer);
+                boolean isDifferentPointer = fd.isPointer() && (value instanceof Pointer) && !fd.getPointedType().getName().equals(((Pointer)value).getType());
                 boolean isNumber = (fd.isIntegerType() || fd.isRealType()) && !(value instanceof Number);
-                if(isMultiTypeParam && (isChar || isPointer || isNumber)) {
+                if(isMultiTypeParam && (isChar || isPointer || isNumber || isDifferentPointer)) {
                     paramHandler.setNullArgument(fd.getName(), ps, i + 1);
                 } else {
                     try {
