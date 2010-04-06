@@ -27,16 +27,26 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.makumba.ProgrammerError;
+import org.makumba.analyser.PageCache;
+import org.makumba.analyser.TagData;
 import org.makumba.analyser.engine.JspParseData;
 import org.makumba.analyser.engine.SourceSyntaxPoints;
 import org.makumba.analyser.engine.SyntaxPoint;
 import org.makumba.analyser.engine.TomcatJsp;
+import org.makumba.commons.MakumbaJspAnalyzer;
+import org.makumba.commons.MultipleKey;
+import org.makumba.list.engine.ComposedQuery;
+import org.makumba.list.tags.QueryTag;
 import org.makumba.providers.Configuration;
 
 /**
@@ -47,6 +57,8 @@ import org.makumba.providers.Configuration;
  * @author Rudolf Mayer
  */
 public class jspViewer extends LineViewer {
+
+    private static final Logger logger = java.util.logging.Logger.getLogger("org.makumba.org.makumba.devel.sourceViewer");
 
     boolean hasLogic;
 
@@ -65,6 +77,10 @@ public class jspViewer extends LineViewer {
     private boolean hideMakumba = false;
 
     private boolean hideJava = false;
+
+    private Map<Object, Object> queryCache;
+
+    private Map<MultipleKey, TagData> tagDataCache = new LinkedHashMap<MultipleKey, TagData>();
 
     private int extraLength() {
         return 1;
@@ -125,6 +141,38 @@ public class jspViewer extends LineViewer {
         }
 
         reader = new FileReader(realPath);
+        String path = TomcatJsp.getJspURI(request);
+        if (path.endsWith(jspSourceViewExtension)) {
+            path = path.substring(0, path.length() - jspSourceViewExtension.length());
+        }
+        JspParseData jpd = JspParseData.getParseData(request.getSession().getServletContext().getRealPath("/"), path,
+            MakumbaJspAnalyzer.getInstance());
+        PageCache pageCache = null;
+        try {
+            pageCache = (PageCache) jpd.getAnalysisResult(null);
+        } catch (Throwable t) {
+            // page analysis failed
+            logger.warning("Page analysis for page " + path + " failed due to error: " + t.getMessage());
+            return;
+        }
+
+        // get only query tags from all the tags in the page
+        final Map<Object, Object> tempTagDataCache = pageCache.retrieveCache(MakumbaJspAnalyzer.TAG_DATA_CACHE);
+        final Set<Object> keySet = tempTagDataCache.keySet();
+        for (Object key : keySet) {
+            final Object value = tempTagDataCache.get(key);
+            if (key instanceof MultipleKey && value instanceof TagData) {
+                TagData td = (TagData) value;
+                final Object tagObject = td.getTagObject();
+                if (tagObject instanceof QueryTag) {
+                    tagDataCache.put((MultipleKey) key, (TagData) value);
+                }
+            } else { // shouldn't happen
+                logger.warning("Unexpected contents in " + MakumbaJspAnalyzer.TAG_DATA_CACHE + " cache: " + key
+                        + " => " + value);
+            }
+        }
+        queryCache = pageCache.retrieveCache(MakumbaJspAnalyzer.QUERY);
     }
 
     @Override
@@ -200,11 +248,10 @@ public class jspViewer extends LineViewer {
             int currentLineLength = lineText.length();
 
             if (currentSyntaxPoint.getOriginalColumn(currentLineLength) > syntaxPoints.getLineText(currentLine).length() + 1) {
-                java.util.logging.Logger.getLogger("org.makumba.org.makumba.devel.sourceViewer").finest(
-                    "skipped syntax Point due to wrong offset: " + (currentSyntaxPoint.isBegin() ? "begin " : "end ")
-                            + currentSyntaxPoint.getType() + " " + currentSyntaxPoint.getLine() + ":"
-                            + currentSyntaxPoint.getColumn() + ":; linelength is: "
-                            + syntaxPoints.getLineText(currentLine).length());
+                logger.finest("skipped syntax Point due to wrong offset: "
+                        + (currentSyntaxPoint.isBegin() ? "begin " : "end ") + currentSyntaxPoint.getType() + " "
+                        + currentSyntaxPoint.getLine() + ":" + currentSyntaxPoint.getColumn() + ":; linelength is: "
+                        + syntaxPoints.getLineText(currentLine).length());
                 continue;
             }
             if (type.equals("TextLine") && currentSyntaxPoint.isBegin()) { // begin of line found - we just move the
@@ -242,14 +289,8 @@ public class jspViewer extends LineViewer {
                                 lastSyntaxPoint.getOriginalColumn(currentLineLength) - 1,
                                 currentSyntaxPoint.getOriginalColumn(currentLineLength) - 1))));
                         }
-                    } else if (currentSyntaxPoint.getOriginalColumn(currentLineLength) > 1 && !hideHTML && shallWrite) { // not
-                        // in
-                        // a
-                        // tag
-                        // ,
-                        // but
-                        // maybe
-                        // there was HTMl before?
+                    } else if (currentSyntaxPoint.getOriginalColumn(currentLineLength) > 1 && !hideHTML && shallWrite) {
+                        // not in a tag , but maybe there was HTMl before?
                         currentText.append(parseLine(htmlEscape(lineText.substring(
                             lastSyntaxPoint.getOriginalColumn(currentLineLength) - 1,
                             currentSyntaxPoint.getOriginalColumn(currentLineLength) - 1))));
@@ -289,7 +330,15 @@ public class jspViewer extends LineViewer {
                             if (tagClass.startsWith("/")) {
                                 tagClass = tagClass.substring(1);
                             }
-                            currentText.append("<span class=\"" + tagClass + "\">");
+                            // if we have a mak:list or mak:object tag, annotate the query
+                            MultipleKey tagKey = getTagDataKey(currentSyntaxPoint);
+                            String titleAnnotation = "";
+                            if (tagKey != null && queryCache.get(tagKey) != null) {
+                                ComposedQuery cq = (ComposedQuery) queryCache.get(tagKey);
+                                titleAnnotation = "title=\"" + cq.getComputedQuery() + "\"";
+                            }
+
+                            currentText.append("<span class=\"" + tagClass + "\"" + titleAnnotation + ">");
                         }
                     }
                     lastSyntaxPoint = currentSyntaxPoint; // move pointers and set flage
@@ -313,8 +362,20 @@ public class jspViewer extends LineViewer {
 
         printPageEnd(writer);
         double time = new Date().getTime() - begin.getTime();
-        java.util.logging.Logger.getLogger("org.makumba.org.makumba.devel.sourceViewer").finer(
-            "Sourcecode viewer took :" + time / 1000 + " seconds");
+        logger.finer("Sourcecode viewer took :" + time / 1000 + " seconds");
+    }
+
+    private MultipleKey getTagDataKey(SyntaxPoint currentSyntaxPoint) {
+        if (tagDataCache != null) {
+            for (MultipleKey key : tagDataCache.keySet()) {
+                TagData td = tagDataCache.get(key);
+                if (td.getStartLine() == currentSyntaxPoint.getLine()
+                        && td.getStartColumn() == currentSyntaxPoint.getColumn()) {
+                    return key;
+                }
+            }
+        }
+        return null;
     }
 
     /**
