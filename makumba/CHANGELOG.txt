@@ -9,6 +9,8 @@ TO BE RELEASED IMMEDIATELY (No need for more testing)
 -----------------------------------------------
 manu: fixing bug: multi-type parameters are accepted again
 manu: optimising new query generation
+rudi: annotating the list-tags in the JSP viewer with the queries they generated
+rudi: developer tool to convert intEnum to setIntEnum, copying the existing data
 
 NOT TO BE RELEASED YET (need more testing)
 manu: auto-complete for mak:input (char and ptr)
