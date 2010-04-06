@@ -94,6 +94,7 @@ public class NamedResources implements java.io.Serializable {
     }
 
     public static void cleanCaches() {
+        // FIXME: also clean the tables cache?
         cleanStaticCache("Authorization constraints");
         cleanStaticCache("JSP page analyses");
         cleanStaticCache("MQL parsed queries (soft cache)");
