@@ -7,10 +7,9 @@
 
 TO BE RELEASED IMMEDIATELY (No need for more testing)
 -----------------------------------------------
-manu: fixing bug: multi-type parameters are accepted again
-manu: optimising new query generation
 rudi: annotating the list-tags in the JSP viewer with the queries they generated
 rudi: developer tool to convert intEnum to setIntEnum, copying the existing data
+gwen: added DBSV format as input option in pointer value converter
 
 NOT TO BE RELEASED YET (need more testing)
 manu: auto-complete for mak:input (char and ptr)
@@ -21,6 +20,9 @@ manu, marius: edit-in-place for mak:input and mak:list ("editable" attribute). I
 
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
+0.8.2.7.4 2 Apr 2010
+manu: fixing bug: multi-type parameters are accepted again
+manu: optimising new query generation
 
 0.8.2.7.3 27 Mar 2010
 rudi: fixing a bug in the reference checker, closing the DB connection
