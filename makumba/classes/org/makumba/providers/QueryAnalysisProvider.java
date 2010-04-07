@@ -26,11 +26,14 @@ package org.makumba.providers;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidFieldTypeException;
-import org.makumba.commons.NamedResourceFactory;
-import org.makumba.commons.NamedResources;
-import org.makumba.providers.query.FunctionInliner;
+import org.makumba.OQLParseError;
+import org.makumba.providers.query.Pass1FunctionInliner;
+import org.makumba.providers.query.mql.ASTUtil;
+import org.makumba.providers.query.mql.HqlParser;
+import org.makumba.providers.query.mql.HqlTokenTypes;
 
-import test.oqlanalyzer;
+import antlr.RecognitionException;
+import antlr.collections.AST;
 
 /**
  * @author
@@ -43,25 +46,15 @@ public abstract class QueryAnalysisProvider {
         return getRawQueryAnalysis(query, null);
     }
     public QueryAnalysis getQueryAnalysis(String query) {
-        return getRawQueryAnalysis(inlineFunctions(query));
+        return getRawQueryAnalysis(query);
     }
 
     public QueryAnalysis getQueryAnalysis(String query, String insertIn) {
-        return getRawQueryAnalysis(inlineFunctions(query), insertIn);
+        return getRawQueryAnalysis(query, insertIn);
     }
 
-    public String inlineFunctions(String query) {
-        try {
-            return (String) inlinedQueries.getResource(query);
-        } catch (NullPointerException e) {
-            initializeCache(query, e);
-            String inlined = (String) inlinedQueries.getResource(query);
-            return inlined;
-        }
-    }
-
-    NamedResources inlinedQueries;
-
+    //public abstract AST inlineFunctions(AST query);
+    
     /** Returns whether the GROUP BY or ORDER BY sections can include labels */
     public abstract boolean selectGroupOrOrderAsLabels();
 
@@ -87,9 +80,6 @@ public abstract class QueryAnalysisProvider {
      * @return The path to the null pointer (if the object is nullable), <code>null</code> otherwise
      */
     public Object checkExprSetOrNullable(String from, String expr) {
-        if (expr.toLowerCase().indexOf(" from ") != -1)
-            // subqueries do not need separate queries
-            return null;
 
         if(from == null) {
             // wtf?
@@ -97,54 +87,43 @@ public abstract class QueryAnalysisProvider {
         }
         
         String query = "select " + expr + " from " + from;
-        query = inlineFunctions(query);
+
+        HqlParser p = Pass1FunctionInliner.parseQuery(query);
+        doThrow(query, p.getError(), p.getAST());
+        AST parsed = Pass1FunctionInliner.inlineAST(p.getAST());
+
+        AST fromAST= parsed.getFirstChild().getFirstChild().getFirstChild();
         
-        int lastFromIndex = query.toLowerCase().lastIndexOf(" from ");
-        expr = query.substring(0, lastFromIndex);
-        expr = expr.substring(7);
-        
-        // since FROM may have changed due to inlining of functions that require joins, we also need to replace the from
-        // we also check for where, maybe a query function appended it
-        
-        int lastWhereIndex = query.toLowerCase().indexOf(" where ");
-        if(lastWhereIndex < lastFromIndex) {
-            lastWhereIndex = -1;
+        // we re-construct the from after inlining
+        // we assume that we have ranges like a.b.c x
+        from="";
+        String separator="";
+        while(fromAST!=null){
+            from+=separator+ ASTUtil.constructPath(fromAST.getFirstChild())+" "+fromAST.getFirstChild().getNextSibling();
+            separator=", ";
+            fromAST= fromAST.getNextSibling();
         }
-        
-        if(lastWhereIndex > -1) {
-            from = query.substring(query.indexOf(" from ") + 6, lastWhereIndex);
-        } else {
-            from = query.substring(lastFromIndex + 6);
-        }
-        
-        // at this stage, we might either have a.b.c or have something else, such as a method like exists(subquery)
-        // so in that case, we have to return null, but we first have to check that this is the case
-        // FIXME it seems that in the time of OQL, makumba was not built to handle complex expressions of this kind
-        // we might have to do a lot more work here
-        // this is a very clumsy check, but it does the job for now
-        if(expr.indexOf("(")  > -1 && expr.endsWith(")")) {
+
+        return checkASTSetOrNullable(from, parsed.getFirstChild().getFirstChild().getNextSibling().getFirstChild());
+    }
+
+
+    private Object checkASTSetOrNullable(String from, AST ast) {
+        if(ast==null)
             return null;
+        if(ast.getType()==HqlTokenTypes.QUERY)
+            // we don't go into subqueries
+            return null;
+        
+        if(ast.getType()==HqlTokenTypes.DOT){
+            Object o= checkLabelSetOrNullable(from, ASTUtil.constructPath(ast));
+            if(o!=null)
+                return o;
         }
-                
-
-        int n = 0;
-        int m = 0;
-        while (true) {
-            // FIXME: this is a not that good algorithm for finding label.field1.fiel2.field3
-            while (n < expr.length() && !isMakId(expr.charAt(n)))
-                n++;
-
-            if (n == expr.length())
-                return null;
-            m = n;
-            while (n < expr.length() && isMakId(expr.charAt(n)))
-                n++;
-            Object nl = checkLabelSetOrNullable(from, expr.substring(m, n));
-            if (nl != null)
-                return nl;
-            if (n == expr.length())
-                return null;
-        }
+        Object o= checkASTSetOrNullable(from, ast.getFirstChild());
+        if(o!=null)
+            return o;
+        return checkASTSetOrNullable(from, ast.getNextSibling());
     }
 
     /**
@@ -205,47 +184,34 @@ public abstract class QueryAnalysisProvider {
         }
     }
 
-    boolean initializedCache;
-
-    private synchronized void initializeCache(String query, NullPointerException e) {
-        if (inlinedQueries == null) {
-            inlinedQueries = NamedResources.getStaticCache(NamedResources.makeStaticCache("Inlined queries by "
-                    + getClass().getName().substring(getClass().getName().lastIndexOf(".") + 1),
-                new NamedResourceFactory() {
-                    private static final long serialVersionUID = 1L;
-
-                    protected Object makeResource(Object nm, Object hashName) throws Exception {
-                        
-                        String result = "";
-                        
-                        if(!Configuration.getQueryInliner().equals("tree") && !Configuration.getQueryInliner().equals("pass1")) {
-                            result = FunctionInliner.inline((String) nm, QueryAnalysisProvider.this);
-                        } else {
-                            // don't inline here, inline directly during processing
-                            result = (String)nm;
-
-                        }
-                        return result;
-                        
-                    }
-                }, true));
-            initializedCache = true;
-        } else {
-            if (!initializedCache)
-                throw e;
-        }
-    }
-
     /** return the first character(s) in a parameter designator */
     public abstract String getParameterSyntax();
-
-    public static void main(String[] args) {
-        for (int i = 0; i < oqlanalyzer.TEST_MDD_FUNCTIONS.length; i++) {
-            String string = oqlanalyzer.TEST_MDD_FUNCTIONS[i];
-            System.out.println(string + "\n=>\n" + QueryProvider.getQueryAnalzyer("oql").inlineFunctions(string)
-                    + "\nshould be:\n" + oqlanalyzer.TEST_MDD_FUNCTION_RESULTS[i] + "\n\n");
-        }
-    }
     
+    public static void doThrow(String query, Throwable t, AST debugTree) {
+        if (t == null)
+            return;
+        if (t instanceof RuntimeException) {
+            t.printStackTrace();
+            throw (RuntimeException) t;
+        }
+        String errorLocation = "";
+        String errorLocationNumber = "";
+        if (t instanceof RecognitionException) {
+            RecognitionException re = (RecognitionException) t;
+            if (re.getColumn() > 0) {
+                errorLocationNumber = " column " + re.getColumn() + " of ";
+                StringBuffer sb = new StringBuffer();
+                sb.append("\r\n");
+
+                for (int i = 0; i < re.getColumn(); i++) {
+                    sb.append(' ');
+                }
+                sb.append('^');
+                errorLocation = sb.toString();
+            }
+        }
+        throw new OQLParseError("\r\nin " + errorLocationNumber + " query:\r\n" + query + errorLocation + errorLocation
+                + errorLocation, t);
+    }
 
 }
