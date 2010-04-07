@@ -1,3 +1,7 @@
+select s.getAppBegins() from best.johnny.Season s
+select actor(projman.User) from projman.User mak_actor
+select actor(projman.User).username='admin' from projman.User mak_actor
+SELECT actor(projman.User).username='admin' AS col1 
 SELECT x AS col1 FROM projman.User x WHERE x.actor($user) 
 select actor(projman.User) from projman.User mak_actor 
 SELECT m.id AS col1,m.TS_create AS col2,it.project.id AS col3,it.subject AS col4 FROM projman.Message m JOIN m.item it WHERE it.unread() AND m.canRead() AND it.project=:project ORDER BY m.TS_create desc 
