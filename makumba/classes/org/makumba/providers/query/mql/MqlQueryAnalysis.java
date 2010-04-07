@@ -20,6 +20,7 @@ import org.makumba.commons.RegExpUtils;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
+import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.query.Pass1FunctionInliner;
 
@@ -85,32 +86,24 @@ public class MqlQueryAnalysis implements QueryAnalysis {
 
         query = preProcess(query);
 
-        if (query.toLowerCase().indexOf("from") == -1) {
-            noFrom = true;
-            query += " FROM org.makumba.db.makumba.Catalog c";
-        }
-        
         AST parsed = null;
-        
-        if(!Configuration.getQueryInliner().equals("tree")) {
-            HqlParser parser=null;
-            try{
-                parser = HqlParser.getInstance(query);
-                parser.statement();
-            }catch(Throwable t){
-                doThrow(t, parser!=null?parser.getAST():null);
-            }
-            doThrow(parser.error, parser.getAST());
-            
-            parsed = parser.getAST();
 
-            if(Configuration.getQueryInliner().equals("pass1"))
-                parsed= Pass1FunctionInliner.inlineAST(parsed);
-            
-        } else {
-            parsed = FunctionInliner.inlineQueryTree(query);
-        }
-        
+        query = Pass1FunctionInliner.checkForFrom(query);
+
+        // if (Configuration.getQueryInliner().equals("pass1")) {
+        HqlParser p = Pass1FunctionInliner.parseQuery(query);
+        QueryAnalysisProvider.doThrow(query, p.error, p.getAST());
+        parsed = Pass1FunctionInliner.inlineAST(p.getAST());
+
+        noFrom = Pass1FunctionInliner.reduceDummyFrom(parsed);
+
+        /*
+         * } else { if (!Configuration.getQ ueryInliner().equals("tree")) { HqlParser parser = null; try { parser =
+         * HqlParser.getInstance(query); parser.statement(); } catch (Throwable t) { doThrow(t, parser != null ?
+         * parser.getAST() : null); } doThrow(parser.error, parser.getAST()); parsed = parser.getAST(); } else { parsed
+         * = FunctionInliner.inlineQueryTree(query); } }
+         */
+
         // we need to do the transformation first so the second-pass parser will accept the query
         MqlQueryAnalysisProvider.transformOQLParameters(parsed, parameterOrder);
         MqlQueryAnalysisProvider.transformOQL(parsed);
@@ -129,17 +122,19 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         try {
             mqlAnalyzer.statement(parsed);
         } catch (Throwable e) {
-            doThrow(e, parsed);
+            QueryAnalysisProvider.doThrow(query, e, parsed);
         }
-        doThrow(mqlAnalyzer.error, parsed);
-        
+        QueryAnalysisProvider.doThrow(query, mqlAnalyzer.error, parsed);
+
         analyserTreeOriginal = mqlAnalyzer.getAST();
         labels = mqlAnalyzer.rootContext.labels;
         aliases = mqlAnalyzer.rootContext.aliases;
         paramInfo = DataDefinitionProvider.getInstance().getVirtualDataDefinition("Parameters for " + query);
         proj = DataDefinitionProvider.getInstance().getVirtualDataDefinition("Projections for " + query);
         mqlAnalyzer.setProjectionTypes(proj);
-        
+
+        // TODO: nofrom queries should only have constant projections
+
         for (int i = 0; i < parameterOrder.size(); i++) {
             // first we check whether we have a parameter type for exactly this position
             FieldDefinition fd = mqlAnalyzer.paramInfoByPosition.getFieldDefinition("param" + i);
@@ -165,32 +160,8 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         }
     }
 
-    protected void doThrow(Throwable t, AST debugTree) {
-        if (t == null)
-            return;
-        if (t instanceof RuntimeException) {
-            t.printStackTrace();
-            throw (RuntimeException) t;
-        }
-        String errorLocation = "";
-        String errorLocationNumber="";
-        if (t instanceof RecognitionException) {
-            RecognitionException re = (RecognitionException) t;
-            if (re.getColumn() > 0) {
-                errorLocationNumber= " column "+re.getColumn()+" of ";
-                StringBuffer sb = new StringBuffer();
-                sb.append("\r\n");
+ 
 
-                for (int i = 0; i < re.getColumn(); i++) {
-                    sb.append(' ');
-                }
-                sb.append('^');
-                errorLocation = sb.toString();
-            }
-        }
-        throw new OQLParseError("\r\nin "+errorLocationNumber+" query:\r\n" + query + errorLocation+errorLocation+errorLocation, t);
-    }
-    
     public String getQuery() {
         return query;
     }
@@ -319,5 +290,21 @@ public class MqlQueryAnalysis implements QueryAnalysis {
     
     public List<String> getParameterOrder() {
         return parameterOrder;
+    }
+
+    public static class ParamConstant {
+        String paramName;
+
+        public ParamConstant(String name) {
+            paramName = name;
+        }
+
+        public String getParamName() {
+            return paramName;
+        }
+    }
+
+    public Map<String, Object> getConstantValues() {
+        return analyser.constantValues;
     }
 }
