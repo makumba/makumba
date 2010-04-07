@@ -126,7 +126,7 @@ public abstract class QueryProvider implements SingletonHolder {
      * @return a Vector holding Dictionaries corresponding to a result
      */
     public Vector<Dictionary<String, Object>> execute(String query, Map args, int offset, int limit){
-        return executeRaw(qap.inlineFunctions(query), args, offset, limit);
+        return executeRaw(query, args, offset, limit);
     }
     
     /**
