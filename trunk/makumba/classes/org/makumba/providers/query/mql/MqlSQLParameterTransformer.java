@@ -18,6 +18,7 @@ import org.makumba.commons.NamedResources;
 import org.makumba.commons.NameResolver.TextList;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
+import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.SQLParameterTransformer;
 
 import antlr.collections.AST;
@@ -69,9 +70,9 @@ public class MqlSQLParameterTransformer implements SQLParameterTransformer {
         try {
             mg.statement(analyserTreeSQL);
         } catch (Throwable e) {
-            qA.doThrow(e, analyserTreeSQL);
+            QueryAnalysisProvider.doThrow(qA.getQuery(), e, analyserTreeSQL);
         }
-        qA.doThrow(mg.error, analyserTreeSQL);
+        QueryAnalysisProvider.doThrow(qA.getQuery(), mg.error, analyserTreeSQL);
 
         text = mg.text;
 
