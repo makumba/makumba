@@ -54,7 +54,6 @@ import org.makumba.UnauthorizedException;
 import org.makumba.commons.DbConnectionProvider;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
-import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysisProvider;
@@ -612,67 +611,25 @@ public class Logic {
         AuthorizationConstraint constraint = (AuthorizationConstraint) o;
         QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer(dbcp.getTransactionProvider().getQueryLanguage());
 
-        Object result = null;
-        // FIXME the !constraint.rule.startsWith("actor(") is an ugly way of figuring whether we are trying an actor
-        if (constraint.fromWhere == null) {
-            // we have no FROM and WHERE section, this leads in a hard-to-analyze query
-            // so we try a parameter
-            String q1;
-
-            String constraintQuery = constraint.rule;
-            if (constraint.rule.startsWith("actor(")) {
-                // try to fetch the type from the actor
-                constraintQuery = "select " + constraint.rule + " from "
-                        + constraint.rule.substring(6, constraint.rule.indexOf(")")) + " mak_actor";
-            }
-            try {
-                q1 = qap.inlineFunctions(constraintQuery).trim();
-            } catch (RuntimeWrappedException rwe) {
-                if (rwe.getCause() instanceof MakumbaError) {
-                    throw new ProgrammerError("Error while checking authorization constraint " + constraint.key
-                            + " during inlining of query " + constraint.rule + " " + rwe.getMessage());
-                } else {
-                    throw rwe;
-                }
-            }
-            q1 = q1.substring("SELECT ".length(), q1.indexOf(" from"));
-            if (q1.startsWith(qap.getParameterSyntax()) && q1.substring(1).matches("[a-zA-Z]\\w*")) {
-                result = a.getAttribute(q1.substring(1));
-            }
-            // then we try a number
-            if (result == null) {
-                try {
-                    result = Double.parseDouble(q1);
-                } catch (NumberFormatException e) {
-                }
-            }
-            // then we try a string
-            if (result == null && q1.startsWith("(") && q1.endsWith(")")) {
-                result = q1;
-            }
+        String query = "SELECT " + constraint.rule + " AS col1 ";
+        if (constraint.fromWhere != null) {
+            query += constraint.fromWhere;
         }
-        if (result == null) {
-            String query = "SELECT " + constraint.rule + " AS col1 ";
-            if (constraint.fromWhere != null) {
-                query += constraint.fromWhere;
-            }
-            query = qap.inlineFunctions(query);
-            Vector<Dictionary<String, Object>> v;
-            try {
-                v = dbcp.getConnectionTo(dbName).executeQuery(query, null);
-            } catch (MakumbaError e) {
-                throw new ProgrammerError("Error while checking authorization constraint " + constraint.key
-                        + " during execution of query " + query + " " + e.getMessage());
-            }
-            if (v.size() > 1) {
-                throw new ProgrammerError("Authorization constraint returned multiple values: " + constraint.key + "="
-                        + constraint.value);
-            }
-            if (v.size() == 0) {
-                throw new UnauthorizedException(constraint.message);
-            }
-            result = v.elementAt(0).get("col1");
+        Vector<Dictionary<String, Object>> v;
+        try {
+            v = dbcp.getConnectionTo(dbName).executeQuery(query, null);
+        } catch (MakumbaError e) {
+            throw new ProgrammerError("Error while checking authorization constraint " + constraint.key
+                    + " during execution of query " + query + " " + e.getMessage());
         }
+        if (v.size() > 1) {
+            throw new ProgrammerError("Authorization constraint returned multiple values: " + constraint.key + "="
+                    + constraint.value);
+        }
+        if (v.size() == 0) {
+            throw new UnauthorizedException(constraint.message);
+        }
+        Object result = v.elementAt(0).get("col1");
         if (result == null || result.equals(Pointer.Null) || result.equals(0) || result.equals(false)) {
             throw new UnauthorizedException(constraint.message);
         }
@@ -752,7 +709,8 @@ public class Logic {
                 return TransactionProvider.getInstance();
             }
 
-            Method getInstance = Class.forName(transactionProviderClass).getDeclaredMethod("getInstance", new Class<?>[] {});
+            Method getInstance = Class.forName(transactionProviderClass).getDeclaredMethod("getInstance",
+                new Class<?>[] {});
             return (TransactionProvider) getInstance.invoke(null, new Object[] {});
 
         } catch (Throwable e) {

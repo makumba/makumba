@@ -28,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.Vector;
 
@@ -52,7 +53,7 @@ public class Query implements org.makumba.db.makumba.Query {
 
     TableManager resultHandler;
 
-    QueryAnalysis qA;
+    MqlQueryAnalysis qA;
     
     ParameterAssigner assigner;
 
@@ -90,8 +91,8 @@ public class Query implements org.makumba.db.makumba.Query {
             e.printStackTrace();
         }
 
-        qA = (insertIn != null && insertIn.length() > 0) ? qap.getQueryAnalysis(MQLQuery, insertIn)
-                : qap.getQueryAnalysis(MQLQuery);
+        qA = (MqlQueryAnalysis)( (insertIn != null && insertIn.length() > 0) ? qap.getQueryAnalysis(MQLQuery, insertIn)
+                : qap.getQueryAnalysis(MQLQuery));
 
         resultHandler = (TableManager) db.makePseudoTable(qA.getProjectionType());
         limitSyntax = db.getLimitSyntax();
@@ -104,6 +105,9 @@ public class Query implements org.makumba.db.makumba.Query {
     }
 
     public Vector<Dictionary<String, Object>> execute(Map<String, Object> args, DBConnection dbc, int offset, int limit) {
+        if((insertIn==null || insertIn.length()==0) && qA.getConstantValues()!=null)
+            // no need to send the query to the sql engine
+            return getConstantResult(args, offset, limit);
         
         MqlSQLParameterTransformer qG = MqlSQLParameterTransformer.getSQLQueryGenerator((MqlQueryAnalysis)qA, args);
         
@@ -237,4 +241,23 @@ public class Query implements org.makumba.db.makumba.Query {
             throw new org.makumba.DBError(e);
         }
     }
+    
+    private Vector<Dictionary<String, Object>> getConstantResult(Map<String, Object> args, int offset, int limit) {
+        Vector<Dictionary<String, Object>> ret= new Vector<Dictionary<String, Object>>(1);
+        if(offset>0 || limit ==0)
+            return ret;
+        Hashtable<String, Object> row= new Hashtable<String, Object>();
+        
+        for(String s:qA.getConstantValues().keySet()){
+            Object column= qA.getConstantValues().get(s);
+            if(column instanceof MqlQueryAnalysis.ParamConstant)
+                row.put(s, args.get(((MqlQueryAnalysis.ParamConstant)column).getParamName()));
+            else
+                row.put(s, column);
+        }
+        ret.add(row);
+        return ret;
+        
+    }
+
 }
