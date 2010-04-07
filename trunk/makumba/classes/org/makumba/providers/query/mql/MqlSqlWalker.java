@@ -2,6 +2,7 @@ package org.makumba.providers.query.mql;
 
 import java.io.PrintWriter;
 import java.util.HashSet;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.Vector;
@@ -66,7 +67,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
 
     QueryContext rootContext;
     
-    LinkedHashMap<String, FunctionCall> orderedFunctionCalls = new LinkedHashMap<String, FunctionCall>();
+    HashMap<String, FunctionCall> orderedFunctionCalls = new HashMap<String, FunctionCall>();
     
     boolean hasSubqueries;
 
@@ -77,6 +78,12 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     boolean autoLeftJoin;
 
     private DataDefinition insertIn;
+    
+    /** some queries have only constant projections. they need no data from a database to be evaluated. 
+     * if they are simple enough they don't need to be sent to the db engine.
+     * If constantValues is null, it means that we found at least one non-constant projection
+     * or one that is not easy to evaluate, so we gave up*/
+    LinkedHashMap<String, Object> constantValues = new LinkedHashMap<String, Object>();
 
     public MqlSqlWalker(String query, DataDefinition insertIn, boolean optimizeJoins, boolean autoLeftJoin, boolean functionAsInliner) {
         this.query = query;
@@ -380,24 +387,14 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         return ASTUtil.create(fact, MqlSqlWalker.PARAM, "?");
     }
 
+    
     void setParameterType(MqlNode param, FieldDefinition likewise) {
-        String paramName = param.getOriginalText();
-        
-        // FIXME if paramName is '?' throw exception, we don't support this syntax here
-        
-        // we separate the parameter position from the name, as both are registered in the same string
-        int paramPositionIndex = paramName.indexOf("###");
-        if(paramPositionIndex < -1) {
-            throw new MakumbaError("Untreated parameter " + paramName + " in query analysis");
-        }
-        
-        int paramPosition = Integer.parseInt(paramName.substring(paramPositionIndex + 3));
-        paramName = paramName.substring(0, paramPositionIndex);
+        ParamInfo info= getParamInfo(param);
 
         // if the parameter is not already registered as multi-type (with different types on different position)
-        if (!multiTypeParams.contains(paramName)) {
-            FieldDefinition fd = DataDefinitionProvider.getInstance().makeFieldWithName(paramName, likewise);
-            FieldDefinition fd1 = paramInfoByName.getFieldDefinition(paramName);
+        if (!multiTypeParams.contains(info.paramName)) {
+            FieldDefinition fd = DataDefinitionProvider.getInstance().makeFieldWithName(info.paramName, likewise);
+            FieldDefinition fd1 = paramInfoByName.getFieldDefinition(info.paramName);
 
             // if we already have a type for that name and the types are not compatible
             if (fd1 != null && !fd1.isAssignableFrom(fd)) {
@@ -407,7 +404,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
                 // and that's currently not possible
                 
                 // we register the parameter as multi-type
-                multiTypeParams.add(paramName);
+                multiTypeParams.add(info.paramName);
             } else if(fd1==null) {
                     // we register the type if we don't have any for this name
                     paramInfoByName.addField(fd);
@@ -417,9 +414,30 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         // we now register the type for this position. 
         // we don't check for duplicate type on this position
         // as each tree node should be visited only once...
-        FieldDefinition fd = DataDefinitionProvider.getInstance().makeFieldWithName("param" + paramPosition, likewise);
+        FieldDefinition fd = DataDefinitionProvider.getInstance().makeFieldWithName("param" + info.paramPosition, likewise);
         param.setMakType(fd);
         paramInfoByPosition.addField(fd);
+    }
+    static class ParamInfo{
+        String paramName;
+        int paramPosition;
+    }
+    private ParamInfo getParamInfo(MqlNode param) {
+        ParamInfo ret= new ParamInfo();
+
+        ret.paramName = param.getOriginalText();
+        
+        // FIXME if paramName is '?' throw exception, we don't support this syntax here
+        
+        // we separate the parameter position from the name, as both are registered in the same string
+        int paramPositionIndex = ret.paramName.indexOf("###");
+        if(paramPositionIndex < -1) {
+            throw new MakumbaError("Untreated parameter " + ret.paramName + " in query analysis");
+        }
+        
+        ret.paramPosition = Integer.parseInt(ret.paramName.substring(paramPositionIndex + 3));
+        ret.paramName= ret.paramName.substring(0, paramPositionIndex);
+        return ret;
     }
 
     void setProjectionTypes(DataDefinition proj) {
@@ -472,7 +490,16 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
                 throw new IllegalStateException("no type set for projection " + name + " "
                         + MqlQueryAnalysis.showAst(a));
             
-
+            if(constantValues!=null){
+                if(mqlNode.isParam())
+                    constantValues.put(name, new MqlQueryAnalysis.ParamConstant(getParamInfo(mqlNode).paramName));
+                else 
+                    // TODO: for now we only accept parameters as constant values
+                    // that solves actor evaluation without having to do a db call
+                    // we could also check whether mqlNode is a NUM_INTEGER, NUM_DOUBLE, QUOTED_STRING, etc
+                   // for anything else than these, we give up on constants, and set constantValues to null
+                    constantValues=null;
+            }
             proj.addField(DataDefinitionProvider.getInstance().makeFieldWithName(name, makType));
             i++;
         }
