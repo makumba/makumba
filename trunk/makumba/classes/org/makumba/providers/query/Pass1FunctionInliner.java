@@ -13,8 +13,8 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.DataDefinition.QueryFragmentFunction;
-import org.makumba.commons.ClassResource; //import org.makumba.providers.datadefinition.mdd.MakumbaDumpASTVisitor;
-import org.makumba.providers.QueryAnalysisProvider;
+import org.makumba.commons.ClassResource;
+import org.makumba.providers.datadefinition.mdd.MakumbaDumpASTVisitor;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.query.mql.ASTUtil;
 import org.makumba.providers.query.mql.HqlASTFactory;
@@ -29,6 +29,9 @@ public class Pass1FunctionInliner {
 
     static final HqlASTFactory fact = new HqlASTFactory();
 
+    public static Logger logger = Logger.getLogger("org.makumba.db.query.inline");
+
+
     public static interface ASTVisitor {
         public AST visit(TraverseState state, AST a);
     }
@@ -42,7 +45,8 @@ public class Pass1FunctionInliner {
     }
 
     /**
-     * recursively traverse the tree, and transform it via a visitor keep a path from the tree root to the current node
+     * recursively traverse the tree, and transform it via a visitor.
+     * keep a traversal state, which includes the path from the tree root to the current node
      */
     static AST traverse(TraverseState state, AST current, ASTVisitor v) {
         if (current == null)
@@ -79,27 +83,23 @@ public class Pass1FunctionInliner {
     // do{ stack.add(a); visit(a); } while((a=a.getFirstChild())!=null);
     // do{ if(stack.isEmpty()) break root; a= stack.remove( stack.size() - 1).getNextSibling(); } while(a==null);
     // }
-    public static AST inlineQuery(String query) {
-        AST parsed = parseQuery(query);
-        return inlineAST(parsed);
-    }
 
-    private static AST parseQuery(String query) {
+    /** Parse the query
+     * If you are not sure whether your query has a FROM section, use checkForFrom() first
+     */
+    public static HqlParser parseQuery(String query) {
         HqlParser parser = HqlParser.getInstance(query);
-        try {
-            parser.statement();
-        } catch (Throwable t) {
-            // TODO: add a doThrow
-            t.printStackTrace();
-        }
-        // FIXME: the parser may be in error, in that case we should throw the error further
-
-        AST parsed = parser.getAST();
-        return parsed;
+            try {
+                parser.statement();
+            } catch (Exception e) {
+                if(parser.getError()==null)
+                    throw new RuntimeException(e);
+            }
+ 
+        return parser;
     }
 
-    static Logger logger= Logger.getLogger("org.makumba.db.query.inline");
-    
+    /** The core inliner method: inline functions in an AST tree */
     public static AST inlineAST(AST parsed) {
         // new MakumbaDumpASTVisitor(false).visit(parsed);
 
@@ -111,12 +111,13 @@ public class Pass1FunctionInliner {
         // FIXME: for now they are added to the root query. adding them to other subqueries may be required
         addFromWhere(ret, state);
 
-        if (logger.getLevel()!=null && logger.getLevel().intValue() >= java.util.logging.Level.FINE.intValue())
+        if (logger.getLevel() != null && logger.getLevel().intValue() >= java.util.logging.Level.FINE.intValue())
             logger.fine(parsed.toStringList() + " \n-> " + ret.toStringList());
 
         return ret;
     }
 
+    /** The traverse() visitor for inlining, inlines functions and actors */
     static class InlineVisitor implements ASTVisitor {
         static ASTVisitor singleton = new InlineVisitor();
 
@@ -142,7 +143,7 @@ public class Pass1FunctionInliner {
             // because we will heavily change the tree
             // FIXME: the MDD function body rewriting to add "this" should also be done with ASTs using traverse()
             // then the function tree should be duplicated here, also using traverse()
-            // not sure whether MDDs need to return the rewritten function as text? 
+            // not sure whether MDDs need to return the rewritten function as text?
             // TODO: separate traverse() in a commons utility class
             // TODO: use traversal in mql to rewrite parameters, IN SET, etc
             // the from FROM doesn't matter really
@@ -282,9 +283,11 @@ public class Pass1FunctionInliner {
 
     /** Add to a query the ranges and the where conditions that were found. The AST is assumed to be the root of a query */
     private static void addFromWhere(AST root, TraverseState state) {
+        AST firstFrom = root.getFirstChild().getFirstChild().getFirstChild();
         for (AST range : state.extraFrom) {
-            ASTUtil.appendSibling(root.getFirstChild().getFirstChild().getFirstChild(), range);
+            ASTUtil.appendSibling(firstFrom, range);
         }
+
         for (AST condition : state.extraWhere) {
             if (condition == null)
                 continue;
@@ -305,7 +308,7 @@ public class Pass1FunctionInliner {
         }
     }
 
-    /** make a copy of an AST, with the same first child, but with no next sibling */
+    /** make a copy of an AST, node with the same first child, but with no next sibling */
     private static AST makeASTCopy(AST current1) {
         Node current2 = ASTUtil.makeNode(current1.getType(), current1.getText());
         // we connect the new node to the rest of the structure
@@ -317,6 +320,42 @@ public class Pass1FunctionInliner {
 
         return current2;
     }
+    
+    static final String DUMMY_PROJECTION= "mak_dummy_projection";
+    
+    /**
+     * Add a dummy FROM section to the query if it doesn't have one, in order for it to conform to the grammars.
+     * @param query
+     * @return the new query
+     */
+    public static String checkForFrom(String query) {
+        // first pass won't work without a FROM section, so we add a dummy catalog
+        if (query.toLowerCase().indexOf("from") == -1) {
+            return query+ " FROM org.makumba.db.makumba.Catalog "+DUMMY_PROJECTION;
+        }
+        return query;
+    }
+
+    /** Attempt to reduce the dummy FROM from the AST after inlining. 
+     * Some inlining processes will add a from section, so the dummy FROM is not needed any longer.
+     * @param parsed the AST
+     * @return whether the query still needs a dummy from after inlining
+     */
+    public static boolean reduceDummyFrom(AST parsed) {
+        AST from= parsed.getFirstChild().getFirstChild();
+        if(from.getFirstChild().getFirstChild().getNextSibling().getText().equals(DUMMY_PROJECTION))
+            if(from.getFirstChild().getNextSibling()!=null){
+                // the query got a new FROM section after inlining, so we can remove our dummy catalog
+                from.setFirstChild(from.getFirstChild().getNextSibling());
+                return false;
+            }
+            else
+                // there is no from even  after inlining, 
+                // so we leave the catalog hanged here, otherwise the second pass will flop
+              return true;
+        return false;
+    }
+
 
     /**
      * @param args
@@ -333,10 +372,24 @@ public class Pass1FunctionInliner {
 
                 if (query.trim().startsWith("#"))
                     continue;
-                AST processedAST = inlineQuery(query);
-                if (!compare(new ArrayList<AST>(), processedAST, parseQuery(FunctionInliner.inline(query,
-                    QueryProvider.getQueryAnalzyer("oql")))))
+                String oldInline= FunctionInliner.inline(query, QueryProvider.getQueryAnalzyer("oql"));
+                HqlParser old= parseQuery(oldInline);
+                AST compAST = old.getAST();
+                
+                AST processedAST = inlineAST(parseQuery(checkForFrom(query)).getAST());
+                reduceDummyFrom(processedAST);
+                //new MakumbaDumpASTVisitor(false).visit(processedAST);
+                
+                //System.out.println(oldInline);
+                if (!compare(new ArrayList<AST>(), processedAST, compAST)) {
                     System.err.println(line + ": " + query);
+                    if (old.getError() != null)
+                        System.err.println(line+": old inliner failed! "+ old.getError()+ " query was: "+ oldInline);
+                    else {
+                        new MakumbaDumpASTVisitor(false).visit(processedAST);
+                        new MakumbaDumpASTVisitor(false).visit(compAST);
+                    }
+                }
             }
         } catch (IOException e) {
             // TODO Auto-generated catch block
@@ -352,7 +405,12 @@ public class Pass1FunctionInliner {
             } else
                 return true;
         if (!t1.equals(t2)) {
-            System.out.println(path + " [" + t1.getType() + " " + t1 + "] <> [" + t2.getType() + " " + t2 + "]");
+            System.out.print(path + " [" + t1.getType() + " " + t1 + "] <> ");
+            if (t2 == null)
+                System.out.println("null");
+            else
+                System.out.println("[" + t2.getType() + " " + t2 + "]");
+
             return false;
         }
         if (!compare(path, t1.getNextSibling(), t2.getNextSibling()))
