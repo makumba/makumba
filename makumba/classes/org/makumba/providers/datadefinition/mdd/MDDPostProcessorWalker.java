@@ -261,8 +261,9 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
                 break;
             }
 
+			//TODO: either look for other keywords (than end) or better rewrite this with ASTs
             // if we have an actor we don't append "this"
-            if (before == '.' || id.equals("this") || id.equals("actor") || funct.parameters.getFieldDefinition(id) != null) {
+            if (before == '.' || id.equals("this") || id.equals("actor") || id.equals("end") ||funct.parameters.getFieldDefinition(id) != null) {
                 continue;
             }
             if (mdd.fields.get(id) != null || after == '(' && mdd.functions.get(id) != null) {
