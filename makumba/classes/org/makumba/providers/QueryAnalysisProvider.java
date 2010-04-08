@@ -27,6 +27,7 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidFieldTypeException;
 import org.makumba.OQLParseError;
+import org.makumba.providers.datadefinition.mdd.MakumbaDumpASTVisitor;
 import org.makumba.providers.query.Pass1FunctionInliner;
 import org.makumba.providers.query.mql.ASTUtil;
 import org.makumba.providers.query.mql.HqlParser;
@@ -98,8 +99,19 @@ public abstract class QueryAnalysisProvider {
         // we assume that we have ranges like a.b.c x
         from="";
         String separator="";
+        
         while(fromAST!=null){
-            from+=separator+ ASTUtil.constructPath(fromAST.getFirstChild())+" "+fromAST.getFirstChild().getNextSibling();
+            // fromAST is RANGE or JOIN, its first child is expected to be the type
+            AST type= fromAST.getFirstChild();
+
+            // but sometimes its first child is "INNER" or "OUTER" or whatever
+            // so we jump that because here we don't care what kind of join it is
+            if(fromAST.getFirstChild().getType()!= HqlTokenTypes.DOT 
+                    && fromAST.getFirstChild().getType()!=HqlTokenTypes.IDENT)
+                type=type.getNextSibling();
+            
+            // now we write the type (path) and the label, which is its next sibling
+            from+=separator+ ASTUtil.constructPath(type)+" "+type.getNextSibling();
             separator=", ";
             fromAST= fromAST.getNextSibling();
         }
