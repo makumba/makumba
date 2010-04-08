@@ -593,8 +593,8 @@ public class RecordParser {
                     before = c;
                     break;
                 }
-
-                if (before == '.' || id.equals("this") || id.equals("actor")
+				//TODO: either look for other keywords (than end) or better rewrite this with ASTs
+                if (before == '.' || id.equals("this") || id.equals("actor") || id.equals("end")
                         || f.getParameters().getFieldDefinition(id) != null) {
                     continue;
                 }

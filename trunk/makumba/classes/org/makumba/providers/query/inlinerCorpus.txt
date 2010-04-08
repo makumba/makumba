@@ -1,3 +1,4 @@
+select s.getAnnDL() from best.johnny.Season s
 select s.getAppBegins() from best.johnny.Season s
 select actor(projman.User) from projman.User mak_actor
 select actor(projman.User).username='admin' from projman.User mak_actor
