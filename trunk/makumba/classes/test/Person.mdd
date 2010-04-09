@@ -129,6 +129,8 @@ oneNameMin2CharsLong() { character_length(indiv.name) > 2 OR character_length(in
 
 fullName() { indiv.fullName() } ; comment
 
+testCaseWhen() { case when this.indiv <> NIL then this.indiv.fullName() else 'noName' end }  
+
 actor(char[] username, char[] password) { myapp_username=username AND this.password=password }
 actor2(char[] username, char[] password) { indiv.someusername=username AND this.password=password }
 
@@ -142,4 +144,5 @@ scoreMatch(char term, char value) { case when value=term then 1.0 else case when
 # see bug entry 1178 (http://bugs.makumba.org/show_bug.cgi?id=1178) 
 # scoreMatchSimple(char term, char value) { case when value=term then 1.0 when value like concat(term, '%') then 0.8 when value like concat('%', term) then 0.6 when value like concat('%', term, '%') then 0.5 else 0 end }
 
- 
+doesSpeak(char language) { case when exists(FROM speaks s where s.name=language) then 'yeah' else 'hell no!' end  } 
+doesSpeak2(char language) { case when exists(FROM speaks s where s.name=language) then (SELECT s.name from speaks.s where s.name=language) else 'hell no!' end  } 
