@@ -212,7 +212,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         MqlNode paramNode = (MqlNode) exprList.getFirstChild();
         int index = 0;
         final String name = functionNode.getText();
-        final MQLFunctionDefinition functionDef = MQLFunctionDefinition.getByName(MqlNode.mqlFunctions, name);
+        final MQLFunctionDefinition functionDef = MQLFunctionRegistry.findMQLFunction(name);
         if (functionDef == null) {
             throw new ProgrammerError("MQL Function '" + name + "' is not defined as query fragment, nor is it a known MQL function! Please refer to " + LINK_FUNCTION_DEF
                     + " for a list of known functions.");
