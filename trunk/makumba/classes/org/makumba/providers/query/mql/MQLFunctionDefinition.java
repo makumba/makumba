@@ -23,7 +23,6 @@
 
 package org.makumba.providers.query.mql;
 
-import java.util.List;
 
 /**
  * This class represents an MQL function, with it's name, return type and required arguments. This definition is then
@@ -44,15 +43,6 @@ public class MQLFunctionDefinition {
 
     public static MQLFunctionDefinition dateToStringFunction(String name) {
         return new MQLFunctionDefinition(name, "char[255]", "date");
-    }
-
-    public static MQLFunctionDefinition getByName(List<MQLFunctionDefinition> functions, String name) {
-        for (MQLFunctionDefinition function : functions) {
-            if (function.getName().equals(name)) {
-                return function;
-            }
-        }
-        return null;
     }
 
     public static MQLFunctionDefinition intToDateFunction(String name) {
