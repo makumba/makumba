@@ -2,7 +2,7 @@
 foreignKeys=true
 defaultDatabaseLayer=makumba
 dataDefinitionProvider=mdd
-queryFunctionInliner=normal
+queryFunctionInliner=pass1
 
 [businessLogicPackages]
 default=

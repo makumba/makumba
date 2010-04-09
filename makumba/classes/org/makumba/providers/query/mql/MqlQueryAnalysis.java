@@ -84,18 +84,13 @@ public class MqlQueryAnalysis implements QueryAnalysis {
             query=queryAndInsert;
         }
 
-        query = preProcess(query);
-
         AST parsed = null;
 
-        query = Pass1FunctionInliner.checkForFrom(query);
+        query = QueryAnalysisProvider.checkForFrom(query);
 
-        // if (Configuration.getQueryInliner().equals("pass1")) {
-        HqlParser p = Pass1FunctionInliner.parseQuery(query);
-        QueryAnalysisProvider.doThrow(query, p.error, p.getAST());
-        parsed = Pass1FunctionInliner.inlineAST(p.getAST());
-
-        noFrom = Pass1FunctionInliner.reduceDummyFrom(parsed);
+        parsed= QueryAnalysisProvider.inlineFunctions(query);
+        
+        noFrom = QueryAnalysisProvider.reduceDummyFrom(parsed);
 
         /*
          * } else { if (!Configuration.getQ ueryInliner().equals("tree")) { HqlParser parser = null; try { parser =
@@ -242,30 +237,6 @@ public class MqlQueryAnalysis implements QueryAnalysis {
             a.setType(HqlTokenTypes.IS_NOT_NULL);
             a.setText("is not null");
         }
-    }
-
-    public static final String regExpInSET = "in" + RegExpUtils.minOneWhitespace + "set" + RegExpUtils.whitespace
-            + "\\(";
-
-    public static final Pattern patternInSet = Pattern.compile(regExpInSET);
-
-    public static String preProcess(String query) {
-        // replace -> (subset separators) with __
-        query = query.replaceAll("->", "__");
-
-        // replace IN SET with IN.
-        Matcher m = patternInSet.matcher(query.toLowerCase()); // find all occurrences of lower-case "in set"
-        while (m.find()) {
-            int start = m.start();
-            int beginSet = m.group().indexOf("set"); // find location of "set" keyword
-            // System.out.println(query);
-            // composing query by concatenating the part before "set", 3 space and the part after "set"
-            query = query.substring(0, start + beginSet) + "   " + query.substring(start + beginSet + 3);
-            // System.out.println(query);
-            // System.out.println();
-        }
-        query = query.replaceAll("IN SET", "IN    ");
-        return query;
     }
 
     private int labelCounter = 0;
