@@ -73,7 +73,7 @@ public class MqlNode extends CommonAST {
     public void setFather(MqlNode node) {
         father = node;
     }
-    
+
     public MqlNode getFather() {
         return father;
     }
@@ -202,14 +202,15 @@ public class MqlNode extends CommonAST {
                 if (child.getType() == HqlSqlTokenTypes.ELSE) {
                     return ((MqlNode) getFirstChild().getFirstChild().getNextSibling()).getMakType();
                 }
-                
+
         }
         return null;
     };
 
     /**
-     * Computes the type of function, based on their path. Note that MDD functions are inlined so their type doesn't need to be computed.
-     * For actor functions, computation happens after the complete sub-tree is built, in the grammar.
+     * Computes the type of function, based on their path. Note that MDD functions are inlined so their type doesn't
+     * need to be computed. For actor functions, computation happens after the complete sub-tree is built, in the
+     * grammar.
      */
     private FieldDefinition getFunctionType(MqlNode child) {
         String type = null;
@@ -218,7 +219,7 @@ public class MqlNode extends CommonAST {
         if (functionDef != null) {
             type = functionDef.getReturnType();
         }
-        
+
         if (type != null) {
             child.setType(HqlSqlTokenTypes.METHOD_NAME);
             return DataDefinitionProvider.getInstance().makeFieldDefinition("x", type);
@@ -253,12 +254,12 @@ public class MqlNode extends CommonAST {
             setMakType(DataDefinitionProvider.getInstance().makeFieldDefinition("x", def));
         }
     }
-    
+
     @Override
     public void initialize(AST t) {
         super.initialize(t);
-        if(t instanceof MqlNode) {
-            MqlNode n = (MqlNode)t;
+        if (t instanceof MqlNode) {
+            MqlNode n = (MqlNode) t;
             makType = n.makType;
             father = n.father;
             originalText = n.originalText;
@@ -304,14 +305,14 @@ public class MqlNode extends CommonAST {
     boolean isParam() {
         return getType() == HqlSqlTokenTypes.NAMED_PARAM || getType() == HqlSqlTokenTypes.PARAM;
     }
-    
+
     /**
      * whether this is a custom MDD function call
      */
     boolean isFunctionCall() {
         return getType() == HqlSqlTokenTypes.METHOD_CALL && getText().startsWith("methodCallPlaceholder_");
     }
-    
+
     void checkOperandTypes(MqlNode left, MqlNode right) throws SemanticException {
         checkForOperandType(left);
         checkForOperandType(right);
@@ -361,11 +362,11 @@ public class MqlNode extends CommonAST {
 
     protected boolean checkAndRewriteOperand(MqlNode left, MqlNode right) throws SemanticException {
         if (right.getType() == HqlSqlTokenTypes.QUOTED_STRING && !left.isParam()) {
-            
-            if(right.getText().startsWith("methodCallPlaceholder_")) {
+
+            if (right.getText().startsWith("methodCallPlaceholder_")) {
                 return true;
             }
-            
+
             String s = right.getText();
             String arg1 = s.substring(1, s.length() - 1);
             Object o = null;
@@ -463,7 +464,7 @@ public class MqlNode extends CommonAST {
         mqlFunctions.add(MQLFunctionDefinition.dateToIntFunction("to_days"));
 
         // date-to-int functions with more arguments
-        mqlFunctions.add(MQLFunctionDefinition.toIntFunction("datediff", "date", "date", "date"));
+        mqlFunctions.add(MQLFunctionDefinition.toIntFunction("datediff", "date", "date"));
 
         // to-int functions with more arguments
         mqlFunctions.add(MQLFunctionDefinition.toIntFunction("mod", "int", "int"));
