@@ -15,6 +15,7 @@ import org.makumba.InvalidValueException;
 import org.makumba.DataDefinition.QueryFragmentFunction;
 import org.makumba.commons.ClassResource;
 import org.makumba.providers.datadefinition.mdd.MakumbaDumpASTVisitor;
+import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.query.mql.ASTUtil;
 import org.makumba.providers.query.mql.HqlASTFactory;
@@ -84,21 +85,7 @@ public class Pass1FunctionInliner {
     // do{ if(stack.isEmpty()) break root; a= stack.remove( stack.size() - 1).getNextSibling(); } while(a==null);
     // }
 
-    /** Parse the query
-     * If you are not sure whether your query has a FROM section, use checkForFrom() first
-     */
-    public static HqlParser parseQuery(String query) {
-        HqlParser parser = HqlParser.getInstance(query);
-            try {
-                parser.statement();
-            } catch (Exception e) {
-                if(parser.getError()==null)
-                    throw new RuntimeException(e);
-            }
- 
-        return parser;
-    }
-
+    
     /** The core inliner method: inline functions in an AST tree */
     public static AST inlineAST(AST parsed) {
         // new MakumbaDumpASTVisitor(false).visit(parsed);
@@ -145,21 +132,12 @@ public class Pass1FunctionInliner {
             // then the function tree should be duplicated here, also using traverse()
             // not sure whether MDDs need to return the rewritten function as text?
             // TODO: separate traverse() in a commons utility class
-            // TODO: use traversal in mql to rewrite parameters, IN SET, etc
             // the from FROM doesn't matter really
-            HqlParser funcParser = HqlParser.getInstance("SELECT " + func.getQueryFragment() + " FROM "
-                    + calleeType.getName() + " this");
-
-            try {
-                funcParser.statement();
-            } catch (Throwable t) {
-                // TODO: add a doThrow
-                t.printStackTrace();
-            }
-            // here we should have no parser error since this function was parsed at MDD parse time
-
+            AST funcAST = 
+                QueryAnalysisProvider
+                 .parseQuery("SELECT " + func.getQueryFragment() + " FROM " + calleeType.getName() + " this")
             // we go from query-> SELECT_FROM -> FROM-> SELELECT -> 1st projection
-            AST funcAST = funcParser.getAST().getFirstChild().getFirstChild().getNextSibling().getFirstChild();
+                .getFirstChild().getFirstChild().getNextSibling().getFirstChild();
 
             // new
             // HqlASTFactory().dupTree(func.getParsedQueryFragment()).getFirstChild().getFirstChild().getNextSibling();
@@ -321,42 +299,6 @@ public class Pass1FunctionInliner {
         return current2;
     }
     
-    static final String DUMMY_PROJECTION= "mak_dummy_projection";
-    
-    /**
-     * Add a dummy FROM section to the query if it doesn't have one, in order for it to conform to the grammars.
-     * @param query
-     * @return the new query
-     */
-    public static String checkForFrom(String query) {
-        // first pass won't work without a FROM section, so we add a dummy catalog
-        if (query.toLowerCase().indexOf("from") == -1) {
-            return query+ " FROM org.makumba.db.makumba.Catalog "+DUMMY_PROJECTION;
-        }
-        return query;
-    }
-
-    /** Attempt to reduce the dummy FROM from the AST after inlining. 
-     * Some inlining processes will add a from section, so the dummy FROM is not needed any longer.
-     * @param parsed the AST
-     * @return whether the query still needs a dummy from after inlining
-     */
-    public static boolean reduceDummyFrom(AST parsed) {
-        AST from= parsed.getFirstChild().getFirstChild();
-        if(from.getFirstChild().getFirstChild().getNextSibling().getText().equals(DUMMY_PROJECTION))
-            if(from.getFirstChild().getNextSibling()!=null){
-                // the query got a new FROM section after inlining, so we can remove our dummy catalog
-                from.setFirstChild(from.getFirstChild().getNextSibling());
-                return false;
-            }
-            else
-                // there is no from even  after inlining, 
-                // so we leave the catalog hanged here, otherwise the second pass will flop
-              return true;
-        return false;
-    }
-
-
     /**
      * @param args
      */
@@ -373,18 +315,21 @@ public class Pass1FunctionInliner {
                 if (query.trim().startsWith("#"))
                     continue;
                 String oldInline= FunctionInliner.inline(query, QueryProvider.getQueryAnalzyer("oql"));
-                HqlParser old= parseQuery(oldInline);
-                AST compAST = old.getAST();
+                Throwable oldError=null;
+                AST compAST=null;
+                try{
+                    compAST = QueryAnalysisProvider.parseQuery(oldInline);
+                }catch(Throwable t){oldError=t; }
                 
-                AST processedAST = inlineAST(parseQuery(checkForFrom(query)).getAST());
-                reduceDummyFrom(processedAST);
+                AST processedAST = inlineAST(QueryAnalysisProvider.parseQuery(QueryAnalysisProvider.checkForFrom(query)));
+                QueryAnalysisProvider.reduceDummyFrom(processedAST);
                 //new MakumbaDumpASTVisitor(false).visit(processedAST);
                 
                 //System.out.println(oldInline);
                 if (!compare(new ArrayList<AST>(), processedAST, compAST)) {
                     System.err.println(line + ": " + query);
-                    if (old.getError() != null)
-                        System.err.println(line+": old inliner failed! "+ old.getError()+ " query was: "+ oldInline);
+                    if (oldError != null)
+                        System.err.println(line+": old inliner failed! "+ oldError+ " query was: "+ oldInline);
                     else {
                         new MakumbaDumpASTVisitor(false).visit(processedAST);
                         new MakumbaDumpASTVisitor(false).visit(compAST);

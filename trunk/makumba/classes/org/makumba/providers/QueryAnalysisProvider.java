@@ -23,11 +23,16 @@
 
 package org.makumba.providers;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidFieldTypeException;
 import org.makumba.OQLParseError;
+import org.makumba.commons.RegExpUtils;
 import org.makumba.providers.datadefinition.mdd.MakumbaDumpASTVisitor;
+import org.makumba.providers.query.FunctionInliner;
 import org.makumba.providers.query.Pass1FunctionInliner;
 import org.makumba.providers.query.mql.ASTUtil;
 import org.makumba.providers.query.mql.HqlParser;
@@ -41,6 +46,8 @@ import antlr.collections.AST;
  * @version $Id$
  */
 public abstract class QueryAnalysisProvider {
+    public static final String DUMMY_PROJECTION= "mak_dummy_projection";
+
     protected abstract QueryAnalysis getRawQueryAnalysis(String query);
 
     protected QueryAnalysis getRawQueryAnalysis(String query, String insertIn){
@@ -88,11 +95,9 @@ public abstract class QueryAnalysisProvider {
         }
         
         String query = "select " + expr + " from " + from;
-
-        HqlParser p = Pass1FunctionInliner.parseQuery(query);
-        doThrow(query, p.getError(), p.getAST());
-        AST parsed = Pass1FunctionInliner.inlineAST(p.getAST());
-
+       
+        AST parsed = inlineFunctions(query);
+        
         AST fromAST= parsed.getFirstChild().getFirstChild().getFirstChild();
         
         // we re-construct the from after inlining
@@ -119,6 +124,13 @@ public abstract class QueryAnalysisProvider {
         return checkASTSetOrNullable(from, parsed.getFirstChild().getFirstChild().getNextSibling().getFirstChild());
     }
 
+
+    public static AST inlineFunctions(String query) {
+        if (!Configuration.getQueryInliner().equals("pass1"))
+            // HQL doesn't use this anyway
+            return parseQuery(FunctionInliner.inline(query, QueryProvider.getQueryAnalzyer("oql")));
+        return Pass1FunctionInliner.inlineAST(parseQuery(query));
+    }
 
     private Object checkASTSetOrNullable(String from, AST ast) {
         if(ast==null)
@@ -199,6 +211,7 @@ public abstract class QueryAnalysisProvider {
     /** return the first character(s) in a parameter designator */
     public abstract String getParameterSyntax();
     
+ 
     public static void doThrow(String query, Throwable t, AST debugTree) {
         if (t == null)
             return;
@@ -224,6 +237,77 @@ public abstract class QueryAnalysisProvider {
         }
         throw new OQLParseError("\r\nin " + errorLocationNumber + " query:\r\n" + query + errorLocation + errorLocation
                 + errorLocation, t);
+    }
+
+    public static AST parseQuery(String query) {
+        query = preProcess(query);
+        HqlParser parser = HqlParser.getInstance(query);
+        try {
+            parser.statement();
+        } catch (Exception e) {
+            if(parser.getError()==null)
+                doThrow(query, e, parser.getAST());
+        }
+        doThrow(query, parser.getError(), parser.getAST());
+        return parser.getAST();
+    }
+
+    /**
+     * Add a dummy FROM section to the query if it doesn't have one, in order for it to conform to the grammars.
+     * @param query
+     * @return the new query
+     */
+    public static String checkForFrom(String query) {
+        // first pass won't work without a FROM section, so we add a dummy catalog
+        if (query.toLowerCase().indexOf("from") == -1) {
+            return query+ " FROM org.makumba.db.makumba.Catalog "+DUMMY_PROJECTION;
+        }
+        return query;
+    }
+    
+    /** Attempt to reduce the dummy FROM from the AST after inlining. 
+     * Some inlining processes will add a from section, so the dummy FROM is not needed any longer.
+     * @param parsed the AST
+     * @return whether the query still needs a dummy from after inlining
+     */
+    public static boolean reduceDummyFrom(AST parsed) {
+        AST from= parsed.getFirstChild().getFirstChild();
+        if(from.getFirstChild().getFirstChild().getNextSibling().getText().equals(DUMMY_PROJECTION))
+            if(from.getFirstChild().getNextSibling()!=null){
+                // the query got a new FROM section after inlining, so we can remove our dummy catalog
+                from.setFirstChild(from.getFirstChild().getNextSibling());
+                return false;
+            }
+            else
+                // there is no from even  after inlining, 
+                // so we leave the catalog hanged here, otherwise the second pass will flop
+              return true;
+        return false;
+    }
+
+
+    public static final String regExpInSET = "in" + RegExpUtils.minOneWhitespace + "set" + RegExpUtils.whitespace
+    + "\\(";
+
+    public static final Pattern patternInSet = Pattern.compile(regExpInSET);
+
+    public static String preProcess(String query) {
+        // replace -> (subset separators) with __
+        query = query.replaceAll("->", "__");
+
+        // replace IN SET with IN.
+        Matcher m = patternInSet.matcher(query.toLowerCase()); // find all occurrences of lower-case "in set"
+        while (m.find()) {
+            int start = m.start();
+            int beginSet = m.group().indexOf("set"); // find location of "set" keyword
+            // System.out.println(query);
+            // composing query by concatenating the part before "set", 3 space and the part after "set"
+            query = query.substring(0, start + beginSet) + "   " + query.substring(start + beginSet + 3);
+            // System.out.println(query);
+            // System.out.println();
+        }
+        query = query.replaceAll("IN SET", "IN    ");
+        return query;
     }
 
 }
