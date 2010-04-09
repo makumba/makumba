@@ -10,7 +10,8 @@ import antlr.collections.AST;
 /**
  * Writing to SQL. This extends the class produced by mql-sql-gen.g which is adapted from Hibernate. To simplify porting
  * of new versions, the class only redefines methods declared in mql-sql-gen.g. Operations redefined: 1) writing is done
- * to a NameResolver.TextList instead of a StringBuffer to allow name-resolving later on 2) minor separator redefinitions
+ * to a NameResolver.TextList instead of a StringBuffer to allow name-resolving later on 2) minor separator
+ * redefinitions
  * 
  * @author Cristian Bogdan
  * @version $Id: MqlSqlGenerator.java,v 1.1 Aug 5, 2008 5:47:16 PM cristi Exp $
@@ -86,36 +87,33 @@ public class MqlSqlGenerator extends MqlSqlGeneratorBase {
             out(sep);
         }
     }
-    
-    /*
-    @Override
-      protected void nestedFromFragment(AST d, AST parent) {
-        // check a set of parent/child nodes in the from-clause tree
-        // to determine if a comma is required between them
-        if ( d != null && hasText( d ) ) {
-            if ( parent != null && hasText( parent ) ) {
-                // again, both should be FromElements
-                FromElement left = ( FromElement ) parent;
-                FromElement right = ( FromElement ) d;
-                if ( right.getRealOrigin() == left ) {
-                    // right represents a joins originating from left...
-                    if ( right.getJoinSequence() != null && right.getJoinSequence().isThetaStyle() ) {
-                        out( ", " );
-                    }
-                    else {
-                        out( " " );
-                    }
-                }
-                else {
-                    // not so sure this is even valid subtree.  but if it was, it'd
-                    // represent two unrelated table references...
-                    out( ", " );
-                }
-            }
-            out( d );
-        }
-    }
-    */
 
+    // @Override
+    // protected void nestedFromFragment(AST d, AST parent) {
+    // // check a set of parent/child nodes in the from-clause tree
+    // // to determine if a comma is required between them
+    // if ( d != null && hasText( d ) ) {
+    // if ( parent != null && hasText( parent ) ) {
+    // // again, both should be FromElements
+    // FromElement left = ( FromElement ) parent;
+    // FromElement right = ( FromElement ) d;
+    // if ( right.getRealOrigin() == left ) {
+    // // right represents a joins originating from left...
+    // if ( right.getJoinSequence() != null && right.getJoinSequence().isThetaStyle() ) {
+    // out( ", " );
+    // }
+    // else {
+    // out( " " );
+    // }
+    // }
+    // else {
+    // // not so sure this is even valid subtree. but if it was, it'd
+    // // represent two unrelated table references...
+    // out( ", " );
+    // }
+    // }
+    // out( d );
+    // }
+    // }
 
 }
