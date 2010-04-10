@@ -9,9 +9,10 @@ TO BE RELEASED IMMEDIATELY (No need for more testing)
 -----------------------------------------------
 rudi: annotating the list-tags in the JSP viewer with the queries they generated
 rudi: developer tool to convert intEnum to setIntEnum, copying the existing data
-gwen: added DBSV format as input option in pointer value converter
+gwen: adding DBSV format as input option in pointer value converter
 manu: fixing release mechanism broken due to build path change
 manu: allowing multi-types also for different pointer types
+gwen: adding Data Definition and Query Function Inliner providers to Makumba configuration overview 
 
 NOT TO BE RELEASED YET (need more testing)
 manu: auto-complete for mak:input (char and ptr)
