@@ -144,5 +144,13 @@ scoreMatch(char term, char value) { case when value=term then 1.0 else case when
 # see bug entry 1178 (http://bugs.makumba.org/show_bug.cgi?id=1178) 
 # scoreMatchSimple(char term, char value) { case when value=term then 1.0 when value like concat(term, '%') then 0.8 when value like concat('%', term) then 0.6 when value like concat('%', term, '%') then 0.5 else 0 end }
 
-doesSpeak(char language) { case when exists(FROM speaks s where s.name=language) then 'yeah' else 'hell no!' end  } 
-doesSpeak2(char language) { case when exists(FROM speaks s where s.name=language) then (SELECT s.name from speaks.s where s.name=language) else 'hell no!' end  } 
+doesSpeak(char language) { ( case when exists(FROM speaks s WHERE s.name=language) then 'yeah' else 'hell no!' end )  } 
+doesSpeak2(char language) { ( case when exists(FROM speaks s WHERE s.name=language) then (SELECT s.name FROM speaks s WHERE s.name=language) else 'hell no!' end )  }
+languageCheck() { concat('English? ', doesSpeak('English'), '; German? ', doesSpeak('German') ) } 
+
+getLanguage(char code) { ( SELECT distinct s.name FROM speaks s WHERE s.isoCode=code ) }
+languageNames() { concat(getLanguage('en'), ' ') } 
+
+birthdayWithin12Months() { now() > dateSub(birthdate, 12, 'month') }
+birthdayBefore(char monthDay) { dayOfYear(birthdate) >= dayOfYear(str_to_date(monthDay, '%Y-%m-%d')) }
+
