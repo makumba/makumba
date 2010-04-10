@@ -7,13 +7,7 @@ import java.util.Vector;
 
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.commons.ReservedKeywords;
-import org.makumba.providers.QueryAnalysis;
-import org.makumba.providers.QueryProvider;
-import org.makumba.providers.TransactionProvider;
-import org.makumba.providers.query.mql.FunctionInliner;
 import org.makumba.providers.query.mql.HqlParser;
-import org.makumba.providers.query.mql.MqlQueryAnalysis;
-import org.makumba.providers.query.mql.MqlQueryAnalysisProvider;
 import org.makumba.providers.query.mql.Node;
 
 import antlr.RecognitionException;
