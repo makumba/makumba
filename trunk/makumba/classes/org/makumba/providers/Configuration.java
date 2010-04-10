@@ -74,9 +74,9 @@ public class Configuration implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final String KEY_DATADEFINITIONPROVIDER = "dataDefinitionProvider";
+    public static final String KEY_DATADEFINITIONPROVIDER = "dataDefinitionProvider";
 
-    private static final String KEY_QUERYFUNCTIONINLINER = "queryFunctionInliner";
+    public static final String KEY_QUERYFUNCTIONINLINER = "queryFunctionInliner";
 
     public static final String MDD_DATADEFINITIONPROVIDER = "mdd";
 
