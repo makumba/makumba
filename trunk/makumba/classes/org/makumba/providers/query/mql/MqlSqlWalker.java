@@ -1,11 +1,10 @@
 package org.makumba.providers.query.mql;
 
 import java.io.PrintWriter;
-import java.util.HashSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Set;
-import java.util.Vector;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.makumba.DataDefinition;
@@ -39,9 +38,9 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
 
     ASTFactory fact;
 
-    RecognitionException error;
+    protected RecognitionException error;
 
-    QueryContext currentContext;
+    protected QueryContext currentContext;
 
     private boolean fromEnded;
 
@@ -65,9 +64,9 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     
     private AST select;
 
-    QueryContext rootContext;
+    protected QueryContext rootContext;
     
-    HashMap<String, FunctionCall> orderedFunctionCalls = new HashMap<String, FunctionCall>();
+    protected HashMap<String, FunctionCall> orderedFunctionCalls = new HashMap<String, FunctionCall>();
     
     boolean hasSubqueries;
 
@@ -85,9 +84,8 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
      * or one that is not easy to evaluate, so we gave up*/
     LinkedHashMap<String, Object> constantValues = new LinkedHashMap<String, Object>();
 
-    public MqlSqlWalker(String query, DataDefinition insertIn, boolean optimizeJoins, boolean autoLeftJoin, boolean functionAsInliner) {
+    public MqlSqlWalker(String query, DataDefinition insertIn, boolean optimizeJoins, boolean autoLeftJoin) {
         this.query = query;
-        this.functionAsInliner = functionAsInliner;
         this.insertIn= insertIn;
         this.optimizeJoins = optimizeJoins;
         this.autoLeftJoin = autoLeftJoin;
@@ -107,92 +105,9 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
             error = new RecognitionException(s);
     }
     
-    @Override
-    protected String inlineFunction(AST functionCall, boolean inFunctionCall) throws SemanticException {
-        
-        final AST functionNode = functionCall.getFirstChild();
-        final AST exprList = functionNode.getNextSibling();
-        MqlNode paramNode = (MqlNode) exprList.getFirstChild();
-        String name = functionNode.getText();
-        
-        DataDefinition type;
-        
-        // we get a.b.c.functionName, resolve type of the path so we can retrieve the DD
-        // TODO I think this will work only on for a.b.c but not further
-        String path = name;
-        String additionalPath = name;
-        int d = name.lastIndexOf(".");
-        if(d > -1) {
-            path = name.substring(0, d);
-            additionalPath = path;
-            name = name.substring(d + 1);
-            String label = "";
-            int d1 = path.indexOf(".");
-            if(d1 > -1) {
-                label = path.substring(0, d1);
-                additionalPath = additionalPath.substring(d1 + 1);
-            } else {
-                label = path;
-                additionalPath = "";
-            }
-            
-            // first we try in the root FROM
-            type = rootContext.labels.get(label);
-            
-            // let's see if we are in a subquery
-            if(type == null && currentContext != null) {
-                type = currentContext.labels.get(label);
-            }
-            
-            additionalPath = additionalPath + (additionalPath.length() == 0 ? "" : ".") + name;
-            
-        } else {
-            type = rootContext.labels.get(name);
-        }
-        
-        // we take the first FROM element we find
-        if(type == null) {
-            type = rootContext.labels.values().iterator().next();
-        }
-        
-        DataDefinition.QueryFragmentFunction funct = type.getFunctionOrPointedFunction(additionalPath);
-        
-        
-        // we didn't find the function in the MDD, so it might be a MQL function
-        // we ignore actors as they will be processed by the inliner
-        if(funct == null && !additionalPath.startsWith("actor")) {
-            processFunction(functionCall);
-            
-            // we still make a dummy function call because we need it to have the right index in the inliner
-            FunctionCall c = new FunctionCall(null, null, null, null, additionalPath, false, true, false, getCurrentClauseType() == WHERE);
-            addFunctionCall(c);
-            return c.getKey();
-        }       
-        
-        // fetch the function parameters of the call and store them so we can perform inlining in the QueryAnalyser
-        // we have to store the arguments for each functionCall separately
-        Vector<MqlNode> args = new Vector<MqlNode>();
-        while(paramNode != null) {
-            args.add(paramNode);
-            paramNode = (MqlNode) paramNode.getNextSibling();
-        }
-        
-        FunctionCall c = new FunctionCall(funct, args, null, type, path, inFunctionCall, false, additionalPath.startsWith("actor"), getCurrentClauseType() == WHERE);
-        addFunctionCall(c);
-        
-        // if this is an actor with path, set the type
-        // FIXME maybe not necessary
-        if(c.isActorFunction() && c.getPath().startsWith("actor")) {
-            setActorType(functionCall);
-        } else if(c.isActorFunction() && !c.getPath().startsWith("actor")) {
-            // do something different
-        }
-        
-        return c.getKey();
-    }
-    
+
     /** makes sure we don't override another function call with the same signature but in a different place **/
-    private void addFunctionCall(FunctionCall c) {
+    protected void addFunctionCall(FunctionCall c) {
         while(orderedFunctionCalls.get(c.getKey()) != null) {
             c = c.incrementId();
         }
@@ -357,7 +272,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     }
 
     protected void resolve(AST node) throws SemanticException {
-        if (error != null || !fromEnded || (functionAsInliner && inFunctionCall))
+        if (error != null || !fromEnded)
             return;
         if (node.getType() == HqlSqlTokenTypes.IDENT)
             ((MqlIdentNode) node).resolve();
@@ -524,5 +439,5 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         DataDefinition typeDD = ddp.getDataDefinition(type);
         ((MqlNode)a).setMakType(typeDD.getFieldDefinition(0));
     }
-    
+   
 }

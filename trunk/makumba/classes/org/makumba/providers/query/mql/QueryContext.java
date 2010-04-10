@@ -486,4 +486,12 @@ public class QueryContext {
         
     }
 
+    public Hashtable<String, MqlNode> getProjectionLabelSearch() {
+        return projectionLabelSearch;
+    }
+
+    public LinkedHashMap<String, DataDefinition> getLabels() {
+        return labels;
+    }
+
 }
