@@ -234,7 +234,7 @@ public class MqlNode extends CommonAST {
         makType = fd;
     }
 
-    protected FieldDefinition getMakType() {
+    public FieldDefinition getMakType() {
         return makType;
     }
 

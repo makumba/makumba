@@ -7,25 +7,18 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.hibernate.hql.antlr.HqlTokenTypes;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
-import org.makumba.OQLParseError;
 import org.makumba.commons.MakumbaJspAnalyzer;
-import org.makumba.commons.RegExpUtils;
-import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
-import org.makumba.providers.query.Pass1FunctionInliner;
 
 import antlr.ASTFactory;
-import antlr.RecognitionException;
 import antlr.collections.AST;
 
 /**
@@ -112,7 +105,7 @@ public class MqlQueryAnalysis implements QueryAnalysis {
 
 
     private void init(boolean optimizeJoins, boolean autoLeftJoin, AST parsed) throws MakumbaError {
-        MqlSqlWalker mqlAnalyzer = new MqlSqlWalker(query, insertIn, optimizeJoins, autoLeftJoin, false);
+        MqlSqlWalker mqlAnalyzer = new MqlSqlWalker(query, insertIn, optimizeJoins, autoLeftJoin);
         analyser = mqlAnalyzer;
         try {
             mqlAnalyzer.statement(parsed);
