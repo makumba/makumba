@@ -140,9 +140,8 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
             writeDescr(w, "Value Editor", "Tool for edit-in-place", Configuration.KEY_MAKUMBA_VALUE_EDITOR,
                 Configuration.getMakumbaValueEditorLocation(), request.getContextPath());
             w.println("</table>");
-
+            
             writeSectionHeader(w, "Value", "Controller settings");
-            writeDescr(w, "Database layer", "", Configuration.KEY_DEFAULT_DATABASE_LAYER, "The default database layer to use for Transactions (Makumba or Hibernate)");
             writeDescr(w, "Form reload", "Whether forms shall be reloaded on validation errors",
                 Configuration.KEY_RELOAD_FORM_ON_ERROR, Configuration.getReloadFormOnErrorDefault());
             writeDescr(w, "Clientside validation",
@@ -160,6 +159,14 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
             w.println("</table>");
 
             writeSectionHeader(w, "Value", "Other settings");
+            writeDescr(w, "Database layer", 
+                "The default database layer to use for Transactions (Makumba or Hibernate)", 
+                Configuration.KEY_DEFAULT_DATABASE_LAYER, Configuration.getDefaultDatabaseLayer());
+            writeDescr(w, "Data Definition provider",
+                "The provider used to read and parse the makumba data definitions", 
+                Configuration.KEY_DATADEFINITIONPROVIDER, Configuration.getDataDefinitionProvider());
+            writeDescr(w, "Query Function Inliner provider", "The module inlining MDD functions", 
+                Configuration.KEY_QUERYFUNCTIONINLINER, Configuration.getQueryInliner());
             writeDescr(w, "Repository URL",
                 "The URL prefix to compose links from the source code viewers to the source code repository",
                 Configuration.KEY_REPOSITORY_URL, Configuration.getRepositoryURL());
