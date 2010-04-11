@@ -1,3 +1,5 @@
+select p.languageNames() from test.Person p
+SELECT now() > dateSub(s.getAppDL(), 30, 'day') from best.johnny.Season s
 select s.getAnnDL() from best.johnny.Season s
 select s.getAppBegins() from best.johnny.Season s
 select actor(projman.User) from projman.User mak_actor
