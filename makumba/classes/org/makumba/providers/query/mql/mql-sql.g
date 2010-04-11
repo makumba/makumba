@@ -606,15 +606,16 @@ collectionFunction
 	;
 
 functionCall
-	: #(METHOD_CALL {boolean wasInFunctionCall = inFunctionCall; inFunctionCall=true;} p:pathAsIdent ( #(EXPR_LIST (expr)* ) )? )
+	: #(METHOD_CALL {boolean wasInFunctionCall = inFunctionCall; inFunctionCall=true;} p:pathAsIdent ( #(EXPR_LIST (exprOrSubquery)* ) )? )
 	    // MQL addition: entry point for function inlining
 		{
-		    // if this is an actor set the actor type
-            if(#p.getText().equals("actor")) {
-              setActorType(#functionCall);
-		    }
-		    
+
 		    if(functionAsInliner) {
+    		    // if this is an actor set the actor type
+                if(#p.getText().equals("actor")) {
+                  setActorType(#functionCall);
+    		    }
+		    
 		          String key = inlineFunction(#functionCall, wasInFunctionCall);
 		          if(key == null) {
 		          // we didn't get an inlined function, either because the function does not exist in the MDD
