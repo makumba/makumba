@@ -54,9 +54,10 @@ import org.makumba.db.makumba.MakumbaTransactionProvider;
 import org.makumba.providers.TransactionProvider;
 
 /**
- * mak:info tag
- *
- * @author
+ * Implementation of the mak:info tag, which displays information about the application server environment, the current
+ * session, etc.
+ * 
+ * @author Rudolf Mayer
  * @version $Id$
  */
 public class MakumbaInfoTag extends TagSupport {
@@ -140,6 +141,14 @@ public class MakumbaInfoTag extends TagSupport {
             HttpSession session = request.getSession(true);
             int port = request.getServerPort();
 
+            String tomcatPort = System.getProperty("tomcat.manager.port");
+            if (tomcatPort == null) { // not in system props? try in application properties
+                tomcatPort = projectProperties.getProperty("tomcat.manager.port");
+            }
+            if (StringUtils.isBlank(tomcatPort)) {
+                tomcatPort = String.valueOf(port);
+            }
+
             // if the manager application is installed, and the .\">Unknown</span>
             String activeSessions = null;
             String activeSessionsTitle = null;
@@ -148,9 +157,11 @@ public class MakumbaInfoTag extends TagSupport {
 
             if (serverInfo.indexOf("Tomcat") != -1) { // we have a tomcat
                 if (username != null && password != null) { // we have a user and password
+                    String tomcatLoc = tomcatLocation != null ? tomcatLocation : "";
+                    String managerLocation = "http://localhost:" + tomcatPort + (tomcatLoc.startsWith("/") ? "" : "/")
+                            + tomcatLoc + (tomcatLoc.endsWith("/") ? "" : "/") + "manager/list";
                     try { // --> connect
-                        HttpURLConnection uc = (HttpURLConnection) (new URL("http://localhost:" + port + "/"
-                                + (tomcatLocation != null ? tomcatLocation : "") + "manager/list")).openConnection();
+                        HttpURLConnection uc = (HttpURLConnection) (new URL(managerLocation)).openConnection();
                         uc.setRequestProperty("connection", "close");
                         uc.setRequestProperty("Authorization", "Basic "
                                 + Base64.encode((username + ":" + password).getBytes()));
@@ -160,7 +171,7 @@ public class MakumbaInfoTag extends TagSupport {
                             throw new RuntimeException(uc.getResponseMessage());
                         }
                         if (uc.getContentLength() == 0) {
-                            throw new RuntimeException("content zero");
+                            throw new RuntimeException("zero content received");
                         }
                         StringWriter sw = new StringWriter();
                         InputStreamReader ir = new InputStreamReader(uc.getInputStream());
@@ -181,10 +192,11 @@ public class MakumbaInfoTag extends TagSupport {
                         }
                         activeSessions = list.substring(found, list.indexOf(":", found + 1));
                     } catch (Throwable t) {
-                        out.println(" <p>could connect to /manager/list: " + t.getMessage() + " </p>");
+                        out.println(" <p>could connect to " + managerLocation + ": " + t.getMessage() + " </p>");
                     }
                 } else {
-                    activeSessionsTitle = "Could not authenticate: 'applicationProperties' attribute must specify 'tomcat.manager.user' and 'tomcat.manager.pass' entries!";
+                    activeSessionsTitle = "Could not authenticate: system properties or custom properties "
+                            + applicationProperties + " must specify 'tomcat.manager.user' and 'tomcat.manager.pass'!";
                 }
             } else {
                 activeSessionsTitle = "This feature is currentely only supported for Apache Tomcat!";
@@ -272,13 +284,16 @@ public class MakumbaInfoTag extends TagSupport {
                 MakumbaSystem.getVersion());
             printMakumbaPropertyRow(out, "Default datasource name", dbname);
             printMakumbaPropertyRow(out, "DBSV", MakumbaTransactionProvider.getDatabaseProperty(dbname, "dbsv"));
-            printMakumbaPropertyRow(out, "Size of the connection pool", MakumbaTransactionProvider.getDatabaseProperty(dbname, "resource_pool_size"));
-            printMakumbaPropertyRow(out, "Number of busy connections", MakumbaTransactionProvider.getDatabaseProperty(dbname, "jdbc_connections"));
-            printMakumbaPropertyRow(out, "Unused connections in the pool", MakumbaTransactionProvider.getDatabaseProperty(dbname, "idle_connections"));
-            printMakumbaPropertyRow(out, "SQL engine and version", MakumbaTransactionProvider.getDatabaseProperty(dbname,
-                "sql_engine.name"));
-            printMakumbaPropertyRow(out, "JDBC driver and version", MakumbaTransactionProvider.getDatabaseProperty(dbname,
-                "jdbc_driver.name")
+            printMakumbaPropertyRow(out, "Size of the connection pool", MakumbaTransactionProvider.getDatabaseProperty(
+                dbname, "resource_pool_size"));
+            printMakumbaPropertyRow(out, "Number of busy connections", MakumbaTransactionProvider.getDatabaseProperty(
+                dbname, "jdbc_connections"));
+            printMakumbaPropertyRow(out, "Unused connections in the pool",
+                MakumbaTransactionProvider.getDatabaseProperty(dbname, "idle_connections"));
+            printMakumbaPropertyRow(out, "SQL engine and version", MakumbaTransactionProvider.getDatabaseProperty(
+                dbname, "sql_engine.name"));
+            printMakumbaPropertyRow(out, "JDBC driver and version", MakumbaTransactionProvider.getDatabaseProperty(
+                dbname, "jdbc_driver.name")
                     + " " + MakumbaTransactionProvider.getDatabaseProperty(dbname, "jdbc_driver.version"));
 
             out.println("</table>");
@@ -331,9 +346,9 @@ public class MakumbaInfoTag extends TagSupport {
 
                 out.println("  <tr bgcolor=\"#" + ((line++ % 2 == 0) ? "eeeeee" : "ffffff") + "\">");
                 out.println("    <td valign=\"top\">" + key + ":</td>");
-                Object o= session.getAttribute(key);
-                if(o instanceof Text){
-                    o=((Text)o).toShortString(100);
+                Object o = session.getAttribute(key);
+                if (o instanceof Text) {
+                    o = ((Text) o).toShortString(100);
                 }
                 out.println("    <td><pre>" + o + "</pre></td>");
                 out.println("    <td>" + session.getAttribute(key).getClass().getName() + "</td>");
@@ -351,14 +366,14 @@ public class MakumbaInfoTag extends TagSupport {
     }
 
     private void printProperties(JspWriter out, Properties props) throws IOException {
-        Enumeration enprop = props.propertyNames();
+        Enumeration<String> enprop = (Enumeration<String>) props.propertyNames();
 
         out.println("<table border=\"0\" cellspacing=\"3\" cellpadding=\"3\">");
         out.println("  <tr bgcolor=\"#cccccc\"> <th>Property</th> <th>Value</th> </tr>");
 
         line = 0;
         while (enprop.hasMoreElements()) {
-            String key = (String) enprop.nextElement();
+            String key = enprop.nextElement();
             out.println("  <tr bgcolor=\"#" + ((line++ % 2 == 0) ? "eeeeee" : "ffffff") + "\">");
             out.println("    <td valign=\"top\">" + key + "</td>");
             out.print("    <td><pre>");
