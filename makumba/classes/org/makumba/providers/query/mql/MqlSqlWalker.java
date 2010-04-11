@@ -34,7 +34,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     // simplify FROM section for sets
     // use a subclass for analysing hql
     
-    DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
+    protected DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
 
     ASTFactory fact;
 
@@ -113,12 +113,11 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         }
         orderedFunctionCalls.put(c.getKey(), c);
     }
-    
-    @Override
-    protected void setBooleanType(AST a) {
-        ((MqlNode)a).setMakType(DataDefinitionProvider.getInstance().makeFieldOfType("dummy", "boolean"));
-    }
-    
+   
+    // TODO: whatever happened to inSelect? we should not change so much the original grammar and methods
+    /* (non-Javadoc)
+     * @see org.makumba.providers.query.mql.MqlSqlBaseWalker#processFunction(antlr.collections.AST)
+     */
     @Override
     protected void processFunction(AST functionCall) throws SemanticException {
         // determine parameter types here
@@ -129,7 +128,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         final String name = functionNode.getText();
         final MQLFunctionDefinition functionDef = MQLFunctionRegistry.findMQLFunction(name);
         if (functionDef == null) {
-            throw new ProgrammerError("MQL Function '" + name + "' is not defined as query fragment, nor is it a known MQL function! Please refer to " + LINK_FUNCTION_DEF
+            throw new ProgrammerError("MQL Function '" + name + "' is not a known MQL function! Please refer to " + LINK_FUNCTION_DEF
                     + " for a list of known functions.");
         }
         final MQLFunctionArgument[] args = functionDef.getArguments();
@@ -427,17 +426,5 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
                 && select.getFirstChild().getType() == HqlSqlTokenTypes.NUM_INT;
     }
     
-    @Override
-    protected void setActorType(AST a) {
-        // ( [78] 
-        //   actor [120] 
-        //   exprList [72] 
-        //      . [15] 
-        //         some [120] 
-        //         Type [120] 
-        String type = ASTUtil.getPath(a.getFirstChild().getNextSibling().getFirstChild());
-        DataDefinition typeDD = ddp.getDataDefinition(type);
-        ((MqlNode)a).setMakType(typeDD.getFieldDefinition(0));
-    }
-   
+ 
 }

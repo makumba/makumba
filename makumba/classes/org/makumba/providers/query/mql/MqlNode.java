@@ -227,7 +227,7 @@ public class MqlNode extends CommonAST {
         return null;
     }
 
-    protected void setMakType(FieldDefinition fd) {
+    public void setMakType(FieldDefinition fd) {
         if (fd.getType().equals("ptrIndex")) {
             fd = DataDefinitionProvider.getInstance().makeFieldDefinition("x", "ptr " + fd.getPointedType().getName());
         }
