@@ -353,7 +353,11 @@
 	</target>
 
 
-	<target name="jar" depends="compile, generateTLDs" description="make a jar in ./lib">
+	<target name="jar" description="make a jar in ./lib" depends="compile, generateTLDs">
+		<antcall target="jarOnly" />
+	</target>
+
+	<target name="jarOnly" description="make a jar in ./lib, w/o first compiling and generating the TLD">
 		<mkdir dir="${jar.place}/lib" />
 
 		<antcall target="makeManifest" />
