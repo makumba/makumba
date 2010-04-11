@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Vector;
 
 import org.makumba.DataDefinition;
+import org.makumba.providers.query.mql.ASTUtil;
 import org.makumba.providers.query.mql.FunctionCall;
 import org.makumba.providers.query.mql.MqlNode;
 import org.makumba.providers.query.mql.MqlSqlWalker;
@@ -33,7 +34,6 @@ public class InlinerMqlSqlWalker extends MqlSqlWalker{
         return rootContext;
     }
     
-    @Override
     protected String inlineFunction(AST functionCall, boolean inFunctionCall) throws SemanticException {
         
         final AST functionNode = functionCall.getFirstChild();
@@ -117,10 +117,22 @@ public class InlinerMqlSqlWalker extends MqlSqlWalker{
         return c.getKey();
     }
     
-    protected void resolve(AST node) throws SemanticException {
+    protected void resolve(AST node) throws SemanticException {    
         if(functionAsInliner && inFunctionCall)
             return;
         super.resolve(node);
     }
     
+    protected void setActorType(AST a) {
+        // ( [78] 
+        //   actor [120] 
+        //   exprList [72] 
+        //      . [15] 
+        //         some [120] 
+        //         Type [120] 
+        String type = ASTUtil.getPath(a.getFirstChild().getNextSibling().getFirstChild());
+        DataDefinition typeDD = ddp.getDataDefinition(type);
+        ((MqlNode)a).setMakType(typeDD.getFieldDefinition(0));
+    }
+   
 }
