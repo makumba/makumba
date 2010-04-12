@@ -73,8 +73,6 @@ tokens
 	private int currentTopLevelClauseType;
 	private int currentStatementType;
 
-    protected boolean functionAsInliner = false;
-    
 	public final boolean isSubQuery() {
 		return level > 1;
 	}
@@ -237,11 +235,8 @@ tokens
 
 	protected void setFromEnded() throws SemanticException { }
 	
-	protected String inlineFunction(AST a, boolean inSelect) throws SemanticException { return null; }
-	
 	protected void setBooleanType(AST a) { }
 	
-	protected void setActorType(AST a) { }
 }
 
 // The main statement rule.
@@ -507,7 +502,7 @@ withClause
 	;
 
 whereClause
-// ***** MQL addition: allow functions in where
+// ***** MQL addition (pass2 inliner): allow functions in where
 
 	: #(w:WHERE { handleClauseStart( WHERE ); } b:logicalExprOrFunctionCall) {
 		// Use the *output* AST for the boolean expression!
@@ -516,13 +511,14 @@ whereClause
 	;
 
 logicalExpr
-// ***** MQL addition: allow functions as logical expression
+// ***** MQL addition (pass2 inliner): allow functions as logical expression
 	: #(AND logicalExprOrFunctionCall logicalExprOrFunctionCall)
 	| #(OR logicalExprOrFunctionCall logicalExprOrFunctionCall)
 	| #(NOT logicalExprOrFunctionCall)
 	| comparisonExpr
 	;
 
+// ***** MQL addition (pass2 inliner) new rule, see above
 logicalExprOrFunctionCall
     : logicalExpr
     | f:functionCall { setBooleanType(#f); }
@@ -591,7 +587,7 @@ arithmeticExpr
 	;
 
 caseExpr
-// ***** MQL addition: allowing function calls in case when ... statements
+// ***** MQL addition (pass2 inliner): allowing function calls in case when ... statements
 	: #(CASE { inCase = true; } (#(WHEN logicalExprOrFunctionCall expr))+ (#(ELSE expr))?) { inCase = false; }
 	| #(CASE2 { inCase = true; } expr (#(WHEN expr expr))+ (#(ELSE expr))?) { inCase = false; }
 	;
@@ -606,29 +602,9 @@ collectionFunction
 	;
 
 functionCall
-	: #(METHOD_CALL {boolean wasInFunctionCall = inFunctionCall; inFunctionCall=true;} p:pathAsIdent ( #(EXPR_LIST (exprOrSubquery)* ) )? )
-	    // MQL addition: entry point for function inlining
-		{
-
-		    if(functionAsInliner) {
-    		    // if this is an actor set the actor type
-                if(#p.getText().equals("actor")) {
-                  setActorType(#functionCall);
-    		    }
-		    
-		          String key = inlineFunction(#functionCall, wasInFunctionCall);
-		          if(key == null) {
-		          // we didn't get an inlined function, either because the function does not exist in the MDD
-		          // or because this is a function call on a MQL function
-		          // so we do nothing and leave the return AST as it is
-		          } else {
-		              key = "methodCallPlaceholder_" + key;
-		              #functionCall = #[QUOTED_STRING, key];
-		          }
-		    } else {
-		      processFunction(#functionCall);
-            }
-		} {inFunctionCall=false;}
+// **** MQL addition (temporarily at least) allow subqueries as function arguments
+	: #(METHOD_CALL {inFunctionCall=true;} p:pathAsIdent ( #(EXPR_LIST (exprOrSubquery)* ) )? )
+		{ processFunction(#functionCall); } {inFunctionCall=false;}
 	| #(AGGREGATE aggregateExpr )
 	;
 
@@ -682,7 +658,7 @@ addrExpr! [ boolean root ]
 
 addrExprLhs
 	: addrExpr [ false ]
-	   // ****** MQL addition: accept function calls for actors, to be able to have actor(Type).field
+	   // ****** MQL addition (pass2 inliner): accept function calls for actors, to be able to have actor(Type).field
     | f:functionCall
     ;
 
@@ -697,15 +673,7 @@ propertyRef!
 	: #(d:DOT lhs:propertyRefLhs rhs:propertyName )	{
 		// This gives lookupProperty() a chance to transform the tree to process collection properties (.elements, etc).
 		#propertyRef = #(#d, #lhs, #rhs);
-		
-		// ****** MQL addition: we don't lookup the properties if we have a function call
-		boolean isFunctionCall = (#lhs != null && #lhs.getText().startsWith("methodCallPlaceholder_"));
-		if(functionAsInliner && !isFunctionCall) {
-		  #propertyRef = lookupProperty(#propertyRef,false,true);
-		} else if(!functionAsInliner) {
-          #propertyRef = lookupProperty(#propertyRef,false,true);
-		}
-		
+		#propertyRef = lookupProperty(#propertyRef,false,true);
 	}
 	|
 	p:identifier {
@@ -725,7 +693,7 @@ propertyRef!
 
 propertyRefLhs
 	: propertyRef
-	   // MQL addition: actor(Type).field is recognized as propertyRef, so we add functionCalls here
+	   // ***** MQL addition (pass2 inliner): actor(Type).field is recognized as propertyRef, so we add functionCalls here
 	   // we can't add it in the propertyRef rule because that leads to a non-determinism with the functionCall of the selectExpr
 	   // this might become a problem if we want to allow actor().function()
     | f:functionCall
