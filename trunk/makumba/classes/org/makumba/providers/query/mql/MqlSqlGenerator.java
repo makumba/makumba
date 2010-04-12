@@ -1,8 +1,12 @@
 package org.makumba.providers.query.mql;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
 import java.util.logging.Level;
 
 import org.makumba.commons.NameResolver;
+import org.makumba.commons.NameResolver.TextList;
 
 import antlr.RecognitionException;
 import antlr.collections.AST;
@@ -19,6 +23,10 @@ import antlr.collections.AST;
 public class MqlSqlGenerator extends MqlSqlGeneratorBase {
 
     NameResolver.TextList text = new NameResolver.TextList();
+
+    private Stack<NameResolver.TextList> textListStack = new Stack<NameResolver.TextList>();
+
+    private Stack<MQLFunctionDefinition> functionStack = new Stack<MQLFunctionDefinition>();
 
     @Override
     protected void out(String s) {
@@ -116,4 +124,66 @@ public class MqlSqlGenerator extends MqlSqlGeneratorBase {
     // }
     // }
 
+    public static class FunctionArgumentWriter extends TextList {
+
+        private int argInd;
+
+        private final List<String> args = new ArrayList<String>(3);
+
+        public List<String> getArgs() {
+            return args;
+        }
+
+        @Override
+        public TextList append(Object o) {
+            // FIXME: we should probably use the methods in the super class for processing the argument
+            if (argInd == args.size()) {
+                args.add(String.valueOf(o));
+            } else {
+                args.set(argInd, args.get(argInd) + o);
+            }
+            return this;
+        }
+
+        public TextList commaBetweenParameters(String comma) {
+            ++argInd;
+            return this;
+        }
+
+    }
+
+    @Override
+    protected void beginFunctionTemplate(AST m, AST i) {
+        String name = i.getText();
+        MQLFunctionDefinition function = MQLFunctionRegistry.findMQLFunction(name);
+        if (function == null) { // this should actually never happen, as all our functions are defined...
+            super.beginFunctionTemplate(m, i);
+        } else {
+            // this function has a class that will render it -> redirect output and catch the arguments
+            textListStack.push(text);
+            functionStack.push(function);
+            text = new FunctionArgumentWriter();
+        }
+    }
+
+    @Override
+    protected void endFunctionTemplate(AST m) {
+        if (textListStack.isEmpty()) { // this should actually never happen, as all our functions are defined...
+            super.endFunctionTemplate(m);
+        } else {
+            FunctionArgumentWriter w = (FunctionArgumentWriter) text;
+            text = textListStack.pop();
+            MQLFunctionDefinition template = functionStack.pop();
+            out(template.render(w.getArgs())); // render the function
+        }
+    }
+
+    @Override
+    protected void commaBetweenParameters(String comma) {
+        if (text instanceof FunctionArgumentWriter) {
+            ((FunctionArgumentWriter) text).commaBetweenParameters(comma);
+        } else {
+            super.commaBetweenParameters(comma);
+        }
+    }
 }
