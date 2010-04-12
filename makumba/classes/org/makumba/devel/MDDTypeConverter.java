@@ -122,7 +122,7 @@ public class MDDTypeConverter {
                         fileContents[i] = sNew;
                         FileUtils.writeLines(f, encoding, Arrays.asList(fileContents));
                         // clean the caches, so we read the MDD again
-                        NamedResources.cleanCaches();
+                        NamedResources.cleanupStaticCaches();
                     }
                 }
                 break;

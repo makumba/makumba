@@ -24,6 +24,7 @@
 package org.makumba.commons;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
 
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletRequest;
@@ -32,6 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.makumba.db.makumba.UniquenessServlet;
 import org.makumba.devel.DevelUtils;
 import org.makumba.devel.relations.RelationCrawlerTool;
@@ -71,11 +73,37 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
             new RelationCrawlerTool().doPost(request, response);
             return false;
         } else if (path.startsWith(Configuration.getMakumbaCacheCleanerLocation())) {
-            // reload the cache
-            java.util.logging.Logger.getLogger("org.makumba.system").info(
-                "Cleaning makumba caches, triggered from Makumba Tools");
-            NamedResources.cleanCaches();
-            DevelUtils.printResponseMessage(res, "Makumba Cache Cleaner", "<br/><br/>Cleaned Makumba caches.");
+            // check if there is a specific cache
+            String cacheName = request.getParameter("cacheName");
+            ArrayList<String> cacheNames = NamedResources.getActiveCacheNames();
+            cacheNames.add("all");
+            if (StringUtils.isBlank(cacheName) || !cacheNames.contains(cacheName)) {
+                // print a list of all caches to clean
+                PrintWriter w = res.getWriter();
+                res.setContentType("text/html");
+                DevelUtils.writePageBegin(w);
+                DevelUtils.writeTitleAndHeaderEnd(w, "Makumba Cache Cleaner");
+                DevelUtils.printPageHeader(w, "Makumba Cache Cleaner");
+                w.println("</table>");
+                w.println("<h3>Select the cache to clean</h3>");
+                for (String string : cacheNames) {
+                    w.println("<a href=\"?cacheName=" + string + "\">" + string + "</a><br/>");
+                }
+                DevelUtils.writePageEnd(w);
+                w.close();
+            } else if (cacheName.equals("all")) {
+                // reload the complete cache
+                java.util.logging.Logger.getLogger("org.makumba.system").info(
+                    "Cleaning makumba caches, triggered from Makumba Tools");
+                NamedResources.cleanupStaticCaches();
+                DevelUtils.printResponseMessage(res, "Makumba Cache Cleaner", "<br/><br/>Cleaned Makumba caches.");
+            } else {
+                // check if the cache type exists
+                NamedResources.cleanStaticCache(cacheName);
+                DevelUtils.printResponseMessage(res, "Makumba Cache Cleaner", "<br/><br/>Cleaned Makumba cache '"
+                        + cacheName + "'.");
+            }
+
             return false;
         } else if (path.startsWith(Configuration.getMakumbaToolsLocation())) {
             // redirect if we have a unknown path
@@ -117,15 +145,17 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
                 "Checks creation the status of foreign and unique keys and displays broken references",
                 Configuration.KEY_REFERENCE_CHECKER, Configuration.getReferenceCheckerLocation(),
                 request.getContextPath());
-            writeDescr(w, "Relation Crawler", "Runs a detection of file relations between JSP, MDD and Java Business Logics", Configuration.KEY_RELATION_CRAWLER,
-                Configuration.getMakumbaRelationCrawlerLocation(), request.getContextPath());
+            writeDescr(w, "Relation Crawler",
+                "Runs a detection of file relations between JSP, MDD and Java Business Logics",
+                Configuration.KEY_RELATION_CRAWLER, Configuration.getMakumbaRelationCrawlerLocation(),
+                request.getContextPath());
             writeDescr(w, "Makumba Cache Cleaner",
                 "Cleans all internal Makumba caches, like queries, data-definitions.<br/>"
                         + "Useful during development, to avoid having to restart the servlet container.",
                 Configuration.KEY_MAKUMBA_CACHE_CLEANER, Configuration.getMakumbaCacheCleanerLocation(),
                 request.getContextPath());
             w.println("</table>");
-            
+
             writeSectionHeader(w, "Location", "Makumba servlets");
             writeDescr(w, "Download", "Download of file-type data", Configuration.KEY_MAKUMBA_DOWNLOAD,
                 Configuration.getMakumbaDownloadLocation(), request.getContextPath());
@@ -140,7 +170,7 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
             writeDescr(w, "Value Editor", "Tool for edit-in-place", Configuration.KEY_MAKUMBA_VALUE_EDITOR,
                 Configuration.getMakumbaValueEditorLocation(), request.getContextPath());
             w.println("</table>");
-            
+
             writeSectionHeader(w, "Value", "Controller settings");
             writeDescr(w, "Form reload", "Whether forms shall be reloaded on validation errors",
                 Configuration.KEY_RELOAD_FORM_ON_ERROR, Configuration.getReloadFormOnErrorDefault());
@@ -159,13 +189,13 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
             w.println("</table>");
 
             writeSectionHeader(w, "Value", "Other settings");
-            writeDescr(w, "Database layer", 
-                "The default database layer to use for Transactions (Makumba or Hibernate)", 
+            writeDescr(w, "Database layer",
+                "The default database layer to use for Transactions (Makumba or Hibernate)",
                 Configuration.KEY_DEFAULT_DATABASE_LAYER, Configuration.getDefaultDatabaseLayer());
             writeDescr(w, "Data Definition provider",
-                "The provider used to read and parse the makumba data definitions", 
+                "The provider used to read and parse the makumba data definitions",
                 Configuration.KEY_DATADEFINITIONPROVIDER, Configuration.getDataDefinitionProvider());
-            writeDescr(w, "Query Function Inliner provider", "The module inlining MDD functions", 
+            writeDescr(w, "Query Function Inliner provider", "The module inlining MDD functions",
                 Configuration.KEY_QUERYFUNCTIONINLINER, Configuration.getQueryInliner());
             writeDescr(w, "Repository URL",
                 "The URL prefix to compose links from the source code viewers to the source code repository",
