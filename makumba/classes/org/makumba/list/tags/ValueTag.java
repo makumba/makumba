@@ -225,7 +225,7 @@ public class ValueTag extends GenericListTag {
                 parentObjectKey.add(parentExpr);
                 ((ValueComputer) pageCache.retrieve(MakumbaJspAnalyzer.VALUE_COMPUTERS, parentObjectKey)).doEndAnalyze(pageCache);
             }
-            pageCache.cacheSetValues(NEEDED_RESOURCES, new String[] { "makumba-editinplace.js" });
+            pageCache.cacheNeededResources(new String[] { "makumba-editinplace.js" });
         }
 
         if (var != null)

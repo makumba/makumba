@@ -29,9 +29,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.collections.set.ListOrderedSet;
+import org.makumba.forms.tags.InputTag;
 
 /**
  * Cache for the page analysis. It is passed along during analysis and holds useful caches. This class provides two
@@ -160,6 +162,12 @@ public class PageCache {
         hashSet.addAll(Arrays.asList(value));
     }
 
+    public void cacheNeededResources(Object[] value) {
+        Logger.getLogger("org.makumba.analyser.pagecache").finest(
+            "Caching needed resource in pageCache " + hashCode() + ": " + Arrays.toString(value));
+        cacheSetValues(InputTag.NEEDED_RESOURCES, value);
+    }
+    
     /** Retrieves a set from a specific set cache. */
     public ListOrderedSet retrieveSetValues(String cacheName) {
         return setCaches.get(cacheName);
