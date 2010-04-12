@@ -148,6 +148,7 @@ doesSpeak(char language) { ( case when exists(FROM speaks s WHERE s.name=languag
 doesSpeak2(char language) { ( case when exists(FROM speaks s WHERE s.name=language) then (SELECT s.name FROM speaks s WHERE s.name=language) else 'hell no!' end )  }
 languageCheck() { concat('English? ', doesSpeak('English'), '; German? ', doesSpeak('German') ) } 
 
+#getLanguage2(char code) { s.name FROM speaks s WHERE s.isoCode=code }
 getLanguage(char code) { ( SELECT distinct s.name FROM speaks s WHERE s.isoCode=code ) }
 languageNames() { concat(getLanguage('en'), ' ') } 
 
