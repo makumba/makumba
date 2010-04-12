@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.makumba.OQLParseError;
 import org.makumba.commons.StringUtils;
+import org.makumba.commons.NameResolver.TextList;
 
 /**
  * This class represents an MQL function, with it's name, return type and required arguments. This definition is then
@@ -169,12 +170,18 @@ public class MQLFunctionDefinition {
      * functions that need to modify the name, the argument order, number of arguments, etc., this method provides an
      * entry point to rewrite it (possibly in a specific SQL dialect).
      */
-    public String render(List<String> args) {
-        StringBuilder buf = new StringBuilder();
-        buf.append(getName() + "(");
-        buf.append(StringUtils.concatAsString(args, ", "));
-        buf.append(')');
-        return buf.toString();
+    public TextList render(List<TextList> args) {
+        TextList textList = new TextList();
+        textList.append(getName() + "(");
+        for (int i = 0; i < args.size(); i++) {
+            textList.append(args.get(i));
+            if (i + 1 < args.size()) {
+                textList.append(",");
+            }
+        }
+        textList.append(StringUtils.concatAsString(args, ", "));
+        textList.append(')');
+        return textList;
     }
 
 }
@@ -189,26 +196,26 @@ class DateArithmeticFunction extends MQLFunctionDefinition {
     }
 
     @Override
-    public String render(List<String> args) {
+    public TextList render(List<TextList> args) {
         // FIXME: this is mysql specific; other dialects should be supported
-        StringBuilder buf = new StringBuilder();
-        buf.append(sqlName + "(");
+        TextList textList = new TextList();
+        textList.append(sqlName + "(");
         if (args.size() == 2) {
-            buf.append(args.get(0)).append(", INTERVAL ").append(args.get(1)).append(" second");
+            textList.append(args.get(0)).append(", INTERVAL ").append(args.get(1)).append(" second");
         } else if (args.size() == 3) {
-            String timeUnit = args.get(2).trim();
+            String timeUnit = args.get(2).toString().trim();
             if (timeUnit.startsWith("'")) {
                 timeUnit = timeUnit.substring(1);
             }
             if (timeUnit.endsWith("'")) {
                 timeUnit = timeUnit.substring(0, timeUnit.length() - 1);
             }
-            buf.append(args.get(0)).append(", INTERVAL ").append(args.get(1)).append(" ").append(timeUnit);
+            textList.append(args.get(0)).append(", INTERVAL ").append(args.get(1)).append(" ").append(timeUnit);
         } else { // doesn't happen
             throw throwUnexpectedArguments(args.size());
         }
-        buf.append(')');
-        return buf.toString();
+        textList.append(')');
+        return textList;
     }
 }
 
@@ -229,7 +236,7 @@ class NowFunction extends MQLFunctionDefinition {
         super("now", "date", new String[] {});
     }
 
-    public String render(java.util.List<String> args) {
+    public TextList render(List<TextList> args) {
         // FIXME: MySQL specific
         return super.render(args);
     }

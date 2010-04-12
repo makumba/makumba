@@ -128,9 +128,9 @@ public class MqlSqlGenerator extends MqlSqlGeneratorBase {
 
         private int argInd;
 
-        private final List<String> args = new ArrayList<String>(3);
+        private final List<TextList> args = new ArrayList<TextList>(3);
 
-        public List<String> getArgs() {
+        public List<TextList> getArgs() {
             return args;
         }
 
@@ -138,9 +138,11 @@ public class MqlSqlGenerator extends MqlSqlGeneratorBase {
         public TextList append(Object o) {
             // FIXME: we should probably use the methods in the super class for processing the argument
             if (argInd == args.size()) {
-                args.add(String.valueOf(o));
+                TextList textList = new TextList();
+                textList.append(o);
+                args.add(textList);
             } else {
-                args.set(argInd, args.get(argInd) + o);
+                args.get(argInd).append(o);
             }
             return this;
         }
@@ -174,7 +176,7 @@ public class MqlSqlGenerator extends MqlSqlGeneratorBase {
             FunctionArgumentWriter w = (FunctionArgumentWriter) text;
             text = textListStack.pop();
             MQLFunctionDefinition template = functionStack.pop();
-            out(template.render(w.getArgs())); // render the function
+            text.append(template.render(w.getArgs())); // render the function
         }
     }
 
