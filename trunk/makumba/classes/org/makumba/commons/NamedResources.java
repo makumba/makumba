@@ -84,23 +84,34 @@ public class NamedResources implements java.io.Serializable {
         allCaches = new Vector<WeakReference<NamedResources>>();
     }
 
-	/** Clean all static caches, so their content will be re-initialized when needed.
-	  * This method is a possible alternative to cleanCaches() which beaks separation of concerns
-	*/
-    static public void cleanupStaticCaches() {
-        for (int i = 0; i < staticCaches.size(); i++) {
-            staticCaches.get(i).close();
-        }
-    }
-
-    /** cleans all caches */
-    public static void cleanCaches() {
+    /** Clean all static caches, so their content will be re-initialized when needed. */
+    public static void cleanupStaticCaches() {
         for (NamedResources r : staticCaches) {
             String name = r.getName();
             r.close();
             java.util.logging.Logger.getLogger("org.makumba.system").fine("Cleaned '" + name + "' cache.");
         }
 
+    }
+
+    /** Cleans the cache with the specified name */
+    public static void cleanupStaticCache(String cacheName) {
+        for (NamedResources r : staticCaches) {
+            String name = r.getName();
+            if (name.equals(cacheName)) {
+                r.close();
+                java.util.logging.Logger.getLogger("org.makumba.system").fine("Cleaned '" + name + "' cache.");
+            }
+        }
+    }
+
+    /** Returns the names of the currently used caches */
+    public static ArrayList<String> getActiveCacheNames() {
+        ArrayList<String> result = new ArrayList<String>();
+        for (NamedResources r : staticCaches) {
+            result.add(r.getName());
+        }
+        return result;
     }
 
     /**
@@ -304,12 +315,12 @@ public class NamedResources implements java.io.Serializable {
             }
         }
     }
-    
+
     /**
-     * Closes each contained object by calling its close() method, if any, 
-     * then de-references all contained objects so they can be garbage collected. 
+     * Closes each contained object by calling its close() method, if any, then de-references all contained objects so
+     * they can be garbage collected.
      */
-    public void close(){
+    public void close() {
         closeContent();
         values.clear();
     }
