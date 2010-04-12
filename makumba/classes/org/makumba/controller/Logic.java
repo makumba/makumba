@@ -934,17 +934,29 @@ public class Logic {
             throw new LogicInvocationError(g);
         } catch (InvocationTargetException f) {
             db.rollback();
-            Throwable g = f.getTargetException();
-            if (g instanceof LogicException) {
-                throw (LogicException) g;
-            } else if (g instanceof InvalidValueException) {
-                // pack the exception in a CompositeValidationException, cause that will be treated later on
-                throw new CompositeValidationException((InvalidValueException) g);
-            } else if (g instanceof CompositeValidationException) {
-                // just propagate the exception, will be treated later on
-                throw (CompositeValidationException) g;
-            }
-            throw new LogicInvocationError(g);
+            return handleException(f.getTargetException());
         }
+    }
+
+    /**
+     * Handles an exception caught while processing form operations. Does the following operations:
+     * <ul>
+     * <li>passes on {@link LogicException}</li>
+     * <li>passes on {@link InvalidValueException}</li>
+     * <li>Wraps a {@link InvalidValueException} into a {@link CompositeValidationException} and passes it on</li>
+     * <li>Wraps any other {@link Throwable} into a {@link LogicInvocationError}</li>
+     * </ul>
+     */
+    private static Pointer handleException(Throwable g) throws LogicException, LogicInvocationError {
+        if (g instanceof LogicException) {
+            throw (LogicException) g;
+        } else if (g instanceof InvalidValueException) {
+            // pack the exception in a CompositeValidationException, cause that will be treated later on
+            throw new CompositeValidationException((InvalidValueException) g);
+        } else if (g instanceof CompositeValidationException) {
+            // just propagate the exception, will be treated later on
+            throw (CompositeValidationException) g;
+        }
+        throw new LogicInvocationError(g);
     }
 }
