@@ -64,23 +64,31 @@ public class NameResolver {
         
         StringBuffer lastBuffer;
         public TextList append(Object o){
+            
             if(o instanceof String){
+                // optimization: we want to have only one StringBuffer in between two non-Strings
+                // if last time we had a string
                 if(lastBuffer!=null)
+                    // we add to the previous buffer
                     lastBuffer.append(o);
                 else{
+                    // otherwise we make a new buffer
                     lastBuffer= new StringBuffer();
+                    // and add to it
                     lastBuffer.append(o);
+                    // and add the buffer to the content
                     content.add(lastBuffer);
                 }    
                 return this;
             }
+            // the string buffer stops here
             lastBuffer=null;
             if(o instanceof DataDefinition){
                 Resolvable r= new Resolvable();
                 r.dd=(DataDefinition)o;
                 o=r;
             }
-                content.add(o);
+            content.add(o);
             return this;
         }
         
