@@ -118,10 +118,6 @@ public class MakumbaInfoTag extends TagSupport {
             String password = System.getProperty("tomcat.manager.pass");
             if (password == null) { // not in system props? try in application properties
                 password = projectProperties.getProperty("tomcat.manager.pass");
-                if (password != null) {
-                    projectProperties.remove("tomcat.manager.pass"); // we don't want to display the password to
-                    // everyone
-                }
             }
 
             String hotspot = System.getProperty("tomcat.jvm.hotspot");
@@ -378,7 +374,9 @@ public class MakumbaInfoTag extends TagSupport {
             out.println("    <td valign=\"top\">" + key + "</td>");
             out.print("    <td><pre>");
             if (key != null) {
-                if (key.endsWith("path")) {
+                if (key.equals("tomcat.manager.pass")) { // we don't want to display the password to everyone
+                    out.print("*******");
+                } else if (key.endsWith("path")) {
                     out.print(props.getProperty(key).replace(sysprops.getProperty("path.separator").charAt(0), '\n'));
                 } else if (((String) props.getProperty(key)).startsWith("http://")) {
                     out.print("<a href=" + props.getProperty(key) + ">" + props.getProperty(key) + "</a>");
