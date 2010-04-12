@@ -96,6 +96,9 @@ public class MQLFunctionRegistry {
         MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.dateToIntFunction("quarter"));
         MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.dateToIntFunction("to_days"));
 
+        // simple string-to-date functions
+        MQLFunctionRegistry.mqlFunctions.add(new MQLFunctionDefinition("str_to_date", "date", "char[255]", "char[255]"));
+
         // date-to-int functions with more arguments
         MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.toIntFunction("datediff", "date", "date"));
 
@@ -111,14 +114,15 @@ public class MQLFunctionRegistry {
         MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.dateToDateFunction("last_day"));
 
         // to-date functions with no arguments
+        MQLFunctionRegistry.mqlFunctions.add(new NowFunction());
+        // FIXME: the functions below are MySQL specific, and are deprecated; should be removed at some later time
         MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.toDateFunction("current_date"));
         MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.toDateFunction("current_time"));
         MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.toDateFunction("current_timestamp"));
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.toDateFunction("now"));
 
         // to-date functions with more arguments
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.toDateFunction("date_add", "char[255]", "date"));
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.toDateFunction("date_sub", "char[255]", "date"));
+        MQLFunctionRegistry.mqlFunctions.add(new DateAddFunction());
+        MQLFunctionRegistry.mqlFunctions.add(new DateSubFunction());
         MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.toDateFunction("makedate", "date", "date"));
         MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.toDateFunction("maketime", "date", "date", "date"));
 
