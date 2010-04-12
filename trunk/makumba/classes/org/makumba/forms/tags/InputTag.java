@@ -234,13 +234,12 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         // if we have a date type and the calendarEditor is requested, request the inclusion of the needed resources
         if ((dataTypeIsDate || contextTypeIsDate) && calendarEditor
                 && !StringUtils.equals(params.get("type"), "hidden")) {
-            pageCache.cacheSetValues(NEEDED_RESOURCES,
-                MakumbaSystem.getCalendarProvider().getNeededJavaScriptFileNames());
+            pageCache.cacheNeededResources(MakumbaSystem.getCalendarProvider().getNeededJavaScriptFileNames());
         }
 
         // if we use the JS set editor, request the inclusion of its resources
         if (StringUtils.equals(params.get("type"), "seteditor")) {
-            pageCache.cacheSetValues(NEEDED_RESOURCES, new String[] { "makumbaSetChooser.js" });
+            pageCache.cacheNeededResources(new String[] { "makumbaSetChooser.js" });
             if (org.apache.commons.lang.StringUtils.isBlank(getForm().formName)) {
                 throw new ProgrammerError(
                         "For using 'seteditor' input types, you have to give the encosing form a name, using name=\"  \"!");
@@ -249,8 +248,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
 
         // if we use auto-complete, request the inclusion of its resources
         if (this.autoComplete != null && this.autoComplete.equals("true")) {
-            pageCache.cacheSetValues(NEEDED_RESOURCES, new String[] { "prototype.js", "scriptaculous.js",
-                    "makumba-autocomplete.js" });
+            pageCache.cacheNeededResources(new String[] { "prototype.js", "scriptaculous.js", "makumba-autocomplete.js" });
         }
 
         super.doEndAnalyze(pageCache);

@@ -225,7 +225,7 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
         }
 
         // request needed resources
-        pageCache.cacheSetValues(NEEDED_RESOURCES, new String[] { "makumba.css", "prototype.js", "scriptaculous.js",
+        pageCache.cacheNeededResources(new String[] { "makumba.css", "prototype.js", "scriptaculous.js",
                 "makumba-ajax.js" });
 
         // check if we are in a mak:list and if we want to uniquely identify sections of the list via an iterationLabel

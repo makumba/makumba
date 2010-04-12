@@ -389,12 +389,11 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         //pageCache.cacheSetValues(NEEDED_RESOURCES, new String[] { "makumba.css" });
         
         if (StringUtils.equalsAny(clientSideValidation, new String[] { "true", "live" })) {
-            pageCache.cacheSetValues(NEEDED_RESOURCES,
-                MakumbaSystem.getClientsideValidationProvider().getNeededJavaScriptFileNames());
+            pageCache.cacheNeededResources(MakumbaSystem.getClientsideValidationProvider().getNeededJavaScriptFileNames());
         }
         
         if(triggerEvent != null) {
-            pageCache.cacheSetValues(NEEDED_RESOURCES, new String[] { "makumba-ajax.js" });
+            pageCache.cacheNeededResources(new String[] { "makumba-ajax.js" });
         }
 
         
