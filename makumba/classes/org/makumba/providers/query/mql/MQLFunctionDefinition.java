@@ -23,6 +23,10 @@
 
 package org.makumba.providers.query.mql;
 
+import java.util.List;
+
+import org.makumba.OQLParseError;
+import org.makumba.commons.StringUtils;
 
 /**
  * This class represents an MQL function, with it's name, return type and required arguments. This definition is then
@@ -32,6 +36,8 @@ package org.makumba.providers.query.mql;
  * @version $Id: MQLFunction.java,v 1.1 Dec 20, 2008 1:19:31 AM rudi Exp $
  */
 public class MQLFunctionDefinition {
+
+    protected int argumentCount = 0;
 
     public static MQLFunctionDefinition dateToDateFunction(String name) {
         return new MQLFunctionDefinition(name, "date", "date");
@@ -151,6 +157,80 @@ public class MQLFunctionDefinition {
                 params.append("]");
             }
         }
-        return params.append(")").toString();
+        return params.append(") => ").append(getReturnType()).toString();
+    }
+
+    public OQLParseError throwUnexpectedArguments(int argumentCount) {
+        return new OQLParseError("Unexpected argument count (" + argumentCount + ") while translating function " + this);
+    }
+
+    /**
+     * This default implementation just renders the function by concatenating the function name and all arguments; for
+     * functions that need to modify the name, the argument order, number of arguments, etc., this method provides an
+     * entry point to rewrite it (possibly in a specific SQL dialect).
+     */
+    public String render(List<String> args) {
+        StringBuilder buf = new StringBuilder();
+        buf.append(getName() + "(");
+        buf.append(StringUtils.concatAsString(args, ", "));
+        buf.append(')');
+        return buf.toString();
+    }
+
+}
+
+class DateArithmeticFunction extends MQLFunctionDefinition {
+    protected String sqlName;
+
+    protected DateArithmeticFunction(String name, String sqlName) {
+        super(name, "date", new MQLFunctionArgument("date"), new MQLFunctionArgument("date"), new MQLFunctionArgument(
+                "char", true, false));
+        this.sqlName = sqlName;
+    }
+
+    @Override
+    public String render(List<String> args) {
+        // FIXME: this is mysql specific; other dialects should be supported
+        StringBuilder buf = new StringBuilder();
+        buf.append(sqlName + "(");
+        if (args.size() == 2) {
+            buf.append(args.get(0)).append(", INTERVAL ").append(args.get(1)).append(" second");
+        } else if (args.size() == 3) {
+            String timeUnit = args.get(2).trim();
+            if (timeUnit.startsWith("'")) {
+                timeUnit = timeUnit.substring(1);
+            }
+            if (timeUnit.endsWith("'")) {
+                timeUnit = timeUnit.substring(0, timeUnit.length() - 1);
+            }
+            buf.append(args.get(0)).append(", INTERVAL ").append(args.get(1)).append(" ").append(timeUnit);
+        } else { // doesn't happen
+            throw throwUnexpectedArguments(args.size());
+        }
+        buf.append(')');
+        return buf.toString();
+    }
+}
+
+class DateAddFunction extends DateArithmeticFunction {
+    public DateAddFunction() {
+        super("dateAdd", "date_add");
+    }
+}
+
+class DateSubFunction extends DateArithmeticFunction {
+    public DateSubFunction() {
+        super("dateSub", "date_sub");
+    }
+}
+
+class NowFunction extends MQLFunctionDefinition {
+    public NowFunction() {
+        super("now", "date", new String[] {});
+    }
+
+    public String render(java.util.List<String> args) {
+        // FIXME: MySQL specific
+        return super.render(args);
     }
 }
