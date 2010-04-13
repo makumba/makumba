@@ -143,7 +143,7 @@ public class Pass1FunctionInliner {
                 // and then be sure that the respective query fragment is ok
                 new MqlQueryAnalysis(queryFragment, false, false);
             }catch(Throwable t){
-                throw new ProgrammerError(t, "Error parsing function "+func.getName() +" from MDD "+ calleeType);
+                throw new ProgrammerError(t, "Error parsing function "+func.getName() +" from MDD "+ calleeType+"\n"+t.getMessage());
             }
             AST funcAST = 
                 QueryAnalysisProvider
