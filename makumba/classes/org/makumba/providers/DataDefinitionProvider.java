@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
+import org.makumba.ConfigurationError;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionParseError;
 import org.makumba.FieldDefinition;
@@ -50,6 +51,11 @@ public abstract class DataDefinitionProvider implements SingletonHolder {
      * Gives an instance of a {@link DataDefinitionProvider}.
      */
     public static DataDefinitionProvider getInstance() {
+        if (providerInstances.get(Configuration.getDataDefinitionProvider()) == null) {
+            throw new ConfigurationError("Unknwon data definition provider '"
+                    + Configuration.getDataDefinitionProvider() + "', eligible values are: "
+                    + providerInstances.keySet());
+        }
         return providerInstances.get(Configuration.getDataDefinitionProvider());
     }
     
