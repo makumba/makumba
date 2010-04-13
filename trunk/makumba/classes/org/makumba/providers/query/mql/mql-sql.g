@@ -588,7 +588,8 @@ arithmeticExpr
 
 caseExpr
 // ***** MQL addition (pass2 inliner): allowing function calls in case when ... statements
-	: #(CASE { inCase = true; } (#(WHEN logicalExprOrFunctionCall expr))+ (#(ELSE expr))?) { inCase = false; }
+// ***** MQL addition: allowing subqueries in THEN and ELSE
+	: #(CASE { inCase = true; } (#(WHEN logicalExprOrFunctionCall exprOrSubquery))+ (#(ELSE exprOrSubquery))?) { inCase = false; }
 	| #(CASE2 { inCase = true; } expr (#(WHEN expr expr))+ (#(ELSE expr))?) { inCase = false; }
 	;
 
