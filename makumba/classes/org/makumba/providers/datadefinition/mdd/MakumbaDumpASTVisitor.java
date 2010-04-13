@@ -24,13 +24,17 @@ public class MakumbaDumpASTVisitor implements ASTVisitor {
 
     protected int level = 0;
 
-    private void tabs() {
+    private StringBuilder tabs() {
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < level; i++) {
-            System.out.print("   ");
+            sb.append("   ");
         }
+        return sb;
     }
 
-    public void visit(AST node) {
+    public String toString(AST node) {
+        StringBuilder sb = new StringBuilder();
+
         // Flatten this level of the tree if it has no children
         boolean flatten = /* true */false;
         AST node2;
@@ -43,21 +47,21 @@ public class MakumbaDumpASTVisitor implements ASTVisitor {
 
         for (node2 = node; node2 != null; node2 = node2.getNextSibling()) {
             if (!flatten || node2 == node) {
-                tabs();
+                sb.append(tabs());
             }
             if (node2.getText() == null) {
-                System.out.print("nil");
+                sb.append("nil");
             } else {
-                System.out.print(node2.getText());
+                sb.append(node2.getText());
             }
 
-            System.out.print(" [" + node2.getType() + "] "
+            sb.append(" [" + node2.getType() + "] "
                     + (showclass ? "{ " + node2.getClass().getCanonicalName() + " }" : ""));
 
             if (flatten) {
-                System.out.print(" ");
+                sb.append(" ");
             } else {
-                System.out.println("");
+                sb.append("\n");
             }
 
             if (node2.getFirstChild() != null) {
@@ -68,7 +72,13 @@ public class MakumbaDumpASTVisitor implements ASTVisitor {
         }
 
         if (flatten) {
-            System.out.println("");
+            sb.append("\n");
         }
+
+        return sb.toString();
+    }
+
+    public void visit(AST node) {
+        System.out.println(toString(node));
     }
 }
