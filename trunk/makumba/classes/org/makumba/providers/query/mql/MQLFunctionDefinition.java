@@ -179,8 +179,7 @@ public class MQLFunctionDefinition {
                 textList.append(",");
             }
         }
-        textList.append(StringUtils.concatAsString(args, ", "));
-        textList.append(')');
+        textList.append(")");
         return textList;
     }
 
@@ -214,7 +213,7 @@ class DateArithmeticFunction extends MQLFunctionDefinition {
         } else { // doesn't happen
             throw throwUnexpectedArguments(args.size());
         }
-        textList.append(')');
+        textList.append(")");
         return textList;
     }
 }
