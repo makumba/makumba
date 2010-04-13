@@ -207,7 +207,7 @@
 				<uptodate targetfile="${basedir}/classes/org/makumba/providers/query/hql/HqlAnalyzeBaseWalker.java">
 					<srcfiles dir="${basedir}/classes/org/makumba/providers/query/hql" includes="**/hql-analyze.g" />
 				</uptodate>
-				<uptodate targetfile="${basedir}/classes/org/makumba/providers/query/mql/MqlSqlBaseWalker.java">
+				<uptodate targetfile="${basedir}/classes/org/makumba/providers/query/mql/HqlBaseParser.java">
 					<srcfiles dir="${basedir}/classes/org/makumba/providers/query/mql" includes="**/hql.g" />
 				</uptodate>
 				<uptodate targetfile="${basedir}/classes/org/makumba/providers/query/mql/MqlSqlBaseWalker.java">
