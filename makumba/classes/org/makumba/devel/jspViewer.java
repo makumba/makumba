@@ -311,12 +311,12 @@ public class jspViewer extends LineViewer {
                         if (hideComments) { // check whether show or hide
                             shallWrite = false;
                         } else {
-                            currentText.append("<span class=\".jspComment\">");
+                            currentText.append("<span class=\"jspComment\">");
                         }
                     } else if (type.equals("JSPSystemTag")) { // we have a JSP system tag (<%@ .. %>)
-                        currentText.append("<span class=\".jspSystemTag\">");
+                        currentText.append("<span class=\"jspSystemTag\">");
                     } else if (type.equals("ExpressionLanguage")) { // we have JSP EL ($...})
-                        currentText.append("<span class=\".expressionLanguage\">");
+                        currentText.append("<span class=\"expressionLanguage\">");
                     } else {// we have any other taglib tag
                         if ((tagType.startsWith("mak") || tagType.startsWith("/mak")) && hideMakumba
                                 || (tagType.startsWith("c") || tagType.startsWith("/c")) && hideJSTLCore
