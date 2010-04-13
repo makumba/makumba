@@ -1,3 +1,7 @@
+SELECT a.getAnnDL() FROM best.johnny.Activity a
+SELECT s.getAnnDL() FROM best.johnny.Season s
+select case when s.getActAppDL() <> NIL then dateAdd(s.getActAppDL(), 7, 'day') else s.getActAppDL() end from best.johnny.Activity s
+select s.isDirectMemberOfTeamOrAlias('ITC') FROM best.internal.Student s
 select p.languageNames() from test.Person p
 SELECT now() > dateSub(s.getAppDL(), 30, 'day') from best.johnny.Season s
 select s.getAnnDL() from best.johnny.Season s
