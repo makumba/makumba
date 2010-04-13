@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
+import org.makumba.ProgrammerError;
 import org.makumba.DataDefinition.QueryFragmentFunction;
 import org.makumba.commons.ClassResource;
 import org.makumba.providers.datadefinition.mdd.MakumbaDumpASTVisitor;
@@ -19,8 +20,7 @@ import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.query.mql.ASTUtil;
 import org.makumba.providers.query.mql.HqlASTFactory;
-import org.makumba.providers.query.mql.HqlParser;
-import org.makumba.providers.query.mql.HqlSqlTokenTypes;
+import org.makumba.providers.query.mql.HqlTokenTypes;
 import org.makumba.providers.query.mql.MqlQueryAnalysis;
 import org.makumba.providers.query.mql.Node;
 
@@ -43,6 +43,9 @@ public class Pass1FunctionInliner {
         List<AST> extraFrom = new ArrayList<AST>();
 
         List<AST> extraWhere = new ArrayList<AST>();
+        
+        // FIXME: extraFrom and extraWhere should also indicate to what query they should add
+        // for now everything is added to the root query
     }
 
     /**
@@ -110,12 +113,12 @@ public class Pass1FunctionInliner {
 
         public AST visit(TraverseState state, AST current) {
             // the function signature is a method call which has a DOT as first child
-            if (current.getType() != HqlSqlTokenTypes.METHOD_CALL)
+            if (current.getType() != HqlTokenTypes.METHOD_CALL)
                 return current;
-            if (current.getFirstChild().getType() == HqlSqlTokenTypes.IDENT
+            if (current.getFirstChild().getType() == HqlTokenTypes.IDENT
                     && current.getFirstChild().getText().equals("actor"))
                 return treatActor(state, current);
-            if (current.getFirstChild().getType() != HqlSqlTokenTypes.DOT)
+            if (current.getFirstChild().getType() != HqlTokenTypes.DOT)
                 return current;
 
             final AST callee = current.getFirstChild().getFirstChild();
@@ -132,10 +135,19 @@ public class Pass1FunctionInliner {
             // then the function tree should be duplicated here, also using traverse()
             // not sure whether MDDs need to return the rewritten function as text?
             // TODO: separate traverse() in a commons utility class
-            // the from FROM doesn't matter really
+            
+            String queryFragment = "SELECT " + func.getQueryFragment() + " FROM " + calleeType.getName() + " this";
+            try{
+                // TODO: this should move to the MDD analyzer after solving chicken-egg
+                // otherwise we call inlining during inlining, which works but it's better to do it only once
+                // and then be sure that the respective query fragment is ok
+                new MqlQueryAnalysis(queryFragment, false, false);
+            }catch(Throwable t){
+                throw new ProgrammerError(t, "Error parsing function "+func.getName() +" from MDD "+ calleeType);
+            }
             AST funcAST = 
                 QueryAnalysisProvider
-                 .parseQuery("SELECT " + func.getQueryFragment() + " FROM " + calleeType.getName() + " this")
+                 .parseQuery(queryFragment)
             // we go from query-> SELECT_FROM -> FROM-> SELELECT -> 1st projection
                 .getFirstChild().getFirstChild().getNextSibling().getFirstChild();
 
@@ -161,7 +173,7 @@ public class Pass1FunctionInliner {
             AST ret = traverse(new TraverseState(), funcAST, new ASTVisitor() {
                 public AST visit(TraverseState state, AST node) {
                     // for each "this" node, we put the callee instead
-                    if (node.getType() == HqlSqlTokenTypes.IDENT && node.getText().equals("this"))
+                    if (node.getType() == HqlTokenTypes.IDENT && node.getText().equals("this"))
                         return callee;
                     return node;
                 }
@@ -172,10 +184,10 @@ public class Pass1FunctionInliner {
             ret = traverse(new TraverseState(), ret, new ASTVisitor() {
                 public AST visit(TraverseState state, AST node) {
                     // for each parameter node, we put the param expression instead
-                    if (node.getType() == HqlSqlTokenTypes.IDENT && paramExpr.get(node.getText()) != null &&
+                    if (node.getType() == HqlTokenTypes.IDENT && paramExpr.get(node.getText()) != null &&
                     // a field name from another table might have the same name as a param
                             // FIXME: there might be other cases where this is not the param but some field
-                            state.path.get(state.path.size() - 1).getType() != HqlSqlTokenTypes.DOT
+                            state.path.get(state.path.size() - 1).getType() != HqlTokenTypes.DOT
                     //        
                     )
                         return paramExpr.get(node.getText());
@@ -196,14 +208,14 @@ public class Pass1FunctionInliner {
             actorType = actorType.getFirstChild();
             String rt = "actor_" + ASTUtil.constructPath(actorType).replace('.', '_');
 
-            if (state.path.get(state.path.size() - 1).getType() == HqlSqlTokenTypes.DOT) {
-                AST range = ASTUtil.makeNode(HqlSqlTokenTypes.RANGE, "RANGE");
+            if (state.path.get(state.path.size() - 1).getType() == HqlTokenTypes.DOT) {
+                AST range = ASTUtil.makeNode(HqlTokenTypes.RANGE, "RANGE");
                 range.setFirstChild(makeASTCopy(actorType));
-                range.getFirstChild().setNextSibling(ASTUtil.makeNode(HqlSqlTokenTypes.ALIAS, rt));
+                range.getFirstChild().setNextSibling(ASTUtil.makeNode(HqlTokenTypes.ALIAS, rt));
 
-                AST equal = ASTUtil.makeNode(HqlSqlTokenTypes.EQ, "=");
-                equal.setFirstChild(ASTUtil.makeNode(HqlSqlTokenTypes.IDENT, rt));
-                equal.getFirstChild().setNextSibling(ASTUtil.makeNode(HqlSqlTokenTypes.IDENT, "$" + rt));
+                AST equal = ASTUtil.makeNode(HqlTokenTypes.EQ, "=");
+                equal.setFirstChild(ASTUtil.makeNode(HqlTokenTypes.IDENT, rt));
+                equal.getFirstChild().setNextSibling(ASTUtil.makeNode(HqlTokenTypes.IDENT, "$" + rt));
 
                 state.extraFrom.add(range);
                 state.extraWhere.add(equal);
@@ -211,7 +223,7 @@ public class Pass1FunctionInliner {
                 // the simple case, we simply add the parameter
                 rt = "$" + rt;
 
-            return ASTUtil.makeNode(HqlSqlTokenTypes.IDENT, rt);
+            return ASTUtil.makeNode(HqlTokenTypes.IDENT, rt);
         }
     }
 
@@ -219,10 +231,10 @@ public class Pass1FunctionInliner {
     private static FieldDefinition findType(List<AST> path, AST expr) {
 
         // we build a query tree
-        Node query = ASTUtil.makeNode(HqlSqlTokenTypes.QUERY, "query");
-        Node selectFrom = ASTUtil.makeNode(HqlSqlTokenTypes.SELECT_FROM, "SELECT_FROM");
-        Node select = ASTUtil.makeNode(HqlSqlTokenTypes.SELECT, "SELECT");
-        Node from = ASTUtil.makeNode(HqlSqlTokenTypes.FROM, "FROM");
+        Node query = ASTUtil.makeNode(HqlTokenTypes.QUERY, "query");
+        Node selectFrom = ASTUtil.makeNode(HqlTokenTypes.SELECT_FROM, "SELECT_FROM");
+        Node select = ASTUtil.makeNode(HqlTokenTypes.SELECT, "SELECT");
+        Node from = ASTUtil.makeNode(HqlTokenTypes.FROM, "FROM");
 
         query.setFirstChild(selectFrom);
         selectFrom.setFirstChild(from);
@@ -231,7 +243,7 @@ public class Pass1FunctionInliner {
         AST lastAdded = null;
         for (AST a : path) {
             // we find queriess
-            if (a.getType() != HqlSqlTokenTypes.QUERY)
+            if (a.getType() != HqlTokenTypes.QUERY)
                 continue;
             // we duplicate the FROM section of each query
             AST originalFrom = a.getFirstChild().getFirstChild().getFirstChild();
@@ -272,18 +284,73 @@ public class Pass1FunctionInliner {
 
             AST where = root.getFirstChild().getNextSibling();
 
-            if (where != null && where.getType() == HqlSqlTokenTypes.WHERE) {
-                AST and = ASTUtil.makeNode(HqlSqlTokenTypes.AND, "AND");
+            if (where != null && where.getType() == HqlTokenTypes.WHERE) {
+                AST and = ASTUtil.makeNode(HqlTokenTypes.AND, "AND");
                 and.setFirstChild(condition);
                 condition.setNextSibling(where.getFirstChild());
                 where.setFirstChild(and);
             } else {
-                AST where1 = ASTUtil.makeNode(HqlSqlTokenTypes.WHERE, "WHERE");
+                AST where1 = ASTUtil.makeNode(HqlTokenTypes.WHERE, "WHERE");
                 where1.setNextSibling(where);
                 root.getFirstChild().setNextSibling(where1);
                 where1.setFirstChild(condition);
             }
         }
+    }
+    
+    // this code is _experimental_ 
+    static class SubqueryReductionVisitor implements ASTVisitor {
+
+        public AST visit(TraverseState state, AST current) {
+            // we are after queries, but not the root query
+            if(current.getType()!= HqlTokenTypes.QUERY || state.path.size()==0)
+                return current;
+            // the reduction is defensive (i.e. we do not reduce unless we are sure that there are no problems)
+            AST parent= state.path.get(state.path.size()-1);
+            
+            // if we are the second child of the parent, then operator IN expects a multiple-result query
+            if(parent.getFirstChild()!=current)
+                if(parent.getType()== HqlTokenTypes.IN)
+                    return current;
+                else;
+            else
+                // aggregate operators expect a multiple-result query
+                switch(parent.getType()){
+                    case HqlTokenTypes.EXISTS:
+                    case HqlTokenTypes.COUNT:
+                    case HqlTokenTypes.MAX:
+                    case HqlTokenTypes.MIN:
+                    case HqlTokenTypes.AVG:
+                    case HqlTokenTypes.INDICES:
+                        return current;
+                }
+ 
+            // TODO: postorder, depth-first traversal!
+            // TODO: currently we only add to the root query, maybe we should add to the enclosing query, and flatten iteratively
+            
+            // TODO: not inline queries with a groupBy, queries without a where
+            // TODO: queries that have orderby, or more than one projection, should not be accepted here?
+
+            // FIXME: i don't think that these copy more than the 1st child (FROM range, WHERE condition), got to check. 
+            state.extraFrom.add(current.getFirstChild().getFirstChild().getFirstChild());
+             
+            if(current.getFirstChild().getNextSibling().getType()==HqlTokenTypes.WHERE)                
+                state.extraWhere.add(current.getFirstChild().getNextSibling().getFirstChild());
+            
+            AST proj= current.getFirstChild().getFirstChild().getNextSibling().getFirstChild();
+
+            // FIXME: the distinct should go to the decorated query
+            if(proj.getType()== HqlTokenTypes.DISTINCT)
+                proj= proj.getNextSibling();
+            return proj;
+        }
+    }
+    
+    private static AST flatten(AST processedAST) {
+        TraverseState s= new TraverseState();
+        AST a= traverse(s, processedAST, new SubqueryReductionVisitor());
+        addFromWhere(a, s);
+        return a;
     }
 
     /** make a copy of an AST, node with the same first child, but with no next sibling */
@@ -326,7 +393,16 @@ public class Pass1FunctionInliner {
                 //new MakumbaDumpASTVisitor(false).visit(processedAST);
                 
                 //System.out.println(oldInline);
-                if (!compare(new ArrayList<AST>(), processedAST, compAST)) {
+                
+                //AST a= flatten(processedAST);                    
+                //    new MakumbaDumpASTVisitor(false).visit(a);
+
+                    //new MakumbaDumpASTVisitor(false).visit(a);
+
+                //if(line==1)
+                //    new MakumbaDumpASTVisitor(false).visit(new MqlQueryAnalysis(oldInline, false, false).getAnalyserTree());
+
+                    if (!compare(new ArrayList<AST>(), processedAST, compAST)) {
                     System.err.println(line + ": " + query);
                     if (oldError != null)
                         System.err.println(line+": old inliner failed! "+ oldError+ " query was: "+ oldInline);
