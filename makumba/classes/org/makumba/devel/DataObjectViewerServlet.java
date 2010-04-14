@@ -74,7 +74,7 @@ public class DataObjectViewerServlet extends DataServlet {
         dataPointer = new Pointer(type, request.getParameter("ptr"));
 
         try {
-            dd = (DataDefinitionProvider.getInstance()).getDataDefinition(virtualPath);
+            dd = (DataDefinitionProvider.getInstance()).getDataDefinition(type);
         } catch (Throwable e) {
         }
         if (dd == null) {
