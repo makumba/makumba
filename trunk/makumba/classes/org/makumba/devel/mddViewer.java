@@ -51,8 +51,6 @@ public class mddViewer extends LineViewer {
 
     private int validationRuleCounter = 0;
 
-    protected MakumbaError err = null;
-
     private static final String subFieldSeperator = "-&gt;";
 
     private DataDefinition dd = null;
@@ -74,16 +72,8 @@ public class mddViewer extends LineViewer {
         } catch (DataDefinitionNotFoundError nf) {
             // FIXME: this is probably an include, we ignore it alltogether
         } catch (MakumbaError pe) {
-            err = pe;
+            parseError = pe;
         }
-    }
-
-    @Override
-    public void footer(PrintWriter pw) throws IOException {
-        if (err != null) {
-            pw.println("<hr><a name=\"errors\"></a><pre>" + err.getMessage() + "</pre>");
-        }
-        super.footer(pw);
     }
 
     @Override
@@ -98,10 +88,10 @@ public class mddViewer extends LineViewer {
 
     @Override
     public void printLine(PrintWriter w, String s, String toPrint) throws IOException {
-        if (err != null) {
+        if (parseError != null) {
             // we go thru the error text, if we find this particular line, we display its error message
             // this is a hack, it should rather go thru the multiple exceptions
-            LineNumberReader lr = new LineNumberReader(new StringReader(err.getMessage()));
+            LineNumberReader lr = new LineNumberReader(new StringReader(parseError.getMessage()));
             String e = null;
             String before = null;
             while (true) {
@@ -124,7 +114,7 @@ public class mddViewer extends LineViewer {
 
     @Override
     public void intro(PrintWriter w) {
-        if (err != null) {
+        if (parseError != null) {
             w.print("<td align=\"center\" style=\"color: red;\">errors!<br><a href=\"#errors\">details</a></td>");
         }
         String browsePath = virtualPath.replace('.', '/').substring(0, virtualPath.lastIndexOf('.') + 1);
@@ -149,9 +139,8 @@ public class mddViewer extends LineViewer {
 
         // link to code generator
         if (dd != null) {
-            w.print("<a style=\"color: darkblue;\" href=\""
-                    + contextPath + Configuration.getCodeGeneratorLocation() + "/" + virtualPath
-                    + "\">code generator</a>&nbsp;&nbsp;&nbsp;");
+            w.print("<a style=\"color: darkblue;\" href=\"" + contextPath + Configuration.getCodeGeneratorLocation()
+                    + "/" + virtualPath + "\">code generator</a>&nbsp;&nbsp;&nbsp;");
         } else if (dir.getName().endsWith(".idd")) { // we don't have a BL for for idd's
             w.print("<span style=\"color:gray;\" title=\"There's no code to be generated for .idd files!\">code generator</span>&nbsp;&nbsp;&nbsp;");
         } else {

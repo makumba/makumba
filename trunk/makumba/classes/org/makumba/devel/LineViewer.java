@@ -125,6 +125,8 @@ public abstract class LineViewer implements SourceViewer {
 
     private String versionControlRepositoryLinkText = "CVS";
 
+    protected Throwable parseError = null;
+
     protected void addImportedPackages(HashSet<String> newPackages) {
         newPackages.addAll(Arrays.asList(importedPackages));
         importedPackages = newPackages.toArray(new String[newPackages.size()]);
@@ -442,6 +444,9 @@ public abstract class LineViewer implements SourceViewer {
 
     /** Write the page footer to the given writer. */
     public void footer(PrintWriter printWriter) throws IOException {
+        if (parseError != null) {
+            printWriter.println("<hr><a name=\"errors\"></a><pre>" + parseError.getMessage() + "</pre>");
+        }
         DevelUtils.printDeveloperSupportFooter(printWriter);
     }
 
