@@ -215,7 +215,7 @@ public interface FieldDefinition {
     public String getNameAt(int i);
 
     /**
-     * Get the name for a certain value of the enumerated field Works only for intEnum
+     * Get the name for a certain value of the enumerated field. Works only for intEnum or setIntEnum
      * 
      * @exception ClassCastException
      *                for other types
