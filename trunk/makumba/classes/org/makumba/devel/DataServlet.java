@@ -43,7 +43,7 @@ public abstract class DataServlet extends HttpServlet {
     protected String virtualPath;
 
     static final Logger logger = java.util.logging.Logger.getLogger("org.makumba.devel.codeGenerator");
-    
+
     protected String toolLocation = null;
 
     public DataServlet() {
@@ -72,15 +72,17 @@ public abstract class DataServlet extends HttpServlet {
         String toolKey = null;
         if (mode == MODE_VIEW || mode == MODE_LIST) {
             if (type != null && !type.equals("")) {
-                w.println("      <a href=\"" + contextPath + Configuration.getMddViewerLocation() + "/" +type
+                w.println("      <a href=\"" + contextPath + Configuration.getMddViewerLocation() + "/" + type
                         + "\"><span style=\"font-size: x-large\"><span style=\"color: darkblue;\">" + type
                         + "</span></a> data</span>");
             } else {
                 w.println("      <span style=\"font-size: large; color: darkblue;\">Browse to select type for data listing</span>");
             }
             if (dataPointer != null) {
-                w.println(" <i>for Pointer " + dataPointer.toExternalForm()  + " (<span title=\"DBSV:UID\" style=\"border-bottom:thin dotted;\">" + dataPointer
-                        + "</span> | <span title=\"Database value\" style=\"border-bottom:thin dotted;\">" + dataPointer.longValue() + "</span>)</i>");
+                w.println(" <i>for Pointer " + dataPointer.toExternalForm()
+                        + " (<span title=\"DBSV:UID\" style=\"border-bottom:thin dotted;\">" + dataPointer
+                        + "</span> | <span title=\"Database value\" style=\"border-bottom:thin dotted;\">"
+                        + dataPointer.longValue() + "</span>)</i>");
             }
             w.println("<br>in Makumba database: " + dataBaseName);
             toolKey = Configuration.KEY_DATA_LISTER;
@@ -108,10 +110,10 @@ public abstract class DataServlet extends HttpServlet {
         } else {
             w.println("      <span class=\"active\">browse</span>");
         }
-        
+
         w.println("&nbsp;&nbsp;&nbsp;");
         DevelUtils.writeDevelUtilLinks(w, toolKey, contextPath);
-        
+
         w.println("    </td>");
         w.println("  </tr>");
         w.println("</table>");
@@ -148,5 +150,5 @@ public abstract class DataServlet extends HttpServlet {
         }
         return fields;
     }
-    
+
 }
