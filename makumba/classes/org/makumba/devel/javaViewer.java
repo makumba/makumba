@@ -159,10 +159,7 @@ public class javaViewer extends LineViewer {
             if (type.equals("TextLine") && currentSyntaxPoint.isBegin()) { // begin of line found -> print line numbers
                 if (printLineNumbers) {
                     writer.print("\n");
-                    if (!hideLineNumbers) {
-                        writer.print("<a name=\"" + currentLine + "\" href=\"#" + currentLine + "\" class=\"lineNo\">"
-                                + currentLine + ":\t</a>");
-                    }
+                    writeLineNumber(writer, currentLine, !hideLineNumbers);
                 }
             } else {
                 String beforeSyntaxPoint = syntaxPoints.getLineText(currentLine).substring(
