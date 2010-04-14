@@ -196,9 +196,8 @@ public abstract class LineViewer implements SourceViewer {
         LineNumberReader lr = new LineNumberReader(reader);
         String s = null;
         while ((s = lr.readLine()) != null) {
-            if (printLineNumbers && !hideLineNumbers) {
-                int n = lr.getLineNumber();
-                writer.print("<a name=\"" + n + "\" href=\"#" + n + "\" class=\"lineNo\">" + n + ":\t</a>");
+            if (printLineNumbers) {
+                writeLineNumber(writer, lr.getLineNumber(), !hideLineNumbers);
             }
             if (this instanceof mddViewer) {
                 printLine(writer, s, parseLine(s));
@@ -211,6 +210,11 @@ public abstract class LineViewer implements SourceViewer {
         double timeTaken = System.currentTimeMillis() - begin;
         java.util.logging.Logger.getLogger("org.makumba.org.makumba.devel.sourceViewer").fine(
             "Sourcecode viewer took :" + (timeTaken / 1000.0) + " seconds");
+    }
+
+    protected void writeLineNumber(PrintWriter writer, int n, boolean initialVisibility) {
+        writer.print("<a style=\"font-weight: normal; " + (initialVisibility ? "" : "display: none;") + " \" name=\""
+                + n + "\" href=\"#" + n + "\" class=\"lineNo\">" + n + ":\t</a>");
     }
 
     /**
@@ -236,7 +240,8 @@ public abstract class LineViewer implements SourceViewer {
             DevelUtils.writePageBegin(writer);
             DevelUtils.writeStylesAndScripts(writer, contextPath);
             DevelUtils.writeTitleAndHeaderEnd(writer, title);
-            DevelUtils.printPageHeader(writer, title, virtualPath, realPath, additionalHeaderInfo, printVersionControlLink());
+            DevelUtils.printPageHeader(writer, title, virtualPath, realPath, additionalHeaderInfo,
+                printVersionControlLink());
             printPageBeginAdditional(writer);
 
             if (printLineNumbers) {
@@ -260,16 +265,12 @@ public abstract class LineViewer implements SourceViewer {
                 if (!urlParams.equals("")) {
                     urlParams = "?" + urlParams;
                 }
-                String link = request.getRequestURI() + urlParams;
-
                 writer.println("<div style=\"font-size: smaller; vertical-align: bottom;\">");
-                writer.print("<a href=\"" + link + "\">");
-                if (hideLineNumbers) {
-                    writer.print("Show");
-                } else {
-                    writer.print("Hide");
-                }
-                writer.println(" line numbers</a>");
+                String linkText = (hideLineNumbers ? "Show" : "Hide") + " line numbers";
+                writer.print("<script type=\"text/javascript\">document.write('<a href=\"javascript:toggleLineNumbers();\">"
+                        + linkText + "</a>');</script>");
+                writer.print(" <noscript><a href=\"" + request.getRequestURI() + urlParams + "\">" + linkText
+                        + "</noscript>");
                 writeAdditionalLinks(writer);
                 writer.println("</div>");
             }
