@@ -169,7 +169,7 @@ public class CodeGenerator {
      */
     public void generateCode(StringBuffer sb, String type, DataDefinition dd, String action,
             CodeGeneratorTemplate template, String queryLanguage) {
-        generateCode(sb, type, dd, action, DataServlet.extractFields(dd, true), template, 0, queryLanguage);
+        generateCode(sb, type, dd, action, DataServlet.separateFieldTypes(dd, true), template, 0, queryLanguage);
     }
 
     /** Starts the business logic code generation for the given DataDefinition. */
