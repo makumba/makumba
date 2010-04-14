@@ -60,7 +60,13 @@ public class AnalysisInitControllerHandler extends ControllerHandler {
         HttpSession session = ((HttpServletRequest)request).getSession();
         if(hadError) {
             // keep the state of the previous analysis so we can display errors even when reloading the page
-            AnalysableElement.keepAnalysisState(session);
+            
+            // FIXME commented out for the moment
+            // this feature has two issues:
+            // - we need to also use the page URL as an identifier for the analysis state attribute, or else a user loading two different pages may get an error on a working
+            //   page for the non-working one
+            // - the stack saved by AnalysableElement#keepAnalysisState() is probably not saved correctly, leading to a EmptyStackException in nested tags (e.g. lists).
+            //AnalysableElement.keepAnalysisState(session);
         } else {
             // first remove the state object from the session
             if(session.getServletContext().getAttribute(AnalysableElement.ANALYSIS_STATE + session.getId()) != null) {
