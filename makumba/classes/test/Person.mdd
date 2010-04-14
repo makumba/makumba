@@ -134,10 +134,7 @@ testCaseWhen() { case when this.indiv <> NIL then this.indiv.fullName() else 'no
 actor(char[] username, char[] password) { myapp_username=username AND this.password=password }
 actor2(char[] username, char[] password) { indiv.someusername=username AND this.password=password }
 
-score(char term) { scoreMatch(term, this.indiv.name)  }
-
-# a generic function assigning weights to pattern matches
-scoreMatch(char term, char value) { case when value=term then 1.0 else case when value like concat(term, '%') then 0.8 else case when value like concat('%', term) then 0.6 else case when value like concat('%', term, '%') then 0.5 else 0 end end end end }
+score(char term) { test.Functions.scoreMatch(term, this.indiv.name)  }
 
 # the function below is a simpler version of scoreMatch above, using case-when in a switch like manner, rather than as if-then-else
 # at least in MySQL this should work, but it fails to pass the MQL anaylsis
