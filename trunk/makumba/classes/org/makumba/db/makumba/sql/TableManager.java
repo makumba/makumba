@@ -999,9 +999,17 @@ public class TableManager extends Table {
      * field is null
      */
     public Object get_dateTime_Value(String fieldName, ResultSet rs, int i) throws SQLException {
+        // FIXME: why not use rs.getTimestamp(i) ?
         Object o = rs.getObject(i);
         if (rs.wasNull())
             return null;
+        if (o instanceof byte[]) { // in some cases, the result might be in a byte array
+            try { // then, try to convert it to a String
+                o = new String((byte[]) o);
+            } catch (Throwable t) {
+                // FIXME: treat the exception ?
+            }
+        }
         if(o instanceof String){
             try {
                 o= sqlDateFormat.parse((String)o);
