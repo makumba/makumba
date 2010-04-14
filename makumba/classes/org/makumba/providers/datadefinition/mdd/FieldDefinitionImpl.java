@@ -884,7 +884,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
     }
 
     public String getNameFor(int i) {
-        if(type != FieldType.INTENUM) {
+        if(type != FieldType.INTENUM && type != FieldType.SETINTENUM) {
             throw new RuntimeException("getNameFor works only for intEnum");
         }
         return (String) intEnumValues.get(i);
