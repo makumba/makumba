@@ -66,6 +66,7 @@ public abstract class AnalysableElement extends TagSupport {
     }
     
     public static void keepAnalysisState(HttpSession session) {
+        // FIXME manu: I suspect that getThreadElementStack() is not properly serialized or needs to be cloned in order to stay in the analysis state
         Object[] analysisState = new Object[] {analyzedElement.get(), runningElement.get(), getThreadElementStack(), jspParser.get()};
         // we save the state in the servlet context, thus we won't have problems if the application server crashes and tries to re-build the session from these
         // non-serializable objects
