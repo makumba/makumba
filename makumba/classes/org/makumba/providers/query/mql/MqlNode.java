@@ -195,13 +195,17 @@ public class MqlNode extends CommonAST {
                     child.setMakType(DataDefinitionProvider.getInstance().makeFieldDefinition("x", "int"));
                 }
                 return child.getMakType();
-            case HqlSqlTokenTypes.CASE:
+            case HqlSqlTokenTypes.WHEN:
                 // TODO: maybe WHEN, THEN or ELSE are parameters
                 // set the WHEN parameter type to boolean, and THEN has the type of ELSE
                 // if both THEN and ELSE are parameters, we're in trouble
-                if (child.getType() == HqlSqlTokenTypes.ELSE) {
-                    return ((MqlNode) getFirstChild().getFirstChild().getNextSibling()).getMakType();
+                if (getFirstChild().getNextSibling() != null) {
+                    if (father != null) {
+                        father.makType = child.makType; // propagate the type of the child (the THEN) to the CASE node
+                        return child.makType; 
+                    }
                 }
+                break;
 
         }
         return null;
