@@ -2,6 +2,7 @@ package org.makumba.devel;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLDecoder;
 import java.util.Vector;
 import java.util.logging.Logger;
 
@@ -57,7 +58,8 @@ public abstract class DataServlet extends HttpServlet {
             virtualPath = "/";
         }
 
-        type = virtualPath;
+        // URL-decode the type, to preserver a potential "->" in the type name (indicating a setComplex/ptrOne)
+        type = URLDecoder.decode(virtualPath, System.getProperty("file.encoding"));
         if (type.startsWith("/")) {
             type = type.substring(1);
         }
