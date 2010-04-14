@@ -23,8 +23,11 @@
 
 package test;
 
+import test.concurrency.ConcurrentTest;
+import test.tags.FormsHQLTest;
 import test.tags.FormsOQLTest;
 import test.tags.ListHQLTest;
+import test.tags.ListOQLTest;
 import junit.framework.Test;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
@@ -49,8 +52,11 @@ public class all {
 		suite.addTest(mdd.suite());
 		suite.addTest(table.suite());
 		suite.addTest(tableHibernate.suite());
-        suite.addTest(ListHQLTest.suite());
+        suite.addTest(ListOQLTest.suite());
         suite.addTest(FormsOQLTest.suite());
+        suite.addTest(ListHQLTest.suite());
+        suite.addTest(FormsHQLTest.suite());
+        suite.addTest(ConcurrentTest.suite());
 	    return suite;
 	}
 }
