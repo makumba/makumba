@@ -297,11 +297,11 @@ public class Configuration implements Serializable {
      * @return a String containing the class name of the data definition provider implementation
      */
     public static String getDataDefinitionProvider() {
-        return applicationConfig.getProperty("dataSourceConfig", KEY_DATADEFINITIONPROVIDER);
+        return applicationConfig.getProperty("providers", KEY_DATADEFINITIONPROVIDER);
     }
 
     public static String getQueryInliner() {
-        return applicationConfig.getProperty("dataSourceConfig", KEY_QUERYFUNCTIONINLINER);
+        return applicationConfig.getProperty("providers", KEY_QUERYFUNCTIONINLINER);
     }
 
     /**
