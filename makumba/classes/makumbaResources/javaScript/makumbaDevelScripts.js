@@ -20,6 +20,17 @@ function toggleElementDisplay(element) {
     }
 }
 
+function toggleLineNumbers() {
+    var elements = document.getElementsByClassName("lineNo");
+    for (i=0; i<elements.length; i++) {
+        if (elements[i].style.display == 'none') {
+            elements[i].style.display = 'inline';
+        } else {
+            elements[i].style.display = 'none';
+        }
+    }
+}
+
 /** toggles reference SQL details visibility on and off */
 function toggleSQLDisplay(element, link) {
     if (element.style.display == 'none') {
