@@ -51,7 +51,7 @@ import org.makumba.providers.Configuration;
 
 /**
  * This class implements a viewer for .jsp files, and provides highlighting of <mak:>, <jsp:>and JSTL tags.
- * 
+ *
  * @version $Id$
  * @author Stefan Baebler
  * @author Rudolf Mayer
@@ -264,9 +264,7 @@ public class jspViewer extends LineViewer {
                 // we write if we are not on column 1 (empty text line) and either are showing HTML or are in a tag
                 if (currentSyntaxPoint.getOriginalColumn(currentLineLength) > 1 && (!hideHTML || inTag > 0)
                         && shallWrite) {
-                    currentText.append(parseLine(htmlEscape(lineText.substring(
-                        lastSyntaxPoint.getOriginalColumn(currentLineLength) - 1,
-                        currentSyntaxPoint.getOriginalColumn(currentLineLength) - 1))));
+                    currentText.append(parseTagContent(lastSyntaxPoint, currentSyntaxPoint, lineText, currentLineLength));
                 }
 
                 // if the current line contained any text to write or we are outside a tag & shall write html
@@ -287,15 +285,13 @@ public class jspViewer extends LineViewer {
                     if (inTag > 1) { // we are in a nested tag
                         lastShallWrite = shallWrite;
                         if (lastShallWrite) {
-                            currentText.append(parseLine(htmlEscape(lineText.substring(
-                                lastSyntaxPoint.getOriginalColumn(currentLineLength) - 1,
-                                currentSyntaxPoint.getOriginalColumn(currentLineLength) - 1))));
+                            currentText.append(parseTagContent(lastSyntaxPoint, currentSyntaxPoint, lineText,
+                                currentLineLength));
                         }
                     } else if (currentSyntaxPoint.getOriginalColumn(currentLineLength) > 1 && !hideHTML && shallWrite) {
                         // not in a tag , but maybe there was HTMl before?
-                        currentText.append(parseLine(htmlEscape(lineText.substring(
-                            lastSyntaxPoint.getOriginalColumn(currentLineLength) - 1,
-                            currentSyntaxPoint.getOriginalColumn(currentLineLength) - 1))));
+                        currentText.append(parseTagContent(lastSyntaxPoint, currentSyntaxPoint, lineText,
+                            currentLineLength));
                     }
 
                     String tagType = lineText.substring(currentSyntaxPoint.getOriginalColumn(currentLineLength));
@@ -332,6 +328,7 @@ public class jspViewer extends LineViewer {
                             if (tagClass.startsWith("/")) {
                                 tagClass = tagClass.substring(1);
                             }
+
                             // if we have a mak:list or mak:object tag, annotate the query
                             MultipleKey tagKey = getTagDataKey(currentSyntaxPoint);
                             String titleAnnotation = "";
@@ -346,9 +343,8 @@ public class jspViewer extends LineViewer {
                     lastSyntaxPoint = currentSyntaxPoint; // move pointers and set flage
                 } else { // we have an end-tag
                     if (shallWrite) {// write content & end of highlighting?
-                        currentText.append(parseLine(htmlEscape(lineText.substring(
-                            lastSyntaxPoint.getOriginalColumn(currentLineLength) - 1,
-                            currentSyntaxPoint.getOriginalColumn(currentLineLength) - 1))));
+                        currentText.append(parseTagContent(lastSyntaxPoint, currentSyntaxPoint, lineText,
+                            currentLineLength));
                         currentText.append("</span>");
                     }
                     if (inTag > 1) { // in a nested tag?
@@ -365,6 +361,12 @@ public class jspViewer extends LineViewer {
         printPageEnd(writer);
         double time = new Date().getTime() - begin.getTime();
         logger.finer("Sourcecode viewer took :" + time / 1000 + " seconds");
+    }
+
+    private String parseTagContent(SyntaxPoint lastSyntaxPoint, SyntaxPoint currentSyntaxPoint, String lineText,
+            int currentLineLength) {
+        return parseLine(htmlEscape(lineText.substring(lastSyntaxPoint.getOriginalColumn(currentLineLength) - 1,
+            currentSyntaxPoint.getOriginalColumn(currentLineLength) - 1)));
     }
 
     private MultipleKey getTagDataKey(SyntaxPoint currentSyntaxPoint) {
