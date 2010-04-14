@@ -117,15 +117,19 @@ public abstract class DataServlet extends HttpServlet {
         w.println("</table>");
     }
 
-    /** Extracts the fields and sets from a given DataDefinition. */
-    public static Vector<FieldDefinition>[] extractFields(DataDefinition dd, boolean skipDefaultFields) {
+    /**
+     * Extracts and separates the fields from a given DataDefinition. The second element of the returned array contains
+     * all setComplex fields, the first element all other fields.
+     */
+    public static Vector<FieldDefinition>[] separateFieldTypes(DataDefinition dd, boolean skipDefaultFields) {
         Vector<FieldDefinition> fields = new Vector<FieldDefinition>();
         Vector<FieldDefinition> sets = new Vector<FieldDefinition>();
         // iterating over the DataDefinition, extracting normal fields and sets
         for (int i = 0; i < dd.getFieldNames().size(); i++) {
             FieldDefinition fd = dd.getFieldDefinition(i);
-            DataServlet.logger.finer("DEBUG INFO: Extracting fields: field name " + fd.getName() + " of type " + fd.getType());
-    
+            DataServlet.logger.finer("DEBUG INFO: Extracting fields: field name " + fd.getName() + " of type "
+                    + fd.getType());
+
             if (!skipDefaultFields || !fd.isDefaultField()) { // we skip default fields and index
                 if (fd.shouldEditBySingleInput()) {
                     fields.add(fd);
@@ -137,4 +141,12 @@ public abstract class DataServlet extends HttpServlet {
         return new Vector[] { fields, sets };
     }
 
+    public static Vector<FieldDefinition> getAllFieldDefinitions(DataDefinition dd) {
+        Vector<FieldDefinition> fields = new Vector<FieldDefinition>();
+        for (int i = 0; i < dd.getFieldNames().size(); i++) {
+            fields.add(dd.getFieldDefinition(i));
+        }
+        return fields;
+    }
+    
 }
