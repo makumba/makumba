@@ -1,6 +1,8 @@
 [dataSourceConfig]
 foreignKeys=true
 defaultDatabaseLayer=makumba
+
+[providers]
 dataDefinitionProvider=mdd
 queryFunctionInliner=pass1
 
