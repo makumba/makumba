@@ -105,6 +105,9 @@ public abstract class TransactionImplementation implements Transaction {
      * subrecords and subsets are automatically deleted.
      */
     public void delete(Pointer ptr) {
+        if(ptr == null) {
+            throw new ProgrammerError("The pointer to be deleted should not be null");
+        }
         DataDefinition ri = ddp.getDataDefinition(ptr.getType());
         FieldDefinition fi = ri.getParentField();
 
