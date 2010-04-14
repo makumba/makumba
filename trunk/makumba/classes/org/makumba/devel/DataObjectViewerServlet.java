@@ -166,7 +166,8 @@ public class DataObjectViewerServlet extends DataServlet {
                                         + " ");
                             } else {
                                 writer.print(value);
-                                if (fd.isEnumType() && value != null) {
+                                // for intEnums, also write their textual values
+                                if (fd.getIntegerType() == FieldDefinition._intEnum && value != null) {
                                     writer.print(" <i>(=" + fd.getNameFor((Integer.parseInt(String.valueOf(value))))
                                             + ")</i>");
                                 }
