@@ -137,24 +137,25 @@ public class DataObjectViewerServlet extends DataServlet {
                         writer.println("</td>");
 
                         writer.print("    <td>");
-                        if (fd.isSetType()) { // special handling for set types - query their values
-                            if (!fd.isComplexSet()) {
-                                String oql = "SELECT setEntry as setEntry, setEntry."
-                                        + fd.getPointedType().getTitleFieldName() + " as setTitle FROM " + dd.getName()
-                                        + " o, o." + fd.getName() + " setEntry WHERE o=$1";
-                                Vector<Dictionary<String, Object>> vSet = t.executeQuery(oql, dataPointer);
-                                for (int j = 0; j < vSet.size(); j++) {
-                                    Dictionary<String, Object> dictionary = vSet.elementAt(j);
+                        if (fd.isSetType()) { // special handling for external set types - query their values
+                            String oql = "SELECT setEntry as setEntry, setEntry."
+                                    + fd.getPointedType().getTitleFieldName() + " as setTitle FROM " + dd.getName()
+                                    + " o, o." + fd.getName() + " setEntry WHERE o=$1";
+                            Vector<Dictionary<String, Object>> vSet = t.executeQuery(oql, dataPointer);
+                            for (int j = 0; j < vSet.size(); j++) {
+                                Dictionary<String, Object> dictionary = vSet.elementAt(j);
+                                final String setTitle = dictionary.get("setTitle").toString();
+                                if (fd.getIntegerType() == FieldDefinition._setIntEnum) {
+                                    writer.print(" " + setTitle + " <i>(="
+                                            + fd.getNameFor((Integer.parseInt(setTitle))) + ")</i>");
+                                } else {
                                     writer.print(" "
                                             + DevelUtils.writePointerValueLink(contextPath,
-                                                (Pointer) dictionary.get("setEntry"),
-                                                dictionary.get("setTitle").toString(), false) + " ");
+                                                (Pointer) dictionary.get("setEntry"), setTitle, false) + " ");
                                 }
-                                if (vSet.size() == 0) {
-                                    writer.print("<span style=\"color:grey;font-style:italic;font-size:smaller\">(empty)</span>");
-                                }
-                            } else {
-                                writer.print("<span style=\"color:grey;font-style:italic;font-size:smaller\">SET COMPLEX</span>");
+                            }
+                            if (vSet.size() == 0) {
+                                writer.print("<span style=\"color:grey;font-style:italic;font-size:smaller\">(empty)</span>");
                             }
                         } else {
                             // use hostDatabase.getFieldNameInSource() to avoid problems when the field name is a
