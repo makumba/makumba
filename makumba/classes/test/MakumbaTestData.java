@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Dictionary;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Vector;
 
 import org.makumba.Pointer;
@@ -29,12 +30,6 @@ public class MakumbaTestData {
     public static final String namePersonIndivName_John = "john";
 
     public static final String namePersonIndivSurname_John = "von Neumann";
-
-    private static Pointer address;
-
-    private static Pointer toy2;
-
-    private static Pointer toy1;
 
     private static ArrayList<Pointer> languages = new ArrayList<Pointer>();
 
@@ -115,7 +110,7 @@ public class MakumbaTestData {
         p.put("description", "");
         p.put("usagestart", birthdateJohn);
         p.put("email", "email1");
-        address = t.insert(person, "address", p);
+        t.insert(person, "address", p);
 
         // let's fill in the languages - we add them twice to have a meaningful test for distinct
         p.clear();
@@ -132,15 +127,14 @@ public class MakumbaTestData {
         // let's add some toys
         p.clear();
         p.put("name", "car");
-        toy1 = t.insert(brother, "toys", p);
+        t.insert(brother, "toys", p);
         p.clear();
         p.put("name", "doll");
-        toy2 = t.insert(brother, "toys", p);
+        t.insert(brother, "toys", p);
 
     }
 
     public void deletePersonsAndIndividuals(Transaction t) {
-        t.delete(address);
         for (int i = 0; i < namesPersonIndivName.length; i++) {
             String query = "SELECT " + (t.getTransactionProvider().getQueryLanguage().equals("oql") ? "p" : "p.id")
                     + " AS p, p.indiv" + (t.getTransactionProvider().getQueryLanguage().equals("oql") ? "" : ".id")
@@ -149,15 +143,23 @@ public class MakumbaTestData {
             Vector<Dictionary<String, Object>> v = t.executeQuery(query, namesPersonIndivName[i]);
             if (v.size() > 0) {
 
+                Vector<Pointer> emptyPointerVector = new Vector<Pointer>();
+                
                 // delete the languages
-                Vector<Pointer> speaks = new Vector<Pointer>();
                 Dictionary<String, Object> speaksDic = new Hashtable<String, Object>();
-                speaksDic.put("speaks", speaks);
+                speaksDic.put("speaks", emptyPointerVector);
                 t.update((Pointer) v.firstElement().get("p"), speaksDic);
 
+                // delete the address
+                Dictionary<String, Object> addressDic = new Hashtable<String, Object>();
+                speaksDic.put("address", emptyPointerVector);
+                t.update((Pointer) v.firstElement().get("p"), addressDic);
+                
                 // delete the toys
-                t.delete(toy1);
-                t.delete(toy2);
+                Dictionary<String, Object> toysDic = new Hashtable<String, Object>();
+                speaksDic.put("toys", emptyPointerVector);
+                t.update((Pointer) v.firstElement().get("p"), toysDic);
+                
 
                 t.delete((Pointer) v.firstElement().get("p"));
                 t.delete((Pointer) v.firstElement().get("i"));
@@ -176,8 +178,15 @@ public class MakumbaTestData {
     }
 
     protected void deleteLanguages(Transaction t) {
-        for (int i = 0; i < languages.size(); i++)
-            t.delete((Pointer) languages.get(i));
+        String query = "SELECT " + (t.getTransactionProvider().getQueryLanguage().equals("oql") ? "l" : "l.id")
+        + " AS l FROM test.Language l";
+        Vector<Dictionary<String, Object>> v = t.executeQuery(query, new Object[] {});
+        if (v.size() > 0) {
+            for (Iterator<Dictionary<String, Object>> languages = v.iterator(); languages.hasNext();) {
+                Dictionary<String, Object> dictionary = (Dictionary<String, Object>) languages.next();
+                t.delete((Pointer) dictionary.get("l"));
+            }
+        }
     }
 
     public static void main(String[] args) {
