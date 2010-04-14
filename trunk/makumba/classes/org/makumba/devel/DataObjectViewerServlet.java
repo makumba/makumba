@@ -32,6 +32,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
@@ -93,8 +94,7 @@ public class DataObjectViewerServlet extends DataServlet {
                 writePageContentHeader(type, writer, dataBaseName, MODE_LIST);
                 writer.println("<br/>");
 
-                Vector<FieldDefinition>[] allFields = DataServlet.extractFields(dd, false);
-                Vector<FieldDefinition> fields = allFields[0];
+                Vector<FieldDefinition> fields = DataServlet.getAllFieldDefinitions(dd);
 
                 String OQL = "";
                 for (int i = 0; i < fields.size(); i++) {
@@ -130,6 +130,10 @@ public class DataObjectViewerServlet extends DataServlet {
                         writer.print("    <td class=\"columnHead\">" + fd.getName());
                         if (fd.isDefaultField()) {
                             writer.print("<br/><span style=\"color:grey;font-style:italic;font-size:smaller\">(default field)</span>");
+                        } else if (fd.getIntegerType() == FieldDefinition._ptrOne) {
+                            writer.print("<br/><span style=\"color:grey;font-style:italic;font-size:smaller\">(ptrOne)</span></td>");
+                        } else if (fd.isComplexSet()) {
+                            writer.print("<br/><span style=\"color:grey;font-style:italic;font-size:smaller\">(setComplex)</span></td>");
                         } else if (fd.isSetType() || fd.isPointer()) {
                             writer.print("<br/><span style=\"color:grey;font-style:italic;font-size:smaller\">("
                                     + (fd.isSetType() ? "set " : "ptr ") + fd.getPointedType().getName() + ")</span>");
@@ -137,24 +141,44 @@ public class DataObjectViewerServlet extends DataServlet {
                         writer.println("</td>");
 
                         writer.print("    <td>");
-                        if (fd.isSetType()) { // special handling for external set types - query their values
-                            String oql = "SELECT setEntry as setEntry, setEntry."
-                                    + fd.getPointedType().getTitleFieldName() + " as setTitle FROM " + dd.getName()
+
+                        // special handling for external set types - query their values
+                        if (fd.isSetType() || fd.getIntegerType() == FieldDefinition._ptrOne) {
+                            boolean isEmpty = true;
+                            String titleFieldName = fd.getPointedType().getTitleFieldName();
+                            String fragmentTitleField = titleFieldName != null ? ", setEntry." + titleFieldName
+                                    + " as setTitle " : "";
+                            String oql = "SELECT setEntry as setEntry " + fragmentTitleField + "FROM " + dd.getName()
                                     + " o, o." + fd.getName() + " setEntry WHERE o=$1";
                             Vector<Dictionary<String, Object>> vSet = t.executeQuery(oql, dataPointer);
                             for (int j = 0; j < vSet.size(); j++) {
                                 Dictionary<String, Object> dictionary = vSet.elementAt(j);
-                                final String setTitle = dictionary.get("setTitle").toString();
+                                String setTitle = String.valueOf(dictionary.get("setTitle"));
                                 if (fd.getIntegerType() == FieldDefinition._setIntEnum) {
                                     writer.print(" " + setTitle + " <i>(="
                                             + fd.getNameFor((Integer.parseInt(setTitle))) + ")</i>");
+                                    isEmpty = false;
                                 } else {
-                                    writer.print(" "
-                                            + DevelUtils.writePointerValueLink(contextPath,
-                                                (Pointer) dictionary.get("setEntry"), setTitle, false) + " ");
+                                    Pointer ptrSetEntry = (Pointer) dictionary.get("setEntry");
+                                    if (fd.isComplexSet() || fd.getIntegerType() == FieldDefinition._ptrOne) {
+
+                                        if (dictionary.size() > 0) {
+                                            writer.print(" "
+                                                    + DevelUtils.writePointerValueLink(contextPath, ptrSetEntry,
+                                                        StringUtils.isNotBlank(setTitle) ? setTitle
+                                                                : ptrSetEntry.toString(), false) + " ");
+                                            isEmpty = false;
+                                        }
+
+                                    } else {
+                                        writer.print(" "
+                                                + DevelUtils.writePointerValueLink(contextPath, ptrSetEntry, setTitle,
+                                                    false) + " ");
+                                        isEmpty = false;
+                                    }
                                 }
                             }
-                            if (vSet.size() == 0) {
+                            if (isEmpty) {
                                 writer.print("<span style=\"color:grey;font-style:italic;font-size:smaller\">(empty)</span>");
                             }
                         } else {
