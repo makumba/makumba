@@ -22,13 +22,18 @@ span.active {
 div.popup {
   display: none;
   position: absolute;
-  top: 45px;
   background-color: lightblue;
   border: 1px;
   border-style: solid;
   border-color: black;
   padding: 5px;
+  margin-top: 5px;
   text-align: left;
+}
+
+div.queryPopup {
+  left: 63px;
+  margin-top: -70px;
 }
 
 /* Generic styles for the code viewers */
@@ -47,6 +52,10 @@ a.classLink {
   border-bottom: thin dotted;
   text-decoration: none;
   color: #000066
+}
+
+.parseError {
+  background-color: pink;
 }
 
 /* Styles for the MDD viewer */
@@ -153,8 +162,8 @@ a.classLink {
 }
 
 .errorLine {
-	background:orange;
-	color:white;
+  background: orange;
+  color: white;
 }
 
 /* Styles for the Java viewer 
