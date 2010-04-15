@@ -28,7 +28,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.JarURLConnection;
 import java.net.URISyntaxException;
@@ -76,27 +75,6 @@ public class MakumbaResourceServlet extends HttpServlet {
     public static final String PLACEHOLDER_RESOURCE_PATH = "_RESOURCE_PATH_";
 
     public static final SimpleDateFormat dfLastModified = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
-
-    private enum ExternalResource {
-
-        PROTOTYPE("prototype", "prototype.js"), SCRIPTACULOUS("scriptaculous", "scriptaculous.js");
-
-        String name, key;
-
-        ExternalResource(String key, String name) {
-            this.name = name;
-            this.key = key;
-        }
-
-        String getKey() {
-            return this.key;
-        }
-
-        String getName() {
-            return this.name;
-        }
-
-    }
 
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String servletPath = req.getContextPath() + Configuration.getMakumbaResourcesLocation();
