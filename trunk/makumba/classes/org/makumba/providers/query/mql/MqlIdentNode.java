@@ -39,6 +39,12 @@ public class MqlIdentNode extends MqlNode {
                 setMakType(selectExpr.getMakType());
                 return;
             }
+            if(walker.knownLabels!=null && walker.knownLabels.getFieldDefinition(label)!=null){
+                setMakType(walker.knownLabels.getFieldDefinition(label));
+                return;
+            }
+                
+                
             throw new SemanticException("Unknown label: " + label, "", getLine(), getColumn());
         }
         
