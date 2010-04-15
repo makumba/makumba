@@ -310,51 +310,5 @@ public abstract class QueryAnalysisProvider {
         return query;
     }
 
-    public static final Pattern ident = Pattern.compile("[a-zA-Z]\\w*");
-
-    public static String addThisToFunction(DataDefinition mdd, DataDefinition.QueryFragmentFunction func) {
-        String queryFragment= func.getQueryFragment();
-        StringBuffer sb = new StringBuffer();        
-        Matcher m = ident.matcher(queryFragment);
-        boolean found = false;
-        while (m.find()) {
-            String id = queryFragment.substring(m.start(), m.end());
-            int after = -1;
-            for (int index = m.end(); index < queryFragment.length(); index++) {
-                char c = queryFragment.charAt(index);
-                if (c == ' ' || c == '\t') {
-                    continue;
-                }
-                after = c;
-                break;
-            }
-            int before = -1;
-            for (int index = m.start() - 1; index >= 0; index--) {
-                char c = queryFragment.charAt(index);
-                if (c == ' ' || c == '\t') {
-                    continue;
-                }
-                before = c;
-                break;
-            }
-
-            //TODO: either look for other keywords (than end) or better rewrite this with ASTs
-            // if we have an actor we don't append "this"
-            if (before == '.' || id.equals("this") || id.equals("actor") || id.equals("end") || func.getParameters().getFieldDefinition(id) != null) {
-                continue;
-            }
-            if (mdd.getFieldDefinition(id) != null || after == '(' && mdd.getFunctions().getFunction(id) != null) {
-                m.appendReplacement(sb, "this." + id);
-                found = true;
-            }
-        }
-        m.appendTail(sb);
-    
-        if (found) 
-            java.util.logging.Logger.getLogger("org.makumba.db.query.inline").fine(queryFragment + " -> " + sb.toString());
-
-        return sb.toString();
-    
-    }
 }
 
