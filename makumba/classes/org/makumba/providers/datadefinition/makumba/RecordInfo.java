@@ -54,7 +54,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
     private static final long serialVersionUID = 1L;
 
     protected static String webappRoot;
-    
+
     public static void setWebappRoot(String s) {
         webappRoot = s;
     }
@@ -148,7 +148,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
     }
 
     protected void addField1(FieldDefinition fi) {
-        if(fi.getType() != null && fi.getType().equals("ptrIndex")) {
+        if (fi.getType() != null && fi.getType().equals("ptrIndex")) {
             fieldOrder.add(0, fi.getName());
         } else {
             fieldOrder.addElement(fi.getName());
@@ -252,9 +252,9 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
             ri = ri.getFieldDefinition(name.substring(0, n)).getSubtable();
         }
         FieldDefinition subfieldCheck = ri.getFieldDefinition(name);
-        if(subfieldCheck==null)
-            throw new DataDefinitionParseError("subfield not found: "+name+" in "+ri.getName());
-        
+        if (subfieldCheck == null)
+            throw new DataDefinitionParseError("subfield not found: " + name + " in " + ri.getName());
+
         ri = subfieldCheck.getSubtable();
         return ri;
     }
@@ -566,7 +566,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
     private void base_checkUpdate(String fieldName, Dictionary<String, Object> d) {
         getFieldDefinition(fieldName).checkUpdate(d);
     }
-    
+
     /** returns the field info associated with a name */
     public QueryFragmentFunction getFunctionOrPointedFunction(String nm) {
         if (getFunction(nm) != null) {
@@ -585,38 +585,33 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
         return dd.getFunction(fieldName);
     }
 
-
-    
-    
     public String getStructure() {
         StringBuffer sb = new StringBuffer();
-        
+
         sb.append("getName() " + getName() + "\n");
         sb.append("getFieldNames()\n");
-        for(String n : getFieldNames()) {
+        for (String n : getFieldNames()) {
             sb.append(n + "\n");
         }
         sb.append("isTemporary() " + isTemporary() + "\n");
         sb.append("getTitleFieldName() " + getTitleFieldName() + "\n");
         sb.append("getIndexPointerFieldName() " + getIndexPointerFieldName() + "\n");
         sb.append("getParentField()\n");
-        sb.append(((FieldInfo)getParentField()) + "\n");
+        sb.append(((FieldInfo) getParentField()) + "\n");
         sb.append("getSetMemberFieldName() " + getSetMemberFieldName() + "\n");
         sb.append("getSetOwnerFieldName() " + getSetOwnerFieldName() + "\n");
         sb.append("lastModified() " + lastModified() + "\n");
         sb.append("getFieldDefinition()\n");
-        for(String n : getFieldNames()) {
-            sb.append(((FieldInfo)getFieldDefinition(n)).getStructure() + "\n");
+        for (String n : getFieldNames()) {
+            sb.append(((FieldInfo) getFieldDefinition(n)).getStructure() + "\n");
         }
         sb.append("getReferenceFields()\n");
-        for(FieldDefinition fi : getReferenceFields()) {
-            sb.append(((FieldInfo)fi).getStructure() + "\n");
+        for (FieldDefinition fi : getReferenceFields()) {
+            sb.append(((FieldInfo) fi).getStructure() + "\n");
         }
-        
-        
-        
+
         return sb.toString();
-        
+
     }
-    
+
 }
