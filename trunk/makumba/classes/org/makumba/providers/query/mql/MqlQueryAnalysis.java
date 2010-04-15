@@ -92,6 +92,14 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         
         noFrom = QueryAnalysisProvider.reduceDummyFrom(pass1);
 
+        AST parsed= pass1;
+        
+        // FIXME: if a pass1 object is really needed to keep query fragments already inlined, then 
+        // the pass1 needs to be duplicated, like
+        // parsed= new  HqlASTFactory().dupTree(pass1)
+        // to avoid transformOQLParameters turning it into a pass1 tree which doesn't work with the pass1 inliner
+        // for now we don't duplicate because pass1 tree is not used  
+        
         /*
          * } else { if (!Configuration.getQ ueryInliner().equals("tree")) { HqlParser parser = null; try { parser =
          * HqlParser.getInstance(query); parser.statement(); } catch (Throwable t) { doThrow(t, parser != null ?
@@ -100,10 +108,10 @@ public class MqlQueryAnalysis implements QueryAnalysis {
          */
 
         // we need to do the transformation first so the second-pass parser will accept the query
-        MqlQueryAnalysisProvider.transformOQLParameters(pass1, parameterOrder);
-        MqlQueryAnalysisProvider.transformOQL(pass1);
+        MqlQueryAnalysisProvider.transformOQLParameters(parsed, parameterOrder);
+        MqlQueryAnalysisProvider.transformOQL(parsed);
                 
-        init(optimizeJoins, autoLeftJoin, pass1, knownLabels);
+        init(optimizeJoins, autoLeftJoin, parsed, knownLabels);
         
         long diff = new java.util.Date().getTime() - d.getTime();
         java.util.logging.Logger.getLogger("org.makumba.db.query.compilation").fine("MQL analysis: " + diff + " ms: " + query);
