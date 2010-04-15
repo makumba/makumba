@@ -15,22 +15,25 @@ import org.makumba.DataDefinition.QueryFragmentFunction;
  */
 public class QueryFragmentFunctions {
 
-    HashMap<String, QueryFragmentFunction> functionNames = new HashMap<String, QueryFragmentFunction>();
+    HashMap<String, QueryFragmentFunction> functionNameCache = new HashMap<String, QueryFragmentFunction>();
+
+    ArrayList<QueryFragmentFunction> functions = new ArrayList<QueryFragmentFunction>();
 
     /** adds a new function to this data definition. */
     public void addFunction(String name, QueryFragmentFunction function) {
-        functionNames.put(name, function);
+        functions.add(function);
+        functionNameCache.put(name, function);
     }
 
     /** returns all functions in this data definition. */
     public Collection<QueryFragmentFunction> getFunctions() {
-        return functionNames.values();
+        return functions;
     }
 
     /** returns all actor functions in this data definition. */
     public Collection<QueryFragmentFunction> getActorFunctions() {
         ArrayList<QueryFragmentFunction> actorFunctions = new ArrayList<QueryFragmentFunction>();
-        for (QueryFragmentFunction function : functionNames.values()) {
+        for (QueryFragmentFunction function : functions) {
             if (function.isActorFunction()) {
                 actorFunctions.add(function);
             }
@@ -41,7 +44,7 @@ public class QueryFragmentFunctions {
     /** returns all actor functions in this data definition. */
     public Collection<QueryFragmentFunction> getSessionFunctions() {
         ArrayList<QueryFragmentFunction> sessionFunctions = new ArrayList<QueryFragmentFunction>();
-        for (QueryFragmentFunction function : functionNames.values()) {
+        for (QueryFragmentFunction function : functions) {
             if (function.isSessionFunction()) {
                 sessionFunctions.add(function);
             }
@@ -51,11 +54,21 @@ public class QueryFragmentFunctions {
 
     /** Returns the function with the specific name. */
     public QueryFragmentFunction getFunction(String name) {
-        return functionNames.get(name);
+        return functionNameCache.get(name);
+    }
+
+    /** Returns the function with the specific name and parameters. */
+    public QueryFragmentFunction getFunction(String name, DataDefinition params) {
+        for (QueryFragmentFunction function : functions) {
+            if (function.getName().equals(name) && function.getParameters().equals(params)) {
+                return function;
+            }
+        }
+        return null;
     }
 
     public int size() {
-        return functionNames.size();
+        return functionNameCache.size();
     }
 
 }
