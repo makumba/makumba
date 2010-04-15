@@ -1,5 +1,6 @@
 package org.makumba;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -13,7 +14,8 @@ import org.makumba.DataDefinition.QueryFragmentFunction;
  * @author Rudolf Mayer
  * @version $Id$
  */
-public class QueryFragmentFunctions {
+public class QueryFragmentFunctions implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     HashMap<String, QueryFragmentFunction> functionNameCache = new HashMap<String, QueryFragmentFunction>();
 
