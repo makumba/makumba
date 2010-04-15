@@ -84,7 +84,10 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
      * or one that is not easy to evaluate, so we gave up*/
     LinkedHashMap<String, Object> constantValues = new LinkedHashMap<String, Object>();
 
-    public MqlSqlWalker(String query, DataDefinition insertIn, boolean optimizeJoins, boolean autoLeftJoin) {
+    /** Labels known a-priori. This is needed for analysis of query fragment parameters */
+    DataDefinition knownLabels;
+
+    public MqlSqlWalker(String query, DataDefinition insertIn, boolean optimizeJoins, boolean autoLeftJoin, DataDefinition knownLabels) {
         this.query = query;
         this.insertIn= insertIn;
         this.optimizeJoins = optimizeJoins;
@@ -92,7 +95,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         setASTFactory(fact = new MqlSqlASTFactory(this));
         this.paramInfoByPosition = DataDefinitionProvider.getInstance().getVirtualDataDefinition("Temporary parameters by order for " + query);
         this.paramInfoByName = DataDefinitionProvider.getInstance().getVirtualDataDefinition("Temporary parameters by name for " + query);
-        
+        this.knownLabels= knownLabels;
     }
 
     public void reportError(RecognitionException e) {

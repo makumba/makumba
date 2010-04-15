@@ -17,7 +17,7 @@ import antlr.collections.AST;
 
 public class InlinerMqlSqlWalker extends MqlSqlWalker {
     public InlinerMqlSqlWalker(String query, DataDefinition insertIn, boolean optimizeJoins, boolean autoLeftJoin) {
-        super(query, insertIn, optimizeJoins, autoLeftJoin);
+        super(query, insertIn, optimizeJoins, autoLeftJoin, null);
 
     }
 
