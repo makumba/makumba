@@ -569,52 +569,6 @@ public class RecordParser {
     void compileFunctions() {
         for (String fn : funcNames.keySet()) {
             QueryFragmentFunction f = funcNames.get(fn);
-            StringBuffer sb = new StringBuffer();
-            String queryFragment = f.getQueryFragment();
-            Matcher m = ident.matcher(queryFragment);
-            boolean found = false;
-            while (m.find()) {
-                String id = queryFragment.substring(m.start(), m.end());
-                int after = -1;
-                for (int index = m.end(); index < queryFragment.length(); index++) {
-                    char c = queryFragment.charAt(index);
-                    if (c == ' ' || c == '\t') {
-                        continue;
-                    }
-                    after = c;
-                    break;
-                }
-                int before = -1;
-                for (int index = m.start() - 1; index >= 0; index--) {
-                    char c = queryFragment.charAt(index);
-                    if (c == ' ' || c == '\t') {
-                        continue;
-                    }
-                    before = c;
-                    break;
-                }
-				//TODO: either look for other keywords (than end) or better rewrite this with ASTs
-                if (before == '.' || id.equals("this") || id.equals("actor") || id.equals("end")
-                        || f.getParameters().getFieldDefinition(id) != null) {
-                    continue;
-                }
-                if (dd.getFieldDefinition(id) != null || after == '(' && funcNames.get(id) != null) {
-                    m.appendReplacement(sb, "this." + id);
-                    found = true;
-                }
-            }
-            m.appendTail(sb);
-            if (found) {
-                java.util.logging.Logger.getLogger("org.makumba.db.query.inline").fine(
-                    queryFragment + " -> " + sb.toString());
-                
-                // now parse the function text to see if that's okay
-                AST tree = getParsedFunction(f.getName(), sb.toString(), f.toString());
-                
-                f = new QueryFragmentFunction(f.getName(), f.getSessionVariableName(), sb.toString(),
-                        f.getParameters(), f.getErrorMessage(), tree);
-
-            }
             dd.addFunction(f.getName(), f);
         }
     }
