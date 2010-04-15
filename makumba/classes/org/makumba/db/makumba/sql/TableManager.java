@@ -991,7 +991,7 @@ public class TableManager extends Table {
         return b;
     }
 
-    static SimpleDateFormat sqlDateFormat= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    static SimpleDateFormat sqlDateFormat= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     // moved from dateTimeManager
     /**
@@ -999,7 +999,13 @@ public class TableManager extends Table {
      * field is null
      */
     public Object get_dateTime_Value(String fieldName, ResultSet rs, int i) throws SQLException {
-        // FIXME: why not use rs.getTimestamp(i) ?
+        // we try to use rs.getTimestamp first; if that fails, get it as an object, and proceed
+        try {
+            return rs.getTimestamp(i);
+        } catch (Throwable t) {
+            
+        }
+
         Object o = rs.getObject(i);
         if (rs.wasNull())
             return null;
