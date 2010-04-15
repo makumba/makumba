@@ -460,7 +460,7 @@ public class ComposedQuery {
     }
     
     public String getComputedQuery() {
-        return getClass().getSimpleName() + ": " + computeQuery(derivedSections, false);
+        return computeQuery(derivedSections, false);
     }    
 
     /**
