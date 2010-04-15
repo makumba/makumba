@@ -43,7 +43,7 @@ public class Pass1FunctionInliner {
             DataDefinition calleeType = DataDefinitionProvider.getInstance().getDataDefinition(
                 s.substring(0, s.lastIndexOf(' ')));
             QueryFragmentFunction func = calleeType.getFunction(s.substring(s.lastIndexOf(' ') + 1));
-            String queryFragment = "SELECT " + func.getQueryFragment() + " FROM " + calleeType.getName() + " this";
+            String queryFragment = "SELECT " + QueryAnalysisProvider.addThisToFunction(calleeType, func) + " FROM " + calleeType.getName() + " this";
             try {
                 // TODO: this should move to the MDD analyzer after solving chicken-egg
                 // however, note that a new Query analysis method is needed (with known labels)
@@ -163,6 +163,8 @@ public class Pass1FunctionInliner {
             String methodName = callee.getNextSibling().getText();
 
             boolean isStatic = false;
+            
+            // determine whether the callee is a DataDefinition name, in which case we have a static function
             DataDefinition calleeType = null;
             if (callee.getType() == HqlTokenTypes.DOT) {
                 AST c = callee.getFirstChild();
@@ -193,16 +195,27 @@ public class Pass1FunctionInliner {
             if (parsed instanceof ProgrammerError)
                 throw (ProgrammerError) parsed;
 
-            // TODO: parsed here contains the pass2 parsing of the function body.
-            // we could re-use its pass1 tree here, but this fails for FROM projman.Principal x WHERE x.actor()
-            String queryFragment = "SELECT " + func.getQueryFragment() + " FROM " + calleeType.getName() + " this";
-
-            AST funcAST = QueryAnalysisProvider.parseQuery(queryFragment)
+            AST funcAST = new HqlASTFactory().dupTree(((MqlQueryAnalysis) parsed).getPass1Tree());
+            // QueryAnalysisProvider.parseQuery(queryFragment)
+            
+            AST from= funcAST.getFirstChild().getFirstChild().getFirstChild();
+            // at this point, from should be "Type this"
+            // but if that has siblings, we need to add them to the FROM of the outer query
+            // since they come from from-where enrichment, probably from actors
+            // TODO: maybe consider whether we should cache the function AST and the from-where enrichments separately
+            from= from.getNextSibling();
+            while(from!=null){
+                state.extraFrom.add(from);
+                from= from.getNextSibling();
+            }
+            // similarly if we have a WHERE, that can only come from previous enrichment, so we propagate it
+            AST where = funcAST.getFirstChild().getNextSibling();
+            if(where!=null && where.getType()==HqlTokenTypes.WHERE)
+                state.extraWhere.add(where.getFirstChild());
+            
+                
             // we go from query-> SELECT_FROM -> FROM-> SELELECT -> 1st projection
-            .getFirstChild().getFirstChild().getNextSibling().getFirstChild();
-
-            // new
-            // HqlASTFactory().dupTree(func.getParsedQueryFragment()).getFirstChild().getFirstChild().getNextSibling();
+            funcAST= funcAST.getFirstChild().getFirstChild().getNextSibling().getFirstChild();
 
             DataDefinition para = func.getParameters();
             AST exprList = current.getFirstChild().getNextSibling();
@@ -433,7 +446,6 @@ public class Pass1FunctionInliner {
                 line++;
                 if (query.trim().startsWith("#"))
                     continue;
-                System.out.println(query);
 
                 AST processedAST = inlineAST(QueryAnalysisProvider.parseQuery(QueryAnalysisProvider.checkForFrom(query)));
                 QueryAnalysisProvider.reduceDummyFrom(processedAST);
@@ -448,8 +460,6 @@ public class Pass1FunctionInliner {
                 }
 
                 // new MakumbaDumpASTVisitor(false).visit(processedAST);
-
-                // System.out.println(oldInline);
 
                 // AST a= flatten(processedAST);
                 // new MakumbaDumpASTVisitor(false).visit(a);
