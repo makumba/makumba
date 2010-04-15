@@ -10,12 +10,14 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.makumba.DataDefinition;
+import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.ProgrammerError;
 import org.makumba.DataDefinition.QueryFragmentFunction;
 import org.makumba.commons.ClassResource;
 import org.makumba.providers.datadefinition.mdd.MakumbaDumpASTVisitor;
+import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.query.mql.ASTUtil;
@@ -32,30 +34,36 @@ public class Pass1FunctionInliner {
 
     public static Logger logger = Logger.getLogger("org.makumba.db.query.inline");
 
-
     public static interface ASTVisitor {
         public AST visit(TraverseState state, AST a);
     }
 
     static class TraverseState {
+        boolean repetitive;
+
+        TraverseState(boolean repetitive) {
+            this.repetitive = repetitive;
+        }
+
         List<AST> path = new ArrayList<AST>();
 
         List<AST> extraFrom = new ArrayList<AST>();
 
         List<AST> extraWhere = new ArrayList<AST>();
-        
+
         // FIXME: extraFrom and extraWhere should also indicate to what query they should add
         // for now everything is added to the root query
     }
 
     /**
-     * recursively traverse the tree, and transform it via a visitor.
-     * keep a traversal state, which includes the path from the tree root to the current node
+     * recursively traverse the tree, and transform it via a visitor. keep a traversal state, which includes the path
+     * from the tree root to the current node
      */
     static AST traverse(TraverseState state, AST current, ASTVisitor v) {
         if (current == null)
             return null;
 
+        boolean wasReplaced = false;
         // while traversal returns new stuff (e.g. an inlined function is still a function to inline) we repeat
         while (true) {
             AST current1 = v.visit(state, current);
@@ -65,13 +73,22 @@ public class Pass1FunctionInliner {
                 // and link it to the rest of our tree
                 current2.setNextSibling(current.getNextSibling());
                 current = current2;
+                if (!state.repetitive) {
+                    wasReplaced = true;
+                    // if we do not need to traverse what we replaced we go on
+                    break;
+                }
             } else
                 break;
         }
-        state.path.add(current);
-        current.setFirstChild(traverse(state, current.getFirstChild(), v));
-        state.path.remove(state.path.size() - 1);
+        // if we replaced already, and we are not repetitive, we do't go deep
+        if (!wasReplaced) {
+            state.path.add(current);
+            current.setFirstChild(traverse(state, current.getFirstChild(), v));
+            state.path.remove(state.path.size() - 1);
+        }
 
+        // but we go wide
         current.setNextSibling(traverse(state, current.getNextSibling(), v));
 
         return current;
@@ -87,14 +104,12 @@ public class Pass1FunctionInliner {
     // do{ stack.add(a); visit(a); } while((a=a.getFirstChild())!=null);
     // do{ if(stack.isEmpty()) break root; a= stack.remove( stack.size() - 1).getNextSibling(); } while(a==null);
     // }
-
-    
     /** The core inliner method: inline functions in an AST tree */
     public static AST inlineAST(AST parsed) {
         // new MakumbaDumpASTVisitor(false).visit(parsed);
 
         // inlining is a simple question of traversal with the inliner visitor
-        TraverseState state = new TraverseState();
+        TraverseState state = new TraverseState(true);
         AST ret = traverse(state, parsed, InlineVisitor.singleton);
 
         // and of adding the from and where sections discovered during inlining
@@ -124,8 +139,24 @@ public class Pass1FunctionInliner {
             final AST callee = current.getFirstChild().getFirstChild();
             String methodName = callee.getNextSibling().getText();
 
+            boolean isStatic = false;
+            DataDefinition calleeType = null;
+            if (callee.getType() == HqlTokenTypes.DOT) {
+                AST c = callee.getFirstChild();
+                while (c.getType() == HqlTokenTypes.DOT && c.getNextSibling().getType() == HqlTokenTypes.IDENT)
+                    c = c.getFirstChild();
+                if (c.getType() == HqlTokenTypes.IDENT) {
+                    try {
+                        calleeType = DataDefinitionProvider.getInstance().getDataDefinition(ASTUtil.getPath(callee));
+                        isStatic = true;
+                    } catch (DataDefinitionNotFoundError e) {
+                    }
+                }
+            }
+
             // FIXME: this will blow if the expression is not a pointer. check that and throw exception
-            DataDefinition calleeType = findType(state.path, callee).getPointedType();
+            if (calleeType == null)
+                calleeType = findType(state.path, callee).getPointedType();
 
             QueryFragmentFunction func = calleeType.getFunction(methodName);
 
@@ -135,21 +166,20 @@ public class Pass1FunctionInliner {
             // then the function tree should be duplicated here, also using traverse()
             // not sure whether MDDs need to return the rewritten function as text?
             // TODO: separate traverse() in a commons utility class
-            
+
             String queryFragment = "SELECT " + func.getQueryFragment() + " FROM " + calleeType.getName() + " this";
-            try{
+            try {
                 // TODO: this should move to the MDD analyzer after solving chicken-egg
                 // otherwise we call inlining during inlining, which works but it's better to do it only once
                 // and then be sure that the respective query fragment is ok
-                new MqlQueryAnalysis(queryFragment, false, false);
-            }catch(Throwable t){
-                throw new ProgrammerError(t, "Error parsing function "+func.getName() +" from MDD "+ calleeType+"\n"+t.getMessage());
+                new MqlQueryAnalysis(queryFragment, func.getParameters());
+            } catch (Throwable t) {
+                throw new ProgrammerError(t, "Error parsing function " + func.getName() + " from MDD " + calleeType
+                        + "\n" + t.getMessage());
             }
-            AST funcAST = 
-                QueryAnalysisProvider
-                 .parseQuery(queryFragment)
+            AST funcAST = QueryAnalysisProvider.parseQuery(queryFragment)
             // we go from query-> SELECT_FROM -> FROM-> SELELECT -> 1st projection
-                .getFirstChild().getFirstChild().getNextSibling().getFirstChild();
+            .getFirstChild().getFirstChild().getNextSibling().getFirstChild();
 
             // new
             // HqlASTFactory().dupTree(func.getParsedQueryFragment()).getFirstChild().getFirstChild().getNextSibling();
@@ -170,18 +200,19 @@ public class Pass1FunctionInliner {
             }
 
             // now we visit the function AST and replace this with the callee
-            AST ret = traverse(new TraverseState(), funcAST, new ASTVisitor() {
-                public AST visit(TraverseState state, AST node) {
-                    // for each "this" node, we put the callee instead
-                    if (node.getType() == HqlTokenTypes.IDENT && node.getText().equals("this"))
-                        return callee;
-                    return node;
-                }
+            AST ret = funcAST;
+            if (!isStatic)
+                ret = traverse(new TraverseState(false), funcAST, new ASTVisitor() {
+                    public AST visit(TraverseState state, AST node) {
+                        // for each "this" node, we put the callee instead
+                        if (node.getType() == HqlTokenTypes.IDENT && node.getText().equals("this"))
+                            return callee;
+                        return node;
+                    }
 
-            });
-
+                });
             // then we visit the function more, and replace parameter names with parameter expressions
-            ret = traverse(new TraverseState(), ret, new ASTVisitor() {
+            ret = traverse(new TraverseState(false), ret, new ASTVisitor() {
                 public AST visit(TraverseState state, AST node) {
                     // for each parameter node, we put the param expression instead
                     if (node.getType() == HqlTokenTypes.IDENT && paramExpr.get(node.getText()) != null &&
@@ -297,25 +328,26 @@ public class Pass1FunctionInliner {
             }
         }
     }
-    
-    // this code is _experimental_ 
+
+    // this code is _experimental_
     static class SubqueryReductionVisitor implements ASTVisitor {
 
         public AST visit(TraverseState state, AST current) {
             // we are after queries, but not the root query
-            if(current.getType()!= HqlTokenTypes.QUERY || state.path.size()==0)
+            if (current.getType() != HqlTokenTypes.QUERY || state.path.size() == 0)
                 return current;
             // the reduction is defensive (i.e. we do not reduce unless we are sure that there are no problems)
-            AST parent= state.path.get(state.path.size()-1);
-            
+            AST parent = state.path.get(state.path.size() - 1);
+
             // if we are the second child of the parent, then operator IN expects a multiple-result query
-            if(parent.getFirstChild()!=current)
-                if(parent.getType()== HqlTokenTypes.IN)
+            if (parent.getFirstChild() != current)
+                if (parent.getType() == HqlTokenTypes.IN)
                     return current;
-                else;
+                else
+                    ;
             else
                 // aggregate operators expect a multiple-result query
-                switch(parent.getType()){
+                switch (parent.getType()) {
                     case HqlTokenTypes.EXISTS:
                     case HqlTokenTypes.COUNT:
                     case HqlTokenTypes.MAX:
@@ -324,31 +356,32 @@ public class Pass1FunctionInliner {
                     case HqlTokenTypes.INDICES:
                         return current;
                 }
- 
+
             // TODO: postorder, depth-first traversal!
-            // TODO: currently we only add to the root query, maybe we should add to the enclosing query, and flatten iteratively
-            
+            // TODO: currently we only add to the root query, maybe we should add to the enclosing query, and flatten
+            // iteratively
+
             // TODO: not inline queries with a groupBy, queries without a where
             // TODO: queries that have orderby, or more than one projection, should not be accepted here?
 
-            // FIXME: i don't think that these copy more than the 1st child (FROM range, WHERE condition), got to check. 
+            // FIXME: i don't think that these copy more than the 1st child (FROM range, WHERE condition), got to check.
             state.extraFrom.add(current.getFirstChild().getFirstChild().getFirstChild());
-             
-            if(current.getFirstChild().getNextSibling().getType()==HqlTokenTypes.WHERE)                
+
+            if (current.getFirstChild().getNextSibling().getType() == HqlTokenTypes.WHERE)
                 state.extraWhere.add(current.getFirstChild().getNextSibling().getFirstChild());
-            
-            AST proj= current.getFirstChild().getFirstChild().getNextSibling().getFirstChild();
+
+            AST proj = current.getFirstChild().getFirstChild().getNextSibling().getFirstChild();
 
             // FIXME: the distinct should go to the decorated query
-            if(proj.getType()== HqlTokenTypes.DISTINCT)
-                proj= proj.getNextSibling();
+            if (proj.getType() == HqlTokenTypes.DISTINCT)
+                proj = proj.getNextSibling();
             return proj;
         }
     }
-    
+
     private static AST flatten(AST processedAST) {
-        TraverseState s= new TraverseState();
-        AST a= traverse(s, processedAST, new SubqueryReductionVisitor());
+        TraverseState s = new TraverseState(true);
+        AST a = traverse(s, processedAST, new SubqueryReductionVisitor());
         addFromWhere(a, s);
         return a;
     }
@@ -365,7 +398,7 @@ public class Pass1FunctionInliner {
 
         return current2;
     }
-    
+
     /**
      * @param args
      */
@@ -378,34 +411,39 @@ public class Pass1FunctionInliner {
 
             while ((query = rd.readLine()) != null) {
                 line++;
-
                 if (query.trim().startsWith("#"))
                     continue;
-                String oldInline= FunctionInliner.inline(query, QueryProvider.getQueryAnalzyer("oql"));
-                Throwable oldError=null;
-                AST compAST=null;
-                try{
-                    compAST = QueryAnalysisProvider.parseQuery(oldInline);
-                }catch(Throwable t){oldError=t; }
-                
+                System.out.println(query);
+
                 AST processedAST = inlineAST(QueryAnalysisProvider.parseQuery(QueryAnalysisProvider.checkForFrom(query)));
                 QueryAnalysisProvider.reduceDummyFrom(processedAST);
-                //new MakumbaDumpASTVisitor(false).visit(processedAST);
-                
-                //System.out.println(oldInline);
-                
-                //AST a= flatten(processedAST);                    
-                //    new MakumbaDumpASTVisitor(false).visit(a);
 
-                    //new MakumbaDumpASTVisitor(false).visit(a);
+                String oldInline = FunctionInliner.inline(query, QueryProvider.getQueryAnalzyer("oql"));
+                Throwable oldError = null;
+                AST compAST = null;
+                try {
+                    compAST = QueryAnalysisProvider.parseQuery(oldInline);
+                } catch (Throwable t) {
+                    oldError = t;
+                }
 
-                //if(line==1)
-                //    new MakumbaDumpASTVisitor(false).visit(new MqlQueryAnalysis(oldInline, false, false).getAnalyserTree());
+                // new MakumbaDumpASTVisitor(false).visit(processedAST);
 
-                    if (!compare(new ArrayList<AST>(), processedAST, compAST)) {
+                // System.out.println(oldInline);
+
+                // AST a= flatten(processedAST);
+                // new MakumbaDumpASTVisitor(false).visit(a);
+
+                // new MakumbaDumpASTVisitor(false).visit(a);
+
+                // if(line==1)
+                // new MakumbaDumpASTVisitor(false).visit(new MqlQueryAnalysis(oldInline, false,
+                // false).getAnalyserTree());
+
+                if (!compare(new ArrayList<AST>(), processedAST, compAST)) {
                     System.err.println(line + ": " + query);
                     if (oldError != null)
-                        System.err.println(line+": old inliner failed! "+ oldError+ " query was: "+ oldInline);
+                        System.err.println(line + ": old inliner failed! " + oldError + " query was: " + oldInline);
                     else {
                         new MakumbaDumpASTVisitor(false).visit(processedAST);
                         new MakumbaDumpASTVisitor(false).visit(compAST);
