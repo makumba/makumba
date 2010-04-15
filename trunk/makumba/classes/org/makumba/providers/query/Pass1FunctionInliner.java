@@ -192,6 +192,12 @@ public class Pass1FunctionInliner {
             if (parsed instanceof ProgrammerError)
                 throw (ProgrammerError) parsed;
 
+            // FIXME: at this point, from the QueryAnalysis (pass2) we know the function return type!
+            // In order to see whether the function fits in the expression it is put in, 
+            // we could replace the function with a constant of that type and analyze that expression 
+            // using e.g. findType(). This would allow us to find an error in the orignal query, 
+            // on the original query text, and therefore with an accurate line-column indication
+            
             // we duplicate the tree as we are going to change it
             AST funcAST = new HqlASTFactory().dupTree(((MqlQueryAnalysis) parsed).getPass1Tree());
             // QueryAnalysisProvider.parseQuery(queryFragment)
@@ -370,8 +376,9 @@ public class Pass1FunctionInliner {
      * Parse the function and add this nodes where they are needed
      */
     static AST parseAndAddThis(final DataDefinition calleeType, final QueryFragmentFunction func) {
-        AST pass1 = QueryAnalysisProvider.parseQuery("SELECT " + func.getQueryFragment() + " FROM "
-                + calleeType.getName() + " this");
+        boolean subquery= func.getQueryFragment().trim().toUpperCase().startsWith("SELECT");
+        AST pass1 = QueryAnalysisProvider.parseQuery("SELECT " + (subquery?"(":"")+func.getQueryFragment() + " FROM "
+                + calleeType.getName() + " this"+(subquery?")":""));
 
         pass1 = traverse(new TraverseState(false), pass1, new ASTVisitor() {
 
@@ -462,6 +469,8 @@ public class Pass1FunctionInliner {
             // TODO: postorder, depth-first traversal!
             // TODO: currently we only add to the root query, maybe we should add to the enclosing query, and flatten
             // iteratively
+            
+            // TODO: left join when enriching the outer query in order not to mess up its result?
 
             // TODO: not inline queries with a groupBy, queries without a where
             // TODO: queries that have orderby, or more than one projection, should not be accepted here?
