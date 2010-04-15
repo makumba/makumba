@@ -2,11 +2,13 @@ package org.makumba.commons;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 
 import org.apache.commons.collections.EnumerationUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 
 /**
  * This class provides utility methods for String manipulation.
@@ -264,6 +266,12 @@ public class StringUtils {
 
     public static String reverseString(String s) {
         return new StringBuilder(s).reverse().toString();
+    }
+
+    public static String getExceptionStackTrace(Exception e) {
+        ByteArrayOutputStream ba = new ByteArrayOutputStream();
+        e.printStackTrace(new PrintStream(ba));
+        return ba.toString();
     }
 
 }
