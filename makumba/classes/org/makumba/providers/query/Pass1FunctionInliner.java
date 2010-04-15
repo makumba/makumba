@@ -16,6 +16,8 @@ import org.makumba.InvalidValueException;
 import org.makumba.ProgrammerError;
 import org.makumba.DataDefinition.QueryFragmentFunction;
 import org.makumba.commons.ClassResource;
+import org.makumba.commons.NamedResourceFactory;
+import org.makumba.commons.NamedResources;
 import org.makumba.providers.datadefinition.mdd.MakumbaDumpASTVisitor;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysisProvider;
@@ -33,6 +35,27 @@ public class Pass1FunctionInliner {
     static final HqlASTFactory fact = new HqlASTFactory();
 
     public static Logger logger = Logger.getLogger("org.makumba.db.query.inline");
+
+    static int functionCache = NamedResources.makeStaticCache("function pass2 analyses", new NamedResourceFactory() {
+        @Override
+        protected Object makeResource(Object name) {
+            String s = (String) name;
+            DataDefinition calleeType = DataDefinitionProvider.getInstance().getDataDefinition(
+                s.substring(0, s.lastIndexOf(' ')));
+            QueryFragmentFunction func = calleeType.getFunction(s.substring(s.lastIndexOf(' ') + 1));
+            String queryFragment = "SELECT " + func.getQueryFragment() + " FROM " + calleeType.getName() + " this";
+            try {
+                // TODO: this should move to the MDD analyzer after solving chicken-egg
+                // however, note that a new Query analysis method is needed (with known labels)
+                // note also that this leads to calls of this inliner, which works.
+                return new MqlQueryAnalysis(queryFragment, func.getParameters());
+            } catch (Throwable t) {
+                return new ProgrammerError(t, "Error parsing function " + func.getName() + " from MDD " + calleeType
+                        + "\n" + t.getMessage());
+            }
+        }
+
+    });
 
     public static interface ASTVisitor {
         public AST visit(TraverseState state, AST a);
@@ -160,23 +183,20 @@ public class Pass1FunctionInliner {
 
             QueryFragmentFunction func = calleeType.getFunction(methodName);
 
-            // we do a new function body parsing rather than using the AST stored in the MDD,
-            // because we will heavily change the tree
             // FIXME: the MDD function body rewriting to add "this" should also be done with ASTs using traverse()
             // then the function tree should be duplicated here, also using traverse()
             // not sure whether MDDs need to return the rewritten function as text?
             // TODO: separate traverse() in a commons utility class
 
+            Object parsed = NamedResources.getStaticCache(functionCache).getResource(
+                calleeType.getName() + " " + func.getName());
+            if (parsed instanceof ProgrammerError)
+                throw (ProgrammerError) parsed;
+
+            // TODO: parsed here contains the pass2 parsing of the function body.
+            // we could re-use its pass1 tree here, but this fails for FROM projman.Principal x WHERE x.actor()
             String queryFragment = "SELECT " + func.getQueryFragment() + " FROM " + calleeType.getName() + " this";
-            try {
-                // TODO: this should move to the MDD analyzer after solving chicken-egg
-                // otherwise we call inlining during inlining, which works but it's better to do it only once
-                // and then be sure that the respective query fragment is ok
-                new MqlQueryAnalysis(queryFragment, func.getParameters());
-            } catch (Throwable t) {
-                throw new ProgrammerError(t, "Error parsing function " + func.getName() + " from MDD " + calleeType
-                        + "\n" + t.getMessage());
-            }
+
             AST funcAST = QueryAnalysisProvider.parseQuery(queryFragment)
             // we go from query-> SELECT_FROM -> FROM-> SELELECT -> 1st projection
             .getFirstChild().getFirstChild().getNextSibling().getFirstChild();
