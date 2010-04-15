@@ -102,7 +102,7 @@ public class MDDNode extends CommonAST {
     }
     
     public void addFunction(FunctionNode funct, AST parsedFunction) {
-        DataDefinition.QueryFragmentFunction function = new DataDefinition.QueryFragmentFunction(funct.name, funct.sessionVariableName, funct.queryFragment, funct.parameters, funct.errorMessage, parsedFunction);
+        DataDefinition.QueryFragmentFunction function = new DataDefinition.QueryFragmentFunction(null, funct.name, funct.sessionVariableName, funct.queryFragment, funct.parameters, funct.errorMessage, parsedFunction);
         funct.function = function;
         functions.put(function.getName(), function);
     }

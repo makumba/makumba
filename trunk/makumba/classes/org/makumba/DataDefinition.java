@@ -28,7 +28,6 @@ package org.makumba;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Iterator;
 import java.util.Vector;
@@ -132,20 +131,8 @@ public interface DataDefinition {
     /** Gets all the fields that have the unique modifier. */
     public ArrayList<FieldDefinition> getUniqueFields();
 
-    /** Returns the function with the specific name. */
-    public QueryFragmentFunction getFunction(String name);
-
-    /** adds a new function to this data definition. */
-    public void addFunction(String name, QueryFragmentFunction function);
-
     /** returns all functions in this data definition. */
-    public Collection<QueryFragmentFunction> getFunctions();
-
-    /** returns all actor functions in this data definition. */
-    public Collection<QueryFragmentFunction> getActorFunctions();
-
-    /** returns all actor functions in this data definition. */
-    public Collection<QueryFragmentFunction> getSessionFunctions();
+    public QueryFragmentFunctions getFunctions();
 
     class QueryFragmentFunction implements Serializable {
         private static final long serialVersionUID = 1L;
@@ -161,13 +148,15 @@ public interface DataDefinition {
         private DataDefinition parameters;
 
         private String errorMessage;
-        
+
+        private DataDefinition holder;
+
         public AST getParsedQueryFragment() {
             return parsedQueryFragment;
         }
 
-        public QueryFragmentFunction(String name, String sessionVariableName, String queryFragment,
-                DataDefinition parameters, String errorMessage, AST parsedQueryFragment) {
+        public QueryFragmentFunction(DataDefinition holder, String name, String sessionVariableName,
+                String queryFragment, DataDefinition parameters, String errorMessage, AST parsedQueryFragment) {
             super();
             this.name = name;
             this.sessionVariableName = sessionVariableName;
@@ -179,10 +168,19 @@ public interface DataDefinition {
                 this.errorMessage = "";
             }
             this.parsedQueryFragment = parsedQueryFragment;
+            this.holder=holder; 
         }
 
         public String getName() {
             return name;
+        }
+        
+        public DataDefinition getHoldingDataDefinition() {
+            return holder;
+        }
+        
+        public void setHoldingDataDefinition(DataDefinition holder) {
+            this.holder = holder;
         }
 
         public String getSessionVariableName() {
@@ -228,7 +226,7 @@ public interface DataDefinition {
             return (org.apache.commons.lang.StringUtils.isNotBlank(sessionVariableName) ? sessionVariableName + "%"
                             : "") + getName() + "(" + s + ") { " + queryFragment.trim() + " } " + (org.apache.commons.lang.StringUtils.isNotBlank(errorMessage) ? ":\""+errorMessage+"\"" : "");
         }
-
+        
     }
 
     /** Data structure holding the definition of a mult-field unique key. */

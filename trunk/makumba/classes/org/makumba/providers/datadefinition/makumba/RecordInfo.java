@@ -39,9 +39,9 @@ import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.DataDefinitionParseError;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
+import org.makumba.QueryFragmentFunctions;
 import org.makumba.ValidationDefinition;
 import org.makumba.ValidationRule;
-import org.makumba.DataDefinition.QueryFragmentFunction;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.commons.RuntimeWrappedException;
@@ -69,7 +69,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
 
     Vector<String> fieldOrder = new Vector<String>();
 
-    HashMap<String, QueryFragmentFunction> functionNames = new HashMap<String, QueryFragmentFunction>();
+    QueryFragmentFunctions functions = new QueryFragmentFunctions();
 
     String title;
 
@@ -373,38 +373,6 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
         return getFieldDefinition(fieldOrder.elementAt(n));
     }
 
-    public QueryFragmentFunction getFunction(String name) {
-        return functionNames.get(name);
-    }
-
-    public void addFunction(String name, QueryFragmentFunction function) {
-        functionNames.put(name, function);
-    }
-
-    public Collection<QueryFragmentFunction> getFunctions() {
-        return functionNames.values();
-    }
-
-    public Collection<QueryFragmentFunction> getActorFunctions() {
-        ArrayList<QueryFragmentFunction> actorFunctions = new ArrayList<QueryFragmentFunction>();
-        for (QueryFragmentFunction function : functionNames.values()) {
-            if (function.isActorFunction()) {
-                actorFunctions.add(function);
-            }
-        }
-        return actorFunctions;
-    }
-
-    public Collection<QueryFragmentFunction> getSessionFunctions() {
-        ArrayList<QueryFragmentFunction> sessionFunctions = new ArrayList<QueryFragmentFunction>();
-        for (QueryFragmentFunction function : functionNames.values()) {
-            if (function.isSessionFunction()) {
-                sessionFunctions.add(function);
-            }
-        }
-        return sessionFunctions;
-    }
-
     /** returns the path-like abstract-level name of this record info */
     public String getName() {
         return name + ptrSubfield;
@@ -567,11 +535,17 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
         getFieldDefinition(fieldName).checkUpdate(d);
     }
 
+    public QueryFragmentFunctions getFunctions() {
+        return functions;
+    }
+
     /** returns the field info associated with a name */
     public QueryFragmentFunction getFunctionOrPointedFunction(String nm) {
-        if (getFunction(nm) != null) {
-            return getFunction(nm);
+        if (getFunctions().getFunction(nm) != null) {
+            return getFunctions().getFunction(nm);
         }
+
+        // FIXME: remove duplicated code from getFieldOrPointedFieldDefinition
         String fieldName = nm;
         DataDefinition dd = this;
 
@@ -582,7 +556,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
             FieldDefinition fieldDefinition = dd.getFieldDefinition(subFieldName);
             dd = fieldDefinition.getPointedType();
         }
-        return dd.getFunction(fieldName);
+        return dd.getFunctions().getFunction(fieldName);
     }
 
     public String getStructure() {

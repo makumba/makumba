@@ -42,7 +42,7 @@ public class Pass1FunctionInliner {
             String s = (String) name;
             DataDefinition calleeType = DataDefinitionProvider.getInstance().getDataDefinition(
                 s.substring(0, s.lastIndexOf(' ')));
-            QueryFragmentFunction func = calleeType.getFunction(s.substring(s.lastIndexOf(' ') + 1));
+            QueryFragmentFunction func = calleeType.getFunctions().getFunction(s.substring(s.lastIndexOf(' ') + 1));
             String queryFragment = "SELECT " + QueryAnalysisProvider.addThisToFunction(calleeType, func) + " FROM " + calleeType.getName() + " this";
             try {
                 // TODO: this should move to the MDD analyzer after solving chicken-egg
@@ -183,7 +183,7 @@ public class Pass1FunctionInliner {
             if (calleeType == null)
                 calleeType = findType(state.path, callee).getPointedType();
 
-            QueryFragmentFunction func = calleeType.getFunction(methodName);
+            QueryFragmentFunction func = calleeType.getFunctions().getFunction(methodName);
 
             // FIXME: the MDD function body rewriting to add "this" should also be done with ASTs using traverse()
             // then the function tree should be duplicated here, also using traverse()

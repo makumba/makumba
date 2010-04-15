@@ -343,7 +343,7 @@ public abstract class QueryAnalysisProvider {
             if (before == '.' || id.equals("this") || id.equals("actor") || id.equals("end") || func.getParameters().getFieldDefinition(id) != null) {
                 continue;
             }
-            if (mdd.getFieldDefinition(id) != null || after == '(' && mdd.getFunction(id) != null) {
+            if (mdd.getFieldDefinition(id) != null || after == '(' && mdd.getFunctions().getFunction(id) != null) {
                 m.appendReplacement(sb, "this." + id);
                 found = true;
             }

@@ -558,7 +558,7 @@ public class RecordParser {
             }
         }
 
-        DataDefinition.QueryFragmentFunction function = new DataDefinition.QueryFragmentFunction(name,
+        DataDefinition.QueryFragmentFunction function = new DataDefinition.QueryFragmentFunction(dd, name,
                 sessionVariableName, queryFragment, ddParams, errorMessage, null);
         funcNames.put(function.getName(), function);
         return true;
@@ -569,7 +569,7 @@ public class RecordParser {
     void compileFunctions() {
         for (String fn : funcNames.keySet()) {
             QueryFragmentFunction f = funcNames.get(fn);
-            dd.addFunction(f.getName(), f);
+            dd.getFunctions().addFunction(f.getName(), f);
         }
     }
     
@@ -1387,7 +1387,7 @@ public class RecordParser {
 
     private static void printFunctions(DataDefinition dd) {
         System.out.println("Functions in " + dd);
-        Collection<QueryFragmentFunction> functions = dd.getFunctions();
+        Collection<QueryFragmentFunction> functions = dd.getFunctions().getFunctions();
         for (QueryFragmentFunction queryFragmentFunction : functions) {
             System.out.println("\t" + queryFragmentFunction);
             System.out.println("\t\tparameters:");
