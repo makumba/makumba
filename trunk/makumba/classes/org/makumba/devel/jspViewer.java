@@ -27,7 +27,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -38,8 +37,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.makumba.MakumbaError;
+import org.makumba.OQLParseError;
 import org.makumba.ProgrammerError;
-import org.makumba.Transaction;
 import org.makumba.analyser.PageCache;
 import org.makumba.analyser.TagData;
 import org.makumba.analyser.engine.JspParseData;
@@ -48,14 +47,19 @@ import org.makumba.analyser.engine.SyntaxPoint;
 import org.makumba.analyser.engine.TomcatJsp;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
-import org.makumba.db.makumba.DBConnection;
-import org.makumba.db.makumba.Query;
+import org.makumba.commons.RuntimeWrappedException;
+import org.makumba.db.makumba.MakumbaTransactionProvider;
+import org.makumba.db.makumba.sql.Database;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.tags.QueryTag;
 import org.makumba.providers.Configuration;
+import org.makumba.providers.QueryAnalysis;
+import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.query.FunctionInliner;
+import org.makumba.providers.query.mql.MqlQueryAnalysis;
+import org.makumba.providers.query.mql.MqlSQLParameterTransformer;
 
 /**
  * This class implements a viewer for .jsp files, and provides highlighting of <mak:>, <jsp:>and JSTL tags.
@@ -375,29 +379,33 @@ public class jspViewer extends LineViewer {
                                 String queryOQL = ((ComposedQuery) queryCache.get(tagKey)).getComputedQuery();
                                 currentText.append("OQL: " + queryOQL + "<br/>");
                                 // FIXME: use default inliner, with QueryAnalysisProvider.inlineFunctions
-                                String queryInlined = FunctionInliner.inline(queryOQL,
-                                    QueryProvider.getQueryAnalzyer("oql"));
+                                QueryAnalysisProvider queryAnalzyer = QueryProvider.getQueryAnalzyer("oql");
+                                String queryInlined = FunctionInliner.inline(queryOQL, queryAnalzyer);
                                 if (!queryInlined.equals(queryOQL)) {
                                     currentText.append("OQL inlined: " + queryInlined + "<br/>");
                                 }
 
-                                Transaction t = null;
                                 try {
-                                    t = TransactionProvider.getInstance().getConnectionTo(
-                                        TransactionProvider.getInstance().getDefaultDataSourceName());
-                                    Query oqlQuery = ((DBConnection) t).getQuery(queryOQL);
-                                    if (oqlQuery instanceof org.makumba.db.makumba.sql.Query) {
-                                        org.makumba.db.makumba.sql.Query sqlQuery = (org.makumba.db.makumba.sql.Query) oqlQuery;
-                                        currentText.append("SQL: " + sqlQuery.getCommand(new HashMap<String, Object>())
-                                                + "<br/>");
+                                    // FIXME: this seems very specific to MQL...
+                                    org.makumba.db.makumba.Database db = MakumbaTransactionProvider.getDatabase(TransactionProvider.getInstance().getDefaultDataSourceName());
+                                    if (db instanceof Database) {
+                                        QueryAnalysis qa = queryAnalzyer.getQueryAnalysis(queryInlined);
+                                        MqlSQLParameterTransformer trans = new MqlSQLParameterTransformer(
+                                                (MqlQueryAnalysis) qa);
+                                        currentText.append("SQL: "
+                                                + trans.getSQLQuery(((Database) db).getNameResolverHook()) + "<br/>");
+                                    }
+                                } catch (RuntimeWrappedException e) {
+                                    if (e.getCause() instanceof OQLParseError
+                                            && e.getMessage().contains("unexpected char: '#'")) {
+                                        currentText.append("<i>Cannot generate SQL: cannot evaluate #{...} expressions.</i>");
+                                    } else {
+                                        e.printStackTrace();
+                                        currentText.append("<i>Problem generating SQL: " + e.getMessage() + "</i>");
                                     }
                                 } catch (Exception e) {
-                                    currentText.append("<i>Problem generating SQL: "
-                                            + org.makumba.commons.StringUtils.getExceptionStackTrace(e) + "</i>");
-                                } finally {
-                                    if (t != null) {
-                                        t.close();
-                                    }
+                                    e.printStackTrace();
+                                    currentText.append("<i>Problem generating SQL: " + e.getMessage() + "</i>");
                                 }
 
                                 currentText.append("</div>");
