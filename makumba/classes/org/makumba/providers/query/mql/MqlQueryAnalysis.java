@@ -65,18 +65,11 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         else return query;
     }
     
-    public MqlQueryAnalysis(AST pass1){
-        init(false, false, pass1, null);
-        
-    }
-    public MqlQueryAnalysis(String queryAndInsert, boolean optimizeJoins, boolean autoLeftJoin){
-        this(queryAndInsert, optimizeJoins, autoLeftJoin, null);
-    }
-    public MqlQueryAnalysis(String queryAndInsert, DataDefinition knownLabels){     
-        this(queryAndInsert, false, false, knownLabels);       
+    public MqlQueryAnalysis(AST pass1, DataDefinition dd){
+        init(false, false, pass1, dd);       
     }
 
-    MqlQueryAnalysis(String queryAndInsert, boolean optimizeJoins, boolean autoLeftJoin, DataDefinition knownLabels) {
+    MqlQueryAnalysis(String queryAndInsert, boolean optimizeJoins, boolean autoLeftJoin) {
         Date d = new Date();
 
         if(queryAndInsert.startsWith("###")){
@@ -88,11 +81,9 @@ public class MqlQueryAnalysis implements QueryAnalysis {
 
         query = QueryAnalysisProvider.checkForFrom(query);
 
-        pass1= QueryAnalysisProvider.inlineFunctions(query);
+        AST parsed= QueryAnalysisProvider.inlineFunctions(query);
         
-        noFrom = QueryAnalysisProvider.reduceDummyFrom(pass1);
-        
-        AST parsed= new  HqlASTFactory().dupTree(pass1);
+        noFrom = QueryAnalysisProvider.reduceDummyFrom(parsed);
         
         /*
          * } else { if (!Configuration.getQ ueryInliner().equals("tree")) { HqlParser parser = null; try { parser =
@@ -101,18 +92,22 @@ public class MqlQueryAnalysis implements QueryAnalysis {
          * = FunctionInliner.inlineQueryTree(query); } }
          */
 
-        // we need to do the transformation first so the second-pass parser will accept the query
-        MqlQueryAnalysisProvider.transformOQLParameters(parsed, parameterOrder);
-        MqlQueryAnalysisProvider.transformOQL(parsed);
-                
-        init(optimizeJoins, autoLeftJoin, parsed, knownLabels);
+               
+        init(optimizeJoins, autoLeftJoin, parsed, null);
         
         long diff = new java.util.Date().getTime() - d.getTime();
         java.util.logging.Logger.getLogger("org.makumba.db.query.compilation").fine("MQL analysis: " + diff + " ms: " + query);
        
     }
 
-    private void init(boolean optimizeJoins, boolean autoLeftJoin, AST parsed, DataDefinition knownLabels) throws MakumbaError {
+    private void init(boolean optimizeJoins, boolean autoLeftJoin, AST pass1, DataDefinition knownLabels) throws MakumbaError {
+        this.pass1= pass1;
+        AST parsed= new  HqlASTFactory().dupTree(pass1);
+        
+        // we need to do the transformation first so the second-pass parser will accept the query
+        MqlQueryAnalysisProvider.transformOQLParameters(parsed, parameterOrder);
+        MqlQueryAnalysisProvider.transformOQL(parsed);
+ 
         MqlSqlWalker mqlAnalyzer = new MqlSqlWalker(query, insertIn, optimizeJoins, autoLeftJoin, knownLabels);
         analyser = mqlAnalyzer;
         try {
