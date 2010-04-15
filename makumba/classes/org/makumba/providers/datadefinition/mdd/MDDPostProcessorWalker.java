@@ -8,6 +8,7 @@ import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.MakumbaError;
 import org.makumba.DataDefinition.QueryFragmentFunction;
+import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.datadefinition.mdd.ComparisonExpressionNode.ComparisonType;
 import org.makumba.providers.datadefinition.mdd.validation.ComparisonValidationRule;
 import org.makumba.providers.datadefinition.mdd.validation.MultiUniquenessValidationRule;
@@ -234,73 +235,7 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
     private static final Pattern ident = Pattern.compile("[a-zA-Z]\\w*");
     
     private void compileFunction(FunctionNode funct) {
-        
-        QueryFragmentFunction f = funct.function;
-        StringBuffer sb = new StringBuffer();
-        String queryFragment = funct.queryFragment;
-        Matcher m = ident.matcher(queryFragment);
-        boolean found = false;
-        while (m.find()) {
-            String id = queryFragment.substring(m.start(), m.end());
-            int after = -1;
-            for (int index = m.end(); index < queryFragment.length(); index++) {
-                char c = queryFragment.charAt(index);
-                if (c == ' ' || c == '\t') {
-                    continue;
-                }
-                after = c;
-                break;
-            }
-            int before = -1;
-            for (int index = m.start() - 1; index >= 0; index--) {
-                char c = queryFragment.charAt(index);
-                if (c == ' ' || c == '\t') {
-                    continue;
-                }
-                before = c;
-                break;
-            }
-
-			//TODO: either look for other keywords (than end) or better rewrite this with ASTs
-            // if we have an actor we don't append "this"
-            if (before == '.' || id.equals("this") || id.equals("actor") || id.equals("end") ||funct.parameters.getFieldDefinition(id) != null) {
-                continue;
-            }
-            if (mdd.fields.get(id) != null || after == '(' && mdd.functions.get(id) != null) {
-                m.appendReplacement(sb, "this." + id);
-                found = true;
-            }
-        }
-        m.appendTail(sb);
-        if (found) {
-            java.util.logging.Logger.getLogger("org.makumba.db.query.inline").fine(queryFragment + " -> " + sb.toString());
-            
-            // we have to parse the query again now that we added this. and so forth
-            // not very efficient as we already do it on first pass, but what the heck, we want to throw good errors
-            // another way would be to defer the "this." appending to the FunctionInliner, but this is good code
-            
-            boolean subquery = sb.toString().toUpperCase().startsWith("SELECT ");
-            
-            String query = "SELECT " + (subquery?"(":"") + sb.toString() + (subquery?")":"") + " FROM " + typeName + " makumbaGeneratedAlias";
-
-            HqlParser parser = null;
-            try {
-                parser = HqlParser.getInstance(query);
-                parser.statement();
-            } catch (Throwable t) {
-                // in theory this should never happen because this process is already done at MDD parsing time
-                // where errors are being handled nicely
-                throw new RuntimeException("ok now this should not have happened.");
-            }
-            
-            funct.function = new QueryFragmentFunction(f.getName(), f.getSessionVariableName(), sb.toString(),
-                    f.getParameters(), f.getErrorMessage(), parser.getAST());
-            
-            // we re-add the function, overriding the non-processed one
-            mdd.functions.put(funct.function.getName(), funct.function);
-
-        }
-        
+        // nothing to do, will be compiled at first use
     }
 
 }

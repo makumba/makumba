@@ -49,6 +49,8 @@ public class FunctionInliner {
     private ArrayList<String> parameterExpr = new ArrayList<String>();
 
     private QueryFragmentFunction functionDefinition;
+    
+    private DataDefinition calleeType;
 
     private String inlinedFunction;
 
@@ -62,7 +64,7 @@ public class FunctionInliner {
             throw new ProgrammerError("parameter number " + parameterExpr + " does not match function "
                     + functionDefinition);
         }
-        QuerySectionProcessor func = new QuerySectionProcessor(functionDefinition.getQueryFragment(), 0);
+        QuerySectionProcessor func = new QuerySectionProcessor(QueryAnalysisProvider.addThisToFunction(calleeType, functionDefinition), 0);
         int n = 0;
         for (String parameter : parameterExpr) {
             String inlineParameter = inline(parameter, qp, qsp);
@@ -92,27 +94,26 @@ public class FunctionInliner {
     }
 
     private void findFunctionObject(Matcher m, String from, QueryAnalysisProvider qp) {
-        DataDefinition dd = null;
         if (from != null && from.length() > 0) {
-            dd = qp.getQueryAnalysis("SELECT 1 FROM " + from).getLabelType(m.group(2));
+            calleeType = qp.getQueryAnalysis("SELECT 1 FROM " + from).getLabelType(m.group(2));
         }
-        if (dd == null) {
+        if (calleeType == null) {
             String possibleMdd = m.group(1);
             int n = possibleMdd.lastIndexOf(".");
             if (n != -1) {
                 String possibleFunction = possibleMdd.substring(n + 1);
                 possibleMdd = possibleMdd.substring(0, n);
-                dd = DataDefinitionProvider.getInstance().getDataDefinition(possibleMdd.trim());
-                if (dd != null) {
-                    functionDefinition = dd.getFunction(possibleFunction.trim());
+                calleeType = DataDefinitionProvider.getInstance().getDataDefinition(possibleMdd.trim());
+                if (calleeType != null) {
+                    functionDefinition = calleeType.getFunction(possibleFunction.trim());
                 } else {
                     throw new org.makumba.DataDefinitionNotFoundError(possibleMdd);
                 }
                 if (functionDefinition == null) {
-                    throw new org.makumba.NoSuchFieldException(dd, possibleFunction);
+                    throw new org.makumba.NoSuchFieldException(calleeType, possibleFunction);
                 }
                 functionObject = null;
-                if (functionDefinition.getQueryFragment().indexOf("this") != -1) {
+                if (QueryAnalysisProvider.addThisToFunction(calleeType, functionDefinition).indexOf("this") != -1) {
                     throw new ProgrammerError("Cannot use 'this' in function used statically" + m.group());
                 }
                 return;
@@ -128,21 +129,21 @@ public class FunctionInliner {
             int dot1 = referenceSequence.indexOf(".", dot + 1);
             if (dot1 == -1) {
                 String fn = referenceSequence.substring(dot + 1);
-                functionDefinition = dd.getFunction(fn);
+                functionDefinition = calleeType.getFunction(fn);
                 if (functionDefinition == null) {
-                    throw new ProgrammerError(fn + " is not a function in " + dd.getName());
+                    throw new ProgrammerError(fn + " is not a function in " + calleeType.getName());
                 }
                 functionObject = referenceSequence.substring(0, dot);
                 break;
             }
-            FieldDefinition fd = dd.getFieldDefinition(referenceSequence.substring(dot + 1, dot1));
+            FieldDefinition fd = calleeType.getFieldDefinition(referenceSequence.substring(dot + 1, dot1));
             if (fd == null) {
-                throw new org.makumba.NoSuchFieldException(dd, referenceSequence.substring(dot + 1, dot1));
+                throw new org.makumba.NoSuchFieldException(calleeType, referenceSequence.substring(dot + 1, dot1));
             }
             if (!fd.getType().startsWith("ptr")) {
                 throw new InvalidFieldTypeException(fd, "pointer");
             }
-            dd = fd.getPointedType();
+            calleeType = fd.getPointedType();
             dot = dot1;
         }
     }
