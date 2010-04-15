@@ -445,7 +445,8 @@ public abstract class LineViewer implements SourceViewer {
     /** Write the page footer to the given writer. */
     public void footer(PrintWriter printWriter) throws IOException {
         if (parseError != null) {
-            printWriter.println("<hr><div class=\"parseError\"><a name=\"errors\"></a><pre>" + parseError.getMessage() + "</pre></div>");
+            printWriter.println("<hr><div class=\"parseError\"><a name=\"errors\"></a><pre>" + parseError.getMessage()
+                    + "</pre></div>");
         }
         DevelUtils.printDeveloperSupportFooter(printWriter);
     }
