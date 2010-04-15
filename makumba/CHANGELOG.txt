@@ -13,6 +13,13 @@ gwen: adding DBSV format as input option in pointer value converter
 manu: fixing release mechanism broken due to build path change
 manu: allowing multi-types also for different pointer types
 gwen: adding Data Definition and Query Function Inliner providers to Makumba configuration overview 
+rudi: several fixes in the data object viewer servlet: charEnum and setIntEnum don't cause errors anymore, displaying ptrOne and setComplex, allowing to view ptrOne and setComplex details
+rudi/cristi: fixing type computation for case-when, especially when there was no else part
+rudi/cristi: some date fields (maybe those resulting from function calls) returned a byte-array, treating that in TableManager
+rudi: extended tests for MDD functions
+rudi: improved mak:info tag
+rudi: improvement to JSP viewer: displaying a pop-up with generated queries for the list/object tags; showing analysis errors 
+ 
 
 NOT TO BE RELEASED YET (need more testing)
 manu: auto-complete for mak:input (char and ptr)

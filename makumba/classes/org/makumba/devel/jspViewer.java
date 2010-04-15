@@ -27,6 +27,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -36,7 +37,9 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.makumba.MakumbaError;
 import org.makumba.ProgrammerError;
+import org.makumba.Transaction;
 import org.makumba.analyser.PageCache;
 import org.makumba.analyser.TagData;
 import org.makumba.analyser.engine.JspParseData;
@@ -45,13 +48,18 @@ import org.makumba.analyser.engine.SyntaxPoint;
 import org.makumba.analyser.engine.TomcatJsp;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
+import org.makumba.db.makumba.DBConnection;
+import org.makumba.db.makumba.Query;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.tags.QueryTag;
 import org.makumba.providers.Configuration;
+import org.makumba.providers.QueryProvider;
+import org.makumba.providers.TransactionProvider;
+import org.makumba.providers.query.FunctionInliner;
 
 /**
  * This class implements a viewer for .jsp files, and provides highlighting of <mak:>, <jsp:>and JSTL tags.
- *
+ * 
  * @version $Id$
  * @author Stefan Baebler
  * @author Rudolf Mayer
@@ -149,10 +157,28 @@ public class jspViewer extends LineViewer {
             MakumbaJspAnalyzer.getInstance());
         PageCache pageCache = null;
         try {
-            pageCache = (PageCache) jpd.getAnalysisResult(null);
+            // FIXME: this is a bit of a hack...
+            // If there is an error while calling jpd.getAnalysisResult(), the first time we call this, we actually get
+            // the exception thrown. Subsequent calls will however have cached the error as the result (via
+            // NamedResources), and return us the error ..
+            // thus, before we cast to pageCache, we check the class of the result
+            // and if the class is a throwable, we throw it on ...
+            Object analysisResult = jpd.getAnalysisResult(null);
+            if (analysisResult instanceof MakumbaError) {
+                throw (MakumbaError) analysisResult;
+            } else if (analysisResult instanceof Throwable) {
+                throw (Throwable) analysisResult;
+            }
+            pageCache = (PageCache) analysisResult;
+        } catch (MakumbaError pe) {
+            // page analysis failed
+            parseError = pe;
+            return;
         } catch (Throwable t) {
             // page analysis failed
-            logger.warning("Page analysis for page " + path + " failed due to error: " + t.getMessage());
+            parseError = t;
+            logger.warning("Page analysis for page " + path + " failed with an unexpected error '" + t.getMessage()
+                    + "' (" + t.getClass() + ")");
             return;
         }
 
@@ -179,6 +205,9 @@ public class jspViewer extends LineViewer {
 
     @Override
     public void intro(PrintWriter w) throws IOException {
+        if (parseError != null) {
+            w.print("<td rowspan=\"2\" align=\"center\" style=\"color: red;\">errors!<br><a href=\"#errors\">details</a></td>");
+        }
         w.println("<td align=\"right\" style=\"color: darkblue; padding: 5px; padding-top: 10px\">");
         printFileRelations(w);
         w.println("&nbsp;&nbsp;&nbsp;");
@@ -264,17 +293,21 @@ public class jspViewer extends LineViewer {
                 // we write if we are not on column 1 (empty text line) and either are showing HTML or are in a tag
                 if (currentSyntaxPoint.getOriginalColumn(currentLineLength) > 1 && (!hideHTML || inTag > 0)
                         && shallWrite) {
-                    currentText.append(parseTagContent(lastSyntaxPoint, currentSyntaxPoint, lineText, currentLineLength));
+                    StringBuilder content = new StringBuilder(parseTagContent(lastSyntaxPoint, currentSyntaxPoint,
+                        lineText, currentLineLength));
+                    // if we have a mak:list or mak:object tag with a query, close the query annotation link
+                    MultipleKey tagKey = getTagDataKey(lastSyntaxPoint);
+                    if (tagKey != null && queryCache != null && queryCache.get(tagKey) != null) {
+                        content.insert(endOfQueryTagName(content), "</a>");
+                    }
+                    currentText.append(content);
                 }
 
                 // if the current line contained any text to write or we are outside a tag & shall write html
                 if ((!currentText.toString().trim().equals("") || inTag < 1 && !hideHTML || inTag > 0 && shallWrite)
                         && printLineNumbers) {
                     writer.print("\n");
-                    if (!hideLineNumbers) {
-                        writer.print("<a style=\"font-weight: normal; \" name=\"" + currentLine + "\" href=\"#"
-                                + currentLine + "\" class=\"lineNo\">" + currentLine + ":\t</a>");
-                    }
+                    writeLineNumber(writer, currentLine, !hideLineNumbers);
                 }
                 writer.print(currentText.toString());
                 currentText = new StringBuffer();
@@ -329,22 +362,64 @@ public class jspViewer extends LineViewer {
                                 tagClass = tagClass.substring(1);
                             }
 
-                            // if we have a mak:list or mak:object tag, annotate the query
+                            // if we have a mak:list or mak:object tag, annotate the query with a pop-up
                             MultipleKey tagKey = getTagDataKey(currentSyntaxPoint);
-                            String titleAnnotation = "";
                             if (tagKey != null && queryCache != null && queryCache.get(tagKey) != null) {
-                                ComposedQuery cq = (ComposedQuery) queryCache.get(tagKey);
-                                titleAnnotation = "title=\"" + cq.getComputedQuery() + "\"";
+
+                                currentText.append("<span class=\"" + tagClass + "\">");
+                                String divId = "query" + currentSyntaxPoint.getLine() + "x"
+                                        + currentSyntaxPoint.getColumn();
+                                currentText.append("<div id=\"" + divId
+                                        + "\" class=\"popup queryPopup\" style=\"display: none;\">");
+
+                                String queryOQL = ((ComposedQuery) queryCache.get(tagKey)).getComputedQuery();
+                                currentText.append("OQL: " + queryOQL + "<br/>");
+                                // FIXME: use default inliner, with QueryAnalysisProvider.inlineFunctions
+                                String queryInlined = FunctionInliner.inline(queryOQL,
+                                    QueryProvider.getQueryAnalzyer("oql"));
+                                if (!queryInlined.equals(queryOQL)) {
+                                    currentText.append("OQL inlined: " + queryInlined + "<br/>");
+                                }
+
+                                Transaction t = null;
+                                try {
+                                    t = TransactionProvider.getInstance().getConnectionTo(
+                                        TransactionProvider.getInstance().getDefaultDataSourceName());
+                                    Query oqlQuery = ((DBConnection) t).getQuery(queryOQL);
+                                    if (oqlQuery instanceof org.makumba.db.makumba.sql.Query) {
+                                        org.makumba.db.makumba.sql.Query sqlQuery = (org.makumba.db.makumba.sql.Query) oqlQuery;
+                                        currentText.append("SQL: " + sqlQuery.getCommand(new HashMap<String, Object>())
+                                                + "<br/>");
+                                    }
+                                } catch (Exception e) {
+                                    currentText.append("<i>Problem generating SQL: "
+                                            + org.makumba.commons.StringUtils.getExceptionStackTrace(e) + "</i>");
+                                } finally {
+                                    if (t != null) {
+                                        t.close();
+                                    }
+                                }
+
+                                currentText.append("</div>");
+                                currentText.append("<a href=\"javascript:toggleElementDisplay(" + divId
+                                        + ");\" title=\"Click to show the query details\">");
+                            } else {
+                                currentText.append("<span class=\"" + tagClass + "\">");
                             }
 
-                            currentText.append("<span class=\"" + tagClass + "\"" + titleAnnotation + ">");
                         }
                     }
                     lastSyntaxPoint = currentSyntaxPoint; // move pointers and set flage
                 } else { // we have an end-tag
                     if (shallWrite) {// write content & end of highlighting?
-                        currentText.append(parseTagContent(lastSyntaxPoint, currentSyntaxPoint, lineText,
-                            currentLineLength));
+                        StringBuilder content = new StringBuilder(parseTagContent(lastSyntaxPoint, currentSyntaxPoint,
+                            lineText, currentLineLength));
+                        // if we have a mak:list or mak:object tag with a query, close the query annotation link
+                        MultipleKey tagKey = getTagDataKey(lastSyntaxPoint);
+                        if (tagKey != null && queryCache != null && queryCache.get(tagKey) != null) {
+                            content.insert(endOfQueryTagName(content), "</a>");
+                        }
+                        currentText.append(content);
                         currentText.append("</span>");
                     }
                     if (inTag > 1) { // in a nested tag?
@@ -361,6 +436,11 @@ public class jspViewer extends LineViewer {
         printPageEnd(writer);
         double time = new Date().getTime() - begin.getTime();
         logger.finer("Sourcecode viewer took :" + time / 1000 + " seconds");
+    }
+
+    private int endOfQueryTagName(StringBuilder content) {
+        return content.indexOf(":list") > 0 ? content.indexOf(":list") + ":list".length() : content.indexOf(":object")
+                + ":object".length();
     }
 
     private String parseTagContent(SyntaxPoint lastSyntaxPoint, SyntaxPoint currentSyntaxPoint, String lineText,
