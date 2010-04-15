@@ -57,9 +57,11 @@ public class ReferenceChecker extends HttpServlet {
 
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         DBConnection connection = null;
+        DBConnection connectionHolder = null;
         try {
             connection = MakumbaTransactionProvider.getDatabase(dbName).getDBConnection();
             if (connection instanceof DBConnectionWrapper) {
+                connectionHolder = connection;
                 connection = ((DBConnectionWrapper) connection).getWrapped();
             }
             SQLDBConnection sqlConnection = ((SQLDBConnection) connection);
@@ -80,6 +82,9 @@ public class ReferenceChecker extends HttpServlet {
         } finally {
             if (connection != null) {
                 connection.close();
+            }
+            if (connectionHolder != null) {
+                connectionHolder.close();
             }
         }
     }

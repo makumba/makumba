@@ -82,9 +82,11 @@ public class DataObjectViewerServlet extends DataServlet {
         } else {
             TransactionProvider tp = TransactionProvider.getInstance();
             Transaction t = tp.getConnectionTo(tp.getDefaultDataSourceName());
+            Transaction tHolder = null;
 
             try {
                 if (t instanceof DBConnectionWrapper) {
+                    tHolder = t;
                     t = ((DBConnectionWrapper) t).getWrapped();
                 }
                 SQLDBConnection sqlConnection = (SQLDBConnection) t;
@@ -205,7 +207,12 @@ public class DataObjectViewerServlet extends DataServlet {
                     writer.println("</table>");
                 }
             } finally {
-                t.close();
+                if (t != null) {
+                    t.close();
+                }
+                if (tHolder != null) {
+                    t.close();
+                }
             }
         }
         DevelUtils.writePageEnd(writer);
