@@ -13,6 +13,7 @@ import java.util.Vector;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
+import org.makumba.QueryFragmentFunctions;
 import org.makumba.ValidationDefinition;
 import org.makumba.ValidationRule;
 
@@ -75,7 +76,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
 
     protected LinkedHashMap<Object, MultipleUniqueKeyDefinition> multiFieldUniqueList = new LinkedHashMap<Object, MultipleUniqueKeyDefinition>();
 
-    protected LinkedHashMap<String, DataDefinition.QueryFragmentFunction> functions = new LinkedHashMap<String, DataDefinition.QueryFragmentFunction>();
+    protected QueryFragmentFunctions functions = new QueryFragmentFunctions();
 
     private transient MDDNode mddNode;
 
@@ -84,8 +85,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
     /** make a virtual data definition **/
     public DataDefinitionImpl(String name) {
         this.name = name;
-        this.origin = null; // this is explicit, as we use the origin being null to say that we have a temporary data
-                            // definition
+        this.origin = null; // this is explicit: we use the origin being null to indicated a temporary data definition
     }
 
     /** constructor for virtual subfield data definitions, like file **/
@@ -410,11 +410,10 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
         return fi;
     }
 
-    /** pre-processes functions (adds this. everywhere needed) **/
     public void addFunctions(HashMap<String, QueryFragmentFunction> funcNames) {
-
         for (QueryFragmentFunction f : funcNames.values()) {
-            addFunction(f.getName(), f);
+            f.setHoldingDataDefinition(this); // have to set the holder here, as it is unknown on Function creation time
+            functions.addFunction(f.getName(), f);
         }
     }
 
@@ -464,7 +463,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
 
             }
         } else if (titleFieldType == TitleFieldType.FUNCTION) {
-            QueryFragmentFunction f = functions.get(titleFieldExpr);
+            QueryFragmentFunction f = functions.getFunction(titleFieldExpr);
             // TODO here we could inline a function call from title
             titleField = f.getName() + "()"; // f.getQueryFragment();
         } else {
@@ -562,9 +561,10 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
 
     /** returns the field info associated with a name */
     public QueryFragmentFunction getFunctionOrPointedFunction(String nm) {
-        if (getFunction(nm) != null) {
-            return getFunction(nm);
+        if (getFunctions().getFunction(nm) != null) {
+            return getFunctions().getFunction(nm);
         }
+        // FIXME: remove duplicated code from getFieldOrPointedFieldDefinition
         String fieldName = nm;
         DataDefinition dd = this;
 
@@ -575,7 +575,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
             FieldDefinition fieldDefinition = dd.getFieldDefinition(subFieldName);
             dd = fieldDefinition.getPointedType();
         }
-        return dd.getFunction(fieldName);
+        return dd.getFunctions().getFunction(fieldName);
     }
 
     /** which is the name of the index field, if any? */
@@ -651,38 +651,8 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
         }
     }
 
-    /** methods for functions **/
-
-    public void addFunction(String name, QueryFragmentFunction function) {
-        functions.put(name, function);
-    }
-
-    public Collection<QueryFragmentFunction> getActorFunctions() {
-        ArrayList<QueryFragmentFunction> actorFunctions = new ArrayList<QueryFragmentFunction>();
-        for (QueryFragmentFunction function : functions.values()) {
-            if (function.isActorFunction()) {
-                actorFunctions.add(function);
-            }
-        }
-        return actorFunctions;
-    }
-
-    public QueryFragmentFunction getFunction(String name) {
-        return functions.get(name);
-    }
-
-    public Collection<QueryFragmentFunction> getFunctions() {
-        return functions.values();
-    }
-
-    public Collection<QueryFragmentFunction> getSessionFunctions() {
-        ArrayList<QueryFragmentFunction> sessionFunctions = new ArrayList<QueryFragmentFunction>();
-        for (QueryFragmentFunction function : functions.values()) {
-            if (function.isSessionFunction()) {
-                sessionFunctions.add(function);
-            }
-        }
-        return sessionFunctions;
+    public QueryFragmentFunctions getFunctions() {
+        return functions;
     }
 
     /**
@@ -775,7 +745,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
 
         sb.append("\n   === Functions \n\n");
 
-        for (DataDefinition.QueryFragmentFunction f : functions.values()) {
+        for (DataDefinition.QueryFragmentFunction f : functions.getFunctions()) {
             sb.append(f.toString() + "\n");
         }
 

@@ -105,7 +105,7 @@ public class FunctionInliner {
                 possibleMdd = possibleMdd.substring(0, n);
                 calleeType = DataDefinitionProvider.getInstance().getDataDefinition(possibleMdd.trim());
                 if (calleeType != null) {
-                    functionDefinition = calleeType.getFunction(possibleFunction.trim());
+                    functionDefinition = calleeType.getFunctions().getFunction(possibleFunction.trim());
                 } else {
                     throw new org.makumba.DataDefinitionNotFoundError(possibleMdd);
                 }
@@ -129,7 +129,7 @@ public class FunctionInliner {
             int dot1 = referenceSequence.indexOf(".", dot + 1);
             if (dot1 == -1) {
                 String fn = referenceSequence.substring(dot + 1);
-                functionDefinition = calleeType.getFunction(fn);
+                functionDefinition = calleeType.getFunctions().getFunction(fn);
                 if (functionDefinition == null) {
                     throw new ProgrammerError(fn + " is not a function in " + calleeType.getName());
                 }

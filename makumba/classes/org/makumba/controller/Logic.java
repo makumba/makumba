@@ -423,7 +423,7 @@ public class Logic {
         DataDefinition.QueryFragmentFunction match = null;
         MakumbaActorHashMap matchValues = null;
         QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer(dbcp.getTransactionProvider().getQueryLanguage());
-        nextFunction: for (DataDefinition.QueryFragmentFunction f : dd.getActorFunctions()) {
+        nextFunction: for (DataDefinition.QueryFragmentFunction f : dd.getFunctions().getActorFunctions()) {
             MakumbaActorHashMap values = new MakumbaActorHashMap();
             DataDefinition params = f.getParameters();
             if (match != null && match.getParameters().getFieldNames().size() > params.getFieldNames().size()) {
@@ -442,7 +442,7 @@ public class Logic {
             matchValues = values;
         }
         if (match == null) {
-            if (dd.getActorFunctions().size() == 0) { // if we have no actor function at all
+            if (dd.getFunctions().getActorFunctions().size() == 0) { // if we have no actor function at all
                 // report this as programmer error
                 throw new ProgrammerError("No fitting actor() function was found in " + type);
             } else {
@@ -503,7 +503,7 @@ public class Logic {
         // now we call all functions with no parameters
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("x", p);
-        for (DataDefinition.QueryFragmentFunction g : dd.getSessionFunctions()) {
+        for (DataDefinition.QueryFragmentFunction g : dd.getFunctions().getSessionFunctions()) {
             StringBuffer fc = new StringBuffer();
             fc.append("SELECT x.").append(g.getName()).append("() AS col1 FROM ").append(type).append(" x WHERE x=").append(
                 qap.getParameterSyntax()).append("x");
@@ -534,7 +534,7 @@ public class Logic {
         for (String s : dd.getFieldNames()) {
             ret.add(att + "_" + s);
         }
-        for (DataDefinition.QueryFragmentFunction g : dd.getSessionFunctions()) {
+        for (DataDefinition.QueryFragmentFunction g : dd.getFunctions().getSessionFunctions()) {
             ret.add(att + "_" + g.getName());
         }
         return ret;
