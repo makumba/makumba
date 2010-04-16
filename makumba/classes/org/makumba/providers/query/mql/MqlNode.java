@@ -137,6 +137,7 @@ public class MqlNode extends CommonAST {
             // processing of the right operand, we look for parameters or strings to rewrite
             do {
                 if (checkParam(leftHandSide, inListMember)) {
+                    // FIXME: this is too strict. as long as we have one element on the left or right which is not a param, we are ok
                     if (leftParam) {
                         walker.error = new SemanticException("cannot have paramters on both sides of IN", "",
                                 getLine(), getColumn());
