@@ -192,11 +192,17 @@ public class Pass1FunctionInliner {
             if (parsed instanceof ProgrammerError)
                 throw (ProgrammerError) parsed;
 
-            // FIXME: at this point, from the QueryAnalysis (pass2) we know the function return type!
-            // In order to see whether the function fits in the expression it is put in, 
-            // we could replace the function with a constant of that type and analyze that expression 
-            // using e.g. findType(). This would allow us to find an error in the orignal query, 
-            // on the original query text, and therefore with an accurate line-column indication
+            /* FIXME: at this point, from the QueryAnalysis (pass2) we know the function return type!
+             In order to see whether the function fits in the expression it is put in, 
+             we could replace the function with a constant of that type (or an extra from for pointers)
+             and analyze the resulting expression using e.g. findType().
+             However, that might pose problems if we have functions in the rest of the expression, so 
+             a simpler heuristic (looking at parent operators, parent MQL/SQL functions, etc) can help. 
+             After all, this doesn't need to be 100% precise. 
+             
+             This would allow us to find an error in the orignal query, 
+             on the original query text, and therefore with an accurate line-column indication
+            */
             
             // we duplicate the tree as we are going to change it
             AST funcAST = new HqlASTFactory().dupTree(((MqlQueryAnalysis) parsed).getPass1Tree());
@@ -334,8 +340,9 @@ public class Pass1FunctionInliner {
                 lastAdded = toAdd;
             }
         }
-
+        // TODO: also add the extraFrom (enrichment) to the new query FROM
         from.setNextSibling(select);
+        
         // we select just the expression we want to determine the type of
         select.setFirstChild(makeASTCopy(expr));
 
