@@ -134,14 +134,6 @@ public class MqlNode extends CommonAST {
             // for processing the left operand, we assume either that the list (right operand)
             // has one member or that all members are of the same type
             boolean leftParam = checkParam(inListMember, leftHandSide);
-            if (!leftParam) {
-                try {
-                    checkAndRewriteOperand(inListMember, leftHandSide);
-                } catch (SemanticException e) {
-                    walker.error = e;
-                    return;
-                }
-            }
             // processing of the right operand, we look for parameters or strings to rewrite
             do {
                 if (checkParam(leftHandSide, inListMember)) {
@@ -149,15 +141,16 @@ public class MqlNode extends CommonAST {
                         walker.error = new SemanticException("cannot have paramters on both sides of IN", "",
                                 getLine(), getColumn());
                         return;
-                    } else {
-                        try {
-                            checkAndRewriteOperand(leftHandSide, inListMember);
-                        } catch (SemanticException e) {
-                            walker.error = e;
-                            return;
-                        }
+                    }
+                } else {
+                    try {
+                        checkAndRewriteOperand(leftHandSide, inListMember);
+                    } catch (SemanticException e) {
+                        walker.error = e;
+                        return;
                     }
                 }
+
                 inListMember = (MqlNode) inListMember.getNextSibling();
             } while (inListMember != null);
         }
@@ -202,7 +195,7 @@ public class MqlNode extends CommonAST {
                 if (getFirstChild().getNextSibling() != null) {
                     if (father != null) {
                         father.makType = child.makType; // propagate the type of the child (the THEN) to the CASE node
-                        return child.makType; 
+                        return child.makType;
                     }
                 }
                 break;
@@ -366,6 +359,8 @@ public class MqlNode extends CommonAST {
 
     /** Symmetrically check both sides for operands that need to be rewritten */
     protected boolean checkAndRewriteOperand(MqlNode left, MqlNode right) throws SemanticException {
+        // TODO: integers are also compatible with pointers?
+        // if not this function cannot be called twice on a 'string'
         if (right.getType() == HqlSqlTokenTypes.QUOTED_STRING && !left.isParam()) {
             return checkAndRewrite(left, right);
         } else if (left.getType() == HqlSqlTokenTypes.QUOTED_STRING && !right.isParam()) {
