@@ -147,6 +147,20 @@ public class ListOQLTest extends MakumbaJspTestCase {
         assertTrue(compareTest(output));
     }
 
+    public void testMakListInSetPointers() throws ServletException, IOException {
+        pageContext.include("list-oql/testMakListInSetPtrs.jsp");
+    }
+
+    public void endMakListInSetPointers(WebResponse response) throws Exception {
+        try {
+            output = response.getText(); fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+
+        assertTrue(compareTest(output));
+    }
+
     public void testMakValueChar() throws ServletException, IOException {
         pageContext.include("list-oql/testMakValueChar.jsp");
     }
