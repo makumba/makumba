@@ -364,38 +364,46 @@ public class MqlNode extends CommonAST {
         textList = tl;
     }
 
+    /** Symmetrically check both sides for operands that need to be rewritten */
     protected boolean checkAndRewriteOperand(MqlNode left, MqlNode right) throws SemanticException {
         if (right.getType() == HqlSqlTokenTypes.QUOTED_STRING && !left.isParam()) {
-
-            if (right.getText().startsWith("methodCallPlaceholder_")) {
-                return true;
-            }
-
-            String s = right.getText();
-            String arg1 = s.substring(1, s.length() - 1);
-            Object o = null;
-            try {
-                o = (left.getMakType()).checkValue(arg1);
-            } catch (org.makumba.InvalidValueException e) {
-                // walker.printer.showAst(right, walker.pw);
-                throw new SemanticException(e.getMessage(), "", getLine(), getColumn());
-            }
-            if (o instanceof Pointer) {
-                o = new Long(((Pointer) o).longValue());
-            }
-            if (o instanceof Number) {
-                right.setText(o.toString());
-                // FIXME: also adapt the type of the node to identifier?
-                // right.setType(HqlSqlTokenTypes.IDENT);
-            } else {
-                right.setText("\'" + o + "\'");
-            }
-            return true;
-
+            return checkAndRewrite(left, right);
+        } else if (left.getType() == HqlSqlTokenTypes.QUOTED_STRING && !right.isParam()) {
+            return checkAndRewrite(right, left);
         } else {
             checkOperandTypes(left, right);
             return false;
         }
+    }
+
+    /** this method does the actual operand rewriting, called by {@link #checkAndRewriteOperand(MqlNode, MqlNode)} */
+    private boolean checkAndRewrite(MqlNode left, MqlNode right) throws SemanticException {
+        if (right.getText().startsWith("methodCallPlaceholder_")) {
+            return true;
+        }
+
+        String s = right.getText();
+        String arg1 = s.substring(1, s.length() - 1);
+        Object o = null;
+        try {
+            o = (left.getMakType()).checkValue(arg1);
+        } catch (org.makumba.InvalidValueException e) {
+            // walker.printer.showAst(right, walker.pw);
+            throw new SemanticException(e.getMessage(), "", getLine(), getColumn());
+        }
+        if (o instanceof Pointer) {
+            o = new Long(((Pointer) o).longValue());
+        }
+        if (o instanceof Number) {
+            right.setText(o.toString());
+            // FIXME: also adapt the type of the node to identifier? seems to be needed on repeated calls
+            // otherwise, we get a StringIndexOutOfBoundsException on:
+            // String arg1 = s.substring(1, s.length() - 1);
+            right.setType(HqlSqlTokenTypes.IDENT);
+        } else {
+            right.setText("\'" + o + "\'");
+        }
+        return true;
     }
 
     protected boolean checkParam(MqlNode left, MqlNode right) {
