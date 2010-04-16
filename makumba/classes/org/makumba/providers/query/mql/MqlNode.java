@@ -128,15 +128,15 @@ public class MqlNode extends CommonAST {
                 && child.getType() == HqlSqlTokenTypes.IN_LIST) {
             // getFirstChild() is the left side of the IN expression, child.getFirstChild() is the right side, where we
             // expect a parameter list
-
+            MqlNode leftHandSide = (MqlNode) getFirstChild();
             MqlNode inListMember = (MqlNode) child.getFirstChild();
 
             // for processing the left operand, we assume either that the list (right operand)
             // has one member or that all members are of the same type
-            boolean leftParam = checkParam(inListMember, (MqlNode) getFirstChild());
+            boolean leftParam = checkParam(inListMember, leftHandSide);
             if (!leftParam) {
                 try {
-                    checkAndRewriteOperand(inListMember, (MqlNode) getFirstChild());
+                    checkAndRewriteOperand(inListMember, leftHandSide);
                 } catch (SemanticException e) {
                     walker.error = e;
                     return;
@@ -144,14 +144,14 @@ public class MqlNode extends CommonAST {
             }
             // processing of the right operand, we look for parameters or strings to rewrite
             do {
-                if (checkParam((MqlNode) getFirstChild(), inListMember)) {
+                if (checkParam(leftHandSide, inListMember)) {
                     if (leftParam) {
                         walker.error = new SemanticException("cannot have paramters on both sides of IN", "",
                                 getLine(), getColumn());
                         return;
                     } else {
                         try {
-                            checkAndRewriteOperand((MqlNode) getFirstChild(), inListMember);
+                            checkAndRewriteOperand(leftHandSide, inListMember);
                         } catch (SemanticException e) {
                             walker.error = e;
                             return;
@@ -385,6 +385,8 @@ public class MqlNode extends CommonAST {
             }
             if (o instanceof Number) {
                 right.setText(o.toString());
+                // FIXME: also adapt the type of the node to identifier?
+                // right.setType(HqlSqlTokenTypes.IDENT);
             } else {
                 right.setText("\'" + o + "\'");
             }
