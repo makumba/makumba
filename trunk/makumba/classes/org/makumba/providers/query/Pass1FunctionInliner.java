@@ -547,7 +547,9 @@ public class Pass1FunctionInliner {
                 if (query.trim().startsWith("#"))
                     continue;
 
-                AST processedAST = inlineAST(QueryAnalysisProvider.parseQuery(QueryAnalysisProvider.checkForFrom(query)));
+                AST firstAST = QueryAnalysisProvider.parseQuery(QueryAnalysisProvider.checkForFrom(query));
+                AST f= QueryAnalysisProvider.parseQuery(QueryAnalysisProvider.checkForFrom(query));
+                AST processedAST = inlineAST(firstAST);
                 QueryAnalysisProvider.reduceDummyFrom(processedAST);
 
                 String oldInline = FunctionInliner.inline(query, QueryProvider.getQueryAnalzyer("oql"));
@@ -569,8 +571,10 @@ public class Pass1FunctionInliner {
                 // if(line==1)
                 // new MakumbaDumpASTVisitor(false).visit(new MqlQueryAnalysis(oldInline, false,
                 // false).getAnalyserTree());
-
-                if (!compare(new ArrayList<AST>(), processedAST, compAST)) {
+                Pass1ASTPrinter.testPrinter(f, query);
+                Pass1ASTPrinter.testPrinter(processedAST, oldInline);
+                
+                if (!QueryAnalysisProvider.compare(new ArrayList<AST>(), processedAST, compAST)) {
                     System.err.println(line + ": " + query);
                     if (oldError != null)
                         System.err.println(line + ": old inliner failed! " + oldError + " query was: " + oldInline);
@@ -583,32 +587,6 @@ public class Pass1FunctionInliner {
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        }
-    }
-
-    static boolean compare(List<AST> path, AST t1, AST t2) {
-        if (t1 == null)
-            if (t2 != null) {
-                System.out.println(path + " t1 null, t2 not null");
-                return false;
-            } else
-                return true;
-        if (!t1.equals(t2)) {
-            System.out.print(path + " [" + t1.getType() + " " + t1 + "] <> ");
-            if (t2 == null)
-                System.out.println("null");
-            else
-                System.out.println("[" + t2.getType() + " " + t2 + "]");
-
-            return false;
-        }
-        if (!compare(path, t1.getNextSibling(), t2.getNextSibling()))
-            return false;
-        path.add(t1);
-        try {
-            return compare(path, t1.getFirstChild(), t2.getFirstChild());
-        } finally {
-            path.remove(path.size() - 1);
         }
     }
 
