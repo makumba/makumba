@@ -23,6 +23,7 @@
 
 package org.makumba.providers;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -211,7 +212,39 @@ public abstract class QueryAnalysisProvider {
     /** return the first character(s) in a parameter designator */
     public abstract String getParameterSyntax();
     
- 
+    /**
+     * Test method to compare two AST trees
+     * @param path the path from the root to the compared nodes
+     * @param t1 current node in the first tree
+     * @param t2 current node in second tree
+     * @return whether the trees are identical or not
+     */
+    public static boolean compare(List<AST> path, AST t1, AST t2) {
+        if (t1 == null)
+            if (t2 != null) {
+                System.out.println(path + " t1 null, t2 not null");
+                return false;
+            } else
+                return true;
+        if (!t1.equals(t2)) {
+            System.out.print(path + " [" + t1.getType() + " " + t1 + "] <> ");
+            if (t2 == null)
+                System.out.println("null");
+            else
+                System.out.println("[" + t2.getType() + " " + t2 + "]");
+    
+            return false;
+        }
+        if (!compare(path, t1.getNextSibling(), t2.getNextSibling()))
+            return false;
+        path.add(t1);
+        try {
+            return compare(path, t1.getFirstChild(), t2.getFirstChild());
+        } finally {
+            path.remove(path.size() - 1);
+        }
+    }
+
     public static void doThrow(String query, Throwable t, AST debugTree) {
         if (t == null)
             return;
