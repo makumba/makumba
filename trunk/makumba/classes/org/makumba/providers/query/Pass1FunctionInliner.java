@@ -398,8 +398,8 @@ public class Pass1FunctionInliner {
                 AST parent = state.path.get(top - 1);
 
                 // if we are part of a DOT tree, we must be the first
-                if (parent.getType() == HqlTokenTypes.DOT && (state.path.get(top - 2).getType() == HqlTokenTypes.DOT)
-                        || parent.getFirstChild() != a)
+                if (parent.getType() == HqlTokenTypes.DOT && ((state.path.get(top - 2).getType() == HqlTokenTypes.DOT)
+                        || parent.getFirstChild() != a))
                     return a;
 
                 // a dot may mean an MDD name, no need for this-adding
