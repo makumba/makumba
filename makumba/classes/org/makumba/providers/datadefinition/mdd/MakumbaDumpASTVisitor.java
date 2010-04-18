@@ -22,18 +22,16 @@ public class MakumbaDumpASTVisitor implements ASTVisitor {
         this.showclass = showClass;
     }
 
+    // FIXME: having the current level of recursion as a global variable is not good for concurrency
     protected int level = 0;
 
-    private StringBuilder tabs() {
-        StringBuilder sb = new StringBuilder();
+    private void tabs(StringBuilder sb) {
         for (int i = 0; i < level; i++) {
             sb.append("   ");
         }
-        return sb;
     }
 
-    public String toString(AST node) {
-        StringBuilder sb = new StringBuilder();
+    protected void toString(AST node, StringBuilder sb) {
 
         // Flatten this level of the tree if it has no children
         boolean flatten = /* true */false;
@@ -47,7 +45,7 @@ public class MakumbaDumpASTVisitor implements ASTVisitor {
 
         for (node2 = node; node2 != null; node2 = node2.getNextSibling()) {
             if (!flatten || node2 == node) {
-                sb.append(tabs());
+                tabs(sb);
             }
             if (node2.getText() == null) {
                 sb.append("nil");
@@ -66,7 +64,7 @@ public class MakumbaDumpASTVisitor implements ASTVisitor {
 
             if (node2.getFirstChild() != null) {
                 level++;
-                visit(node2.getFirstChild());
+                toString(node2.getFirstChild(), sb);
                 level--;
             }
         }
@@ -74,11 +72,16 @@ public class MakumbaDumpASTVisitor implements ASTVisitor {
         if (flatten) {
             sb.append("\n");
         }
+    }
 
+    public String toString(AST node) {
+        StringBuilder sb = new StringBuilder();
+        toString(node, sb);
         return sb.toString();
     }
 
     public void visit(AST node) {
-        System.out.println(toString(node));
+        System.out.print(toString(node));
     }
+
 }
