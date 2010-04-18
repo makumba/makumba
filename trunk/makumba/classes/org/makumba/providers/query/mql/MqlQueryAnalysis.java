@@ -17,6 +17,7 @@ import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
+import org.makumba.providers.query.Pass1ASTPrinter;
 
 import antlr.ASTFactory;
 import antlr.collections.AST;
@@ -65,8 +66,15 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         else return query;
     }
     
-    public MqlQueryAnalysis(AST pass1, DataDefinition dd){
-        init(false, false, pass1, dd);       
+    /**
+     * constructs a query analysis given the pass1 AST tree and a set of known labels (used for MDD function parameters)
+     * @param pass1 the pass1 tree
+     * @param knownLabels the known labels 
+     */
+    public MqlQueryAnalysis(AST pass1, DataDefinition knownLabels){
+        // TODO: the original query should be passed, if one exists, otherwise we can make one like so: 
+        //query= Pass1ASTPrinter.printAST(pass1).toString();
+        init(false, false, pass1, knownLabels);       
     }
 
     MqlQueryAnalysis(String queryAndInsert, boolean optimizeJoins, boolean autoLeftJoin) {
