@@ -1,5 +1,14 @@
 package org.makumba.providers.query;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+
+import org.makumba.commons.ClassResource;
+import org.makumba.providers.QueryAnalysisProvider;
+import org.makumba.providers.datadefinition.mdd.MakumbaDumpASTVisitor;
 import org.makumba.providers.query.mql.HqlASTFactory;
 import org.makumba.providers.query.mql.HqlTokenTypes;
 
@@ -14,8 +23,9 @@ public class Pass1ASTPrinter {
 
     /**
      * print a AST pass1 tree back to its "original" HQL query
+     * 
      * @param tree
-     * @return
+     * @return the HQL query
      */
     public static StringBuffer printAST(AST tree) {
         StringBuffer sb = new StringBuffer();
@@ -26,13 +36,20 @@ public class Pass1ASTPrinter {
 
     /**
      * Recursively prints the tree. In principle printing the node, its first child and its next sibling should generate
-     * a query. However: - some nodes produce nothing (query, in_list, expr_list) - the query natural order is
-     * re-arranged in the tree (FROM before SELECT) - some text items are missing (case-when's then, end) - commas are
-     * missing in lists (IN, SELECT, function call, sometimes in FROM)
+     * a query. However:
+     * <ul>
+     * <li>some nodes produce nothing (query, in_list, expr_list).
+     * <li>the query natural order is re-arranged in the tree (FROM before SELECT).
+     * <li>some text items are missing (case-when's then, end).
+     * <li>commas are missing in lists (IN, SELECT, function call, sometimes in FROM)
+     * </ul>
      * 
-     * @param parent parent of the current element
-     * @param ast current element to print
-     * @param sb string buffer result
+     * @param parent
+     *            parent of the current element
+     * @param ast
+     *            current element to print
+     * @param sb
+     *            string buffer result
      */
     private static void printRecursive(AST parent, AST ast, StringBuffer sb) {
         if (ast == null)
@@ -40,6 +57,7 @@ public class Pass1ASTPrinter {
         space(sb);
         AST right;
         boolean noPar = false;
+        boolean prio = false;
 
         // this is for printing the current node and its children. after this, we always print the next sibling
         switch (ast.getType()) {
@@ -86,7 +104,12 @@ public class Pass1ASTPrinter {
                 break;
 
             case HqlTokenTypes.ELEMENTS:
-                printKeyword(ast, sb);
+            case HqlTokenTypes.AGGREGATE:
+            case HqlTokenTypes.COUNT:
+                // we don't use printKeyword as that would print a space after
+                space(sb);
+                sb.append(ast.getText());
+
                 // then come parantheses after elements
             case HqlTokenTypes.IN_LIST:
                 noPar = ast.getFirstChild().getType() == HqlTokenTypes.ELEMENTS;
@@ -155,7 +178,15 @@ public class Pass1ASTPrinter {
 
                 break;
 
-            // binary operators, some may be missing, please add!
+            // not in and not like do
+            // NOT ( their binary expression )
+            case HqlTokenTypes.NOT_IN:
+            case HqlTokenTypes.NOT_LIKE:
+                space(sb);
+                sb.append("not");
+                prio = true;
+
+                // binary operators, some may be missing, please add!
             case HqlTokenTypes.AS:
             case HqlTokenTypes.PLUS:
             case HqlTokenTypes.MINUS:
@@ -170,12 +201,11 @@ public class Pass1ASTPrinter {
             case HqlTokenTypes.EQ:
             case HqlTokenTypes.NE:
             case HqlTokenTypes.LIKE:
-            case HqlTokenTypes.NOT_LIKE:
             case HqlTokenTypes.IN:
-            // dot is treated like a normal binary operator, except it won't print spaces for aesthetic reasons
+                // dot is treated like a normal binary operator, except it won't print spaces for aesthetic reasons
             case HqlTokenTypes.DOT:
                 // we compare with the parent operator, if any
-                boolean prio = checkPriority(parent, ast);
+                prio = checkPriority(parent, ast);
                 // if we are lower precedence, we print parantheses
                 if (prio)
                     sb.append('(');
@@ -231,18 +261,19 @@ public class Pass1ASTPrinter {
 
     // print a space if we didn't print already or we are not after an open para
     private static void space(StringBuffer sb) {
-        if(sb.length()==0)
+        if (sb.length() == 0)
             return;
-        char last= sb.charAt(sb.length()-1);
-        if (!(last == ' ' || last == '(' || last==':'|| last=='.'))
+        char last = sb.charAt(sb.length() - 1);
+        if (!(last == ' ' || last == '(' || last == ':' || last == '.'))
             sb.append(' ');
     }
 
     private static void printKeyword(AST ast, StringBuffer sb) {
-        if(ast.getType()!= HqlTokenTypes.DOT)
+        // print spaces before and after, if we are not a dot
+        if (ast.getType() != HqlTokenTypes.DOT)
             space(sb);
-        sb.append(ast.getText());
-        if(ast.getType()!= HqlTokenTypes.DOT)
+        sb.append(ast.getText().substring(ast.getText().lastIndexOf('}') + 1));
+        if (ast.getType() != HqlTokenTypes.DOT)
             sb.append(' ');
     }
 
@@ -269,6 +300,62 @@ public class Pass1ASTPrinter {
             ast.setNextSibling(null);
             // print element
             printRecursive(parent, ast, sb);
+        }
+    }
+
+    /**
+     * Test method that prints a given AST, re-parses it and compares the initial and final AST
+     * 
+     * @param f
+     *            the initial AST
+     * @param query
+     *            the query from which the initial AST came. Used only for debug purposes in case of error
+     * @return
+     */
+    public static boolean testPrinter(AST f, String query) {
+        String printed = printAST(f).toString();
+        try {
+            AST printedAST = QueryAnalysisProvider.parseQuery(printed);
+            if (!QueryAnalysisProvider.compare(new ArrayList<AST>(), printedAST, f)) {
+                new MakumbaDumpASTVisitor(false).visit(f);
+                System.out.println(query);
+                System.out.println(printed);
+                new MakumbaDumpASTVisitor(false).visit(printedAST);
+                System.out.println("\n\n");
+                return false;
+            }
+        } catch (Throwable e) {
+            System.out.println(e);
+            new MakumbaDumpASTVisitor(false).visit(f);
+
+            System.out.println(query);
+            System.out.println(printed);
+            return false;
+        }
+        return true;
+    }
+
+    public static void main(String[] argv) {
+        int line = 1;
+        try {
+            BufferedReader rd = new BufferedReader(new InputStreamReader((InputStream) ClassResource.get(
+                "org/makumba/providers/query/mql/queries.txt").getContent()));
+            String query = null;
+            while ((query = rd.readLine()) != null) {
+                if (!query.trim().startsWith("#")) {
+                    query = QueryAnalysisProvider.checkForFrom(query);
+                    try {
+                        AST a = QueryAnalysisProvider.parseQuery(query);
+                        testPrinter(a, query);
+                    } catch (Throwable t) {
+                        System.err.println(line + ": " + t);
+                    }
+                }
+                line++;
+            }
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 }
