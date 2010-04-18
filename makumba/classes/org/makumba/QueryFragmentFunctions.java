@@ -64,11 +64,11 @@ public class QueryFragmentFunctions implements Serializable {
 
     /** Returns the function with the specific name. */
     public QueryFragmentFunction getFunction(String name) {
-        if (functionNameCache.containsKey(name)) {
-            return functionNameCache.get(name);
-        } else {
-            throw new ProgrammerError("Unknown function '" + name + "' in type " + holder.getName());
-        }
+        return functionNameCache.get(name);
+    }
+
+    public boolean hasFunction(String name) {
+        return functionNameCache.get(name) != null;
     }
 
     /** Returns the function with the specific name and parameters. */

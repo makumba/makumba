@@ -186,6 +186,10 @@ public class Pass1FunctionInliner {
             // now we can retrieve the function
             QueryFragmentFunction func = calleeType.getFunctions().getFunction(methodName);
 
+            if (func == null) {
+                throw new ProgrammerError("Unknown function '" + methodName + "' in type " + calleeType.getName());
+            }
+
             // and its parsed form from the cache
             Object parsed = NamedResources.getStaticCache(functionCache).getResource(
                 calleeType.getName() + " " + func.getName());
