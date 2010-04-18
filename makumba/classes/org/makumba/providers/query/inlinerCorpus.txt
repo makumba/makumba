@@ -3,13 +3,13 @@ SELECT x.oneNameMin2CharsLong() FROM test.Person x
 SELECT x AS col1 FROM test.Person x WHERE x.actor($username, $password)
 SELECT x AS col1 FROM test.Person x WHERE x.actor2($username, $password)
 select p.score('a') from test.Person p
-select m.canRead() from projman.Message m
 select p.languageNames() from test.Person p
 select case when s.getActAppDL() <> NIL then dateAdd(s.getActAppDL(), 7, 'day') else s.getActAppDL() end from best.johnny.Activity s
 select s.isDirectMemberOfTeamOrAlias('ITC') FROM best.internal.Student s
 SELECT now() > dateSub(s.getAppDL(), 30, 'day') from best.johnny.Season s
 #select s.getAnnDL() from best.johnny.Season s
 select s.getAppBegins() from best.johnny.Season s
+select m.canRead() from projman.Message m
 select actor(projman.User) from projman.User mak_actor
 select actor(projman.User).username='admin' from projman.User mak_actor
 SELECT actor(projman.User).username='admin' AS col1 
