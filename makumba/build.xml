@@ -13,6 +13,7 @@
 		<pathelement location="lib/core/commons-cli-1.2.jar" />
 		<pathelement location="lib/core/antlr-2.7.6.jar" />
 		<pathelement location="lib/common/jsp-api.jar" />
+		<pathelement location="lib/common/commons-httpclient.jar" />
 		<pathelement location="lib/common/servlet-api.jar" />
 		<pathelement location="lib/common/jstl-standard.jar" />
 		<pathelement location="lib/common/jstl.jar" />
@@ -40,35 +41,35 @@
 		<pathelement location="classes" />
 		<pathelement location="webapps/tests/WEB-INF/classes/" />
 
-		<pathelement location="lib/test/cactus.jar" />
-		<pathelement location="lib/optional/hibernate/hibernate3.jar" />
-		<pathelement location="lib/optional/hibernate/javassist-3.4.GA.jar" />
-		<pathelement location="lib/optional/prefuse.jar" />
-		<pathelement location="lib/common/jsp-api.jar" />
-		<pathelement location="lib/common/servlet-api.jar" />
+		<pathelement location="lib/core/antlr-2.7.6.jar" />
+		<pathelement location="lib/core/c3p0-0.9.1.jar" />
+		<pathelement location="lib/core/commons-cli-1.2.jar" />
+		<pathelement location="lib/core/commons-configuration-1.6.jar" />
+		<pathelement location="lib/core/commons-collections-3.2.jar" />
 		<pathelement location="lib/core/commons-fileupload-1.1.1.jar" />
 		<pathelement location="lib/core/commons-io-1.1.jar" />
-		<pathelement location="lib/core/commons-collections-3.2.jar" />
+		<pathelement location="lib/core/commons-lang-2.3.jar" />
+		<pathelement location="lib/core/mime-util.jar" />
+		<pathelement location="lib/common/dom4j-1.6.1.jar" />
+		<pathelement location="lib/common/jsp-api.jar" />
 		<pathelement location="lib/common/jstl-standard.jar" />
 		<pathelement location="lib/common/jstl.jar" />
-		<pathelement location="lib/core/commons-lang-2.3.jar" />
-		<pathelement location="lib/core/antlr-2.7.6.jar" />
-		<pathelement location="lib/common/dom4j-1.6.1.jar" />
+		<pathelement location="lib/common/commons-logging-api.jar" />
+		<pathelement location="lib/common/servlet-api.jar" />
+		<pathelement location="lib/db/mysql-connector-java-5.1.6-bin.jar" />
+		<pathelement location="lib/optional/prefuse.jar" />
+		<pathelement location="lib/optional/hibernate/hibernate3.jar" />
+		<pathelement location="lib/optional/hibernate/javassist-3.4.GA.jar" />
 		<pathelement location="lib/optional/hibernate/cglib-2.1.3.jar" />
-		<pathelement location="lib/core/mime-util.jar" />
-		<pathelement location="lib/core/c3p0-0.9.1.jar" />
-		<pathelement location="doc-jspwiki/JSPWiki/WEB-INF/lib/JSPWiki.jar" />
-		<pathelement location="lib/core/commons-configuration-1.6.jar" />
+		<pathelement location="lib/optional/hibernate/hibernate-annotations.jar" />
+		<pathelement location="lib/test/cactus.jar" />
 		<pathelement location="lib/test/diff-bmsi.jar" />
-		<pathelement location="lib/core/commons-cli-1.2.jar" />
 		<pathelement location="lib/test/junit.jar" />
 		<pathelement location="lib/test/httpunit.jar" />
-		<pathelement location="lib/optional/hibernate/hibernate-annotations.jar" />
-		<pathelement location="lib/common/commons-logging-api.jar" />
 		<pathelement location="lib/test/selenium-java-client-driver.jar" />
-		<pathelement location="lib/db/mysql-connector-java-5.1.6-bin.jar" />
 		<pathelement location="lib/test/jetty/jetty-6.1.3.jar" />
 		<pathelement location="lib/test/jetty/jetty-util-6.1.3.jar" />
+		<pathelement location="doc-jspwiki/JSPWiki/WEB-INF/lib/JSPWiki.jar" />
 
 		<pathelement location="${basedir}/build" />
 
@@ -1093,10 +1094,17 @@ package org.makumba]]>
 		<loadfile property="leftMenuContent" srcfile="doc-jspwiki/JSPWiki/api/leftMenu.html" />
 
 		<javadoc destdir="doc-jspwiki/JSPWiki/api" sourcepath="classes" packagenames="org.makumba" notree="true" noindex="true" nohelp="true" windowtitle="Makumba" classpathref="project.class.path" Version="true" Author="true" additionalparam="-breakiterator" doctitle="Makumba API Documentation" stylesheetfile="doc-jspwiki/JSPWiki/templates/makumba/jspwiki-api.css">
+<!--
+	The XHTML doclet would produce a more web 2.0 HTML, with divs & spans, that allow an easier modification.
+	owever, it is buggy in many places, e.g. it doesn't always actually generate method comments... !		    
 			<doclet name="net.sourceforge.xhtmldoclet.Doclet" path="${basedir}/lib/doc/XHTML_Doclet_2009-12-06.jar" />
+	
+	once it works, one can add 
+	<div id='sidemenu'>${leftMenuContent}</div>
+	back in the bottom definition below		    
+-->			
 			<bottom>
 				<![CDATA[
-            	<div id='sidemenu'>${leftMenuContent}</div>
 			<div class='pageFooter'>
                 Docs generated on ${javadoc.startup.time}
                 </div>
