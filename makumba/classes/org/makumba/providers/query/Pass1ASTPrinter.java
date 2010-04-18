@@ -8,10 +8,16 @@ import antlr.collections.AST;
 
 /**
  * Prints a pass1 AST tree back into a query.
+ * 
  * @author Cristian Bogdan
  */
 public class Pass1ASTPrinter {
 
+    /**
+     * print a AST pass1 tree back to its "original" HQL query
+     * @param tree
+     * @return
+     */
     public static StringBuffer printAST(AST tree) {
         StringBuffer sb = new StringBuffer();
         tree = new HqlASTFactory().dupTree(tree);
@@ -19,6 +25,16 @@ public class Pass1ASTPrinter {
         return sb;
     }
 
+    /**
+     * Recursively prints the tree. In principle printing the node, its first child and its next sibling should generate
+     * a query. However: - some nodes produce nothing (query, in_list, expr_list) - the query natural order is
+     * re-arranged in the tree (FROM before SELECT) - some text items are missing (case-when's then, end) - commas are
+     * missing in lists (IN, SELECT, function call, sometimes in FROM)
+     * 
+     * @param parent parent of the current element
+     * @param ast current element to print
+     * @param sb string buffer result
+     */
     private static void printRecursive(AST parent, AST ast, StringBuffer sb) {
         if (ast == null)
             return;
@@ -26,26 +42,29 @@ public class Pass1ASTPrinter {
         AST right;
         boolean noPar = false;
 
-        // FIXME: elements
-        // FIXME: stack
-        // this is for printing the current node and its children. after this, we always print the first child
+        // this is for printing the current node and its children. after this, we always print the next sibling
         switch (ast.getType()) {
             case HqlTokenTypes.QUERY:
+                // subqueries are normally in parantheses
                 boolean subquery = false;
-                if (sb.length() != 0) {
+                if (parent != null) {
                     subquery = true;
                     sb.append("(");
                 }
 
+                // we undo the arrangement that pass1 normally makes (it puts FROM before SELECT for easier pass2)
                 AST sele_from = ast.getFirstChild();
                 AST where = sele_from.getNextSibling();
 
-                AST q = sele_from.getFirstChild().getNextSibling();
-                if (q != null)
-                    q.setNextSibling(sele_from.getFirstChild());
-                else
-                    q = sele_from.getFirstChild();
-                printRecursive(null, q, sb);
+                // first we print the FROM
+                printRecursive(null, sele_from.getFirstChild().getNextSibling(), sb);
+
+                // we remove the link between FROM and SELECt
+                sele_from.getFirstChild().setNextSibling(null);
+                // and we print the FROM
+                printRecursive(null, sele_from.getFirstChild(), sb);
+
+                // this will print all the next siblings like WHERE, ORDERBY, etc.
                 printRecursive(null, where, sb);
                 if (subquery)
                     sb.append(")");
@@ -54,23 +73,29 @@ public class Pass1ASTPrinter {
             case HqlTokenTypes.SELECT:
             case HqlTokenTypes.HAVING:
                 printKeyword(ast, sb);
+                // comma-separated children
                 printList(ast, ast.getFirstChild(), sb);
                 break;
 
             case HqlTokenTypes.GROUP:
             case HqlTokenTypes.ORDER:
                 printKeyword(ast, sb);
+                // wrong keyword in the AST
                 sb.append("BY ");
+                // comma separated children
                 printList(ast, ast.getFirstChild(), sb);
                 break;
 
             case HqlTokenTypes.ELEMENTS:
                 printKeyword(ast, sb);
+                // then come parantheses after elements
             case HqlTokenTypes.IN_LIST:
                 noPar = ast.getFirstChild().getType() == HqlTokenTypes.ELEMENTS;
+                // no parantheses in IN_LIST if it contains elements
             case HqlTokenTypes.EXPR_LIST:
                 if (!noPar)
                     sb.append('(');
+                // comma-separated children
                 printList(ast, ast.getFirstChild(), sb);
                 if (!noPar)
                     sb.append(')');
@@ -78,12 +103,17 @@ public class Pass1ASTPrinter {
 
             case HqlTokenTypes.FROM:
                 printKeyword(ast, sb);
+                // in principle children of FROM are comma separated but
+                // sometimes the comma is replaced with joins
                 AST a = ast.getFirstChild();
                 right = ast.getNextSibling();
                 ast.setNextSibling(null);
                 boolean first = true;
                 while (a != null) {
                     right = a.getNextSibling();
+
+                    // to print the separator, we must unlink the AST from its next sibling
+                    // otherwise printing the AST will also print its next sibling
                     a.setNextSibling(null);
 
                     switch (a.getType()) {
@@ -96,6 +126,7 @@ public class Pass1ASTPrinter {
                             printKeyword(a, sb);
                             break;
                         case HqlTokenTypes.RANGE:
+                            // basically only RANGE produces a comma, and only if it's not first
                             sb.append(first ? "" : ", ");
                     }
                     printRecursive(a, a.getFirstChild(), sb);
@@ -106,24 +137,31 @@ public class Pass1ASTPrinter {
                 break;
 
             case HqlTokenTypes.DOT:
+                // this is an a.b.c path
                 sb.append(ASTUtil.getPath(ast));
                 break;
 
             case HqlTokenTypes.METHOD_CALL:
+                // we don't print anything, just the first child
+                // the expr_list will print the function call prarantheses
                 printRecursive(ast, ast.getFirstChild(), sb);
                 break;
 
             case HqlTokenTypes.WHEN:
+                // then is not part of the tree
                 sb.append(ast.getText());
+                // so we unconnect the then branch from the first child (condition)
                 AST then = ast.getFirstChild().getNextSibling();
                 ast.getFirstChild().setNextSibling(null);
+                // print first child
                 printRecursive(ast, ast.getFirstChild(), sb);
-
+                // print then
                 sb.append(" then ");
                 printRecursive(ast, then, sb);
 
                 break;
 
+            // binary operators, some may be missing, please add!
             case HqlTokenTypes.AS:
             case HqlTokenTypes.PLUS:
             case HqlTokenTypes.MINUS:
@@ -140,33 +178,41 @@ public class Pass1ASTPrinter {
             case HqlTokenTypes.LIKE:
             case HqlTokenTypes.NOT_LIKE:
             case HqlTokenTypes.IN:
+                // we compare with the parent operator, if any
                 boolean prio = checkPriority(parent, ast);
+                // if we are lower precedence, we print parantheses
                 if (prio)
                     sb.append('(');
+                // disconnect first from second child
                 right = ast.getFirstChild().getNextSibling();
                 ast.getFirstChild().setNextSibling(null);
+                // print first child
                 printRecursive(ast, ast.getFirstChild(), sb);
-                switch (ast.getType()) {
-                    case HqlTokenTypes.DOT:
-                        sb.append(ast.getText());
-                    default:
-                        printKeyword(ast, sb);
-                }
+                // print operator
+                printKeyword(ast, sb);
+                // print second child
                 printRecursive(ast, right, sb);
                 if (prio)
                     sb.append(')');
                 break;
+
             default:
+                // for all other cases, we print the node, then its first child
                 sb.append(ast.getText());
                 printRecursive(ast, ast.getFirstChild(), sb);
 
         }
-        printRecursive(parent, ast.getNextSibling(), sb);
-        if (ast.getType() == HqlTokenTypes.CASE)
+        // the end of case
+        if (parent != null && parent.getType() == HqlTokenTypes.CASE && ast.getNextSibling() == null)
             sb.append(" end");
+
+        // we then print the next sibling, with the same parent.
+        // this tail recursion is ready to be eliminated but I leave it in for code clarity
+        printRecursive(parent, ast.getNextSibling(), sb);
 
     }
 
+    // check operator precedence
     private static boolean checkPriority(AST prnt, AST ast) {
         int parent = prnt.getType();
         int child = ast.getType();
@@ -187,8 +233,12 @@ public class Pass1ASTPrinter {
 
     }
 
+    // print a space if we didn't print already or we are not after an open para
     private static void space(StringBuffer sb) {
-        if (sb.length() > 0 && !(sb.charAt(sb.length() - 1) == ' ' || sb.charAt(sb.length() - 1) == '('))
+        if(sb.length()==0)
+            return;
+        char last= sb.charAt(sb.length()-1);
+        if (!(last == ' ' || last == '(' || last==':'))
             sb.append(' ');
     }
 
@@ -198,22 +248,29 @@ public class Pass1ASTPrinter {
         sb.append(' ');
     }
 
+    /*
+     * print a comma-separated list
+     */
     private static void printList(AST parent, AST ast, StringBuffer sb) {
         if (ast == null)
             return;
+        // disconnect first from second child
         AST right = ast.getNextSibling();
         ast.setNextSibling(null);
+        // print first element
         printRecursive(parent, ast, sb);
         while (right != null) {
+            // comma is not printed after DISTINCT, before ASC or DESC
             if (ast.getType() != HqlTokenTypes.DISTINCT && right.getType() != HqlTokenTypes.ASCENDING
                     && right.getType() != HqlTokenTypes.DESCENDING)
                 sb.append(",");
+            // iterate in list
             ast = right;
+            // disconnect next element
             right = ast.getNextSibling();
             ast.setNextSibling(null);
+            // print element
             printRecursive(parent, ast, sb);
         }
-
     }
-
 }
