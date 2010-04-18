@@ -1,6 +1,5 @@
 package org.makumba.providers.query;
 
-import org.makumba.providers.query.mql.ASTUtil;
 import org.makumba.providers.query.mql.HqlASTFactory;
 import org.makumba.providers.query.mql.HqlTokenTypes;
 
@@ -136,11 +135,6 @@ public class Pass1ASTPrinter {
                 }
                 break;
 
-            case HqlTokenTypes.DOT:
-                // this is an a.b.c path
-                sb.append(ASTUtil.getPath(ast));
-                break;
-
             case HqlTokenTypes.METHOD_CALL:
                 // we don't print anything, just the first child
                 // the expr_list will print the function call prarantheses
@@ -178,6 +172,8 @@ public class Pass1ASTPrinter {
             case HqlTokenTypes.LIKE:
             case HqlTokenTypes.NOT_LIKE:
             case HqlTokenTypes.IN:
+            // dot is treated like a normal binary operator, except it won't print spaces for aesthetic reasons
+            case HqlTokenTypes.DOT:
                 // we compare with the parent operator, if any
                 boolean prio = checkPriority(parent, ast);
                 // if we are lower precedence, we print parantheses
@@ -238,14 +234,16 @@ public class Pass1ASTPrinter {
         if(sb.length()==0)
             return;
         char last= sb.charAt(sb.length()-1);
-        if (!(last == ' ' || last == '(' || last==':'))
+        if (!(last == ' ' || last == '(' || last==':'|| last=='.'))
             sb.append(' ');
     }
 
     private static void printKeyword(AST ast, StringBuffer sb) {
-        space(sb);
+        if(ast.getType()!= HqlTokenTypes.DOT)
+            space(sb);
         sb.append(ast.getText());
-        sb.append(' ');
+        if(ast.getType()!= HqlTokenTypes.DOT)
+            sb.append(' ');
     }
 
     /*
