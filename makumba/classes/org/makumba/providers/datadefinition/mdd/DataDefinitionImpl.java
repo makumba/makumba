@@ -76,7 +76,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
 
     protected LinkedHashMap<Object, MultipleUniqueKeyDefinition> multiFieldUniqueList = new LinkedHashMap<Object, MultipleUniqueKeyDefinition>();
 
-    protected QueryFragmentFunctions functions = new QueryFragmentFunctions();
+    protected QueryFragmentFunctions functions = new QueryFragmentFunctions(this);
 
     private transient MDDNode mddNode;
 
@@ -412,7 +412,6 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
 
     public void addFunctions(HashMap<String, QueryFragmentFunction> funcNames) {
         for (QueryFragmentFunction f : funcNames.values()) {
-            f.setHoldingDataDefinition(this); // have to set the holder here, as it is unknown on Function creation time
             functions.addFunction(f.getName(), f);
         }
     }

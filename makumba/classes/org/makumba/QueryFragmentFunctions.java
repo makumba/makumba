@@ -17,12 +17,20 @@ import org.makumba.DataDefinition.QueryFragmentFunction;
 public class QueryFragmentFunctions implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    HashMap<String, QueryFragmentFunction> functionNameCache = new HashMap<String, QueryFragmentFunction>();
+    private HashMap<String, QueryFragmentFunction> functionNameCache = new HashMap<String, QueryFragmentFunction>();
 
-    ArrayList<QueryFragmentFunction> functions = new ArrayList<QueryFragmentFunction>();
+    private ArrayList<QueryFragmentFunction> functions = new ArrayList<QueryFragmentFunction>();
+
+    private DataDefinition holder;
+
+    public QueryFragmentFunctions(DataDefinition holder) {
+        this.holder = holder;
+    }
 
     /** adds a new function to this data definition. */
     public void addFunction(String name, QueryFragmentFunction function) {
+        // set the holder here, as it might be unknown on Function creation time
+        function.setHoldingDataDefinition(holder);
         functions.add(function);
         functionNameCache.put(name, function);
     }
@@ -56,7 +64,11 @@ public class QueryFragmentFunctions implements Serializable {
 
     /** Returns the function with the specific name. */
     public QueryFragmentFunction getFunction(String name) {
-        return functionNameCache.get(name);
+        if (functionNameCache.containsKey(name)) {
+            return functionNameCache.get(name);
+        } else {
+            throw new ProgrammerError("Unknown function '" + name + "' in type " + holder.getName());
+        }
     }
 
     /** Returns the function with the specific name and parameters. */

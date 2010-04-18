@@ -69,7 +69,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
 
     Vector<String> fieldOrder = new Vector<String>();
 
-    QueryFragmentFunctions functions = new QueryFragmentFunctions();
+    QueryFragmentFunctions functions = new QueryFragmentFunctions(this);
 
     String title;
 
