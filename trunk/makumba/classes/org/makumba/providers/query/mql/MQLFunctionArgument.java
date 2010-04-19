@@ -30,14 +30,6 @@ package org.makumba.providers.query.mql;
  * @version $Id: MQLFunctionArgument.java,v 1.1 Dec 20, 2008 3:33:06 AM rudi Exp $
  */
 class MQLFunctionArgument {
-    public static MQLFunctionArgument multipleArgument(String type) {
-        return new MQLFunctionArgument(type, false, true);
-    }
-
-    public static MQLFunctionArgument optionalArgument(String type) {
-        return new MQLFunctionArgument(type, true, false);
-    }
-
     private boolean multiple;
 
     private boolean optional;

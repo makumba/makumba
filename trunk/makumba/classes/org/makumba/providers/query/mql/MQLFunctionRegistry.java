@@ -61,11 +61,11 @@ public class MQLFunctionRegistry {
         mqlFunctions.add(stringToStringFunction("reverse"));
 
         // to-string functions with more arguments
-        mqlFunctions.add(toStringFunction("concat", MQLFunctionArgument.multipleArgument("char[255]")));
+        mqlFunctions.add(toStringFunction("concat", makMultipleArgument("char[255]")));
         mqlFunctions.add(toStringFunction("concat_ws", new MQLFunctionArgument("char[255]"),
-            MQLFunctionArgument.multipleArgument("char[255]")));
+            makMultipleArgument("char[255]")));
         mqlFunctions.add(toStringFunction("substring", new MQLFunctionArgument("char[255]"), new MQLFunctionArgument(
-                "int"), MQLFunctionArgument.optionalArgument("int")));
+                "int"), MQLFunctionRegistry.makeOptionalArgument("int")));
         String[] arguments = { "char[255]", "char[255]" };
         mqlFunctions.add(new MQLFunctionDefinition("replace", "char[255]", arguments));
 
@@ -151,6 +151,14 @@ public class MQLFunctionRegistry {
 
     private static MQLFunctionDefinition toStringFunction(String name, MQLFunctionArgument... arguments) {
         return new MQLFunctionDefinition(name, "char[255]", arguments);
+    }
+
+    private static MQLFunctionArgument makMultipleArgument(String type) {
+        return new MQLFunctionArgument(type, false, true);
+    }
+
+    private static MQLFunctionArgument makeOptionalArgument(String type) {
+        return new MQLFunctionArgument(type, true, false);
     }
 
 }
