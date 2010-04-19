@@ -53,84 +53,104 @@ public class MQLFunctionRegistry {
         // String FUNCTIONS
         //
         // simple string-to-string functions
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.stringToStringFunction("lower"));
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.stringToStringFunction("upper"));
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.stringToStringFunction("trim"));
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.stringToStringFunction("rtrim"));
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.stringToStringFunction("ltrim"));
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.stringToStringFunction("reverse"));
+        mqlFunctions.add(stringToStringFunction("lower"));
+        mqlFunctions.add(stringToStringFunction("upper"));
+        mqlFunctions.add(stringToStringFunction("trim"));
+        mqlFunctions.add(stringToStringFunction("rtrim"));
+        mqlFunctions.add(stringToStringFunction("ltrim"));
+        mqlFunctions.add(stringToStringFunction("reverse"));
 
         // to-string functions with more arguments
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.toStringFunction("concat",
+        mqlFunctions.add(toStringFunction("concat", MQLFunctionArgument.multipleArgument("char[255]")));
+        mqlFunctions.add(toStringFunction("concat_ws", new MQLFunctionArgument("char[255]"),
             MQLFunctionArgument.multipleArgument("char[255]")));
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.toStringFunction("concat_ws",
-            new MQLFunctionArgument("char[255]"), MQLFunctionArgument.multipleArgument("char[255]")));
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.toStringFunction("substring",
-            new MQLFunctionArgument("char[255]"), new MQLFunctionArgument("int"),
-            MQLFunctionArgument.optionalArgument("int")));
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.toStringFunction("replace", "char[255]", "char[255]"));
+        mqlFunctions.add(toStringFunction("substring", new MQLFunctionArgument("char[255]"), new MQLFunctionArgument(
+                "int"), MQLFunctionArgument.optionalArgument("int")));
+        String[] arguments = { "char[255]", "char[255]" };
+        mqlFunctions.add(new MQLFunctionDefinition("replace", "char[255]", arguments));
 
         // simple string-to-int functions
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.stringToIntFunction("ascii"));
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.stringToIntFunction("character_length"));
+        mqlFunctions.add(new MQLFunctionDefinition("ascii", "int", "char[255]"));
+        mqlFunctions.add(new MQLFunctionDefinition("character_length", "int", "char[255]"));
 
         // simple int-to-string functions
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.intToStringFunction("format"));
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.intToStringFunction("char"));
+        mqlFunctions.add(new MQLFunctionDefinition("format", "char[255]", "int"));
+        mqlFunctions.add(new MQLFunctionDefinition("char", "char[255]", "int"));
 
         //
         // DATE FUNCTIONS
         //
         // simple date-to-int functions
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.dateToIntFunction("dayOfMonth"));
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.dateToIntFunction("dayOfWeek"));
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.dateToIntFunction("week"));
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.dateToIntFunction("weekday"));
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.dateToIntFunction("dayOfYear"));
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.dateToIntFunction("year"));
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.dateToIntFunction("month"));
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.dateToIntFunction("hour"));
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.dateToIntFunction("minute"));
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.dateToIntFunction("second"));
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.dateToIntFunction("microsecond"));
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.dateToIntFunction("quarter"));
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.dateToIntFunction("to_days"));
+        mqlFunctions.add(dateToIntFunction("dayOfMonth"));
+        mqlFunctions.add(dateToIntFunction("dayOfWeek"));
+        mqlFunctions.add(dateToIntFunction("week"));
+        mqlFunctions.add(dateToIntFunction("weekday"));
+        mqlFunctions.add(dateToIntFunction("dayOfYear"));
+        mqlFunctions.add(dateToIntFunction("year"));
+        mqlFunctions.add(dateToIntFunction("month"));
+        mqlFunctions.add(dateToIntFunction("hour"));
+        mqlFunctions.add(dateToIntFunction("minute"));
+        mqlFunctions.add(dateToIntFunction("second"));
+        mqlFunctions.add(dateToIntFunction("microsecond"));
+        mqlFunctions.add(dateToIntFunction("quarter"));
+        mqlFunctions.add(dateToIntFunction("to_days"));
 
         // simple string-to-date functions
-        MQLFunctionRegistry.mqlFunctions.add(new MQLFunctionDefinition("str_to_date", "date", "char[255]", "char[255]"));
+        mqlFunctions.add(new MQLFunctionDefinition("str_to_date", "date", "char[255]", "char[255]"));
 
         // date-to-int functions with more arguments
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.toIntFunction("datediff", "date", "date"));
+        mqlFunctions.add(toIntFunction("datediff", "date", "date"));
 
         // to-int functions with more arguments
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.toIntFunction("mod", "int", "int"));
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.toIntFunction("extract", "char[255]", "date"));
+        mqlFunctions.add(toIntFunction("mod", "int", "int"));
+        mqlFunctions.add(toIntFunction("extract", "char[255]", "date"));
 
         // simple date-to-string functions
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.dateToStringFunction("monthName"));
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.dateToStringFunction("dayName"));
+        mqlFunctions.add(new MQLFunctionDefinition("monthName", "char[255]", "date"));
+        mqlFunctions.add(new MQLFunctionDefinition("dayName", "char[255]", "date"));
 
         // simple date-to-date functions
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.dateToDateFunction("last_day"));
+        mqlFunctions.add(new MQLFunctionDefinition("last_day", "date", "date"));
 
         // to-date functions with no arguments
-        MQLFunctionRegistry.mqlFunctions.add(new NowFunction());
+        mqlFunctions.add(new NowFunction());
         // FIXME: the functions below are MySQL specific, and are deprecated; should be removed at some later time
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.toDateFunction("current_date"));
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.toDateFunction("current_time"));
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.toDateFunction("current_timestamp"));
+        mqlFunctions.add(toDateFunction("current_date"));
+        mqlFunctions.add(toDateFunction("current_time"));
+        mqlFunctions.add(toDateFunction("current_timestamp"));
 
         // to-date functions with more arguments
-        MQLFunctionRegistry.mqlFunctions.add(new DateAddFunction());
-        MQLFunctionRegistry.mqlFunctions.add(new DateSubFunction());
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.toDateFunction("makedate", "date", "date"));
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.toDateFunction("maketime", "date", "date", "date"));
+        mqlFunctions.add(new DateAddFunction());
+        mqlFunctions.add(new DateSubFunction());
+        mqlFunctions.add(new MQLFunctionDefinition("makedate", "date", new String[] { "date", "date" }));
+        mqlFunctions.add(new MQLFunctionDefinition("maketime", "date", new String[] { "date", "date", "date" }));
 
         // int-to-date functions with more arguments
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.intToDateFunction("from_days"));
+        mqlFunctions.add(new MQLFunctionDefinition("from_days", "date", "int"));
 
         // to-real functions with no arguments
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.toRealFunction("rand"));
-        MQLFunctionRegistry.mqlFunctions.add(MQLFunctionDefinition.intToRealFunction("rand"));
+        mqlFunctions.add(new MQLFunctionDefinition("rand", "real", new String[] {}));
+        mqlFunctions.add(new MQLFunctionDefinition("rand", "real", "int"));
     }
+
+    private static MQLFunctionDefinition dateToIntFunction(String name) {
+        return new MQLFunctionDefinition(name, "int", "date");
+    }
+
+    private static MQLFunctionDefinition stringToStringFunction(String name) {
+        return new MQLFunctionDefinition(name, "char[255]", "char[255]");
+    }
+
+    private static MQLFunctionDefinition toDateFunction(String name) {
+        return new MQLFunctionDefinition(name, "date", new String[] {});
+    }
+
+    private static MQLFunctionDefinition toIntFunction(String name, String... arguments) {
+        return new MQLFunctionDefinition(name, "int", arguments);
+    }
+
+    private static MQLFunctionDefinition toStringFunction(String name, MQLFunctionArgument... arguments) {
+        return new MQLFunctionDefinition(name, "char[255]", arguments);
+    }
+
 }
