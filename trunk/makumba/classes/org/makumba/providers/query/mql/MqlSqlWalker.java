@@ -124,7 +124,8 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     @Override
     protected void processFunction(AST functionCall) throws SemanticException {
         // determine parameter types here
-        final AST functionNode = functionCall.getFirstChild();
+        final MqlNode functionNode = (MqlNode)functionCall.getFirstChild();
+        ((MqlNode) functionCall).setMakType(getFunctionType(functionNode));
         final AST exprList = functionNode.getNextSibling();
         MqlNode paramNode = (MqlNode) exprList.getFirstChild();
         int index = 0;
@@ -161,6 +162,28 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
             index++;
         }
     }
+    
+    /**
+     * Computes the type of function, based on their path. Note that MDD functions are inlined so their type doesn't
+     * need to be computed. For actor functions, computation happens after the complete sub-tree is built, in the
+     * grammar.
+     * @param child TODO
+     */
+    FieldDefinition getFunctionType(MqlNode child) {
+        String type = null;
+        String name = child.getText();
+        MQLFunctionDefinition functionDef = MQLFunctionRegistry.findMQLFunction(name);
+        if (functionDef != null) {
+            type = functionDef.getReturnType();
+        }
+    
+        if (type != null) {
+            child.setType(HqlSqlTokenTypes.METHOD_NAME);
+            return DataDefinitionProvider.getInstance().makeFieldDefinition("x", type);
+        }
+        return null;
+    }
+    
 
     public void reportWarning(String s) {
         System.out.println(s);
@@ -428,6 +451,5 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         return select.getFirstChild().getNextSibling() == null
                 && select.getFirstChild().getType() == HqlSqlTokenTypes.NUM_INT;
     }
-    
  
 }

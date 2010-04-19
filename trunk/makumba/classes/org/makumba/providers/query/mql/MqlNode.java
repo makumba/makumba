@@ -94,6 +94,11 @@ public class MqlNode extends CommonAST {
     public void setNextSibling(AST a) {
         super.setNextSibling(a);
         if (father != null) {
+ /*         
+			FIXME: this feels natural to do but it fails...
+			i think all the non-first-children are fatherless!  
+			if(a!=null)
+                ((MqlNode) a).setFather(father);*/
             father.addCheckedIds((MqlNode) a);
             father.oneMoreChild((MqlNode) a);
         }
@@ -180,8 +185,7 @@ public class MqlNode extends CommonAST {
                 }
                 // otherwise this child is the first projection and we set the type to it
                 return child.getMakType();
-            case HqlSqlTokenTypes.METHOD_CALL:
-                return getFunctionType(child);
+         
             case HqlSqlTokenTypes.AGGREGATE:
             case HqlSqlTokenTypes.UNARY_MINUS:
             case HqlSqlTokenTypes.UNARY_PLUS:
@@ -204,26 +208,6 @@ public class MqlNode extends CommonAST {
         }
         return null;
     };
-
-    /**
-     * Computes the type of function, based on their path. Note that MDD functions are inlined so their type doesn't
-     * need to be computed. For actor functions, computation happens after the complete sub-tree is built, in the
-     * grammar.
-     */
-    private FieldDefinition getFunctionType(MqlNode child) {
-        String type = null;
-        String name = child.getText();
-        MQLFunctionDefinition functionDef = MQLFunctionRegistry.findMQLFunction(name);
-        if (functionDef != null) {
-            type = functionDef.getReturnType();
-        }
-
-        if (type != null) {
-            child.setType(HqlSqlTokenTypes.METHOD_NAME);
-            return DataDefinitionProvider.getInstance().makeFieldDefinition("x", type);
-        }
-        return null;
-    }
 
     public void setMakType(FieldDefinition fd) {
         if (fd.getType().equals("ptrIndex")) {
