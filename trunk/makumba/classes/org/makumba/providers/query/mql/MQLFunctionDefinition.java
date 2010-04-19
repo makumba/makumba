@@ -71,6 +71,10 @@ public class MQLFunctionDefinition {
         return name;
     }
 
+    public String getSQLCommand() {
+        return getName();
+    }
+
     public String getReturnType() {
         return returnType;
     }
@@ -107,7 +111,7 @@ public class MQLFunctionDefinition {
      */
     public TextList render(List<TextList> args) {
         TextList textList = new TextList();
-        textList.append(getName() + "(");
+        textList.append(getSQLCommand() + "(");
         for (int i = 0; i < args.size(); i++) {
             textList.append(args.get(i));
             if (i + 1 < args.size()) {
@@ -120,20 +124,31 @@ public class MQLFunctionDefinition {
 
 }
 
-class DateArithmeticFunction extends MQLFunctionDefinition {
-    protected String sqlName;
+class SQLDialectFunction extends MQLFunctionDefinition {
+    protected String sqlCommand;
 
-    protected DateArithmeticFunction(String name, String sqlName) {
-        super(name, "date", new MQLFunctionArgument("date"), new MQLFunctionArgument("date"), new MQLFunctionArgument(
-                "char", true, false));
-        this.sqlName = sqlName;
+    public SQLDialectFunction(String name, String sqlCommand, String returnType, MQLFunctionArgument... arguments) {
+        super(name, returnType, arguments);
+        this.sqlCommand = sqlCommand;
+    }
+
+    @Override
+    public String getSQLCommand() {
+        return sqlCommand;
+    }
+}
+
+class DateArithmeticFunction extends SQLDialectFunction {
+    protected DateArithmeticFunction(String name, String sqlCommand) {
+        super(name, sqlCommand, "date", new MQLFunctionArgument("date"), new MQLFunctionArgument("date"),
+                new MQLFunctionArgument("char", true, false));
     }
 
     @Override
     public TextList render(List<TextList> args) {
         // FIXME: this is mysql specific; other dialects should be supported
         TextList textList = new TextList();
-        textList.append(sqlName + "(");
+        textList.append(getSQLCommand() + "(");
         if (args.size() == 2) {
             textList.append(args.get(0)).append(", INTERVAL ").append(args.get(1)).append(" second");
         } else if (args.size() == 3) {
