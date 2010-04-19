@@ -26,7 +26,6 @@ package org.makumba.providers.query.mql;
 import java.util.List;
 
 import org.makumba.OQLParseError;
-import org.makumba.commons.StringUtils;
 import org.makumba.commons.NameResolver.TextList;
 
 /**
@@ -40,76 +39,12 @@ public class MQLFunctionDefinition {
 
     protected int argumentCount = 0;
 
-    public static MQLFunctionDefinition dateToDateFunction(String name) {
-        return new MQLFunctionDefinition(name, "date", "date");
-    }
-
-    public static MQLFunctionDefinition dateToIntFunction(String name) {
-        return new MQLFunctionDefinition(name, "int", "date");
-    }
-
-    public static MQLFunctionDefinition dateToStringFunction(String name) {
-        return new MQLFunctionDefinition(name, "char[255]", "date");
-    }
-
-    public static MQLFunctionDefinition intToDateFunction(String name) {
-        return new MQLFunctionDefinition(name, "date", "int");
-    }
-
-    public static MQLFunctionDefinition intToStringFunction(String name) {
-        return new MQLFunctionDefinition(name, "char[255]", "int");
-    }
-
     private static MQLFunctionArgument[] makeStandardArguments(String[] args) {
         MQLFunctionArgument[] arguments = new MQLFunctionArgument[args.length];
         for (int i = 0; i < arguments.length; i++) {
             arguments[i] = new MQLFunctionArgument(args[i]);
         }
         return arguments;
-    }
-
-    public static MQLFunctionDefinition stringToIntFunction(String name) {
-        return new MQLFunctionDefinition(name, "int", "char[255]");
-    }
-
-    public static MQLFunctionDefinition stringToStringFunction(String name) {
-        return new MQLFunctionDefinition(name, "char[255]", "char[255]");
-    }
-
-    public static MQLFunctionDefinition toDateFunction(String name) {
-        return new MQLFunctionDefinition(name, "date", new String[] {});
-    }
-
-    public static MQLFunctionDefinition toDateFunction(String name, MQLFunctionArgument... arguments) {
-        return new MQLFunctionDefinition(name, "date", arguments);
-    }
-
-    public static MQLFunctionDefinition toDateFunction(String name, String... arguments) {
-        return new MQLFunctionDefinition(name, "date", arguments);
-    }
-
-    public static MQLFunctionDefinition toIntFunction(String name, MQLFunctionArgument... arguments) {
-        return new MQLFunctionDefinition(name, "int", arguments);
-    }
-
-    public static MQLFunctionDefinition toIntFunction(String name, String... arguments) {
-        return new MQLFunctionDefinition(name, "int", arguments);
-    }
-
-    public static MQLFunctionDefinition toStringFunction(String name, MQLFunctionArgument... arguments) {
-        return new MQLFunctionDefinition(name, "char[255]", arguments);
-    }
-
-    public static MQLFunctionDefinition toStringFunction(String name, String... arguments) {
-        return new MQLFunctionDefinition(name, "char[255]", arguments);
-    }
-
-    public static MQLFunctionDefinition toRealFunction(String name) {
-        return new MQLFunctionDefinition(name, "real", new String[] {});
-    }
-
-    public static MQLFunctionDefinition intToRealFunction(String name) {
-        return new MQLFunctionDefinition(name, "real", "int");
     }
 
     private MQLFunctionArgument[] arguments;
