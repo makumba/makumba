@@ -128,6 +128,15 @@ public class MQLFunctionRegistry {
         // int-to-date functions with more arguments
         mqlFunctions.add(new MQLFunctionDefinition("from_days", "date", "int"));
 
+        // FIXME: those functions should also work for (int, int+)->int, (real, real+)->real, and other types
+        mqlFunctions.add(new MQLFunctionDefinition("least", "date", new MQLFunctionArgument("date"),
+                new MQLFunctionArgument("date", false, true)));
+        mqlFunctions.add(new MQLFunctionDefinition("greatest", "date", new MQLFunctionArgument("date"),
+                new MQLFunctionArgument("date", false, true)));
+
+        //
+        // REAL FUNCTIONS
+        //
         // to-real functions with no arguments
         mqlFunctions.add(new MQLFunctionDefinition("rand", "real", new String[] {}));
         mqlFunctions.add(new MQLFunctionDefinition("rand", "real", "int"));
