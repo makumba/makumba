@@ -124,6 +124,11 @@ public class Query implements org.makumba.db.makumba.Query {
 
             if (supportsLimitInQuery) {
                 int limit1 = limit == -1 ? Integer.MAX_VALUE : limit;
+                
+                // FIXME this should be checked earlier, see http://bugs.makumba.org/show_bug.cgi?id=1191
+                if(ps.getParameterMetaData().getParameterCount() < assigner.qG.getArgumentCount() + 2) {
+                    throw new InvalidValueException("Wrong number of arguments passed to query ");
+                }
 
                 if (offsetFirst) {
                     ps.setInt(assigner.qG.getArgumentCount() + 1, offset);

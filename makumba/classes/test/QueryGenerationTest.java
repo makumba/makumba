@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
+import org.makumba.InvalidValueException;
 import org.makumba.Transaction;
 import org.makumba.providers.TransactionProvider;
 
@@ -51,6 +52,26 @@ public class QueryGenerationTest extends TestCase {
         Object name = line.get("name");
         assertNotNull(name);
         assertEquals("bart", (String)name);
+    }
+    
+    public void testVectorParameterError() {
+        String query = "SELECT p.indiv.name as name FROM test.Person p WHERE p.indiv.name = $simulatedVector";
+        Map<String, Object> arguments = new HashMap<String, Object>();
+        Vector<String> v = new Vector<String>();
+        v.add("bart");
+        v.add("bart");
+        arguments.put("simulatedVector", v);
+        Vector<Dictionary<String, Object>> result = new Vector<Dictionary<String,Object>>();
+        
+        Transaction t = TransactionProvider.getInstance().getConnectionTo(TransactionProvider.getInstance().getDefaultDataSourceName());
+        try {
+            result = t.executeQuery(query, arguments);
+        } catch(Exception e) {
+            assertTrue(e instanceof InvalidValueException);
+        } finally {
+            t.close();
+        }
+        
     }
 
 }
