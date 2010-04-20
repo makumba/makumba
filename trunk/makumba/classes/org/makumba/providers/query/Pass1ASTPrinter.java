@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import org.makumba.commons.ClassResource;
+import org.makumba.commons.StringUtils;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.datadefinition.mdd.MakumbaDumpASTVisitor;
@@ -336,8 +337,10 @@ public class Pass1ASTPrinter {
                 System.out.println("\n\n");
                 return false;
             }
-            if(printed.toUpperCase().trim().equals(query.toUpperCase().trim()))
-                System.out.print('.');
+            if(!StringUtils.removeRedundantSpaces(printed.toUpperCase().trim()).equals(StringUtils.removeRedundantSpaces(query.toUpperCase().trim()))){
+                // System.out.print('.');
+                System.out.println(query+"\n\t"+printed);
+            }
             //System.out.println(printed);
             
         } catch (Throwable e) {
