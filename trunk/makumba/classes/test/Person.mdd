@@ -130,6 +130,7 @@ oneNameMin2CharsLong() { character_length(indiv.name) > 2 OR character_length(in
 fullName() { indiv.fullName() } ; comment
 
 testCaseWhen() { case when this.indiv <> NIL then this.indiv.fullName() else 'noName' end }  
+testCaseWhen2() { CASE WHEN this.indiv <> NIL THEN this.indiv.fullName() WHEN this.indiv.name <> NIL THEN indiv.name ELSE CASE WHEN this.indiv.surname <> NIL THEN indiv.surname END END }  
 
 actor(char[] username, char[] password) { myapp_username=username AND this.password=password }
 actor2(char[] username, char[] password) { indiv.someusername=username AND this.password=password }
