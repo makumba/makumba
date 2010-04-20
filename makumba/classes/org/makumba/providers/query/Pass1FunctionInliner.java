@@ -575,9 +575,7 @@ public class Pass1FunctionInliner {
                 // if(line==1)
                 // new MakumbaDumpASTVisitor(false).visit(new MqlQueryAnalysis(oldInline, false,
                 // false).getAnalyserTree());
-                Pass1ASTPrinter.testPrinter(f, query);
-                Pass1ASTPrinter.testPrinter(processedAST, oldInline);
-                
+               
                 if (!QueryAnalysisProvider.compare(new ArrayList<AST>(), processedAST, compAST)) {
                     System.err.println(line + ": " + query);
                     if (oldError != null)
