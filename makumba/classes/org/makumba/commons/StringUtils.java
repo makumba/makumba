@@ -274,4 +274,12 @@ public class StringUtils {
         return ba.toString();
     }
 
+    public static String removeRedundantSpaces(String s) {
+        String result = s;
+        while (result.contains("  ")) {
+            result = result.replace("  ", " ");
+        }
+        return result;
+    }
+
 }
