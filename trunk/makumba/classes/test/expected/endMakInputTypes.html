@@ -1,0 +1,172 @@
+
+
+<html>
+<head><title>Testing different types for mak:input</title></head>
+<body>
+
+
+
+
+<form action="" id="_form1" method="POST" onsubmit="return validateForm_age_form1Validation();">
+  age spinner: <input name="age" type="spinner" value="" maxlength="10" id="age_form1" >
+<table valign="top" border="0" cellpadding="0" cellspacing="0" style="display: inline;">
+<tr><td><input type="button" value="+" onclick="document.getElementById('age_form1').value = document.getElementById('age_form1').value==''? 1:parseInt(document.getElementById('age_form1').value) + 1;" style="font-size:5px;margin:0;padding:0;width:15px;height:12px;"></td></tr>
+<tr><td><input type="button" value="-" onclick="document.getElementById('age_form1').value-=1;" style="font-size:5px;margin:0;padding:0;width:15px;height:12px;"></td></tr>
+    </table> <br/> <br/>
+  age drop down: <SELECT NAME="age" SIZE="1" >
+	<OPTION value="12">12</OPTION>
+	<OPTION value="13">13</OPTION>
+	<OPTION value="14">14</OPTION>
+	<OPTION value="15">15</OPTION>
+	<OPTION value="16">16</OPTION>
+	<OPTION value="17">17</OPTION>
+	<OPTION value="18">18</OPTION>
+	<OPTION value="19">19</OPTION>
+	<OPTION value="20">20</OPTION>
+	<OPTION value="21">21</OPTION>
+	<OPTION value="22">22</OPTION>
+	<OPTION value="23">23</OPTION>
+	<OPTION value="24">24</OPTION>
+	<OPTION value="25">25</OPTION>
+	<OPTION value="26">26</OPTION>
+	<OPTION value="27">27</OPTION>
+	<OPTION value="28">28</OPTION>
+	<OPTION value="29">29</OPTION>
+	<OPTION value="30">30</OPTION>
+	<OPTION value="31">31</OPTION>
+	<OPTION value="32">32</OPTION>
+	<OPTION value="33">33</OPTION>
+	<OPTION value="34">34</OPTION>
+	<OPTION value="35">35</OPTION>
+	<OPTION value="36">36</OPTION>
+	<OPTION value="37">37</OPTION>
+	<OPTION value="38">38</OPTION>
+	<OPTION value="39">39</OPTION>
+	<OPTION value="40">40</OPTION>
+	<OPTION value="41">41</OPTION>
+	<OPTION value="42">42</OPTION>
+	<OPTION value="43">43</OPTION>
+	<OPTION value="44">44</OPTION>
+	<OPTION value="45">45</OPTION>
+	<OPTION value="46">46</OPTION>
+	<OPTION value="47">47</OPTION>
+	<OPTION value="48">48</OPTION>
+	<OPTION value="49">49</OPTION>
+	<OPTION value="50">50</OPTION>
+	<OPTION value="51">51</OPTION>
+	<OPTION value="52">52</OPTION>
+	<OPTION value="53">53</OPTION>
+	<OPTION value="54">54</OPTION>
+	<OPTION value="55">55</OPTION>
+	<OPTION value="56">56</OPTION>
+	<OPTION value="57">57</OPTION>
+	<OPTION value="58">58</OPTION>
+	<OPTION value="59">59</OPTION>
+	<OPTION value="60">60</OPTION>
+	<OPTION value="61">61</OPTION>
+	<OPTION value="62">62</OPTION>
+	<OPTION value="63">63</OPTION>
+	<OPTION value="64">64</OPTION>
+	<OPTION value="65">65</OPTION>
+	<OPTION value="66">66</OPTION>
+	<OPTION value="67">67</OPTION>
+	<OPTION value="68">68</OPTION>
+	<OPTION value="69">69</OPTION>
+	<OPTION value="70">70</OPTION>
+	<OPTION value="71">71</OPTION>
+	<OPTION value="72">72</OPTION>
+	<OPTION value="73">73</OPTION>
+	<OPTION value="74">74</OPTION>
+	<OPTION value="75">75</OPTION>
+	<OPTION value="76">76</OPTION>
+	<OPTION value="77">77</OPTION>
+	<OPTION value="78">78</OPTION>
+	<OPTION value="79">79</OPTION>
+	<OPTION value="80">80</OPTION>
+	<OPTION value="81">81</OPTION>
+	<OPTION value="82">82</OPTION>
+	<OPTION value="83">83</OPTION>
+	<OPTION value="84">84</OPTION>
+	<OPTION value="85">85</OPTION>
+	<OPTION value="86">86</OPTION>
+	<OPTION value="87">87</OPTION>
+	<OPTION value="88">88</OPTION>
+	<OPTION value="89">89</OPTION>
+	<OPTION value="90">90</OPTION>
+	<OPTION value="91">91</OPTION>
+	<OPTION value="92">92</OPTION>
+	<OPTION value="93">93</OPTION>
+	<OPTION value="94">94</OPTION>
+	<OPTION value="95">95</OPTION>
+	<OPTION value="96">96</OPTION>
+	<OPTION value="97">97</OPTION>
+	<OPTION value="98">98</OPTION>
+	<OPTION value="99">99</OPTION>
+</SELECT> <br/> <br/>
+  age drop down with steps: <SELECT NAME="age" SIZE="1" >
+	<OPTION value="12">12</OPTION>
+	<OPTION value="15">15</OPTION>
+	<OPTION value="18">18</OPTION>
+	<OPTION value="21">21</OPTION>
+	<OPTION value="24">24</OPTION>
+	<OPTION value="27">27</OPTION>
+	<OPTION value="30">30</OPTION>
+	<OPTION value="33">33</OPTION>
+	<OPTION value="36">36</OPTION>
+	<OPTION value="39">39</OPTION>
+	<OPTION value="42">42</OPTION>
+	<OPTION value="45">45</OPTION>
+	<OPTION value="48">48</OPTION>
+	<OPTION value="51">51</OPTION>
+	<OPTION value="54">54</OPTION>
+	<OPTION value="57">57</OPTION>
+	<OPTION value="60">60</OPTION>
+	<OPTION value="63">63</OPTION>
+	<OPTION value="66">66</OPTION>
+	<OPTION value="69">69</OPTION>
+	<OPTION value="72">72</OPTION>
+	<OPTION value="75">75</OPTION>
+	<OPTION value="78">78</OPTION>
+	<OPTION value="81">81</OPTION>
+	<OPTION value="84">84</OPTION>
+	<OPTION value="87">87</OPTION>
+	<OPTION value="90">90</OPTION>
+	<OPTION value="93">93</OPTION>
+	<OPTION value="96">96</OPTION>
+	<OPTION value="99">99</OPTION>
+</SELECT> <br/> <br/>
+  age radio buttons: <INPUT TYPE=RADIO NAME="age"  VALUE="12"  id="age_0null"> <LABEL for="age_0null">12</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="13"  id="age_1null"> <LABEL for="age_1null">13</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="14"  id="age_2null"> <LABEL for="age_2null">14</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="15"  id="age_3null"> <LABEL for="age_3null">15</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="16"  id="age_4null"> <LABEL for="age_4null">16</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="17"  id="age_5null"> <LABEL for="age_5null">17</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="18"  id="age_6null"> <LABEL for="age_6null">18</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="19"  id="age_7null"> <LABEL for="age_7null">19</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="20"  id="age_8null"> <LABEL for="age_8null">20</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="21"  id="age_9null"> <LABEL for="age_9null">21</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="22"  id="age_10null"> <LABEL for="age_10null">22</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="23"  id="age_11null"> <LABEL for="age_11null">23</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="24"  id="age_12null"> <LABEL for="age_12null">24</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="25"  id="age_13null"> <LABEL for="age_13null">25</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="26"  id="age_14null"> <LABEL for="age_14null">26</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="27"  id="age_15null"> <LABEL for="age_15null">27</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="28"  id="age_16null"> <LABEL for="age_16null">28</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="29"  id="age_17null"> <LABEL for="age_17null">29</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="30"  id="age_18null"> <LABEL for="age_18null">30</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="31"  id="age_19null"> <LABEL for="age_19null">31</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="32"  id="age_20null"> <LABEL for="age_20null">32</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="33"  id="age_21null"> <LABEL for="age_21null">33</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="34"  id="age_22null"> <LABEL for="age_22null">34</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="35"  id="age_23null"> <LABEL for="age_23null">35</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="36"  id="age_24null"> <LABEL for="age_24null">36</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="37"  id="age_25null"> <LABEL for="age_25null">37</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="38"  id="age_26null"> <LABEL for="age_26null">38</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="39"  id="age_27null"> <LABEL for="age_27null">39</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="40"  id="age_28null"> <LABEL for="age_28null">40</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="41"  id="age_29null"> <LABEL for="age_29null">41</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="42"  id="age_30null"> <LABEL for="age_30null">42</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="43"  id="age_31null"> <LABEL for="age_31null">43</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="44"  id="age_32null"> <LABEL for="age_32null">44</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="45"  id="age_33null"> <LABEL for="age_33null">45</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="46"  id="age_34null"> <LABEL for="age_34null">46</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="47"  id="age_35null"> <LABEL for="age_35null">47</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="48"  id="age_36null"> <LABEL for="age_36null">48</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="49"  id="age_37null"> <LABEL for="age_37null">49</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="50"  id="age_38null"> <LABEL for="age_38null">50</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="51"  id="age_39null"> <LABEL for="age_39null">51</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="52"  id="age_40null"> <LABEL for="age_40null">52</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="53"  id="age_41null"> <LABEL for="age_41null">53</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="54"  id="age_42null"> <LABEL for="age_42null">54</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="55"  id="age_43null"> <LABEL for="age_43null">55</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="56"  id="age_44null"> <LABEL for="age_44null">56</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="57"  id="age_45null"> <LABEL for="age_45null">57</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="58"  id="age_46null"> <LABEL for="age_46null">58</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="59"  id="age_47null"> <LABEL for="age_47null">59</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="60"  id="age_48null"> <LABEL for="age_48null">60</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="61"  id="age_49null"> <LABEL for="age_49null">61</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="62"  id="age_50null"> <LABEL for="age_50null">62</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="63"  id="age_51null"> <LABEL for="age_51null">63</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="64"  id="age_52null"> <LABEL for="age_52null">64</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="65"  id="age_53null"> <LABEL for="age_53null">65</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="66"  id="age_54null"> <LABEL for="age_54null">66</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="67"  id="age_55null"> <LABEL for="age_55null">67</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="68"  id="age_56null"> <LABEL for="age_56null">68</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="69"  id="age_57null"> <LABEL for="age_57null">69</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="70"  id="age_58null"> <LABEL for="age_58null">70</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="71"  id="age_59null"> <LABEL for="age_59null">71</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="72"  id="age_60null"> <LABEL for="age_60null">72</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="73"  id="age_61null"> <LABEL for="age_61null">73</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="74"  id="age_62null"> <LABEL for="age_62null">74</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="75"  id="age_63null"> <LABEL for="age_63null">75</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="76"  id="age_64null"> <LABEL for="age_64null">76</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="77"  id="age_65null"> <LABEL for="age_65null">77</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="78"  id="age_66null"> <LABEL for="age_66null">78</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="79"  id="age_67null"> <LABEL for="age_67null">79</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="80"  id="age_68null"> <LABEL for="age_68null">80</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="81"  id="age_69null"> <LABEL for="age_69null">81</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="82"  id="age_70null"> <LABEL for="age_70null">82</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="83"  id="age_71null"> <LABEL for="age_71null">83</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="84"  id="age_72null"> <LABEL for="age_72null">84</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="85"  id="age_73null"> <LABEL for="age_73null">85</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="86"  id="age_74null"> <LABEL for="age_74null">86</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="87"  id="age_75null"> <LABEL for="age_75null">87</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="88"  id="age_76null"> <LABEL for="age_76null">88</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="89"  id="age_77null"> <LABEL for="age_77null">89</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="90"  id="age_78null"> <LABEL for="age_78null">90</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="91"  id="age_79null"> <LABEL for="age_79null">91</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="92"  id="age_80null"> <LABEL for="age_80null">92</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="93"  id="age_81null"> <LABEL for="age_81null">93</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="94"  id="age_82null"> <LABEL for="age_82null">94</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="95"  id="age_83null"> <LABEL for="age_83null">95</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="96"  id="age_84null"> <LABEL for="age_84null">96</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="97"  id="age_85null"> <LABEL for="age_85null">97</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="98"  id="age_86null"> <LABEL for="age_86null">98</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="99"  id="age_87null"> <LABEL for="age_87null">99</LABEL> <br/> <br/>
+  age radio buttons with steps: <INPUT TYPE=RADIO NAME="age"  VALUE="12"  id="age_0null"> <LABEL for="age_0null">12</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="15"  id="age_1null"> <LABEL for="age_1null">15</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="18"  id="age_2null"> <LABEL for="age_2null">18</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="21"  id="age_3null"> <LABEL for="age_3null">21</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="24"  id="age_4null"> <LABEL for="age_4null">24</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="27"  id="age_5null"> <LABEL for="age_5null">27</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="30"  id="age_6null"> <LABEL for="age_6null">30</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="33"  id="age_7null"> <LABEL for="age_7null">33</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="36"  id="age_8null"> <LABEL for="age_8null">36</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="39"  id="age_9null"> <LABEL for="age_9null">39</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="42"  id="age_10null"> <LABEL for="age_10null">42</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="45"  id="age_11null"> <LABEL for="age_11null">45</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="48"  id="age_12null"> <LABEL for="age_12null">48</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="51"  id="age_13null"> <LABEL for="age_13null">51</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="54"  id="age_14null"> <LABEL for="age_14null">54</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="57"  id="age_15null"> <LABEL for="age_15null">57</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="60"  id="age_16null"> <LABEL for="age_16null">60</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="63"  id="age_17null"> <LABEL for="age_17null">63</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="66"  id="age_18null"> <LABEL for="age_18null">66</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="69"  id="age_19null"> <LABEL for="age_19null">69</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="72"  id="age_20null"> <LABEL for="age_20null">72</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="75"  id="age_21null"> <LABEL for="age_21null">75</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="78"  id="age_22null"> <LABEL for="age_22null">78</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="81"  id="age_23null"> <LABEL for="age_23null">81</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="84"  id="age_24null"> <LABEL for="age_24null">84</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="87"  id="age_25null"> <LABEL for="age_25null">87</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="90"  id="age_26null"> <LABEL for="age_26null">90</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="93"  id="age_27null"> <LABEL for="age_27null">93</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="96"  id="age_28null"> <LABEL for="age_28null">96</LABEL> <INPUT TYPE=RADIO NAME="age"  VALUE="99"  id="age_29null"> <LABEL for="age_29null">99</LABEL> <br/> <br/>
+  speaks set editor: <table> <tr>
+<td> <select multiple size="10" name="speaksselectFrom"></select> </tf>
+<td> <input type="button" onClick="move(this.form.speaksselectFrom, this.form.speaks)" value="&raquo; add &raquo;"> <br/> <br/><input type="button" onClick="move(this.form.speaks, this.form.speaksselectFrom)" value="&laquo; remove &laquo;"> </td>
+<td> <SELECT MULTIPLE NAME="speaks" SIZE="10" id="speaks_form1" >
+	<OPTION VALUE="3vyr0id">English</OPTION>
+	<OPTION VALUE="3vyr0ie">French</OPTION>
+	<OPTION VALUE="5uzv2hj">German</OPTION>
+	<OPTION VALUE="3vyr0i8">Italian</OPTION>
+	<OPTION VALUE="5uzv2hd">Spanish</OPTION>
+</SELECT></td>
+<script language="JavaScript">
+<!-- //
+moveNotSelected(document.getElementById('null').speaks,document.getElementById('null').speaksselectFrom)
+// -->
+</script>
+</tr> </table> <br/> <br/>
+<script type="text/javascript">
+var age_form1Validation = new LiveValidation('age_form1', { validMessage: " " });
+age_form1Validation.add( Validate.Numericality , { onlyInteger: true, failureMessage: "invalid integer" } );
+age_form1Validation.add( Validate.Numericality , { minimum: 12, maximum: 99,  failureMessage: "Age must be between 12 and 99!" } );
+age_form1Validation.add( MakumbaValidate.NumberComparison , { element1: "age_form1", element2: "weight_form1", comparisonOperator: ">",  failureMessage: "Your weight can't be higher than your age!" } );
+
+function validateForm_age_form1Validation() {
+  valid = LiveValidation.massValidate( [age_form1Validation] );
+  if (!valid) { alert('Please correct all form errors first!'); }
+  return valid;
+}
+</script>
+<input type="hidden" name="__makumba__responder__" value="-1772792713">
+</form>
+
+</body>
+</html>
