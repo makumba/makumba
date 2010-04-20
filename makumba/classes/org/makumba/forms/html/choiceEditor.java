@@ -213,8 +213,8 @@ public abstract class choiceEditor extends FieldEditor {
                 sb.append("<td> " + hcw.getSelect() + "</td>\n");
                 sb.append("<script language=\"JavaScript\">\n");
                 sb.append("<!-- //\n");
-                sb.append("moveNotSelected(document.forms['" + formatParams.get(formName) + "']." + inputName
-                        + ",document.forms['" + formatParams.get(formName) + "']." + inputName + "selectFrom)\n");
+                sb.append("moveNotSelected(document.getElementById('" + formatParams.get(formName) + "')." + inputName
+                        + ",document.getElementById('" + formatParams.get(formName) + "')." + inputName + "selectFrom)\n");
                 sb.append("// -->\n");
                 sb.append("</script>\n");
                 sb.append("</tr> </table>");
