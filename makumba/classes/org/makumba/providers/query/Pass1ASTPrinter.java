@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import org.makumba.commons.ClassResource;
 import org.makumba.providers.QueryAnalysisProvider;
+import org.makumba.providers.QueryProvider;
 import org.makumba.providers.datadefinition.mdd.MakumbaDumpASTVisitor;
 import org.makumba.providers.query.mql.HqlASTFactory;
 import org.makumba.providers.query.mql.HqlTokenTypes;
@@ -114,7 +115,6 @@ public class Pass1ASTPrinter {
             case HqlTokenTypes.IN_LIST:
                 noPar = ast.getFirstChild().getType() == HqlTokenTypes.ELEMENTS;
                 // no parantheses in IN_LIST if it contains elements
-            case HqlTokenTypes.EXPR_LIST:
                 if (!noPar)
                     sb.append('(');
                 // comma-separated children
@@ -122,7 +122,7 @@ public class Pass1ASTPrinter {
                 if (!noPar)
                     sb.append(')');
                 break;
-
+                
             case HqlTokenTypes.FROM:
                 printKeyword(ast, sb);
                 // in principle children of FROM are comma separated but
@@ -162,6 +162,16 @@ public class Pass1ASTPrinter {
                 // we don't print anything, just the first child
                 // the expr_list will print the function call prarantheses
                 printRecursive(ast, ast.getFirstChild(), sb);
+                break;
+
+            case HqlTokenTypes.EXPR_LIST:
+                if(sb.charAt(sb.length()-1)==' ')
+                    sb.setCharAt(sb.length()-1, '(');
+                else
+                    sb.append('(');
+                // comma-separated children
+                printList(ast, ast.getFirstChild(), sb);
+                sb.append(')');                
                 break;
 
             case HqlTokenTypes.WHEN:
@@ -272,6 +282,8 @@ public class Pass1ASTPrinter {
         // print spaces before and after, if we are not a dot
         if (ast.getType() != HqlTokenTypes.DOT)
             space(sb);
+        // the indexOf(}) is used for {not}in and {not}like.
+        // it normally returns -1, and then +1 it gives 0, i.e. the whole string
         sb.append(ast.getText().substring(ast.getText().lastIndexOf('}') + 1));
         if (ast.getType() != HqlTokenTypes.DOT)
             sb.append(' ');
@@ -317,13 +329,17 @@ public class Pass1ASTPrinter {
         try {
             AST printedAST = QueryAnalysisProvider.parseQuery(printed);
             if (!QueryAnalysisProvider.compare(new ArrayList<AST>(), printedAST, f)) {
-                new MakumbaDumpASTVisitor(false).visit(f);
+                // new MakumbaDumpASTVisitor(false).visit(f);
                 System.out.println(query);
                 System.out.println(printed);
-                new MakumbaDumpASTVisitor(false).visit(printedAST);
+                // new MakumbaDumpASTVisitor(false).visit(printedAST);
                 System.out.println("\n\n");
                 return false;
             }
+            if(printed.toUpperCase().trim().equals(query.toUpperCase().trim()))
+                System.out.print('.');
+            //System.out.println(printed);
+            
         } catch (Throwable e) {
             System.out.println(e);
             new MakumbaDumpASTVisitor(false).visit(f);
@@ -336,26 +352,34 @@ public class Pass1ASTPrinter {
     }
 
     public static void main(String[] argv) {
-        int line = 1;
+        testCorpus("org/makumba/providers/query/mql/queries.txt", false);
+        //testCorpus("org/makumba/providers/query/inlinerCorpus.txt", true);
+    }
+
+    private static void testCorpus(String corpusFile, boolean inline) {
         try {
-            BufferedReader rd = new BufferedReader(new InputStreamReader((InputStream) ClassResource.get(
-                "org/makumba/providers/query/mql/queries.txt").getContent()));
+            BufferedReader rd = new BufferedReader(new InputStreamReader(
+                    (InputStream) ClassResource.get(corpusFile).getContent()));
             String query = null;
+            int line = 1;
             while ((query = rd.readLine()) != null) {
                 if (!query.trim().startsWith("#")) {
                     query = QueryAnalysisProvider.checkForFrom(query);
                     try {
                         AST a = QueryAnalysisProvider.parseQuery(query);
                         testPrinter(a, query);
+                        if(inline){
+                            a = QueryAnalysisProvider.inlineFunctions(query);
+                            testPrinter(a, FunctionInliner.inline(query, QueryProvider.getQueryAnalzyer("oql")));
+                        }
                     } catch (Throwable t) {
                         System.err.println(line + ": " + t);
                     }
                 }
                 line++;
             }
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
         }
     }
 }
