@@ -578,6 +578,20 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         assertTrue(compareTest(output));
     }
 
+    public void testMakInputTypes() throws ServletException, IOException, SAXException {
+        pageContext.include("forms-oql/testMakInputTypes.jsp");
+    }
+
+    public void endMakInputTypes(WebResponse response) throws Exception {
+        try {
+            output = response.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
+    }
+
     public void testCalendarEditor() throws ServletException, IOException, SAXException {
         pageContext.include("forms-oql/testCalendarEditor.jsp");
     }
@@ -591,7 +605,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         }
         assertTrue(compareTest(output));
     }
-
+    
     public void beginMakNestedNewFormsSimple(Request request) throws Exception {
         WebConversation wc = new WebConversation();
         WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL")
