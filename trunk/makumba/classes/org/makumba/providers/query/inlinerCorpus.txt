@@ -1,3 +1,4 @@
+SELECT p.functionWithPointerIsThatPerson(p.indiv) FROM test.Person p
 SELECT i.fullName() FROM test.Individual i
 SELECT p.fullName() FROM test.Person p
 SELECT x.allNamesMin2CharsLong() FROM test.Person x
