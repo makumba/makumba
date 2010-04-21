@@ -119,6 +119,7 @@ unique(indiv.name, indiv.surname) : "name and surname need to be unique!"
 someFunction(char[] b) { count(address) > 0 } : "You need to specify an address" ; comment
 someOtherFunction(int age, char[] b) { this.age > age } : "You are too young!"
 functionWithPointer(ptr test.Individual i, int age, char[] b) { this.age > age } : "You are too young!"
+functionWithPointerIsThatPerson(ptr test.Individual i) { i=indiv } : "You are not that person!"
 someFunctionWithParams(int param, int param2, int param3) { age+param > 20 } : "You are too young!"
 nameMin2CharsLong() { character_length(indiv.name) > 2 } : "Your name is not long enough!"
 nameMin4CharsLong() { character_length(indiv.name) > 4 } : "Your name is not long enough!"
@@ -145,6 +146,9 @@ score(char term) { test.Functions.scoreMatch(term, this.indiv.name)  }
 doesSpeak(char language) { ( case when exists(FROM speaks s WHERE s.name=language) then 'yeah' else 'hell no!' end )  } 
 doesSpeak2(char language) { ( case when exists(FROM speaks s WHERE s.name=language) then (SELECT s.name FROM speaks s WHERE s.name=language) else 'hell no!' end )  }
 languageCheck() { concat('English? ', doesSpeak('English'), '; German? ', doesSpeak('German') ) } 
+
+toughToMDDView() { concat('English? ', doesSpeak('English'), '; German? ', doesSpeak('German') ) } ; this is tough to detect 
+toughToMDDView2() { concat('English? ', doesSpeak('English'), '; German? ', doesSpeak('German') ) } : "Some message" ; this is even tougher to detect, and not highlight the error message as comment... 
 
 #getLanguage2(char code) { s.name FROM speaks s WHERE s.isoCode=code }
 getLanguage(char code) { ( SELECT distinct s.name FROM speaks s WHERE s.isoCode=code ) }
