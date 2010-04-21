@@ -218,23 +218,35 @@ public class mddViewer extends LineViewer {
     }
 
     private String parseFunctionLine(String s) {
-        StringBuffer result = new StringBuffer();
-        result.append("<span name=\"mddFunction\" class=\"mddFunction\">");
-        int commentBegin = s.indexOf(";");
-        if (commentBegin == -1) {
-            commentBegin = s.length();
-        }
-        String name = htmlEscape(s.substring(0, s.indexOf("(")));
-        String params = htmlEscape(s.substring(s.indexOf("("), s.indexOf(")") + 1));
-        String definition = htmlEscape(s.substring(s.indexOf("{"), s.indexOf("}") + 1));
-        String message = htmlEscape(s.substring(s.indexOf("}") + 1, commentBegin));
-        result.append("<span class=\"mddFunctionName\">" + name + "</span>");
-        result.append("<span class=\"mddFunctionParams\">" + params + "</span>");
-        result.append("<span class=\"mddFunctionDefinition\">" + definition + "</span>");
-        result.append("<span class=\"mddFunctionMessage\">" + message + "</span>");
-        result.append("</span>");
-        if (s.indexOf(";") != -1) {
-            result.append("<span class=\"mddComment\">" + htmlEscape(s.substring(commentBegin)) + "</span>");
+        StringBuilder result = new StringBuilder();
+        try {
+            result.append("<span name=\"mddFunction\" class=\"mddFunction\">");
+            int endOfFunctionDefinition = s.indexOf("}");
+
+            // prevent special cases when the ";" is part of the function
+            int commentBegin = s.indexOf(";", endOfFunctionDefinition);
+            if (commentBegin == -1) {
+                commentBegin = s.length();
+            }
+            String name = htmlEscape(s.substring(0, s.indexOf("(")));
+            String params = htmlEscape(s.substring(s.indexOf("("), s.indexOf(")") + 1));
+            String definition = htmlEscape(s.substring(s.indexOf("{"), endOfFunctionDefinition + 1));
+            String message = htmlEscape(s.substring(endOfFunctionDefinition + 1, commentBegin));
+            result.append("<span class=\"mddFunctionName\">" + name + "</span>");
+            result.append("<span class=\"mddFunctionParams\">" + params + "</span>");
+            result.append("<span class=\"mddFunctionDefinition\">" + definition + "</span>");
+            result.append("<span class=\"mddFunctionMessage\">" + message + "</span>");
+            result.append("</span>");
+            if (s.indexOf(";") != -1) {
+                result.append("<span class=\"mddComment\">" + htmlEscape(s.substring(commentBegin)) + "</span>");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result = new StringBuilder(
+                    "<span name=\"mddFunction\" class=\"mddFunction\" style=\"color:red\" title=\"Errors during highlighting: ");
+            result.append(e.getMessage()).append("\">");
+            result.append(s);
+            result.append("</span>");
         }
         return super.parseLine(result.toString());
     }
