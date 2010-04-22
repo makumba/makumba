@@ -1,4 +1,3 @@
-# temporary file, should be removed once new parser works
 
 !type.yesNo=int{"No"=0, "Yes"=1}
 !type.genTyp=int{"Female"=0, "Male"=1}
