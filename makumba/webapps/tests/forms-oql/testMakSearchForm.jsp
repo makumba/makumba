@@ -13,9 +13,14 @@
 </mak:searchForm>
 
 <c:if test="${searchPersonDone}">
-  <hr>
-  searchPersonWhere: ${searchPersonWhere}<br>
-  searchPersonFrom: ${searchPersonFrom}<br>  
+  <hr/>
+  <b>Search form attributes:</b><br/>
+  searchPersonDone: ${searchPersonDone}<br/>
+  searchPersonFrom: ${searchPersonFrom}<br/>
+  searchPersonWhere: ${searchPersonWhere}<br/>
+  searchPersonQueryString: ${searchPersonQueryString}<br/>
+  <hr/>
+
   <mak:resultList resultsFrom="searchPerson">
     <mak:value expr="o.indiv.name"/> <mak:value expr="o.indiv.surname"/><br>
   </mak:resultList>

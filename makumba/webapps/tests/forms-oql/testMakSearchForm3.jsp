@@ -29,9 +29,11 @@
     <c:when test='${param.sortby=="birthdate"}'><c:set var="sortby" value="o.birthdate" /></c:when>
   </c:choose>
   <hr/>
-  searchPersonWhere: ${searchPersonWhere}<br>
-  searchPersonFrom: ${searchPersonFrom}<br>
-  searchPersonQueryString: ${searchPersonQueryString}<br>
+  <b>Search form attributes:</b><br/>
+  searchPersonDone: ${searchPersonDone}<br/>
+  searchPersonFrom: ${searchPersonFrom}<br/>
+  searchPersonWhere: ${searchPersonWhere}<br/>
+  searchPersonQueryString: ${searchPersonQueryString}<br/>
   <hr/>
   <table>
     <tr>
