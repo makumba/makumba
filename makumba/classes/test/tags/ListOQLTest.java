@@ -380,6 +380,19 @@ public class ListOQLTest extends MakumbaJspTestCase {
         assertTrue(compareTest(output));
     }
     
+    public void testMDDFunctionsPointers() throws ServletException, IOException {
+        pageContext.include("list-oql/testMDDFunctionsPointers.jsp");
+    }
+
+    public void endMDDFunctionsPointers(WebResponse response) throws Exception {
+        try {
+            output = response.getText(); fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
+    }
+    
     public void testSectionSimple() throws ServletException, IOException {
         pageContext.include("list-oql/testMakSectionSimple.jsp");
     }

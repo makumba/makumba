@@ -10,3 +10,6 @@
 <mak:list from="test.Person p" >
   <mak:value expr="p.fullName()"/>, <mak:value expr="p.indiv"/>: <mak:value expr="p.functionWithPointerIsThatPerson(p.indiv)"/> <br/>
 </mak:list>
+
+</body>
+</html>
