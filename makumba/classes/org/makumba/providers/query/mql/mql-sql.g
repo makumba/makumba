@@ -516,6 +516,8 @@ logicalExpr
 	| #(OR logicalExprOrFunctionCall logicalExprOrFunctionCall)
 	| #(NOT logicalExprOrFunctionCall)
 	| comparisonExpr
+	| TRUE
+	| FALSE
 	;
 
 // ***** MQL addition (pass2 inliner) new rule, see above
