@@ -129,6 +129,7 @@ allNamesMin2CharsLong() { character_length(indiv.name) > 2 AND character_length(
 oneNameMin2CharsLong() { character_length(indiv.name) > 2 OR character_length(indiv.surname) > 2 } : "Your name and surname is not long enough!"
 
 fullName() { indiv.fullName() } ; comment
+indi(){ indiv } ; a function that returns pointer
 
 testCaseWhen() { case when this.indiv <> NIL then this.indiv.fullName() else 'noName' end }  
 testCaseWhen2() { CASE WHEN this.indiv <> NIL THEN this.indiv.fullName() WHEN this.indiv.name <> NIL THEN indiv.name ELSE CASE WHEN this.indiv.surname <> NIL THEN indiv.surname END END }  
