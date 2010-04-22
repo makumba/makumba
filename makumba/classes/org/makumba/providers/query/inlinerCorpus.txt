@@ -1,4 +1,4 @@
-#SELECT p.functionWithPointerIsThatPerson(p.indiv) FROM test.Person p
+SELECT p.functionWithPointerIsThatPerson(p.indiv) FROM test.Person p
 SELECT actor(test.Person).fullName() 
 SELECT p.indi().fullName() FROM test.Person p
 SELECT i.fullName() FROM test.Individual i
