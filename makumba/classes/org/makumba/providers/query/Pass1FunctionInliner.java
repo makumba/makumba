@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Stack;
 import java.util.logging.Logger;
 
 import org.makumba.DataDefinition;
@@ -69,7 +70,7 @@ public class Pass1FunctionInliner {
             this.repetitive = repetitive;
         }
 
-        List<AST> path = new ArrayList<AST>();
+        Stack<AST> path = new Stack<AST>();
 
         List<AST> extraFrom = new ArrayList<AST>();
 
@@ -107,9 +108,9 @@ public class Pass1FunctionInliner {
         }
         // if we replaced already, and we are not repetitive, we do't go deep
         if (!wasReplaced) {
-            state.path.add(current);
+            state.path.push(current);
             current.setFirstChild(traverse(state, current.getFirstChild(), v));
-            state.path.remove(state.path.size() - 1);
+            state.path.pop();
         }
 
         // but we go wide
@@ -134,15 +135,19 @@ public class Pass1FunctionInliner {
 
         // inlining is a simple question of traversal with the inliner visitor
         TraverseState state = new TraverseState(true);
-        AST ret = traverse(state, parsed, InlineVisitor.singleton);
-
-        // and of adding the from and where sections discovered during inlining
-        // FIXME: for now they are added to the root query. adding them to other subqueries may be required
-        addFromWhere(ret, state);
-
+        AST ret = inlineAST(state, parsed);
+        
         if (logger.getLevel() != null && logger.getLevel().intValue() >= java.util.logging.Level.FINE.intValue())
             logger.fine(parsed.toStringList() + " \n-> " + ret.toStringList());
 
+        return ret;
+    }
+
+    private static AST inlineAST(TraverseState state, AST parsed) {
+        AST ret= traverse(state, parsed, InlineVisitor.singleton);
+        // and of adding the from and where sections discovered during inlining
+        // FIXME: for now they are added to the root query. adding them to other subqueries may be required
+        addFromWhere(ret, state);
         return ret;
     }
 
@@ -159,8 +164,14 @@ public class Pass1FunctionInliner {
                 return treatActor(state, current);
             if (current.getFirstChild().getType() != HqlTokenTypes.DOT)
                 return current;
-
-            final AST callee = current.getFirstChild().getFirstChild();
+            
+            // we push both the method call and the dot into the stack
+            // to have complete data there when we need to recurse
+            // the dot is especially important for e.g. actors into the callee
+            state.path.push(current);
+            state.path.push(current.getFirstChild());
+            
+            AST callee = current.getFirstChild().getFirstChild();
             String methodName = callee.getNextSibling().getText();
 
             boolean isStatic = false;
@@ -174,6 +185,10 @@ public class Pass1FunctionInliner {
 
             // if we're not an MDD name, we try to find a label type using the FROMs of the query
             if (calleeType == null) {
+                // we force a recursion now because we might have a function or actor in the callee
+                // FIXME: this probably would not be needed in case of a depth-first, post-order traversal
+                // TODO: find type will be needed also to compute parameter types. the recursion is needed there too
+                callee= inlineAST(state, callee);                                    
                 FieldDefinition fd = findType(state.path, callee);
                 if (fd.getType().startsWith("ptr"))
                     calleeType = fd.getPointedType();
@@ -247,6 +262,7 @@ public class Pass1FunctionInliner {
                 p = p.getNextSibling();
             }
 
+            final AST calleeThis= callee;
             // now we visit the function AST and replace "this" with the callee tree
             AST ret = funcAST;
             if (!isStatic)
@@ -254,7 +270,7 @@ public class Pass1FunctionInliner {
                     public AST visit(TraverseState state, AST node) {
                         // for each "this" node, we put the callee instead
                         if (node.getType() == HqlTokenTypes.IDENT && node.getText().equals("this"))
-                            return callee;
+                            return calleeThis;
                         return node;
                     }
 
@@ -267,13 +283,17 @@ public class Pass1FunctionInliner {
                     if (node.getType() == HqlTokenTypes.IDENT && paramExpr.get(node.getText()) != null &&
                     // a field name from another table might have the same name as a param
                             // FIXME: there might be other cases where this is not the param but some field
-                            state.path.get(state.path.size() - 1).getType() != HqlTokenTypes.DOT
+                            state.path.peek().getType() != HqlTokenTypes.DOT
                     //        
                     )
                         return paramExpr.get(node.getText());
                     return node;
                 }
             });
+            
+            state.path.pop(); // pop the dot
+            state.path.pop(); // pop the method_call
+            
             // new MakumbaDumpASTVisitor(false).visit(ret);
 
             return ret;
@@ -290,7 +310,8 @@ public class Pass1FunctionInliner {
             String rt = "actor_" + ASTUtil.constructPath(actorType).replace('.', '_');
 
             // the more complicated case: we have a actor(Type).something
-            if (state.path.get(state.path.size() - 1).getType() == HqlTokenTypes.DOT) {
+            int type = state.path.peek().getType();
+            if (type == HqlTokenTypes.DOT) {
                 // make an extra FROM
                 AST range = ASTUtil.makeNode(HqlTokenTypes.RANGE, "RANGE");
                 range.setFirstChild(makeASTCopy(actorType));
@@ -358,11 +379,18 @@ public class Pass1FunctionInliner {
 
     /** Add to a query the ranges and the where conditions that were found. The AST is assumed to be the root of a query */
     private static void addFromWhere(AST root, TraverseState state) {
+        // if we are in the middle of a parsing, (like when we force recursion to inline the callee)
+        // we take the root from the bottom of the stack
+        // otherwise we are a the end of a parsing since the stack is empty, so we got the real root
+        if(state.path.size()>0)
+            root= state.path.get(0);
+        
         AST firstFrom = root.getFirstChild().getFirstChild().getFirstChild();
         for (AST range : state.extraFrom) {
             ASTUtil.appendSibling(firstFrom, range);
         }
-
+        // the FROM ranges are in the FROM now, we clear it so it won't be added again
+        state.extraFrom.clear();
         for (AST condition : state.extraWhere) {
             if (condition == null)
                 continue;
@@ -376,11 +404,14 @@ public class Pass1FunctionInliner {
                 where.setFirstChild(and);
             } else {
                 AST where1 = ASTUtil.makeNode(HqlTokenTypes.WHERE, "WHERE");
+                // where is not really a where here, can be null or can be somethig else, like orderby
                 where1.setNextSibling(where);
                 root.getFirstChild().setNextSibling(where1);
                 where1.setFirstChild(condition);
-            }
+            }            
         }
+        // the where conditions are in the FROM now, we clear them so they won't be added again
+        state.extraWhere.clear();
     }
 
     /*
@@ -457,7 +488,7 @@ public class Pass1FunctionInliner {
             if (current.getType() != HqlTokenTypes.QUERY || state.path.size() == 0)
                 return current;
             // the reduction is defensive (i.e. we do not reduce unless we are sure that there are no problems)
-            AST parent = state.path.get(state.path.size() - 1);
+            AST parent = state.path.peek();
 
             // if we are the second child of the parent, then operator IN expects a multiple-result query
             if (parent.getFirstChild() != current)
@@ -556,10 +587,12 @@ public class Pass1FunctionInliner {
                 AST processedAST = inlineAST(firstAST);
                 QueryAnalysisProvider.reduceDummyFrom(processedAST);
 
-                String oldInline = FunctionInliner.inline(query, QueryProvider.getQueryAnalzyer("oql"));
                 Throwable oldError = null;
                 AST compAST = null;
+                String oldInline = null;
+                
                 try {
+                    oldInline= FunctionInliner.inline(query, QueryProvider.getQueryAnalzyer("oql"));
                     compAST = QueryAnalysisProvider.parseQuery(oldInline);
                 } catch (Throwable t) {
                     oldError = t;
@@ -575,14 +608,19 @@ public class Pass1FunctionInliner {
                 // if(line==1)
                 // new MakumbaDumpASTVisitor(false).visit(new MqlQueryAnalysis(oldInline, false,
                 // false).getAnalyserTree());
-               
+                // System.out.println(oldInline);
+                
                 if (!QueryAnalysisProvider.compare(new ArrayList<AST>(), processedAST, compAST)) {
                     System.err.println(line + ": " + query);
-                    if (oldError != null)
+                    if (oldError != null){
                         System.err.println(line + ": old inliner failed! " + oldError + " query was: " + oldInline);
+                        System.out.println(line + ": " +Pass1ASTPrinter.printAST(processedAST));
+                        //new MakumbaDumpASTVisitor(false).visit(processedAST);
+
+                    }
                     else {
-                        new MakumbaDumpASTVisitor(false).visit(processedAST);
-                        new MakumbaDumpASTVisitor(false).visit(compAST);
+                        System.out.println(line+": pass1: " +Pass1ASTPrinter.printAST(processedAST));
+                        System.out.println(line+": old:   " +Pass1ASTPrinter.printAST(compAST));
                     }
                 }
             }
