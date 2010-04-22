@@ -257,10 +257,12 @@ public class Pass1FunctionInliner {
             // FIXME: use findType(path, expr) for each parameter expression and check its type!
             final HashMap<String, AST> paramExpr = new HashMap<String, AST>();
             AST p = exprList.getFirstChild();
+            state.path.push(exprList);
             for (String s : para.getFieldNames()) {
-                paramExpr.put(s, p);
+                paramExpr.put(s, inlineAST(state, p));
                 p = p.getNextSibling();
             }
+            state.path.pop();
 
             final AST calleeThis= callee;
             // now we visit the function AST and replace "this" with the callee tree
