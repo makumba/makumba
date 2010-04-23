@@ -26,6 +26,7 @@ package org.makumba.forms.html;
 import java.util.Dictionary;
 
 import org.makumba.ProgrammerError;
+import org.makumba.commons.attributes.HttpParameters;
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.InvalidValueException;
 import org.makumba.commons.formatters.RecordFormatter;
@@ -161,9 +162,23 @@ public class FieldEditor extends org.makumba.commons.formatters.FieldFormatter {
 		formatParams.put(extraFormattingParam, extraFormatting);
 	}
 
-	public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.commons.attributes.HttpParameters p,
-			String suffix) {
-		return p.getParameter(getInputName(rf, fieldIndex, suffix));
+    /**
+     * As {@link #readFrom(RecordFormatter, int, HttpParameters, String)}, but if indicated, then allowing multiple
+     * values of the type, which might be needed e.g. for certain types/editors in search forms.<br/>
+     * This is a default implementation that ignores the relaxedValidityCheck parameter; subclasses should thus override
+     * this method if they want to allow multiple values.
+     */
+    public Object readFrom(RecordFormatter rf, int fieldIndex, HttpParameters p, String suffix,
+            boolean allowMultipleValues) {
+        return p.getParameter(getInputName(rf, fieldIndex, suffix));
+    }
+	
+    /**
+     * Reads, converts and validates the value present in the {@link HttpParameters}, for the {@link FieldEditor}
+     * indicated by the given index.
+     */
+    public Object readFrom(RecordFormatter rf, int fieldIndex, HttpParameters p, String suffix) {
+        return readFrom(rf, fieldIndex, p, suffix, false);
 	}
 
 	protected Integer toInt(RecordFormatter rf, int fieldIndex, Object o) {

@@ -116,22 +116,24 @@ public class RecordEditor extends RecordFormatter {
             Object o = null;
             try {
                 FieldDefinition fd = dd.getFieldDefinition(i);
-                o = ((FieldEditor) formatterArray[i]).readFrom(this, i, RequestAttributes.getParameters(req), suffix);
+                o = ((FieldEditor) formatterArray[i]).readFrom(this, i, RequestAttributes.getParameters(req), suffix, true);
                 if (o != null) {
+                    // FIXME: to correctly treat multiple values, we could either 
+                    // - modify the fd.checkValue(Object) method, to allow multiple values
+                    // - iterate over the collection and check if value separately
                     o = fd.checkValue(o);
                 } else {
                     o = fd.getNull();
                 }
                 RequestAttributes.setAttribute(req, FieldEditor.getInputName(this, i, suffix) + "_type", fd);
-
+                data.put(inputName, o);
+                RequestAttributes.setAttribute(req, FieldEditor.getInputName(this, i, suffix), o);
 
             } catch (InvalidValueException e) {
                 // if there is an exception in this field
                 // we store it in the hash, together with the field definition where it occurred
                 exceptions.add(e);
             }
-            data.put(inputName, o);
-            RequestAttributes.setAttribute(req, FieldEditor.getInputName(this, i, suffix), o);
         }
         if (exceptions.size() > 0) {
             throw new CompositeValidationException(exceptions);

@@ -23,6 +23,10 @@
 
 package org.makumba.forms.html;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+import org.makumba.commons.attributes.HttpParameters;
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.InvalidValueException;
 import org.makumba.commons.formatters.RecordFormatter;
@@ -61,8 +65,7 @@ public class intEnumEditor extends charEnumEditor {
     }
 
     @Override
-    public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.commons.attributes.HttpParameters par,
-            String suffix) {
+    public Object readFrom(RecordFormatter rf, int fieldIndex, HttpParameters par, String suffix) {
         Object o = par.getParameter(getInputName(rf, fieldIndex, suffix));
         // DB level should complain in this case:
         // if(o==null && isNotNull())
@@ -72,5 +75,29 @@ public class intEnumEditor extends charEnumEditor {
             throw new InvalidValueException(rf.expr[fieldIndex], "multiple value not accepted for integer: " + o);
         }
         return toInt(rf, fieldIndex, o);
+    }
+
+    /** allowMultipleValues indicates that we still require an integer type, but we accept multiple values */
+    @Override
+    public Object readFrom(RecordFormatter rf, int fieldIndex, HttpParameters p, String suffix,
+            boolean allowMultipleValues) {
+
+        if (!allowMultipleValues) {
+            return readFrom(rf, fieldIndex, p, suffix);
+        }
+        
+        Object o = p.getParameter(getInputName(rf, fieldIndex, suffix));
+        if (o instanceof Collection<?>) {
+            // convert the generic collection to a collection of integer
+            // thereby also checking that each member is actually an integer
+            Collection<?> values = (Collection<?>) o;
+            ArrayList<Integer> convertedValues = new ArrayList<Integer>(values.size());
+            for (Object object : values) {
+                convertedValues.add(toInt(rf, fieldIndex, object));
+            }
+            return values;
+        } else {
+            return readFrom(rf, fieldIndex, p, suffix);
+        }
     }
 }
