@@ -118,10 +118,16 @@ public class RecordEditor extends RecordFormatter {
                 FieldDefinition fd = dd.getFieldDefinition(i);
                 o = ((FieldEditor) formatterArray[i]).readFrom(this, i, RequestAttributes.getParameters(req), suffix, true);
                 if (o != null) {
-                    // FIXME: to correctly treat multiple values, we could either 
-                    // - modify the fd.checkValue(Object) method, to allow multiple values
-                    // - iterate over the collection and check if value separately
-                    o = fd.checkValue(o);
+                    // if we have multiple values for pointers or enums
+                    if (o instanceof Vector && (fd.isPointer() || fd.isEnumType())) {
+                        // we treat them by iterating over the vector and checking each value separately
+                        // thus, we don't need to modify fs.checkValue(o)
+                        for (int j = 0; j < ((Vector) o).size(); j++) {
+                            ((Vector) o).set(j, fd.checkValue(((Vector) o).get(j)));
+                        }
+                    } else {
+                        o = fd.checkValue(o);
+                    }
                 } else {
                     o = fd.getNull();
                 }
