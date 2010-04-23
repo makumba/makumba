@@ -332,9 +332,26 @@ public abstract class Responder implements java.io.Serializable {
 
     /** a key that should identify this responder among all */
     public String responderKey() {
+        // we strip the makumba responder from the originating page, to not modify the responder value recursively...
+        String originatingPageNameWithoutResponder = originatingPageName;
+        try {
+            if (originatingPageName.contains(responderName)) {
+                int beginIndex = originatingPageName.indexOf(responderName);
+                if (originatingPageName.indexOf("&", beginIndex) > 0) {
+                    originatingPageNameWithoutResponder = originatingPageName.substring(0, beginIndex - 1)
+                            + originatingPageName.substring(originatingPageName.indexOf("&", beginIndex));
+                } else {
+                    originatingPageNameWithoutResponder = originatingPageName.substring(0, beginIndex - 1);
+                }
+            }
+        } catch (Exception e) {
+            logger.warning("Couldn't remove '" + responderName + "' part from the originating URL '"
+                    + originatingPageName + "': " + e.getMessage());
+        }
         return basePointerType + message + multipleSubmitErrorMsg + resultAttribute + database + operation
                 + controller.getClass().getName() + handler + addField + newType + reloadFormOnError
-                + originatingPageName + showFormAnnotated + clientSideValidation + defaultMatchModes + triggerEvent;
+                + originatingPageNameWithoutResponder + showFormAnnotated + clientSideValidation + defaultMatchModes
+                + resultLabel + triggerEvent;
     }
 
     /** get the integer key of this form, and register it if not already registered */
@@ -407,8 +424,8 @@ public abstract class Responder implements java.io.Serializable {
     }
 
     /**
-     * Reads the data needed for the logic operation, from the http request. org.makumba.forms.html.FormResponder
-     * provides an implementation
+     * Reads the data needed for the logic operation, from the http request. {@link FormResponder} provides an
+     * implementation
      * 
      * @param req
      *            the request corresponding to the current page
