@@ -274,16 +274,6 @@ public class SearchTag extends FormTagBase {
                         }
                         String finalFieldName = fieldName;
 
-                        FieldDefinition thisFd = dd.getFieldOrPointedFieldDefinition(finalFieldName);
-                        if (thisFd.getDataDefinition() != dd) { // we are searching on a sub-field
-                            int lastIndexOf = finalFieldName.lastIndexOf(thisFd.getName());
-                            // FIXME: this takes into account only one level of subfields
-                            String subfieldName = inputName.substring(0, lastIndexOf - 1);
-                            objectName = resp.getResultLabel() + "_" + subfieldName.replace('.', '_');
-                            variableFroms.add(resp.getResultLabel() + "." + subfieldName + " " + objectName);
-                            finalFieldName = thisFd.getName();
-                        }
-
                         if (StringUtils.equalsAny(matchMode, SearchTag.MATCH_BETWEEN_ALL)) {
                             // range comparison
                             whereThisField += computeRangeQuery(attributes, objectName, finalFieldName, attributeName,
@@ -296,10 +286,6 @@ public class SearchTag extends FormTagBase {
                     }
                     if (whereThisField.trim().length() > 0) {
                         where += " (" + whereThisField + ") ";
-                        if (fd.isSetType()) { // enhance the variableFrom part if we select sets
-                            variableFroms.add(resp.getResultLabel() + "." + inputName + " " + resp.getResultLabel()
-                                    + "_" + inputName.replace(".", "_"));
-                        }
                     }
                 }
             }
@@ -389,16 +375,19 @@ public class SearchTag extends FormTagBase {
         private String computeTypeSpecificQuery(HttpServletRequest req, Object value, String objectName,
                 String fieldName, String attributeName, Object matchMode, FieldDefinition fd) throws LogicException {
             String where = "";
-//            Object value = parameters.getParameter(attributeName); // Refactored this function for passing the value directly as a parameter, since it was not working for multi-input fields like Dates
+            // Refactored this function for passing the value directly as a parameter, since it was not working for
+            // multi-input fields like Dates
+            // Object value = parameters.getParameter(attributeName);
             if (value instanceof Vector || fd.isSetType()) {
-                // we need to check for the field type as well - we have different labels for the sets
-                String labelName;
-                if (!fd.isSetType()) {
-                    labelName = objectName + "." + fieldName;
+                if (fd.isSetType()) {
+                    // for a set, we do a subquery with exists
+                    String setLabel = objectName + "_" + fieldName.replace(".", "_") + "_set";
+                    where += " EXISTS (FROM " + objectName + "." + fieldName + " " + setLabel + " WHERE " + setLabel
+                            + " IN SET ($" + attributeName + "))";
                 } else {
-                    labelName = objectName + "_" + fieldName;
+                    // for a simple field, we do a simple IN SET
+                    where += objectName + "." + fieldName + " IN SET ($" + attributeName + ")";
                 }
-                where += labelName + " IN SET ($" + attributeName + ")";
             } else if (isSingleValue(value)) {
                 where += objectName + "." + fieldName;
 
