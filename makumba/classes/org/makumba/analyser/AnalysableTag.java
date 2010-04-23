@@ -293,12 +293,23 @@ public abstract class AnalysableTag extends AnalysableElement {
         return false;
     }
 
-    protected void onlyInt(String s, String value) throws JspException {
+    /** Checks whether the given value is of type integer, and throws a descriptive programmer error otherwise */
+    protected void onlyInt(String attributeName, String value) throws JspException {
         value = value.trim();
         if (value.startsWith("$")) {
             return;
         } else if (!StringUtils.isNumeric(value)) {
-            throw new ProgrammerError("The attribute '" + s + "' can only be an $attribute or an int");
+            throw new ProgrammerError("The attribute '" + attributeName + "' can only be an $attribute or an int");
+        }
+    }
+    
+    /**
+     * Checks whether the given value is not blank, i.e. not null, and not an empty string or just contains whitespace,
+     * and throws a descriptive programmer error otherwise
+     */
+    protected void notEmpty(String attributeName, String value) {
+        if (StringUtils.isBlank(value)) {
+            throw new ProgrammerError("The attribute '" + attributeName + "' can not be empty");
         }
     }
     
