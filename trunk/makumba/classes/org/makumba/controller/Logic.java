@@ -500,7 +500,15 @@ public class Logic {
             ret.put(att + "_" + k, obj.get(k));
         }
 
-        // now we call all functions with no parameters
+        // computeThickActorSession(attname, type, dd, qap, connection, p, ret, att);
+
+        return ret;
+    }
+
+    /** Computes a thick session of the current actor, by evaluating all functions with no parameters. */
+    protected static void computeThickActorSession(String attname, String type, DataDefinition dd,
+            QueryAnalysisProvider qap, Transaction connection, Pointer p, MakumbaActorHashMap ret, String att)
+            throws ProgrammerError {
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("x", p);
         for (DataDefinition.QueryFragmentFunction g : dd.getFunctions().getSessionFunctions()) {
@@ -519,8 +527,6 @@ public class Logic {
                 ret.put(g.getSessionVariableName(), result);
             }
         }
-
-        return ret;
     }
 
     private static String actorPrefix(DataDefinition dd) {
