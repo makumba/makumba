@@ -95,6 +95,8 @@ public class SearchTag extends FormTagBase {
 
     DataDefinition in = null;
 
+    public String resultLabel = OBJECT_NAME;
+
     private ArrayList<String> inputNames = new ArrayList<String>();
 
     private void fillFormAction() {
@@ -129,6 +131,7 @@ public class SearchTag extends FormTagBase {
             responder.setMessage(Responder.defaultMessageSearchForm);
         }
         responder.setFormName(formName);
+        responder.setResultLabel(resultLabel);
     }
 
     public void setAction(String s) {
@@ -139,6 +142,11 @@ public class SearchTag extends FormTagBase {
 
     public void setIn(String s) {
         in = ddp.getDataDefinition(s);
+    }
+
+    public void setResultLabel(String resultLabel) {
+        notEmpty("resultLabel", resultLabel);
+        this.resultLabel = resultLabel;
     }
 
     /**
@@ -199,7 +207,7 @@ public class SearchTag extends FormTagBase {
             req.setAttribute(ResponseControllerHandler.MAKUMBA_FORM_RELOAD, "true");
 
             // set the from part & set a label name
-            req.setAttribute(resp.getFormName() + "From", resp.getSearchType() + " " + OBJECT_NAME);
+            req.setAttribute(resp.getFormName() + "From", resp.getSearchType() + " " + resp.getResultLabel());
 
             HashSet<String> variableFroms = new HashSet<String>(1); // hold variable from selections
             String where = "";
@@ -258,7 +266,7 @@ public class SearchTag extends FormTagBase {
                     String whereThisField = "";
                     // iterate over all data fields this input is associated with
                     for (int i = 0; i < multiFieldSearchCriterion.length; i++) {
-                        String objectName = OBJECT_NAME;
+                        String objectName = resp.getResultLabel();
                         String fieldName = multiFieldSearchCriterion[i];
                         if (whereThisField.length() > 0) {
                             // if we are having a multi-field match, we might need to combine rules
@@ -271,8 +279,8 @@ public class SearchTag extends FormTagBase {
                             int lastIndexOf = finalFieldName.lastIndexOf(thisFd.getName());
                             // FIXME: this takes into account only one level of subfields
                             String subfieldName = inputName.substring(0, lastIndexOf - 1);
-                            objectName = OBJECT_NAME + "_" + subfieldName.replace('.', '_');
-                            variableFroms.add(OBJECT_NAME + "." + subfieldName + " " + objectName);
+                            objectName = resp.getResultLabel() + "_" + subfieldName.replace('.', '_');
+                            variableFroms.add(resp.getResultLabel() + "." + subfieldName + " " + objectName);
                             finalFieldName = thisFd.getName();
                         }
 
@@ -289,7 +297,8 @@ public class SearchTag extends FormTagBase {
                     if (whereThisField.trim().length() > 0) {
                         where += " (" + whereThisField + ") ";
                         if (fd.isSetType()) { // enhance the variableFrom part if we select sets
-                            variableFroms.add(OBJECT_NAME + "." + inputName + " " + OBJECT_NAME + "_" + inputName.replace(".", "_"));
+                            variableFroms.add(resp.getResultLabel() + "." + inputName + " " + resp.getResultLabel()
+                                    + "_" + inputName.replace(".", "_"));
                         }
                     }
                 }

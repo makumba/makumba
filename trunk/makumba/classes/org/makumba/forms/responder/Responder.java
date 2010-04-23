@@ -120,6 +120,9 @@ public abstract class Responder implements java.io.Serializable {
     /** new and add responders set their result to a result attribute */
     protected String resultAttribute = anonymousResult;
 
+    /** the name of the resultLabel used in the resultList of a search form */
+    protected String resultLabel;
+    
     /** HTML ID of the form **/
     protected String formId;
 
@@ -198,6 +201,10 @@ public abstract class Responder implements java.io.Serializable {
 
     public String getSearchType() {
         return searchType;
+    }
+    
+    public String getResultLabel() {
+        return resultLabel;
     }
 
     public String getFormName() {
@@ -286,6 +293,11 @@ public abstract class Responder implements java.io.Serializable {
     /** pass the name of the result attribute */
     public void setResultAttribute(String resultAttribute) {
         this.resultAttribute = resultAttribute;
+    }
+
+    /** set the name of the resultLabel used in the resultList of a search form */
+    public void setResultLabel(String resultLabel) {
+        this.resultLabel = resultLabel;
     }
 
     /** passes the HTML ID of the form, either generated or provided by the user, enriched with form iteration **/
