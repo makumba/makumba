@@ -122,6 +122,7 @@ public class RecordEditor extends RecordFormatter {
                 } else {
                     o = fd.getNull();
                 }
+                RequestAttributes.setAttribute(req, FieldEditor.getInputName(this, i, suffix) + "_type", fd);
 
 
             } catch (InvalidValueException e) {
@@ -129,7 +130,12 @@ public class RecordEditor extends RecordFormatter {
                 // we store it in the hash, together with the field definition where it occurred
                 exceptions.add(e);
             }
-        } 
+            data.put(inputName, o);
+            RequestAttributes.setAttribute(req, FieldEditor.getInputName(this, i, suffix), o);
+        }
+        if (exceptions.size() > 0) {
+            throw new CompositeValidationException(exceptions);
+        }
         return data;
     }
     
@@ -154,7 +160,7 @@ public class RecordEditor extends RecordFormatter {
             Object o = null;
             try {
                 FieldDefinition fd = dd.getFieldDefinition(i);
-                o = fe.readFrom(this, i, org.makumba.commons.attributes.RequestAttributes.getParameters(req), suffix);
+                o = fe.readFrom(this, i, RequestAttributes.getParameters(req), suffix);
                 if (o != null) {
                     o = fd.checkValue(o);
                 } else {
@@ -259,8 +265,7 @@ public class RecordEditor extends RecordFormatter {
                 }
             }
 
-            org.makumba.commons.attributes.RequestAttributes.setAttribute(req,
-                FieldEditor.getInputName(this, i, suffix) + "_type", fieldDefinition);
+            RequestAttributes.setAttribute(req, FieldEditor.getInputName(this, i, suffix) + "_type", fieldDefinition);
 
             String inputName = FieldEditor.getInputName(this, i, "");
             if (fieldDefinition.isFileType() && o != null) {
@@ -286,8 +291,7 @@ public class RecordEditor extends RecordFormatter {
                 data.put(inputName, o);
             }
             
-            org.makumba.commons.attributes.RequestAttributes.setAttribute(req,
-                FieldEditor.getInputName(this, i, suffix), o);
+            RequestAttributes.setAttribute(req, FieldEditor.getInputName(this, i, suffix), o);
         }
         
         
