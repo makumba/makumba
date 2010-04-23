@@ -98,7 +98,42 @@ public class RecordEditor extends RecordFormatter {
         return unassignedExceptions;
     }
 
-    public Dictionary<String, Object> readFrom(HttpServletRequest req, String suffix, boolean applyValidationRules, HashMap<String, String> lazyEvaluatedInputs) {
+    /**
+     * This is a simple version of {@link #readFrom(HttpServletRequest, String, HashMap)}, as search forms don't need to
+     * apply validation rules, and have relaxed validity constraints on type checks. E.g., they accept multiple values
+     * for ptr or enum types.
+     */
+    public Dictionary<String, Object> readFromSearchForm(HttpServletRequest req, String suffix, HashMap<String, String> lazyEvaluatedInputs) {
+        Dictionary<String, Object> data = new Hashtable<String, Object>();
+        // will collect all exceptions from the field validity checks
+        Vector<InvalidValueException> exceptions = new Vector<InvalidValueException>();
+
+        for (int i = 0; i < dd.getFieldNames().size(); i++) {
+            String inputName = FieldEditor.getInputName(this, i, suffix);
+            if (inputName == null) {
+                continue;
+            }
+            Object o = null;
+            try {
+                FieldDefinition fd = dd.getFieldDefinition(i);
+                o = ((FieldEditor) formatterArray[i]).readFrom(this, i, RequestAttributes.getParameters(req), suffix);
+                if (o != null) {
+                    o = fd.checkValue(o);
+                } else {
+                    o = fd.getNull();
+                }
+
+
+            } catch (InvalidValueException e) {
+                // if there is an exception in this field
+                // we store it in the hash, together with the field definition where it occurred
+                exceptions.add(e);
+            }
+        } 
+        return data;
+    }
+    
+    public Dictionary<String, Object> readFrom(HttpServletRequest req, String suffix, HashMap<String, String> lazyEvaluatedInputs) {
         Dictionary<String, Object> data = new Hashtable<String, Object>();
         // will collect all exceptions from the field validity checks
         Vector<InvalidValueException> exceptions = new Vector<InvalidValueException>();
@@ -128,7 +163,7 @@ public class RecordEditor extends RecordFormatter {
                     // TODO maybe find a more robust way to make sure wether the field is to be lazily evaluated
                     boolean lazyEvaluation = lazyEvaluatedInputs.containsValue(inputName.substring(0, inputName.indexOf(suffix)));
                     
-                    if (applyValidationRules && fd.isNotNull() && !lazyEvaluation) {
+                    if (fd.isNotNull() && !lazyEvaluation) {
                         String error = fd.getNotNullErrorMessage();
                         if(error == null)
                             error = FieldDefinition.ERROR_NOT_NULL;
@@ -137,7 +172,7 @@ public class RecordEditor extends RecordFormatter {
                     o = fd.getNull();
                 }
                 // for string types (text, char) check not empty
-                if (applyValidationRules && fd.isNotEmpty() && fd.isStringType() && StringUtils.isEmpty(o.toString())) {
+                if (fd.isNotEmpty() && fd.isStringType() && StringUtils.isEmpty(o.toString())) {
                     String error = fd.getNotEmptyErrorMessage();
                     if(error == null)
                         error = FieldDefinition.ERROR_NOT_EMPTY;
@@ -157,7 +192,7 @@ public class RecordEditor extends RecordFormatter {
 
             } catch (InvalidValueException e) {
                 // if there is an exception in this field
-                // we store it in the hash, together with the field definition where it occured
+                // we store it in the hash, together with the field definition where it occurred
                 exceptions.add(e);
             }
         }
@@ -181,7 +216,7 @@ public class RecordEditor extends RecordFormatter {
             Object o = validatedFields.get(validatedFieldsOrdered.get(index));
             Collection<ValidationRule> validationRules = fieldDefinition.getValidationRules();
 
-            if (validationRules != null && applyValidationRules) {
+            if (validationRules != null) {
                 for (ValidationRule validationRule : validationRules) {
                     ValidationRule rule = validationRule;
                     

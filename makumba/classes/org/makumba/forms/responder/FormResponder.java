@@ -56,8 +56,12 @@ public class FormResponder extends Responder {
     @Override
     public Dictionary<String, Object> getHttpData(HttpServletRequest req, String suffix) {
         if (editor != null) {
+            if (operation.equals("search")) {
+                // search forms are more basic in their form data treatment, and don't have unresolved inputs
+                return editor.readFromSearchForm(req, suffix, lazyEvaluatedInputs);
+            }
             // first read data from the form itself
-            Dictionary<String, Object> data = editor.readFrom(req, suffix, !operation.equals("search"), lazyEvaluatedInputs);
+            Dictionary<String, Object> data = editor.readFrom(req, suffix, lazyEvaluatedInputs);
 
             // then, fill in values from unresolved inputs (i.e. from nested forms)
             HashMap<String, Object> results = (HashMap<String, Object>) req.getAttribute(Responder.FORM_RESULTS);
