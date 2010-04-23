@@ -23,8 +23,8 @@
 
 package org.makumba.forms.html;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Vector;
 
 import org.makumba.commons.attributes.HttpParameters;
 import org.makumba.commons.formatters.FieldFormatter;
@@ -91,11 +91,11 @@ public class intEnumEditor extends charEnumEditor {
             // convert the generic collection to a collection of integer
             // thereby also checking that each member is actually an integer
             Collection<?> values = (Collection<?>) o;
-            ArrayList<Integer> convertedValues = new ArrayList<Integer>(values.size());
+            Vector<Integer> convertedValues = new Vector<Integer>(values.size());
             for (Object object : values) {
                 convertedValues.add(toInt(rf, fieldIndex, object));
             }
-            return values;
+            return convertedValues;
         } else {
             return readFrom(rf, fieldIndex, p, suffix);
         }
