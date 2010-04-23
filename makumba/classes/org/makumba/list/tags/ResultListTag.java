@@ -2,6 +2,7 @@ package org.makumba.list.tags;
 
 import javax.servlet.jsp.JspException;
 
+import org.apache.commons.lang.StringUtils;
 import org.makumba.LogicException;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
@@ -60,7 +61,8 @@ public class ResultListTag extends QueryTag {
         TagData tag = (TagData) pageCache.retrieve(MakumbaJspAnalyzer.TAG_DATA_CACHE,
             new MultipleKey(new Object[] { resultsFrom }));
         if (tag != null) {
-            setFrom(tag.attributes.get("in") + " " + SearchTag.OBJECT_NAME);
+            setFrom(tag.attributes.get("in") + " "
+                    + StringUtils.defaultString(tag.attributes.get("resultLabel"), SearchTag.OBJECT_NAME));
             tag.attributes.put("from", queryProps[ComposedQuery.FROM]);
         } else if (queryProps[ComposedQuery.FROM] == null) {
             throw new ProgrammerError(

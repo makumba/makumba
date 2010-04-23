@@ -1409,6 +1409,14 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
     </attribute>
 
     <attribute>
+      <name>resultLabel</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>name of the label of the results, used in the resultList</description>
+      <comments>Optional. Defaults to "o"</comments>
+    </attribute>
+
+    <attribute>
       <name>name</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
