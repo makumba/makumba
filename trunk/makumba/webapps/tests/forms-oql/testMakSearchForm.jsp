@@ -17,6 +17,7 @@
   <b>Search form attributes:</b><br/>
   searchPersonDone: ${searchPersonDone}<br/>
   searchPersonFrom: ${searchPersonFrom}<br/>
+  searchPersonVariableFrom: ${searchPersonVariableFrom}<br/>
   searchPersonWhere: ${searchPersonWhere}<br/>
   searchPersonQueryString: ${searchPersonQueryString}<br/>
   <hr/>
