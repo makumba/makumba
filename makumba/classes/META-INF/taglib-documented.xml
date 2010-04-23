@@ -1501,6 +1501,9 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
       <comments>Fixed. Defaults to 'equals' for string, number and date comparisons, and 'betweenInclusive' for range
         comparisons.</comments>
     </attribute>
+    
+    <attribute name="id" specifiedIn="list" />
+    
   </tag>
 
   <tag>
