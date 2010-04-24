@@ -20,8 +20,8 @@
 	<classpathentry kind="lib" path="lib/core/commons-fileupload-1.1.1.jar" sourcepath="lib-src/commons-fileupload-1.2.1-src.zip"/>
 	<classpathentry kind="lib" path="lib/core/commons-io-1.1.jar" sourcepath="lib-src/commons-io-1.1-src.zip"/>
 	<classpathentry kind="lib" path="lib/core/commons-collections-3.2.jar" sourcepath="lib-src/commons-collections-3.2-src.zip"/>
-        <classpathentry kind="lib" path="lib/common/jstl-standard.jar"/>
-        <classpathentry kind="lib" path="lib/common/jstl.jar"/>
+	<classpathentry kind="lib" path="lib/common/jstl-standard.jar"/>
+	<classpathentry kind="lib" path="lib/common/jstl.jar"/>
 	<classpathentry kind="lib" path="lib/core/commons-lang-2.3.jar" sourcepath="lib-src/commons-lang-2.3-sources.jar"/>
 	<classpathentry kind="lib" path="lib/core/antlr-2.7.6.jar" sourcepath="lib-src/antlr-2.7.6.zip"/>
 	<classpathentry kind="lib" path="lib/common/dom4j-1.6.1.jar" sourcepath="lib-src/dom4j-1.6.1-src.zip"/>
@@ -36,7 +36,7 @@
 	<classpathentry kind="lib" path="lib/test/diff-bmsi.jar"/>
 	<classpathentry kind="lib" path="lib/core/commons-cli-1.2.jar" sourcepath="lib-src/commons-cli-1.2-sources.jar"/>
 	<classpathentry kind="lib" path="lib/test/junit.jar" sourcepath="lib-src/junit-3.8.1-src.jar"/>
-	<classpathentry kind="lib" path="lib/test/httpunit.jar"/>
+	<classpathentry kind="lib" path="lib/test/httpunit.jar" sourcepath="lib-src/httpunit-1.6.zip"/>
 	<classpathentry kind="lib" path="lib/optional/hibernate/hibernate-annotations.jar"/>
 	<classpathentry kind="lib" path="lib/common/commons-logging-api.jar"/>
 	<classpathentry kind="lib" path="lib/test/selenium-java-client-driver.jar"/>
