@@ -440,6 +440,52 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         }
         assertTrue(compareTest(output));
     }
+    
+    public void beginMakSearchFormInSet(Request request) throws Exception {
+        WebConversation wc = new WebConversation();
+        WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL") + "/forms-oql/testMakSearchFormInSet.jsp");
+
+        // first, compare that the form generated is ok
+        try {
+            output = resp.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + resp.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
+
+        // we get the first form in the jsp
+        WebForm form = resp.getForms()[0];
+
+        // select all gender options ([0, 1], as defined in the MDD test.Person
+        form.setParameter("gender", form.getOptionValues("gender"));
+        
+        // select one brother ('bart van Vandervanden')
+        form.setParameter("brother", "34dqsls");
+        
+
+        
+        // TODO: read HTTP unit documents carefully.
+        // not sure if that is the most elegant / intended solution
+        // but, we want to save this specific form submission for later evaluation
+        // cause the WebResponse passed in endMakSearchForm is not from this submission
+        // we could also do the comparison here, though, and leave the endMakSearchForm method empty
+        submissionResponse = form.submit();
+    }
+
+    public void testMakSearchFormInSet() throws ServletException, IOException {
+        // we need to have this method, even if it is empty; otherwise, the test is not run
+    }
+
+    public void endMakSearchFormInSet(WebResponse response) throws Exception {
+        try {
+            output = submissionResponse.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
+    }    
 
     public void beginFormAnnotation(Request request) throws Exception {
         WebConversation wc = new WebConversation();
