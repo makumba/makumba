@@ -85,11 +85,11 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         return setup;
     }
 
-    public void testDbReset(){
+    public void testDbReset() {
         System.err.println("cleaning caches");
         NamedResources.cleanStaticCache("Databases open");
     }
-    
+
     public void beginTomcat(Request request) {
         WebConversation wc = new WebConversation();
         WebRequest req = new GetMethodWebRequest(System.getProperty("cactus.contextURL"));
@@ -197,7 +197,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         }
         assertTrue(compareTest(output));
     }
-    
+
     public void testBug1115() throws ServletException, IOException, SAXException {
         pageContext.include("forms-oql/testBug1115.jsp");
     }
@@ -211,8 +211,6 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         }
         assertTrue(compareTest(output));
     }
-    
-        
 
     public void testMakFormRepeatedForms() throws ServletException, IOException, SAXException {
         pageContext.include("forms-oql/testMakRepeatedForms.jsp");
@@ -440,10 +438,11 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         }
         assertTrue(compareTest(output));
     }
-    
+
     public void beginMakSearchFormInSet(Request request) throws Exception {
         WebConversation wc = new WebConversation();
-        WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL") + "/forms-oql/testMakSearchFormInSet.jsp");
+        WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL")
+                + "/forms-oql/testMakSearchFormInSet.jsp");
 
         // first, compare that the form generated is ok
         try {
@@ -459,12 +458,10 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 
         // select all gender options ([0, 1], as defined in the MDD test.Person
         form.setParameter("gender", form.getOptionValues("gender"));
-        
+
         // select one brother ('bart van Vandervanden')
         form.setParameter("brother", "34dqsls");
-        
 
-        
         // TODO: read HTTP unit documents carefully.
         // not sure if that is the most elegant / intended solution
         // but, we want to save this specific form submission for later evaluation
@@ -485,7 +482,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
             fail("JSP output error: " + response.getResponseMessage());
         }
         assertTrue(compareTest(output));
-    }    
+    }
 
     public void beginFormAnnotation(Request request) throws Exception {
         WebConversation wc = new WebConversation();
@@ -651,7 +648,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         }
         assertTrue(compareTest(output));
     }
-    
+
     public void beginMakNestedNewFormsSimple(Request request) throws Exception {
         WebConversation wc = new WebConversation();
         WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL")
@@ -727,7 +724,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     public void testMakNestedNewAndEditFormsSimple() throws ServletException, IOException {
         // we need to have this method, even if it is empty; otherwise, the test is not run
     }
-    
+
     public void testMakSubmit() throws ServletException, IOException {
         pageContext.include("forms-oql/testMakSubmit.jsp");
     }
@@ -741,7 +738,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         }
         assertTrue(compareTest(output));
     }
-    
+
     /** TODO this is not a real test, we should test for the result of the response of the partial postback **/
     public void testMakFormAjax() throws ServletException, IOException {
         pageContext.include("forms-oql/testMakFormAjax.jsp");
@@ -756,7 +753,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         }
         assertTrue(compareTest(output));
     }
-    
+
     public void endMakNestedNewAndEditFormsSimple(WebResponse response) throws Exception {
         try {
             output = submissionResponse.getText();
