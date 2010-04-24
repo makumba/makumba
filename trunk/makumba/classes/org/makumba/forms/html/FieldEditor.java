@@ -165,12 +165,13 @@ public class FieldEditor extends org.makumba.commons.formatters.FieldFormatter {
     /**
      * As {@link #readFrom(RecordFormatter, int, HttpParameters, String)}, but if indicated, then allowing multiple
      * values of the type, which might be needed e.g. for certain types/editors in search forms.<br/>
-     * This is a default implementation that ignores the relaxedValidityCheck parameter; subclasses should thus override
-     * this method if they want to allow multiple values.
+     * This is a default implementation that ignores the relaxedValidityCheck parameter and simply calls
+     * {@link #readFrom(RecordFormatter, int, HttpParameters, String)}; subclasses should thus override this method if
+     * they want to allow multiple values.
      */
     public Object readFrom(RecordFormatter rf, int fieldIndex, HttpParameters p, String suffix,
             boolean allowMultipleValues) {
-        return p.getParameter(getInputName(rf, fieldIndex, suffix));
+        return readFrom(rf, fieldIndex, p, suffix);
     }
 	
     /**
@@ -178,7 +179,7 @@ public class FieldEditor extends org.makumba.commons.formatters.FieldFormatter {
      * indicated by the given index.
      */
     public Object readFrom(RecordFormatter rf, int fieldIndex, HttpParameters p, String suffix) {
-        return readFrom(rf, fieldIndex, p, suffix, false);
+        return p.getParameter(getInputName(rf, fieldIndex, suffix));
 	}
 
 	protected Integer toInt(RecordFormatter rf, int fieldIndex, Object o) {
