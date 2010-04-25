@@ -7,12 +7,10 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import org.makumba.commons.ClassResource;
-import org.makumba.commons.StringUtils;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
+import org.makumba.providers.QueryAnalysisProvider.ASTTransformVisitor;
 import org.makumba.providers.datadefinition.mdd.MakumbaDumpASTVisitor;
-import org.makumba.providers.query.Pass1FunctionInliner.ASTVisitor;
-import org.makumba.providers.query.Pass1FunctionInliner.TraverseState;
 import org.makumba.providers.query.mql.ASTUtil;
 import org.makumba.providers.query.mql.HqlASTFactory;
 import org.makumba.providers.query.mql.HqlTokenTypes;
@@ -319,9 +317,6 @@ public class Pass1ASTPrinter {
         }
     }
 
-
-    static final AssociativeFlatVisitor assoc= new AssociativeFlatVisitor();
-
     /**
      * Test method that prints a given AST, re-parses it and compares the initial and final AST
      * 
@@ -335,9 +330,9 @@ public class Pass1ASTPrinter {
         String printed = printAST(f).toString();
 
         try {
-            f= Pass1FunctionInliner.traverse(new TraverseState(true), f, assoc);
+            f = new AssociativeFlatVisitor().traverse(f);
             AST printedAST = QueryAnalysisProvider.parseQuery(printed);
-            printedAST= Pass1FunctionInliner.traverse(new TraverseState(true), printedAST, assoc);
+            printedAST = new AssociativeFlatVisitor().traverse(printedAST);
             if (!QueryAnalysisProvider.compare(new ArrayList<AST>(), printedAST, f)) {
                 // new MakumbaDumpASTVisitor(false).visit(f);
                 System.out.println(query);
@@ -346,12 +341,11 @@ public class Pass1ASTPrinter {
                 System.out.println("\n\n");
                 return false;
             }
-            /*if(!StringUtils.removeRedundantSpaces(printed.toUpperCase().trim()).equals(StringUtils.removeRedundantSpaces(query.toUpperCase().trim()))){
-                // System.out.print('.');
-                System.out.println(query+"\n\t"+printed);
-            }*/
-            //System.out.println(printed);
-            
+            /*
+             * if(!StringUtils.removeRedundantSpaces(printed.toUpperCase().trim()).equals(StringUtils.removeRedundantSpaces
+             * (query.toUpperCase().trim()))){ // System.out.print('.'); System.out.println(query+"\n\t"+printed); }
+             */
+            // System.out.println(printed);
         } catch (Throwable e) {
             System.out.println(e);
             new MakumbaDumpASTVisitor(false).visit(f);
@@ -362,48 +356,55 @@ public class Pass1ASTPrinter {
         }
         return true;
     }
-    /** 
-     * Pulls up an associative operator from (OP a (OP b c)) to (OP (OP a b) c). This helps detect equivalent trees.  
+
+    /**
+     * Pulls up an associative operator from (OP a (OP b c)) to (OP (OP a b) c). This helps detect equivalent trees.
+     * 
      * @author cristi
      * @version $Id: Pass1ASTPrinter.java,v 1.1 Apr 21, 2010 9:34:21 AM cristi Exp $
      */
-    static class AssociativeFlatVisitor implements ASTVisitor {
+    static class AssociativeFlatVisitor extends ASTTransformVisitor {
 
-        public AST visit(TraverseState state, AST current) {
-            switch(current.getType()){
+        public AssociativeFlatVisitor() {
+            super(true);
+        }
+
+        public AST visit(AST current) {
+            switch (current.getType()) {
                 case HqlTokenTypes.AND:
                 case HqlTokenTypes.OR:
                 case HqlTokenTypes.PLUS:
                 case HqlTokenTypes.MINUS:
-              
-                    AST a= current.getFirstChild();
 
-                    if(a.getNextSibling().getType()==current.getType()){
+                    AST a = current.getFirstChild();
+
+                    if (a.getNextSibling().getType() == current.getType()) {
                         /*
-                         *  AND(a (AND b c)) -> (AND (AND a b) c)                        
+                         * AND(a (AND b c)) -> (AND (AND a b) c)
                          */
-                        AST b= a.getNextSibling().getFirstChild();
-                        AST c= b.getNextSibling();
+                        AST b = a.getNextSibling().getFirstChild();
+                        AST c = b.getNextSibling();
 
-                        AST current1= ASTUtil.makeNode(current.getType(), current.getText());
+                        AST current1 = ASTUtil.makeNode(current.getType(), current.getText());
                         current1.setNextSibling(current.getNextSibling());
-                        AST nw= ASTUtil.makeNode(current.getType(), current.getText());
+                        AST nw = ASTUtil.makeNode(current.getType(), current.getText());
                         current1.setFirstChild(nw);
-                        
+
                         nw.setFirstChild(a);
                         nw.getFirstChild().setNextSibling(b);
                         b.setNextSibling(null);
                         nw.setNextSibling(c);
                         return current1;
                     }
-                default: 
+                default:
                     return current;
             }
         }
     }
+
     public static void main(String[] argv) {
         testCorpus("org/makumba/providers/query/mql/queries.txt", false);
-        //testCorpus("org/makumba/providers/query/inlinerCorpus.txt", true);
+        testCorpus("org/makumba/providers/query/inlinerCorpus.txt", true);
     }
 
     private static void testCorpus(String corpusFile, boolean inline) {
@@ -418,13 +419,17 @@ public class Pass1ASTPrinter {
                     try {
                         AST a = QueryAnalysisProvider.parseQuery(query);
                         testPrinter(a, query);
-                        if(inline){
-                            a = QueryAnalysisProvider.inlineFunctions(query);
-                            testPrinter(a, FunctionInliner.inline(query, QueryProvider.getQueryAnalzyer("oql")));
-                        }
                     } catch (Throwable t) {
-                        System.err.println(line + ": " + t);
+                        System.err.println(line + ": plain: " + t + " " + query);
                     }
+
+                    if (inline)
+                        try {
+                            AST a = QueryAnalysisProvider.inlineFunctions(query);
+                            testPrinter(a, FunctionInliner.inline(query, QueryProvider.getQueryAnalzyer("oql")));
+                        } catch (Throwable t) {
+                            System.err.println(line + ": inlined: " + t + " " + query);
+                        }
                 }
                 line++;
             }
