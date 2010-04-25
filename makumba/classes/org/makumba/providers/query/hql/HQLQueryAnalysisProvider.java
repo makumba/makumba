@@ -7,6 +7,8 @@ import org.makumba.commons.NamedResources;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
 
+import antlr.collections.AST;
+
 public class HQLQueryAnalysisProvider extends QueryAnalysisProvider {
 
     @Override
@@ -51,6 +53,11 @@ public class HQLQueryAnalysisProvider extends QueryAnalysisProvider {
     @Override
     public String getParameterSyntax() {
         return ":";
+    }
+
+    @Override
+    public QueryAnalysis getQueryAnalysis(AST pass1, DataDefinition knownLabels) {
+        return new HqlAnalyzer(pass1, knownLabels);
     }
 
 }

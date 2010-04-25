@@ -173,6 +173,11 @@ public class MqlQueryAnalysisProvider extends QueryAnalysisProvider {
         type.setNextSibling(ASTUtil.makeNode(HqlTokenTypes.ALIAS, "makElementsLabel"));
     }
 
+    @Override
+    public QueryAnalysis getQueryAnalysis(AST pass1, DataDefinition knownLabels) {
+        return new MqlQueryAnalysis(pass1, knownLabels);
+    }
+
 
 
 }

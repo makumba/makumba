@@ -57,6 +57,9 @@ public class HqlAnalyzer implements QueryAnalysis {
     
     private AST parsedHQL;
 
+    public HqlAnalyzer(AST pass1, DataDefinition knownLabels){
+        
+    }
     public HqlAnalyzer(String query1) {
         java.util.Date d = new java.util.Date();
         this.query = query1;
@@ -305,6 +308,10 @@ public class HqlAnalyzer implements QueryAnalysis {
 
     public String writeInSQLQuery(NameResolver nr) {
         throw new RuntimeException("not implemented");
+    }
+    public AST getPass1Tree() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

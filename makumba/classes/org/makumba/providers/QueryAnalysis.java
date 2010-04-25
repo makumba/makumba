@@ -27,6 +27,8 @@ import java.util.Map;
 
 import org.makumba.DataDefinition;
 
+import antlr.collections.AST;
+
 /**
  * This interface describes the result of a query analysis.
  * 
@@ -74,4 +76,10 @@ public interface QueryAnalysis {
      * Each mentioning of a parameter new will get a new field in this DataDefinition!  
      */
     DataDefinition getParameterTypes();
+
+    /**
+     * return the pass1 (syntax) AST tree
+     * @return
+     */
+    AST getPass1Tree();
 }
