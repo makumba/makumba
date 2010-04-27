@@ -528,6 +528,47 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         submissionResponse = form.submit();
     }
 
+    public void beginMakSearchFormFilterMode(Request request) throws Exception {
+        WebConversation wc = new WebConversation();
+        WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL")
+                + "/forms-oql/testMakSearchFormFilterMode.jsp");
+
+        // first, compare that the form generated is ok
+        try {
+            output = resp.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + resp.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
+
+        // we get the first form in the jsp
+        WebForm form = resp.getForms()[0];
+        // set the inputs in the add-to-new form
+        form.setParameter("indiv.name", "v");
+
+        // TODO: read HTTP unit documents carefully.
+        // not sure if that is the most elegant / intended solution
+        // but, we want to save this specific form submission for later evaluation
+        // cause the WebResponse passed in endMakSearchForm is not from this submission
+        // we could also do the comparison here, though, and leave the endMakSearchForm method empty
+        submissionResponse = form.submit();
+    }
+
+    public void testMakSearchFormFilterMode() throws ServletException, IOException {
+        // we need to have this method, even if it is empty; otherwise, the test is not run
+    }
+
+    public void endMakSearchFormFilterMode(WebResponse response) throws Exception {
+        try {
+            output = submissionResponse.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+        assertTrue(compareTest(output));
+    }
+
     public void testFormAnnotation() throws ServletException, IOException {
         // we need to have this method, even if it is empty; otherwise, the test is not run
     }
