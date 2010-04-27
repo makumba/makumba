@@ -96,8 +96,8 @@
 			<include name="commons-logging-api.jar" />
 		</fileset>
 		<fileset dir="${basedir}/lib/building">
-			<include name="ant-1.6.5.jar" />
-			<include name="ant-launcher-1.6.5.jar" />
+			<include name="ant-1.7.0.jar" />
+			<include name="ant-launcher-1.7.0.jar" />
 		</fileset>
 	</path>
 
