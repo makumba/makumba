@@ -27,7 +27,7 @@ import antlr.collections.AST;
  * @version $Id: MqlSqlGenerator.java,v 1.1 Aug 5, 2008 5:47:16 PM cristi Exp $
  */
 public class MqlSqlWalker extends MqlSqlBaseWalker {
-    private static final String LINK_FUNCTION_DEF = "http://www.makumba.org/makumba-spec.html#tab_ql";
+    private static final String LINK_FUNCTION_DEF = "http://www.makumba.org/page/QueryLanguages#section-QueryLanguages-MQLFunctions";
 
     // TODO:
     // finish subqueries
@@ -125,16 +125,19 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     protected void processFunction(AST functionCall) throws SemanticException {
         // determine parameter types here
         final MqlNode functionNode = (MqlNode)functionCall.getFirstChild();
+
+        final String name = functionNode.getText();
+        // check if we can find the function itself. Most likely, we used an unknow function...
+        final MQLFunctionDefinition functionDef = MQLFunctionRegistry.findMQLFunction(name);
+        if (functionDef == null) { // no function found => programmer error
+            throw new ProgrammerError("MQL Function '" + name + "' is not a known MQL function! Please refer to " + LINK_FUNCTION_DEF
+                    + " for a list of known functions.");
+        }
+
         ((MqlNode) functionCall).setMakType(getFunctionType(functionNode));
         final AST exprList = functionNode.getNextSibling();
         MqlNode paramNode = (MqlNode) exprList.getFirstChild();
         int index = 0;
-        final String name = functionNode.getText();
-        final MQLFunctionDefinition functionDef = MQLFunctionRegistry.findMQLFunction(name);
-        if (functionDef == null) {
-            throw new ProgrammerError("MQL Function '" + name + "' is not a known MQL function! Please refer to " + LINK_FUNCTION_DEF
-                    + " for a list of known functions.");
-        }
         final MQLFunctionArgument[] args = functionDef.getArguments();
         if (paramNode == null && !ArrayUtils.isEmpty(args)) {
             throw new ProgrammerError("The function '" + functionDef + "' requires arguments! Please refer to "
