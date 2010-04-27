@@ -72,6 +72,10 @@ public class MQLFunctionRegistry {
         // simple string-to-int functions
         mqlFunctions.add(new MQLFunctionDefinition("ascii", "int", "char[255]"));
         mqlFunctions.add(new MQLFunctionDefinition("character_length", "int", "char[255]"));
+        mqlFunctions.add(new MQLFunctionDefinition("length", "int", "char[255]"));
+
+        // to-int functions with more arguments
+        mqlFunctions.add(new MQLFunctionDefinition("locate", "int", "char[255]", "char[255]"));
 
         // simple int-to-string functions
         mqlFunctions.add(new MQLFunctionDefinition("format", "char[255]", "int"));
