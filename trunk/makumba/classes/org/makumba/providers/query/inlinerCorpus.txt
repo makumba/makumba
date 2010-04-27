@@ -8,6 +8,7 @@ SELECT x.oneNameMin2CharsLong() FROM test.Person x
 SELECT x AS col1 FROM test.Person x WHERE x.actor($username, $password)
 SELECT x AS col1 FROM test.Person x WHERE x.actor2($username, $password)
 select p.score('a') from test.Person p
+SELECT p.scoreMatchSimple('a', 'b') from test.Person p
 select p.languageNames() from test.Person p
 select case when s.getActAppDL() <> NIL then dateAdd(s.getActAppDL(), 7, 'day') else s.getActAppDL() end from best.johnny.Activity s
 select s.isDirectMemberOfTeamOrAlias('ITC') FROM best.internal.Student s
