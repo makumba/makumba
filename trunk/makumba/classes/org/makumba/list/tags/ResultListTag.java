@@ -24,26 +24,59 @@ import org.makumba.list.engine.ComposedQuery;
 public class ResultListTag extends QueryTag {
     private static final long serialVersionUID = 1L;
 
+    private static final String MODE_SEARCH = "search";
+
+    private static final String MODE_FILTER = "filter";
+
     private String resultsFrom;
 
-    private boolean noResultsPresent = false; // indicates whether we execute the list, or not
+    private String mode = MODE_SEARCH;
+
+    private String staticCondition = null;
+
+    private boolean noResultsPresent = false; // indicates whether we the search form was execute already
 
     public void setResultsFrom(String s) {
         this.resultsFrom = s;
     }
 
     @Override
+    protected void registerPossibleAttributeValues() {
+        registerAttributeValues("mode", MODE_SEARCH, MODE_FILTER);
+    }
+
+    public void setMode(String mode) {
+        this.mode = mode;
+    }
+
+    public void setStaticCondition(String staticCondition) {
+        this.staticCondition = staticCondition;
+    }
+
+    @Override
     public int doAnalyzedStartTag(PageCache pageCache) throws LogicException, JspException {
         setFieldsFromSearchFormInfo(pageCache);
-        // check whether we have the attributes from the search present, if not, don't process the list
+
+        // check whether we have the attributes from the search present
         String[] attributesToCheck = { SearchTag.ATTRIBUTE_NAME_VARIABLE_FROM, SearchTag.ATTRIBUTE_NAME_WHERE };
         for (int i = 0; i < attributesToCheck.length; i++) {
             String thisAttribute = resultsFrom + attributesToCheck[i];
             if (pageContext.getRequest().getAttribute(thisAttribute) == null) {
                 this.noResultsPresent = true;
-                return SKIP_BODY;
+                if (mode.equals(MODE_SEARCH)) {// if we do search, we only execute the tag if we already did the search
+                    return SKIP_BODY;
+                }
             }
         }
+
+        if (mode.equals(MODE_FILTER) && noResultsPresent) {
+            // if we filter, but the search hasn't been done yet, we execute an unfiltered list
+            // thus, we need to populate the variableFrom & where fields with empty values
+            pageContext.setAttribute(resultsFrom + SearchTag.ATTRIBUTE_NAME_VARIABLE_FROM, "");
+            pageContext.setAttribute(resultsFrom + SearchTag.ATTRIBUTE_NAME_WHERE, "");
+            setFieldsFromSearchFormInfo(pageCache);
+        }
+
         return super.doAnalyzedStartTag(pageCache);
     }
 
@@ -58,8 +91,8 @@ public class ResultListTag extends QueryTag {
      * called before any of the super class methods to do analysis & execution is invoked.
      */
     private void setFieldsFromSearchFormInfo(PageCache pageCache) {
-        TagData tag = (TagData) pageCache.retrieve(MakumbaJspAnalyzer.TAG_DATA_CACHE,
-            new MultipleKey(new Object[] { resultsFrom }));
+        TagData tag = (TagData) pageCache.retrieve(MakumbaJspAnalyzer.TAG_DATA_CACHE, new MultipleKey(
+                new Object[] { resultsFrom }));
         if (tag != null) {
             setFrom(tag.attributes.get("in") + " "
                     + StringUtils.defaultString(tag.attributes.get("resultLabel"), SearchTag.OBJECT_NAME));
@@ -85,7 +118,7 @@ public class ResultListTag extends QueryTag {
     }
 
     public int doAnalyzedEndTag(PageCache pageCache) throws JspException {
-        if (noResultsPresent) { // no results ==> skip the list
+        if (noResultsPresent && mode.equals(MODE_SEARCH)) { // no results ==> skip the list in search mode
             return SKIP_BODY;
         } else {
             return super.doAnalyzedEndTag(pageCache);
