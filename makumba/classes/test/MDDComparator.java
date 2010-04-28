@@ -10,6 +10,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.makumba.DataDefinition;
+import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.datadefinition.makumba.RecordInfo;
 import org.makumba.providers.datadefinition.mdd.MDDProvider;
 
@@ -24,13 +25,10 @@ public class MDDComparator {
 
     public static void main(String... args) {
 
-        // create a temporary directory to read the files using the "webappRoot" configuration
-        File tempDir = new File(TEMP + "/WEB-INF/classes/dataDefinitions/");
+        // create a temporary directory that will be deleted on exit
+        File tempDir = new File(TEMP);
         tempDir.deleteOnExit();
         tempDir.mkdir();
-
-        RecordInfo.setWebappRoot(TEMP);
-        MDDProvider.setWebappRoot(TEMP);
 
         try {
 
@@ -38,19 +36,33 @@ public class MDDComparator {
             File f = new File(MDDComparator.class.getResource("mdd-corpus.zip").getPath());
             ZipFile zf = new ZipFile(f);
             extractMDDsFile(zf, tempDir);
+            
+            // we go through the corpus, one application at a time
+            // for this we first extract all files, then consider only a given application sub-set
+            
+            String[] apps = tempDir.list();
+            for (int i = 0; i < apps.length; i++) {
+                System.out.println("== Reading corpus MDDs of application " + apps[i]);
+                File app = new File(TEMP + File.separator + apps[i]);
+                if(!app.isDirectory()) continue;
+                
+                RecordInfo.setWebappRoot(app.getPath());
+                MDDProvider.setWebappRoot(app.getPath());
+                
+                Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zf.entries();
+                while (entries.hasMoreElements()) {
+                    ZipEntry ze = entries.nextElement();
+                    if(!ze.getName().endsWith(".mdd")) continue;
+                    if(!ze.getName().startsWith(apps[i])) continue;
 
-            Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zf.entries();
-            while (entries.hasMoreElements()) {
-                ZipEntry ze = entries.nextElement();
-                if (!ze.getName().endsWith(".mdd")) {
-                    continue;
+                    String type = ze.getName().substring( (apps[i] + "/WEB-INF/classes/dataDefinitions/").length(), ze.getName().lastIndexOf(".")).replaceAll("/", ".");
+                    
+                    System.out.println("==== Reading MDD " + type);
+                    //DataDefinition dd1 = RecordInfo.getRecordInfo(type);
+                    DataDefinition dd1 = MDDProvider.getMDD(type);
+                    DataDefinition dd2 = MDDProvider.getMDD(type);
+                    compare(dd1, dd2);
                 }
-
-                System.out.println("==== Reading MDD " + ze.getName());
-                String type = ze.getName().substring(0, ze.getName().lastIndexOf("."));
-                DataDefinition dd1 = RecordInfo.getRecordInfo(type);
-                DataDefinition dd2 = MDDProvider.getMDD(type);
-                compare(dd1, dd2);
             }
 
         } catch (IOException e) {
