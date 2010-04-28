@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.makumba.DataDefinition;
 import org.makumba.LogicException;
 import org.makumba.list.tags.QueryTag;
@@ -98,6 +99,9 @@ public class ComposedQuery {
 
     /** Standard index for the VARFROM query section */
     public static final int VARFROM = 4;
+
+    /** Standard index for the STATIC_CONDITION query section */
+    public static final int STATIC_WHERE = 5;
 
     /** Section texts, encoded with the standard indexes */
     String[] sections;
@@ -435,6 +439,17 @@ public class ComposedQuery {
         vars[0] = getFromSection();
         for (int i = 1; i < 5; i++)
             vars[i] = derivedSections[i] == null ? null : v.evaluate(derivedSections[i]);
+
+        if (derivedSections.length > STATIC_WHERE && StringUtils.isNotBlank(derivedSections[STATIC_WHERE])) {
+            // add the static condition to the WHERE part
+            // first, check if the dynamic where condition is not blank; for this, we need to evaluate it
+
+            if (StringUtils.isNotBlank(vars[WHERE])) {
+                vars[WHERE] += " AND " + derivedSections[STATIC_WHERE];
+            } else {
+                vars[WHERE] = derivedSections[STATIC_WHERE];
+            }
+        }
 
         return new Grouper(previousKeyset, qep.execute(computeQuery(vars, false), args, offset, limit).elements());
     }

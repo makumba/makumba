@@ -57,7 +57,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
     private static final long serialVersionUID = 1L;
 
-    String[] queryProps = new String[5];
+    String[] queryProps = new String[6];
 
     String separator = "";
 
