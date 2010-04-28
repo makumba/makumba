@@ -41,7 +41,7 @@ public class dateEditor extends FieldEditor {
 
     private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
         static FieldEditor singleton = new dateEditor();
-        
+
         public void release() {
             singleton = null;
         }
@@ -78,8 +78,8 @@ public class dateEditor extends FieldEditor {
 
     static final int[] hiLimits = { 31, 11, -1, 23, 59, 59 };
 
-    public static final int[] components = { Calendar.DAY_OF_MONTH, Calendar.MONTH, Calendar.YEAR, Calendar.HOUR_OF_DAY,
-            Calendar.MINUTE, Calendar.SECOND };
+    public static final int[] components = { Calendar.DAY_OF_MONTH, Calendar.MONTH, Calendar.YEAR,
+            Calendar.HOUR_OF_DAY, Calendar.MINUTE, Calendar.SECOND };
 
     static final String[] componentNames = { "day", "month", "year", "hour", "minute", "second" };
 
@@ -109,14 +109,14 @@ public class dateEditor extends FieldEditor {
             o = null;
         }
         Date d = (Date) o;
-        
-        if(formatParams.get("default") != null) {
+
+        if (formatParams.get("default") != null) {
             // FIXME this should actually evaluate the date in a manner similar to MQL...
-            if(((String)formatParams.get("default")).equals("now()")) {
+            if (((String) formatParams.get("default")).equals("now()")) {
                 d = new Date();
             }
         }
-        
+
         StringBuffer sb = new StringBuffer();
         boolean hidden = "hidden".equals(formatParams.get("type"));
         if (d == null) {
@@ -134,7 +134,7 @@ public class dateEditor extends FieldEditor {
 
         String inputName = getInputName(rf, fieldIndex, getSuffix(rf, fieldIndex, formatParams));
         String calendarEditor = (String) formatParams.get("calendarEditor");
-        
+
         // add calendar editor code, if calendarEditor="true" AND if we have all components of day, month & year
         if (calendarEditor != null && !"false".equals(calendarEditor)
                 && (format.contains("d") && format.contains("M") && format.contains("y"))) {
