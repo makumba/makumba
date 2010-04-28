@@ -108,15 +108,15 @@ public class FieldFormatter {
     public void checkParam(RecordFormatter rf, int fieldIndex, String name, String val) {
         Hashtable<String, Object> h = validParams.get(name);
         if (h == null) {
-            throw new ProgrammerError("Error for expression '" + rf.expr[fieldIndex] + "': invalid format parameter \'"
-                    + name + "\'. Allowed values are: " + ArrayUtils.toString(validParams.keySet()));
+            throw new ProgrammerError("Error for field '" + rf.expr[fieldIndex] + "': unknown format parameter \'"
+                    + name + "\'. Known parameters are: " + validParams.keySet());
         }
         if (h.size() == 0) {
             return;
         }
         if (h.get(val) == null) {
-            throw new ProgrammerError("Error for expression '" + rf.expr[fieldIndex] + "': invalid format parameter \'"
-                    + name + "\'. Allowed values are: " + ArrayUtils.toString(validParams.keySet()));
+            throw new ProgrammerError("Error for field '" + rf.expr[fieldIndex]
+                    + "': invalid value for format parameter \'" + name + "\'. Allowed values are " + h.keySet());
         }
     }
 
