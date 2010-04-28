@@ -32,8 +32,6 @@ public class ResultListTag extends QueryTag {
 
     private String mode = MODE_SEARCH;
 
-    private String staticCondition = null;
-
     private boolean noResultsPresent = false; // indicates whether we the search form was execute already
 
     public void setResultsFrom(String s) {
@@ -49,8 +47,8 @@ public class ResultListTag extends QueryTag {
         this.mode = mode;
     }
 
-    public void setStaticCondition(String staticCondition) {
-        this.staticCondition = staticCondition;
+    public void setStaticWhere(String s) {
+        queryProps[ComposedQuery.STATIC_WHERE] = s;
     }
 
     @Override
