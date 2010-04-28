@@ -12,14 +12,14 @@
   Language: 
   <mak:criterion fields="speaks">
     <mak:searchField>
-      <mak:list from="test.Language l" where="l.name < 'm'">
+      <mak:list from="test.Language l" where="l.name < 'h'">
         <mak:option value="l"> <mak:value expr="l.name" /> </mak:option>
       </mak:list>
     </mak:searchField>
   </mak:criterion>
   <mak:criterion fields="speaks" id="speaks2">
     <mak:searchField>
-      <mak:list from="test.Language l" where="l.name >= 'm'">
+      <mak:list from="test.Language l" where="l.name >= 'h'">
         <mak:option value="l"> <mak:value expr="l.name" /> </mak:option>
       </mak:list>
     </mak:searchField>
