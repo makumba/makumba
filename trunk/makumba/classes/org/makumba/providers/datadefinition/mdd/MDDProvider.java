@@ -18,6 +18,10 @@ import org.makumba.providers.DataDefinitionProvider;
 public class MDDProvider extends DataDefinitionProvider {
     
     private static String webappRoot;
+    
+    public static void setWebappRoot(String w) {
+        webappRoot = w;
+    }
 
     public DataDefinition getDataDefinition(String typeName) {
         return getMDD(typeName.replaceAll("__", "->"));
