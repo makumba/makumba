@@ -35,6 +35,7 @@ import java.util.regex.Pattern;
 
 import javax.servlet.jsp.tagext.Tag;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.makumba.analyser.ElementData;
 import org.makumba.analyser.ELData;
 import org.makumba.analyser.TagData;
@@ -73,8 +74,8 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
 
     /** The patterns used to parse the page. */
     static private Pattern JspSystemTagPattern, JspTagPattern, JspCommentPattern, JspScriptletPattern,
-            JspIncludePattern, JspTagAttributePattern, JspExpressionLanguagePattern, JsfExpressionLanguagePattern,
-            Word, TagName, MapExpression, DotExpression;
+            JspIncludePattern, JspTagAttributePattern, JspExpressionLanguagePattern, JSPELFunctionPattern,
+            JsfExpressionLanguagePattern, Word, TagName, MapExpression, DotExpression;
 
     static private String[] JspCommentPatternNames = { "JspComment", "JspScriptlet" };
 
@@ -135,6 +136,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
             JspCommentPattern = Pattern.compile("<%--.*?[^-]--%>", Pattern.DOTALL);
             JspScriptletPattern = Pattern.compile("<%[^@].*?%>", Pattern.DOTALL);
             JspExpressionLanguagePattern = Pattern.compile("\\$\\{[^\\}]*\\}");
+            JSPELFunctionPattern = Pattern.compile("\\w+:\\w+\\(\\)");
             JsfExpressionLanguagePattern = Pattern.compile("\\#\\{[^\\}]*\\}");
             Pattern[] cp = { JspCommentPattern, JspScriptletPattern };
             JspCommentPatterns = cp;
@@ -347,6 +349,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
         Matcher tags = JspTagPattern.matcher(content);
         Matcher systemTags = JspSystemTagPattern.matcher(content);
         Matcher jspELExpressions = JspExpressionLanguagePattern.matcher(content);
+        Matcher jspELFunctions = JSPELFunctionPattern.matcher(content);
         Matcher jsfELExpressions = JsfExpressionLanguagePattern.matcher(content);
 
         int tagStart = Integer.MAX_VALUE;
@@ -361,21 +364,31 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
         if (jspELExpressions.find()) {
             jspELExpressionStart = jspELExpressions.start();
         }
+        int jspELFunctionStart = Integer.MAX_VALUE;
+        if (jspELFunctions.find()) {
+            jspELFunctionStart = jspELFunctions.start();
+        }
 
         while (true) {
-            if (tagStart < systemStart && tagStart < jspELExpressionStart) {
+            if (tagStart < NumberUtils.min(systemStart, jspELExpressionStart, jspELFunctionStart)) {
                 treatTag(tags, content, an);
                 tagStart = Integer.MAX_VALUE;
                 if (tags.find()) {
                     tagStart = tags.start();
                 }
-            } else if (systemStart < tagStart && systemStart < jspELExpressionStart) {
+            } else if (systemStart < NumberUtils.min(tagStart, jspELExpressionStart, jspELFunctionStart)) {
                 treatSystemTag(systemTags, content, an);
                 systemStart = Integer.MAX_VALUE;
                 if (systemTags.find()) {
                     systemStart = systemTags.start();
                 }
-            } else if (jspELExpressionStart < tagStart && jspELExpressionStart < systemStart) {
+            } else if (jspELFunctionStart < NumberUtils.min(tagStart, systemStart, jspELExpressionStart)) {
+                treatELFunction(jspELFunctions, content, an);
+                jspELFunctionStart = Integer.MAX_VALUE;
+                if (jspELFunctions.find()) {
+                    jspELFunctionStart = jspELFunctions.start();
+                }
+            } else if (jspELExpressionStart < NumberUtils.min(tagStart, systemStart, jspELFunctionStart)) {
                 treatELExpression(jspELExpressions, content, an, false);
                 jspELExpressionStart = Integer.MAX_VALUE;
                 if (jspELExpressions.find()) {
@@ -466,6 +479,10 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
         } else {
             an.startTag(td, holder);
         }
+    }
+
+    void treatELFunction(Matcher m, String content, JspAnalyzer an) {
+        syntaxPoints.addSyntaxPoints(m.start(), m.end(), "ExpressionLanguageFunction", null);
     }
 
     /**
