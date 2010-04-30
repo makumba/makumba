@@ -103,16 +103,51 @@ public class RecordParser {
             + funcDefParamValueRegExp + "(?:" + RegExpUtils.minOneLineWhitespace + funcDefParamValueRegExp + ")?";
 
     /** treats (int a, char b, ...) */
-    public static final String funcDefParamRepeatRegExp = "\\((" + "(?:" + funcDefParamRegExp + ")" + "(?:"
-            + RegExpUtils.LineWhitespaces + "," + RegExpUtils.LineWhitespaces + funcDefParamRegExp + ")*"
-            + RegExpUtils.LineWhitespaces + ")?\\)";
+    public static final String funcDefParamRepeatRegExp = "\\((" 
+        + "(?:" + funcDefParamRegExp + ")" 
+        + "(?:" + RegExpUtils.LineWhitespaces + "," + RegExpUtils.LineWhitespaces + funcDefParamRegExp + ")*"
+        + RegExpUtils.LineWhitespaces + ")?\\)";
 
     /** treats function(params) { queryFragment } errorMessage. */
-    public static final String funcDefRegExp = "(" + RegExpUtils.fieldName + "%)?" + "(" + RegExpUtils.fieldName + ")"
-            + funcDefParamRepeatRegExp + RegExpUtils.LineWhitespaces + "\\{" + RegExpUtils.LineWhitespaces
-            + "(.[^\\}]+)" + RegExpUtils.LineWhitespaces + "(?:\\}" + RegExpUtils.LineWhitespaces + "(.*))?";
+    public static final String funcDefRegExp = "(" + RegExpUtils.fieldName + "%)?" 
+    + "(" + RegExpUtils.fieldName + ")"
+    + funcDefParamRepeatRegExp  
+    + RegExpUtils.LineWhitespaces  
+    + "\\{" + 
+    RegExpUtils.LineWhitespaces
+    + "(.[^\\}]+)"  
+    + RegExpUtils.LineWhitespaces 
+    + "(?:\\}" 
+    + RegExpUtils.LineWhitespaces 
+    + "(.*))?";
 
     public static final Pattern funcDefPattern = Pattern.compile(funcDefRegExp);
+
+    public static final String ruleDefRegExp =  "(" + RegExpUtils.fieldName + ")"
+    + "\\("
+    + RegExpUtils.LineWhitespaces
+    + "(?:" + RegExpUtils.fieldName + ")" 
+    + "(?:" + RegExpUtils.LineWhitespaces + "," + RegExpUtils.LineWhitespaces + RegExpUtils.fieldName + ")*"
+    + RegExpUtils.LineWhitespaces
+    + "\\)"
+    + RegExpUtils.LineWhitespaces
+    + "\\{"  
+    + RegExpUtils.LineWhitespaces
+    + "(.[^\\}]+)"  
+    + RegExpUtils.LineWhitespaces 
+    + "(?:\\}" 
+    + RegExpUtils.LineWhitespaces 
+    + "(.*))?";
+
+    public static final Pattern ruleDefPattern = Pattern.compile(ruleDefRegExp);
+
+    public static final String constraintDefRegExp =  "(" + RegExpUtils.fieldName + ")"
+    + "\\."
+    + "("+ RegExpUtils.fieldName + ")" 
+    + RegExpUtils.LineWhitespaces 
+    + "((.*))?";
+    
+    public static final Pattern constraintDefPattern = Pattern.compile(constraintDefRegExp);
 
     public static final Pattern ident = Pattern.compile("[a-zA-Z]\\w*");
 
@@ -395,13 +430,14 @@ public class RecordParser {
         }
 
         if (u == null) {
-                u = getResource("dataDefinitions/" + s.replace('.', '/') + "." + ext);
-                
+            u = getResource("dataDefinitions/" + s.replace('.', '/') + "." + ext);
+
             // this is maybe a directory?
-            // FIXME: this doesn't work if the MDDs are not in the dataDefinitions directory, but in the classes folder directly 
-            if(u == null)
+            // FIXME: this doesn't work if the MDDs are not in the dataDefinitions directory, but in the classes folder
+            // directly
+            if (u == null)
                 u = getResource("dataDefinitions" + (s.length() == 0 ? "" : "/") + s);
-                
+
             if (u == null) {
                 u = getResource(s.replace('.', '/') + "." + ext);
             }
@@ -491,7 +527,15 @@ public class RecordParser {
             if (matchFunction(nm + val)) {
                 continue;
             }
+            
+            if (matchRule(nm + val)) {
+                continue;
+            }
 
+            if (matchConstraint(nm + val)) {
+                continue;
+            }
+            
             // check name for validity:
             for (int i = 0; i < nm.length(); i++) {
                 if (i == 0 && !Character.isJavaIdentifierStart(nm.charAt(i)) || i > 0
@@ -518,6 +562,25 @@ public class RecordParser {
         }
     }
 
+    boolean matchRule(String line) {
+        // check if the line is a function definition
+        Matcher matcher = ruleDefPattern.matcher(line);
+        if (!matcher.matches()) {
+            return false;
+        }
+        // TODO: add rule data
+        return true;        
+    }
+ 
+    boolean matchConstraint(String line) {
+        // check if the line is a function definition
+        Matcher matcher = constraintDefPattern.matcher(line);
+        if (!matcher.matches()) {
+            return false;
+        }
+        // TODO: add rule data
+        return true;        
+    }
     boolean matchFunction(String line) {
         // check if the line is a function definition
         Matcher matcher = funcDefPattern.matcher(line);
@@ -572,24 +635,25 @@ public class RecordParser {
             dd.getFunctions().addFunction(f.getName(), f);
         }
     }
-    
+
     private AST getParsedFunction(String fName, String expression, String line) {
-        
-     // here we parse the function to see if it's okay
+
+        // here we parse the function to see if it's okay
         // when the expression is a subquery, i.e. starts with SELECT, we add paranthesis around it
         boolean subquery = expression.toUpperCase().startsWith("SELECT ");
-        
-        String query = "SELECT " + (subquery?"(":"") + expression + (subquery?")":"") + " FROM " + dd.getName() + " makumbaGeneratedAlias";
+
+        String query = "SELECT " + (subquery ? "(" : "") + expression + (subquery ? ")" : "") + " FROM " + dd.getName()
+                + " makumbaGeneratedAlias";
         HqlParser parser = HqlParser.getInstance(query);
         try {
             parser.statement();
         } catch (Exception e) {
-            mpe.add(new DataDefinitionParseError(dd.getName(), "Error in function " + fName + ": " + e.getMessage(), line));
+            mpe.add(new DataDefinitionParseError(dd.getName(), "Error in function " + fName + ": " + e.getMessage(),
+                    line));
         }
-        
+
         return parser.getAST();
-        
-        
+
     }
 
     void configSubfields() {
@@ -655,7 +719,7 @@ public class RecordParser {
         } else if (uconn.getClass().getName().endsWith("JarURLConnection")) {
             JarFile jf = ((JarURLConnection) uconn).getJarFile();
 
-            // jar:file:/home/manu/workspace/parade2/webapp/WEB-INF/lib/makumba.jar!/org/makumba/devel/relations/Relation
+            //jar:file:/home/manu/workspace/parade2/webapp/WEB-INF/lib/makumba.jar!/org/makumba/devel/relations/Relation
             // .mdd
             String[] jarURL = u.toExternalForm().split("!");
 
@@ -973,13 +1037,16 @@ public class RecordParser {
     // moved from charParser
     public void char_parse1(String fieldName, FieldCursor fc) {
         if (!fc.lookup("{")) {
-            fc.expect("[");
-            Integer size = fc.expectInteger();
-            if (size.intValue() > 255 || size.intValue() < 0) {
-                throw fc.fail("char size must be between 0 and 255, not " + size.toString());
-            }
-            getFieldInfo(fieldName).extra2 = size;
-            fc.expect("]");
+            if (fc.lookup("[")) {
+                Integer size = fc.expectInteger();
+                if (size.intValue() > 255 || size.intValue() < 0) {
+                    throw fc.fail("char size must be between 0 and 255, not " + size.toString());
+                }
+                getFieldInfo(fieldName).extra2 = size;
+                fc.expect("]");
+            } else
+                getFieldInfo(fieldName).extra2 = 255;
+
             getFieldInfo(fieldName).description = fc.lookupDescription();
             return;
         }
@@ -999,10 +1066,10 @@ public class RecordParser {
         getFieldInfo(fieldName).description = fc.lookupDescription();
         return;
     }
-    
+
     public void date_parse1(String fieldName, FieldCursor fc) {
         getFieldInfo(fieldName).description = fc.lookupDescription();
-        //getFieldInfo(fieldName).defaultValue = new Date();
+        // getFieldInfo(fieldName).defaultValue = new Date();
         return;
     }
 
