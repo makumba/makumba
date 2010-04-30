@@ -94,6 +94,14 @@ public class jspViewer extends LineViewer {
 
     private Map<MultipleKey, TagData> tagDataCache = new LinkedHashMap<MultipleKey, TagData>();
 
+    // FIXME: these prefixes should be adapted to the ones really set in the taglib import statement
+    // see http://bugs.makumba.org/show_bug.cgi?id=1199
+    private String makTagPrefix = "mak";
+
+    private String jstlCoreTagPrefix = "c";
+
+    private String jstlFormatTagPrefix = "fmt";
+
     private int extraLength() {
         return 1;
     }
@@ -351,9 +359,9 @@ public class jspViewer extends LineViewer {
                     } else if (type.equals("ExpressionLanguage")) { // we have JSP EL ($...})
                         currentText.append("<span class=\"expressionLanguage\">");
                     } else {// we have any other taglib tag
-                        if ((tagType.startsWith("mak") || tagType.startsWith("/mak")) && hideMakumba
-                                || (tagType.startsWith("c") || tagType.startsWith("/c")) && hideJSTLCore
-                                || (tagType.startsWith("fmt") || tagType.startsWith("/fmt")) && hideJSTLFormat) {
+                        if ((isTagOfPrefix(tagType, makTagPrefix)) && hideMakumba
+                                || (isTagOfPrefix(tagType, jstlCoreTagPrefix)) && hideJSTLCore
+                                || (isTagOfPrefix(tagType, jstlFormatTagPrefix)) && hideJSTLFormat) {
                             shallWrite = false;
                         }
 
@@ -444,6 +452,10 @@ public class jspViewer extends LineViewer {
         printPageEnd(writer);
         double time = new Date().getTime() - begin.getTime();
         logger.finer("Sourcecode viewer took :" + time / 1000 + " seconds");
+    }
+
+    private boolean isTagOfPrefix(String tagType, String prefix) {
+        return tagType.startsWith(prefix) || tagType.startsWith("/" + prefix);
     }
 
     private int endOfQueryTagName(StringBuilder content) {
