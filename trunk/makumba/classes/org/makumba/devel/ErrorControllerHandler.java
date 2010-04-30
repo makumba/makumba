@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.makumba.MakumbaError;
-import org.makumba.UnauthorizedException;
+import org.makumba.UnauthenticatedException;
 import org.makumba.commons.ControllerHandler;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.ServletObjects;
@@ -66,11 +66,16 @@ public class ErrorControllerHandler extends ControllerHandler {
      */
     public void treatException(Throwable t, HttpServletRequest req, HttpServletResponse resp, FilterConfig conf) {
         resp.setContentType("text/html");
-        if (t instanceof RuntimeWrappedException)
+        // sometimes tomcat wraps the RuntimeWrappedException in a JasperException (which extends ServletException)
+        if (t instanceof ServletException && ((ServletException)t).getRootCause() instanceof RuntimeWrappedException) {
+            t = ((ServletException)t).getRootCause();
+        }
+        if (t instanceof RuntimeWrappedException) {
             t = ((RuntimeWrappedException) t).getCause();
+        }
         req.setAttribute(javax.servlet.jsp.PageContext.EXCEPTION, t);
         
-        if (req.getAttribute("org.makumba.exceptionTreated") == null && !((t instanceof UnauthorizedException) && login(req, resp))) {
+        if (req.getAttribute("org.makumba.exceptionTreated") == null && !(t instanceof UnauthenticatedException && login(req, resp))) {
         try {
 
                 String errorPage = getPage(req, req.getServletPath(), "error.jsp");
