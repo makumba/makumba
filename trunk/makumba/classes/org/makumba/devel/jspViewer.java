@@ -339,8 +339,6 @@ public class jspViewer extends LineViewer {
                             currentLineLength));
                     }
 
-                    String tagType = lineText.substring(currentSyntaxPoint.getOriginalColumn(currentLineLength));
-
                     // we have a scriplet (<% ... %>)
                     if (type.equals("JspScriptlet")) {
                         if (hideJava) { // check whether show or hide
@@ -358,7 +356,15 @@ public class jspViewer extends LineViewer {
                         currentText.append("<span class=\"jspSystemTag\">");
                     } else if (type.equals("ExpressionLanguage")) { // we have JSP EL ($...})
                         currentText.append("<span class=\"expressionLanguage\">");
+                    } else if (type.equals("ExpressionLanguageFunction")) { // we have a JSP EL Function ($...})
+                        String functionType = lineText.substring(currentSyntaxPoint.getOriginalColumn(currentLineLength) - 1);
+                        // check if it is a mak function
+                        if (functionType.startsWith(makTagPrefix + ":")) {
+                            currentText.append("<span class=\"" + getStyleClass(functionType) + "\">");
+                        }
                     } else {// we have any other taglib tag
+                        String tagType = lineText.substring(currentSyntaxPoint.getOriginalColumn(currentLineLength));
+
                         if ((isTagOfPrefix(tagType, makTagPrefix)) && hideMakumba
                                 || (isTagOfPrefix(tagType, jstlCoreTagPrefix)) && hideJSTLCore
                                 || (isTagOfPrefix(tagType, jstlFormatTagPrefix)) && hideJSTLFormat) {
@@ -366,13 +372,7 @@ public class jspViewer extends LineViewer {
                         }
 
                         if (shallWrite) { // do the defined highlighting
-                            String tagClass = tagType;
-                            if (tagClass.contains(":")) {
-                                tagClass = tagClass.substring(0, tagType.indexOf(":")) + "Tag";
-                            }
-                            if (tagClass.startsWith("/")) {
-                                tagClass = tagClass.substring(1);
-                            }
+                            String tagClass = getStyleClass(tagType);
 
                             // if we have a mak:list or mak:object tag, annotate the query with a pop-up
                             MultipleKey tagKey = getTagDataKey(currentSyntaxPoint);
@@ -454,6 +454,17 @@ public class jspViewer extends LineViewer {
         logger.finer("Sourcecode viewer took :" + time / 1000 + " seconds");
     }
 
+    private String getStyleClass(String tagType) {
+        String tagPrefix = tagType;
+        if (tagPrefix.contains(":")) {
+            tagPrefix = tagPrefix.substring(0, tagType.indexOf(":")) + "Tag";
+        }
+        if (tagPrefix.startsWith("/")) {
+            tagPrefix = tagPrefix.substring(1);
+        }
+        return tagPrefix;
+    }
+
     private boolean isTagOfPrefix(String tagType, String prefix) {
         return tagType.startsWith(prefix) || tagType.startsWith("/" + prefix);
     }
@@ -488,7 +499,7 @@ public class jspViewer extends LineViewer {
      */
     private boolean isTagToHighlight(String type) {
         return type.equals("JspTagBegin") || type.equals("JspTagEnd") || type.equals("JspTagSimple")
-                || type.equals("ExpressionLanguage") || isSystemtag(type);
+                || type.equals("ExpressionLanguage") || type.equals("ExpressionLanguageFunction") || isSystemtag(type);
     }
 
     private boolean isSystemtag(String type) {
