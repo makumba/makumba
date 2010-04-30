@@ -57,11 +57,24 @@ public class MDDComparator {
 
                     String type = ze.getName().substring( (apps[i] + "/WEB-INF/classes/dataDefinitions/").length(), ze.getName().lastIndexOf(".")).replaceAll("/", ".");
                     
-                    System.out.println("==== Reading MDD " + type);
+                    //System.out.println("==== Reading MDD " + type);
                     //DataDefinition dd1 = RecordInfo.getRecordInfo(type);
-                    DataDefinition dd1 = MDDProvider.getMDD(type);
-                    DataDefinition dd2 = MDDProvider.getMDD(type);
-                    compare(dd1, dd2);
+                    DataDefinition dd1=null;
+                    DataDefinition dd2=null;
+                    try{
+                        dd1 = MDDProvider.getMDD(type);
+                    }catch(Throwable t){
+                        System.err.println("MDDProvider error on "+type+" : "+ t.getMessage());
+                    }
+                    try{
+                        dd2 = RecordInfo.getRecordInfo(type);
+                    }catch(Throwable t){
+                        System.err.println("RecordInfo error on "+type+" : "+ t.getMessage());
+                    }
+                   
+                    if(dd1!=null && dd2!=null)
+                        compare(dd1, dd2);
+                    
                 }
             }
 
@@ -105,9 +118,10 @@ public class MDDComparator {
      * Compares the structure of two DataDefinition-s and their underlying FieldDefinition-s
      */
     private static void compare(DataDefinition dd1, DataDefinition dd2) {
+        
         // playground for Gwen
-        System.out.println(dd1.getName());
-        System.out.println(dd2.getName());
+        //System.out.println(dd1.getName());
+        //System.out.println(dd2.getName());
         
     }
 
