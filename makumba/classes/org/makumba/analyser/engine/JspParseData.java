@@ -35,9 +35,8 @@ import java.util.regex.Pattern;
 
 import javax.servlet.jsp.tagext.Tag;
 
-import org.apache.commons.lang.math.NumberUtils;
-import org.makumba.analyser.ElementData;
 import org.makumba.analyser.ELData;
+import org.makumba.analyser.ElementData;
 import org.makumba.analyser.TagData;
 import org.makumba.analyser.interfaces.JspAnalyzer;
 import org.makumba.commons.NamedResourceFactory;
@@ -349,7 +348,6 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
         Matcher tags = JspTagPattern.matcher(content);
         Matcher systemTags = JspSystemTagPattern.matcher(content);
         Matcher jspELExpressions = JspExpressionLanguagePattern.matcher(content);
-        Matcher jspELFunctions = JSPELFunctionPattern.matcher(content);
         Matcher jsfELExpressions = JsfExpressionLanguagePattern.matcher(content);
 
         int tagStart = Integer.MAX_VALUE;
@@ -364,31 +362,21 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
         if (jspELExpressions.find()) {
             jspELExpressionStart = jspELExpressions.start();
         }
-        int jspELFunctionStart = Integer.MAX_VALUE;
-        if (jspELFunctions.find()) {
-            jspELFunctionStart = jspELFunctions.start();
-        }
 
         while (true) {
-            if (tagStart < NumberUtils.min(systemStart, jspELExpressionStart, jspELFunctionStart)) {
+            if (tagStart < Math.min(systemStart, jspELExpressionStart)) {
                 treatTag(tags, content, an);
                 tagStart = Integer.MAX_VALUE;
                 if (tags.find()) {
                     tagStart = tags.start();
                 }
-            } else if (systemStart < NumberUtils.min(tagStart, jspELExpressionStart, jspELFunctionStart)) {
+            } else if (systemStart < Math.min(tagStart, jspELExpressionStart)) {
                 treatSystemTag(systemTags, content, an);
                 systemStart = Integer.MAX_VALUE;
                 if (systemTags.find()) {
                     systemStart = systemTags.start();
                 }
-            } else if (jspELFunctionStart < NumberUtils.min(tagStart, systemStart, jspELExpressionStart)) {
-                treatELFunction(jspELFunctions, content, an);
-                jspELFunctionStart = Integer.MAX_VALUE;
-                if (jspELFunctions.find()) {
-                    jspELFunctionStart = jspELFunctions.start();
-                }
-            } else if (jspELExpressionStart < NumberUtils.min(tagStart, systemStart, jspELFunctionStart)) {
+            } else if (jspELExpressionStart < Math.min(tagStart, systemStart)) {
                 treatELExpression(jspELExpressions, content, an, false);
                 jspELExpressionStart = Integer.MAX_VALUE;
                 if (jspELExpressions.find()) {
@@ -420,7 +408,8 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
 
         SyntaxPoint end = syntaxPoints.addSyntaxPoints(m.start(), m.end(), "ExpressionLanguage", null);
         SyntaxPoint start = (SyntaxPoint) end.getOtherInfo();
-        String elContent = content.substring(m.start() + 2, m.end() - 1);
+        int elContentStart = m.start() + 2;
+        String elContent = content.substring(elContentStart, m.end() - 1);
         Matcher map = MapExpression.matcher(elContent);
         while (map.find()) {
             SyntaxPoint mapEnd = syntaxPoints.addSyntaxPoints(m.start() + map.start(), m.start() + map.end(),
@@ -433,6 +422,13 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
             an.elExpression(elData, holder);
         }
 
+        Matcher jspELFunctions = JSPELFunctionPattern.matcher(elContent);
+        while (jspELFunctions.find()) {
+            SyntaxPoint jspELFunctionsEnd = syntaxPoints.addSyntaxPoints(elContentStart + jspELFunctions.start(),
+                elContentStart + jspELFunctions.end(), "ExpressionLanguageFunction", null);
+            SyntaxPoint jspELFunctionsStart = (SyntaxPoint) jspELFunctionsEnd.getOtherInfo();
+            String jspELFunctionsContent = elContent.substring(jspELFunctions.start(), jspELFunctions.end());
+        }
     }
 
     /**
