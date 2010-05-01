@@ -294,7 +294,7 @@ public abstract class AnalysableTag extends AnalysableElement {
     }
 
     /** Checks whether the given value is of type integer, and throws a descriptive programmer error otherwise */
-    protected void onlyInt(String attributeName, String value) throws JspException {
+    protected void onlyInt(String attributeName, String value) {
         value = value.trim();
         if (value.startsWith("$")) {
             return;
