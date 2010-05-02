@@ -118,7 +118,8 @@ public class MakumbaTLDGenerator {
                                     
                                     File d = new File(documentationPath + File.separator + descriptionFileName + ".txt");
                                     if(!d.exists()) {
-                                        throw new RuntimeException("Could not find attribute description file " + d);
+                                        System.err.println("Could not find attribute description file " + d);
+                                        continue;
                                     }
                                     String desc = "";
                                     try {
