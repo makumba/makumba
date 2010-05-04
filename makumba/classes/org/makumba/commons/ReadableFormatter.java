@@ -124,6 +124,24 @@ public class ReadableFormatter {
 
 		return (retval);
 	}
+	
+    /** Compute a time unit and value of that time unit from a given time in seconds */
+    public static Object[] getUnitAndValue(long secs) {
+        // keep the signum of the long, as ReadableFormatter.getUnitAndValue() works only with positive values
+        long signum = (long) Math.signum(secs);
+        secs = secs * signum;
+
+        long[] breaks = { 31536000, 2628000, 604800, 86400, 3600, 60, 1 };
+        String[] desc = { "year", "month", "week", "day", "hour", "minute", "second" };
+
+        int i = 0;
+        while (i <= breaks.length && secs <= (2 * breaks[i])) {
+            i++;
+        }
+        // i=i-1;
+        // long break=breaks[i];
+        return new Object[] { desc[i], (secs / breaks[i]) * signum };
+    }
 
 	/**
 	 * prints date in nice format - only relevant parts Skips year if current,
