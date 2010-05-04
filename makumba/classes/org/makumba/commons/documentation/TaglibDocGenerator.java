@@ -26,7 +26,7 @@ import org.dom4j.io.SAXReader;
 import org.makumba.commons.MakumbaTLDGenerator;
 
 /**
- * This class generates the taglib documentation JSPWiki files based on the taglib-documented.xml file
+ * This class generates the taglib documentation JSPWiki files based on the taglib-skeleton.tld file
  * 
  * @author Manuel Gay
  * @version $Id: TaglibDocGenerator.java,v 1.1 Nov 16, 2009 2:57:04 PM manu Exp $
@@ -50,7 +50,7 @@ public class TaglibDocGenerator {
         String inputXMLPath = args[0];
         String outputPath = args[1];
 
-        TaglibDocGenerator tdg = new TaglibDocGenerator(inputXMLPath, outputPath);
+        new TaglibDocGenerator(inputXMLPath, outputPath);
     }
 
     public TaglibDocGenerator(String inputXMLPath, String outputPath) {
@@ -429,7 +429,7 @@ public class TaglibDocGenerator {
     }
 
     /**
-     * Generates the description for this document. Checks if the <description> element in taglib-documented exists
+     * Generates the description for this document. Checks if the <description> element in taglib-skeleton exists
      * 
      * @throws IOException
      */
@@ -517,7 +517,7 @@ public class TaglibDocGenerator {
     private Node checkNodeExists(Element element, String nodeName) {
         Node n = element.element(nodeName);
         if (n == null) {
-            throw new RuntimeException("No <" + nodeName + "> element found in taglib-documented.xml for element "
+            throw new RuntimeException("No <" + nodeName + "> element found in taglib-skeleton.tld for element "
                     + element.elementText("name"));
         }
         return n;
