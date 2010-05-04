@@ -748,7 +748,7 @@
 					<exclude name="**/makumba*.jar" />
 				</fileset>
 			</classpath>
-			<arg value="./classes/META-INF/taglib-documented.xml" />
+			<arg value="./classes/META-INF/taglib-skeleton.tld" />
 			<arg value="./doc-jspwiki/wikidoc" />
 		</java>
 	</target>

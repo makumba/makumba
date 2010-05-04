@@ -48,13 +48,13 @@ import org.makumba.commons.StringUtils;
  */
 public class MakumbaTLDGenerator {
 
+    private static final String TAGLIB_SKELETON = "taglib-skeleton.tld";
+
     private static final String TAGLIB_MAK = "taglib.tld";
 
     private static final String TAGLIB_HIBERNATE = "taglib-hibernate.tld";
 
     private static final String HIBERNATE_TLD_URI = "http://www.makumba.org/view-hql";
-
-    private static final String TAGLIB_DOCUMENTED_XML = "taglib-documented.xml";
 
     public static void main(String[] args) {
         HashMap<String, Element> processedTags = new HashMap<String, Element>();
@@ -62,7 +62,7 @@ public class MakumbaTLDGenerator {
         // read the documented XML files
         SAXReader saxReader = new SAXReader();
         Document document = null;
-        final String sourcePath = new File(args[0]) + File.separator + TAGLIB_DOCUMENTED_XML;
+        final String sourcePath = new File(args[0]) + File.separator + TAGLIB_SKELETON;
         final String documentationPath = new File(args[1]).getAbsolutePath();
         try {
             document = saxReader.read(sourcePath);
@@ -78,7 +78,7 @@ public class MakumbaTLDGenerator {
                 tag.setText(tag.getText().replace("@version@", version.getVersion()));
             }
             boolean isTag = false;
-            if (isTag = tag.getName().equals("tag") || tag.getName().equals("function")) {
+            if (isTag = tag.getName().equals("tag")) {
 
                 Element name = tag.element("name");
                 String tagName = name.getText();
