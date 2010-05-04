@@ -117,7 +117,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
     
     static String[] elExpressions = { };
     
-    static String[] elExpressionNames = { "expr"};
+    static String[] elExpressionNames = { "expr", "nextCount"};
 
     static final Map<String, Class<?>> tagClasses = new HashMap<String, Class<?>>();
 
