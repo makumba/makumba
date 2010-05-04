@@ -30,12 +30,21 @@ import java.util.Dictionary;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
+import org.makumba.HtmlChoiceWriter;
+import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
+import org.makumba.commons.ReadableFormatter;
+import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.attributes.HttpParameters;
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.InvalidValueException;
 import org.makumba.commons.formatters.RecordFormatter;
 import org.makumba.commons.formatters.dateFormatter;
+import org.makumba.forms.tags.BasicValueTag;
+import org.makumba.providers.datadefinition.mdd.MDDProvider;
 
 public class dateEditor extends FieldEditor {
 
@@ -58,9 +67,9 @@ public class dateEditor extends FieldEditor {
         return SingletonHolder.singleton;
     }
 
-    static String[] _params = { "default", "format", "calendarEditor", "calendarEditorLink" };
+    static String[] _params = { "default", "format", "calendarEditor", "calendarEditorLink", "type" };
 
-    static String[][] _paramValues = { null, null, new String[] { "true", "false" }, null };
+    static String[][] _paramValues = { null, null, new String[] { "true", "false" }, null, new String[] { "interval" } };
 
     @Override
     public String[] getAcceptedParams() {
@@ -83,6 +92,11 @@ public class dateEditor extends FieldEditor {
 
     static final String[] componentNames = { "day", "month", "year", "hour", "minute", "second" };
 
+    static final String[] intervalUnits = { "days", "weeks", "months", "years" };
+
+    static final int[] calendarIntervalUnits = { Calendar.DAY_OF_YEAR, Calendar.WEEK_OF_YEAR, Calendar.MONTH,
+            Calendar.YEAR };
+
     String getNullName(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
         return getNullName(rf, fieldIndex, getSuffix(rf, fieldIndex, formatParams));
     }
@@ -101,10 +115,6 @@ public class dateEditor extends FieldEditor {
 
     @Override
     public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
-        String format = (String) formatParams.get("format");
-        if (format == null) {
-            format = "dd MMMMM yyyy";
-        }
         if (o == org.makumba.Pointer.NullDate) {
             o = null;
         }
@@ -123,6 +133,24 @@ public class dateEditor extends FieldEditor {
             d = (Date) rf.dd.getFieldDefinition(fieldIndex).getDefaultValue();
             sb.append("<input type=\"hidden\" name=\"").append(getNullName(rf, fieldIndex, formatParams)).append("\">");
         }
+        String inputName = getInputName(rf, fieldIndex, getSuffix(rf, fieldIndex, formatParams));
+        String format = (String) formatParams.get("format");
+
+        // check whether we have a normal or interval date
+        if (StringUtils.equals(String.valueOf(formatParams.get("type")), "interval")) {
+            formatInterval(rf, fieldIndex, formatParams, d, sb, hidden, inputName, format);
+        } else {
+            formatMultipleDateInput(rf, fieldIndex, formatParams, d, sb, hidden, inputName, format);
+        }
+
+        return sb.toString();
+    }
+
+    private void formatMultipleDateInput(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams,
+            Date d, StringBuffer sb, boolean hidden, String inputName, String format) {
+        if (format == null) {
+            format = "dd MMMMM yyyy";
+        }
         int n = 0;
         while (true) {
             n = findNextFormatter(rf, fieldIndex, sb, format, n, hidden);
@@ -132,7 +160,6 @@ public class dateEditor extends FieldEditor {
             n = formatFrom(rf, fieldIndex, sb, d, format, n, hidden, formatParams);
         }
 
-        String inputName = getInputName(rf, fieldIndex, getSuffix(rf, fieldIndex, formatParams));
         String calendarEditor = (String) formatParams.get("calendarEditor");
 
         // add calendar editor code, if calendarEditor="true" AND if we have all components of day, month & year
@@ -141,8 +168,6 @@ public class dateEditor extends FieldEditor {
             sb.append(MakumbaSystem.getCalendarProvider().formatEditorCode(inputName, rf.getFormIdentifier(),
                 (String) formatParams.get("calendarEditorLink")));
         }
-
-        return sb.toString();
     }
 
     void formatComponent(RecordFormatter rf, int fieldIndex, StringBuffer sb, Date d, String fmt, int component,
@@ -162,6 +187,7 @@ public class dateEditor extends FieldEditor {
             String val = df.format(d);
 
             if (lowLimits[component] == -1) {// year
+                // FIXME: add client-side/live validation for only int on the input
                 sb.append("<input type=\"text\" name=\"").append(name).append("\"").append(id).append(" value=\"").append(
                     val).append("\" maxlength=\"").append(fmt.length()).append("\" size=\"").append(fmt.length()).append(
                     "\"").append(getExtraFormatting(rf, fieldIndex, formatParams)).append(">");
@@ -186,9 +212,51 @@ public class dateEditor extends FieldEditor {
         }
     }
 
+    /** Formats an date interval input control, with a text field for the interval, and a combo-box for the unit */
+    private void formatInterval(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams, Date d,
+            StringBuffer sb, boolean hidden, String inputName, String format) {
+
+        String value = "";
+        String unit = null;
+        if (d != null && !d.equals(rf.dd.getFieldDefinition(fieldIndex).getDefaultValue())) {
+            // figure out the interval
+            long interval = d.getTime() - new Date().getTime();
+            Object[] unitAndValue = ReadableFormatter.getUnitAndValue(interval / 1000);
+            unit = String.valueOf(unitAndValue[0]) + "s";
+            value = String.valueOf(unitAndValue[1]);
+        }
+
+        // field for interval value
+        int size = NumberUtils.toInt(String.valueOf(formatParams.get("width")), 5);
+
+        // FIXME: add client-side/live validation for only int on the input
+        sb.append("<input type=\"text\" name=\"" + inputName + "_IntervalValue" + "\" size=\"" + size + "\" value=\""
+                + value + "\">");
+
+        // select for interval unit
+        HtmlChoiceWriter choiceWriter = new HtmlChoiceWriter(inputName + "_IntervalUnit");
+        choiceWriter.setSelectedValues(unit);
+        String[] units = intervalUnits; // FIXME: this should be user controllable
+        choiceWriter.setLabels(units);
+        choiceWriter.setValues(units);
+        sb.append(choiceWriter.getSelectOne());
+    }
+
     @Override
     public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.commons.attributes.HttpParameters pr,
             String suffix) {
+        if (pr.getParameter(getInputName(rf, fieldIndex, suffix) + "_IntervalValue") != null) {
+            // read from an interval input
+            return readFromInterval(rf, fieldIndex, pr, suffix);
+        } else {
+            // read from classic multi-input
+            return readfromMultipleDateInput(rf, fieldIndex, pr, suffix);
+        }
+    }
+
+    /** Reads from the standard, multi-input date field */
+    private Object readfromMultipleDateInput(RecordFormatter rf, int fieldIndex,
+            org.makumba.commons.attributes.HttpParameters pr, String suffix) {
         Calendar c = new GregorianCalendar(org.makumba.MakumbaSystem.getTimeZone());
         c.clear();
         for (int i = 0; i < components.length; i++) {
@@ -218,27 +286,71 @@ public class dateEditor extends FieldEditor {
         return d;
     }
 
+    /** reads from a interval date input */
+    private Object readFromInterval(RecordFormatter rf, int fieldIndex,
+            org.makumba.commons.attributes.HttpParameters pr, String suffix) {
+        return readFromInterval(pr, getInputName(rf, fieldIndex, suffix), getNullName(rf, fieldIndex, suffix),
+            rf.dd.getFieldDefinition(fieldIndex).getDefaultValue());
+    }
+
+    private static Object readFromInterval(HttpParameters pr, String inputName, String nullName, Object defaultValue) {
+        String intervalValueStr = (String) pr.getParameter(inputName + "_IntervalValue");
+        if (StringUtils.isBlank(intervalValueStr)) {
+            return defaultValue;
+        }
+        int intervalValue;
+        try {
+            intervalValue = Integer.parseInt(intervalValueStr);
+        } catch (NumberFormatException e) {
+            throw new RuntimeWrappedException(new LogicException("Invalid interval value for field '" + inputName
+                    + "'."));
+        }
+
+        String intervalUnitStr = (String) pr.getParameter(inputName + "_IntervalUnit");
+        int intervalIndex = ArrayUtils.indexOf(intervalUnits, intervalUnitStr);
+        if (intervalIndex == ArrayUtils.INDEX_NOT_FOUND) {
+            throw new RuntimeWrappedException(
+                    new LogicException("Invalid interval unit for field '" + inputName + "'."));
+        }
+        int unit = calendarIntervalUnits[intervalIndex];
+        Calendar c = new GregorianCalendar(org.makumba.MakumbaSystem.getTimeZone());
+        c.add(unit, intervalValue);
+
+        Date d = c.getTime();
+        if (d.equals(defaultValue) && pr.getParameter(nullName) != null) {
+            return null;
+        }
+        return d;
+    }
+
     /**
-     * This method is used to get the date field in case of a form reload due to validation errors, and is used from
-     * {@link BasicValueTag#doMakumbaEndTag(org.makumba.commons.formatters.jsptaglib.PageCache)}. It is basically a
-     * simplified version of {@link #readFrom(RecordFormatter, int, HttpParameters, String)}.
+     * This method is used to get the date field in case of a form reload due to validation errors (or in search forms),
+     * and is used from {@link BasicValueTag#doMakumbaEndTag(org.makumba.commons.formatters.jsptaglib.PageCache)}. It is
+     * basically a simplified version of {@link #readFrom(RecordFormatter, int, HttpParameters, String)}.
      */
     public static Object readFrom(String name, HttpParameters pr) {
-        Calendar c = new GregorianCalendar(org.makumba.MakumbaSystem.getTimeZone());
-        c.clear();
-        for (int i = 0; i < components.length; i++) {
-            Object o = pr.getParameter(name + "_" + i);
-            if (o == null) {
-                continue;
+        if (pr.getParameter(name + "_IntervalValue") != null) {
+            // read from an interval input
+            return readFromInterval(pr, name, name + "_null", MDDProvider.getInstance().makeFieldOfType("dummyDate",
+                "date").getDefaultValue());
+        } else {
+            // read from classic multi-input
+            Calendar c = new GregorianCalendar(org.makumba.MakumbaSystem.getTimeZone());
+            c.clear();
+            for (int i = 0; i < components.length; i++) {
+                Object o = pr.getParameter(name + "_" + i);
+                if (o == null) {
+                    continue;
+                }
+                int n = -1;
+                try {
+                    n = Integer.parseInt((String) o);
+                } catch (NumberFormatException e) {
+                }
+                c.set(components[i], n);
             }
-            int n = -1;
-            try {
-                n = Integer.parseInt((String) o);
-            } catch (NumberFormatException e) {
-            }
-            c.set(components[i], n);
+            return c.getTime();
         }
-        return c.getTime();
     }
 
     int formatFrom(RecordFormatter rf, int fieldIndex, StringBuffer sb, Date d, String format, int n, boolean hidden,
