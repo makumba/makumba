@@ -427,7 +427,10 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
             SyntaxPoint jspELFunctionsEnd = syntaxPoints.addSyntaxPoints(elContentStart + jspELFunctions.start(),
                 elContentStart + jspELFunctions.end(), "ExpressionLanguageFunction", null);
             SyntaxPoint jspELFunctionsStart = (SyntaxPoint) jspELFunctionsEnd.getOtherInfo();
-            String jspELFunctionsContent = elContent.substring(jspELFunctions.start(), jspELFunctions.end());
+            String jspELFunctionsContent = elContent.substring(elContent.indexOf(":", jspELFunctions.start()) + 1,
+                jspELFunctions.end() - 2);
+            ELData elData = new ELData(jspELFunctionsContent, jspELFunctionsStart, jspELFunctionsEnd);
+            an.elExpression(elData, holder);
         }
     }
 
@@ -475,10 +478,6 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
         } else {
             an.startTag(td, holder);
         }
-    }
-
-    void treatELFunction(Matcher m, String content, JspAnalyzer an) {
-        syntaxPoints.addSyntaxPoints(m.start(), m.end(), "ExpressionLanguageFunction", null);
     }
 
     /**
