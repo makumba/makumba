@@ -402,8 +402,8 @@ public abstract class TransactionImplementation implements Transaction {
         if (args == null) {
             return ret;
         }
-        if (args instanceof List) {
-            args = ((List) args).toArray();
+        if (args instanceof Collection) {
+            args = ((Collection) args).toArray();
         }
         if (args instanceof Object[]) {
             for (int j = 0; j < ((Object[]) args).length; j++) {
