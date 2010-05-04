@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -50,6 +51,8 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
     private String cssResources = "";
 
     private String javaScriptResources = "";
+
+    private static final Logger logger = Logger.getLogger("org.makumba.controller.response");
 
     public MakumbaResponseWrapper(HttpServletResponse response, HttpServletRequest request) {
         super(response);
@@ -181,6 +184,7 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
                         s = injectStyleSheets(s);
                         buf = s.toCharArray();
                         len = s.length();
+                        logger.finer(request.getRequestURI() + ", found opening head tag, added style sheet.");
                     }
                 }
                 if (headOpenPassed) {
@@ -193,6 +197,7 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
                         s = injectJavaScriptsResources(s);
                         buf = s.toCharArray();
                         len = s.length();
+                        logger.finer(request.getRequestURI() + ", found closing head tag, added scripts.");
                     }
                 }
             }
@@ -213,6 +218,7 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
                         headOpenPassed = true;
                         s = injectStyleSheets(s);
                         len = s.length();
+                        logger.finer(request.getRequestURI() + ", found opening head tag, added style sheet.");
                     }
                 }
                 if (headOpenPassed) {
@@ -221,6 +227,7 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
                         headClosedPassed = true;
                         s = injectJavaScriptsResources(s);
                         len = s.length();
+                        logger.finer(request.getRequestURI() + ", found closing head tag, added scripts.");
                     }
                 }
             }
@@ -235,6 +242,15 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
         private String injectStyleSheets(String s) {
             // we add the CSS stylesheet right after the <head>
             return s.replace("<head>", "<head>\n  " + makumbaStyleSheet + cssResources);
+        }
+
+        @Override
+        public void close() {
+            super.close();
+            // print a warning if we found the opening of the head, but not the closing
+            if (headOpenPassed && !headClosedPassed) {
+                logger.info("Found opening head tag, but no closing -> did not add scripts!!");
+            }
         }
 
     }
