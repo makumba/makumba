@@ -53,7 +53,7 @@ import org.makumba.providers.TransactionProvider;
 
 /**
  * Abstract {@link Transaction}, with helper methods for both concrete implementations
- * 
+ *
  * @version $Id: TransactionImplementation.java,v 1.1 Jun 15, 2008 3:31:07 PM rudi Exp $
  */
 public abstract class TransactionImplementation implements Transaction {
@@ -85,7 +85,7 @@ public abstract class TransactionImplementation implements Transaction {
 
     /**
      * Executes an UPDATE statement or a DELETE FROM statement, depending on the value of set.
-     * 
+     *
      * @param type
      *            the type on which to perform the operation
      * @param set
@@ -120,12 +120,15 @@ public abstract class TransactionImplementation implements Transaction {
         try {
             delete1(ptr);
         } catch (Throwable e) {
-            if (e.getClass().getName().endsWith("ConstraintViolationException"))
+            if (e.getClass().getName().endsWith("ConstraintViolationException")) {
                 throw new DBError(e);
-            if (e instanceof Error)
+            }
+            if (e instanceof Error) {
                 throw (Error) e;
-            if (e instanceof RuntimeException)
+            }
+            if (e instanceof RuntimeException) {
                 throw (RuntimeException) e;
+            }
             throw new RuntimeWrappedException(e);
         }
 
@@ -134,7 +137,7 @@ public abstract class TransactionImplementation implements Transaction {
     /**
      * Deletes in the form delete("general.Person p", "p=$1", params) NOTE that this method does not delete subsets and
      * subrecords
-     * 
+     *
      * @return the number of records affected
      */
     public int delete(String from, String where, Object parameters) {
@@ -168,7 +171,7 @@ public abstract class TransactionImplementation implements Transaction {
     /**
      * Insert a record in a subset (1-N set) or subrecord (1-1 pointer) of the given record. For 1-1 pointers, if
      * another subrecord existed, it is deleted.
-     * 
+     *
      * @return a Pointer to the inserted record
      */
     public Pointer insert(Pointer base, String field, Dictionary<String, Object> data) {
@@ -239,7 +242,7 @@ public abstract class TransactionImplementation implements Transaction {
     /**
      * updates in the form update("general.Person p", "p.birthdate=$1", "p=$2", params) NOTE that this method does not
      * delete subrecords if their pointers are nullified
-     * 
+     *
      * @return the number of records affected
      */
     public int update(String from, String set, String where, Object parameters) {
@@ -364,8 +367,9 @@ public abstract class TransactionImplementation implements Transaction {
      */
     protected Map<String, Object> paramsToMap(Object args) {
         final Map<String, Object> m = paramsToMap1(args);
-        if (contextAttributes == null)
+        if (contextAttributes == null) {
             return m;
+        }
         return new HashMap<String, Object>() {
 
             private static final long serialVersionUID = 1L;
@@ -375,8 +379,9 @@ public abstract class TransactionImplementation implements Transaction {
             @Override
             public Object get(Object key) {
                 Object o = m.get(key);
-                if (o != null)
+                if (o != null) {
                     return o;
+                }
                 try {
 
                     if (contextAttributesCopy == null) {
@@ -384,8 +389,9 @@ public abstract class TransactionImplementation implements Transaction {
                     }
 
                     o = contextAttributesCopy.getAttribute((String) key);
-                    if (o == null && contextAttributesCopy.hasAttribute("" + key + "_null"))
+                    if (o == null && contextAttributesCopy.hasAttribute("" + key + "_null")) {
                         o = Pointer.Null;
+                    }
                     return o;
                 } catch (UnauthenticatedException e) {
                     // we need to pass on a potential UnauthenticatedException that might stem from actor lookup
