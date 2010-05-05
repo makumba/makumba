@@ -56,16 +56,16 @@ public class ControllerFilter implements Filter {
 
     private FilterConfig conf;
 
-    private String handlerClasses = "org.makumba.controller.AJAXDataControllerHandler,"
-            + "org.makumba.devel.SourceViewControllerHandler,"
-            + "org.makumba.devel.DataToolsControllerHandler,"
-            + "org.makumba.commons.MakumbaToolsControllerHandler,"
-            + "org.makumba.devel.ErrorControllerHandler,"
-            + "org.makumba.analyser.AnalysisInitControllerHandler,"
-            + "org.makumba.controller.FilterConditionControllerHandler,"
-            + "org.makumba.controller.CharsetControllerHandler,"
-            + "org.makumba.commons.attributes.DatabaseConnectionControllerHandler,"
-            + "org.makumba.commons.attributes.AttributesControllerHandler,"
+    private String handlerClasses = "org.makumba.controller.AJAXDataControllerHandler," //
+            + "org.makumba.devel.SourceViewControllerHandler," //
+            + "org.makumba.devel.DataToolsControllerHandler," //
+            + "org.makumba.commons.MakumbaToolsControllerHandler," //
+            + "org.makumba.devel.ErrorControllerHandler," //
+            + "org.makumba.analyser.AnalysisInitControllerHandler," //
+            + "org.makumba.controller.FilterConditionControllerHandler," //
+            + "org.makumba.controller.CharsetControllerHandler," //
+            + "org.makumba.commons.attributes.DatabaseConnectionControllerHandler," //
+            + "org.makumba.commons.attributes.AttributesControllerHandler," //
             + "org.makumba.forms.responder.ResponseControllerHandler";
 
     private ArrayList<ControllerHandler> handlers = new ArrayList<ControllerHandler>();
@@ -87,9 +87,10 @@ public class ControllerFilter implements Filter {
         }
     }
 
-    static final JspFactory fact= JspFactory.getDefaultFactory();
-    static JspFactory makFact= new JspFactory(){
-        
+    static final JspFactory fact = JspFactory.getDefaultFactory();
+
+    static JspFactory makFact = new JspFactory() {
+
         @Override
         public JspEngineInfo getEngineInfo() {
             return fact.getEngineInfo();
@@ -98,7 +99,7 @@ public class ControllerFilter implements Filter {
         @Override
         public PageContext getPageContext(Servlet servlet, ServletRequest request, ServletResponse response,
                 String errorPageURL, boolean needsSession, int buffer, boolean autoflush) {
-            //System.out.println(servlet);
+            // System.out.println(servlet);
             return fact.getPageContext(servlet, request, response, errorPageURL, needsSession, buffer, autoflush);
             // here we can hang the pageContext in a threadLocal stack
             // and also trigger page analysis
@@ -109,15 +110,16 @@ public class ControllerFilter implements Filter {
         @Override
         public void releasePageContext(PageContext pc) {
             fact.releasePageContext(pc);
-            // this tells us when a page finishes and if it was included, we will go back to the including page 
+            // this tells us when a page finishes and if it was included, we will go back to the including page
             // here we can pop the pageContext from the thread local stack
             // and activate the runtime state of the makumba tags from the including page
-            
+
         }
     };
+
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws ServletException,
             java.io.IOException {
-        
+
         JspFactory.setDefaultFactory(makFact);
 
         // replace the response by the MakumbaResponseWrapper, which modifies the output to inject links to CSS/JS files
