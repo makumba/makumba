@@ -28,7 +28,6 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -95,8 +94,8 @@ public abstract class TransactionImplementation implements Transaction {
      *            the WHERE part of the query
      * @param args
      *            the query arguments
-     * @return either (1) the row count for <code>INSERT</code>, <code>UPDATE</code>, or <code>DELETE</code>
-     *         statements or (2) 0 for SQL statements that return nothing
+     * @return either (1) the row count for <code>INSERT</code>, <code>UPDATE</code>, or <code>DELETE</code> statements
+     *         or (2) 0 for SQL statements that return nothing
      */
     protected abstract int executeUpdate(String type, String set, String where, Object args);
 
@@ -105,7 +104,7 @@ public abstract class TransactionImplementation implements Transaction {
      * subrecords and subsets are automatically deleted.
      */
     public void delete(Pointer ptr) {
-        if(ptr == null) {
+        if (ptr == null) {
             throw new ProgrammerError("The pointer to be deleted should not be null");
         }
         DataDefinition ri = ddp.getDataDefinition(ptr.getType());
@@ -121,12 +120,12 @@ public abstract class TransactionImplementation implements Transaction {
         try {
             delete1(ptr);
         } catch (Throwable e) {
-            if(e.getClass().getName().endsWith("ConstraintViolationException"))
+            if (e.getClass().getName().endsWith("ConstraintViolationException"))
                 throw new DBError(e);
-            if(e instanceof Error)
-                throw (Error)e;
-            if(e instanceof RuntimeException)
-                throw (RuntimeException)e;
+            if (e instanceof Error)
+                throw (Error) e;
+            if (e instanceof RuntimeException)
+                throw (RuntimeException) e;
             throw new RuntimeWrappedException(e);
         }
 
@@ -161,7 +160,7 @@ public abstract class TransactionImplementation implements Transaction {
         return dh.insert();
 
     }
-    
+
     public Vector<Pointer> insert(String type, Collection<Dictionary<String, Object>> data) {
         throw new MakumbaError("not implemented");
     }
@@ -189,14 +188,14 @@ public abstract class TransactionImplementation implements Transaction {
         int i = 0;
         try {
             i = insertFromQueryImpl(type, OQL, parameterValues);
-        } catch(NotUniqueException nue) {
+        } catch (NotUniqueException nue) {
             treatNotUniqueException(type, nue);
         }
         return i;
     }
 
     protected abstract int insertFromQueryImpl(String type, String OQL, Object parameterValues);
-    
+
     protected abstract StringBuffer writeReadQuery(Pointer p, Enumeration<String> e);
 
     /** change the record pointed by the given pointer. Only fields indicated are changed to the respective values */
@@ -204,32 +203,32 @@ public abstract class TransactionImplementation implements Transaction {
         DataHolder dh = new DataHolder(this, fieldsToChange, ptr.getType());
         dh.checkUpdate(ptr);
         int updated = 0;
-        
+
         try {
             updated = dh.update(ptr);
-        } catch(NotUniqueException nue) {
+        } catch (NotUniqueException nue) {
             treatNotUniqueException(ptr.getType(), nue);
         }
-        
+
         return updated;
     }
 
     private void treatNotUniqueException(String type, NotUniqueException nue) {
         DataDefinition dd = ddp.getDataDefinition(type);
         CompositeValidationException cve = new CompositeValidationException();
-        
-        if(nue.getFields().size() == 1) {
+
+        if (nue.getFields().size() == 1) {
             // see if we have a custom message for this field
             FieldDefinition fd = dd.getFieldDefinition(nue.getFields().keySet().iterator().next());
-            if(fd.getNotUniqueErrorMessage() == null) {
+            if (fd.getNotUniqueErrorMessage() == null) {
                 cve.addException(new NotUniqueException(fd, nue.getFields().get(fd.getName())));
             } else {
                 cve.addException(new NotUniqueException(fd.getNotUniqueErrorMessage()));
             }
         } else {
             // multi-field uniqueness exception
-            for(DataDefinition.MultipleUniqueKeyDefinition m : dd.getMultiFieldUniqueKeys()) {
-                if(CollectionUtils.isEqualCollection(Arrays.asList(m.getFields()), nue.getFields().keySet())) {
+            for (DataDefinition.MultipleUniqueKeyDefinition m : dd.getMultiFieldUniqueKeys()) {
+                if (CollectionUtils.isEqualCollection(Arrays.asList(m.getFields()), nue.getFields().keySet())) {
                     cve.addException(new NotUniqueException(m.getErrorMessage()));
                 }
             }
@@ -310,7 +309,7 @@ public abstract class TransactionImplementation implements Transaction {
         Object param[] = { ptr };
 
         // FIXME: deleting the ptrOnes and set entries could potentially be skipped, by automatically creating
-        
+
         // delete the ptrOnes
         Vector<String> ptrOnes = new Vector<String>();
 
@@ -332,14 +331,18 @@ public abstract class TransactionImplementation implements Transaction {
             if (fi.getType().startsWith("set")) {
                 if (fi.getType().equals("setComplex")) {
                     // recursively process all set entries, to delete their subSets and ptrOnes
-                    Vector<Dictionary<String, Object>> v = executeQuery("SELECT pointedType"+ getPrimaryKeyName()+ " as pointedType FROM " + ptr.getType() + " ptr "+getSetJoinSyntax()+" ptr." + fi.getName() + " pointedType WHERE ptr"+getPrimaryKeyName()+"="+getParameterName(), ptr);
+                    Vector<Dictionary<String, Object>> v = executeQuery("SELECT pointedType" + getPrimaryKeyName()
+                            + " as pointedType FROM " + ptr.getType() + " ptr " + getSetJoinSyntax() + " ptr."
+                            + fi.getName() + " pointedType WHERE ptr" + getPrimaryKeyName() + "=" + getParameterName(),
+                        ptr);
                     for (Dictionary<String, Object> dictionary : v) {
                         Pointer p = (Pointer) dictionary.get("pointedType");
                         delete1(p);
                     }
                     executeUpdate(transformTypeName(fi.getSubtable().getName()) + " this", null, "this."
-                            + transformTypeName(fi.getSubtable().getFieldDefinition(fi.getSubtable().getSetOwnerFieldName()).getName()) + getPrimaryKeyName()
-                            + "= " + getParameterName(), param);
+                            + transformTypeName(fi.getSubtable().getFieldDefinition(
+                                fi.getSubtable().getSetOwnerFieldName()).getName()) + getPrimaryKeyName() + "= "
+                            + getParameterName(), param);
                 } else {
                     tp.getCRUD().deleteSet(this, ptr, fi);
                 }
@@ -355,33 +358,34 @@ public abstract class TransactionImplementation implements Transaction {
     }
 
     /**
-     * Takes a heterogeneous argument object (coming from the BL API or the view layer) and transforms it into a Map<String, Object>,
-     * taking into account possible context attributes (session, request, and other bundled makumba {@link Attributes})
+     * Takes a heterogeneous argument object (coming from the BL API or the view layer) and transforms it into a
+     * Map<String, Object>, taking into account possible context attributes (session, request, and other bundled makumba
+     * {@link Attributes})
      */
     protected Map<String, Object> paramsToMap(Object args) {
-        final Map<String, Object> m= paramsToMap1(args);
-        if(contextAttributes==null)
+        final Map<String, Object> m = paramsToMap1(args);
+        if (contextAttributes == null)
             return m;
         return new HashMap<String, Object>() {
 
             private static final long serialVersionUID = 1L;
-            
+
             private Attributes contextAttributesCopy;
 
             @Override
             public Object get(Object key) {
-                Object o= m.get(key);
-                if(o!=null)
+                Object o = m.get(key);
+                if (o != null)
                     return o;
-                try{
-                    
-                    if(contextAttributesCopy == null) {
+                try {
+
+                    if (contextAttributesCopy == null) {
                         contextAttributesCopy = contextAttributes;
                     }
-                    
-                    o= contextAttributesCopy.getAttribute((String)key);
-                    if(o==null && contextAttributesCopy.hasAttribute(""+key+"_null"))
-                        o=Pointer.Null;
+
+                    o = contextAttributesCopy.getAttribute((String) key);
+                    if (o == null && contextAttributesCopy.hasAttribute("" + key + "_null"))
+                        o = Pointer.Null;
                     return o;
                 } catch (UnauthenticatedException e) {
                     // we need to pass on a potential UnauthenticatedException that might stem from actor lookup
@@ -393,7 +397,7 @@ public abstract class TransactionImplementation implements Transaction {
 
         };
     }
-    
+
     protected Map<String, Object> paramsToMap1(Object args) {
         if (args instanceof Map) {
             return (Map<String, Object>) args;
