@@ -19,6 +19,8 @@
 /////////////////////////////////////
 package org.makumba.controller.http;
 
+import java.util.Stack;
+
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
@@ -29,13 +31,17 @@ import javax.servlet.jsp.JspFactory;
 import javax.servlet.jsp.PageContext;
 
 /**
- * A JSP factory that wraps the default factory from the servlet container.
- * This is needed for Makumba to find out when a page begins and ends,
- * and to store its pageContext. 
+ * A JSP factory that wraps the default factory from the servlet container.<br>
+ * This is needed for Makumba to find out when a page begins and ends, and to store its pageContext.
+ * 
  * @author cristi
  * @version $Id: MakumbaJspFactory.java,v 1.1 May 5, 2010 10:51:00 PM cristi Exp $
  */
 public class MakumbaJspFactory extends JspFactory {
+
+    // TODO: not sure if the ThreadLocal should be here, or whether there's a more fitting place
+    private static Stack<ThreadLocal<PageContext>> pageContextStack = new Stack<ThreadLocal<PageContext>>();
+
     // state pattern, we stay in the initial state until we find the container factory
     // this will happen at first access but we make sure that concurrent initial accesses don't collide
     // further accesses will use the noop state which does nothing
@@ -65,24 +71,38 @@ public class MakumbaJspFactory extends JspFactory {
     public PageContext getPageContext(Servlet servlet, ServletRequest request, ServletResponse response,
             String errorPageURL, boolean needsSession, int buffer, boolean autoflush) {
         System.out.println(servlet);
-        return fact.getPageContext(servlet, request, response, errorPageURL, needsSession, buffer, autoflush);
-        // here we can hang the pageContext in a threadLocal stack
+
+        // we hang the pageContext in a threadLocal stack
+        PageContext pageContext = fact.getPageContext(servlet, request, response, errorPageURL, needsSession, buffer,
+            autoflush);
+        ThreadLocal<PageContext> threadLocal = new ThreadLocal<PageContext>();
+        threadLocal.set(pageContext);
+        pageContextStack.push(threadLocal);
+
         // and also trigger page analysis
         // this also tells us when a page starts or is included
 
+        return pageContext;
     }
 
     @Override
     public void releasePageContext(PageContext pc) {
         fact.releasePageContext(pc);
-        // this tells us when a page finishes and if it was included, we will go back to the including page
-        // here we can pop the pageContext from the thread local stack
-        // and activate the runtime state of the makumba tags from the including page
 
+        // this tells us when a page finishes and if it was included, we will go back to the including page
+
+        // here we pop the pageContext from the thread local stack
+        pageContextStack.pop(); // TODO: maybe check if the result of pop() and pc is the same?
+
+        // TODO: activate the runtime state of the makumba tags from the including page
     }
 
     @Override
     public JspApplicationContext getJspApplicationContext(ServletContext arg0) {
         return fact.getJspApplicationContext(arg0);
+    }
+
+    public static PageContext getPageContext() {
+        return pageContextStack.peek().get();
     }
 }
