@@ -9,19 +9,18 @@ import org.makumba.providers.TransactionProvider;
 
 public class MakumbaTestSetup extends TestSetup {
 
-
     private String transactionProviderType;
-    
+
     private MakumbaTestData testData = new MakumbaTestData();
 
     public MakumbaTestSetup(Test test, String transactionProviderType) {
         super(test);
         this.transactionProviderType = transactionProviderType;
     }
-    
+
     @Override
     protected void setUp() {
-        
+
         TransactionProvider tp = null;
         Transaction db = null;
 
@@ -46,10 +45,9 @@ public class MakumbaTestSetup extends TestSetup {
         db.close();
     }
 
-    
     @Override
     public void tearDown() {
-        
+
         // do your one-time tear down here!
         TransactionProvider tp = null;
         Transaction db = null;
