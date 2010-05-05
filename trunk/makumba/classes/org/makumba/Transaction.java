@@ -179,6 +179,48 @@ public interface Transaction extends Database
      */
     public int update(String from, String set, String where, Object parameterValues);
 
+    /**
+     * Convenience method to update the values of an external set. This method is a shortcut to other Makumba API and
+     * Java methods, and basically does the following steps:
+     * <ol>
+     * <li>Read all the existing values of the field <code>setName</code> of the object <code>basePointer</code> into a
+     * collection, using {@link #readExternalSetElements(Pointer, String)}</li>
+     * <li>Remove the set elements specified in the parameter <code>deleteElements</code></li>
+     * <li>Add the set elements specified in the parameter <code>newElements</code></li>
+     * <li>Use {@link #update(Pointer, Dictionary)} to write the new set values to the database</li>
+     * </ol>
+     * 
+     * @param basePointer
+     *            pointer to the record to update
+     * @param setName
+     *            the name of the external set in the type of basePointer
+     * @param addElements
+     *            A {@link Collection} of {@link String} or {@link Pointer} (the type can vary for each collection
+     *            element) of new objects to add to existing set elements
+     * @param removeElements
+     *            A {@link Collection} of {@link String} or {@link Pointer} (the type can vary for each collection
+     *            element) of objects that should be removed from the existing set elements
+     * @return the number of records affected
+     */
+    public int updateSet(Pointer basePointer, String setName, Collection<?> addElements, Collection<?> removeElements);
+    
+    /**
+     * Convenience method to read all the values of an external set into one {@link Collection}. This method is a
+     * shortcut to other Makumba API and Java methods, and basically does the following steps:
+     * <ol>
+     * <li>Run {@link #executeQuery(String, Object)} to read all the values of the field <code>setName</code> of the
+     * object <code>basePointer</code>.</li>
+     * <li>Convert the resulting <code>Vector<Dictionary<String, Object>></code> into a <code>Vector<Pointer></code></li>
+     * </ol>
+     * 
+     * @param basePointer
+     *            pointer to the record to update
+     * @param setName
+     *            the name of the external set in the type of basePointer
+     * @return A {@link Vector} containing the {@link Pointer} of the external set
+     */
+    public Vector<Pointer> readExternalSetElements(Pointer basePointer, String setName);
+
     /** Delete the record pointed by the given pointer. If the pointer is a 1-1, the pointer in the base record is set to null. All the subrecords and subsets are automatically deleted. <br>
      * Database update is logged (see {@link java.util.logging.Logger}, {@link org.makumba.MakumbaSystem#setLoggingRoot(java.lang.String)}) in the <b><code>"db.update.execution", "db.update.performance"</code></b> loggers, with {@link java.util.logging.Level#INFO} logging level. "db.update.execution" also logs {@link java.util.logging.Level#SEVERE} fatal errors.<br>
      * @exception DBError if a fatal database error occurs
