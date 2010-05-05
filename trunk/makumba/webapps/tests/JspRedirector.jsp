@@ -1,4 +1,4 @@
-<%@page import="org.apache.cactus.server.*,org.apache.cactus.internal.server.*" session="true" %><%
+<%@page import="org.makumba.controller.http.MakumbaJspFactory"%><%@page import="org.apache.cactus.server.*,org.apache.cactus.internal.server.*" session="true" %><%
 
     /**                                                
      * Note:
@@ -15,6 +15,7 @@
      * JspWriter).
      */
 
+    MakumbaJspFactory.checker.run();
     JspImplicitObjects objects = new JspImplicitObjects();
     objects.setHttpServletRequest(request);
     objects.setHttpServletResponse(response);
