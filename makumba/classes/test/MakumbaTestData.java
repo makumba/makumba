@@ -31,7 +31,7 @@ public class MakumbaTestData {
 
     public static final String namePersonIndivSurname_John = "von Neumann";
 
-    private static ArrayList<Pointer> languages = new ArrayList<Pointer>();
+    static ArrayList<Pointer> languages = new ArrayList<Pointer>();
 
     private static String[][] languageData = { { "English", "en" }, { "French", "fr" }, { "German", "de" },
             { "Italian", "it" }, { "Spanish", "sp" } };
@@ -72,6 +72,10 @@ public class MakumbaTestData {
 
     }
 
+    Pointer person;
+
+    Pointer brother;
+
     public void insertPerson(Transaction t) {
         Hashtable<String, Object> p = new Hashtable<String, Object>();
 
@@ -79,7 +83,7 @@ public class MakumbaTestData {
         p.put("indiv.surname", namePersonIndivSurname_Bart);
         p.put("birthdate", birthdateBart);
         p.put("gender", new Integer(1));
-        Pointer brother = t.insert("test.Person", p);
+        brother = t.insert("test.Person", p);
 
         p.clear();
         p.put("indiv.name", namePersonIndivName_John);
@@ -104,7 +108,7 @@ public class MakumbaTestData {
 
         p.put("brother", brother);
         p.put("uniqPtr", languages.get(0));
-        Pointer person = t.insert("test.Person", p);
+        person = t.insert("test.Person", p);
 
         p.clear();
         p.put("description", "");

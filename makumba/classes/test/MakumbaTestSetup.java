@@ -7,6 +7,9 @@ import org.makumba.Transaction;
 import org.makumba.db.hibernate.HibernateTransactionProvider;
 import org.makumba.providers.TransactionProvider;
 
+/**
+ * @version $Id: MakumbaTestSetup.java,v 1.1 5 May 2010 13:51:13 rudi Exp $
+ */
 public class MakumbaTestSetup extends TestSetup {
 
     private String transactionProviderType;
@@ -16,6 +19,10 @@ public class MakumbaTestSetup extends TestSetup {
     public MakumbaTestSetup(Test test, String transactionProviderType) {
         super(test);
         this.transactionProviderType = transactionProviderType;
+    }
+
+    public MakumbaTestData getTestData() {
+        return testData;
     }
 
     @Override
