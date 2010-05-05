@@ -50,6 +50,7 @@ import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProvider;
+import org.makumba.providers.datadefinition.mdd.MDDProvider;
 
 /**
  * Abstract {@link Transaction}, with helper methods for both concrete implementations
@@ -214,6 +215,47 @@ public abstract class TransactionImplementation implements Transaction {
         }
 
         return updated;
+    }
+
+    public int updateSet(Pointer basePointer, String setName, Collection<?> addElements, Collection<?> removeElements) {
+        // read the set's current values from db
+        final Vector<Pointer> setElements = readExternalSetElements(basePointer, setName);
+
+        // get the set type
+        final FieldDefinition fdSet = MDDProvider.getMDD(basePointer.getType()).getFieldDefinition(setName);
+        final DataDefinition setDD = fdSet.getPointedType();
+        final FieldDefinition setDDPointer = setDD.getFieldDefinition(setDD.getIndexPointerFieldName());
+
+        // remove from the set the elements that should be deleted
+        if (removeElements != null) {
+            for (Object element : removeElements) {
+                Pointer ptr = (Pointer) setDDPointer.checkValue(element); // check type & convert to pointer
+                setElements.remove(ptr);
+            }
+        }
+
+        // add the new elements to the set
+        if (addElements != null) {
+            for (Object element : addElements) {
+                Pointer ptr = (Pointer) setDDPointer.checkValue(element); // check type & convert to pointer
+                setElements.add(ptr);
+            }
+        }
+
+        Hashtable<String, Object> d = new Hashtable<String, Object>(1);
+        d.put(setName, setElements);
+        return update(basePointer, d);
+    }
+
+    public Vector<Pointer> readExternalSetElements(Pointer basePointer, String setName) {
+        String label = "setElement";
+        Vector<Dictionary<String, Object>> v = executeQuery("SELECT " + label + " as " + label + " FROM "
+                + basePointer.getType() + " o, o." + setName + " " + label + " WHERE o=$1", basePointer);
+        Vector<Pointer> currentElements = new Vector<Pointer>(v.size());
+        for (Dictionary<String, Object> dictionary : v) {
+            currentElements.add((Pointer) dictionary.get(label));
+        }
+        return currentElements;
     }
 
     private void treatNotUniqueException(String type, NotUniqueException nue) {
