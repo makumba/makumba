@@ -10,7 +10,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.makumba.DataDefinition;
-import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.datadefinition.makumba.RecordInfo;
 import org.makumba.providers.datadefinition.mdd.MDDProvider;
 
@@ -91,7 +90,7 @@ public class MDDComparator {
         Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zf.entries();
         while (entries.hasMoreElements()) {
             ZipEntry ze = entries.nextElement();
-            if (!ze.getName().endsWith(".mdd")) {
+            if (!(ze.getName().endsWith(".mdd") || ze.getName().endsWith(".idd"))) {
                 continue;
             }
 
