@@ -51,6 +51,16 @@ public abstract class TransactionProvider implements SingletonHolder {
     }
 
     /**
+     * Opens a {@link Transaction} to the default dataSource, using {@link #getConnectionTo(String)} and
+     * {@link #getDefaultDataSourceName()}
+     * 
+     * @return a {@link Transaction}
+     */
+    public Transaction getConnectionToDefault() {
+        return getConnectionTo(getDefaultDataSourceName());
+    }
+    
+    /**
      * Opens a {@link Transaction} with the specified dataSource.
      * 
      * @param name
