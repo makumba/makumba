@@ -38,6 +38,7 @@ import org.makumba.analyser.PageCache;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.RuntimeWrappedException;
+import org.makumba.controller.http.MakumbaJspFactory;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.ComposedSubquery;
 import org.makumba.list.engine.QueryExecution;
@@ -275,8 +276,6 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
     Object upperMaxResults = null;
 
-    private static ThreadLocal<ServletRequest> servletRequestThreadLocal = new ThreadLocal<ServletRequest>();
-
     /**
      * Decides if there will be any tag iteration. The QueryExecution is found (and made if needed), and we check if
      * there are any results in the iterationGroup.
@@ -287,7 +286,6 @@ public class QueryTag extends GenericListTag implements IterationTag {
      * @see QueryExecution
      */
     public int doAnalyzedStartTag(PageCache pageCache) throws LogicException, JspException {
-        servletRequestThreadLocal.set(pageContext.getRequest());
         if (getParentList(this) == null)
             QueryExecution.startListGroup(pageContext);
         else {
@@ -503,7 +501,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
      * @return The current count of iterations
      */
     public static int count() {
-        Object countAttr = servletRequestThreadLocal.get().getAttribute(standardCountVar);
+        Object countAttr = MakumbaJspFactory.getPageContext().getRequest().getAttribute(standardCountVar);
         if (countAttr == null) {
             // throw new ProgrammerError("mak:count() can only be used inside a <mak:list> tag");
             // FIXME: above error throwing led to some not-yet-known-anymore errors (manu might know more)
@@ -519,7 +517,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
      * @return The maximum number of iterations within the current iterationGroup
      */
     public static int maxCount() {
-        Object maxAttr = servletRequestThreadLocal.get().getAttribute(standardMaxCountVar);
+        Object maxAttr = MakumbaJspFactory.getPageContext().getRequest().getAttribute(standardMaxCountVar);
         if (maxAttr == null) {
             // throw new ProgrammerError("mak:maxCount() can only be used inside a <mak:list> tag");
             // FIXME: above error throwing led to some not-yet-known-anymore errors (manu might know more)
@@ -537,7 +535,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
      * @return The maximum number of results returned as if the query would not contain any limit / offset.
      */
     public static int maxResults() {
-        ServletRequest servletRequest = servletRequestThreadLocal.get();
+        ServletRequest servletRequest = MakumbaJspFactory.getPageContext().getRequest();
         Object totalAttr = servletRequest.getAttribute(standardMaxResultsVar);
         if (totalAttr == null) {
             // throw new ProgrammerError("mak:maxResults() can only be used inside a <mak:list> tag");
@@ -582,9 +580,11 @@ public class QueryTag extends GenericListTag implements IterationTag {
      * @return The total number of iterations performed within the previous iterationGroup
      */
     public static int lastCount() {
-        if (servletRequestThreadLocal.get() == null)
+        Object attribute = MakumbaJspFactory.getPageContext().getRequest().getAttribute(standardLastCountVar);
+        if (attribute == null) {
             return -1;
-        return ((Integer) servletRequestThreadLocal.get().getAttribute(standardLastCountVar)).intValue();
+        }
+        return ((Integer) attribute).intValue();
     }
 
     @Override
