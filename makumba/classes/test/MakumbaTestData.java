@@ -144,7 +144,7 @@ public class MakumbaTestData {
             if (v.size() > 0) {
 
                 Vector<Pointer> emptyPointerVector = new Vector<Pointer>();
-                
+
                 // delete the languages
                 Dictionary<String, Object> speaksDic = new Hashtable<String, Object>();
                 speaksDic.put("speaks", emptyPointerVector);
@@ -154,12 +154,11 @@ public class MakumbaTestData {
                 Dictionary<String, Object> addressDic = new Hashtable<String, Object>();
                 speaksDic.put("address", emptyPointerVector);
                 t.update((Pointer) v.firstElement().get("p"), addressDic);
-                
+
                 // delete the toys
                 Dictionary<String, Object> toysDic = new Hashtable<String, Object>();
                 speaksDic.put("toys", emptyPointerVector);
                 t.update((Pointer) v.firstElement().get("p"), toysDic);
-                
 
                 t.delete((Pointer) v.firstElement().get("p"));
                 t.delete((Pointer) v.firstElement().get("i"));
@@ -179,7 +178,7 @@ public class MakumbaTestData {
 
     protected void deleteLanguages(Transaction t) {
         String query = "SELECT " + (t.getTransactionProvider().getQueryLanguage().equals("oql") ? "l" : "l.id")
-        + " AS l FROM test.Language l";
+                + " AS l FROM test.Language l";
         Vector<Dictionary<String, Object>> v = t.executeQuery(query, new Object[] {});
         if (v.size() > 0) {
             for (Iterator<Dictionary<String, Object>> languages = v.iterator(); languages.hasNext();) {
@@ -193,7 +192,7 @@ public class MakumbaTestData {
         MakumbaTestData testData = new MakumbaTestData();
         Transaction t = TransactionProvider.getInstance().getConnectionTo(
             TransactionProvider.getInstance().getDefaultDataSourceName());
-        if (args == null || args.length == 0 ||  args[0].equals("create")) {
+        if (args == null || args.length == 0 || args[0].equals("create")) {
             testData.insertLanguages(t);
             testData.insertPerson(t);
         } else if (args[0].equals("delete")) {
