@@ -70,7 +70,7 @@ public class MakumbaJspFactory extends JspFactory {
     @Override
     public PageContext getPageContext(Servlet servlet, ServletRequest request, ServletResponse response,
             String errorPageURL, boolean needsSession, int buffer, boolean autoflush) {
-        System.out.println(servlet);
+        // System.out.println(servlet);
 
         // we hang the pageContext in a threadLocal stack
         PageContext pageContext = fact.getPageContext(servlet, request, response, errorPageURL, needsSession, buffer,
