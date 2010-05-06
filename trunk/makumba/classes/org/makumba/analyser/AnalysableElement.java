@@ -1,5 +1,6 @@
 package org.makumba.analyser;
 
+import java.util.Comparator;
 import java.util.ListIterator;
 import java.util.Stack;
 
@@ -191,4 +192,16 @@ public abstract class AnalysableElement extends TagSupport {
         }
         return pageCache;
     }
+
+    public static final class FilePositionElementComparator implements Comparator<AnalysableElement> {
+        public int compare(AnalysableElement o1, AnalysableElement o2) {
+            int lineCompare = Double.compare(o1.getElementData().getStartLine(), o2.getElementData().getStartLine());
+            if (lineCompare != 0) {
+                return lineCompare;
+            } else {
+                return Double.compare(o1.getElementData().getStartColumn(), o2.getElementData().getStartColumn());
+            }
+        }
+    }
+
 }
