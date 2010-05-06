@@ -360,7 +360,8 @@ public class PaginationTag extends GenericMakumbaTag {
 
     @Override
     public void setTagKey(PageCache pageCache) {
-        tagKey = new MultipleKey(new Object[] {action, getParentListTag().tagKey, itemName, limit, offset, paginationLinkTitle, paginationLinkTitleText});
+        tagKey = new MultipleKey(new Object[] { action, getParentListTag() != null ? getParentListTag().tagKey : null,
+                itemName, limit, offset, paginationLinkTitle, paginationLinkTitleText });
     }
     
     @Override
