@@ -147,6 +147,51 @@ public class ListOQLTest extends MakumbaJspTestCase {
         assertTrue(compareTest(output));
     }
 
+    public void testMakListNextCount() throws ServletException, IOException {
+        pageContext.include("list-oql/testMakListNextCount.jsp");
+    }
+
+    public void endMakListNextCount(WebResponse response) throws Exception {
+        try {
+            output = response.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+
+        assertTrue(compareTest(output));
+    }
+
+    public void testMakListNextCountNestedList() throws ServletException, IOException {
+        pageContext.include("list-oql/testMakListNextCountNestedList.jsp");
+    }
+
+    public void endMakListNextCountNestedList(WebResponse response) throws Exception {
+        try {
+            output = response.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+
+        assertTrue(compareTest(output));
+    }
+
+    public void testMakListNextCountMultiNestedList() throws ServletException, IOException {
+        pageContext.include("list-oql/testMakListNextCountMultiNestedList.jsp");
+    }
+
+    public void endMakListNextCountMultiNestedList(WebResponse response) throws Exception {
+        try {
+            output = response.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+
+        assertTrue(compareTest(output));
+    }
+
     public void testMakListPointerComparison() throws ServletException, IOException {
         pageContext.include("list-oql/testMakListPointerComparison.jsp");
     }
