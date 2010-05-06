@@ -103,7 +103,21 @@ public class ListOQLTest extends MakumbaJspTestCase {
         assertTrue(compareTest(output));
     }
     
-    // FIXME this is a bug that needs to be fixed
+    public void testMakListCountMulitNestedLists() throws ServletException, IOException {
+        pageContext.include("list-oql/testMakListCountMulitNestedLists.jsp");
+    }
+
+    public void endMakListCountMulitNestedLists(WebResponse response) throws Exception {
+        try {
+            output = response.getText(); fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+
+        assertTrue(compareTest(output));
+    }
+    
+    // FIXME this is a bug/behaviour that might need to be fixed (see http://bugs.makumba.org/show_bug.cgi?id=1201)
     public void testShouldFailMakListCountClosedList() throws ServletException, IOException {
         pageContext.include("list-oql/testMakListCountClosedList.jsp");
     }
