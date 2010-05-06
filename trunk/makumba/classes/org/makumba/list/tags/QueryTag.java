@@ -23,6 +23,10 @@
 
 package org.makumba.list.tags;
 
+import java.util.Map;
+import java.util.Stack;
+import java.util.TreeSet;
+
 import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
@@ -82,11 +86,17 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
     static String standardLastCountVar = "org_makumba_view_jsptaglib_lastCountVar";
 
+    static String standardNextCountVar = "org_makumba_view_jsptaglib_nextCountVar";
+
     static String standardMaxResultsVar = "org_makumba_view_jsptaglib_MaxResultsVar";
 
-    static String standardMaxResultsContext = "org_makumba_view_jsptaglib_MaxResultsContext";
-
     static String standardMaxResultsKey = "org_makumba_view_jsptaglib_MaxResultsKey";
+
+    static String lastFinishedListKey = "org_makumba_view_jsptaglib_LastListKey";
+
+    static String runningListKeyStack = "org_makumba_view_jsptaglib_RunningListKeyStack";
+
+    static String queryExecuted = "org_makumba_view_jsptaglib_QueryExecuted";
 
     public void setFrom(String s) {
         queryProps[ComposedQuery.FROM] = s;
@@ -287,7 +297,8 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
     /**
      * Decides if there will be any tag iteration. The QueryExecution is found (and made if needed), and we check if
-     * there are any results in the iterationGroup.
+     * there are any results in the iterationGroup. Calls {@link #initiateQueryExecution(PageContext, boolean)} and
+     * {@link #doTagExecution(PageCache, PageContext)}
      *
      * @param pageCache
      *            The page cache for the current page
@@ -296,9 +307,39 @@ public class QueryTag extends GenericListTag implements IterationTag {
      */
     @Override
     public int doAnalyzedStartTag(PageCache pageCache) throws LogicException, JspException {
-        if (getParentList(this) == null) {
+        initiateQueryExecution(pageContext, false);
+        return doTagExecution(pageCache, pageContext);
+    }
+
+    /**
+     * This method is initiating the query execution. It is intended to be called by two means:
+     * <ul>
+     * <li>In the standard flow at the start of the tag, by {@link #doAnalyzedStartTag(PageCache)}</li>
+     * <li>or before the start of the tag, by {@link #nextCount()}</li>
+     * </ul>
+     * It thus needs to know whether the query has already been executed; it does so by setting variables in the
+     * {@link ServletRequest}
+     */
+    private void initiateQueryExecution(PageContext pageContext, boolean preTagStartInitialisation)
+            throws LogicException {
+
+        // we need to figure out whether the query was already initiated before, which can be either
+        // a.) we are in the beginning of the tag, and there was a mak:nextCount() before
+        // b.) we are in a mak:nextCount(), and there was another mak:nextCount() before
+        // we know that the query was executed it the pageContext holds an attribute with the exact query key
+        // the key is computed by getListKey(), and contains the current list key, and all parent list keys & iteration
+        // numbers
+        
+        String listKey = getListKey(pageContext);
+        final boolean wasStarted = pageContext.getRequest().getAttribute(listKey) != null;
+
+        // start the list group if it wasn't started before (by nextCount()), AND if it is a root list
+        if (!wasStarted && getParentList(this) == null) {
             QueryExecution.startListGroup(pageContext);
-        } else {
+        }
+        // if we are not in preTagStartInitialisation, i.e. not triggered by nextCount, AND in a nested list
+        // then set the values of the outer/parent list in this nested list
+        if (!preTagStartInitialisation && getParentList(this) != null) {
             upperCount = pageContext.getRequest().getAttribute(standardCountVar);
             upperMaxCount = pageContext.getRequest().getAttribute(standardMaxCountVar);
             upperMaxResults = pageContext.getRequest().getAttribute(standardMaxResultsVar);
@@ -306,9 +347,31 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
         execution = QueryExecution.getFor(tagKey, pageContext, offset, limit, defaultLimit);
 
-        int n = execution.onParentIteration();
+        if (!wasStarted) {
+            // if this tag is at its first iteration, compute the iterationGroupData, and set attributes
+            int n = execution.onParentIteration();
+            pageContext.getRequest().setAttribute(standardNextCountVar, n);
+            pageContext.getRequest().setAttribute(listKey + "_" + standardNextCountVar, n);
 
+            // mark this list (iteration) to be run
+            pageContext.getRequest().setAttribute(listKey, Boolean.TRUE);
+        }
+    }
+
+    private int doTagExecution(PageCache pageCache, PageContext pageContext) throws LogicException, JspException {
+        // we retrieve the number of iterations from the request, as it was set there before by initiateExecution
+        int n = (Integer) pageContext.getRequest().getAttribute(getListKey(pageContext) + "_" + standardNextCountVar);
         setNumberOfIterations(n);
+
+        // for nextCount() to know which list to relate to, store the key of the currently execute mak:list in the
+        // request. Need to keep a stack of keys to support nested lists
+        Stack<MultipleKey> currentListKeyStack = (Stack<MultipleKey>) pageContext.getRequest().getAttribute(
+            runningListKeyStack);
+        if (currentListKeyStack == null) { // create a new stack, if there's none yet
+            currentListKeyStack = new Stack<MultipleKey>();
+            pageContext.getRequest().setAttribute(runningListKeyStack, currentListKeyStack);
+        }
+        currentListKeyStack.push(getTagKey());
 
         // set the total result count, i.e. the count this list would have w/o limit & offset
         int maxResults = Integer.MIN_VALUE;
@@ -334,7 +397,6 @@ public class QueryTag extends GenericListTag implements IterationTag {
             pageCache.cache(MakumbaJspAnalyzer.QUERY, maxResultsKey, query);
             // we need to pass these variables in request to the method doing the query
             // TODO: this looks like a hack, and might not be safe if there are more lists in the same page
-            pageContext.getRequest().setAttribute(standardMaxResultsContext, pageContext);
             pageContext.getRequest().setAttribute(standardMaxResultsKey, maxResultsKey);
         }
         pageContext.getRequest().setAttribute(standardMaxResultsVar, maxResults);
@@ -344,13 +406,45 @@ public class QueryTag extends GenericListTag implements IterationTag {
                 pageContext.setAttribute(countVar, one);
             }
             pageContext.getRequest().setAttribute(standardCountVar, one);
+            pageContext.getRequest().setAttribute(getListSpecificCountVar(this), one);
             return EVAL_BODY_INCLUDE;
         }
         if (countVar != null) {
             pageContext.setAttribute(countVar, zero);
         }
         pageContext.getRequest().setAttribute(standardCountVar, zero);
+        pageContext.getRequest().setAttribute(getListSpecificCountVar(this), zero);
         return SKIP_BODY;
+    }
+
+    /**
+     * Compute a {@link String} that uniquely identifies this mak:list/object inside the current request; for nested
+     * mak:list/objects, we also append the key of all the parent mak:list/objects, and their current iteration.<br/>
+     * The key starts being built from the root list.
+     */
+    private String getListKey(PageContext pageContext) {
+        String listStartedKey = "";
+        QueryTag current = this;
+        while (getParentList(current) != null) {
+            QueryTag queryTag = (QueryTag) getParentList(current);
+            String key = "Key:" + queryTag.getTagKey().hashCode();
+            final String listSpecificCountVar = getListSpecificCountVar(queryTag);
+            key += "_iteration:" + pageContext.getRequest().getAttribute(listSpecificCountVar);
+            listStartedKey = "_" + key + listStartedKey;
+            current = queryTag;
+        }
+        listStartedKey += "_Key:" + getTagKey().hashCode();
+        return queryExecuted + listStartedKey;
+    }
+
+    /**
+     * Returns a variable name that is specific for the given query tag inside the current page
+     *
+     * @return {@link #standardCountVar} appended {@link AnalysableTag#getPageTextInfo()}, i.e. the source file name,
+     *         start &amp; end line and column of the tag
+     */
+    private String getListSpecificCountVar(QueryTag tag) {
+        return standardCountVar + "_" + tag.getPageTextInfo();
     }
 
     private MultipleKey getMaxResultsKey(MultipleKey tagKey) {
@@ -370,9 +464,9 @@ public class QueryTag extends GenericListTag implements IterationTag {
     protected void setNumberOfIterations(int n) throws JspException {
         Integer cnt = new Integer(n);
         if (maxCountVar != null) {
-            pageContext.setAttribute(maxCountVar, cnt);
+            MakumbaJspFactory.getPageContext().setAttribute(maxCountVar, cnt);
         }
-        pageContext.getRequest().setAttribute(standardMaxCountVar, cnt);
+        MakumbaJspFactory.getPageContext().getRequest().setAttribute(standardMaxCountVar, cnt);
     }
 
     /**
@@ -415,8 +509,14 @@ public class QueryTag extends GenericListTag implements IterationTag {
                     pageContext.setAttribute(countVar, cnt);
                 }
                 pageContext.getRequest().setAttribute(standardCountVar, cnt);
+                pageContext.getRequest().setAttribute(getListSpecificCountVar(this), cnt);
                 return EVAL_BODY_AGAIN;
             }
+            // to support nextCount(), remove the current list key from the stack of running lists
+            Stack<MultipleKey> currentListKeyStack = (Stack<MultipleKey>) pageContext.getRequest().getAttribute(
+                runningListKeyStack);
+            // and set it as the last finished list
+            pageContext.getRequest().setAttribute(lastFinishedListKey, currentListKeyStack.pop());
             return SKIP_BODY;
         } finally {
             setRunningElementData(null);
@@ -565,7 +665,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
         Integer total = ((Integer) totalAttr);
         if (total == Integer.MIN_VALUE) { // we still need to evaluate this total count
-            PageContext pageContext = (PageContext) servletRequest.getAttribute(standardMaxResultsContext);
+            PageContext pageContext = MakumbaJspFactory.getPageContext();
             MultipleKey keyMaxResults = (MultipleKey) servletRequest.getAttribute(standardMaxResultsKey);
             PageCache pageCache = AnalysableElement.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance());
             try {
@@ -604,6 +704,85 @@ public class QueryTag extends GenericListTag implements IterationTag {
             return -1;
         }
         return ((Integer) attribute).intValue();
+    }
+
+    /**
+     * Gives the total number of iterations of the next iterationGroup.<br/>
+     * Invoking this method in the JSP page will cause this mak:list/object to pre-execute it's query, for the number of
+     * iterations to be known before the tag will actually be executed.
+     *
+     * @return The total number of iterations that will be performed within the next iterationGroup
+     */
+    public static int nextCount() throws LogicException, JspException {
+        // This method requires quite some trickery:
+        //
+        // 1. as a static method, it requires the pageContext, which it will get from MakumbaJspFactory.getPageContext()
+        // this is equivalent to the other mak:xxxCount() functions
+        //
+        // 2. the function needs to find the query tag it relates to. This is done as follows
+        // a.) the stack of currently running QueryTags is retrieved from the pageContext
+        // If it is not empty, the function starts from the top element on the stack, and finds the tag that comes next
+        // in the page, by using the MakumbaJspAnalyzer.TAG_CACHE in PageCache
+        // b.) if the stack was empty, then retrieve the list that was finished last
+        // if that list is set, find the next tag as above
+        // c.) if neither stack nor last finished list are set, just use the first tag in the page
+        //
+        // 3. the function needs to execute the query before the QueryTag actually starts, before doAnalyzedStartTag
+        // it does so by calling initiateExecution(), which then will execute the query
+        //
+        // 4. finally, the number of iterations can be retrieved from the pageContext
+
+        PageContext pageContext = MakumbaJspFactory.getPageContext();
+        if (pageContext == null) {
+            return -1;
+        }
+
+        // get all query tags
+        Map<Object, Object> tagcache = AnalysableElement.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance()).retrieveCache(
+            MakumbaJspAnalyzer.TAG_CACHE);
+        // sometimes query tags might be stored duplicated in the pagecache
+        // and they might not be ordered by their line number..
+        TreeSet<QueryTag> queryTags = new TreeSet<QueryTag>(new FilePositionElementComparator());
+        for (Object tag : tagcache.values()) {
+            if (tag instanceof QueryTag) {
+                queryTags.add((QueryTag) tag);
+            }
+        }
+        // find the correct query tag from the tagCache
+        QueryTag nextQueryTag = null;
+
+        Stack<MultipleKey> listKeyStack = (Stack<MultipleKey>) pageContext.getRequest().getAttribute(
+            runningListKeyStack);
+
+        if (listKeyStack != null && listKeyStack.size() > 0) {
+            // we have some running/open mak:lists => find the next list after
+            final MultipleKey currentListKey = listKeyStack.peek();
+            nextQueryTag = findNextTag(queryTags, currentListKey);
+        } else {
+            // check if we have already passed any list
+            MultipleKey lastFinished = (MultipleKey) pageContext.getRequest().getAttribute(lastFinishedListKey);
+            if (lastFinished != null) {
+                // find the next one
+                nextQueryTag = findNextTag(queryTags, lastFinished);
+            } else {
+                // if we haven't passed a mak:list/object yet, just take the first one
+                nextQueryTag = queryTags.first();
+            }
+        }
+
+        nextQueryTag.initiateQueryExecution(pageContext, true);
+        return ((Integer) pageContext.getRequest().getAttribute(standardNextCountVar)).intValue();
+    }
+
+    private static QueryTag findNextTag(TreeSet<QueryTag> queryTags, final MultipleKey currentListKey) {
+        QueryTag nextQueryTag = null;
+        for (QueryTag queryTag : queryTags) {
+            if (queryTag.getTagKey().equals(currentListKey)) {
+                nextQueryTag = queryTags.higher(queryTag);
+                break;
+            }
+        }
+        return nextQueryTag;
     }
 
     @Override

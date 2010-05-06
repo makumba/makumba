@@ -1794,7 +1794,7 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
     <function-class>org.makumba.list.tags.QueryTag</function-class>
     <function-signature>int count()</function-signature>
     <example>CountFunctionExample</example>
-    <see>maxCount,lastCount,maxResults</see>
+    <see>maxCount,lastCount,nextCount,maxResults</see>
   </function>
 
 
@@ -1805,7 +1805,7 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
     <function-class>org.makumba.list.tags.QueryTag</function-class>
     <function-signature>int maxCount()</function-signature>
     <example>CountFunctionExample</example>
-    <see>count,lastCount,maxResults</see>
+    <see>count,lastCount,nextCount,maxResults</see>
   </function>
 
 
@@ -1816,7 +1816,18 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
     <function-class>org.makumba.list.tags.QueryTag</function-class>
     <function-signature>int lastCount()</function-signature>
     <example>CountFunctionExample</example>
-    <see>count,maxCount,maxResults</see>
+    <see>count,maxCount,nextCount,maxResults</see>
+  </function>
+
+
+
+  <function>
+    <name>nextCount</name>
+    <descriptionPage>LastCountFunctionDescription</descriptionPage>
+    <function-class>org.makumba.list.tags.QueryTag</function-class>
+    <function-signature>int nextCount()</function-signature>
+    <example>CountFunctionExample</example>
+    <see>count,maxCount,lastCount,maxResults</see>
   </function>
 
 
@@ -1828,7 +1839,7 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
     <function-signature>int maxResults()</function-signature>
     <descriptionPage>MaxResultsFunctionDescription</descriptionPage>
     <example>CountFunctionExample</example>
-    <see>count,maxCount,lastCount</see>
+    <see>count,maxCount,lastCount,nextCount</see>
   </function>
 
 
