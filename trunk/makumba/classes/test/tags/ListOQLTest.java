@@ -103,11 +103,11 @@ public class ListOQLTest extends MakumbaJspTestCase {
         assertTrue(compareTest(output));
     }
     
-    public void testMakListCountMulitNestedLists() throws ServletException, IOException {
-        pageContext.include("list-oql/testMakListCountMulitNestedLists.jsp");
+    public void testMakListCountMultiNestedLists() throws ServletException, IOException {
+        pageContext.include("list-oql/testMakListCountMultiNestedLists.jsp");
     }
 
-    public void endMakListCountMulitNestedLists(WebResponse response) throws Exception {
+    public void endMakListCountMultiNestedLists(WebResponse response) throws Exception {
         try {
             output = response.getText(); fetchValidTestResult(output, record);
         } catch (IOException e) {
