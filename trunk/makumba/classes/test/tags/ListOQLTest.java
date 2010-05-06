@@ -177,6 +177,21 @@ public class ListOQLTest extends MakumbaJspTestCase {
         assertTrue(compareTest(output));
     }
 
+    public void testMakListNextCountAsymmetricNestedList() throws ServletException, IOException {
+        pageContext.include("list-oql/testMakListNextCountAsymmetricNestedList.jsp");
+    }
+
+    public void endMakListNextCountAsymmetricNestedList(WebResponse response) throws Exception {
+        try {
+            output = response.getText();
+            fetchValidTestResult(output, record);
+        } catch (IOException e) {
+            fail("JSP output error: " + response.getResponseMessage());
+        }
+
+        assertTrue(compareTest(output));
+    }
+
     public void testMakListNextCountMultiNestedList() throws ServletException, IOException {
         pageContext.include("list-oql/testMakListNextCountMultiNestedList.jsp");
     }
