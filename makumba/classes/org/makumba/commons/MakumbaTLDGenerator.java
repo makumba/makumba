@@ -77,8 +77,8 @@ public class MakumbaTLDGenerator {
                 // update makumba version place-holder
                 tag.setText(tag.getText().replace("@version@", version.getVersion()));
             }
-            boolean isTag = false;
-            if (isTag = tag.getName().equals("tag")) {
+            if (StringUtils.equalsAny(tag.getName(), "tag", "function")) {
+                boolean isTag = tag.getName().equals("tag");
 
                 Element name = tag.element("name");
                 String tagName = name.getText();
