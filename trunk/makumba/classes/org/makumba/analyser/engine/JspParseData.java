@@ -380,7 +380,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
                 treatELExpression(jspELExpressions, content, an, false);
                 jspELExpressionStart = Integer.MAX_VALUE;
                 if (jspELExpressions.find()) {
-                    jspELExpressions.start();
+                    jspELExpressionStart = jspELExpressions.start();
                 }
             }
             if (tagStart == Integer.MAX_VALUE && systemStart == Integer.MAX_VALUE
