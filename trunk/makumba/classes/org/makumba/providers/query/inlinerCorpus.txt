@@ -1,3 +1,5 @@
+SELECT actor(test.Person).indiv, actor(test.Person).birthdate
+SELECT actor(test.Person).fullName(), actor(test.Person).birthdate
 SELECT p.functionWithPointerIsThatPerson(p.indiv) FROM test.Person p
 SELECT actor(test.Person).fullName() 
 SELECT p.indi().fullName() FROM test.Person p
