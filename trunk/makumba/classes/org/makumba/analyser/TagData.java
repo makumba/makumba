@@ -67,8 +67,7 @@ public class TagData extends ElementData implements Serializable {
 
     @Override
     public String toString() {
-        return "Tag " + name + " on " + getStartLine() + ":" + getStartColumn() + " - " + getEndLine() + ":"
-                + getEndColumn() + ", attributes: " + attributes;
+        return "Tag " + name + " on " + getLocation() + ", attributes: " + attributes;
     }
 
 }

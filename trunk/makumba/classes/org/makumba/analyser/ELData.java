@@ -39,4 +39,10 @@ public class ELData extends ElementData implements Serializable {
     public ArrayList<String> getArguments() {
         return arguments;
     }
+
+    @Override
+    public String toString() {
+        return "Expression " + expression + " on " + getLocation()
+                + (arguments.isEmpty() ? "" : ", arguments: " + arguments);
+    }
 }
