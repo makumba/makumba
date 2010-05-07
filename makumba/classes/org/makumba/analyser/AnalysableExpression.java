@@ -94,6 +94,8 @@ public abstract class AnalysableExpression extends AnalysableElement {
      */
     protected Tag findParentWithClass(Class<?> clazz) {
 
+        // FIXME: this seems to be a sloppy copy of TagSupport#findAncestorWithClass
+        // It leads easily to an endless loop, if the parent tag itself is not of the desired class 
         boolean isInterface = false;
         Tag from = getParent();
 
@@ -103,7 +105,7 @@ public abstract class AnalysableExpression extends AnalysableElement {
         }
 
         for (;;) {
-            Tag parent = from;
+            Tag parent = from; // FIXME: most likely should be from.getParent !!!
 
             if (parent == null) {
                 return null;
