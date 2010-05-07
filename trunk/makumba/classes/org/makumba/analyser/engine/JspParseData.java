@@ -25,6 +25,7 @@ package org.makumba.analyser.engine;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -41,6 +42,7 @@ import org.makumba.analyser.TagData;
 import org.makumba.analyser.interfaces.JspAnalyzer;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
+import org.makumba.commons.RegExpUtils;
 import org.makumba.commons.RuntimeWrappedException;
 
 /**
@@ -135,7 +137,15 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
             JspCommentPattern = Pattern.compile("<%--.*?[^-]--%>", Pattern.DOTALL);
             JspScriptletPattern = Pattern.compile("<%[^@].*?%>", Pattern.DOTALL);
             JspExpressionLanguagePattern = Pattern.compile("\\$\\{[^\\}]*\\}");
-            JSPELFunctionPattern = Pattern.compile("\\w+:\\w+\\(\\)");
+            
+            String functionParamElement = RegExpUtils.LineWhitespaces + "(" + "\\'\\w+\\'" + ")"
+                    + RegExpUtils.LineWhitespaces;
+            String functionParamElementRepeatment = "(?:" + RegExpUtils.LineWhitespaces + "," + "(?:"
+                    + functionParamElement + "))*";
+            String functionParamRegExp = RegExpUtils.LineWhitespaces + "(?:" + functionParamElement + ")?"
+            + functionParamElementRepeatment + RegExpUtils.LineWhitespaces;        
+            JSPELFunctionPattern = Pattern.compile("\\w+:\\w+\\(" + functionParamRegExp + "?\\)"); //"\\w+:\\w+\\(\\)");
+            
             JsfExpressionLanguagePattern = Pattern.compile("\\#\\{[^\\}]*\\}");
             Pattern[] cp = { JspCommentPattern, JspScriptletPattern };
             JspCommentPatterns = cp;
@@ -422,14 +432,25 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
             an.elExpression(elData, holder);
         }
 
-        Matcher jspELFunctions = JSPELFunctionPattern.matcher(elContent);
-        while (jspELFunctions.find()) {
-            SyntaxPoint jspELFunctionsEnd = syntaxPoints.addSyntaxPoints(elContentStart + jspELFunctions.start(),
-                elContentStart + jspELFunctions.end(), "ExpressionLanguageFunction", null);
+        // search for functions inside the expression
+        Matcher jspELFunction = JSPELFunctionPattern.matcher(elContent);
+        while (jspELFunction.find()) {
+            SyntaxPoint jspELFunctionsEnd = syntaxPoints.addSyntaxPoints(elContentStart + jspELFunction.start(),
+                elContentStart + jspELFunction.end(), "ExpressionLanguageFunction", null);
             SyntaxPoint jspELFunctionsStart = (SyntaxPoint) jspELFunctionsEnd.getOtherInfo();
-            String jspELFunctionsContent = elContent.substring(elContent.indexOf(":", jspELFunctions.start()) + 1,
-                jspELFunctions.end() - 2);
-            ELData elData = new ELData(jspELFunctionsContent, jspELFunctionsStart, jspELFunctionsEnd);
+            // find the function name
+            int beginIndex = elContent.indexOf(":", jspELFunction.start()) + 1;
+            String jspELFunctionsContent = elContent.substring(beginIndex, elContent.indexOf("(", beginIndex));
+            // find the function arguments
+            ArrayList<String> arguments = new ArrayList<String>();
+            if (jspELFunction.groupCount() > 0) {
+                for (int j = 1; j <= jspELFunction.groupCount(); j++) {
+                    if (jspELFunction.group(j) != null) {
+                        arguments.add(jspELFunction.group(j).trim());
+                    }
+                }
+            }
+            ELData elData = new ELData(jspELFunctionsContent, arguments, jspELFunctionsStart, jspELFunctionsEnd);
             an.elExpression(elData, holder);
         }
     }
