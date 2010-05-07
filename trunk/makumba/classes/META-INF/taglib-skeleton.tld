@@ -250,6 +250,66 @@ Can be a Rtexpr <%= ...%>]]></comments>
 
 
   <tag>
+    <name>pagination</name>
+    <tagclass>org.makumba.list.pagination.PaginationTag</tagclass>
+    <body-content>empty</body-content>
+    <display-name>Prints links for pagination navigation</display-name>
+    <descriptionPage>PaginationTagDescription</descriptionPage>
+    <example>PaginationTagExample</example>
+    <see>list</see>
+
+    <attribute>
+      <name>action</name>
+      <required>false</required>
+      <rtexprvalue>yes</rtexprvalue>
+      <description>The target page to go to when clicking on a pagination link.</description>
+      <comments>Rtexpr.</comments>
+    </attribute>
+    <attribute>
+      <name>showPageTitle</name>
+      <required>false</required>
+      <rtexprvalue>yes</rtexprvalue>
+      <description>Whether or not to show the 'Showing Item x to y out of z (Page a out of b)' header.</description>
+      <comments>Fixed; defaults to true</comments>
+    </attribute>
+    <attribute>
+      <name>paginationLinkTitle</name>
+      <required>false</required>
+      <rtexprvalue>yes</rtexprvalue>
+      <description>Whether or not to display title="..." elements on the pagination links (i.e. 'first page', 'previous
+        page', 'next page', 'last page'.</description>
+      <comments>Fixed; defaults to true</comments>
+    </attribute>
+    <attribute>
+      <name>paginationLinkTitleText</name>
+      <required>false</required>
+      <rtexprvalue>yes</rtexprvalue>
+      <description>The test to use for the pagination links. The default is 'page', creating e.g. 'previous page'. The
+        text given in the attribute will be appended to the prefixes 'first', 'previous', 'next', 'last'.</description>
+      <comments>Fixed; defaults to true</comments>
+    </attribute>
+    <attribute>
+      <name>itemName</name>
+      <required>false</required>
+      <rtexprvalue>yes</rtexprvalue>
+      <description>The name of the items displayed, to be used in the text "Showing 'itemName' x out of y (Page z)".</description>
+      <comments>Rtexpr.</comments>
+    </attribute>
+    <attribute>
+      <name>forList</name>
+      <required>false</required>
+      <rtexprvalue>yes</rtexprvalue>
+      <description>The ID of the list to related to; used when the pagination is not enclosed in a mak:list/object</description>
+      <comments>Rtexpr.</comments>
+    </attribute>
+
+    <!-- generic -->
+    <attribute name="styleClass" specifiedIn="form" />
+  </tag>
+
+
+
+  <tag>
     <name>value</name>
     <tag-class>org.makumba.list.tags.ValueTag</tag-class>
     <tei-class>org.makumba.list.tags.VarTEI</tei-class>
@@ -1797,8 +1857,6 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
     <see>maxCount,lastCount,nextCount,maxResults</see>
   </function>
 
-
-
   <function>
     <name>maxCount</name>
     <descriptionPage>MaxCountFunctionDescription</descriptionPage>
@@ -1807,8 +1865,6 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
     <example>CountFunctionExample</example>
     <see>count,lastCount,nextCount,maxResults</see>
   </function>
-
-
 
   <function>
     <name>lastCount</name>
@@ -1819,8 +1875,6 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
     <see>count,maxCount,nextCount,maxResults</see>
   </function>
 
-
-
   <function>
     <name>lastCountById</name>
     <descriptionPage>LastCountFunctionDescription</descriptionPage>
@@ -1829,8 +1883,6 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
     <example>CountFunctionExample</example>
     <see>count,maxCount,nextCount,maxResults</see>
   </function>
-
-
 
   <function>
     <name>nextCount</name>
@@ -1841,8 +1893,6 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
     <see>count,maxCount,lastCount,maxResults</see>
   </function>
 
-
-
   <function>
     <name>maxResults</name>
     <descriptionPage>MaxResultsFunctionDescription</descriptionPage>
@@ -1851,65 +1901,5 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
     <example>CountFunctionExample</example>
     <see>count,maxCount,lastCount,nextCount</see>
   </function>
-
-
-
-  <tag>
-    <name>pagination</name>
-    <tagclass>org.makumba.list.pagination.PaginationTag</tagclass>
-    <body-content>empty</body-content>
-    <display-name>Prints links for pagination navigation</display-name>
-    <descriptionPage>PaginationTagDescription</descriptionPage>
-    <example>PaginationTagExample</example>
-    <see>list</see>
-
-    <attribute>
-      <name>action</name>
-      <required>false</required>
-      <rtexprvalue>yes</rtexprvalue>
-      <description>The target page to go to when clicking on a pagination link.</description>
-      <comments>Rtexpr.</comments>
-    </attribute>
-    <attribute>
-      <name>showPageTitle</name>
-      <required>false</required>
-      <rtexprvalue>yes</rtexprvalue>
-      <description>Whether or not to show the 'Showing Item x to y out of z (Page a out of b)' header.</description>
-      <comments>Fixed; defaults to true</comments>
-    </attribute>
-    <attribute>
-      <name>paginationLinkTitle</name>
-      <required>false</required>
-      <rtexprvalue>yes</rtexprvalue>
-      <description>Whether or not to display title="..." elements on the pagination links (i.e. 'first page', 'previous
-        page', 'next page', 'last page'.</description>
-      <comments>Fixed; defaults to true</comments>
-    </attribute>
-    <attribute>
-      <name>paginationLinkTitleText</name>
-      <required>false</required>
-      <rtexprvalue>yes</rtexprvalue>
-      <description>The test to use for the pagination links. The default is 'page', creating e.g. 'previous page'. The
-        text given in the attribute will be appended to the prefixes 'first', 'previous', 'next', 'last'.</description>
-      <comments>Fixed; defaults to true</comments>
-    </attribute>
-    <attribute>
-      <name>itemName</name>
-      <required>false</required>
-      <rtexprvalue>yes</rtexprvalue>
-      <description>The name of the items displayed, to be used in the text "Showing 'itemName' x out of y (Page z)".</description>
-      <comments>Rtexpr.</comments>
-    </attribute>
-    <attribute>
-      <name>forList</name>
-      <required>false</required>
-      <rtexprvalue>yes</rtexprvalue>
-      <description>The ID of the list to related to; used when the pagination is not enclosed in a mak:list/object</description>
-      <comments>Rtexpr.</comments>
-    </attribute>
-
-    <!-- generic -->
-    <attribute name="styleClass" specifiedIn="form" />
-  </tag>
 
 </taglib>
