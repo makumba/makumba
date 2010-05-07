@@ -12,7 +12,7 @@
 <mak:list from="test.Language l">
   countLanguage:${mak:count()}<br>
   maxCountLanguage:${mak:maxCount()}<br>
-  <mak:list from="test.Person p">
+  <mak:list from="test.Person p" id="personList">
     nestedCountPerson:${mak:count()}<br>
     nestedMaxCountPerson:${mak:maxCount()}<br>
   </mak:list>
@@ -22,5 +22,6 @@
   lastCountPerson2:${mak:lastCount()}<br>
 </mak:list>
 lastCountLanguage:${mak:lastCount()}<br>
+lastCountById('personList'):${mak:lastCountById('personList')}<br>
 </body>
 </html>
