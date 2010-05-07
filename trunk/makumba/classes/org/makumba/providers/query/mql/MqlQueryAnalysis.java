@@ -1,6 +1,7 @@
 package org.makumba.providers.query.mql;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
@@ -285,5 +286,9 @@ public class MqlQueryAnalysis implements QueryAnalysis {
 
     public AST getPass1Tree() {
         return pass1;
+    }
+
+    public Collection<String> getWarnings() {
+        return analyser.warnings;
     }
 }
