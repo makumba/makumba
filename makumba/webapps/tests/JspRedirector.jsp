@@ -15,7 +15,6 @@
      * JspWriter).
      */
 
-    MakumbaJspFactory.checker.run();
     JspImplicitObjects objects = new JspImplicitObjects();
     objects.setHttpServletRequest(request);
     objects.setHttpServletResponse(response);
