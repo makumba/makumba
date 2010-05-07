@@ -228,6 +228,36 @@ public abstract class AnalysableElement extends TagSupport {
         }
     }
 
+    protected static TagData getElementBefore(PageCache pageCache, ElementData elData,
+            Class<? extends AnalysableTag> klass) {
+        return getElementNextTo(pageCache, elData, true, klass);
+    }
+
+    protected static TagData getElementAfter(PageCache pageCache, ElementData elData,
+            Class<? extends AnalysableTag> klass) {
+        return getElementNextTo(pageCache, elData, false, klass);
+    }
+
+    private static TagData getElementNextTo(PageCache pageCache, ElementData elData, boolean before,
+            Class<? extends AnalysableTag> klass) {
+        Map<Object, Object> tagDataCache = pageCache.retrieveCache(MakumbaJspAnalyzer.TAG_DATA_CACHE);
+        if (tagDataCache == null) {
+            return null;
+        }
+        TagData tagData = null;
+        for (Object key : tagDataCache.keySet()) {
+            TagData td = (TagData) tagDataCache.get(key);
+            boolean correctClass = klass == null || klass.isAssignableFrom(td.getTagObject().getClass());
+            boolean direction = (before && td.before(elData)) || !before && td.after(elData);
+            if (direction && correctClass) {
+                if (tagData == null || ((before && td.after(tagData)) || (!before && td.before(tagData)))) {
+                    tagData = td;
+                }
+            }
+        }
+        return tagData;
+    }
+
     public static final class FilePositionElementComparator implements Comparator<AnalysableElement> {
         public int compare(AnalysableElement o1, AnalysableElement o2) {
             int lineCompare = Double.compare(o1.getElementData().getStartLine(), o2.getElementData().getStartLine());
