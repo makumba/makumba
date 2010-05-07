@@ -115,9 +115,13 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
     static String[] formTagNames = { "form", "newForm", "addForm", "editForm", "deleteLink", "delete", "searchForm",
             "new", "add", "edit", "submit" };
     
-    static String[] elExpressions = { };
-    
-    static String[] elExpressionNames = { "expr", "nextCount"};
+    private static final String COUNT_FUNCTIONS = "org.makumba.list.functions.CountFunctions";
+
+    static String[] elExpressions = { "count", COUNT_FUNCTIONS, "maxCount", COUNT_FUNCTIONS, "maxResults",
+            COUNT_FUNCTIONS, "nextCount", COUNT_FUNCTIONS, "lastCount", COUNT_FUNCTIONS, "lastCountById",
+            COUNT_FUNCTIONS };
+
+    static String[] elExpressionNames = { "expr", "nextCount", "count", "maxCount", "lastCountById", "lastCount", };
 
     static final Map<String, Class<?>> tagClasses = new HashMap<String, Class<?>>();
 
