@@ -536,6 +536,11 @@ public class QueryTag extends GenericListTag implements IterationTag {
     public int doAnalyzedEndTag(PageCache pageCache) throws JspException {
         pageContext.getRequest().setAttribute(standardLastCountVar,
             pageContext.getRequest().getAttribute(standardMaxCountVar));
+        if (StringUtils.isNotBlank(id)) {
+            pageContext.getRequest().setAttribute(standardLastCountVar + "_" + id,
+                pageContext.getRequest().getAttribute(standardMaxCountVar));
+        }
+        
 
         pageContext.getRequest().setAttribute(standardCountVar, upperCount);
         pageContext.getRequest().setAttribute(standardMaxCountVar, upperMaxCount);
@@ -700,6 +705,21 @@ public class QueryTag extends GenericListTag implements IterationTag {
      */
     public static int lastCount() {
         Object attribute = MakumbaJspFactory.getPageContext().getRequest().getAttribute(standardLastCountVar);
+        if (attribute == null) {
+            return -1;
+        }
+        return ((Integer) attribute).intValue();
+    }
+
+    /**
+     * Gives the total number of iterations of the iterationGroup identified by the given ID string
+     * 
+     * @param id
+     *            the id of the mak:list or mak:object tag to relate to
+     * @return The total number of iterations performed within the given iterationGroup
+     */
+    public static int lastCountById(String id) {
+        Object attribute = MakumbaJspFactory.getPageContext().getRequest().getAttribute(standardLastCountVar + "_" + id);
         if (attribute == null) {
             return -1;
         }
