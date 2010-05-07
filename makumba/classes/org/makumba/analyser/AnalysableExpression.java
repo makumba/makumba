@@ -4,6 +4,7 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.Tag;
 
 import org.makumba.LogicException;
+import org.makumba.ProgrammerError;
 import org.makumba.commons.MultipleKey;
 
 /**
@@ -89,13 +90,12 @@ public abstract class AnalysableExpression extends AnalysableElement {
 
     /**
      * Finds the first parent of this expression that is a tag of the specified type
+     * 
      * @clazz the type of the parent tag we are looking for
      * @return a parent {@link Tag}
      */
     protected Tag findParentWithClass(Class<?> clazz) {
 
-        // FIXME: this seems to be a sloppy copy of TagSupport#findAncestorWithClass
-        // It leads easily to an endless loop, if the parent tag itself is not of the desired class 
         boolean isInterface = false;
         Tag from = getParent();
 
@@ -105,7 +105,7 @@ public abstract class AnalysableExpression extends AnalysableElement {
         }
 
         for (;;) {
-            Tag parent = from; // FIXME: most likely should be from.getParent !!!
+            Tag parent = from;
 
             if (parent == null) {
                 return null;
@@ -114,8 +114,19 @@ public abstract class AnalysableExpression extends AnalysableElement {
             if ((isInterface && clazz.isInstance(parent)) || clazz.isAssignableFrom(parent.getClass())) {
                 return parent;
             } else {
-                from = parent;
+                from = from.getParent();
             }
+        }
+    }
+
+    /**
+     * Checks that the function has the expected number of arguments. This should be enforced by the JSP compiler, but
+     * an additional check can't hurt
+     */
+    protected void checkNumberOfArguments(final int argumentCount) throws ProgrammerError {
+        if (elData.getArguments().size() != argumentCount) {
+            throw new ProgrammerError("Function '" + expression + "' accepts " + argumentCount + " arguments, but "
+                    + elData.getArguments().size() + " were provided.");
         }
     }
 
