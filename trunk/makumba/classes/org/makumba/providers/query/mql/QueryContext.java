@@ -394,12 +394,13 @@ public class QueryContext {
     }
 
     private void rewriteProjections(Join j) {
-        TextList text= labelText.get(j.label2);
-        if(text==null){
-            if(!walker.isAnalysisQuery()){
-                String msg= "unused label: "+j.label2 ;
-                walker.addWarning(msg);
-                java.util.logging.Logger.getLogger("org.makumba.db.query.compilation").warning(msg+ " in query "+walker.query);
+        TextList text = labelText.get(j.label2);
+        if (text == null) {
+            String msg = "unused label: " + j.label2;
+            walker.addWarning(msg);
+            if (!walker.isAnalysisQuery()) {
+                java.util.logging.Logger.getLogger("org.makumba.db.query.compilation").warning(
+                    msg + " in query " + walker.query);
             }
             return;
         }
