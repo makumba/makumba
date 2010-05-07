@@ -1,5 +1,6 @@
 package org.makumba.providers.query.hql;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -311,6 +312,10 @@ public class HqlAnalyzer implements QueryAnalysis {
     }
     public AST getPass1Tree() {
         // TODO Auto-generated method stub
+        return null;
+    }
+    public Collection<String> getWarnings() {
+        // no warnings supported for now
         return null;
     }
 

@@ -1,6 +1,8 @@
 package org.makumba.providers.query.mql;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -453,6 +455,13 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
             return false;
         return select.getFirstChild().getNextSibling() == null
                 && select.getFirstChild().getType() == HqlSqlTokenTypes.NUM_INT;
+    }
+
+    Collection<String> warnings;
+    public void addWarning(String msg) {
+        if(warnings==null)
+            warnings= new ArrayList<String>();
+        warnings.add(msg);
     }
  
 }

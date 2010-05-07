@@ -23,6 +23,7 @@
 
 package org.makumba.providers;
 
+import java.util.Collection;
 import java.util.Map;
 
 import org.makumba.DataDefinition;
@@ -76,6 +77,12 @@ public interface QueryAnalysis {
      * Each mentioning of a parameter new will get a new field in this DataDefinition!  
      */
     DataDefinition getParameterTypes();
+    
+    /**
+     * Get the warnings resulted from query analysis
+     * @return a collection of warnings, as strings
+     */
+    public Collection<String> getWarnings();
 
     /**
      * return the pass1 (syntax) AST tree
