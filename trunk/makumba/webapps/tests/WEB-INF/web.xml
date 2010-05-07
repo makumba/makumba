@@ -26,6 +26,10 @@
     <filter-name>makumba_controller</filter-name>
     <url-pattern>*.jspx</url-pattern>
   </filter-mapping>
+    <filter-mapping>
+    <filter-name>makumba_controller</filter-name>
+    <url-pattern>/JspRedirector</url-pattern>
+  </filter-mapping>
   <filter-mapping>
     <filter-name>makumba_controller</filter-name>
     <url-pattern>/mak-tools</url-pattern>
