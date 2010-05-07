@@ -1,6 +1,7 @@
 package org.makumba.analyser;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import org.makumba.analyser.engine.SyntaxPoint;
 
@@ -13,11 +14,9 @@ import org.makumba.analyser.engine.SyntaxPoint;
 public class ELData extends ElementData implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    public String getExpression() {
-        return expression;
-    }
+    private String expression;
 
-    String expression;
+    private ArrayList<String> arguments;
 
     public ELData(String expression, SyntaxPoint start, SyntaxPoint end) {
         this.expression = expression;
@@ -28,4 +27,16 @@ public class ELData extends ElementData implements Serializable {
         this.endColumn = end.getColumn();
     }
 
+    public ELData(String expression, ArrayList<String> arguments, SyntaxPoint start, SyntaxPoint end) {
+        this(expression, start, end);
+        this.arguments = arguments;
+    }
+
+    public String getExpression() {
+        return expression;
+    }
+
+    public ArrayList<String> getArguments() {
+        return arguments;
+    }
 }
