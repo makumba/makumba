@@ -1822,8 +1822,19 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
 
 
   <function>
-    <name>nextCount</name>
+    <name>lastCountById</name>
     <descriptionPage>LastCountFunctionDescription</descriptionPage>
+    <function-class>org.makumba.list.tags.QueryTag</function-class>
+    <function-signature>int lastCountById(java.lang.String)</function-signature>
+    <example>CountFunctionExample</example>
+    <see>count,maxCount,nextCount,maxResults</see>
+  </function>
+
+
+
+  <function>
+    <name>nextCount</name>
+    <descriptionPage>NextCountFunctionDescription</descriptionPage>
     <function-class>org.makumba.list.tags.QueryTag</function-class>
     <function-signature>int nextCount()</function-signature>
     <example>CountFunctionExample</example>
@@ -1837,7 +1848,6 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
     <descriptionPage>MaxResultsFunctionDescription</descriptionPage>
     <function-class>org.makumba.list.tags.QueryTag</function-class>
     <function-signature>int maxResults()</function-signature>
-    <descriptionPage>MaxResultsFunctionDescription</descriptionPage>
     <example>CountFunctionExample</example>
     <see>count,maxCount,lastCount,nextCount</see>
   </function>
@@ -1888,6 +1898,13 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
       <required>false</required>
       <rtexprvalue>yes</rtexprvalue>
       <description>The name of the items displayed, to be used in the text "Showing 'itemName' x out of y (Page z)".</description>
+      <comments>Rtexpr.</comments>
+    </attribute>
+    <attribute>
+      <name>forList</name>
+      <required>false</required>
+      <rtexprvalue>yes</rtexprvalue>
+      <description>The ID of the list to related to; used when the pagination is not enclosed in a mak:list/object</description>
       <comments>Rtexpr.</comments>
     </attribute>
 
