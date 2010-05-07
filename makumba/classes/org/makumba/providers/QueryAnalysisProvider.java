@@ -24,7 +24,9 @@
 package org.makumba.providers;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -320,7 +322,10 @@ public abstract class QueryAnalysisProvider {
             extraWhere.add(where);
         }
 
+        Set<String> actors= new HashSet<String>();
         public void addActor(AST actorType, String paramSyntax) {
+            if(actors.contains(actorType))
+                return;
             String act = getGeneratedActorName(actorType);
             // make an extra FROM
             AST range = ASTUtil.makeNode(HqlTokenTypes.RANGE, "RANGE");
