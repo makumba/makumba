@@ -18,7 +18,6 @@ import org.makumba.ProgrammerError;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.ClassResource;
-import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.tags.GenericMakumbaTag;
 import org.makumba.list.tags.QueryTag;
@@ -303,16 +302,7 @@ public class PaginationTag extends GenericMakumbaTag {
     }
 
     private AnalysableTag getReferredListTag(PageCache pageCache) {
-        if (forList != null) {
-            AnalysableTag tag = (AnalysableTag) pageCache.retrieve(MakumbaJspAnalyzer.TAG_CACHE, forList);
-            if (tag == null) {
-                throw new ProgrammerError("Could not find list with id '" + forList + "'");
-            } else {
-                return (AnalysableTag) tag;
-            }
-        } else {
-            return null;
-        }
+        return getTagById(pageCache, forList, PaginationTag.class);
     }
 
     public void setForList(String forList) {

@@ -2,6 +2,7 @@ package org.makumba.analyser;
 
 import java.util.Comparator;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Stack;
 
 import javax.servlet.http.HttpServletRequest;
@@ -9,10 +10,13 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
 
+import org.apache.commons.lang.StringUtils;
 import org.makumba.MakumbaError;
+import org.makumba.ProgrammerError;
 import org.makumba.analyser.engine.JspParseData;
 import org.makumba.analyser.engine.TomcatJsp;
 import org.makumba.analyser.interfaces.JspAnalyzer;
+import org.makumba.commons.MakumbaJspAnalyzer;
 
 /**
  * An analyzable element of the page, e.g. a tag or an EL expression.<br>
@@ -191,6 +195,37 @@ public abstract class AnalysableElement extends TagSupport {
             pageContext.setAttribute("makumba.parse.cache", pageCache);
         }
         return pageCache;
+    }
+
+    protected static AnalysableTag getTagById(PageCache pageCache, String id, Class<? extends AnalysableTag> klass) {
+        return getTagByAttribute(pageCache, "id", id, klass);
+    }
+
+    protected static AnalysableTag getTagByAttribute(PageCache pageCache, String attributeName, String attributeValue,
+            Class<? extends AnalysableTag> klass) {
+        Map<Object, Object> tagDataCache = pageCache.retrieveCache(MakumbaJspAnalyzer.TAG_DATA_CACHE);
+        AnalysableTag tag = null;
+        for (Object key : tagDataCache.keySet()) {
+            TagData tagData = (TagData) tagDataCache.get(key);
+            String attribute = tagData.attributes.get(attributeName);
+            if (StringUtils.equals(attribute, attributeValue)) {
+                tag = (AnalysableTag) tagData.getTagObject();
+                break;
+            }
+        }
+        if (tag != null && klass != null && !klass.isAssignableFrom(tag.getClass())) {
+            throw new ProgrammerError("Tag with attribute '" + attributeName + "' of value '" + attributeValue
+                    + "' is of type " + tag.getClass().getSimpleName() + ", required " + klass.getSimpleName());
+        }
+        return tag;
+    }
+
+    protected static void checkTagFound(PageCache pageCache, String attributeName, String attributeValue,
+            Class<? extends AnalysableTag> klass) {
+        if (getTagByAttribute(pageCache, attributeName, attributeValue, klass) == null) {
+            throw new ProgrammerError("Could not find tag with attribute '" + attributeName + "' of value '"
+                    + attributeValue + "' in the page.");
+        }
     }
 
     public static final class FilePositionElementComparator implements Comparator<AnalysableElement> {
