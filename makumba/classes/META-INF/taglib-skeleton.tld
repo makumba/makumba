@@ -304,7 +304,13 @@ Can be a Rtexpr <%= ...%>]]></comments>
     </attribute>
 
     <!-- generic -->
-    <attribute name="styleClass" specifiedIn="form" />
+    <attribute>
+      <name>styleClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Generic HTML tag attribute</description>
+      <comments>results in class="..."</comments>
+    </attribute>
   </tag>
 
 
@@ -752,20 +758,14 @@ Values are none (displayed in <mak:response/>), before (before the input), after
     </attribute>
 
     <!-- generic: -->
+    <attribute name="styleClass" specifiedIn="pagination" />
+
     <attribute>
       <name>styleId</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <description>Generic HTML tag attribute</description>
       <comments>results in id="..."</comments>
-    </attribute>
-
-    <attribute>
-      <name>styleClass</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Generic HTML tag attribute</description>
-      <comments>results in class="..."</comments>
     </attribute>
 
     <attribute>
@@ -1902,4 +1902,36 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
     <see>count,maxCount,lastCount,nextCount</see>
   </function>
 
+
+
+  <function>
+    <name>expr</name>
+    <descriptionPage>ExprFunctionDescription</descriptionPage>
+    <function-class>org.makumba.list.tags.QueryTag</function-class>
+    <function-signature>boolean expr(java.lang.String)</function-signature>
+    <example>ExprFunctionExample</example>
+    <see>value</see>
+  </function>
+
+
+
+  <function>
+    <name>hasValueChanged</name>
+    <descriptionPage>HasValueChangedFunctionDescription</descriptionPage>
+    <function-class>org.makumba.list.tags.QueryTag</function-class>
+    <function-signature>boolean hasValueChanged(java.lang.String)</function-signature>
+    <example>ValueChangeFunctionExample</example>
+    <see>willValueChange</see>
+  </function>
+
+  <function>
+    <name>willValueChange</name>
+    <descriptionPage>WillValueChangeFunctionDescription</descriptionPage>
+    <function-class>org.makumba.list.tags.QueryTag</function-class>
+    <function-signature>boolean willValueChange(java.lang.String)</function-signature>
+    <example>ValueChangeFunctionExample</example>
+    <see>hasValueChanged</see>
+  </function>
+  
+  
 </taglib>
