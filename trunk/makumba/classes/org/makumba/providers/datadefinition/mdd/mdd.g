@@ -6,7 +6,7 @@ class MDDLexer extends Lexer;
 
 options {
     exportVocab=MDD;
-    k = 3;
+    k = 4;
 }
 	    
 LEFT_PAREN options { paraphrase = "'('";}: '(';
@@ -567,6 +567,7 @@ keyword
     | FILE
     | TEXT
     | TITLE
+    | DATE
     ;
 
 atom
