@@ -20,7 +20,7 @@ rudi: extended tests for MDD functions
 rudi: improved mak:info tag
 rudi: improvement to JSP viewer: displaying a pop-up with generated queries for the list/object tags; showing analysis errors 
 manu: date now accepted as field name in antlr MDD parser, also fields starting with low... accepted (by incresing lexer lookahead to avoid collision with 'lower' keyword)
-
+ 
 NOT TO BE RELEASED YET (need more testing)
 manu: auto-complete for mak:input (char and ptr)
 manu, marius: edit-in-place for mak:input and mak:list ("editable" attribute). Is yet to be finished.
