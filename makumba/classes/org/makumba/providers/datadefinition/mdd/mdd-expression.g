@@ -155,6 +155,7 @@ keyword
     | FILE
     | TEXT
     | TITLE
+    | DATE
     ;
 
 number
