@@ -54,7 +54,7 @@ import org.makumba.providers.DataDefinitionProvider;
  * the tag. The query projections are indicated by Value tags in the body of the tag. The sub-tags will generate
  * subqueries of their enclosing tag queries (i.e. their WHERE, GROUPBY and ORDERBY are concatenated). Attributes of the
  * environment can be passed as $attrName to the query
- *
+ * 
  * @author Cristian Bogdan
  * @version $Id$
  */
@@ -214,7 +214,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
     /**
      * Computes and set the tagKey. At analysis time, the listQuery is associated with the tagKey, and retrieved at
      * runtime. At runtime, the QueryExecution is discovered by the tag based on the tagKey.
-     *
+     * 
      * @param pageCache
      *            The page cache for the current page
      */
@@ -234,7 +234,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
     /**
      * Determines whether the tag can have the same key as others in the page
-     *
+     * 
      * @return <code>true</code> if the tag is allowed to have the same key as others in the page, <code>false</code>
      *         otherwise
      */
@@ -246,7 +246,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
     /**
      * Starts the analysis of the tag, without knowing what tags follow it in the page. Defines a query, sets the types
      * of variables to "int".
-     *
+     * 
      * @param pageCache
      *            The page cache for the current page
      */
@@ -274,7 +274,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
     /**
      * Ends the analysis of the tag, after all tags in the page were visited. As all the query projections are known, a
      * RecordViewer is cached as formatter for the mak:values nested in this tag.
-     *
+     * 
      * @param pageCache
      *            The page cache for the current page
      */
@@ -299,7 +299,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
      * Decides if there will be any tag iteration. The QueryExecution is found (and made if needed), and we check if
      * there are any results in the iterationGroup. Calls {@link #initiateQueryExecution(PageContext, boolean)} and
      * {@link #doTagExecution(PageCache, PageContext)}
-     *
+     * 
      * @param pageCache
      *            The page cache for the current page
      * @return The tag return state as defined in the {@link javax.servlet.jsp.tagext.Tag} interface
@@ -329,7 +329,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
         // we know that the query was executed it the pageContext holds an attribute with the exact query key
         // the key is computed by getListKey(), and contains the current list key, and all parent list keys & iteration
         // numbers
-        
+
         String listKey = getListKey(pageContext);
         final boolean wasStarted = pageContext.getRequest().getAttribute(listKey) != null;
 
@@ -408,13 +408,14 @@ public class QueryTag extends GenericListTag implements IterationTag {
             pageContext.getRequest().setAttribute(standardCountVar, one);
             pageContext.getRequest().setAttribute(getListSpecificCountVar(this), one);
             return EVAL_BODY_INCLUDE;
+        } else {
+            if (countVar != null) {
+                pageContext.setAttribute(countVar, zero);
+            }
+            pageContext.getRequest().setAttribute(standardCountVar, zero);
+            pageContext.getRequest().setAttribute(getListSpecificCountVar(this), zero);
+            return SKIP_BODY;
         }
-        if (countVar != null) {
-            pageContext.setAttribute(countVar, zero);
-        }
-        pageContext.getRequest().setAttribute(standardCountVar, zero);
-        pageContext.getRequest().setAttribute(getListSpecificCountVar(this), zero);
-        return SKIP_BODY;
     }
 
     /**
@@ -439,7 +440,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
     /**
      * Returns a variable name that is specific for the given query tag inside the current page
-     *
+     * 
      * @return {@link #standardCountVar} appended {@link AnalysableTag#getPageTextInfo()}, i.e. the source file name,
      *         start &amp; end line and column of the tag
      */
@@ -455,7 +456,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
     /**
      * Sets the number of iterations in the iterationGroup. ObjectTag will redefine this and throw an exception if n>1
-     *
+     * 
      * @param n
      *            The number of iterations in the iterationGroup
      * @throws JspException
@@ -485,7 +486,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
     /**
      * Decides whether to do further iterations. Checks if we got to the end of the iterationGroup.
-     *
+     * 
      * @return The tag return state as defined in the {@link javax.servlet.jsp.tagext.Tag} interface
      * @throws JspException
      */
@@ -525,7 +526,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
     /**
      * Cleans up variables, especially for the rootList.
-     *
+     * 
      * @param pageCache
      *            The page cache for the current page
      * @return The tag return state as defined in the {@link javax.servlet.jsp.tagext.Tag} interface in order to
@@ -540,7 +541,6 @@ public class QueryTag extends GenericListTag implements IterationTag {
             pageContext.getRequest().setAttribute(standardLastCountVar + "_" + id,
                 pageContext.getRequest().getAttribute(standardMaxCountVar));
         }
-        
 
         pageContext.getRequest().setAttribute(standardCountVar, upperCount);
         pageContext.getRequest().setAttribute(standardMaxCountVar, upperMaxCount);
@@ -556,7 +556,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
     /**
      * Finds the parentList of a list
-     *
+     * 
      * @param tag
      *            the tag we want to discover the parent of
      * @return the parent QueryTag of the Tag
@@ -567,7 +567,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
     /**
      * Finds the key of the parentList of the Tag
-     *
+     * 
      * @param tag
      *            the tag we want to discover the parent of
      * @param pageCache
@@ -581,7 +581,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
     /**
      * Gets the query for a given key
-     *
+     * 
      * @param key
      *            the key of the tag for which we want to get a query
      * @return The OQL query corresponding to this tag
@@ -596,7 +596,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
     /**
      * Gets a composed query from the cache, and if none is found, creates one and caches it.
-     *
+     * 
      * @param key
      *            the key of the tag
      * @param sections
@@ -621,7 +621,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
     /**
      * Gives the value of the iteration in progress
-     *
+     * 
      * @return The current count of iterations
      */
     public static int count() {
@@ -637,7 +637,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
     /**
      * Gives the maximum number of iteration of the iterationGroup
-     *
+     * 
      * @return The maximum number of iterations within the current iterationGroup
      */
     public static int maxCount() {
@@ -655,7 +655,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
      * Gives the maximum number of results returned as if the query would not contain any limit / offset. <br>
      * TODO: we need to pass quite some information in the request attributes, as this method has to be static. Not sure
      * what happens if there are more lists in the same page, if that would overlap or not.
-     *
+     * 
      * @return The maximum number of results returned as if the query would not contain any limit / offset.
      */
     public static int maxResults() {
@@ -700,7 +700,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
     /**
      * Gives the total number of iterations of the previous iterationGroup
-     *
+     * 
      * @return The total number of iterations performed within the previous iterationGroup
      */
     public static int lastCount() {
@@ -730,7 +730,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
      * Gives the total number of iterations of the next iterationGroup.<br/>
      * Invoking this method in the JSP page will cause this mak:list/object to pre-execute it's query, for the number of
      * iterations to be known before the tag will actually be executed.
-     *
+     * 
      * @return The total number of iterations that will be performed within the next iterationGroup
      */
     public static int nextCount() throws LogicException, JspException {
