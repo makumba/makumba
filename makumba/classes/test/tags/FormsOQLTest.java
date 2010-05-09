@@ -25,7 +25,6 @@ package test.tags;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -48,11 +47,8 @@ import test.MakumbaTestData;
 import test.MakumbaTestSetup;
 import test.util.MakumbaJspTestCase;
 
-import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.HTMLElement;
-import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebForm;
-import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 
 /**
@@ -64,11 +60,22 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 
     private static final String namePersonIndivSurname = "Makumbian";
 
-    private boolean record = false;
+    @Override
+    protected boolean getRecordingMode() {
+        return false;
+    }
+
+    @Override
+    protected String getJspDir() {
+        return "forms-oql";
+    }
+
+    @Override
+    protected MakumbaTestSetup getSetup() {
+        return setup;
+    }
 
     static Suite setup;
-
-    private String output;
 
     private WebResponse submissionResponse;
 
@@ -90,52 +97,19 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         NamedResources.cleanStaticCache("Databases open");
     }
 
-    public void beginTomcat(Request request) {
-        WebConversation wc = new WebConversation();
-        WebRequest req = new GetMethodWebRequest(System.getProperty("cactus.contextURL"));
-        try {
-            wc.getResponse(req);
-        } catch (MalformedURLException e) {
-        } catch (IOException e) {
-            setup.tearDown();
-            System.err.println("\n\n\n\n\nYou should run tomcat first! Use mak-tomcat to do that.\n\n");
-            System.exit(1);
-        } catch (SAXException e) {
-        }
-    }
-
     public void testTomcat() {
     }
 
     public void testMakNewForm() throws ServletException, IOException {
-        pageContext.include("forms-oql/testMakNewForm.jsp");
+        includeJspWithTestName();
     }
 
     public void endMakNewForm(WebResponse response) throws Exception {
-        try {
-            output = response.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
+        compareToFileWithTestName(response);
     }
 
     public void beginMakAddForm(Request request) throws Exception {
-        WebConversation wc = new WebConversation();
-        WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL") + "/forms-oql/beginMakAddForm.jsp");
-
-        // first, compare that the form generated is ok
-        try {
-            output = resp.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + resp.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
-
-        // we get the first form in the jsp
-        WebForm form = resp.getForms()[0];
+        WebForm form = getFormInJspWithTestName();
         // set the input field "email" to "bartolomeus@rogue.be"
         form.setParameter("email", "bartolomeus@rogue.be");
         // submit the form
@@ -143,148 +117,83 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void testMakAddForm() throws ServletException, IOException {
-        pageContext.include("forms-oql/testMakAddForm.jsp");
+        includeJspWithTestName();
     }
 
     public void endMakAddForm(WebResponse response) throws Exception {
-        try {
-            output = response.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
+        compareToFileWithTestName(response);
     }
 
     public void testMakEditForm() throws ServletException, IOException {
-        pageContext.include("forms-oql/testMakEditForm.jsp");
+        includeJspWithTestName();
     }
 
     public void endMakEditForm(WebResponse response) throws Exception {
-        try {
-            output = response.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
+        compareToFileWithTestName(response);
     }
 
     public void testMakForm() throws ServletException, IOException, SAXException {
-        pageContext.include("forms-oql/testMakForm.jsp");
+        includeJspWithTestName();
     }
 
     public void endMakForm(WebResponse response) throws Exception {
-        try {
-            output = response.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
+        compareToFileWithTestName(response);
     }
 
     public void testBug946() throws ServletException, IOException, SAXException {
-        pageContext.include("forms-oql/testBug946.jsp");
+        includeJspWithTestName();
     }
 
     public void endBug946(WebResponse response) throws Exception {
-        try {
-            output = response.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
+        compareToFileWithTestName(response);
     }
 
     public void testBug1115() throws ServletException, IOException, SAXException {
-        pageContext.include("forms-oql/testBug1115.jsp");
+        includeJspWithTestName();
     }
 
     public void endBug1115(WebResponse response) throws Exception {
-        try {
-            output = response.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
+        compareToFileWithTestName(response);
     }
 
     public void testMakFormRepeatedForms() throws ServletException, IOException, SAXException {
+        // FIXME: jsp name not the same as test name
         pageContext.include("forms-oql/testMakRepeatedForms.jsp");
     }
 
-    public void endMakFormRepeatedForms(WebResponse response) throws Exception {
-        try {
-            output = response.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-
-        assertTrue(compareTest(output));
+    public void endMakRepeatedForms(WebResponse response) throws Exception {
+        compareToFileWithTestName(response);
     }
 
     public void testFormNestedForms() throws ServletException, IOException, SAXException {
+        // FIXME: jsp name not the same as test name
         pageContext.include("forms-oql/testMakNestedForms.jsp");
     }
 
-    public void endFormNestedForms(WebResponse response) throws Exception {
-        try {
-            output = response.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
+    public void endNestedForms(WebResponse response) throws Exception {
+        compareToFileWithTestName(response);
     }
 
     public void testFormMakNewFile() throws ServletException, IOException, SAXException {
+        // FIXME: jsp name not the same as test name
         pageContext.include("forms-oql/testMakNewFormFile.jsp");
     }
 
-    public void endFormMakNewFile(WebResponse response) throws Exception {
-        try {
-            output = response.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
+    public void endMakNewFile(WebResponse response) throws Exception {
+        compareToFileWithTestName(response);
     }
 
     public void testFormMakNewBinary() throws ServletException, IOException, SAXException {
+        // FIXME: jsp name not the same as test name
         pageContext.include("forms-oql/testMakNewFormBinary.jsp");
     }
 
-    public void endFormMakNewBinary(WebResponse response) throws Exception {
-        try {
-            output = response.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
+    public void endMakNewBinary(WebResponse response) throws Exception {
+        compareToFileWithTestName(response);
     }
 
     public void beginMakAddToNewForm(Request request) throws Exception {
-        WebConversation wc = new WebConversation();
-        WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL")
-                + "/forms-oql/beginMakAddToNewForm.jsp");
-
-        // first, compare that the form generated is ok
-        try {
-            output = resp.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + resp.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
-
-        // we get the first form in the jsp
-        WebForm form = resp.getForms()[0];
+        WebForm form = getFormInJspWithTestName();
         // set the inputs in the add-to-new form
         form.setParameter("indiv.name", MakumbaTestData.namePersonIndivName_AddToNew);
         form.setParameter("description_1", "addToNewDescription");
@@ -294,34 +203,16 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void testMakAddToNewForm() throws ServletException, IOException {
-        pageContext.include("forms-oql/testMakAddToNewForm.jsp");
+        includeJspWithTestName();
     }
 
     public void endMakAddToNewForm(WebResponse response) throws Exception {
-        try {
-            output = response.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
+        compareToFileWithTestName(response);
     }
 
     public void beginMakSearchForm(Request request) throws Exception {
-        WebConversation wc = new WebConversation();
-        WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL") + "/forms-oql/testMakSearchForm.jsp");
-
-        // first, compare that the form generated is ok
-        try {
-            output = resp.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + resp.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
-
-        // we get the first form in the jsp
-        WebForm form = resp.getForms()[0];
+        // FIXME: jsp name not the same as test name
+        WebForm form = getFormInJsp("/forms-oql/testMakSearchForm.jsp");
         // set the inputs in the add-to-new form
         form.setParameter("indiv.name", "a");
 
@@ -338,30 +229,12 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakSearchForm(WebResponse response) throws Exception {
-        try {
-            output = submissionResponse.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
+        compareToFileWithTestName(submissionResponse);
     }
 
     public void beginMakSearchForm2(Request request) throws Exception {
-        WebConversation wc = new WebConversation();
-        WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL") + "/forms-oql/testMakSearchForm2.jsp");
-
-        // first, compare that the form generated is ok
-        try {
-            output = resp.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + resp.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
-
-        // we get the first form in the jsp
-        WebForm form = resp.getForms()[0];
+        // FIXME: jsp name not the same as test name
+        WebForm form = getFormInJsp("/forms-oql/testMakSearchForm2.jsp");
         // set the inputs in the add-to-new form
         form.setParameter("indiv.name", "a");
 
@@ -378,30 +251,12 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakSearchForm2(WebResponse response) throws Exception {
-        try {
-            output = submissionResponse.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
+        compareToFileWithTestName(submissionResponse);
     }
 
     public void beginMakSearchForm3(Request request) throws Exception {
-        WebConversation wc = new WebConversation();
-        WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL") + "/forms-oql/testMakSearchForm3.jsp");
-
-        // first, compare that the form generated is ok
-        try {
-            output = resp.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + resp.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
-
-        // we get the first form in the jsp
-        WebForm form = resp.getForms()[0];
+        // FIXME: jsp name not the same as test name
+        WebForm form = getFormInJsp("/forms-oql/testMakSearchForm3.jsp");
 
         // TODO: read HTTP unit documents carefully.
         // not sure if that is the most elegant / intended solution
@@ -416,45 +271,20 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakSearchForm3(WebResponse response) throws Exception {
-        try {
-            output = submissionResponse.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
+        compareToFileWithTestName(submissionResponse);
     }
 
     public void testMakSearchFormDefaultMatchMode() throws ServletException, IOException, SAXException {
-        pageContext.include("forms-oql/testMakSearchFormDefaultMatchMode.jsp");
+        includeJspWithTestName();
     }
 
     public void endMakSearchFormDefaultMatchMode(WebResponse response) throws Exception {
-        try {
-            output = response.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
+        compareToFileWithTestName(response);
     }
 
     public void beginMakSearchFormInSet(Request request) throws Exception {
-        WebConversation wc = new WebConversation();
-        WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL")
-                + "/forms-oql/testMakSearchFormInSet.jsp");
-
-        // first, compare that the form generated is ok
-        try {
-            output = resp.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + resp.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
-
-        // we get the first form in the jsp
-        WebForm form = resp.getForms()[0];
+        // FIXME: jsp name not the same as test name
+        WebForm form = getFormInJsp("/forms-oql/testMakSearchFormInSet.jsp");
 
         // select all gender options ([0, 1], as defined in the MDD test.Person
         form.setParameter("gender", form.getOptionValues("gender"));
@@ -475,31 +305,11 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakSearchFormInSet(WebResponse response) throws Exception {
-        try {
-            output = submissionResponse.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
+        compareToFileWithTestName(submissionResponse);
     }
 
     public void beginFormAnnotation(Request request) throws Exception {
-        WebConversation wc = new WebConversation();
-        WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL")
-                + "/forms-oql/beginFormAnnotation.jsp");
-
-        // first, compare that the form generated is ok
-        try {
-            output = resp.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + resp.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
-
-        // we get the first form in the jsp
-        WebForm form = resp.getForms()[0];
+        WebForm form = getFormInJspWithTestName();
         // set the inputs in the add-to-new form
         form.setParameter("indiv.name", "name");
         form.setParameter("indiv.surname", "surname");
@@ -529,21 +339,8 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void beginMakSearchFormFilterMode(Request request) throws Exception {
-        WebConversation wc = new WebConversation();
-        WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL")
-                + "/forms-oql/testMakSearchFormFilterMode.jsp");
-
-        // first, compare that the form generated is ok
-        try {
-            output = resp.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + resp.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
-
-        // we get the first form in the jsp
-        WebForm form = resp.getForms()[0];
+        // FIXME: jsp name not the same as test name
+        WebForm form = getFormInJsp("/forms-oql/testMakSearchFormFilterMode.jsp");
         // set the inputs in the add-to-new form
         form.setParameter("indiv.name", "v");
 
@@ -560,31 +357,12 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakSearchFormFilterMode(WebResponse response) throws Exception {
-        try {
-            output = submissionResponse.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
+        compareToFileWithTestName(submissionResponse);
     }
 
     public void beginMakSearchFormStaticWhere(Request request) throws Exception {
-        WebConversation wc = new WebConversation();
-        WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL")
-                + "/forms-oql/testMakSearchFormStaticWhere.jsp");
-
-        // first, compare that the form generated is ok
-        try {
-            output = resp.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + resp.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
-
-        // we get the first form in the jsp
-        WebForm form = resp.getForms()[0];
+        // FIXME: jsp name not the same as test name
+        WebForm form = getFormInJsp("/forms-oql/testMakSearchFormStaticWhere.jsp");
         // set the inputs in the add-to-new form
         form.setParameter("indiv.name", "h");
 
@@ -601,13 +379,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakSearchFormStaticWhere(WebResponse response) throws Exception {
-        try {
-            output = submissionResponse.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
+        compareToFileWithTestName(submissionResponse);
     }
 
     public void testFormAnnotation() throws ServletException, IOException {
@@ -615,28 +387,11 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endFormAnnotation(WebResponse response) throws Exception {
-        try {
-            output = submissionResponse.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
+        compareToFileWithTestName(submissionResponse);
     }
 
     public void beginFormResponderOrder(Request request) throws Exception {
-        WebConversation wc = new WebConversation();
-        WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL")
-                + "/forms-oql/beginMakNestedNewForms.jsp");
-
-        // first, compare that the form generated is ok
-        try {
-            output = resp.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + resp.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
+        WebResponse resp = getJspRsponse("/forms-oql/beginMakNestedNewForms.jsp", true);
 
         // read all the inputs with responder codes, store them in an array
         HTMLElement[] responderElements = resp.getElementsWithAttribute("name", "__makumba__responder__");
@@ -690,63 +445,31 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void testClientSideValidationMultipleForms() throws ServletException, IOException, SAXException {
-        pageContext.include("forms-oql/testClientSideValidationMultipleForms.jsp");
+        includeJspWithTestName();
     }
 
     public void endClientSideValidationMultipleForms(WebResponse response) throws Exception {
-        try {
-            output = response.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
+        compareToFileWithTestName(response);
     }
 
     public void testMakInputTypes() throws ServletException, IOException, SAXException {
-        pageContext.include("forms-oql/testMakInputTypes.jsp");
+        includeJspWithTestName();
     }
 
     public void endMakInputTypes(WebResponse response) throws Exception {
-        try {
-            output = response.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
+        compareToFileWithTestName(response);
     }
 
     public void testCalendarEditor() throws ServletException, IOException, SAXException {
-        pageContext.include("forms-oql/testCalendarEditor.jsp");
+        includeJspWithTestName();
     }
 
     public void endCalendarEditor(WebResponse response) throws Exception {
-        try {
-            output = response.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
+        compareToFileWithTestName(response);
     }
 
     public void beginMakNestedNewFormsSimple(Request request) throws Exception {
-        WebConversation wc = new WebConversation();
-        WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL")
-                + "/forms-oql/beginMakNestedNewFormsSimple.jsp");
-
-        // first, compare that the form generated is ok
-        try {
-            output = resp.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + resp.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
-
-        // we get the first form in the jsp
-        WebForm form = resp.getForms()[0];
+        WebForm form = getFormInJspWithTestName();
         // set the inputs in the add-to-new form
         form.setParameter("indiv.name", MakumbaTestData.namePersonIndivName_FirstBrother);
         form.setParameter("indiv.surname", "Person");
@@ -766,31 +489,11 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakNestedNewFormsSimple(WebResponse response) throws Exception {
-        try {
-            output = submissionResponse.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
+        compareToFileWithTestName(submissionResponse);
     }
 
     public void beginMakNestedNewAndEditFormsSimple(Request request) throws Exception {
-        WebConversation wc = new WebConversation();
-        WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL")
-                + "/forms-oql/beginMakNestedNewAndEditFormsSimple.jsp");
-
-        // first, compare that the form generated is ok
-        try {
-            output = resp.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + resp.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
-
-        // we get the first form in the jsp
-        WebForm form = resp.getForms()[0];
+        WebForm form = getFormInJspWithTestName();
         // set the inputs in the add-to-new form
         form.setParameter("indiv.name", MakumbaTestData.namePersonIndivName_StepBrother);
         form.setParameter("indiv.surname", namePersonIndivSurname);
@@ -807,55 +510,29 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         // we need to have this method, even if it is empty; otherwise, the test is not run
     }
 
+    public void endMakNestedNewAndEditFormsSimple(WebResponse response) throws Exception {
+        compareToFileWithTestName(submissionResponse);
+    }
+
     public void testMakSubmit() throws ServletException, IOException {
-        pageContext.include("forms-oql/testMakSubmit.jsp");
+        includeJspWithTestName();
     }
 
     public void endMakSubmit(WebResponse response) throws Exception {
-        try {
-            output = response.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
+        compareToFileWithTestName(response);
     }
 
     /** TODO this is not a real test, we should test for the result of the response of the partial postback **/
     public void testMakFormAjax() throws ServletException, IOException {
-        pageContext.include("forms-oql/testMakFormAjax.jsp");
+        includeJspWithTestName();
     }
 
     public void endMakFormAjax(WebResponse response) throws Exception {
-        try {
-            output = response.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
+        compareToFileWithTestName(response);
     }
 
-    public void endMakNestedNewAndEditFormsSimple(WebResponse response) throws Exception {
-        try {
-            output = submissionResponse.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
-    }
-
-    public void beginLogin(Request request) throws MalformedURLException, IOException, SAXException {
-        WebConversation wc = new WebConversation();
-        WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL") + "/login/loginTest.jsp");
-
-        // we get the first form in the jsp
-        if (resp.getForms().length == 0) {
-            fail("Loging test fails: login page not created correctly, no form present. Page:\n" + resp.getText());
-        }
-        WebForm form = resp.getForms()[0];
-        // we try to login
+    public void beginLogin(Request request) throws Exception {
+        WebForm form = getFormInJsp("/login/testLogin.jsp", false);
         form.setParameter("username", "manu");
         form.setParameter("password", "secret");
         // submit the form
@@ -863,17 +540,10 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void testLogin() throws ServletException, IOException {
-        pageContext.include("login/loginTest.jsp");
+        pageContext.include("login/testLogin.jsp");
     }
 
     public void endLogin(WebResponse response) throws Exception {
-        try {
-            output = response.getText();
-            fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
+        compareToFileWithTestName(response);
     }
-
 }

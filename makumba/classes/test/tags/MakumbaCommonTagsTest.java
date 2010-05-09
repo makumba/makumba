@@ -23,10 +23,11 @@ import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebResponse;
 
 public class MakumbaCommonTagsTest extends MakumbaJspTestCase {
-
+    @Override
+    protected boolean getRecordingMode() {
+        return false;
+    }
     static Suite setup;
-    private String output;
-    private boolean record = false;
 
     private static final class Suite extends MakumbaTestSetup {
         private Suite(Test arg0) {
@@ -39,6 +40,21 @@ public class MakumbaCommonTagsTest extends MakumbaJspTestCase {
         return setup;
     }
 
+    @Override
+    protected String getJspDir() {
+        return "login";
+    }
+
+
+
+    @Override
+    protected MakumbaTestSetup getSetup() {
+        return setup;
+    }
+    
+    public void testTomcat() {
+    }
+    
     public void testVersionTag() throws JspException, IOException {
         MakumbaVersionTag versionTag = new MakumbaVersionTag();
         versionTag.setPageContext(pageContext);
@@ -53,12 +69,8 @@ public class MakumbaCommonTagsTest extends MakumbaJspTestCase {
         pageContext.popBody();
     }
 
-    public void beginLogin(Request request) throws MalformedURLException, IOException, SAXException {
-        WebConversation wc = new WebConversation();
-        WebResponse   resp = wc.getResponse( System.getProperty("cactus.contextURL") + "/login/loginTest.jsp" );
-
-        // we get the first form in the jsp
-        WebForm form = resp.getForms()[0];
+    public void beginLogin(Request request) throws Exception {
+        WebForm form =getFormInJsp("/login/testLogin.jsp", false);
         // we try to login
         form.setParameter("username","manu");
         form.setParameter("password", "secret");
@@ -66,16 +78,10 @@ public class MakumbaCommonTagsTest extends MakumbaJspTestCase {
         form.submit();
     }
     public void testLogin() throws ServletException, IOException {
-        pageContext.include("login/loginTest.jsp");
+        includeJspWithTestName();
     }
     public void endLogin(WebResponse response) throws Exception {
-        try {
-            output = response.getText(); fetchValidTestResult(output, true);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-
-        assertTrue(compareTest(output));
+        compareToFileWithTestName(response);
     }
 
     /*

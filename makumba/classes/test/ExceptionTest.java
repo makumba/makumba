@@ -1,41 +1,44 @@
 package test;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 
 import javax.servlet.ServletException;
 
-import org.apache.cactus.Request;
-import org.xml.sax.SAXException;
-
-import com.meterware.httpunit.GetMethodWebRequest;
-import com.meterware.httpunit.WebConversation;
-import com.meterware.httpunit.WebRequest;
-import com.meterware.httpunit.WebResponse;
-
-import junit.extensions.TestSetup;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import test.util.MakumbaJspTestCase;
 
+import com.meterware.httpunit.WebResponse;
+
 /**
- * Tests for the way makumba handles expcetions
- * 
- * FIXME this appears to be broken, cactus does not proceed the page but instead interrupts execution
+ * Tests for the way makumba handles expcetions FIXME this appears to be broken, cactus does not proceed the page but
+ * instead interrupts execution
  * 
  * @author Manuel Gay
  * @version $Id: ExceptionTest.java,v 1.1 May 11, 2008 3:25:44 AM manu Exp $
  */
 public class ExceptionTest extends MakumbaJspTestCase {
 
+    @Override
+    protected String getJspDir() {
+        return "exceptions";
+    }
+
+    @Override
+    protected boolean getRecordingMode() {
+        return false;
+    }
+
+    @Override
+    protected MakumbaTestSetup getSetup() {
+        return setup;
+    }
+
     static Suite setup;
 
-    private String output;
-    private boolean record = false;
-
-    private static final class Suite extends TestSetup {
+    private static final class Suite extends MakumbaTestSetup {
         private Suite(Test arg0) {
-            super(arg0);
+            super(arg0, null);
         }
     }
 
@@ -44,92 +47,54 @@ public class ExceptionTest extends MakumbaJspTestCase {
         return setup;
     }
 
-    public void beginTomcat(Request request) {
-        WebConversation wc = new WebConversation();
-        WebRequest req = new GetMethodWebRequest(System.getProperty("cactus.contextURL"));
-        try {
-            WebResponse resp = wc.getResponse(req);
-        } catch (MalformedURLException e) {
-        } catch (IOException e) {
-            System.err.println("\n\n\n\n\nYou should run tomcat first! Use mak-tomcat to do that.\n\n");
-            System.exit(1);
-        } catch (SAXException e) {
-        }
-    }
-
     public void testTomcat() {
     }
-    
+
     public void testArrayIndexException() throws ServletException, IOException {
-        pageContext.include("exceptions/testArrayIndexException.jsp");        
+        includeJspWithTestName();
     }
+
     public void endArrayIndexException(WebResponse response) throws Exception {
-        try {
-            output = response.getText(); fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
+        compareToFileWithTestName(response);
     }
-    
+
     public void testCompilationError() throws ServletException, IOException {
-        pageContext.include("exceptions/testCompilationError.jsp");        
+        includeJspWithTestName();
     }
+
     public void endCompilationError(WebResponse response) throws Exception {
-        try {
-            output = response.getText(); fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
+        compareToFileWithTestName(response);
     }
-    
+
     public void testDataDefinitionNotFoundException() throws ServletException, IOException {
-        pageContext.include("exceptions/testDataDefinitionNotFoundException.jsp");        
+        includeJspWithTestName();
     }
+
     public void endDataDefinitionNotFoundException(WebResponse response) throws Exception {
-        try {
-            output = response.getText(); fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
+        compareToFileWithTestName(response);
     }
 
     public void testNoSuchFieldException() throws ServletException, IOException {
-        pageContext.include("exceptions/testNoSuchFieldException.jsp");        
+        includeJspWithTestName();
     }
+
     public void endNoSuchFieldException(WebResponse response) throws Exception {
-        try {
-            output = response.getText(); fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
+        compareToFileWithTestName(response);
     }
-    
+
     public void testNullPointerException() throws ServletException, IOException {
-        pageContext.include("exceptions/testNullPointerException.jsp");        
+        includeJspWithTestName();
     }
+
     public void endNullPointerException(WebResponse response) throws Exception {
-        try {
-            output = response.getText(); fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
+        compareToFileWithTestName(response);
     }
-    
+
     public void testNumberFormatException() throws ServletException, IOException {
-        pageContext.include("exceptions/testNumberFormatException.jsp");        
+        includeJspWithTestName();
     }
+
     public void endNumberFormatException(WebResponse response) throws Exception {
-        try {
-            output = response.getText(); fetchValidTestResult(output, record);
-        } catch (IOException e) {
-            fail("JSP output error: " + response.getResponseMessage());
-        }
-        assertTrue(compareTest(output));
+        compareToFileWithTestName(response);
     }
-    
 }
