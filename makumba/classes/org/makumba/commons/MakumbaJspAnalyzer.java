@@ -52,11 +52,11 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
     // cache keys, centralised in one place to have an overview of what is cached
 
     public static final String TAG_CACHE = "org.makumba.tags";
-    
+
     public static final String EL_CACHE = "org.makumba.el";
 
     public static final String EL_DATA_CACHE = "org.makumba.elData";
-    
+
     public static final String TAG_DATA_CACHE = "org.makumba.tagData";
 
     public static final String FORM_TAGS_DEPENDENCY_CACHE = "org.makumba.dependency";
@@ -82,14 +82,13 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
     public static final String PROJECTION_ORIGIN_CACHE = "org.makumba.projectionOrigin";
 
     public static final String ADD_FORM_DATA_TYPE = "org.makumba.addFormDataType";
-    
+
     public static final String SECTION_EVENT_TO_ID = "org.makumba.sectionsEventToId";
 
     public static final String SECTION_IDEVENT_TO_TYPE = "org.makumba.sectionsEventToType";
-    
+
     public static final String SECTION_DATA = "org.makumba.sectionData";
 
-    
     static String[] listTags = { "value", "org.makumba.list.tags.ValueTag", "list", "org.makumba.list.tags.QueryTag",
             "object", "org.makumba.list.tags.ObjectTag", "if", "org.makumba.list.tags.IfTag", "resultList",
             "org.makumba.list.tags.ResultListTag", "pagination", "org.makumba.list.pagination.PaginationTag",
@@ -114,16 +113,18 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
 
     static String[] formTagNames = { "form", "newForm", "addForm", "editForm", "deleteLink", "delete", "searchForm",
             "new", "add", "edit", "submit" };
-    
+
     private static final String COUNT_FUNCTIONS = "org.makumba.list.functions.CountFunctions";
 
-    static String[] elExpressions = { "count", COUNT_FUNCTIONS, "maxCount", COUNT_FUNCTIONS, "maxResults",
-            COUNT_FUNCTIONS, "nextCount", COUNT_FUNCTIONS, "lastCount", COUNT_FUNCTIONS, "lastCountById",
-            COUNT_FUNCTIONS };
+    static String[] elExpressions = { "value", "org.makumba.list.functions.ValueFunction", "count", COUNT_FUNCTIONS,
+            "maxCount", COUNT_FUNCTIONS, "maxResults", COUNT_FUNCTIONS, "nextCount", COUNT_FUNCTIONS, "lastCount",
+            COUNT_FUNCTIONS, "lastCountById", COUNT_FUNCTIONS };
 
-    static String[] elExpressionNames = { "expr", "nextCount", "count", "maxCount", "lastCountById", "lastCount", };
+    static String[] elExpressionNames = { "value", "nextCount", "count", "maxCount", "lastCountById", "lastCount" };
 
     static final Map<String, Class<?>> tagClasses = new HashMap<String, Class<?>>();
+
+    static final Map<String, Class<?>> elClasses = new HashMap<String, Class<?>>();
 
     static final List<String> formTagNamesList = Arrays.asList(formTagNames);
 
@@ -154,7 +155,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
         }
         for (int i = 0; i < elExpressions.length; i += 2) {
             try {
-                tagClasses.put(elExpressions[i], Class.forName(elExpressions[i + 1]));
+                elClasses.put(elExpressions[i], Class.forName(elExpressions[i + 1]));
             } catch (Throwable t) {
                 t.printStackTrace();
             }
@@ -166,9 +167,9 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
      * 
      * @author Cristian Bogdan
      */
-    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder{
+    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
         static JspAnalyzer singleton = new MakumbaJspAnalyzer();
-        
+
         public void release() {
             singleton = null;
         }
@@ -284,26 +285,26 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
             AnalysableElement.setAnalyzedElementData(null);
         }
     }
-    
+
     /**
      * Performs analysis for a EL expression (see {@link Expression})
      * 
-     *  @param td
+     * @param td
      *            the TagData holding the information
      * @param status
      *            the status of the parsing
      */
     public void elExpression(ELData ed, Object status) {
         // we accept only makumba EL stuff
-        
-        if(!StringUtils.startsWith(ed.getExpression(), elExpressionNames)) {
+
+        if (!StringUtils.startsWith(ed.getExpression(), elExpressionNames)) {
             return;
         }
-        
+
         // find the type of the expression / method
         String type = StringUtils.getStartsWith(ed.getExpression(), elExpressionNames);
-        
-        Class<?> c = tagClasses.get(type);
+
+        Class<?> c = elClasses.get(type);
         if (c == null) {
             return;
         }
@@ -314,10 +315,10 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
         } catch (Throwable thr) {
             thr.printStackTrace();
         }
-        
+
         e.setELDataAtAnalysis(ed);
         e.treatELExpressionAtAnalysis(ed.getExpression());
-        
+
         ((ParseStatus) status).addExpression(e, ed);
         AnalysableElement.setAnalyzedElementData(null);
     }
