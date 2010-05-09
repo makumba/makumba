@@ -1904,5 +1904,15 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
 
 
 
-  
+  <function>
+    <name>value</name>
+    <descriptionPage>ExprFunctionDescription</descriptionPage>
+    <function-class>org.makumba.list.functions.ValueFunction</function-class>
+    <function-signature>Object value(java.lang.String)</function-signature>
+    <example>ExprFunctionExample</example>
+    <see>value</see>
+  </function>
+
+
+
 </taglib>
