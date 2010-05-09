@@ -49,10 +49,7 @@ public class CountFunctions extends AnalysableExpression {
         } else if (expression.equals("lastCountById")) {
             checkNumberOfArguments(1);
             // check that the mak:list/object specified exists
-            String id = elData.getArguments().get(0);
-            if (id.startsWith("'") && id.endsWith("'")) {
-                id = id.substring(1, id.length() - 1);
-            }
+            String id = StringUtils.removeSingleQuote(elData.getArguments().get(0));
             checkTagFound(pageCache, "id", id, QueryTag.class);
         }
     }
