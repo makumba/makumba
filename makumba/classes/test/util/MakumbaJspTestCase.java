@@ -19,20 +19,17 @@ import junit.framework.Test;
 
 import org.apache.cactus.JspTestCase;
 import org.apache.cactus.Request;
-import org.makumba.MakumbaError;
 import org.xml.sax.SAXException;
 
 import test.MakumbaTestSetup;
+import bmsi.util.Diff;
+import bmsi.util.DiffPrint;
 
 import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
-import com.sun.jdi.InvalidStackFrameException;
-
-import bmsi.util.Diff;
-import bmsi.util.DiffPrint;
 
 /**
  * Utility class which enables it to quickly write tests based on the execution of a JSP. Since we know the expected
