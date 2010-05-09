@@ -19,7 +19,11 @@ import org.makumba.commons.NameResolver;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
+import org.makumba.providers.QueryAnalysisProvider;
+import org.makumba.providers.QueryProvider;
+import org.makumba.providers.query.Pass1ASTPrinter;
 
+import antlr.RecognitionException;
 import antlr.collections.AST;
 
 public class HqlAnalyzer implements QueryAnalysis {
@@ -57,64 +61,57 @@ public class HqlAnalyzer implements QueryAnalysis {
     private HqlAnalyzeWalker walker;
     
     private AST parsedHQL;
-
+    
     public HqlAnalyzer(AST pass1, DataDefinition knownLabels){
-        
+        init(pass1, knownLabels);
     }
     public HqlAnalyzer(String query1) {
         java.util.Date d = new java.util.Date();
         this.query = query1;
+        
+        query = QueryAnalysisProvider.checkForFrom(query);
 
-        HqlParser parser = HqlParser.getInstance(query1);
+        AST parsed= QueryProvider.getQueryAnalzyer("oql").inlineFunctions(query);
+        
+        boolean noFrom = QueryAnalysisProvider.reduceDummyFrom(parsed);
 
-        // Parse the input expression
-        try {
-            parser.statement();
-            ParseErrorHandler parseErrorHandler = parser.getParseErrorHandler();
-            if(parseErrorHandler.getErrorCount()>0)
-                parseErrorHandler.throwQueryException();
-            
-            AST t1 = parsedHQL = parser.getAST();
-            
-            /*
-            if(t1!=null){ ASTFrame frame = new ASTFrame("normal", t1);
-            frame.setVisible(true); }
-            */
-            
-            //here I can display the tree and look at the tokens, then find them in the grammar and implement the function type detection
-
-            // Print the resulting tree out in LISP notation
-            if (t1 != null) {
-                walker = new HqlAnalyzeWalker();
-                walker.typeComputer = new MddObjectType();
-                try {
-                    walker.setDebug(query1);
-                    walker.statement(t1);
-                } catch(RuntimeWrappedException e1){
-                    throw new OQLParseError(" during analysis of query: " + query1, e1.getCause()); 
-                }
-                catch (RuntimeException e) {
-                    throw new OQLParseError(" during analysis of query: " + query1, e);
-                }
-                
-                  //print the tree
-                /*
-                AST t = walker.getAST(); if(t!=null){ ASTFrame frame = new ASTFrame("analyzed", t);
-                frame.setVisible(true); }                
-                */
-            }
-        } catch(QuerySyntaxException g){
-            throw new OQLParseError("during analysis of query: " + query1, g);           
-        }
-        catch (antlr.ANTLRException f) {
-            throw new OQLParseError("during analysis of query: " + query1, f);
-        }
+        init(parsed, null);
+        
         
         long diff = new java.util.Date().getTime() - d.getTime();
         java.util.logging.Logger.getLogger("org.makumba.db.query.compilation").fine("HQL to SQL: " + diff + " ms: " + query);
 
     }
 
+    private void init(AST t1, DataDefinition knownLabels) {
+        if (t1 != null) {
+            parsedHQL = t1;
+            if(query==null)
+                query= Pass1ASTPrinter.printAST(t1).toString();
+            walker = new HqlAnalyzeWalker();
+            walker.knownLabels= knownLabels;
+            walker.typeComputer = new MddObjectType();
+            try {
+                walker.setDebug(query);
+                walker.statement(t1);
+            } catch(RuntimeWrappedException e1){
+                throw new OQLParseError(" during analysis of query: " + query, e1.getCause()); 
+            }
+            catch (RuntimeException e) {
+                throw new OQLParseError(" during analysis of query: " + query, e);
+            } catch (RecognitionException f) {
+                throw new OQLParseError("during analysis of query: " + query, f);
+            }
+            
+              //print the tree
+            /*
+            AST t = walker.getAST(); if(t!=null){ ASTFrame frame = new ASTFrame("analyzed", t);
+            frame.setVisible(true); }                
+            */
+        }
+
+        
+    }
     public synchronized DataDefinition getProjectionType() {
         if (projTypes != null)
             return projTypes;
@@ -311,8 +308,7 @@ public class HqlAnalyzer implements QueryAnalysis {
         throw new RuntimeException("not implemented");
     }
     public AST getPass1Tree() {
-        // TODO Auto-generated method stub
-        return null;
+        return parsedHQL;
     }
     public Collection<String> getWarnings() {
         // no warnings supported for now
