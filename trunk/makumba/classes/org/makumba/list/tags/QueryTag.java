@@ -365,8 +365,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
         // for nextCount() to know which list to relate to, store the key of the currently execute mak:list in the
         // request. Need to keep a stack of keys to support nested lists
-        Stack<MultipleKey> currentListKeyStack = (Stack<MultipleKey>) pageContext.getRequest().getAttribute(
-            runningListKeyStack);
+        Stack<MultipleKey> currentListKeyStack = getRunningQueryTagStack(pageContext);
         if (currentListKeyStack == null) { // create a new stack, if there's none yet
             currentListKeyStack = new Stack<MultipleKey>();
             pageContext.getRequest().setAttribute(runningListKeyStack, currentListKeyStack);
@@ -514,8 +513,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
                 return EVAL_BODY_AGAIN;
             }
             // to support nextCount(), remove the current list key from the stack of running lists
-            Stack<MultipleKey> currentListKeyStack = (Stack<MultipleKey>) pageContext.getRequest().getAttribute(
-                runningListKeyStack);
+            Stack<MultipleKey> currentListKeyStack = getRunningQueryTagStack(pageContext);
             // and set it as the last finished list
             pageContext.getRequest().setAttribute(lastFinishedListKey, currentListKeyStack.pop());
             return SKIP_BODY;
@@ -771,8 +769,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
         // find the correct query tag from the tagCache
         QueryTag nextQueryTag = null;
 
-        Stack<MultipleKey> listKeyStack = (Stack<MultipleKey>) pageContext.getRequest().getAttribute(
-            runningListKeyStack);
+        Stack<MultipleKey> listKeyStack = getRunningQueryTagStack(pageContext);
 
         if (listKeyStack != null && listKeyStack.size() > 0) {
             // we have some running/open mak:lists => find the next list after
@@ -792,6 +789,11 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
         nextQueryTag.initiateQueryExecution(pageContext, true);
         return ((Integer) pageContext.getRequest().getAttribute(standardNextCountVar)).intValue();
+    }
+
+    /** Gets the stack of currently running (nested) Query Tags from the pageContext */
+    public static Stack<MultipleKey> getRunningQueryTagStack(PageContext pageContext) {
+        return (Stack<MultipleKey>) pageContext.getRequest().getAttribute(runningListKeyStack);
     }
 
     private static QueryTag findNextTag(TreeSet<QueryTag> queryTags, final MultipleKey currentListKey) {
