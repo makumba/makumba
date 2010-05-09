@@ -5,8 +5,6 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
-import test.MakumbaTestSetup;
 import test.util.MakumbaJspTestCase;
 
 import com.meterware.httpunit.WebResponse;
@@ -20,32 +18,13 @@ import com.meterware.httpunit.WebResponse;
  */
 public class ListOQLTest extends MakumbaJspTestCase {
 
-    @Override
-    protected boolean getRecordingMode() {
-        return false;
-    }
-
-    @Override
-    protected String getJspDir() {
-        return "list-oql";
-    }
-
-    @Override
-    protected MakumbaTestSetup getSetup() {
-        return setup;
-    }
-
-    static Suite setup;
-
-    private static final class Suite extends MakumbaTestSetup {
-        private Suite(Test arg0) {
-            super(arg0, "oql");
-        }
+    {
+        recording = false;
+        jspDir = "list-oql";
     }
 
     public static Test suite() {
-        setup = new Suite(new TestSuite(ListOQLTest.class));
-        return setup;
+        return makeSuite(ListOQLTest.class, "oql");
     }
 
     public void testTomcat() {

@@ -5,7 +5,6 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
 import test.util.MakumbaJspTestCase;
 
 import com.meterware.httpunit.WebResponse;
@@ -19,22 +18,10 @@ import com.meterware.httpunit.WebResponse;
  */
 public class ExceptionTest extends MakumbaJspTestCase {
 
-    @Override
-    protected String getJspDir() {
-        return "exceptions";
+    {
+        recording = false;
+        jspDir = "exceptions";
     }
-
-    @Override
-    protected boolean getRecordingMode() {
-        return false;
-    }
-
-    @Override
-    protected MakumbaTestSetup getSetup() {
-        return setup;
-    }
-
-    static Suite setup;
 
     private static final class Suite extends MakumbaTestSetup {
         private Suite(Test arg0) {
@@ -43,8 +30,7 @@ public class ExceptionTest extends MakumbaJspTestCase {
     }
 
     public static Test suite() {
-        setup = new Suite(new TestSuite(ExceptionTest.class));
-        return setup;
+        return makeSuite(ExceptionTest.class, null);
     }
 
     public void testTomcat() {

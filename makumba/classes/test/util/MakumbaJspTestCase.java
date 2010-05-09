@@ -9,13 +9,19 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 
 import junit.extensions.TestSetup;
 import junit.framework.Test;
+import junit.framework.TestSuite;
 
 import org.apache.cactus.JspTestCase;
 import org.apache.cactus.Request;
@@ -60,12 +66,9 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
      * @throws FileNotFoundException
      *             in case the comparison basis file is not found, this indicates it
      */
-    protected boolean compareTest(String result) throws Exception {
+    protected boolean compareTest(String result, String testName) throws Exception {
 
         boolean testOk = true;
-
-        // first we retrieve the name of the method which calls us
-        String testName = getTestMethod();
 
         // based on the method name, we retrieve the file used as comparison basis
         File f = getExpectedResult(testName);
@@ -155,16 +158,14 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
      * 
      * @param output
      *            the result (HTML code) of the page that was ran correctly.
+     * @param testName
      * @param record
      *            TODO
      */
-    protected void fetchValidTestResult(String output, boolean record) {
+    protected void fetchValidTestResult(String output, String testName, boolean record) {
 
         if (!record)
             return;
-
-        // first we retrieve the name of the method which calls us
-        String testName = getTestMethod();
 
         // based on the method name, we retrieve the file used as comparison basis
         File f = getExpectedResult(testName);
@@ -187,84 +188,96 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
 
     /**
      * Examine the stacktrace and find the test method
+     * 
      * @return the test method name
      */
     private String getTestMethod() {
         StackTraceElement[] stackTrace = new Throwable().fillInStackTrace().getStackTrace();
-        for(int n=0; ; n++)
-            if(stackTrace[n].getMethodName().startsWith("begin") ||
-                    stackTrace[n].getMethodName().startsWith("test") ||
-                    stackTrace[n].getMethodName().startsWith("end") 
-                    )
+        for (int n = 0;; n++)
+            if (stackTrace[n].getMethodName().startsWith("begin") || stackTrace[n].getMethodName().startsWith("test")
+                    || stackTrace[n].getMethodName().startsWith("end"))
                 return stackTrace[n].getMethodName();
     }
-    
+
     /**
      * Compare the given WebResponse to the file that has the name of the current test
-     * @param response the WebResponse to compare
+     * 
+     * @param response
+     *            the WebResponse to compare
      * @throws Exception
      */
     protected void compareToFileWithTestName(WebResponse response) throws Exception {
-        String output= null;
+        compareToFile(response, getTestMethod());
+    }
+
+    protected void compareToFile(WebResponse response, String testName) throws Exception {
+        String output = null;
         try {
             output = response.getText();
-            fetchValidTestResult(output, getRecordingMode());
+            fetchValidTestResult(output, testName, getRecordingMode());
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
         }
-        assertTrue(compareTest(output));
+        assertTrue(compareTest(output, testName));
     }
 
     /**
      * Include the JSP from the JSP dir of this suite that has the name of the currently running test
+     * 
      * @throws ServletException
      * @throws IOException
      */
-    protected void includeJspWithTestName() throws ServletException, IOException{
+    protected void includeJspWithTestName() throws ServletException, IOException {
         pageContext.include(getJspNameBasedOnTestMethod());
     }
 
     /**
-     * Retrieve the page with the test name from the suite JSP dir,
-     * compare the content to the comparison file with the test name, 
-     * and return the first form in the page.
+     * Retrieve the page with the test name from the suite JSP dir, compare the content to the comparison file with the
+     * test name, and return the first form in the page.
+     * 
      * @return the first WebForm in the response page
      */
     protected WebForm getFormInJspWithTestName() throws MalformedURLException, IOException, SAXException, Exception {
-        return getFormInJsp("/"+getJspNameBasedOnTestMethod());
+        return getFormInJsp("/" + getJspNameBasedOnTestMethod());
     }
 
     /**
-     * Retrieve the page with the test name from the suite JSP dir,
-     * optionally compare the content to the comparison file with the test name, 
-     * and return the first form in the page.
-     * @param check whether to compare the content with the comparison file with test name 
+     * Retrieve the page with the test name from the suite JSP dir, optionally compare the content to the comparison
+     * file with the test name, and return the first form in the page.
+     * 
+     * @param check
+     *            whether to compare the content with the comparison file with test name
      * @return the first WebForm in the response page
      */
-    protected WebForm getFormInJspWithTestName(boolean check) throws MalformedURLException, IOException, SAXException, Exception {
-        return getFormInJsp("/"+getJspNameBasedOnTestMethod(), check);
+    protected WebForm getFormInJspWithTestName(boolean check) throws MalformedURLException, IOException, SAXException,
+            Exception {
+        return getFormInJsp("/" + getJspNameBasedOnTestMethod(), check);
     }
 
     /**
-     * Retrieve the indicated page,
-     * compare the content to the comparison file with the test name, 
-     * and return the first form in the page.
-     * @param page the page to retrieve
+     * Retrieve the indicated page, compare the content to the comparison file with the test name, and return the first
+     * form in the page.
+     * 
+     * @param page
+     *            the page to retrieve
      * @return the first WebForm in the response page
      */
     protected WebForm getFormInJsp(String page) throws MalformedURLException, IOException, SAXException, Exception {
         return getFormInJsp(page, true);
     }
-    
+
     /**
-     * Retrieve the indicated page,
-     * optionally compare the content to the comparison file with the test name, 
-     * and return the first form in the page.
-     * @param page the page to retrieve
-     * @param check whether to compare the content with the comparison file with test name 
+     * Retrieve the indicated page, optionally compare the content to the comparison file with the test name, and return
+     * the first form in the page.
+     * 
+     * @param page
+     *            the page to retrieve
+     * @param check
+     *            whether to compare the content with the comparison file with test name
      * @return the first WebForm in the response page
      */
-    protected WebForm getFormInJsp(String page, boolean check) throws MalformedURLException, IOException, SAXException, Exception {
+    protected WebForm getFormInJsp(String page, boolean check) throws MalformedURLException, IOException, SAXException,
+            Exception {
         WebResponse resp = getJspResponse(page, check);
 
         if (resp.getForms().length == 0) {
@@ -274,32 +287,34 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
         WebForm form = resp.getForms()[0];
         return form;
     }
-    
+
     /**
-     * Retrieve the indicated page,
-     * optionally compare the content to the comparison file with the test name.
-     * @param page the page to retrieve
-     * @param check whether to compare the content with the comparison file with test name 
+     * Retrieve the indicated page, optionally compare the content to the comparison file with the test name.
+     * 
+     * @param page
+     *            the page to retrieve
+     * @param check
+     *            whether to compare the content with the comparison file with test name
      * @return the WebResponse from the page access
      */
     protected WebResponse getJspResponse(String page, boolean check) throws MalformedURLException, IOException,
             SAXException, Exception {
         WebConversation wc = new WebConversation();
-        WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL")+ page);
+        WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL") + page);
 
         // first, compare that the form generated is ok
-        if(check)
+        if (check)
             compareToFileWithTestName(resp);
         return resp;
     }
- 
 
     private String getJspNameBasedOnTestMethod() {
-        return getJspDir()+"/"+getTestMethod()+".jsp";
+        return getJspDir() + "/" + getTestMethod() + ".jsp";
     }
 
     /**
      * Common method for classes that want to test tomcat. They only need to declare an empty testTomcat() method
+     * 
      * @param request
      */
     public void beginTomcat(Request request) {
@@ -309,28 +324,178 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
             wc.getResponse(req);
         } catch (MalformedURLException e) {
         } catch (IOException e) {
-            getSetup().tearDown();
+            try {
+                tearDown();
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
             System.err.println("\n\n\n\n\nYou should run tomcat first! Use mak-tomcat to do that.\n\n");
             System.exit(1);
         } catch (SAXException e) {
         }
     }
-    
-    /**
-     * the setup object of the suite, to tear down if tocmat doesn't run
-     * @return the setup object
-     */
-    protected abstract MakumbaTestSetup getSetup();
 
     /**
      * The JSP dir of this suite
+     * 
      * @return a dir name relative to the root
      */
-    protected abstract String getJspDir();
+    public String getJspDir() {
+        return jspDir;
+    }
 
     /**
      * Recording mode of the suite, for generating comparison files.
+     * 
      * @return true if the suite should record its responses, false otherwise.
      */
-    protected abstract boolean getRecordingMode();
+    public boolean getRecordingMode() {
+        return recording;
+    }
+
+    /**
+     * recording mode
+     */
+    protected boolean recording = false;
+
+    /**
+     * JSP dir of the suite
+     */
+    protected String jspDir;
+
+    /**
+     * for dynamically built suites, the names and order of tests
+     */
+    protected String[] tests;
+
+    /**
+     * for dynamically built suites, the tests whose included jsp has a different name
+     */
+    protected Map<String, String> differentNameJsps = new HashMap<String, String>();
+
+    /**
+     * for dynamically built suites, the tests that will not include any jsp
+     */
+    protected Set<String> noJspTests = new HashSet<String>();
+
+    /**
+     * some tests will compare content against the response of a form submission
+     */
+    protected WebResponse submissionResponse;
+
+    public static class MakumbaJspTestCaseDecorator extends MakumbaJspTestCase {
+        MakumbaJspTestCase decorated;
+
+        public MakumbaJspTestCaseDecorator(MakumbaJspTestCase decorated) {
+            this.decorated = decorated;
+        }
+
+        @Override
+        public String getJspDir() {
+            return decorated.getJspDir();
+        }
+
+        @Override
+        public boolean getRecordingMode() {
+            return decorated.getRecordingMode();
+        }
+
+    }
+
+    public static final class JspTest extends MakumbaJspTestCaseDecorator {
+        String test;
+
+        /** only invokved at server side
+         * therefore the server-side object is a bit dumb because it wraps nobody
+         */
+        public JspTest() {
+            super(null);
+        }
+
+        /** decorate a test class to run one of its tests */
+        public JspTest(MakumbaJspTestCase decorated, String testName) {
+            super(decorated);
+            this.test = testName;
+        }
+
+        /** invoked by cactus at test begin, on client */
+        public void begin(Request request) throws Exception {
+            decorated.submissionResponse = null;
+            // we run the beginXXX method if we find one
+            Method m = null;
+            try {
+                m = decorated.getClass().getMethod(test.replace("test", "begin"), Request.class);
+            } catch (Exception e) {
+            }
+            if (m != null)
+                m.invoke(decorated, request);
+
+            // now we set a header, to tell the server side what to include
+            // some tests have a jsp page with a different name
+            String jspPage = decorated.differentNameJsps.get(test);
+            if (jspPage == null)
+                // but most have the page with the same name
+                jspPage = "/" + decorated.getJspDir() + "/" + test + ".jsp";
+
+            // some tests include no jsp
+            if (!decorated.noJspTests.contains(test))
+                ((org.apache.cactus.WebRequest) request).addHeader("mak-test-page", jspPage);
+        }
+
+        /** invoked by cactus on server */
+        public void runBareServer() throws Exception {
+            // if we have a jsp, we include it
+            String page = (String) request.getHeader("mak-test-page");
+            if (page != null)
+                pageContext.include(page);
+        }
+
+        /** invoked by cactus at the end, on client */
+        public void end(WebResponse response) throws Exception {
+            // if the submisionResponse is set, we use it instead of the response
+            if (decorated.submissionResponse != null)
+                response = decorated.submissionResponse;
+            // compare the response to the result file with the same name
+            compareToFile(response, test.replace("test", "end"));
+            decorated.submissionResponse = null;
+        }
+
+        /**
+         * test name
+         */
+        public String getName() {
+            return test;
+        }
+
+    }
+
+    /**
+     * Make a dynamic test suite, from a prototype object. 
+     * This allows testTestName and endTestName to be missing. The test names are found in the tests[] array.
+     * Each test includes a JSP with (in principle) the same name, and compares to a comparison file.
+     * If a beginTestName method exists, it will be executed.
+     * If testTestName tests are present in the prototype class, they are honored _before_ all other tests.
+     * @param prototype the object whose tests[] array will be used to make the suite
+     * @param queryLang query language used in the test
+     * @return the test suite
+     */
+    public static Test makeJspSuite(MakumbaJspTestCase prototype, String queryLang) {
+        TestSuite ts = new TestSuite(prototype.getClass().getName());
+        ts.addTest(new TestSuite(prototype.getClass()));
+        for (String test : prototype.tests) {
+            ts.addTest(new JspTest(prototype, test));
+        }
+        return new MakumbaTestSetup(ts, queryLang);
+    }
+
+    /**
+     * Make a test suite using the standard, reflection-based mechanism
+     * @param claz the class where the tests are extracted from
+     * @param queryLang the query language used in the test
+     * @return the test suite
+     */
+    public static Test makeSuite(Class<?> claz, String queryLang) {
+        return new MakumbaTestSetup(new TestSuite(claz), queryLang);
+    }
+
 }

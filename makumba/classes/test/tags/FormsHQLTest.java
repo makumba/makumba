@@ -24,23 +24,17 @@
 package test.tags;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 
 import javax.servlet.ServletException;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
 
 import org.apache.cactus.Request;
 import org.xml.sax.SAXException;
 
-import test.MakumbaTestSetup;
 import test.util.MakumbaJspTestCase;
 
-import com.meterware.httpunit.GetMethodWebRequest;
-import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebForm;
-import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 
 /**
@@ -50,33 +44,13 @@ import com.meterware.httpunit.WebResponse;
  */
 public class FormsHQLTest extends MakumbaJspTestCase {
 
-    @Override
-    protected boolean getRecordingMode() {
-        return false;
-    }
-
-    @Override
-    protected String getJspDir() {
-        return "forms-hql";
-    }
-
-    @Override
-    protected MakumbaTestSetup getSetup() {
-        return setup;
-    }
-
-    static Suite setup;
-
-    private static final class Suite extends MakumbaTestSetup {
-
-        private Suite(Test arg0) {
-            super(arg0, "hql");
-        }
+    {
+        recording = false;
+        jspDir = "forms-hql";
     }
 
     public static Test suite() {
-        setup = new Suite(new TestSuite(FormsHQLTest.class));
-        return setup;
+        return makeSuite(FormsHQLTest.class, "hql");
     }
 
     public void testTomcat() {

@@ -35,7 +35,6 @@ import java.util.Vector;
 import javax.servlet.ServletException;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
 
 import org.apache.cactus.Request;
 import org.apache.commons.collections.CollectionUtils;
@@ -44,7 +43,6 @@ import org.makumba.forms.responder.ResponderFactory;
 import org.xml.sax.SAXException;
 
 import test.MakumbaTestData;
-import test.MakumbaTestSetup;
 import test.util.MakumbaJspTestCase;
 
 import com.meterware.httpunit.HTMLElement;
@@ -57,39 +55,17 @@ import com.meterware.httpunit.WebResponse;
  * @version $Id$
  */
 public class FormsOQLTest extends MakumbaJspTestCase {
-
-    private static final String namePersonIndivSurname = "Makumbian";
-
-    @Override
-    protected boolean getRecordingMode() {
-        return false;
+    {
+        recording = false;
+        jspDir = "forms-oql";
     }
-
-    @Override
-    protected String getJspDir() {
-        return "forms-oql";
-    }
-
-    @Override
-    protected MakumbaTestSetup getSetup() {
-        return setup;
-    }
-
-    static Suite setup;
 
     private WebResponse submissionResponse;
 
-    private static final class Suite extends MakumbaTestSetup {
-
-        public Suite(Test test) {
-            super(test, "oql");
-        }
-
-    }
+    private static final String namePersonIndivSurname = "Makumbian";
 
     public static Test suite() {
-        setup = new Suite(new TestSuite(FormsOQLTest.class));
-        return setup;
+        return makeSuite(FormsOQLTest.class, "oql");
     }
 
     public void testDbReset() {

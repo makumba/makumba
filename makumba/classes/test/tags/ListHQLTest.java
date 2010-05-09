@@ -5,11 +5,9 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
 
 import org.xml.sax.SAXException;
 
-import test.MakumbaTestSetup;
 import test.util.MakumbaJspTestCase;
 
 import com.meterware.httpunit.WebResponse;
@@ -23,33 +21,14 @@ import com.meterware.httpunit.WebResponse;
  */
 public class ListHQLTest extends MakumbaJspTestCase {
 
-    @Override
-    protected boolean getRecordingMode() {
-        return false;
+    {
+        recording = false;
+        jspDir = "list-hql";
     }
 
-    @Override
-    protected Suite getSetup() {
-        return setup;
-    }
-
-    static Suite setup;
-
-    private static final class Suite extends MakumbaTestSetup {
-        private Suite(Test arg0) {
-            super(arg0, "hql");
-        }
-
-    }
 
     public static Test suite() {
-        setup = new Suite(new TestSuite(ListHQLTest.class));
-        return setup;
-    }
-
-    @Override
-    protected String getJspDir() {
-        return "list-hql";
+        return makeSuite(ListHQLTest.class, "hql");
     }
 
     public void testTomcat() {
@@ -133,7 +112,7 @@ public class ListHQLTest extends MakumbaJspTestCase {
      */
 
     public void testHibernateMakIf() throws ServletException, IOException, SAXException {
-        includeJspWithTestName();
+        pageContext.include("list-hql/testHibernateMakIfTag.jsp");
     }
 
     public void endHibernateMakIf(WebResponse response) throws Exception {

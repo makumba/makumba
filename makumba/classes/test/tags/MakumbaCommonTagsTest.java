@@ -8,49 +8,25 @@ import javax.servlet.jsp.tagext.BodyContent;
 
 import junit.framework.Assert;
 import junit.framework.Test;
-import junit.framework.TestSuite;
 
 import org.apache.cactus.Request;
 import org.makumba.commons.tags.MakumbaVersionTag;
 
-import test.MakumbaTestSetup;
 import test.util.MakumbaJspTestCase;
 
 import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebResponse;
 
 public class MakumbaCommonTagsTest extends MakumbaJspTestCase {
-    @Override
-    protected boolean getRecordingMode() {
-        return false;
-    }
-    static Suite setup;
-
-    private static final class Suite extends MakumbaTestSetup {
-        private Suite(Test arg0) {
-            super(arg0, "oql");
-        }
+    {
+        recording = false;
+        jspDir = "login";
     }
 
     public static Test suite() {
-        setup = new Suite(new TestSuite(MakumbaCommonTagsTest.class));
-        return setup;
+        return makeSuite(MakumbaCommonTagsTest.class, "oql");
     }
 
-    @Override
-    protected String getJspDir() {
-        return "login";
-    }
-
-
-
-    @Override
-    protected MakumbaTestSetup getSetup() {
-        return setup;
-    }
-    
-    public void testTomcat() {
-    }
     
     public void testVersionTag() throws JspException, IOException {
         MakumbaVersionTag versionTag = new MakumbaVersionTag();
