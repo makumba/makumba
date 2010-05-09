@@ -282,4 +282,13 @@ public class StringUtils {
         return result;
     }
 
+    /** Removes single quotes, if the string is starting and ending with the single quote character. */
+    public static String removeSingleQuote(String s) {
+        if (s.startsWith("'") && s.endsWith("'")) {
+            return s.substring(1, s.length() - 1);
+        } else {
+            return s;
+        }
+    }
+
 }
