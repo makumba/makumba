@@ -23,6 +23,9 @@ public class MqlQueryAnalysisProvider extends QueryAnalysisProvider {
     }, true);
 
     @Override
+    public String getName(){ return "oql"; }
+ 
+    @Override
     public QueryAnalysis getRawQueryAnalysis(String query) {
         return (QueryAnalysis) NamedResources.getStaticCache(parsedQueries).getResource(query);
     }
