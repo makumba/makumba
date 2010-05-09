@@ -1,7 +1,5 @@
 package org.makumba.list.functions;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Stack;
 
 import javax.servlet.jsp.PageContext;
@@ -32,10 +30,6 @@ import org.makumba.list.tags.ValueTag;
  */
 public class ValueFunction extends AnalysableExpression {
 
-    public static final String MAK_VALUE_FUNCTION = "";
-
-    public static final String VALUE_FUNCTIONS = "org.makumba.ExprFunctionValueComputers";
-
     private static final long serialVersionUID = 1L;
 
     @Override
@@ -51,10 +45,6 @@ public class ValueFunction extends AnalysableExpression {
         // analogously to ValueTag, we register a value computer
         pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, key, ValueComputer.getValueComputerAtAnalysis(true,
             parentList.getTagKey(), expr, pageCache));
-
-        // additionally, as during runtime we won't have access to the enclosing query tag or the pageCache
-        // we register the value computers from this expr in the pageCache, and rely on the QueryTag to process them
-        pageCache.cacheMultiple(VALUE_FUNCTIONS, parentList.getTagKey(), new Object[] { expr, key });
 
         // FIXME: the following code is similar to ValueTag.doStartAnalyze; unifying might make sense.
         // if we add a projection to a query, we also cache this so that we know where the projection comes from (for
@@ -141,24 +131,6 @@ public class ValueFunction extends AnalysableExpression {
             // TODO: some error handling...
             return null;
         }
-    }
-
-    /** Retrieve the expr functions for the given QueryTag from the cache */
-    public static HashMap<String, MultipleKey> getExprFunctionsFromCache(PageCache pageCache, QueryTag queryTag) {
-        HashMap<String, MultipleKey> funcs = new HashMap<String, MultipleKey>();
-        Collection<Object> cache = pageCache.retrieveMultiple(VALUE_FUNCTIONS, queryTag.getTagKey());
-        if (cache != null) {
-            for (Object object : cache) {
-                Object[] o = (Object[]) object;
-                funcs.put((String) o[0], (MultipleKey) o[1]);
-            }
-        }
-        return funcs;
-    }
-
-    /** Compute the name of the attribute that will hold the value computer of the given expression */
-    public static String exprAttributeName(String expr) {
-        return MAK_VALUE_FUNCTION + "_" + expr;
     }
 
 }
