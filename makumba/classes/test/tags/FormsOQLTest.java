@@ -391,7 +391,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void beginFormResponderOrder(Request request) throws Exception {
-        WebResponse resp = getJspRsponse("/forms-oql/beginMakNestedNewForms.jsp", true);
+        WebResponse resp = getJspResponse("/forms-oql/beginMakNestedNewForms.jsp", true);
 
         // read all the inputs with responder codes, store them in an array
         HTMLElement[] responderElements = resp.getElementsWithAttribute("name", "__makumba__responder__");

@@ -268,7 +268,7 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
      * @return the first WebForm in the response page
      */
     protected WebForm getFormInJsp(String page, boolean check) throws MalformedURLException, IOException, SAXException, Exception {
-        WebResponse resp = getJspRsponse(page, check);
+        WebResponse resp = getJspResponse(page, check);
 
         if (resp.getForms().length == 0) {
             fail("Form expected but not present. Page:\n" + resp.getText());
@@ -285,7 +285,7 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
      * @param check whether to compare the content with the comparison file with test name 
      * @return the WebResponse from the page access
      */
-    protected WebResponse getJspRsponse(String page, boolean check) throws MalformedURLException, IOException,
+    protected WebResponse getJspResponse(String page, boolean check) throws MalformedURLException, IOException,
             SAXException, Exception {
         WebConversation wc = new WebConversation();
         WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL")+ page);
