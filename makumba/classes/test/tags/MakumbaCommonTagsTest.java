@@ -1,7 +1,6 @@
 package test.tags;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.jsp.JspException;
@@ -13,12 +12,10 @@ import junit.framework.TestSuite;
 
 import org.apache.cactus.Request;
 import org.makumba.commons.tags.MakumbaVersionTag;
-import org.xml.sax.SAXException;
 
 import test.MakumbaTestSetup;
 import test.util.MakumbaJspTestCase;
 
-import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebResponse;
 
@@ -70,7 +67,7 @@ public class MakumbaCommonTagsTest extends MakumbaJspTestCase {
     }
 
     public void beginLogin(Request request) throws Exception {
-        WebForm form =getFormInJsp("/login/testLogin.jsp", false);
+        WebForm form = getFormInJsp("/login/testLogin.jsp", false);
         // we try to login
         form.setParameter("username","manu");
         form.setParameter("password", "secret");
