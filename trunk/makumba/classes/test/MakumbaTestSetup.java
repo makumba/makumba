@@ -31,6 +31,8 @@ public class MakumbaTestSetup extends TestSetup {
         TransactionProvider tp = null;
         Transaction db = null;
 
+        if (transactionProviderType == null)
+            return;
         if (transactionProviderType.equals("oql")) {
             tp = TransactionProvider.getInstance();
             db = tp.getConnectionTo("testDatabase");
