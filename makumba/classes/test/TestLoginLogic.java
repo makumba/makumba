@@ -6,7 +6,7 @@ import org.makumba.Database;
 import org.makumba.LogicException;
 import org.makumba.UnauthenticatedException;
 
-public class LoginTestLogic {
+public class TestLoginLogic {
     
     public void checkAttributes(Attributes a, Database db) throws LogicException {
         a.getAttribute("testAttribute");
