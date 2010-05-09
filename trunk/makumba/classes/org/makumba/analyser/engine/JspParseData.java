@@ -137,15 +137,17 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
             JspCommentPattern = Pattern.compile("<%--.*?[^-]--%>", Pattern.DOTALL);
             JspScriptletPattern = Pattern.compile("<%[^@].*?%>", Pattern.DOTALL);
             JspExpressionLanguagePattern = Pattern.compile("\\$\\{[^\\}]*\\}");
-            
-            String functionParamElement = RegExpUtils.LineWhitespaces + "(" + "\\'\\w+\\'" + ")"
+
+            // FIXME: the function accepts only quoted literal as parameters
+            // There might be a need to also accept $parameters or expressions/labels
+            String functionParamElement = RegExpUtils.LineWhitespaces + "(" + "\\'.+\\'" + ")"
                     + RegExpUtils.LineWhitespaces;
             String functionParamElementRepeatment = "(?:" + RegExpUtils.LineWhitespaces + "," + "(?:"
                     + functionParamElement + "))*";
             String functionParamRegExp = RegExpUtils.LineWhitespaces + "(?:" + functionParamElement + ")?"
-            + functionParamElementRepeatment + RegExpUtils.LineWhitespaces;        
-            JSPELFunctionPattern = Pattern.compile("\\w+:\\w+\\(" + functionParamRegExp + "?\\)"); //"\\w+:\\w+\\(\\)");
-            
+                    + functionParamElementRepeatment + RegExpUtils.LineWhitespaces;
+            JSPELFunctionPattern = Pattern.compile("\\w+:\\w+\\(" + functionParamRegExp + "?\\)");
+
             JsfExpressionLanguagePattern = Pattern.compile("\\#\\{[^\\}]*\\}");
             Pattern[] cp = { JspCommentPattern, JspScriptletPattern };
             JspCommentPatterns = cp;
