@@ -31,6 +31,8 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.hibernate.hql.ast.ParseErrorHandler;
+import org.hibernate.hql.ast.QuerySyntaxException;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidFieldTypeException;
@@ -53,6 +55,8 @@ import antlr.collections.AST;
  */
 public abstract class QueryAnalysisProvider {
 
+    public abstract String getName();
+    
     protected abstract QueryAnalysis getRawQueryAnalysis(String query);
 
     protected QueryAnalysis getRawQueryAnalysis(String query, String insertIn) {
@@ -131,14 +135,7 @@ public abstract class QueryAnalysisProvider {
 
         return checkASTSetOrNullable(from, parsed.getFirstChild().getFirstChild().getNextSibling().getFirstChild());
     }
-
-    public static AST inlineFunctions(String query) {
-        if (!Configuration.getQueryInliner().equals("pass1"))
-            // HQL doesn't use this anyway
-            return parseQuery(FunctionInliner.inline(query, QueryProvider.getQueryAnalzyer("oql")));
-        return Pass1FunctionInliner.inlineAST(parseQuery(query), "oql");
-    }
-
+    
     private Object checkASTSetOrNullable(String from, AST ast) {
         if (ast == null)
             return null;
@@ -222,6 +219,13 @@ public abstract class QueryAnalysisProvider {
     public static String getGeneratedActorName(AST actorType){
         return "actor_" + ASTUtil.constructPath(actorType).replace('.', '_');
     }
+
+    public AST inlineFunctions(String query) {
+        if (!Configuration.getQueryInliner().equals("pass1"))
+            return parseQuery(FunctionInliner.inline(query, this));
+        return Pass1FunctionInliner.inlineAST(parseQuery(query), getName());
+    }
+
     /** make a copy of an AST, node with the same first child, but with no next sibling */
     public static AST makeASTCopy(AST current1) {
         Node current2 = ASTUtil.makeNode(current1.getType(), current1.getText());
@@ -442,6 +446,38 @@ public abstract class QueryAnalysisProvider {
         throw new OQLParseError("\r\nin " + errorLocationNumber + " query:\r\n" + query + errorLocation + errorLocation
                 + errorLocation, t);
     }
+    
+    
+    /*
+     * 
+     * This is code from the old HQL pass1 parser invocation
+     * 
+     *      HqlParser parser = HqlParser.getInstance(query1);
+
+        // Parse the input expression
+        try {
+            parser.statement();
+            ParseErrorHandler parseErrorHandler = parser.getParseErrorHandler();
+            if(parseErrorHandler.getErrorCount()>0)
+                parseErrorHandler.throwQueryException();
+            
+            
+            //if(t1!=null){ ASTFrame frame = new ASTFrame("normal", t1);
+            //frame.setVisible(true); }
+            
+            
+            //here I can display the tree and look at the tokens, then find them in the grammar and implement the function type detection
+
+            // Print the resulting tree out in LISP notation
+            
+        } catch(QuerySyntaxException g){
+            throw new OQLParseError("during analysis of query: " + query1, g);           
+        }
+        catch (antlr.ANTLRException f) {
+            throw new OQLParseError("during analysis of query: " + query1, f);
+        }
+      
+     */
 
     public static AST parseQuery(String query) {
         query = preProcess(query);

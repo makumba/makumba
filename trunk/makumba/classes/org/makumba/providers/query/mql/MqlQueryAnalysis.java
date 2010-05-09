@@ -90,7 +90,7 @@ public class MqlQueryAnalysis implements QueryAnalysis {
 
         query = QueryAnalysisProvider.checkForFrom(query);
 
-        AST parsed= QueryAnalysisProvider.inlineFunctions(query);
+        AST parsed= QueryProvider.getQueryAnalzyer("oql").inlineFunctions(query);
         
         noFrom = QueryAnalysisProvider.reduceDummyFrom(parsed);
         
