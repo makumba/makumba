@@ -234,6 +234,13 @@ public class Pass1ASTPrinter {
                     sb.append(')');
                 break;
 
+            case HqlTokenTypes.IS_NULL:
+            case HqlTokenTypes.IS_NOT_NULL:
+                printRecursive(ast, ast.getFirstChild(), sb);
+                space(sb);
+                sb.append(ast.getText());
+                break;
+                
             default:
                 // for all other cases, we print the node, then its first child
                 sb.append(ast.getText());
@@ -425,7 +432,7 @@ public class Pass1ASTPrinter {
 
                     if (inline)
                         try {
-                            AST a = QueryAnalysisProvider.inlineFunctions(query);
+                            AST a = QueryProvider.getQueryAnalzyer("oql").inlineFunctions(query);
                             testPrinter(a, FunctionInliner.inline(query, QueryProvider.getQueryAnalzyer("oql")));
                         } catch (Throwable t) {
                             System.err.println(line + ": inlined: " + t + " " + query);
