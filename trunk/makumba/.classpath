@@ -41,7 +41,7 @@
 	<classpathentry kind="lib" path="lib/common/commons-logging-api.jar"/>
 	<classpathentry kind="lib" path="lib/test/selenium-java-client-driver.jar"/>
 	<classpathentry kind="lib" path="lib/optional/prefuse.jar"/>
-	<classpathentry kind="lib" path="lib/test/cactus.jar"/>
+	<classpathentry kind="lib" path="lib/test/cactus.jar" sourcepath="lib-src/cactus-1.8.1-src.zip"/>
 	<classpathentry kind="lib" path="lib/building/ant-1.7.0.jar"/>
 	<classpathentry kind="lib" path="lib/common/commons-httpclient.jar"/>
 	<classpathentry kind="output" path="build"/>
