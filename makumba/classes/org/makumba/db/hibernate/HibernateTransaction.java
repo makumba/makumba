@@ -35,6 +35,7 @@ import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.query.FunctionInliner;
+import org.makumba.providers.query.Pass1ASTPrinter;
 import org.makumba.providers.query.hql.HqlAnalyzer;
 
 /**
@@ -272,12 +273,10 @@ public class HibernateTransaction extends TransactionImplementation {
     public Vector<Dictionary<String, Object>> execute(String query, Object args, int offset, int limit) {
         MakumbaSystem.getLogger("hibernate.query").fine("Executing hibernate query " + query);
         QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer("hql");
-        // TODO: use the AST inliner to inline the query before analysis (that's easy)
-        // TODO: use the AST inliner to inline the query before execution (that's harder)
     
-        query =FunctionInliner.inline(query, qap);
         QueryAnalysis analyzer = qap.getQueryAnalysis(query);
-
+        query= Pass1ASTPrinter.printAST(analyzer.getPass1Tree()).toString();
+        
         DataDefinition dataDef = analyzer.getProjectionType();
         DataDefinition paramsDef = analyzer.getParameterTypes();
 
