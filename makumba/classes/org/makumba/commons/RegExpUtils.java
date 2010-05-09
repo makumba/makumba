@@ -79,6 +79,9 @@ public class RegExpUtils {
     public static void main(String[] args) {
         System.out.println(or(new String[] { "a", "b", "c" }));
         testIdentifiers();
+
+        // evaluate(org.makumba.analyser.engine.JspParseData.JSPELFunctionPattern, true, "mak:count()", "mak:Count()",
+        // "mak:lastCount()", "mak:lastCountById('abc')", "mak:lastCountById('abc', 'def')", "mak:expr('l.name')");
     }
 
     /** testing method. */
