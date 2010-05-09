@@ -374,11 +374,6 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
     protected Map<String, String> differentNameJsps = new HashMap<String, String>();
 
     /**
-     * for dynamically built suites, the tests that will not include any jsp
-     */
-    protected Set<String> noJspTests = new HashSet<String>();
-
-    /**
      * some tests will compare content against the response of a form submission
      */
     protected WebResponse submissionResponse;
@@ -405,8 +400,8 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
     public static final class JspTest extends MakumbaJspTestCaseDecorator {
         String test;
 
-        /** only invokved at server side
-         * therefore the server-side object is a bit dumb because it wraps nobody
+        /**
+         * only invokved at server side therefore the server-side object is a bit dumb because it wraps nobody
          */
         public JspTest() {
             super(null);
@@ -418,6 +413,9 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
             this.test = testName;
         }
 
+        /**
+         * see http://jakarta.apache.org/cactus/how_it_works.html for the begin, end etc, methods
+         */
         /** invoked by cactus at test begin, on client */
         public void begin(Request request) throws Exception {
             decorated.submissionResponse = null;
@@ -438,7 +436,7 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
                 jspPage = "/" + decorated.getJspDir() + "/" + test + ".jsp";
 
             // some tests include no jsp
-            if (!decorated.noJspTests.contains(test))
+            if (decorated.submissionResponse == null)
                 ((org.apache.cactus.WebRequest) request).addHeader("mak-test-page", jspPage);
         }
 
@@ -470,13 +468,15 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
     }
 
     /**
-     * Make a dynamic test suite, from a prototype object. 
-     * This allows testTestName and endTestName to be missing. The test names are found in the tests[] array.
-     * Each test includes a JSP with (in principle) the same name, and compares to a comparison file.
-     * If a beginTestName method exists, it will be executed.
-     * If testTestName tests are present in the prototype class, they are honored _before_ all other tests.
-     * @param prototype the object whose tests[] array will be used to make the suite
-     * @param queryLang query language used in the test
+     * Make a dynamic test suite, from a prototype object. This allows testTestName and endTestName to be missing. The
+     * test names are found in the tests[] array. Each test includes a JSP with (in principle) the same name, and
+     * compares to a comparison file. If a beginTestName method exists, it will be executed. If testTestName tests are
+     * present in the prototype class, they are honored _before_ all other tests.
+     * 
+     * @param prototype
+     *            the object whose tests[] array will be used to make the suite
+     * @param queryLang
+     *            query language used in the test
      * @return the test suite
      */
     public static Test makeJspSuite(MakumbaJspTestCase prototype, String queryLang) {
@@ -490,8 +490,11 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
 
     /**
      * Make a test suite using the standard, reflection-based mechanism
-     * @param claz the class where the tests are extracted from
-     * @param queryLang the query language used in the test
+     * 
+     * @param claz
+     *            the class where the tests are extracted from
+     * @param queryLang
+     *            the query language used in the test
      * @return the test suite
      */
     public static Test makeSuite(Class<?> claz, String queryLang) {
