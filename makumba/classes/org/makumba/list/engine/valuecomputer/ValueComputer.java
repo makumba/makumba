@@ -27,7 +27,6 @@ import javax.servlet.jsp.JspException;
 
 import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
-import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
@@ -199,6 +198,10 @@ public class ValueComputer {
 
     public FieldDefinition getType() {
         return type;
+    }
+    
+    public int getProjectionIndex() {
+        return projectionIndex;
     }
 
     public static boolean isPointer(PageCache pageCache, MultipleKey parentListKey, String expr) {
