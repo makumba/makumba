@@ -65,6 +65,8 @@ public abstract class AnalysableExpression extends AnalysableElement {
      */
     public abstract void analyze(PageCache pageCache);
 
+    public abstract void doEndAnalyze(PageCache pageCache);
+
     /**
      * Modifies the expression before analysis. This is necessary because the expression that comes from page analysis
      * is not tailored to the specific expression we want to handle
