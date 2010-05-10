@@ -53,7 +53,7 @@ public class QueryExecution {
     Grouper listData;
 
     /** The part of listData iterated for a certain parent iteration */
-    Vector iterationGroupData;
+    Vector<ArrayMap> iterationGroupData;
 
     /** The index of iteration within the iteration group */
     public int iteration;
@@ -119,8 +119,11 @@ public class QueryExecution {
             executions.put(key, lqe = new QueryExecution(key, pageContext, offset, limit));
         return lqe;
     }
-    
-    /** Like {@link #getFor(MultipleKey, PageContext, String, String)}, but uses the default values for offset/limit from the list tag. */
+
+    /**
+     * Like {@link #getFor(MultipleKey, PageContext, String, String)}, but uses the default values for offset/limit from
+     * the list tag.
+     */
     public static QueryExecution getFor(MultipleKey key, PageContext pageContext, String offset, String limit,
             String defaultLimit) throws LogicException {
         HashMap<MultipleKey, QueryExecution> executions = (HashMap<MultipleKey, QueryExecution>) pageContext.getAttribute(EXECUTIONS);
@@ -134,9 +137,7 @@ public class QueryExecution {
     /**
      * Constructs a QueryExection which executes the given query, in the given database, with the given attributes, to
      * form the listData. Keeps the reference to the currentDataSet for future push and pop operations, finds the nested
-     * valueQueries.
-     * 
-     * TODO implement an AttributeProvider to remove the dependency from controller
+     * valueQueries. TODO implement an AttributeProvider to remove the dependency from controller
      * 
      * @param key
      *            The tag key of the tag calling the QueryExecution
@@ -150,15 +151,17 @@ public class QueryExecution {
      */
     private QueryExecution(MultipleKey key, PageContext pageContext, String offset, String limit) throws LogicException {
         currentDataSet = (Stack<Dictionary<String, Object>>) pageContext.getAttribute(CURRENT_DATA_SET);
-        ComposedQuery cq = QueryTag.getQuery(AnalysableElement.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance()), key);
-        QueryProvider qep = QueryProvider.makeQueryRunner(GenericListTag.getDataSourceName(pageContext), MakumbaJspAnalyzer.getQueryLanguage(AnalysableElement.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance())),
-            PageAttributes.getAttributes(pageContext));
-        
+        ComposedQuery cq = QueryTag.getQuery(AnalysableElement.getPageCache(pageContext,
+            MakumbaJspAnalyzer.getInstance()), key);
+        QueryProvider qep = QueryProvider.makeQueryRunner(GenericListTag.getDataSourceName(pageContext),
+            MakumbaJspAnalyzer.getQueryLanguage(AnalysableElement.getPageCache(pageContext,
+                MakumbaJspAnalyzer.getInstance())), PageAttributes.getAttributes(pageContext));
+
         try {
-            //Attributes.MA args = new Attributes.MA(PageAttributes.getAttributes(pageContext));
+            // Attributes.MA args = new Attributes.MA(PageAttributes.getAttributes(pageContext));
             // query parameters are actually in the transaction context (the page context)
-            listData = cq.execute(qep, null, new Evaluator(pageContext),
-                    computeLimit(pageContext, offset, 0), computeLimit(pageContext, limit, -1));
+            listData = cq.execute(qep, null, new Evaluator(pageContext), computeLimit(pageContext, offset, 0),
+                computeLimit(pageContext, limit, -1));
         } finally {
             qep.close();
         }
@@ -168,13 +171,13 @@ public class QueryExecution {
     private QueryExecution(MultipleKey key, PageContext pageContext, String offset, String limit, String defaultLimit)
             throws LogicException {
         currentDataSet = (Stack<Dictionary<String, Object>>) pageContext.getAttribute(CURRENT_DATA_SET);
-        ComposedQuery cq = QueryTag.getQuery(
-            AnalysableElement.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance()), key);
+        ComposedQuery cq = QueryTag.getQuery(AnalysableElement.getPageCache(pageContext,
+            MakumbaJspAnalyzer.getInstance()), key);
         QueryProvider qep = QueryProvider.makeQueryRunner(GenericListTag.getDataSourceName(pageContext),
-            MakumbaJspAnalyzer.getQueryLanguage(AnalysableElement.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance())), 
-            PageAttributes.getAttributes(pageContext));
+            MakumbaJspAnalyzer.getQueryLanguage(AnalysableElement.getPageCache(pageContext,
+                MakumbaJspAnalyzer.getInstance())), PageAttributes.getAttributes(pageContext));
         try {
-            //Attributes.MA args = new Attributes.MA(PageAttributes.getAttributes(pageContext));
+            // Attributes.MA args = new Attributes.MA(PageAttributes.getAttributes(pageContext));
             int defaultLimitInt = QueryExecution.computeLimit(pageContext, defaultLimit, -1, -1);
             // query parameters are actually in the transaction context (the page context)
             listData = cq.execute(qep, null, new Evaluator(pageContext), computeLimit(pageContext, offset, 0, 0),
@@ -183,7 +186,7 @@ public class QueryExecution {
             qep.close();
         }
     }
-    
+
     /**
      * Computes the limit from the value passed in the limit tag parameter.
      * 
@@ -199,7 +202,8 @@ public class QueryExecution {
      * @return The int value of the limit, if a correct one is passed as tag parameter
      * @throws LogicException
      */
-    public static int computeLimit(PageContext pc, String s, int defaultValue, int defaultNonSpecified) throws LogicException {
+    public static int computeLimit(PageContext pc, String s, int defaultValue, int defaultNonSpecified)
+            throws LogicException {
         if (s == null) {
             return defaultNonSpecified;
         }
@@ -316,7 +320,7 @@ public class QueryExecution {
      * @return The current listData
      */
     public ArrayMap currentListData() {
-        return (ArrayMap) iterationGroupData.elementAt(iteration);
+        return iterationGroupData.elementAt(iteration);
     }
 
 }
