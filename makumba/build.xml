@@ -80,6 +80,19 @@
 
 	<property file="build.properties" />
 
+	<path id="test.class.path">
+		<path refid="project.class.path" />
+		<pathelement path="classes"/>
+		<pathelement path="webapps/tests/WEB-INF/classes"/>
+		<fileset dir="lib/db">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="lib/test">
+			<include name="*.jar" />
+			<exclude name="*bootstrap.jar" />
+		</fileset>
+	</path>
+		
 	<!-- classpath for starting the JSPWiki tomcat -->
 	<path id="tomcat.class.path">
 		<fileset dir="${java.home}/lib/">
@@ -635,21 +648,64 @@
 	</target>
 
 	<!-- Targets for JUNIT testing -->
+	
+	<target name="test.junit" depends="compile">
+	    <junit fork="no">
+	      <sysproperty key="cactus.contextURL" value="http://localhost:8080/tests"/>
+	      <classpath refid="test.class.path" />
+	      <formatter type="plain" usefile="false" />
+		      <test name="test.table" />
+	    </junit>
+		<!-- there could be more tests in the junit tag, 
+		but this fails, probably due to improper cleanup.
+		if we make that to work, we could also use batchtest 
+		-->
+	    <junit fork="no">
+	      <sysproperty key="cactus.contextURL" value="http://localhost:8080/tests"/>
+	      <classpath refid="test.class.path" />
+	      <formatter type="plain" usefile="false" />
+	    	  <test name="test.mdd" />
+	    </junit>
+	</target>
+	
+	<target name="test.jsp" depends="compile">
+	    <junit fork="no">
+	      <sysproperty key="cactus.contextURL" value="http://localhost:8080/tests"/>
+	      <classpath refid="test.class.path" />
+	      <formatter type="plain" usefile="false" />
+		  <test name="test.tags.FormsOQLTest" />
+	    </junit>
+		<!-- there could be more tests in the junit tag, 
+		but this fails, probably due to improper cleanup.
+		if we make that to work, we could also use batchtest 
+		-->
+		<junit fork="no">
+	      <sysproperty key="cactus.contextURL" value="http://localhost:8080/tests"/>
+	      <classpath refid="test.class.path" />
+	      <formatter type="plain" usefile="false" />
+		  <test name="test.tags.ListOQLTest" />
+	    </junit>
 
+	</target>
+	
+
+	<!-- old version of some tests -->
+	<target name="test.table" depends="compile" description="run database test cases">
+		<java classname="test.table" fork="true" failonerror="true" classpathref="test.class.path" taskname="junit" />
+	</target>
+	
+	<target name="test.mdd" depends="compile" description="run MDD test cases">
+		<java classname="test.mdd" fork="true" failonerror="true" classpath="classes" classpathref="test.class.path" taskname="junit" />
+	</target>
+
+	<!-- the following tests should be converted to junit -->
 	<target name="test" depends="compile" description="run all test cases">
 		<java classname="test.all" fork="true" failonerror="true" classpath="classes" classpathref="project.class.path" taskname="junit" />
 	</target>
 
-	<target name="test.table" depends="compile" description="run database test cases">
-		<java classname="test.table" fork="true" failonerror="true" classpath="classes" classpathref="project.class.path" taskname="junit" />
-	</target>
-
-	<target name="test.mdd" depends="compile" description="run MDD test cases">
-		<java classname="test.mdd" fork="true" failonerror="true" classpath="classes" classpathref="project.class.path" taskname="junit" />
-	</target>
 
 	<target name="test.config" depends="compile" description="run config test cases">
-		<java classname="test.config" fork="true" failonerror="true" classpath="classes" classpathref="project.class.path" taskname="junit" />
+		<java classname="test.config" fork="true" failonerror="true" classpath="classes" classpathref="test.class.path" taskname="junit" />
 	</target>
 
 	<target name="test.lock" depends="compile" description="run locking test cases">
@@ -770,8 +826,27 @@
 
 	</target>
 
+	<target name="tomcat-mak" description="start the tomcat for tests">
+		<echo>Java home in build: ${java.home}</echo>
+		<!-- responders are different for spawn = true, versus spawn = false -->
+		<java classname="org.apache.catalina.startup.Bootstrap"  fork="true" spawn="true" classpathref="test.class.path">
+			<jvmarg value="-Dcatalina.home=${tomcat.home}" />
+			<jvmarg value="-Dcatalina.base=${basedir}/tomcat" />
+			<jvmarg value="-Xms${tomcat.Xms}" />
+			<jvmarg value="-Xmx${tomcat.Xmx}" />
+			<jvmarg value="-XX:MaxPermSize=${tomcat.Xmx}" />
+			<jvmarg value="-Djava.util.logging.config.file=${basedir}/logging.properties" />
+			<jvmarg value="-client" />
+			<arg value="start" />
+		</java>
+		<!-- give tomcat time to start up -->
+		<sleep seconds="5" />
+
+
+	</target>
+
 	<target name="tomcat-stop" description="stops the tomcat that runs JSPwiki">
-		<java classname="org.apache.catalina.startup.Bootstrap" fork="yes" classpathref="tomcat.class.path">
+		<java classname="org.apache.catalina.startup.Bootstrap" fork="yes" classpathref="test.class.path">
 			<jvmarg value="-Dcatalina.home=${tomcat.home}" />
 			<jvmarg value="-Dcatalina.base=tomcat" />
 			<arg value="stop" />
