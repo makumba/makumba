@@ -33,10 +33,11 @@ import org.makumba.analyser.engine.SyntaxPoint;
  * 
  * @author Cristian Bogdan
  * @author Manuel Gay
+ * @author Rudolf Mayer
  * @version $Id$
  */
 public class TagData extends ElementData implements Serializable {
-   
+
     private static final long serialVersionUID = 1L;
 
     /** Name of the tag */
@@ -49,7 +50,10 @@ public class TagData extends ElementData implements Serializable {
     public Map<String, String> attributes;
 
     /** Tag object, if one is created by the analyzer */
-    public Object tagObject;
+    public AnalysableTag tagObject;
+
+    /** The {@link TagData} of the tag closing element */
+    public TagData closingTagData;
 
     public TagData(String name, SyntaxPoint start, SyntaxPoint end, Map<String, String> attributes) {
         this.name = name;
@@ -61,13 +65,26 @@ public class TagData extends ElementData implements Serializable {
         this.attributes = attributes;
     }
 
-    public Object getTagObject() {
+    public AnalysableTag getTagObject() {
         return tagObject;
     }
 
     @Override
     public String toString() {
-        return "Tag " + name + " on " + getLocation() + ", attributes: " + attributes;
+        return "Tag " + name + " on " + getLocation() + ", attributes: " + attributes
+                + (closingTagData != null ? " (ends on " + closingTagData.getLocation() + ")" : "");
     }
 
+    /** Checks whether this {@link ElementData} is declared after the closing tag of the given {@link ElementData} */
+    public boolean afterClosing(TagData el) {
+        if (el.closingTagData != null) {
+            return after(el.closingTagData);
+        } else {
+            return after(el);
+        }
+    }
+
+    public void setClosingTagData(TagData closingTagData) {
+        this.closingTagData = closingTagData;
+    }
 }

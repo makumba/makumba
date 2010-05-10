@@ -225,6 +225,9 @@ public class ParseStatus {
             throw new org.makumba.ProgrammerError(sb.toString());
         }
 
+        TagData beginTagData = (TagData) pageCache.retrieve(MakumbaJspAnalyzer.TAG_DATA_CACHE, t.getTagKey());
+        beginTagData.setClosingTagData(td);
+
         parents.remove(parents.size() - 1);
     }
 

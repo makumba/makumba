@@ -3,6 +3,8 @@ package org.makumba.analyser;
 import org.makumba.analyser.engine.SourceSyntaxPoints;
 
 /**
+ * @author Manuel Gay
+ * @author Rudolf Mayer
  * @version $Id: ElementData.java,v 1.1 7 May 2010 15:48:42 rudi Exp $
  */
 public class ElementData {
