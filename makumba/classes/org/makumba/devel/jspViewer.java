@@ -58,6 +58,7 @@ import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.query.FunctionInliner;
+import org.makumba.providers.query.Pass1ASTPrinter;
 import org.makumba.providers.query.mql.MqlQueryAnalysis;
 import org.makumba.providers.query.mql.MqlSQLParameterTransformer;
 
@@ -386,9 +387,16 @@ public class jspViewer extends LineViewer {
 
                                 String queryOQL = ((ComposedQuery) queryCache.get(tagKey)).getComputedQuery();
                                 currentText.append("OQL: " + queryOQL + "<br/>");
-                                // FIXME: use default inliner, with QueryAnalysisProvider.inlineFunctions
-                                QueryAnalysisProvider queryAnalzyer = QueryProvider.getQueryAnalzyer("oql");
-                                String queryInlined = FunctionInliner.inline(queryOQL, queryAnalzyer);
+
+                                String queryInlined = null;
+                                // check which inliner to use
+                                if (Configuration.getQueryInliner().equals("matcher")) {
+                                    QueryAnalysisProvider queryAnalzyer = QueryProvider.getQueryAnalzyer("oql");
+                                    queryInlined = FunctionInliner.inline(queryOQL, queryAnalzyer);
+                                } else {
+                                    QueryAnalysisProvider queryAnalzyer = QueryProvider.getQueryAnalzyer(TransactionProvider.getInstance().getQueryLanguage());
+                                    queryInlined = Pass1ASTPrinter.printAST(queryAnalzyer.inlineFunctions(queryOQL)).toString();
+                                }
                                 if (!queryInlined.equals(queryOQL)) {
                                     currentText.append("OQL inlined: " + queryInlined + "<br/>");
                                 }
@@ -397,6 +405,7 @@ public class jspViewer extends LineViewer {
                                     // FIXME: this seems very specific to MQL...
                                     org.makumba.db.makumba.Database db = MakumbaTransactionProvider.getDatabase(TransactionProvider.getInstance().getDefaultDataSourceName());
                                     if (db instanceof Database) {
+                                        QueryAnalysisProvider queryAnalzyer = QueryProvider.getQueryAnalzyer("oql");
                                         QueryAnalysis qa = queryAnalzyer.getQueryAnalysis(queryInlined);
                                         MqlSQLParameterTransformer trans = new MqlSQLParameterTransformer(
                                                 (MqlQueryAnalysis) qa);
