@@ -55,6 +55,11 @@ public class CountFunctions extends AnalysableExpression {
     }
 
     @Override
+    public void doEndAnalyze(PageCache pageCache) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
     public String getPrefix() {
         // TODO Auto-generated method stub
         return null;

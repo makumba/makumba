@@ -43,8 +43,8 @@ public class ValueFunction extends AnalysableExpression {
         }
 
         // analogously to ValueTag, we register a value computer
-        pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, key, ValueComputer.getValueComputerAtAnalysis(true,
-            parentList.getTagKey(), expr, pageCache));
+        ValueComputer vc = ValueComputer.getValueComputerAtAnalysis(true, parentList.getTagKey(), expr, pageCache);
+        pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, key, vc);
 
         // FIXME: the following code is similar to ValueTag.doStartAnalyze; unifying might make sense.
         // if we add a projection to a query, we also cache this so that we know where the projection comes from (for
@@ -61,6 +61,19 @@ public class ValueFunction extends AnalysableExpression {
             pageCache.cache(MakumbaJspAnalyzer.PROJECTION_ORIGIN_CACHE, new MultipleKey(parentList.getTagKey(), expr),
                 key);
         }
+    }
+
+    /**
+     * Tells the ValueComputer to finish analysis.
+     * 
+     * @param pageCache
+     *            the page cache of the current page
+     */
+    @Override
+    public void doEndAnalyze(PageCache pageCache) {
+        // analogously to ValueTag, we tell the value computer t a value computer
+        ValueComputer vc = (ValueComputer) pageCache.retrieve(MakumbaJspAnalyzer.VALUE_COMPUTERS, key);
+        vc.doEndAnalyze(pageCache);
     }
 
     private QueryTag getEnclosingList() {

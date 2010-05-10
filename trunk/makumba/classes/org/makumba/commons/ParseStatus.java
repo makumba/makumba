@@ -254,6 +254,11 @@ public class ParseStatus {
                 AnalysableElement.setAnalyzedElementData(t.tagData);
                 t.doEndAnalyze(pageCache);
                 AnalysableElement.setAnalyzedElementData(null);
+            } else if (analysableElement instanceof AnalysableExpression) {
+                AnalysableExpression expr = (AnalysableExpression) analysableElement;
+                AnalysableElement.setAnalyzedElementData(expr.getElementData());
+                expr.doEndAnalyze(pageCache);
+                AnalysableElement.setAnalyzedElementData(null);
             }
         }
         // additionally to the tags, we also store the dependency graph in the pageCache after sorting it
