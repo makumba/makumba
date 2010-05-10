@@ -13,6 +13,7 @@
 		<pathelement location="lib/core/commons-cli-1.2.jar" />
 		<pathelement location="lib/core/antlr-2.7.6.jar" />
 		<pathelement location="lib/common/jsp-api.jar" />
+		<pathelement location="lib/common/el-api.jar" />
 		<pathelement location="lib/common/commons-httpclient.jar" />
 		<pathelement location="lib/common/servlet-api.jar" />
 		<pathelement location="lib/common/jstl-standard.jar" />
@@ -52,6 +53,7 @@
 		<pathelement location="lib/core/mime-util.jar" />
 		<pathelement location="lib/common/dom4j-1.6.1.jar" />
 		<pathelement location="lib/common/jsp-api.jar" />
+		<pathelement location="lib/common/el-api.jar" />
 		<pathelement location="lib/common/jstl-standard.jar" />
 		<pathelement location="lib/common/jstl.jar" />
 		<pathelement location="lib/common/commons-logging-api.jar" />
@@ -829,7 +831,11 @@
 	<target name="tomcat-mak" description="start the tomcat for tests">
 		<echo>Java home in build: ${java.home}</echo>
 		<!-- responders are different for spawn = true, versus spawn = false -->
-		<java classname="org.apache.catalina.startup.Bootstrap"  fork="true" spawn="true" classpathref="test.class.path">
+		<java classname="org.apache.catalina.startup.Bootstrap"  fork="true" spawn="true" ><!-- spawn="true" -->
+			<classpath>
+			<path refid="test.class.path" />
+			<pathelement path="lib/test/tomcat-bootstrap.jar"/>
+			</classpath>
 			<jvmarg value="-Dcatalina.home=${tomcat.home}" />
 			<jvmarg value="-Dcatalina.base=${basedir}/tomcat" />
 			<jvmarg value="-Xms${tomcat.Xms}" />
@@ -845,8 +851,33 @@
 
 	</target>
 
-	<target name="tomcat-stop" description="stops the tomcat that runs JSPwiki">
+	<target name="tomcat6-mak" description="start the tomcat for tests">
+			<echo>Java home in build: ${java.home}</echo>
+			<!-- responders are different for spawn = true, versus spawn = false -->
+			<java classname="org.apache.catalina.startup.Bootstrap"  fork="true" spawn="true"  ><!-- spawn="true" -->
+				<classpath>
+				<path refid="test.class.path" />
+				<pathelement path="lib/test/tomcat6-bootstrap.jar"/>
+				</classpath>
+				<jvmarg value="-Dcatalina.home=${tomcat6.home}" />
+				<jvmarg value="-Dcatalina.base=${basedir}/tomcat6" />
+				<jvmarg value="-Xms${tomcat.Xms}" />
+				<jvmarg value="-Xmx${tomcat.Xmx}" />
+				<jvmarg value="-XX:MaxPermSize=${tomcat.Xmx}" />
+				<jvmarg value="-Djava.util.logging.config.file=${basedir}/logging.properties" />
+				<jvmarg value="-client" />
+				<arg value="start" />
+			</java>
+			<!-- give tomcat time to start up -->
+			<sleep seconds="5" />
+
+
+		</target>
+	<target name="tomcat-stop" description="stops the tomcat">
 		<java classname="org.apache.catalina.startup.Bootstrap" fork="yes" classpathref="test.class.path">
+			<classpath>
+			<pathelement path="lib/test/tomcat-bootstrap.jar"/>
+			</classpath>
 			<jvmarg value="-Dcatalina.home=${tomcat.home}" />
 			<jvmarg value="-Dcatalina.base=tomcat" />
 			<arg value="stop" />
@@ -855,6 +886,18 @@
 		<sleep seconds="5" />
 	</target>
 
+	<target name="tomcat6-stop" description="stops the tomcat">
+		<java classname="org.apache.catalina.startup.Bootstrap" fork="yes" classpathref="test.class.path">
+			<classpath>
+			<pathelement path="lib/test/tomcat6-bootstrap.jar"/>
+			</classpath>
+			<jvmarg value="-Dcatalina.home=${tomcat6.home}" />
+			<jvmarg value="-Dcatalina.base=tomcat6" />
+			<arg value="stop" />
+		</java>
+		<!-- give tomcat time to shut down -->
+		<sleep seconds="5" />
+	</target>
 
 
 
