@@ -371,12 +371,23 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
     /**
      * for dynamically built suites, the tests whose included jsp has a different name
      */
-    protected Map<String, String> differentNameJsps = new HashMap<String, String>();
+    protected Map<String, String> differentNameJspsMap = new HashMap<String, String>();
+    protected Map<String, String> differentNameJspsReverseMap = new HashMap<String, String>();
 
     /**
      * some tests will compare content against the response of a form submission
      */
     protected WebResponse submissionResponse;
+    
+    protected void differentNameJsps(String name, String jsp){
+        differentNameJspsMap.put(name, jsp);
+        differentNameJspsReverseMap.put(jsp, name);
+    }
+    
+    Set<String> disabledTests= new HashSet<String>();
+    protected void disableTest(String test){
+        disabledTests.add(test);
+    }
 
     public static class MakumbaJspTestCaseDecorator extends MakumbaJspTestCase {
         MakumbaJspTestCase decorated;
@@ -430,7 +441,7 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
 
             // now we set a header, to tell the server side what to include
             // some tests have a jsp page with a different name
-            String jspPage = decorated.differentNameJsps.get(test);
+            String jspPage = decorated.differentNameJspsMap.get(test);
             if (jspPage == null)
                 // but most have the page with the same name
                 jspPage = "/" + decorated.getJspDir() + "/" + test + ".jsp";
@@ -499,6 +510,26 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
      */
     public static Test makeSuite(Class<?> claz, String queryLang) {
         return new MakumbaTestSetup(new TestSuite(claz), queryLang);
+    }
+    
+    public static Test makeJspDirSuite(MakumbaJspTestCase prototype, String queryLang){
+        TestSuite ts = new TestSuite(prototype.getClass().getName());
+        //ts.addTest(new TestSuite(prototype.getClass()));
+        File dir= new File("webapps/tests/"+prototype.getJspDir());
+        
+        for (String test : dir.list()) {
+            if(test.startsWith("test") && test.endsWith(".jsp")){
+                String testName= test.replace(".jsp", "");
+                if(prototype.disabledTests.contains(testName))
+                    continue;
+                String test1= prototype.differentNameJspsReverseMap.get(prototype.getJspDir()+"/"+test);
+                if(test1!=null)
+                    ts.addTest(new JspTest(prototype, test1));
+                else
+                    ts.addTest(new JspTest(prototype, testName));
+            }
+        }
+        return new MakumbaTestSetup(ts, queryLang);
     }
 
 }
