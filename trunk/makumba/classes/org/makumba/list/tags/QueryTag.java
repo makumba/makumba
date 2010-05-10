@@ -23,9 +23,10 @@
 
 package org.makumba.list.tags;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-import java.util.TreeSet;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspException;
@@ -39,6 +40,7 @@ import org.makumba.ProgrammerError;
 import org.makumba.analyser.AnalysableElement;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
+import org.makumba.analyser.TagData;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.RuntimeWrappedException;
@@ -757,13 +759,11 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
         // get all query tags
         Map<Object, Object> tagcache = AnalysableElement.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance()).retrieveCache(
-            MakumbaJspAnalyzer.TAG_CACHE);
-        // sometimes query tags might be stored duplicated in the pagecache
-        // and they might not be ordered by their line number..
-        TreeSet<QueryTag> queryTags = new TreeSet<QueryTag>(new FilePositionElementComparator());
-        for (Object tag : tagcache.values()) {
-            if (tag instanceof QueryTag) {
-                queryTags.add((QueryTag) tag);
+            MakumbaJspAnalyzer.TAG_DATA_CACHE);
+        ArrayList<TagData> queryTags = new ArrayList<TagData>();
+        for (Object tagData : tagcache.values()) {
+            if (((TagData) tagData).getTagObject() instanceof QueryTag) {
+                queryTags.add((TagData) tagData);
             }
         }
         // find the correct query tag from the tagCache
@@ -780,10 +780,10 @@ public class QueryTag extends GenericListTag implements IterationTag {
             MultipleKey lastFinished = (MultipleKey) pageContext.getRequest().getAttribute(lastFinishedListKey);
             if (lastFinished != null) {
                 // find the next one
-                nextQueryTag = findNextTag(queryTags, lastFinished);
+                nextQueryTag = findNextTagAfterEnd(queryTags, lastFinished);
             } else {
                 // if we haven't passed a mak:list/object yet, just take the first one
-                nextQueryTag = queryTags.first();
+                nextQueryTag = (QueryTag) queryTags.get(0).getTagObject();
             }
         }
 
@@ -796,15 +796,32 @@ public class QueryTag extends GenericListTag implements IterationTag {
         return (Stack<MultipleKey>) pageContext.getRequest().getAttribute(runningListKeyStack);
     }
 
-    private static QueryTag findNextTag(TreeSet<QueryTag> queryTags, final MultipleKey currentListKey) {
-        QueryTag nextQueryTag = null;
-        for (QueryTag queryTag : queryTags) {
-            if (queryTag.getTagKey().equals(currentListKey)) {
-                nextQueryTag = queryTags.higher(queryTag);
-                break;
+    private static QueryTag findNextTag(List<TagData> queryTags, final MultipleKey currentListKey) {
+        for (int i = 0; i < queryTags.size(); i++) {
+            TagData queryTag = queryTags.get(i);
+            if (queryTag.getTagObject().getTagKey().equals(currentListKey)) {
+                return (QueryTag) queryTags.get(i + 1).getTagObject();
             }
         }
-        return nextQueryTag;
+        return null;
+    }
+
+    private static QueryTag findNextTagAfterEnd(List<TagData> queryTags, final MultipleKey currentListKey) {
+        // find the active open tag
+        for (int i = 0; i < queryTags.size(); i++) {
+            TagData queryTag = queryTags.get(i);
+            if (queryTag.getTagObject().getTagKey().equals(currentListKey)) {
+                TagData activeTag = queryTag;
+
+                // now find the next query tag after this one is closed
+                for (int j = i + 1; j < queryTags.size(); j++) {
+                    if (queryTags.get(j).afterClosing(activeTag)) {
+                        return (QueryTag) queryTags.get(j).getTagObject();
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     @Override
