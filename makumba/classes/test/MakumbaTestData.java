@@ -33,8 +33,8 @@ public class MakumbaTestData {
 
     static ArrayList<Pointer> languages = new ArrayList<Pointer>();
 
-    private static String[][] languageData = { { "English", "en" }, { "French", "fr" }, { "German", "de" },
-            { "Italian", "it" }, { "Spanish", "sp" } };
+    private static String[][] languageData = { { "English", "en", "Germanic" }, { "French", "fr", "Romance" },
+            { "German", "de", "Germanic" }, { "Italian", "it", "Romance" }, { "Spanish", "sp", "Romance" } };
 
     public static Date birthdateJohn;
 
@@ -176,6 +176,7 @@ public class MakumbaTestData {
         for (int i = 0; i < languageData.length; i++) {
             p.put("name", languageData[i][0]);
             p.put("isoCode", languageData[i][1]);
+            p.put("family", languageData[i][2]);
             languages.add(t.insert("test.Language", p));
         }
     }
