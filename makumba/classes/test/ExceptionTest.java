@@ -23,12 +23,6 @@ public class ExceptionTest extends MakumbaJspTestCase {
         jspDir = "exceptions";
     }
 
-    private static final class Suite extends MakumbaTestSetup {
-        private Suite(Test arg0) {
-            super(arg0, null);
-        }
-    }
-
     public static Test suite() {
         return makeSuite(ExceptionTest.class, null);
     }

@@ -23,21 +23,15 @@ import org.makumba.providers.TransactionProvider;
 public class ExternalSetAPITest extends TestCase {
     private static final String setName = "speaks";
 
-    static Suite setup;
 
     private Pointer person = null;
 
     private Vector<Pointer> speaks;
 
-    private static final class Suite extends MakumbaTestSetup {
-        private Suite(Test arg0) {
-            super(arg0, "oql");
-        }
-    }
-
+    private static MakumbaTestSetup setup;
+    
     public static Test suite() {
-        setup = new Suite(new TestSuite(ExternalSetAPITest.class));
-        return setup;
+        return (setup= new MakumbaTestSetup(new TestSuite(ExternalSetAPITest.class), "oql"));
     }
 
     @Override

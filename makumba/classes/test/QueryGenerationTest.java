@@ -21,14 +21,8 @@ import junit.framework.TestSuite;
  */
 public class QueryGenerationTest extends TestCase {
     
-    private static final class Suite extends MakumbaTestSetup {
-        private Suite(Test test) {
-            super(test, "oql");
-        }
-    }
-    
     public static Test suite() {
-        return new Suite(new TestSuite(QueryGenerationTest.class));
+        return new MakumbaTestSetup(new TestSuite(QueryGenerationTest.class), "oql");
     }
     
     public void testParameterNameWithDot() throws Exception {

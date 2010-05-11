@@ -17,7 +17,7 @@ import test.MakumbaTestSetup;
 
 public class ConcurrentTest extends TestCase {
 
-    private static Suite setup;
+    private static MakumbaTestSetup setup;
     
     private static final int THREADS = 200;
     
@@ -25,14 +25,8 @@ public class ConcurrentTest extends TestCase {
     
     private static final String EXPECTED_TEST_RESULT_FRAGMENT = "speaks: English English French French German German Italian Italian Spanish Spanish";
     
-    private static final class Suite extends MakumbaTestSetup {
-        private Suite(Test test) {
-            super(test, "oql");
-        }
-    }
-    
     public static Test suite() {
-        return setup = new Suite(new TestSuite(ConcurrentTest.class));
+        return setup = new MakumbaTestSetup(new TestSuite(ConcurrentTest.class), "oql");
     }
     
     public void testListConcurrent() throws Exception {
