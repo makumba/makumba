@@ -655,7 +655,6 @@
 	
 	<target name="test.junit" depends="compile">
 	    <junit fork="no">
-	      <sysproperty key="cactus.contextURL" value="http://localhost:8080/tests"/>
 	      <classpath refid="test.class.path" />
 	      <formatter type="plain" usefile="false" />
 		      <test name="test.table" />
@@ -665,7 +664,6 @@
 		if we make that to work, we could also use batchtest 
 		-->
 	    <junit fork="no">
-	      <sysproperty key="cactus.contextURL" value="http://localhost:8080/tests"/>
 	      <classpath refid="test.class.path" />
 	      <formatter type="plain" usefile="false" />
 	    	  <test name="test.mdd" />
@@ -673,9 +671,10 @@
 	</target>
 	
 	<target name="test.jsp" depends="compile">
+		<antcall target="${tomcatVersion}-mak"/>
 	    <junit fork="no">
 	      <sysproperty key="cactus.contextURL" value="http://localhost:8080/tests"/>
-	      <classpath refid="test.class.path" />
+	    	<classpath refid="test.class.path" />
 	      <formatter type="plain" usefile="false" />
 		  <test name="test.tags.FormsOQLTest" />
 	    </junit>
@@ -689,7 +688,7 @@
 	      <formatter type="plain" usefile="false" />
 		  <test name="test.tags.ListOQLTest" />
 	    </junit>
-
+		<antcall target="${tomcatVersion}-stop"/>
 	</target>
 	
 
@@ -813,7 +812,7 @@
 		</java>
 	</target>
 
-	<target name="tomcat-start" description="start the tomcat to deploy JSPwiki">
+	<target name="tomcat-wiki" description="start the tomcat to deploy JSPwiki">
 		<echo>Java home in build: ${java.home}</echo>
 		<java classname="org.apache.catalina.startup.Bootstrap" fork="yes" classpathref="tomcat.class.path" append="true">
 			<jvmarg value="-Dcatalina.home=${tomcat.home}" />
@@ -830,12 +829,34 @@
 
 	</target>
 
+	<target name="beforeContainer" >
+		 <available file="build.properties" property="configured"/>
+				<fail unless="configured"
+					>build.properties file does not exist! Please mae it based on the build.properties.example file
+				</fail>
+		<echo>Starting servlet container. Java home in build: ${java.home}
+In case of problems, in order to see the output, consider setting tomcat.spawn to false in build.properties</echo>
+	</target>
+	
+	<target name="checkContainer">
+		<echo>Checking whether servlet container started.</echo>
+		<!-- give tomcat time to start up -->
+		<sleep seconds="2" />
+		<property name="testFile" value="${temp.dir}/container-start.txt" />
+		<delete file="${testFile}" />
+		<get src="http://localhost:8080/tests" dest="${testFile}" ignoreerrors="true" />
+	    <available file="${testFile}" property="containerStarted"/>
+		<fail unless="containerStarted">
+			Servlet container did not start
+		</fail>
+	</target>
+	
 	<target name="tomcat-mak" description="start the tomcat for tests">
-		<echo>Java home in build: ${java.home}</echo>
+		<antcall target="beforeContainer" />
 		<!-- spawn=true leads to the ant target returning immediately
 		http://ant.apache.org/manual/CoreTasks/java.html
 		 -->
-		<java classname="org.apache.catalina.startup.Bootstrap"  fork="true" spawn="true" ><!-- spawn="true" -->
+		<java classname="org.apache.catalina.startup.Bootstrap"  fork="true" spawn="${tomcat.spawn}" ><!-- spawn="true" -->
 			<classpath>
 			<path refid="test.class.path" />
 			<pathelement path="lib/test/tomcat-bootstrap.jar"/>
@@ -849,15 +870,12 @@
 			<jvmarg value="-client" />
 			<arg value="start" />
 		</java>
-		<!-- give tomcat time to start up -->
-		<sleep seconds="5" />
-
-
+		<antcall target="checkContainer" />
 	</target>
 
 	<target name="tomcat6-mak" description="start the tomcat for tests">
+		<antcall target="beforeContainer" />
 			<echo>Java home in build: ${java.home}</echo>
-			<!-- responders are different for spawn = true, versus spawn = false -->
 			<java classname="org.apache.catalina.startup.Bootstrap"  fork="true" spawn="true"  ><!-- spawn="true" -->
 				<classpath>
 				<path refid="test.class.path" />
@@ -872,11 +890,9 @@
 				<jvmarg value="-client" />
 				<arg value="start" />
 			</java>
-			<!-- give tomcat time to start up -->
-			<sleep seconds="5" />
+		<antcall target="checkContainer" />
+	</target>
 
-
-		</target>
 	<target name="tomcat-stop" description="stops the tomcat">
 		<java classname="org.apache.catalina.startup.Bootstrap" fork="yes" classpathref="test.class.path">
 			<classpath>
@@ -886,8 +902,6 @@
 			<jvmarg value="-Dcatalina.base=tomcat" />
 			<arg value="stop" />
 		</java>
-		<!-- give tomcat time to shut down -->
-		<sleep seconds="5" />
 	</target>
 
 	<target name="tomcat6-stop" description="stops the tomcat">
@@ -899,8 +913,6 @@
 			<jvmarg value="-Dcatalina.base=tomcat6" />
 			<arg value="stop" />
 		</java>
-		<!-- give tomcat time to shut down -->
-		<sleep seconds="5" />
 	</target>
 
 

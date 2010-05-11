@@ -18,3 +18,11 @@ jspwiki.baseURL= http://localhost:9090/
 
 # build path (i.e. where the classes are generated)
 build.path=build
+
+# the tomcat version to use in the tomcat-dependent tests
+# possible values: tomcat and tomcat6
+tomcatVersion=tomcat6
+
+# set this to false if you want to see the tomcat output. 
+# set it back to true if you want ant not to block after starting tomcat
+tomcat.spawn=true
