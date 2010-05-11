@@ -27,14 +27,13 @@ import org.apache.cactus.JspTestCase;
 import org.apache.cactus.Request;
 import org.xml.sax.SAXException;
 
-import test.MakumbaTestSetup;
+import test.MakumbaWebTestSetup;
+
 import bmsi.util.Diff;
 import bmsi.util.DiffPrint;
 
-import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebForm;
-import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 
 /**
@@ -313,29 +312,6 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
     }
 
     /**
-     * Common method for classes that want to test tomcat. They only need to declare an empty testTomcat() method
-     * 
-     * @param request
-     */
-    public void beginTomcat(Request request) {
-        WebConversation wc = new WebConversation();
-        WebRequest req = new GetMethodWebRequest(System.getProperty("cactus.contextURL"));
-        try {
-            wc.getResponse(req);
-        } catch (MalformedURLException e) {
-        } catch (IOException e) {
-            try {
-                tearDown();
-            } catch (Exception e1) {
-                e1.printStackTrace();
-            }
-            System.err.println("\n\n\n\n\nYou should run tomcat first! Use mak-tomcat to do that.\n\n");
-            System.exit(1);
-        } catch (SAXException e) {
-        }
-    }
-
-    /**
      * The JSP dir of this suite
      * 
      * @return a dir name relative to the root
@@ -498,7 +474,7 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
         for (String test : prototype.tests) {
             ts.addTest(new JspTest(prototype, test));
         }
-        return new MakumbaTestSetup(ts, queryLang);
+        return new MakumbaWebTestSetup(ts, queryLang);
     }
 
     /**
@@ -511,7 +487,7 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
      * @return the test suite
      */
     public static Test makeSuite(Class<?> claz, String queryLang) {
-        return new MakumbaTestSetup(new TestSuite(claz), queryLang);
+        return new MakumbaWebTestSetup(new TestSuite(claz), queryLang);
     }
 
     /**
@@ -543,7 +519,7 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
                     ts.addTest(new JspTest(prototype, testName));
             }
         }
-        return new MakumbaTestSetup(ts, queryLang);
+        return new MakumbaWebTestSetup(ts, queryLang);
     }
 
 }
