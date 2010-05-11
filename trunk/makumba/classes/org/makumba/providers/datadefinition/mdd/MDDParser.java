@@ -43,7 +43,7 @@ public class MDDParser extends MDDBaseParser {
         try {
             included = factory.parseIncludedDataDefinition(type.getText()).getAST();
         } catch(DataDefinitionNotFoundError e) {
-            factory.doThrow(type.getText(), "Could not find included data definition", type);
+            factory.doThrow(typeName, "Could not find included data definition", type);
         }
         
         return included;
