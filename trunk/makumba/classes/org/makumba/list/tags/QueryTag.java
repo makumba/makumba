@@ -754,6 +754,18 @@ public class QueryTag extends GenericListTag implements IterationTag {
         // if that list is set, find the next tag as above
         // c.) if neither stack nor last finished list are set, just use the first tag in the page
         //
+        // FIXME: the query tag lookup does NOT work if we have a mak:list with the same key in the page.
+        // see bug http://bugs.makumba.org/show_bug.cgi?id=1211
+        // Can happen if
+        // - we have one of the lists (list A) @included, and the other one (list B) in the including page, AND
+        // - there is a nextCount() between list A and list B
+        // then, the key for the last list in the pageContext will match the one of list B
+        // as we don't have lits A in the tag cache of the current page, we will find list B as the last list execute
+        // and then find the one list after as the one the nextCount() relates too...
+        // FIXME: handle this by using
+        // a.) a different key that also holds the name of the source file
+        // b.) having the tagCache augmented by the tags from the included page
+        //
         // 3. the function needs to execute the query before the QueryTag actually starts, before doAnalyzedStartTag
         // it does so by calling initiateExecution(), which then will execute the query
         //
