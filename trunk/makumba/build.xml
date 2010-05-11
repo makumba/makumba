@@ -649,7 +649,9 @@
 
 	</target>
 
-	<!-- Targets for JUNIT testing -->
+	<!-- Targets for JUNIT testing 
+	http://ant.apache.org/manual/OptionalTasks/junit.html
+	-->
 	
 	<target name="test.junit" depends="compile">
 	    <junit fork="no">
@@ -830,7 +832,9 @@
 
 	<target name="tomcat-mak" description="start the tomcat for tests">
 		<echo>Java home in build: ${java.home}</echo>
-		<!-- responders are different for spawn = true, versus spawn = false -->
+		<!-- spawn=true leads to the ant target returning immediately
+		http://ant.apache.org/manual/CoreTasks/java.html
+		 -->
 		<java classname="org.apache.catalina.startup.Bootstrap"  fork="true" spawn="true" ><!-- spawn="true" -->
 			<classpath>
 			<path refid="test.class.path" />
