@@ -100,10 +100,10 @@
 		<fileset dir="${java.home}/lib/">
 			<include name="rt.jar" />
 		</fileset>
-		<fileset dir="${tomcat.home}/bin/">
+		<fileset dir="${tomcat6.home}/bin/">
 			<include name="bootstrap.jar" />
 		</fileset>
-		<fileset dir="${tomcat.home}/lib/">
+		<fileset dir="${tomcat6.home}/lib/">
 			<include name="*.jar" />
 		</fileset>
 		<fileset dir="${basedir}/lib/common">
@@ -813,6 +813,7 @@
 	</target>
 
 	<target name="tomcat-wiki" description="start the tomcat to deploy JSPwiki">
+		<antcall target="beforeContainer" />
 		<echo>Java home in build: ${java.home}</echo>
 		<java classname="org.apache.catalina.startup.Bootstrap" fork="yes" classpathref="tomcat.class.path" append="true">
 			<jvmarg value="-Dcatalina.home=${tomcat.home}" />
@@ -831,9 +832,9 @@
 
 	<target name="beforeContainer" >
 		 <available file="build.properties" property="configured"/>
-				<fail unless="configured"
-					>build.properties file does not exist! Please mae it based on the build.properties.example file
-				</fail>
+		<fail unless="configured"
+			>build.properties file does not exist! Please make it based on the build.properties.example file
+		</fail>
 		<echo>Starting servlet container. Java home in build: ${java.home}
 In case of problems, in order to see the output, consider setting tomcat.spawn to false in build.properties</echo>
 	</target>
@@ -841,7 +842,7 @@ In case of problems, in order to see the output, consider setting tomcat.spawn t
 	<target name="checkContainer">
 		<echo>Checking whether servlet container started.</echo>
 		<!-- give tomcat time to start up -->
-		<sleep seconds="2" />
+		<sleep seconds="4" />
 		<property name="testFile" value="${temp.dir}/container-start.txt" />
 		<delete file="${testFile}" />
 		<get src="http://localhost:8080/tests" dest="${testFile}" ignoreerrors="true" />
@@ -902,6 +903,7 @@ In case of problems, in order to see the output, consider setting tomcat.spawn t
 			<jvmarg value="-Dcatalina.base=tomcat" />
 			<arg value="stop" />
 		</java>
+		<sleep seconds="2" />
 	</target>
 
 	<target name="tomcat6-stop" description="stops the tomcat">
@@ -913,6 +915,7 @@ In case of problems, in order to see the output, consider setting tomcat.spawn t
 			<jvmarg value="-Dcatalina.base=tomcat6" />
 			<arg value="stop" />
 		</java>
+		<sleep seconds="2" />
 	</target>
 
 
