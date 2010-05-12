@@ -135,7 +135,7 @@ public class ControllerFilter implements Filter {
     }
 
     public void destroy() {
-
+        MakumbaJspFactory.reset();
     }
 
 }

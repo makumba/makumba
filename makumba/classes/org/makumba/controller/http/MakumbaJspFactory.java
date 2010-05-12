@@ -40,16 +40,21 @@ import javax.servlet.jsp.PageContext;
 public class MakumbaJspFactory extends JspFactory {
 
     // TODO: not sure if the ThreadLocal should be here, or whether there's a more fitting place
-    private static Stack<ThreadLocal<PageContext>> pageContextStack = new Stack<ThreadLocal<PageContext>>();
+    private static ThreadLocal<Stack<PageContext>> pageContextStack = new ThreadLocal<Stack<PageContext>>();
 
     // state pattern, we stay in the initial state until we find the container factory
     // this will happen at first access but we make sure that concurrent initial accesses don't collide
     // further accesses will use the noop state which does nothing
     static public Runnable checker = new Runnable() {
         public synchronized void run() {
-            fact = JspFactory.getDefaultFactory();
+
+            JspFactory fact = JspFactory.getDefaultFactory();
             if (fact != null) {
-                JspFactory.setDefaultFactory(new MakumbaJspFactory());
+                if (!(fact.getClass().getName().endsWith("MakumbaJspFactory"))) {
+                    JspFactory.setDefaultFactory(new MakumbaJspFactory(fact));
+                } else
+                    throw new IllegalStateException("Cannot use JspFactory from old classloader!");
+
                 checker = noop;
             }
         }
@@ -60,7 +65,31 @@ public class MakumbaJspFactory extends JspFactory {
         }
     };
 
-    static JspFactory fact = null;
+    /**
+     * Reset the factory to the original value We do this at webapp undeploy, otherwise the next webapp will use an
+     * instance of this class loaded with the previous classloader.
+     */
+    static void reset() {
+        JspFactory current = JspFactory.getDefaultFactory();
+        if (!(current instanceof MakumbaJspFactory))
+            return;
+        pageContextStack = null;
+        JspFactory.setDefaultFactory(((MakumbaJspFactory) current).getDecorated());
+    }
+
+    JspFactory fact = null;
+
+    public JspFactory getDecorated() {
+        return fact;
+    }
+
+    public String toString() {
+        return "mak factory decorating " + fact;
+    }
+
+    public MakumbaJspFactory(JspFactory fact) {
+        this.fact = fact;
+    }
 
     @Override
     public JspEngineInfo getEngineInfo() {
@@ -75,9 +104,9 @@ public class MakumbaJspFactory extends JspFactory {
         // we hang the pageContext in a threadLocal stack
         PageContext pageContext = fact.getPageContext(servlet, request, response, errorPageURL, needsSession, buffer,
             autoflush);
-        ThreadLocal<PageContext> threadLocal = new ThreadLocal<PageContext>();
-        threadLocal.set(pageContext);
-        pageContextStack.push(threadLocal);
+        Stack<PageContext> stack = new Stack<PageContext>();
+        pageContextStack.set(stack);
+        stack.push(pageContext);
 
         // and also trigger page analysis
         // this also tells us when a page starts or is included
@@ -92,7 +121,7 @@ public class MakumbaJspFactory extends JspFactory {
         // this tells us when a page finishes and if it was included, we will go back to the including page
 
         // here we pop the pageContext from the thread local stack
-        pageContextStack.pop(); // TODO: maybe check if the result of pop() and pc is the same?
+        pageContextStack.get().pop(); // TODO: maybe check if the result of pop() and pc is the same?
 
         // TODO: activate the runtime state of the makumba tags from the including page
     }
@@ -103,6 +132,6 @@ public class MakumbaJspFactory extends JspFactory {
     }
 
     public static PageContext getPageContext() {
-        return pageContextStack.peek().get();
+        return pageContextStack.get().peek();
     }
 }
