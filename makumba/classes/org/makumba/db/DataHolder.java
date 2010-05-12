@@ -23,30 +23,30 @@ import org.makumba.providers.TransactionProvider;
  */
 public class DataHolder {
 
-    /** the Transaction of this DataHolder * */
+    /** the Transaction of this DataHolder */
     private Transaction t;
 
-    /** the TransactionProvider of the transaction of this DataHolder * */
+    /** the TransactionProvider of the transaction of this DataHolder */
     private TransactionProvider tp;
 
-    /** dictionary holding the data used for the operation, and on which operations are performed * */
+    /** dictionary holding the data used for the operation, and on which operations are performed */
     Dictionary<String, Object> dictionnary = new Hashtable<String, Object>();
 
-    /** dictionary holding subrecords, i.e. each key gives access to a hashtable of fields * */
-    Dictionary<String, Object> others = new Hashtable<String, Object>(); // contains data holders
+    /** dictionary holding subrecords, i.e. each key gives access to a hashtable of fields */
+    Dictionary<String, DataHolder> subrecords = new Hashtable<String, DataHolder>(); // contains data holders
 
-    /** dictionary holding the data which has to be performed on sets * */
+    /** dictionary holding the data which has to be performed on sets */
     Dictionary<String, Object> sets = new Hashtable<String, Object>(); // contains vectors
 
-    /** all the fields to be processed * */
+    /** all the fields to be processed */
     private Dictionary<String, Object> fullData;
 
     private DataDefinitionProvider ddp;
 
-    /** the type of the base object to be worked on * */
+    /** the type of the base object to be worked on */
     private String type;
 
-    /** the DataDefinition of the base object to be worked on * */
+    /** the DataDefinition of the base object to be worked on */
     private DataDefinition typeDef;
 
     public DataHolder(Transaction t, Dictionary<String, Object> data, String type) {
@@ -63,6 +63,8 @@ public class DataHolder {
             String o = e.nextElement();
             dictionnary.put(o, data.get(o));
         }
+
+        Hashtable<String, Hashtable<String, Object>> subfieldsTemp = new Hashtable<String, Hashtable<String, Object>>();
 
         for (Enumeration<String> e = data.keys(); e.hasMoreElements();) {
             Object o = e.nextElement();
@@ -96,20 +98,19 @@ public class DataHolder {
                 }
             } else { // if there's a dot, we place it in our dictionary of subrecords
                 String fld = s.substring(0, dot);
-                Dictionary oth = (Dictionary) others.get(fld);
+                Hashtable<String, Object> oth = subfieldsTemp.get(fld);
                 if (oth == null) {
-                    others.put(fld, oth = new Hashtable());
+                    oth = new Hashtable<String, Object>();
+                    subfieldsTemp.put(fld, oth);
                 }
                 oth.put(s.substring(dot + 1), dictionnary.remove(s)); // we keep only the field name after the dot
             }
         }
-        Dictionary others1 = others;
-        others = new Hashtable<String, Object>(); // we clean the dictionary of subrecords
 
         // we check what is left (in the subrecords)
-        for (Enumeration e = others1.keys(); e.hasMoreElements();) {
+        for (Enumeration<String> e = subfieldsTemp.keys(); e.hasMoreElements();) {
 
-            String fld = (String) e.nextElement();
+            String fld = e.nextElement();
             FieldDefinition fd = typeDef.getFieldDefinition(fld);
 
             if (fd == null) {
@@ -120,7 +121,7 @@ public class DataHolder {
             if (dictionnary.get(fld) != null) {
                 throw new org.makumba.InvalidValueException(fd,
                         "you cannot indicate both a subfield and the field itself. Values for " + fld + "."
-                                + others.get(fld) + " were also indicated");
+                                + subrecords.get(fld) + " were also indicated");
             }
 
             // if this field is a ptrOne (in the same table), i.e. a subrecord (not external record)
@@ -130,45 +131,47 @@ public class DataHolder {
             }
 
             // we recursively add the subfield to our fields
-            others.put(fld, new DataHolder(t, (Dictionary) others1.get(fld), fd.getPointedType().getName()));
+            subrecords.put(fld, new DataHolder(t, subfieldsTemp.get(fld), fd.getPointedType().getName()));
         }
     }
 
     @Override
     public String toString() {
-        return "data: " + dictionnary + " others: " + others;
+        return "data: " + dictionnary + " others: " + subrecords;
     }
 
     /**
      * Checks if it is possible to insert data for all subrecords.<br>
-     * Does not check if same-table duplicate exists; duplicate errors are to be dealt with after an insertion attempt has been made by the implementation of {@link #insert()}
+     * Does not check if same-table duplicate exists; duplicate errors are to be dealt with after an insertion attempt
+     * has been made by the implementation of {@link #insert()}
      */
     public void checkInsert() {
-        for (Enumeration e = others.elements(); e.hasMoreElements();) {
-            ((DataHolder) e.nextElement()).checkInsert();
+        for (Enumeration<DataHolder> e = subrecords.elements(); e.hasMoreElements();) {
+            e.nextElement().checkInsert();
         }
-        tp.getCRUD().checkInsert(t, type, dictionnary, others, fullData);
+        tp.getCRUD().checkInsert(t, type, dictionnary, subrecords, fullData);
     }
 
     /**
      * Checks if it is possible to update for all subrecords.<br>
-     * Does not check if same-table duplicate exists; duplicate errors are to be dealt with after an update attempt has been made by the implementation of {@link #update(Pointer)}
+     * Does not check if same-table duplicate exists; duplicate errors are to be dealt with after an update attempt has
+     * been made by the implementation of {@link #update(Pointer)}
      * 
      * @param pointer
      *            the pointer to the record to be updated
      */
     void checkUpdate(Pointer pointer) {
-        for (Enumeration<Object> e = others.elements(); e.hasMoreElements();) {
-            ((DataHolder) e.nextElement()).checkUpdate(pointer);
+        for (Enumeration<DataHolder> e = subrecords.elements(); e.hasMoreElements();) {
+            e.nextElement().checkUpdate(pointer);
         }
-        tp.getCRUD().checkUpdate(t, type, pointer, dictionnary, others, fullData);
+        tp.getCRUD().checkUpdate(t, type, pointer, dictionnary, subrecords, fullData);
     }
 
     public Pointer insert() {
         // first we insert the other pointers, i.e. the subrecords
-        for (Enumeration<String> e = others.keys(); e.hasMoreElements();) {
+        for (Enumeration<String> e = subrecords.keys(); e.hasMoreElements();) {
             String fld = e.nextElement();
-            dictionnary.put(fld, ((DataHolder) others.get(fld)).insert());
+            dictionnary.put(fld, subrecords.get(fld).insert());
         }
         // then we insert the record, and we know all the pointers to the subrecords
         Pointer p = tp.getCRUD().insert(t, type, dictionnary);
@@ -186,7 +189,7 @@ public class DataHolder {
         // see if we have to read some pointers
         Vector<Object> ptrsx = new Vector<Object>();
         // we have to read the "other" pointers
-        for (Enumeration<String> e = others.keys(); e.hasMoreElements();) {
+        for (Enumeration<String> e = subrecords.keys(); e.hasMoreElements();) {
             ptrsx.addElement(e.nextElement());
         }
         // we might have to read the ptrOnes that are nullified
@@ -203,13 +206,13 @@ public class DataHolder {
         }
 
         // update others
-        for (Enumeration<String> e = others.keys(); e.hasMoreElements();) {
+        for (Enumeration<String> e = subrecords.keys(); e.hasMoreElements();) {
             String fld = e.nextElement();
             Pointer ptr = (Pointer) ptrs.remove(fld);
             if (ptr == null || ptr == Pointer.Null) {
-                dictionnary.put(fld, ((DataHolder) others.get(fld)).insert());
+                dictionnary.put(fld, subrecords.get(fld).insert());
             } else {
-                ((DataHolder) others.get(fld)).update(ptr);
+                subrecords.get(fld).update(ptr);
             }
         }
 

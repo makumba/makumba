@@ -6,6 +6,7 @@ import java.util.Enumeration;
 import org.makumba.DataDefinition;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
+import org.makumba.db.DataHolder;
 import org.makumba.providers.CRUDOperationProvider;
 
 /**
@@ -18,24 +19,24 @@ public class MakumbaCRUDOperationProvider extends CRUDOperationProvider {
 
     @Override
     public Pointer insert(Transaction t, String type, Dictionary<String, Object> data) {
-        Table table = (((DBConnection) t).db.getTable(ddp.getDataDefinition(type).getName()));
+        Table table = ((DBConnection) t).db.getTable(ddp.getDataDefinition(type).getName());
         return table.insertRecord((DBConnection) t, data);
     }
 
     @Override
     public void checkInsert(Transaction t, String type, Dictionary<String, Object> fieldsToCheck,
-            Dictionary<String, Object> fieldsToIgnore, Dictionary<String, Object> allFields) {
-        Table table = (((DBConnection) t).db.getTable(ddp.getDataDefinition(type).getName()));
+            Dictionary<String, DataHolder> fieldsToIgnore, Dictionary<String, Object> allFields) {
+        Table table = ((DBConnection) t).db.getTable(ddp.getDataDefinition(type).getName());
         table.checkInsert(fieldsToCheck, fieldsToIgnore, allFields);
     }
 
     @Override
     public void checkUpdate(Transaction t, String type, Pointer pointer, Dictionary<String, Object> fieldsToCheck,
-            Dictionary<String, Object> fieldsToIgnore, Dictionary<String, Object> allFields) {
+            Dictionary<String, DataHolder> fieldsToIgnore, Dictionary<String, Object> allFields) {
 
         DataDefinition dd = checkUpdate(type, fieldsToCheck, fieldsToIgnore);
 
-        Table table = (((DBConnection) t).db.getTable(dd.getName()));
+        Table table = ((DBConnection) t).db.getTable(dd.getName());
         table.checkUpdate(pointer, allFields);
     }
 

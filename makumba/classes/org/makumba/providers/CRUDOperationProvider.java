@@ -10,6 +10,7 @@ import org.makumba.FieldDefinition;
 import org.makumba.InvalidFieldTypeException;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
+import org.makumba.db.DataHolder;
 import org.makumba.db.TransactionImplementation;
 
 /**
@@ -129,7 +130,7 @@ public abstract class CRUDOperationProvider {
      *            the FieldDefinition of the field containing the set
      */
     public void deleteSet(Transaction t, Pointer base, FieldDefinition fi) {
-        TransactionImplementation t1 = ((TransactionImplementation) t);
+        TransactionImplementation t1 = (TransactionImplementation) t;
         t.update(t1.transformTypeName(fi.getSubtable().getName()) + " this", null, "this."
                 + fi.getSubtable().getSetOwnerFieldName() + t1.getPrimaryKeyName() + "=" + t1.getParameterName(), base);
     }
@@ -149,7 +150,7 @@ public abstract class CRUDOperationProvider {
      *            the entire data to be inserted
      */
     public abstract void checkInsert(Transaction t, String type, Dictionary<String, Object> fieldsToCheck,
-            Dictionary<String, Object> fieldsToIgnore, Dictionary<String, Object> allFields);
+            Dictionary<String, DataHolder> fieldsToIgnore, Dictionary<String, Object> allFields);
 
     /**
      * Checks if a set of values can be updated in the database.
@@ -162,17 +163,17 @@ public abstract class CRUDOperationProvider {
      *            the pointer to the record to be updated
      * @param fieldsToCheck
      *            the values to be checked
-     * @param fieldsToIgnore
+     * @param others
      *            the values of toCheck not to be checked
      * @param allFields
      *            the entire data to be inserted
      */
     public abstract void checkUpdate(Transaction t, String type, Pointer pointer,
-            Dictionary<String, Object> fieldsToCheck, Dictionary<String, Object> fieldsToIgnore,
+            Dictionary<String, Object> fieldsToCheck, Dictionary<String, DataHolder> others,
             Dictionary<String, Object> allFields);
 
     protected DataDefinition checkUpdate(String type, Dictionary<String, Object> fieldsToCheck,
-            Dictionary<String, Object> fieldsToIgnore) {
+            Dictionary<String, DataHolder> fieldsToIgnore) {
         DataDefinition dd = ddp.getDataDefinition(type);
 
         // we check if we can perform the update

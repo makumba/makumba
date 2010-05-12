@@ -20,6 +20,7 @@ import org.makumba.Text;
 import org.makumba.Transaction;
 import org.makumba.commons.NameResolver;
 import org.makumba.commons.SQLPointer;
+import org.makumba.db.DataHolder;
 import org.makumba.providers.CRUDOperationProvider;
 
 /**
@@ -34,7 +35,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
     private static NameResolver nr = new NameResolver();
 
     @Override
-    public void checkInsert(Transaction t, String type, Dictionary<String, Object> fieldsToCheck, Dictionary<String, Object> fieldsToIgnore,
+    public void checkInsert(Transaction t, String type, Dictionary<String, Object> fieldsToCheck, Dictionary<String, DataHolder> fieldsToIgnore,
             Dictionary<String, Object> allFields) {
 
         DataDefinition dd = ddp.getDataDefinition(type);
@@ -61,7 +62,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
     @Override
     public void checkUpdate(Transaction t, String type, Pointer pointer, Dictionary<String, Object> fieldsToCheck,
-            Dictionary<String, Object> fieldsToIgnore, Dictionary<String, Object> allFields) {
+            Dictionary<String, DataHolder> fieldsToIgnore, Dictionary<String, Object> allFields) {
 
         // DataDefinition dd =
         checkUpdate(type, fieldsToCheck, fieldsToIgnore);
