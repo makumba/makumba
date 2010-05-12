@@ -25,6 +25,7 @@ import org.makumba.commons.MakumbaJspAnalyzer;
  * (tag or EL expression). This is useful when providing accurate error messages to the user.
  *
  * @author Manuel Gay
+ * @author Rudolf Mayer
  * @version $Id: AnalysableElement.java,v 1.1 Jan 27, 2010 11:49:06 AM manu Exp $
  */
 public abstract class AnalysableElement extends TagSupport {
@@ -209,7 +210,7 @@ public abstract class AnalysableElement extends TagSupport {
             TagData tagData = (TagData) tagDataCache.get(key);
             String attribute = tagData.attributes.get(attributeName);
             if (StringUtils.equals(attribute, attributeValue)) {
-                tag = (AnalysableTag) tagData.getTagObject();
+                tag = tagData.getTagObject();
                 break;
             }
         }
@@ -220,12 +221,14 @@ public abstract class AnalysableElement extends TagSupport {
         return tag;
     }
 
-    protected static void checkTagFound(PageCache pageCache, String attributeName, String attributeValue,
+    public static AnalysableTag checkTagFound(PageCache pageCache, String attributeName, String attributeValue,
             Class<? extends AnalysableTag> klass) {
-        if (getTagByAttribute(pageCache, attributeName, attributeValue, klass) == null) {
+        AnalysableTag tag = getTagByAttribute(pageCache, attributeName, attributeValue, klass);
+        if (tag == null) {
             throw new ProgrammerError("Could not find tag with attribute '" + attributeName + "' of value '"
                     + attributeValue + "' in the page.");
         }
+        return tag;
     }
 
     protected static TagData getElementBefore(PageCache pageCache, ElementData elData,
