@@ -35,6 +35,7 @@ import org.makumba.DataTransformer;
 import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
 import org.makumba.commons.NameResolver;
+import org.makumba.db.DataHolder;
 
 /**
  * This is a generic database table RecordHandler. TODO Document the methods in here
@@ -261,7 +262,7 @@ public abstract class Table // extends RecordHandler
     public abstract Pointer insertRecordImpl(DBConnection c, Dictionary<String, Object> d);
 
     public abstract void checkInsert(Dictionary<String, Object> fieldsToCheck,
-            Dictionary<String, Object> fieldsToIgnore, Dictionary<String, Object> allFields);
+            Dictionary<String, DataHolder> fieldsToIgnore, Dictionary<String, Object> allFields);
 
     public abstract void checkUpdate(Pointer pointer, Dictionary<String, Object> allFields);
     

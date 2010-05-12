@@ -53,6 +53,7 @@ import org.makumba.commons.NameResolver;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.SQLPointer;
 import org.makumba.commons.StringUtils;
+import org.makumba.db.DataHolder;
 import org.makumba.db.makumba.DBConnection;
 import org.makumba.db.makumba.DBConnectionWrapper;
 import org.makumba.db.makumba.Table;
@@ -2103,7 +2104,7 @@ public class TableManager extends Table {
      *            the entire data to be inserted
      */
     @Override
-    public void checkInsert(Dictionary<String, Object> fieldsToCheck, Dictionary<String, Object> fieldsToIgnore,
+    public void checkInsert(Dictionary<String, Object> fieldsToCheck, Dictionary<String, DataHolder> fieldsToIgnore,
             Dictionary<String, Object> allFields) {
         dd.checkFieldNames(fieldsToCheck);
         for (String string : dd.getFieldNames()) {
