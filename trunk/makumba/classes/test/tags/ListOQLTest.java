@@ -88,6 +88,14 @@ public class ListOQLTest extends MakumbaJspTestCase {
         compareToFileWithTestName(response);
     }
 
+    public void testMakListNextCountById() throws ServletException, IOException {
+        includeJspWithTestName();
+    }
+
+    public void endMakListNextCountById(WebResponse response) throws Exception {
+        compareToFileWithTestName(response);
+    }
+
     public void testMakListNextCountNestedList() throws ServletException, IOException {
         includeJspWithTestName();
     }

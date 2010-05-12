@@ -1894,6 +1894,15 @@ set: 'single' forces a single-select rather than a multiple-select, and radio-bu
   </function>
 
   <function>
+    <name>nextCountById</name>
+    <descriptionPage>NextCountFunctionDescription</descriptionPage>
+    <function-class>org.makumba.list.tags.QueryTag</function-class>
+    <function-signature>int nextCountById(java.lang.String)</function-signature>
+    <example>CountFunctionExample</example>
+    <see>count,maxCount,lastCount,maxResults</see>
+  </function>
+
+  <function>
     <name>maxResults</name>
     <descriptionPage>MaxResultsFunctionDescription</descriptionPage>
     <function-class>org.makumba.list.tags.QueryTag</function-class>

@@ -741,19 +741,61 @@ public class QueryTag extends GenericListTag implements IterationTag {
      * @return The total number of iterations that will be performed within the next iterationGroup
      */
     public static int nextCount() throws LogicException, JspException {
+        // find the correct query tag from the tagCache
+        // TODO: some error handling in case the nextQueryTag could not be found
+        QueryTag nextQueryTag = findNextCountQueryTag(MakumbaJspFactory.getPageContext());
+        return nextCount(nextQueryTag);
+    }
+
+    /**
+     * Gives the total number of iterations of the next iterationGroup.<br/>
+     * Invoking this method in the JSP page will cause this mak:list/object to pre-execute it's query, for the number of
+     * iterations to be known before the tag will actually be executed.
+     * 
+     * @param id
+     *            the ID of the mak:list/object to relate to
+     * @return The total number of iterations that will be performed within the next iterationGroup
+     */
+    public static int nextCountById(String id) throws LogicException, JspException {
+        // find the correct query tag from the tagCache
+        // TODO: some error handling in case the nextQueryTag could not be found
+        PageContext pageContext = MakumbaJspFactory.getPageContext();
+        PageCache pageCache = AnalysableElement.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance());
+        QueryTag nextQueryTag = (QueryTag) AnalysableElement.checkTagFound(pageCache, "id", id, QueryTag.class);
+        return nextCount(nextQueryTag);
+    }
+
+    private static int nextCount(QueryTag nextQueryTag) throws LogicException {
         // This method requires quite some trickery:
         //
         // 1. as a static method, it requires the pageContext, which it will get from MakumbaJspFactory.getPageContext()
         // this is equivalent to the other mak:xxxCount() functions
         //
-        // 2. the function needs to find the query tag it relates to. This is done as follows
-        // a.) the stack of currently running QueryTags is retrieved from the pageContext
+        // 2. the function needs to find the query tag it relates to.
+        // This is done by
+        // a.) using the ID passed to the function, or
+        // b.) by looking up the most likely tag with findNextCountQueryTag
+        //
+        // 3. the function needs to execute the query before the QueryTag actually starts, before doAnalyzedStartTag
+        // it does so by calling initiateExecution(), which then will execute the query
+        //
+        // 4. finally, the number of iterations can be retrieved from the pageContext
+
+        PageContext pageContext = MakumbaJspFactory.getPageContext();
+        nextQueryTag.initiateQueryExecution(pageContext, true);
+        return ((Integer) pageContext.getRequest().getAttribute(standardNextCountVar)).intValue();
+    }
+
+    private static QueryTag findNextCountQueryTag(PageContext pageContext) {
+        // find the QueryTag the nextCount might related to, as follows:
+        // 
+        // 1.) the stack of currently running QueryTags is retrieved from the pageContext
         // If it is not empty, the function starts from the top element on the stack, and finds the tag that comes next
         // in the page, by using the MakumbaJspAnalyzer.TAG_CACHE in PageCache
-        // b.) if the stack was empty, then retrieve the list that was finished last
+        // 2.) if the stack was empty, then retrieve the list that was finished last
         // if that list is set, find the next tag as above
-        // c.) if neither stack nor last finished list are set, just use the first tag in the page
-        //
+        // 3.) if neither stack nor last finished list are set, just use the first tag in the page
+
         // FIXME: the query tag lookup does NOT work if we have a mak:list with the same key in the page.
         // see bug http://bugs.makumba.org/show_bug.cgi?id=1211
         // Can happen if
@@ -766,15 +808,6 @@ public class QueryTag extends GenericListTag implements IterationTag {
         // a.) a different key that also holds the name of the source file
         // b.) having the tagCache augmented by the tags from the included page
         //
-        // 3. the function needs to execute the query before the QueryTag actually starts, before doAnalyzedStartTag
-        // it does so by calling initiateExecution(), which then will execute the query
-        //
-        // 4. finally, the number of iterations can be retrieved from the pageContext
-
-        PageContext pageContext = MakumbaJspFactory.getPageContext();
-        if (pageContext == null) {
-            return -1;
-        }
 
         // get all query tags
         Map<Object, Object> tagcache = AnalysableElement.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance()).retrieveCache(
@@ -805,11 +838,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
                 nextQueryTag = (QueryTag) queryTags.get(0).getTagObject();
             }
         }
-
-        // TODO: some error handling in case the nextQueryTag could not be found
-
-        nextQueryTag.initiateQueryExecution(pageContext, true);
-        return ((Integer) pageContext.getRequest().getAttribute(standardNextCountVar)).intValue();
+        return nextQueryTag;
     }
 
     /** Gets the stack of currently running (nested) Query Tags from the pageContext */
