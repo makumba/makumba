@@ -39,7 +39,6 @@ import junit.framework.TestSuite;
 import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.Transaction;
-import org.makumba.commons.NamedResources;
 import org.makumba.db.makumba.MakumbaTransactionProvider;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
@@ -68,15 +67,17 @@ public class table extends TestCase {
         return new TestSuite(table.class);
     }
 
+    @Override
     public void setUp() {
         db = tp.getConnectionTo("testDatabase");
     }
 
+    @Override
     public void tearDown() {
         db.close();
     }
 
-    private TransactionProvider tp = TransactionProvider.getInstance();
+    private final TransactionProvider tp = TransactionProvider.getInstance();
 
     static Pointer ptr, ptr1;
 
@@ -107,14 +108,15 @@ public class table extends TestCase {
     String readToy1 = "SELECT t.name AS name, t.color AS color, t.serial AS serial FROM test.AllTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers t WHERE t = $1";
 
     String readToy2 = "SELECT t.name AS name, t.color AS color, t.serial AS serial, t.relatedToy AS relatedToy FROM test.AllTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers t WHERE t = $1";
-    
+
     String readIntSet = "SELECT i as member FROM test.Person p, p.intSet i WHERE p=$1 ORDER BY i";
 
     String readCharSet = "SELECT c as member FROM test.Person p, p.charSet c WHERE p=$1 ORDER BY c";
 
     static InputStream getExampleData() {
         try {
-            return new BufferedInputStream(new FileInputStream("lib/core/antlr-2.7.6.jar".replace('/', File.separatorChar)));
+            return new BufferedInputStream(new FileInputStream("lib/core/antlr-2.7.6.jar".replace('/',
+                File.separatorChar)));
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -127,36 +129,35 @@ public class table extends TestCase {
 
         Vector<String> errors = new Vector<String>();
         for (int i = 0; i < v.size(); i++) {
-                try {
-                    db.executeQuery("SELECT t FROM test.validMdds." + v.elementAt(i) + " t", null);
-                    
-                    Vector<String> fields = ddp.getDataDefinition("test.validMdds." + v.elementAt(i)).getFieldNames();
-                    String what = "";
-                    for (String string : fields) {
-                        String fname = (String) string;
-                        String ftype = ddp.getDataDefinition("test.validMdds." + (String) v.elementAt(i)).getFieldDefinition(
-                            fname).getDataType();
-                        // System.out.println(fname+": "+ftype);
-                        if (ftype != null && !ftype.equals("null") && !ftype.startsWith("set")) {
-                            // fields
-                            what = what + (what.length() > 0 ? ", " : "") + "t." + fname;
-                        }
-                        
+            try {
+                db.executeQuery("SELECT t FROM test.validMdds." + v.elementAt(i) + " t", null);
+
+                Vector<String> fields = ddp.getDataDefinition("test.validMdds." + v.elementAt(i)).getFieldNames();
+                String what = "";
+                for (String string : fields) {
+                    String fname = string;
+                    String ftype = ddp.getDataDefinition("test.validMdds." + v.elementAt(i)).getFieldDefinition(fname).getDataType();
+                    // System.out.println(fname+": "+ftype);
+                    if (ftype != null && !ftype.equals("null") && !ftype.startsWith("set")) {
+                        // fields
+                        what = what + (what.length() > 0 ? ", " : "") + "t." + fname;
                     }
-                    // System.out.println(what);
-                    if (what.length() > 0) {
-                        db.executeQuery("SELECT " + what + " FROM test.validMdds." + (String) v.elementAt(i) + " t", null);
-                    }
-                } catch (Exception e) {
-                    errors.add("\n ." + (errors.size() + 1) + ") Error querying valid MDD <" + (String) v.elementAt(i)
-                            + ">:\n\t " + e);
+
                 }
+                // System.out.println(what);
+                if (what.length() > 0) {
+                    db.executeQuery("SELECT " + what + " FROM test.validMdds." + v.elementAt(i) + " t", null);
+                }
+            } catch (Exception e) {
+                errors.add("\n ." + (errors.size() + 1) + ") Error querying valid MDD <" + v.elementAt(i) + ">:\n\t "
+                        + e);
             }
-            if (errors.size() > 0) {
-                fail("\n  Tested " + v.size() + " valid MDDs, of which " + errors.size() + " cant be used for DB queries:"
-                        + errors.toString());
-            }
-        
+        }
+        if (errors.size() > 0) {
+            fail("\n  Tested " + v.size() + " valid MDDs, of which " + errors.size() + " cant be used for DB queries:"
+                    + errors.toString());
+        }
+
     }
 
     public void testInsert() {
@@ -294,7 +295,7 @@ public class table extends TestCase {
         db.delete(fptr);
 
     }
-    
+
     public void testForeignKeysWithLongMDDName() {
         assertTrue(org.makumba.db.makumba.sql.Database.supportsForeignKeys());
 
@@ -303,24 +304,24 @@ public class table extends TestCase {
 
         // insert the first toy
         Hashtable<String, Object> r = new Hashtable<String, Object>();
-        
+
         r.put("name", "car");
         r.put("color", "red");
         r.put("serial", "mak111");
 
         fptr = db.insert("test.AllTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers", r);
-        
+
         // check if he got inserted
         assertNotNull(fptr);
         assertEquals(fptr.getType(), "test.AllTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers");
 
         Vector<Dictionary<String, Object>> v = db.executeQuery(readToy1, fptr);
-        //System.out.println(v.size()); 
+        // System.out.println(v.size());
         assertEquals(1, v.size());
 
         // insert the second toy
         r = new Hashtable<String, Object>();
-        
+
         r.put("relatedToy", fptr);
         r.put("name", "helicopter");
         r.put("color", "rosa");
@@ -334,25 +335,24 @@ public class table extends TestCase {
         v = db.executeQuery(readToy2, fptr1);
 
         assertEquals(1, v.size());
-        
+
         pc = v.elementAt(0);
-        
+
         fptr2 = (Pointer) pc.get("relatedToy");
         assertNotNull(fptr2);
         assertEquals("relatedToy", fptr2, fptr);
-        
+
         // try to delete the first guy (who was set as a related toy. should fail)
-        try
-        {
+        try {
             db.delete(fptr);
             // we could delete him... the foreign keys don't work
             assertTrue(false);
-        } catch(org.makumba.DBError e) {
+        } catch (org.makumba.DBError e) {
         }
-        
+
         // try to delete the second guy
         db.delete(fptr1);
-        
+
         // delete the first guy again, this time he shouldn't be linked to from anywhere
         db.delete(fptr);
 
@@ -683,7 +683,6 @@ public class table extends TestCase {
         address.put("languages", languages);
         address.put("sth.aaa", "someAAA");
 
-        
         db.insert(ptrPerson, "address", address);
         address.put("streetno", "Sesame Street 16");
         Pointer ptrAddress2 = db.insert(ptrPerson, "address", address);
@@ -739,6 +738,7 @@ public class table extends TestCase {
         db.delete("test.Individual i", "1=1", null);
     }
 
+    @Override
     public void run(TestResult r) {
         try {
             super.run(r);
@@ -754,16 +754,17 @@ public class table extends TestCase {
         if (toString().equals("testCopy(test.table)")) {
             String nm = "testDatabase";
 
-            System.out.println("\nworked with: " + MakumbaTransactionProvider.getDatabaseProperty(nm, "sql_engine.name")
-                    + " version: " + MakumbaTransactionProvider.getDatabaseProperty(nm, "sql_engine.version") + "\njdbc driver: "
+            System.out.println("\nworked with: "
+                    + MakumbaTransactionProvider.getDatabaseProperty(nm, "sql_engine.name") + " version: "
+                    + MakumbaTransactionProvider.getDatabaseProperty(nm, "sql_engine.version") + "\njdbc driver: "
                     + MakumbaTransactionProvider.getDatabaseProperty(nm, "jdbc_driver.name") + " version: "
-                    + MakumbaTransactionProvider.getDatabaseProperty(nm, "jdbc_driver.version") + "\njdbc connections allocated: "
+                    + MakumbaTransactionProvider.getDatabaseProperty(nm, "jdbc_driver.version")
+                    + "\njdbc connections allocated: "
                     + MakumbaTransactionProvider.getDatabaseProperty(nm, "jdbc_connections") + "\ncaches: "
                     + org.makumba.commons.NamedResources.getCacheInfo()
 
             );
             java.util.logging.Logger.getLogger("org.makumba.system").info("destroying makumba caches");
-            NamedResources.cleanup();
         }
     }
 }
