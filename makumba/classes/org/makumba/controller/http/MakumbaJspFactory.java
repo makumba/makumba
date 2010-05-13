@@ -104,9 +104,9 @@ public class MakumbaJspFactory extends JspFactory {
         // we hang the pageContext in a threadLocal stack
         PageContext pageContext = fact.getPageContext(servlet, request, response, errorPageURL, needsSession, buffer,
             autoflush);
-        Stack<PageContext> stack = new Stack<PageContext>();
-        pageContextStack.set(stack);
-        stack.push(pageContext);
+        if(pageContextStack.get()==null)
+            pageContextStack.set(new Stack<PageContext>());
+        pageContextStack.get().push(pageContext);
 
         // and also trigger page analysis
         // this also tells us when a page starts or is included
