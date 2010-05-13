@@ -4,6 +4,7 @@ import junit.extensions.TestSetup;
 import junit.framework.Test;
 
 import org.makumba.Transaction;
+import org.makumba.commons.NamedResources;
 import org.makumba.db.hibernate.HibernateTransactionProvider;
 import org.makumba.providers.TransactionProvider;
 
@@ -12,9 +13,9 @@ import org.makumba.providers.TransactionProvider;
  */
 public class MakumbaTestSetup extends TestSetup {
 
-    private String transactionProviderType;
+    private final String transactionProviderType;
 
-    private MakumbaTestData testData = new MakumbaTestData();
+    private final MakumbaTestData testData = new MakumbaTestData();
 
     public MakumbaTestSetup(Test test, String transactionProviderType) {
         super(test);
@@ -34,6 +35,9 @@ public class MakumbaTestSetup extends TestSetup {
         if (transactionProviderType == null)
             return;
         if (transactionProviderType.equals("oql")) {
+            System.err.println("cleaning caches");
+            NamedResources.cleanStaticCache("Databases open");
+
             tp = TransactionProvider.getInstance();
             db = tp.getConnectionTo("testDatabase");
         } else if (transactionProviderType.equals("hql")) {
