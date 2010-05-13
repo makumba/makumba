@@ -28,7 +28,6 @@ import org.apache.cactus.Request;
 import org.xml.sax.SAXException;
 
 import test.MakumbaWebTestSetup;
-
 import bmsi.util.Diff;
 import bmsi.util.DiffPrint;
 
@@ -123,8 +122,8 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
 
             try {
                 StringWriter stringWriter = new StringWriter();
-                String[] a = (String[]) expectedResult.toArray(new String[expectedResult.size()]);
-                String[] b = (String[]) realResult.toArray(new String[realResult.size()]);
+                String[] a = expectedResult.toArray(new String[expectedResult.size()]);
+                String[] b = realResult.toArray(new String[realResult.size()]);
                 // System.out.println(Arrays.toString(a));
                 // System.out.println(Arrays.toString(b));
                 Diff d = new Diff(a, b);
@@ -213,6 +212,7 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
         String output = null;
         try {
             output = response.getText();
+            output.replace("http://localhost:8080/tests", System.getProperty("cactus.contextURL"));
             fetchValidTestResult(output, testName, getRecordingMode());
         } catch (IOException e) {
             fail("JSP output error: " + response.getResponseMessage());
@@ -430,9 +430,10 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
         }
 
         /** invoked by cactus on server */
+        @Override
         public void runBareServer() throws Exception {
             // if we have a jsp, we include it
-            String page = (String) request.getHeader("mak-test-page");
+            String page = request.getHeader("mak-test-page");
             if (page != null)
                 pageContext.include(page);
         }
@@ -450,6 +451,7 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
         /**
          * test name
          */
+        @Override
         public String getName() {
             return test;
         }
