@@ -89,6 +89,9 @@
 		<fileset dir="lib/db">
 			<include name="*.jar" />
 		</fileset>
+		<fileset dir="lib/optional/hibernate">
+			<include name="*.jar" />
+		</fileset>
 		<fileset dir="lib/test">
 			<include name="*.jar" />
 			<exclude name="*bootstrap.jar" />
@@ -385,15 +388,7 @@
 		</jar>
 	</target>
 	
-	<target name="testJar" description="make a jar in ./lib containing the test classes">
-		<mkdir dir="${jar.place}/lib" />
-		<jar jarfile="${jar.place}/lib/mak-test.jar">
-			<fileset dir="build" includes="test/**/*.class" defaultExcludes="no" />
-			<fileset dir="classes" includes="test/**/*.mdd" defaultExcludes="no" />
-		</jar>
-	</target>
-
-	<target name="testWar" depends="jar, testJar" >
+	<target name="testWar" depends="jar" >
 		<property name="webapp.source" value="webapps" />
 		<war destfile="build/tests.war" webxml="${webapp.source}/tests/WEB-INF/web.xml.dynamic" update="true">
 				<fileset dir="${webapp.source}/tests">
@@ -406,6 +401,9 @@
 					<!-- do note that servlet-api.jar, jsp-api.jar, el-api.jar must not be included! -->
 			       <include name="jstl*.jar" />
 				</lib>
+				<fileset dir="lib/optional/hibernate">
+					<include name="*.jar" />
+				</fileset>
 				<lib dir="lib/test">
 						<!-- FIXME: tomcat bootstraps don't need to be here, and maybe other jars
 						 however exclude doesn't seem to work -->					
@@ -413,9 +411,9 @@
 				</lib>
 				<lib dir="lib">
 					<include name="makumba.jar"/>
-					<include name="mak-test.jar"/>
 				</lib>
 			    <classes dir="${webapp.source}/tests/WEB-INF/classes"/>
+		    	<classes dir="build/test/"/>
 			</war>
 	</target>
 
@@ -688,43 +686,33 @@
 	-->
 	
 	<target name="test.junit" depends="compile">
-	    <junit fork="no">
+	    <junit fork="no" outputtoformatters="false">
 	      <classpath refid="test.class.path" />
-	      <formatter type="plain" usefile="false" />
-		      <test name="test.table" />
-	    </junit>
-		<!-- there could be more tests in the junit tag, 
-		but this fails, probably due to improper cleanup.
-		if we make that to work, we could also use batchtest 
-		-->
-	    <junit fork="no">
-	      <classpath refid="test.class.path" />
-	      <formatter type="plain" usefile="false" />
-	    	  <test name="test.mdd" />
-	    </junit>
+	      <formatter type="xml" usefile="false" />
+	      <test name="test.tableHibernate" />
+    	  <test name="test.mdd" />
+	      <test name="test.table" />
+		  <test name="test.config" />
+    	  <test name="test.ExternalSetAPITest" />
+	      <test name="test.hqlanalyzer" />
+		  <test name="test.lock" />
+	      <test name="test.oqlanalyzer" />
+	      <test name="test.QueryGenerationTest" />
+	    </junit>	  
 	</target>
 	
 	<target name="deployTests" depends="testWar">
 		<copy file="build/tests.war" toFile="${test.deploy}/tests.war"/>
 		<!-- wait for deploy -->
-		<sleep seconds="5"/>
+		<sleep seconds="8"/>
 	</target>
 	<target name="test.jsp"  depends="deployTests" >
 		<junit fork="no">
 		<sysproperty key="cactus.contextURL" value="http://localhost:${test.port}/tests"/>
 	   	  <classpath refid="test.class.path" />
 	      <formatter type="plain" usefile="false" />
-		  <test name="test.tags.FormsOQLTest" />
-	    </junit>
-		<!-- there could be more tests in the junit tag, 
-		but this fails, probably due to improper cleanup.
-		if we make that to work, we could also use batchtest 
-		-->
-		<junit fork="no">
-	      <sysproperty key="cactus.contextURL" value="http://localhost:${test.port}/tests"/>
-	      <classpath refid="test.class.path" />
-	      <formatter type="plain" usefile="false" />
-		  <test name="test.tags.ListOQLTest" />
+			<test name="test.tags.FormsOQLTest" />
+	     	<test name="test.tags.ListOQLTest" />
 	    </junit>
 	</target>
 	
@@ -867,7 +855,7 @@
 
 	</target>
 
-	<target name="beforeContainer" >
+	<target name="beforeContainer" >		
 		 <available file="build.properties" property="configured"/>
 		<fail unless="configured"
 			>build.properties file does not exist! Please make it based on the build.properties.example file
@@ -875,16 +863,16 @@
 		<echo>Starting servlet container. Java home in build: ${java.home}
 In case of problems, in order to see the output, consider setting tomcat.spawn to false in build.properties
 WARNING: webapps/tests will not work with this container because it is designed to be statically loaded. 
-To run tests, switch the appBase of the server (in server.xml) to e.g. webapps.dynamic, and configure that in build.properties.		
+The JSP tests will make a war of another name, which can be configured in build.properties (test.webapp)
 		</echo>
 	</target>
 	
 	<target name="checkContainer">
-		<echo>Checking whether servlet container started.</echo>
 		<!-- give tomcat time to start up -->
 		<sleep seconds="4" />
 		<!-- FIXME: skipping this for now, since there may not be a real webapp in the tomcat to access
 		 a dummy one with an index.html can be made easily anyway		
+		<echo>Checking whether servlet container started.</echo>
 		<property name="testFile" value="${temp.dir}/container-start.txt" />
 		<delete file="${testFile}" />
 		<get src="http://localhost:8080/dummy/index.html" dest="${testFile}" ignoreerrors="true" />
@@ -895,18 +883,20 @@ To run tests, switch the appBase of the server (in server.xml) to e.g. webapps.d
 		-->
 	</target>
 	
-	<target name="tomcat-mak" description="start the tomcat for tests">
+	<target name="tomcat-mak-common" >
+		<mkdir dir="${test.deploy}"/>
+		<replace file="${tomcatNumber}/conf/server.xml" token='appBase="../webapps"' value='appBase="../${test.deploy}"' />
 		<antcall target="beforeContainer" />
 		<!-- spawn=true leads to the ant target returning immediately
 		http://ant.apache.org/manual/CoreTasks/java.html
 		 -->
 		<java classname="org.apache.catalina.startup.Bootstrap"  fork="true" spawn="${tomcat.spawn}" ><!-- spawn="true" -->
 			<classpath>
-			<pathelement path="lib/test/tomcat-bootstrap.jar"/>
+			<pathelement path="lib/test/${tomcatNumber}-bootstrap.jar"/>
 			<pathelement path="lib/common/commons-logging-api.jar" />
 			</classpath>
-			<jvmarg value="-Dcatalina.home=${tomcat.home}" />
-			<jvmarg value="-Dcatalina.base=${basedir}/tomcat" />
+			<jvmarg value="-Dcatalina.home=${tomcatHome}" />
+			<jvmarg value="-Dcatalina.base=${tomcatNumber}" />
 			<jvmarg value="-Xms${tomcat.Xms}" />
 			<jvmarg value="-Xmx${tomcat.Xmx}" />
 			<jvmarg value="-XX:MaxPermSize=${tomcat.Xmx}" />
@@ -917,27 +907,20 @@ To run tests, switch the appBase of the server (in server.xml) to e.g. webapps.d
 		<antcall target="checkContainer" />
 	</target>
 
-	<target name="tomcat6-mak" description="start the tomcat for tests">
-		<antcall target="beforeContainer" />
-			<echo>Java home in build: ${java.home}</echo>
-			<java classname="org.apache.catalina.startup.Bootstrap"  fork="true" spawn="${tomcat.spawn}"  ><!-- spawn="true" -->
-				<classpath>
-					<pathelement path="lib/test/tomcat6-bootstrap.jar"/>
-					<pathelement path="lib/common/commons-logging-api.jar" />
-				</classpath>
-				<jvmarg value="-Dcatalina.home=${tomcat6.home}" />
-				<jvmarg value="-Dcatalina.base=${basedir}/tomcat6" />
-				<jvmarg value="-Xms${tomcat.Xms}" />
-				<jvmarg value="-Xmx${tomcat.Xmx}" />
-				<jvmarg value="-XX:MaxPermSize=${tomcat.Xmx}" />
-				<jvmarg value="-Djava.util.logging.config.file=${basedir}/logging.properties" />
-				<jvmarg value="-client" />
-				<arg value="start" />
-			</java>
-		<antcall target="checkContainer" />
+	<target name="tomcat-mak" description="start the tomcat for tests">
+		<antcall target="tomcat-mak-common" >
+			<param name="tomcatNumber" value="tomcat"/>
+			<param name="tomcatHome" value="${tomcat.home}" />
+		</antcall>
+		</target>
+
+	<target name="tomcat6-mak" description="start the tomcat6 for tests">
+		<property name="tomcatNumber" value="tomcat6"/>
+		<property name="tomcatHome" value="${tomcat6.home}" />
+		<antcall target="tomcat-mak-common" />
 	</target>
 
-	<target name="tomcat-stop" description="stops the tomcat">
+	<target name="tomcat-stop-common" description="stops the tomcat">
 		<java classname="org.apache.catalina.startup.Bootstrap" fork="yes" classpathref="test.class.path">
 			<classpath>
 			<pathelement path="lib/test/tomcat-bootstrap.jar"/>
@@ -946,21 +929,21 @@ To run tests, switch the appBase of the server (in server.xml) to e.g. webapps.d
 			<jvmarg value="-Dcatalina.base=tomcat" />
 			<arg value="stop" />
 		</java>
+		<replace file="${tomcatNumber}/conf/server.xml" token='appBase="../${test.deploy}"' value='appBase="../webapps"' />
 		<sleep seconds="2" />
 	</target>
 
-	<target name="tomcat6-stop" description="stops the tomcat">
-		<java classname="org.apache.catalina.startup.Bootstrap" fork="yes" classpathref="test.class.path">
-			<classpath>
-			<pathelement path="lib/test/tomcat6-bootstrap.jar"/>
-			</classpath>
-			<jvmarg value="-Dcatalina.home=${tomcat6.home}" />
-			<jvmarg value="-Dcatalina.base=tomcat6" />
-			<arg value="stop" />
-		</java>
-		<sleep seconds="2" />
+	<target name="tomcat-stop" description="stop the tomcat">
+		<antcall target="tomcat-stop-common" >
+			<param name="tomcatNumber" value="tomcat"/>
+		</antcall>
 	</target>
 
+	<target name="tomcat6-stop" description="stop the tomcat">
+		<antcall target="tomcat-stop-common" >
+			<param name="tomcatNumber" value="tomcat6"/>
+		</antcall>
+	</target>
 
 
 	<!-- Targets for modular building (list, forms, commons, ...) -->
