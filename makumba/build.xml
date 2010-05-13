@@ -378,11 +378,45 @@
 
 		<antcall target="makeManifest" />
 		<jar jarfile="${jar.place}/lib/makumba.jar" manifest="manifest.mf">
-			<fileset dir="classes" includes="makumbaResources/javaScript/*.js, makumbaResources/css/*.css, makumbaResources/image/*.*, org/makumba/**/*.mdd, Makumba.conf.default, org/**/*.properties, org/makumba/devel/codeTemplates/*.properties" defaultExcludes="no" excludes="**/**/SEED.txt" />
+			<fileset dir="classes" includes="makumbaResources/javaScript/*.js, makumbaResources/css/*.css, makumbaResources/image/*.*, org/makumba/**/*.mdd, Makumba.conf.default, org/**/*.properties, org/makumba/devel/codeTemplates/*.properties" defaultExcludes="no" excludes="**/**/SEED.txt, META-INF/*skeleton*" />
 			<fileset dir="build" includes="org/**/*.class" defaultExcludes="no" excludes="**/**/SEED.txt" />
 			<fileset dir="." includes="COPYING.txt" defaultExcludes="no" excludes="queries.txt" />
 			<metainf dir="classes/META-INF" includes="**/*.tld" defaultExcludes="no" />
 		</jar>
+	</target>
+	
+	<target name="testJar" description="make a jar in ./lib containing the test classes">
+		<mkdir dir="${jar.place}/lib" />
+		<jar jarfile="${jar.place}/lib/mak-test.jar">
+			<fileset dir="build" includes="test/**/*.class" defaultExcludes="no" />
+			<fileset dir="classes" includes="test/**/*.mdd" defaultExcludes="no" />
+		</jar>
+	</target>
+
+	<target name="testWar" depends="jar, testJar" >
+		<property name="webapp.source" value="webapps" />
+		<war destfile="build/tests.war" webxml="${webapp.source}/tests/WEB-INF/web.xml.dynamic" update="true">
+				<fileset dir="${webapp.source}/tests">
+					<exclude name="WEB-INF/**/*" />
+				</fileset>
+				<lib dir="lib/core">
+					<include name="*.jar"/>					
+				</lib>
+			    <lib dir="lib/common">
+					<!-- do note that servlet-api.jar, jsp-api.jar, el-api.jar must not be included! -->
+			       <include name="jstl*.jar" />
+				</lib>
+				<lib dir="lib/test">
+						<!-- FIXME: tomcat bootstraps don't need to be here, and maybe other jars
+						 however exclude doesn't seem to work -->					
+					<include name="*.jar"/>
+				</lib>
+				<lib dir="lib">
+					<include name="makumba.jar"/>
+					<include name="mak-test.jar"/>
+				</lib>
+			    <classes dir="${webapp.source}/tests/WEB-INF/classes"/>
+			</war>
 	</target>
 
 	<target name="release" description="makes a new makumba release with the given tag">
@@ -670,11 +704,15 @@
 	    </junit>
 	</target>
 	
-	<target name="test.jsp" depends="compile">
-		<antcall target="${tomcatVersion}-mak"/>
-	    <junit fork="no">
-	      <sysproperty key="cactus.contextURL" value="http://localhost:8080/tests"/>
-	    	<classpath refid="test.class.path" />
+	<target name="deployTests" depends="testWar">
+		<copy file="build/tests.war" toFile="${test.deploy}/tests.war"/>
+		<!-- wait for deploy -->
+		<sleep seconds="5"/>
+	</target>
+	<target name="test.jsp"  depends="deployTests" >
+		<junit fork="no">
+		<sysproperty key="cactus.contextURL" value="http://localhost:${test.port}/tests"/>
+	   	  <classpath refid="test.class.path" />
 	      <formatter type="plain" usefile="false" />
 		  <test name="test.tags.FormsOQLTest" />
 	    </junit>
@@ -683,12 +721,11 @@
 		if we make that to work, we could also use batchtest 
 		-->
 		<junit fork="no">
-	      <sysproperty key="cactus.contextURL" value="http://localhost:8080/tests"/>
+	      <sysproperty key="cactus.contextURL" value="http://localhost:${test.port}/tests"/>
 	      <classpath refid="test.class.path" />
 	      <formatter type="plain" usefile="false" />
 		  <test name="test.tags.ListOQLTest" />
 	    </junit>
-		<antcall target="${tomcatVersion}-stop"/>
 	</target>
 	
 
@@ -807,7 +844,7 @@
 					<exclude name="**/makumba*.jar" />
 				</fileset>
 			</classpath>
-			<arg value="./classes/META-INF/taglib-skeleton.tld" />
+			<arg value="./classes/META-INF/taglib-skeleton.tld.tmpl" />
 			<arg value="./doc-jspwiki/wikidoc" />
 		</java>
 	</target>
@@ -836,20 +873,26 @@
 			>build.properties file does not exist! Please make it based on the build.properties.example file
 		</fail>
 		<echo>Starting servlet container. Java home in build: ${java.home}
-In case of problems, in order to see the output, consider setting tomcat.spawn to false in build.properties</echo>
+In case of problems, in order to see the output, consider setting tomcat.spawn to false in build.properties
+WARNING: webapps/tests will not work with this container because it is designed to be statically loaded. 
+To run tests, switch the appBase of the server (in server.xml) to e.g. webapps.dynamic, and configure that in build.properties.		
+		</echo>
 	</target>
 	
 	<target name="checkContainer">
 		<echo>Checking whether servlet container started.</echo>
 		<!-- give tomcat time to start up -->
 		<sleep seconds="4" />
+		<!-- FIXME: skipping this for now, since there may not be a real webapp in the tomcat to access
+		 a dummy one with an index.html can be made easily anyway		
 		<property name="testFile" value="${temp.dir}/container-start.txt" />
 		<delete file="${testFile}" />
-		<get src="http://localhost:8080/tests" dest="${testFile}" ignoreerrors="true" />
+		<get src="http://localhost:8080/dummy/index.html" dest="${testFile}" ignoreerrors="true" />
 	    <available file="${testFile}" property="containerStarted"/>
 		<fail unless="containerStarted">
 			Servlet container did not start
 		</fail>
+		-->
 	</target>
 	
 	<target name="tomcat-mak" description="start the tomcat for tests">
@@ -859,8 +902,8 @@ In case of problems, in order to see the output, consider setting tomcat.spawn t
 		 -->
 		<java classname="org.apache.catalina.startup.Bootstrap"  fork="true" spawn="${tomcat.spawn}" ><!-- spawn="true" -->
 			<classpath>
-			<path refid="test.class.path" />
 			<pathelement path="lib/test/tomcat-bootstrap.jar"/>
+			<pathelement path="lib/common/commons-logging-api.jar" />
 			</classpath>
 			<jvmarg value="-Dcatalina.home=${tomcat.home}" />
 			<jvmarg value="-Dcatalina.base=${basedir}/tomcat" />
@@ -877,10 +920,10 @@ In case of problems, in order to see the output, consider setting tomcat.spawn t
 	<target name="tomcat6-mak" description="start the tomcat for tests">
 		<antcall target="beforeContainer" />
 			<echo>Java home in build: ${java.home}</echo>
-			<java classname="org.apache.catalina.startup.Bootstrap"  fork="true" spawn="true"  ><!-- spawn="true" -->
+			<java classname="org.apache.catalina.startup.Bootstrap"  fork="true" spawn="${tomcat.spawn}"  ><!-- spawn="true" -->
 				<classpath>
-				<path refid="test.class.path" />
-				<pathelement path="lib/test/tomcat6-bootstrap.jar"/>
+					<pathelement path="lib/test/tomcat6-bootstrap.jar"/>
+					<pathelement path="lib/common/commons-logging-api.jar" />
 				</classpath>
 				<jvmarg value="-Dcatalina.home=${tomcat6.home}" />
 				<jvmarg value="-Dcatalina.base=${basedir}/tomcat6" />
