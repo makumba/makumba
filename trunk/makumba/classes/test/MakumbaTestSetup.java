@@ -39,7 +39,7 @@ public class MakumbaTestSetup extends TestSetup {
             NamedResources.cleanStaticCache("Databases open");
 
             tp = TransactionProvider.getInstance();
-            db = tp.getConnectionTo("testDatabase");
+            db = tp.getConnectionTo(tp.getDefaultDataSourceName());
         } else if (transactionProviderType.equals("hql")) {
             tp = HibernateTransactionProvider.getInstance();
             db = tp.getConnectionTo("testDatabaseHibernate");
