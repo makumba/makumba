@@ -124,7 +124,7 @@ public class Pass1ASTPrinter {
                 if (!noPar)
                     sb.append(')');
                 break;
-                
+
             case HqlTokenTypes.FROM:
                 printKeyword(ast, sb);
                 // in principle children of FROM are comma separated but
@@ -141,12 +141,14 @@ public class Pass1ASTPrinter {
                     a.setNextSibling(null);
 
                     switch (a.getType()) {
-                        case HqlTokenTypes.INNER:
-                        case HqlTokenTypes.OUTER:
-                        case HqlTokenTypes.LEFT:
-                            printKeyword(a, sb);
-                            a = a.getNextSibling();
                         case HqlTokenTypes.JOIN:
+                            switch (a.getFirstChild().getType()) {
+                                case HqlTokenTypes.INNER:
+                                case HqlTokenTypes.OUTER:
+                                case HqlTokenTypes.LEFT:
+                                    printKeyword(a.getFirstChild(), sb);
+                                    a.setFirstChild(a.getFirstChild().getNextSibling());
+                            }
                             printKeyword(a, sb);
                             break;
                         case HqlTokenTypes.RANGE:
@@ -167,13 +169,13 @@ public class Pass1ASTPrinter {
                 break;
 
             case HqlTokenTypes.EXPR_LIST:
-                if(sb.charAt(sb.length()-1)==' ')
-                    sb.setCharAt(sb.length()-1, '(');
+                if (sb.charAt(sb.length() - 1) == ' ')
+                    sb.setCharAt(sb.length() - 1, '(');
                 else
                     sb.append('(');
                 // comma-separated children
                 printList(ast, ast.getFirstChild(), sb);
-                sb.append(')');                
+                sb.append(')');
                 break;
 
             case HqlTokenTypes.WHEN:
@@ -240,7 +242,7 @@ public class Pass1ASTPrinter {
                 space(sb);
                 sb.append(ast.getText());
                 break;
-                
+
             default:
                 // for all other cases, we print the node, then its first child
                 sb.append(ast.getText());
@@ -376,6 +378,7 @@ public class Pass1ASTPrinter {
             super(true);
         }
 
+        @Override
         public AST visit(AST current) {
             switch (current.getType()) {
                 case HqlTokenTypes.AND:
