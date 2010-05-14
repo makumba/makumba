@@ -871,11 +871,19 @@
 
 	</target>
 
+	<target name="tomcat-wiki1" description="start the tomcat to deploy JSPwiki">
+		<antcall target="tomcat-common">
+			<param name="tomcatNumber" value="tomcat" />
+			<param name="tomcatHome" value="${tomcat.home}" />
+			<param name="catalinaBase" value="tomcat-jspwiki" />
+		</antcall>
+	</target>
+
 	<target name="beforeContainer">
 		<echo>Starting servlet container. Java home in build: ${java.home}
 In case of problems, in order to see the output, consider setting tomcat.spawn to false in build.properties
 WARNING: webapps/tests will not work with this container because it is designed to be statically loaded. 
-The JSP tests will make a war of another name, which can be configured in build.properties (test.webapp)
+The JSP tests will deploy on another dir, which can be configured via the property test.webapp.
 		</echo>
 	</target>
 
@@ -896,13 +904,21 @@ The JSP tests will make a war of another name, which can be configured in build.
 	</target>
 
 	<target name="tomcat-mak-common">
-		<!-- this will set tomcat.spawn to a default value, if it is not set -->
+		<!-- this will set some tomcat properties to default values, if they are not set -->
 		<property name="tomcat.spawn" value="true" />
+		<property name="tomcat.Xms" value="64M" />
+		<property name="tomcat.Xmx" value="128M" />
 
-		<fail unless="test.deploy" >Cannot find test.deploy. Set it in build.properties or via the command line</fail>
+		<fail unless="test.deploy">Cannot find test.deploy. Set it in build.properties or via the command line</fail>
 		<mkdir dir="${test.deploy}" />
-		
+
 		<replace file="${tomcatNumber}/conf/server.xml" token='appBase="../webapps"' value='appBase="../${test.deploy}"' />
+		<antcall target="tomcat-common">
+			<param name="catalinaBase" value="${tomcatNumber}" />
+		</antcall>
+	</target>
+
+	<target name="tomcat-common">
 		<antcall target="beforeContainer" />
 		<!-- spawn=true leads to the ant target returning immediately
 		http://ant.apache.org/manual/CoreTasks/java.html
@@ -913,7 +929,7 @@ The JSP tests will make a war of another name, which can be configured in build.
 				<pathelement path="lib/common/commons-logging-api.jar" />
 			</classpath>
 			<jvmarg value="-Dcatalina.home=${tomcatHome}" />
-			<jvmarg value="-Dcatalina.base=${tomcatNumber}" />
+			<jvmarg value="-Dcatalina.base=${catalinaBase}" />
 			<jvmarg value="-Xms${tomcat.Xms}" />
 			<jvmarg value="-Xmx${tomcat.Xmx}" />
 			<jvmarg value="-XX:MaxPermSize=${tomcat.Xmx}" />
@@ -925,6 +941,8 @@ The JSP tests will make a war of another name, which can be configured in build.
 	</target>
 
 	<target name="tomcat-mak" description="start the tomcat for tests">
+		<fail unless="tomcat.home">Cannot find tomcat.home. Set it in build.properties or via the command line</fail>
+
 		<antcall target="tomcat-mak-common">
 			<param name="tomcatNumber" value="tomcat" />
 			<param name="tomcatHome" value="${tomcat.home}" />
@@ -932,9 +950,11 @@ The JSP tests will make a war of another name, which can be configured in build.
 	</target>
 
 	<target name="tomcat6-mak" description="start the tomcat6 for tests">
-		<property name="tomcatNumber" value="tomcat6" />
-		<property name="tomcatHome" value="${tomcat6.home}" />
-		<antcall target="tomcat-mak-common" />
+		<fail unless="tomcat.home">Cannot find tomcat6.home. Set it in build.properties or via the command line</fail>
+		<antcall target="tomcat-mak-common">
+			<param name="tomcatNumber" value="tomcat6" />
+			<param name="tomcatHome" value="${tomcat6.home}" />
+		</antcall>
 	</target>
 
 	<target name="tomcat-stop-common" description="stops the tomcat">
