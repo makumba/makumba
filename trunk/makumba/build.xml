@@ -990,7 +990,7 @@ The JSP tests will deploy on another dir, which can be configured via the proper
 	<target name="tomcat6-stop" description="stop the tomcat">
 		<antcall target="tomcat-stop-common">
 			<param name="catalinaBase" value="tomcat6" />
-			<param name="tomcatNumber" value="tomca6" />
+			<param name="tomcatNumber" value="tomcat6" />
 			<param name="tomcatHome" value="${tomcat6.home}" />
 		</antcall>
 	</target>
