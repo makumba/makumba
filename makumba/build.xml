@@ -962,23 +962,36 @@ The JSP tests will deploy on another dir, which can be configured via the proper
 			<classpath>
 				<pathelement path="lib/test/tomcat-bootstrap.jar" />
 			</classpath>
-			<jvmarg value="-Dcatalina.home=${tomcat.home}" />
-			<jvmarg value="-Dcatalina.base=tomcat" />
+			<jvmarg value="-Dcatalina.home=${tomcatHome}" />
+			<jvmarg value="-Dcatalina.base=${catalinaBase}" />
 			<arg value="stop" />
 		</java>
+		<!-- this will fail for tomcat-wiki but no problem -->
 		<replace file="${tomcatNumber}/conf/server.xml" token='appBase="../${test.deploy}"' value='appBase="../webapps"' />
 		<sleep seconds="2" />
 	</target>
 
 	<target name="tomcat-stop" description="stop the tomcat">
 		<antcall target="tomcat-stop-common">
+			<param name="catalinaBase" value="tomcat" />
 			<param name="tomcatNumber" value="tomcat" />
+			<param name="tomcatHome" value="${tomcat.home}" />
+		</antcall>
+	</target>
+
+	<target name="tomcat-wiki-stop" description="stop the tomcat">
+		<antcall target="tomcat-stop-common">
+			<param name="catalinaBase" value="tomcat-jspwiki" />
+			<param name="tomcatNumber" value="tomcat" />
+			<param name="tomcatHome" value="${tomcat.home}" />
 		</antcall>
 	</target>
 
 	<target name="tomcat6-stop" description="stop the tomcat">
 		<antcall target="tomcat-stop-common">
-			<param name="tomcatNumber" value="tomcat6" />
+			<param name="catalinaBase" value="tomcat6" />
+			<param name="tomcatNumber" value="tomca6" />
+			<param name="tomcatHome" value="${tomcat6.home}" />
 		</antcall>
 	</target>
 
