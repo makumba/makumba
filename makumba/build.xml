@@ -84,8 +84,8 @@
 
 	<path id="test.class.path">
 		<path refid="project.class.path" />
-		<pathelement path="classes"/>
-		<pathelement path="webapps/tests/WEB-INF/classes"/>
+		<pathelement path="classes" />
+		<pathelement path="webapps/tests/WEB-INF/classes" />
 		<fileset dir="lib/db">
 			<include name="*.jar" />
 		</fileset>
@@ -388,32 +388,43 @@
 		</jar>
 	</target>
 
-	<target name="testWar" depends="jar" >
+	<target name="testJar" description="make a jar in ./lib containing the test classes">
+		<mkdir dir="${jar.place}/lib" />
+		<jar jarfile="${jar.place}/lib/mak-test.jar">
+			<fileset dir="build" includes="test/**/*.class" defaultExcludes="no" />
+			<fileset dir="classes" includes="test/**/*.mdd" defaultExcludes="no" />
+		</jar>
+	</target>
+
+	<target name="testWar" depends="jar, testJar">
+		<delete file="build/tests.war" />
 		<property name="webapp.source" value="webapps" />
 		<war destfile="build/tests.war" webxml="${webapp.source}/tests/WEB-INF/web.xml.dynamic" update="true">
 			<fileset dir="${webapp.source}/tests">
 				<exclude name="WEB-INF/**/*" />
 			</fileset>
 			<lib dir="lib/core">
-				<include name="*.jar"/>
+				<include name="*.jar" />
 			</lib>
 			<lib dir="lib/common">
 				<!-- do note that servlet-api.jar, jsp-api.jar, el-api.jar must not be included! -->
 				<include name="jstl*.jar" />
+				<include name="dom4*.jar" />
 			</lib>
-			<fileset dir="lib/optional/hibernate">
+			<lib dir="lib/optional/hibernate/">
 				<include name="*.jar" />
-			</fileset>
+			</lib>
 			<lib dir="lib/test">
-				<!-- FIXME: tomcat bootstraps don't need to be here, and maybe other jars
-						 however exclude doesn't seem to work -->
-				<include name="*.jar"/>
+				<include name="aspectjrt.jar" />
+				<include name="cactus.jar" />
+				<include name="junit.jar" />
+				<include name="httpunit.jar" />
 			</lib>
 			<lib dir="lib">
-				<include name="makumba.jar"/>
+				<include name="makumba.jar" />
+				<include name="mak-test.jar" />
 			</lib>
-			<classes dir="${webapp.source}/tests/WEB-INF/classes"/>
-			<classes dir="build/test/"/>
+			<classes dir="${webapp.source}/tests/WEB-INF/classes" includes="Makumba.conf" />
 		</war>
 	</target>
 
@@ -701,12 +712,17 @@
 		</junit>
 	</target>
 
-	<target name="deployTests" depends="testWar">
+	<target name="deployTests">
+		<delete file="${test.deploy}/tests.war" />
+		<!-- the war is packed while tomcat undeploys -->
+		<antcall target="testWar" />
 		<copy file="build/tests.war" toFile="${test.deploy}/tests.war" />
 		<!-- wait for deploy -->
 		<sleep seconds="8" />
 	</target>
-	<target name="test.jsp" depends="deployTests">
+	<target name="test.jsp">
+		<replace file="webapps/tests/WEB-INF/classes/Makumba.conf" token="defaultDataSource=testDatabaseHibernate" value="defaultDataSource=testDatabase" />
+		<antcall target="deployTests" />
 		<junit fork="no">
 			<sysproperty key="cactus.contextURL" value="http://localhost:${test.port}/tests" />
 			<classpath refid="test.class.path" />
@@ -715,34 +731,24 @@
 			<test name="test.concurrency.ConcurrentTest" />
 			<test name="test.tags.FormsOQLTest" />
 			<test name="test.tags.ListOQLTest" />
-			<test name="test.tags.ListHQLTest" />
-			<test name="test.tags.FormsHQLTest" />
 		</junit>
 	</target>
 
-
-	<!-- old version of some tests -->
-	<target name="test.table" depends="compile" description="run database test cases">
-		<java classname="test.table" fork="true" failonerror="true" classpathref="test.class.path" taskname="junit" />
+	<target name="test.jsp-hql">
+		<replace file="webapps/tests/WEB-INF/classes/Makumba.conf" token="defaultDataSource=testDatabase" value="defaultDataSource=testDatabaseHibernate" />
+		<antcall target="deployTests" />
+		<junit fork="no">
+			<sysproperty key="cactus.contextURL" value="http://localhost:${test.port}/tests" />
+			<classpath refid="test.class.path" />
+			<formatter type="plain" usefile="false" />
+			<test name="test.tags.ListHQLTest" />
+			<test name="test.tags.FormsHQLTest" />
+		</junit>
+		<replace file="webapps/tests/WEB-INF/classes/Makumba.conf" token="defaultDataSource=testDatabaseHibernate" value="defaultDataSource=testDatabase" />
 	</target>
 
-	<target name="test.mdd" depends="compile" description="run MDD test cases">
-		<java classname="test.mdd" fork="true" failonerror="true" classpath="classes" classpathref="test.class.path" taskname="junit" />
-	</target>
-
-	<!-- the following tests should be converted to junit -->
-	<target name="test" depends="compile" description="run all test cases">
-		<java classname="test.all" fork="true" failonerror="true" classpath="classes" classpathref="project.class.path" taskname="junit" />
-	</target>
 
 
-	<target name="test.config" depends="compile" description="run config test cases">
-		<java classname="test.config" fork="true" failonerror="true" classpath="classes" classpathref="test.class.path" taskname="junit" />
-	</target>
-
-	<target name="test.lock" depends="compile" description="run locking test cases">
-		<java classname="test.lock" fork="true" failonerror="true" classpath="classes" classpathref="project.class.path" taskname="junit" />
-	</target>
 
 	<!-- Targets for Selenium testing -->
 
@@ -859,10 +865,9 @@
 
 	</target>
 
-	<target name="beforeContainer" >
-		<available file="build.properties" property="configured"/>
-		<fail unless="configured"
-			>build.properties file does not exist! Please make it based on the build.properties.example file
+	<target name="beforeContainer">
+		<available file="build.properties" property="configured" />
+		<fail unless="configured">build.properties file does not exist! Please make it based on the build.properties.example file
 		</fail>
 		<echo>Starting servlet container. Java home in build: ${java.home}
 In case of problems, in order to see the output, consider setting tomcat.spawn to false in build.properties
@@ -887,16 +892,16 @@ The JSP tests will make a war of another name, which can be configured in build.
 		-->
 	</target>
 
-	<target name="tomcat-mak-common" >
-		<mkdir dir="${test.deploy}"/>
+	<target name="tomcat-mak-common">
+		<mkdir dir="${test.deploy}" />
 		<replace file="${tomcatNumber}/conf/server.xml" token='appBase="../webapps"' value='appBase="../${test.deploy}"' />
 		<antcall target="beforeContainer" />
 		<!-- spawn=true leads to the ant target returning immediately
 		http://ant.apache.org/manual/CoreTasks/java.html
 		 -->
-		<java classname="org.apache.catalina.startup.Bootstrap"  fork="true" spawn="${tomcat.spawn}" >
+		<java classname="org.apache.catalina.startup.Bootstrap" fork="true" spawn="${tomcat.spawn}">
 			<classpath>
-				<pathelement path="lib/test/${tomcatNumber}-bootstrap.jar"/>
+				<pathelement path="lib/test/${tomcatNumber}-bootstrap.jar" />
 				<pathelement path="lib/common/commons-logging-api.jar" />
 			</classpath>
 			<jvmarg value="-Dcatalina.home=${tomcatHome}" />
@@ -912,14 +917,14 @@ The JSP tests will make a war of another name, which can be configured in build.
 	</target>
 
 	<target name="tomcat-mak" description="start the tomcat for tests">
-		<antcall target="tomcat-mak-common" >
-			<param name="tomcatNumber" value="tomcat"/>
+		<antcall target="tomcat-mak-common">
+			<param name="tomcatNumber" value="tomcat" />
 			<param name="tomcatHome" value="${tomcat.home}" />
 		</antcall>
 	</target>
 
 	<target name="tomcat6-mak" description="start the tomcat6 for tests">
-		<property name="tomcatNumber" value="tomcat6"/>
+		<property name="tomcatNumber" value="tomcat6" />
 		<property name="tomcatHome" value="${tomcat6.home}" />
 		<antcall target="tomcat-mak-common" />
 	</target>
@@ -927,7 +932,7 @@ The JSP tests will make a war of another name, which can be configured in build.
 	<target name="tomcat-stop-common" description="stops the tomcat">
 		<java classname="org.apache.catalina.startup.Bootstrap" fork="yes" classpathref="test.class.path">
 			<classpath>
-				<pathelement path="lib/test/tomcat-bootstrap.jar"/>
+				<pathelement path="lib/test/tomcat-bootstrap.jar" />
 			</classpath>
 			<jvmarg value="-Dcatalina.home=${tomcat.home}" />
 			<jvmarg value="-Dcatalina.base=tomcat" />
@@ -938,14 +943,14 @@ The JSP tests will make a war of another name, which can be configured in build.
 	</target>
 
 	<target name="tomcat-stop" description="stop the tomcat">
-		<antcall target="tomcat-stop-common" >
-			<param name="tomcatNumber" value="tomcat"/>
+		<antcall target="tomcat-stop-common">
+			<param name="tomcatNumber" value="tomcat" />
 		</antcall>
 	</target>
 
 	<target name="tomcat6-stop" description="stop the tomcat">
-		<antcall target="tomcat-stop-common" >
-			<param name="tomcatNumber" value="tomcat6"/>
+		<antcall target="tomcat-stop-common">
+			<param name="tomcatNumber" value="tomcat6" />
 		</antcall>
 	</target>
 
