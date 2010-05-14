@@ -1,3 +1,4 @@
+SELECT p.id AS col1, a.email AS col2 FROM test.Person p inner join p.address a WHERE p.indiv.name = 'john'
 SELECT it AS Item, :p3 AS who, :p2 AS type FROM projman.Item it WHERE exists(FROM projman.Message t WHERE t=$1 AND t.item=it) AND not exists(FROM it.events e WHERE e.who=$3 AND e.type=$2)
 SELECT it AS col1,(SELECT count (*) FROM projman.Document d1 WHERE d1.content.name=d.content.name AND d1.TS_create<= d.TS_create) AS col2,(SELECT count (*) FROM projman.Document d1 WHERE d1.content.name=d.content.name) AS col3,d.id AS col4,it.creator.displayName AS col5,case when it.creator=$2 then 1 else 0 end AS col6,it.creator.id AS col7,d.TS_create AS col8,it.subject AS col9 FROM projman.Message m join m.item mit join mit.attachments d join d.item it WHERE m=$1
 SELECT ms.id FROM projman.Message ms, ms.item msit, projman.Document d WHERE size (msit.attachments) >1
