@@ -12,6 +12,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.makumba.commons.RuntimeWrappedException;
 
 import test.MakumbaTestSetup;
 import test.MakumbaWebTestSetup;
@@ -22,7 +23,7 @@ public class ConcurrentTest extends TestCase {
 
     private static final int THREADS = 200;
 
-    private static final String CONCURRENT_TEST_URL = "http://localhost:8080/tests/concurrent/concurrentListTest.jsp";
+    private static final String CONCURRENT_TEST_URL = "/concurrent/concurrentListTest.jsp";
 
     private static final String EXPECTED_TEST_RESULT_FRAGMENT = "speaks: English English French French German German Italian Italian Spanish Spanish";
 
@@ -48,7 +49,8 @@ public class ConcurrentTest extends TestCase {
                         try {
                             long start = System.currentTimeMillis();
                             HttpClient httpClient = new HttpClient();
-                            GetMethod getTestPage = new GetMethod(CONCURRENT_TEST_URL);
+                            GetMethod getTestPage = new GetMethod(System.getProperty("cactus.contextURL")
+                                    + CONCURRENT_TEST_URL);
                             httpClient.executeMethod(getTestPage);
                             String result = getTestPage.getResponseBodyAsString();
                             // System.out.println(result);
@@ -78,14 +80,13 @@ public class ConcurrentTest extends TestCase {
 
     private void checkListPageAvailable() throws IOException, HttpException {
         HttpClient httpClient = new HttpClient();
-        GetMethod getTestPage = new GetMethod(CONCURRENT_TEST_URL);
+        GetMethod getTestPage = new GetMethod(System.getProperty("cactus.contextURL") + CONCURRENT_TEST_URL);
         int status = -1;
         try {
             status = httpClient.executeMethod(getTestPage);
         } catch (ConnectException c) {
             setup.tearDown();
-            System.err.println("\n\n\n\n\nYou should run tomcat first! Use tomcat-mak to do that.\n\n");
-            System.exit(1);
+            throw new RuntimeWrappedException(c);
         }
         assertEquals("Test page did not run correctly", HttpStatus.SC_OK, status);
     }
