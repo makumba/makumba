@@ -97,7 +97,7 @@
 			<exclude name="*bootstrap.jar" />
 		</fileset>
 	</path>
-		
+
 	<!-- classpath for starting the JSPWiki tomcat -->
 	<path id="tomcat.class.path">
 		<fileset dir="${java.home}/lib/">
@@ -387,34 +387,34 @@
 			<metainf dir="classes/META-INF" includes="**/*.tld" defaultExcludes="no" />
 		</jar>
 	</target>
-	
+
 	<target name="testWar" depends="jar" >
 		<property name="webapp.source" value="webapps" />
 		<war destfile="build/tests.war" webxml="${webapp.source}/tests/WEB-INF/web.xml.dynamic" update="true">
-				<fileset dir="${webapp.source}/tests">
-					<exclude name="WEB-INF/**/*" />
-				</fileset>
-				<lib dir="lib/core">
-					<include name="*.jar"/>					
-				</lib>
-			    <lib dir="lib/common">
-					<!-- do note that servlet-api.jar, jsp-api.jar, el-api.jar must not be included! -->
-			       <include name="jstl*.jar" />
-				</lib>
-				<fileset dir="lib/optional/hibernate">
-					<include name="*.jar" />
-				</fileset>
-				<lib dir="lib/test">
-						<!-- FIXME: tomcat bootstraps don't need to be here, and maybe other jars
-						 however exclude doesn't seem to work -->					
-					<include name="*.jar"/>
-				</lib>
-				<lib dir="lib">
-					<include name="makumba.jar"/>
-				</lib>
-			    <classes dir="${webapp.source}/tests/WEB-INF/classes"/>
-		    	<classes dir="build/test/"/>
-			</war>
+			<fileset dir="${webapp.source}/tests">
+				<exclude name="WEB-INF/**/*" />
+			</fileset>
+			<lib dir="lib/core">
+				<include name="*.jar"/>
+			</lib>
+			<lib dir="lib/common">
+				<!-- do note that servlet-api.jar, jsp-api.jar, el-api.jar must not be included! -->
+				<include name="jstl*.jar" />
+			</lib>
+			<fileset dir="lib/optional/hibernate">
+				<include name="*.jar" />
+			</fileset>
+			<lib dir="lib/test">
+				<!-- FIXME: tomcat bootstraps don't need to be here, and maybe other jars
+						 however exclude doesn't seem to work -->
+				<include name="*.jar"/>
+			</lib>
+			<lib dir="lib">
+				<include name="makumba.jar"/>
+			</lib>
+			<classes dir="${webapp.source}/tests/WEB-INF/classes"/>
+			<classes dir="build/test/"/>
+		</war>
 	</target>
 
 	<target name="release" description="makes a new makumba release with the given tag">
@@ -684,44 +684,48 @@
 	<!-- Targets for JUNIT testing 
 	http://ant.apache.org/manual/OptionalTasks/junit.html
 	-->
-	
+
 	<target name="test.junit" depends="compile">
-	    <junit fork="no" outputtoformatters="false">
-	      <classpath refid="test.class.path" />
-	      <formatter type="xml" usefile="false" />
-	      <test name="test.tableHibernate" />
-    	  <test name="test.mdd" />
-	      <test name="test.table" />
-		  <test name="test.config" />
-    	  <test name="test.ExternalSetAPITest" />
-	      <test name="test.hqlanalyzer" />
-		  <test name="test.lock" />
-	      <test name="test.oqlanalyzer" />
-	      <test name="test.QueryGenerationTest" />
-	    </junit>	  
+		<junit fork="no" outputtoformatters="false">
+			<classpath refid="test.class.path" />
+			<formatter type="brief" usefile="false" />
+			<test name="test.tableHibernate" />
+			<test name="test.mdd" />
+			<test name="test.table" />
+			<test name="test.config" />
+			<test name="test.ExternalSetAPITest" />
+			<test name="test.hqlanalyzer" />
+			<test name="test.lock" />
+			<test name="test.oqlanalyzer" />
+			<test name="test.QueryGenerationTest" />
+		</junit>
 	</target>
-	
+
 	<target name="deployTests" depends="testWar">
-		<copy file="build/tests.war" toFile="${test.deploy}/tests.war"/>
+		<copy file="build/tests.war" toFile="${test.deploy}/tests.war" />
 		<!-- wait for deploy -->
-		<sleep seconds="8"/>
+		<sleep seconds="8" />
 	</target>
-	<target name="test.jsp"  depends="deployTests" >
+	<target name="test.jsp" depends="deployTests">
 		<junit fork="no">
-		<sysproperty key="cactus.contextURL" value="http://localhost:${test.port}/tests"/>
-	   	  <classpath refid="test.class.path" />
-	      <formatter type="plain" usefile="false" />
+			<sysproperty key="cactus.contextURL" value="http://localhost:${test.port}/tests" />
+			<classpath refid="test.class.path" />
+			<formatter type="plain" usefile="false" />
+			<!-- test name="test.selenium.TestListMQL" /-->
+			<test name="test.concurrency.ConcurrentTest" />
 			<test name="test.tags.FormsOQLTest" />
-	     	<test name="test.tags.ListOQLTest" />
-	    </junit>
+			<test name="test.tags.ListOQLTest" />
+			<test name="test.tags.ListHQLTest" />
+			<test name="test.tags.FormsHQLTest" />
+		</junit>
 	</target>
-	
+
 
 	<!-- old version of some tests -->
 	<target name="test.table" depends="compile" description="run database test cases">
 		<java classname="test.table" fork="true" failonerror="true" classpathref="test.class.path" taskname="junit" />
 	</target>
-	
+
 	<target name="test.mdd" depends="compile" description="run MDD test cases">
 		<java classname="test.mdd" fork="true" failonerror="true" classpath="classes" classpathref="test.class.path" taskname="junit" />
 	</target>
@@ -855,8 +859,8 @@
 
 	</target>
 
-	<target name="beforeContainer" >		
-		 <available file="build.properties" property="configured"/>
+	<target name="beforeContainer" >
+		<available file="build.properties" property="configured"/>
 		<fail unless="configured"
 			>build.properties file does not exist! Please make it based on the build.properties.example file
 		</fail>
@@ -866,7 +870,7 @@ WARNING: webapps/tests will not work with this container because it is designed 
 The JSP tests will make a war of another name, which can be configured in build.properties (test.webapp)
 		</echo>
 	</target>
-	
+
 	<target name="checkContainer">
 		<!-- give tomcat time to start up -->
 		<sleep seconds="4" />
@@ -882,7 +886,7 @@ The JSP tests will make a war of another name, which can be configured in build.
 		</fail>
 		-->
 	</target>
-	
+
 	<target name="tomcat-mak-common" >
 		<mkdir dir="${test.deploy}"/>
 		<replace file="${tomcatNumber}/conf/server.xml" token='appBase="../webapps"' value='appBase="../${test.deploy}"' />
@@ -890,10 +894,10 @@ The JSP tests will make a war of another name, which can be configured in build.
 		<!-- spawn=true leads to the ant target returning immediately
 		http://ant.apache.org/manual/CoreTasks/java.html
 		 -->
-		<java classname="org.apache.catalina.startup.Bootstrap"  fork="true" spawn="${tomcat.spawn}" ><!-- spawn="true" -->
+		<java classname="org.apache.catalina.startup.Bootstrap"  fork="true" spawn="${tomcat.spawn}" >
 			<classpath>
-			<pathelement path="lib/test/${tomcatNumber}-bootstrap.jar"/>
-			<pathelement path="lib/common/commons-logging-api.jar" />
+				<pathelement path="lib/test/${tomcatNumber}-bootstrap.jar"/>
+				<pathelement path="lib/common/commons-logging-api.jar" />
 			</classpath>
 			<jvmarg value="-Dcatalina.home=${tomcatHome}" />
 			<jvmarg value="-Dcatalina.base=${tomcatNumber}" />
@@ -912,7 +916,7 @@ The JSP tests will make a war of another name, which can be configured in build.
 			<param name="tomcatNumber" value="tomcat"/>
 			<param name="tomcatHome" value="${tomcat.home}" />
 		</antcall>
-		</target>
+	</target>
 
 	<target name="tomcat6-mak" description="start the tomcat6 for tests">
 		<property name="tomcatNumber" value="tomcat6"/>
@@ -923,7 +927,7 @@ The JSP tests will make a war of another name, which can be configured in build.
 	<target name="tomcat-stop-common" description="stops the tomcat">
 		<java classname="org.apache.catalina.startup.Bootstrap" fork="yes" classpathref="test.class.path">
 			<classpath>
-			<pathelement path="lib/test/tomcat-bootstrap.jar"/>
+				<pathelement path="lib/test/tomcat-bootstrap.jar"/>
 			</classpath>
 			<jvmarg value="-Dcatalina.home=${tomcat.home}" />
 			<jvmarg value="-Dcatalina.base=tomcat" />
@@ -1257,7 +1261,7 @@ package org.makumba]]>
 		<loadfile property="leftMenuContent" srcfile="doc-jspwiki/JSPWiki/api/leftMenu.html" />
 
 		<javadoc destdir="doc-jspwiki/JSPWiki/api" sourcepath="classes" packagenames="org.makumba" notree="true" noindex="true" nohelp="true" windowtitle="Makumba" classpathref="project.class.path" Version="true" Author="true" additionalparam="-breakiterator" doctitle="Makumba API Documentation" stylesheetfile="doc-jspwiki/JSPWiki/templates/makumba/jspwiki-api.css">
-<!--
+			<!--
 	The XHTML doclet would produce a more web 2.0 HTML, with divs & spans, that allow an easier modification.
 	owever, it is buggy in many places, e.g. it doesn't always actually generate method comments... !		    
 			<doclet name="net.sourceforge.xhtmldoclet.Doclet" path="${basedir}/lib/doc/XHTML_Doclet_2009-12-06.jar" />
@@ -1265,7 +1269,7 @@ package org.makumba]]>
 	once it works, one can add 
 	<div id='sidemenu'>${leftMenuContent}</div>
 	back in the bottom definition below		    
--->			
+-->
 			<bottom>
 				<![CDATA[
 			<div class='pageFooter'>
