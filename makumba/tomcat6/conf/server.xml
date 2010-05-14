@@ -120,7 +120,6 @@
        unpackWARs="true" autoDeploy="true"
        xmlValidation="false" xmlNamespaceAware="false">
 
- 		<Context docBase="tests" path="/tests" reloadable="true" />
  		
         <!-- SingleSignOn valve, share authentication between web applications
              Documentation at: /docs/config/valve.html -->
