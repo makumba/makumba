@@ -713,6 +713,7 @@
 	</target>
 
 	<target name="deployTests">
+		<fail unless="test.deploy">Cannot find test.deploy. Set it in build.properties or via the command line</fail>
 		<delete file="${test.deploy}/tests.war" />
 		<!-- the war is packed while tomcat undeploys -->
 		<antcall target="testWar" />
@@ -721,6 +722,8 @@
 		<sleep seconds="8" />
 	</target>
 	<target name="test.jsp">
+		<!-- this will set test.port to a default value, if it is not set -->
+		<property name="test.port" value="8080" />
 		<replace file="webapps/tests/WEB-INF/classes/Makumba.conf" token="defaultDataSource=testDatabaseHibernate" value="defaultDataSource=testDatabase" />
 		<antcall target="deployTests" />
 		<junit fork="no">
@@ -735,6 +738,9 @@
 	</target>
 
 	<target name="test.jsp-hql">
+		<!-- this will set test.port to a default value, if it is not set -->
+		<property name="test.port" value="8080" />
+
 		<replace file="webapps/tests/WEB-INF/classes/Makumba.conf" token="defaultDataSource=testDatabase" value="defaultDataSource=testDatabaseHibernate" />
 		<antcall target="deployTests" />
 		<junit fork="no">
@@ -866,9 +872,6 @@
 	</target>
 
 	<target name="beforeContainer">
-		<available file="build.properties" property="configured" />
-		<fail unless="configured">build.properties file does not exist! Please make it based on the build.properties.example file
-		</fail>
 		<echo>Starting servlet container. Java home in build: ${java.home}
 In case of problems, in order to see the output, consider setting tomcat.spawn to false in build.properties
 WARNING: webapps/tests will not work with this container because it is designed to be statically loaded. 
@@ -893,7 +896,12 @@ The JSP tests will make a war of another name, which can be configured in build.
 	</target>
 
 	<target name="tomcat-mak-common">
+		<!-- this will set tomcat.spawn to a default value, if it is not set -->
+		<property name="tomcat.spawn" value="true" />
+
+		<fail unless="test.deploy" >Cannot find test.deploy. Set it in build.properties or via the command line</fail>
 		<mkdir dir="${test.deploy}" />
+		
 		<replace file="${tomcatNumber}/conf/server.xml" token='appBase="../webapps"' value='appBase="../${test.deploy}"' />
 		<antcall target="beforeContainer" />
 		<!-- spawn=true leads to the ant target returning immediately
