@@ -89,6 +89,9 @@
 		<fileset dir="lib/db">
 			<include name="*.jar" />
 		</fileset>
+		<fileset dir="lib/optional">
+			<include name="hsqldb.jar" />
+		</fileset>
 		<fileset dir="lib/optional/hibernate">
 			<include name="*.jar" />
 		</fileset>
@@ -413,6 +416,9 @@
 			</lib>
 			<lib dir="lib/optional/hibernate/">
 				<include name="*.jar" />
+			</lib>
+			<lib dir="lib/optional/">
+				<include name="hsqldb.jar" />
 			</lib>
 			<lib dir="lib/test">
 				<include name="aspectjrt.jar" />
@@ -751,6 +757,25 @@
 			<test name="test.tags.FormsHQLTest" />
 		</junit>
 		<replace file="webapps/tests/WEB-INF/classes/Makumba.conf" token="defaultDataSource=testDatabaseHibernate" value="defaultDataSource=testDatabase" />
+	</target>
+
+
+	<target name="test.hsqldb">
+		<!-- this will set test.port to a default value, if it is not set -->
+		<property name="test.port" value="8080" />
+
+		<replace file="webapps/tests/WEB-INF/classes/Makumba.conf" token="defaultDataSource=testDatabase" value="defaultDataSource=testHsqldb" />
+		
+		<!--antcall target="deployTests" /-->
+		<junit fork="no">
+			<sysproperty key="cactus.contextURL" value="http://localhost:${test.port}/tests" />
+			<classpath refid="test.class.path" />
+			<formatter type="plain" usefile="false" />
+		<!--	<test name="test.tags.FormsOQLTest" />
+			<test name="test.tags.ListOQLTest" /> -->
+			<test name="test.table" />
+		</junit>
+		<replace file="webapps/tests/WEB-INF/classes/Makumba.conf" token="defaultDataSource=testHsqldb" value="defaultDataSource=testDatabase" />
 	</target>
 
 
