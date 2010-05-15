@@ -67,7 +67,7 @@ public class MakumbaTestSetup extends TestSetup {
 
         if (transactionProviderType.equals("oql")) {
             tp = TransactionProvider.getInstance();
-            db = tp.getConnectionTo("testDatabase");
+            db = tp.getConnectionTo(tp.getDefaultDataSourceName());
         } else if (transactionProviderType.equals("hql")) {
             tp = HibernateTransactionProvider.getInstance();
             db = tp.getConnectionTo("testDatabaseHibernate");
