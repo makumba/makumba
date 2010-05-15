@@ -765,21 +765,31 @@
 		<property name="test.port" value="8080" />
 
 		<replace file="webapps/tests/WEB-INF/classes/Makumba.conf" token="defaultDataSource=testDatabase" value="defaultDataSource=testHsqldb" />
-		
-		<!--antcall target="deployTests" /-->
+
+		<antcall target="deployTests" />
 		<junit fork="no">
 			<sysproperty key="cactus.contextURL" value="http://localhost:${test.port}/tests" />
 			<classpath refid="test.class.path" />
 			<formatter type="plain" usefile="false" />
-		<!--	<test name="test.tags.FormsOQLTest" />
-			<test name="test.tags.ListOQLTest" /> -->
+			<test name="test.tags.FormsOQLTest" />
+			<test name="test.tags.ListOQLTest" />
 			<test name="test.table" />
 		</junit>
 		<replace file="webapps/tests/WEB-INF/classes/Makumba.conf" token="defaultDataSource=testHsqldb" value="defaultDataSource=testDatabase" />
 	</target>
 
+	<target name="hsqldb.server">
+		<java classname="org.hsqldb.Server" classpathref="test.class.path" fork="true">
+			<arg value="-database.0" />
+			<arg value="file:hsqldata/makumba" />
+			<arg value="-dbname.0" />
+			<arg value="makumba" />
+		</java>
+	</target>
 
-
+	<target name="hsqldb.cleandb">
+		<delete dir="hsqldata" />
+	</target>
 
 	<!-- Targets for Selenium testing -->
 
