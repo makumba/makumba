@@ -10,7 +10,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Vector;
 
 import org.makumba.Attributes;
@@ -26,21 +25,21 @@ public class HQLQueryProvider extends QueryProvider {
 
     static final String HQLQUERY_ANALYSIS_PROVIDER = "org.makumba.providers.query.hql.HQLQueryAnalysisProvider";
 
-
     private org.makumba.Transaction transaction;
-    
-    
+
     private TransactionProvider tp;
+
     @Override
     protected String getQueryAnalysisProviderClass() {
         return HQLQUERY_ANALYSIS_PROVIDER;
     }
+
     @Override
     protected void init(String db, Attributes a) {
         super.init(db, a);
         tp = HibernateTransactionProvider.getInstance();
         transaction = tp.getConnectionTo(db);
-        ((TransactionImplementation)transaction).setContext(a);
+        ((TransactionImplementation) transaction).setContext(a);
     }
 
     @Override
@@ -52,7 +51,7 @@ public class HQLQueryProvider extends QueryProvider {
     public void close() {
         transaction.close();
     }
-    
+
     public static String printQueryResults(Vector v) {
         String result = "";
         for (int i = 0; i < v.size(); i++) {
@@ -61,7 +60,6 @@ public class HQLQueryProvider extends QueryProvider {
         return result;
     }
 
-    
     /**
      * Method for testing the query runner outside a JSP
      */
@@ -70,13 +68,10 @@ public class HQLQueryProvider extends QueryProvider {
 
         HQLQueryProvider qr = new HQLQueryProvider();
         qr.init("test/localhost_mysql_makumba", null);
-        
-        org.makumba.Transaction t = tp.getConnectionTo("testDatabase");
-        
+
+        org.makumba.Transaction t = tp.getConnectionTo(tp.getDefaultDataSourceName());
+
         populateDatabase(t);
-        
-        
-        
 
         Vector<Integer> v = new Vector<Integer>();
         v.add(new Integer(1));
@@ -105,62 +100,69 @@ public class HQLQueryProvider extends QueryProvider {
         String query12 = "SELECT myIndiv.person.indiv.name FROM test.Person p join p.indiv as myIndiv";
 
         String[] queries = new String[] { query8, query7 };
-        /*for (int i = 0; i < queries.length; i++) {
-            System.out.println("Query " + queries[i] + " ==> \n"
-                    + printQueryResults(qr.execute(queries[i], params, 0, 50)) + "\n\n");
-        }*/
-        System.out.println("Query  ==> \n"
-            + printQueryResults(qr.execute(query12, params, 0, 50)) + "\n\n");
+        /*
+         * for (int i = 0; i < queries.length; i++) { System.out.println("Query " + queries[i] + " ==> \n" +
+         * printQueryResults(qr.execute(queries[i], params, 0, 50)) + "\n\n"); }
+         */
+        System.out.println("Query  ==> \n" + printQueryResults(qr.execute(query12, params, 0, 50)) + "\n\n");
     }
-    
+
     static Pointer person;
+
     static Pointer brother;
+
     static Pointer address;
+
     static Dictionary pc;
+
     static Vector v;
+
     static String readPerson = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.gender AS gender, p.uniqChar AS uniqChar, p.uniqInt AS uniqInt, p.birthdate AS birthdate, p.weight AS weight, p.TS_modify AS TS_modify, p.TS_create AS TS_create, p.comment AS comment, a.description AS description, a.email AS email, a.usagestart AS usagestart FROM test.Person p, p.address a WHERE p= $1";
+
     static ArrayList<Pointer> languages = new ArrayList<Pointer>();
-    static String[][] languageData = { { "English", "en" }, { "French", "fr" },
-            { "German", "de" }, { "Italian", "it" }, { "Spanish", "sp" } };
-    
+
+    static String[][] languageData = { { "English", "en" }, { "French", "fr" }, { "German", "de" },
+            { "Italian", "it" }, { "Spanish", "sp" } };
+
     private static boolean populated = false;
-    
+
     private static void populateDatabase(org.makumba.Transaction db) {
-        if(populated) return;
+        if (populated)
+            return;
         populated = true;
-        
+
         languages.clear();
         Dictionary<String, Object> language = new Hashtable<String, Object>();
         for (int i = 0; i < languageData.length; i++) {
             language.put("name", languageData[i][0]);
             language.put("isoCode", languageData[i][1]);
             languages.add(db.insert("test.Language", language));
-        }  
-        
+        }
+
         Hashtable<String, Object> p = new Hashtable<String, Object>();
-        
+
         p.put("indiv.name", "bart");
-        brother=db.insert("test.Person", p);
+        brother = db.insert("test.Person", p);
 
         p.clear();
         p.put("indiv.name", "john");
-        
+
         Calendar c = Calendar.getInstance();
         c.clear();
         c.set(1977, 2, 5);
         Date birthdate = c.getTime();
         p.put("birthdate", birthdate);
-                
+
         p.put("uniqDate", birthdate);
         p.put("gender", new Integer(1));
         p.put("uniqChar", new String("testing \" character field"));
-        
+
         p.put("weight", new Double(85.7d));
-        
+
         p.put("comment", new Text("This is a text field. It's a comment about this person."));
 
-        p.put("uniqInt", new Integer(255));             
-        
+        p.put("uniqInt", new Integer(255));
+
         Vector<Integer> intSet = new Vector<Integer>();
         intSet.addElement(new Integer(1));
         intSet.addElement(new Integer(0));
@@ -169,14 +171,13 @@ public class HQLQueryProvider extends QueryProvider {
         p.put("brother", brother);
         p.put("uniqPtr", languages.get(0));
         person = db.insert("test.Person", p);
-        
+
         p.clear();
         p.put("description", "");
         p.put("usagestart", birthdate);
         p.put("email", "email1");
-        System.out.println(address=db.insert(person, "address", p));
-        
-                  
+        System.out.println(address = db.insert(person, "address", p));
+
     }
-    
+
 }

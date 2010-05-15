@@ -22,6 +22,7 @@
 /////////////////////////////////////
 
 package test;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -30,45 +31,45 @@ import org.makumba.Transaction;
 import org.makumba.providers.TransactionProvider;
 
 /**
-* Testing locking related operations
-*
-* run "ant test.lock" from a number of consoles to test locks
-*
-* @author cristi
-*/
-public class lock extends TestCase
-{
-        
-  public lock(String name) {
-    super(name);
-  }
+ * Testing locking related operations run "ant test.lock" from a number of consoles to test locks
+ * 
+ * @author cristi
+ */
+public class lock extends TestCase {
 
-  public static void main (String[] args) {
-    junit.textui.TestRunner.run (suite());
-  }
+    public lock(String name) {
+        super(name);
+    }
 
-  public static Test suite() {
-    return new TestSuite(lock.class);
-  }
+    public static void main(String[] args) {
+        junit.textui.TestRunner.run(suite());
+    }
 
-  Transaction db;
+    public static Test suite() {
+        return new TestSuite(lock.class);
+    }
 
-  public void setUp()
-  {
-    TransactionProvider tp = TransactionProvider.getInstance();
-    db=tp.getConnectionTo("testDatabase");
-  }
+    Transaction db;
 
-  public void tearDown() { db.close(); }
+    @Override
+    public void setUp() {
+        TransactionProvider tp = TransactionProvider.getInstance();
+        db = tp.getConnectionTo(tp.getDefaultDataSourceName());
+    }
 
-  public void testLock(){
-    System.out.println("locking");
-    db.lock("something");
-    System.out.println("waiting");
-    try{
-      Thread.sleep(10000);
-    }catch(InterruptedException e){}
-    System.out.println("closing");
-  }
+    @Override
+    public void tearDown() {
+        db.close();
+    }
+
+    public void testLock() {
+        System.out.println("locking");
+        db.lock("something");
+        System.out.println("waiting");
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+        }
+        System.out.println("closing");
+    }
 }
-
