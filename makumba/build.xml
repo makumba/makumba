@@ -779,12 +779,21 @@
 	</target>
 
 	<target name="hsqldb.server">
-		<java classname="org.hsqldb.Server" classpathref="test.class.path" fork="true">
+		<java classname="org.hsqldb.Server" classpathref="test.class.path" fork="true" spawn="true">
 			<arg value="-database.0" />
 			<arg value="file:hsqldata/makumba" />
 			<arg value="-dbname.0" />
 			<arg value="makumba" />
 		</java>
+	</target>
+
+	<target name="hsqldb.stop">
+	  <sql
+	    classpathref="test.class.path"
+	    driver="org.hsqldb.jdbcDriver"
+	    url="jdbc:hsqldb:hsql://localhost/makumba"
+	    userid="sa" password=""
+	    autocommit="true">SHUTDOWN</sql>
 	</target>
 
 	<target name="hsqldb.cleandb">
