@@ -60,7 +60,7 @@ public class TaglibDocGenerator {
             throw new RuntimeException("Could not find input file " + inputXMLPath);
         }
 
-        outputDir = new File(outputPath);
+        outputDir = new File(new File(outputPath).getAbsolutePath());
         if (!outputDir.isDirectory() || !outputDir.exists()) {
             throw new RuntimeException("Output path " + outputPath + " does not exist or is not a directory");
         }
