@@ -22,6 +22,12 @@
     </fileset>
   </path>
 
+  <path id="project.class.path">
+    <pathelement location="JSPWiki/WEB-INF/lib/JSPWiki.jar" />
+    <pathelement location="JSPWiki/WEB-INF/lib/commons-lang-2.3.jar" />
+  </path>
+
+
   <target name="compile" description="compile all java files">
     <javac srcdir="src" destdir="bin" source="1.5" target="1.5" debug="on">
       <classpath refid="project.class.path" />
