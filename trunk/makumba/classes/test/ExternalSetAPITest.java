@@ -23,22 +23,21 @@ import org.makumba.providers.TransactionProvider;
 public class ExternalSetAPITest extends TestCase {
     private static final String setName = "speaks";
 
-
     private Pointer person = null;
 
     private Vector<Pointer> speaks;
 
     private static MakumbaTestSetup setup;
-    
+
     public static Test suite() {
-        return (setup= new MakumbaTestSetup(new TestSuite(ExternalSetAPITest.class), "oql"));
+        return (setup = new MakumbaTestSetup(new TestSuite(ExternalSetAPITest.class), "oql"));
     }
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        speaks = new Vector<Pointer>(MakumbaTestData.languages);
-        speaks.addAll(MakumbaTestData.languages);
+        speaks = new Vector<Pointer>(setup.getTestData().languages);
+        speaks.addAll(setup.getTestData().languages);
         person = setup.getTestData().brother;
     }
 
