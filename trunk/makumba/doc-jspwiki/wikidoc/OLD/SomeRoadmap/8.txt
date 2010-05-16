@@ -1,0 +1,10 @@
+Here is a list of makumba concerns, and how they might evolve in the future.
+
+||concern ||Present || Future || Todo
+| query | MQL, HQL| also JPQL | JPQL analyzer, JPQL pass1 inliner,  JPA-Hibernate table and field name provider
+| CRUD   | Dictionary, Hibernate | JPA, Hibernate | deprecate Dictionary or implement it with JPA, Mak-JPA provide
+| Table management | Makumba, Hibernate | JPA, Hibernate | JPA-Hibernate table and field name provider, MDD-POJO generator for JPA, Mak-JPA provider
+| MDD | .mdd | also Hibernate, JPA | Hibernate, JPA mdd provider
+| form->CRUD | Dictionary | POJO, JSF?
+| data->HTML view and edit | makumba-jsp | also JSF | queries returning POJOs?
+

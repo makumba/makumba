@@ -1,0 +1,1 @@
+Fixed. Can have as values 'button' or 'link', defaults to 'button'.

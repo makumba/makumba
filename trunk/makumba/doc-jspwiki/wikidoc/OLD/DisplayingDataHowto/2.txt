@@ -1,0 +1,287 @@
+!!!Introduction
+
+One of the most common operations in database-driven websites is to display information to the user. Makumba provides a query-based approach to this through its [mak:object|ObjectTag] and [mak:list|ListTag] tags.
+
+[{TableOfContents }]
+
+!!!Displaying data through queries
+
+Both [<mak:object>|ObjectTag] and [<mak:list>|ListTag] use the same general principles for displaying data. [<mak:object>|ObjectTag] is meant to view one record, e.g. an employee's profile or the details of a project, while [<mak:list>|ListTag] handles multiple objects, and would be used to display a list of employees or projects.
+
+Let's say that we want to display the profile of an employee - we want to give details on the person, such as the name, as well as on the role in the company, such as the department, projects, etc.. 
+
+!!Listing data
+First, we need to select which employee we want to display - for this, we first create a page showing basic information of all employees, linking to the page with detailed profiles for a specific employee.
+
+We can list data by using the [<mak:list>|ListTag] tag, and by specifying which data type to list, using the "from" attribute of the tag.
+
+%%prettify
+{{{
+<mak:list from="company.Employee e">
+</mak:list>
+}}}%%
+
+Note that ''e'' is a ''label'' we need to give to the objects we are fetching.
+[{Box
+
+This is similar to SQL, where you can do "SELECT ... FROM table t WHERE ....". While in SQL such a label is optional, in Makumba, it is mandatory.
+}]
+
+A page with this list will tell Makumba to get all data from the %%code company.Employee%% type, and to iterate in the list over each record retrieved. Besides this, the page will not yet show anything - we need to specifically tell which fields we want to display. For this purpose, we can use the [<mak:value>|ValueTag] tag, which prints data from one field in the data definition. Thus, we can extend our page:
+
+%%prettify
+{{{
+<mak:list from="company.Employee e">
+  Name: <mak:value expr="e.name"/> <mak:value expr="e.surname"/> <br/>
+</mak:list>
+}}}%%
+
+This will print us the name and surnames of all employees, one per line. 
+
+[{Box
+
+The [<mak:value>|ValueTag] tag expects to receive the name of a field in the data definition that is represented by the label in the %%code expr%% attribute. If you provide an unknown field, you will get an error message showing a [NoSuchFieldException|api:NoSuchFieldException].
+}]
+
+[{Box
+
+Note that we can freely mix HTML and Makumba. While Makumba is responsible for displaying data from the database, HTML is mainly used for formatting.
+}]
+
+!Limiting the list
+In many cases, you wouldn't want to display all the records from a specific data type, as they might be simply to many. Then, you can use the %%code where%% attribute of the [<mak:list>|ListTag] to limit the records you will retrieve from the database. Let's say we want to display only the employees that have a salary over 2.000 (euro per month):
+
+%%prettify
+{{{
+<mak:list from="company.Employee e" where="e.salary > 2000">
+  Name: <mak:value expr="e.name"/> <mak:value expr="e.surname"/> <br/>
+</mak:list>
+}}}%%
+
+In the %%code where%% attribute, we can specify simple query language expressions, but also more complex conditions. As such, we can also logically combine conditions - if we want to show only female employees with a high salary, we can do
+
+%%prettify
+{{{
+<mak:list from="company.Employee e" where="e.salary > 2000 AND e.gender='Female'">
+  Name: <mak:value expr="e.name"/> <mak:value expr="e.surname"/> <br/>
+</mak:list>
+}}}%%
+
+In the example above, we made a comparison on the field %%code gender%%, which is an [enumeration|DataDefinitions#Int] type. We can do the comparison both on the textual value ('Male' or 'Female'), as well as on the internal numerical representation (10 or 20), i.e. %%code e.gender='Female'%% and %%code e.gender='20%% or equivalent.
+
+The %%code where%% attribute can accept really complex conditions, involving e.g. sub-queries. Basically, the limitation is set by the [query language|QueryLanguages] used.
+!Creating links with object identifiers
+When we want to display details on a specific data record, let's say an employee's profile, we need to know in the page showing that profile ''which'' employee to display. Each record in the data base has a unique identifier - thus, we need to pass on the identifier for that specific employee to the profile page. We can do this by mixing HTML links with a [<mak:value>|ValueTag] tag:
+
+
+%%prettify
+{{{
+<mak:list from="company.Employee e">
+  Name: <mak:value expr="e.name"/> <mak:value expr="e.surname"/> 
+  <a href="employeeProfile.jsp?employee=<mak:value expr='e'/>">[Details]</a> <br/>
+</mak:list>
+}}}
+
+This will display us, next to the names of each employee, a link to the page for showing the profile, e.g. %%code employeeProfile.jsp?employee=hhi4xw7%%. The text that will appear on the link is the same as if the link was constructed in HTML, i.e. %%[[Details]%%.
+
+!!Displaying single records
+
+Displaying a single record from the database requires us to limit our selection. This can be done with the %%code where%% attribute of the [<mak:object>|ObjectTag]. If we have constructed a link to our employee profile page as described [above|DisplayingDataHowto#], i.e. we are on a page employeeProfile.jsp?employee=hhi4xw7, we can do the following page:
+
+%%prettify
+{{{
+<mak:object from="company.employee e" where="e=$employee">
+</mak:object>
+}}}%%
+
+Instead of having a constant value in the equality comparison for ''e'', we use a parameter present in the current page. %%code $employee%% will indicated Makumba to search for a parameter with the name ''employee'' in the page parameters (and subsequently in all the [Makumba attributes|MakumbaAttributes]).
+
+We can thus extend our page, and display all of the employees details:
+
+%%prettify
+{{{
+<mak:object from="company.employee e" where="e=$employee">
+  <h1> Profile page of <mak:value expr="e.name"/> <mak:value expr="e.surname"/> </h1>
+  Title: 
+  <mak:if test="e.gender='Male'"/>Mr.</mak:if><mak:if test="e.gender='Female'"/>Mrs.</mak:if>
+  <br/>
+  Birthday: <mak:value expr="e.birthdate"/> <br/>
+  Department: <mak:value expr="e.department"/> <br/>  
+</mak:object>
+}}}%%
+
+[{Box
+
+We can use the [<mak:if>|IfTag] to do conditional processing. There is no <mak:else> tag available, thus if we have several options, we need to repeatedly use <mak:if>.
+}]
+
+[{Box
+
+If we use a [relational type|DataDefinitions#StructuralRelationalTypesAndCollections] in the expression of a <mak:value>, such as the ''pointer'' to %%code company.Department%% in the example above, not the all details of the record, but just the value of the [title field|DataDefinitions#ObjectTitle] will be displayed.
+}]
+
+!!Displaying sub-records
+Let's consider still the employee profile from [above|DisplayingDataHowto#DisplayingSingleRecords]. In the profile page, we might also want to display all the projects a person is involved in, maybe in a tabular way. We can thus extend our example:
+
+%%prettify
+{{{
+<mak:object from="company.employee e" where="e=$employee">
+  <h1> Profile page of <mak:value expr="e.name"/> <mak:value expr="e.surname"/> </h1>
+  Title: 
+  <mak:if test="e.gender='Male'"/>Mr.</mak:if><mak:if test="e.gender='Female'"/>Mrs.</mak:if>
+  <br/>
+  Birthday: <mak:value expr="e.birthdate"/> <br/>
+  Department: <mak:value expr="e.department"/> <br/>
+  <h2>Projects</h2>
+  <table>
+    <tr> <th>Name</th> <th>Leader</th> <th>% Emplyoyed</th> </tr>
+    <mak:list from="e.projects p">
+    <tr>
+      <td> <mak:value expr="e.project"/> </td>
+      <td> 
+        <mak:value expr="e.project.leader.name"/> 
+        <mak:value expr="e.project.leader.surname"/>
+      </td>
+      <td> <mak:value expr="e.timePercentage"/> </td>
+    </tr>
+    </mak:list>
+  </table>
+</mak:object>
+}}}%%
+[{Box
+
+We can nest [<mak:list>|ListTag] and [<mak:object>|ObjectTag] tags inside each other. Read more on this in the section on [multiple lists|MultipleListsAndFormsHowto].
+}]
+
+[{Box
+
+When displaying relational types, we can traverse over several pointer relations at once. In the example above, ''e.project'' is a record of type %%code company.Project%%, and ''e.project.leader'' a record of type %%code company.Employee%%. Thus, we can access the fields ''name'' and surname'' of this type by using the expression %%code e.project.leader.name%% and %%code e.project.leader.surname%%.
+}]
+
+!!!Using database data outside Makumba
+Sometimes you might want to do processing steps with the data that you cannot do in Makumba or with query languages, and you would want to use procedural programming to accomplish it. Makumba has inherit support for that, by allowing to ''export'' data to the page context, where it can be further processed e.g. via JSTL (Java Server Pages Standard Tag Library).
+Documentation on JSTL is available e.g. at:
+* [http://www.roseindia.net/jstl/jstlcoretags.shtml]
+* [http://java.sun.com/javaee/5/docs/tutorial/doc/bnakc.html]
+
+To expose a database value to JSTL, we can use the %%code var%% and %%code printVar%% attributes in the [<mak:value>|ValueTag] tag.
+
+%%prettify
+{{{
+<mak:object from="company.employee e" where="e=$employee">
+  <mak:value expr="e.birthdate" var="birthdayVar" printVar="birthdayPrintVar" />
+</mak:object>
+}}}%%
+
+This example page will not display anything, as we told the <mak:value> to put the data contained in the %%code birthday%% field into two variables. %%code birthdayVar%% will contain a Java Object of type %%code java.util.Date%%, while %%code birthdayPrintVar%% contains a Java Object of type String, generated by calling that objects %%code toString()%% method. The specific type generated by the %%code var%% attribute depends on the type in the data definition. You can find a comprehensive list in the documentation of [primitive|DataDefinitions#Overview] and [structural (relational)|DataDefinitions#Overview-2] in Makumba Data Definitions.
+
+[{Box type='fixme' author='rudi'
+
+Find some examples for JSTL now.. something that cannot be done with MQL functions....!
+}]
+
+
+!!!Makumba EL functions
+Makumba provides a set of JSP Expression Language (EL) functions. More general information on EL can be found e.g. at:
+* [http://java.sun.com/j2ee/1.4/docs/tutorial/doc/JSPIntro7.html]
+* [http://www.oracle.com/technology/sample_code/tutorials/jsp20/simpleel.html]
+
+The functions Makumba provides are described in detail in the [tag library reference documentation|Taglib]. Here, we give a few examples on how to use them.
+
+!!Getting the current index in a <mak:list>
+Often when listing data, we want to display a counter next to the data we show to the user. This can be achieved with the [mak:count()|CountFunction] function, e.g. as follows:
+
+%%prettify
+{{{
+<mak:list from="company.Employee e">
+  #${mak:count()} Name: <mak:value expr="e.name"/> <mak:value expr="e.surname"/> <br/>
+</mak:list>
+}}}%%
+
+[{Box
+
+mak:count() will always start with __1__ as the first index.
+}]
+
+In combination with JSTL conditional tags such as <c:if>, [mak:count()|CountFunction] can be also used to display a header only in the first iteration of the list:
+
+%%prettify
+{{{
+<mak:list from="company.Employee e">
+  <c:if test="${mak:count()==1}">These are the employees: </c:if>
+  #${mak:count()} Name: <mak:value expr="e.name"/> <mak:value expr="e.surname"/> <br/>
+</mak:list>
+}}}%%
+
+If we use a table to list our data, we might want to show every second row with a different background colour. This can also be achieved with mak:count():
+
+%%prettify
+{{{
+<table>
+  <mak:list from="company.Employee e">
+    <tr bgcolor="${mak:count()%2==1?"white":"grey"}">
+      <td> #${mak:count()} </td>
+      <td> <mak:value expr="e.name"/> <mak:value expr="e.surname"/> </td>
+    </tr>
+  </mak:list>
+</table>  
+}}}%%
+
+!!Getting the total index in a <mak:list>
+Sometimes you might want to display the total number of records you are going to display. This can be achieved with using [mak:maxCount()|MaxCountFunction] in combination with [mak:count()|CountFunction] and <c:if> from the JSTL library, as follows:
+
+%%prettify
+{{{
+<mak:list from="company.Employee e">
+  <c:if test="${mak:count()==1}">Displaying ${mak:maxCount()] employees: </c:if>
+  #${mak:count()} Name: <mak:value expr="e.name"/> <mak:value expr="e.surname"/> <br/>
+</mak:list>
+}}}%%
+
+Another scenario when mak:maxCount() comes in handy is when you want to display data from a list in a row, and put a separator, such as a comma, between each entry.
+%%prettify
+{{{
+<mak:list from="company.Employee e">
+  <mak:value expr="e.name"/> <mak:value expr="e.surname"/>
+  <c:if test="${mak:count()!=mak:maxCount()}">, </c:if>
+</mak:list>
+}}}%%
+
+Instead of using <c:if>, we can also just use JSP EL directly to achieve a more compact code:
+%%prettify
+{{{
+<mak:list from="company.Employee e">
+  <mak:value expr="e.name"/> <mak:value expr="e.surname"/> 
+  ${mak:count()!=mak:maxCount()? ", " : ""}
+</mak:list>
+}}}%%
+
+!!Getting the total index of the __previous__ <mak:list>
+In many cases, you need to know how many records the previous [<mak:list>|ListTag] retrieved. Frequently, you are specifically interested to display a message if the previous list retrieved no records at all, and thus didn't display anything in the page. This can be done with the [mak:lastCount()|LastCountFunction] function, in combination with a <c:if> tag from JSTL:
+
+%%prettify
+{{{
+<mak:list from="company.Employee e">
+  <c:if test="${mak:count()==1}">Displaying ${mak:maxCount()] employees: </c:if>
+  #${mak:count()} Name: <mak:value expr="e.name"/> <mak:value expr="e.surname"/> <br/>
+</mak:list>
+<c:if test="${mak:lastCount()==0}"> There are no employees registered ! </c:if>
+}}}%%
+
+Again, this could also be achieved using EL only, rather than JSTL's <c:if> tag, to achieve a more compact code:
+
+%%prettify
+{{{
+<mak:list from="company.Employee e">
+  <c:if test="${mak:count()==1}">Displaying ${mak:maxCount()] employees: </c:if>
+  #${mak:count()} Name: <mak:value expr="e.name"/> <mak:value expr="e.surname"/> <br/>
+</mak:list>
+${mak:lastCount()==0? "There are no employees registered !" : ""}
+}}}%%
+
+[{Box type='warning'
+
+If you use mak:count() in a page that has no <mak:list> defined before, you will get an error message.
+}]
+
+%%(display:hidden;) [Category Usage] %%

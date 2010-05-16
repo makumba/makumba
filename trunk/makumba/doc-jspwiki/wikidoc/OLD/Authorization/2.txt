@@ -1,0 +1,91 @@
+Makumba has two mechanisms through which it can trigger authorization mechanisms. The first one uses makumba attributes in order to check whether a user can perform authentication or not. The second, more recent mechanism is to use so called actors in combination with query functions in order to check whether a user is allowed to perform a given set of actions.
+
+[{TableOfContents}]
+
+
+!!!Attributes-based authorization
+
+[{Box
+
+This mechanism is the legacy mechanism that was in Makumba since the very beginning. Since it brings some limitations and demands quite some work in order to be used properly, the second mechanism was implemented in order to ease the task of handling webapp-wide authentication. We hence recommend using the second mechanism.
+}]
+
+Makumba makes it possible to perform authorization using the %%code checkAttributes%% method of the Java business logic classes.
+
+When a page is executed, Makumba will first check if there is any [business logic class|JavaBusinessLogics] defined for it (see the lookup mechanism for [business logic classses|JavaBusinessLogics]), and if yes, checks if there is a %%code checkAttributes%% method defined, and if it is, executes it.
+
+The method has following signature:
+
+%%prettify
+{{{
+public void checkAttributes(Attributes a, Transaction t) throws LogicException
+}}}%%
+
+It makes it possible to check whether a specific [Makumba attribute|MakumbaAttributes] is set, look up data in the database, and if necessary, throw a [UnauthorizedException|api:UnauthorizedException]
+
+[{Box
+
+When using this mechanism, it is highly recommended to build the business logic classes in such a way that they extend a common super-class that handles authentication. In this way, specific pages can add additional checks by overwriting the checkAttributes method, but the overall method stays the same.
+}]
+
+An example of a checkAttributes method would be following:
+
+%%prettify
+{{{
+public void checkAttributes(Attributes a, Transaction t) throws LogicException {
+// check if generic employee-attribute is set
+try {
+    a.getAttribute("_sessPtr_company_Employee");
+} catch(AttributeNotFoundException anfe) {
+    throw new UnauthorizedException("You are not an employee of this company")
+}
+
+// if so, check whether he's an admin
+Vector<Dictionary<String, Object>> admin = t.executeQuery("select e.isAdmin as isAdmin from company.Employee e where e = $1", a.getAttribute("_sessPtr_company_Employee"));
+if(admin.size() == 1) {
+  if(!((Boolean)admin.get(0).get("isAdmin"))) {
+    throw new UnauthorizedException("You are not an administrator!");
+  }
+} else if(admin.size() == 0) {
+    throw new CompanyPortalException("Error: employee " + a.getAttribute("_sessPtr_company_Employee") + " does not exist");
+} else if(admin.size() > 1) {
+    throw new CompanyPortalException("Error: employee " + a.getAttribute("_sessPtr_company_Employee") + " saved more than once in the database");
+}
+}}}%%
+
+The example above is complicated on purpose so as to illustrate some of the mechanisms that could be used. Let's have a closer look at it:
+
+* the first call a.getAttribute("_sessPtr_company_Employee"); tells makumba to try to retrieve the "_sessPtr_company_Employee" attribute. If this fails, makumba will throw an AttributeNotFoundException which we catch and transform into an [UnauthorizedException|api:UnauthorizedException]. The [UnauthorizedException|api:UnauthorizedException] extends the generic [LogicException|api:LogicException], and is used in order to perform specific error-handling on its
+* If the first call passed, we try to figure out whether this employee is an administrator or not. This is not a very good practice since it is not cost-effective, the better approach would be to set the attribute when the user accesses the site for the first time. In this example, we retrieve the %%code isAdmin%% field of the MDD %%code company.Employee%% and if the user is not an admin, we throw an [UnauthorizedException|api:UnauthorizedException].
+* We further handle the case where the user was not found in the database, and throw a %%code CompanyPortalException%%, which is a custom exception for this web-application that extends [LogicException|api:LogicException].
+
+
+
+!!!Actor-based authorization
+In order to deal with authentication in a more effective manner, actor-based authentication was introduced. It uses the concept of roles, but in a flexible manner: there is no need to define a clear set of roles, instead, roles can be made up and defined using query fragments
+
+At this point, it is necessary to read the [reference documentation on query fragments|QueryFragments], especially the [actor functions|QueryFragments#ActorFunctions| and [explicit authorization|QueryFragments#Explicit Authorisation].
+
+Let's take the following example: we want to ensure that only employees with administrative privileges can access the "admin" section of the site.
+
+In order to achieve this, let's first define a MDD function that checks for this condition in the %%code company.Employee MDD%%:
+
+%%prettify
+{{{
+isAdmin() { this.isAdmin and this.accountActive }
+}}}%%
+
+This MDD function will check whether the isAdmin field is set and the account is active.
+
+Now, we need to define an authorization constraint that will be launched whenever the admin directory is accessed. We do so by defining the following constraint in the [[authorization] section of the [Makumba.conf|MakumbaConfiguration] file:
+
+%%prettify
+{{{
+[authorization]
+/admin={actor(company.Employee).isAdmin()}
+}}}%%
+
+We could of course have skipped the creation of the %%source isAdmin()%% function, but this way ensures that we can re-use the query in other places.
+
+
+%%(display:none;)[Category Documentation]%%
