@@ -1,7 +1,0 @@
-!!![home|Main]
-!!![quick start]
-!!![configuration]
-!!![usage]
-!!![documentation]
-!!![showcase]
-!!![download]

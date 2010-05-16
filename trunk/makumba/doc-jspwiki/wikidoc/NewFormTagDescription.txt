@@ -1,1 +1,0 @@
-Makes a form for creating a new object of the indicated type.

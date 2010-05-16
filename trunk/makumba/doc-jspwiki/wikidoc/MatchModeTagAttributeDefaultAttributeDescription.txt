@@ -1,1 +1,0 @@
-The default match-mode to be selected when the form is first loaded.

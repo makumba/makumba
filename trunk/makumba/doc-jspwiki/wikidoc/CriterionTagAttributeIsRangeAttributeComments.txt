@@ -1,1 +1,0 @@
-Values are true or false; defaults to false.

@@ -1,3 +1,0 @@
-!!!Libraries
-
-Here will be a list of libraries necessary for using makumba

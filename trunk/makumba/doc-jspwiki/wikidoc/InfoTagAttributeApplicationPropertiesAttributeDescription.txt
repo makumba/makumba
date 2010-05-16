@@ -1,1 +1,0 @@
-The name of a properties file containing application-specific configuration properties to be displayed

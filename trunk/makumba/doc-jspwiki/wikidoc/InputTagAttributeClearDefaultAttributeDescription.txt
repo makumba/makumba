@@ -1,1 +1,0 @@
-Enable this to hide the default text of an input onFocus and display it again onBlur if nothing has been entered.
