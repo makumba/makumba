@@ -2,13 +2,13 @@
 
 The unformatted message is available as request-scope attribute makumba.response. The jsp page can get hold of the message using e.g.
 
-[{Code
-
+%%prettify
+{{{
 <% String s = (String) request.getAttribute("makumba.response") %>
-}]
+}}}%%
 
 Similarly, request-scope attribute %%code makumba.successfulResponse%% is set only in case of successful action execution.
-[{Code
-
+%%prettify
+{{{
 <% if (null == request.getAttribute("makumba.successfulResponse")) { /* action failed */ } %>
-}]
+}}}%%

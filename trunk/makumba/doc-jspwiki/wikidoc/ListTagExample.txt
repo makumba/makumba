@@ -1,5 +1,5 @@
-[{Code
-
+%%prettify
+{{{
 <mak:list from="copmany.Employee e" where="e.department.company=$company AND p.gender=\"male\"" orderBy="e.surname, e.name">
     <c:if test="${mak:count()==1}">
         <p> There are ${mak:maxCount()} male employees:
@@ -11,5 +11,4 @@
 </mak:list>
 
 <c:if test="${mak:lastCount()==0}"> There are no male employees. </c:if>
-
-}]
+}}}%%

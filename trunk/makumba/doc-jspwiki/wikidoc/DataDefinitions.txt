@@ -24,10 +24,10 @@ Replication is not yet implemented, but the design is prepared for it. Copying w
 Every data definition file contains __field definitions__, separated by newline.
 
 A field definition looks like:
-[{Code lang='properties'
-
+%%prettify
+{{{
 fieldname= [attributes] fieldtype [parameters] [; description]
-}]
+}}}%%
 
 [{Box
 
@@ -45,10 +45,10 @@ The field description is used by the code generator at interface levels to prese
 
 __Comment lines__ can be inserted in the data definition files as follows:
 
-[{Code lang='properties'
-
+%%prettify
+{{{
 # your comment... 
-}]
+}}}%%
 
 !!!Default fields
 
@@ -79,23 +79,22 @@ Every datatype has some additional fields by default, as follows:
 
 A 32-bit integer. For example
 
-[{Code lang='properties'
-
+%%prettify
+{{{
 shoeSize= int; Shoe size
-}]
+}}}%%
 
 If the int can have a limited number of values, it can be described as follows
 
-[{Code lang='properties'
-
+%%prettify
+{{{
 gender = int{ "Male" = 10, "Female" = 20 }
-}]
+}}}%%
 
-This will help the presentation layer to present a suitable input control.
-
-[{Box type='fixme' author='manu'
-
-Render html within JSPWiki
+This will help the presentation layer to present a suitable input control: [{HTML <select name="gender">
+  <option value="10">Male</option>
+  <option value="20">Female</option>
+</select>
 }]
 
 [{Box
@@ -114,20 +113,20 @@ Negative numbers are supported (e.g. int { "aa"=5, "bb"=2, "cc"=-10}).
 
 A real number with double precision with (2-2-52)·21023 as max value and 2-1074 as min value. For example:
 
-[{Code lang='properties'
-
+%%prettify
+{{{
 turnover = real; turnover of the company
-}]
+}}}%%
 
 !char
 
 A char field contains a number of characters. Maximal width must be specified and is limited to 255. (Optionally a minimal number of characters (lesser than max) can be indicated). Both must be positive integers. For example:
 
-[{Code lang='properties'
-
+%%prettify
+{{{
 fieldName= char[maxWidth];
 name= unique char[80];
-}]
+}}}%%
 
 unique is a [field attribute|DataDefinitions#FieldAttributes], explained below.
 [{Box
@@ -138,38 +137,38 @@ Pay close attention to the character set (charset) for encoding the characters. 
 !boolean
 
 A boolean, that can take as values true or false. For example:
-[{Code lang='properties'
-
+%%prettify
+{{{
 currentlyEmployed= boolean; whether this employee is currently employed
-}]
+}}}%%
 
 !text
 
 An unlimited-length string of characters. This type is designed to accommodate large text content. It is implemented with LONGTEXT or its counterparts, depending on the underlying DB engine. The text data-type is ready for accepting data in UTF-8 encoding.
  
-[{Code lang='properties'
-
+%%prettify
+{{{
 description=text ; Description of the project
-}]
+}}}%%
 
 !binary
 
 An unlimited-length field designed for binary content. In contrast to the text data type, binary will always be of 8 bit length. It is implemented with LONGTEXT or its counterparts, depending on the underlying DB engine. This type is meant for storing only raw binary data, for storing files along with meta-data like a file name, content type, etc., you should rather use the file data type.
 
-[{Code lang='properties'
-
+%%prettify
+{{{
 signature= binary ; a binary digital signature 
-}]
+}}}%%
 
 !date
 
 A date and/or time.
 
-[{Code lang='properties'
-
+%%prettify
+{{{
 birthdate = date; Date of birth
 arrivalTime = date; Arrival time
-}]
+}}}%%
 
 !!!Structural (relational) types and collections
 
@@ -201,30 +200,30 @@ fieldName-> ...
 
 Pointers define a reference to an object of a certain type. For example
 
-[{Code lang='properties'
-
+%%prettify
+{{{
 manager = ptr company.Employee; The manager of the department
-}]
+}}}%%
 
 !set
 
 Sets define a number of references to multiple objects of a certain type. For example:
 
-[{Code lang='properties'
-
+%%prettify
+{{{
 suppliers= set company.Company; Suppliers of this company
-}]
+}}}%%
 
 This type accomodates sets, bags and lists. The set and list constraints (sets have to contain only one element of a certain value and lists have to be ordered) have to be cared for by the programmer. Lists are easy to represent, just having an integer field, for the order.
 
 The type which the set is made of can be defined on the spot:
 
-[{Code lang='properties'
-
+%%prettify
+{{{
 projects = set
 projects->project = ptr company.Project
 projects->timePercentage = int ;percentage assigned
-}]
+}}}%%
 
 [{Box
 
@@ -238,10 +237,10 @@ This type is known internally as setComplex
 
 The set can contain enumerated int values :
 
-[{Code lang='properties'
-
+%%prettify
+{{{
 place= set int {"home"=1, "away"=0} ; Home or away 
-}] 
+}}}%%
 
 [{Box
 
@@ -273,12 +272,12 @@ This type should be used in favour of the [binary data type|DataDefinitions#Bina
 
 A name can be defined for a more complex type and it can be reused in the file. This can be done with a !type directive
 
-[{Code lang='properties'
-
+%%prettify
+{{{
 !type.rank = int{"Neutral"=0, "Very good"=5, "Very bad"=-5}
 
 happyInLife = rank
-}] 
+}}}%%
 
 !!!Field attributes
 
@@ -291,15 +290,15 @@ These attributes are used by makumba in order to perform implicit validation at 
 
 It is possible to customise the error message that will be displayed in case an implicit field validation fails:
 
-[{Code lang='properties'
-
+%%prettify
+{{{
 login.unique = "This login is already taken, please choose another one"
 surname.notEmpty = "Please fill in your surname"
 age.notNull = "Please fill in your age"
 age.NaN = "Please enter a valid number"
 age.notInt = "Please enter a valid integer"
 amount.notReal = "Please enter a valid real"
-}] 
+}}}%%
 
 [{Box
 
@@ -314,10 +313,10 @@ The object title is used for set and ptr choosers
 
 One of the fields is always the object title, and is normally presented differently from other fields in user interface. For example, when you have a field that is a set and you use a mak:input on that field, Makumba will automatically create a list with all the items in the set and it will use the object title to know what field to display. The default is the field called "name" if that exists, otherwise it is the first non-pointer field in the record description. If another field needs to be title, it can be specified like
 
-[{Code lang='properties'
-
+%%prettify
+{{{
 !title=gender
-}] 
+}}}%%
 
 [{Box
 
@@ -329,19 +328,19 @@ address->!title= street
 
 A record description can include text from one or more files. This is declared as
 
-[{Code lang='properties'
-
+%%prettify
+{{{
 !include=name_of_included_type
-}]  
+}}}%%
 
 The included file has the idd extension and is found in a similar way like the data definitions.
 
 The included file is inserted instead of the !include line. There can be more include lines in a record description file. If a field is defined that exists also in the included metadata, the defined field takes precedence.
 
-[{Code lang='properties'
-
+%%prettify
+{{{
 fieldname =
-}]  
+}}}%% 
 
 If it means that it does not actually exist. This can be used to cancel an included field.
 

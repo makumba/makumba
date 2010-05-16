@@ -1,7 +1,22 @@
+!!!Custom error handling
+
+By default, Makumba throws errors using its internal layout. To enable the custom error for some pages of your application, you only need to create an {{error.jsp}} file in the root folder of your web-app and it will be used for all subfolders.
+
+If you want a different error message for specific pages, these will need to be in their own folder and you will need to put a different error.jsp file in that folder. In other words, Makumba searches for {{error.jsp}} starting from the folder of the page that caused the error and going to all the parent folders until it finds it or reaches the root of application in which case it shows the default error page.
+
+!Content of error.jsp
+It is advised to use a simple HTML document as error.jsp, or to minimize the additional code (Makumba, JSTL, etc.).
+
+There are 3 attributes that should be placed somewhere in the page to get the error information:
+
+* mak_error_title - gives the title of the error
+* mak_error_description - gives the error description which is normally the content of the default error page
+* mak_error_realpath - gives you the path to the file that caused the error
+
 [{Box type='fixme' author='manu'
 
-Describe error handling mechanism: error pages (customizable, link to conf) and error messages
+Provide example of custom error.jsp
+Document error messages coming from the business logics
 }]
-
 
 %%(display:none;)[Category Documentation]%%

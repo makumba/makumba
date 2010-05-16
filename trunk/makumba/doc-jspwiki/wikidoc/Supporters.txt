@@ -3,6 +3,8 @@
 !!SourceForge
 [{Image src='http://sourceforge.net/sflogo.php?group_id=25704'}]
 
+SourceForge.net is the world's largest open source software development web site, providing free services that help people build cool stuff and share it with a global audience.
+
 !!.SE - The Internet Infrastructure Foundation
 [{Image src='Supporters/se.gif'}]
 

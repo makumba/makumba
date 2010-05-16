@@ -1,5 +1,5 @@
-[{Code
-
+%%prettify
+{{{
 <mak:list ...>
    <c:if test="${mak:count()==1}">These are the list elements: </c:if>
    <tr bgcolor="${mak:count()%2==1?"white":"grey"}">
@@ -12,5 +12,4 @@
    </c:if>
 </mak:list>
 <c:if test="${mak:lastCount()==0}">These are no elements </c:if>
-
-}]
+}}}%%

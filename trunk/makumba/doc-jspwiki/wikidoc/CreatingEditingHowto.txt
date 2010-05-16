@@ -27,15 +27,15 @@ Multiple forms are a powerful feature of Makumba which makes it possible to:
 The following code examples are all based on the [company data model|DataModelHowto] described earlier in this section. We are mainly using the %%code company.Employee%% type:
 
 __company.Employee (company/Employee.mdd)__
-[{Code
-
+%%prettify
+{{{
 name = char[200]
 surname = char[200]
 ...
 projects = set
 projects->project = ptr company.Project
 projects->timePercentage = int ;percentage assigned
-}]
+}}}%%
 
 
 
@@ -44,28 +44,28 @@ In order to create new data of a specific type ([Makumba Data Definition|DataDef
 
 To make a new record of the type %%code Employee%%, one could do a form as follows:
 
-[{Code
-
+%%prettify
+{{{
 <mak:newForm type="company.Employee" action="employeeList.jsp" method="post">
     <mak:input name="name"/>
     <mak:input name="surname"/>
     <input type="submit">
 </mak:newForm>
-}]
+}}}%%
 
 !!Editing existing data: editForm
 
 The [<mak:editForm>|EditFormTag] allows to edit existing records in the database. To allow editing, the record has to be first fetched by a [<mak:object>|ObjectTag] or [<mak:list>|ListTag].
 
-[{Code
-
+%%prettify
+{{{
 <mak:object from="company.Employee e" where="e=$employee">
     <mak:editForm object="e" action="employeeList.jsp" method="post">
         <mak:input name="name"/>
         <mak:input name="surname"/>
     </mak:editForm>
 </mak:object>
-}]
+}}}%%
 
 Note that in this example, we assume that the where-condition in the [<mak:object>|ObjectTag] is constructed by comparing the [{API class='org.makumba.Pointer'}] to a parameter passed in the URL, e.g. in a page %%code employeeEdit.jsp?employee=hhiwx47%%.
 
@@ -77,8 +77,8 @@ The [<mak:addForm>|AddFormTag] allows to add a new record to a so-called [intern
 
 If we want to add a new %%code projects%% record to an existing employee record, we have to first, similar to the [<mak:editForm>|EditFormTag], fetch the employee record by a <mak:object> or <mak:list>.
 
-[{Code
-
+%%prettify
+{{{
 <mak:object from="company.Employee e" where="e=$employee">
     <mak:addForm object="e" field="projects" action="employeeList.jsp" method="post">
         <mak:input name="project"/>
@@ -86,7 +86,7 @@ If we want to add a new %%code projects%% record to an existing employee record,
         <input type="submit" value="Add project"/>
     </mak:addForm>
 </mak:object>
-}]
+}}}%%
 
 Note that in this example, we assume that the where-condition in the <mak:object> is constructed by comparing the Pointer to a parameter passed in the URL, e.g. in a page employeeEdit.jsp?employee=hhiwx47.
 
@@ -98,13 +98,13 @@ Deleting requires a similar approach as editing
 
 Let's say we want to delete employees from the data base that are ready for retirement (see the [MDD functions example|MDDFunctionsHowto] for the function definition)
 
-[{Code
-
+%%prettify
+{{{
 <mak:list from="company.employee e" where="e.shallRetire()">
   <mak:value expr="e.nameSurname()"/> 
   <mak:delete object="e" action="employeeList.jsp" >delete from the database</mak:delete> <br/>
 </mak:list>  
-}]
+}}}%%
 
 will render us a page with all the names of the employees fulfilling the retirement criterion, printing their name and a __link__ with the text "delete from the database".
 
@@ -117,13 +117,13 @@ Deleting via a link is the legacy approach in Makumba, and has the major disadva
 
 If we want to use a form button rather than a link, we need to specify this explicitely:
 
-[{Code
-
+%%prettify
+{{{
 <mak:list from="company.employee e" where="e.shallRetire()">
   <mak:value expr="e.nameSurname()"/> 
   <mak:delete widget="button" object="e" action="employeeList.jsp" >delete from the database</mak:delete> <br/>
 </mak:list>  
-}]
+}}}%%
 
 [{Box
 
@@ -144,13 +144,13 @@ Consider we want to store the skin to be used for rendering the pages. You can a
 
 So, let's assume your website has a set of different skins to chose from, called "green", "geeky" and "funky", and you want a non-logged in the user to change that for his session only.
 
-[{Code
-
+%%prettify
+{{{
 <mak:form action="" handler="changeSkin">
   Skin: <mak:input tydataType="set int{1='green', 2='geeky', 3='funky'}" value="$currentSkin" />
   <input type="submit" value="change!"/>
 </mak:form>
-}]
+}}}%%
 
 when the form is submitted, a [handler method|JavaBusinessLogic#Custom handler methods] "changeSkin" will be called, in which you can alter the value of the session attribute of ''currentSkin'' to the newly chosen one.
 

@@ -10,14 +10,14 @@ Makumba provides integrated support for pagination both on regular data listing 
 
 If we want to print the list of employees, and only view 15 employees per page, we could do this as follows:
 
-[{Code
-
+%%prettify
+{{{
 <mak:list from="company.Employee e" offset="$offset" limit="15">
   <mak:pagination action="employeeList.jsp" title="true" itemName="Employees" />
   <mak:value expr="e.nameSurname()"/>, born on <mak:value expr="e.birthdate" /> <br/>
   <mak:pagination action="employeeList.jsp" title="true" itemName="Employees" />
 </mak:list>
-}]
+}}}%%
 
 This will create a pagination header and footer, before and after the list of employees. The exact meaning of the attributes can be seen in the [<mak:pagination> reference documentation|PaginationTag].
 
@@ -29,14 +29,14 @@ Finally, the appearance is controlled by a set of attrbiutes: %%code itemName%% 
 Regarding layouting and formatting, the %%code styleClass%% sets the CSS class used for the pagination elements, and defaults to %%code makumbaPagination%%.
 
 In the example above, the limit of items to be shown in the page was constant. However, often we want the user to chose how many items he wants to see at once. We can do this as follows:
-[{Code
-
+%%prettify
+{{{
 <mak:list from="company.Employee e" offset="$offset" limit="$limit" defaultLimit="15">
   <mak:pagination action="employeeList.jsp" title="true" itemName="Employees" />
   <mak:value expr="e.nameSurname()"/>, born on <mak:value expr="e.birthdate" /> <br/>
   <mak:pagination action="employeeList.jsp" title="true" itemName="Employees" />
 </mak:list>
-}]
+}}}%%
 
 In this case, we now also control the %%code limit%% by a changeable value. As before with the $offset, the value can be set via a page-parameter (e.g. employeeList.jsp?offset=50&limit=25), or be defined somewhere in the page before the <mak:list>.
 If the value for $limit is __not__ defined, the <mak:list> will instead default to the value given by %%code defaultLimit%%.
@@ -82,6 +82,8 @@ If mak:option doesn't have a value indicated, it will produce a nil option. Such
 
 If an option value appears many times it will only be shown the first time it occurs.
 
+%%prettify
+{{{
 <mak:input name="some" dataType="ptr T">
 <mak:option>Please choose:</mak:option>
 <mak:list from="T choice" where="someCondition" >
@@ -92,6 +94,8 @@ If an option value appears many times it will only be shown the first time it oc
    <mak:option value="choice"> <mak:value expr="choice.someField /></mak:option>
 </mak:list>
 </mak:input>
+}}}%%
+
 !!!Form validation
 Explain how to write [validation rules|ValidationRules]
 

@@ -18,10 +18,10 @@ Some comments about the repository and the deployment:
 
 The deployment can be achieved thanks to the ANT task mavenDeploy:
 
-[{Code
-
+%%prettify
+{{{
 ant mavenDeploy -Dtag=makumba-0_8_2_6 -Dkeyphrase=secret -Dusername=manu -Dpassword=myPassword
-}]
+}}}
 
 * __tag__ is the tag of the release to deploy. make sure that you have built the JAR before, e.g. by issuing a %%code ant release%%
 * __keyphrase__ is the keyphrase of the PGP key (it's not 'secret', of course)

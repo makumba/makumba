@@ -64,9 +64,9 @@
 |''__Not started__''
 
 | UTF8 configuration
-| ?
+| gwen, manu
 | see [bug:503]
-|''__Not started__''
+|''__Done__''
 
 |Adapt datadefinition model
 |rudi
@@ -140,6 +140,6 @@
 |Trash the forrest documentation
 |manu
 |
-|''done''
+|''__Done__''
 
 }]

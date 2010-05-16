@@ -1,3 +1,5 @@
+!!!Form submission handling
+
 When a form is submitted with Makumba, the following things happen:
 
 * Makumba constructs (or loads from cache) a so-called form responder, that will take care of responding to the submission to the form.

@@ -1,5 +1,5 @@
-[{Code
-
+%%prettify
+{{{
 <mak:attribute name="pattern" var="pattern" exceptionVar="exception"/>
 
 <% if (exception!=null) {
@@ -10,4 +10,4 @@
 <% } else { %>
    No pattern argument. Please indicate one.
 <% } %>
-}]
+}}}%%

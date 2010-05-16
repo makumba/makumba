@@ -1,3 +1,5 @@
+[{TableOfContents}]
+
 !!!Introduction
 Search forms provide an easy way to perform searches on data in your application's database. There are two steps
 * composing the search form
@@ -8,36 +10,36 @@ Makumba search forms build on the familiar concepts of other Makumba forms, such
 First, you need to specify the [data definition|DataDefinitions] you want to search in, and specify a name identifier, to which you can refer to in your result display page.
 
 !!The form stub
-[{Code
-
+%%prettify
+{{{
 <mak:searchForm in="company.Employee" name="searchEmployee">
   ....
 </mak:searchForm>
-}]
+}}}%%
 
 This just provides the stub of the form, to actually have the user select options or input search terms, you have to provide search criteria on which field(s) to search on:
 
 !!Search criteria
-[{Code
-
+%%prettify
+{{{
 <mak:searchForm in="company.Employee" name="searchPerson">
   <mak:criterion fields="name"> ... </mak:criterion>
   <mak:criterion fields="projects"> ... </mak:criterion>  
 </mak:searchForm>
-}]
+}}}%%
 
 This tells Makumba that you want to search for an Employee, and as a criterion you want to use the %%Code name%% field.
 
 !!Input control rendering
 Finally, you need to tell Makumba how you want to render the input control, so let's extend the example a bit further:
 
-[{Code
-
+%%prettify
+{{{
 <mak:searchForm in="company.Employee" name="searchEmployee">
   <mak:criterion fields="name"> <mak:searchField /> </mak:criterion>
   <mak:criterion fields="projects"> <mak:searchField forceInputStyle="single" /> </mak:criterion>  
 </mak:searchForm>
-}]
+}}}%%
 
 This tells Makumba that we want a standard input control for the name, and from the given [data definition|DataDefinitions], it will render a %%Code input box%%. For the projects criterion, which is a %%Code set%%, Makumba would normally create a multiple-select box. However in this case, we want to select only one project, and thus we can force the input style to be a 'single' select. 
 
@@ -53,23 +55,23 @@ By default, Makumba will evaluate your search terms or search option selections 
 
 You may want to modify this behaviour, which can be done by providing a %%Code matchMode%% attribute to the [<mak:criterion>|CriterionTag], e.g.:
 
-[{Code
-
+%%prettify
+{{{
 <mak:searchForm in="company.Employee" name="searchEmployee">
   <mak:criterion fields="name" matchMode="contains"> <mak:searchField /> </mak:criterion>
 </mak:searchForm>
-}]
+}}}%%
 
 This will change the matching to any name that ''contains'' the search term.
 
 If you want to let the user decide on how to do the matching, you can provide another input control by using [<mak:matchMode>|MatchModeTag]:
 
-[{Code
-
+%%prettify
+{{{
 <mak:searchForm in="company.Employee" name="searchEmployee">
   <mak:criterion fields="name"> <mak:matchMode matchModes="contains, equals, begins, ends"> <mak:searchField /> </mak:criterion>
 </mak:searchForm>
-}]
+}}}%%
 
 This will show an input control that lets the user chose between the different matching modes. For the complete list of available attribute values, please refer to the [<mak:matchMode>|MatchModeTag] documentation.
 !!!Displaying Search Results
@@ -78,12 +80,12 @@ Displaying results from the search is in principle equal to displaying results f
 
 The name of the object selected in the list is fixed to 'o', sub-sets get selected as 'o_subFieldName':
 
-[{Code
-
+%%prettify
+{{{
 <mak:resultList resultsFrom="searchEmployee">
   Name: <mak:value expr="o.name"/> <br/>
 </mak:resultList>
-}]
+}}}%%
 
 !!Advanced result display
 

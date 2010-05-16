@@ -1,5 +1,5 @@
-[{Code
-
+%%prettify
+{{{
 <mak:searchForm in="company.Company" name="searchCompany">
     <mak:criterion fields="name"> 
         <mak:searchField />
@@ -8,5 +8,4 @@
         <mak:searchField forceInputStyle="single" /> 
     </mak:criterion>  
 </mak:searchForm>
-
-}]
+}}}%%

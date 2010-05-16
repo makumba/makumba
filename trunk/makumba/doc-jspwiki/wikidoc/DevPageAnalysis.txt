@@ -1,3 +1,5 @@
+[{TableOfContents}]
+
 !!!Introduction
 
 The makumba page analysis is a mechanism that allows makumba tags to know (almost) everything about the JSP page they are executed in, in order to optimise their execution and provide accurate developer support.
@@ -6,14 +8,14 @@ The makumba page analysis is a mechanism that allows makumba tags to know (almos
 
 In order to optimise rendering of pages, especially the mak:list engine requires to know more about the page than what is provided to tag-library developers according to the JSP standard.
 
-the following example depicts this situation:
+The following example depicts this situation:
 
-[{Code
-
+%%prettify
+{{{
 <mak:list from="general.Person p" where="p.age > 18">
   Name: <mak:value expr="p.name" /> <mak:value expr="p.surname" /><br/>
 </mak:list>
-}]
+}}}%%
 
 mak:list is a custom tag, which is implemented by extending the [{JAVA class='javax.servlet.jsp.tagext.TagSupport'}] class.
 the API of TagSupport is designed in such a way that the tag can execute custom code when its doStartTag() and doEndTag() methods are called. Additionally it also knows about its parents, however, it has no knowledge about its children. Further, there's no information given regarding its position in the page (line and column number for instance).
@@ -21,6 +23,11 @@ the API of TagSupport is designed in such a way that the tag can execute custom 
 In the example above, where we want to execute a query on the database, it would be very expensive to run one query per projection (e.g. for p.name and p.surname). In fact, early implementations of the mak:list showed that in this case, pages became very slow, close to unusable. Hence, combining query fragments (such as projections or more complex MQL expressions passed in a mak:value expr attribute) is a much more suitable approach. In the example above, such a combined query would be %%code SELECT p.name, p.surname FROM general.Person p WHERE p.age > 18%%.
 
 Thus, the makumba page analysis provides this information to makumba tags. We will now present how this mechanism works.
+
+[{Box
+
+Whilst the issues depicted above have been addressed by the JSF standard, makumba was developed a bit earlier / in parallel to that standard. A JSF implementation of the makumba tags would not anymore require page analysis but use the JSF design-time tree instead.
+}]
 
 !!!General page analysis mechanism
 
@@ -88,3 +95,6 @@ The page analysis parses the JSP page in order to collect all the necessary info
 !!!A word on error handling
 
 The [{DEV class='org.makumba.analyser.AnalysableElement'}] class contains a number of methods that keep a hold on the element being currently analyzed or ran. This is useful when an exception occurs and detailed information should be provided to the user. It can then be achived, given that there is a reference to the [{DEV class='org.makumba.analyser.ElementData'}] being hold.
+
+
+%%invisible [Category Documentation]%%

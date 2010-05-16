@@ -41,17 +41,6 @@ Together with the BEST Public Website:
 * More than 11 GB of document archives
 
 
-!!!SuperStavka.ru
-A cent auction website for the Russian market.
-
-[{Img src='Showcases/stavka1_t.png' link='Showcases/stavka1.png'}] [{Img src='Showcases/stavka2_t.png' link='Showcases/stavka2.png'}] [{Img src='Showcases/stavka3_t.png' link='Showcases/stavka3.png'}] 
-
-!!!Project Online Communicator
-A website for the coordination of an international building project.
-
-[{Img src='Showcases/poc_t.jpg' link='Showcases/poc.jpg'}] 
-
-
 !!!Key to the Future
 A website for the jobfair organised by the local BEST group in Tallinn University of Technology.
 
@@ -68,6 +57,16 @@ SvenskWebb is a meeting place for teachers in Swedish at universities abroad.
 !!!Map Collection
 A collection of famous antique maps.
 
+
+!!!Project Online Communicator
+A website for the coordination of an international building project.
+
+[{Img src='Showcases/poc_t.jpg' link='Showcases/poc.jpg'}] 
 [{Img src='Showcases/maps_t.jpg' link='Showcases/maps.jpg'}] 
+
+
+!!!Cherry.ee
+A deal of the day [website|http://cherry.ee] for the Estonian market.
+
 
 %%(display:none;)[Category Showcase]%%

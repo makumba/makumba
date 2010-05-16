@@ -10,4 +10,8 @@ Here you can find documentation about how to develop makumba and about how it wo
 * [List engine|DevListEngine]
 * [makumba Forms|DevMakForms]
 
+* [some roadmap|SomeRoadmap]
+
+* [makumba and jsf 2.0 comparison|DevCompareMakJSF2]
+
 %%(display:none;) [CategoryDocumentation] %%

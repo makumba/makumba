@@ -1,5 +1,5 @@
-[{Code
-
+%%prettify
+{{{
 <mak:newForm type="company.Employee" triggerEvent="employeeCreated">
   Name: <mak:input field="name" /><br/>
   Surname: <mak:input field="surname" /><br/>
@@ -12,4 +12,4 @@
     <mak:value expr="e.nameSurname()" /><br/>
   </mak:list>
 </mak:section>
-}]
+}}}%%

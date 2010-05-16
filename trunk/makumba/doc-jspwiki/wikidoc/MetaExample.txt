@@ -57,24 +57,23 @@ In order to embed code inside of text, use the ''code'' style:
 
 !Source code
 
-It is possible to format source code using the code plugin:
+It is possible to format source code using the prettify JSPWiki style:
 
 {{{
-[{Code
-
+%%prettify
+{{{
 public static void main(String[] args) {
   System.out.println("Hello, world!");
 }
-
-}]
+~}}}%%
 }}}
 
-[{Code
-
+%%prettify
+{{{
 public static void main(String[] args) {
   System.out.println("Hello, world!");
 }
-}]
+}}}%%
 
 /%
 %%tab-Boxes

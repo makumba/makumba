@@ -1,6 +1,6 @@
 !!![home|Main]
 * [blog|Blog]
-* [mailing-lists|Mailing-lists]
+* [getting help|GettingHelp]
 * [supporters|Supporters]
 * [about|About]
 !!![quick start]

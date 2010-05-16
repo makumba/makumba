@@ -1,8 +1,8 @@
-[{Code
-
-<mak:object from="company.Employee e, e.projects p" where="e=$employee AND p.project.name=$projectName">
+%%prettify
+{{{
+<mak:object from="company.Employee e, e.projects p" where="e=$employee AND p.name=$projectName">
     <mak:delete object="p" action="employeeView.jsp">
         Delete <mak:value expr="p.project.name"/>
     </mak:delete>
 </mak:object>
-}]
+}}}%%

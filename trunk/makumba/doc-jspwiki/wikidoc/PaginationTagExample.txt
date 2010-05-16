@@ -1,9 +1,8 @@
-[{Code
-
+%%prettify
+{{{
 <mak:list from="company.Employee e" offset="$offset" limit="$limit" defaultLimit="25" orderBy="e.name, e.surname">
-      <mak:pagination action="employeeList.jsp" title="true" itemName="employees" />
+      <mak:pagination action="employeeList.jsp" itemName="employees" />
       <mak:value expr="e.name"/> <mak:value expr="e.surname"/>, born on <mak:value expr="e.birthdate" />
-      <mak:pagination action="employeeList.jsp" title="true" itemName="employees" />
+      <mak:pagination action="employeeList.jsp" itemName="employees" />
 </mak:list>
-
-}]
+}}}%%

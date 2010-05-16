@@ -1,6 +1,8 @@
 This section describes how to configure Makumba:
 
-* the configuration of the web-app descriptor file {{web.xml}}
-* the main Makumba configuration in {{Makumba.conf}}
+* configuration of the web-app descriptor file {{web.xml}}
+* main Makumba configuration in {{Makumba.conf}}
+* configuration needed for UTF-8 support
+* librairies needed to run Makumba
 
 %%(display:none;)[Category Configuration]%%
