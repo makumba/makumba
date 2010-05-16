@@ -33,14 +33,12 @@ import java.util.Vector;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestResult;
 import junit.framework.TestSuite;
 
 import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.Transaction;
 import org.makumba.db.hibernate.HibernateTransactionProvider;
-import org.makumba.db.makumba.MakumbaTransactionProvider;
 import org.makumba.providers.TransactionProvider;
 
 /**
@@ -556,35 +554,5 @@ public class tableHibernate extends TestCase {
         db.delete(ptr1);
         db.delete("test.Individual i", "i.surname='Copy'", null);
         db.delete("test.Language l", "1=1", null);
-    }
-
-    @Override
-    public void run(TestResult r) {
-        try {
-            super.run(r);
-
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
-
-        /*
-         * very shitty solution, more JUnit should be studied for a better one... we want to find out whether we just
-         * finished the last test if yes, we do cleanup
-         */
-        if (toString().equals("testCopy(test.table)")) {
-            String nm = "testDatabaseHibernate";
-
-            System.out.println("\nworked with: "
-                    + MakumbaTransactionProvider.getDatabaseProperty(nm, "sql_engine.name") + " version: "
-                    + MakumbaTransactionProvider.getDatabaseProperty(nm, "sql_engine.version") + "\njdbc driver: "
-                    + MakumbaTransactionProvider.getDatabaseProperty(nm, "jdbc_driver.name") + " version: "
-                    + MakumbaTransactionProvider.getDatabaseProperty(nm, "jdbc_driver.version")
-                    + "\njdbc connections allocated: "
-                    + MakumbaTransactionProvider.getDatabaseProperty(nm, "jdbc_connections") + "\ncaches: "
-                    + org.makumba.commons.NamedResources.getCacheInfo()
-
-            );
-            java.util.logging.Logger.getLogger("org.makumba.system").info("destroying makumba caches");
-        }
     }
 }
