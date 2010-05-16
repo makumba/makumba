@@ -705,8 +705,7 @@
 	<target name="test.junit" depends="compile">
 		<junit fork="no" outputtoformatters="false">
 			<classpath refid="test.class.path" />
-			<formatter type="brief" usefile="false" />
-			<test name="test.tableHibernate" />
+			<formatter type="plain" usefile="false" />
 			<test name="test.mdd" />
 			<test name="test.table" />
 			<test name="test.config" />
@@ -717,7 +716,13 @@
 			<test name="test.QueryGenerationTest" />
 		</junit>
 	</target>
-
+	<target name="test.junit-hql" depends="compile">
+		<junit fork="true" outputtoformatters="false">
+			<classpath refid="test.class.path" />
+			<formatter type="plain" usefile="false" />
+			<test name="test.tableHibernate" />
+		</junit>
+	</target>
 	<target name="deployTests">
 		<fail unless="test.deploy">Cannot find test.deploy. Set it in build.properties or via the command line</fail>
 		<delete file="${test.deploy}/tests.war" />
@@ -779,7 +784,8 @@
 	</target>
 
 	<target name="hsqldb.server">
-		<java classname="org.hsqldb.Server" classpathref="test.class.path" fork="true" spawn="true">
+		<property name="hsqldb.spawn" value="true" />
+		<java classname="org.hsqldb.Server" classpathref="test.class.path" fork="true" spawn="${hsqldb.spawn}">
 			<arg value="-database.0" />
 			<arg value="file:hsqldata/makumba" />
 			<arg value="-dbname.0" />
@@ -788,12 +794,7 @@
 	</target>
 
 	<target name="hsqldb.stop">
-	  <sql
-	    classpathref="test.class.path"
-	    driver="org.hsqldb.jdbcDriver"
-	    url="jdbc:hsqldb:hsql://localhost/makumba"
-	    userid="sa" password=""
-	    autocommit="true">SHUTDOWN</sql>
+		<sql classpathref="test.class.path" driver="org.hsqldb.jdbcDriver" url="jdbc:hsqldb:hsql://localhost/makumba" userid="sa" password="" autocommit="true">SHUTDOWN</sql>
 	</target>
 
 	<target name="hsqldb.cleandb">
