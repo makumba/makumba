@@ -16,10 +16,8 @@ import antlr.SemanticException;
 import antlr.collections.AST;
 
 /**
- * FROM analysis code. Each query/subquery has its own QueryContext. 
- * This is ported from the old OQL parser. Additions:
- * 1) look in the parent query context for labels unknown here 
- * 2) more than just LEFT JOIN is supported
+ * FROM analysis code. Each query/subquery has its own QueryContext. This is ported from the old OQL parser. Additions:
+ * 1) look in the parent query context for labels unknown here 2) more than just LEFT JOIN is supported
  * 
  * @author Cristian Bogdan
  * @version $Id: QueryContext.java,v 1.1 Aug 5, 2008 5:50:39 PM cristi Exp $
@@ -30,7 +28,7 @@ public class QueryContext {
     MqlSqlWalker walker;
 
     DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
-    
+
     MqlNode inTree = null;
 
     public QueryContext(MqlSqlWalker mqlSqlWalker) {
@@ -91,17 +89,17 @@ public class QueryContext {
     /** correlation conditions */
     Vector<TextList> filters = new Vector<TextList>();
 
-    private Hashtable<String, TextList> labelText= new Hashtable<String, TextList>();
+    private final Hashtable<String, TextList> labelText = new Hashtable<String, TextList>();
 
     /** labels that have fields selected, not just the primary key */
-    private HashSet<String> labelFields= new HashSet<String>();
+    private final HashSet<String> labelFields = new HashSet<String>();
 
     /** labels defined explicitly in the FROM section of this subquery */
-    HashSet<String> explicitLabels= new HashSet<String>();
+    HashSet<String> explicitLabels = new HashSet<String>();
 
     /** labels that have fields selected, not just the primary key */
-    private HashSet<String> leftJoinedImplicit= new HashSet<String>();
-    
+    private final HashSet<String> leftJoinedImplicit = new HashSet<String>();
+
     private boolean wroteRange;
 
     /** the four elements of a join: label1.field1 = label2.field2 */
@@ -124,6 +122,7 @@ public class QueryContext {
             this.joinType = joinType;
         }
 
+        @Override
         public String toString() {
             return label1 + "." + field1 + " JOIN " + label2 + "." + field2;
         }
@@ -133,7 +132,7 @@ public class QueryContext {
      * make a new join with the name and associate the label with the type
      * 
      * @param joinType
-     * @param location 
+     * @param location
      * @throws SemanticException
      */
     String addJoin(String l1, String f1, String name, String f2, DataDefinition type, int joinType, AST location)
@@ -142,13 +141,13 @@ public class QueryContext {
         joins.addElement(new Join(l1, f1, name, f2, joinType));
         joinNames.put(l1 + "." + f1, name);
         setLabelType(name, type, location);
-        if(leftJoinedImplicit.contains(l1) && joinType==HqlSqlTokenTypes.LEFT_OUTER)
+        if (leftJoinedImplicit.contains(l1) && joinType == HqlSqlTokenTypes.LEFT_OUTER)
             leftJoinedImplicit.add(name);
         return name;
     }
 
     private void addLabelField(String label) {
-        if(labels.get(label)!=null)
+        if (labels.get(label) != null)
             labelFields.add(label);
         else
             parent.addLabelField(label);
@@ -160,25 +159,25 @@ public class QueryContext {
      * (e.g. for sets), add these joins as well
      * 
      * @param joinType
-     * @param  
+     * @param
      */
     String join(String label, String field, String labelf, int joinType, AST location) throws SemanticException {
         // need protection to avoid repeating a join
-        String s = (String) joinNames.get(label + "." + field);
+        String s = joinNames.get(label + "." + field);
         if (s != null)
             return s;
 
         DataDefinition foreign = null, sub = null;
-        DataDefinition type = (DataDefinition) findLabelType(label);
+        DataDefinition type = findLabelType(label);
         String index = type.getIndexPointerFieldName();
 
         FieldDefinition fi = type.getFieldDefinition(field);
         if (fi == null)
-            throw new SemanticException("no such field \"" + field + "\" in makumba type \"" + type.getName()
-                    + "\"", "", location.getLine(), location.getColumn());
+            throw new SemanticException("no such field \"" + field + "\" in makumba type \"" + type.getName() + "\"",
+                    "", location.getLine(), location.getColumn());
 
         // if the label is defined in a parent, and this is a pointer, we let the parent do the join
-        if(fi.getType().startsWith("ptr") && labels.get(label)==null && parent!=null)
+        if (fi.getType().startsWith("ptr") && labels.get(label) == null && parent != null)
             return parent.join(label, field, labelf, joinType, location);
 
         try {
@@ -196,20 +195,21 @@ public class QueryContext {
 
         while (findLabelType(label2) != null)
             label2 += "x";
-        if(joinType==-1 && leftJoinedImplicit.contains(label)){
-            joinType= HqlSqlTokenTypes.LEFT_OUTER;            
+        if (joinType == -1 && leftJoinedImplicit.contains(label)) {
+            joinType = HqlSqlTokenTypes.LEFT_OUTER;
         }
 
-        if(joinType==-1){
-            joinType= HqlSqlTokenTypes.INNER;
+        if (joinType == -1) {
+            joinType = HqlSqlTokenTypes.INNER;
 
-            if(walker.autoLeftJoin && fi.getType().startsWith("ptr") && !fi.isNotNull()){
-                DataDefinition joinTable= fi.getType().equals("ptrOne")?sub:foreign;
-                joinType= HqlSqlTokenTypes.LEFT_OUTER;
-                String ret= addJoin(label, field, label2, joinTable.getIndexPointerFieldName(), joinTable, joinType, location);
+            if (walker.autoLeftJoin && fi.getType().startsWith("ptr") && !fi.isNotNull()) {
+                DataDefinition joinTable = fi.getType().equals("ptrOne") ? sub : foreign;
+                joinType = HqlSqlTokenTypes.LEFT_OUTER;
+                String ret = addJoin(label, field, label2, joinTable.getIndexPointerFieldName(), joinTable, joinType,
+                    location);
                 leftJoinedImplicit.add(ret);
                 return ret;
-            } 
+            }
         }
         if (fi.getType().equals("ptr") || fi.getType().equals("ptrRel"))
             return addJoin(label, field, label2, foreign.getIndexPointerFieldName(), foreign, joinType, location);
@@ -226,7 +226,7 @@ public class QueryContext {
 
             addJoin(label, index, label2, index, sub, joinType, location);
             labels.put(label2, sub);
-            if(joinType==HqlSqlTokenTypes.LEFT_OUTER && leftJoinedImplicit.contains(label))
+            if (joinType == HqlSqlTokenTypes.LEFT_OUTER && leftJoinedImplicit.contains(label))
                 leftJoinedImplicit.add(label2);
 
             String label3 = label;
@@ -243,7 +243,7 @@ public class QueryContext {
     }
 
     public void addFrom(String frm, AST labelAST, int joinType) throws SemanticException {
-        String label= labelAST.getText();
+        String label = labelAST.getText();
         String iterator = frm;
         explicitLabels.add(label);
         DataDefinition type = null;
@@ -271,8 +271,9 @@ public class QueryContext {
                 String field = iterator;
                 i = iterator.indexOf('.');
                 if (i == -1) {
-                    if(findLabelType(label)!=null)
-                        throw new SemanticException("label defined twice: "+label, "", labelAST.getLine(), labelAST.getColumn());
+                    if (findLabelType(label) != null)
+                        throw new SemanticException("label defined twice: " + label, "", labelAST.getLine(),
+                                labelAST.getColumn());
                     join(lbl, field, label, joinType, labelAST);
                     break;
                 }
@@ -281,7 +282,8 @@ public class QueryContext {
             }
         } else {
             if (findLabelType(frm) == null)
-                throw new antlr.SemanticException("could not find type \"" + frm + "\"", "", labelAST.getLine(), labelAST.getColumn());
+                throw new antlr.SemanticException("could not find type \"" + frm + "\"", "", labelAST.getLine(),
+                        labelAST.getColumn());
             aliases.put(label, frm);
         }
 
@@ -289,12 +291,13 @@ public class QueryContext {
 
     private String findLabel(String frm, String lbl, AST location) throws SemanticException {
         if (labels.get(lbl) == null) {
-            String lbl1 = (String) aliases.get(lbl);
+            String lbl1 = aliases.get(lbl);
             if (lbl1 == null)
                 if (parent != null)
                     lbl1 = parent.findLabel(frm, lbl, location);
                 else
-                    throw new SemanticException("could not find type \"" + frm + "\" or label \"" + lbl + "\"", "", location.getLine(), location.getColumn());
+                    throw new SemanticException("could not find type \"" + frm + "\" or label \"" + lbl + "\"", "",
+                            location.getLine(), location.getColumn());
             lbl = lbl1;
         }
         return lbl;
@@ -302,7 +305,8 @@ public class QueryContext {
 
     private void setLabelType(String label, DataDefinition type, AST location) throws SemanticException {
         if (findLabelType(label) != null)
-            throw new antlr.SemanticException("label defined twice: " + label, "", location.getLine(), location.getColumn());
+            throw new antlr.SemanticException("label defined twice: " + label, "", location.getLine(),
+                    location.getColumn());
         labels.put(label, type);
     }
 
@@ -316,9 +320,9 @@ public class QueryContext {
     /** writes the iterator definitions (FROM part) */
     protected void writeFrom(TextList ret) {
         boolean comma = false;
-        wroteRange=false;
+        wroteRange = false;
         for (Enumeration<String> e = fromLabels.keys(); e.hasMoreElements();) {
-            String label = (String) e.nextElement();
+            String label = e.nextElement();
 
             if (comma)
                 ret.append(" JOIN ");
@@ -327,18 +331,18 @@ public class QueryContext {
             ret.append(getTableName(label))
             // .append(" AS ")
             .append(" ").append(label);
-            wroteRange=true;
+            wroteRange = true;
         }
     }
 
     /** return the database-level name of the type of the given label */
     DataDefinition getTableName(String label) {
-        return (DataDefinition) findLabelType(label);
+        return findLabelType(label);
     }
 
     /** return the database-level name of the given field of the given label */
     String getFieldName(String label, String field, NameResolver nr) {
-        DataDefinition ri = (DataDefinition) findLabelType(label);
+        DataDefinition ri = findLabelType(label);
         try {
             // return ((org.makumba.db.sql.TableManager) d.getTable(ri)).getFieldDBName(field);
             return nr.resolveFieldName(ri, field);
@@ -351,8 +355,8 @@ public class QueryContext {
     protected void writeJoins(TextList ret) {
         // boolean and = false;
         for (Enumeration<Join> e = joins.elements(); e.hasMoreElements();) {
-            Join j = (Join) e.nextElement();
-            if(walker.optimizeJoins && !isFieldUsed(j)){
+            Join j = e.nextElement();
+            if (walker.optimizeJoins && !isFieldUsed(j)) {
                 rewriteProjections(j);
                 continue;
             }
@@ -374,7 +378,7 @@ public class QueryContext {
                 }
                 ret.append(" JOIN ");
             }
-            wroteRange=true;
+            wroteRange = true;
             ret.append(getTableName(j.label2))
             // .append(" AS ")
             .append(" ").append(j.label2);
@@ -409,10 +413,10 @@ public class QueryContext {
     }
 
     private TextList findLabelText(String label) {
-        if(labels.get(label)==null)
+        if (labels.get(label) == null)
             return parent.findLabelText(label);
 
-       return addLabelText(label, labels.get(label).getIndexPointerFieldName());
+        return addLabelText(label, labels.get(label).getIndexPointerFieldName());
     }
 
     private boolean isFieldUsed(Join j) {
@@ -431,7 +435,7 @@ public class QueryContext {
 
     public TextList selectLabel(String label, MqlNode node) {
         DataDefinition dd = labels.get(label);
-        if(dd==null)
+        if (dd == null)
             return parent.selectLabel(label, node);
         String field = null;
         if (dd.getParentField() != null) {
@@ -442,21 +446,21 @@ public class QueryContext {
                 labelFields.add(label);
                 node.setMakType(dd.getFieldDefinition(dd.getSetMemberFieldName()));
             }
-            if(stp.equals("setComplex"))
+            if (stp.equals("setComplex"))
                 // there is no way to take out the joins for setComplex label selects
-                labelFields.add(label);                
+                labelFields.add(label);
         }
         if (field == null) {
             field = dd.getIndexPointerFieldName();
             node.setMakType(walker.currentContext.ddp.makeFieldDefinition("x", "ptr " + dd.getName()));
         }
-        
+
         return addLabelText(label, field);
     }
 
     private TextList addLabelText(String label, String field) {
         TextList text = labelText.get(label);
-        if(text==null){
+        if (text == null) {
             text = makeTextList(label, field);
             labelText.put(label, text);
         }
@@ -464,30 +468,31 @@ public class QueryContext {
     }
 
     private TextList makeTextList(String label, String field) {
-        TextList text=new TextList();
+        TextList text = new TextList();
         text.append(label).append(".").append(labels.get(label), field);
         return text;
     }
 
-    public void selectField(String label, String field, MqlDotNode mqlDotNode) throws SemanticException{
+    public void selectField(String label, String field, MqlDotNode mqlDotNode) throws SemanticException {
         DataDefinition labelType = labels.get(label);
-        if(labelType==null){
+        if (labelType == null) {
             parent.selectField(label, field, mqlDotNode);
             return;
         }
 
-        if (field.equals("id") && labelType.getFieldDefinition("id") == null){
+        if (field.equals("id") && labelType.getFieldDefinition("id") == null) {
             mqlDotNode.setTextList(selectLabel(label, mqlDotNode));
             return;
         }
-            
+
         if (labelType.getFieldDefinition(field) == null)
-            throw new SemanticException("No such field " + field + " in " + labelType, "", mqlDotNode.getLine(), mqlDotNode.getColumn());
-        
+            throw new SemanticException("No such field " + field + " in " + labelType, "", mqlDotNode.getLine(),
+                    mqlDotNode.getColumn());
+
         labelFields.add(label);
         mqlDotNode.setTextList(makeTextList(label, field));
         mqlDotNode.setMakType(labelType.getFieldDefinition(field));
-        
+
     }
 
     public Hashtable<String, MqlNode> getProjectionLabelSearch() {
