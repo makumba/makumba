@@ -2,7 +2,7 @@
 
   <property file="build.properties" />
   <property name="build.dir" value="bin/" />
-  
+
   <!-- classpath for starting the JSPWiki tomcat -->
   <path id="tomcat.class.path">
     <fileset dir="${java.home}/lib/">
@@ -28,13 +28,11 @@
     </javac>
   </target>
 
-  <target name="installWiki" depends="compile">
+  <target name="installWiki" depends="compile" description="prepares JSPwiki instance">
+    <mkdir dir="work" />
     <antcall target="makeJSPWikiProperties" />
     <antcall target="copyWikiPlugins" />
-    <antcall target="generateTaglibDoc" />
   </target>
-
-  <!-- Targets for documentation with JSPWiki -->
 
   <target name="makeJSPWikiProperties" description="generates JSPWiki properties file for local use">
 
@@ -64,11 +62,12 @@
 
   </target>
 
+  
   <target name="tomcat-wiki" description="start the tomcat to deploy JSPwiki">
     <echo>Java home in build: ${java.home}</echo>
     <java classname="org.apache.catalina.startup.Bootstrap" fork="yes" classpathref="tomcat.class.path" append="true">
       <jvmarg value="-Dcatalina.home=${tomcat.home}" />
-      <jvmarg value="-Dcatalina.base=${basedir}/tomcat-jspwiki" />
+      <jvmarg value="-Dcatalina.base=${basedir}/tomcat" />
       <jvmarg value="-Xms${tomcat.Xms}" />
       <jvmarg value="-Xmx${tomcat.Xmx}" />
       <jvmarg value="-XX:MaxPermSize=${tomcat.Xmx}" />
@@ -80,16 +79,16 @@
     <sleep seconds="5" />
 
   </target>
-  
+
   <target name="tomcat-stop" description="stops the tomcat">
-        <java classname="org.apache.catalina.startup.Bootstrap" fork="yes" classpathref="tomcat.class.path">
-            <classpath>
-                <pathelement path="${tomcat6.home}/bin/bootstrap.jar" />
-            </classpath>
-            <jvmarg value="-Dcatalina.home=${tomcat6.home}" />
-            <jvmarg value="-Dcatalina.base=tomcat" />
-            <arg value="stop" />
-        </java>
-    </target>
+    <java classname="org.apache.catalina.startup.Bootstrap" fork="yes" classpathref="tomcat.class.path">
+      <classpath>
+        <pathelement path="${tomcat6.home}/bin/bootstrap.jar" />
+      </classpath>
+      <jvmarg value="-Dcatalina.home=${tomcat6.home}" />
+      <jvmarg value="-Dcatalina.base=tomcat" />
+      <arg value="stop" />
+    </java>
+  </target>
 
 </project>
