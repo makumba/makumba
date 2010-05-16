@@ -1,0 +1,1 @@
+The maximum length (number of characters) to print. Longer output is cut off, and an ellipsis is added to indicate the cut. If not set (default), there is no maximum.

@@ -1,0 +1,98 @@
+[{TableOfContents }]
+
+!!! Overview
+MDD Functions are fragments of MQL queries, defined alongside the data in the [Makumba Data Definition|DataDefinitions]. They can be used in
+* queries in the [Makumba JSP Tag Library|Taglib]
+* queries in [Makumba Business Logics|JavaBusinessLogic]
+* for explicit and implicit authentication and authorisation
+
+!!! Defining MDD Functions
+MDD Functions are defined in the same file as the [Makumba Data Definition|DataDefinitions] they operate on. They can make use of the full MQL syntax, and directly use fields defined in the same data definition, as well as fields in [relational types|DataDefinitions#StructuralRelationalTypes], i.e. in pointers and sets.
+
+Remember the [company data model|DataModelHowto] described earlier in this section, specifically the %%code company.Employee%% type:
+
+__company.Employee (company/Employee.mdd)__
+%%prettify
+{{{
+name = char[200]
+surname = char[200]
+gender = int{"Male" = 10, "Female" = 20}
+birthdate = date
+salary = real
+department = ptr company.Department
+projects = set
+projects->project = ptr company.Project
+projects->timePercentage = int ;percentage assigned
+}}}%%
+
+When we want to print the name of that employee in a JSP page, it is cumbersome to always do
+%%prettify
+{{{
+Name: <mak:value expr="employee.name"/> <mak:value expr="employee.surnname"/> 
+}}}%%
+
+In this case, we can define an MDD function as a shortcut:
+__company.Employee (company/Employee.mdd)__
+%%prettify
+{{{
+nameSurname() { concat(name, ' ', surname) }
+}}}%%
+
+and can thus use it in the JSP page:
+
+%%prettify
+{{{
+Name: <mak:value expr="employee.nameSurname()"/>
+}}}%%
+
+To define this MDD function, we used the function %%code concat%%, which has to be provided by the query language. MDD functions can return several data types, depending on the return type of the query language functions or operators used.
+You can find a list of [currently supported functions|QueryLanguages#MQLFunctions] in MQL.
+
+Another example for an MDD function could be when you want to list employees that have their birthday today. You could do this by:
+
+%%prettify
+{{{
+Today's birthdays:
+<mak:list from="company.Employee e" where="e.birthday=current_date()">
+  <mak:value expr="e.nameSurname()"/> <br/>
+</mak:list>
+}}}%%  
+
+or you could predefine this function:
+
+__company.Employee (company/Employee.mdd)__
+%%prettify
+{{{
+hasBirthday() { birthday = current_date() }
+}}}%%
+
+and then use it as:
+
+%%prettify
+{{{
+Today's birthdays:
+<mak:list from="company.Employee e" where="e.hasBirthday()">
+  <mak:value expr="e.nameSurname()"/> <br/>
+</mak:list>
+}}}%%
+
+When we want to display all employees that are ready for retirement, we could do this like follows:
+
+__company.Employee (company/Employee.mdd)__
+%%prettify
+{{{
+shallRetire() { year(birthday - current_date()) > 65 } 
+}}}%%
+
+and then use it as:
+
+%%prettify
+{{{
+The following employees should retire:
+<mak:list from="company.Employee e" where="e.shallRetire()">
+  <mak:value expr="e.nameSurname()"/> <br/>
+</mak:list>
+}}}%%
+
+
+%%(display:none;)[Category Usage]%%

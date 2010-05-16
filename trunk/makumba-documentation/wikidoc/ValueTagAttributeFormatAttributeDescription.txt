@@ -1,0 +1,2 @@
+For a date value, formats the date according to a java.text.SimpleDateFormat pattern.
+For a text value, setting the value to "raw" avoids any HTML escaping.

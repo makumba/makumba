@@ -1,0 +1,56 @@
+!!!Taglib documentation for tag mak:section
+
+!!Description
+
+[{InsertPage page=SectionTagDescription}]
+
+!!Attributes
+
+%%(display:none) makumba hackers: DO NOT CHANGE THESE ATTRIBUTES HERE since your changes will be lost! You have to edit the taglib-documented.xml file and re-generate the taglib doc! %%
+
+[{Table
+
+||Name||Required||Request-time||Description||Comments 
+
+|name 
+|true 
+|false 
+|The name of the section, must be unique for the page 
+|Fixed, Mandatory. 
+
+|showOn 
+|false 
+|false 
+|The name of the event that causes this section to be displayed 
+|Fixed 
+
+|hideOn 
+|false 
+|false 
+|The name of the event that causes this section to be hidden 
+|Fixed 
+
+|reloadOn 
+|false 
+|false 
+|The name of the event that causes this section to be reloaded via partial post-back 
+|Fixed 
+
+|iterationExpr 
+|false 
+|false 
+|A MQL expression used to identify the section uniquely inside of a mak:list 
+|Fixed. 
+
+
+}]
+
+!!See also
+
+[mak:list|ListTag]
+!!Examples
+
+[{InsertPage page=SectionTagExample}]
+
+
+%%(display:none;)[Category Documentation]%%

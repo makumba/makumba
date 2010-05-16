@@ -1,0 +1,24 @@
+[{TableOfContents}]
+
+!!SourceForge
+[{Image src='http://sourceforge.net/sflogo.php?group_id=25704'}]
+
+SourceForge.net is the world's largest open source software development web site, providing free services that help people build cool stuff and share it with a global audience.
+
+!!.SE - The Internet Infrastructure Foundation
+[{Image src='Supporters/se.gif'}]
+
+The .SE Internet fund supports projects that work towards the positive development of the Internet in Sweden.
+
+!!Atlassian
+[{Image src='Supporters/confluence_pro_wiki_120x80.gif'}]
+
+Atlassian supports our efforts by contributing Confluence, the professional wiki, to our organisation.
+Atlassian is an innovative Australian software company providing enterprise software solutions to the world's leading organisations. Atlassian's newest software product, Confluence is a knowledge management tool designed to make it easy for a team to communicate: sharing information, collaborating on documents and brainstorming ideas, all in a single web-based location. [Try|http://www.atlassian.com/c/NPOS/10161] it for yourself today. 
+
+!!YourKit
+YourKit is kindly supporting open source projects with its full-featured Java Profiler.
+YourKit, LLC is creator of innovative and intelligent tools for profiling Java and .NET applications. Take a look at YourKit's leading software products:
+[YourKit Java Profiler|http://www.yourkit.com/java/profiler/index.jsp] and [YourKit .NET Profiler|http://www.yourkit.com/.net/profiler/index.jsp]. 
+
+%%(display:none;)[Category Main]%%
