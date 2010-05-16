@@ -373,8 +373,8 @@ public class TaglibDocGenerator {
         String description = getPageInsert(attributePageName+"Description");
         String comments = getPageInsert(attributePageName+"Comments");
 
-        String descriptionText = MakumbaTLDGenerator.readFileAsString(outputDir.getAbsolutePath() + File.separator + attributePageName+"Description.txt");
-        String commentsText = MakumbaTLDGenerator.readFileAsString(outputDir.getAbsolutePath() + File.separator + attributePageName+"Comments.txt");
+        String descriptionText = MakumbaTLDGenerator.readFileAsString(new File(outputDir.getAbsolutePath() + File.separator + attributePageName+"Description.txt").getAbsolutePath());
+        String commentsText = MakumbaTLDGenerator.readFileAsString(new File(outputDir.getAbsolutePath() + File.separator + attributePageName+"Comments.txt").getAbsolutePath());
         
         
         String deprecated = attribute.elementText("deprecated");
