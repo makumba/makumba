@@ -1,0 +1,161 @@
+[{TableOfContents }]
+
+!!!Introduction
+
+Most of the Makumba configuration is centralised in the WEB-INF/classes/Makumba.conf file. This file is organised in sections, in an INI stlye, so as to be easier to read.
+
+!!!Database configuration
+
+Makumba can retrieve data from one or more databases, yet its most common usage is to work with one database. Makumba has two database base layers, one native layer and one layer that uses Hibernate as an abstraction layer. The native Makumba layer supports several database engines, but in the past years has mostly been tested with MySQL. The Hibernate database layer uses Hibernate, hence supports many different database engines.
+
+
+!!Global DataSource configuration [[dataSourceConfig]
+
+|| Parameter || Mandatory || Database Layer || Description
+| foreignKeys=true/false | no. true by default | Makumba | Whether foreign keys should be generated
+| defaultDataSource=value | yes | both | The name of the dataSource to be used by default
+| encoding=value | no | Makumba | Specify the encoding to use for the database. If "utf8" is specified, will enforce UTF-8 on table creation
+
+!!Data Sources [[dataSource:name]
+
+A dataSource section provides the necessary information to establish a connection with a database server. It is possible to configure several dataSources and to use them at runtime.
+The syntax of a dataSource section is as follows: [[dataSource:name host:hostname path:server path].
+The host and path elements are optional, and can be used to automatically use one specific dataSource depending on which server the web-app runs on.
+
+Example: the dataSource [[dataSource:production host:production.mycompany.com path:/opt/tomcat-production] would be automatically selected as default data source when the web-app is ran on production.mycompany.com and the working directory of tomcat is /opt/tomcat-production, whereas [[dataSource:test host:production.mycompany.com path:/opt/tomcat-test] would be selected when the web-app is run from the tomcat running at /opt/tomcat-test 
+
+
+|| Parameter || Mandatory || Database Layer || Description
+|databaseLayer=makumba~|hibernate | yes | both | Which database layer should be used
+|connection.url=value | yes for the hibernate database layer | both | a JDBC URL to which to connect
+|connection.username=value | no | both | A username to connect to the dataSource
+|connection.password=value | no | both | A password to connect to the dataSource
+|connection.host=hostName | no | Makumba | the host to which to connect
+|connection.port=portNumber | no | Makumba | the port to which to connect
+|connection.database=databaseName | no | Makumba | the name of the database to which to connect
+|connection.engine=engineName | no | Makumba | the SQL engine to use
+|sql.setting=valuetd> | no | Makumba | sends a setting to the JDBC driver (for example user, password, create, etc). Such settings are JDBC driver specific
+|dbsv=value | no | Makumba | the DBSV will be used to set the most significant 8 bits of all primary keys generated for the new records created by this makumba client. Using different DBSVs can help to ensure key uniqueness among multiple clients using (or synchronizing with) the same database. Database inserts of records that have the same primary key as an already existing record in that table (i.e. a record created by a client that used the same DBSV) will fail. You cannot specify both dbsv and auto_increment in the same configuration file, but you can access the same database with some clients using (different) dbsv-s, and others using autoIncrement.
+|autoIncrement=true~|false | no | Makumba | if autoIncrement is on, makumba will use the server-side primary key generation. You cannot specify both dbsv and auto_increment in the same configuration file, but you can access the same database with some clients using (different) dbsv-s, and others using autoIncrement.
+|initConnections=value | no | Makumba | specifies the initial number of connections that makumba will open when connecting to the database. Default is 1, though some makumba versions will open 2-3 more connections pretty early in their activity. High server load will lead to more connections being open.
+|database_class=className | no | Makumba | The main class of the makumba database driver. This is normally read from org/makumba/db/sql/sqlEngines.properties, but other, more powerful drivers can be plugged in.
+|table_class=className | no | Makumba | Table handler of the database driver (optional, norlally known by the dbclass or read from org/makumba/db/makumba/db/sql/sqlEngines.properties)
+|typename=SQLtableName | no | both | Sets the name of the SQL table representing the given type to SQLtableName (to inhibit automatic table name generation)
+|typename->field=SQLfieldName | no | both | Sets the name of the SQL field representing the given object attribute to SQLfieldName (to inhibit automatic field name generation)
+|addUnderscore=true~|false | no | both | Specifies whether to add an underscore at the end of the generated field and table names during automatic name generation. It is true by default. (Introduced to avoid conflicts with reserved words on some SQL engines)
+|alter#typenameShorthand=true~|false | no | Makumba | If true allows automatic alteration of the SQL table representing the type(s) when the SQL table doesn't match the type definition. For example: \\alter#=true \\alter#general=false \\will allow alteration of all tables from the database except for tables whose names begin with "general"
+|admin#typenameShorthand=true~|false | no | Makumba | If true allows deletion of multiple records of the respective types during org.makumba.delete and org.makumba.copy the type(s) when the SQL table doesn't match the type definition.
+|hibernate.dialect=className | yes | Hibernate | the dialect to use with the database server
+|makumba.seed=fileName | no | Hibernate | the file name of a file in the classpath, that will be used to determine the root directory of the mappings and classes generated by Makumba in order to use Hibernate as a database layer. by default it is Makumba.conf, hence the classes and mappings will be generated under WEB-INF/classes.
+|makumba.prefix=value | no | Hibernate | the name of the folder under which the mappings should be generated. by default it is 'makumbaGeneratedMappings'.
+|makumba.mdd.root=value | no | Hibernate | the name of the folder in which the MDDs of the webapp are located. If none is provided, the default value is "dataDefinitions".
+|makumba.mdd.list=types | no | Hibernate | a comma-separated list of Makumba Data Definitions that should be used. If none is provided, makumba will use all the MDDs in the root folder, if there are.
+|makumba.mdd.additionalList=types | no | Hibernate | a comma-separated list of MDDs that should be used in addition to all MDDs found in * the root folder. if none is provided, makumba will use all the MDDs in the root folder, if there are.
+|makumba.schemaUpdate=true~|false | no | Hibernate | indicates whether makumba should do a schema update with the session factory
+
+
+In addition to these parameters, additional parameters can be passed directly to the database layer. For additional Hibernate configuration parameters, see:
+* http://www.hibernate.org/hib_docs/v3/reference/en/html/configuration-hibernatejdbc.html
+* http://www.hibernate.org/hib_docs/v3/reference/en/html/configuration-optional.html
+
+
+!!!Controller configuration
+
+!!Business Logic packages [[businessLogicPackages]
+A list of directory=package values that can be used with the Makumba Business Logics. See the Business Logic documentation for more information.
+
+!!Authorization [[authorization]
+This section contains the explicit authorization configuration. See the authorization reference for more details.
+
+!!Controller behavior [[controllerConfig]
+|| Parameter || Default value || Description
+| reloadFormOnError=true~|false | false | Whether the form should be reloaded if a validation error occurs, or whether the action page should be displayed. If a <mak:response> tag is used, the errors will be displayed there.
+| clientSideValidation=true~|false~|live  | false | Whether forms are validated client-side. Possible values are false (no client-side validation), true (default client-side validation, that validates only on submission) and live (live validation, that validates fields after input).
+| useDefaultResponseStyles=true~|false | true |	Whether the default display style for should be used. If false, the CSS classes makumbaResponder and makumbaSuccess can be used in order to define customized styles for displaying the response.
+| formAnnotation=none~|before~|after~|both | none | If none, the validation errors will all be displayed in the <mak:response>. If before, after or both, the form will be annotated with validation errors before, after or before and after the fields.
+
+[{Box
+
+These settings can also be changed at form level. See the [mak:Form|FormTag] attributes documentation for more details.
+}]
+
+
+!!!Makumba tools
+
+!!Makumba tools path [[makumbaToolPaths]
+Configuration of the path to the Makumba developer tools. By default you don't need to set any of those keys, but if you want to disable a tool, just put an empty value for the key.
+
+!!Makumba developer tools
+||Parameter || Description || Default value
+|path | Root path of the makumba tools. This path will be the prefix under which all the subsequent tools can be found. | /mak-tools
+|mddViewer | makumba data definition viewer | /dataDefinitions
+|blMethods | tool to generate the java body of the makumba business logics | /blMethods
+|javaViewer | java classes viewer | classes
+|logicDiscovery | tool that shows the makumba business logics discovery path | /logic
+|dataQueryTool | tool to query data using MQL or HQL | /dataQuery
+|dataObjectViewer | a tool to display records of the database, used together with the data query tool | /dataObjectViewer
+|dataLister | a tool to list records of the database, used together with the data query tool | /dataLister
+|referenceChecker | a tool to check references (foreign keys) in the database | /referenceChecker
+|codeGenerator | the makumba code generator, to generate default pages (list, view, create, edit, delete) based on a MDD | /codeGenerator
+|objectIdConverter | converts from external pointer values to internal and DB pointer values |	/dataValueConverter
+|relationCrawler | tool used to trigger the crawling of relations between MDD, JSP and business logic files | /relationCrawler
+|makumbaCacheCleaner | tool that cleans the makumba caches | /makumbaCacheCleaner
+
+
+!!Internal Makumba tools
+||Parameter || Description || Default value
+|makumbaValueEditor | servlet used for in-place edition | /makumbaValueEditor
+|makumbaUniquenessValidator | servlet used for uniqueness validation, when using the live validation | /makumbaUnique
+|makumbaAutoComplete | servlet that generates answers for the auto-complete | /makumbaAutoComplete
+|makumbaResources | servlet that serves resources (stylesheets, javascript) for several makumba features | /makumbaResources
+|makumbaDownload | servlet used for the download of file field types | /makumbaDownload
+
+!!Makumba tools configuration [[makumbaToolConfig]
+||Parameter || Description || Default value
+|repositoryURL=value | The URL to the application repository, used in the source viewer | http://makumba.svn.sourceforge.net/viewvc/makumba/trunk/makumba/webapps/tests/
+|repositoryLinkText=value | The text of the repository link | SVN
+|logErrors=true~|false | Whether Makumba errors should be logged to the database, enabling further analysis | false
+
+
+!!!Input style configuration [[inputStyleConfig]
+Configuration of input properties (e.g. mak:input).
+||Property key || Description || Default value
+|calendarEditor | Whether the calendar editor for date fields should be active | false
+|calendarEditorLink | The content of the link to the calendar editor | <img border="0" src="_CONTEXT_PATH_/mak-tools/makumbaResources/image/calendar.gif"> 
+
+!!!Configuration example
+
+Here's an example configuration for a minimalistic %%code Makumba.conf%% file. It uses the makumba database layer and a file-based HSQLDB database connection.
+
+
+{{{
+[dataSourceConfig]
+foreignKeys=true
+defaultDataSource=testDatabase
+defaultDatabaseLayer=makumba
+
+[dataSource:testDatabase]
+databaseLayer=makumba
+connection.url=jdbc:hsqldb:file:testDatabase
+dbsv=0
+
+alter#=true
+
+[businessLogicPackages]
+default=
+
+[authorization]
+
+[makumbaToolPaths]
+path=/mak-tools
+
+[controllerConfig]
+reloadFormOnError=true
+clientSideValidation=live
+
+[makumbaToolConfig]
+repositoryURL=http://makumba.svn.sourceforge.net/viewvc/makumba/trunk/makumba-archetype
+repositoryLinkText=SVN
+}}}
+
+%%(display:none;)[Category Configuration]%%

@@ -1,0 +1,1 @@
+Only for <code>ptr and intEnum types</code>
