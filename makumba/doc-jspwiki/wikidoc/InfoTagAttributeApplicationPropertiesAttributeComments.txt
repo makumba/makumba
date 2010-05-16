@@ -1,1 +1,0 @@
-If the web-app has a properties-based configuration file, the properties can be displayed by mak:info when the file name is specified.

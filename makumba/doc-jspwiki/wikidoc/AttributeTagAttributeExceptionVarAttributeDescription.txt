@@ -1,1 +1,0 @@
-The name of the created java.lang.Throwable variable that will hold eventual exceptions raised when trying to compute the attribute. If exceptionVar is missing, any raised exception will stop page execution. If it is present, and AttibuteNotFoundException occurs, the attribute is set to null (so a next request for the attribute will return null)

@@ -1,1 +1,0 @@
-Indicates whether validation errors should be shown in the form, or be displayed in the <mak:response/>.

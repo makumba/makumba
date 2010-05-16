@@ -1,1 +1,0 @@
-The string that separates the different options. Default is " " (space). The output will be < ~[x] label >< elementSeparator >< ~[x] label >

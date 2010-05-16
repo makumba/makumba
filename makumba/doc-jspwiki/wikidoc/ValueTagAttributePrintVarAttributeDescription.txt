@@ -1,1 +1,0 @@
-The formatted output as it would have been printed, is instead stored in a new java.lang.String variable by this name, as well as to a page-scope attribute by the same name (accessible as $attributename).

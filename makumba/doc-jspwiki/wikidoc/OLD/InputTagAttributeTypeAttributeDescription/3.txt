@@ -1,9 +1,0 @@
-HTML INPUT type to be used 
-* "hidden" works for all fields 
-* for char[], type can be "text" or "password", default is "text" 
-* default type for [set]intEnum, [set]charEnum, ptr and set is "select" (dropdown or scroll list depending on size). Alternative is "tickbox" (checkboxes or radio buttons). Can be forced to a specific type by using "radio" or "checkbox" 
-* for set, type can be seteditor, which will create two multiple-select boxes (see an example). 
-* for int, spinner creates a spinner input with increase/decrease buttons; if a validation definition defines a range for the field, select and radio will create select boxes and radio buttons. 
-* date is split in 3 inputs, <fieldname>_0 (day), _1 (month), _2 (year), and likewise for time elements 
-* for text, default is "textarea"; "file" will create file upload box, and will create supplementary attributes <fieldname>_filename, <fieldname>_contentType and <fieldname>_contentLength that have to be handled separately by the handler method
-* for file, a file upload box will automatically created, and handling of file name, content type and length will be done automatically.

@@ -1,1 +1,0 @@
-Displays information about the makumba system (caches, database, open database connections...) and the servlet container (active sessions, ...).

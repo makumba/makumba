@@ -1,1 +1,0 @@
-Similar to, and based on the %%code <mak:list>%%, this tag automatically iterates over the results from a specified search form. The label of the result objects is automatically assumed to be "o". On top of %%code <mak:list>%%, the following attributes are available:

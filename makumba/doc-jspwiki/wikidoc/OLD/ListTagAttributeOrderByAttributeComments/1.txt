@@ -1,1 +1,0 @@
-Fixed, can contain #{ JSP EL expressions } label.$fieldname used to be supported, not anymore

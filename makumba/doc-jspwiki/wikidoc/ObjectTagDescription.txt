@@ -1,1 +1,0 @@
-Like list, but the query can only have zero or one result. A zero value for maxCountVar and countVar indicate that the object does not exist.

@@ -1,1 +1,0 @@
-MQL label of the object to delete
