@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<groups>
+  <group name="Documentation" creator="Manu" created="2009.12.07 at 18:09:53:203 CET" modifier="Manu" lastModified="2009.12.17 at 14:20:27:746 CET">
+    <member principal="viktor" />
+    <member principal="raul" />
+    <member principal="marius" />
+    <member principal="maja" />
+    <member principal="gwen" />
+  </group>
+  <group name="Admin" creator="Admin" created="2009.11.20 at 12:04:26:430 CET" modifier="Manu" lastModified="2010.03.02 at 14:36:57:920 CET">
+    <member principal="manu" />
+    <member principal="viktor" />
+    <member principal="jasper" />
+    <member principal="rudi" />
+    <member principal="Nikola" />
+    <member principal="Admin" />
+    <member principal="filip" />
+  </group>
+</groups>
