@@ -1,0 +1,31 @@
+!!!Blog 
+
+!! Spring 2010 development meeting
+05 Mar 2010 \\
+As a follow-up on the outcomes of the makumba meeting held last November in Copenhagen, next month will see another gathering, this time in Vienna.
+On the agenda, hands-on activities such as:
+* cleanup / refactoring work to ease the integration with [JSF|http://en.wikipedia.org/wiki/Java_Server_Faces] (to progressively adopt it as the underlying presentation technology)
+* implementation of implicit, MDD-based, authorization
+* design of accountability support
+
+!! Makumba [0.8.2.7.2|https://sourceforge.net/projects/makumba/files/Makumba/makumba-0_8_2_7_2.jar/download] is out!
+09 Feb 2010 \\ 
+The new release fixes in particular [bug 1163|http://bugs.makumba.org/show_bug.cgi?id=1163]
+
+!! Makumba [0.8.2.7.1|https://sourceforge.net/projects/makumba/files/Makumba/makumba-0_8_2_7_1.jar/download] is out!
+03 Feb 2010 \\
+Maintenance release fixing broken reference to JSP 2.1 API
+
+!! Makumba [0.8.2.7|https://sourceforge.net/projects/makumba/files/Makumba/makumba-0_8_2_7.jar/download] is out!
+29 Jan 2010
+* Form submission message also shown for successful response
+* Fixing bug in MDD parser that would prevent overriding of IDD fields in sub-tables (setComplex, ptrOne)
+* Enhancing analysis engine: reporting invalid values for tag attributes can now be handled through AnalysableTag#registerAttributeValues()
+* Improving error reporting: when an error occurs during the analysis or execution of a tag, we fetch the exact line of that tag and display it to the user.
+* Keeping the analysis status in the servlet context (as attribute) until the error does not occur anymore, so that we can keep on displaying the error message on successive requests (page reloads).
+* Extending/refactoring page analysis: introducing AnalysableElement and ElementData to abstract from Tag, and allow for another kind of element (EL expression).
+* Moving all the code required for accurate error handling into AnalysableElement
+* Small fixes reported by bug detection plugin
+* Fixing small bug in error viewer: removing generation of a link to the current directory in error pages when encountering a '.'
+
+%%(display:none;)[Category Main]%%
