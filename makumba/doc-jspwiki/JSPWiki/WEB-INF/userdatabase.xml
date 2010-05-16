@@ -4,8 +4,6 @@
     </user>
     <user uid="ae6bfbaa-4ff4-4c67-b976-9f87008d36bd" loginName="Admin" wikiName="Admin" fullName="Admin" email="" password="{SSHA}GqUCgqqn8jXsIPkBqp8oVui/ZbloesJSw5sIig==" created="2009.11.20 at 12:04:08:619 CET" lastModified="2009.11.20 at 12:04:08:619 CET" lockExpiry="" >
     </user>
-    <user uid="480287c2-b0eb-4743-8a08-e9fb86aa25aa" loginName="TestUser" wikiName="TestUser" fullName="Test User" email="" password="{SSHA}ItE/n4y00pcouYtIsXWGBnGQmBZ99onkMOko7A==" created="2009.11.20 at 12:27:33:150 CET" lastModified="2009.11.20 at 12:27:33:150 CET" lockExpiry="" >
-    </user>
     <user uid="2553520a-62b9-4431-935a-4d85f5a69ff3" loginName="manu" wikiName="Manu" fullName="Manu" email="manuel@makumba.org" password="{SSHA}wXYXDfLVOu4Iyp88nwnt3SAnlvEyJiUvNi9YsA==" created="2009.11.20 at 13:00:50:994 CET" lastModified="2009.11.20 at 13:00:50:994 CET" lockExpiry="" >
     </user>
     <user uid="8bcf3c13-1e63-4018-ad1c-313a90747237" loginName="jasper" wikiName="Jasper" fullName="Jasper" email="van.bourgognie@gmail.com" password="{SSHA}FCBa2efpi4TVAMMQugL4g01NfbJRP8P0+eeGWA==" created="2009.11.29 at 15:32:29:806 CET" lastModified="2009.11.29 at 15:32:29:806 CET" lockExpiry="" >
@@ -19,5 +17,13 @@
     <user uid="3d757d73-b997-4db6-b3c9-f40448f02405" loginName="rudi" wikiName="RudolfMayer" fullName="Rudolf Mayer" email="rudolf.mayer@best.eu.org" password="{SSHA}QgpVt5TJRxuAXKOAWCGO/4l6/ZuJldwqHAn+Zw==" created="2009.11.29 at 15:33:20:581 CET" lastModified="2009.11.29 at 15:33:20:581 CET" lockExpiry="" >
     </user>
     <user uid="5bca77c8-86de-4a25-ae19-19c6e6594e33" loginName="gwen" wikiName="GwenaelAlizon" fullName="Gwenael Alizon" email="gwen@makumba.org" password="{SSHA}wBwzslJWnBZwbQOkcR4Bn+ZjcUUVION4omEMKQ==" created="2009.11.29 at 15:41:40:520 CET" lastModified="2009.11.29 at 15:41:40:520 CET" lockExpiry="" >
+    </user>
+    <user uid="4b705e91-7668-411e-a5d4-ee1c84e493d8" loginName="alexandar.vladimirov" wikiName="alexandar.vladimirov" fullName="alexandar.vladimirov" email="alexandar.vladimirov@gmail.com" password="{SSHA}/ybmongI4m+6Hqg6QlEo9aW4gJFcgx7t5tbWIQ==" created="2009.12.09 at 18:52:00:706 CET" lastModified="2009.12.09 at 18:52:00:706 CET" lockExpiry="" >
+    </user>
+    <user uid="1c0dca19-b25d-421f-b93f-ace9684b7a6e" loginName="marius" wikiName="marius" fullName="marius" email="marius.andra@gmail.com" password="{SSHA}wRqngBHeeoomTszF3hVId3PKilC+vXDgSdMslA==" created="2009.12.17 at 14:10:05:078 CET" lastModified="2009.12.17 at 14:10:05:078 CET" lockExpiry="" >
+    </user>
+    <user uid="a0f5bd84-ecee-4869-9e5a-703c0833bd94" loginName="maja" wikiName="MajaSiljanoska" fullName="Maja Siljanoska" email="maja.siljanoska@gmail.com" password="{SSHA}lZomGGiJikehMQZeKFPHRPZKK93YW3hFTB+GrQ==" created="2009.12.17 at 14:10:07:702 CET" lastModified="2009.12.17 at 14:10:07:702 CET" lockExpiry="" >
+    </user>
+    <user uid="5be8a0a3-f7bb-44ab-9fc2-9594f8c88c5f" loginName="Nikola" wikiName="NikolaMilivojevic" fullName="Nikola Milivojevic" email="0dziga0@gmail.com" password="{SSHA}YDqsi4addkH5uSgFMQKPFaUfYc0vlNwvBNjXUw==" created="2009.12.27 at 17:12:34:934 CET" lastModified="2009.12.27 at 17:12:34:934 CET" lockExpiry="" >
     </user>
 </users>
