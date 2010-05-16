@@ -196,8 +196,25 @@
 		<antcall target="generateTaglibDoc" />
 	</target>
 
-	<target name="detectHqlTokens">
-		<javac srcdir="classes" destdir="classes" includes="org/makumba/providers/query/hql/DetectHQLTokenTypes.java">
+	<target name="checkHqlTokens">
+		<property name="build.path" value="build" />
+
+		<condition property="hqlTokenDetection.notRequired">
+			<and>
+				<uptodate targetfile="${build.path}/org/makumba/providers/query/hql/DetectHQLTokenTypes.class">
+					<srcfiles dir="${basedir}/classes/org/makumba/providers/query/hql" includes="DetectHQLTokenTypes.java" />
+				</uptodate>
+				<uptodate targetfile="${basedir}/classes/org/makumba/providers/query/hql/HqlTokenTypes.txt">
+					<srcfiles dir="${basedir}/lib/optional/hibernate" includes="hibernate3.jar" />
+				</uptodate>
+			</and>
+		</condition>
+	</target>
+
+
+	<target name="detectHqlTokens" depends="checkHqlTokens" unless="hqlTokenDetection.notRequired">
+		<property name="build.path" value="build" />
+		<javac srcdir="classes" destdir="${build.path}" includes="org/makumba/providers/query/hql/DetectHQLTokenTypes.java">
 			<classpath refid="project.class.path" />
 		</javac>
 		<java classname="org.makumba.providers.query.hql.DetectHQLTokenTypes" failonerror="true" dir="." fork="true" taskname="detecting tokens">
@@ -221,6 +238,7 @@
 
 
 	<!-- Targets for Makumba compilation and building -->
+
 
 	<!-- check if the HQL/MQL/MDD grammar has changed since last parser generation-->
 	<target name="checkAntlr">
