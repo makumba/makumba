@@ -101,13 +101,11 @@ public class MakumbaTestData {
         Vector<Integer> intSet = new Vector<Integer>();
         intSet.addElement(new Integer(1));
         intSet.addElement(new Integer(0));
-        // p.put("intSet", intSet);
+        p.put("intSet", intSet);
 
         p.put("brother", brother);
         p.put("uniqPtr", languages.get(0));
         person = t.insert("test.Person", p);
-        t.commit();
-        System.out.println(t.executeQuery("SELECT p from test.Person p", null));
 
         p.clear();
         p.put("description", "");
