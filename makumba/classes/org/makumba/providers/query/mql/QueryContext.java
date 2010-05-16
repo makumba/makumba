@@ -62,7 +62,6 @@ public class QueryContext {
         TextList tl = new TextList();
         writeFrom(tl);
         writeJoins(tl);
-
         return tl;
     }
 
@@ -102,6 +101,10 @@ public class QueryContext {
 
     private boolean wroteRange;
 
+    // true: write joins immediately after the label is defined.
+    // false: write joins after all the explicitly defined labels (type label)
+    private static final boolean joinClosely = true;
+
     /** the four elements of a join: label1.field1 = label2.field2 */
     class Join {
         String label1;
@@ -113,6 +116,8 @@ public class QueryContext {
         String field2;
 
         int joinType;
+
+        public boolean written = false;
 
         public Join(String l1, String f1, String l2, String f2, int joinType) {
             label1 = l1;
@@ -324,14 +329,27 @@ public class QueryContext {
         for (Enumeration<String> e = fromLabels.keys(); e.hasMoreElements();) {
             String label = e.nextElement();
 
-            if (comma)
-                ret.append(" JOIN ");
+            if (comma) {
+                ret.append(joinClosely ? ", " : " JOIN ");
+            }
             comma = true;
 
             ret.append(getTableName(label))
             // .append(" AS ")
             .append(" ").append(label);
             wroteRange = true;
+
+            if (joinClosely)
+                writeJoinsOf(label, ret);
+        }
+    }
+
+    private void writeJoinsOf(String label, TextList ret) {
+        for (Join j : joins) {
+            if (j.label1.equals(label)) {
+                writeJoin(j, ret);
+                writeJoinsOf(j.label2, ret);
+            }
         }
     }
 
@@ -355,46 +373,52 @@ public class QueryContext {
     protected void writeJoins(TextList ret) {
         // boolean and = false;
         for (Enumeration<Join> e = joins.elements(); e.hasMoreElements();) {
-            Join j = e.nextElement();
-            if (walker.optimizeJoins && !isFieldUsed(j)) {
-                rewriteProjections(j);
-                continue;
-            }
-            // if (and)
-            // ret.append(" AND ");
-            // and = true;
-            if (wroteRange) {
-                // if this join is not correlating with a label from a superquery
-                switch (j.joinType) {
-                    case HqlSqlTokenTypes.LEFT_OUTER:
-                        ret.append(" LEFT");
-                        break;
-                    case HqlSqlTokenTypes.RIGHT_OUTER:
-                        ret.append(" RIGHT");
-                        break;
-                    case HqlSqlTokenTypes.FULL:
-                        ret.append(" FULL");
-                        break;
-                }
-                ret.append(" JOIN ");
-            }
-            wroteRange = true;
-            ret.append(getTableName(j.label2))
-            // .append(" AS ")
-            .append(" ").append(j.label2);
-
-            TextList cond = ret;
-            if (!isCorrelated(j))
-                // if this join is not correlating with a label from a superquery
-                ret.append(" ON ");
-            else {
-                // if we are correlated, we add a condition to the filters
-                cond = new TextList();
-                filters.add(cond);
-            }
-
-            joinCondition(cond, j);
+            writeJoin(e.nextElement(), ret);
         }
+    }
+
+    private void writeJoin(Join j, TextList ret) {
+        if (j.written)
+            return;
+        if (walker.optimizeJoins && !isFieldUsed(j)) {
+            rewriteProjections(j);
+            return;
+        }
+        // if (and)
+        // ret.append(" AND ");
+        // and = true;
+        if (wroteRange) {
+            // if this join is not correlating with a label from a superquery
+            switch (j.joinType) {
+                case HqlSqlTokenTypes.LEFT_OUTER:
+                    ret.append(" LEFT");
+                    break;
+                case HqlSqlTokenTypes.RIGHT_OUTER:
+                    ret.append(" RIGHT");
+                    break;
+                case HqlSqlTokenTypes.FULL:
+                    ret.append(" FULL");
+                    break;
+            }
+            ret.append(" JOIN ");
+        }
+        wroteRange = true;
+        ret.append(getTableName(j.label2))
+        // .append(" AS ")
+        .append(" ").append(j.label2);
+
+        TextList cond = ret;
+        if (!isCorrelated(j))
+            // if this join is not correlating with a label from a superquery
+            ret.append(" ON ");
+        else {
+            // if we are correlated, we add a condition to the filters
+            cond = new TextList();
+            filters.add(cond);
+        }
+
+        joinCondition(cond, j);
+        j.written = true;
     }
 
     private void rewriteProjections(Join j) {
