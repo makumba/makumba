@@ -1,8 +1,8 @@
 !!!Nested Lists
 Makumba allows for several <mak:list> and <mak:object> tags to be nested inside each other. This allows you to display objects from a certain type, and then for each object to list all related objects. As an example, we might want to list all companies, and then for each company all the employees working at that specific company. 
 
-[{Code 
-      
+%%prettify
+{{{
 <ul>
     <mak:list from="company.Company c" orderBy="name">
         <li>
@@ -15,7 +15,7 @@ Makumba allows for several <mak:list> and <mak:object> tags to be nested inside 
         </li>
     </mak:list>
 </ul>
-}]
+}}}%%
 
 The strength in nested <mak:lists> is that Makumba will take care of optimising the SQL statements needed for fetching the data. In an optimal case, for each root/top level <mak:list>, only 1 SQL statement is needed, fetching and grouping all the data needed for the nested lists.
 
@@ -31,8 +31,8 @@ Some properties of multiple forms are:
 * addForms can add to the subsets of object produced by the enclosing newForm.
 * After_ methods are not executed in correct order (bug 689)
 
-[{Code 
-      
+%%prettify
+{{{
 <mak:form action="blabla">
     <%-- the topmost form, will result in a HTML form --!>
 
@@ -60,14 +60,14 @@ Some properties of multiple forms are:
     
     <input type="submit"> <%-- it's easy to add a submit button anywhere --%>
 </mak:form>
-}]
+}}}%%
 
 !Having an <mak:addForm> inside a <mak:newForm>
 
 To insert to a set of an object being created, use code similar to the following
 
-[{Code
-
+%%prettify
+{{{
 <mak:newForm type="bla.Bla" name="b" method="post" action="page.jsp">
 
     <%-- a regular textfield inside bla.Bla --%>
@@ -83,9 +83,6 @@ To insert to a set of an object being created, use code similar to the following
     <input type="submit" value="submit" /> <%-- a regular submit button --%>
 
 </mak:newForm>
-
-
-}]
-
+}}}%%
 
 %%(display:none;)[Category Usage]%%

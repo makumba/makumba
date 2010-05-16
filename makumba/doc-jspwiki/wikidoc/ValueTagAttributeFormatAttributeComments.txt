@@ -1,1 +1,1 @@
-Only for date. Defaults to "dd MMMM yyyy"
+For date defaults to "dd MMMM yyyy"

@@ -65,11 +65,14 @@ Support for new functions is normally easy to add, so if you miss specific funct
 Makumba supports HQL as a query language. Please check its [reference documentation|http://www.hibernate.orghib_docs/reference/en/html/queryhql.html].
 
 In order to use HQL in Makumba JSPs pages, the following TLD declaration should be used: 
-[{Code
-
+%%prettify
+{{{
 <%@taglib uri="http://www.makumba.org/view-hql" prefix="mak" %>
-
-}]
+}}}%%
 
 
 %%(display:none;)[Category Documentation]%%
+
+
+!!! Join types
+Makumba automatically creates the SQL statements from the (Object) Query Languages MQL or HQL. Doing so, it converts elements such as %%prettify label.subTable %% to corresponding JOINs in SQL. Normally, Makumba will create default (inner) JOINs between tables. However, if the expression contains two or more ".", then all but the last "." will translate to a LEFT JOIN.

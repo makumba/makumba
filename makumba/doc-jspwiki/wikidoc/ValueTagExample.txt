@@ -1,8 +1,8 @@
-[{Code
-
+%%prettify
+{{{
   <mak:list from="general.Employee e>
       <mak:value expr="e.name"/>
       <mak:value expr="e.surname"/>
       <mak:value expr="e.department.name" maxLength="40" addTitle="auto" />
   </mak:list>
-}]
+}}}%%

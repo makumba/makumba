@@ -1,5 +1,5 @@
-[{Code
-
+%%prettify
+{{{
 <mak:object from="company.Project p" where="p=$project">
   <mak:editForm object="p">
     <mak:input name="leader">
@@ -16,5 +16,4 @@
     </mak:input>
   </mak:editForm>
 </mak:object>
-
-}]
+}}}%%

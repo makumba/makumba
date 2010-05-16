@@ -1,15 +1,15 @@
 To cancel out a certain attribute, specify the exact name:
 
-[{Code
-      
+%%prettify
+{{{
 <mak:logout actor="employee"/>
-}]
+}}}%%
 
 You can remove (cancel-out, logout) multiple attributes from the session by using <mak:logout actor="attribute name"> several times and/or by using the star (*) wildcard, e.g.:
 
-[{Code
-
+%%prettify
+{{{
 <mak:logout actor="demo_*"/> (attributes whose names start with "demo_")
 <mak:logout actor="*app"/> (attributes whose names end with "app")
 <mak:logout actor="*"/> (all attributes; this "invalidates" the session)
-}]
+}}}%%

@@ -18,7 +18,7 @@ This is the meta-makumba site, where we talk about the documentation itself: gui
 * [Documentation TODO|MetaDocumentationTodo]
 
 !!Blog
-* [{WeblogEntryPlugin page='Blog' entrytext='Create new blog post'}]
+* [{WeblogEntryPlugin page='Blog' entrytext='Create new blog post'}] ''(not used for now due to misteriously disappearing posts, edit the ["Blog"|Blog] page directly instead)''
 
 !!HowTo
 ''Various how-to documents related to makumba-meta''

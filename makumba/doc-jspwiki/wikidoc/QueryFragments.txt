@@ -6,11 +6,11 @@ Makumba focuses on combining query fragments to obtain high-performance systems 
 !!!MDD functions
 
 A simple function for an MDD called Leveler that has a level integer field looks like
-[{Code
-
+%%prettify
+{{{
 level=int
 function(int a) { level+a }
-}]
+}}}%%
 
 [{Box
 
@@ -45,10 +45,10 @@ The main uses of MDD functions are:
 
 The complete specification of function definition is as follows:
 
-[{Code
-
+%%prettify
+{{{
 [sessionVar%]function([type parameter]*){ expression [FROM supplementaryLabels [WHERE condition]]} [: "errorMessage" ] [; comment] 
-}]
+}}}%%
 
 * sessionVar [may be used|http://bugs.makumba.org/show_bug.cgi?id=1052] for MDDs that define actors (or those related to them) to indicate the name of a session variable where the function result will be stored. This is only possible for functions with no parameters. (this is currently implemented but may be deprecated)
 * parameter type can be either the primitive types (int, char, date, text, binary, boolean) or an MDD name
@@ -78,48 +78,48 @@ A return type [may be added|http://bugs.makumba.org/show_bug.cgi?id=1056] to fun
 Actors are a special type of function that, when mentioned in queries or functions, may trigger authentication. An actor invocation looks like
 
 
-[{Code
-
+%%prettify
+{{{
 actor(MDDName) 
-}]
+}}}%%
 
 i.e. it indicates which type ([MDD|DataDefinitions]) is the entity representing the actor. A query invoking an actor:
 
-[{Code
-
+%%prettify
+{{{
 SELECT actor(Person).name 
-}]
+}}}%%
 
-[{Code
-
+%%prettify
+{{{
 SELECT obj.hasDoneJob(actor(Person)) FROM SomeType obj 
-}]
+}}}%%
 
 These queries are inlined as follows:
 
-[{Code
-
+%%prettify
+{{{
 SELECT actor_Person.name FROM Person actor_Person WHERE actor_Person=$actor_Person
-}]
+}}}%%
 
-[{Code
-
+%%prettify
+{{{
 SELECT obj.hasDoneJob($actor_Person) FROM SomeType obj
-}]
+}}}%%
 
 (in the second example, the function hasDoneJob() will be inlined further)
 
 $actor_Person is a special attribute retrieved from the query context. The query context handler will check for the attribute and if it is not defined, it will look in the MDD indicated by the actor attribute name (Person) for actor functions. Assuming that Person has a username and a passoword field, some actor functions may look like
 
 
-[{Code
-
+%%prettify
+{{{
 username=char[255] 
 password=char[255] 
 actor(char[] user){username=user}
 actor1(char[] admin){ username=admin }
 actor2(char[] user, char []pass){ username=user AND password=pass } 
-}]
+}}}%%
 
 First, the context handler will look for a suitable function to use. For example if the attribute user is defined in the context, the first function (actor()) will match. However if both the attributes user and pass are defined in the context, the actor2() function will match (so the function with most matching parameters will be chosen). Finally, if the admin attribute is found, the actor1() function will match.
 
@@ -127,23 +127,23 @@ The functions above correspond to different authentication mechanisms that may b
 
 Once a function has been selected (say actor2()) the following query is ran:
 
-[{Code
-
+%%prettify
+{{{
 SELECT x FROM Person x WHERE x.actor($user, $pass) 
-}]
+}}}%%
 
 which inlines to
 
-[{Code
-
+%%prettify
+{{{
 SELECT x FROM Person x WHERE x.username=$user AND x.password=$pass 
-}]
+}}}%%
 
 Once the actor is authenticated, the $actor_Person attribute is put in the session part of the query context. It can be removed using [mak:logout|LogoutTag]
-[{Code
-
+%%prettify
+{{{
 <mak:logout actor="Person" /> 
-}] 
+}}}%%
 
 Some fields of Person (the MDD declaring the actor) [may also be put in the session|bug:1052], along with the results of functions with no parameters, and along with related objects.
 
@@ -153,11 +153,11 @@ Explicit authorisation constraints are associations between web application path
 
 Currently explicit authorisation constraints can be put in the file Makumba.conf (see the [configuration documentation|MakumbaConfiguration]). Authorisation constraints looks like:
 
-[{Code
-
+%%prettify
+{{{
 authorize%/={actor(Person)}
 authorize%/admin=(char[]admin){actor(Person).username=admin} You are not an administrator  
-}]
+}}}%%
 
 The first example makes the whole site accessible to users who can authenticate as a Person actor.
 

@@ -14,8 +14,8 @@ Additionally, the [mak:submit|SubmitTag] can help rendering submit buttons and l
 
 Let us consider the following example:
 
-[{Code
-
+%%prettify
+{{{
 <mak:section name="employees" reloadOn="employeesChanged">
   <mak:list from="company.Employee e">
     <mak:value expr="e.name"/> <mak:value expr="e.surname"/><br />
@@ -23,7 +23,7 @@ Let us consider the following example:
 </mak:section>
 <br />
 <button onClick="mak.event('employeesChanged')">Reload list of employees</button>
-}]
+}}}%%
 
 In this example, the mak:section contains a list of employees. If for some reason, we would like to reload this list, but without reloading the whole page, this can be achieved by triggering the %%code employeesChanged%% event.
 
@@ -39,15 +39,15 @@ Sections can only be inside of a mak:list, in which case it might be intended to
 
 In this case, one specific section inside of a mak:list can be uniquely identified using a MQL expression:
 
-[{Code
-
+%%prettify
+{{{
 <mak:list from="company.Employee e">
   <mak:section name="nameSurname" reloadOn="employeeRenamed" iterationExpr="e">
     <mak:value expr="e.name"/> <mak:value expr="e.surname"/><br />
   </mak:section>
     <button onClick="mak.event('employeeRenamed', '<mak:value expr="e" />')">Reload this employee</button>
 </mak:list>
-}]
+}}}%%
 
 The %%code iterationExpr%% attribute of the mak:section tag should contain a MQL expression that can uniquely identify one sections of the tag (in the example above, the primary key of the Employee is used). This expression should be used in order to address the particular iteration in the %%code mak.event(eventName, expressionValue)%% method call.
 
@@ -70,8 +70,8 @@ In the future, it should be possible to specify different kind of effects in whi
 
 It is possible to submit makumba forms via partial post-back, by giving a value to the %%code triggerEvent%% attribute:
 
-[{Code
-
+%%prettify
+{{{
 <mak:newForm type="company.Employee" triggerEvent="employeeCreated">
   Name: <mak:input field="name" /><br/>
   Surname: <mak:input field="surname" /><br/>
@@ -84,7 +84,7 @@ It is possible to submit makumba forms via partial post-back, by giving a value 
     <mak:value expr="e.nameSurname()" /><br/>
   </mak:list>
 </mak:section>
-}]
+}}}%%
 
 In this example, when the newForm has been submitted successfully, the "employeeCreated" event is fired. The ''employees'' section is reloaded as a result, since it has a %%code reloadOn%% attribute set on this event.
 

@@ -14,6 +14,7 @@ In order to get started, read further on the following topics:
 * [MDD functions|MDDFunctionsHowto]
 * [Authentication and authorisation|AuthenticationAuthorizationHowto]
 * [Layout and navigation|LayoutHowto]
+* [Developer tools|DeveloperToolsHowTo]
 
 
 %%(display:none;)[Category Usage]%%

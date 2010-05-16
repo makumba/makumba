@@ -1,4 +1,4 @@
-[{Code
-
-<mak:info applicationProperties="parade.properties" />
-}]
+%%prettify
+{{{
+<mak:info applicationProperties="system.properties" />
+}}}%%

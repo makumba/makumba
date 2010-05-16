@@ -3,6 +3,7 @@
 !!![configuration]
 * [web-app configuration|WebappConfiguration]
 * [makumba configuration|MakumbaConfiguration]
+* [utf-8|UTF8Configuration]
 * [libraries]
 !!![usage]
 !!![documentation]

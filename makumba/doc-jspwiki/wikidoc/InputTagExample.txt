@@ -1,5 +1,5 @@
-[{Code
-
+%%prettify
+{{{
 <mak:object from="company.Employee e" where="e=$employee">
     <mak:editForm object="e" action="employeeView.jsp" method="post">
         Name      <mak:input name="name"/>
@@ -9,5 +9,4 @@
         Projects  <mak:input name="projects" type="seteditor"/>
     </mak:editForm>
 </mak:object>
-
-}]
+}}}%%
