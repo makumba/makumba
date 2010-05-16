@@ -49,7 +49,7 @@ grant principal com.ecyrd.jspwiki.auth.authorize.Role "All" {
 // allow editing only, then replace "modify" with "edit".
 
 grant principal com.ecyrd.jspwiki.auth.authorize.Role "Anonymous" {
-    permission com.ecyrd.jspwiki.auth.permissions.PagePermission "*:*", "view,comment";
+      permission com.ecyrd.jspwiki.auth.permissions.PagePermission "*:*", "view";
 //    permission com.ecyrd.jspwiki.auth.permissions.WikiPermission "*", "createPages";
 };
 
@@ -72,7 +72,7 @@ grant principal com.ecyrd.jspwiki.auth.authorize.Role "Asserted" {
 // edit groups they are members of.
 
 grant principal com.ecyrd.jspwiki.auth.authorize.Role "Authenticated" {
-    permission com.ecyrd.jspwiki.auth.permissions.PagePermission "*:*", "modify,rename";
+    permission com.ecyrd.jspwiki.auth.permissions.PagePermission "*:*", "modify,rename,comment";
     permission com.ecyrd.jspwiki.auth.permissions.GroupPermission "*:*", "view";
     permission com.ecyrd.jspwiki.auth.permissions.GroupPermission "*:<groupmember>", "edit";
     permission com.ecyrd.jspwiki.auth.permissions.WikiPermission "*", "createPages,createGroups";
