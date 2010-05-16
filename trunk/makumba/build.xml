@@ -845,7 +845,7 @@
 	<target name="generateTaglibDoc" description="generates the taglib documentation wiki files">
 		<java classname="org.makumba.commons.documentation.TaglibDocGenerator" fork="true">
 			<classpath>
-				<pathelement path="classes/" />
+				<pathelement path="build/" />
 				<pathelement path="${java.class.path}" />
 				<fileset dir="${basedir}/lib">
 					<include name="**/*.jar" />
