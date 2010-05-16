@@ -1,0 +1,3 @@
+!!!Blog archive
+
+[{INSERT WeblogArchivePlugin page='Blog'}]

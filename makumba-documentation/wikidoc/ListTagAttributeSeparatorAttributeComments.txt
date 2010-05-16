@@ -1,0 +1,1 @@
+Deprecated, use <c:if test="${mak:count<mak:maxCount()}"> instead.

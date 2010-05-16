@@ -1,0 +1,1 @@
+Whether or not to display title="..." elements on the pagination links (i.e. 'first page', 'previous page', 'next page', 'last page'.

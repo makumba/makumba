@@ -1,0 +1,8 @@
+[{Code
+
+<mak:editForm object="employee" method="post">
+    <mak:action>employeeView.jsp?employee=<mak:value expr="employee"/></mak:action>
+    ...
+</mak:editForm>
+
+}]
