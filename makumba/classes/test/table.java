@@ -735,4 +735,19 @@ public class table extends TestCase {
         db.delete(ptr1);
         db.delete("test.Individual i", "1=1", null);
     }
+
+    private final MakumbaTestData testData = new MakumbaTestData();
+
+    public void testMakTestData() {
+        testData.insertLanguages(db);
+        testData.insertPerson(db);
+        int personNumber = db.executeQuery("SELECT p FROM test.Person p", null).size();
+        int individualNumber = db.executeQuery("SELECT i FROM test.Individual i", null).size();
+        testData.deletePersonsAndIndividuals(db);
+        testData.deleteLanguages(db);
+
+        // now we've done the cleanup so we can afford to fail
+        assertEquals(2, personNumber);
+        assertEquals(2, individualNumber);
+    }
 }
