@@ -101,28 +101,6 @@
 		</fileset>
 	</path>
 
-	<!-- classpath for starting the JSPWiki tomcat -->
-	<path id="tomcat.class.path">
-		<fileset dir="${java.home}/lib/">
-			<include name="rt.jar" />
-		</fileset>
-		<fileset dir="${tomcat6.home}/bin/">
-			<include name="bootstrap.jar" />
-		</fileset>
-		<fileset dir="${tomcat6.home}/lib/">
-			<include name="*.jar" />
-		</fileset>
-		<fileset dir="${basedir}/lib/common">
-			<include name="servlet-api.jar" />
-			<include name="commons-logging-api.jar" />
-		</fileset>
-		<fileset dir="${basedir}/lib/building">
-			<include name="ant-1.7.0.jar" />
-			<include name="ant-launcher-1.7.0.jar" />
-		</fileset>
-	</path>
-
-
 	<!-- Properties and task definitions -->
 
 	<!-- jikes as default compiler
@@ -132,8 +110,6 @@
 	<property environment="env" />
 	<property name="build.compiler.emacs" value="true" />
 	<property name="temp.dir" value="work/temp" />
-	<property name="forrest.home" value="${env.FORREST_HOME}" />
-	<property name="forrest.plugins-dir" value="${forrest.home}/plugins" />
 	<property name="jar.place" value="." />
 
 	<taskdef resource="svntask.properties">
@@ -188,12 +164,6 @@
 		<mkdir dir="tomcat/temp" />
 		<mkdir dir="work/generated-hibernate-classes" />
 		<mkdir dir="work/generated-hibernate-mappings" />
-	</target>
-
-	<target name="installWiki" depends="compile">
-		<antcall target="makeJSPWikiProperties" />
-		<antcall target="copyWikiPlugins" />
-		<antcall target="generateTaglibDoc" />
 	</target>
 
 	<target name="checkHqlTokens">
@@ -871,36 +841,7 @@
 
 
 
-	<!-- Targets for documentation with JSPWiki -->
-
-	<target name="makeJSPWikiProperties" description="generates JSPWiki properties file for local use">
-
-		<echo>Generating jspwiki.properties file. Edit build.properties if you want to change the base URL, for instance for deployment on a remote server</echo>
-		<!-- Filters -->
-		<pathconvert property="basedirConverted" dirsep="/">
-			<path>
-				<pathelement location="${basedir}" />
-			</path>
-		</pathconvert>
-		<filter token="pageDir" value="${basedirConverted}/doc-jspwiki/wikidoc" />
-		<filter token="workDir" value="${basedirConverted}/work" />
-		<filter token="baseURL" value="${jspwiki.baseURL}" />
-
-		<filter filtersfile="doc-jspwiki/JSPWiki/WEB-INF/jspwiki.properties.template" />
-
-		<!-- Copy the template in order to replace the version token filter -->
-		<copy file="doc-jspwiki/JSPWiki/WEB-INF/jspwiki.properties.template" tofile="doc-jspwiki/JSPWiki/WEB-INF/jspwiki.properties" filtering="on" overwrite="true" />
-	</target>
-
-
-	<target name="copyWikiPlugins" description="compiles and copies the plugins to the JSPWiki folder">
-
-		<copy todir="doc-jspwiki/JSPWiki/WEB-INF/classes/org/makumba/commons/documentation">
-			<fileset dir="${build.path}/org/makumba/commons/documentation/" includes="Box*.class,Insert*.class,Img*.class,API*.class,DEV*.class,JAVA*.class,HTML*.class" />
-		</copy>
-
-	</target>
-
+	<!-- Target for documentation with JSPWiki -->
 	<target name="generateTaglibDoc" description="generates the taglib documentation wiki files">
 		<java classname="org.makumba.commons.documentation.TaglibDocGenerator" fork="true">
 			<classpath>
@@ -912,36 +853,11 @@
 				</fileset>
 			</classpath>
 			<arg value="./classes/META-INF/taglib-skeleton.tld.tmpl" />
-			<arg value="./doc-jspwiki/wikidoc" />
+			<arg value="${documentation.path}/wikidoc" />
 		</java>
 	</target>
 
-	<target name="tomcat-wiki" description="start the tomcat to deploy JSPwiki">
-		<antcall target="beforeContainer" />
-		<echo>Java home in build: ${java.home}</echo>
-		<java classname="org.apache.catalina.startup.Bootstrap" fork="yes" classpathref="tomcat.class.path" append="true">
-			<jvmarg value="-Dcatalina.home=${tomcat.home}" />
-			<jvmarg value="-Dcatalina.base=${basedir}/tomcat-jspwiki" />
-			<jvmarg value="-Xms${tomcat.Xms}" />
-			<jvmarg value="-Xmx${tomcat.Xmx}" />
-			<jvmarg value="-XX:MaxPermSize=${tomcat.Xmx}" />
-			<jvmarg value="-Djava.util.logging.config.file=${basedir}/logging.properties" />
-			<jvmarg value="-client" />
-			<arg value="start" />
-		</java>
-		<!-- give tomcat time to start up -->
-		<sleep seconds="5" />
-
-	</target>
-
-	<target name="tomcat-wiki1" description="start the tomcat to deploy JSPwiki">
-		<antcall target="tomcat-common">
-			<param name="tomcatNumber" value="tomcat" />
-			<param name="tomcatHome" value="${tomcat.home}" />
-			<param name="catalinaBase" value="tomcat-jspwiki" />
-		</antcall>
-	</target>
-
+  
 	<target name="beforeContainer">
 		<echo>Starting servlet container. Java home in build: ${java.home}
 In case of problems, in order to see the output, consider setting tomcat.spawn to false in build.properties
@@ -1037,14 +953,6 @@ The JSP tests will deploy on another dir, which can be configured via the proper
 	<target name="tomcat-stop" description="stop the tomcat">
 		<antcall target="tomcat-stop-common">
 			<param name="catalinaBase" value="tomcat" />
-			<param name="tomcatNumber" value="tomcat" />
-			<param name="tomcatHome" value="${tomcat.home}" />
-		</antcall>
-	</target>
-
-	<target name="tomcat-wiki-stop" description="stop the tomcat">
-		<antcall target="tomcat-stop-common">
-			<param name="catalinaBase" value="tomcat-jspwiki" />
 			<param name="tomcatNumber" value="tomcat" />
 			<param name="tomcatHome" value="${tomcat.home}" />
 		</antcall>
