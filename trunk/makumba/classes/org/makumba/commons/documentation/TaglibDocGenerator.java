@@ -326,6 +326,9 @@ public class TaglibDocGenerator {
                     Element includedAttribute = MakumbaTLDGenerator.getReferencedAttributes(this.processedElements,
                         "Error processing attribute " + a.attributeValue("name") + " of tag "
                                 + element.elementText("name") + ": ", element, element.elementText("name"), a);
+                    if(includedAttribute == null) {
+                        continue;
+                    }
                     generateAttributeRow(includedAttribute, s, genericAttributeTuple, typedElementName);
 
                 } else {
