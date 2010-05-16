@@ -113,7 +113,7 @@ public class TaglibDocGenerator {
                     generateTagFile(e, false);
                 }
             } catch (FileNotFoundException io) {
-                throw new RuntimeException("Cannot find generated file", io);
+                System.err.println("Cannot find file " + io.getMessage());
             } catch (IOException io2) {
                 throw new RuntimeException("Cannot create generated file", io2);
 
@@ -170,12 +170,14 @@ public class TaglibDocGenerator {
 
         File generatedFile = new File(this.outputDir.getAbsoluteFile() + File.separator + generatedFileName + ".txt");
         if (!generatedFile.exists()) {
+            generatedFile = new File(generatedFile.getAbsolutePath());
             generatedFile.createNewFile();
         }
         
         // create properties file so JSPWiki is not confused about the author
         File props = new File(this.outputDir.getAbsoluteFile() + File.separator + generatedFileName + ".properties");
         if(!props.exists()) {
+            props = new File(props.getAbsolutePath());
             props.createNewFile();
         }
         PrintWriter propWriter = new PrintWriter(new FileWriter(props, false));
