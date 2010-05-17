@@ -95,7 +95,6 @@ public class TaglibDocGenerator {
 
             // keep names in separate places
             if (e.getName().equals("tag") && !e.elementText("name").equals("rickroll")) {
-                System.out.println(e.elementText("name"));
                 tagNames.add(e.elementText("name"));
             }
             if (e.getName().equals("function")) {
