@@ -95,6 +95,7 @@ public class TaglibDocGenerator {
 
             // keep names in separate places
             if (e.getName().equals("tag") && !e.elementText("name").equals("rickroll")) {
+                System.out.println(e.elementText("name"));
                 tagNames.add(e.elementText("name"));
             }
             if (e.getName().equals("function")) {
@@ -105,18 +106,20 @@ public class TaglibDocGenerator {
             try {
                 if (e.getName().equals("tag") && !e.elementText("name").equals("rickroll")) {
                     generateTagFile(e, true);
-
-                    // we keep a reference to the processed attributes because we need this for the attribute referrer
-                    // resolution
-                    processedElements.put(e.elementText("name"), e);
                 } else if (e.getName().equals("function")) {
                     generateTagFile(e, false);
                 }
             } catch (FileNotFoundException io) {
                 System.err.println("Cannot find file " + io.getMessage());
+                io.printStackTrace();
             } catch (IOException io2) {
                 throw new RuntimeException("Cannot create generated file", io2);
-
+            } finally {
+                // we keep a reference to the processed attributes because we need this for the attribute referrer
+                // resolution
+                if(e.getName().equals("tag")) {
+                    processedElements.put(e.elementText("name"), e);
+                }
             }
         }
 
@@ -168,7 +171,8 @@ public class TaglibDocGenerator {
         String elementName = element.elementText("name");
         String generatedFileName = getWikiTagName(elementName, isTag);
 
-        File generatedFile = new File(this.outputDir.getAbsoluteFile() + File.separator + generatedFileName + ".txt");
+        String path = this.outputDir.getAbsoluteFile() + File.separator + generatedFileName + ".txt";
+        File generatedFile = new File(path);
         if (!generatedFile.exists()) {
             generatedFile = new File(generatedFile.getAbsolutePath());
             generatedFile.createNewFile();
@@ -327,6 +331,7 @@ public class TaglibDocGenerator {
                         "Error processing attribute " + a.attributeValue("name") + " of tag "
                                 + element.elementText("name") + ": ", element, element.elementText("name"), a);
                     if(includedAttribute == null) {
+                        System.err.println("Warning: could not retrieve the included attribue " + a.attributeValue("name") + ", skipping the attribute");
                         continue;
                     }
                     generateAttributeRow(includedAttribute, s, genericAttributeTuple, typedElementName);
@@ -376,8 +381,23 @@ public class TaglibDocGenerator {
         String description = getPageInsert(attributePageName+"Description");
         String comments = getPageInsert(attributePageName+"Comments");
 
-        String descriptionText = MakumbaTLDGenerator.readFileAsString(new File(outputDir.getAbsolutePath() + File.separator + attributePageName+"Description.txt").getAbsolutePath());
-        String commentsText = MakumbaTLDGenerator.readFileAsString(new File(outputDir.getAbsolutePath() + File.separator + attributePageName+"Comments.txt").getAbsolutePath());
+        File descriptionFile = new File(outputDir.getAbsolutePath() + File.separator + attributePageName+"Description.txt");
+        String descriptionText;
+        if(!descriptionFile.exists()) {
+            descriptionText = "Document me please!";
+            System.err.println("Description page " + attributePageName + " not found, needs to be documented!");
+        } else {
+            descriptionText = MakumbaTLDGenerator.readFileAsString(descriptionFile.getAbsolutePath());
+        }
+        
+        File commentsFile = new File(outputDir.getAbsolutePath() + File.separator + attributePageName+"Comments.txt");
+        String commentsText;
+        if(!commentsFile.exists()) {
+            commentsText = "Document me please!";
+            System.err.println("Comments page " + attributePageName + " not found, needs to be documented!");
+        } else {
+            commentsText = MakumbaTLDGenerator.readFileAsString(commentsFile.getAbsolutePath());
+        }
         
         
         String deprecated = attribute.elementText("deprecated");
