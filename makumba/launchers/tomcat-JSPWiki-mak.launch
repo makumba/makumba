@@ -27,5 +27,5 @@
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.apache.catalina.startup.Bootstrap"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="start"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="makumba"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xss4M -Xmx80M -Xms10M -Dcatalina.base=tomcat-jspwiki/ -Djava.io.tmpdir=${catalina_home}/temp -Dcatalina.home=${catalina_home} -Dfile.encoding=UTF-8 -Djava.util.logging.config.file=logging.properties"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xss4M -Xmx80M -Xms10M -Dcatalina.base=${workspace_loc}/makumba-documentation/tomcat/ -Djava.io.tmpdir=${catalina_home}/temp -Dcatalina.home=${catalina_home} -Dfile.encoding=UTF-8 -Djava.util.logging.config.file=logging.properties"/>
 </launchConfiguration>
