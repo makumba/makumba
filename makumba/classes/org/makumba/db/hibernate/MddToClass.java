@@ -1,6 +1,5 @@
 package org.makumba.db.hibernate;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,240 +7,283 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
-import org.makumba.DataDefinition;
-import org.makumba.FieldDefinition;
-import org.makumba.commons.NameResolver;
-import org.makumba.providers.DataDefinitionProvider;
-
 import javassist.CannotCompileException;
 import javassist.ClassClassPath;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtField;
-import javassist.CtNewMethod;
 import javassist.CtNewConstructor;
+import javassist.CtNewMethod;
 import javassist.NotFoundException;
+import javassist.bytecode.AnnotationsAttribute;
+import javassist.bytecode.ClassFile;
+import javassist.bytecode.ConstPool;
+import javassist.bytecode.annotation.Annotation;
+import javassist.bytecode.annotation.ClassMemberValue;
+
+import org.makumba.DataDefinition;
+import org.makumba.FieldDefinition;
+import org.makumba.commons.NameResolver;
+import org.makumba.providers.DataDefinitionProvider;
 
 public class MddToClass {
-    //public static final String generatedClassPath="work/generated-hibernate-classes";
-    public String generatedClassPath="";
-    private List<String> mddsDone = new ArrayList<String>();
-	private LinkedList<DataDefinition> mddsToDo = new LinkedList<DataDefinition>();
-	private LinkedList<Object[]> appendToClass = new LinkedList<Object[]>();
-    
-    private DataDefinitionProvider ddp= DataDefinitionProvider.getInstance();
+    // public static final String generatedClassPath="work/generated-hibernate-classes";
+    public String generatedClassPath = "";
+
+    private final List<String> mddsDone = new ArrayList<String>();
+
+    private final LinkedList<DataDefinition> mddsToDo = new LinkedList<DataDefinition>();
+
+    private final LinkedList<Object[]> appendToClass = new LinkedList<Object[]>();
+
+    private final DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
+
     private NameResolver nr;
 
-    public MddToClass(Vector<String> v, String generationPath, NameResolver nr) throws CannotCompileException, NotFoundException, IOException{
-      this.nr = nr;
-      this.generatedClassPath = generationPath;
-      for(int i=0; i<v.size(); i++){
-          generateClass(ddp.getDataDefinition(v.elementAt(i)));
-          v.set(i, nr.arrowToDoubleUnderscore(v.get(i)));
-      }
-      while (!mddsToDo.isEmpty()) {
+    public MddToClass(Vector<String> v, String generationPath, NameResolver nr) throws CannotCompileException,
+            NotFoundException, IOException {
+        this.nr = nr;
+        this.generatedClassPath = generationPath;
+        for (int i = 0; i < v.size(); i++) {
+            generateClass(ddp.getDataDefinition(v.elementAt(i)));
+            v.set(i, nr.arrowToDoubleUnderscore(v.get(i)));
+        }
+        while (!mddsToDo.isEmpty()) {
             DataDefinition first = mddsToDo.removeFirst();
             String name = nr.arrowToDoubleUnderscore(first.getName());
-            if(!v.contains(name)) {
+            if (!v.contains(name)) {
                 v.add(name);
             }
             generateClass(first);
-      }
+        }
         while (!appendToClass.isEmpty()) {
             Object[] append = appendToClass.removeFirst();
-            appendClass((String)append[0], (FieldDefinition)append[1]);
+            appendClass((String) append[0], (FieldDefinition) append[1]);
         }
     }
-	public MddToClass(DataDefinition dd, String generationPath) throws CannotCompileException, NotFoundException, IOException {
+
+    public MddToClass(DataDefinition dd, String generationPath) throws CannotCompileException, NotFoundException,
+            IOException {
         this.generatedClassPath = generationPath;
         generateClass(dd);
-		while (!mddsToDo.isEmpty()) {
-			generateClass(mddsToDo.removeFirst());	
-		}
+        while (!mddsToDo.isEmpty()) {
+            generateClass(mddsToDo.removeFirst());
+        }
 
-		while (!appendToClass.isEmpty()) {
-			Object[] append = appendToClass.removeFirst();
-			appendClass((String)append[0], (FieldDefinition)append[1]);
-		}
-	}
-	
-	/**
-	 * Creates a bytecode .class file for the given DataDefinition
-	 * @param dd DataDefinition that needs to be mapped   
-	 **/
-	public void appendClass(String classname, FieldDefinition fd) throws NotFoundException, CannotCompileException, IOException {
-		ClassPool cp = ClassPool.getDefault();
+        while (!appendToClass.isEmpty()) {
+            Object[] append = appendToClass.removeFirst();
+            appendClass((String) append[0], (FieldDefinition) append[1]);
+        }
+    }
+
+    /**
+     * Creates a bytecode .class file for the given DataDefinition
+     * 
+     * @param dd
+     *            DataDefinition that needs to be mapped
+     **/
+    public void appendClass(String classname, FieldDefinition fd) throws NotFoundException, CannotCompileException,
+            IOException {
+        ClassPool cp = ClassPool.getDefault();
         cp.insertClassPath(new ClassClassPath(this.getClass()));
-		CtClass cc = cp.get(classname);
-		cc.defrost();
-		
-		String type = null;
-		String name = fd.getName();
-		switch (fd.getIntegerType()) {
-			case FieldDefinition._ptr:
-			case FieldDefinition._ptrOne:
-				type = nr.arrowToDoubleUnderscore(fd.getPointedType().getName());
-				break;
-			case FieldDefinition._set:
-				type = "java.util.Collection";
-				break;
-		}
-        name=nr.checkReserved(name);
-		cc.addField(CtField.make("private "+type+" "+name+";", cc));
-		cc.addMethod(CtNewMethod.getter("get"+name, CtField.make("private "+type+" "+name+";", cc)));
-		cc.addMethod(CtNewMethod.setter("set"+name, CtField.make("private "+type+" "+name+";", cc)));		
+        CtClass cc = cp.get(classname);
+        cc.defrost();
 
-		cc.writeFile(generatedClassPath);
-	}
-	
-	public void generateClass(DataDefinition dd) throws CannotCompileException, NotFoundException, IOException {
-		if (!mddsDone.contains(dd.getName())) {
-			mddsDone.add(dd.getName());
-            
-            
-			//checks if the class has to be generated
-            File checkFile = new File(generatedClassPath+java.io.File.separator+ nr.dotToUnderscore(nr.arrowToDoubleUnderscore(dd.getName()))+"_.class");
-            if(checkFile.exists()) {
-                
-                if(dd.lastModified() < checkFile.lastModified()) {
+        String type = null;
+        String name = fd.getName();
+        switch (fd.getIntegerType()) {
+            case FieldDefinition._ptr:
+            case FieldDefinition._ptrOne:
+                type = nr.arrowToDoubleUnderscore(fd.getPointedType().getName());
+                break;
+            case FieldDefinition._set:
+                type = "java.util.Collection";
+                break;
+        }
+        name = nr.checkReserved(name);
+        cc.addField(CtField.make("private " + type + " " + name + ";", cc));
+        cc.addMethod(CtNewMethod.getter("get" + name, CtField.make("private " + type + " " + name + ";", cc)));
+        cc.addMethod(CtNewMethod.setter("set" + name, CtField.make("private " + type + " " + name + ";", cc)));
+
+        cc.writeFile(generatedClassPath);
+    }
+
+    public void generateClass(DataDefinition dd) throws CannotCompileException, NotFoundException, IOException {
+        if (!mddsDone.contains(dd.getName())) {
+            mddsDone.add(dd.getName());
+
+            // checks if the class has to be generated
+            File checkFile = new File(generatedClassPath + java.io.File.separator
+                    + nr.dotToUnderscore(nr.arrowToDoubleUnderscore(dd.getName())) + "_.class");
+            if (checkFile.exists()) {
+
+                if (dd.lastModified() < checkFile.lastModified()) {
                     return;
                 }
             }
-            
 
-			ClassPool cp = ClassPool.getDefault();
+            ClassPool cp = ClassPool.getDefault();
             cp.insertClassPath(new ClassClassPath(this.getClass()));
-			CtClass cc = cp.makeClass(nr.arrowToDoubleUnderscore(dd.getName()));
-			cc.stopPruning(true);
-	        
+            CtClass cc = cp.makeClass(nr.arrowToDoubleUnderscore(dd.getName()));
+            cc.stopPruning(true);
 
-			String type = null;
-			String name = null;
-			
-			for (int i = 0; i < dd.getFieldNames().size(); i++) {
-				Object[] append = new Object[2];
-				FieldDefinition fd = dd.getFieldDefinition(i);
-				name = nr.arrowToDoubleUnderscore(fd.getName());
-				switch (fd.getIntegerType()) {
-					case FieldDefinition._intEnum:
-                        //type="enum";
-                        //break;
-					case FieldDefinition._int:
-						type = "Integer";
-						break;
-					case FieldDefinition._real:
-						type = "Double";
-						break;
-					case FieldDefinition._charEnum:
-					case FieldDefinition._char:
-						type = "String";
-						break;
-					case FieldDefinition._dateModify:
-					case FieldDefinition._dateCreate:
-					case FieldDefinition._date:
-						type = "java.util.Date";
-						break;
-					case FieldDefinition._ptr:
-					case FieldDefinition._ptrOne:
-						mddsToDo.add(fd.getPointedType());
-						append[0] = nr.arrowToDoubleUnderscore(dd.getName());
-						append[1] = fd;
-						appendToClass.add(append);
-						continue;
-					case FieldDefinition._ptrRel:
-						name = fd.getName();
-						type = fd.getPointedType().getName();
-						break;
-					case FieldDefinition._ptrIndex:
-						name = "primaryKey";
-						type = "int";
-						break;
-					case FieldDefinition._text:
-					case FieldDefinition._binary:
-						type = "org.makumba.Text";
-						break;
-					case FieldDefinition._boolean:
-					    type = "java.lang.Boolean";
-					    break;
-					case FieldDefinition._set:
-						type = "java.util.Collection";
-						mddsToDo.add(fd.getPointedType());
+            String type = null;
+            String name = null;
+
+            for (int i = 0; i < dd.getFieldNames().size(); i++) {
+                Object[] append = new Object[2];
+                FieldDefinition fd = dd.getFieldDefinition(i);
+                name = nr.arrowToDoubleUnderscore(fd.getName());
+                switch (fd.getIntegerType()) {
+                    case FieldDefinition._intEnum:
+                        // type="enum";
+                        // break;
+                    case FieldDefinition._int:
+                        type = "Integer";
+                        break;
+                    case FieldDefinition._real:
+                        type = "Double";
+                        break;
+                    case FieldDefinition._charEnum:
+                    case FieldDefinition._char:
+                        type = "String";
+                        break;
+                    case FieldDefinition._dateModify:
+                    case FieldDefinition._dateCreate:
+                    case FieldDefinition._date:
+                        type = "java.util.Date";
+                        break;
+                    case FieldDefinition._ptr:
+                    case FieldDefinition._ptrOne:
+                        mddsToDo.add(fd.getPointedType());
+                        append[0] = nr.arrowToDoubleUnderscore(dd.getName());
+                        append[1] = fd;
+                        appendToClass.add(append);
+                        continue;
+                    case FieldDefinition._ptrRel:
+                        name = fd.getName();
+                        type = fd.getPointedType().getName();
+                        break;
+                    case FieldDefinition._ptrIndex:
+                        name = "primaryKey";
+                        type = "int";
+                        break;
+                    case FieldDefinition._text:
+                    case FieldDefinition._binary:
+                        type = "org.makumba.Text";
+                        break;
+                    case FieldDefinition._boolean:
+                        type = "java.lang.Boolean";
+                        break;
+                    case FieldDefinition._set:
+                        type = "java.util.Collection";
+                        mddsToDo.add(fd.getPointedType());
                         mddsToDo.add(fd.getSubtable());
                         break;
-					case FieldDefinition._setComplex:
-					case FieldDefinition._setCharEnum:
-					case FieldDefinition._setIntEnum:
-						type = "java.util.Collection";
-						mddsToDo.add(fd.getSubtable());
-						break;
-					default:
-						try {
-							throw new Exception("Unmapped type: " + fd.getName() + "-" + fd.getType());
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-				}
-                //if(type.equals("enum")) {
-                    //generateIntEnum(cc, name, dd.getFieldDefinition(name));
-                //} else {
-                    addFields(cc, type, name);
-                //}
-		
-			}
-            String nm= dd.getName();
-            int lst= nm.lastIndexOf("->");
-            if(lst!=-1) {
+                    case FieldDefinition._setComplex:
+                    case FieldDefinition._setCharEnum:
+                    case FieldDefinition._setIntEnum:
+                        type = "java.util.Collection";
+                        mddsToDo.add(fd.getSubtable());
+                        break;
+                    default:
+                        try {
+                            throw new Exception("Unmapped type: " + fd.getName() + "-" + fd.getType());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                }
+                // if(type.equals("enum")) {
+                // generateIntEnum(cc, name, dd.getFieldDefinition(name));
+                // } else {
+                addFields(cc, type, name);
+                // }
+
+            }
+            String nm = dd.getName();
+            int lst = nm.lastIndexOf("->");
+            if (lst != -1) {
                 lst++;
             } else {
-                lst=nm.lastIndexOf(".");
+                lst = nm.lastIndexOf(".");
             }
-                
-			cc.addConstructor(CtNewConstructor.make("public "+ nm.substring(lst+1)+"() {}", cc));
-//			ClassFileWriter.print(cc.getClassFile());
-			cc.writeFile(generatedClassPath);
-		}
-	}
-	
+
+            cc.addConstructor(CtNewConstructor.make("public " + nm.substring(lst + 1) + "() {}", cc));
+            // ClassFileWriter.print(cc.getClassFile());
+            cc.writeFile(generatedClassPath);
+        }
+    }
+
     /**
-     * Generates the code for a java enum from a Makumba intEnum.
-     * TODO once javassist supports generation of enum bytecode, use the method
-     * @param cc the CtClass to which the enum should be added
-     * @param name the name of the enum
-     * @param fd the field definition corresponding to the enum
+     * Generates the code for a java enum from a Makumba intEnum. TODO once javassist supports generation of enum
+     * bytecode, use the method
+     * 
+     * @param cc
+     *            the CtClass to which the enum should be added
+     * @param name
+     *            the name of the enum
+     * @param fd
+     *            the field definition corresponding to the enum
      * @throws CannotCompileException
      */
-    
-	private void generateIntEnum(CtClass cc, String name, FieldDefinition fd) throws CannotCompileException {
-        
-        String enumName = name.substring(0,1).toUpperCase() + name.substring(1, name.length());
-        
-        String enumCode = "public enum "+enumName+" {";
-        
-        for(int i = 0; i < fd.getEnumeratorSize(); i++) {
+
+    private void generateIntEnum(CtClass cc, String name, FieldDefinition fd) throws CannotCompileException {
+
+        String enumName = name.substring(0, 1).toUpperCase() + name.substring(1, name.length());
+
+        String enumCode = "public enum " + enumName + " {";
+
+        for (int i = 0; i < fd.getEnumeratorSize(); i++) {
             String currentIntEnumName = fd.getNameFor(i);
             Integer currentIntEnumValue = new Integer(fd.getIntAt(i));
-            
-            enumCode += "I"+i+ "(\""+currentIntEnumName+"\", "+currentIntEnumValue.intValue() + ")";
-            if(i+1 != fd.getEnumeratorSize()) {
+
+            enumCode += "I" + i + "(\"" + currentIntEnumName + "\", " + currentIntEnumValue.intValue() + ")";
+            if (i + 1 != fd.getEnumeratorSize()) {
                 enumCode += ",";
             }
         }
-        enumCode +=";";
-        
-        enumCode +="private String endUserPresentation;";
-        enumCode +="private int dbLevelValue;";
-        enumCode +=enumName+"(String s, int n) {endUserPresentation=s; dbLevelValue=n;}";
+        enumCode += ";";
+
+        enumCode += "private String endUserPresentation;";
+        enumCode += "private int dbLevelValue;";
+        enumCode += enumName + "(String s, int n) {endUserPresentation=s; dbLevelValue=n;}";
         enumCode += "}";
-        
+
         cc.addMethod(CtNewMethod.make(enumCode, cc));
-       
 
     }
+
     private void addFields(CtClass cc, String type, String name) throws CannotCompileException {
-        type= nr.arrowToDoubleUnderscore(type);
-        name= nr.checkReserved(nr.arrowToDoubleUnderscore(name));
-		cc.addField(CtField.make("private "+type+" "+name+";", cc));
-		cc.addMethod(CtNewMethod.getter("get"+name, CtField.make("private "+type+" "+name+";", cc)));
-		cc.addMethod(CtNewMethod.setter("set"+name, CtField.make("private "+type+" "+name+";", cc)));		
-	}    
+        type = nr.arrowToDoubleUnderscore(type);
+        name = nr.checkReserved(nr.arrowToDoubleUnderscore(name));
+        cc.addField(CtField.make("private " + type + " " + name + ";", cc));
+        cc.addMethod(CtNewMethod.getter("get" + name, CtField.make("private " + type + " " + name + ";", cc)));
+        cc.addMethod(CtNewMethod.setter("set" + name, CtField.make("private " + type + " " + name + ";", cc)));
+    }
+
+    public static void main(String argv[]) throws Exception {
+
+        ClassPool cp = ClassPool.getDefault();
+        cp.insertClassPath(new ClassClassPath(MddToClass.class));
+        CtClass cc = cp.makeClass("A");
+        cc.stopPruning(true);
+        String type = null;
+        CtField fld = CtField.make("public java.util.List myField;", cc);
+
+        ClassFile cf = cc.getClassFile();
+        ConstPool cop = cf.getConstPool();
+        AnnotationsAttribute attr = new AnnotationsAttribute(cop, AnnotationsAttribute.visibleTag);
+        Annotation anno = new Annotation("javax.persistence.ManyToMany", cop);
+        anno.addMemberValue("targetEntity", new ClassMemberValue("java.lang.String", cop));
+        attr.setAnnotation(anno);
+        fld.getFieldInfo().addAttribute(attr);
+        cf.setVersionToJava5();
+
+        cc.addField(fld);
+        cc.writeFile("build");
+
+        Class<?> A = Class.forName("A");
+        System.out.println(A.getField("myField").getAnnotations()[0]);
+
+    }
 }
