@@ -67,17 +67,8 @@ public class DataHolder {
         Hashtable<String, Hashtable<String, Object>> subfieldsTemp = new Hashtable<String, Hashtable<String, Object>>();
 
         for (Enumeration<String> e = data.keys(); e.hasMoreElements();) {
-            Object o = e.nextElement();
-
-            // we check if the key of the dictionary is a string, if not, we complain
-            if (!(o instanceof String)) {
-                throw new org.makumba.NoSuchFieldException(typeDef,
-                        "Dictionaries passed to makumba DB operations should have String keys. Key <" + o
-                                + "> is of type " + o.getClass() + typeDef.getName());
-            }
-
             // we figure out the content of our dictionary. if dots are found, this means we refer to subtypes
-            String s = (String) o;
+            String s = e.nextElement();
             int dot = s.indexOf(".");
 
             // if there's no dot, this is a field of the current object (the "type" parameter)
@@ -86,7 +77,7 @@ public class DataHolder {
 
                 // if there was no field definition found, then this field doesn't exist and we complain
                 if (fi == null) {
-                    throw new org.makumba.NoSuchFieldException(typeDef, (String) o);
+                    throw new org.makumba.NoSuchFieldException(typeDef, s);
                 }
 
                 // if this field is a set, we add it to our dictionary of sets
