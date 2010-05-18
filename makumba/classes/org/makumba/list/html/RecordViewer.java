@@ -54,6 +54,7 @@ public class RecordViewer extends RecordFormatter {
         super(ri, h, false, null); // false = no searchform, null = no form identifier
     }
 
+    @Override
     protected String applyParameters(FieldFormatter ff, Dictionary<String, Object> formatParams, String s) {
         if (formatParams.get("urlEncode") != null)
             try {
@@ -65,6 +66,7 @@ public class RecordViewer extends RecordFormatter {
         return s;
     }
 
+    @Override
     protected void initFormatters() {
         formatterArray = new FieldFormatter[dd.getFieldNames().size()];
         for (int i = 0; i < dd.getFieldNames().size(); i++) {

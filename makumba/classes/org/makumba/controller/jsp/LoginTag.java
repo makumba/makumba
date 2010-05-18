@@ -48,6 +48,7 @@ public class LoginTag extends BodyTagSupport {
     static final String pageAttr = "org.makumba.original.request";
 
     /** this always returns EVAL_BODY_TAG so we make sure {@link #doInitBody()} is called **/
+    @Override
     public int doStartTag() {
         return EVAL_BODY_BUFFERED;
     }
@@ -74,6 +75,7 @@ public class LoginTag extends BodyTagSupport {
      * and query string are identical to the original access the HTTP parameters that are not in the query string (POST
      * params) written in the form as hidden INPUT tags
      */
+    @Override
     public void doInitBody() throws JspException {
         try {
             // get the original request, as written in the request attributes by MakumbaTag
@@ -176,6 +178,7 @@ public class LoginTag extends BodyTagSupport {
     }
 
     /** appends a /FORM to the tag body, closing the login form */
+    @Override
     public int doEndTag() throws JspException {
         try {
             getPreviousOut().print(bodyContent.getString() + "</form>");

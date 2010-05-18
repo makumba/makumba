@@ -41,10 +41,12 @@ public class binaryViewer extends FieldViewer {
 
     static String[][] paramValues = {};
 
+    @Override
     public String[] getAcceptedParams() {
         return params;
     }
 
+    @Override
     public String[][] getAcceptedValue() {
         return paramValues;
     }
@@ -68,6 +70,7 @@ public class binaryViewer extends FieldViewer {
         return SingletonHolder.singleton;
     }
 
+    @Override
     public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
         Pointer pointer = ((Pointer) o);
         return Configuration.getMakumbaToolsLocation() + "/makumbaDownload?type=" + pointer.getType() + "&value="

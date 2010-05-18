@@ -74,6 +74,7 @@ public abstract class DBConnection extends TransactionImplementation {
     }
 
     /** Get the name of the database in the form host[_port]_dbprotocol_dbname */
+    @Override
     public String getName() {
         return db.getName();
     }
@@ -82,12 +83,14 @@ public abstract class DBConnection extends TransactionImplementation {
 
     Hashtable<String, Object> lockRecord = new Hashtable<String, Object>(5);
 
+    @Override
     public void lock(String symbol) {
         lockRecord.clear();
         lockRecord.put("name", symbol);
         locks.put(symbol, insert("org.makumba.db.makumba.Lock", lockRecord));
     }
 
+    @Override
     public void unlock(String symbol) {
         Pointer p = locks.get(symbol);
         if (p == null)
@@ -108,6 +111,7 @@ public abstract class DBConnection extends TransactionImplementation {
         }
     }
 
+    @Override
     protected StringBuffer writeReadQuery(Pointer p, Enumeration<String> e) {
         StringBuffer sb = new StringBuffer();
         sb.append("SELECT ");
@@ -129,6 +133,7 @@ public abstract class DBConnection extends TransactionImplementation {
         return sb;
     }
 
+    @Override
     protected Vector<Dictionary<String, Object>> executeReadQuery(Pointer p, StringBuffer sb) {
         Object[] params = { p };
         Vector<Dictionary<String, Object>> v = executeQuery(sb.toString(), params);
@@ -157,6 +162,7 @@ public abstract class DBConnection extends TransactionImplementation {
     }
 
     /** mass insert of a record **/
+    @Override
     public Vector<Pointer> insert(String type, Collection<Dictionary<String, Object>> data) {
         throw new MakumbaError("Not implemented");
     }
@@ -166,17 +172,20 @@ public abstract class DBConnection extends TransactionImplementation {
      * 
      * @return a Vector of Dictionaries
      */
+    @Override
     public Vector<Dictionary<String, Object>> executeQuery(String OQL, Object args, int offset, int limit) {
         Object[] k = { OQL, "" };
         return ((Query) getHostDatabase().queries.getResource(k)).execute(paramsToMap(args), this, offset, limit);
 
     }
 
+    @Override
     protected int insertFromQueryImpl(String type, String OQL, Object args) {
         Object[] k = { OQL, type };
         return ((Query) getHostDatabase().queries.getResource(k)).insert(paramsToMap(args), this);
     }
 
+    @Override
     public Vector<Dictionary<String, Object>> executeQuery(String OQL, Object args) {
         return executeQuery(OQL, args, 0, -1);
     }

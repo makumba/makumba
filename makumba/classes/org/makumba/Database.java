@@ -48,6 +48,7 @@ import java.util.Dictionary;
  * @see org.makumba.providers.TransactionProvider#getConnectionTo(java.lang.String)
  * @since makumba-0.5
  */
+@Deprecated
 public interface Database {
     /** Get the name of the database in the form host[_port]_dbprotocol_dbname */
     public String getName();

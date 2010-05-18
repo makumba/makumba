@@ -77,6 +77,7 @@ public class SearchFieldTag extends InputTag {
      * @param pageCache
      *            the page cache of the current page
      */
+    @Override
     public void doStartAnalyze(PageCache pageCache) {
         if (getCriterionTag() == null) {
             throw new ProgrammerError("\'criterionInput\' tag must be enclosed in a 'criterion' tag");

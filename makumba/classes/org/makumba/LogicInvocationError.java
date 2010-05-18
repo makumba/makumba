@@ -40,6 +40,7 @@ public class LogicInvocationError extends Error {
         return t;
     }
 
+    @Override
     public void printStackTrace(java.io.PrintWriter pw) {
         t.printStackTrace(pw);
     }

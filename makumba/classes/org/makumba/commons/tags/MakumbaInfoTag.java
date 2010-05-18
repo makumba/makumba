@@ -77,6 +77,7 @@ public class MakumbaInfoTag extends TagSupport {
         this.applicationProperties = applicationProperties;
     }
 
+    @Override
     public int doStartTag() throws JspException {
         try {
             Properties projectProperties = new Properties();

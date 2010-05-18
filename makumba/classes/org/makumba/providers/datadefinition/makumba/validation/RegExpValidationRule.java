@@ -56,6 +56,7 @@ public class RegExpValidationRule extends SingleFieldValidationRule {
         }
     }
 
+    @Override
     public String toString() {
         return fieldName + " " + getOperator() + " " + regExp;
     }

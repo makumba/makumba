@@ -64,69 +64,85 @@ public class DBConnectionWrapper extends DBConnection {
         this.dataSource = dataSource;
     }
 
+    @Override
     public String getName() {
         return getWrapped().getName();
     }
 
+    @Override
     public Database getHostDatabase() {
         return getWrapped().getHostDatabase();
     }
 
+    @Override
     public java.util.Dictionary<String, Object> read(Pointer ptr, Object fields) {
         return getWrapped().read(ptr, fields);
     }
 
+    @Override
     public java.util.Vector<Dictionary<String, Object>> executeQuery(String OQL, Object parameterValues, int offset,
             int limit) {
         return getWrapped().executeQuery(OQL, parameterValues, offset, limit);
     }
 
+    @Override
     public Pointer insert(String type, java.util.Dictionary<String, Object> data) {
         return getWrapped().insert(type, data);
     }
 
+    @Override
     public Pointer insert(Pointer host, String subsetField, java.util.Dictionary<String, Object> data) {
         return getWrapped().insert(host, subsetField, data);
     }
 
+    @Override
     public int insertFromQuery(String type, String OQL, Object parameterValues) {
         return getWrapped().insertFromQuery(type, OQL, parameterValues);
     }
 
+    @Override
     public int update(Pointer ptr, java.util.Dictionary<String, Object> fieldsToChange) {
         return getWrapped().update(ptr, fieldsToChange);
     }
 
+    @Override
     public int update(String from, String set, String where, Object parameters) {
         return getWrapped().update(from, set, where, parameters);
     }
 
+    @Override
     public void delete(Pointer ptr) {
         getWrapped().delete(ptr);
     }
 
+    @Override
     public int delete(String from, String where, Object parameters) {
         return getWrapped().delete(from, where, parameters);
     }
 
+    @Override
     public void commit() {
         getWrapped().unlockAll();
         getWrapped().commit();
     }
 
+    @Override
     public void rollback() {
         getWrapped().unlockAll();
         getWrapped().rollback();
     }
 
+    @Override
     public void lock(String symbol) {
         getWrapped().lock(symbol);
     }
 
+    @Override
     public void unlock(String symbol) {
         getWrapped().lock(symbol);
     }
 
+    @Override
     public synchronized void close() {
         try {
             getWrapped().setContext(null);
@@ -140,6 +156,7 @@ public class DBConnectionWrapper extends DBConnection {
         }
     }
 
+    @Override
     protected synchronized void finalize() {
         if (wrapped != ClosedDBConnection.getInstance()) {
             java.util.logging.Logger.getLogger("org.makumba.db").severe(
@@ -161,6 +178,7 @@ public class DBConnectionWrapper extends DBConnection {
         return sbw.toString();
     }
 
+    @Override
     public String toString() {
 
         return getWrapped() + " " + getCreationStack();
@@ -189,6 +207,7 @@ class ClosedDBConnection extends DBConnectionWrapper {
         return SingletonHolder.singleton;
     }
 
+    @Override
     public DBConnection getWrapped() {
         throw new IllegalStateException("connection already closed");
     }

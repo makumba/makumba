@@ -199,6 +199,7 @@ public class HqlAnalyzer implements QueryAnalysis {
         return integerTypeMap.get(new Integer(i));
     }
 
+    @Override
     public String toString() {
         String result = "Query:\n" + this.getQuery() + "\n";
         Vector<String> w = this.getProjectionType().getFieldNames();

@@ -31,6 +31,7 @@ public class Node extends antlr.CommonAST {
         super(tok); // This will call initialize(tok)!
     }
 
+    @Override
     public void initialize(Token tok) {
         super.initialize(tok);
         filename = tok.getFilename();
@@ -40,6 +41,7 @@ public class Node extends antlr.CommonAST {
         textLength = (text == null || text.length() == 0) ? 0 : text.length();
     }
 
+    @Override
     public void initialize(AST t) {
         super.initialize(t);
         if (t instanceof Node) {
@@ -55,10 +57,12 @@ public class Node extends antlr.CommonAST {
         return filename;
     }
 
+    @Override
     public int getLine() {
         return line;
     }
 
+    @Override
     public int getColumn() {
         return column;
     }

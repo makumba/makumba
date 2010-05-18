@@ -49,14 +49,17 @@ public class HibernateTransactionProvider extends TransactionProvider {
 
     }
 
+    @Override
     public CRUDOperationProvider getCRUD() {
         return super.getCRUD(this);
     }
 
+    @Override
     public Transaction getConnectionTo(String name) {
         return super.getConnectionTo(name, this);
     }
 
+    @Override
     public String getQueryLanguage() {
         return super.getQueryLanguage(this);
     }

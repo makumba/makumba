@@ -167,6 +167,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
     }
 
     // for new
+    @Override
     public void setType(String s) {
         type = ddp.getDataDefinition(s);
     }

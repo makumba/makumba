@@ -88,6 +88,7 @@ public class Pointer implements java.io.Serializable {
     }
 
     /** generate a printable format */
+    @Override
     public String toString() {
         return getType() + "[" + getDbsv() + ":" + getUid() + "]";
     }
@@ -139,6 +140,7 @@ public class Pointer implements java.io.Serializable {
     }
 
     /** see if this Pointer is equal with the object provided */
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof Pointer))
             return false;
@@ -151,6 +153,7 @@ public class Pointer implements java.io.Serializable {
     }
 
     /** A hash code for this pointer */
+    @Override
     public int hashCode() {
         return ("" + longValue()).hashCode() * getType().hashCode();
     }

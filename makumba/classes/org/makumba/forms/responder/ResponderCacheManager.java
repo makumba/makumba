@@ -146,10 +146,12 @@ public class ResponderCacheManager {
 
         private static final long serialVersionUID = 1L;
 
+        @Override
         public Object getHashObject(Object o) {
             return ((Responder) o).responderKey();
         }
 
+        @Override
         public Object makeResource(Object name, Object hashName) {
             Responder f = (Responder) name;
             f.identity = hashName.hashCode();

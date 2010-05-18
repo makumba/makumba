@@ -119,6 +119,7 @@ public class Pass1FunctionInliner {
             return ret;
         }
 
+        @Override
         public AST visit(AST current) {
             // the function signature is a method call which has a DOT as first child
             if (current.getType() != HqlTokenTypes.METHOD_CALL)
@@ -229,6 +230,7 @@ public class Pass1FunctionInliner {
             AST ret = funcAST;
             if (!isStatic)
                 ret = (new ASTTransformVisitor(false) {
+                    @Override
                     public AST visit(AST node) {
                         // for each "this" node, we put the callee instead
                         if (node.getType() == HqlTokenTypes.IDENT && node.getText().equals("this"))
@@ -240,6 +242,7 @@ public class Pass1FunctionInliner {
 
             // then we visit the function more, and replace parameter names with parameter expressions
             ret = (new ASTTransformVisitor(false) {
+                @Override
                 public AST visit(AST node) {
                     // for each parameter node, we put the param expression instead
                     if (node.getType() == HqlTokenTypes.IDENT && paramExpr.get(node.getText()) != null &&
@@ -345,6 +348,7 @@ public class Pass1FunctionInliner {
 
         ASTTransformVisitor thisVisitor = new ASTTransformVisitor(false) {
 
+            @Override
             public AST visit(AST a) {
                 // we are looking for non-this idents
                 if (a.getType() != HqlTokenTypes.IDENT || a.getText().equals("this"))

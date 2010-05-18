@@ -127,6 +127,7 @@ public class ComposedSubquery extends ComposedQuery {
     /**
      * Initializes the keysets by adding the superquery's previousKeyset to its keyset.
      */
+    @Override
     protected void initKeysets() {
         previousKeyset = (Vector) superQuery.previousKeyset.clone();
         keyset = (Vector<Integer>) superQuery.keyset.clone();
@@ -140,6 +141,7 @@ public class ComposedSubquery extends ComposedQuery {
         superQuery = null;
     }
 
+    @Override
     public String toString() {
         return "Composed subquery: " + typeAnalyzerOQL;
     }

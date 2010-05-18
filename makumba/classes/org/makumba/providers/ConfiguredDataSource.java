@@ -81,6 +81,7 @@ class ConfiguredDataSource {
         this.type = type;
     }
 
+    @Override
     public String toString() {
         return "dataSource:" + name + (host == null ? "" : " host:" + hostAddress)
                 + (path == null ? "" : " path:" + path);

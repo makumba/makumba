@@ -43,15 +43,18 @@ public final class HqlParser extends HqlBaseParser {
         initialize();
     }
 
+    @Override
     public void reportError(RecognitionException e) {
         error = e;
     }
 
+    @Override
     public void reportError(String s) {
         if (error == null)
             error = new RecognitionException(s);
     }
 
+    @Override
     public void reportWarning(String s) {
     }
 
@@ -68,6 +71,7 @@ public final class HqlParser extends HqlBaseParser {
      * @throws antlr.TokenStreamException
      *             if the substitution was not possible.
      */
+    @Override
     public AST handleIdentifierError(Token token, RecognitionException ex) throws RecognitionException,
             TokenStreamException {
         // If the token can tell us if it could be an identifier...
@@ -107,6 +111,7 @@ public final class HqlParser extends HqlBaseParser {
      *            The sub tree to transform, the parent is assumed to be NOT.
      * @return AST - The equivalent sub-tree.
      */
+    @Override
     public AST negateNode(AST x) {
         if (error != null)
             return null;
@@ -198,6 +203,7 @@ public final class HqlParser extends HqlBaseParser {
      *            The equality expression.
      * @return AST - The clean sub-tree.
      */
+    @Override
     public AST processEqualityExpression(AST x) {
         if (x == null) {
             log.warn("processEqualityExpression() : No expression to process!");
@@ -262,6 +268,7 @@ public final class HqlParser extends HqlBaseParser {
         setASTFactory(new HqlASTFactory()); // Create nodes that track line and column number.
     }
 
+    @Override
     public void weakKeywords() throws TokenStreamException {
 
         int t = LA(1);
@@ -292,6 +299,7 @@ public final class HqlParser extends HqlBaseParser {
         }
     }
 
+    @Override
     public void handleDotIdent() throws TokenStreamException {
         // This handles HHH-354, where there is a strange property name in a where clause.
         // If the lookahead contains a DOT then something that isn't an IDENT...
@@ -308,6 +316,7 @@ public final class HqlParser extends HqlBaseParser {
         }
     }
 
+    @Override
     public void processMemberOf(Token n, AST p, ASTPair currentAST) {
         AST inAst = n == null ? astFactory.create(IN, "in") : astFactory.create(NOT_IN, "not in");
         astFactory.makeASTRoot(currentAST, inAst);

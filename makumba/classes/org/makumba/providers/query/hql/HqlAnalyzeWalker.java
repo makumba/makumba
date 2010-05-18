@@ -29,11 +29,13 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
 
     private boolean allowLogicalExprInSelect = false;
 
+    @Override
     void checkLogicalExprInSelect(AST logical) throws SemanticException {
         if (!allowLogicalExprInSelect)
             throw new SemanticException("logical expressions not allowed in SELECT projections ");
     }
 
+    @Override
     void setAliasType(AST alias, String type) throws antlr.RecognitionException {
         if (aliasTypes.get(alias.getText()) != null)
             throw new antlr.SemanticException("alias " + alias.getText() + " defined twice");
@@ -76,11 +78,13 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
         // System.out.println(alias.getText()+" "+aliasTypes.get(alias.getText()));
     }
 
+    @Override
     AST deriveParamExpr(AST pe) throws SemanticException {
 
         return new ParamTypeAST(ExprTypeAST.PARAMETER, pe.getText());
     }
 
+    @Override
     AST deriveLogicalExpr(AST le) {
         // we assume that the two sides of the logical operation have the same type, which helps us to determine the
         // parameter type if one side is a parameter
@@ -160,6 +164,7 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
     }
 
     // FIXME if a function parameter is a query parameter, assign its type
+    @Override
     AST deriveFunctionCallExpr(AST fc, AST e) {
 
         String functionCall = fc.getText().toUpperCase();
@@ -168,6 +173,7 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
 
     }
 
+    @Override
     AST deriveQueryExpr(AST ae) throws SemanticException {
         // the query type is the first projection type
         // FIXME maybe we should check to make sure that we only have one projection
@@ -175,6 +181,7 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
         return ae;
     }
 
+    @Override
     AST deriveAggregateExpr(AST ae, AST ag) throws SemanticException {
         String agr = ag.getText();
         if ("max".equals(agr) || "min".equals(agr))
@@ -191,6 +198,7 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
         return null;
     }
 
+    @Override
     AST deriveArithmethicExpr(AST ae) throws SemanticException {
         // FIXME: add arithmetic parameter inferences, see deriveLogicalExpr
         // case-when already returns an analyzed expression
@@ -214,6 +222,7 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
                 : secondValue.getDataType());
     }
 
+    @Override
     protected void setAlias(AST se, AST i) {
         if (se instanceof ExprTypeAST) {
             ((ExprTypeAST) se).setIdentifier(i.getText());
@@ -221,6 +230,7 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
     }
 
     /** this method is called when the SELECT section (projections) is parsed */
+    @Override
     void getReturnTypes(AST r, java.util.Stack stackAliases) throws RecognitionException {
         if (isSubQuery())
             return;
@@ -230,6 +240,7 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
         }
     }
 
+    @Override
     void beforeStatement(String statementName, int statementType) {
         super.beforeStatement(statementName, statementType);
         if (isSubQuery()) {
@@ -239,6 +250,7 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
         }
     }
 
+    @Override
     void afterStatementCompletion(String statementName) {
         if (isSubQuery())
             aliasTypes = (HashMap) stackAliases.pop();
@@ -266,6 +278,7 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
         query = query1;
     }
 
+    @Override
     public String toString() {
         return query;
     }

@@ -13,30 +13,37 @@ import org.makumba.providers.DataDefinitionProvider;
  */
 public class MakumbaDataDefinitionFactory extends DataDefinitionProvider {
 
+    @Override
     public DataDefinition getDataDefinition(String typeName) {
         return RecordInfo.getRecordInfo(typeName.replaceAll("__", "->"));
     }
 
+    @Override
     public DataDefinition getVirtualDataDefinition(String name) {
         return new RecordInfo(name.replaceAll("__", "->"));
     }
 
+    @Override
     public FieldDefinition makeFieldDefinition(String name, String definition) {
         return FieldInfo.getFieldInfo(name.replaceAll("__", "->"), definition.replaceAll("__", "->"), true);
     }
 
+    @Override
     public FieldDefinition makeFieldOfType(String name, String type) {
         return FieldInfo.getFieldInfo(name.replaceAll("__", "->"), type.replaceAll("__", "->"), false);
     }
 
+    @Override
     public FieldDefinition makeFieldOfType(String name, String type, String description) {
         return FieldInfo.getFieldInfo(name.replaceAll("__", "->"), type.replaceAll("__", "->"), false, description);
     }
 
+    @Override
     public FieldDefinition makeFieldWithName(String name, FieldDefinition type) {
         return FieldInfo.getFieldInfo(name, type, false);
     }
 
+    @Override
     public FieldDefinition makeFieldWithName(String name, FieldDefinition type, String description) {
         return FieldInfo.getFieldInfo(name, type, false, description);
     }

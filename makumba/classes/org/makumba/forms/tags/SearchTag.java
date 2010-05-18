@@ -109,10 +109,12 @@ public class SearchTag extends FormTagBase {
         }
     }
 
+    @Override
     public DataDefinition getDataTypeAtAnalysis(PageCache pageCache) {
         return in;
     }
 
+    @Override
     public ResponderOperation getResponderOperation(String operation) {
         return searchOp;
     }
@@ -120,6 +122,7 @@ public class SearchTag extends FormTagBase {
     /**
      * Inherited
      */
+    @Override
     public void initialiseState() {
         fillFormAction();
         super.initialiseState();
@@ -134,6 +137,7 @@ public class SearchTag extends FormTagBase {
         responder.setResultLabel(resultLabel);
     }
 
+    @Override
     public void setAction(String s) {
         formAction = s;
         fillFormAction();
@@ -152,6 +156,7 @@ public class SearchTag extends FormTagBase {
     /**
      * Inherited
      */
+    @Override
     public void setTagKey(PageCache pageCache) {
         tagKey = new MultipleKey(new Object[] { formName });
     }
@@ -195,6 +200,7 @@ public class SearchTag extends FormTagBase {
          * evaluated when the Where and VariableFrom parts are not set.</li>
          * </ul>
          */
+        @Override
         public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
                 throws LogicException {
 
@@ -368,6 +374,7 @@ public class SearchTag extends FormTagBase {
             return where;
         }
 
+        @Override
         public String verify(Responder resp) {
             return null;
         }

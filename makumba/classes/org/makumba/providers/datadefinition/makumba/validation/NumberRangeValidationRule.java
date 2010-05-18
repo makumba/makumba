@@ -54,6 +54,7 @@ public class NumberRangeValidationRule extends RangeValidationRule {
         }
     }
 
+    @Override
     public String toString() {
         return "" + fieldName + " " + getOperator() + " [" + lowerLimitString + ".." + upperLimitString + "]";
     }

@@ -120,6 +120,7 @@ public class QuerySectionProcessor {
             }
         }
 
+        @Override
         public String toString() {
             StringBuffer sb = new StringBuffer();
             sb.append(query, projectionStart, projectionEnd);

@@ -105,11 +105,13 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         this.knownLabels = knownLabels;
     }
 
+    @Override
     public void reportError(RecognitionException e) {
         if (error == null)
             error = e;
     }
 
+    @Override
     public void reportError(String s) {
         if (error == null)
             error = new RecognitionException(s);
@@ -195,10 +197,12 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         return null;
     }
 
+    @Override
     public void reportWarning(String s) {
         System.out.println(s);
     }
 
+    @Override
     protected void pushFromClause(AST fromClause, AST inputFromNode) {
         QueryContext c = new QueryContext(this);
         c.setParent(currentContext);
@@ -209,10 +213,12 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         currentContext = c;
     }
 
+    @Override
     protected void setFromEnded() throws SemanticException {
         fromEnded = true;
     }
 
+    @Override
     protected void processQuery(AST select, AST query) throws SemanticException {
         if (error != null)
             return;
@@ -283,10 +289,12 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         }
     }
 
+    @Override
     protected AST createFromElement(String path, AST alias, AST propertyFetch) throws SemanticException {
         return currentContext.createFromElement(path, alias, HqlSqlTokenTypes.INNER);
     }
 
+    @Override
     protected void createFromJoinElement(AST path, AST alias, int joinType, AST fetch, AST propertyFetch, AST with)
             throws SemanticException {
         if (error != null)
@@ -297,6 +305,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         currentContext.createFromElement(path.getText(), alias, joinType);
     }
 
+    @Override
     protected AST lookupProperty(AST dot, boolean root, boolean inSelect) throws SemanticException {
         if (error != null || !fromEnded)
             return dot;
@@ -306,6 +315,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         return dot;
     }
 
+    @Override
     protected void resolve(AST node) throws SemanticException {
         if (error != null || !fromEnded)
             return;
@@ -313,6 +323,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
             ((MqlIdentNode) node).resolve();
     }
 
+    @Override
     protected void setAlias(AST selectExpr, AST ident) {
         if (error != null)
             return;
@@ -326,6 +337,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         currentContext.projectionLabelSearch.put(ident.getText(), (MqlNode) selectExpr);
     }
 
+    @Override
     protected AST generateNamedParameter(AST delimiterNode, AST nameNode) throws SemanticException {
         MqlNode para = (MqlNode) ASTUtil.create(fact, MqlSqlWalker.NAMED_PARAM, nameNode.getText());
         // old name will be preserved as para.originalText
@@ -333,6 +345,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         return para;
     }
 
+    @Override
     protected AST generatePositionalParameter(AST inputNode) throws SemanticException {
         return ASTUtil.create(fact, MqlSqlWalker.PARAM, "?");
     }

@@ -43,6 +43,7 @@ public class hqlanalyzer extends TestCase {
         return new TestSuite(hqlanalyzer.class);
     }
 
+    @Override
     public void run(TestResult r) {
         try {
             super.run(r);

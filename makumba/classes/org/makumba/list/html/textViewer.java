@@ -38,10 +38,12 @@ public class textViewer extends FieldViewer {
     static String[][] paramValues = { null, null, null, null, { "true", "false", "auto" },
             { "raw", "htmlescape", "stripHTML", "urlencode", "wiki", "auto" } };
 
+    @Override
     public String[] getAcceptedParams() {
         return params;
     }
 
+    @Override
     public String[][] getAcceptedValue() {
         return paramValues;
     }
@@ -67,6 +69,7 @@ public class textViewer extends FieldViewer {
         return SingletonHolder.singleton;
     }
 
+    @Override
     public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
         if (o instanceof Text)
             o = ((Text) o).getString();

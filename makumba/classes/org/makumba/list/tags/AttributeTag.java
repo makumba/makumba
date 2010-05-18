@@ -62,6 +62,7 @@ public class AttributeTag extends GenericMakumbaTag {
     /**
      * Indicates if the tag needs the page cache
      */
+    @Override
     protected boolean needPageCache() {
         return false;
     }
@@ -72,6 +73,7 @@ public class AttributeTag extends GenericMakumbaTag {
      * @param pageCache
      *            the page cache of the current page
      */
+    @Override
     public int doAnalyzedStartTag(PageCache pageCache) throws JspException {
         Object o = null;
         Throwable t = null;
@@ -103,6 +105,7 @@ public class AttributeTag extends GenericMakumbaTag {
         return EVAL_BODY_INCLUDE;
     }
 
+    @Override
     public String toString() {
         return "attribute name=" + name + " var=" + var + " exceptionVar=" + exceptionVar;
     }

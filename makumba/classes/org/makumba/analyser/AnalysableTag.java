@@ -199,6 +199,7 @@ public abstract class AnalysableTag extends AnalysableElement {
      * 
      * @throws JspException
      */
+    @Override
     public int doStartTag() throws JspException {
         PageCache pageCache = null;
         // FIXME: need to check if this is still needed, it was here only if the tag was root...
@@ -233,6 +234,7 @@ public abstract class AnalysableTag extends AnalysableElement {
      * 
      * @throws JspException
      */
+    @Override
     public int doEndTag() throws JspException {
         try {
             if ("yes".equals(getRequest().getAttribute("org.makumba.wasException")))

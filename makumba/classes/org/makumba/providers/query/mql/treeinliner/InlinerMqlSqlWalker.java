@@ -122,6 +122,7 @@ public class InlinerMqlSqlWalker extends MqlSqlWalker {
         return c.getKey();
     }
 
+    @Override
     protected void resolve(AST node) throws SemanticException {
         if (inFunctionCall)
             return;

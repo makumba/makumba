@@ -68,6 +68,7 @@ public class MakumbaSystem {
      * @since makumba-0.5.4
      * @deprecated Use {@link org.makumba.providers.TransactionProvider#getDefaultDataSourceName()} instead
      */
+    @Deprecated
     public static String getDefaultDatabaseName() {
         return tp.getDefaultDataSourceName();
     }
@@ -98,6 +99,7 @@ public class MakumbaSystem {
      * @deprecated This method name is misleading since it returns a connection, not a database. Use
      *             getConnectionTo(getDefaultDatabaseName()) instead
      */
+    @Deprecated
     public static Transaction findDatabase() {
         return getConnectionTo(tp.getDefaultDataSourceName());
     }
@@ -110,6 +112,7 @@ public class MakumbaSystem {
      * @deprecated This method name is misleading since it returns a connection, not a database. Use
      *             getConnectionTo(connectionFile) instead
      */
+    @Deprecated
     public static Transaction getDatabase(String connectionFile) {
         return getConnectionTo(connectionFile);
     }

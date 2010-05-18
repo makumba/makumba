@@ -323,6 +323,7 @@ public class PaginationTag extends GenericMakumbaTag {
         this.offset = offset;
     }
 
+    @Override
     public void setStyleClass(String styleClass) {
         this.styleClass = styleClass;
     }

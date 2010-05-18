@@ -121,6 +121,7 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
      * @param pageCache
      *            the page cache of the current page
      */
+    @Override
     public void doStartAnalyze(PageCache pageCache) {
         if (isValue()) {
             fdp.onBasicValueStartAnalyze(this, isNull(), getForm().getTagKey(), pageCache, expr);
@@ -139,6 +140,7 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
      * @param pageCache
      *            the page cache of the current page
      */
+    @Override
     public void doEndAnalyze(PageCache pageCache) {
         FieldDefinition contextType = getTypeFromContext(pageCache);
 
@@ -197,6 +199,7 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
         pageCache.cache(MakumbaJspAnalyzer.INPUT_TYPES, tagKey, contextType);
     }
 
+    @Override
     public int doAnalyzedEndTag(PageCache pageCache) throws JspException, LogicException {
         params.put("org.makumba.forms.queryLanguage", MakumbaJspAnalyzer.getQueryLanguage(pageCache));
         FieldDefinition type = (FieldDefinition) pageCache.retrieve(MakumbaJspAnalyzer.INPUT_TYPES, tagKey);

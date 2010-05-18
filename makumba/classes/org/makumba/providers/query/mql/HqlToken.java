@@ -37,6 +37,7 @@ public class HqlToken extends antlr.CommonToken {
      * @param t
      *            The new token type.
      */
+    @Override
     public void setType(int t) {
         this.tokenType = getType();
         super.setType(t);
@@ -66,6 +67,7 @@ public class HqlToken extends antlr.CommonToken {
      * 
      * @return String - The debug string.
      */
+    @Override
     public String toString() {
         return "[\"" + getText() + "\",<" + getType() + "> previously: <" + getPreviousType() + ">,line=" + line
                 + ",col=" + col + ",possibleID=" + possibleID + "]";

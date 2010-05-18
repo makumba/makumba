@@ -243,6 +243,7 @@ public class MqlSQLParameterTransformer implements SQLParameterTransformer {
             return qA.getQuery() + " " + sb.toString();
         };
 
+        @Override
         protected Object makeResource(Object name, Object hashName) throws Throwable {
             Object[] multi = (Object[]) name;
             MqlQueryAnalysis qA = (MqlQueryAnalysis) multi[0];
@@ -251,6 +252,7 @@ public class MqlSQLParameterTransformer implements SQLParameterTransformer {
             return new MqlSQLParameterTransformer(qA);
         }
 
+        @Override
         protected void configureResource(Object name, Object hashName, Object resource) throws Throwable {
             Object[] multi = (Object[]) name;
             Map<String, Object> args = (Map<String, Object>) multi[1];

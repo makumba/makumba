@@ -143,6 +143,7 @@ public class ComparisonValidationRule extends BasicValidationRule {
         return false; // TODO: think of throwing some "cannot validate exception"
     }
 
+    @Override
     public String toString() {
         String to;
         if (compareToExpression != null) {
