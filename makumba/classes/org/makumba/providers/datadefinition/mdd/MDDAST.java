@@ -11,6 +11,7 @@ import antlr.collections.AST;
  * @version $Id: MDDAST.java,v 1.1 May 8, 2009 1:44:43 PM manu Exp $
  */
 public class MDDAST extends antlr.CommonAST {
+    private static final long serialVersionUID = 1L;
 
     // makumba field type
     protected FieldType makumbaType;
