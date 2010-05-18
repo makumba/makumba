@@ -16,7 +16,6 @@ import org.makumba.analyser.PageCache;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MakumbaResourceServlet;
 import org.makumba.commons.tags.GenericMakumbaTag;
-import org.makumba.forms.tags.FormTagBase;
 import org.makumba.forms.validation.LiveValidationProvider;
 import org.makumba.list.tags.SectionTag;
 import org.makumba.providers.Configuration;

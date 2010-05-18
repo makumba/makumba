@@ -21,7 +21,6 @@ import org.makumba.commons.MultipleKey;
 import org.makumba.commons.StringUtils;
 import org.makumba.commons.attributes.HttpParameters;
 import org.makumba.commons.attributes.RequestAttributes;
-import org.makumba.forms.responder.FormResponder;
 import org.makumba.forms.responder.Responder;
 import org.makumba.forms.responder.ResponderOperation;
 import org.makumba.forms.responder.ResponseControllerHandler;

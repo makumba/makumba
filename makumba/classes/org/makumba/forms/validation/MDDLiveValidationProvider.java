@@ -4,7 +4,6 @@ import java.util.Collection;
 
 import org.makumba.ValidationRule;
 import org.makumba.providers.datadefinition.mdd.MDDExpressionBaseParser;
-import org.makumba.providers.datadefinition.mdd.MDDExpressionParser;
 import org.makumba.providers.datadefinition.mdd.MDDTokenTypes;
 import org.makumba.providers.datadefinition.mdd.ValidationRuleNode;
 import org.makumba.providers.datadefinition.mdd.validation.ComparisonValidationRule;
