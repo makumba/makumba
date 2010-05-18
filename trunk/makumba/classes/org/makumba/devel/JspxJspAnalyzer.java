@@ -31,33 +31,34 @@ import org.makumba.analyser.interfaces.JspAnalyzer;
 /**
  * @version $ID $
  * @author Cristian Bogdan
- *  
  */
 public class JspxJspAnalyzer implements JspAnalyzer {
 
-	private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
-		static JspAnalyzer singleton = new JspxJspAnalyzer();
-		
-		public void release() {
+    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+        static JspAnalyzer singleton = new JspxJspAnalyzer();
+
+        public void release() {
             singleton = null;
         }
 
         public SingletonHolder() {
             org.makumba.commons.SingletonReleaser.register(this);
         }
-	}
+    }
 
-	private JspxJspAnalyzer() {}
+    private JspxJspAnalyzer() {
+    }
 
-	public static JspAnalyzer getInstance() {
-		return SingletonHolder.singleton;
-	}
+    public static JspAnalyzer getInstance() {
+        return SingletonHolder.singleton;
+    }
 
     /**
      * make a status holder, which is passed to all other methods
      * 
      * @param initStatus
-     *            an initial status to be passed to the JspAnalyzer. for example, the pageContext for an example-based analyzer
+     *            an initial status to be passed to the JspAnalyzer. for example, the pageContext for an example-based
+     *            analyzer
      */
     public Object makeStatusHolder(Object initStatus) {
         return null;
@@ -82,7 +83,7 @@ public class JspxJspAnalyzer implements JspAnalyzer {
     /** a system tag, like <%@ ...%> */
     public void systemTag(TagData td, Object status) {
     }
-    
+
     /** an EL expression, either ${...} or #{...} **/
     public void elExpression(ELData ed, Object status) {
     }

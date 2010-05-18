@@ -84,20 +84,19 @@ public class MDDRelationVisualiser {
 
         Document d = DocumentHelper.createDocument();
         Element graphml_tag = d.addElement("graphml");
-        
-        
+
         Element root = graphml_tag.addElement(tree);
         root.addAttribute("edgedefault", "directed");
-        
+
         Namespace ns = Namespace.get("", "http://graphml.graphdrawing.org/xmlns");
         d.getRootElement().add(ns);
-        
+
         Element incoming = root.addElement("key");
         incoming.addAttribute("id", "name");
         incoming.addAttribute("for", "node");
         incoming.addAttribute("attr.name", "name");
         incoming.addAttribute("attr.type", "string");
-        
+
         for (String mdd : mdds) {
             try {
                 DataDefinition dd = DataDefinitionProvider.getInstance().getDataDefinition(mdd);

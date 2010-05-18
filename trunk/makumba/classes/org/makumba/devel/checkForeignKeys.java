@@ -44,8 +44,8 @@ import org.makumba.providers.DataDefinitionProvider;
  * <p>
  * Usage: <code>java org.makumba.devel.open [source [type1 [type2 ...] ] ]</code>
  * </p>
- * If no source is specified the default data source is used. If not types
- * are specified, all MDDs found in the webapp are processed.
+ * If no source is specified the default data source is used. If not types are specified, all MDDs found in the webapp
+ * are processed.
  * 
  * @author Cristian Bogdan
  */
@@ -66,7 +66,8 @@ public class checkForeignKeys {
             }
             SQLDBConnection sqlConnection = ((SQLDBConnection) connection);
 
-            Vector<String> mddsInDirectory = DataDefinitionProvider.getInstance().getDataDefinitionsInDefaultLocations("test.brokenMdds");
+            Vector<String> mddsInDirectory = DataDefinitionProvider.getInstance().getDataDefinitionsInDefaultLocations(
+                "test.brokenMdds");
 
             String[] tables = mddsInDirectory.toArray(new String[mddsInDirectory.size()]);
             for (int i = 0; i < tables.length; i++) {

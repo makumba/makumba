@@ -59,10 +59,10 @@ public class ErrorFormatter {
             { org.makumba.NoSuchFieldException.class, "no such field" },
             { org.makumba.NoSuchLabelException.class, "no such label" },
             { org.makumba.LogicException.class, "business logic" },
-            /*{ org.makumba.list.tags.MakumbaELException.class, "expression language"} */ };
+    /*{ org.makumba.list.tags.MakumbaELException.class, "expression language"} */};
 
     static final Class<?>[] knownJSPruntimeErrors = { ArrayIndexOutOfBoundsException.class,
-            NumberFormatException.class, ClassCastException.class /*, javax.el.ELException.class */ };
+            NumberFormatException.class, ClassCastException.class /*, javax.el.ELException.class */};
 
     protected ServletContext servletContext;
 
@@ -194,22 +194,21 @@ public class ErrorFormatter {
                 }
                 t = t1;
             }
-            
+
             // FIXME this is duplicated code from above to get this working with Jetty.
-            // the problem is that tomcat has a specific way of wrapping exceptions, which jetty does not because it direclty uses Jasper
-            if(isRuntimeJspErrors((ServletException)original)) {
-                treatJspRuntimeException(original, t, wr, req, this.servletContext,
-                    printHeaderFooter);
+            // the problem is that tomcat has a specific way of wrapping exceptions, which jetty does not because it
+            // direclty uses Jasper
+            if (isRuntimeJspErrors((ServletException) original)) {
+                treatJspRuntimeException(original, t, wr, req, this.servletContext, printHeaderFooter);
                 return;
 
             }
-            
-        } else if(isRuntimeJspErrors(t)) {
+
+        } else if (isRuntimeJspErrors(t)) {
             // Jetty throws Runtime Exceptions in a different way thant Tomcat
             treatJspRuntimeException(original, t, wr, req, this.servletContext, printHeaderFooter);
             return;
         }
-        
 
         for (Object[] element : errors) {
             if ((((Class<?>) element[0])).isInstance(t) || t1 != null && (((Class<?>) element[0])).isInstance(t = t1)) {
@@ -222,8 +221,8 @@ public class ErrorFormatter {
     }
 
     private boolean isRuntimeJspErrors(Throwable e) {
-        
-        if(e instanceof ServletException) {
+
+        if (e instanceof ServletException) {
             ServletException t1 = (ServletException) e;
             if (t1.getRootCause() != null) {
                 for (Class<?> element : knownJSPruntimeErrors) {
@@ -240,7 +239,7 @@ public class ErrorFormatter {
                 }
             }
         }
-        
+
         return false;
     }
 
@@ -254,46 +253,44 @@ public class ErrorFormatter {
      */
 
     public void logError(Throwable t, HttpServletRequest req) {
-        
-        //we only log if this is configured
-        if(Configuration.getErrorLog()) {
-        
-            try{
-            // we re-use the transaction provider of the request to do our logging
-            DbConnectionProvider dbc = (DbConnectionProvider) req.getAttribute(RequestAttributes.PROVIDER_ATTRIBUTE);
-            Transaction tr = dbc.getTransactionProvider().getConnectionTo(
-                dbc.getTransactionProvider().getDefaultDataSourceName());
-    
+
+        // we only log if this is configured
+        if (Configuration.getErrorLog()) {
+
             try {
-                Dictionary<String, Object> d = new Hashtable<String, Object>();
-    
-                // TODO: read and store the source of the submited page
-                // d.put("page", "");
-                if (t != null && t.getMessage() != null) {
-                    d.put("exception", t.getMessage());
-                }
-                d.put("executionDate", new Date());
-                d.put("url", req.getRequestURL().toString());
-                if (req.getAttribute("makumba.parameters") != null) {
-                    d.put("makumbaParameters", req.getAttribute("makumba.parameters").toString());
-                }
-                if (req.getAttribute(RequestAttributes.ATTRIBUTES_NAME) != null) {
-                    d.put("makumbaAttributes", req.getAttribute(RequestAttributes.ATTRIBUTES_NAME).toString());
-                }
-                if (req.getAttribute("makumba.controller") != null) {
-                    d.put("makumbaController", req.getAttribute("makumba.controller").toString());
-                }
-    
-                tr.insert("org.makumba.controller.ErrorLog", d);
-            } finally {
+                // we re-use the transaction provider of the request to do our logging
+                DbConnectionProvider dbc = (DbConnectionProvider) req.getAttribute(RequestAttributes.PROVIDER_ATTRIBUTE);
+                Transaction tr = dbc.getTransactionProvider().getConnectionTo(
+                    dbc.getTransactionProvider().getDefaultDataSourceName());
+
+                try {
+                    Dictionary<String, Object> d = new Hashtable<String, Object>();
+
+                    // TODO: read and store the source of the submited page
+                    // d.put("page", "");
+                    if (t != null && t.getMessage() != null) {
+                        d.put("exception", t.getMessage());
+                    }
+                    d.put("executionDate", new Date());
+                    d.put("url", req.getRequestURL().toString());
+                    if (req.getAttribute("makumba.parameters") != null) {
+                        d.put("makumbaParameters", req.getAttribute("makumba.parameters").toString());
+                    }
+                    if (req.getAttribute(RequestAttributes.ATTRIBUTES_NAME) != null) {
+                        d.put("makumbaAttributes", req.getAttribute(RequestAttributes.ATTRIBUTES_NAME).toString());
+                    }
+                    if (req.getAttribute("makumba.controller") != null) {
+                        d.put("makumbaController", req.getAttribute("makumba.controller").toString());
+                    }
+
+                    tr.insert("org.makumba.controller.ErrorLog", d);
+                } finally {
                     tr.close();
-            }
-            }catch (Throwable t1) {
-                java.util.logging.Logger.getLogger("org.makumba.errorFormatter").log(
-                    java.util.logging.Level.SEVERE,
+                }
+            } catch (Throwable t1) {
+                java.util.logging.Logger.getLogger("org.makumba.errorFormatter").log(java.util.logging.Level.SEVERE,
                     "Could not log exception to the db, exception to log was", t);
-                java.util.logging.Logger.getLogger("org.makumba.errorFormatter").log(
-                    java.util.logging.Level.SEVERE,
+                java.util.logging.Logger.getLogger("org.makumba.errorFormatter").log(java.util.logging.Level.SEVERE,
                     "Could not log exception to the db, database logging exception was", t1);
             }
         }
@@ -322,15 +319,17 @@ public class ErrorFormatter {
         // we check whether this exception is a logic exception thrown at controller, or is a foreign key error
         if (((t instanceof LogicException && ((LogicException) t).isControllerOriginated()) || t instanceof ForeignKeyError)
                 && findNonMakumbaRootCause(t) != -1) {
-            // TODO: // maybe this should not be just for logic exception and foreign key error, but for everything in general?
+            // TODO: // maybe this should not be just for logic exception and foreign key error, but for everything in
+            // general?
             int i = findNonMakumbaRootCause(t);
             body = "Exception occured at " + t.getStackTrace()[i].getClassName() + "."
                     + t.getStackTrace()[i].getMethodName() + ":" + t.getStackTrace()[i].getLineNumber() + "\n\n" + body;
         } else {
-            
-            // TODO we could improve the error message for specific errors, e.g. if a MakumbaQueryError occurs during analysis of a mak:value
+
+            // TODO we could improve the error message for specific errors, e.g. if a MakumbaQueryError occurs during
+            // analysis of a mak:value
             // or a EL value expr, we could also display the query tag in order to help the developer
-            
+
             body = formatElementData(req) + body;
         }
 
@@ -373,35 +372,35 @@ public class ErrorFormatter {
      * @return The element error, nicely displayed
      */
     String formatElementData(HttpServletRequest req) {
-        
+
         String explanation = new String();
         ElementData data = null;
-        
+
         // try to figure out where we are
         // first try analysis, then running, then body tag
-        
+
         // analysis
         data = AnalysableElement.getAnalyzedElementData();
-        if(data != null) {
-            if(data instanceof TagData) {
+        if (data != null) {
+            if (data instanceof TagData) {
                 explanation = "During analysis of the following tag (and possibly tags around or inside it):";
-            } else if(data instanceof ELData) {
+            } else if (data instanceof ELData) {
                 explanation = "During analysis of the following EL expression (and possibly tags around it):";
             }
         } else {
             // runtime
             data = AnalysableElement.getRunningElementData();
-            if(data != null) {
+            if (data != null) {
                 explanation = "During running of:";
             } else {
                 // body tag - fetch the data of the first surrounding tag
                 data = AnalysableElement.getCurrentBodyTagData();
-                if(data != null) {
+                if (data != null) {
                     explanation = "While executing inside this body tag, but most probably *not* due to the tag:";
                 }
             }
         }
-        
+
         if (data == null) {
             String filePath = req.getRequestURL().toString();
             try {
@@ -414,7 +413,7 @@ public class ErrorFormatter {
             }
             return explanation = "While executing page " + filePath + "\n\n";
         }
-        
+
         StringBuffer sb = new StringBuffer();
         try {
             JspParseData.tagDataLine(data, sb);
@@ -659,12 +658,10 @@ public class ErrorFormatter {
     boolean treatJspRuntimeException(Throwable original, Throwable t, PrintWriter wr, HttpServletRequest req,
             ServletContext servletContext, boolean printHeaderFooter) {
 
-        
-        
         Throwable rootCause = null;
-        
-        if(t instanceof ServletException) {
-            rootCause = ((ServletException)t).getRootCause();
+
+        if (t instanceof ServletException) {
+            rootCause = ((ServletException) t).getRootCause();
         } else {
             rootCause = t;
         }
@@ -674,7 +671,8 @@ public class ErrorFormatter {
         String body = "A " + rootCause.getClass().getName()
                 + " occured (most likely because of a programming error in the JSP):\n\n" + message;
 
-        if (t != null && original.getStackTrace() != null && !java.util.Arrays.equals(original.getStackTrace(), t.getStackTrace())) {
+        if (t != null && original.getStackTrace() != null
+                && !java.util.Arrays.equals(original.getStackTrace(), t.getStackTrace())) {
             body += "\n\n" + trace(rootCause);
         }
 

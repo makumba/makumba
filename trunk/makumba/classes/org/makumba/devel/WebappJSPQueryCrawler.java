@@ -53,9 +53,9 @@ public class WebappJSPQueryCrawler {
 
         String webappRoot = line.getOptionValue("w");
         String[] skipPaths = line.getOptionValues("s");
-        
+
         // this seems to be a bug in commons CLI
-        if(skipPaths == null) {
+        if (skipPaths == null) {
             skipPaths = new String[] {};
         }
         String analysisOutputFile = line.getOptionValue("q", "queries.txt");
@@ -84,14 +84,15 @@ public class WebappJSPQueryCrawler {
                     if (cache != null) {
                         for (Object key : cache.keySet()) {
                             ComposedQuery query = (ComposedQuery) cache.get(key);
-                            String s= query.getTypeAnalyzerQuery();
-                            // FIXME this won't work until we implement a method to print back to MQL analyzed query trees
-//                            ArgumentReplacer ar = new ArgumentReplacer(s, false);
-//                            Map<String, Object> d = new HashMap<String, Object>();
-//                            int j = 1;
-//                            for (Iterator<String> e = ar.getArgumentNames(); e.hasNext();)
-//                                d.put(e.next(), "$" + (j++));
-//                            pw.println(ar.replaceValues(d));
+                            String s = query.getTypeAnalyzerQuery();
+                            // FIXME this won't work until we implement a method to print back to MQL analyzed query
+                            // trees
+                            // ArgumentReplacer ar = new ArgumentReplacer(s, false);
+                            // Map<String, Object> d = new HashMap<String, Object>();
+                            // int j = 1;
+                            // for (Iterator<String> e = ar.getArgumentNames(); e.hasNext();)
+                            // d.put(e.next(), "$" + (j++));
+                            // pw.println(ar.replaceValues(d));
                         }
                     }
                 }
@@ -109,7 +110,7 @@ public class WebappJSPQueryCrawler {
                 pw.println(query);
             }
         }
-        
+
         pw.flush();
         pw.close();
 
