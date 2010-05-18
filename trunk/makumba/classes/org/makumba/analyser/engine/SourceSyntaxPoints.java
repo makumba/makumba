@@ -45,7 +45,8 @@ import org.makumba.ProgrammerError;
  */
 public class SourceSyntaxPoints {
     public static interface PreprocessorClient {
-        public void treatInclude(int position, String includeDirective, SyntaxPoint start, SyntaxPoint end, SourceSyntaxPoints host);
+        public void treatInclude(int position, String includeDirective, SyntaxPoint start, SyntaxPoint end,
+                SourceSyntaxPoints host);
 
         public Pattern[] getCommentPatterns();
 
@@ -58,9 +59,9 @@ public class SourceSyntaxPoints {
         public Pattern getIncludePattern();
 
         public String getIncludePatternName();
-        
+
         public SourceSyntaxPoints getSyntaxPoints();
-        
+
         public SyntaxPoint[] getSyntaxPointArray(Object initStatus);
 
     }
@@ -190,9 +191,8 @@ public class SourceSyntaxPoints {
     }
 
     /**
-     * Gets the text of the line n.
-     * This will not work after discardSyntaxPoints because both the text of the file
-     * and the syntax points are gone, to spare memory.
+     * Gets the text of the line n. This will not work after discardSyntaxPoints because both the text of the file and
+     * the syntax points are gone, to spare memory.
      * 
      * @param n
      *            the line number
@@ -218,9 +218,10 @@ public class SourceSyntaxPoints {
                 return;
 
             // we add syntax points for the @include directive
-            SyntaxPoint end = addSyntaxPoints(m.start()+offset, m.end()+offset, "JSPIncludeDirective", content.substring(m.start(), m.end()));
+            SyntaxPoint end = addSyntaxPoints(m.start() + offset, m.end() + offset, "JSPIncludeDirective",
+                content.substring(m.start(), m.end()));
             SyntaxPoint start = (SyntaxPoint) end.getOtherInfo();
-            
+
             client.treatInclude(m.start(), content.substring(m.start(), m.end()), start, end, this);
         }
     }
@@ -236,24 +237,24 @@ public class SourceSyntaxPoints {
      *            the directive calling for the inclusion
      */
     public void include(File f, int position, String includeDirective) {
-        
-        SourceSyntaxPoints sf = new SourceSyntaxPoints(f, client, this, includeDirective, position+offset);
-        
+
+        SourceSyntaxPoints sf = new SourceSyntaxPoints(f, client, this, includeDirective, position + offset);
+
         int delta = sf.getContent().length() - includeDirective.length();
 
         StringBuffer sb = new StringBuffer();
         sb.append(content.substring(0, position)).
         // add the content of the file
-                append(sf.getContent()).
-                // but remove the include directive
-                append(content.substring(position + includeDirective.length()));
+        append(sf.getContent()).
+        // but remove the include directive
+        append(content.substring(position + includeDirective.length()));
 
         content = sb.toString();
 
         // we move the position of all SyntaxPoints that occur after the include
         for (Iterator<SyntaxPoint> i = syntaxPoints.iterator(); i.hasNext();) {
             SyntaxPoint sp = i.next();
-            if (sp.position > position+offset && !sp.getType().equals("JSPIncludeDirective"))
+            if (sp.position > position + offset && !sp.getType().equals("JSPIncludeDirective"))
                 sp.moveByInclude(delta);
         }
 
@@ -301,7 +302,7 @@ public class SourceSyntaxPoints {
                 uncommentedContent.append(' ');
             endOfLast = m.end();
             java.util.logging.Logger.getLogger("org.makumba.syntaxpoint.comment").fine(
-                    "UNCOMMENT " + patternName + " : " + m.group());
+                "UNCOMMENT " + patternName + " : " + m.group());
             addSyntaxPoints(m.start() + offset, m.end() + offset, patternName, null);
         }
         uncommentedContent.append(content.substring(endOfLast));
@@ -332,8 +333,8 @@ public class SourceSyntaxPoints {
      * @see #addSyntaxPointsCommon(int start, int end, String type, Object extra)
      */
     public SyntaxPoint.End addSyntaxPoints(int start, int end, String type, Object extra) {
-        SourceSyntaxPoints ssp= findSourceFile(start);
-        if(ssp==this)
+        SourceSyntaxPoints ssp = findSourceFile(start);
+        if (ssp == this)
             return addSyntaxPoints1(start, end, type, extra);
         else
             return ssp.addSyntaxPoints(start, end, type, extra);
@@ -372,7 +373,7 @@ public class SourceSyntaxPoints {
      *            position of the syntax point
      */
     SourceSyntaxPoints findSourceFile(int position) {
-        int index = Collections.binarySearch(fileBeginningIndexes, new Integer(position-offset));
+        int index = Collections.binarySearch(fileBeginningIndexes, new Integer(position - offset));
         if (index < 0)
             index = -index - 2;
         return (SourceSyntaxPoints) fileBeginnings.get(index);
@@ -390,7 +391,6 @@ public class SourceSyntaxPoints {
      *            String stating the type of syntax point
      * @param extra
      *            any extra info (for example the object created at the syntax point
-     * 
      * @return the created <tt>SyntaxPoint.End</tt>
      * @see #addSyntaxPoints(int, int, String, Object)
      */
@@ -518,14 +518,14 @@ public class SourceSyntaxPoints {
     }
 
     public void discardPoints() {
-        for(Iterator<SourceSyntaxPoints> i= fileBeginnings.iterator(); i.hasNext();){
-            SourceSyntaxPoints s= i.next();
-            if(s!=this)
+        for (Iterator<SourceSyntaxPoints> i = fileBeginnings.iterator(); i.hasNext();) {
+            SourceSyntaxPoints s = i.next();
+            if (s != this)
                 s.discardPoints();
         }
-        content = originalText= null;
+        content = originalText = null;
         fileBeginningIndexes = null;
-        lineBeginnings=null; 
+        lineBeginnings = null;
         syntaxPoints = null;
     }
 
