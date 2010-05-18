@@ -156,6 +156,7 @@ public class FileRelations {
             this.reason = reason;
         }
 
+        @Override
         public String toString() {
             String result = "Relation origin:\n";
             result += "  startCol: " + startCol + "\n";
@@ -170,6 +171,7 @@ public class FileRelations {
         }
     }
 
+    @Override
     public String toString() {
         String result = "Relations for file " + path + "\n";
 

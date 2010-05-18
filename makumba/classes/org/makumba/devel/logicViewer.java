@@ -42,6 +42,7 @@ public class logicViewer extends LineViewer {
         title = "Logic for " + virtualPath;
     }
 
+    @Override
     public void intro(PrintWriter w) {
         w.print("<td><a href=\"" + contextPath + virtualPath + "x\">page</a></td>");
     }

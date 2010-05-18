@@ -135,8 +135,9 @@ public class DevelUtils {
 
     public static String getVirtualPath(HttpServletRequest req, String toolLocation) {
         String path = req.getRequestURI();
-        if (path == null)
+        if (path == null) {
             path = "/";
+        }
         if (path.startsWith(req.getContextPath())) {
             path = path.substring(req.getContextPath().length());
         }

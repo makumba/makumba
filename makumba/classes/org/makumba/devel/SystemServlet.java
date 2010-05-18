@@ -37,6 +37,7 @@ public class SystemServlet extends HttpServlet {
 	 */
     private static final long serialVersionUID = 1L;
 
+    @Override
     public void service(HttpServletRequest req, HttpServletResponse resp) {
         String s = (String) req.getAttribute("org.makumba.systemServlet.command");
         if ("setLoggingRoot".equals(s)) {

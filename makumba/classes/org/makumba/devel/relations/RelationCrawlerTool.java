@@ -34,8 +34,9 @@ public class RelationCrawlerTool extends HttpServlet {
 
         // fetch parameters
         String webappRoot = req.getSession().getServletContext().getRealPath("/");
-        if (webappRoot.endsWith("/"))
+        if (webappRoot.endsWith("/")) {
             webappRoot = webappRoot.substring(0, webappRoot.length() - 1);
+        }
 
         // initialise crawler
         RelationCrawler rc = RelationCrawler.getRelationCrawler(webappRoot, RelationCrawler.getDefaultTargetDatabase(),
@@ -48,13 +49,13 @@ public class RelationCrawlerTool extends HttpServlet {
         ArrayList<String> allFilesInDirectory = FileUtils.getAllFilesInDirectory(webappRoot, new String[] {},
             new MakumbaRelatedFileFilter());
         Collections.sort(allFilesInDirectory);
-        String[] files = (String[]) allFilesInDirectory.toArray(new String[allFilesInDirectory.size()]);
+        String[] files = allFilesInDirectory.toArray(new String[allFilesInDirectory.size()]);
 
         // while we crawl, we adjust the MDD provider root to the webapp root
         RecordInfo.setWebappRoot(webappRoot);
 
-        for (int i = 0; i < files.length; i++) {
-            rc.crawl(files[i]);
+        for (String file : files) {
+            rc.crawl(file);
         }
 
         // we set it back to null after the crawling and clean the cache

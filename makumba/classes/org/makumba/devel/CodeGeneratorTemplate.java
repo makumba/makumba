@@ -77,20 +77,20 @@ public class CodeGeneratorTemplate {
             header = CodeGenerator.HQL_TLD_DEFINITION;
         }
         header += "\n";
-        header += (String) getProperty(props, "header", DEFAULT_STYLE_HEADER);
-        footer = (String) getProperty(props, "footer");
-        afterFormBegin = (String) getProperty(props, "afterFormBegin");
-        beforeFormEnd = (String) getProperty(props, "beforeFormEnd");
-        beforeField = (String) getProperty(props, "beforeField");
-        afterField = (String) getProperty(props, "afterField");
-        beforeFieldName = (String) getProperty(props, "beforeFieldName");
-        afterFieldName = (String) getProperty(props, "afterFieldName");
-        beforeFieldTag = (String) getProperty(props, "beforeFieldTag");
-        afterFieldTag = (String) getProperty(props, "afterFieldTag");
-        beforePageHeader = (String) getProperty(props, "beforePageHeader");
-        afterPageHeader = (String) getProperty(props, "afterPageHeader");
-        beforePageHeaderLevel2 = (String) getProperty(props, "beforePageHeaderLevel2", beforePageHeader);
-        afterPageHeaderLevel2 = (String) getProperty(props, "afterPageHeaderLevel2", afterPageHeader);
+        header += getProperty(props, "header", DEFAULT_STYLE_HEADER);
+        footer = getProperty(props, "footer");
+        afterFormBegin = getProperty(props, "afterFormBegin");
+        beforeFormEnd = getProperty(props, "beforeFormEnd");
+        beforeField = getProperty(props, "beforeField");
+        afterField = getProperty(props, "afterField");
+        beforeFieldName = getProperty(props, "beforeFieldName");
+        afterFieldName = getProperty(props, "afterFieldName");
+        beforeFieldTag = getProperty(props, "beforeFieldTag");
+        afterFieldTag = getProperty(props, "afterFieldTag");
+        beforePageHeader = getProperty(props, "beforePageHeader");
+        afterPageHeader = getProperty(props, "afterPageHeader");
+        beforePageHeaderLevel2 = getProperty(props, "beforePageHeaderLevel2", beforePageHeader);
+        afterPageHeaderLevel2 = getProperty(props, "afterPageHeaderLevel2", afterPageHeader);
     }
 
     String getProperty(Map<String, String> map, String key) {

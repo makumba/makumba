@@ -41,6 +41,7 @@ import org.makumba.providers.Configuration;
  */
 public class DataToolsControllerHandler extends ControllerHandler {
 
+    @Override
     public boolean beforeFilter(ServletRequest req, ServletResponse res, FilterConfig conf,
             ServletObjects httpServletObjects) throws Exception {
         HttpServletRequest request = (HttpServletRequest) req;

@@ -286,6 +286,7 @@ public class GeneratedCodeViewer extends jspViewer {
     }
 
     /** writes the page header, with links to the mdd and to browse. */
+    @Override
     public void intro(PrintWriter w) {
         initTemplates();
         String browsePath = contextPath + Configuration.getMddViewerLocation()
@@ -305,6 +306,7 @@ public class GeneratedCodeViewer extends jspViewer {
     }
 
     /** prints the code generator form. */
+    @Override
     public void printPageBeginAdditional(PrintWriter w) throws IOException {
         if (dd != null) {
             w.println("<form style=\"margin-top:1px; margin-bottom:0px; font-size:smaller;\">");
@@ -322,12 +324,12 @@ public class GeneratedCodeViewer extends jspViewer {
             w.println("<br />");
             w.println("<b>Query language:</b>");
 
-            for (int i = 0; i < selectableQueryLanguages.length; i++) {
-                w.print("<input type=\"radio\" name=\"queryLanguage\" value=\"" + selectableQueryLanguages[i] + "\"");
-                if (selectableQueryLanguages[i].equals(queryLanguageParam)) {
+            for (String selectableQueryLanguage : selectableQueryLanguages) {
+                w.print("<input type=\"radio\" name=\"queryLanguage\" value=\"" + selectableQueryLanguage + "\"");
+                if (selectableQueryLanguage.equals(queryLanguageParam)) {
                     w.print("checked=\"checked\" ");
                 }
-                w.println(" />" + selectableQueryLanguages[i]);
+                w.println(" />" + selectableQueryLanguage);
 
             }
             w.println("<br />");

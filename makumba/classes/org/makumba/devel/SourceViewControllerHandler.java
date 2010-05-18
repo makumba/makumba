@@ -126,8 +126,7 @@ public class SourceViewControllerHandler extends ControllerHandler {
                 // process and display files
                 String[] list = dir.list(new SuffixFileFilter(".java"));
                 Arrays.sort(list);
-                for (int i = 0; i < list.length; i++) {
-                    String s = list[i];
+                for (String s : list) {
                     w.println("<b><a href=\"" + s + "\">" + s + "</a></b>");
                 }
             } else if (sw instanceof mddViewer) {
@@ -137,11 +136,11 @@ public class SourceViewControllerHandler extends ControllerHandler {
                 // process and display files
                 String[] list = dir.list(new SuffixFileFilter(new String[] { ".idd", ".mdd" }));
                 Arrays.sort(list);
-                for (int i = 0; i < list.length; i++) {
-                    String s = DevelUtils.getVirtualPath(req, Configuration.getMddViewerLocation()) + list[i];
+                for (String element : list) {
+                    String s = DevelUtils.getVirtualPath(req, Configuration.getMddViewerLocation()) + element;
                     s = s.substring(1, s.lastIndexOf(".")).replace('/', '.');
                     String addr = (req.getContextPath() + Configuration.getMddViewerLocation()) + "/" + s;
-                    w.println("<a href=\"" + addr + "\">" + list[i] + "</a>");
+                    w.println("<a href=\"" + addr + "\">" + element + "</a>");
                 }
             } else {
                 java.util.logging.Logger.getLogger("org.makumba.devel").warning(
@@ -173,9 +172,9 @@ public class SourceViewControllerHandler extends ControllerHandler {
     public static void processDirectory(PrintWriter w, File dir, String extension) {
         File[] list = dir.listFiles(new DirectoriesExcludingRepositoriesFilter());
         Arrays.sort(list);
-        for (int i = 0; i < list.length; i++) {
-            if (extension == null || containsFilesWithExtension(list[i], extension)) {
-                w.println("<b><a href=\"" + list[i].getName() + "/\">" + list[i].getName() + "/</a></b>");
+        for (File element : list) {
+            if (extension == null || containsFilesWithExtension(element, extension)) {
+                w.println("<b><a href=\"" + element.getName() + "/\">" + element.getName() + "/</a></b>");
             }
         }
     }
@@ -183,15 +182,15 @@ public class SourceViewControllerHandler extends ControllerHandler {
     static boolean containsFilesWithExtension(File dir, String... extension) {
         File[] files = dir.listFiles((FileFilter) new SuffixFileFilter(extension));
         // we first process only files, to decrease the amount of sub-directories we search
-        for (int i = 0; i < files.length; i++) {
-            if (files[i].isFile()) {
+        for (File file : files) {
+            if (file.isFile()) {
                 return true;
             }
         }
         files = dir.listFiles(new DirectoriesExcludingRepositoriesFilter());
-        for (int i = 0; i < files.length; i++) {
-            if (files[i].isDirectory()) {
-                if (containsFilesWithExtension(files[i], extension)) { // if not a dir with classes, continue the search
+        for (File file : files) {
+            if (file.isDirectory()) {
+                if (containsFilesWithExtension(file, extension)) { // if not a dir with classes, continue the search
                     return true;
                 }
             }

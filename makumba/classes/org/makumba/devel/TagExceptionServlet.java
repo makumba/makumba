@@ -43,6 +43,7 @@ public class TagExceptionServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
+    @Override
     public void service(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         resp.setContentType("text/html");
         // FIXME:see if error code thrown gives problems to tests

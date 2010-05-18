@@ -36,8 +36,9 @@ public class ErrorControllerHandler extends ControllerHandler {
     public boolean beforeFilter(ServletRequest request, ServletResponse response, FilterConfig conf,
             ServletObjects httpServletObjects) {
 
-        if (wasException((HttpServletRequest) request))
+        if (wasException((HttpServletRequest) request)) {
             return false;
+        }
 
         return true;
     }
@@ -175,14 +176,16 @@ public class ErrorControllerHandler extends ControllerHandler {
 
         java.util.StringTokenizer st = new java.util.StringTokenizer(servletPath, "/");
         while (st.hasMoreElements()) {
-            if (new java.io.File(root + pageName).exists())
+            if (new java.io.File(root + pageName).exists()) {
                 page = virtualRoot + pageName;
+            }
             String s = st.nextToken() + "/";
             root += s;
             virtualRoot += s;
         }
-        if (new java.io.File(root + pageName).exists())
+        if (new java.io.File(root + pageName).exists()) {
             page = virtualRoot + pageName;
+        }
         return page;
     }
 
@@ -198,12 +201,14 @@ public class ErrorControllerHandler extends ControllerHandler {
         // the request path may be modified by the filter, we take it as is
         String login = getLoginPage(req, req.getServletPath());
 
-        if (login == null)
+        if (login == null) {
             return false;
+        }
 
         // we will forward to the login page using the original request
-        while (req instanceof HttpServletRequestWrapper)
+        while (req instanceof HttpServletRequestWrapper) {
             req = (HttpServletRequest) ((HttpServletRequestWrapper) req).getRequest();
+        }
 
         req.setAttribute(ORIGINAL_REQUEST, req);
 
