@@ -116,7 +116,7 @@ public class TaglibDocGenerator {
             } finally {
                 // we keep a reference to the processed attributes because we need this for the attribute referrer
                 // resolution
-                if(e.getName().equals("tag")) {
+                if (e.getName().equals("tag")) {
                     processedElements.put(e.elementText("name"), e);
                 }
             }
@@ -176,10 +176,10 @@ public class TaglibDocGenerator {
             generatedFile = new File(generatedFile.getAbsolutePath());
             generatedFile.createNewFile();
         }
-        
+
         // create properties file so JSPWiki is not confused about the author
         File props = new File(this.outputDir.getAbsoluteFile() + File.separator + generatedFileName + ".properties");
-        if(!props.exists()) {
+        if (!props.exists()) {
             props = new File(props.getAbsolutePath());
             props.createNewFile();
         }
@@ -189,8 +189,6 @@ public class TaglibDocGenerator {
         propWriter.append("author=TaglibReferenceGenerator");
         propWriter.flush();
         propWriter.close();
-
-        
 
         // wtf?
         if (System.getProperty("os.name").startsWith("Mac OS X")) {
@@ -223,7 +221,7 @@ public class TaglibDocGenerator {
         s.newLine();
 
         // then the attributes
-        generateAttributes(element, s, elementName + (isTag?"Tag":"Function"));
+        generateAttributes(element, s, elementName + (isTag ? "Tag" : "Function"));
         s.newLine();
 
         // then the "see also" section
@@ -243,7 +241,8 @@ public class TaglibDocGenerator {
     }
 
     private String getWikiTagName(String elementName, boolean isTag) {
-        return elementName.substring(0, 1).toUpperCase() + elementName.substring(1, elementName.length()) + (isTag?"Tag":"Function");
+        return elementName.substring(0, 1).toUpperCase() + elementName.substring(1, elementName.length())
+                + (isTag ? "Tag" : "Function");
     }
 
     private void generateExamples(Element element, BufferedWriter s) throws IOException {
@@ -329,8 +328,9 @@ public class TaglibDocGenerator {
                     Element includedAttribute = MakumbaTLDGenerator.getReferencedAttributes(this.processedElements,
                         "Error processing attribute " + a.attributeValue("name") + " of tag "
                                 + element.elementText("name") + ": ", element, element.elementText("name"), a);
-                    if(includedAttribute == null) {
-                        System.err.println("Warning: could not retrieve the included attribue " + a.attributeValue("name") + ", skipping the attribute");
+                    if (includedAttribute == null) {
+                        System.err.println("Warning: could not retrieve the included attribue "
+                                + a.attributeValue("name") + ", skipping the attribute");
                         continue;
                     }
                     generateAttributeRow(includedAttribute, s, genericAttributeTuple, typedElementName);
@@ -352,53 +352,56 @@ public class TaglibDocGenerator {
         }
     }
 
-    private void generateAttributeRow(Element attribute, BufferedWriter s, GenericAttributeTuple genericAttributeTuple, String typedElementName)
-            throws IOException {
+    private void generateAttributeRow(Element attribute, BufferedWriter s, GenericAttributeTuple genericAttributeTuple,
+            String typedElementName) throws IOException {
 
         String name = attribute.elementText("name");
         String required = attribute.elementText("required");
         String runtimeExpr = attribute.elementText("rtexprvalue");
-        
+
         // was this one included?
         String inheritedFrom = attribute.attributeValue("inheritedFrom");
 
         String inherited = "";
-        if(inheritedFrom != null) {
-            inherited = "\\\\ %%(font-size:smaller;) (from [mak:"+inheritedFrom+"|" + StringUtils.capitalize(inheritedFrom) + (typedElementName.endsWith("Tag")?"Tag":"Function") + "])%%";
+        if (inheritedFrom != null) {
+            inherited = "\\\\ %%(font-size:smaller;) (from [mak:" + inheritedFrom + "|"
+                    + StringUtils.capitalize(inheritedFrom) + (typedElementName.endsWith("Tag") ? "Tag" : "Function")
+                    + "])%%";
         }
-        
+
         String attributePageSuffix = "Attribute" + StringUtils.capitalize(name) + "Attribute";
         String attributePageName = "";
-        
-        if(inheritedFrom != null) {
-            attributePageName += StringUtils.capitalize(inheritedFrom) +  (typedElementName.endsWith("Tag")?"Tag":"Function") + attributePageSuffix;
+
+        if (inheritedFrom != null) {
+            attributePageName += StringUtils.capitalize(inheritedFrom)
+                    + (typedElementName.endsWith("Tag") ? "Tag" : "Function") + attributePageSuffix;
         } else {
             attributePageName += StringUtils.capitalize(typedElementName) + attributePageSuffix;
-            
-        }
-        
-        String description = getPageInsert(attributePageName+"Description");
-        String comments = getPageInsert(attributePageName+"Comments");
 
-        File descriptionFile = new File(outputDir.getAbsolutePath() + File.separator + attributePageName+"Description.txt");
+        }
+
+        String description = getPageInsert(attributePageName + "Description");
+        String comments = getPageInsert(attributePageName + "Comments");
+
+        File descriptionFile = new File(outputDir.getAbsolutePath() + File.separator + attributePageName
+                + "Description.txt");
         String descriptionText;
-        if(!descriptionFile.exists()) {
+        if (!descriptionFile.exists()) {
             descriptionText = "Document me please!";
             System.err.println("Description page " + attributePageName + " not found, needs to be documented!");
         } else {
             descriptionText = MakumbaTLDGenerator.readFileAsString(descriptionFile.getAbsolutePath());
         }
-        
-        File commentsFile = new File(outputDir.getAbsolutePath() + File.separator + attributePageName+"Comments.txt");
+
+        File commentsFile = new File(outputDir.getAbsolutePath() + File.separator + attributePageName + "Comments.txt");
         String commentsText;
-        if(!commentsFile.exists()) {
+        if (!commentsFile.exists()) {
             commentsText = "Document me please!";
             System.err.println("Comments page " + attributePageName + " not found, needs to be documented!");
         } else {
             commentsText = MakumbaTLDGenerator.readFileAsString(commentsFile.getAbsolutePath());
         }
-        
-        
+
         String deprecated = attribute.elementText("deprecated");
         boolean isDeprecated = deprecated != null && deprecated.equals("true");
         String deprecatedStyle = isDeprecated ? "(deprecated) " : "";
@@ -414,15 +417,18 @@ public class TaglibDocGenerator {
 
                 if (genericAttributeTuple.getGenericAttributeName() == null) {
                     // this is the first occurrence of the generic attribute so we build it
-                    genericAttributeTuple.setFirstGenericAttribute(name + inherited, required, runtimeExpr, description + " (generic)", comments + " (generic)");
+                    genericAttributeTuple.setFirstGenericAttribute(name + inherited, required, runtimeExpr, description
+                            + " (generic)", comments + " (generic)");
                     genericAttributeTuple.setGenericAttributeName(generic[0]);
                 } else if (genericAttributeTuple.getGenericAttributeName().equals(generic[0])) {
                     genericAttributeTuple.addAttribute(name + inherited, required, runtimeExpr);
                 } else {
-                    // we have a different generic attribute, so we print the previous one, clear the tuple and set the new one
+                    // we have a different generic attribute, so we print the previous one, clear the tuple and set the
+                    // new one
                     genericAttributeTuple.print(s);
                     genericAttributeTuple.reset();
-                    genericAttributeTuple.setFirstGenericAttribute(name + inherited, required, runtimeExpr, description + " (generic)", comments + " (generic)");
+                    genericAttributeTuple.setFirstGenericAttribute(name + inherited, required, runtimeExpr, description
+                            + " (generic)", comments + " (generic)");
                 }
             }
         }
@@ -432,11 +438,11 @@ public class TaglibDocGenerator {
             genericAttributeTuple.print(s);
             genericAttributeTuple.reset();
         } else if (!isGenericAttribute) {
-            
+
             if (isDeprecated) {
-                s.append("|" + deprecatedStyle + name + " (deprecated) " +  inherited + " ");
+                s.append("|" + deprecatedStyle + name + " (deprecated) " + inherited + " ");
             } else {
-                s.append("|" + deprecatedStyle + name  + inherited + " ");
+                s.append("|" + deprecatedStyle + name + inherited + " ");
             }
             s.newLine();
             s.append("|" + deprecatedStyle + required + " ");
@@ -474,9 +480,9 @@ public class TaglibDocGenerator {
      */
     private String getOrInsertElement(Element element, String elementName, boolean export, String exportName) {
         if (export) {
-            
+
             String result = "";
-            
+
             // export the element text into a separate file
             Element e = element.element(elementName);
             if (e == null) {
@@ -490,7 +496,7 @@ public class TaglibDocGenerator {
                 if (!f.exists()) {
                     f.createNewFile();
                 }
-                
+
                 File props = new File(outputDir, StringUtils.capitalize(exportName) + ".properties");
                 props.createNewFile();
                 PrintWriter propWriter = new PrintWriter(new FileWriter(props, false));
@@ -500,9 +506,9 @@ public class TaglibDocGenerator {
 
                 propWriter.flush();
                 propWriter.close();
-                
+
                 pw = new PrintWriter(new FileWriter(f, false));
-                
+
                 if (e != null && e.hasContent()) {
                     pw.println(e.getTextTrim());
                     result = e.getTextTrim();
@@ -518,7 +524,7 @@ public class TaglibDocGenerator {
                 pw.flush();
                 pw.close();
             }
-            
+
             return result;
 
         } else {

@@ -14,15 +14,16 @@ import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 
 public abstract class GenericMakumbaTag extends AnalysableTag {
-    
+
     public static final String NEEDED_RESOURCES = "org.makumba.neededResources";
-    
+
     private static final long serialVersionUID = 1L;
 
     /** Tag parameters */
     public Hashtable<String, Object> params = new Hashtable<String, Object>(7); // holds certain 'normal' tag attributes
 
-    public Map<String, String> extraFormattingParams = new HashMap<String, String>(7); // container for html formatting params
+    public Map<String, String> extraFormattingParams = new HashMap<String, String>(7); // container for html formatting
+                                                                                       // params
 
     /** Extra html formatting, copied verbatim to the output */
     public StringBuffer extraFormatting;
@@ -33,12 +34,12 @@ public abstract class GenericMakumbaTag extends AnalysableTag {
      */
     public void initialiseState() {
         extraFormatting = new StringBuffer();
-    
+
         for (Entry<String, String> me : extraFormattingParams.entrySet()) {
             extraFormatting.append(" ").append(me.getKey()).append("=\"").append(me.getValue()).append("\" ");
         }
     }
-    
+
     @Override
     public int doStartTag() throws JspException {
         initialiseState();
@@ -195,7 +196,7 @@ public abstract class GenericMakumbaTag extends AnalysableTag {
     protected void setType(PageCache pc, String key, FieldDefinition value) {
         Object[] val1 = (Object[]) pc.retrieve(TYPES, key);
         FieldDefinition fd = null;
-    
+
         if (val1 != null) {
             fd = (FieldDefinition) val1[0];
         }
@@ -203,15 +204,15 @@ public abstract class GenericMakumbaTag extends AnalysableTag {
         if (fd != null && value.getType().equals("nil")) {
             return;
         }
-    
+
         AnalysableElement.setAnalyzedElementData(tagData);
         if (fd != null && !value.isAssignableFrom(fd)) {
             throw new ProgrammerError("Attribute type changing within the page: in tag\n"
-                    + ((AnalysableTag) val1[1]).getTagText() + " attribute " + key + " was determined to have type " + fd
-                    + " and the from this tag results the incompatible type " + value);
+                    + ((AnalysableTag) val1[1]).getTagText() + " attribute " + key + " was determined to have type "
+                    + fd + " and the from this tag results the incompatible type " + value);
         }
         AnalysableElement.setAnalyzedElementData(null);
-    
+
         Object[] val2 = { value, this };
         pc.cache(TYPES, key, val2);
     }

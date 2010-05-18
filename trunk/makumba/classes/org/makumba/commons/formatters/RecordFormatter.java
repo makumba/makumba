@@ -40,7 +40,7 @@ import org.makumba.FieldDefinition;
  */
 
 public class RecordFormatter implements Serializable {
-    
+
     public DataDefinition dd;
 
     public String[] expr;
@@ -56,7 +56,8 @@ public class RecordFormatter implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public RecordFormatter(DataDefinition dd, Hashtable<String, String> names, boolean isSearchForm, Object formIdentifier) {
+    public RecordFormatter(DataDefinition dd, Hashtable<String, String> names, boolean isSearchForm,
+            Object formIdentifier) {
         this.dd = dd;
         this.isSearchForm = isSearchForm;
         this.formIdentifier = formIdentifier;
@@ -83,24 +84,24 @@ public class RecordFormatter implements Serializable {
         for (int i = 0; i < dd.getFieldNames().size(); i++) {
             FieldDefinition fd = dd.getFieldDefinition(i);
             switch (fd.getIntegerType()) {
-            case FieldDefinition._ptr:
-            case FieldDefinition._ptrRel:
-            case FieldDefinition._ptrOne:
-            case FieldDefinition._ptrIndex:
-                formatterArray[i] = ptrFormatter.getInstance();
-                break;
-            case FieldDefinition._intEnum:
-                formatterArray[i] = intEnumFormatter.getInstance();
-                break;
-            case FieldDefinition._date:
-                formatterArray[i] = dateFormatter.getInstance();
-                break;
-            case FieldDefinition._dateCreate:
-            case FieldDefinition._dateModify:
-                formatterArray[i] = timestampFormatter.getInstance();
-                break;
-            default:
-                formatterArray[i] = FieldFormatter.getInstance();
+                case FieldDefinition._ptr:
+                case FieldDefinition._ptrRel:
+                case FieldDefinition._ptrOne:
+                case FieldDefinition._ptrIndex:
+                    formatterArray[i] = ptrFormatter.getInstance();
+                    break;
+                case FieldDefinition._intEnum:
+                    formatterArray[i] = intEnumFormatter.getInstance();
+                    break;
+                case FieldDefinition._date:
+                    formatterArray[i] = dateFormatter.getInstance();
+                    break;
+                case FieldDefinition._dateCreate:
+                case FieldDefinition._dateModify:
+                    formatterArray[i] = timestampFormatter.getInstance();
+                    break;
+                default:
+                    formatterArray[i] = FieldFormatter.getInstance();
             }
         }
     }

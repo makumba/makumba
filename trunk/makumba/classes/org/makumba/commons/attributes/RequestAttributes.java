@@ -53,7 +53,7 @@ import org.makumba.providers.TransactionProvider;
  * @version $Id: RequestAttributes.java 1707 2007-09-28 15:35:48Z manuel_gay $
  */
 public class RequestAttributes implements Attributes {
-    
+
     public static final String PARAMETERS_NAME = "makumba.parameters";
 
     public static final String ATTRIBUTES_NAME = "makumba.attributes";
@@ -83,21 +83,22 @@ public class RequestAttributes implements Attributes {
         }
         return (RequestAttributes) req.getAttribute(ATTRIBUTES_NAME);
     }
-    
+
     static Map<Object, Object> getFormRedirectionResponseParameters(HttpServletRequest req) {
         final HttpServletRequest httpServletRequest = req;
         final HttpSession session = httpServletRequest.getSession();
         final String suffix = "_" + httpServletRequest.getRequestURI();
-        
-        Map<Object, Object> sessionMap =  (Map<Object, Object>) session.getAttribute(ResponseControllerHandler.MAKUMBA_FORM_RELOAD_PARAMS + suffix);
-        if(sessionMap == null) {
+
+        Map<Object, Object> sessionMap = (Map<Object, Object>) session.getAttribute(ResponseControllerHandler.MAKUMBA_FORM_RELOAD_PARAMS
+                + suffix);
+        if (sessionMap == null) {
             return null;
         }
         session.removeAttribute(ResponseControllerHandler.MAKUMBA_FORM_RELOAD_PARAMS + suffix);
-        
+
         return sessionMap;
     }
-    
+
     static void setFormRedirectionResponseAttributes(HttpServletRequest req) {
         // check if we came from a form-redirection, and move info from the session to the request
         final HttpServletRequest httpServletRequest = req;
@@ -109,13 +110,12 @@ public class RequestAttributes implements Attributes {
 
         logger.fine("respFromSession: " + respFromSession + ", response: " + response);
         if (response == null && respFromSession != null) {
-            
+
             // set the attributes from the session to the request, clear the session values from this form
             String[] attributes = ResponderFactory.RESPONSE_ATTRIBUTE_NAMES;
             attributes = (String[]) ArrayUtils.add(attributes, ResponseControllerHandler.MAKUMBA_FORM_VALIDATION_ERRORS);
             attributes = (String[]) ArrayUtils.add(attributes, ResponseControllerHandler.MAKUMBA_FORM_RELOAD);
 
-            
             for (String attr : attributes) {
                 httpServletRequest.setAttribute(attr, session.getAttribute(attr + suffix));
                 logger.fine("Setting '" + attr + "' value: '" + req.getAttribute(attr + suffix) + "'.");
@@ -149,8 +149,6 @@ public class RequestAttributes implements Attributes {
             }
         }
     }
-    
-    
 
     static final public String PROVIDER_ATTRIBUTE = "org.makumba.providerAttribute";
 
@@ -182,12 +180,12 @@ public class RequestAttributes implements Attributes {
             return new MultipartHttpParameters(req);
         }
 
-        if(reloadedParams != null) {
+        if (reloadedParams != null) {
             return new HttpParameters(req, reloadedParams);
         } else {
             return new HttpParameters(req);
         }
-        
+
     }
 
     static public void setAttribute(HttpServletRequest req, String var, Object o) {

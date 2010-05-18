@@ -29,44 +29,42 @@ import java.util.Dictionary;
 
 public class timestampFormatter extends dateFormatter {
 
-	private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
-		static FieldFormatter singleton = new timestampFormatter();
-		
-		public void release() {
+    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+        static FieldFormatter singleton = new timestampFormatter();
+
+        public void release() {
             singleton = null;
         }
 
         public SingletonHolder() {
             org.makumba.commons.SingletonReleaser.register(this);
         }
-	}
+    }
 
-	private timestampFormatter() {
-	}
+    private timestampFormatter() {
+    }
 
-	public static FieldFormatter getInstance() {
-		return SingletonHolder.singleton;
-	}
+    public static FieldFormatter getInstance() {
+        return SingletonHolder.singleton;
+    }
 
-	@Override
+    @Override
     public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
-		DateFormat formatter = timestamp;
-		String s = (String) formatParams.get("format");
-		if (s != null) {
-			formatter = new SimpleDateFormat(s, org.makumba.MakumbaSystem
-					.getLocale());
-			formatter.setCalendar(calendar);
-		}
+        DateFormat formatter = timestamp;
+        String s = (String) formatParams.get("format");
+        if (s != null) {
+            formatter = new SimpleDateFormat(s, org.makumba.MakumbaSystem.getLocale());
+            formatter.setCalendar(calendar);
+        }
 
-		return formatter.format((java.util.Date) o);
-	}
+        return formatter.format((java.util.Date) o);
+    }
 
-	public static final DateFormat timestamp;
+    public static final DateFormat timestamp;
 
-	static {
-		timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S",
-				org.makumba.MakumbaSystem.getLocale());
-		timestamp.setCalendar(calendar);
-	}
+    static {
+        timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S", org.makumba.MakumbaSystem.getLocale());
+        timestamp.setCalendar(calendar);
+    }
 
 }

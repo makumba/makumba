@@ -28,28 +28,28 @@ import java.util.Dictionary;
 import org.makumba.Pointer;
 
 public class ptrFormatter extends FieldFormatter {
-	
-	private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
-		static FieldFormatter singleton = new ptrFormatter();
-		
-		public void release() {
+
+    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+        static FieldFormatter singleton = new ptrFormatter();
+
+        public void release() {
             singleton = null;
         }
 
         public SingletonHolder() {
             org.makumba.commons.SingletonReleaser.register(this);
         }
-	}
+    }
 
-	private ptrFormatter() {
-	}
+    private ptrFormatter() {
+    }
 
-	public static FieldFormatter getInstance() {
-		return SingletonHolder.singleton;
-	}
+    public static FieldFormatter getInstance() {
+        return SingletonHolder.singleton;
+    }
 
-	@Override
+    @Override
     public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
-		return ((Pointer) o).toExternalForm();
-	}
+        return ((Pointer) o).toExternalForm();
+    }
 }

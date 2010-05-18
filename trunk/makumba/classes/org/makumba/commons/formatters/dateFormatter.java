@@ -30,22 +30,22 @@ import java.util.Dictionary;
 import java.util.GregorianCalendar;
 
 public class dateFormatter extends FieldFormatter {
-	static String[] _params = { "default", "empty", "format" };
+    static String[] _params = { "default", "empty", "format" };
 
-	static String[][] _paramValues = { null, null, null };
+    static String[][] _paramValues = { null, null, null };
 
-	@Override
+    @Override
     public String[] getAcceptedParams() {
-		return _params;
-	}
+        return _params;
+    }
 
-	@Override
+    @Override
     public String[][] getAcceptedValue() {
-		return _paramValues;
-	}
-	
-	private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
-		static FieldFormatter singleton = new dateFormatter();
+        return _paramValues;
+    }
+
+    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+        static FieldFormatter singleton = new dateFormatter();
 
         public void release() {
             singleton = null;
@@ -54,43 +54,39 @@ public class dateFormatter extends FieldFormatter {
         public SingletonHolder() {
             org.makumba.commons.SingletonReleaser.register(this);
         }
-	}
+    }
 
-	/** Don't use this, use getInstance() */
-	protected dateFormatter() {
-	}
+    /** Don't use this, use getInstance() */
+    protected dateFormatter() {
+    }
 
-	public static FieldFormatter getInstance() {
-		return SingletonHolder.singleton;
-	}
+    public static FieldFormatter getInstance() {
+        return SingletonHolder.singleton;
+    }
 
-	@Override
+    @Override
     public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
-		DateFormat formatter = yearDate;
-		String s = (String) formatParams.get("format");
-		if (s != null) {
-			formatter = new SimpleDateFormat(s, org.makumba.MakumbaSystem
-					.getLocale());
-			formatter.setCalendar(calendar);
-		}
+        DateFormat formatter = yearDate;
+        String s = (String) formatParams.get("format");
+        if (s != null) {
+            formatter = new SimpleDateFormat(s, org.makumba.MakumbaSystem.getLocale());
+            formatter.setCalendar(calendar);
+        }
 
-		return formatter.format((java.util.Date) o);
-	}
+        return formatter.format((java.util.Date) o);
+    }
 
-	public static final Calendar calendar;
+    public static final Calendar calendar;
 
-	public static final DateFormat yearDate;
+    public static final DateFormat yearDate;
 
-	public static final DateFormat debugTime;
+    public static final DateFormat debugTime;
 
-	static {
-		calendar = new GregorianCalendar(org.makumba.MakumbaSystem
-				.getTimeZone());
-		yearDate = new SimpleDateFormat("dd MMMM yyyy",
-				org.makumba.MakumbaSystem.getLocale());
-		debugTime = new SimpleDateFormat("d MMMM yyyy HH:mm:ss zzz",
-				org.makumba.MakumbaSystem.getLocale());
-		yearDate.setCalendar(calendar);
-		debugTime.setCalendar(calendar);
-	}
+    static {
+        calendar = new GregorianCalendar(org.makumba.MakumbaSystem.getTimeZone());
+        yearDate = new SimpleDateFormat("dd MMMM yyyy", org.makumba.MakumbaSystem.getLocale());
+        debugTime = new SimpleDateFormat("d MMMM yyyy HH:mm:ss zzz", org.makumba.MakumbaSystem.getLocale());
+        yearDate.setCalendar(calendar);
+        debugTime.setCalendar(calendar);
+    }
 }

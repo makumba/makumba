@@ -32,6 +32,7 @@ import org.makumba.forms.html.FieldEditor;
 
 /**
  * Formats a specific field. Subclasses of this class are handling the different kind of fields.
+ * 
  * @author Cristian Bogdan
  * @author Stefan Baebler
  * @author Frederik Habilis
@@ -52,7 +53,7 @@ public class FieldFormatter {
 
     private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
         static FieldFormatter singleton = new FieldFormatter();
-        
+
         public void release() {
             singleton = null;
         }
@@ -171,7 +172,8 @@ public class FieldFormatter {
         }
     }
 
-    public String getIntParamString(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams, String name) {
+    public String getIntParamString(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams,
+            String name) {
         int n = getIntParam(rf, fieldIndex, formatParams, name);
         if (n == -1) {
             return "";
