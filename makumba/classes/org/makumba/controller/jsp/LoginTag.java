@@ -40,10 +40,9 @@ import org.makumba.analyser.AnalysableTag;
  * {@link AnalysableTag}
  * 
  * @author Cristian Bogdan
- * 
  */
 public class LoginTag extends BodyTagSupport {
-    
+
     private static final long serialVersionUID = 1L;
 
     static final String pageAttr = "org.makumba.original.request";
@@ -81,9 +80,9 @@ public class LoginTag extends BodyTagSupport {
 
             HttpServletRequest req = (HttpServletRequest) pageContext.getRequest().getAttribute(
                 org.makumba.devel.ErrorControllerHandler.ORIGINAL_REQUEST);
-            
+
             if (req == null && ((HttpServletRequest) pageContext.getRequest()).getRequestURI().endsWith("login.jsp")) {
-                throw new JspException(new LogicException("You cannot access/run a login.jsp page directly!"));                
+                throw new JspException(new LogicException("You cannot access/run a login.jsp page directly!"));
             }
 
             // retrieve the path info on original request
