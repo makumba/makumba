@@ -33,8 +33,8 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import org.makumba.DataDefinition;
-import org.makumba.Transaction;
 import org.makumba.InvalidValueException;
+import org.makumba.Transaction;
 import org.makumba.db.makumba.MakumbaTransactionProvider;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;

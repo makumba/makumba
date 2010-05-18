@@ -8,9 +8,6 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import org.hibernate.hql.ast.HqlParser;
-import org.hibernate.hql.ast.ParseErrorHandler;
-import org.hibernate.hql.ast.QuerySyntaxException;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.FieldDefinition;

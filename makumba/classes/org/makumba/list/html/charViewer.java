@@ -27,7 +27,6 @@ import java.util.Dictionary;
 
 import org.apache.commons.lang.StringUtils;
 import org.makumba.HtmlUtils;
-import org.makumba.MakumbaSystem;
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.InvalidValueException;
 import org.makumba.commons.formatters.RecordFormatter;

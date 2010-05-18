@@ -18,7 +18,6 @@ import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
-import org.makumba.providers.query.Pass1ASTPrinter;
 
 import antlr.ASTFactory;
 import antlr.collections.AST;

@@ -29,7 +29,6 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -38,11 +37,11 @@ import java.util.Properties;
 import java.util.Vector;
 
 import org.makumba.DataDefinition;
-import org.makumba.Transaction;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
 import org.makumba.Pointer;
+import org.makumba.Transaction;
 import org.makumba.providers.DataDefinitionProvider;
 
 /**

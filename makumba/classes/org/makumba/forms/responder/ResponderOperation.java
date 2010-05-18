@@ -1,6 +1,7 @@
 package org.makumba.forms.responder;
 
 import javax.servlet.http.HttpServletRequest;
+
 import org.makumba.LogicException;
 import org.makumba.Pointer;
 import org.makumba.commons.DbConnectionProvider;

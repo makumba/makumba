@@ -7,7 +7,6 @@ import javax.servlet.jsp.PageContext;
 
 import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
-import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;

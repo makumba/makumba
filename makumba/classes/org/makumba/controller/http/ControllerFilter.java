@@ -23,6 +23,9 @@
 
 package org.makumba.controller.http;
 
+import java.util.ArrayList;
+import java.util.StringTokenizer;
+
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -31,9 +34,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import java.util.ArrayList;
-import java.util.StringTokenizer;
 
 import org.makumba.commons.ControllerHandler;
 import org.makumba.commons.RuntimeWrappedException;

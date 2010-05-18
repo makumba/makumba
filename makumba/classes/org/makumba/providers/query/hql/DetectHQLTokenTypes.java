@@ -1,8 +1,8 @@
 package org.makumba.providers.query.hql;
-import java.lang.reflect.Field;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.lang.reflect.Field;
 
 /**
  * Generateds file org/makumba/db/hibernate/hql/HqlTokenTypes.txt<br/>

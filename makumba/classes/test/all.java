@@ -23,14 +23,14 @@
 
 package test;
 
+import junit.framework.Test;
+import junit.framework.TestResult;
+import junit.framework.TestSuite;
 import test.concurrency.ConcurrentTest;
 import test.tags.FormsHQLTest;
 import test.tags.FormsOQLTest;
 import test.tags.ListHQLTest;
 import test.tags.ListOQLTest;
-import junit.framework.Test;
-import junit.framework.TestResult;
-import junit.framework.TestSuite;
 
 /**
  * TestSuite that runs all the Makumba tests

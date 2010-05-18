@@ -26,7 +26,6 @@ import java.util.Vector;
 
 import org.makumba.commons.NamedResources;
 import org.makumba.db.makumba.MakumbaTransactionProvider;
-import org.makumba.providers.TransactionProvider;
 
 /** Copies one database to the other. Usage: 
  *  <code>java org.makumba.copy source dest type1 [type2 ...]</code>
