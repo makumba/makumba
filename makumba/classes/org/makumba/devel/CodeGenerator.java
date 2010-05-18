@@ -151,8 +151,7 @@ public class CodeGenerator {
             BufferedWriter out = new BufferedWriter(fw);
             StringBuffer sb = new StringBuffer();
             String action = getLabelNameFromDataDefinition(dd) + "View.jsp";
-            new CodeGenerator().generateCode(sb, element, dd, action, template,
-                MakumbaJspAnalyzer.QL_OQL);
+            new CodeGenerator().generateCode(sb, element, dd, action, template, MakumbaJspAnalyzer.QL_OQL);
             out.write(sb.toString());
             out.close();
         }

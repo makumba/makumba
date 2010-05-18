@@ -135,8 +135,7 @@ public class ErrorFormatter {
                 // JSP exceptions
                 // ==> as a quick fix, we treat those as unknown errors
                 if (isRuntimeJspErrors(t)) {
-                    treatJspRuntimeException(original, t, wr, req, this.servletContext,
-                        printHeaderFooter);
+                    treatJspRuntimeException(original, t, wr, req, this.servletContext, printHeaderFooter);
                     return;
                 } else {
                     Throwable rootCause = ((ServletException) t).getRootCause();

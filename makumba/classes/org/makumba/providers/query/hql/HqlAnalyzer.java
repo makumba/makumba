@@ -213,7 +213,8 @@ public class HqlAnalyzer implements QueryAnalysis {
         for (int i = 0; i < w.size(); i++) {
             result += i + " FieldDef Name: " + this.getProjectionType().getFieldDefinition(i).getName() + "\n";
             result += i + " FieldDef Type: " + this.getProjectionType().getFieldDefinition(i).getType() + "\n";
-            result += i + " FieldDef Comment: " + this.getProjectionType().getFieldDefinition(i).getDescription() + "\n";
+            result += i + " FieldDef Comment: " + this.getProjectionType().getFieldDefinition(i).getDescription()
+                    + "\n";
         }
 
         return result;

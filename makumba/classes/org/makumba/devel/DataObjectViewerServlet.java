@@ -157,8 +157,8 @@ public class DataObjectViewerServlet extends DataServlet {
                                 Dictionary<String, Object> dictionary = vSet.elementAt(j);
                                 String setTitle = String.valueOf(dictionary.get("setTitle"));
                                 if (fd.getIntegerType() == FieldDefinition._setIntEnum) {
-                                    writer.print(" " + setTitle + " <i>(="
-                                            + fd.getNameFor(Integer.parseInt(setTitle)) + ")</i>");
+                                    writer.print(" " + setTitle + " <i>(=" + fd.getNameFor(Integer.parseInt(setTitle))
+                                            + ")</i>");
                                     isEmpty = false;
                                 } else {
                                     Pointer ptrSetEntry = (Pointer) dictionary.get("setEntry");
