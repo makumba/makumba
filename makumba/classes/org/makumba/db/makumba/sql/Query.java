@@ -52,7 +52,7 @@ public class Query implements org.makumba.db.makumba.Query {
     TableManager resultHandler;
 
     MqlQueryAnalysis qA;
-    
+
     ParameterAssigner assigner;
 
     String limitSyntax;
@@ -69,10 +69,12 @@ public class Query implements org.makumba.db.makumba.Query {
 
     /**
      * Gets the raw SQL query to be executed
+     * 
      * @return the SQL query string to be sent to the database, given a set of arguments
      */
     public String getCommand(Map<String, Object> arguments) {
-        return MqlSQLParameterTransformer.getSQLQueryGenerator((MqlQueryAnalysis)qA, arguments).getSQLQuery(db.getNameResolverHook());
+        return MqlSQLParameterTransformer.getSQLQueryGenerator((MqlQueryAnalysis) qA, arguments).getSQLQuery(
+            db.getNameResolverHook());
     }
 
     public Query(Database db, String MQLQuery, String insertIn) {
@@ -89,7 +91,7 @@ public class Query implements org.makumba.db.makumba.Query {
             e.printStackTrace();
         }
 
-        qA = (MqlQueryAnalysis)( (insertIn != null && insertIn.length() > 0) ? qap.getQueryAnalysis(MQLQuery, insertIn)
+        qA = (MqlQueryAnalysis) ((insertIn != null && insertIn.length() > 0) ? qap.getQueryAnalysis(MQLQuery, insertIn)
                 : qap.getQueryAnalysis(MQLQuery));
 
         resultHandler = (TableManager) db.makePseudoTable(qA.getProjectionType());
@@ -103,14 +105,14 @@ public class Query implements org.makumba.db.makumba.Query {
     }
 
     public Vector<Dictionary<String, Object>> execute(Map<String, Object> args, DBConnection dbc, int offset, int limit) {
-        if((insertIn==null || insertIn.length()==0) && qA.getConstantValues()!=null)
+        if ((insertIn == null || insertIn.length() == 0) && qA.getConstantValues() != null)
             // no need to send the query to the sql engine
             return getConstantResult(args, offset, limit);
-        
-        MqlSQLParameterTransformer qG = MqlSQLParameterTransformer.getSQLQueryGenerator((MqlQueryAnalysis)qA, args);
-        
+
+        MqlSQLParameterTransformer qG = MqlSQLParameterTransformer.getSQLQueryGenerator((MqlQueryAnalysis) qA, args);
+
         assigner = new ParameterAssigner(db, qA, qG);
-        
+
         String com = qG.getSQLQuery(db.getNameResolverHook());
         if (supportsLimitInQuery) {
             com += " " + limitSyntax; // TODO: it might happen that it should be in other places than at the end.
@@ -122,9 +124,9 @@ public class Query implements org.makumba.db.makumba.Query {
 
             if (supportsLimitInQuery) {
                 int limit1 = limit == -1 ? Integer.MAX_VALUE : limit;
-                
+
                 // FIXME this should be checked earlier, see http://bugs.makumba.org/show_bug.cgi?id=1191
-                if(ps.getParameterMetaData().getParameterCount() < assigner.qG.getArgumentCount() + 2) {
+                if (ps.getParameterMetaData().getParameterCount() < assigner.qG.getArgumentCount() + 2) {
                     throw new InvalidValueException("Wrong number of arguments passed to query ");
                 }
 
@@ -199,10 +201,10 @@ public class Query implements org.makumba.db.makumba.Query {
 
     public int insert(Map<String, Object> args, DBConnection dbc) {
 
-        MqlSQLParameterTransformer qG = MqlSQLParameterTransformer.getSQLQueryGenerator((MqlQueryAnalysis)qA, args);
+        MqlSQLParameterTransformer qG = MqlSQLParameterTransformer.getSQLQueryGenerator((MqlQueryAnalysis) qA, args);
 
         assigner = new ParameterAssigner(db, qA, qG);
-        
+
         String comma = "";
         StringBuffer fieldList = new StringBuffer();
         for (String string : resultHandler.getDataDefinition().getFieldNames()) {
@@ -244,23 +246,23 @@ public class Query implements org.makumba.db.makumba.Query {
             throw new org.makumba.DBError(e);
         }
     }
-    
+
     private Vector<Dictionary<String, Object>> getConstantResult(Map<String, Object> args, int offset, int limit) {
-        Vector<Dictionary<String, Object>> ret= new Vector<Dictionary<String, Object>>(1);
-        if(offset>0 || limit ==0)
+        Vector<Dictionary<String, Object>> ret = new Vector<Dictionary<String, Object>>(1);
+        if (offset > 0 || limit == 0)
             return ret;
-        Hashtable<String, Object> row= new Hashtable<String, Object>();
-        
-        for(String s:qA.getConstantValues().keySet()){
-            Object column= qA.getConstantValues().get(s);
-            if(column instanceof MqlQueryAnalysis.ParamConstant)
-                row.put(s, args.get(((MqlQueryAnalysis.ParamConstant)column).getParamName()));
+        Hashtable<String, Object> row = new Hashtable<String, Object>();
+
+        for (String s : qA.getConstantValues().keySet()) {
+            Object column = qA.getConstantValues().get(s);
+            if (column instanceof MqlQueryAnalysis.ParamConstant)
+                row.put(s, args.get(((MqlQueryAnalysis.ParamConstant) column).getParamName()));
             else
                 row.put(s, column);
         }
         ret.add(row);
         return ret;
-        
+
     }
 
 }

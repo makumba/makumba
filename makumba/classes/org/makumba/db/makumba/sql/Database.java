@@ -53,78 +53,84 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
  * An SQL database, using JDBC. This class should comply with SQL-92
  */
 public class Database extends org.makumba.db.makumba.Database {
-    
-	Properties connectionConfig = new Properties();
 
-	String url;
+    Properties connectionConfig = new Properties();
 
-	protected static String eng; //
+    String url;
 
-	boolean addUnderscore = true;
+    protected static String eng; //
 
-	Hashtable<String, Vector<Hashtable<String, Object>>> catalog = null;
+    boolean addUnderscore = true;
+
+    Hashtable<String, Vector<Hashtable<String, Object>>> catalog = null;
 
     private NameResolver nrh;
 
-	static final int DESIRED_TRANSACTION_LEVEL = java.sql.Connection.TRANSACTION_REPEATABLE_READ;
+    static final int DESIRED_TRANSACTION_LEVEL = java.sql.Connection.TRANSACTION_REPEATABLE_READ;
 
-	static Properties sqlDrivers;
-	//static boolean requestUTF8 = false;
-	
+    static Properties sqlDrivers;
+
+    // static boolean requestUTF8 = false;
+
     protected ComboPooledDataSource pooledDataSource;
 
-	public String getEngine() {
-		return eng;
-	}
+    public String getEngine() {
+        return eng;
+    }
 
-	public static String getEngineProperty(String s) {
-		return sqlDrivers.getProperty(s);
-	}
-	
-	static public boolean supportsUTF8() {
-	    if(requestUTF8 == false) return false;
-	    if(sqlDrivers.getProperty(eng+".utf8") == null) return false;
-	    if(sqlDrivers.getProperty(eng+".utf8").equals("true")) return requestUTF8;
-	    return false;
-	}
+    public static String getEngineProperty(String s) {
+        return sqlDrivers.getProperty(s);
+    }
 
-    static public boolean supportsForeignKeys() {
-        if(requestForeignKeys == false) return false;
-        if(sqlDrivers.getProperty(eng+".foreignKeys") == null) return false;
-        if(sqlDrivers.getProperty(eng+".foreignKeys").equals("true")) return requestForeignKeys;
+    static public boolean supportsUTF8() {
+        if (requestUTF8 == false)
+            return false;
+        if (sqlDrivers.getProperty(eng + ".utf8") == null)
+            return false;
+        if (sqlDrivers.getProperty(eng + ".utf8").equals("true"))
+            return requestUTF8;
         return false;
     }
-    
-	@Override
+
+    static public boolean supportsForeignKeys() {
+        if (requestForeignKeys == false)
+            return false;
+        if (sqlDrivers.getProperty(eng + ".foreignKeys") == null)
+            return false;
+        if (sqlDrivers.getProperty(eng + ".foreignKeys").equals("true"))
+            return requestForeignKeys;
+        return false;
+    }
+
+    @Override
     protected DBConnection makeDBConnection() {
-		try {
-			return new SQLDBConnection(this, tp, pooledDataSource);
-		
-		/*} FIXME this should be handled via SQL states and not the instance of the class 
-		 * catch(com.mysql.jdbc.CommunicationsException ce) {
-		    // it may be that a connection returned by the pooledDataSource is in fact stale
-		    // in that case we warn the user that there is a problem
-		    // TODO in fact we should try to get another connection or figure out if the connection given by the pool is valid
-		    // but this should be done by the pool...
-		    logException(ce);
-		    throw new DBError(ce, "Communications exception in database connection, make sure the timeout option 'MaxIdleTime' (current value: )" + pooledDataSource.getMaxIdleTime() + " s) is smaller than the connection timeout of your database server");
-		*/} catch (SQLException e) {
-			logException(e);
-			throw new DBError(e);
-		}
-	}
+        try {
+            return new SQLDBConnection(this, tp, pooledDataSource);
 
-	static {
-		sqlDrivers = new Properties();
-		try {
-			sqlDrivers.load(org.makumba.commons.ClassResource.get(
-					"org/makumba/db/makumba/sql/sqlEngines.properties").openStream());
-		} catch (Exception e) {
-			throw new org.makumba.MakumbaError(e);
-		}
-	}
+            /*} FIXME this should be handled via SQL states and not the instance of the class 
+             * catch(com.mysql.jdbc.CommunicationsException ce) {
+                // it may be that a connection returned by the pooledDataSource is in fact stale
+                // in that case we warn the user that there is a problem
+                // TODO in fact we should try to get another connection or figure out if the connection given by the pool is valid
+                // but this should be done by the pool...
+                logException(ce);
+                throw new DBError(ce, "Communications exception in database connection, make sure the timeout option 'MaxIdleTime' (current value: )" + pooledDataSource.getMaxIdleTime() + " s) is smaller than the connection timeout of your database server");
+            */} catch (SQLException e) {
+            logException(e);
+            throw new DBError(e);
+        }
+    }
 
-	/**
+    static {
+        sqlDrivers = new Properties();
+        try {
+            sqlDrivers.load(org.makumba.commons.ClassResource.get("org/makumba/db/makumba/sql/sqlEngines.properties").openStream());
+        } catch (Exception e) {
+            throw new org.makumba.MakumbaError(e);
+        }
+    }
+
+/**
 	 * Initialize the database. Use Database.getDatabase to initilize a SQL
 	 * database! This constructor will be invoked there (thus it should be
 	 * hidden :). Besides the properties needed for the org.makumba.db.Database,
@@ -165,365 +171,349 @@ public class Database extends org.makumba.db.makumba.Database {
 	 * connection with mysql will also be made in utf8
 	 * </dl>
 	 */
-	public Database(Properties p) {
-		super(p);
-		nrh= new NameResolverHook(this);
-		try {
+    public Database(Properties p) {
+        super(p);
+        nrh = new NameResolverHook(this);
+        try {
 
-            if(p.getProperty("encoding") != null && p.getProperty("encoding").equals("utf8")) 
+            if (p.getProperty("encoding") != null && p.getProperty("encoding").equals("utf8"))
                 requestUTF8 = true;
 
             // set engine
             eng = p.getProperty("#sqlEngine");
 
-		    // set JDBC Connection URL
-		    if(p.getProperty("jdbc_url") != null) {
-		        url = p.getProperty("jdbc_url");
-		    } else {
-	            url = getJdbcUrl(p);
-		    }
-		    
-		    p.put("jdbc_url", url);
-		    
-			String s;
+            // set JDBC Connection URL
+            if (p.getProperty("jdbc_url") != null) {
+                url = p.getProperty("jdbc_url");
+            } else {
+                url = getJdbcUrl(p);
+            }
 
-			for (Enumeration e = p.keys(); e.hasMoreElements();) {
-				s = (String) e.nextElement();
-				if (!s.startsWith("sql."))
-					continue;
-				connectionConfig.put(s.substring(4), p.getProperty(s).trim());
-			}
+            p.put("jdbc_url", url);
 
-			String driver = p.getProperty("sql.driver");
-			
-            if(p.getProperty("foreignKeys") != null && p.getProperty("foreignKeys").equals("true")) 
+            String s;
+
+            for (Enumeration e = p.keys(); e.hasMoreElements();) {
+                s = (String) e.nextElement();
+                if (!s.startsWith("sql."))
+                    continue;
+                connectionConfig.put(s.substring(4), p.getProperty(s).trim());
+            }
+
+            String driver = p.getProperty("sql.driver");
+
+            if (p.getProperty("foreignKeys") != null && p.getProperty("foreignKeys").equals("true"))
                 requestForeignKeys = true;
-			
-			if (driver == null)
-				driver = sqlDrivers.getProperty(getConfiguration("#sqlEngine"));
 
-			if (driver == null)
-				driver = sqlDrivers.getProperty(url.substring(5, url.indexOf(
-						':', 6)));
+            if (driver == null)
+                driver = sqlDrivers.getProperty(getConfiguration("#sqlEngine"));
 
-			java.util.logging.Logger.getLogger("org.makumba.db.init").info(
-					"Makumba " + MakumbaSystem.getVersion() + " INIT: " + url);
-			Class.forName(driver);
-			
+            if (driver == null)
+                driver = sqlDrivers.getProperty(url.substring(5, url.indexOf(':', 6)));
 
-			// initialise the c3p0 pooled data source
-	        pooledDataSource = new ComboPooledDataSource();
-			pooledDataSource.setDriverClass(driver);
-			pooledDataSource.setJdbcUrl(url);
-			
-			// some default configuration that should fit any kind of makumba webapp
+            java.util.logging.Logger.getLogger("org.makumba.db.init").info(
+                "Makumba " + MakumbaSystem.getVersion() + " INIT: " + url);
+            Class.forName(driver);
+
+            // initialise the c3p0 pooled data source
+            pooledDataSource = new ComboPooledDataSource();
+            pooledDataSource.setDriverClass(driver);
+            pooledDataSource.setJdbcUrl(url);
+
+            // some default configuration that should fit any kind of makumba webapp
             // this can anyway be overriden in Makumba.conf
             pooledDataSource.setAcquireIncrement(5);
             pooledDataSource.setMaxIdleTime(1800); // 30 mins
-            
-			pooledDataSource.setProperties(connectionConfig);
-			
-			
-			DBConnectionWrapper dbcw = (DBConnectionWrapper) getDBConnection();
-			SQLDBConnection dbc = (SQLDBConnection) dbcw.getWrapped();
-			try {
-				p.put("sql_engine.name", dbc.getMetaData()
-						.getDatabaseProductName().trim());
-				p.put("sql_engine.version", dbc.getMetaData()
-						.getDatabaseProductVersion().trim());
-				p.put("jdbc_driver.name", dbc.getMetaData().getDriverName()
-						.trim());
-				p.put("jdbc_driver.version", dbc.getMetaData()
-						.getDriverVersion().trim());
 
-				java.util.logging.Logger.getLogger("org.makumba.db.init").info(
-						"\tconnected to " + p.get("sql_engine.name")
-								+ " version: " + p.get("sql_engine.version")
-								+ "\n\tusing " + p.get("jdbc_driver.name")
-								+ " version: " + p.get("jdbc_driver.version")
-								+ ("\n\tusing "+(isAutoIncrement()?"auto increment (no DBSV)":"DBSV " + p.get("dbsv"))));
-				if (!dbc.getMetaData().supportsTransactionIsolationLevel(
-						DESIRED_TRANSACTION_LEVEL)) {
-					java.util.logging.Logger.getLogger("org.makumba.db.init").warning(
-							"transaction isolation level "
-									+ DESIRED_TRANSACTION_LEVEL
-									+ " not supported, using "
-									+ dbc.getMetaData()
-											.getDefaultTransactionIsolation());
-				}
+            pooledDataSource.setProperties(connectionConfig);
 
-				readCatalog(dbc);
+            DBConnectionWrapper dbcw = (DBConnectionWrapper) getDBConnection();
+            SQLDBConnection dbc = (SQLDBConnection) dbcw.getWrapped();
+            try {
+                p.put("sql_engine.name", dbc.getMetaData().getDatabaseProductName().trim());
+                p.put("sql_engine.version", dbc.getMetaData().getDatabaseProductVersion().trim());
+                p.put("jdbc_driver.name", dbc.getMetaData().getDriverName().trim());
+                p.put("jdbc_driver.version", dbc.getMetaData().getDriverVersion().trim());
 
-			} finally {
-				dbcw.close();
-			}
-		} catch (Exception e) {
-			throw new org.makumba.MakumbaError(e);
-		}
-	}
-	
-	@Override
-	protected void closeResourcePool() {
-	    pooledDataSource.close();
-	}
-	
-	@Override
-	protected int getResourcePoolSize() {
-	    try {
+                java.util.logging.Logger.getLogger("org.makumba.db.init").info(
+                    "\tconnected to "
+                            + p.get("sql_engine.name")
+                            + " version: "
+                            + p.get("sql_engine.version")
+                            + "\n\tusing "
+                            + p.get("jdbc_driver.name")
+                            + " version: "
+                            + p.get("jdbc_driver.version")
+                            + ("\n\tusing " + (isAutoIncrement() ? "auto increment (no DBSV)" : "DBSV " + p.get("dbsv"))));
+                if (!dbc.getMetaData().supportsTransactionIsolationLevel(DESIRED_TRANSACTION_LEVEL)) {
+                    java.util.logging.Logger.getLogger("org.makumba.db.init").warning(
+                        "transaction isolation level " + DESIRED_TRANSACTION_LEVEL + " not supported, using "
+                                + dbc.getMetaData().getDefaultTransactionIsolation());
+                }
+
+                readCatalog(dbc);
+
+            } finally {
+                dbcw.close();
+            }
+        } catch (Exception e) {
+            throw new org.makumba.MakumbaError(e);
+        }
+    }
+
+    @Override
+    protected void closeResourcePool() {
+        pooledDataSource.close();
+    }
+
+    @Override
+    protected int getResourcePoolSize() {
+        try {
             return pooledDataSource.getNumConnectionsDefaultUser();
         } catch (SQLException e) {
             logException(e);
             return -1;
         }
-	}
-	
-	@Override
-	protected int getIdleConnections() {
-	    try {
+    }
+
+    @Override
+    protected int getIdleConnections() {
+        try {
             return pooledDataSource.getNumIdleConnectionsDefaultUser();
         } catch (SQLException e) {
             logException(e);
             return -1;
         }
-	}
-	
-	@Override
-	protected int getOpenedConnections() {
-	    try {
-	        return pooledDataSource.getNumBusyConnectionsDefaultUser();
+    }
+
+    @Override
+    protected int getOpenedConnections() {
+        try {
+            return pooledDataSource.getNumBusyConnectionsDefaultUser();
         } catch (SQLException e) {
             logException(e);
             return -1;
         }
-	}
-	
-	@Override
-	protected DBConnection getPooledDBConnection() {
-	    return makeDBConnection();
-	}
+    }
 
-	protected void readCatalog(SQLDBConnection dbc) throws SQLException {
-		Exception ex = null;
-		Hashtable<String, Vector<Hashtable<String, Object>>> c = new Hashtable<String, Vector<Hashtable<String, Object>>>();
-		boolean failed = false;
-		try {
-			ResultSet rs = dbc.getMetaData().getColumns(null, null, "%", null);
-			if (rs == null)
-				failed = true;
-			else
-				while (rs.next()) {
-					String tn = rs.getString("TABLE_NAME");
-					Vector<Hashtable<String, Object>> v = (Vector<Hashtable<String, Object>>) c.get(tn);
-					if (v == null)
-						c.put(tn, v = new Vector<Hashtable<String, Object>>());
-					Hashtable<String, Object> h = new Hashtable<String, Object>(5);
-					h.put("COLUMN_NAME", rs.getString("COLUMN_NAME"));
-					h.put("DATA_TYPE", new Integer(rs.getInt("DATA_TYPE")));
-					h.put("TYPE_NAME", rs.getString("TYPE_NAME"));
-					h.put("COLUMN_SIZE", new Integer(rs.getInt("COLUMN_SIZE")));
+    @Override
+    protected DBConnection getPooledDBConnection() {
+        return makeDBConnection();
+    }
+
+    protected void readCatalog(SQLDBConnection dbc) throws SQLException {
+        Exception ex = null;
+        Hashtable<String, Vector<Hashtable<String, Object>>> c = new Hashtable<String, Vector<Hashtable<String, Object>>>();
+        boolean failed = false;
+        try {
+            ResultSet rs = dbc.getMetaData().getColumns(null, null, "%", null);
+            if (rs == null)
+                failed = true;
+            else
+                while (rs.next()) {
+                    String tn = rs.getString("TABLE_NAME");
+                    Vector<Hashtable<String, Object>> v = (Vector<Hashtable<String, Object>>) c.get(tn);
+                    if (v == null)
+                        c.put(tn, v = new Vector<Hashtable<String, Object>>());
+                    Hashtable<String, Object> h = new Hashtable<String, Object>(5);
+                    h.put("COLUMN_NAME", rs.getString("COLUMN_NAME"));
+                    h.put("DATA_TYPE", new Integer(rs.getInt("DATA_TYPE")));
+                    h.put("TYPE_NAME", rs.getString("TYPE_NAME"));
+                    h.put("COLUMN_SIZE", new Integer(rs.getInt("COLUMN_SIZE")));
                     h.put("IS_NULLABLE", rs.getString("IS_NULLABLE"));
-					v.addElement(h);
-				}
-			rs.close();
-		} catch (SQLException e) {
-			failed = true;
-			ex = e;
-		}
-		if (failed) {
-			java.util.logging.Logger.getLogger("org.makumba.db.init").severe(
-					"failed to read catalog " + ex);
-		} else {
-			catalog = c;
-		}
-	}
+                    v.addElement(h);
+                }
+            rs.close();
+        } catch (SQLException e) {
+            failed = true;
+            ex = e;
+        }
+        if (failed) {
+            java.util.logging.Logger.getLogger("org.makumba.db.init").severe("failed to read catalog " + ex);
+        } else {
+            catalog = c;
+        }
+    }
 
-	/**
-	 * builds a JDBC Connection URL given the host, sqlEngine and database properties
-	 */
-	protected String getJdbcUrl(Properties p) {
-	    
-		String _url = "jdbc:";
-		_url += eng + ":";
-		String local = getEngineProperty(eng + ".localJDBC");
-		if (local == null || !local.equals("true"))
-			_url += "//" + p.getProperty("#host") + "/";
-		return _url + p.getProperty("#database")+(supportsUTF8()?"?useEncoding=true&characterEncoding=UTF-8":"");
-	}
+    /**
+     * builds a JDBC Connection URL given the host, sqlEngine and database properties
+     */
+    protected String getJdbcUrl(Properties p) {
 
-	@Override
+        String _url = "jdbc:";
+        _url += eng + ":";
+        String local = getEngineProperty(eng + ".localJDBC");
+        if (local == null || !local.equals("true"))
+            _url += "//" + p.getProperty("#host") + "/";
+        return _url + p.getProperty("#database") + (supportsUTF8() ? "?useEncoding=true&characterEncoding=UTF-8" : "");
+    }
+
+    @Override
     public org.makumba.db.makumba.Query prepareQueryImpl(String oqlQuery, String insertIn) {
-		return new Query(this, oqlQuery, insertIn);
-	}
+        return new Query(this, oqlQuery, insertIn);
+    }
 
-	@Override
+    @Override
     public Update prepareUpdateImpl(String type, String set, String where) {
-		return new SQLUpdate(this, type, set, where);
-	}
+        return new SQLUpdate(this, type, set, where);
+    }
 
-	@Override
+    @Override
     public int getMinPointerValue() {
-		return getDbsv() << SQLPointer.getMaskOrder();
-	}
+        return getDbsv() << SQLPointer.getMaskOrder();
+    }
 
-	@Override
+    @Override
     public int getMaxPointerValue() {
-		return ((getDbsv() + 1) << SQLPointer.getMaskOrder()) - 1;
-	}
+        return ((getDbsv() + 1) << SQLPointer.getMaskOrder()) - 1;
+    }
 
-	@Override
+    @Override
     protected Class<?> getTableClassConfigured() {
-		String tcs;
-		try {
-			if ((tcs = getConfiguration(MakumbaTransactionProvider.TABLE_CLASS)) != null
-					|| (tcs = sqlDrivers
-							.getProperty(getConfiguration("#sqlEngine")
-									+ "." + MakumbaTransactionProvider.TABLE_CLASS)) != null)
-				return Class.forName(tcs);
-			else
-				return getTableClass();
-		} catch (Exception e) {
-			throw new org.makumba.MakumbaError(e);
-		}
-	}
+        String tcs;
+        try {
+            if ((tcs = getConfiguration(MakumbaTransactionProvider.TABLE_CLASS)) != null
+                    || (tcs = sqlDrivers.getProperty(getConfiguration("#sqlEngine") + "."
+                            + MakumbaTransactionProvider.TABLE_CLASS)) != null)
+                return Class.forName(tcs);
+            else
+                return getTableClass();
+        } catch (Exception e) {
+            throw new org.makumba.MakumbaError(e);
+        }
+    }
 
-	protected Class<?> getTableClass() {
-		return org.makumba.db.makumba.sql.TableManager.class;
-	}
+    protected Class<?> getTableClass() {
+        return org.makumba.db.makumba.sql.TableManager.class;
+    }
 
-	/**
-	 * escapes all apostrophes from a string and puts the string into
-	 * apostrophes to be added in a sql command
-	 */
-	public static String SQLEscape(String s) {
-		StringBuffer sb = new StringBuffer("\'");
-		int n = s.length();
-		for (int i = 0; i < n; i++) {
-			char c = s.charAt(i);
-			if (c == '\'')
-				sb.append('\\');
-			else if (c == '\\')
-				sb.append('\\');
-			else if (c == '\"')
-				sb.append('\\');
-			else if ((int) c == 0) {
-				sb.append("\\0");
-				continue;
-			}
-			sb.append(c);
+    /**
+     * escapes all apostrophes from a string and puts the string into apostrophes to be added in a sql command
+     */
+    public static String SQLEscape(String s) {
+        StringBuffer sb = new StringBuffer("\'");
+        int n = s.length();
+        for (int i = 0; i < n; i++) {
+            char c = s.charAt(i);
+            if (c == '\'')
+                sb.append('\\');
+            else if (c == '\\')
+                sb.append('\\');
+            else if (c == '\"')
+                sb.append('\\');
+            else if ((int) c == 0) {
+                sb.append("\\0");
+                continue;
+            }
+            sb.append(c);
 
-		}
-		sb.append('\'');
-		return sb.toString();
-	}
+        }
+        sb.append('\'');
+        return sb.toString();
+    }
 
-	/**
-	 * check the sql state of a SQL exception and throw a DBError if it is not
-	 * equal with the given state
-	 */
-	protected void checkState(SQLException e, String state) {
-		checkState(e, state, null);
-	}
+    /**
+     * check the sql state of a SQL exception and throw a DBError if it is not equal with the given state
+     */
+    protected void checkState(SQLException e, String state) {
+        checkState(e, state, null);
+    }
 
-	/**
-	 * check the sql state of a SQL exception and throw a DBError if it is not
-	 * equal with the given state
-	 */
-	protected void checkState(SQLException e, String state, String command) {
-		state = sqlDrivers.getProperty(getConfiguration("#sqlEngine") + "."
-				+ state);
-		if (state != null && e.getSQLState().equals(state))
-			return;
-		java.util.logging.Logger.getLogger("org.makumba.db.init.tablechecking").log(
-				java.util.logging.Level.SEVERE, "" + e.getSQLState(), e);
-		throw new org.makumba.DBError(e, command);
-	}
+    /**
+     * check the sql state of a SQL exception and throw a DBError if it is not equal with the given state
+     */
+    protected void checkState(SQLException e, String state, String command) {
+        state = sqlDrivers.getProperty(getConfiguration("#sqlEngine") + "." + state);
+        if (state != null && e.getSQLState().equals(state))
+            return;
+        java.util.logging.Logger.getLogger("org.makumba.db.init.tablechecking").log(java.util.logging.Level.SEVERE,
+            "" + e.getSQLState(), e);
+        throw new org.makumba.DBError(e, command);
+    }
 
-	/**
-	 * execute a prepared statement and log it, and its exceptions. return the
-	 * number of records affected, or -1 if a duplicate error appeared
-	 */
-	protected int exec(PreparedStatement ps) {
-		try {
-			java.util.logging.Logger.getLogger("org.makumba.db.update.execution").fine(
-					getWrappedStatementToString(ps));
-			ps.execute();
-			int n = ps.getUpdateCount();
+    /**
+     * execute a prepared statement and log it, and its exceptions. return the number of records affected, or -1 if a
+     * duplicate error appeared
+     */
+    protected int exec(PreparedStatement ps) {
+        try {
+            java.util.logging.Logger.getLogger("org.makumba.db.update.execution").fine(getWrappedStatementToString(ps));
+            ps.execute();
+            int n = ps.getUpdateCount();
             ps.close();
-			return n;
-		} catch (SQLException e) {
-			if (isDuplicateException(e))
-				return -1;
-			logException(e);
-			throw new DBError(e);
-		}
-	}
+            return n;
+        } catch (SQLException e) {
+            if (isDuplicateException(e))
+                return -1;
+            logException(e);
+            throw new DBError(e);
+        }
+    }
 
-	/**
-	 * return whether the exception indicates a duplicate. may need to be
-	 * specified differently for certain database engines
-	 */
-	@Override
+    /**
+     * return whether the exception indicates a duplicate. may need to be specified differently for certain database
+     * engines
+     */
+    @Override
     public boolean isDuplicateException(SQLException e) {
-		return e.getMessage().toLowerCase().indexOf("duplicate") != -1;
-	}
-	
-	@Override
-	public Map<String, String> getDuplicateFields(SQLException e) {
-	    throw new MakumbaError("Method not implemented for this database driver, please contact the developers");
-	}
-	
-	
+        return e.getMessage().toLowerCase().indexOf("duplicate") != -1;
+    }
+
+    @Override
+    public Map<String, String> getDuplicateFields(SQLException e) {
+        throw new MakumbaError("Method not implemented for this database driver, please contact the developers");
+    }
 
     public boolean isForeignKeyViolationException(SQLException se) {
         return se.getMessage().toLowerCase().contains("a foreign key constraint fails");
     }
-	
-	static void logException(SQLException e) {
-		logException(e, null);
-	}
+
+    static void logException(SQLException e) {
+        logException(e, null);
+    }
 
     static void logException(SQLException e, DBConnection dbc) {
         logException(e, dbc, Level.WARNING);
     }
-	static void logException(SQLException e, DBConnection dbc, Level lev) {
-        if(!java.util.logging.Logger.getLogger("org.makumba.db.exception").isLoggable(lev))
+
+    static void logException(SQLException e, DBConnection dbc, Level lev) {
+        if (!java.util.logging.Logger.getLogger("org.makumba.db.exception").isLoggable(lev))
             return;
-		String log = "";
-		if (dbc != null)
-			log = dbc.toString() + " ";
-		for (SQLException se1 = e; se1 != null; se1 = se1.getNextException()) {
-			log += se1.getMessage() + " SQL state: " + se1.getSQLState()
-					+ " error code :" + se1.getErrorCode() + "\n";
-		}
+        String log = "";
+        if (dbc != null)
+            log = dbc.toString() + " ";
+        for (SQLException se1 = e; se1 != null; se1 = se1.getNextException()) {
+            log += se1.getMessage() + " SQL state: " + se1.getSQLState() + " error code :" + se1.getErrorCode() + "\n";
+        }
 
-		java.util.logging.Logger.getLogger("org.makumba.db.exception").log(lev, "" + log);
-	}
+        java.util.logging.Logger.getLogger("org.makumba.db.exception").log(lev, "" + log);
+    }
 
-	/** write a date into an OQL query */
-	@Override
+    /** write a date into an OQL query */
+    @Override
     public String OQLDate(java.util.Date d) {
-		return "date" + "\"" + new Timestamp(d.getTime()) + "\"";
-	}
+        return "date" + "\"" + new Timestamp(d.getTime()) + "\"";
+    }
 
-	@Override
+    @Override
     public Pointer getPointer(String type, int uid) {
-		return new SQLPointer(type, getDbsv(), uid);
-	}
-	
-	/** whether specific engine supports LIMIT & OFFSET extensions to the SQL-92 syntax */
-	public boolean supportsLimitInQuery() {
-		return true;
-	}
+        return new SQLPointer(type, getDbsv(), uid);
+    }
 
-	public String getLimitSyntax() {
-		return "LIMIT ?, ?";
-	}
+    /** whether specific engine supports LIMIT & OFFSET extensions to the SQL-92 syntax */
+    public boolean supportsLimitInQuery() {
+        return true;
+    }
 
-	public boolean isLimitOffsetFirst() {
-		return true;
-	}
+    public String getLimitSyntax() {
+        return "LIMIT ?, ?";
+    }
 
-	/** Implementing classes can override this method to extract a more readable error message on foreign key errors. */
+    public boolean isLimitOffsetFirst() {
+        return true;
+    }
+
+    /** Implementing classes can override this method to extract a more readable error message on foreign key errors. */
     public String parseReadableForeignKeyErrorMessage(SQLException se) {
         return se.getMessage();
     }
@@ -531,29 +521,27 @@ public class Database extends org.makumba.db.makumba.Database {
     public NameResolver getNameResolverHook() {
         return nrh;
     }
-    
+
     /**
-     * Since we use c3p0 for connection pooling we don't get the raw prepared statement anymore but a proxy.
-     * This method fetches the toString() result of the wrapped prepared statement
+     * Since we use c3p0 for connection pooling we don't get the raw prepared statement anymore but a proxy. This method
+     * fetches the toString() result of the wrapped prepared statement
      */
     public String getWrappedStatementToString(PreparedStatement ps) {
         String sql = "";
         try {
-          C3P0ProxyStatement c3p0Stmt = (C3P0ProxyStatement) ps;
-          Method toStringMethod = Object.class.getMethod("toString", new Class[] {});
-          Object toStr = c3p0Stmt.rawStatementOperation(toStringMethod,
-              C3P0ProxyStatement.RAW_STATEMENT, new Object[] {});
-          if (toStr instanceof String) {
-            sql = (String) toStr;
-            sql = sql.substring(sql.indexOf('-') + 1).trim() + ";";
-            return sql;
-          }
+            C3P0ProxyStatement c3p0Stmt = (C3P0ProxyStatement) ps;
+            Method toStringMethod = Object.class.getMethod("toString", new Class[] {});
+            Object toStr = c3p0Stmt.rawStatementOperation(toStringMethod, C3P0ProxyStatement.RAW_STATEMENT,
+                new Object[] {});
+            if (toStr instanceof String) {
+                sql = (String) toStr;
+                sql = sql.substring(sql.indexOf('-') + 1).trim() + ";";
+                return sql;
+            }
         } catch (Throwable e) {
-          return "Exception extracting SQL: " + e.getMessage();
-        } 
+            return "Exception extracting SQL: " + e.getMessage();
+        }
         return null;
     }
-    
-
 
 }

@@ -150,12 +150,12 @@ public class TableManager extends Table {
             makeKeyIndex();
 
     }
-    
+
     @Override
     public void close() {
         // FIXME we should maybe do more things here, for now, we only reset the primary key index
         resetPrimaryKey();
-        
+
     }
 
     /** the SQL table opening. might call create() or alter() */
@@ -321,14 +321,14 @@ public class TableManager extends Table {
         StringBuffer sb = new StringBuffer();
         fieldList(sb, dd.getFieldNames().elements());
         handlerList = sb.toString();
-        
+
         // initialises list of fields without PK as we have auto-increment
         sb = new StringBuffer();
         Enumeration<String> e = dd.getFieldNames().elements();
         e.nextElement();
         fieldList(sb, e);
         handlerListAutoIncrement = sb.toString();
-        
+
         indexField = dd.getIndexPointerFieldName();
         indexDBField = getFieldDBName(indexField);
     }
@@ -447,8 +447,12 @@ public class TableManager extends Table {
         return n;
     }
 
-    /** checks if an alteration is needed, and calls doAlter if so 
-     * @param alter TODO*/
+    /**
+     * checks if an alteration is needed, and calls doAlter if so
+     * 
+     * @param alter
+     *            TODO
+     */
     protected void alter(SQLDBConnection dbc, CheckingStrategy cs, boolean alter) throws SQLException {
         Vector<String> present = new Vector<String>();
         Vector<String> add = new Vector<String>();
@@ -669,7 +673,8 @@ public class TableManager extends Table {
                 }
             }
             // exec closes ps
-            // here if we have an error, we enrich it by finding the duplicates (which we assume is the only error one can get at this stage of the insert)
+            // here if we have an error, we enrich it by finding the duplicates (which we assume is the only error one
+            // can get at this stage of the insert)
             if (getSQLDatabase().exec(ps) == -1)
                 findDuplicates((SQLDBConnection) dbc, d);
 
@@ -719,7 +724,7 @@ public class TableManager extends Table {
                 continue;
             if (checkDuplicate(fieldName, dbc, d)) {
                 FieldDefinition fd = dd.getFieldDefinition(fieldName);
-                if(fd.getNotUniqueErrorMessage() == null) {
+                if (fd.getNotUniqueErrorMessage() == null) {
                     notUnique.addException(new NotUniqueException(getFieldDefinition(fieldName), val));
                 } else {
                     notUnique.addException(new NotUniqueException(fd.getNotUniqueErrorMessage()));
@@ -746,7 +751,7 @@ public class TableManager extends Table {
                 }
             }
         }
-        
+
         if (notUnique.getExceptions().size() > 0) {
             throw notUnique;
         }
@@ -992,7 +997,7 @@ public class TableManager extends Table {
         return b;
     }
 
-    static SimpleDateFormat sqlDateFormat= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    static SimpleDateFormat sqlDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     // moved from dateTimeManager
     /**
@@ -1004,7 +1009,7 @@ public class TableManager extends Table {
         try {
             return rs.getTimestamp(i);
         } catch (Throwable t) {
-            
+
         }
 
         Object o = rs.getObject(i);
@@ -1017,12 +1022,12 @@ public class TableManager extends Table {
                 // FIXME: treat the exception ?
             }
         }
-        if(o instanceof String){
+        if (o instanceof String) {
             try {
-                o= sqlDateFormat.parse((String)o);
+                o = sqlDateFormat.parse((String) o);
             } catch (ParseException e) {
                 throw new RuntimeWrappedException(e);
-            }                
+            }
         }
         return o;
     }
@@ -1858,9 +1863,9 @@ public class TableManager extends Table {
      * return whether there was a duplicate entry for this multi-field combination when inserting the given data
      */
     public boolean checkDuplicate(String[] fields, Object values[], DBConnection dbc) {
-        
+
         SQLDBConnection sqlDbc = (SQLDBConnection) dbc;
-        
+
         String query = "SELECT 1 FROM " + getDBName() + " WHERE ";
         for (int j = 0; j < fields.length; j++) {
             query += getFieldDBName(fields[j]) + "=?";
@@ -2215,21 +2220,11 @@ public class TableManager extends Table {
         }
 
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     /**
-     * DBMS-specific syntax
-     * 
-     * useful resource: http://www.troels.arvin.dk/db/rdbms/
+     * DBMS-specific syntax useful resource: http://www.troels.arvin.dk/db/rdbms/
      **/
-    
+
     /** for odbc */
     protected void indexCreated(SQLDBConnection dbc) {
     }
@@ -2243,11 +2238,11 @@ public class TableManager extends Table {
     protected String getTableMissingStateName(SQLDBConnection dbc) {
         return "tableMissing";
     }
-    
+
     protected String getQueryAutoIncrementSyntax() {
         return null;
     }
-    
+
     protected String getCreateAutoIncrementSyntax() {
         return null;
     }

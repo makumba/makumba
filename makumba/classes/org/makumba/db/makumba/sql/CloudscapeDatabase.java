@@ -22,34 +22,34 @@
 /////////////////////////////////////
 
 package org.makumba.db.makumba.sql;
+
 import java.sql.SQLException;
 import java.util.Properties;
 
 /** the database adapter for PostgreSQL */
-public class CloudscapeDatabase extends org.makumba.db.makumba.sql.Database
-{
-  /** simply calls super */
-  public CloudscapeDatabase(Properties p) 
-    { super(p); }
+public class CloudscapeDatabase extends org.makumba.db.makumba.sql.Database {
+    /** simply calls super */
+    public CloudscapeDatabase(Properties p) {
+        super(p);
+    }
 
-  /** Postgres column names are case-insensitive */
-  protected String getFieldName(String s)
-  {
-      //FIXME needs a new nameresolver
-    return s.toUpperCase(); //nr.getFieldNameInSource(s).toUpperCase();
-  }
+    /** Postgres column names are case-insensitive */
+    protected String getFieldName(String s) {
+        // FIXME needs a new nameresolver
+        return s.toUpperCase(); // nr.getFieldNameInSource(s).toUpperCase();
+    }
 
-  /** the postgres jdbc driver does not return sql states...
-   * we just let every state pass, but print the exception */
-  @Override
-protected void checkState(SQLException e, String state)
-  {
-    System.out.println(e);
-  }
+    /**
+     * the postgres jdbc driver does not return sql states... we just let every state pass, but print the exception
+     */
+    @Override
+    protected void checkState(SQLException e, String state) {
+        System.out.println(e);
+    }
 
-// TODO now in sqlEngines.properties --> OK?  
-//  /** returns org.makumba.db.sql.pgsql.RecordManager */
-//  protected Class getTableClass()
-//  { return org.makumba.db.sql.cloudscape.RecordManager.class; }
+    // TODO now in sqlEngines.properties --> OK?
+    // /** returns org.makumba.db.sql.pgsql.RecordManager */
+    // protected Class getTableClass()
+    // { return org.makumba.db.sql.cloudscape.RecordManager.class; }
 
 }

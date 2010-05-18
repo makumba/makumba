@@ -41,8 +41,11 @@ import org.makumba.providers.SQLParameterTransformer;
  */
 public class ParameterAssigner {
     TableManager paramHandler;
+
     org.makumba.db.makumba.Database db;
+
     QueryAnalysis qA;
+
     SQLParameterTransformer qG;
 
     ParameterAssigner(org.makumba.db.makumba.Database db, QueryAnalysis qA, SQLParameterTransformer qG) {
@@ -57,12 +60,11 @@ public class ParameterAssigner {
         if (qG.getArgumentCount() == 0) {
             return null;
         }
-        
+
         if (qG.getArgumentCount() > 0) {
             paramHandler = (TableManager) db.makePseudoTable(qG.getSQLQueryArgumentTypes());
         }
 
-        
         try {
             Hashtable<String, Integer> correct = new Hashtable<String, Integer>();
             Hashtable<String, InvalidValueException> errors = new Hashtable<String, InvalidValueException>();
@@ -71,21 +73,22 @@ public class ParameterAssigner {
                 if (fd == null) {
                     throw new IllegalStateException("No type assigned for param" + i + " of query " + qA.getQuery());
                 }
-                
+
                 String spara = "$" + i;
                 Object value = args[i];
                 if (value == Pointer.Null) {
                     value = fd.getNull();
                 }
-                
+
                 // special treatment for multi-type parameters (that have different types at different positions)
                 // if we have an argument of wrong type we set a null argument instead
                 boolean isMultiTypeParam = fd.getDescription().equals("true");
                 boolean isChar = fd.isStringType() && !(value instanceof String);
                 boolean isPointer = fd.isPointer() && !(value instanceof Pointer);
-                boolean isDifferentPointer = fd.isPointer() && (value instanceof Pointer) && !fd.getPointedType().getName().equals(((Pointer)value).getType());
+                boolean isDifferentPointer = fd.isPointer() && (value instanceof Pointer)
+                        && !fd.getPointedType().getName().equals(((Pointer) value).getType());
                 boolean isNumber = (fd.isIntegerType() || fd.isRealType()) && !(value instanceof Number);
-                if(isMultiTypeParam && (isChar || isPointer || isNumber || isDifferentPointer)) {
+                if (isMultiTypeParam && (isChar || isPointer || isNumber || isDifferentPointer)) {
                     paramHandler.setNullArgument(fd.getName(), ps, i + 1);
                 } else {
                     try {
@@ -105,7 +108,7 @@ public class ParameterAssigner {
                     paramHandler.setUpdateArgument(fd.getName(), ps, i + 1, value);
                 }
             }
-            
+
             if (errors.size() > 0) {
                 String s = "";
                 for (Enumeration<String> e = errors.keys(); e.hasMoreElements();) {

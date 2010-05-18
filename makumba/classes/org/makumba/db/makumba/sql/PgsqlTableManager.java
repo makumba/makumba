@@ -15,65 +15,61 @@ import org.makumba.FieldDefinition;
 import org.makumba.Text;
 
 /**
- * @author Bart
- * 
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
+ * @author Bart TODO To change the template for this generated type comment go to Window - Preferences - Java - Code
+ *         Style - Code Templates
  */
 public class PgsqlTableManager extends org.makumba.db.makumba.sql.TableManager {
-	//	moved from pgsql.charManager
-	/**
-	 * postgres can't check char width, we return true
-	 * 
-	 * @throws SQLException
-	 */
-	@Override
-    protected boolean check_char_Width(String fieldName, ResultSetMetaData rsm,
-			int index) throws SQLException {
-		switch (getFieldDefinition(fieldName).getIntegerType()) {
-		case FieldDefinition._char:
-		case FieldDefinition._charEnum:
-			return true;
-		default:
-			return super.check_char_Width(fieldName, rsm, index);
-		}
-	}
+    // moved from pgsql.charManager
+    /**
+     * postgres can't check char width, we return true
+     * 
+     * @throws SQLException
+     */
+    @Override
+    protected boolean check_char_Width(String fieldName, ResultSetMetaData rsm, int index) throws SQLException {
+        switch (getFieldDefinition(fieldName).getIntegerType()) {
+            case FieldDefinition._char:
+            case FieldDefinition._charEnum:
+                return true;
+            default:
+                return super.check_char_Width(fieldName, rsm, index);
+        }
+    }
 
-	//Moved from pgsql.textManager
-	/** returns Postgres TEXT */
-	@Override
+    // Moved from pgsql.textManager
+    /** returns Postgres TEXT */
+    @Override
     protected String getFieldDBType(String fieldName) {
-		switch (getFieldDefinition(fieldName).getIntegerType()) {
-		case FieldDefinition._text:
-			return "TEXT";
-		default:
-			return super.getFieldDBType(fieldName);
-		}
+        switch (getFieldDefinition(fieldName).getIntegerType()) {
+            case FieldDefinition._text:
+                return "TEXT";
+            default:
+                return super.getFieldDBType(fieldName);
+        }
 
-	}
+    }
 
-	//	Moved from pgsql.textManager
-	@Override
+    // Moved from pgsql.textManager
+    @Override
     protected int getSQLType(String fieldName) {
-		switch (getFieldDefinition(fieldName).getIntegerType()) {
-		case FieldDefinition._text:
-			return Types.VARCHAR;
-		default:
-			return super.getSQLType(fieldName);
-		}
-	}
+        switch (getFieldDefinition(fieldName).getIntegerType()) {
+            case FieldDefinition._text:
+                return Types.VARCHAR;
+            default:
+                return super.getSQLType(fieldName);
+        }
+    }
 
-	//	Moved from pgsql.textManager
-	@Override
-    public void setArgument(String fieldName, PreparedStatement ps, int n,
-			Object o) throws SQLException {
-		switch (getFieldDefinition(fieldName).getIntegerType()) {
-		case FieldDefinition._text:
-			Text t = Text.getText(o);
-			ps.setString(n, t.getString());
-			break;
-		default:
-			super.setArgument(fieldName, ps, n, o);
-		}
-	}
+    // Moved from pgsql.textManager
+    @Override
+    public void setArgument(String fieldName, PreparedStatement ps, int n, Object o) throws SQLException {
+        switch (getFieldDefinition(fieldName).getIntegerType()) {
+            case FieldDefinition._text:
+                Text t = Text.getText(o);
+                ps.setString(n, t.getString());
+                break;
+            default:
+                super.setArgument(fieldName, ps, n, o);
+        }
+    }
 }

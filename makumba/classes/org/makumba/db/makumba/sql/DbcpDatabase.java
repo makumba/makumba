@@ -22,41 +22,39 @@
 /////////////////////////////////////
 
 package org.makumba.db.makumba.sql;
+
 import java.sql.SQLException;
 import java.util.Properties;
 
 /** the database adapter for PostgreSQL */
-public class DbcpDatabase extends org.makumba.db.makumba.sql.Database
-{
-  /** simply calls super */
-  public DbcpDatabase(Properties p) 
-    { super(p); }
+public class DbcpDatabase extends org.makumba.db.makumba.sql.Database {
+    /** simply calls super */
+    public DbcpDatabase(Properties p) {
+        super(p);
+    }
 
-  /** column names are case-insensitive */
-  protected String getFieldName(String s)
-  { //FIXME needs a new nameresolver
-    return s.toLowerCase();//nr.getFieldNameInSource(s).toLowerCase();
-  }
+    /** column names are case-insensitive */
+    protected String getFieldName(String s) { // FIXME needs a new nameresolver
+        return s.toLowerCase();// nr.getFieldNameInSource(s).toLowerCase();
+    }
 
+    /**
+     * the postgres jdbc driver does not return sql states... we just let every state pass, but print the exception
+     */
+    @Override
+    protected void checkState(SQLException e, String state) {
+        System.out.println(e + " " + e.getSQLState());
+    }
 
-  /** the postgres jdbc driver does not return sql states...
-   * we just let every state pass, but print the exception */
-  @Override
-protected void checkState(SQLException e, String state)
-  {
-    System.out.println(e+" "+e.getSQLState());
-  }
+    // TODO now in sqlEngines.properties -->OK?
+    // /** returns org.makumba.db.sql.pgsql.RecordManager */
+    // protected Class getTableClass()
+    //  
+    // { return org.makumba.db.sql.dbcp.RecordManager.class; }
 
-//TODO now in sqlEngines.properties -->OK?  
-//  /** returns org.makumba.db.sql.pgsql.RecordManager */
-//  protected Class getTableClass()
-//  
-//  { return org.makumba.db.sql.dbcp.RecordManager.class; }
-
-  @Override
-protected String getJdbcUrl(Properties p)
-  {
-     return "jdbc:dbcp://local";
-  }
+    @Override
+    protected String getJdbcUrl(Properties p) {
+        return "jdbc:dbcp://local";
+    }
 
 }

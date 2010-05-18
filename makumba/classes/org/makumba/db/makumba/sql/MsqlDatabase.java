@@ -22,38 +22,39 @@
 /////////////////////////////////////
 
 package org.makumba.db.makumba.sql;
+
 import java.sql.SQLException;
 import java.util.Properties;
 
-/** The msql particularities of the database
+/**
+ * The msql particularities of the database
  */
-public class MsqlDatabase extends org.makumba.db.makumba.sql.Database
-{
-  /** simply calls super */
-  public MsqlDatabase(Properties p) 
-    { super(p); }
+public class MsqlDatabase extends org.makumba.db.makumba.sql.Database {
+    /** simply calls super */
+    public MsqlDatabase(Properties p) {
+        super(p);
+    }
 
-  /** msql doesn't accept underscores as first char of table name */
-  protected String getTableName(String s)
-  {
-      // FIXME should have a special name resolver 
-    //s= super.getTableName(s);
-    if(s.charAt(0)=='_')
-      s= "x"+s.substring(1);
-    return s;
-  }
+    /** msql doesn't accept underscores as first char of table name */
+    protected String getTableName(String s) {
+        // FIXME should have a special name resolver
+        // s= super.getTableName(s);
+        if (s.charAt(0) == '_')
+            s = "x" + s.substring(1);
+        return s;
+    }
 
-  /** the imaginary jdbc driver does not return sql states... 
-   * we just let every state pass, but print the exception */
-  @Override
-protected void checkState(SQLException e, String state)
-  {
-    System.out.println(e); 
-  }
-  
-//TODO now in sqlEngines.properties -->OK?
-//  /** returns org.makumba.db.sql.msql.RecordManager */
-//  protected Class getTableClass()
-//  { return org.makumba.db.sql.msql.RecordManager.class; } 
+    /**
+     * the imaginary jdbc driver does not return sql states... we just let every state pass, but print the exception
+     */
+    @Override
+    protected void checkState(SQLException e, String state) {
+        System.out.println(e);
+    }
+
+    // TODO now in sqlEngines.properties -->OK?
+    // /** returns org.makumba.db.sql.msql.RecordManager */
+    // protected Class getTableClass()
+    // { return org.makumba.db.sql.msql.RecordManager.class; }
 
 }

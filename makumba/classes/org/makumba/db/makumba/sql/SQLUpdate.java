@@ -41,25 +41,25 @@ import org.makumba.providers.query.mql.MqlQueryAnalysis;
 import org.makumba.providers.query.mql.MqlSQLParameterTransformer;
 
 public class SQLUpdate implements Update {
-    
+
     ParameterAssigner assigner;
 
     String debugString;
 
     String updateCommand;
-    
+
     String type;
-    
+
     String setWhere;
-    
+
     String DELIM;
-    
+
     Database db;
-    
+
     SQLParameterTransformer qG;
-    
+
     QueryAnalysisProvider qP = QueryProvider.getQueryAnalzyer("oql");
-    
+
     SQLUpdate(Database db, String from, String setWhere, String DELIM) {
         this.type = from;
         this.db = db;
@@ -67,8 +67,8 @@ public class SQLUpdate implements Update {
         this.DELIM = DELIM;
     }
 
-    
-    private void compileUpdateCommand(Database db, String from, String setWhere, String DELIM, Map<String, Object> args) throws OQLParseError, MakumbaError {
+    private void compileUpdateCommand(Database db, String from, String setWhere, String DELIM, Map<String, Object> args)
+            throws OQLParseError, MakumbaError {
         int whereMark = setWhere.indexOf(DELIM);
         String set = setWhere.substring(0, whereMark);
         String where = setWhere.substring(whereMark + DELIM.length());
@@ -106,8 +106,8 @@ public class SQLUpdate implements Update {
         }
 
         QueryAnalysis qA = qP.getQueryAnalysis(OQLQuery);
-        qG = MqlSQLParameterTransformer.getSQLQueryGenerator((MqlQueryAnalysis)qA, args);
-        
+        qG = MqlSQLParameterTransformer.getSQLQueryGenerator((MqlQueryAnalysis) qA, args);
+
         try {
             // FIXME: we should make sure here that the tree contains one single type!
             assigner = new ParameterAssigner(db, qA, qG);
@@ -115,7 +115,6 @@ public class SQLUpdate implements Update {
             throw new org.makumba.OQLParseError(e.getMessage() + "\r\nin " + debugString + "\n" + OQLQuery, e);
         }
 
-        
         String fakeCommand;
         String fakeCommandUpper;
         try {
@@ -123,7 +122,7 @@ public class SQLUpdate implements Update {
         } catch (RuntimeException e) {
             throw new MakumbaError(e, debugString + "\n" + OQLQuery);
         }
-        fakeCommandUpper= fakeCommand.toUpperCase();
+        fakeCommandUpper = fakeCommand.toUpperCase();
         StringBuffer replaceLabel = new StringBuffer();
 
         // we remove all "label." sequences from the SELECT part of the command
@@ -163,14 +162,16 @@ public class SQLUpdate implements Update {
         }
 
         fakeCommand = replaceLabel.toString();
-        fakeCommandUpper= fakeCommand.toUpperCase();
+        fakeCommandUpper = fakeCommand.toUpperCase();
 
         // now we break the query SQL in pieces to form the update SQL
         StringBuffer command = new StringBuffer();
         command.append(set == null ? "DELETE FROM" : "UPDATE");
-        command.append(fakeCommand.substring(fakeCommandUpper.indexOf(" FROM ") + 5, fakeCommandUpper.indexOf(" WHERE ")));
+        command.append(fakeCommand.substring(fakeCommandUpper.indexOf(" FROM ") + 5,
+            fakeCommandUpper.indexOf(" WHERE ")));
         if (set != null) {
-            String setString = fakeCommand.substring(fakeCommandUpper.indexOf("SELECT ") + 7, fakeCommandUpper.indexOf(" FROM "));
+            String setString = fakeCommand.substring(fakeCommandUpper.indexOf("SELECT ") + 7,
+                fakeCommandUpper.indexOf(" FROM "));
             n = 0;
             while (true) {
                 n = setString.toLowerCase().indexOf("is null", n);
@@ -195,9 +196,9 @@ public class SQLUpdate implements Update {
     }
 
     public int execute(org.makumba.db.makumba.DBConnection dbc, Map<String, Object> args) {
-        
+
         compileUpdateCommand(db, type, setWhere, DELIM, args);
-        
+
         PreparedStatement ps = ((SQLDBConnection) dbc).getPreparedStatement(updateCommand);
         try {
             String s = assigner.assignParameters(ps, qG.toArgumentArray(args));
@@ -208,7 +209,8 @@ public class SQLUpdate implements Update {
 
             // org.makumba.db.sql.Database db=(org.makumba.db.sql.Database)dbc.getHostDatabase();
 
-            java.util.logging.Logger.getLogger("org.makumba.db.update.execution").fine("" + db.getWrappedStatementToString(ps));
+            java.util.logging.Logger.getLogger("org.makumba.db.update.execution").fine(
+                "" + db.getWrappedStatementToString(ps));
             java.util.Date d = new java.util.Date();
             int rez;
             try {
@@ -218,11 +220,11 @@ public class SQLUpdate implements Update {
                 if (db.isForeignKeyViolationException(se)) {
                     throw new org.makumba.ForeignKeyError(db.parseReadableForeignKeyErrorMessage(se));
                 } else if (db.isDuplicateException(se)) {
-                    
+
                     NotUniqueException nue = new NotUniqueException(se.getMessage());
                     nue.setFields(db.getDuplicateFields(se));
                     throw nue;
-                    
+
                 }
                 org.makumba.db.makumba.sql.Database.logException(se);
                 throw new DBError(se, debugString);

@@ -22,45 +22,44 @@
 /////////////////////////////////////
 
 package org.makumba.db.makumba.sql;
+
 import java.sql.SQLException;
 import java.util.Properties;
 
 /** the database adapter for PostgreSQL */
-public class QedDatabase extends org.makumba.db.makumba.sql.Database
-{
-  /** simply calls super */
-  public QedDatabase(Properties p) 
-    { super(p); }
+public class QedDatabase extends org.makumba.db.makumba.sql.Database {
+    /** simply calls super */
+    public QedDatabase(Properties p) {
+        super(p);
+    }
 
-  /** Postgres column names are case-insensitive */
-  protected String getFieldName(String s)
-  { //FIXME needs a new nameresolver
-    return s.toUpperCase();//nr.getFieldNameInSource(s).toUpperCase();
-  }
+    /** Postgres column names are case-insensitive */
+    protected String getFieldName(String s) { // FIXME needs a new nameresolver
+        return s.toUpperCase();// nr.getFieldNameInSource(s).toUpperCase();
+    }
 
-  /** the postgres jdbc driver does not return sql states...
-   * we just let every state pass, but print the exception */
-  @Override
-protected void checkState(SQLException e, String state)
-  {
-    System.out.println(e);
-  }
+    /**
+     * the postgres jdbc driver does not return sql states... we just let every state pass, but print the exception
+     */
+    @Override
+    protected void checkState(SQLException e, String state) {
+        System.out.println(e);
+    }
 
-//TODO now in sqlEngines.properties -->OK?
-//  /** returns org.makumba.db.sql.pgsql.RecordManager */
-//  protected Class getTableClass()
-//  { return org.makumba.db.sql.qed.RecordManager.class; }
+    // TODO now in sqlEngines.properties -->OK?
+    // /** returns org.makumba.db.sql.pgsql.RecordManager */
+    // protected Class getTableClass()
+    // { return org.makumba.db.sql.qed.RecordManager.class; }
 
-  @Override
-protected String getJdbcUrl(Properties p)
-  {
-    String qedUrl="jdbc:";
-    String qedEng=p.getProperty("#sqlEngine");
-    qedUrl+=qedEng+":";
-    String local= getEngineProperty(qedEng+".localJDBC");
-    if(local==null || !local.equals("true"))
-      qedUrl+="//"+p.getProperty("#host")+"/";
-    return qedUrl+p.getProperty("#database");
-  }
+    @Override
+    protected String getJdbcUrl(Properties p) {
+        String qedUrl = "jdbc:";
+        String qedEng = p.getProperty("#sqlEngine");
+        qedUrl += qedEng + ":";
+        String local = getEngineProperty(qedEng + ".localJDBC");
+        if (local == null || !local.equals("true"))
+            qedUrl += "//" + p.getProperty("#host") + "/";
+        return qedUrl + p.getProperty("#database");
+    }
 
 }
