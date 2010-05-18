@@ -28,13 +28,13 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
 
     // basic field info
     protected DataDefinitionImpl mdd;
-    
+
     protected String name;
-    
+
     protected FieldType type;
-    
+
     protected String description;
-    
+
     // default value for this field
     private Object defaultValue;
 
@@ -46,47 +46,46 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
     protected boolean notEmpty;
 
     protected boolean unique;
-    
+
     // native validation rule messages
     protected String notNullError;
-    
+
     protected String NaNError;
-    
+
     protected String uniqueError;
-    
+
     protected String notEmptyError;
-    
+
     protected String notIntError;
 
     protected String notRealError;
-    
+
     protected String notBooleanError;
-    
+
     // intEnum - contains all values, including deprecated
     protected LinkedHashMap<Integer, String> intEnumValues = new LinkedHashMap<Integer, String>();
 
     // intEnum - contains depreciated values
     protected LinkedHashMap<Integer, String> intEnumValuesDeprecated = new LinkedHashMap<Integer, String>();
-    
+
     // charEnum - contains all values, including deprecated
     protected Vector<String> charEnumValues = new Vector<String>();
 
     // chaEnum - contains depreciated values
     protected Vector<String> charEnumValuesDeprecated = new Vector<String>();
-    
+
     // char length
     protected int charLength;
-    
+
     // pointed type name
     protected String pointedType;
-    
-    // pointed type 
+
+    // pointed type
     protected transient DataDefinition pointed;
-    
+
     // subfield - ptrOne, setComplex
     protected DataDefinitionImpl subfield;
-    
-    
+
     // validation rules for this field
     private Hashtable<String, ValidationRule> validationRules = new Hashtable<String, ValidationRule>();
 
@@ -95,18 +94,22 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
 
     // name of the original field definition, needed for serialization
     private String originalFieldDefinitionName;
-    
+
     /**
      * Creates a field definition given a name, type and description
-     * @param name the name of the field
-     * @param type the type of the filed, e.g. char, int, ptr - but no relational type definition
-     * @param description the description of the field
+     * 
+     * @param name
+     *            the name of the field
+     * @param type
+     *            the type of the filed, e.g. char, int, ptr - but no relational type definition
+     * @param description
+     *            the description of the field
      */
     public FieldDefinitionImpl(String name, String type, String description) {
         this(name, type);
         this.description = description;
     }
-    
+
     /**
      * Minimal constructor for standard fields
      */
@@ -114,12 +117,14 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         this.name = name;
         this.mdd = dd;
     }
-    
 
     /**
      * Creates a field definition given a name and a type
-     * @param name the name of the field
-     * @param type the type of the filed, e.g. char, int, ptr - but no relational type definition
+     * 
+     * @param name
+     *            the name of the field
+     * @param type
+     *            the type of the filed, e.g. char, int, ptr - but no relational type definition
      */
     public FieldDefinitionImpl(String name, String type) {
         this.name = name;
@@ -129,16 +134,16 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         unique = false;
         try {
             this.type = FieldType.valueOf(type.toUpperCase());
-            if(this.type == FieldType.CHAR) {
+            if (this.type == FieldType.CHAR) {
                 charLength = 255;
             }
 
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // type is not a strict type
-            if(type.startsWith("char")) {
-                
+            if (type.startsWith("char")) {
+
                 try {
-                    
+
                     int n = type.indexOf("[");
                     int m = type.indexOf("]");
                     if (!type.endsWith("]") || type.substring(3, n).trim().length() > 1) {
@@ -147,26 +152,26 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
 
                     charLength = new Integer(Integer.parseInt(type.substring(n + 1, m)));
                     this.type = FieldType.CHAR;
-                    
+
                 } catch (StringIndexOutOfBoundsException e1) {
                     throw new InvalidValueException("bad type " + type);
                 } catch (NumberFormatException f) {
                     throw new InvalidValueException("bad char[] size " + type);
                 }
             }
-        }   
+        }
     }
-    
+
     public FieldDefinitionImpl(String name, String type, DataDefinitionImpl mdd) {
         this(name, type);
         this.mdd = mdd;
     }
-    
+
     /** for virtual FieldDefinition */
     public FieldDefinitionImpl(String name, FieldDefinition fi) {
-        
+
         FieldDefinitionImpl f = (FieldDefinitionImpl) fi;
-        
+
         this.name = name;
         this.mdd = f.mdd;
 
@@ -175,7 +180,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         this.notEmpty = f.notEmpty;
         this.notNull = f.notNull;
         this.unique = f.unique;
-        
+
         this.uniqueError = f.uniqueError;
         this.notNullError = f.notNullError;
         this.notEmptyError = f.notEmptyError;
@@ -183,7 +188,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         this.notIntError = f.notIntError;
         this.notRealError = f.notRealError;
         this.notBooleanError = f.notBooleanError;
-        
+
         this.defaultValue = fi.getDefaultValue();
         this.description = fi.getDescription();
         this.charLength = f.charLength;
@@ -196,12 +201,12 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         this.intEnumValuesDeprecated = f.intEnumValuesDeprecated;
         this.charEnumValues = f.charEnumValues;
         this.charEnumValuesDeprecated = f.charEnumValuesDeprecated;
-        
+
         if (type == FieldType.PTRINDEX) {
             type = FieldType.PTR;
             pointed = fi.getDataDefinition();
         }
-        validationRules = ((FieldDefinitionImpl)fi).validationRules;
+        validationRules = ((FieldDefinitionImpl) fi).validationRules;
 
         // store names of original field definition and data definition; see getOriginalFieldDefinition() for details
         if (fi.getDataDefinition() != null && !fi.getDataDefinition().isTemporary()) {
@@ -209,15 +214,13 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
             originalFieldDefinitionName = fi.getName();
         }
     }
-    
+
     /** for virtual field definitions **/
     public FieldDefinitionImpl(String name, FieldDefinition field, String description) {
         this(name, field);
         this.description = description;
     }
 
-
-    
     /** constructor used when creating the {@link DataDefinitionImpl} during parsing **/
     public FieldDefinitionImpl(DataDefinitionImpl mdd, FieldNode f) {
         this.mdd = mdd;
@@ -226,7 +229,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         this.notEmpty = f.notEmpty;
         this.notNull = f.notNull;
         this.unique = f.unique;
-        
+
         this.uniqueError = f.uniqueError;
         this.notNullError = f.notNullError;
         this.notEmptyError = f.notEmptyError;
@@ -234,7 +237,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         this.notIntError = f.notIntError;
         this.notRealError = f.notRealError;
         this.notBooleanError = f.notBooleanError;
-        
+
         this.charLength = f.charLength;
         this.defaultValue = f.defaultValue;
         this.description = f.description;
@@ -245,28 +248,26 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         this.charEnumValuesDeprecated = f.charEnumValuesDeprecated;
         this.pointedType = f.pointedType;
         this.validationRules = f.validationRules;
-        
+
         // store names of original field definition and data definition; see getOriginalFieldDefinition() for details
         if (getDataDefinition() != null && !getDataDefinition().isTemporary()) {
             originalFieldDefinitionParent = getDataDefinition().getName();
             originalFieldDefinitionName = getName();
         }
-        
+
         // we have to transform the subfield MDDNode into a DataDefinitionImpl
-        if(f.subfield != null) {
+        if (f.subfield != null) {
             this.subfield = new DataDefinitionImpl(f.getName(), f.subfield, mdd);
             this.subfield.build();
         }
     }
 
-
-
     /** methods for base fields **/
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public String getName() {
         return this.name;
     }
@@ -298,35 +299,32 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
     public void setDefaultValue(Object defaultValue) {
         this.defaultValue = defaultValue;
     }
-    
+
     public String getDescription() {
         if (description == null || description.trim().equals("")) {
             return name;
         }
         return description;
     }
-    
+
     public boolean hasDescription() {
         return this.description != null;
     }
-    
+
     public DataDefinitionImpl getDataDefinition() {
         return this.mdd;
     }
 
-
-    
-    
     /** methods for modifiers **/
-    
+
     public boolean isUnique() {
         return unique;
     }
-    
+
     public boolean isFixed() {
         return fixed;
     }
-    
+
     public boolean isNotEmpty() {
         return notEmpty;
     }
@@ -335,13 +333,12 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         return notNull;
     }
 
-
     /** methods for type **/
-    
+
     public boolean isBinaryType() {
         return type == FieldType.BINARY;
     }
-    
+
     public boolean isBooleanType() {
         return type == FieldType.BOOLEAN;
     }
@@ -402,10 +399,8 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         return type == FieldType.CHAR || type == FieldType.TEXT;
     }
 
-    
-    
     /** methods for validation rules **/
-    
+
     public void addValidationRule(Collection<ValidationRule> rules) {
         if (rules != null) {
             for (ValidationRule validationRule : rules) {
@@ -424,19 +419,19 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         Collections.sort(arrayList);
         return arrayList;
     }
-    
-    
-    
+
     /** methods for checks (assignability) **/
 
     public void checkInsert(Dictionary<String, Object> d) {
         Object o = d.get(getName());
         if (isNotNull() && (o == null || o.equals(getNull()))) {
             // FIXME: call this in RecordEditor.readFrom, to have more possible exceptions gathered at once
-            throw new CompositeValidationException(new InvalidValueException(this, notNullError != null ? notNullError : ERROR_NOT_NULL));
+            throw new CompositeValidationException(new InvalidValueException(this, notNullError != null ? notNullError
+                    : ERROR_NOT_NULL));
         } else if (isNotEmpty() && StringUtils.isEmpty(o)) {
             // FIXME: call this in RecordEditor.readFrom, to have more possible exceptions gathered at once
-            throw new CompositeValidationException(new InvalidValueException(this, notEmptyError != null ? notEmptyError : ERROR_NOT_EMPTY));
+            throw new CompositeValidationException(new InvalidValueException(this,
+                    notEmptyError != null ? notEmptyError : ERROR_NOT_EMPTY));
         }
         if (o != null) {
             d.put(getName(), checkValue(o));
@@ -446,31 +441,31 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
     public void checkUpdate(Dictionary<String, Object> d) {
         Object o = d.get(getName());
         if (isNotEmpty() && StringUtils.isEmpty(o)) {
-         // FIXME: call this in RecordEditor.readFrom, to have more possible exceptions gathered at once
+            // FIXME: call this in RecordEditor.readFrom, to have more possible exceptions gathered at once
             throw new CompositeValidationException(new InvalidValueException(this, ERROR_NOT_EMPTY));
         }
         if (o == null) {
             return;
         }
         if (isFixed()) {
-         // FIXME: call this in RecordEditor.readFrom, to have more possible exceptions gathered at once
+            // FIXME: call this in RecordEditor.readFrom, to have more possible exceptions gathered at once
             throw new CompositeValidationException(new InvalidValueException(this, "You cannot update a fixed field"));
         }
         d.put(getName(), checkValue(o));
     }
 
     public Object checkValue(Object value) {
-        
+
         if (!value.equals(getNull())) {
-            
-            switch(type) {
-                
+
+            switch (type) {
+
                 case CHAR:
                     normalCheck(value);
                     String s = (String) value;
                     if (s.length() > getWidth()) {
-                        throw new InvalidValueException(this, "String too long for char[] field. Maximum width: " + getWidth()
-                                + " given width " + s.length() + ".\n\tGiven value <" + s + ">");
+                        throw new InvalidValueException(this, "String too long for char[] field. Maximum width: "
+                                + getWidth() + " given width " + s.length() + ".\n\tGiven value <" + s + ">");
                     }
                     return value;
                 case CHARENUM:
@@ -480,7 +475,8 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
                 case DATEMODIFY:
                     return normalCheck(value);
                 case INT:
-                 // we allow Integer and Long types (Long might come e.g. from JSTL <ftm:parseNumber ...> which returns a Long
+                    // we allow Integer and Long types (Long might come e.g. from JSTL <ftm:parseNumber ...> which
+                    // returns a Long
                     if (!(value instanceof Integer || value instanceof Long)) {
                         throw new org.makumba.InvalidValueException(this, getJavaType(), value);
                     }
@@ -488,7 +484,8 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
                         return value;
                     } else { // if it is a Long, we convert it to an Integer
                         // FIXME: this might potentially mean losing some data, if the Long is too long for an Integer
-                        // Solution: Either makumba stores the date as long, or we throw an error if the value is too big?
+                        // Solution: Either makumba stores the date as long, or we throw an error if the value is too
+                        // big?
                         // See: http://bugs.best.eu.org/1071
                         return ((Long) value).intValue();
                     }
@@ -498,7 +495,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
                 case PTRINDEX:
                 case PTRONE:
                 case PTRREL:
-                    
+
                     // file is a transformed to a pointer type on MDD
                     // parsing but the binary input is on the name of the field, not field.content
                     if (isFileType() && !(value instanceof Pointer)) {
@@ -506,14 +503,14 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
                     } else {
                         return checkPointer(value);
                     }
-                    
+
                 case REAL:
                     if (value instanceof Integer) {
                         return value;
                     }
                     return normalCheck(value);
                 case SET:
-                    
+
                     try {
                         // may be just a pointer
                         Object o = checkPointer(value);
@@ -529,7 +526,8 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
 
                     Vector<Object> v = (Vector) value;
 
-                    FieldDefinition ptr = getForeignTable().getFieldDefinition(getForeignTable().getIndexPointerFieldName());
+                    FieldDefinition ptr = getForeignTable().getFieldDefinition(
+                        getForeignTable().getIndexPointerFieldName());
 
                     for (int i = 0; i < v.size(); i++) {
                         if (v.elementAt(i) == null || v.elementAt(i).equals(org.makumba.Pointer.Null)) {
@@ -544,51 +542,50 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
                     }
                     return v;
                 case SETINTENUM:
-                    
+
                     Vector<Object> vect = new Vector<Object>();
-                    
-                    // may just have one value 
+
+                    // may just have one value
                     if (value != null && value instanceof Integer) {
                         checkIntEnum(value);
                         vect.addElement(value);
                         return vect;
                     }
-                    
+
                     if (value != null && value instanceof String) {
                         checkIntEnum(value);
                         vect.addElement(value);
                         return vect;
                     }
-                    
+
                     normalCheck(value);
                     vect = (Vector) value;
-    
+
                     for (int i = 0; i < vect.size(); i++) {
                         if (vect.elementAt(i) == null || vect.elementAt(i).equals(org.makumba.Pointer.NullInteger)) {
                             throw new org.makumba.InvalidValueException(this, "set members cannot be null");
                         } else {
-                            
+
                         }
                         vect.setElementAt(checkIntEnum(vect.elementAt(i)), i);
                     }
                     return vect;
-                    
+
                 case SETCHARENUM:
-                    
+
                     normalCheck(value);
                     v = (Vector) value;
-    
+
                     for (int i = 0; i < v.size(); i++) {
                         if (v.elementAt(i) == null || v.elementAt(i).equals(org.makumba.Pointer.NullString)) {
                             throw new org.makumba.InvalidValueException(this, "set members cannot be null");
                         } else {
-                            
+
                         }
                         v.setElementAt(checkCharEnum(v.elementAt(i)), i);
                     }
                     return v;
-                        
-                    
+
                 case SETCOMPLEX:
                     throw new org.makumba.InvalidValueException(this, "subsets cannot be assigned directly");
                 case TEXT:
@@ -602,8 +599,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
                 default:
                     throw new RuntimeException("Unknown case handling for field type '" + this + "', integer type "
                             + getIntegerType());
-               
-                    
+
             }
         }
         return value;
@@ -621,35 +617,36 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         if (value instanceof Integer && !intEnumValues.containsKey(value)) {
             throw new org.makumba.InvalidValueException(this, "int value set to int enumerator (" + value
                     + ") is not a member of " + Arrays.toString(intEnumValues.keySet().toArray()));
-        } else if(!(value instanceof Integer) && !(value instanceof String)) {
+        } else if (!(value instanceof Integer) && !(value instanceof String)) {
             throw new org.makumba.InvalidValueException(this,
-                "int enumerators only accept values of type Integer or String. Value supplied (" + value
-                + ") is of type " + value.getClass().getName());
-        } else if(value instanceof String && !intEnumValues.containsValue(value)) {
+                    "int enumerators only accept values of type Integer or String. Value supplied (" + value
+                            + ") is of type " + value.getClass().getName());
+        } else if (value instanceof String && !intEnumValues.containsValue(value)) {
             throw new org.makumba.InvalidValueException(this, "string value set to int enumerator (" + value
-                    + ") is neither a member of " + Arrays.toString(intEnumValues.values().toArray()) + " nor a member of " + Arrays.toString(intEnumValues.keySet().toArray()));
-        } else if(value instanceof String && intEnumValues.containsValue(value)) {
-            for(Integer i : intEnumValues.keySet()) {
-                if(intEnumValues.get(i).equals(value)) {
+                    + ") is neither a member of " + Arrays.toString(intEnumValues.values().toArray())
+                    + " nor a member of " + Arrays.toString(intEnumValues.keySet().toArray()));
+        } else if (value instanceof String && intEnumValues.containsValue(value)) {
+            for (Integer i : intEnumValues.keySet()) {
+                if (intEnumValues.get(i).equals(value)) {
                     return i;
                 }
             }
         }
-        
+
         return value;
     }
-    
+
     private Object checkCharEnum(Object value) {
-        if(value instanceof String && !charEnumValues.contains(value))
+        if (value instanceof String && !charEnumValues.contains(value))
             throw new org.makumba.InvalidValueException(this, "char value set to char enumerator (" + value
-                + ") is not a member of " + Arrays.toString(charEnumValues.toArray())); 
-        
+                    + ") is not a member of " + Arrays.toString(charEnumValues.toArray()));
+
         if (!(value instanceof String)) {
             throw new org.makumba.InvalidValueException(this,
-                    "char enumerators only accept values of type String. Value supplied (" + value
-                            + ") is of type " + value.getClass().getName());
+                    "char enumerators only accept values of type String. Value supplied (" + value + ") is of type "
+                            + value.getClass().getName());
         }
-        
+
         return value;
     }
 
@@ -675,7 +672,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         }
         return value;
     }
-    
+
     public boolean isAssignableFrom(FieldDefinition fi) {
         switch (type) {
             case INT:
@@ -719,50 +716,44 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         return "nil".equals(fi.getType()) || getType().equals(fi.getType())
                 && getForeignTable().getName().equals(fi.getForeignTable().getName());
     }
-    
-    
 
     /** methods for types (java, sql, null) **/
-    
+
     public String getDataType() {
         return type.getDataType();
     }
-    
+
     public Class<?> getJavaType() {
         return this.type.getJavaType();
     }
-    
+
     public int getIntegerType() {
         return type.getIntegerType();
     }
-    
+
     public Object getNull() {
         // file is a transformed to a pointer type on MDD parsing
         // but the binary input is on the name of the field, not field.content
-        if(type == FieldType.PTRONE && isFileType()) {
+        if (type == FieldType.PTRONE && isFileType()) {
             return Pointer.NullText;
         }
-        
+
         return this.type.getNullType();
     }
-    
+
     public Object getEmptyValue() {
         return type.getEmptyValue();
     }
-    
+
     public String getType() {
         return this.type.getTypeName();
     }
-    
+
     public boolean isDefaultField() {
         return type == FieldType.PTRINDEX || type == FieldType.DATECREATE || type == FieldType.DATEMODIFY;
     }
 
-
-
-    
     /** methods for default values **/
-    
 
     public Date getDefaultDate() {
 
@@ -775,7 +766,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
                 throw new RuntimeException("Shouldn't be here");
         }
     }
-    
+
     public int getDefaultInt() {
         switch (type) {
             case INT:
@@ -814,17 +805,14 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         return defaultValue;
     }
 
-    
-    
-
     /** methods for enumerations **/
-    
+
     public Vector<String> getDeprecatedValues() {
-        switch(type) {
+        switch (type) {
             case INTENUM:
                 // TODO optimize this, maybe change interface...
                 Vector<String> depr = new Vector<String>();
-                for(Integer i : intEnumValuesDeprecated.keySet()) {
+                for (Integer i : intEnumValuesDeprecated.keySet()) {
                     depr.add(i.toString());
                 }
                 return depr;
@@ -834,7 +822,6 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
                 return null;
         }
     }
-    
 
     public int getEnumeratorSize() {
         switch (type) {
@@ -850,48 +837,47 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
                 throw new RuntimeException("Shouldn't be here");
         }
     }
-    
+
     public int getIntAt(int i) {
-        if(i > intEnumValues.size()) {
+        if (i > intEnumValues.size()) {
             throw new RuntimeException("intEnum size is " + intEnumValues.size() + ", index is " + i);
         }
-        
+
         return (Integer) intEnumValues.keySet().toArray()[i];
     }
 
     public String getNameAt(int i) {
-        
-        switch(type) {
+
+        switch (type) {
             case INTENUM:
             case SETINTENUM:
-                if(i > intEnumValues.size()) {
+                if (i > intEnumValues.size()) {
                     throw new RuntimeException("enumerator size is " + intEnumValues.size() + ", index is " + i);
                 }
                 return (String) intEnumValues.values().toArray()[i];
 
             case CHARENUM:
             case SETCHARENUM:
-                if(i > charEnumValues.size()) {
+                if (i > charEnumValues.size()) {
                     throw new RuntimeException("enumerator size is " + charEnumValues.size() + ", index is " + i);
                 }
                 return (String) charEnumValues.elementAt(i);
-        
+
             default:
                 throw new RuntimeException("getNameAt works only for intEnum, setintEnum, charEnum and setcharEnum");
         }
-        
-        
+
     }
 
     public String getNameFor(int i) {
-        if(type != FieldType.INTENUM && type != FieldType.SETINTENUM) {
+        if (type != FieldType.INTENUM && type != FieldType.SETINTENUM) {
             throw new RuntimeException("getNameFor works only for intEnum");
         }
         return (String) intEnumValues.get(i);
     }
 
     public Collection<String> getNames() {
-        switch(type) {
+        switch (type) {
             case INTENUM:
             case SETINTENUM:
                 return intEnumValues.values();
@@ -901,11 +887,11 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
             default:
                 throw new RuntimeException("getNames() only work for intEnum and charEnum");
         }
-        
+
     }
-    
+
     public Collection getValues() {
-        switch(type) {
+        switch (type) {
             case INTENUM:
             case SETINTENUM:
                 return intEnumValues.keySet();
@@ -917,18 +903,14 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         }
     }
 
-    
-    
-    
     /** methods for relational types **/
-    
-    
+
     public DataDefinition getForeignTable() {
         switch (type) {
             case PTR:
             case PTRREL:
             case SET:
-                if(this.pointed == null) {
+                if (this.pointed == null) {
                     this.pointed = MDDProvider.getMDD(pointedType);
                 }
                 return this.pointed;
@@ -936,25 +918,24 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
                 throw new RuntimeException("Shouldn't be here");
         }
     }
-    
+
     public FieldDefinition getOriginalFieldDefinition() {
         // we can't store a reference to the original field definition, otherwise it will be serialised in the form
         // responder, and in turn will serialise it's data definition, which might cause issues like locking..
         // thus, we do a lookup here
         DataDefinition dataDefinition = null;
-        
-        if(originalFieldDefinitionParent == null) {
+
+        if (originalFieldDefinitionParent == null) {
             return null;
         }
-        
+
         try {
             dataDefinition = DataDefinitionProvider.getInstance().getDataDefinition(originalFieldDefinitionParent);
-        } catch(DataDefinitionNotFoundError dnfe) {
+        } catch (DataDefinitionNotFoundError dnfe) {
             dataDefinition = null;
         }
         return dataDefinition != null ? dataDefinition.getFieldDefinition(originalFieldDefinitionName) : null;
     }
-
 
     public DataDefinition getPointedType() {
         switch (type) {
@@ -1003,7 +984,6 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         }
     }
 
-    
     private int longestChar = -1;
 
     public int getWidth() {
@@ -1011,18 +991,18 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
             case CHAR:
                 return this.charLength;
             case CHARENUM:
-                if(longestChar == -1) {
-                    for(String s : charEnumValues) {
-                        if(s.length() > longestChar) {
+                if (longestChar == -1) {
+                    for (String s : charEnumValues) {
+                        if (s.length() > longestChar) {
                             longestChar = s.length();
                         }
                     }
                 }
                 return longestChar;
             case SETCHARENUM:
-                if(longestChar == -1) {
-                    for(String s : charEnumValues) {
-                        if(s.length() > longestChar) {
+                if (longestChar == -1) {
+                    for (String s : charEnumValues) {
+                        if (s.length() > longestChar) {
                             longestChar = s.length();
                         }
                     }
@@ -1036,20 +1016,22 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
     public boolean shouldEditBySingleInput() {
         return !(getIntegerType() == _ptrOne || getIntegerType() == _setComplex);
     }
-    
+
     @Override
     public String toString() {
         return getType();
     }
-    
+
     public String toString1() {
         StringBuffer sb = new StringBuffer();
         sb.append("== Field name: " + name + "\n");
         sb.append("== Field type: " + type.getTypeName() + "\n");
-        sb.append("== Modifiers: " + (fixed? "fixed ":"") + (unique? "unique ":"") + (notNull? "not null ":"") + (notEmpty? "not empty ":"")  + "\n");
-        if(description != null) sb.append("== Description: "+ description + "\n");
+        sb.append("== Modifiers: " + (fixed ? "fixed " : "") + (unique ? "unique " : "") + (notNull ? "not null " : "")
+                + (notEmpty ? "not empty " : "") + "\n");
+        if (description != null)
+            sb.append("== Description: " + description + "\n");
 
-        switch(type) {
+        switch (type) {
             case CHAR:
                 sb.append("== char length: " + charLength + "\n");
                 break;
@@ -1073,24 +1055,23 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
                 sb.append(subfield.toString() + "\n");
                 break;
         }
-        
-        
+
         return sb.toString();
     }
 
     public String getStructure() {
         StringBuffer sb = new StringBuffer();
         sb.append("--- structure of " + getName() + "\n");
-        
+
         sb.append("getName() " + getName() + "\n");
         sb.append("getDataDefinition() " + getDataDefinition().getName() + "\n");
-//        sb.append("getOriginalFieldDefinition() " + getOriginalFieldDefinition().getName() + "\n");
+        // sb.append("getOriginalFieldDefinition() " + getOriginalFieldDefinition().getName() + "\n");
         sb.append("isIndexPointerField() " + isIndexPointerField() + "\n");
         sb.append("getEmptyValue() " + getEmptyValue() + "\n");
         sb.append("getNull()" + getNull() + "\n");
         try {
             sb.append("hasDescription() " + hasDescription() + "\n");
-        } catch(RuntimeException e) {
+        } catch (RuntimeException e) {
             sb.append("has invalid description");
         }
         sb.append("getDescription() " + getDescription() + "\n");
@@ -1106,83 +1087,82 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         sb.append("getDefaultString()\n");
         try {
             sb.append(getDefaultString() + "\n");
-        } catch(RuntimeException re) {
+        } catch (RuntimeException re) {
             sb.append("was not a string\n");
         }
         sb.append("getDefaultInt()\n");
         try {
             sb.append(getDefaultInt() + "\n");
-        } catch(RuntimeException re) {
+        } catch (RuntimeException re) {
             sb.append("was not an int: " + re.getMessage() + "\n");
         }
         sb.append("getDefaultDate()\n");
         try {
             sb.append(getDefaultDate() + "\n");
-        } catch(RuntimeException re) {
+        } catch (RuntimeException re) {
             sb.append("was not a date\n");
         }
         sb.append("getValues()\n");
         try {
             sb.append(getValues() + "\n");
-        } catch(RuntimeException re) {
+        } catch (RuntimeException re) {
             sb.append("was not an enum\n");
         }
         sb.append("getNames()\n");
         try {
             sb.append(getNames() + "\n");
-        } catch(RuntimeException re) {
+        } catch (RuntimeException re) {
             sb.append("was not an enum: " + re.getMessage() + "\n");
         }
         sb.append("getEnumeratorSize()\n");
         try {
             sb.append(getEnumeratorSize() + "\n");
-        } catch(RuntimeException re) {
+        } catch (RuntimeException re) {
             sb.append("was not an enum\n");
         }
-        
+
         sb.append("getWidth()\n");
         try {
             sb.append(getWidth() + "\n");
-        } catch(RuntimeException re) {
+        } catch (RuntimeException re) {
             sb.append("was not a char\n");
         }
-        
+
         sb.append("getForeignTable()\n");
         try {
-            sb.append(((DataDefinitionImpl)getForeignTable()).getName() + "\n");
-        } catch(RuntimeException re) {
+            sb.append(((DataDefinitionImpl) getForeignTable()).getName() + "\n");
+        } catch (RuntimeException re) {
             sb.append("was not a ptr\n");
         }
-        
+
         sb.append("getSubtable()\n");
         try {
-            sb.append(((DataDefinitionImpl)getSubtable()).getStructure() + "\n");
-        } catch(RuntimeException re) {
+            sb.append(((DataDefinitionImpl) getSubtable()).getStructure() + "\n");
+        } catch (RuntimeException re) {
             sb.append("was not a ptr: " + re.getMessage() + "\n");
         }
-        
-        
+
         sb.append("getPointedType()\n");
         try {
-            sb.append(((DataDefinitionImpl)getPointedType()).getName() + "\n");
-        } catch(RuntimeException re) {
+            sb.append(((DataDefinitionImpl) getPointedType()).getName() + "\n");
+        } catch (RuntimeException re) {
             sb.append("was not a ptr\n");
         }
-        
+
         sb.append("getTitleField()\n");
         try {
             sb.append(getTitleField() + "\n");
-        } catch(RuntimeException re) {
+        } catch (RuntimeException re) {
             sb.append("was not a ptr\n");
         }
-        
+
         sb.append("getDeprecatedValues()\n");
         try {
             sb.append(getDeprecatedValues() + "\n");
-        } catch(RuntimeException re) {
+        } catch (RuntimeException re) {
             sb.append("was not an enum\n");
         }
-        
+
         sb.append("isDefaultField()" + isDefaultField() + "\n");
         sb.append("shouldEditBySingleInput() " + shouldEditBySingleInput() + "\n");
         sb.append("isDateType() " + isDateType() + "\n");
@@ -1190,16 +1170,16 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         sb.append("isIntegerType() " + isIntegerType() + "\n");
         sb.append("isRealType() " + isRealType() + "\n");
         sb.append("isBinaryType() " + isBinaryType() + "\n");
-        sb.append("isFileType() " +isFileType() + "\n");
+        sb.append("isFileType() " + isFileType() + "\n");
         sb.append("isSetType() " + isSetType() + "\n");
         sb.append("isSetEnumType() " + isSetEnumType() + "\n");
         sb.append("isEnumType() " + isEnumType() + "\n");
-        sb.append("isInternalSet() " + isInternalSet() +"\n");
+        sb.append("isInternalSet() " + isInternalSet() + "\n");
         sb.append("isExternalSet() " + isExternalSet() + "\n");
         sb.append("isComplexSet() " + isComplexSet() + "\n");
         sb.append("isPointer() " + isPointer() + "\n");
         sb.append("isStringType() " + isStringType() + "\n");
-        
+
         sb.append("---  end structure of " + getName());
 
         return sb.toString();
@@ -1220,17 +1200,17 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
     public String getNotEmptyErrorMessage() {
         return this.notEmptyError;
     }
-    
+
     public String getNotIntErrorMessage() {
         return this.notIntError;
     }
-    
+
     public String getNotRealErrorMessage() {
         return this.notRealError;
     }
-    
+
     public String getNotBooleanErrorMessage() {
         return this.notBooleanError;
     }
-    
+
 }

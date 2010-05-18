@@ -71,7 +71,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         // we can't store a reference to the original field definition, otherwise it will be serialised in the form
         // responder, and in turn will serialise it's data definition, which might cause issues like locking..
         // thus, we do a lookup here
-        if(originalFieldDefinitionParent == null)
+        if (originalFieldDefinitionParent == null)
             return null;
         DataDefinition dataDefinition = DataDefinitionProvider.getInstance().getDataDefinition(
             originalFieldDefinitionParent);
@@ -337,14 +337,14 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     public void checkUpdate(Dictionary<String, Object> d) {
         Object o = d.get(getName());
         if (isNotEmpty() && StringUtils.isEmpty(o)) {
-         // FIXME: call this in RecordEditor.readFrom, to have more possible exceptions gathered at once
+            // FIXME: call this in RecordEditor.readFrom, to have more possible exceptions gathered at once
             throw new CompositeValidationException(new InvalidValueException(this, ERROR_NOT_EMPTY));
         }
         if (o == null) {
             return;
         }
         if (isFixed()) {
-         // FIXME: call this in RecordEditor.readFrom, to have more possible exceptions gathered at once
+            // FIXME: call this in RecordEditor.readFrom, to have more possible exceptions gathered at once
             throw new CompositeValidationException(new InvalidValueException(this, "You cannot update a fixed field"));
         }
         d.put(getName(), checkValue(o));
@@ -615,9 +615,8 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     }
 
     /**
-     * works only for intEnum, charEnum, setintEnum, setcharEnum types
-     * FIXME this does not work, because of a {@link ClassCastException} when attempting to convert
-     * the extra2 informatino into a Vector of Strings
+     * works only for intEnum, charEnum, setintEnum, setcharEnum types FIXME this does not work, because of a
+     * {@link ClassCastException} when attempting to convert the extra2 informatino into a Vector of Strings
      */
     public Collection<String> getNames() {
         switch (getIntegerType()) {
@@ -1192,7 +1191,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     public boolean isBinaryType() {
         return getIntegerType() == _binary;
     }
-    
+
     public boolean isBooleanType() {
         return getIntegerType() == _boolean;
     }
@@ -1251,9 +1250,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         Collections.sort(arrayList);
         return arrayList;
     }
-    
-    
-    
+
     public String getStructure() {
         StringBuffer sb = new StringBuffer();
         sb.append("--- structure of " + getName() + "\n");
@@ -1265,7 +1262,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         sb.append("getNull()" + getNull() + "\n");
         try {
             sb.append("hasDescription() " + hasDescription() + "\n");
-        } catch(RuntimeException e) {
+        } catch (RuntimeException e) {
             sb.append("has invalid description");
         }
         sb.append("getDescription() " + getDescription() + "\n");
@@ -1281,83 +1278,82 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         sb.append("getDefaultString()\n");
         try {
             sb.append(getDefaultString() + "\n");
-        } catch(RuntimeException re) {
+        } catch (RuntimeException re) {
             sb.append("was not a string\n");
         }
         sb.append("getDefaultInt()\n");
         try {
             sb.append(getDefaultInt() + "\n");
-        } catch(RuntimeException re) {
+        } catch (RuntimeException re) {
             sb.append("was not an int: " + re.getMessage() + "\n");
         }
         sb.append("getDefaultDate()\n");
         try {
             sb.append(getDefaultDate() + "\n");
-        } catch(RuntimeException re) {
+        } catch (RuntimeException re) {
             sb.append("was not a date\n");
         }
         sb.append("getValues()\n");
         try {
             sb.append(getValues() + "\n");
-        } catch(RuntimeException re) {
+        } catch (RuntimeException re) {
             sb.append("was not an enum\n");
         }
         sb.append("getNames()\n");
         try {
             sb.append(getNames() + "\n");
-        } catch(RuntimeException re) {
+        } catch (RuntimeException re) {
             sb.append("was not an enum: " + re.getMessage() + "\n");
         }
         sb.append("getEnumeratorSize()\n");
         try {
             sb.append(getEnumeratorSize() + "\n");
-        } catch(RuntimeException re) {
+        } catch (RuntimeException re) {
             sb.append("was not an enum\n");
         }
-        
+
         sb.append("getWidth()\n");
         try {
             sb.append(getWidth() + "\n");
-        } catch(RuntimeException re) {
+        } catch (RuntimeException re) {
             sb.append("was not a char\n");
         }
-        
+
         sb.append("getForeignTable()\n");
         try {
-            sb.append(((RecordInfo)getForeignTable()).getName() + "\n");
-        } catch(RuntimeException re) {
+            sb.append(((RecordInfo) getForeignTable()).getName() + "\n");
+        } catch (RuntimeException re) {
             sb.append("was not a ptr\n");
         }
-        
+
         sb.append("getSubtable()\n");
         try {
-            sb.append(((RecordInfo)getSubtable()).getStructure() + "\n");
-        } catch(RuntimeException re) {
+            sb.append(((RecordInfo) getSubtable()).getStructure() + "\n");
+        } catch (RuntimeException re) {
             sb.append("was not a ptr: " + re.getMessage() + "\n");
         }
-        
-        
+
         sb.append("getPointedType()\n");
         try {
-            sb.append(((RecordInfo)getPointedType()).getName() + "\n");
-        } catch(RuntimeException re) {
+            sb.append(((RecordInfo) getPointedType()).getName() + "\n");
+        } catch (RuntimeException re) {
             sb.append("was not a ptr\n");
         }
-        
+
         sb.append("getTitleField()\n");
         try {
             sb.append(getTitleField() + "\n");
-        } catch(RuntimeException re) {
+        } catch (RuntimeException re) {
             sb.append("was not a ptr\n");
         }
-        
+
         sb.append("getDeprecatedValues()\n");
         try {
             sb.append(getDeprecatedValues() + "\n");
-        } catch(RuntimeException re) {
+        } catch (RuntimeException re) {
             sb.append("was not an enum\n");
         }
-        
+
         sb.append("isDefaultField()" + isDefaultField() + "\n");
         sb.append("shouldEditBySingleInput() " + shouldEditBySingleInput() + "\n");
         sb.append("isDateType() " + isDateType() + "\n");
@@ -1365,16 +1361,16 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         sb.append("isIntegerType() " + isIntegerType() + "\n");
         sb.append("isRealType() " + isRealType() + "\n");
         sb.append("isBinaryType() " + isBinaryType() + "\n");
-        sb.append("isFileType() " +isFileType() + "\n");
+        sb.append("isFileType() " + isFileType() + "\n");
         sb.append("isSetType() " + isSetType() + "\n");
         sb.append("isSetEnumType() " + isSetEnumType() + "\n");
         sb.append("isEnumType() " + isEnumType() + "\n");
-        sb.append("isInternalSet() " + isInternalSet() +"\n");
+        sb.append("isInternalSet() " + isInternalSet() + "\n");
         sb.append("isExternalSet() " + isExternalSet() + "\n");
         sb.append("isComplexSet() " + isComplexSet() + "\n");
         sb.append("isPointer() " + isPointer() + "\n");
         sb.append("isStringType() " + isStringType() + "\n");
-        
+
         sb.append("---  end structure of " + getName());
 
         return sb.toString();
@@ -1395,17 +1391,17 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     public String getNotEmptyErrorMessage() {
         return null;
     }
-    
+
     public String getNotIntErrorMessage() {
         return null;
     }
-    
+
     public String getNotRealErrorMessage() {
         return null;
     }
-    
+
     public String getNotBooleanErrorMessage() {
         return null;
     }
-    
+
 }

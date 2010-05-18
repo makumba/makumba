@@ -19,7 +19,9 @@ import antlr.collections.AST;
 public class MDDExpressionParser extends MDDExpressionBaseParser {
 
     private MDDFactory factory;
+
     private AST originalExpression;
+
     private String typeName;
 
     public MDDExpressionParser(TokenStream lexer, MDDFactory factory, String typeName, AST originalExpression) {
@@ -28,15 +30,15 @@ public class MDDExpressionParser extends MDDExpressionBaseParser {
         this.typeName = typeName;
         this.originalExpression = originalExpression;
     }
-    
+
     @Override
     protected void assignPart(ComparisonExpressionNode ce, AST part) {
-        
-        switch(part.getType()) {
+
+        switch (part.getType()) {
             case DATE:
             case NOW:
             case TODAY:
-                if(ce.getLhs() == null) {
+                if (ce.getLhs() == null) {
                     ce.setLhs(part.getText());
                     ce.setLhs_date(handleDate(ce, part));
                     ce.setLhs_type(DATE);
@@ -46,9 +48,9 @@ public class MDDExpressionParser extends MDDExpressionBaseParser {
                     ce.setRhs_type(DATE);
                 }
                 break;
-                
+
             default:
-                if(ce.getLhs() == null) {
+                if (ce.getLhs() == null) {
                     ce.setLhs(part.getText());
                     ce.setLhs_type(part.getType());
                 } else {
@@ -56,19 +58,14 @@ public class MDDExpressionParser extends MDDExpressionBaseParser {
                     ce.setRhs_type(part.getType());
                 }
         }
-        
-        
-        
-        
+
     }
-    
-    
 
     private Date handleDate(ComparisonExpressionNode ce, AST part) {
         GregorianCalendar c = new GregorianCalendar();
         c.set(Calendar.MILLISECOND, 0);
-        
-        switch(part.getType()) {
+
+        switch (part.getType()) {
             case NOW:
             case TODAY:
                 handleConstant(c, part);
@@ -76,10 +73,10 @@ public class MDDExpressionParser extends MDDExpressionBaseParser {
             case DATE:
                 int level = 0;
                 AST arg = part.getFirstChild();
-                while(arg.getNextSibling() != null && level < 10) {
+                while (arg.getNextSibling() != null && level < 10) {
                     processDate(c, arg, level);
                     level++;
-                    if(level > 6) {
+                    if (level > 6) {
                         MDDAST argMDD = (MDDAST) arg;
                         MDDAST originalMDD = (MDDAST) originalExpression;
                         argMDD.setLine(originalMDD.getLine());
@@ -90,22 +87,22 @@ public class MDDExpressionParser extends MDDExpressionBaseParser {
 
                 }
         }
-        
+
         return c.getTime();
-        
+
     }
-    
+
     private void processDate(GregorianCalendar c, AST arg, int level) {
-        
-        switch(arg.getType()) {
+
+        switch (arg.getType()) {
             case PLUS:
             case MINUS:
                 AST lhs = arg.getFirstChild();
                 AST rhs = lhs.getNextSibling();
                 int lhs_val = getSummandValue(c, level, lhs);
                 int rhs_val = getSummandValue(c, level, rhs);
-                
-                if(arg.getType() == MINUS) {
+
+                if (arg.getType() == MINUS) {
                     c.set(dateEditor.components[level], lhs_val - rhs_val);
                 } else {
                     c.set(dateEditor.components[level], lhs_val + rhs_val);
@@ -118,9 +115,9 @@ public class MDDExpressionParser extends MDDExpressionBaseParser {
     }
 
     private int getSummandValue(GregorianCalendar c, int level, AST lhs) {
-        if(lhs.getType() == NOW) {
+        if (lhs.getType() == NOW) {
             return c.get(dateEditor.components[level]);
-        } else if(lhs.getType() == POSITIVE_INTEGER || lhs.getType() == NEGATIVE_INTEGER) {
+        } else if (lhs.getType() == POSITIVE_INTEGER || lhs.getType() == NEGATIVE_INTEGER) {
             return Integer.parseInt(lhs.getText());
         } else {
             throw new RuntimeException("expecting NOW or NUMBER but got " + lhs.getType());
@@ -128,7 +125,7 @@ public class MDDExpressionParser extends MDDExpressionBaseParser {
     }
 
     private void handleConstant(Calendar c, AST constant) {
-        switch(constant.getType()) {
+        switch (constant.getType()) {
             case NOW:
                 // we will just use the calendar
                 break;
@@ -140,5 +137,5 @@ public class MDDExpressionParser extends MDDExpressionBaseParser {
                 break;
         }
     }
-    
+
 }

@@ -103,50 +103,28 @@ public class RecordParser {
             + funcDefParamValueRegExp + "(?:" + RegExpUtils.minOneLineWhitespace + funcDefParamValueRegExp + ")?";
 
     /** treats (int a, char b, ...) */
-    public static final String funcDefParamRepeatRegExp = "\\((" 
-        + "(?:" + funcDefParamRegExp + ")" 
-        + "(?:" + RegExpUtils.LineWhitespaces + "," + RegExpUtils.LineWhitespaces + funcDefParamRegExp + ")*"
-        + RegExpUtils.LineWhitespaces + ")?\\)";
+    public static final String funcDefParamRepeatRegExp = "\\((" + "(?:" + funcDefParamRegExp + ")" + "(?:"
+            + RegExpUtils.LineWhitespaces + "," + RegExpUtils.LineWhitespaces + funcDefParamRegExp + ")*"
+            + RegExpUtils.LineWhitespaces + ")?\\)";
 
     /** treats function(params) { queryFragment } errorMessage. */
-    public static final String funcDefRegExp = "(" + RegExpUtils.fieldName + "%)?" 
-    + "(" + RegExpUtils.fieldName + ")"
-    + funcDefParamRepeatRegExp  
-    + RegExpUtils.LineWhitespaces  
-    + "\\{" + 
-    RegExpUtils.LineWhitespaces
-    + "(.[^\\}]+)"  
-    + RegExpUtils.LineWhitespaces 
-    + "(?:\\}" 
-    + RegExpUtils.LineWhitespaces 
-    + "(.*))?";
+    public static final String funcDefRegExp = "(" + RegExpUtils.fieldName + "%)?" + "(" + RegExpUtils.fieldName + ")"
+            + funcDefParamRepeatRegExp + RegExpUtils.LineWhitespaces + "\\{" + RegExpUtils.LineWhitespaces
+            + "(.[^\\}]+)" + RegExpUtils.LineWhitespaces + "(?:\\}" + RegExpUtils.LineWhitespaces + "(.*))?";
 
     public static final Pattern funcDefPattern = Pattern.compile(funcDefRegExp);
 
-    public static final String ruleDefRegExp =  "(" + RegExpUtils.fieldName + ")"
-    + "\\("
-    + RegExpUtils.LineWhitespaces
-    + "(?:" + RegExpUtils.fieldName + ")" 
-    + "(?:" + RegExpUtils.LineWhitespaces + "," + RegExpUtils.LineWhitespaces + RegExpUtils.fieldName + ")*"
-    + RegExpUtils.LineWhitespaces
-    + "\\)"
-    + RegExpUtils.LineWhitespaces
-    + "\\{"  
-    + RegExpUtils.LineWhitespaces
-    + "(.[^\\}]+)"  
-    + RegExpUtils.LineWhitespaces 
-    + "(?:\\}" 
-    + RegExpUtils.LineWhitespaces 
-    + "(.*))?";
+    public static final String ruleDefRegExp = "(" + RegExpUtils.fieldName + ")" + "\\(" + RegExpUtils.LineWhitespaces
+            + "(?:" + RegExpUtils.fieldName + ")" + "(?:" + RegExpUtils.LineWhitespaces + ","
+            + RegExpUtils.LineWhitespaces + RegExpUtils.fieldName + ")*" + RegExpUtils.LineWhitespaces + "\\)"
+            + RegExpUtils.LineWhitespaces + "\\{" + RegExpUtils.LineWhitespaces + "(.[^\\}]+)"
+            + RegExpUtils.LineWhitespaces + "(?:\\}" + RegExpUtils.LineWhitespaces + "(.*))?";
 
     public static final Pattern ruleDefPattern = Pattern.compile(ruleDefRegExp);
 
-    public static final String constraintDefRegExp =  "(" + RegExpUtils.fieldName + ")"
-    + "\\."
-    + "("+ RegExpUtils.fieldName + ")" 
-    + RegExpUtils.LineWhitespaces 
-    + "((.*))?";
-    
+    public static final String constraintDefRegExp = "(" + RegExpUtils.fieldName + ")" + "\\." + "("
+            + RegExpUtils.fieldName + ")" + RegExpUtils.LineWhitespaces + "((.*))?";
+
     public static final Pattern constraintDefPattern = Pattern.compile(constraintDefRegExp);
 
     public static final Pattern ident = Pattern.compile("[a-zA-Z]\\w*");
@@ -527,7 +505,7 @@ public class RecordParser {
             if (matchFunction(nm + val)) {
                 continue;
             }
-            
+
             if (matchRule(nm + val)) {
                 continue;
             }
@@ -535,7 +513,7 @@ public class RecordParser {
             if (matchConstraint(nm + val)) {
                 continue;
             }
-            
+
             // check name for validity:
             for (int i = 0; i < nm.length(); i++) {
                 if (i == 0 && !Character.isJavaIdentifierStart(nm.charAt(i)) || i > 0
@@ -569,9 +547,9 @@ public class RecordParser {
             return false;
         }
         // TODO: add rule data
-        return true;        
+        return true;
     }
- 
+
     boolean matchConstraint(String line) {
         // check if the line is a function definition
         Matcher matcher = constraintDefPattern.matcher(line);
@@ -579,8 +557,9 @@ public class RecordParser {
             return false;
         }
         // TODO: add rule data
-        return true;        
+        return true;
     }
+
     boolean matchFunction(String line) {
         // check if the line is a function definition
         Matcher matcher = funcDefPattern.matcher(line);
@@ -719,7 +698,7 @@ public class RecordParser {
         } else if (uconn.getClass().getName().endsWith("JarURLConnection")) {
             JarFile jf = ((JarURLConnection) uconn).getJarFile();
 
-            //jar:file:/home/manu/workspace/parade2/webapp/WEB-INF/lib/makumba.jar!/org/makumba/devel/relations/Relation
+            // jar:file:/home/manu/workspace/parade2/webapp/WEB-INF/lib/makumba.jar!/org/makumba/devel/relations/Relation
             // .mdd
             String[] jarURL = u.toExternalForm().split("!");
 
