@@ -15,30 +15,30 @@ import antlr.collections.AST;
 public class RegExpValidationRule extends ValidationRuleNode {
 
     private static final long serialVersionUID = 8505083575565314064L;
-    
+
     private Pattern regExpPattern;
 
     public RegExpValidationRule(MDDNode mdd, AST originAST, FieldNode field, ValidationType type) {
         super(mdd, originAST, field);
         this.type = type;
     }
-    
+
     @Override
     public String getRuleName() {
         return "matches(" + field.getName() + ") {" + expression + "} : " + message + " (line " + getLine() + ")";
     }
-        
+
     @Override
     public boolean validate(Object value, Transaction t) throws InvalidValueException {
-        
+
         if (!(value instanceof String)) {
             return false;// TODO: think of throwing some "cannot validate exception"
         }
-        
-        if(regExpPattern == null) {
+
+        if (regExpPattern == null) {
             regExpPattern = Pattern.compile(expression);
         }
-        
+
         Matcher matcher = regExpPattern.matcher((String) value);
         if (!matcher.matches()) {
             // throw new InvalidValueException(fieldName, "does not match regular expression '" + regExp + "'");
@@ -47,7 +47,7 @@ public class RegExpValidationRule extends ValidationRuleNode {
         } else {
             return true;
         }
-        
+
     }
 
 }

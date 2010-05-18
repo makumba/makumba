@@ -46,7 +46,8 @@ public class RangeValidationRule extends ValidationRuleNode {
                 if (!(value instanceof Number)) {
                     return false;// TODO: think of throwing some "cannot validate exception"
                 }
-                if (lowerLimit.doubleValue() <= ((Number) value).doubleValue() && ((Number) value).doubleValue() <= upperLimit.doubleValue()) {
+                if (lowerLimit.doubleValue() <= ((Number) value).doubleValue()
+                        && ((Number) value).doubleValue() <= upperLimit.doubleValue()) {
                     return true;
                 } else {
                     throwException();

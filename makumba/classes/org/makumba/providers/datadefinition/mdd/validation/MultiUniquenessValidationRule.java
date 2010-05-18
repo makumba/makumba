@@ -9,6 +9,7 @@ import antlr.collections.AST;
 
 /**
  * A validation rule for multi-uniqueness keys
+ * 
  * @version $Id: MultiUniquenessValidationRule.java,v 1.1 29.06.2009 14:18:03 gaym Exp $
  */
 public class MultiUniquenessValidationRule extends ValidationRuleNode {
@@ -22,6 +23,6 @@ public class MultiUniquenessValidationRule extends ValidationRuleNode {
 
     @Override
     public String getRuleName() {
-        return "unique(" + arguments.toString() + ") : " + message  + " (line " + getLine() + ")";
+        return "unique(" + arguments.toString() + ") : " + message + " (line " + getLine() + ")";
     }
 }

@@ -12,7 +12,7 @@ public abstract class RangeValidationRule extends SingleFieldValidationRule {
     protected static final String rule = rangeDef;
 
     protected static final Pattern pattern = Pattern.compile(getAcceptedRules());
-    
+
     public static String getAcceptedRules() {
         return rule;
     }
@@ -32,7 +32,7 @@ public abstract class RangeValidationRule extends SingleFieldValidationRule {
     protected Number lowerLimit;
 
     protected Number upperLimit;
-    
+
     protected RangeValidationRule() {
         super();
     }
