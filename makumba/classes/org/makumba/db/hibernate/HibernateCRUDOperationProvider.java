@@ -35,8 +35,8 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
     private static NameResolver nr = new NameResolver();
 
     @Override
-    public void checkInsert(Transaction t, String type, Dictionary<String, Object> fieldsToCheck, Dictionary<String, DataHolder> fieldsToIgnore,
-            Dictionary<String, Object> allFields) {
+    public void checkInsert(Transaction t, String type, Dictionary<String, Object> fieldsToCheck,
+            Dictionary<String, DataHolder> fieldsToIgnore, Dictionary<String, Object> allFields) {
 
         DataDefinition dd = ddp.getDataDefinition(type);
 
@@ -94,7 +94,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                 Object baseObject = getPointedObject(t, c, base);
 
                 String fieldNameInClass = getFieldNameInClass(c, fi.getName());
-                
+
                 Method m = c.getMethod("get" + fieldNameInClass, new Class[] {});
 
                 Collection<Object> col = (Collection) m.invoke(baseObject, new Object[] {});
@@ -196,8 +196,9 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
     }
 
-    private void fillObject(Transaction t, Dictionary<String, Object> data, DataDefinition dd, Class<?> recordClass, Object newRecord)
-            throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    private void fillObject(Transaction t, Dictionary<String, Object> data, DataDefinition dd, Class<?> recordClass,
+            Object newRecord) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException,
+            InvocationTargetException {
         Enumeration<String> fields = data.keys();
         while (fields.hasMoreElements()) {
             String fieldName = fields.nextElement();
@@ -325,7 +326,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
     @Override
     public void updateSet1(Transaction t, Pointer base, FieldDefinition fi, Object val) {
-        
+
         if (fi.getType().equals("set")) {
 
             try {
@@ -340,7 +341,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
                 Object baseObject = getPointedObject(t, c, base);
 
                 Method m = c.getMethod("get" + getFieldNameInClass(c, fi.getName()), new Class[] {});
-                
+
                 Collection<Object> col = (Collection) m.invoke(baseObject, new Object[] {});
                 if (col == null) {
                     col = new HashSet();
@@ -398,7 +399,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
                 String fieldNameInClass = fi.getName();
                 Class<?>[] parameterTypes = new Class[] { Collection.class };
-                
+
                 if (!isGenerated(c)) {
                     for (Method met : c.getMethods()) {
                         if (met.getName().toLowerCase().equals("set" + fieldNameInClass.toLowerCase())) {
@@ -474,7 +475,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
             ht.s.saveOrUpdate(record);
             ht.s.flush();
-            
+
             return 1;
 
         } catch (ClassNotFoundException cnfe) {
@@ -495,7 +496,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        
+
         return 0;
 
     }
@@ -518,8 +519,11 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
     /**
      * Figures the name of a field in a class (meaning the right capitalisation)
-     * @param clazz the class
-     * @param fieldName the name of the field 
+     * 
+     * @param clazz
+     *            the class
+     * @param fieldName
+     *            the name of the field
      * @return the fieldName, with the right capitals
      */
     private String getFieldNameInClass(Class<?> clazz, String fieldName) {
@@ -534,11 +538,13 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
         return fieldName;
     }
 
-
     /**
      * Figures the pointer value of a hibernate object, with the right type of the primary key (hibernate id) field
-     * @param clazz the class
-     * @param p the Pointer
+     * 
+     * @param clazz
+     *            the class
+     * @param p
+     *            the Pointer
      * @return a long or int value, depending on the type of the field in the class
      */
     private Serializable getTypedId(Class<?> clazz, Pointer p) {

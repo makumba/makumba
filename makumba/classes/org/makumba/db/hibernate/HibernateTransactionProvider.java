@@ -8,18 +8,17 @@ import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.Configuration.DataSourceType;
 
 /**
- * This class is a Hibernate-specific implementation of a {@link TransactionProvider}.
- * 
- * FIXME see what to do with the old _copy, ... etc. methods
+ * This class is a Hibernate-specific implementation of a {@link TransactionProvider}. FIXME see what to do with the old
+ * _copy, ... etc. methods
  * 
  * @author Manuel Gay
  * @version $Id: HibernateTransactionProvider.java,v 1.1 06.11.2007 11:01:32 Manuel Exp $
  */
 public class HibernateTransactionProvider extends TransactionProvider {
-   
+
     private static class SingletonHolder implements org.makumba.commons.SingletonHolder {
         private static TransactionProvider singleton = new HibernateTransactionProvider();
-        
+
         public void release() {
             singleton = null;
         }
@@ -28,10 +27,10 @@ public class HibernateTransactionProvider extends TransactionProvider {
             org.makumba.commons.SingletonReleaser.register(this);
         }
     }
-    
+
     private static class CRUDOperationProviderSingletonHolder implements org.makumba.commons.SingletonHolder {
         private static CRUDOperationProvider singleton = new HibernateCRUDOperationProvider();
-        
+
         public void release() {
             singleton = null;
         }
@@ -41,13 +40,13 @@ public class HibernateTransactionProvider extends TransactionProvider {
         }
 
     }
-    
+
     public static TransactionProvider getInstance() {
         return SingletonHolder.singleton;
     }
-    
+
     private HibernateTransactionProvider() {
-        
+
     }
 
     public CRUDOperationProvider getCRUD() {
@@ -57,7 +56,7 @@ public class HibernateTransactionProvider extends TransactionProvider {
     public Transaction getConnectionTo(String name) {
         return super.getConnectionTo(name, this);
     }
-    
+
     public String getQueryLanguage() {
         return super.getQueryLanguage(this);
     }
@@ -83,20 +82,18 @@ public class HibernateTransactionProvider extends TransactionProvider {
     protected String getQueryLanguageInternal() {
         return "hql";
     }
-    
+
     @Override
     protected Transaction getTransaction(String name) {
         return new HibernateTransaction(name, DataDefinitionProvider.getInstance(), this);
     }
 
-    
     public Object getHibernateSessionFactory(String name) {
         return HibernateSFManager.getSF(name);
     }
-    
+
     @Override
     public void closeDataSource(String dataSourceName) {
     }
-
 
 }

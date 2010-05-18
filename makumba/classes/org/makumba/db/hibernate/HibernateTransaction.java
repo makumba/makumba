@@ -46,7 +46,7 @@ import org.makumba.providers.query.hql.HqlAnalyzer;
 public class HibernateTransaction extends TransactionImplementation {
 
     public org.hibernate.Transaction t;
-    
+
     private boolean useCurrentSession = false;
 
     public Session s;
@@ -61,17 +61,18 @@ public class HibernateTransaction extends TransactionImplementation {
         super(tp);
     }
 
-    public HibernateTransaction(String dataSource, DataDefinitionProvider ddp, HibernateTransactionProvider hibernateTransactionProvider) {
+    public HibernateTransaction(String dataSource, DataDefinitionProvider ddp,
+            HibernateTransactionProvider hibernateTransactionProvider) {
         this(hibernateTransactionProvider);
         this.dataSource = dataSource;
         this.ddp = ddp;
-        
-        useCurrentSession = org.makumba.providers.Configuration.getDataSourceConfiguration(dataSource).containsKey(HibernateSFManager.HIBERNATE_CURRENT_SESSION_CONTEXT);
-        
-        if(useCurrentSession) {
+
+        useCurrentSession = org.makumba.providers.Configuration.getDataSourceConfiguration(dataSource).containsKey(
+            HibernateSFManager.HIBERNATE_CURRENT_SESSION_CONTEXT);
+
+        if (useCurrentSession) {
             this.s = ((SessionFactory) ((HibernateTransactionProvider) hibernateTransactionProvider).getHibernateSessionFactory(dataSource)).getCurrentSession();
-        }
-        else {
+        } else {
             this.s = ((SessionFactory) ((HibernateTransactionProvider) hibernateTransactionProvider).getHibernateSessionFactory(dataSource)).openSession();
             s.setCacheMode(CacheMode.IGNORE);
         }
@@ -82,10 +83,10 @@ public class HibernateTransaction extends TransactionImplementation {
     public void close() {
         setContext(null);
         t.commit();
-        if(!useCurrentSession) {
+        if (!useCurrentSession) {
             s.close();
         }
-        
+
     }
 
     @Override
@@ -272,10 +273,10 @@ public class HibernateTransaction extends TransactionImplementation {
     public Vector<Dictionary<String, Object>> execute(String query, Object args, int offset, int limit) {
         MakumbaSystem.getLogger("hibernate.query").fine("Executing hibernate query " + query);
         QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer("hql");
-    
+
         QueryAnalysis analyzer = qap.getQueryAnalysis(query);
-        query= Pass1ASTPrinter.printAST(analyzer.getPass1Tree()).toString();
-        
+        query = Pass1ASTPrinter.printAST(analyzer.getPass1Tree()).toString();
+
         DataDefinition dataDef = analyzer.getProjectionType();
         DataDefinition paramsDef = analyzer.getParameterTypes();
 
@@ -293,7 +294,7 @@ public class HibernateTransaction extends TransactionImplementation {
 
         // workaround for Hibernate bug HHH-2390
         // see http://opensource.atlassian.com/projects/hibernate/browse/HHH-2390
-        query = ((HqlAnalyzer)analyzer).getHackedQuery(query);
+        query = ((HqlAnalyzer) analyzer).getHackedQuery(query);
 
         org.hibernate.Query q = s.createQuery(query);
 
@@ -319,11 +320,9 @@ public class HibernateTransaction extends TransactionImplementation {
             results = getConvertedQueryResult(analyzer, q.list());
 
         } catch (Exception e) {
-             
-            throw new ProgrammerError(
-                    "Error while trying to execute query "
-                            + q.getQueryString() + ":\n"
-                            + StacktraceUtil.getStackTrace(e));
+
+            throw new ProgrammerError("Error while trying to execute query " + q.getQueryString() + ":\n"
+                    + StacktraceUtil.getStackTrace(e));
         }
         return results;
     }
@@ -339,7 +338,7 @@ public class HibernateTransaction extends TransactionImplementation {
     private Vector<Dictionary<String, Object>> getConvertedQueryResult(QueryAnalysis analyzer, List list) {
         DataDefinition dataDef = analyzer.getProjectionType();
         Vector<Dictionary<String, Object>> results = new Vector<Dictionary<String, Object>>(list.size());
-        
+
         String[] projections = dataDef.getFieldNames().toArray(new String[dataDef.getFieldNames().size()]);
         Dictionary<String, Integer> keyIndex = new java.util.Hashtable<String, Integer>(projections.length);
         for (int i = 0; i < projections.length; i++) {
@@ -462,7 +461,7 @@ public class HibernateTransaction extends TransactionImplementation {
             }
         }
     }
-    
+
     @Override
     public Vector<Pointer> insert(String type, Collection<Dictionary<String, Object>> data) {
         // TODO Auto-generated method stub
@@ -489,6 +488,7 @@ public class HibernateTransaction extends TransactionImplementation {
     public String getPrimaryKeyName() {
         return ".id";
     }
+
     @Override
     public String getSetJoinSyntax() {
         return "JOIN";

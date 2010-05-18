@@ -24,7 +24,7 @@ public class MakumbaTransactionProvider extends TransactionProvider {
 
     private static class SingletonHolder implements org.makumba.commons.SingletonHolder {
         private static TransactionProvider singleton = new MakumbaTransactionProvider();
-        
+
         public void release() {
             singleton = null;
         }
@@ -45,9 +45,9 @@ public class MakumbaTransactionProvider extends TransactionProvider {
     public static final String CONNECTION_HOST = "host";
 
     public static final String CONNECTION_PORT = "port";
-    
+
     public static final String CONNECTION_ENGINE = "engine";
-    
+
     public static final String CONNECTION_DATABASE = "database";
 
     private MakumbaTransactionProvider() {
@@ -56,7 +56,7 @@ public class MakumbaTransactionProvider extends TransactionProvider {
 
     private static class CRUDOperationProviderSingletonHolder implements org.makumba.commons.SingletonHolder {
         private static CRUDOperationProvider singleton = new MakumbaCRUDOperationProvider();
-        
+
         public void release() {
             singleton = null;
         }
@@ -148,13 +148,14 @@ public class MakumbaTransactionProvider extends TransactionProvider {
                 if (property.startsWith(CONNECTION_PREFIX)) {
                     property = property.substring(CONNECTION_PREFIX.length());
 
-                    // we need to adjust for the global connection.username format, Hibernate does use "username" instead of
+                    // we need to adjust for the global connection.username format, Hibernate does use "username"
+                    // instead of
                     // the JDBC "user"
                     if (property.equals(CONNECTION_USERNAME)) {
                         property = "sql.user";
                     }
-                    
-                    if(property.equals(CONNECTION_PASSWORD)) {
+
+                    if (property.equals(CONNECTION_PASSWORD)) {
                         property = "sql.password";
                     }
                 }
@@ -180,13 +181,13 @@ public class MakumbaTransactionProvider extends TransactionProvider {
             } else {
 
                 // check if the required properties are there
-                String[] requiredProps = { CONNECTION_HOST, CONNECTION_DATABASE, CONNECTION_ENGINE};
+                String[] requiredProps = { CONNECTION_HOST, CONNECTION_DATABASE, CONNECTION_ENGINE };
                 for (String prop : requiredProps) {
                     if (p.get(prop) == null) {
                         throw new ConfigurationError("Property " + prop + " not defined for dataSource " + name);
                     }
                 }
-                if(p.getProperty(CONNECTION_PORT) != null) {
+                if (p.getProperty(CONNECTION_PORT) != null) {
                     p.put("#host", p.getProperty(CONNECTION_HOST) + ":" + p.getProperty(CONNECTION_PORT));
                 } else {
                     p.put("#host", p.getProperty(CONNECTION_HOST));
@@ -230,7 +231,7 @@ public class MakumbaTransactionProvider extends TransactionProvider {
         return super.getConnectionTo(name, this);
     }
 
-    /**
+/**
      * Access the properties of a database. Besides the properties defined in the database connection file, the
      * following are available <table border =1>
      * <tr>
@@ -287,12 +288,11 @@ public class MakumbaTransactionProvider extends TransactionProvider {
         return CRUDOperationProviderSingletonHolder.singleton;
     }
 
-
     @Override
     protected String getQueryLanguageInternal() {
         return "oql";
     }
-    
+
     private DataSourceType lastConnectionType = DataSourceType.makumba;
 
     @Override
@@ -304,11 +304,11 @@ public class MakumbaTransactionProvider extends TransactionProvider {
     protected void setLastConnectionType(DataSourceType type) {
         this.lastConnectionType = type;
     }
-    
+
     @Override
     public void closeDataSource(String dataSourceName) {
         getDatabase(dataSourceName);
-        
+
     }
 
 }
