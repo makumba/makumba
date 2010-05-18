@@ -34,8 +34,8 @@ public class setEditor extends ptrEditor {
     static String[] _params = { "default", "empty", "type", "size", "labelSeparator", "elementSeparator", "nullOption",
             "forceInputStyle" };
 
-    static String[][] _paramValues = { null, null, { "hidden", "radio", "checkbox", "tickbox", "seteditor" }, null, null, null,
-            null, SearchFieldTag.allowedSelectTypes };
+    static String[][] _paramValues = { null, null, { "hidden", "radio", "checkbox", "tickbox", "seteditor" }, null,
+            null, null, null, SearchFieldTag.allowedSelectTypes };
 
     @Override
     public String[] getAcceptedParams() {
@@ -49,7 +49,7 @@ public class setEditor extends ptrEditor {
 
     private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
         static FieldEditor singleton = new setEditor();
-        
+
         public void release() {
             singleton = null;
         }
@@ -94,5 +94,5 @@ public class setEditor extends ptrEditor {
         }
         return o;
     }
-    
+
 }

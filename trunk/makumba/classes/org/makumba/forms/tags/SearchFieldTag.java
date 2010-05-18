@@ -40,8 +40,7 @@ import org.makumba.providers.Configuration;
  * <ul>
  * <li>Not needing the name field, but getting the name & type of the input from the first argument in the fields
  * attribute of {@link CriterionTag}, using {@link CriterionTag#getInputName()}</>
- * <li>Allows to change a select input to be forced to a single/multiple select using the 'forceInputStyle'
- * attribute.</li>
+ * <li>Allows to change a select input to be forced to a single/multiple select using the 'forceInputStyle' attribute.</li>
  * <li>Allows for range searching, triggered by the the 'role' attribute, requiring 'isRange' attribute in
  * {@link CriterionTag} to be set to 'true'</li>
  * </ul>
@@ -103,7 +102,8 @@ public class SearchFieldTag extends InputTag {
             fdp.onNonQueryStartAnalyze(this, isNull(), getForm().getTagKey(), pageCache, expr);
         }
         if (StringUtils.equals(forceInputStyle, "multiple") && nullOption != null) {
-            throw new ProgrammerError("'forceInputStyle' attribute with value 'multiple' cannot be used in combination with 'nullOption'");
+            throw new ProgrammerError(
+                    "'forceInputStyle' attribute with value 'multiple' cannot be used in combination with 'nullOption'");
         }
     }
 
@@ -138,7 +138,7 @@ public class SearchFieldTag extends InputTag {
     public boolean allowsIdenticalKey() {
         return false;
     }
-    
+
     @Override
     protected void registerPossibleAttributeValues() {
         registerAttributeValues("forceInputStyle", allowedSelectTypes);

@@ -23,7 +23,6 @@
 
 package org.makumba.forms.tags;
 
-
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.ProgrammerError;
@@ -49,7 +48,8 @@ public class AddTag extends FormTagBase {
      *            the page cache of the current page
      */
     public void setTagKey(PageCache pageCache) {
-        Object[] keyComponents = { baseObject, field, handler, afterHandler, fdp.getParentListKey(this), formName, getClass() };
+        Object[] keyComponents = { baseObject, field, handler, afterHandler, fdp.getParentListKey(this), formName,
+                getClass() };
         tagKey = new MultipleKey(keyComponents);
     }
 
@@ -109,5 +109,5 @@ public class AddTag extends FormTagBase {
         throw new RuntimeException("Houston, we have a problem");
 
     }
-    
+
 }

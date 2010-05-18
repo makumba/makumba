@@ -34,56 +34,57 @@ import org.makumba.commons.formatters.RecordFormatter;
 public class FieldEditor extends org.makumba.commons.formatters.FieldFormatter {
 
     public static final String ERROR_NO_INT = "invalid integer";
-    
+
     public static final String ERROR_NO_BOOLEAN = "invalid boolean";
 
     public static final String ERROR_NO_REAL = "invalid real";
-	
-	/* see http://c2.com/cgi/wiki?JavaSingleton */
-	private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
-		static FieldEditor singleton = new FieldEditor();
-		
-		public void release() {
+
+    /* see http://c2.com/cgi/wiki?JavaSingleton */
+    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+        static FieldEditor singleton = new FieldEditor();
+
+        public void release() {
             singleton = null;
         }
 
         public SingletonHolder() {
             org.makumba.commons.SingletonReleaser.register(this);
         }
-	}	
+    }
 
-	/** Don't use this, use getInstance() */
-	protected FieldEditor() {}	
+    /** Don't use this, use getInstance() */
+    protected FieldEditor() {
+    }
 
-	public static FieldFormatter getInstance() {
-		return SingletonHolder.singleton;
-	}
+    public static FieldFormatter getInstance() {
+        return SingletonHolder.singleton;
+    }
 
-	static String[] params = { "default", "empty", "type" };
+    static String[] params = { "default", "empty", "type" };
 
-	static String[][] paramValues = { null, null, { "hidden" } };
+    static String[][] paramValues = { null, null, { "hidden" } };
 
-	@Override
+    @Override
     public String[] getAcceptedParams() {
-		return params;
-	}
+        return params;
+    }
 
-	@Override
+    @Override
     public String[][] getAcceptedValue() {
-		return paramValues;
-	}
+        return paramValues;
+    }
 
-	static final String suffixName = "org.makumba.editorSuffix";
+    static final String suffixName = "org.makumba.editorSuffix";
 
     static final String formName = "org.makumba.formName";
 
-	public static String getSuffix(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
-		return (String) formatParams.get(suffixName);
-	}
+    public static String getSuffix(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
+        return (String) formatParams.get(suffixName);
+    }
 
-	public static void setSuffix(Dictionary<String, Object> formatParams, String suffix) {
-		formatParams.put(suffixName, suffix);
-	}
+    public static void setSuffix(Dictionary<String, Object> formatParams, String suffix) {
+        formatParams.put(suffixName, suffix);
+    }
 
     public static void setFormName(Dictionary<String, Object> formatParams, String formName) {
         if (formName != null) {
@@ -91,76 +92,75 @@ public class FieldEditor extends org.makumba.commons.formatters.FieldFormatter {
         }
     }
 
-	@Override
+    @Override
     public void checkParam(RecordFormatter rf, int fieldIndex, String name, String val) {
-		if (name.equals(extraFormattingParam)) {
+        if (name.equals(extraFormattingParam)) {
             return;
         }
-		if (name.equals("type") && val.equals("hidden")) {
+        if (name.equals("type") && val.equals("hidden")) {
             return;
         }
-		super.checkParam(rf, fieldIndex, name, val);
-	}
+        super.checkParam(rf, fieldIndex, name, val);
+    }
 
-	@Override
+    @Override
     public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
-		String s = (String) formatParams.get("type");
-		if (s != null && s.equals("hidden")) {
+        String s = (String) formatParams.get("type");
+        if (s != null && s.equals("hidden")) {
             return formatHidden(rf, fieldIndex, o, formatParams);
         }
-		return formatShow(rf, fieldIndex, o, formatParams);
-	}
+        return formatShow(rf, fieldIndex, o, formatParams);
+    }
 
-	public String formatShow(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
-		// this will call formatNull and formatNotNull which should be redefined
-		// or, the entire formatShow should be redefined
-		return super.format(rf, fieldIndex, o, formatParams);
-	}
+    public String formatShow(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
+        // this will call formatNull and formatNotNull which should be redefined
+        // or, the entire formatShow should be redefined
+        return super.format(rf, fieldIndex, o, formatParams);
+    }
 
-	public String formatHidden(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
-		return "<input type=\"hidden\" name=\"" + getInputName(rf, fieldIndex, formatParams)
-				+ "\" value=\"" + formatHiddenValue(rf, fieldIndex, o, formatParams) + "\" "
-				+ getExtraFormatting(rf, fieldIndex, formatParams) + ">";
-	}
+    public String formatHidden(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
+        return "<input type=\"hidden\" name=\"" + getInputName(rf, fieldIndex, formatParams) + "\" value=\""
+                + formatHiddenValue(rf, fieldIndex, o, formatParams) + "\" "
+                + getExtraFormatting(rf, fieldIndex, formatParams) + ">";
+    }
 
-	/** Formats the value to appear in hidden input statement. */
-	public String formatHiddenValue(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
-		// default : same treatment as formatting for normal input.
-		return formatValue(rf, fieldIndex, o, formatParams);
-	}
+    /** Formats the value to appear in hidden input statement. */
+    public String formatHiddenValue(RecordFormatter rf, int fieldIndex, Object o,
+            Dictionary<String, Object> formatParams) {
+        // default : same treatment as formatting for normal input.
+        return formatValue(rf, fieldIndex, o, formatParams);
+    }
 
-	/** Formats the value to appear in an input statement. */
-	public String formatValue(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
-		// return super.format(o, formatParams);
-		throw new ProgrammerError(
-				"If this method is needed, overload it in the inheriting class");
-	}
+    /** Formats the value to appear in an input statement. */
+    public String formatValue(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
+        // return super.format(o, formatParams);
+        throw new ProgrammerError("If this method is needed, overload it in the inheriting class");
+    }
 
-	public void onStartup(RecordFormatter rf, int fieldIndex) {
-	}
+    public void onStartup(RecordFormatter rf, int fieldIndex) {
+    }
 
-	public static String getInputName(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
-		return getInputName(rf, fieldIndex, getSuffix(rf, fieldIndex, formatParams));
-	}
+    public static String getInputName(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
+        return getInputName(rf, fieldIndex, getSuffix(rf, fieldIndex, formatParams));
+    }
 
-	public static String getInputName(RecordFormatter rf, int fieldIndex, String suffix) {
-		return rf.expr[fieldIndex] + suffix;
-	}
+    public static String getInputName(RecordFormatter rf, int fieldIndex, String suffix) {
+        return rf.expr[fieldIndex] + suffix;
+    }
 
     public static String getInputID(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
         return getInputName(rf, fieldIndex, getSuffix(rf, fieldIndex, formatParams)) + rf.getFormIdentifier();
     }
 
-	public static final String extraFormattingParam = "makumba.extraFormatting";
+    public static final String extraFormattingParam = "makumba.extraFormatting";
 
-	public static String getExtraFormatting(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
-		return (String) formatParams.get(extraFormattingParam);
-	}
+    public static String getExtraFormatting(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
+        return (String) formatParams.get(extraFormattingParam);
+    }
 
-	public static void setExtraFormatting(Dictionary<String, Object> formatParams,
-			String extraFormatting) {
-		formatParams.put(extraFormattingParam, extraFormatting);
-	}
+    public static void setExtraFormatting(Dictionary<String, Object> formatParams, String extraFormatting) {
+        formatParams.put(extraFormattingParam, extraFormatting);
+    }
 
     /**
      * As {@link #readFrom(RecordFormatter, int, HttpParameters, String)}, but if indicated, then allowing multiple
@@ -173,51 +173,51 @@ public class FieldEditor extends org.makumba.commons.formatters.FieldFormatter {
             boolean allowMultipleValues) {
         return readFrom(rf, fieldIndex, p, suffix);
     }
-	
+
     /**
      * Reads, converts and validates the value present in the {@link HttpParameters}, for the {@link FieldEditor}
      * indicated by the given index.
      */
     public Object readFrom(RecordFormatter rf, int fieldIndex, HttpParameters p, String suffix) {
         return p.getParameter(getInputName(rf, fieldIndex, suffix));
-	}
+    }
 
-	protected Integer toInt(RecordFormatter rf, int fieldIndex, Object o) {
-		if (o == null) {
+    protected Integer toInt(RecordFormatter rf, int fieldIndex, Object o) {
+        if (o == null) {
             return null;
         }
-		String s = ("" + o).trim();
-		if (s.length() == 0) {
+        String s = ("" + o).trim();
+        if (s.length() == 0) {
             return null;
         }
-		try {
-			return new Integer(Integer.parseInt(s));
-		} catch (NumberFormatException e) {
-            throw new InvalidValueException(rf.expr[fieldIndex], ERROR_NO_INT+": " + o);
-		}
-	}
+        try {
+            return new Integer(Integer.parseInt(s));
+        } catch (NumberFormatException e) {
+            throw new InvalidValueException(rf.expr[fieldIndex], ERROR_NO_INT + ": " + o);
+        }
+    }
 
-	protected Double toReal(RecordFormatter rf, int fieldIndex, Object o) {
-		if (o == null) {
+    protected Double toReal(RecordFormatter rf, int fieldIndex, Object o) {
+        if (o == null) {
             return null;
         }
-		String s = ("" + o).trim();
-		if (s.length() == 0) {
+        String s = ("" + o).trim();
+        if (s.length() == 0) {
             return null;
         }
-		try {
-			return new Double(Double.parseDouble(s));
-		} catch (NumberFormatException e) {
-			try {
-				return new Double(Double.parseDouble(s.replace(',', '.')));
-			} catch (NumberFormatException e2) {
-				try {
-					return new Double(Double.parseDouble(s.replace('.', ',')));
-				} catch (NumberFormatException e3) {
-                    throw new InvalidValueException(rf.expr[fieldIndex], ERROR_NO_REAL+": " + o);
-				}
-			}
-		}
-	}
+        try {
+            return new Double(Double.parseDouble(s));
+        } catch (NumberFormatException e) {
+            try {
+                return new Double(Double.parseDouble(s.replace(',', '.')));
+            } catch (NumberFormatException e2) {
+                try {
+                    return new Double(Double.parseDouble(s.replace('.', ',')));
+                } catch (NumberFormatException e3) {
+                    throw new InvalidValueException(rf.expr[fieldIndex], ERROR_NO_REAL + ": " + o);
+                }
+            }
+        }
+    }
 
 }

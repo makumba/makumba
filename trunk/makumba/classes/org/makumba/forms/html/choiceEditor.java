@@ -75,7 +75,7 @@ public abstract class choiceEditor extends FieldEditor {
     public abstract String formatOptionValue(RecordFormatter rf, int fieldIndex, Object val);
 
     /** Returns blank string, or " multiple " if multiple selections possible. */
-    
+
     public abstract boolean isMultiple(RecordFormatter rf, int fieldIndex);
 
     /** Gets the default size of the select HTML box. */
@@ -214,7 +214,8 @@ public abstract class choiceEditor extends FieldEditor {
                 sb.append("<script language=\"JavaScript\">\n");
                 sb.append("<!-- //\n");
                 sb.append("moveNotSelected(document.getElementById('" + formatParams.get(formName) + "')." + inputName
-                        + ",document.getElementById('" + formatParams.get(formName) + "')." + inputName + "selectFrom)\n");
+                        + ",document.getElementById('" + formatParams.get(formName) + "')." + inputName
+                        + "selectFrom)\n");
                 sb.append("// -->\n");
                 sb.append("</script>\n");
                 sb.append("</tr> </table>");
@@ -238,7 +239,8 @@ public abstract class choiceEditor extends FieldEditor {
     /**
      * Return value if not null, or finds the default option and returns it as a Vector.
      */
-    public Object getValueOrDefault(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
+    public Object getValueOrDefault(RecordFormatter rf, int fieldIndex, Object o,
+            Dictionary<String, Object> formatParams) {
         if (o == null || (o instanceof Vector && ((Vector<?>) o).size() == 0)) {
             String nullReplacer = (String) formatParams.get("default");
             if (nullReplacer != null) {

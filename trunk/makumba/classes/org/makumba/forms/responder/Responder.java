@@ -122,7 +122,7 @@ public abstract class Responder implements java.io.Serializable {
 
     /** the name of the resultLabel used in the resultList of a search form */
     protected String resultLabel;
-    
+
     /** HTML ID of the form **/
     protected String formId;
 
@@ -202,7 +202,7 @@ public abstract class Responder implements java.io.Serializable {
     public String getSearchType() {
         return searchType;
     }
-    
+
     public String getResultLabel() {
         return resultLabel;
     }

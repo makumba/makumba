@@ -81,7 +81,8 @@ public class ValueEditor extends HttpServlet {
 
             // check if the pointer exists
             Pointer ptr = new Pointer(tableName, pointer);
-            Vector<Dictionary<String, Object>> v = transaction.executeQuery("SELECT l FROM " + tableName + " l WHERE l=$1", ptr);
+            Vector<Dictionary<String, Object>> v = transaction.executeQuery("SELECT l FROM " + tableName
+                    + " l WHERE l=$1", ptr);
             if (v.size() < 1) {
                 writer.println("No such data");
             }

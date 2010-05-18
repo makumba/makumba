@@ -410,7 +410,8 @@ public class ResponderFactory {
                 // we do nothing, cause we will treat that from the ResponseControllerHandler
                 return e;
             } catch (LogicException e) {
-                java.util.logging.Logger.getLogger("org.makumba.logic.error").log(Level.INFO, "Caught a logic exception on form response.", e);
+                java.util.logging.Logger.getLogger("org.makumba.logic.error").log(Level.INFO,
+                    "Caught a logic exception on form response.", e);
                 message = Responder.errorMessage(e);
                 formattedMessage = Responder.errorMessageFormatter(message);
 

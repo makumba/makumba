@@ -164,7 +164,7 @@ public class SearchTag extends FormTagBase {
         public FormOperationType getOperationType() {
             return FormOperationType.SEARCH;
         }
-        
+
         private boolean notEmpty(Object value) {
             if (value instanceof Vector) {
                 return ((Vector<?>) value).size() > 0;

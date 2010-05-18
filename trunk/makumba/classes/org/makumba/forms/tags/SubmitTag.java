@@ -94,7 +94,8 @@ public class SubmitTag extends GenericMakumbaTag implements BodyTag {
                     "\" />");
             } else if (widget.equals(LINK)) {
                 pageContext.getOut().append("<a class=\"makSubmitLink\" href=\"#\" onClick=\"").append(
-                    getForm().getSubmitJavascriptCall(null, getForm().triggerEvent != null)).append("\">").append(text).append("</a>");
+                    getForm().getSubmitJavascriptCall(null, getForm().triggerEvent != null)).append("\">").append(text).append(
+                    "</a>");
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

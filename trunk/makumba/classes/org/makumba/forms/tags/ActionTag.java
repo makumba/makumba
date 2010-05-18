@@ -33,6 +33,7 @@ import org.makumba.commons.tags.GenericMakumbaTag;
 
 /**
  * mak:action tag
+ * 
  * @author Cristian Bogdan
  * @version $Id$
  */
@@ -46,16 +47,18 @@ public class ActionTag extends GenericMakumbaTag implements BodyTag {
         bodyContent = bc;
     }
 
-    /** 
+    /**
      * Indicates if the tag needs the page cache
      */
     protected boolean needPageCache() {
         return false;
     }
 
-    /** 
+    /**
      * This always returns EVAL_BODY_TAG so we make sure {@link #doInitBody()} is called
-     * @param pageCache the page cache of the current page
+     * 
+     * @param pageCache
+     *            the page cache of the current page
      */
     public int doAnalyzedStartTag(PageCache pageCache) {
         return EVAL_BODY_BUFFERED;

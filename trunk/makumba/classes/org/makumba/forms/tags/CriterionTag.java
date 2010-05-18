@@ -69,7 +69,7 @@ public class CriterionTag extends GenericMakumbaTag implements BodyTag {
         }
         parseFieldList(pageCache);
         // FIXME: we can't have the same field as the primary criterion yet => it would lead to two inputs with
-        // the same name. 
+        // the same name.
         // The fix should be to give a different name to the input, and store a mapping input-name => field
         // name, so we can construct the query correctly.
         // For now, we just prevent errors by checking that this field was not yet used in this search form
@@ -155,7 +155,8 @@ public class CriterionTag extends GenericMakumbaTag implements BodyTag {
             parseFieldList(pageCache);
             if (matchMode != null) {
                 // check for valid match-mode
-                Hashtable<String, String> matchModes = MatchModeTag.getValidMatchmodes(false, getFieldDefinition(pageCache));
+                Hashtable<String, String> matchModes = MatchModeTag.getValidMatchmodes(false,
+                    getFieldDefinition(pageCache));
                 if (!matchModes.containsKey(matchMode)) {
                     throw new ProgrammerError("Unknown match mode '" + matchMode + "'. Valid options are: "
                             + org.makumba.commons.StringUtils.toString(matchModes.keySet()));
@@ -242,8 +243,7 @@ public class CriterionTag extends GenericMakumbaTag implements BodyTag {
     protected void registerPossibleAttributeValues() {
         registerAttributeValues("isRange", allowedRanges);
     }
-    
-    
+
     @Override
     protected void doAnalyzedCleanup() {
         super.doAnalyzedCleanup();

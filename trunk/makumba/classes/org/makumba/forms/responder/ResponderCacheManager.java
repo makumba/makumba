@@ -26,7 +26,7 @@ public class ResponderCacheManager {
 
     private static class SingletonHolder implements org.makumba.commons.SingletonHolder {
         private static ResponderCacheManager singleton = new ResponderCacheManager();
-        
+
         public void release() {
             singleton = null;
         }
@@ -34,8 +34,9 @@ public class ResponderCacheManager {
         public SingletonHolder() {
             org.makumba.commons.SingletonReleaser.register(this);
         }
-        
+
     }
+
     private ResponderFactory factory;
 
     public static ResponderCacheManager getInstance() {
@@ -63,7 +64,8 @@ public class ResponderCacheManager {
 
     /** Sets the responder working directory from the given temp directory and context path. */
     public void setResponderWorkingDir(Object tempDir, String contextPath) {
-        java.util.logging.Logger.getLogger("org.makumba.controller").info("had an empty responder dir - working dir ==> " + tempDir);
+        java.util.logging.Logger.getLogger("org.makumba.controller").info(
+            "had an empty responder dir - working dir ==> " + tempDir);
         String baseDir = tempDir + System.getProperty("file.separator") + "makumba-responders"
                 + System.getProperty("file.separator");
         makumbaResponderBaseDirectory = baseDir + contextPath;

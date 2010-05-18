@@ -31,7 +31,7 @@ import org.makumba.commons.formatters.RecordFormatter;
 public class charEnumEditor extends choiceEditor {
     private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
         static FieldEditor singleton = new charEnumEditor();
-        
+
         public void release() {
             singleton = null;
         }

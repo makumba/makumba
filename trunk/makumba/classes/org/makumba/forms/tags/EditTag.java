@@ -23,22 +23,22 @@
 
 package org.makumba.forms.tags;
 
-
 import org.makumba.forms.responder.ResponderOperation;
 
 /**
  * mak:editForm tag
+ * 
  * @author Cristian Bogdan
  * @version $Id$
  */
 public class EditTag extends FormTagBase {
 
     private static final long serialVersionUID = 1L;
-    
+
     @Override
     public ResponderOperation getResponderOperation(String operation) {
-        if(operation.equals("edit")) {
-            return ResponderOperation.editOp ;
+        if (operation.equals("edit")) {
+            return ResponderOperation.editOp;
         }
         return null;
     }
