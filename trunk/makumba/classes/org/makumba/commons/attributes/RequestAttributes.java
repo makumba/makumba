@@ -233,7 +233,8 @@ public class RequestAttributes implements Attributes {
         try {
             return checkSessionForAttribute(s) != RequestAttributes.notFound
                     || checkServletLoginForAttribute(s) != RequestAttributes.notFound
-                    || checkLogicForAttribute(s) != RequestAttributes.notFound || checkParameterForAttribute(s) != RequestAttributes.notFound;
+                    || checkLogicForAttribute(s) != RequestAttributes.notFound
+                    || checkParameterForAttribute(s) != RequestAttributes.notFound;
         } catch (LogicException e) {
             return false;
         }

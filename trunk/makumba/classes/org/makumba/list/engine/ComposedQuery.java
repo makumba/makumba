@@ -331,8 +331,8 @@ public class ComposedQuery {
         }
         if (!qep.selectGroupOrOrderAsLabels()) {
             return str;
-        // if(projections.size()==1)
-        // new Throwable().printStackTrace();
+            // if(projections.size()==1)
+            // new Throwable().printStackTrace();
         }
 
         StringBuffer ret = new StringBuffer();

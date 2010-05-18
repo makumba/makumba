@@ -83,9 +83,8 @@ public class textViewer extends FieldViewer {
                     "invalid combination of parameters 'html' and 'format'. 'html' is deprecated, please use only 'format'.");
         }
 
-        if (StringUtils.equals(html, "true") || StringUtils.equals(format, "raw")
-                || StringUtils.equals(html, "auto") && HtmlUtils.detectHtml(txt)
-                || StringUtils.equals(format, "auto") && HtmlUtils.detectHtml(txt)) {
+        if (StringUtils.equals(html, "true") || StringUtils.equals(format, "raw") || StringUtils.equals(html, "auto")
+                && HtmlUtils.detectHtml(txt) || StringUtils.equals(format, "auto") && HtmlUtils.detectHtml(txt)) {
             return txt;
         } else if (StringUtils.equals(format, "urlencode")) {
             return java.net.URLEncoder.encode(txt);

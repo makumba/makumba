@@ -75,8 +75,7 @@ public class WebappJSPQueryCrawler {
         for (String jspFile : jspFiles) {
             try {
                 Object analysisResult;
-                JspParseData jpd = JspParseData.getParseData(webappRoot, jspFile,
-                    JspRelationsAnalyzer.getInstance());
+                JspParseData jpd = JspParseData.getParseData(webappRoot, jspFile, JspRelationsAnalyzer.getInstance());
                 analysisResult = jpd.getAnalysisResult(new RelationParseStatus());
                 if (analysisResult != null && analysisResult instanceof PageCache) {
                     PageCache pageCache = (PageCache) analysisResult;

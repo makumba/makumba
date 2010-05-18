@@ -367,8 +367,7 @@ public class SourceSyntaxPoints {
      *            the syntax point to be filled in
      */
     void setLineAndColumn(SyntaxPoint point) {
-        SyntaxPoint lineBegin = lineBeginnings.get(-1 * Collections.binarySearch(lineBeginnings, point)
-                - 2);
+        SyntaxPoint lineBegin = lineBeginnings.get(-1 * Collections.binarySearch(lineBeginnings, point) - 2);
         point.line = lineBegin.line;
         point.column = point.position - lineBegin.position + 1;
         point.sourceFile = this;

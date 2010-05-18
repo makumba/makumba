@@ -73,8 +73,7 @@ public class Query implements org.makumba.db.makumba.Query {
      * @return the SQL query string to be sent to the database, given a set of arguments
      */
     public String getCommand(Map<String, Object> arguments) {
-        return MqlSQLParameterTransformer.getSQLQueryGenerator(qA, arguments).getSQLQuery(
-            db.getNameResolverHook());
+        return MqlSQLParameterTransformer.getSQLQueryGenerator(qA, arguments).getSQLQuery(db.getNameResolverHook());
     }
 
     public Query(Database db, String MQLQuery, String insertIn) {

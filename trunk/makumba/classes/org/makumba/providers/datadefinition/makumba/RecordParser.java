@@ -803,7 +803,8 @@ public class RecordParser {
     // moved from setParser
     public void parse_set_Subfields(String fieldName) {
         if (getFieldInfo(fieldName).extra2 == null) {
-            getFieldInfo(fieldName).extra2 = subtableParser_subtables.get(fieldName).title = setParser_settbls.get(fieldName).getTitleFieldName();
+            getFieldInfo(fieldName).extra2 = subtableParser_subtables.get(fieldName).title = setParser_settbls.get(
+                fieldName).getTitleFieldName();
         }
     }
 
@@ -932,7 +933,8 @@ public class RecordParser {
                 return null;
             }
             parse1(fieldName, fc);
-            if (initialType.equals(FieldInfo.getStringType(FieldDefinition._file))) { // file type gets re-written to ptrOne
+            // file type gets re-written to ptrOne
+            if (initialType.equals(FieldInfo.getStringType(FieldDefinition._file))) {
                 return getFieldInfo(fieldName).type;
             }
             if (getFieldInfo(fieldName).type.equals(initialType)) {

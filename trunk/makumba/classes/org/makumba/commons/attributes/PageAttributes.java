@@ -75,7 +75,8 @@ public class PageAttributes implements Attributes {
      */
     public boolean hasAttribute(String s) {
         try {
-            return RequestAttributes.getAttributes((HttpServletRequest) pageContext.getRequest()).hasAttribute(s) || checkPageForAttribute(s) != RequestAttributes.notFound;
+            return RequestAttributes.getAttributes((HttpServletRequest) pageContext.getRequest()).hasAttribute(s)
+                    || checkPageForAttribute(s) != RequestAttributes.notFound;
         } catch (LogicException e) {
             return false;
         }
