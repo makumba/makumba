@@ -36,8 +36,8 @@ import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 
 /**
- * Testing mdd handling & parsing, for the old RecordInfo-based MDD parser. In order to run this test you need to make sure that
- * "dataDefinitionProvider=recordinfo" is set in the Makumba.conf file (dataSource section).
+ * Testing mdd handling & parsing, for the old RecordInfo-based MDD parser. In order to run this test you need to make
+ * sure that "dataDefinitionProvider=recordinfo" is set in the Makumba.conf file (dataSource section).
  * 
  * @author Stefan Baebler
  */
@@ -47,7 +47,8 @@ public class mddOld extends TestCase {
 
     public mddOld(String name) {
         super(name);
-        Configuration.setPropery("dataSourceConfig", "dataDefinitionProvider", Configuration.RECORDINFO_DATADEFINITIONPROVIDER);
+        Configuration.setPropery("dataSourceConfig", "dataDefinitionProvider",
+            Configuration.RECORDINFO_DATADEFINITIONPROVIDER);
 
     }
 

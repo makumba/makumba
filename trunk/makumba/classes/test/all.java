@@ -34,29 +34,30 @@ import test.tags.ListOQLTest;
 
 /**
  * TestSuite that runs all the Makumba tests
+ * 
  * @author Stefan Baebler
  * @author Manuel Gay
  */
 public class all {
 
-	public static void main (String[] args) {
-		System.out.println("Makumba test suite: Running all tests...");
-		TestResult tr=junit.textui.TestRunner.run(suite());
-		if(!tr.wasSuccessful())
-		  System.exit(1); //report an error
-	}
+    public static void main(String[] args) {
+        System.out.println("Makumba test suite: Running all tests...");
+        TestResult tr = junit.textui.TestRunner.run(suite());
+        if (!tr.wasSuccessful())
+            System.exit(1); // report an error
+    }
 
-	public static Test suite ( ) {
-		TestSuite suite= new TestSuite("All JUnit Tests for Makumba");
-		suite.addTest(config.suite());
-		suite.addTest(mdd.suite());
-		suite.addTest(table.suite());
-		suite.addTest(tableHibernate.suite());
+    public static Test suite() {
+        TestSuite suite = new TestSuite("All JUnit Tests for Makumba");
+        suite.addTest(config.suite());
+        suite.addTest(mdd.suite());
+        suite.addTest(table.suite());
+        suite.addTest(tableHibernate.suite());
         suite.addTest(ListOQLTest.suite());
         suite.addTest(FormsOQLTest.suite());
         suite.addTest(ListHQLTest.suite());
         suite.addTest(FormsHQLTest.suite());
         suite.addTest(ConcurrentTest.suite());
-	    return suite;
-	}
+        return suite;
+    }
 }

@@ -61,7 +61,7 @@ public class mdd extends TestCase {
 
     public void testMdd() {
         ddp.getDataDefinition("test.Person");
-        //ddp.getDataDefinition("test.PersonNew.address.sth");
+        // ddp.getDataDefinition("test.PersonNew.address.sth");
     }
 
     public void testNonexistingMdd() {
@@ -79,10 +79,10 @@ public class mdd extends TestCase {
             System.out.println("\n\nOperating System is "
                     + osName
                     + ", skipping 'testWronglyCapitalizedMdd' test (Windows does not support capitalization in file name).\n");
-        } else if(osName.toLowerCase().startsWith("mac os")) {
+        } else if (osName.toLowerCase().startsWith("mac os")) {
             System.out.println("\n\nOperating System is "
-                + osName
-                + ", skipping 'testWronglyCapitalizedMdd' test (Mac OS X with HFS+ does not support capitalization in file name).\n");
+                    + osName
+                    + ", skipping 'testWronglyCapitalizedMdd' test (Mac OS X with HFS+ does not support capitalization in file name).\n");
 
         } else {
             try {
@@ -102,7 +102,7 @@ public class mdd extends TestCase {
         Vector<String> errors = new Vector<String>();
         for (Enumeration<String> e = mdds.elements(); e.hasMoreElements();) {
             String mdd = e.nextElement();
-            if(!mdd.equals("NestedSet")) {
+            if (!mdd.equals("NestedSet")) {
                 try {
                     ddp.getDataDefinition("test.validMdds." + mdd);
                 } catch (DataDefinitionParseError ex) {
@@ -113,7 +113,7 @@ public class mdd extends TestCase {
             if (errors.size() > 0)
                 fail("\n  Tested " + mdds.size() + " valid MDDs, but found " + errors.size() + " problems: "
                         + errors.toString());
-            }
+        }
     }
 
     public void testIfAllBrokenMddsThrowErrors() {
