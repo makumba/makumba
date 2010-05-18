@@ -90,7 +90,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
         @Override
         public Object getHashObject(Object o) {
             Object[] o1 = (Object[]) o;
-            return ((String) o1[0] + o1[2]) + o1[1].getClass().getName();
+            return (String) o1[0] + o1[2] + o1[1].getClass().getName();
         }
 
         @Override
@@ -475,7 +475,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
         m1.find();
         syntaxPoints.addSyntaxPoints(m.start() + m1.start(), m.start() + m1.end(), "JSPTagName", null);
 
-        String type = tagEnd ? "JspTagEnd" : (tagClosed ? "JspTagSimple" : "JspTagBegin");
+        String type = tagEnd ? "JspTagEnd" : tagClosed ? "JspTagSimple" : "JspTagBegin";
 
         SyntaxPoint end = syntaxPoints.addSyntaxPoints(m.start(), m.end(), type, null);
         SyntaxPoint start = (SyntaxPoint) end.getOtherInfo();
@@ -489,7 +489,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
         // we avoid evaluation of the logging expression
         if (log.isLoggable(Level.FINE)) {
             log.fine(uri + ":" + start.line + ":" + start.column + ": "
-                    + (tagEnd ? ("/" + tagName) : (td.name + " " + td.attributes)));
+                    + (tagEnd ? "/" + tagName : td.name + " " + td.attributes));
         }
         if (tagEnd) {
             an.endTag(td, holder);

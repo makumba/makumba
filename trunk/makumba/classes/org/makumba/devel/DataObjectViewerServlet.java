@@ -74,7 +74,7 @@ public class DataObjectViewerServlet extends DataServlet {
         dataPointer = new Pointer(type, request.getParameter("ptr"));
 
         try {
-            dd = (DataDefinitionProvider.getInstance()).getDataDefinition(type);
+            dd = DataDefinitionProvider.getInstance().getDataDefinition(type);
         } catch (Throwable e) {
         }
         if (dd == null) {
@@ -158,7 +158,7 @@ public class DataObjectViewerServlet extends DataServlet {
                                 String setTitle = String.valueOf(dictionary.get("setTitle"));
                                 if (fd.getIntegerType() == FieldDefinition._setIntEnum) {
                                     writer.print(" " + setTitle + " <i>(="
-                                            + fd.getNameFor((Integer.parseInt(setTitle))) + ")</i>");
+                                            + fd.getNameFor(Integer.parseInt(setTitle)) + ")</i>");
                                     isEmpty = false;
                                 } else {
                                     Pointer ptrSetEntry = (Pointer) dictionary.get("setEntry");
@@ -195,7 +195,7 @@ public class DataObjectViewerServlet extends DataServlet {
                                 writer.print(value);
                                 // for intEnums, also write their textual values
                                 if (fd.getIntegerType() == FieldDefinition._intEnum && value != null) {
-                                    writer.print(" <i>(=" + fd.getNameFor((Integer.parseInt(String.valueOf(value))))
+                                    writer.print(" <i>(=" + fd.getNameFor(Integer.parseInt(String.valueOf(value)))
                                             + ")</i>");
                                 }
                             }

@@ -71,7 +71,7 @@ public class booleanViewer extends FieldViewer {
 
     @Override
     public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
-        return ((Boolean) o) ? "Yes" : "No";
+        return (Boolean) o ? "Yes" : "No";
     }
 
 }

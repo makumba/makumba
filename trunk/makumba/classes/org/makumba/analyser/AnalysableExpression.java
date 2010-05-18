@@ -103,7 +103,7 @@ public abstract class AnalysableExpression extends AnalysableElement {
         Tag from = getParent();
 
         if (parent == null || clazz == null
-                || (!Tag.class.isAssignableFrom(clazz) && !(isInterface = clazz.isInterface()))) {
+                || !Tag.class.isAssignableFrom(clazz) && !(isInterface = clazz.isInterface())) {
             return null;
         }
 
@@ -114,7 +114,7 @@ public abstract class AnalysableExpression extends AnalysableElement {
                 return null;
             }
 
-            if ((isInterface && clazz.isInstance(parent)) || clazz.isAssignableFrom(parent.getClass())) {
+            if (isInterface && clazz.isInstance(parent) || clazz.isAssignableFrom(parent.getClass())) {
                 return parent;
             } else {
                 from = from.getParent();

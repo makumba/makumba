@@ -38,7 +38,7 @@ public class Node extends antlr.CommonAST {
         line = tok.getLine();
         column = tok.getColumn();
         String text = tok.getText();
-        textLength = (text == null || text.length() == 0) ? 0 : text.length();
+        textLength = text == null || text.length() == 0 ? 0 : text.length();
     }
 
     @Override

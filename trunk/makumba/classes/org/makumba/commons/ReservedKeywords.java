@@ -43,7 +43,7 @@ public class ReservedKeywords {
     }
 
     public static boolean isReservedKeyword(String s) {
-        return (reservedKeywords.contains(s));
+        return reservedKeywords.contains(s);
     }
 
     public static String getKeywordsAsString() {

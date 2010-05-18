@@ -269,7 +269,7 @@ public class SourceSyntaxPoints {
         // we add a fileBeginning
         int n = fileBeginningIndexes.size() - 1;
         // replace the one at the end, for some reason
-        if ((fileBeginningIndexes.get(n)).intValue() == position) {
+        if (fileBeginningIndexes.get(n).intValue() == position) {
             fileBeginnings.set(n, sf);
         } else {
             // add one at the end
@@ -369,7 +369,7 @@ public class SourceSyntaxPoints {
      *            the syntax point to be filled in
      */
     void setLineAndColumn(SyntaxPoint point) {
-        SyntaxPoint lineBegin = lineBeginnings.get((-1) * Collections.binarySearch(lineBeginnings, point)
+        SyntaxPoint lineBegin = lineBeginnings.get(-1 * Collections.binarySearch(lineBeginnings, point)
                 - 2);
         point.line = lineBegin.line;
         point.column = point.position - lineBegin.position + 1;

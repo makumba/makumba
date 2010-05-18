@@ -152,7 +152,7 @@ public class JSONArray {
      *            A Collection.
      */
     public JSONArray(Collection collection) {
-        this.myArrayList = (collection == null) ? new ArrayList() : new ArrayList(collection);
+        this.myArrayList = collection == null ? new ArrayList() : new ArrayList(collection);
     }
 
     /**
@@ -249,9 +249,9 @@ public class JSONArray {
      */
     public boolean getBoolean(int index) throws JSONException {
         Object o = get(index);
-        if (o.equals(Boolean.FALSE) || (o instanceof String && ((String) o).equalsIgnoreCase("false"))) {
+        if (o.equals(Boolean.FALSE) || o instanceof String && ((String) o).equalsIgnoreCase("false")) {
             return false;
-        } else if (o.equals(Boolean.TRUE) || (o instanceof String && ((String) o).equalsIgnoreCase("true"))) {
+        } else if (o.equals(Boolean.TRUE) || o instanceof String && ((String) o).equalsIgnoreCase("true")) {
             return true;
         }
         throw new JSONException("JSONArray[" + index + "] is not a Boolean.");
@@ -402,7 +402,7 @@ public class JSONArray {
      * @return An object value, or null if there is no object at that index.
      */
     public Object opt(int index) {
-        return (index < 0 || index >= length()) ? null : this.myArrayList.get(index);
+        return index < 0 || index >= length() ? null : this.myArrayList.get(index);
     }
 
     /**

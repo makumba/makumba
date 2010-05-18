@@ -43,12 +43,12 @@ public class ElementData {
 
     /** Checks whether this {@link ElementData} is declared before the given {@link ElementData} */
     public boolean before(ElementData el) {
-        return endLine < el.getStartLine() || (endLine == el.getStartLine() && endColumn < el.getStartColumn());
+        return endLine < el.getStartLine() || endLine == el.getStartLine() && endColumn < el.getStartColumn();
     }
 
     /** Checks whether this {@link ElementData} is declared after the given {@link ElementData} */
     public boolean after(ElementData el) {
-        return startLine > el.getEndLine() || (startLine == el.getEndLine() && startColumn > el.getEndColumn());
+        return startLine > el.getEndLine() || startLine == el.getEndLine() && startColumn > el.getEndColumn();
     }
 
     public String getLocation() {

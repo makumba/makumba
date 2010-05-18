@@ -65,7 +65,7 @@ public class ReferenceChecker extends HttpServlet {
                 connectionHolder = connection;
                 connection = ((DBConnectionWrapper) connection).getWrapped();
             }
-            SQLDBConnection sqlConnection = ((SQLDBConnection) connection);
+            SQLDBConnection sqlConnection = (SQLDBConnection) connection;
             String contextPath = req.getContextPath();
             resp.setContentType("text/html");
             PrintWriter w = resp.getWriter();

@@ -64,7 +64,7 @@ public class AddTag extends FormTagBase {
     @Override
     public DataDefinition getDataTypeAtAnalysis(PageCache pageCache) {
         DataDefinition base = getOperation().equals("add") ? fdp.getBasePointerType(this, pageCache, baseObject)
-                : (findParentForm()).type;
+                : findParentForm().type;
         if (base == null) { // we could not find the type
             String message = "Could not determine type for specified object '" + baseObject + "'";
             if (baseObject.indexOf('.') != -1) { // the programmer tried to use some sub-pointer here..
@@ -87,7 +87,7 @@ public class AddTag extends FormTagBase {
     @Override
     String getOperation() {
         FormTagBase parent = findParentForm();
-        if ((parent instanceof NewTag) && baseObject.equals(parent.formName)) {
+        if (parent instanceof NewTag && baseObject.equals(parent.formName)) {
             return "addToNew";
         }
         return "add";

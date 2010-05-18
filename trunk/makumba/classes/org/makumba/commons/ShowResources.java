@@ -47,7 +47,7 @@ public class ShowResources {
 
         if (args.length == 0) {
             for (URL url : resources) {
-                System.out.println((url).toExternalForm());
+                System.out.println(url.toExternalForm());
             }
         } else {
             for (URL url2 : resources) {

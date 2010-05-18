@@ -64,7 +64,7 @@ public class checkForeignKeys {
             if (connection instanceof DBConnectionWrapper) {
                 connection = ((DBConnectionWrapper) connection).getWrapped();
             }
-            SQLDBConnection sqlConnection = ((SQLDBConnection) connection);
+            SQLDBConnection sqlConnection = (SQLDBConnection) connection;
 
             Vector<String> mddsInDirectory = DataDefinitionProvider.getInstance().getDataDefinitionsInDefaultLocations(
                 "test.brokenMdds");

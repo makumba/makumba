@@ -89,7 +89,7 @@ public class ResponderCacheManager {
      */
     Responder getResponder(String code, String suffix, String parentSuffix) {
         Integer i = new Integer(Integer.parseInt(code));
-        Responder fr = ((Responder) indexedCache.get(i));
+        Responder fr = (Responder) indexedCache.get(i);
         String fileName = validResponderFilename(i.intValue());
 
         // responder check

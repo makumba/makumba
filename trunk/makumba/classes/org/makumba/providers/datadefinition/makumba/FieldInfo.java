@@ -607,10 +607,10 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         switch (getIntegerType()) {
             case FieldDefinition._charEnum:
             case FieldDefinition._intEnum:
-                return ((Vector) this.extra1);
+                return (Vector) this.extra1;
             case FieldDefinition._setCharEnum:
             case FieldDefinition._setIntEnum:
-                return ((Vector) getEnum().extra1);
+                return (Vector) getEnum().extra1;
             default:
                 throw new RuntimeException("Shouldn't be here");
         }
@@ -624,10 +624,10 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         switch (getIntegerType()) {
             case FieldDefinition._charEnum:
             case FieldDefinition._intEnum:
-                return ((Vector) this.extra2);
+                return (Vector) this.extra2;
             case FieldDefinition._setCharEnum:
             case FieldDefinition._setIntEnum:
-                return ((Vector) getEnum().extra2);
+                return (Vector) getEnum().extra2;
             default:
                 throw new RuntimeException("getNames() only work for intEnum and charEnum");
         }

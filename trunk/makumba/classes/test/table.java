@@ -214,12 +214,12 @@ public class table extends TestCase {
         v = db.executeQuery(readIntSet, ptr);
         assertEquals(2, v.size());
         assertEquals(new Integer(0), v.elementAt(0).get("member"));
-        assertEquals(new Integer(1), (v.elementAt(1)).get("member"));
+        assertEquals(new Integer(1), v.elementAt(1).get("member"));
 
         v = db.executeQuery(readCharSet, ptr);
         assertEquals(v.size(), 2);
         assertEquals("e", v.elementAt(0).get("member"));
-        assertEquals("f", (v.elementAt(1)).get("member"));
+        assertEquals("f", v.elementAt(1).get("member"));
 
         assertEquals(create, pc.get("TS_modify"));
         assertTrue(now.getTime() - create.getTime() < 3 * epsilon);
@@ -382,8 +382,8 @@ public class table extends TestCase {
         assertEquals(2, v.size());
         assertEquals("away", v.elementAt(0).get("col1"));
         assertEquals(set2, v.elementAt(0).get("col2"));
-        assertEquals("home", (v.elementAt(1)).get("col1"));
-        assertEquals(set1, (v.elementAt(1)).get("col2"));
+        assertEquals("home", v.elementAt(1).get("col1"));
+        assertEquals(set1, v.elementAt(1).get("col2"));
     }
 
     public void testSetMemberUpdate() {

@@ -241,7 +241,7 @@ public abstract class choiceEditor extends FieldEditor {
      */
     public Object getValueOrDefault(RecordFormatter rf, int fieldIndex, Object o,
             Dictionary<String, Object> formatParams) {
-        if (o == null || (o instanceof Vector && ((Vector<?>) o).size() == 0)) {
+        if (o == null || o instanceof Vector && ((Vector<?>) o).size() == 0) {
             String nullReplacer = (String) formatParams.get("default");
             if (nullReplacer != null) {
                 Vector<String> v = new Vector<String>();

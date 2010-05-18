@@ -360,7 +360,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
     }
 
     public boolean isFileType() {
-        return subfield != null && (subfield).isFileSubfield;
+        return subfield != null && subfield.isFileSubfield;
     }
 
     public boolean isIndexPointerField() {

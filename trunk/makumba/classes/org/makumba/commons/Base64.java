@@ -15,15 +15,15 @@ public class Base64 {
 
         int block = 0;
         int slack = raw.length - offset - 1;
-        int end = (slack >= 2) ? 2 : slack;
+        int end = slack >= 2 ? 2 : slack;
         for (int i = 0; i <= end; i++) {
             byte b = raw[offset + i];
-            int neuter = (b < 0) ? b + 256 : b;
-            block += neuter << (8 * (2 - i));
+            int neuter = b < 0 ? b + 256 : b;
+            block += neuter << 8 * (2 - i);
         }
         char[] base64 = new char[4];
         for (int i = 0; i < 4; i++) {
-            int sixbit = (block >>> (6 * (3 - i))) & 0x3f;
+            int sixbit = block >>> 6 * (3 - i) & 0x3f;
             base64[i] = getChar(sixbit);
         }
         if (slack < 1) {
@@ -67,9 +67,9 @@ public class Base64 {
         int rawIndex = 0;
         for (int i = 0; i < base64.length(); i += 4) {
             int block = (getValue(base64.charAt(i)) << 18) + (getValue(base64.charAt(i + 1)) << 12)
-                    + (getValue(base64.charAt(i + 2)) << 6) + (getValue(base64.charAt(i + 3)));
+                    + (getValue(base64.charAt(i + 2)) << 6) + getValue(base64.charAt(i + 3));
             for (int j = 0; j < 3 && rawIndex + j < raw.length; j++) {
-                raw[rawIndex + j] = (byte) ((block >> (8 * (2 - j))) & 0xff);
+                raw[rawIndex + j] = (byte) (block >> 8 * (2 - j) & 0xff);
             }
             rawIndex += 3;
         }

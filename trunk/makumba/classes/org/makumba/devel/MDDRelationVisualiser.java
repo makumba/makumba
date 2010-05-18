@@ -207,8 +207,8 @@ public class MDDRelationVisualiser {
     private static Element addEdge(Element root, String from, String to, Integer count) {
         Element elem = root.addElement("edge");
 
-        elem.addAttribute("source", "" + (from));
-        elem.addAttribute("target", "" + (to));
+        elem.addAttribute("source", "" + from);
+        elem.addAttribute("target", "" + to);
         elem.addAttribute("directed", "true");
 
         return elem;

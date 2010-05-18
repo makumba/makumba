@@ -189,7 +189,7 @@ public class FieldFormatter {
      */
     public String getDefaultValueFormat(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
         String s = (String) formatParams.get("default");
-        return (s == null) ? "" : s;
+        return s == null ? "" : s;
     }
 
     /**
@@ -197,7 +197,7 @@ public class FieldFormatter {
      */
     public String getEmptyValueFormat(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
         String s = (String) formatParams.get("empty");
-        return (s == null) ? "" : s;
+        return s == null ? "" : s;
     }
 
     /**

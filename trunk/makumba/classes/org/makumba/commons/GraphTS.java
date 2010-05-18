@@ -59,7 +59,7 @@ public class GraphTS {
 
     public int addVertex(MultipleKey tagKey) {
         vertexList[numVerts++] = new Vertex(tagKey);
-        return (numVerts - 1);
+        return numVerts - 1;
     }
 
     public void addEdge(int start, int end) {

@@ -79,7 +79,7 @@ public class Pointer implements java.io.Serializable {
 
     /** Get the unique index of the pointer within the parent database and the respective type */
     public int getUid() {
-        return (int) (n & ((1l << MASK_ORDER) - 1));
+        return (int) (n & (1l << MASK_ORDER) - 1);
     }
 
     /** Get the makumba type of the pointed object */

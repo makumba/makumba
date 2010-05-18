@@ -379,7 +379,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
         int defaultLimitInt = QueryExecution.computeLimit(pageContext, defaultLimit, -1, -1);
         int limitEval = QueryExecution.computeLimit(pageContext, limit, defaultLimitInt, -1);
         int offsetEval = QueryExecution.computeLimit(pageContext, offset, defaultOffset, 0);
-        if ((offsetEval == 0 && limitEval == -1) || (offsetEval == 0 && (limitEval > 00 && limitEval < n))) {
+        if (offsetEval == 0 && limitEval == -1 || offsetEval == 0 && limitEval > 00 && limitEval < n) {
             // we can set the total count if there is no limit / offset in the page
             maxResults = n;
         } else {
@@ -675,7 +675,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
             return -1;
         }
 
-        Integer total = ((Integer) totalAttr);
+        Integer total = (Integer) totalAttr;
         if (total == Integer.MIN_VALUE) { // we still need to evaluate this total count
             PageContext pageContext = MakumbaJspFactory.getPageContext();
             MultipleKey keyMaxResults = (MultipleKey) servletRequest.getAttribute(standardMaxResultsKey);
@@ -694,7 +694,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
                 if (StringUtils.isNotBlank(query.getGroupBySection())) {
                     total = dataSize;
                 } else {
-                    total = ((Integer) exec.currentListData().get("col1"));
+                    total = (Integer) exec.currentListData().get("col1");
                 }
                 servletRequest.setAttribute(standardMaxResultsVar, total);
             } catch (LogicException e) {

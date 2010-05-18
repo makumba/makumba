@@ -384,7 +384,7 @@ public abstract class Responder implements java.io.Serializable {
 
     /** pass the parent responder */
     public void setParentResponder(Responder resp, Responder root) {
-        storedSuffix = "" + suffixSeparator + (++root.groupCounter);
+        storedSuffix = "" + suffixSeparator + ++root.groupCounter;
         storedParentSuffix = resp.storedSuffix;
     }
 

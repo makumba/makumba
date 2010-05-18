@@ -91,7 +91,7 @@ public class Query implements org.makumba.db.makumba.Query {
             e.printStackTrace();
         }
 
-        qA = (MqlQueryAnalysis) ((insertIn != null && insertIn.length() > 0) ? qap.getQueryAnalysis(MQLQuery, insertIn)
+        qA = (MqlQueryAnalysis) (insertIn != null && insertIn.length() > 0 ? qap.getQueryAnalysis(MQLQuery, insertIn)
                 : qap.getQueryAnalysis(MQLQuery));
 
         resultHandler = (TableManager) db.makePseudoTable(qA.getProjectionType());

@@ -24,7 +24,7 @@ public class NameResolverHook extends NameResolver {
 
     @Override
     public String resolveTypeName(DataDefinition dd) {
-        org.makumba.db.makumba.sql.TableManager table = ((org.makumba.db.makumba.sql.TableManager) db1.getTable(dd));
+        org.makumba.db.makumba.sql.TableManager table = (org.makumba.db.makumba.sql.TableManager) db1.getTable(dd);
         return delegate.resolveTypeName(dd);
     }
 

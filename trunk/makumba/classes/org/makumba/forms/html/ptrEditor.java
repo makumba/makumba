@@ -134,7 +134,7 @@ public class ptrEditor extends choiceEditor {
 
     @Override
     public Object getOptionValue(RecordFormatter rf, int fieldIndex, Object options, int i) {
-        return (((ChoiceSet) options).get(i)).getValue();
+        return ((ChoiceSet) options).get(i).getValue();
     }
 
     @Override
@@ -157,7 +157,7 @@ public class ptrEditor extends choiceEditor {
 
     @Override
     public String formatOptionTitle(RecordFormatter rf, int fieldIndex, Object options, int i) {
-        return (((ChoiceSet) options).get(i)).getTitle();
+        return ((ChoiceSet) options).get(i).getTitle();
     }
 
     @Override
@@ -236,7 +236,7 @@ public class ptrEditor extends choiceEditor {
     /** Formats the value to appear in an input statement. */
     @Override
     public String formatValue(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
-        String s = (o == null) ? null : HtmlUtils.string2html(o.toString());
+        String s = o == null ? null : HtmlUtils.string2html(o.toString());
         return resetValueFormat(rf, fieldIndex, s, formatParams);
     }
 }

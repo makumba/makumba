@@ -229,7 +229,7 @@ public class RecordEditor extends RecordFormatter {
 
         // STEP 1: go over all the fields and fetch validation rules
         for (int index = 0; index < validatedFieldsOrdered.size(); index++) {
-            int i = (validatedFieldsOrdered.get(index)).intValue();
+            int i = validatedFieldsOrdered.get(index).intValue();
             FieldDefinition fieldDefinition = dd.getFieldDefinition(i);
             Object o = validatedFields.get(validatedFieldsOrdered.get(index));
             Collection<ValidationRule> validationRules = fieldDefinition.getValidationRules();

@@ -30,7 +30,7 @@ public class ExternalSetAPITest extends TestCase {
     private static MakumbaTestSetup setup;
 
     public static Test suite() {
-        return (setup = new MakumbaTestSetup(new TestSuite(ExternalSetAPITest.class), "oql"));
+        return setup = new MakumbaTestSetup(new TestSuite(ExternalSetAPITest.class), "oql");
     }
 
     @Override

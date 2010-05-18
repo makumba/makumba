@@ -222,7 +222,7 @@ public class PaginationTag extends GenericMakumbaTag {
             Logger.getLogger("org.makumba.list.pagination").info(
                 "Loading alternative properties for pagination links from "
                         + alternateLinkPropertiesURL.toExternalForm());
-            linkStyleProperties.load((alternateLinkPropertiesURL).openConnection().getInputStream());
+            linkStyleProperties.load(alternateLinkPropertiesURL.openConnection().getInputStream());
         }
         String[] s = { FIRST, NEXT, LAST, PREVIOUS };
         for (int i = 0; i < s.length; i++) {
@@ -269,7 +269,7 @@ public class PaginationTag extends GenericMakumbaTag {
     }
 
     private String getBaseURL() {
-        HttpServletRequest r = ((HttpServletRequest) pageContext.getRequest());
+        HttpServletRequest r = (HttpServletRequest) pageContext.getRequest();
         StringBuilder queryString = getQueryString(r.getParameterMap());
         StringBuilder url = new StringBuilder(r.getRequestURL().toString().substring(
             r.getRequestURL().toString().indexOf(r.getContextPath())));

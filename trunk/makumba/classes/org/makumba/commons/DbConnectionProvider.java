@@ -62,7 +62,7 @@ public class DbConnectionProvider {
     /** Close all connections. */
     public void close() {
         for (Transaction transaction : connections.values()) {
-            (transaction).close();
+            transaction.close();
         }
         connections.clear();
     }

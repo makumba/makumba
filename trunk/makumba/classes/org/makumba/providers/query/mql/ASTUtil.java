@@ -174,7 +174,7 @@ public final class ASTUtil {
     public static String getDebugString(AST n) {
         StringBuffer buf = new StringBuffer();
         buf.append("[ ");
-        buf.append((n == null) ? "{null}" : n.toStringTree());
+        buf.append(n == null ? "{null}" : n.toStringTree());
         buf.append(" ]");
         return buf.toString();
     }

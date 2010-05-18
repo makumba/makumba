@@ -100,7 +100,7 @@ public class SourceViewControllerHandler extends ControllerHandler {
 
             if (sw instanceof GeneratedCodeViewer && requestURI.endsWith("/")) {
                 String location = requestURI.substring((req.getContextPath() + Configuration.getCodeGeneratorLocation()).length() + 1);
-                res.sendRedirect((req.getContextPath() + Configuration.getMddViewerLocation()) + location);
+                res.sendRedirect(req.getContextPath() + Configuration.getMddViewerLocation() + location);
                 return false;
             }
 
@@ -139,7 +139,7 @@ public class SourceViewControllerHandler extends ControllerHandler {
                 for (String element : list) {
                     String s = DevelUtils.getVirtualPath(req, Configuration.getMddViewerLocation()) + element;
                     s = s.substring(1, s.lastIndexOf(".")).replace('/', '.');
-                    String addr = (req.getContextPath() + Configuration.getMddViewerLocation()) + "/" + s;
+                    String addr = req.getContextPath() + Configuration.getMddViewerLocation() + "/" + s;
                     w.println("<a href=\"" + addr + "\">" + element + "</a>");
                 }
             } else {
@@ -200,7 +200,7 @@ public class SourceViewControllerHandler extends ControllerHandler {
 
     public static final class DirectoriesExcludingRepositoriesFilter implements FileFilter {
         public boolean accept(File f) {
-            return f.isDirectory() && (!f.getName().equals("CVS") && !f.getName().equals(".svn"));
+            return f.isDirectory() && !f.getName().equals("CVS") && !f.getName().equals(".svn");
         }
     }
 

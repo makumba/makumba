@@ -32,7 +32,7 @@ public class NameCase {
         boolean wasLowerCase = false;
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
-            if ((c == '-') || (c == '\'')) {
+            if (c == '-' || c == '\'') {
                 wasSpace = true;
                 wasSpaceChar = false;
                 wasLowerCase = false;
@@ -51,14 +51,14 @@ public class NameCase {
                     sb.append(Character.toUpperCase(c));
                     wasLowerCase = false;
                 } else {
-                    if ((wasLowerCase == true) && (Character.toUpperCase(c) == c)) {
+                    if (wasLowerCase == true && Character.toUpperCase(c) == c) {
                         /* uncomment this if you want BauerPartnerHeimer -> Bauer Partner Heimer */
                         /* sb.append(' '); */
                         sb.append(Character.toUpperCase(c));
                         wasLowerCase = false;
                     } else {
                         sb.append(Character.toLowerCase(c));
-                        wasLowerCase = (Character.toLowerCase(c) == c);
+                        wasLowerCase = Character.toLowerCase(c) == c;
                     }
                 }
                 wasSpace = false;

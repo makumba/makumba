@@ -80,7 +80,7 @@ public final class HqlParser extends HqlBaseParser {
             HqlToken hqlToken = (HqlToken) token;
             // ... and the token could be an identifer and the error is
             // a mismatched token error ...
-            if (hqlToken.isPossibleID() && (ex instanceof MismatchedTokenException)) {
+            if (hqlToken.isPossibleID() && ex instanceof MismatchedTokenException) {
                 MismatchedTokenException mte = (MismatchedTokenException) ex;
                 // ... and the expected token type was an identifier, then:
                 if (mte.expecting == HqlTokenTypes.IDENT) {

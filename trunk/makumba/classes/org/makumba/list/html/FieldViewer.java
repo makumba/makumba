@@ -96,7 +96,7 @@ public class FieldViewer extends FieldFormatter {
             postfix = ellipsis;
         }
 
-        if (addTitle.equals("true") || (addTitle.equals("auto") && maxLen != -1 && s.length() > maxLen)) {
+        if (addTitle.equals("true") || addTitle.equals("auto") && maxLen != -1 && s.length() > maxLen) {
             // add title, to be normally shown as tooltip on mouse hover
             prefix = "<span title=\"" + s.replace('\"', '\'') + "\">";
             postfix = postfix + "</span>";

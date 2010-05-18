@@ -134,7 +134,7 @@ public class GeneratedCodeViewer extends jspViewer {
     /** Starts the code generation. */
     public void generateCode() throws IOException {
         try {
-            dd = (DataDefinitionProvider.getInstance()).getDataDefinition(virtualPath);
+            dd = DataDefinitionProvider.getInstance().getDataDefinition(virtualPath);
 
             // check what code types are selected
             typeParam = request.getParameter("type");

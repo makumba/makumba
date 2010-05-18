@@ -23,7 +23,7 @@ public class ReadableFormatter {
      */
     public static String readableBytes(String byteSize) {
         try {
-            return readableBytes((new Long(byteSize.toString())).longValue());
+            return readableBytes(new Long(byteSize.toString()).longValue());
         } catch (NumberFormatException nfe) {
             return "N/A";
         } catch (NullPointerException npe) {
@@ -41,13 +41,13 @@ public class ReadableFormatter {
      */
     public static String readableBytes(long byteSize) {
         if (byteSize < 0l) {
-            return ("invalid");
+            return "invalid";
         }
         if (byteSize < 1l) {
-            return ("empty");
+            return "empty";
         }
 
-        float byteSizeF = (new java.lang.Float(byteSize)).floatValue();
+        float byteSizeF = new java.lang.Float(byteSize).floatValue();
         String unit = "bytes";
         float factor = 1f;
         String[] desc = { "B", "kB", "MB", "GB", "TB" };
@@ -59,7 +59,7 @@ public class ReadableFormatter {
         String value = nf.format(byteSizeF);
 
         int i = 0;
-        while (i + 1 < desc.length && (value.length() > 4 || (value.length() > 3 && value.indexOf('.') < 0))) {
+        while (i + 1 < desc.length && (value.length() > 4 || value.length() > 3 && value.indexOf('.') < 0)) {
             i++;
             factor = factor * 1024l;
             value = nf.format(byteSizeF / factor);
@@ -76,7 +76,7 @@ public class ReadableFormatter {
         }
 
         unit = desc[i];
-        return (value + " " + unit);
+        return value + " " + unit;
     }
 
     /**
@@ -92,10 +92,10 @@ public class ReadableFormatter {
         long secs = milis / 1000l;
 
         if (secs < 2l) {
-            return ("1 second");
+            return "1 second";
         }
         if (secs == 2l) {
-            return ("2 seconds");
+            return "2 seconds";
         }
 
         // default:
@@ -107,7 +107,7 @@ public class ReadableFormatter {
         String[] desc = { "year", "month", "week", "day", "hour", "minute", "second" };
 
         int i = 0;
-        while (i <= breaks.length && secs <= (2 * breaks[i])) {
+        while (i <= breaks.length && secs <= 2 * breaks[i]) {
             i++;
         }
         // i=i-1;
@@ -122,7 +122,7 @@ public class ReadableFormatter {
 
         // if...
 
-        return (retval);
+        return retval;
     }
 
     /** Compute a time unit and value of that time unit from a given time in seconds */
@@ -135,12 +135,12 @@ public class ReadableFormatter {
         String[] desc = { "year", "month", "week", "day", "hour", "minute", "second" };
 
         int i = 0;
-        while (i <= breaks.length && secs <= (2 * breaks[i])) {
+        while (i <= breaks.length && secs <= 2 * breaks[i]) {
             i++;
         }
         // i=i-1;
         // long break=breaks[i];
-        return new Object[] { desc[i], (secs / breaks[i]) * signum };
+        return new Object[] { desc[i], secs / breaks[i] * signum };
     }
 
     /**
@@ -152,7 +152,7 @@ public class ReadableFormatter {
         java.text.DateFormat df = java.text.DateFormat.getInstance();
         df.setTimeZone(TimeZone.getTimeZone("CET"));
 
-        return (df.format(date));
+        return df.format(date);
     }
 
 }

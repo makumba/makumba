@@ -103,7 +103,7 @@ public class FormResponder extends Responder {
     /** Format a field using the editor, and grow the editor as needed */
     public String format(String fname, FieldDefinition ftype, Object fval, Hashtable<String, Object> formatParams,
             String extraFormatting, Object formIdentifier) {
-        Dictionary<String, Object> paramCopy = (Dictionary<String, Object>) (formatParams).clone();
+        Dictionary<String, Object> paramCopy = (Dictionary<String, Object>) formatParams.clone();
 
         // appending the ID to the extra formatting params seems like a bit of a hack here.. but it also the fastest..
         // don't do it for dates (a date is several inputs, need _0, _1, _2, ..) and radio / checkbox / tickbox
@@ -117,14 +117,14 @@ public class FormResponder extends Responder {
         FieldEditor.setExtraFormatting(paramCopy, extraFormatting);
         FieldEditor.setFormName(paramCopy, formName);
 
-        boolean display = (formatParams.get("org.makumba.noDisplay") == null);
+        boolean display = formatParams.get("org.makumba.noDisplay") == null;
         Integer i = indexes.get(fname);
         if (i != null) {
             return display ? editor.format(i, fval, paramCopy) : "";
         }
 
         indexes.put(fname, new Integer(max));
-        String colName = ("col" + max);
+        String colName = "col" + max;
         fieldNames.put(colName, fname);
         fieldParameters.put(colName, formatParams);
         dd.addField(DataDefinitionProvider.getInstance().makeFieldWithName(colName, ftype));

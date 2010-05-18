@@ -164,7 +164,7 @@ public class dateEditor extends FieldEditor {
 
         // add calendar editor code, if calendarEditor="true" AND if we have all components of day, month & year
         if (calendarEditor != null && !"false".equals(calendarEditor)
-                && (format.contains("d") && format.contains("M") && format.contains("y"))) {
+                && format.contains("d") && format.contains("M") && format.contains("y")) {
             sb.append(MakumbaSystem.getCalendarProvider().formatEditorCode(inputName, rf.getFormIdentifier(),
                 (String) formatParams.get("calendarEditorLink")));
         }

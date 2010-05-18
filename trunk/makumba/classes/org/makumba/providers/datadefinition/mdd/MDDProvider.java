@@ -207,7 +207,7 @@ public class MDDProvider extends DataDefinitionProvider {
         // if a webappRoot was passed, we fetch the MDDs from there, not using the CP
         if (webappRoot != null) {
             File f = new File(webappRoot);
-            if (!f.exists() || (f.exists() && !f.isDirectory())) {
+            if (!f.exists() || f.exists() && !f.isDirectory()) {
                 throw new MakumbaError("webappRoot " + webappRoot + " does not appear to be a valid directory");
             }
             String mddPath = webappRoot + "/WEB-INF/classes/dataDefinitions/" + s.replace('.', '/') + "." + ext;

@@ -72,7 +72,7 @@ public class binaryViewer extends FieldViewer {
 
     @Override
     public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
-        Pointer pointer = ((Pointer) o);
+        Pointer pointer = (Pointer) o;
         return Configuration.getMakumbaToolsLocation() + "/makumbaDownload?type=" + pointer.getType() + "&value="
                 + pointer.toExternalForm();
     }

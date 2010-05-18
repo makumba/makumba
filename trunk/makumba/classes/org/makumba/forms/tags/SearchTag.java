@@ -319,9 +319,9 @@ public class SearchTag extends FormTagBase {
             }
             if (value instanceof Vector) {
                 Vector<?> vector = (Vector<?>) value;
-                for (int i = 0; i < (vector).size(); i++) {
-                    link.append(inputName).append("=").append(treatValue(inputName, (vector).get(i)));
-                    if (i + 1 < (vector).size()) {
+                for (int i = 0; i < vector.size(); i++) {
+                    link.append(inputName).append("=").append(treatValue(inputName, vector.get(i)));
+                    if (i + 1 < vector.size()) {
                         link.append("&");
                     }
                 }

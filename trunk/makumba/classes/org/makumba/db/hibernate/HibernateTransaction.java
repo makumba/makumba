@@ -71,9 +71,9 @@ public class HibernateTransaction extends TransactionImplementation {
             HibernateSFManager.HIBERNATE_CURRENT_SESSION_CONTEXT);
 
         if (useCurrentSession) {
-            this.s = ((SessionFactory) (hibernateTransactionProvider).getHibernateSessionFactory(dataSource)).getCurrentSession();
+            this.s = ((SessionFactory) hibernateTransactionProvider.getHibernateSessionFactory(dataSource)).getCurrentSession();
         } else {
-            this.s = ((SessionFactory) (hibernateTransactionProvider).getHibernateSessionFactory(dataSource)).openSession();
+            this.s = ((SessionFactory) hibernateTransactionProvider.getHibernateSessionFactory(dataSource)).openSession();
             s.setCacheMode(CacheMode.IGNORE);
         }
         beginTransaction();
@@ -201,7 +201,7 @@ public class HibernateTransaction extends TransactionImplementation {
                 if (HibernateCRUDOperationProvider.isInteger(m.getReturnType().getName())) {
                     return new Integer(p.getId());
                 } else if (HibernateCRUDOperationProvider.isLong(m.getReturnType().getName())) {
-                    return (p.longValue());
+                    return p.longValue();
                 }
 
             } catch (ClassNotFoundException cnfe) {
@@ -287,7 +287,7 @@ public class HibernateTransaction extends TransactionImplementation {
         for (int i = 0; i < dataDef.getFieldNames().size(); i++) {
             FieldDefinition fd = dataDef.getFieldDefinition(i);
             if (fd.getType().equals("ptr")) { // we have a pointer
-                if (!(fd.getDescription().equalsIgnoreCase("ID"))) {
+                if (!fd.getDescription().equalsIgnoreCase("ID")) {
                     throw new ProgrammerError("Invalid HQL query - you must not select the whole object '"
                             + fd.getDescription() + "' in the query '" + query + "'!\nYou have to select '"
                             + fd.getDescription() + ".id' instead.");
