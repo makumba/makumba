@@ -33,8 +33,11 @@ import java.io.UnsupportedEncodingException;
 import org.makumba.commons.LongData;
 import org.makumba.commons.RuntimeWrappedException;
 
-/** A makumba text, a byte array that can be converted to String when needed. 
- * When texts get big, they are swapped on disk. Text swapping is logged (see {@link java.util.logging.Logger}, {@link org.makumba.MakumbaSystem#setLoggingRoot(java.lang.String)} in the logger <b><code>"abstr.longContent"</code></b> with {@link java.util.logging.Level#FINE} logging level.
+/**
+ * A makumba text, a byte array that can be converted to String when needed. When texts get big, they are swapped on
+ * disk. Text swapping is logged (see {@link java.util.logging.Logger},
+ * {@link org.makumba.MakumbaSystem#setLoggingRoot(java.lang.String)} in the logger <b><code>"abstr.longContent"</code>
+ * </b> with {@link java.util.logging.Level#FINE} logging level.
  */
 public class Text {
     // first alternative
@@ -159,30 +162,30 @@ public class Text {
     }
 
     public String toShortString(int length) {
-        if(length>len)
-            length=len;
-        if(length>FILE_LIMIT)
-            length=FILE_LIMIT;
-        ByteArrayOutputStream bo = new ByteArrayOutputStream(length+20);
-        
+        if (length > len)
+            length = len;
+        if (length > FILE_LIMIT)
+            length = FILE_LIMIT;
+        ByteArrayOutputStream bo = new ByteArrayOutputStream(length + 20);
+
         InputStream is = toBinaryStream();
         byte[] b = new byte[length];
-        try{
         try {
+            try {
 
-            int n = is.read(b, 0, b.length);
-            if(n!=-1)
-                bo.write(b, 0, n);
-            bo.write("... (length: ".getBytes());
-            bo.write(new Integer(len).toString().getBytes());
-            bo.write(")".getBytes());
-            return bo.toString();
-        } finally {
-            bo.close();
-            is.close();
-        
-        }
-        }catch(IOException ioe){
+                int n = is.read(b, 0, b.length);
+                if (n != -1)
+                    bo.write(b, 0, n);
+                bo.write("... (length: ".getBytes());
+                bo.write(new Integer(len).toString().getBytes());
+                bo.write(")".getBytes());
+                return bo.toString();
+            } finally {
+                bo.close();
+                is.close();
+
+            }
+        } catch (IOException ioe) {
             throw new RuntimeWrappedException(ioe);
         }
 

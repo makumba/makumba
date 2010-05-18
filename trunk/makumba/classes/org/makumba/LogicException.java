@@ -28,9 +28,8 @@ package org.makumba;
  * 
  * @author Cristian Bogdan
  * @author Manuel Gay
- * 
  * @version $Id$
- * */
+ */
 public class LogicException extends org.makumba.commons.WrappedException {
 
     private static final long serialVersionUID = 1L;
@@ -42,7 +41,7 @@ public class LogicException extends org.makumba.commons.WrappedException {
     public LogicException(String s) {
         super(s, false);
     }
-    
+
     public LogicException(Throwable t, boolean isControllerOriginated) {
         super(t, isControllerOriginated);
     }

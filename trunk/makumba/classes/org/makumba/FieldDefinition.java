@@ -91,7 +91,7 @@ public interface FieldDefinition {
 
     /** The original field definition this field definition was made of, used e.g. in form responders. */
     public FieldDefinition getOriginalFieldDefinition();
-    
+
     /** Indicates whether this field is the index pointer field of the {@link DataDefinition} it belongs to. */
     public boolean isIndexPointerField();
 
@@ -133,7 +133,7 @@ public interface FieldDefinition {
      * </ul>
      */
     public String getType();
-    
+
     /** returns the integer value associated with the field's internal makumba type. */
     public int getIntegerType();
 
@@ -316,7 +316,7 @@ public interface FieldDefinition {
 
     /** returns whether this field is a boolean type */
     public boolean isBooleanType();
-    
+
     /** returns whether this field is a file type. */
     public boolean isFileType();
 
@@ -330,8 +330,8 @@ public interface FieldDefinition {
     public boolean isEnumType();
 
     /**
-     * returns whether this field is any kind of internal set type, i.e. set, setIntEnum, setCharEnum and setComplex, but
-     * not set.
+     * returns whether this field is any kind of internal set type, i.e. set, setIntEnum, setCharEnum and setComplex,
+     * but not set.
      */
     public boolean isInternalSet();
 
@@ -355,29 +355,29 @@ public interface FieldDefinition {
 
     /** adds several new validation rules to this field. */
     public void addValidationRule(Collection<ValidationRule> rules);
-    
+
     /** gets the error message for not null field, if specified **/
     public String getNotNullErrorMessage();
-    
+
     /** gets the error message for the not a number field constraint, if specified **/
     public String getNotANumberErrorMessage();
-    
+
     /** gets the error message for the not unique field constraint, if specified **/
     public String getNotUniqueErrorMessage();
 
     /** gets the error message for the not empty field constraint, if specified **/
     public String getNotEmptyErrorMessage();
-    
+
     /** gets the error message for the not an int field constraint, if specified **/
     public String getNotIntErrorMessage();
-    
+
     /** gets the error message for the not a real field constraint, if specified **/
     public String getNotRealErrorMessage();
-    
+
     /** gets the error message for the not a boolean field constraint, if specified **/
     public String getNotBooleanErrorMessage();
-    
+
     /** gets the language of this field **/
-//    public String getLanguage();
-    
+    // public String getLanguage();
+
 }

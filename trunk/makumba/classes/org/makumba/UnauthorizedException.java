@@ -28,9 +28,8 @@ package org.makumba;
  * 
  * @author Cristian Bogdan
  * @author Manuel Gay
- * 
  * @version $Id$
- * */
+ */
 public class UnauthorizedException extends LogicException {
     private static final long serialVersionUID = 1L;
 

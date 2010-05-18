@@ -35,8 +35,9 @@ import java.util.Collection;
 public interface ValidationRule extends Comparable<ValidationRule> {
     /**
      * Perform the validation process.
-     * @param t TODO
      * 
+     * @param t
+     *            TODO
      * @throws InvalidValueException
      *             if the validation fails
      */
@@ -50,10 +51,10 @@ public interface ValidationRule extends Comparable<ValidationRule> {
 
     /** Gets the {@link FieldDefinition} this rule applies to. */
     public FieldDefinition getFieldDefinition();
-    
+
     /** Gets the arguments (field names) this rule applies to **/
     public Collection<String> getValidationRuleArguments();
-    
+
     /** Gets the {@link DataDefinition} this rule applies to **/
     public DataDefinition getDataDefinition();
 }

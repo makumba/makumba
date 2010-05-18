@@ -23,24 +23,22 @@
 
 package org.makumba;
 
-
-/** 
+/**
  * An exception thrown if an attribute is not found
  * 
  * @author Cristian Bogdan
  * @author Manuel Gay
- * 
  * @version $Id$
- * */
+ */
 public class AttributeNotFoundException extends LogicException {
 
     private static final long serialVersionUID = 1L;
-    
+
     /** construct an exception message from the name of the missing attribute, indicates origin */
     public AttributeNotFoundException(String attName, boolean isControllerOriginated) {
         super("attribute not found: " + attName, isControllerOriginated);
     }
-    
+
     /** construct an exception message from the name of the missing attribute */
     public AttributeNotFoundException(String attName) {
         super("attribute not found: " + attName, false);

@@ -52,5 +52,5 @@ public interface ValidationDefinition {
     public DataDefinition getDataDefinition();
 
     public boolean hasValidationRules();
-    
+
 }

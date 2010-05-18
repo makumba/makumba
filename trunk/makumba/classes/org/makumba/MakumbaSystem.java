@@ -39,7 +39,9 @@ import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.datadefinition.mdd.MDDProvider;
 
-/** The makumba runtime system. Provides starter methods to obtain {@link Transaction} and {@link DataDefinition} objects */
+/**
+ * The makumba runtime system. Provides starter methods to obtain {@link Transaction} and {@link DataDefinition} objects
+ */
 public class MakumbaSystem {
     /** DataDefinition provider - FIXME should read which one it is from config */
     private static DataDefinitionProvider MDDFactory = DataDefinitionProvider.getInstance();
@@ -77,10 +79,10 @@ public class MakumbaSystem {
      *            the database name, the same as the db description file but without ".properties". for example
      *            "localhost_mysql_databasename". The file should be in CLASSPATH. The operations carried out during
      *            database initialization are logged (see {@link java.util.logging.Logger},
-     *            {@link org.makumba.MakumbaSystem#setLoggingRoot(java.lang.String)}) in the <b><code>"db.init"</code></b>
-     *            and <b><code>"db.init.tablechecking"</code></b> loggers, with {@link java.util.logging.Level#INFO}
-     *            (connections, checkings), {@link java.util.logging.Level#SEVERE} (fatal errors) and with
-     *            {@link java.util.logging.Level#WARNING} logging levels.
+     *            {@link org.makumba.MakumbaSystem#setLoggingRoot(java.lang.String)}) in the <b><code>"db.init"</code>
+     *            </b> and <b><code>"db.init.tablechecking"</code></b> loggers, with
+     *            {@link java.util.logging.Level#INFO} (connections, checkings), {@link java.util.logging.Level#SEVERE}
+     *            (fatal errors) and with {@link java.util.logging.Level#WARNING} logging levels.
      * @since makumba-0.5.4
      * @deprecated use {@link TransactionProvider#getConnectionTo(String)} instead
      */
@@ -111,7 +113,7 @@ public class MakumbaSystem {
     public static Transaction getDatabase(String connectionFile) {
         return getConnectionTo(connectionFile);
     }
-    
+
     /**
      * Get the DataDefinition defined by the given type. The type a.b.C will generate a lookup for the file
      * CLASSPATH/a/b/C.mdd and then for CLASSPATH/dataDefinitions/a/b/C.mdd
@@ -178,7 +180,7 @@ public class MakumbaSystem {
 
     static String loggingRoot = "org.makumba";
 
-    /**
+/**
      * Get a logger for logging during makumba operations. See {@link java.util.logging.Logger},
      * {@link #setLoggingRoot(java.lang.String)}. This method is mostly used by makumba code. From application code,
      * use {@link #getLogger(java.lang.String)} or {@link #getLogger() }.
@@ -292,8 +294,8 @@ public class MakumbaSystem {
     }
 
     /**
-     * Change the makumba logging root in this classloader. The default logging root is <b><code>"org.makumba"</code></b>
-     * so loggers would look like <b><code>org.makumba.db.init.tableckecking</code></b>
+     * Change the makumba logging root in this classloader. The default logging root is <b><code>"org.makumba"</code>
+     * </b> so loggers would look like <b><code>org.makumba.db.init.tableckecking</code></b>
      * 
      * @since makumba-0.5.5.3
      */
@@ -339,8 +341,8 @@ public class MakumbaSystem {
 
     /** Get the default client-side validation provider. */
     public static ClientsideValidationProvider getClientsideValidationProvider() {
-        
-        if(MDDFactory instanceof MDDProvider) {
+
+        if (MDDFactory instanceof MDDProvider) {
             return new MDDLiveValidationProvider();
         }
         return new LiveValidationProvider();

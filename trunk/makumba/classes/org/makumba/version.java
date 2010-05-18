@@ -35,9 +35,8 @@ import java.util.Properties;
 
 /**
  * Computes the version from SVN BaseURL tag. If used from a HEAD check-out, this will return "devel-<currentDate>" If
- * used from a TAG check-out, this will return the version of the tag, e.g. "0.7.1"
- * 
- * Note that in order to work, the file needs to have the HeadURL keyword enabled
+ * used from a TAG check-out, this will return the version of the tag, e.g. "0.7.1" Note that in order to work, the file
+ * needs to have the HeadURL keyword enabled
  * 
  * @author Cristian Bogdan
  * @author Stefan Baebler
@@ -50,7 +49,7 @@ public class version {
     /** @see MakumbaSystem#getVersion() */
     public static String getVersion() {
         String vs = "$HeadURL$";
-        
+
         // HeadURL will return something like
         // https://makumba.svn.sourceforge.net/svnroot/makumba/trunk/makumba/classes/org/makumba/version.java for HEAD
         // https://makumba.svn.sourceforge.net/svnroot/makumba/tags/makumba-0_5_10_2/makumba/classes/org/makumba/version.java
@@ -76,7 +75,7 @@ public class version {
         } else {
             SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss"); // yyyy-MMM-dd HH:mm:ss
             Date buildDate = getBuildDate();
-            if(buildDate != null) {
+            if (buildDate != null) {
                 version = "devel-" + df.format(getBuildDate());
             } else {
                 version = "devel-DATE-NOT-FOUND";

@@ -154,19 +154,19 @@ public class HtmlUtils {
         str = str.replaceAll("<[^>]*>", "");
         return str;
     }
-    
+
     /**
      * escapes single and double quotes in a string by adding a forward slash before them
      */
     public static String escapeQuotes(String str) {
-        if(str == null)
+        if (str == null)
             return null;
 
         // escape double quotes
         str = str.replace("\"", "\\\"");
         // escape single quotes
         str = str.replace("'", "\\'");
-        
+
         return str;
     }
 

@@ -44,10 +44,9 @@ import antlr.collections.AST;
 public interface DataDefinition {
 
     String createName = "TS_create";
+
     String modifyName = "TS_modify";
-    
-    
-    
+
     /** name of this data definition */
     public String getName();
 
@@ -65,7 +64,7 @@ public interface DataDefinition {
 
     /** Returns a query function that is either contained in this data definition, or in a pointed type. */
     public QueryFragmentFunction getFunctionOrPointedFunction(String name);
-    
+
     /**
      * tells whether this data definition was generated temporarily to depict a query result as opposed to being read
      * from an MDD file
@@ -77,17 +76,15 @@ public interface DataDefinition {
 
     /** The name of the index field (primary key), if any? */
     public String getIndexPointerFieldName();
-    
+
     // TODO the two methods beneath are actually not needed but not using them
     // somehow breaks the TableManager
 
-	/** The name of the creation timestamp field, if any? */
+    /** The name of the creation timestamp field, if any? */
     public String getCreationDateFieldName();
 
     /** The name of the modification timestamp field, if any? */
     public String getLastModificationDateFieldName();
-
-	
 
     /**
      * If this type is the data pointed to by a 1-1 pointer or subset, return the field definition in the main record,
@@ -168,17 +165,17 @@ public interface DataDefinition {
                 this.errorMessage = "";
             }
             this.parsedQueryFragment = parsedQueryFragment;
-            this.holder=holder; 
+            this.holder = holder;
         }
 
         public String getName() {
             return name;
         }
-        
+
         public DataDefinition getHoldingDataDefinition() {
             return holder;
         }
-        
+
         public void setHoldingDataDefinition(DataDefinition holder) {
             this.holder = holder;
         }
@@ -202,7 +199,7 @@ public interface DataDefinition {
         public boolean isActorFunction() {
             return getName().startsWith("actor");
         }
-        
+
         public boolean isSubquery() {
             return getQueryFragment().toUpperCase().startsWith("SELECT ");
         }
@@ -224,9 +221,16 @@ public interface DataDefinition {
             }
             s += "";
             return (org.apache.commons.lang.StringUtils.isNotBlank(sessionVariableName) ? sessionVariableName + "%"
-                            : "") + getName() + "(" + s + ") { " + queryFragment.trim() + " } " + (org.apache.commons.lang.StringUtils.isNotBlank(errorMessage) ? ":\""+errorMessage+"\"" : "");
+                    : "")
+                    + getName()
+                    + "("
+                    + s
+                    + ") { "
+                    + queryFragment.trim()
+                    + " } "
+                    + (org.apache.commons.lang.StringUtils.isNotBlank(errorMessage) ? ":\"" + errorMessage + "\"" : "");
         }
-        
+
     }
 
     /** Data structure holding the definition of a mult-field unique key. */
@@ -246,7 +250,7 @@ public interface DataDefinition {
             this(fields, errorMessage);
             this.line = line;
         }
-        
+
         public MultipleUniqueKeyDefinition(String[] fields, String errorMessage) {
             this.fields = fields;
             this.errorMessage = errorMessage;
