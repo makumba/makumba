@@ -28,6 +28,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 /**
  * mak:version tag
+ * 
  * @author Cristian Bogdan
  * @version $Id$
  */
