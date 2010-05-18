@@ -32,8 +32,9 @@ public class MakumbaTestSetup extends TestSetup {
         TransactionProvider tp = null;
         Transaction db = null;
 
-        if (transactionProviderType == null)
+        if (transactionProviderType == null) {
             return;
+        }
         if (transactionProviderType.equals("oql")) {
             System.err.println("cleaning caches");
             NamedResources.cleanStaticCache("Databases open");

@@ -16,6 +16,7 @@ public class TestListMQL extends SeleneseTestCase {
         return new MakumbaWebTestSetup(new TestSuite(TestListMQL.class), "oql");
     }
 
+    @Override
     public void setUp() throws Exception {
         setUp("http://localhost:8080/", "*firefox");
     }

@@ -44,8 +44,9 @@ public class MDDComparator {
             for (int i = 0; i < apps.length; i++) {
                 System.out.println("== Reading corpus MDDs of application " + apps[i]);
                 File app = new File(TEMP + File.separator + apps[i]);
-                if (!app.isDirectory())
+                if (!app.isDirectory()) {
                     continue;
+                }
 
                 RecordInfo.setWebappRoot(app.getPath());
                 MDDProvider.setWebappRoot(app.getPath());
@@ -53,10 +54,12 @@ public class MDDComparator {
                 Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zf.entries();
                 while (entries.hasMoreElements()) {
                     ZipEntry ze = entries.nextElement();
-                    if (!ze.getName().endsWith(".mdd"))
+                    if (!ze.getName().endsWith(".mdd")) {
                         continue;
-                    if (!ze.getName().startsWith(apps[i]))
+                    }
+                    if (!ze.getName().startsWith(apps[i])) {
                         continue;
+                    }
 
                     String type = ze.getName().substring((apps[i] + "/WEB-INF/classes/dataDefinitions/").length(),
                         ze.getName().lastIndexOf(".")).replaceAll("/", ".");
@@ -76,8 +79,9 @@ public class MDDComparator {
                         System.err.println("RecordInfo error on " + type + " : " + t.getMessage());
                     }
 
-                    if (dd1 != null && dd2 != null)
+                    if (dd1 != null && dd2 != null) {
                         compare(dd1, dd2);
+                    }
 
                 }
             }

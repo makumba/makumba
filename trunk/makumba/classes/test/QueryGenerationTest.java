@@ -59,12 +59,12 @@ public class QueryGenerationTest extends TestCase {
         v.add("bart");
         v.add("bart");
         arguments.put("simulatedVector", v);
-        Vector<Dictionary<String, Object>> result = new Vector<Dictionary<String, Object>>();
+        new Vector<Dictionary<String, Object>>();
 
         Transaction t = TransactionProvider.getInstance().getConnectionTo(
             TransactionProvider.getInstance().getDefaultDataSourceName());
         try {
-            result = t.executeQuery(query, arguments);
+            t.executeQuery(query, arguments);
         } catch (Exception e) {
             assertTrue(e instanceof InvalidValueException);
         } finally {

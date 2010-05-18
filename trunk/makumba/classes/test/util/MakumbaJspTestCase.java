@@ -71,10 +71,11 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
         // based on the method name, we retrieve the file used as comparison basis
         File f = getExpectedResult(testName);
 
-        if (!f.exists())
+        if (!f.exists()) {
             throw new Exception("Couldn't find the comparison file in classes/test/expected/" + testName
                     + EXPECTED_RESULT_EXTENSION
                     + " - create it first using the fetchValidTestResult(String result) method!");
+        }
 
         String fileIntoString = "";
         BufferedReader fileIn = null;
@@ -162,18 +163,20 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
      */
     protected void fetchValidTestResult(String output, String testName, boolean record) {
 
-        if (!record)
+        if (!record) {
             return;
+        }
 
         // based on the method name, we retrieve the file used as comparison basis
         File f = getExpectedResult(testName);
-        if (!f.exists())
+        if (!f.exists()) {
             try {
                 f.createNewFile();
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
+        }
 
         try {
             BufferedWriter out = new BufferedWriter(new FileWriter(f));
@@ -191,10 +194,12 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
      */
     private String getTestMethod() {
         StackTraceElement[] stackTrace = new Throwable().fillInStackTrace().getStackTrace();
-        for (int n = 0;; n++)
+        for (int n = 0;; n++) {
             if (stackTrace[n].getMethodName().startsWith("begin") || stackTrace[n].getMethodName().startsWith("test")
-                    || stackTrace[n].getMethodName().startsWith("end"))
+                    || stackTrace[n].getMethodName().startsWith("end")) {
                 return stackTrace[n].getMethodName();
+            }
+        }
     }
 
     /**
@@ -302,8 +307,9 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
         WebResponse resp = wc.getResponse(System.getProperty("cactus.contextURL") + page);
 
         // first, compare that the form generated is ok
-        if (check)
+        if (check) {
             compareToFileWithTestName(resp);
+        }
         return resp;
     }
 
@@ -414,19 +420,22 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
                 m = decorated.getClass().getMethod(test.replace("test", "begin"), Request.class);
             } catch (Exception e) {
             }
-            if (m != null)
+            if (m != null) {
                 m.invoke(decorated, request);
+            }
 
             // now we set a header, to tell the server side what to include
             // some tests have a jsp page with a different name
             String jspPage = decorated.differentNameJspsMap.get(test);
-            if (jspPage == null)
+            if (jspPage == null) {
                 // but most have the page with the same name
                 jspPage = "/" + decorated.getJspDir() + "/" + test + ".jsp";
+            }
 
             // some tests include no jsp
-            if (decorated.submissionResponse == null)
+            if (decorated.submissionResponse == null) {
                 ((org.apache.cactus.WebRequest) request).addHeader("mak-test-page", jspPage);
+            }
         }
 
         /** invoked by cactus on server */
@@ -434,15 +443,17 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
         public void runBareServer() throws Exception {
             // if we have a jsp, we include it
             String page = request.getHeader("mak-test-page");
-            if (page != null)
+            if (page != null) {
                 pageContext.include(page);
+            }
         }
 
         /** invoked by cactus at the end, on client */
         public void end(WebResponse response) throws Exception {
             // if the submisionResponse is set, we use it instead of the response
-            if (decorated.submissionResponse != null)
+            if (decorated.submissionResponse != null) {
                 response = decorated.submissionResponse;
+            }
             // compare the response to the result file with the same name
             compareToFile(response, test.replace("test", "end"));
             decorated.submissionResponse = null;
@@ -512,13 +523,15 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
         for (String test : dir.list()) {
             if (test.startsWith("test") && test.endsWith(".jsp")) {
                 String testName = test.replace(".jsp", "");
-                if (prototype.disabledTests.contains(testName))
+                if (prototype.disabledTests.contains(testName)) {
                     continue;
+                }
                 String test1 = prototype.differentNameJspsReverseMap.get(prototype.getJspDir() + "/" + test);
-                if (test1 != null)
+                if (test1 != null) {
                     ts.addTest(new JspTest(prototype, test1));
-                else
+                } else {
                     ts.addTest(new JspTest(prototype, testName));
+                }
             }
         }
         return new MakumbaWebTestSetup(ts, queryLang);

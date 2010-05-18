@@ -42,6 +42,7 @@ public class oqlanalyzer extends TestCase {
         return new TestSuite(oqlanalyzer.class);
     }
 
+    @Override
     public void run(TestResult r) {
         try {
             super.run(r);

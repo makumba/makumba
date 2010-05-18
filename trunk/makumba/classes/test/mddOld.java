@@ -23,7 +23,6 @@
 
 package test;
 
-import java.util.Enumeration;
 import java.util.Vector;
 
 import junit.framework.Test;
@@ -96,8 +95,7 @@ public class mddOld extends TestCase {
         // we have to collect all errors if we want to run tests on all
         // MDDs in directory instead of stopping at first fail()ure.
         Vector<String> errors = new Vector<String>();
-        for (Enumeration<String> e = mdds.elements(); e.hasMoreElements();) {
-            String mdd = (String) e.nextElement();
+        for (String mdd : mdds) {
             try {
                 ddp.getDataDefinition("test.validMdds." + mdd);
             } catch (DataDefinitionParseError ex) {
@@ -105,9 +103,10 @@ public class mddOld extends TestCase {
                 // ex.printStackTrace();
             }
         }
-        if (errors.size() > 0)
+        if (errors.size() > 0) {
             fail("\n  Tested " + mdds.size() + " valid MDDs, but found " + errors.size() + " problems: "
                     + errors.toString());
+        }
     }
 
     public void testIfAllBrokenMddsThrowErrors() {
@@ -117,25 +116,27 @@ public class mddOld extends TestCase {
         // we have to collect all errors if we want to run tests on all
         // MDDs in directory instead of stoping at first fail()ure.
         Vector<String> errors = new Vector<String>();
-        for (Enumeration<String> e = mdds.elements(); e.hasMoreElements();) {
+        for (String mdd : mdds) {
             DataDefinitionParseError expected = new DataDefinitionParseError();
             DataDefinitionParseError actual = expected;
-            String mdd = (String) e.nextElement();
             try {
                 ddp.getDataDefinition("test.brokenMdds." + mdd);
             } catch (DataDefinitionParseError thrown) {
                 actual = thrown;
             }
 
-            if (expected == actual)
+            if (expected == actual) {
                 errors.add("\n ." + (errors.size() + 1) + ") Error report missing from broken MDD <" + mdd + "> ");
-            if (!expected.getClass().equals(actual.getClass()))
+            }
+            if (!expected.getClass().equals(actual.getClass())) {
                 errors.add("\n ." + (errors.size() + 1) + ") MDD " + mdd + " threw <" + actual.getClass()
                         + "> instead of expected <" + expected.getClass() + ">");
+            }
         }
-        if (errors.size() > 0)
+        if (errors.size() > 0) {
             fail("\n  Tested " + mdds.size() + " broken MDDs, but " + errors.size() + " reported wrong/no error: "
                     + errors.toString());
+        }
     }
 
 }
