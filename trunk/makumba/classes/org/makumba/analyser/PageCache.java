@@ -34,7 +34,6 @@ import java.util.logging.Logger;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.collections.set.ListOrderedSet;
 import org.makumba.commons.tags.GenericMakumbaTag;
-import org.makumba.forms.tags.InputTag;
 
 /**
  * Cache for the page analysis. It is passed along during analysis and holds useful caches. This class provides two
