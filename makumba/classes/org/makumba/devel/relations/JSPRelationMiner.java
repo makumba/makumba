@@ -146,8 +146,8 @@ public class JSPRelationMiner extends RelationMiner {
             }
 
             // we only look at the input tags
-            if (tag instanceof InputTag && !(tag instanceof SearchFieldTag)) { // skip search field tags. FIXME: at
-                                                                               // least for now
+            // skip search field tags. FIXME: at least for now
+            if (tag instanceof InputTag && !(tag instanceof SearchFieldTag)) {
                 MultipleKey formTagKey = ((InputTag) tag).getForm().getTagKey();
 
                 String baseObjectType = (String) pageCache.retrieve(MakumbaJspAnalyzer.BASE_POINTER_TYPES, formTagKey);

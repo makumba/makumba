@@ -173,8 +173,8 @@ public class HqlAnalyzer implements QueryAnalysis {
             // if this is a query with not named parameters
             if (name.equals("?")) {
                 if (count == null) {
-                    throw new OQLParseError("Unexpected projection name during HQL query analysis"); // should not
-                                                                                                     // happen
+                    // should not happen
+                    throw new OQLParseError("Unexpected projection name during HQL query analysis");
                 }
                 name = "param" + count.toString();
             }
