@@ -27,15 +27,12 @@ package org.makumba.analyser.engine;
  * Keeps track of important points in a file. Syntax points are typically stored in a sorted set, and used for syntax
  * colouring. A syntax colourer would load the file, then go through the syntax points and change the coloring context
  * at each syntax point. This is an abstract class, but can be easily instantiated with an anonymous inner class like
- * this: SyntaxPoint comment=new SyntaxPoint(position) { public String getType(){ return "JSPcomment";}};
- * 
- * idea: the class can also find identifiers in the text and ask the owners of other enclosing syntax points (or the
- * owner of the whole text info) if they can account for them. For example in the case of a makumba JSP, a LIST tag can
- * account for a OQL label, an MDD field, a MDD name or a $attribute). If yes, syntax points are produced by the
- * respective entity, and presented in different colours or as links
- * 
- * idea: a syntax point walker that goes through a text and invokes methods of a syntax colourer like beginText(),
- * beginJSPComment, endJspComment, beginTag... etc
+ * this: SyntaxPoint comment=new SyntaxPoint(position) { public String getType(){ return "JSPcomment";}}; idea: the
+ * class can also find identifiers in the text and ask the owners of other enclosing syntax points (or the owner of the
+ * whole text info) if they can account for them. For example in the case of a makumba JSP, a LIST tag can account for a
+ * OQL label, an MDD field, a MDD name or a $attribute). If yes, syntax points are produced by the respective entity,
+ * and presented in different colours or as links idea: a syntax point walker that goes through a text and invokes
+ * methods of a syntax colourer like beginText(), beginJSPComment, endJspComment, beginTag... etc
  * 
  * @author Cristian Bogdan
  * @version $Id$
