@@ -23,7 +23,8 @@ public abstract class GenericMakumbaTag extends AnalysableTag {
     public Hashtable<String, Object> params = new Hashtable<String, Object>(7); // holds certain 'normal' tag attributes
 
     public Map<String, String> extraFormattingParams = new HashMap<String, String>(7); // container for html formatting
-                                                                                       // params
+
+    // params
 
     /** Extra html formatting, copied verbatim to the output */
     public StringBuffer extraFormatting;
