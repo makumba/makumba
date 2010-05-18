@@ -35,6 +35,8 @@ public class Pass1FunctionInliner {
     public static Logger logger = Logger.getLogger("org.makumba.db.query.inline");
 
     static int functionCache = NamedResources.makeStaticCache("function pass2 analyses", new NamedResourceFactory() {
+        private static final long serialVersionUID = 1L;
+
         @Override
         protected Object makeResource(Object name) {
             String s = (String) name;
