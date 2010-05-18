@@ -175,10 +175,10 @@ public class TableManager extends Table {
     }
 
     protected void checkStructure(SQLDBConnection dbc, Properties config) {
-        String s = Database.findConfig(config, "admin#" + getDataDefinition().getName());
+        String s = org.makumba.db.makumba.Database.findConfig(config, "admin#" + getDataDefinition().getName());
         admin = s != null && config.getProperty(s).trim().equals("true");
 
-        s = Database.findConfig(config, "alter#" + getDataDefinition().getName());
+        s = org.makumba.db.makumba.Database.findConfig(config, "alter#" + getDataDefinition().getName());
         alter = s != null && config.getProperty(s).trim().equals("true");
 
         java.util.logging.Logger.getLogger("org.makumba.db.init.tablechecking").info(

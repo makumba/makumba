@@ -15,6 +15,7 @@ import org.makumba.analyser.AnalysableElement;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MakumbaResourceServlet;
+import org.makumba.commons.tags.GenericMakumbaTag;
 import org.makumba.forms.tags.FormTagBase;
 import org.makumba.forms.validation.LiveValidationProvider;
 import org.makumba.list.tags.SectionTag;
@@ -84,7 +85,7 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
         PageCache pageCache = AnalysableElement.getPageCache(request,
             request.getSession().getServletContext().getRealPath("/"), MakumbaJspAnalyzer.getInstance());
         if (pageCache != null) {
-            ListOrderedSet resources = pageCache.retrieveSetValues(FormTagBase.NEEDED_RESOURCES);
+            ListOrderedSet resources = pageCache.retrieveSetValues(GenericMakumbaTag.NEEDED_RESOURCES);
             if (resources != null) {
                 for (Object object : resources) {
                     String resource = (String) object;

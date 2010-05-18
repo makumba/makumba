@@ -294,7 +294,7 @@ public class SearchTag extends FormTagBase {
                     }
                 }
             }
-            appendParams(queryString, FormResponder.responderName, parameters.getParameter(FormResponder.responderName));
+            appendParams(queryString, Responder.responderName, parameters.getParameter(Responder.responderName));
 
             // set the attributes, and do logging
             Hashtable<String, Object> searchResults = new Hashtable<String, Object>(4);

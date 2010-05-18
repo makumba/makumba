@@ -932,7 +932,7 @@ public class RecordParser {
                 return null;
             }
             parse1(fieldName, fc);
-            if (initialType.equals(FieldInfo.getStringType(FieldInfo._file))) { // file type gets re-written to ptrOne
+            if (initialType.equals(FieldInfo.getStringType(FieldDefinition._file))) { // file type gets re-written to ptrOne
                 return getFieldInfo(fieldName).type;
             }
             if (getFieldInfo(fieldName).type.equals(initialType)) {
@@ -1082,7 +1082,7 @@ public class RecordParser {
 
         String name = getFieldInfo(fieldName).name;
         subtableParser_subtables.put(fieldName, new FileRecordInfo(dd, name));
-        getFieldInfo(fieldName).type = FieldInfo.getStringType(FieldInfo._ptrOne);
+        getFieldInfo(fieldName).type = FieldInfo.getStringType(FieldDefinition._ptrOne);
         subtableParser_subtables.get(fieldName).addStandardFields(subtableParser_subtables.get(fieldName).subfield);
         getFieldInfo(fieldName).extra1 = subtableParser_subtables.get(fieldName);
         ptrOne_RecordParsers.put(fieldName, new RecordParser(subtableParser_subtables.get(fieldName), this));
