@@ -27,7 +27,6 @@ public class MakumbaCommonTagsTest extends MakumbaJspTestCase {
         return makeSuite(MakumbaCommonTagsTest.class, "oql");
     }
 
-    
     public void testVersionTag() throws JspException, IOException {
         MakumbaVersionTag versionTag = new MakumbaVersionTag();
         versionTag.setPageContext(pageContext);
@@ -45,14 +44,16 @@ public class MakumbaCommonTagsTest extends MakumbaJspTestCase {
     public void beginLogin(Request request) throws Exception {
         WebForm form = getFormInJsp("/login/testLogin.jsp", false);
         // we try to login
-        form.setParameter("username","manu");
+        form.setParameter("username", "manu");
         form.setParameter("password", "secret");
         // submit the form
         form.submit();
     }
+
     public void testLogin() throws ServletException, IOException {
         includeJspWithTestName();
     }
+
     public void endLogin(WebResponse response) throws Exception {
         compareToFileWithTestName(response);
     }
