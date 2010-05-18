@@ -26,7 +26,6 @@ public class ListHQLTest extends MakumbaJspTestCase {
         jspDir = "list-hql";
     }
 
-
     public static Test suite() {
         return makeSuite(ListHQLTest.class, "hql");
     }

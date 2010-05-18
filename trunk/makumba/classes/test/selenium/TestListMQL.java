@@ -11,15 +11,15 @@ import test.MakumbaWebTestSetup;
 import com.thoughtworks.selenium.SeleneseTestCase;
 
 public class TestListMQL extends SeleneseTestCase {
-    
+
     public static Test suite() {
         return new MakumbaWebTestSetup(new TestSuite(TestListMQL.class), "oql");
     }
-    
+
     public void setUp() throws Exception {
         setUp("http://localhost:8080/", "*firefox");
     }
-    
+
     public void testMakObjectTag() throws ServletException, IOException {
         selenium.open("/tests/list-oql/testMakObjectTag.jsp");
         verifyTrue(selenium.isTextPresent("name:john"));
