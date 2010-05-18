@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.Dictionary;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Vector;
 
 import org.makumba.Pointer;
@@ -136,12 +135,12 @@ public class MakumbaTestData {
     }
 
     public void deletePersonsAndIndividuals(Transaction t) {
-        for (int i = 0; i < namesPersonIndivName.length; i++) {
+        for (String element : namesPersonIndivName) {
             String query = "SELECT " + (t.getTransactionProvider().getQueryLanguage().equals("oql") ? "p" : "p.id")
                     + " AS p, p.indiv" + (t.getTransactionProvider().getQueryLanguage().equals("oql") ? "" : ".id")
                     + " as i FROM test.Person p WHERE p.indiv.name="
                     + (t.getTransactionProvider().getQueryLanguage().equals("oql") ? "$1" : "?");
-            Vector<Dictionary<String, Object>> v = t.executeQuery(query, namesPersonIndivName[i]);
+            Vector<Dictionary<String, Object>> v = t.executeQuery(query, element);
             if (v.size() > 0) {
 
                 Vector<Pointer> emptyPointerVector = new Vector<Pointer>();
@@ -170,10 +169,10 @@ public class MakumbaTestData {
     protected void insertLanguages(Transaction t) {
         languages.clear();
         Dictionary<String, Object> p = new Hashtable<String, Object>();
-        for (int i = 0; i < languageData.length; i++) {
-            p.put("name", languageData[i][0]);
-            p.put("isoCode", languageData[i][1]);
-            p.put("family", languageData[i][2]);
+        for (String[] element : languageData) {
+            p.put("name", element[0]);
+            p.put("isoCode", element[1]);
+            p.put("family", element[2]);
             languages.add(t.insert("test.Language", p));
         }
     }
@@ -183,8 +182,7 @@ public class MakumbaTestData {
                 + " AS l FROM test.Language l";
         Vector<Dictionary<String, Object>> v = t.executeQuery(query, new Object[] {});
         if (v.size() > 0) {
-            for (Iterator<Dictionary<String, Object>> languages = v.iterator(); languages.hasNext();) {
-                Dictionary<String, Object> dictionary = languages.next();
+            for (Dictionary<String, Object> dictionary : v) {
                 t.delete((Pointer) dictionary.get("l"));
             }
         }
