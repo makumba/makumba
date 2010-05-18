@@ -14,13 +14,15 @@ import org.makumba.providers.Configuration;
 public class FilterConditionControllerHandler extends ControllerHandler {
 
     @Override
-    public boolean beforeFilter(ServletRequest request, ServletResponse response, FilterConfig conf, ServletObjects httpServletObjects) throws Exception {
-        HttpServletRequest req=(HttpServletRequest)request;
+    public boolean beforeFilter(ServletRequest request, ServletResponse response, FilterConfig conf,
+            ServletObjects httpServletObjects) throws Exception {
+        HttpServletRequest req = (HttpServletRequest) request;
         String uri = req.getRequestURI();
 
         // accesses to the source viewer are not filtered
         if (uri.startsWith(Configuration.getMakumbaToolsLocation() + Configuration.getMddViewerLocation())
-                || uri.startsWith(Configuration.getMakumbaToolsLocation() + Configuration.getLogicDiscoveryViewerLocation())
+                || uri.startsWith(Configuration.getMakumbaToolsLocation()
+                        + Configuration.getLogicDiscoveryViewerLocation())
                 || uri.startsWith(Configuration.getMakumbaToolsLocation() + Configuration.getJavaViewerLocation())) {
             return false;
         }
@@ -29,7 +31,7 @@ public class FilterConditionControllerHandler extends ControllerHandler {
             file = new URL(req.getRequestURL().toString()).getFile();
         } catch (java.net.MalformedURLException e) {
         } // can't be
- 
+
         // JSP and HTML are always filtered
         if (file.endsWith(".jsp") || file.endsWith(".html")) {
             return true;
@@ -52,6 +54,5 @@ public class FilterConditionControllerHandler extends ControllerHandler {
         // it it exists, it's probably an image or a CSS, we don't filter
         return !f.exists();
     }
-
 
 }
