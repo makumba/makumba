@@ -209,6 +209,14 @@ public class ListOQLTest extends MakumbaJspTestCase {
         compareToFileWithTestName(response);
     }
 
+    public void testMakValueChangeFunctions() throws Exception {
+        includeJspWithTestName();
+    }
+
+    public void endMakValueChangeFunctions(WebResponse response) throws Exception {
+        compareToFileWithTestName(response);
+    }
+
     /*
      * Commented out by manu on 22-05-2009, since those tests fail with the current comparison method public void
      * testMakValueTS_create() throws ServletException, IOException { // FIXME: this test will fail // a line-by-line
