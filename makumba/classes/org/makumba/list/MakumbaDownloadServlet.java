@@ -103,8 +103,8 @@ public class MakumbaDownloadServlet extends HttpServlet {
      * FIXME: find a library that does this better.
      */
     public static boolean isInlineContentType(String contentType) {
-        for (int i = 0; i < INLINE_CONTENT_TYPES.length; i++) {
-            if (contentType.equalsIgnoreCase(INLINE_CONTENT_TYPES[i])) {
+        for (String element : INLINE_CONTENT_TYPES) {
+            if (contentType.equalsIgnoreCase(element)) {
                 return true;
             }
         }

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -111,8 +110,7 @@ public class AJAXDataControllerHandler extends ControllerHandler {
                             // store the message with the input ID as key
                             // TODO not sure if this works with multiple forms
                             fieldErrors.put(param + formName, errors);
-                            for (Iterator<InvalidValueException> it = paramFieldErrors.iterator(); it.hasNext();) {
-                                InvalidValueException ive = it.next();
+                            for (InvalidValueException ive : paramFieldErrors) {
                                 errors.put(ive.getShortMessage());
                             }
                         }

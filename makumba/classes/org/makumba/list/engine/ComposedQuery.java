@@ -381,10 +381,10 @@ public class ComposedQuery {
 
         int i = 0;
 
-        for (Enumeration<String> e = projections.elements(); e.hasMoreElements();) {
+        for (String string : projections) {
             sb.append(sep);
             sep = ",";
-            sb.append(e.nextElement()).append(" AS ").append(columnName(new Integer(i++)));
+            sb.append(string).append(" AS ").append(columnName(new Integer(i++)));
         }
         Object o;
 

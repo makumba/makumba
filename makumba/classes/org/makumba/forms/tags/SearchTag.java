@@ -271,9 +271,8 @@ public class SearchTag extends FormTagBase {
 
                     String whereThisField = "";
                     // iterate over all data fields this input is associated with
-                    for (int i = 0; i < multiFieldSearchCriterion.length; i++) {
+                    for (String fieldName : multiFieldSearchCriterion) {
                         String objectName = resp.getResultLabel();
-                        String fieldName = multiFieldSearchCriterion[i];
                         if (whereThisField.length() > 0) {
                             // if we are having a multi-field match, we might need to combine rules
                             whereThisField = whereThisField + " OR ";

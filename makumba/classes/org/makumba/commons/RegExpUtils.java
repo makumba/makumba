@@ -101,9 +101,9 @@ public class RegExpUtils {
     /** Testing method to see if some Strings match a pattern. */
     public static void evaluate(Pattern p, boolean details, String... rules) {
         System.out.println(p.pattern());
-        for (int i = 0; i < rules.length; i++) {
-            Matcher matcher = p.matcher(rules[i].trim());
-            System.out.println(rules[i].trim() + ":" + matcher.matches());
+        for (String rule : rules) {
+            Matcher matcher = p.matcher(rule.trim());
+            System.out.println(rule.trim() + ":" + matcher.matches());
             if (matcher.matches() && details) {
                 System.out.print("groups:" + matcher.groupCount());
                 for (int j = 0; j < matcher.groupCount(); j++) {

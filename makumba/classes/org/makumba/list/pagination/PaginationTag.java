@@ -225,10 +225,10 @@ public class PaginationTag extends GenericMakumbaTag {
             linkStyleProperties.load(alternateLinkPropertiesURL.openConnection().getInputStream());
         }
         String[] s = { FIRST, NEXT, LAST, PREVIOUS };
-        for (int i = 0; i < s.length; i++) {
-            navigationLinkStyle.put(s[i], linkStyleProperties.getProperty(s[i], navigationLinkStyle.get(s[i])));
-            navigationNALinkStyle.put(s[i], linkStyleProperties.getProperty(s[i] + "_NA",
-                navigationNALinkStyle.get(s[i])));
+        for (String element : s) {
+            navigationLinkStyle.put(element, linkStyleProperties.getProperty(element, navigationLinkStyle.get(element)));
+            navigationNALinkStyle.put(element, linkStyleProperties.getProperty(element + "_NA",
+                navigationNALinkStyle.get(element)));
         }
 
         navigationStylesInitialised = true;
@@ -291,9 +291,9 @@ public class PaginationTag extends GenericMakumbaTag {
         for (Object obj : map.keySet()) {
             if (!org.makumba.commons.StringUtils.equalsAny(obj, new String[] { LIMIT, OFFSET })) {
                 String[] strings = (String[]) map.get(obj);
-                for (int i = 0; i < strings.length; i++) {
-                    if (StringUtils.isNotBlank(strings[i])) {
-                        sb.append(obj).append("=").append(strings[i]).append("&");
+                for (String string : strings) {
+                    if (StringUtils.isNotBlank(string)) {
+                        sb.append(obj).append("=").append(string).append("&");
                     }
                 }
             }

@@ -28,7 +28,6 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
@@ -107,8 +106,8 @@ public abstract class DBConnection extends TransactionImplementation {
     }
 
     protected void unlockAll() {
-        for (Iterator<String> i = locks.keySet().iterator(); i.hasNext();) {
-            deleteLock(i.next());
+        for (String string : locks.keySet()) {
+            deleteLock(string);
         }
     }
 

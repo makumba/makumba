@@ -392,8 +392,8 @@ public class QueryContext {
     /** write the translator-generated joins */
     protected void writeJoins(TextList ret) {
         // boolean and = false;
-        for (Enumeration<Join> e = joins.elements(); e.hasMoreElements();) {
-            writeJoin(e.nextElement(), ret);
+        for (Join join : joins) {
+            writeJoin(join, ret);
         }
     }
 

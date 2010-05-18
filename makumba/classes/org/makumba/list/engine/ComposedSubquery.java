@@ -23,7 +23,6 @@
 
 package org.makumba.list.engine;
 
-import java.util.Enumeration;
 import java.util.Vector;
 
 /**
@@ -141,8 +140,8 @@ public class ComposedSubquery extends ComposedQuery {
         keyset = (Vector<Integer>) superQuery.keyset.clone();
         keysetLabels = (Vector<String>) superQuery.keysetLabels.clone();
 
-        for (Enumeration<String> e = keysetLabels.elements(); e.hasMoreElements();) {
-            addProjection(e.nextElement());
+        for (String string : keysetLabels) {
+            addProjection(string);
         }
         previousKeyset.addElement(superQuery.keyset);
 

@@ -24,7 +24,6 @@ package org.makumba;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.makumba.commons.SerializedGenericMultiValueMap;
 
@@ -84,8 +83,7 @@ public class CompositeValidationException extends RuntimeException {
     @Override
     public String toString() {
         StringBuilder message = new StringBuilder("\n");
-        for (Iterator<InvalidValueException> iter = exceptionsHash.values().iterator(); iter.hasNext();) {
-            InvalidValueException e = iter.next();
+        for (InvalidValueException e : exceptionsHash.values()) {
             message.append("<span class=\"invalidValueException\">").append(e.getMessage()).append("</span>");
             message.append("\n");
         }

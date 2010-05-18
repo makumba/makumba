@@ -59,8 +59,8 @@ public class ResultListTag extends QueryTag {
 
         // check whether we have the attributes from the search present
         String[] attributesToCheck = { SearchTag.ATTRIBUTE_NAME_VARIABLE_FROM, SearchTag.ATTRIBUTE_NAME_WHERE };
-        for (int i = 0; i < attributesToCheck.length; i++) {
-            String thisAttribute = resultsFrom + attributesToCheck[i];
+        for (String element : attributesToCheck) {
+            String thisAttribute = resultsFrom + element;
             if (pageContext.getRequest().getAttribute(thisAttribute) == null) {
                 this.noResultsPresent = true;
                 if (mode.equals(MODE_SEARCH)) {// if we do search, we only execute the tag if we already did the search

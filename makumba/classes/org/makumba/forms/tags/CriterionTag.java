@@ -83,8 +83,7 @@ public class CriterionTag extends GenericMakumbaTag implements BodyTag {
 
     private void parseFieldList(PageCache pageCache) throws ProgrammerError {
         String[] fieldsSplit = getFieldsSplit();
-        for (int i = 0; i < fieldsSplit.length; i++) {
-            String element = fieldsSplit[i];
+        for (String element : fieldsSplit) {
             FieldDefinition fd = getForm().fdp.getInputTypeAtAnalysis(this, getForm().getDataTypeAtAnalysis(pageCache),
                 element, pageCache);
 

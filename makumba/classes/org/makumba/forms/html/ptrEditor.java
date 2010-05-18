@@ -25,7 +25,6 @@ package org.makumba.forms.html;
 
 import java.util.Dictionary;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
@@ -108,8 +107,7 @@ public class ptrEditor extends choiceEditor {
         if (nullOption != null) {
             c.add("", nullOption, false, false);
         }
-        for (Iterator<Dictionary<String, Object>> i = v.iterator(); i.hasNext();) {
-            Dictionary<String, Object> d = i.next();
+        for (Dictionary<String, Object> d : v) {
             Object ttl = d.get("title");
             if (ttl == null) {
                 Pointer ptr = (Pointer) d.get("choice");

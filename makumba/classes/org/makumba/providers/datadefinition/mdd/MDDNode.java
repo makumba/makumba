@@ -1,7 +1,6 @@
 package org.makumba.providers.datadefinition.mdd;
 
 import java.net.URL;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 import org.makumba.DataDefinition;
@@ -121,13 +120,13 @@ public class MDDNode extends CommonAST {
             sb.append("Title field: " + titleField.getText());
         }
         sb.append("\nFields:" + "\n");
-        for (Iterator<String> i = fields.keySet().iterator(); i.hasNext();) {
-            sb.append(fields.get(i.next()).toString() + "\n");
+        for (String string : fields.keySet()) {
+            sb.append(fields.get(string).toString() + "\n");
         }
 
         sb.append("\nValidation rules:" + "\n");
-        for (Iterator<String> i = validationRules.keySet().iterator(); i.hasNext();) {
-            sb.append(validationRules.get(i.next()).toString() + "\n");
+        for (String string : validationRules.keySet()) {
+            sb.append(validationRules.get(string).toString() + "\n");
         }
 
         return sb.toString();

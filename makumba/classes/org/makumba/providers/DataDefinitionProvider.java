@@ -206,8 +206,8 @@ public abstract class DataDefinitionProvider implements SingletonHolder {
     private void fillMdds(int baselength, java.io.File dir, java.util.Vector<String> mdds) {
         if (dir.isDirectory()) {
             String[] list = dir.list();
-            for (int i = 0; i < list.length; i++) {
-                String s = list[i];
+            for (String element : list) {
+                String s = element;
                 if (s.endsWith(".mdd")) {
                     s = dir.toString() + java.io.File.separatorChar + s;
                     s = s.substring(baselength, s.length() - 4); // cut off the ".mdd"

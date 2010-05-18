@@ -34,7 +34,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeSet;
@@ -303,8 +302,7 @@ public class MakumbaInfoTag extends TagSupport {
             Map<String, int[]> m = MakumbaSystem.getCacheInfo();
             TreeSet<String> treeSet = new TreeSet<String>(m.keySet());
 
-            for (Iterator<String> iterator = treeSet.iterator(); iterator.hasNext();) {
-                String nm = iterator.next();
+            for (String nm : treeSet) {
                 Object o = m.get(nm);
 
                 out.println("  <tr bgcolor=\"#" + (line++ % 2 == 0 ? "eeeeee" : "ffffff") + "\">");
@@ -312,8 +310,8 @@ public class MakumbaInfoTag extends TagSupport {
 
                 if (o instanceof int[]) {
                     int[] intArray = (int[]) o;
-                    for (int i = 0; i < intArray.length; i++) {
-                        out.println("    <td align=right><code>" + intArray[i] + "</code></td>");
+                    for (int element : intArray) {
+                        out.println("    <td align=right><code>" + element + "</code></td>");
                     }
                 } else {
                     out.println("    <td align=right><code>" + o + "</code></td>");

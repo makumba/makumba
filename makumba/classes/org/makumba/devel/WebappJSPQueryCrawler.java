@@ -72,10 +72,10 @@ public class WebappJSPQueryCrawler {
         PrintWriter pw = new PrintWriter(new FileOutputStream(f));
 
         String[] jspFiles = getFiles(webappRoot, skipPaths, jspFilter);
-        for (int i = 0; i < jspFiles.length; i++) {
+        for (String jspFile : jspFiles) {
             try {
                 Object analysisResult;
-                JspParseData jpd = JspParseData.getParseData(webappRoot, jspFiles[i],
+                JspParseData jpd = JspParseData.getParseData(webappRoot, jspFile,
                     JspRelationsAnalyzer.getInstance());
                 analysisResult = jpd.getAnalysisResult(new RelationParseStatus());
                 if (analysisResult != null && analysisResult instanceof PageCache) {
@@ -103,8 +103,8 @@ public class WebappJSPQueryCrawler {
 
         pw.println();
         String[] javaFiles = getFiles(webappRoot, skipPaths, javaFilter);
-        for (int i = 0; i < javaFiles.length; i++) {
-            JavaMDDParser jqp = new JavaMDDParser(webappRoot + File.separator + javaFiles[i]);
+        for (String javaFile : javaFiles) {
+            JavaMDDParser jqp = new JavaMDDParser(webappRoot + File.separator + javaFile);
             Vector<String> queries = jqp.getQueries();
             for (String query : queries) {
                 pw.println(query);

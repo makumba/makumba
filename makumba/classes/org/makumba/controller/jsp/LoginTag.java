@@ -59,14 +59,14 @@ public class LoginTag extends BodyTagSupport {
      */
     static Dictionary<String, Integer> countValues(String[] parameterValues) {
         Dictionary<String, Integer> values = new Hashtable<String, Integer>();
-        for (int i = 0; i < parameterValues.length; i++) {
-            Integer n = values.get(parameterValues[i]);
+        for (String parameterValue : parameterValues) {
+            Integer n = values.get(parameterValue);
             if (n == null) {
                 n = new Integer(1);
             } else {
                 n = new Integer(n.intValue() + 1);
             }
-            values.put(parameterValues[i], n);
+            values.put(parameterValue, n);
         }
         return values;
     }

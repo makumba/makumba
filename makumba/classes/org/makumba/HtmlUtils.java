@@ -62,8 +62,8 @@ public class HtmlUtils {
         }
 
         // try to find HTML tags
-        for (int i = 0; i < tagExamples.length; i++) {
-            if (s.indexOf(tagExamples[i]) != -1) {
+        for (String tagExample : tagExamples) {
+            if (s.indexOf(tagExample) != -1) {
                 return true;
             }
         }

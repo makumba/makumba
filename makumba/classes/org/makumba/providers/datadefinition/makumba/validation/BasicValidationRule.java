@@ -170,9 +170,9 @@ public abstract class BasicValidationRule implements ValidationRule, Serializabl
         Pattern p = Pattern.compile(fieldFunction);
         System.out.println(p.pattern());
         String[] rules = { "someField", "lower(someField)", "lower(  someField    )", "lower (  someField    )" };
-        for (int i = 0; i < rules.length; i++) {
-            Matcher matcher = p.matcher(rules[i]);
-            System.out.println(rules[i] + ":" + matcher.matches());
+        for (String rule : rules) {
+            Matcher matcher = p.matcher(rule);
+            System.out.println(rule + ":" + matcher.matches());
         }
     }
 
