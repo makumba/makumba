@@ -61,7 +61,8 @@ public class MakumbaDownloadServlet extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
         Transaction t = null;
         try {
-            t = TransactionProvider.getInstance().getConnectionTo(TransactionProvider.getInstance().getDefaultDataSourceName());
+            t = TransactionProvider.getInstance().getConnectionTo(
+                TransactionProvider.getInstance().getDefaultDataSourceName());
             String ptr = req.getParameter("value");
             String type = req.getParameter("type");
             if (StringUtils.isBlank(ptr) || StringUtils.isBlank(type)) {

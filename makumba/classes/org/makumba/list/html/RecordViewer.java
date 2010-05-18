@@ -49,59 +49,59 @@ public class RecordViewer extends RecordFormatter {
         for (int i = 0; i < dd.getFieldNames().size(); i++)
             expr[i] = q.getProjectionAt(i);
     }
-	public RecordViewer(DataDefinition ri, Hashtable<String, String> h) {
-		super(ri, h, false, null); // false = no searchform, null = no form identifier
-	}
 
-	protected String applyParameters(FieldFormatter ff,
-			Dictionary<String, Object> formatParams, String s) {
-		if (formatParams.get("urlEncode") != null)
-			try {
-				return java.net.URLEncoder.encode(s, "UTF-8");
-			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		return s;
-	}
+    public RecordViewer(DataDefinition ri, Hashtable<String, String> h) {
+        super(ri, h, false, null); // false = no searchform, null = no form identifier
+    }
 
-	protected void initFormatters() {
-		formatterArray = new FieldFormatter[dd.getFieldNames().size()];
-		for (int i = 0; i < dd.getFieldNames().size(); i++) {
-			FieldDefinition fd = dd.getFieldDefinition(i);
-			switch (fd.getIntegerType()) {
-			case FieldDefinition._char:
-				formatterArray[i] = charViewer.getInstance();
-				break;
-			case FieldDefinition._text:
-				formatterArray[i] = textViewer.getInstance();
-				break;
-			case FieldDefinition._boolean:
-			    formatterArray[i] = booleanViewer.getInstance();
-			    break;
-			case FieldDefinition._date:
-				formatterArray[i] = dateFormatter.getInstance();
-				break;
-			case FieldDefinition._dateCreate:
-			case FieldDefinition._dateModify:
-				formatterArray[i] = timestampFormatter.getInstance();
-				break;
-			case FieldDefinition._intEnum:
-				formatterArray[i] = intEnumFormatter.getInstance();
-				break;
-			case FieldDefinition._ptr:
-			case FieldDefinition._ptrIndex:
-			case FieldDefinition._ptrOne:
-			case FieldDefinition._ptrRel:
-			    if (fd.isFileType()) {
-	                formatterArray[i] = binaryViewer.getInstance();
-			    } else {
-			        formatterArray[i] = ptrFormatter.getInstance();
-			    }
-				break;
-			default:
-				formatterArray[i] = FieldViewer.getInstance();
-			}
-		}
-	}
+    protected String applyParameters(FieldFormatter ff, Dictionary<String, Object> formatParams, String s) {
+        if (formatParams.get("urlEncode") != null)
+            try {
+                return java.net.URLEncoder.encode(s, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        return s;
+    }
+
+    protected void initFormatters() {
+        formatterArray = new FieldFormatter[dd.getFieldNames().size()];
+        for (int i = 0; i < dd.getFieldNames().size(); i++) {
+            FieldDefinition fd = dd.getFieldDefinition(i);
+            switch (fd.getIntegerType()) {
+                case FieldDefinition._char:
+                    formatterArray[i] = charViewer.getInstance();
+                    break;
+                case FieldDefinition._text:
+                    formatterArray[i] = textViewer.getInstance();
+                    break;
+                case FieldDefinition._boolean:
+                    formatterArray[i] = booleanViewer.getInstance();
+                    break;
+                case FieldDefinition._date:
+                    formatterArray[i] = dateFormatter.getInstance();
+                    break;
+                case FieldDefinition._dateCreate:
+                case FieldDefinition._dateModify:
+                    formatterArray[i] = timestampFormatter.getInstance();
+                    break;
+                case FieldDefinition._intEnum:
+                    formatterArray[i] = intEnumFormatter.getInstance();
+                    break;
+                case FieldDefinition._ptr:
+                case FieldDefinition._ptrIndex:
+                case FieldDefinition._ptrOne:
+                case FieldDefinition._ptrRel:
+                    if (fd.isFileType()) {
+                        formatterArray[i] = binaryViewer.getInstance();
+                    } else {
+                        formatterArray[i] = ptrFormatter.getInstance();
+                    }
+                    break;
+                default:
+                    formatterArray[i] = FieldViewer.getInstance();
+            }
+        }
+    }
 }

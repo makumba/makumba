@@ -62,48 +62,54 @@ public class IfTag extends GenericListTag implements BodyTag {
     /**
      * Sets tagKey to uniquely identify this tag. Called at analysis time before doStartAnalyze() and at runtime before
      * doMakumbaStartTag()
-     * @param pageCache the page cache of the current page
+     * 
+     * @param pageCache
+     *            the page cache of the current page
      */
     public void setTagKey(PageCache pageCache) {
         addToParentListKey(testExpr.trim());
     }
 
-    /** 
-     * Determines the ValueComputer and associates it with the tagKey .
-     * If we use Hibernate we need to adjust the syntax
-     * @param pageCache the page cache of the current page
+    /**
+     * Determines the ValueComputer and associates it with the tagKey . If we use Hibernate we need to adjust the syntax
      * 
-     * FIXME QueryExecutionProvider should tell us the syntax for the if boolean test
-     * 
+     * @param pageCache
+     *            the page cache of the current page FIXME QueryExecutionProvider should tell us the syntax for the if
+     *            boolean test
      */
     public void doStartAnalyze(PageCache pageCache) {
-        String te= testExpr;
-        if(MakumbaJspAnalyzer.getQueryLanguage(pageCache).equals("hql")) 
-            te="case when " + testExpr +" then 1 else 0 end";
-        pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, tagKey, ValueComputer.getValueComputerAtAnalysis(false, QueryTag.getParentListKey(this, pageCache), te, pageCache));
+        String te = testExpr;
+        if (MakumbaJspAnalyzer.getQueryLanguage(pageCache).equals("hql"))
+            te = "case when " + testExpr + " then 1 else 0 end";
+        pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, tagKey, ValueComputer.getValueComputerAtAnalysis(false,
+            QueryTag.getParentListKey(this, pageCache), te, pageCache));
     }
 
-    /** 
+    /**
      * Tells the ValueComputer to finish analysis, check for proper test result type
-     * @param pageCache the page cache of the current page
+     * 
+     * @param pageCache
+     *            the page cache of the current page
      */
     public void doEndAnalyze(PageCache pageCache) {
         ValueComputer vc = (ValueComputer) pageCache.retrieve(MakumbaJspAnalyzer.VALUE_COMPUTERS, tagKey);
         vc.doEndAnalyze(pageCache);
         String type = vc.getType().getDataType();
         if (!"int".equals(type) && !"boolean".equals(type)) {
-            throw new ProgrammerError("mak:if test expression must be of type 'int' or 'boolean'. In this case [" + this
-                    + "], type is " + type);
+            throw new ProgrammerError("mak:if test expression must be of type 'int' or 'boolean'. In this case ["
+                    + this + "], type is " + type);
         }
     }
 
-    /** Asks the ValueComputer to calculate the expression, and SKIP_BODY if false.
-     * @param pageCache the page cache of the current page
+    /**
+     * Asks the ValueComputer to calculate the expression, and SKIP_BODY if false.
+     * 
+     * @param pageCache
+     *            the page cache of the current page
      * @throws JspException
      * @throws LogicException
      */
-    public int doAnalyzedStartTag(PageCache pageCache) throws JspException,
-            org.makumba.LogicException {
+    public int doAnalyzedStartTag(PageCache pageCache) throws JspException, org.makumba.LogicException {
         Object exprvalue = ((ValueComputer) pageCache.retrieve(MakumbaJspAnalyzer.VALUE_COMPUTERS, tagKey)).getValue(this.getPageContext());
 
         if (exprvalue instanceof Integer) {
@@ -121,12 +127,12 @@ public class IfTag extends GenericListTag implements BodyTag {
 
         if (exprvalue instanceof Boolean) {
             boolean b = ((Boolean) exprvalue).booleanValue();
-            if (b) 
+            if (b)
                 return EVAL_BODY_INCLUDE;
-            else 
+            else
                 return SKIP_BODY;
-        }  
-            
+        }
+
         // comparison with null, will return null, equivalent to false
         if (exprvalue == null)
             return SKIP_BODY;

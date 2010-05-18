@@ -41,8 +41,6 @@ public class ListFormDataProvider implements FormDataProvider {
 
     private static final String[] dummyQuerySections = { null, null, null, null, null };
 
-    
-
     /*
      * (non-Javadoc)
      * 
@@ -68,7 +66,7 @@ public class ListFormDataProvider implements FormDataProvider {
                 // the addForm, for good or bad..
                 TagData tagData = (TagData) cache.get(key);
                 if (tagData.getTagObject() instanceof InputTag) { // consider only input tags
-                    if (tagData.attributes.get("name")!=null && tagData.attributes.get("name").equals(ptrExpr)) {
+                    if (tagData.attributes.get("name") != null && tagData.attributes.get("name").equals(ptrExpr)) {
                         // and only the one that has the same name as the addForm base object
                         String dataType = tagData.attributes.get("dataType");
                         if (StringUtils.isBlank(dataType)) {
@@ -94,9 +92,9 @@ public class ListFormDataProvider implements FormDataProvider {
                         + "' to be used as base object for the addForm");
             }
         } else { // enclosed in list or form
-            
+
             boolean isValue = tag instanceof ValueTag;
-            
+
             pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, tag.getTagKey(),
                 ValueComputer.getValueComputerAtAnalysis(isValue, parentListKey, ptrExpr, pageCache));
         }
@@ -113,7 +111,7 @@ public class ListFormDataProvider implements FormDataProvider {
         MultipleKey parentListKey = getBasicValueParentListKey(tag, isNull, parentFormKey, pageCache);
 
         boolean isValue = tag instanceof ValueTag;
-        
+
         pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, tag.getTagKey(), ValueComputer.getValueComputerAtAnalysis(
             isValue, parentListKey, ptrExpr, pageCache));
     }
@@ -148,7 +146,7 @@ public class ListFormDataProvider implements FormDataProvider {
             expr += ".id";
 
         boolean isValue = tag instanceof ValueTag;
-        
+
         pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, tag.getTagKey(), ValueComputer.getValueComputerAtAnalysis(
             isValue, parentListKey, expr, pageCache));
     }
@@ -305,7 +303,7 @@ public class ListFormDataProvider implements FormDataProvider {
 
     private static class SingletonHolder implements org.makumba.commons.SingletonHolder {
         private static ListFormDataProvider singleton = new ListFormDataProvider();
-        
+
         public void release() {
             singleton = null;
         }
@@ -314,15 +312,16 @@ public class ListFormDataProvider implements FormDataProvider {
             org.makumba.commons.SingletonReleaser.register(this);
         }
     }
-    
+
     public static ListFormDataProvider getInstance() {
         return SingletonHolder.singleton;
     }
+
     /*
      * This needs to be public because of forms.tags.FormTagBase which uses reflection to get an instance
      */
     public ListFormDataProvider() {
-        
+
     }
 
 }

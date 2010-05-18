@@ -112,7 +112,7 @@ public class PaginationTag extends GenericMakumbaTag {
 
     @Override
     public int doAnalyzedStartTag(PageCache pageCache) throws LogicException, JspException {
-    
+
         if (!navigationStylesInitialised) {
             try {
                 initLinkStyle();
@@ -353,7 +353,7 @@ public class PaginationTag extends GenericMakumbaTag {
         tagKey = new MultipleKey(new Object[] { action, getParentListTag() != null ? getParentListTag().tagKey : null,
                 itemName, limit, offset, paginationLinkTitle, paginationLinkTitleText });
     }
-    
+
     @Override
     public void initialiseState() {
         super.initialiseState();
@@ -362,13 +362,13 @@ public class PaginationTag extends GenericMakumbaTag {
         paginationLinkTitle = "true";
         paginationLinkTitleText = "page";
     }
-    
+
     @Override
     protected void registerPossibleAttributeValues() {
         registerAttributeValues("showPageTitle", ATTRIBUTE_VALUES_TRUE_FALSE);
         registerAttributeValues("paginationLinkTitle", ATTRIBUTE_VALUES_TRUE_FALSE);
     }
-    
+
     @Override
     protected void doAnalyzedCleanup() {
         super.doAnalyzedCleanup();

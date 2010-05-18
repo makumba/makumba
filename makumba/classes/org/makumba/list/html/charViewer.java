@@ -49,7 +49,7 @@ public class charViewer extends FieldViewer {
 
     private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
         static FieldFormatter singleton = new charViewer();
-        
+
         public void release() {
             singleton = null;
         }

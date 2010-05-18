@@ -54,7 +54,7 @@ public class ResultListTag extends QueryTag {
     @Override
     public int doAnalyzedStartTag(PageCache pageCache) throws LogicException, JspException {
         setFieldsFromSearchFormInfo(pageCache);
-        
+
         this.noResultsPresent = false;
 
         // check whether we have the attributes from the search present

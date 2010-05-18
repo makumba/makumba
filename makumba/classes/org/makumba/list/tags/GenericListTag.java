@@ -62,10 +62,10 @@ public abstract class GenericListTag extends GenericMakumbaTag {
         } finally {
             if (findAncestorWithClass(this, GenericListTag.class) == null)
                 pageContext.removeAttribute(MakumbaJspAnalyzer.DS_ATTR);
-            
+
         }
     }
-    
+
     /**
      * Adds a key to the parentList, verifies if the tag has a parent.
      * 
