@@ -33,6 +33,7 @@ import org.makumba.commons.tags.GenericMakumbaTag;
 
 /**
  * mak:attribute tag
+ * 
  * @author Cristian Bogdan
  * @version $Id$
  */
@@ -58,16 +59,18 @@ public class AttributeTag extends GenericMakumbaTag {
         this.exceptionVar = s;
     }
 
-    /** 
+    /**
      * Indicates if the tag needs the page cache
      */
     protected boolean needPageCache() {
         return false;
     }
 
-    /** 
+    /**
      * Asks the enclosing query to present the expression
-     * @param pageCache the page cache of the current page
+     * 
+     * @param pageCache
+     *            the page cache of the current page
      */
     public int doAnalyzedStartTag(PageCache pageCache) throws JspException {
         Object o = null;

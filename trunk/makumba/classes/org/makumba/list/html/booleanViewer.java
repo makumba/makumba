@@ -30,48 +30,45 @@ import org.makumba.commons.formatters.RecordFormatter;
 
 /**
  * Boolean viewer, that simply displays "Yes" or "No" instead of "true" and "false"<br>
- * 
  * TODO: add possibility to provide other display values than "Yes" or "No"
  * 
  * @author Manuel Gay
  * @version $Id: booleanViewer.java,v 1.1 May 11, 2008 9:45:07 PM manu Exp $
  */
 public class booleanViewer extends FieldViewer {
-	static String[] params = { "default" };
+    static String[] params = { "default" };
 
-	static String[][] paramValues = { null };
+    static String[][] paramValues = { null };
 
-	public String[] getAcceptedParams() {
-		return params;
-	}
+    public String[] getAcceptedParams() {
+        return params;
+    }
 
-	public String[][] getAcceptedValue() {
-		return paramValues;
-	}
+    public String[][] getAcceptedValue() {
+        return paramValues;
+    }
 
-	private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
-		static FieldFormatter singleton = new booleanViewer();
+    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+        static FieldFormatter singleton = new booleanViewer();
 
-		public void release() {
+        public void release() {
             singleton = null;
         }
 
         public SingletonHolder() {
             org.makumba.commons.SingletonReleaser.register(this);
         }
-	}
-    
-    
-
-	private booleanViewer() {
-	}
-
-	public static FieldFormatter getInstance() {
-		return SingletonHolder.singleton;
-	}
-	
-	public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
-        return ((Boolean)o) ? "Yes" : "No";
     }
-    
+
+    private booleanViewer() {
+    }
+
+    public static FieldFormatter getInstance() {
+        return SingletonHolder.singleton;
+    }
+
+    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
+        return ((Boolean) o) ? "Yes" : "No";
+    }
+
 }

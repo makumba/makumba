@@ -50,7 +50,7 @@ public class textViewer extends FieldViewer {
 
     private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
         static FieldFormatter singleton = new textViewer();
-        
+
         public void release() {
             singleton = null;
         }
@@ -68,8 +68,8 @@ public class textViewer extends FieldViewer {
     }
 
     public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
-        if(o instanceof Text)
-            o=((Text)o).getString();
+        if (o instanceof Text)
+            o = ((Text) o).getString();
         String txt = o.toString();
         String html = (String) formatParams.get("html");
         String format = (String) formatParams.get("format");

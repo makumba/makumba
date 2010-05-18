@@ -408,12 +408,12 @@ public class ComposedQuery {
             return ret;
 
         // replace names with numbers
-/*        ArgumentReplacer ar = new ArgumentReplacer(ret);
-        Map<String, Object> d = new HashMap<String, Object>();
-        int j = 1;
-        for (Iterator<String> e = ar.getArgumentNames(); e.hasNext();)
-            d.put(e.next(), "$" + (j++));
-        return ar.replaceValues(d);*/
+        /*        ArgumentReplacer ar = new ArgumentReplacer(ret);
+                Map<String, Object> d = new HashMap<String, Object>();
+                int j = 1;
+                for (Iterator<String> e = ar.getArgumentNames(); e.hasNext();)
+                    d.put(e.next(), "$" + (j++));
+                return ar.replaceValues(d);*/
         return ret;
     }
 
@@ -473,10 +473,10 @@ public class ComposedQuery {
     public String toString() {
         return "Composed query: " + typeAnalyzerOQL;
     }
-    
+
     public String getComputedQuery() {
         return computeQuery(derivedSections, false);
-    }    
+    }
 
     /**
      * Gets the query string.
@@ -518,5 +518,5 @@ public class ComposedQuery {
     public Object checkExprSetOrNullable(String expr) {
         return qep.checkExprSetOrNullable(getFromSection(), expr);
     }
-    
+
 }

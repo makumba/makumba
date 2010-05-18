@@ -171,11 +171,14 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
             isLastSection = true;
         }
     }
-    
+
     /**
      * Whether this section matches a specific event (only for 'reloadOn' and 'showOn' events)
-     * @param event the name of the event that the JSP page is being called with
-     * @param exprValue the expression value used to uniquely identify the section in multiple iterations of the list
+     * 
+     * @param event
+     *            the name of the event that the JSP page is being called with
+     * @param exprValue
+     *            the expression value used to uniquely identify the section in multiple iterations of the list
      * @return <code>true</code> if this section is concerned by the called event, <code>false</code> otherwise
      */
     private boolean matches(String event, String exprValue) {
@@ -261,14 +264,15 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
 
         events = new String[] { showOn, hideOn, reloadOn };
 
-        if(isInvoked && showOn != null) {
-            
-            // FIXME here we skip the evaluation of the body but if the body contains forms, the form ID won't be increased
+        if (isInvoked && showOn != null) {
+
+            // FIXME here we skip the evaluation of the body but if the body contains forms, the form ID won't be
+            // increased
             // which will lead to problems when the form will be finally shown
-            
+
             return SKIP_BODY;
         }
-        
+
         if (exprValue.length() > 0) {
             cacheSectionResolution(pageCache, exprValue, parentList != null && iterationExpr != null);
         }
@@ -449,12 +453,13 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
     }
 
     /**
-     * Serializes the page parameters. If there's a _mak_responder_ parameter indicating the submission of a form, we don't return the parameters.<br>
+     * Serializes the page parameters. If there's a _mak_responder_ parameter indicating the submission of a form, we
+     * don't return the parameters.<br>
      * TODO make this smarter, i.e. detect which parameters come from a form
      */
     private String getQueryParameters(HttpServletRequest req) {
-        
-        if(req.getParameter(Responder.responderName) != null) {
+
+        if (req.getParameter(Responder.responderName) != null) {
             return new JSONObject().toString();
         }
         return new JSONObject(req.getParameterMap()).toString();

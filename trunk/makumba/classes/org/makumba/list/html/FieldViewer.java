@@ -32,75 +32,74 @@ import org.makumba.commons.formatters.RecordFormatter;
 /** Default HTML formatting of fields */
 public class FieldViewer extends FieldFormatter {
 
-	private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
-		static FieldFormatter singleton = new FieldViewer();
-		
-		public void release() {
+    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+        static FieldFormatter singleton = new FieldViewer();
+
+        public void release() {
             singleton = null;
         }
 
         public SingletonHolder() {
             org.makumba.commons.SingletonReleaser.register(this);
         }
-	}
+    }
 
-	/** Don't use this, use getInstance() */
-	protected FieldViewer() {
-	}
+    /** Don't use this, use getInstance() */
+    protected FieldViewer() {
+    }
 
-	public static FieldFormatter getInstance() {
-		return SingletonHolder.singleton;
-	}
-	
-	final static String defaultEllipsis = "...";
+    public static FieldFormatter getInstance() {
+        return SingletonHolder.singleton;
+    }
 
-	/**
-	 * Returns a substring of maximum length by cutting at the end; if cut, an
-	 * ellipsis is added on the end. Note: uses only J2 1.3 supported functions.
-	 * An ellipsis is 3 dots (...) TODO:add support for fixedLength=N and
-	 * fixedLengthAlign=left|center|right, fixedLengthPadChar='.'
-	 * 
-	 * @param s
-	 *            string to format
-	 * @param formatParams
-	 *            formatting parameters
-	 */
-	public String formatMaxLengthEllipsis(RecordFormatter rf, int fieldIndex, String s, Dictionary<String, Object> formatParams) {
-		String prefix = "";
-		String postfix = "";
-		String sOut = s;
-		int maxLen = getIntParam(rf, fieldIndex, formatParams, "maxLength");
+    final static String defaultEllipsis = "...";
 
-		String ellipsis = (String) formatParams.get("ellipsis");
-		if (ellipsis == null)
-			ellipsis = defaultEllipsis;
+    /**
+     * Returns a substring of maximum length by cutting at the end; if cut, an ellipsis is added on the end. Note: uses
+     * only J2 1.3 supported functions. An ellipsis is 3 dots (...) TODO:add support for fixedLength=N and
+     * fixedLengthAlign=left|center|right, fixedLengthPadChar='.'
+     * 
+     * @param s
+     *            string to format
+     * @param formatParams
+     *            formatting parameters
+     */
+    public String formatMaxLengthEllipsis(RecordFormatter rf, int fieldIndex, String s,
+            Dictionary<String, Object> formatParams) {
+        String prefix = "";
+        String postfix = "";
+        String sOut = s;
+        int maxLen = getIntParam(rf, fieldIndex, formatParams, "maxLength");
 
-		int ellipsisLen = getIntParam(rf, fieldIndex, formatParams, "ellipsisLength");
-		if (ellipsisLen == -1) //not specified
-			ellipsisLen = ellipsis.length(); //compute from actual ellipsis
+        String ellipsis = (String) formatParams.get("ellipsis");
+        if (ellipsis == null)
+            ellipsis = defaultEllipsis;
 
-		String addTitle = (String) formatParams.get("addTitle");
-		if (addTitle == null)
-			addTitle = "false";
+        int ellipsisLen = getIntParam(rf, fieldIndex, formatParams, "ellipsisLength");
+        if (ellipsisLen == -1) // not specified
+            ellipsisLen = ellipsis.length(); // compute from actual ellipsis
 
-		if (maxLen != -1 && s.length() > maxLen) //content longer than allowed
-		{ //shorten the content
-			int cutAt = maxLen - ellipsisLen;
-			if (cutAt < 0)
-				cutAt = 0;
-			sOut = sOut.substring(0, cutAt);
-			postfix = ellipsis;
-		}
+        String addTitle = (String) formatParams.get("addTitle");
+        if (addTitle == null)
+            addTitle = "false";
 
-		if (addTitle.equals("true")
-				|| (addTitle.equals("auto") && maxLen != -1 && s.length() > maxLen)) { 
-		    // add title, to be normally shown as tooltip on mouse hover
-			prefix = "<span title=\"" + s.replace('\"', '\'') + "\">";
-			postfix = postfix + "</span>";
-		}
+        if (maxLen != -1 && s.length() > maxLen) // content longer than allowed
+        { // shorten the content
+            int cutAt = maxLen - ellipsisLen;
+            if (cutAt < 0)
+                cutAt = 0;
+            sOut = sOut.substring(0, cutAt);
+            postfix = ellipsis;
+        }
 
-		return prefix + HtmlUtils.string2html(sOut) + postfix;
+        if (addTitle.equals("true") || (addTitle.equals("auto") && maxLen != -1 && s.length() > maxLen)) {
+            // add title, to be normally shown as tooltip on mouse hover
+            prefix = "<span title=\"" + s.replace('\"', '\'') + "\">";
+            postfix = postfix + "</span>";
+        }
 
-	} // end formatMaxLengthEllipsis
+        return prefix + HtmlUtils.string2html(sOut) + postfix;
+
+    } // end formatMaxLengthEllipsis
 
 }

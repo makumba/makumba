@@ -135,13 +135,13 @@ public class ComposedSubquery extends ComposedQuery {
         for (Enumeration<String> e = keysetLabels.elements(); e.hasMoreElements();)
             addProjection((String) e.nextElement());
         previousKeyset.addElement(superQuery.keyset);
-        
+
         // we're all set now, no more need for the super query
-        superQuery=null;
+        superQuery = null;
     }
-    
+
     public String toString() {
-        return "Composed subquery: "+typeAnalyzerOQL;
+        return "Composed subquery: " + typeAnalyzerOQL;
     }
 
 }
