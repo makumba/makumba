@@ -15,6 +15,7 @@ import org.makumba.providers.datadefinition.mdd.MDDProvider;
 
 /**
  * Compares MDDs provided by two separate MDD providers
+ * 
  * @author manu
  * @version $Id: MDDComparator.java,v 1.1 Apr 28, 2010 9:39:39 AM manu Exp $
  */
@@ -35,45 +36,49 @@ public class MDDComparator {
             File f = new File(MDDComparator.class.getResource("mdd-corpus.zip").getPath());
             ZipFile zf = new ZipFile(f);
             extractMDDsFile(zf, tempDir);
-            
+
             // we go through the corpus, one application at a time
             // for this we first extract all files, then consider only a given application sub-set
-            
+
             String[] apps = tempDir.list();
             for (int i = 0; i < apps.length; i++) {
                 System.out.println("== Reading corpus MDDs of application " + apps[i]);
                 File app = new File(TEMP + File.separator + apps[i]);
-                if(!app.isDirectory()) continue;
-                
+                if (!app.isDirectory())
+                    continue;
+
                 RecordInfo.setWebappRoot(app.getPath());
                 MDDProvider.setWebappRoot(app.getPath());
-                
+
                 Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zf.entries();
                 while (entries.hasMoreElements()) {
                     ZipEntry ze = entries.nextElement();
-                    if(!ze.getName().endsWith(".mdd")) continue;
-                    if(!ze.getName().startsWith(apps[i])) continue;
+                    if (!ze.getName().endsWith(".mdd"))
+                        continue;
+                    if (!ze.getName().startsWith(apps[i]))
+                        continue;
 
-                    String type = ze.getName().substring( (apps[i] + "/WEB-INF/classes/dataDefinitions/").length(), ze.getName().lastIndexOf(".")).replaceAll("/", ".");
-                    
-                    //System.out.println("==== Reading MDD " + type);
-                    //DataDefinition dd1 = RecordInfo.getRecordInfo(type);
-                    DataDefinition dd1=null;
-                    DataDefinition dd2=null;
-                    try{
+                    String type = ze.getName().substring((apps[i] + "/WEB-INF/classes/dataDefinitions/").length(),
+                        ze.getName().lastIndexOf(".")).replaceAll("/", ".");
+
+                    // System.out.println("==== Reading MDD " + type);
+                    // DataDefinition dd1 = RecordInfo.getRecordInfo(type);
+                    DataDefinition dd1 = null;
+                    DataDefinition dd2 = null;
+                    try {
                         dd1 = MDDProvider.getMDD(type);
-                    }catch(Throwable t){
-                        System.err.println("MDDProvider error on "+type+" : "+ t.getMessage());
+                    } catch (Throwable t) {
+                        System.err.println("MDDProvider error on " + type + " : " + t.getMessage());
                     }
-                    try{
+                    try {
                         dd2 = RecordInfo.getRecordInfo(type);
-                    }catch(Throwable t){
-                        System.err.println("RecordInfo error on "+type+" : "+ t.getMessage());
+                    } catch (Throwable t) {
+                        System.err.println("RecordInfo error on " + type + " : " + t.getMessage());
                     }
-                   
-                    if(dd1!=null && dd2!=null)
+
+                    if (dd1 != null && dd2 != null)
                         compare(dd1, dd2);
-                    
+
                 }
             }
 
@@ -117,11 +122,11 @@ public class MDDComparator {
      * Compares the structure of two DataDefinition-s and their underlying FieldDefinition-s
      */
     private static void compare(DataDefinition dd1, DataDefinition dd2) {
-        
+
         // playground for Gwen
-        //System.out.println(dd1.getName());
-        //System.out.println(dd2.getName());
-        
+        // System.out.println(dd1.getName());
+        // System.out.println(dd2.getName());
+
     }
 
 }
