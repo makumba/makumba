@@ -16,9 +16,9 @@ import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.DataDefinitionProvider;
 
 public class MDDProvider extends DataDefinitionProvider {
-    
+
     private static String webappRoot;
-    
+
     public static void setWebappRoot(String w) {
         webappRoot = w;
     }
@@ -32,17 +32,18 @@ public class MDDProvider extends DataDefinitionProvider {
     }
 
     public FieldDefinition makeFieldDefinition(String name, String definition) {
-        
+
         String def = name.replaceAll("__", "->") + "=" + definition.replaceAll("__", "->");
-        return MDDFactory.getInstance().getVirtualDataDefinition(name.replaceAll("__", "->"), def).getFieldDefinition(name.replaceAll("__", "->"));
+        return MDDFactory.getInstance().getVirtualDataDefinition(name.replaceAll("__", "->"), def).getFieldDefinition(
+            name.replaceAll("__", "->"));
     }
 
     public FieldDefinition makeFieldOfType(String name, String type) {
-        
-        if(type.startsWith("ptr ")) {
+
+        if (type.startsWith("ptr ")) {
             return makeFieldDefinition(name, type);
         }
-        
+
         return new FieldDefinitionImpl(name.replaceAll("__", "->"), type.replaceAll("__", "->"));
     }
 
@@ -61,7 +62,7 @@ public class MDDProvider extends DataDefinitionProvider {
     public Vector<String> getDataDefinitionsInDefaultLocations() {
         return getDataDefinitionsInDefaultLocations((String[]) null);
     }
-    
+
     /**
      * returns the record info with the given absolute name
      * 
@@ -98,9 +99,9 @@ public class MDDProvider extends DataDefinitionProvider {
             dd = dd.getFieldDefinition(name.substring(0, n)).getSubtable();
         }
         FieldDefinition subfieldCheck = dd.getFieldDefinition(name);
-        if(subfieldCheck==null)
-            throw new DataDefinitionParseError("subfield not found: "+name+" in "+dd.getName());
-        
+        if (subfieldCheck == null)
+            throw new DataDefinitionParseError("subfield not found: " + name + " in " + dd.getName());
+
         dd = subfieldCheck.getSubtable();
         return dd;
     }
@@ -158,8 +159,7 @@ public class MDDProvider extends DataDefinitionProvider {
         }
         return dd;
     }
-    
-    
+
     /**
      * Finds a data definition, based on its name and extensions
      */
@@ -171,12 +171,11 @@ public class MDDProvider extends DataDefinitionProvider {
         }
         return u;
     }
-    
-    
+
     static java.net.URL getResource(String s) {
         return org.makumba.commons.ClassResource.get(s);
     }
-    
+
     /**
      * Looks up a data definition. First tries to see if an arbitrary webapp root path was passed, if not uses the
      * classpath
@@ -222,7 +221,7 @@ public class MDDProvider extends DataDefinitionProvider {
         }
         return u;
     }
-    
+
     public static int infos = NamedResources.makeStaticCache("MDDs parsed", new NamedResourceFactory() {
 
         private static final long serialVersionUID = 1L;
@@ -244,19 +243,17 @@ public class MDDProvider extends DataDefinitionProvider {
             }
             return MDDFactory.getInstance().getDataDefinition(nm);
         }
-        
+
         @Override
         protected void configureResource(Object name, Object hashName, Object resource) throws Throwable {
-            ((DataDefinitionImpl)resource).build();
+            ((DataDefinitionImpl) resource).build();
         }
-        
 
-        
     });
-    
+
     private static class SingletonHolder implements org.makumba.commons.SingletonHolder {
         private static DataDefinitionProvider singleton = new MDDProvider();
-        
+
         public void release() {
             singleton = null;
         }
@@ -269,12 +266,9 @@ public class MDDProvider extends DataDefinitionProvider {
     public static DataDefinitionProvider getInstance() {
         return SingletonHolder.singleton;
     }
-    
+
     private MDDProvider() {
-        
+
     }
-    
+
 }
-
-
-

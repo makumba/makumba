@@ -173,36 +173,39 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
     @Override
     protected void addSubfield(FieldNode parent, FieldNode field) {
         FieldNode previous = parent.subfield.fields.get(field.name);
-        
-        // we allow subfields that are directly part of the setComplex to override an subfield that comes from an !include definition
+
+        // we allow subfields that are directly part of the setComplex to override an subfield that comes from an
+        // !include definition
         if (previous != null && (previous.wasIncluded || field.wasIncluded || parent.wasIncluded)) {
             parent.subfield.fields.remove(field.name);
             parent.subfield.addField(field);
-            
-        // but if we are overriding a subfield and it was not !include-d, we don't allow this
+
+            // but if we are overriding a subfield and it was not !include-d, we don't allow this
         } else if (previous != null && !(previous.wasIncluded || parent.wasIncluded) && !field.wasIncluded) {
-            factory.doThrow(typeName, "Duplicated field definition for subfield '" + field.name + "' of field '" + parent.name + "'" , field);
-        } else if(previous != null && !(previous.wasIncluded || parent.wasIncluded) && field.wasIncluded) {
-            factory.doThrow(typeName, "Field definition for subfield '" + field.name + "' of field '" + parent.name + "' is overriden by an !include-d subfield, however this is not allowed" , field);
+            factory.doThrow(typeName, "Duplicated field definition for subfield '" + field.name + "' of field '"
+                    + parent.name + "'", field);
+        } else if (previous != null && !(previous.wasIncluded || parent.wasIncluded) && field.wasIncluded) {
+            factory.doThrow(typeName, "Field definition for subfield '" + field.name + "' of field '" + parent.name
+                    + "' is overriden by an !include-d subfield, however this is not allowed", field);
         } else {
             parent.subfield.addField(field);
         }
     }
-    
+
     @Override
     protected void addFunction(MDDNode mdd, FunctionNode function, AST originalFunctionDeclaration, FieldNode subField) {
-        
+
         MDDNode mddNode = null;
-        if(subField != null) {
+        if (subField != null) {
             mddNode = subField.subfield;
         } else {
             mddNode = mdd;
         }
-        
-        if(mddNode.functions.containsKey(function.name)) {
+
+        if (mddNode.functions.containsKey(function.name)) {
             factory.doThrow(typeName, "Duplicate function " + function.name, function);
         }
-        
+
         mddNode.addFunction(function, parser.parsedFunctions.get(originalFunctionDeclaration));
     }
 
@@ -300,6 +303,6 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
                 break;
 
         }
-    }    
+    }
 
 }

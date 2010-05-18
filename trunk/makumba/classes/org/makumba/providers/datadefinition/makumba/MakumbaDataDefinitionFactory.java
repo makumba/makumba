@@ -43,7 +43,7 @@ public class MakumbaDataDefinitionFactory extends DataDefinitionProvider {
 
     private static class SingletonHolder implements org.makumba.commons.SingletonHolder {
         private static DataDefinitionProvider singleton = new MakumbaDataDefinitionFactory();
-        
+
         public void release() {
             singleton = null;
         }
@@ -56,9 +56,9 @@ public class MakumbaDataDefinitionFactory extends DataDefinitionProvider {
     public static DataDefinitionProvider getInstance() {
         return SingletonHolder.singleton;
     }
-    
+
     private MakumbaDataDefinitionFactory() {
-        
+
     }
 
 }
