@@ -124,8 +124,9 @@ public class InlinerMqlSqlWalker extends MqlSqlWalker {
 
     @Override
     protected void resolve(AST node) throws SemanticException {
-        if (inFunctionCall)
+        if (inFunctionCall) {
             return;
+        }
         super.resolve(node);
     }
 
@@ -175,8 +176,9 @@ public class InlinerMqlSqlWalker extends MqlSqlWalker {
         // FIXME: cristi: I don't know if finding the left-hand-side is correct like this
         // but lhs can be obtained from dot in any case
         AST lhs = dot.getFirstChild().getNextSibling();
-        if (lhs != null && lhs.getText().startsWith("methodCallPlaceholder_"))
+        if (lhs != null && lhs.getText().startsWith("methodCallPlaceholder_")) {
             return dot;
+        }
         return super.lookupProperty(dot, root, inSelect);
     }
 }

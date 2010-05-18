@@ -25,7 +25,7 @@ public abstract class TransactionProvider implements SingletonHolder {
      * Puts the TransactionProviders into a Map
      */
     static {
-        for (int i = 0; i < transactionProviders.length; i += 2)
+        for (int i = 0; i < transactionProviders.length; i += 2) {
             try {
                 Method getInstance = Class.forName(transactionProviders[i + 1]).getDeclaredMethod("getInstance",
                     new Class<?>[] {});
@@ -34,6 +34,7 @@ public abstract class TransactionProvider implements SingletonHolder {
             } catch (Throwable t) {
                 t.printStackTrace();
             }
+        }
     }
 
     public static final String CONNECTION_PREFIX = "connection.";

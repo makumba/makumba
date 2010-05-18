@@ -184,17 +184,18 @@ public class MultipartHttpParameters extends HttpParameters {
 
     void addParameter(String name, String value) {
         Object o = parameters.get(name);
-        if (o != null)
-            if (o instanceof Vector)
+        if (o != null) {
+            if (o instanceof Vector) {
                 ((Vector) o).addElement(value);
-            else {
+            } else {
                 Vector<Object> v = new Vector<Object>();
                 v.addElement(o);
                 v.addElement(value);
                 parameters.put(name, v);
             }
-        else
+        } else {
             parameters.put(name, value);
+        }
     }
 
     /**
@@ -220,21 +221,24 @@ public class MultipartHttpParameters extends HttpParameters {
      * @return a composed object
      */
     static Object compose(Object a1, Object a2) {
-        if (a1 == null)
+        if (a1 == null) {
             return a2;
-        if (a2 == null)
+        }
+        if (a2 == null) {
             return a1;
+        }
 
-        if (a1 instanceof Vector)
+        if (a1 instanceof Vector) {
             if (a2 instanceof Vector) {
-                for (Enumeration e = ((Vector) a2).elements(); e.hasMoreElements();)
+                for (Enumeration e = ((Vector) a2).elements(); e.hasMoreElements();) {
                     ((Vector) a1).addElement(e.nextElement());
+                }
                 return a1;
             } else {
                 ((Vector) a1).addElement(a2);
                 return a1;
             }
-        else if (a2 instanceof Vector) {
+        } else if (a2 instanceof Vector) {
             ((Vector) a2).addElement(a1);
             return a2;
         } else {

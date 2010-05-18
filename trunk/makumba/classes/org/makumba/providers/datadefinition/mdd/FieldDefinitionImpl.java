@@ -637,9 +637,10 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
     }
 
     private Object checkCharEnum(Object value) {
-        if (value instanceof String && !charEnumValues.contains(value))
+        if (value instanceof String && !charEnumValues.contains(value)) {
             throw new org.makumba.InvalidValueException(this, "char value set to char enumerator (" + value
                     + ") is not a member of " + Arrays.toString(charEnumValues.toArray()));
+        }
 
         if (!(value instanceof String)) {
             throw new org.makumba.InvalidValueException(this,
@@ -1028,8 +1029,9 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         sb.append("== Field type: " + type.getTypeName() + "\n");
         sb.append("== Modifiers: " + (fixed ? "fixed " : "") + (unique ? "unique " : "") + (notNull ? "not null " : "")
                 + (notEmpty ? "not empty " : "") + "\n");
-        if (description != null)
+        if (description != null) {
             sb.append("== Description: " + description + "\n");
+        }
 
         switch (type) {
             case CHAR:

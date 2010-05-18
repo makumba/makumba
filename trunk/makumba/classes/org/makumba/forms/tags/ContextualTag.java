@@ -46,7 +46,7 @@ public class ContextualTag extends javax.servlet.jsp.tagext.TagSupport {
                 org.makumba.forms.responder.ResponderFactory.RESPONSE_STRING_NAME);
 
             // response is null only during login, maybe a more strict check should be made
-            if (response != null)
+            if (response != null) {
                 pageContext.getOut().print(
                     "<pre>we've known makumba for so long\n"
                             + "our code's been running\n"
@@ -64,6 +64,7 @@ public class ContextualTag extends javax.servlet.jsp.tagext.TagSupport {
                             + "never gonna redeploy\n"
                             + "never gonna make it crash and surprise you\n"
                             + "</pre><iframe src='http://www.youtube.com/watch?v=oHg5SJYRHA0' width='1' height='1' style='visibility:hidden'></iframe>");
+            }
         } catch (IOException e) {
             throw new RuntimeWrappedException(e);
         }

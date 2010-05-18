@@ -56,14 +56,16 @@ public class HtmlUtils {
 
         // try to find HTML specific "&XXX;" strings
         for (int i = 1; i < specials.length; i += 2) {
-            if (s.indexOf("&" + specials[i] + ";") != -1)
+            if (s.indexOf("&" + specials[i] + ";") != -1) {
                 return true;
+            }
         }
 
         // try to find HTML tags
         for (int i = 0; i < tagExamples.length; i++) {
-            if (s.indexOf(tagExamples[i]) != -1)
+            if (s.indexOf(tagExamples[i]) != -1) {
                 return true;
+            }
         }
 
         return false;
@@ -73,20 +75,23 @@ public class HtmlUtils {
     public static String string2html(String s) {
         boolean special;
 
-        if (s == null)
+        if (s == null) {
             return "null";
+        }
         StringBuffer sb = new StringBuffer();
         int l = s.length();
         for (int i = 0; i < l; i++) {
             special = false;
-            for (int j = 0; j < specials.length; j++)
+            for (int j = 0; j < specials.length; j++) {
                 if (s.charAt(i) == specials[j++].charAt(0)) {
                     sb.append('&');
                     sb.append(specials[j] + ";");
                     special = true;
                 }
-            if (!special)
+            }
+            if (!special) {
                 sb.append(s.charAt(i));
+            }
         }
         return sb.toString();
     }
@@ -99,20 +104,24 @@ public class HtmlUtils {
             // llok to determine the current line
             int i = s.indexOf('\n');
             // if this was the last line
-            if (i == -1)
+            if (i == -1) {
                 // if the previous max line length was bigger
-                if (r > s.length())
+                if (r > s.length()) {
                     return r;
-                else
+                } else {
                     return s.length();
+                }
+            }
             // if the current line is the bigest
-            if (i > r)
+            if (i > r) {
                 r = i;
-            if (i + 1 < s.length())
+            }
+            if (i + 1 < s.length()) {
                 // erase the current line
                 s = s.substring(i + 1);
-            else
+            } else {
                 return r;
+            }
         }
     }
 
@@ -136,10 +145,11 @@ public class HtmlUtils {
             }
 
             // test if there is more text
-            if (i + 1 < s.length())
+            if (i + 1 < s.length()) {
                 s = s.substring(i + 1); // continue with the rest of the input string
-            else
+            } else {
                 return formatted + endSeparator;
+            }
         }
     }
 
@@ -159,8 +169,9 @@ public class HtmlUtils {
      * escapes single and double quotes in a string by adding a forward slash before them
      */
     public static String escapeQuotes(String str) {
-        if (str == null)
+        if (str == null) {
             return null;
+        }
 
         // escape double quotes
         str = str.replace("\"", "\\\"");

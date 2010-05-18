@@ -39,16 +39,19 @@ public class QuerySectionProcessor {
         }
 
         public void checkFromEnd(int index) {
-            if (fromStart != -1 && (fromEnd == -1 || fromEnd >= index))
+            if (fromStart != -1 && (fromEnd == -1 || fromEnd >= index)) {
                 fromEnd = index;
+            }
             // we might have no from and no where but orderby or groupby
-            if (projectionEnd >= index)
+            if (projectionEnd >= index) {
                 projectionEnd = index;
+            }
         }
 
         public void checkWhereEnd(int index) {
-            if (whereStart != -1 && (whereEnd == -1 || whereEnd >= index))
+            if (whereStart != -1 && (whereEnd == -1 || whereEnd >= index)) {
                 whereEnd = index;
+            }
         }
 
         public void setFromStart(int index) {
@@ -73,23 +76,30 @@ public class QuerySectionProcessor {
 
         public void shift(int index, int delta) {
             end += delta;
-            if (projectionStart > index)
+            if (projectionStart > index) {
                 projectionStart += delta;
-            if (fromStart > index)
+            }
+            if (fromStart > index) {
                 fromStart += delta;
-            if (fromEnd > index)
+            }
+            if (fromEnd > index) {
                 fromEnd += delta;
-            if (whereStart > index)
+            }
+            if (whereStart > index) {
                 whereStart += delta;
-            if (whereEnd > index)
+            }
+            if (whereEnd > index) {
                 whereEnd += delta;
-            if (projectionEnd > index)
+            }
+            if (projectionEnd > index) {
                 projectionEnd += delta;
+            }
         }
 
         public void addFromWhere() {
-            for (Insertion ins : insertions)
+            for (Insertion ins : insertions) {
                 addFromWhere(ins.from, ins.where);
+            }
         }
 
         public void addFromWhere(String from, String where) {
@@ -98,11 +108,13 @@ public class QuerySectionProcessor {
                 fromEnd = end;
                 QuerySectionProcessor.this.replace(fromEnd, 0, " FROM " + from);
                 fromEnd = end;
-            } else
+            } else {
                 QuerySectionProcessor.this.replace(fromEnd, 0, ", " + from);
+            }
 
-            if (where == null)
+            if (where == null) {
                 return;
+            }
             if (whereStart == -1) {
                 int x = fromEnd;
                 QuerySectionProcessor.this.replace(fromEnd, 0, " WHERE " + where);
@@ -110,13 +122,15 @@ public class QuerySectionProcessor {
                 fromEnd = x;
                 whereStart = fromEnd + 7;
             } else {
-                if (!where.trim().startsWith("(") || !where.trim().endsWith(")"))
+                if (!where.trim().startsWith("(") || !where.trim().endsWith(")")) {
                     where = "(" + where + ")";
+                }
                 String wh = getWhere().trim();
                 boolean para = wh.startsWith("(") && wh.endsWith(")");
                 QuerySectionProcessor.this.replace(whereStart, 0, where + " AND " + (para ? "" : "("));
-                if (!para)
+                if (!para) {
                     QuerySectionProcessor.this.replace(whereEnd, 0, ")");
+                }
             }
         }
 
@@ -124,22 +138,26 @@ public class QuerySectionProcessor {
         public String toString() {
             StringBuffer sb = new StringBuffer();
             sb.append(query, projectionStart, projectionEnd);
-            if (fromStart != -1)
+            if (fromStart != -1) {
                 sb.append(" FROM ").append(query, fromStart, fromEnd);
-            if (whereStart != -1)
+            }
+            if (whereStart != -1) {
                 sb.append(" WHERE ").append(query, whereStart, whereEnd);
+            }
             return sb.toString();
         }
 
         public String getWhere() {
-            if (whereStart == -1)
+            if (whereStart == -1) {
                 return null;
+            }
             return query.substring(whereStart, whereEnd);
         }
 
         public String getFrom() {
-            if (fromStart == -1)
+            if (fromStart == -1) {
                 return null;
+            }
             return query.substring(fromStart, fromEnd);
         }
 
@@ -148,11 +166,13 @@ public class QuerySectionProcessor {
         }
 
         public void addInsertion(Insertion ins) {
-            if (myFromWhere.contains(ins))
+            if (myFromWhere.contains(ins)) {
                 return;
+            }
             for (Insertion in : insertions) {
-                if (in.contains(ins))
+                if (in.contains(ins)) {
                     return;
+                }
             }
             insertions.add(ins);
         }
@@ -176,14 +196,17 @@ public class QuerySectionProcessor {
 
         int parLevel = 0;
         for (int i = 0; i < query.length(); i++) {
-            if (query.charAt(i) == '(')
+            if (query.charAt(i) == '(') {
                 parLevel++;
+            }
             levels[i] = parLevel;
-            if (query.charAt(i) == ')')
+            if (query.charAt(i) == ')') {
                 parLevel--;
+            }
         }
-        if (parLevel != 0)
+        if (parLevel != 0) {
             throw new ProgrammerError("Unbalanced parantheses in query " + query);
+        }
         int myLevel = levels[startPoint];
         int min = startPoint;
         int max = startPoint + 1;
@@ -192,46 +215,52 @@ public class QuerySectionProcessor {
             subqueries.add(0, sd);
             for (int i = min; i >= 0; i--) {
                 if (sd.start == -1) {
-                    if (levels[i] > lev)
+                    if (levels[i] > lev) {
                         levels[i] = -1;
-                    else if (levels[i] < lev && levels[i] != -1) {
+                    } else if (levels[i] < lev && levels[i] != -1) {
                         sd.setStart(min = i + 1);
-                        if (lowerQuery.substring(min).trim().startsWith("select "))
+                        if (lowerQuery.substring(min).trim().startsWith("select ")) {
                             sd.setProjectionStart(lowerQuery.substring(min).indexOf("select") + 7);
+                        }
                     }
                 } else {
-                    if (levels[i] >= lev)
+                    if (levels[i] >= lev) {
                         levels[i] = -1;
+                    }
                 }
             }
             if (sd.start == -1) {
                 sd.setStart(0);
-                if (lowerQuery.trim().startsWith("select "))
+                if (lowerQuery.trim().startsWith("select ")) {
                     sd.setProjectionStart(lowerQuery.indexOf("select") + 7);
+                }
             }
 
             for (int i = max; i < query.length(); i++) {
                 if (sd.end == -1) {
-                    if (levels[i] > lev)
+                    if (levels[i] > lev) {
                         levels[i] = -1;
-                    else if (levels[i] < lev && levels[i] != -1) {
+                    } else if (levels[i] < lev && levels[i] != -1) {
                         sd.setEnd(max = i);
                     }
                 } else {
-                    if (levels[i] >= lev)
+                    if (levels[i] >= lev) {
                         levels[i] = -1;
+                    }
                 }
             }
-            if (sd.end == -1)
+            if (sd.end == -1) {
                 sd.setEnd(query.length());
+            }
         }
 
         // find froms
         int findIndex = 0;
         while (true) {
             findIndex = lowerQuery.indexOf("from ", findIndex);
-            if (findIndex == -1)
+            if (findIndex == -1) {
                 break;
+            }
             if (levels[findIndex] != -1) {
                 subqueries.get(levels[findIndex]).setFromStart(findIndex + 5);
             }
@@ -254,8 +283,9 @@ public class QuerySectionProcessor {
         findIndex = 0;
         while (true) {
             findIndex = lowerQuery.indexOf(" where ", findIndex);
-            if (findIndex == -1)
+            if (findIndex == -1) {
                 break;
+            }
             if (levels[findIndex] != -1) {
                 subqueries.get(levels[findIndex]).setWhereStart(findIndex + 7);
             }
@@ -266,8 +296,9 @@ public class QuerySectionProcessor {
         findIndex = 0;
         while (true) {
             findIndex = lowerQuery.indexOf(" order by ", findIndex);
-            if (findIndex == -1)
+            if (findIndex == -1) {
                 break;
+            }
             if (levels[findIndex] != -1) {
                 subqueries.get(levels[findIndex]).checkWhereEnd(findIndex);
                 subqueries.get(levels[findIndex]).checkFromEnd(findIndex);
@@ -279,8 +310,9 @@ public class QuerySectionProcessor {
         findIndex = 0;
         while (true) {
             findIndex = lowerQuery.indexOf(" group by ", findIndex);
-            if (findIndex == -1)
+            if (findIndex == -1) {
                 break;
+            }
             if (levels[findIndex] != -1) {
                 subqueries.get(levels[findIndex]).checkWhereEnd(findIndex);
                 subqueries.get(levels[findIndex]).checkFromEnd(findIndex);
@@ -349,8 +381,9 @@ public class QuerySectionProcessor {
 
     /** Replace the region begining at regionStart, of length regionLength with the given text. */
     private void replace(int regionStart, int regionLength, String text) {
-        if (closed)
+        if (closed) {
             throw new IllegalStateException("Cannot add text after getText() was called");
+        }
 
         for (SubqueryData dt : subqueries) {
             dt.shift(regionStart, text.length() - regionLength);
@@ -409,8 +442,9 @@ public class QuerySectionProcessor {
      *            the where section for joining it
      */
     public void addFromWhere(String from, String where) {
-        if (closed)
+        if (closed) {
             throw new IllegalStateException("Cannot add text after getText() was called");
+        }
 
         Insertion ins = new Insertion();
         ins.from = from;
@@ -420,8 +454,9 @@ public class QuerySectionProcessor {
 
     /** Return the query text */
     public String getText() {
-        for (SubqueryData dt : subqueries)
+        for (SubqueryData dt : subqueries) {
             dt.addFromWhere();
+        }
         closed = true;
         return query.toString();
     }
@@ -450,13 +485,15 @@ public class QuerySectionProcessor {
         String trimExpr = expr.trim();
 
         // if the expression is already paranthesized, we return
-        if (trimExpr.startsWith("(") && trimExpr.trim().endsWith(")"))
+        if (trimExpr.startsWith("(") && trimExpr.trim().endsWith(")")) {
             return trimExpr;
+        }
 
         // we don't paranthesize identifiers or parameters
         if (ident.matcher(trimExpr).matches() || (trimExpr.startsWith("$") || trimExpr.startsWith(":"))
-                && ident.matcher(trimExpr.substring(1)).matches())
+                && ident.matcher(trimExpr.substring(1)).matches()) {
             return trimExpr;
+        }
 
         // we don't paranthesize numbers
         try {
@@ -466,8 +503,9 @@ public class QuerySectionProcessor {
         } catch (NumberFormatException nfe) {
         }
         // we don't paranthesize 'strings'
-        if (trimExpr.startsWith("\'") && trimExpr.endsWith("\'"))
+        if (trimExpr.startsWith("\'") && trimExpr.endsWith("\'")) {
             return trimExpr;
+        }
 
         // we never paranthesize [a.b.]function() or actor(...)
 
@@ -475,25 +513,31 @@ public class QuerySectionProcessor {
         if (func.find() && func.start() == 0 && trimExpr.endsWith(")")) {
             int level = 1;
             for (int i = func.group().length(); i < trimExpr.length() - 1; i++) {
-                if (trimExpr.charAt(i) == '(')
+                if (trimExpr.charAt(i) == '(') {
                     level++;
-                if (trimExpr.charAt(i) == ')')
+                }
+                if (trimExpr.charAt(i) == ')') {
                     level--;
-                if (level == 0)
+                }
+                if (level == 0) {
                     break;
+                }
             }
-            if (level == 1)
+            if (level == 1) {
                 return trimExpr;
+            }
         }
         // if there are already parantheses before and after the expression, we return
-        if (before.endsWith("(") && after.startsWith(")"))
+        if (before.endsWith("(") && after.startsWith(")")) {
             return trimExpr;
+        }
 
         // if we are after a select or a comma
         if ((before.toLowerCase().endsWith("select") || before.endsWith(",")) && // and we are before an as or a
                 // comma or a from
-                (after.toLowerCase().startsWith("as") || after.startsWith(",") || after.toLowerCase().startsWith("from")))
+                (after.toLowerCase().startsWith("as") || after.startsWith(",") || after.toLowerCase().startsWith("from"))) {
             return trimExpr;
+        }
 
         // otherwise we put the expression in paranthesis
         return "(" + trimExpr + ")";
@@ -505,8 +549,9 @@ public class QuerySectionProcessor {
         };
         for (int i = 0; i < queries.length; i++) {
             java.util.regex.Matcher m = FunctionInliner.functionBegin.matcher(queries[i]);
-            if (m.find())
+            if (m.find()) {
                 new QuerySectionProcessor(queries[i], 0);
+            }
         }
 
     }

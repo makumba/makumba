@@ -24,12 +24,14 @@ public class PgsqlOldTableManager extends PgsqlTableManager {
     @Override
     public Object get_char_Value(String fieldName, ResultSet rs, int i) throws SQLException {
         Object o = super.get_char_Value(fieldName, rs, i);
-        if (o == null)
+        if (o == null) {
             return null;
+        }
         String s = o.toString();
         i = s.length() - 1;
-        while (i >= 0 && s.charAt(i) == ' ')
+        while (i >= 0 && s.charAt(i) == ' ') {
             i--;
+        }
         return s.substring(0, i + 1);
     }
 }

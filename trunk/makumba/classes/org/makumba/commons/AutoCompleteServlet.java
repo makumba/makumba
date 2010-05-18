@@ -169,8 +169,9 @@ public class AutoCompleteServlet extends HttpServlet {
                 }
             }
         } finally {
-            if (qp != null)
+            if (qp != null) {
                 qp.close();
+            }
         }
 
         writer.flush();

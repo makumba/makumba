@@ -46,8 +46,9 @@ public class ClassResource {
             u = ClassResource.class.getClassLoader().getResource(s);
         } catch (RuntimeException e) {
         }
-        if (u == null)
+        if (u == null) {
             u = ClassLoader.getSystemResource(s);
+        }
         // new Throwable().printStackTrace();
         return u;
     }

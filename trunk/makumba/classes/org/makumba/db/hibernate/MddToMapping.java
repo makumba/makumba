@@ -45,10 +45,12 @@ public class MddToMapping {
 
         this.nr = nr;
 
-        for (int i = 0; i < v.size(); i++)
+        for (int i = 0; i < v.size(); i++) {
             generateMapping(ddp.getDataDefinition(v.elementAt(i)), cfg);
-        while (!mddsToDo.isEmpty())
+        }
+        while (!mddsToDo.isEmpty()) {
             generateMapping(mddsToDo.removeFirst(), cfg);
+        }
     }
 
     public MddToMapping(DataDefinition dd, Configuration cfg, String generationPath, String prefix)
@@ -82,8 +84,9 @@ public class MddToMapping {
      */
     public void generateMapping(DataDefinition dd, Configuration cfg) throws TransformerConfigurationException,
             SAXException {
-        if (mddsDone.contains(dd.getName()))
+        if (mddsDone.contains(dd.getName())) {
             return;
+        }
         mddsDone.add(dd.getName());
 
         takenColumnNames = new HashSet<String>();

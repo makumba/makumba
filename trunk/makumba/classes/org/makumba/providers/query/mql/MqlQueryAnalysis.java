@@ -61,10 +61,11 @@ public class MqlQueryAnalysis implements QueryAnalysis {
     protected Vector<String> generatedLabels = new Vector<String>();
 
     static String formatQueryAndInsert(String query, String insertIn) {
-        if (insertIn != null && insertIn.length() > 0)
+        if (insertIn != null && insertIn.length() > 0) {
             return "###" + insertIn + "###" + query;
-        else
+        } else {
             return query;
+        }
     }
 
     /**
@@ -146,8 +147,9 @@ public class MqlQueryAnalysis implements QueryAnalysis {
 
             // failing that, we see if we have a parameter with the same name on another position
             // but we consider that only if the parameter is not multi-type
-            if (fd == null && !mqlAnalyzer.multiTypeParams.contains(parameterOrder.get(i)))
+            if (fd == null && !mqlAnalyzer.multiTypeParams.contains(parameterOrder.get(i))) {
                 fd = mqlAnalyzer.paramInfoByName.getFieldDefinition(parameterOrder.get(i));
+            }
 
             // if we still don't know who this guy is, maybe it's an actor parameter that we generated on the fly
             if (parameterOrder.get(i).startsWith("actor_")) {
@@ -173,8 +175,9 @@ public class MqlQueryAnalysis implements QueryAnalysis {
 
     public DataDefinition getLabelType(String labelName) {
         String s1 = aliases.get(labelName);
-        if (s1 != null)
+        if (s1 != null) {
             labelName = s1;
+        }
         return labels.get(labelName);
     }
 
@@ -201,10 +204,11 @@ public class MqlQueryAnalysis implements QueryAnalysis {
 
     // FIXME needed for relation miner, but should maybe be moved, it's dependent on the analysis per se
     public String getFieldOfExpr(String expr) {
-        if (expr.indexOf(".") > -1)
+        if (expr.indexOf(".") > -1) {
             return expr.substring(expr.lastIndexOf(".") + 1);
-        else
+        } else {
             return expr;
+        }
     }
 
     // FIXME needed for relation miner, but should be refactored or made more robust

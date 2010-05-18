@@ -48,8 +48,9 @@ public class ListFormDataProvider implements FormDataProvider {
      *      org.makumba.analyser.PageCache, java.lang.String)
      */
     public void onFormStartAnalyze(AnalysableTag tag, PageCache pageCache, String ptrExpr) {
-        if (MakumbaJspAnalyzer.getQueryLanguage(pageCache).equals("hql"))
+        if (MakumbaJspAnalyzer.getQueryLanguage(pageCache).equals("hql")) {
             ptrExpr += ".id";
+        }
         MultipleKey parentListKey = QueryTag.getParentListKey(tag, pageCache);
         if (parentListKey == null) {
             // if we are not enclosed in a list or object, try to find the input with the object name
@@ -142,8 +143,9 @@ public class ListFormDataProvider implements FormDataProvider {
 
         // we're trying to make sure we don't produce a bad HQL query
         if (MakumbaJspAnalyzer.getQueryLanguage(pageCache).equals("hql")
-                && ValueComputer.isPointer(pageCache, parentListKey, expr) && !expr.endsWith(".id"))
+                && ValueComputer.isPointer(pageCache, parentListKey, expr) && !expr.endsWith(".id")) {
             expr += ".id";
+        }
 
         boolean isValue = tag instanceof ValueTag;
 
@@ -159,8 +161,9 @@ public class ListFormDataProvider implements FormDataProvider {
      */
     public void onFormEndAnalyze(MultipleKey tagKey, PageCache pageCache) {
         ComposedQuery dummy = (ComposedQuery) pageCache.retrieve(MakumbaJspAnalyzer.QUERY, tagKey);
-        if (dummy != null)
+        if (dummy != null) {
             dummy.analyze();
+        }
     }
 
     /*
@@ -196,8 +199,9 @@ public class ListFormDataProvider implements FormDataProvider {
      */
     public void onFormEndTag(MultipleKey tagKey, PageCache pageCache, PageContext pageContext) {
         // if we have a dummy query, we simulate end iteration
-        if (pageCache.retrieve(MakumbaJspAnalyzer.QUERY, tagKey) != null)
+        if (pageCache.retrieve(MakumbaJspAnalyzer.QUERY, tagKey) != null) {
             QueryExecution.endListGroup(pageContext);
+        }
 
     }
 
@@ -244,8 +248,9 @@ public class ListFormDataProvider implements FormDataProvider {
             return "valueOf_" + retrieveBaseObjectInputInfo(tagKey, pageCache)[1];
         }
         Object o = ((ValueComputer) pageCache.retrieve(MakumbaJspAnalyzer.VALUE_COMPUTERS, tagKey)).getValue(pageContext);
-        if (!(o instanceof Pointer))
+        if (!(o instanceof Pointer)) {
             throw new RuntimeException("Pointer expected, got instead " + o);
+        }
         return ((Pointer) o).toExternalForm();
     }
 
@@ -272,21 +277,25 @@ public class ListFormDataProvider implements FormDataProvider {
      */
     public FieldDefinition getInputTypeAtAnalysis(AnalysableTag tag, DataDefinition dd, String fieldName,
             PageCache pageCache) {
-        if (dd == null)
+        if (dd == null) {
             return null;
+        }
         int dot = -1;
         while (true) {
             int dot1 = fieldName.indexOf(".", dot + 1);
-            if (dot1 == -1)
+            if (dot1 == -1) {
                 return dd.getFieldDefinition(fieldName.substring(dot + 1));
+            }
             String fname = fieldName.substring(dot + 1, dot1);
             FieldDefinition fd = dd.getFieldDefinition(fname);
-            if (fd == null)
+            if (fd == null) {
                 throw new org.makumba.NoSuchFieldException(dd, fname);
+            }
             if (!(tag instanceof SearchFieldTag || tag instanceof CriterionTag)
-                    && !(fd.getType().equals("ptr") && fd.isNotNull()) && !fd.getType().equals("ptrOne"))
+                    && !(fd.getType().equals("ptr") && fd.isNotNull()) && !fd.getType().equals("ptrOne")) {
                 throw new org.makumba.InvalidFieldTypeException(fieldName + " must be linked via not null pointers, "
                         + fd.getDataDefinition().getName() + "->" + fd.getName() + " is not");
+            }
             dd = fd.getPointedType();
             dot = dot1;
         }

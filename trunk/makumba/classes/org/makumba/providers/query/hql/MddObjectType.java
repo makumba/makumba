@@ -23,13 +23,14 @@ public class MddObjectType implements ObjectType {
      * @return the type of the field, if it could be computed
      */
     public Object determineType(String type, String field) throws RecognitionException, SemanticException {
-        if (field == null)
+        if (field == null) {
             try {
                 ddp.getDataDefinition(type);
                 return type;
             } catch (DataDefinitionNotFoundError err) {
                 return null;
             }
+        }
 
         // System.out.println("Trying to get field type: " + field + " from type " + type + " ...");
         DataDefinition dd = null;
@@ -44,15 +45,17 @@ public class MddObjectType implements ObjectType {
             throw new ProgrammerError("No such MDD \"" + type + "\"");
         }
 
-        if (field.equals("enum_") && dd.getFieldDefinition("enum") != null)
+        if (field.equals("enum_") && dd.getFieldDefinition("enum") != null) {
             // FIXME: need to check if this is really a setEnum generated type
             return dd.getFieldDefinition("enum");
+        }
 
         FieldDefinition fi = dd.getFieldDefinition(field);
 
-        if (fi == null)
+        if (fi == null) {
             // throw new SemanticException("No such field \"" + field + "\" in Makumba type \"" + dd.getName() + "\"");
             throw new ProgrammerError("No such field \"" + field + "\" in Makumba type \"" + dd.getName() + "\"");
+        }
 
         DataDefinition foreign = null, sub = null;
 
@@ -65,13 +68,11 @@ public class MddObjectType implements ObjectType {
         } catch (Exception e) {
         }
 
-        if (fi.getType().equals("ptr"))
+        if (fi.getType().equals("ptr")) {
             return foreign.getName();
-
-        else if (fi.getType().equals("ptrOne"))
+        } else if (fi.getType().equals("ptrOne")) {
             return sub.getName();
-
-        else if (fi.getType().equals("setComplex") || fi.getType().equals("setintEnum")
+        } else if (fi.getType().equals("setComplex") || fi.getType().equals("setintEnum")
                 || fi.getType().equals("setcharEnum")) {
             return sub.getName();
 
@@ -81,9 +82,10 @@ public class MddObjectType implements ObjectType {
 
             return ddp.getDataDefinition(foreign.getName()).getName();
 
-        } else
+        } else {
             // System.out.println(MakumbaSystem.getDataDefinition(type).getFieldDefinition(field).getIntegerType());
             return ddp.getDataDefinition(type).getFieldDefinition(field);
+        }
     }
 
     /** given a type descriptor, resolve it to an integer for type analysis */

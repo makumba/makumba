@@ -107,8 +107,9 @@ public class MDDProvider extends DataDefinitionProvider {
             dd = dd.getFieldDefinition(name.substring(0, n)).getSubtable();
         }
         FieldDefinition subfieldCheck = dd.getFieldDefinition(name);
-        if (subfieldCheck == null)
+        if (subfieldCheck == null) {
             throw new DataDefinitionParseError("subfield not found: " + name + " in " + dd.getName());
+        }
 
         dd = subfieldCheck.getSubtable();
         return dd;

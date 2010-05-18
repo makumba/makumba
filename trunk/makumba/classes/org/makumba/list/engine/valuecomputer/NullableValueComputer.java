@@ -44,10 +44,12 @@ class NullableValueComputer extends QueryValueComputer {
     public Object getValue(PageContext pageContext) throws LogicException {
         QueryExecution ex = runQuery(pageContext);
         int n = ex.dataSize();
-        if (n > 1)
+        if (n > 1) {
             throw new RuntimeException("nullable query with more than one result ??? " + n);
-        if (n == 0)
+        }
+        if (n == 0) {
             return null;
+        }
         return ex.currentListData().data[projectionIndex];
     }
 }

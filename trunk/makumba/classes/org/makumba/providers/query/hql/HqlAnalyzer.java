@@ -87,8 +87,9 @@ public class HqlAnalyzer implements QueryAnalysis {
     private void init(AST t1, DataDefinition knownLabels) {
         if (t1 != null) {
             parsedHQL = t1;
-            if (query == null)
+            if (query == null) {
                 query = Pass1ASTPrinter.printAST(t1).toString();
+            }
             walker = new HqlAnalyzeWalker();
             walker.knownLabels = knownLabels;
             walker.typeComputer = new MddObjectType();
@@ -113,8 +114,9 @@ public class HqlAnalyzer implements QueryAnalysis {
     }
 
     public synchronized DataDefinition getProjectionType() {
-        if (projTypes != null)
+        if (projTypes != null) {
             return projTypes;
+        }
         projTypes = ddp.getVirtualDataDefinition("Projections for " + query);
         try {
             for (int i = 0; i < walker.getResult().size(); i++) {
@@ -137,14 +139,16 @@ public class HqlAnalyzer implements QueryAnalysis {
 
     public DataDefinition getLabelType(String labelName) {
         String labelTypeName = walker.getLabelTypes().get(labelName);
-        if (labelTypeName == null)
+        if (labelTypeName == null) {
             throw new OQLParseError(" unknown label " + labelName + " in query " + query);
+        }
         return ddp.getDataDefinition(labelTypeName);
     }
 
     public DataDefinition getParameterTypes() {
-        if (paramTypes != null)
+        if (paramTypes != null) {
             return paramTypes;
+        }
         paramTypes = ddp.getVirtualDataDefinition("Parameters for " + query);
         try {
             int parameterCounter = 0;
@@ -165,10 +169,11 @@ public class HqlAnalyzer implements QueryAnalysis {
     private FieldDefinition makeField(String name, ExprTypeAST expr, Integer count) {
         FieldDefinition fd = null;
         if (expr.getObjectType() == null) {
-            if (expr.getExtraTypeInfo() != null)
+            if (expr.getExtraTypeInfo() != null) {
                 fd = ddp.makeFieldWithName(name, (FieldDefinition) expr.getExtraTypeInfo(), expr.getDescription());
-            else
+            } else {
                 fd = ddp.makeFieldOfType(name, getTypeName(expr.getDataType()), expr.getDescription());
+            }
         } else {
             // if this is a query with not named parameters
             if (name.equals("?")) {
@@ -217,12 +222,14 @@ public class HqlAnalyzer implements QueryAnalysis {
     private AST getSection(String sectionName) {
         boolean found = false;
         AST child = parsedHQL.getFirstChild();
-        if (child == null)
+        if (child == null) {
             return null;
+        }
         while (!child.getText().equals(sectionName) || !found) {
             child = child.getNextSibling();
-            if (child == null)
+            if (child == null) {
                 return null;
+            }
             if (child.getText().equals(sectionName)) {
                 found = true;
             }

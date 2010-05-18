@@ -18,9 +18,10 @@ public class CloudscapeTableManager extends org.makumba.db.makumba.sql.TableMana
     /** ask this field to write its contribution in a SQL CREATE statement */
     @Override
     public String inCreate(String fieldName, Database d) {
-        if (getFieldDefinition(fieldName).getIntegerType() == FieldDefinition._text)
+        if (getFieldDefinition(fieldName).getIntegerType() == FieldDefinition._text) {
             return getFieldDBName(fieldName) + " " + getFieldDBType(fieldName, d) + "(1024000)";
-        else
+        } else {
             return super.inCreate(fieldName, d);
+        }
     }
 }

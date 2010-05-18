@@ -89,8 +89,9 @@ public class ptrEditor extends choiceEditor {
     public Object getOptions(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
 
         ChoiceSet c = (ChoiceSet) formatParams.get(ChoiceSet.PARAMNAME);
-        if (c != null)
+        if (c != null) {
             return c;
+        }
 
         Vector<Dictionary<String, Object>> v = null;
         String queryLang = (String) formatParams.get("org.makumba.forms.queryLanguage");
@@ -138,8 +139,9 @@ public class ptrEditor extends choiceEditor {
 
     @Override
     public String formatOptionValue(RecordFormatter rf, int fieldIndex, Object val) {
-        if (val == Pointer.Null)
+        if (val == Pointer.Null) {
             return "";
+        }
         if (val instanceof String) {
             // for reloaded forms (via ControllerFilter) check needed
             // val is String when a null option is selected in mak:input (with mak:option)
@@ -162,8 +164,9 @@ public class ptrEditor extends choiceEditor {
     public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.commons.attributes.HttpParameters p,
             String suffix) {
         Object o = super.readFrom(rf, fieldIndex, p, suffix);
-        if ("".equals(o))
+        if ("".equals(o)) {
             return null;
+        }
         return o;
     }
 

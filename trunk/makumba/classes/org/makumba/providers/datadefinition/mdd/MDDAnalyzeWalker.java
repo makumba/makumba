@@ -43,8 +43,9 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
     // AST
     // keep type AST for error processing
     protected void checkFieldType(AST type, FieldNode field) {
-        if (type == null)
+        if (type == null) {
             return;
+        }
 
         // check type attributes
         switch (type.getType()) {

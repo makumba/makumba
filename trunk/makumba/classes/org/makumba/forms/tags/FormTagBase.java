@@ -499,18 +499,23 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
         switch (getResponderOperation(getOperation()).getOperationType()) {
             case NEW:
-                if (type != null)
+                if (type != null) {
                     responder.setNewType(type);
-                if (multipleSubmitErrorMsg != null)
+                }
+                if (multipleSubmitErrorMsg != null) {
                     responder.setMultipleSubmitErrorMsg(multipleSubmitErrorMsg);
+                }
                 break;
             case ADD:
-                if (multipleSubmitErrorMsg != null)
+                if (multipleSubmitErrorMsg != null) {
                     responder.setMultipleSubmitErrorMsg(multipleSubmitErrorMsg);
-                if (field != null)
+                }
+                if (field != null) {
                     responder.setAddField(field);
-                if (!"add".equals(getOperation()))
+                }
+                if (!"add".equals(getOperation())) {
                     responder.setNewType((findParentForm()).type);
+                }
 
                 break;
         }

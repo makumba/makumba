@@ -29,8 +29,9 @@ public class TitleFieldNode extends MDDAST {
         titleType = MDDTokenTypes.FUNCTION;
         functionName = nameAndArgs[0];
         for (int i = 1; i < nameAndArgs.length; i++) {
-            if (nameAndArgs[i] != null)
+            if (nameAndArgs[i] != null) {
                 functionArgs.add(nameAndArgs[i]);
+            }
         }
 
     }

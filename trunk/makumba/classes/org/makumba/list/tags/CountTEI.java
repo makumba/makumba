@@ -41,18 +41,22 @@ public class CountTEI extends TagExtraInfo {
         Vector<VariableInfo> v = new Vector<VariableInfo>();
 
         String var = data.getAttributeString("countVar");
-        if (var != null)
+        if (var != null) {
             v.addElement(new VariableInfo(var, "java.lang.Integer", true, VariableInfo.NESTED));
+        }
 
-        if (var != null)
+        if (var != null) {
             v.addElement(new VariableInfo(var, "java.lang.Integer", true, VariableInfo.AT_END));
+        }
 
         var = data.getAttributeString("maxCountVar");
-        if (var != null)
+        if (var != null) {
             v.addElement(new VariableInfo(var, "java.lang.Integer", true, VariableInfo.NESTED));
+        }
 
-        if (var != null)
+        if (var != null) {
             v.addElement(new VariableInfo(var, "java.lang.Integer", true, VariableInfo.AT_END));
+        }
 
         return v.toArray(new VariableInfo[v.size()]);
     }

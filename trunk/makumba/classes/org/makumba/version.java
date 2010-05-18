@@ -64,13 +64,15 @@ public class version {
 
             version = vs.substring(7);
 
-            if (version.indexOf('-') >= 0)
+            if (version.indexOf('-') >= 0) {
                 // we have something like "-0_5_10_2"
                 version = version.substring(version.indexOf('-') + 1);
+            }
 
-            if (version.length() > 2)
+            if (version.length() > 2) {
                 // we have something like "0_5_10_2"
                 version = version.replace('_', '.');
+            }
 
         } else {
             SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss"); // yyyy-MMM-dd HH:mm:ss
@@ -164,8 +166,9 @@ public class version {
     public static void flushTo(BufferedReader r, PrintWriter o) {
         String s;
         try {
-            while ((s = r.readLine()) != null)
+            while ((s = r.readLine()) != null) {
                 o.println(s);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

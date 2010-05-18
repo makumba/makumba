@@ -92,10 +92,11 @@ public class LongData {
         }
 
         public void append(byte[] b, int start, int len) throws IOException {
-            if (length + len >= org.makumba.Text.FILE_LIMIT)
+            if (length + len >= org.makumba.Text.FILE_LIMIT) {
                 ds = new FileStrategy();
-            else
+            } else {
                 ds = new DataStrategy(len);
+            }
             ds.append(b, start, len);
         }
     }
@@ -117,8 +118,9 @@ public class LongData {
                 ds.append(bout.toByteArray(), 0, bout.size());
                 ds.append(b, start, len);
                 bout = null;
-            } else
+            } else {
                 bout.write(b, start, len);
+            }
         }
     }
 

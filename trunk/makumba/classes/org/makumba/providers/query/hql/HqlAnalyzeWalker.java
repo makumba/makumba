@@ -31,47 +31,55 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
 
     @Override
     void checkLogicalExprInSelect(AST logical) throws SemanticException {
-        if (!allowLogicalExprInSelect)
+        if (!allowLogicalExprInSelect) {
             throw new SemanticException("logical expressions not allowed in SELECT projections ");
+        }
     }
 
     @Override
     void setAliasType(AST alias, String type) throws antlr.RecognitionException {
-        if (aliasTypes.get(alias.getText()) != null)
+        if (aliasTypes.get(alias.getText()) != null) {
             throw new antlr.SemanticException("alias " + alias.getText() + " defined twice");
+        }
 
-        if (typeComputer.determineType(type, null) != null)
+        if (typeComputer.determineType(type, null) != null) {
             aliasTypes.put(alias.getText(), type);
-        else {
+        } else {
             // we have a from section in the form a.b.c that is not a type!
             // a must be a recognizable label
             int dot = type.indexOf('.');
-            if (dot == -1)
+            if (dot == -1) {
                 throw new DataDefinitionNotFoundError(type);
+            }
             String label = type.substring(0, dot);
             String labelType = (String) aliasTypes.get(label);
-            if (labelType == null && knownLabels != null && knownLabels.getFieldDefinition(label) != null)
+            if (labelType == null && knownLabels != null && knownLabels.getFieldDefinition(label) != null) {
                 labelType = knownLabels.getFieldDefinition(label).getPointedType().getName();
+            }
 
-            if (labelType == null)
+            if (labelType == null) {
                 throw new SemanticException("Unknown label: " + label + "\n"
                         + (new NoSuchFieldException(label)).getStackTrace());
+            }
             while (true) {
                 int dot1 = type.indexOf('.', dot + 1);
                 String field;
-                if (dot1 == -1)
+                if (dot1 == -1) {
                     field = type.substring(dot + 1);
-                else
+                } else {
                     field = type.substring(dot + 1, dot1);
+                }
                 // System.out.println(field);
                 Object tp = typeComputer.determineType(labelType, field);
-                if (!(tp instanceof String))
+                if (!(tp instanceof String)) {
                     throw new SemanticException("composite type expected in FROM expression " + type + ". " + field
                             + " is a non-composite field of type " + labelType);
+                }
                 labelType = (String) tp;
                 dot = dot1;
-                if (dot1 == -1)
+                if (dot1 == -1) {
                     break;
+                }
             }
             aliasTypes.put(alias.getText(), labelType);
         }
@@ -184,16 +192,20 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
     @Override
     AST deriveAggregateExpr(AST ae, AST ag) throws SemanticException {
         String agr = ag.getText();
-        if ("max".equals(agr) || "min".equals(agr))
+        if ("max".equals(agr) || "min".equals(agr)) {
             // min and max return the same type as the expr
             return ae;
-        if ("sum".equals(agr))
+        }
+        if ("sum".equals(agr)) {
             // sum returns the same type as the expr
             return ae;
-        if ("avg".equals(agr))
+        }
+        if ("avg".equals(agr)) {
             return new ExprTypeAST(ExprTypeAST.DOUBLE);
-        if ("count".equals(agr))
+        }
+        if ("count".equals(agr)) {
             return new ExprTypeAST(ExprTypeAST.INT);
+        }
 
         return null;
     }
@@ -202,8 +214,9 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
     AST deriveArithmethicExpr(AST ae) throws SemanticException {
         // FIXME: add arithmetic parameter inferences, see deriveLogicalExpr
         // case-when already returns an analyzed expression
-        if (ae instanceof ExprTypeAST)
+        if (ae instanceof ExprTypeAST) {
             return ae;
+        }
         String operator = ae.getText();
         ExprTypeAST firstValue = null;
         ExprTypeAST secondValue = null;
@@ -215,8 +228,9 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
             throw new SemanticException("Cannot perform operation " + operator + " on elements " + firstValue.getText()
                     + " and " + secondValue.getText());
         }
-        if (firstValue.getDataType() == ExprTypeAST.PARAMETER || secondValue.getDataType() == ExprTypeAST.PARAMETER)
+        if (firstValue.getDataType() == ExprTypeAST.PARAMETER || secondValue.getDataType() == ExprTypeAST.PARAMETER) {
             return new ExprTypeAST(ExprTypeAST.PARAMETER);
+        }
 
         return new ExprTypeAST(firstValue.getDataType() > secondValue.getDataType() ? firstValue.getDataType()
                 : secondValue.getDataType());
@@ -232,8 +246,9 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
     /** this method is called when the SELECT section (projections) is parsed */
     @Override
     void getReturnTypes(AST r, java.util.Stack stackAliases) throws RecognitionException {
-        if (isSubQuery())
+        if (isSubQuery()) {
             return;
+        }
         result = new ArrayList<AST>();
         for (AST a = r.getFirstChild(); a != null; a = a.getNextSibling()) {
             result.add(a);
@@ -252,8 +267,9 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
 
     @Override
     void afterStatementCompletion(String statementName) {
-        if (isSubQuery())
+        if (isSubQuery()) {
             aliasTypes = (HashMap) stackAliases.pop();
+        }
         super.afterStatementCompletion(statementName);
     }
 

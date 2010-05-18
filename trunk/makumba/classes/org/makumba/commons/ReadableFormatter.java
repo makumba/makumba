@@ -40,10 +40,12 @@ public class ReadableFormatter {
      * @return Formatted number of bytes (eg: empty, 15 B, 12kB, 821 kB, 3 MB...)
      */
     public static String readableBytes(long byteSize) {
-        if (byteSize < 0l)
+        if (byteSize < 0l) {
             return ("invalid");
-        if (byteSize < 1l)
+        }
+        if (byteSize < 1l) {
             return ("empty");
+        }
 
         float byteSizeF = (new java.lang.Float(byteSize)).floatValue();
         String unit = "bytes";
@@ -68,9 +70,10 @@ public class ReadableFormatter {
             i--;
         }
 
-        if (value.length() > 3 && value.indexOf('.') > 0) // sut decimals on
+        if (value.length() > 3 && value.indexOf('.') > 0) {
             // large numbers
             value = value.substring(0, value.indexOf('.'));
+        }
 
         unit = desc[i];
         return (value + " " + unit);
@@ -88,10 +91,12 @@ public class ReadableFormatter {
         // return((new Long(secs)).toString())+" seconds";
         long secs = milis / 1000l;
 
-        if (secs < 2l)
+        if (secs < 2l) {
             return ("1 second");
-        if (secs == 2l)
+        }
+        if (secs == 2l) {
             return ("2 seconds");
+        }
 
         // default:
         long value = secs; // new Long(secs);
@@ -109,8 +114,9 @@ public class ReadableFormatter {
         // long break=breaks[i];
         value = secs / breaks[i];
         unit = desc[i];
-        if (value >= 2)
+        if (value >= 2) {
             unit = unit + "s";
+        }
 
         String retval = value + " " + unit;
 

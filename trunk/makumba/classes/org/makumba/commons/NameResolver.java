@@ -52,8 +52,9 @@ public class NameResolver {
 
     public NameResolver(Properties configurationProperties) {
         this.config = configurationProperties;
-        if (config == null)
+        if (config == null) {
             config = new Properties();
+        }
     }
 
     public String getKey() {
@@ -70,10 +71,10 @@ public class NameResolver {
             if (o instanceof String) {
                 // optimization: we want to have only one StringBuffer in between two non-Strings
                 // if last time we had a string
-                if (lastBuffer != null)
+                if (lastBuffer != null) {
                     // we add to the previous buffer
                     lastBuffer.append(o);
-                else {
+                } else {
                     // otherwise we make a new buffer
                     lastBuffer = new StringBuffer();
                     // and add to it
@@ -134,10 +135,11 @@ public class NameResolver {
         String field;
 
         public String resolve(NameResolver nr) {
-            if (field != null)
+            if (field != null) {
                 return nr.resolveFieldName(dd, field);
-            else
+            } else {
                 return nr.resolveTypeName(dd);
+            }
         }
     }
 
@@ -165,8 +167,9 @@ public class NameResolver {
      */
     public String resolveFieldName(DataDefinition dd, String fieldName) {
         HashMap<String, String> resolvedCache = fieldDBNames.get(dd.getName());
-        if (resolvedCache == null)
+        if (resolvedCache == null) {
             resolvedCache = makeTypeCache(dd);
+        }
         return resolvedCache.get(fieldName);
     }
 
@@ -183,20 +186,22 @@ public class NameResolver {
         boolean addUnderscore = true;
 
         String s = config.getProperty("addUnderscore");
-        if (s != null)
+        if (s != null) {
             addUnderscore = s.equals("true");
+        }
 
-        if (!addUnderscore)
+        if (!addUnderscore) {
             name = ("." + name.toLowerCase()); // OLDSUPPORT
+        }
         // "/general/Person"->"_general_person"
         name = name.replace('.', '_').replace('(', '_').replace(')', '_').replace('>', '_').replace('-', '_');
         name = name + (addUnderscore ? "_" : "");
 
         // if the name is too long, we replace the end with a hash
 
-        if (name.length() <= getMaxTableNameLength())
+        if (name.length() <= getMaxTableNameLength()) {
             return name;
-        else // compose "startingpartoflongnam___HASH"
+        } else // compose "startingpartoflongnam___HASH"
         {
             String hash = Integer.toString(name.hashCode(), Character.MAX_RADIX).replace('-', '_');
             String shortname = name.substring(0, getMaxTableNameLength() - 3 - hash.length());
@@ -221,12 +226,14 @@ public class NameResolver {
         if (tbname == null) {
             String key = Database.findConfig(config, dd.getName());
             String shortname = dd.getName();
-            if (key != null)
+            if (key != null) {
                 shortname = config.getProperty(key) + dd.getName().substring(key.length());
+            }
 
             tbname = getTypeNameInSource(shortname);
-        } else if (tbname.indexOf('.') != -1)
+        } else if (tbname.indexOf('.') != -1) {
             tbname = getTypeNameInSource(tbname);
+        }
 
         return tbname;
     }
@@ -243,20 +250,22 @@ public class NameResolver {
         boolean addUnderscore = true;
 
         String s = config.getProperty("addUnderscore");
-        if (s != null)
+        if (s != null) {
             addUnderscore = s.equals("true");
+        }
 
         String name = field;
 
-        if (!addUnderscore && !s.startsWith("TS_")) // make it start with
+        if (!addUnderscore && !s.startsWith("TS_")) {
             // lowercase
             name = name.substring(0, 1).toLowerCase() + name.substring(1);
+        }
         name = name.replace('.', '_'); // should be tirrelevant for field names,
         // OLDSUPPORT?
         name = name + (addUnderscore ? "_" : "");
-        if (name.length() <= getMaxFieldNameLength())
+        if (name.length() <= getMaxFieldNameLength()) {
             return name;
-        else // compose "startingpartoflongnam___HASH"
+        } else // compose "startingpartoflongnam___HASH"
         {
             String hash = Integer.toString(name.hashCode(), Character.MAX_RADIX).replace('-', '_');
             String shortname = name.substring(0, getMaxFieldNameLength() - 3 - hash.length());
@@ -276,11 +285,13 @@ public class NameResolver {
     private static boolean checkDuplicateFieldName(String name, DataDefinition dd, HashMap<String, String> resolvedCache) {
         for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
             String fieldName = e.nextElement();
-            if (dd.getFieldDefinition(fieldName).getType().startsWith("set"))
+            if (dd.getFieldDefinition(fieldName).getType().startsWith("set")) {
                 continue;
+            }
             if (resolvedCache.get(fieldName) != null
-                    && resolvedCache.get(fieldName).toLowerCase().equals(name.toLowerCase()))
+                    && resolvedCache.get(fieldName).toLowerCase().equals(name.toLowerCase())) {
                 return true;
+            }
         }
         return false;
     }
@@ -301,14 +312,16 @@ public class NameResolver {
 
             String name = e.nextElement();
 
-            if (dd.getFieldDefinition(name).getType().startsWith("set"))
+            if (dd.getFieldDefinition(name).getType().startsWith("set")) {
                 continue;
+            }
 
             String resolved = config.getProperty(getTableNameFromConfig(config, dd) + "->" + name);
             if (resolved == null) {
                 resolved = checkReserved(getFieldNameInSource(name));
-                while (checkDuplicateFieldName(resolved, dd, resolvedCache))
+                while (checkDuplicateFieldName(resolved, dd, resolvedCache)) {
                     resolved = resolved + "_";
+                }
             }
             resolvedCache.put(name, resolved);
         }
@@ -342,8 +355,9 @@ public class NameResolver {
 
     public String checkReserved(String name) {
         // check if this is a java reserved keyword, not to annoy the class generator
-        if (ReservedKeywords.getReservedKeywords().contains(name))
+        if (ReservedKeywords.getReservedKeywords().contains(name)) {
             return arrowToDoubleUnderscore(name + "_");
+        }
         return arrowToDoubleUnderscore(name);
     }
 

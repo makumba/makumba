@@ -107,14 +107,16 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
 
     @Override
     public void reportError(RecognitionException e) {
-        if (error == null)
+        if (error == null) {
             error = e;
+        }
     }
 
     @Override
     public void reportError(String s) {
-        if (error == null)
+        if (error == null) {
             error = new RecognitionException(s);
+        }
     }
 
     /** makes sure we don't override another function call with the same signature but in a different place **/
@@ -166,8 +168,9 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
             } else {
                 throw new ProgrammerError("MQL Function '" + functionDef + "' requires no arguments.");
             }
-            if (paramNode.isParam())
+            if (paramNode.isParam()) {
                 setParameterType(paramNode, DataDefinitionProvider.getInstance().makeFieldOfType("dummy", type));
+            }
             // FIXME: a param might also be a nested function
             paramNode = (MqlNode) paramNode.getNextSibling();
             index++;
@@ -206,10 +209,11 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     protected void pushFromClause(AST fromClause, AST inputFromNode) {
         QueryContext c = new QueryContext(this);
         c.setParent(currentContext);
-        if (currentContext == null)
+        if (currentContext == null) {
             rootContext = c;
-        else
+        } else {
             hasSubqueries = true;
+        }
         currentContext = c;
     }
 
@@ -220,12 +224,14 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
 
     @Override
     protected void processQuery(AST select, AST query) throws SemanticException {
-        if (error != null)
+        if (error != null) {
             return;
+        }
 
         // if we have no projections, we add the explicitly declared labels
-        if (select == null)
+        if (select == null) {
             addDefaultProjections(query);
+        }
 
         this.select = query.getFirstChild();
 
@@ -233,8 +239,9 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         currentContext.close();
 
         // if the currentContext has a filter, we make sure we have a WHERE and we add it there
-        if (!currentContext.filters.isEmpty())
+        if (!currentContext.filters.isEmpty()) {
             addFilters(query);
+        }
 
         currentContext = currentContext.getParent();
     }
@@ -246,10 +253,11 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         for (String label : currentContext.explicitLabels) {
             MqlIdentNode proj = (MqlIdentNode) ASTUtil.create(fact, IDENT, label);
             proj.resolve();
-            if (lastProjection == null)
+            if (lastProjection == null) {
                 clause.setFirstChild(proj);
-            else
+            } else {
                 lastProjection.setNextSibling(proj);
+            }
             lastProjection = proj;
         }
         query.setFirstChild(clause);
@@ -258,8 +266,9 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     private void addFilters(AST query) {
         // we find the FROM
         AST from = query.getFirstChild();
-        while (from.getType() != FROM)
+        while (from.getType() != FROM) {
             from = from.getNextSibling();
+        }
 
         // we make sure that there is a where
         AST where = from.getNextSibling();
@@ -280,10 +289,11 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         AST lastCond = null;
         for (TextList f : currentContext.filters) {
             MqlNode sqlToken = (MqlNode) ASTUtil.create(fact, SQL_TOKEN, "");
-            if (lastCond != null)
+            if (lastCond != null) {
                 lastCond.setNextSibling(sqlToken);
-            else
+            } else {
                 filters.setFirstChild(sqlToken);
+            }
             lastCond = sqlToken;
             sqlToken.setTextList(f);
         }
@@ -297,18 +307,21 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     @Override
     protected void createFromJoinElement(AST path, AST alias, int joinType, AST fetch, AST propertyFetch, AST with)
             throws SemanticException {
-        if (error != null)
+        if (error != null) {
             return;
-        if (!(path instanceof MqlDotNode))
+        }
+        if (!(path instanceof MqlDotNode)) {
             throw new SemanticException("can only support dot froms " + path, "", path.getLine(), path.getColumn());
+        }
         ((MqlDotNode) path).processInFrom();
         currentContext.createFromElement(path.getText(), alias, joinType);
     }
 
     @Override
     protected AST lookupProperty(AST dot, boolean root, boolean inSelect) throws SemanticException {
-        if (error != null || !fromEnded)
+        if (error != null || !fromEnded) {
             return dot;
+        }
         // root and inSelect are useless due to logicExpr being accepted now in SELECT
         MqlDotNode dotNode = (MqlDotNode) dot;
         dotNode.processInExpression();
@@ -317,16 +330,19 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
 
     @Override
     protected void resolve(AST node) throws SemanticException {
-        if (error != null || !fromEnded)
+        if (error != null || !fromEnded) {
             return;
-        if (node.getType() == HqlSqlTokenTypes.IDENT)
+        }
+        if (node.getType() == HqlSqlTokenTypes.IDENT) {
             ((MqlIdentNode) node).resolve();
+        }
     }
 
     @Override
     protected void setAlias(AST selectExpr, AST ident) {
-        if (error != null)
+        if (error != null) {
             return;
+        }
         // we add the label to the output, this is a bit of a hack!
         MqlNode as = (MqlNode) ASTUtil.create(fact, HqlSqlTokenTypes.ALIAS_REF, ident.getText());
         selectExpr.setNextSibling(as);
@@ -407,18 +423,21 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     }
 
     void setProjectionTypes(DataDefinition proj) {
-        if (select == null)
+        if (select == null) {
             // there are no projections, we leave this pass
             // we could chose to throw something
             return;
+        }
 
         int i = 0;
         for (AST a = select.getFirstChild(); a != null; a = a.getNextSibling()) {
-            if (a.getType() == ALIAS_REF)
+            if (a.getType() == ALIAS_REF) {
                 continue;
+            }
             String name = "col" + (i + 1);
-            if (a.getNextSibling() != null && a.getNextSibling().getType() == ALIAS_REF)
+            if (a.getNextSibling() != null && a.getNextSibling().getType() == ALIAS_REF) {
                 name = ((MqlNode) a.getNextSibling()).getOriginalText();
+            }
 
             MqlNode mqlNode = (MqlNode) a;
             FieldDefinition makType = mqlNode.getMakType();
@@ -437,8 +456,9 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
 
                 } else {
                     // we accept the type registered on some other position unless it is a multi-type param
-                    if (!multiTypeParams.contains(paramName))
+                    if (!multiTypeParams.contains(paramName)) {
                         makType = paramInfoByName.getFieldDefinition(paramName);
+                    }
                 }
 
             }
@@ -448,23 +468,26 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
                 makType = insertIn.getFieldDefinition(name);
 
                 // and such we are most probably a parameter
-                if (makType != null && mqlNode.isParam())
+                if (makType != null && mqlNode.isParam()) {
                     setParameterType((MqlNode) a, makType);
+                }
             }
 
-            if (makType == null)
+            if (makType == null) {
                 throw new IllegalStateException("no type set for projection " + name + " "
                         + MqlQueryAnalysis.showAst(a));
+            }
 
             if (constantValues != null) {
-                if (mqlNode.isParam())
+                if (mqlNode.isParam()) {
                     constantValues.put(name, new MqlQueryAnalysis.ParamConstant(getParamInfo(mqlNode).paramName));
-                else
+                } else {
                     // TODO: for now we only accept parameters as constant values
                     // that solves actor evaluation without having to do a db call
                     // we could also check whether mqlNode is a NUM_INTEGER, NUM_DOUBLE, QUOTED_STRING, etc
                     // for anything else than these, we give up on constants, and set constantValues to null
                     constantValues = null;
+                }
             }
             proj.addField(DataDefinitionProvider.getInstance().makeFieldWithName(name, makType));
             i++;
@@ -472,8 +495,9 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     }
 
     public boolean isAnalysisQuery() {
-        if (select == null || select.getFirstChild() == null)
+        if (select == null || select.getFirstChild() == null) {
             return false;
+        }
         return select.getFirstChild().getNextSibling() == null
                 && select.getFirstChild().getType() == HqlSqlTokenTypes.NUM_INT;
     }
@@ -481,8 +505,9 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     Collection<String> warnings;
 
     public void addWarning(String msg) {
-        if (warnings == null)
+        if (warnings == null) {
             warnings = new ArrayList<String>();
+        }
         warnings.add(msg);
     }
 

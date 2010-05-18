@@ -94,8 +94,9 @@ public class OrderedProperties extends Dictionary<String, String> {
 
     public synchronized String putLast(String key, String origKey, String value) {
         String o = content.put(key, value);
-        if (o != null)
+        if (o != null) {
             ks.removeElement(key);
+        }
         ks.addElement(key);
         orig.put(key, origKey);
         return o;

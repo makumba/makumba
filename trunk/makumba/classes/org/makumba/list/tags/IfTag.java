@@ -81,8 +81,9 @@ public class IfTag extends GenericListTag implements BodyTag {
     @Override
     public void doStartAnalyze(PageCache pageCache) {
         String te = testExpr;
-        if (MakumbaJspAnalyzer.getQueryLanguage(pageCache).equals("hql"))
+        if (MakumbaJspAnalyzer.getQueryLanguage(pageCache).equals("hql")) {
             te = "case when " + testExpr + " then 1 else 0 end";
+        }
         pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, tagKey, ValueComputer.getValueComputerAtAnalysis(false,
             QueryTag.getParentListKey(this, pageCache), te, pageCache));
     }
@@ -131,15 +132,17 @@ public class IfTag extends GenericListTag implements BodyTag {
 
         if (exprvalue instanceof Boolean) {
             boolean b = ((Boolean) exprvalue).booleanValue();
-            if (b)
+            if (b) {
                 return EVAL_BODY_INCLUDE;
-            else
+            } else {
                 return SKIP_BODY;
+            }
         }
 
         // comparison with null, will return null, equivalent to false
-        if (exprvalue == null)
+        if (exprvalue == null) {
             return SKIP_BODY;
+        }
 
         // return value is another type
         throw new MakumbaJspException(this, "test expression in mak:if should result in an Integer, result is "

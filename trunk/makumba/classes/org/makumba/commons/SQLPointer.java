@@ -43,8 +43,9 @@ public class SQLPointer extends Pointer {
     }
 
     private SQLPointer(String type) {
-        if (type == null)
+        if (type == null) {
             throw new NullPointerException();
+        }
         this.type = type;
     }
 
@@ -58,8 +59,9 @@ public class SQLPointer extends Pointer {
         if (uid > (1 << MASK_ORDER)) {
             java.util.logging.Logger.getLogger("org.makumba.debug.db").finest("p");
             n = uid;
-        } else
+        } else {
             n = compute(dbsv, uid);
+        }
     }
 
     public SQLPointer(String type, String s) {

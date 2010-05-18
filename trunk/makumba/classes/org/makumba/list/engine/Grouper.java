@@ -118,12 +118,14 @@ public class Grouper extends Hashtable {
         for (; i < max; i++) {
             keyStack[i] = getKey(i, ((ArrayMap) keyData.elementAt(i)).data);
             stack[i + 1] = (Hashtable) stack[i].get(keyStack[i]);
-            if (stack[i + 1] == null)
+            if (stack[i + 1] == null) {
                 return null;
+            }
         }
         Vector v = (Vector) stack[i].remove(getKey(i, ((ArrayMap) keyData.elementAt(i)).data));
-        for (; i > 0 && stack[i].isEmpty(); i--)
+        for (; i > 0 && stack[i].isEmpty(); i--) {
             stack[i - 1].remove(keyStack[i - 1]);
+        }
         return v;
     }
 

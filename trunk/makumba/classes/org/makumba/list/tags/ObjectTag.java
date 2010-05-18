@@ -40,8 +40,9 @@ public class ObjectTag extends QueryTag {
 
     @Override
     protected void setNumberOfIterations(int max) throws JspException {
-        if (max > 1)
+        if (max > 1) {
             throw new MakumbaJspException(this, "Object tag should have only one result");
+        }
         super.setNumberOfIterations(max);
     }
 

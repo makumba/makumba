@@ -71,8 +71,9 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         // we can't store a reference to the original field definition, otherwise it will be serialised in the form
         // responder, and in turn will serialise it's data definition, which might cause issues like locking..
         // thus, we do a lookup here
-        if (originalFieldDefinitionParent == null)
+        if (originalFieldDefinitionParent == null) {
             return null;
+        }
         DataDefinition dataDefinition = DataDefinitionProvider.getInstance().getDataDefinition(
             originalFieldDefinitionParent);
         return dataDefinition != null ? dataDefinition.getFieldDefinition(originalFieldDefinitionName) : null;

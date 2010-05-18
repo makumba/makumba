@@ -316,9 +316,10 @@ public class FunctionInliner {
         }
         m.appendTail(sb);
 
-        if (found)
+        if (found) {
             java.util.logging.Logger.getLogger("org.makumba.db.query.inline").fine(
                 queryFragment + " -> " + sb.toString());
+        }
 
         return sb.toString();
 

@@ -413,8 +413,9 @@ public class RecordParser {
             // this is maybe a directory?
             // FIXME: this doesn't work if the MDDs are not in the dataDefinitions directory, but in the classes folder
             // directly
-            if (u == null)
+            if (u == null) {
                 u = getResource("dataDefinitions" + (s.length() == 0 ? "" : "/") + s);
+            }
 
             if (u == null) {
                 u = getResource(s.replace('.', '/') + "." + ext);
@@ -1023,8 +1024,9 @@ public class RecordParser {
                 }
                 getFieldInfo(fieldName).extra2 = size;
                 fc.expect("]");
-            } else
+            } else {
                 getFieldInfo(fieldName).extra2 = 255;
+            }
 
             getFieldInfo(fieldName).description = fc.lookupDescription();
             return;

@@ -59,8 +59,9 @@ public class copy {
                 if (nargs == 2) {
                     Vector<String> v = org.makumba.MakumbaSystem.mddsInDirectory("dataDefinitions");
                     types = new String[v.size()];
-                    for (int i = 0; i < v.size(); i++)
+                    for (int i = 0; i < v.size(); i++) {
                         types[i] = v.elementAt(i);
+                    }
                 } else {
                     types = new String[nargs - 2];
                     System.arraycopy(argv, firstArg + 2, types, 0, types.length);

@@ -21,11 +21,13 @@ public class MqlIdentNode extends MqlNode {
     }
 
     public void resolve() throws SemanticException {
-        if (walker.error != null)
+        if (walker.error != null) {
             return;
-        if (label != null)
+        }
+        if (label != null) {
             // we've analyzed already
             return;
+        }
         label = getText();
         DataDefinition dd = walker.currentContext.findLabelType(label);
         if (dd == null) {

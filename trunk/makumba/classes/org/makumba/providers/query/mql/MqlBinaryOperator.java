@@ -13,15 +13,17 @@ public class MqlBinaryOperator extends MqlNode {
 
     @Override
     protected void oneMoreChild(MqlNode node) {
-        if (this.getNumberOfChildren() != 2)
+        if (this.getNumberOfChildren() != 2) {
             // this is the first child, we're not yet ready for analysis
             return;
+        }
         analyze((MqlNode) getFirstChild(), node);
     }
 
     private void analyze(MqlNode left, MqlNode right) {
-        if (walker.error != null)
+        if (walker.error != null) {
             return;
+        }
         if (left.isFunctionCall() || right.isFunctionCall()) {
             return;
         }

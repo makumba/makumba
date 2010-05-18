@@ -121,8 +121,9 @@ public abstract class QueryAnalysisProvider {
             // but sometimes its first child is "INNER" or "OUTER" or whatever
             // so we jump that because here we don't care what kind of join it is
             if (fromAST.getFirstChild().getType() != HqlTokenTypes.DOT
-                    && fromAST.getFirstChild().getType() != HqlTokenTypes.IDENT)
+                    && fromAST.getFirstChild().getType() != HqlTokenTypes.IDENT) {
                 type = type.getNextSibling();
+            }
 
             // now we write the type (path) and the label, which is its next sibling
             from += separator + ASTUtil.constructPath(type) + " " + type.getNextSibling();
@@ -134,20 +135,24 @@ public abstract class QueryAnalysisProvider {
     }
 
     private Object checkASTSetOrNullable(String from, AST ast) {
-        if (ast == null)
+        if (ast == null) {
             return null;
-        if (ast.getType() == HqlTokenTypes.QUERY)
+        }
+        if (ast.getType() == HqlTokenTypes.QUERY) {
             // we don't go into subqueries
             return null;
+        }
 
         if (ast.getType() == HqlTokenTypes.DOT) {
             Object o = checkLabelSetOrNullable(from, ASTUtil.constructPath(ast));
-            if (o != null)
+            if (o != null) {
                 return o;
+            }
         }
         Object o = checkASTSetOrNullable(from, ast.getFirstChild());
-        if (o != null)
+        if (o != null) {
             return o;
+        }
         return checkASTSetOrNullable(from, ast.getNextSibling());
     }
 
@@ -171,8 +176,9 @@ public abstract class QueryAnalysisProvider {
      */
     public Object checkLabelSetOrNullable(String from, String referenceSequence) {
         int dot = referenceSequence.indexOf(".");
-        if (dot == -1)
+        if (dot == -1) {
             return null;
+        }
         String substring = referenceSequence.substring(0, dot);
         try { // if the "label" is actually a real number as 3.0
             Integer.parseInt(substring);
@@ -190,21 +196,26 @@ public abstract class QueryAnalysisProvider {
             if (dot1 == -1) {
                 String fn = referenceSequence.substring(dot + 1);
                 FieldDefinition fd = dd.getFieldDefinition(fn);
-                if (fd == null && (fd = getAlternativeField(dd, fn)) == null)
+                if (fd == null && (fd = getAlternativeField(dd, fn)) == null) {
                     throw new org.makumba.NoSuchFieldException(dd, fn);
+                }
 
                 if (fd.getType().equals("set") || fd.getType().equals("setintEnum")
-                        || fd.getType().equals("setcharEnum"))
+                        || fd.getType().equals("setcharEnum")) {
                     return fd;
+                }
                 return null;
             }
             FieldDefinition fd = dd.getFieldDefinition(referenceSequence.substring(dot + 1, dot1));
-            if (fd == null)
+            if (fd == null) {
                 throw new org.makumba.NoSuchFieldException(dd, referenceSequence.substring(dot + 1, dot1));
-            if (!fd.getType().startsWith("ptr"))
+            }
+            if (!fd.getType().startsWith("ptr")) {
                 throw new InvalidFieldTypeException(fd, "pointer");
-            if (!fd.isNotNull())
+            }
+            if (!fd.isNotNull()) {
                 return referenceSequence.substring(0, dot1);
+            }
             dd = fd.getPointedType();
             dot = dot1;
         }
@@ -218,8 +229,9 @@ public abstract class QueryAnalysisProvider {
     }
 
     public AST inlineFunctions(String query) {
-        if (!Configuration.getQueryInliner().equals("pass1"))
+        if (!Configuration.getQueryInliner().equals("pass1")) {
             return parseQuery(FunctionInliner.inline(query, this));
+        }
         return Pass1FunctionInliner.inlineAST(parseQuery(query), getName());
     }
 
@@ -261,8 +273,9 @@ public abstract class QueryAnalysisProvider {
          * path from the tree root to the current node
          */
         public AST traverse(AST current) {
-            if (current == null)
+            if (current == null) {
                 return null;
+            }
 
             boolean wasReplaced = false;
             // while traversal returns new stuff (e.g. an inlined function is still a function to inline) we repeat
@@ -279,8 +292,9 @@ public abstract class QueryAnalysisProvider {
                         // if we do not need to traverse what we replaced we go on
                         break;
                     }
-                } else
+                } else {
                     break;
+                }
             }
             // if we replaced already, and we are not repetitive, we do't go deep
             if (!wasReplaced) {
@@ -326,8 +340,9 @@ public abstract class QueryAnalysisProvider {
         Set<String> actors = new HashSet<String>();
 
         public void addActor(AST actorType, String paramSyntax) {
-            if (actors.contains(actorType))
+            if (actors.contains(actorType)) {
                 return;
+            }
             String act = getGeneratedActorName(actorType);
             // make an extra FROM
             AST range = ASTUtil.makeNode(HqlTokenTypes.RANGE, "RANGE");
@@ -359,8 +374,9 @@ public abstract class QueryAnalysisProvider {
             // the FROM ranges are in the FROM now, we clear it so it won't be added again
             extraFrom.clear();
             for (AST condition : extraWhere) {
-                if (condition == null)
+                if (condition == null) {
                     continue;
+                }
 
                 AST where = query.getFirstChild().getNextSibling();
 
@@ -395,23 +411,27 @@ public abstract class QueryAnalysisProvider {
      * @return whether the trees are identical or not
      */
     public static boolean compare(List<AST> path, AST t1, AST t2) {
-        if (t1 == null)
+        if (t1 == null) {
             if (t2 != null) {
                 System.out.println(path + " t1 null, t2 not null");
                 return false;
-            } else
+            } else {
                 return true;
+            }
+        }
         if (!t1.equals(t2)) {
             System.out.print(path + " [" + t1.getType() + " " + t1 + "] <> ");
-            if (t2 == null)
+            if (t2 == null) {
                 System.out.println("null");
-            else
+            } else {
                 System.out.println("[" + t2.getType() + " " + t2 + "]");
+            }
 
             return false;
         }
-        if (!compare(path, t1.getNextSibling(), t2.getNextSibling()))
+        if (!compare(path, t1.getNextSibling(), t2.getNextSibling())) {
             return false;
+        }
         path.add(t1);
         try {
             return compare(path, t1.getFirstChild(), t2.getFirstChild());
@@ -421,8 +441,9 @@ public abstract class QueryAnalysisProvider {
     }
 
     public static void doThrow(String query, Throwable t, AST debugTree) {
-        if (t == null)
+        if (t == null) {
             return;
+        }
         if (t instanceof RuntimeException) {
             t.printStackTrace();
             throw (RuntimeException) t;
@@ -484,8 +505,9 @@ public abstract class QueryAnalysisProvider {
         try {
             parser.statement();
         } catch (Exception e) {
-            if (parser.getError() == null)
+            if (parser.getError() == null) {
                 doThrow(query, e, parser.getAST());
+            }
         }
         doThrow(query, parser.getError(), parser.getAST());
         return parser.getAST();
@@ -517,15 +539,17 @@ public abstract class QueryAnalysisProvider {
      */
     public static boolean reduceDummyFrom(AST parsed) {
         AST from = parsed.getFirstChild().getFirstChild();
-        if (from.getFirstChild().getFirstChild().getNextSibling().getText().equals(DUMMY_PROJECTION))
+        if (from.getFirstChild().getFirstChild().getNextSibling().getText().equals(DUMMY_PROJECTION)) {
             if (from.getFirstChild().getNextSibling() != null) {
                 // the query got a new FROM section after inlining, so we can remove our dummy catalog
                 from.setFirstChild(from.getFirstChild().getNextSibling());
                 return false;
-            } else
+            } else {
                 // there is no from even after inlining,
                 // so we leave the catalog hanged here, otherwise the second pass will flop
                 return true;
+            }
+        }
         return false;
     }
 
@@ -565,18 +589,20 @@ public abstract class QueryAnalysisProvider {
         @Override
         public AST visit(AST current) {
             // we are after queries, but not the root query
-            if (current.getType() != HqlTokenTypes.QUERY || getPath().size() == 0)
+            if (current.getType() != HqlTokenTypes.QUERY || getPath().size() == 0) {
                 return current;
+            }
             // the reduction is defensive (i.e. we do not reduce unless we are sure that there are no problems)
             AST parent = getPath().peek();
 
             // if we are the second child of the parent, then operator IN expects a multiple-result query
-            if (parent.getFirstChild() != current)
-                if (parent.getType() == HqlTokenTypes.IN)
+            if (parent.getFirstChild() != current) {
+                if (parent.getType() == HqlTokenTypes.IN) {
                     return current;
-                else
+                } else {
                     ;
-            else
+                }
+            } else {
                 // aggregate operators expect a multiple-result query
                 switch (parent.getType()) {
                     case HqlTokenTypes.EXISTS:
@@ -587,6 +613,7 @@ public abstract class QueryAnalysisProvider {
                     case HqlTokenTypes.INDICES:
                         return current;
                 }
+            }
 
             // TODO: postorder, depth-first traversal!
             // TODO: currently we only add to the root query, maybe we should add to the enclosing query, and flatten
@@ -600,14 +627,16 @@ public abstract class QueryAnalysisProvider {
             // FIXME: i don't think that these copy more than the 1st child (FROM range, WHERE condition), got to check.
             fromWhere.addFrom(current.getFirstChild().getFirstChild().getFirstChild());
 
-            if (current.getFirstChild().getNextSibling().getType() == HqlTokenTypes.WHERE)
+            if (current.getFirstChild().getNextSibling().getType() == HqlTokenTypes.WHERE) {
                 fromWhere.addWhere(current.getFirstChild().getNextSibling().getFirstChild());
+            }
 
             AST proj = current.getFirstChild().getFirstChild().getNextSibling().getFirstChild();
 
             // FIXME: the distinct should go to the decorated query
-            if (proj.getType() == HqlTokenTypes.DISTINCT)
+            if (proj.getType() == HqlTokenTypes.DISTINCT) {
                 proj = proj.getNextSibling();
+            }
             return proj;
         }
     }

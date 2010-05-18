@@ -72,22 +72,26 @@ public class FieldViewer extends FieldFormatter {
         int maxLen = getIntParam(rf, fieldIndex, formatParams, "maxLength");
 
         String ellipsis = (String) formatParams.get("ellipsis");
-        if (ellipsis == null)
+        if (ellipsis == null) {
             ellipsis = defaultEllipsis;
+        }
 
         int ellipsisLen = getIntParam(rf, fieldIndex, formatParams, "ellipsisLength");
-        if (ellipsisLen == -1) // not specified
+        if (ellipsisLen == -1) {
             ellipsisLen = ellipsis.length(); // compute from actual ellipsis
+        }
 
         String addTitle = (String) formatParams.get("addTitle");
-        if (addTitle == null)
+        if (addTitle == null) {
             addTitle = "false";
+        }
 
         if (maxLen != -1 && s.length() > maxLen) // content longer than allowed
         { // shorten the content
             int cutAt = maxLen - ellipsisLen;
-            if (cutAt < 0)
+            if (cutAt < 0) {
                 cutAt = 0;
+            }
             sOut = sOut.substring(0, cutAt);
             postfix = ellipsis;
         }

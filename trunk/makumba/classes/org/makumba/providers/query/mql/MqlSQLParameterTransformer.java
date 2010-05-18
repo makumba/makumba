@@ -79,8 +79,9 @@ public class MqlSQLParameterTransformer implements SQLParameterTransformer {
         // still we should first check if this is needed, maybe the generated SQL (or processing of it)
         // is cached already somewhere else
         String sql = text.toString(nr);
-        if (qA.getNoFrom())
+        if (qA.getNoFrom()) {
             return sql.substring(0, sql.toLowerCase().indexOf("from")).trim();
+        }
         return sql;
     }
 
@@ -98,8 +99,9 @@ public class MqlSQLParameterTransformer implements SQLParameterTransformer {
 
             if (o instanceof List<?>) {
                 List<?> v = (List<?>) o;
-                for (int i = 1; i <= v.size(); i++)
+                for (int i = 1; i <= v.size(); i++) {
                     res.add(v.get(i - 1));
+                }
             } else {
                 res.add(o);
             }

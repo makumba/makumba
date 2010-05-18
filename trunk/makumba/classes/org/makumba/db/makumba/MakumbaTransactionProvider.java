@@ -121,8 +121,9 @@ public class MakumbaTransactionProvider extends TransactionProvider {
         try {
             return (Database) NamedResources.getStaticCache(dbs).getResource(name);
         } catch (RuntimeWrappedException e) {
-            if (e.getCause() instanceof org.makumba.MakumbaError)
+            if (e.getCause() instanceof org.makumba.MakumbaError) {
                 throw (org.makumba.MakumbaError) e.getCause();
+            }
             throw e;
         }
     }
@@ -203,8 +204,9 @@ public class MakumbaTransactionProvider extends TransactionProvider {
                 if (dbclass == null) {
                     dbclass = org.makumba.db.makumba.sql.Database.getEngineProperty(p.getProperty("#sqlEngine") + "."
                             + DATABASE_CLASS);
-                    if (dbclass == null)
+                    if (dbclass == null) {
                         dbclass = "org.makumba.db.makumba.sql.Database";
+                    }
                 }
                 p.put("db.name", name);
 

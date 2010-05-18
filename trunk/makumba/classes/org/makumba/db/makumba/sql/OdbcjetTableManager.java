@@ -92,10 +92,11 @@ public class OdbcjetTableManager extends org.makumba.db.makumba.sql.TableManager
         switch (getFieldDefinition(fieldName).getIntegerType()) {
             case FieldDefinition._text:
                 Text t = (Text) o;
-                if (t.length() == 0)
+                if (t.length() == 0) {
                     ps.setBytes(n, new byte[0]);
-                else
+                } else {
                     ps.setBinaryStream(n, t.toBinaryStream(), t.length());
+                }
                 break;
             default:
                 super.setArgument(fieldName, ps, n, o);
@@ -121,8 +122,9 @@ public class OdbcjetTableManager extends org.makumba.db.makumba.sql.TableManager
     @Override
     public Object get_text_Value(String fieldName, ResultSet rs, int i) throws SQLException {
         InputStream in = rs.getBinaryStream(i);
-        if (rs.wasNull())
+        if (rs.wasNull()) {
             return null;
+        }
         return new Text(in);
     }
 }

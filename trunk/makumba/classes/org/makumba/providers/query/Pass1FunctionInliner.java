@@ -65,8 +65,9 @@ public class Pass1FunctionInliner {
 
         Object ret = NamedResources.getStaticCache(functionCache).getResource(
             calleeType.getName() + " " + func.getName() + " " + queryAnalysisProvider);
-        if (ret instanceof ProgrammerError)
+        if (ret instanceof ProgrammerError) {
             throw (ProgrammerError) ret;
+        }
         return (QueryAnalysis) ret;
     }
 
@@ -90,8 +91,9 @@ public class Pass1FunctionInliner {
         InlineVisitor v = new InlineVisitor(provider);
         AST ret = v.inlineAST(parsed);
 
-        if (logger.getLevel() != null && logger.getLevel().intValue() >= java.util.logging.Level.FINE.intValue())
+        if (logger.getLevel() != null && logger.getLevel().intValue() >= java.util.logging.Level.FINE.intValue()) {
             logger.fine(parsed.toStringList() + " \n-> " + ret.toStringList());
+        }
 
         return ret;
     }
@@ -124,13 +126,16 @@ public class Pass1FunctionInliner {
         @Override
         public AST visit(AST current) {
             // the function signature is a method call which has a DOT as first child
-            if (current.getType() != HqlTokenTypes.METHOD_CALL)
+            if (current.getType() != HqlTokenTypes.METHOD_CALL) {
                 return current;
+            }
             if (current.getFirstChild().getType() == HqlTokenTypes.IDENT
-                    && current.getFirstChild().getText().equals("actor"))
+                    && current.getFirstChild().getText().equals("actor")) {
                 return treatActor(current);
-            if (current.getFirstChild().getType() != HqlTokenTypes.DOT)
+            }
+            if (current.getFirstChild().getType() != HqlTokenTypes.DOT) {
                 return current;
+            }
 
             // we push both the method call and the dot into the stack
             // to have complete data there when we need to recurse
@@ -145,10 +150,12 @@ public class Pass1FunctionInliner {
 
             // determine whether the callee is a DataDefinition name, in which case we have a static function
             DataDefinition calleeType = null;
-            if (callee.getType() == HqlTokenTypes.DOT)
+            if (callee.getType() == HqlTokenTypes.DOT) {
                 calleeType = getMdd(ASTUtil.getPath(callee));
-            if (callee.getType() == HqlTokenTypes.IDENT)
+            }
+            if (callee.getType() == HqlTokenTypes.IDENT) {
                 calleeType = getMdd(callee.getText());
+            }
 
             // if we're not an MDD name, we try to find a label type using the FROMs of the query
             if (calleeType == null) {
@@ -157,12 +164,14 @@ public class Pass1FunctionInliner {
                 // TODO: find type will be needed also to compute parameter types. the recursion is needed there too
                 callee = inlineAST(callee);
                 FieldDefinition fd = findType(callee);
-                if (fd.getType().startsWith("ptr"))
+                if (fd.getType().startsWith("ptr")) {
                     calleeType = fd.getPointedType();
-                else
+                } else {
                     throw new ProgrammerError("Not a pointer type in call of " + methodName + ": " + view(callee));
-            } else
+                }
+            } else {
                 isStatic = true;
+            }
 
             // now we can retrieve the function
             QueryFragmentFunction func = calleeType.getFunctions().getFunction(methodName);
@@ -203,18 +212,20 @@ public class Pass1FunctionInliner {
             // similarly if we have a WHERE, that can only come from previous enrichment
             // (since we parsed SELECT functionExpr FROM Type this), so we propagate it
             AST where = funcAST.getFirstChild().getNextSibling();
-            if (where != null && where.getType() == HqlTokenTypes.WHERE)
+            if (where != null && where.getType() == HqlTokenTypes.WHERE) {
                 fromWhere.addWhere(where.getFirstChild());
+            }
 
             // the function expr: query-> SELECT_FROM -> FROM-> SELELECT -> 1st projection
             funcAST = funcAST.getFirstChild().getFirstChild().getNextSibling().getFirstChild();
 
             DataDefinition para = func.getParameters();
             AST exprList = current.getFirstChild().getNextSibling();
-            if (exprList.getNumberOfChildren() != para.getFieldNames().size())
+            if (exprList.getNumberOfChildren() != para.getFieldNames().size()) {
                 throw new ProgrammerError("Wrong number of parameters for call to " + func
                         + "\nRequired parameter number: " + para.getFieldNames().size() + "\nGiven parameters: "
                         + exprList.getNumberOfChildren() + "\nParameter values: " + view(exprList));
+            }
 
             // we copy the parameter expressions
             // FIXME: use findType(path, expr) for each parameter expression and check its type!
@@ -230,17 +241,19 @@ public class Pass1FunctionInliner {
             final AST calleeThis = callee;
             // now we visit the function AST and replace "this" with the callee tree
             AST ret = funcAST;
-            if (!isStatic)
+            if (!isStatic) {
                 ret = (new ASTTransformVisitor(false) {
                     @Override
                     public AST visit(AST node) {
                         // for each "this" node, we put the callee instead
-                        if (node.getType() == HqlTokenTypes.IDENT && node.getText().equals("this"))
+                        if (node.getType() == HqlTokenTypes.IDENT && node.getText().equals("this")) {
                             return calleeThis;
+                        }
                         return node;
                     }
 
                 }).traverse(funcAST);
+            }
 
             // then we visit the function more, and replace parameter names with parameter expressions
             ret = (new ASTTransformVisitor(false) {
@@ -252,8 +265,9 @@ public class Pass1FunctionInliner {
                             // FIXME: there might be other cases where this is not the param but some field
                             getPath().peek().getType() != HqlTokenTypes.DOT
                     //        
-                    )
+                    ) {
                         return paramExpr.get(node.getText());
+                    }
                     return node;
                 }
             }).traverse(ret);
@@ -272,8 +286,9 @@ public class Pass1FunctionInliner {
          */
         private AST treatActor(AST current) {
             AST actorType = current.getFirstChild().getNextSibling();
-            if (actorType.getNumberOfChildren() != 1)
+            if (actorType.getNumberOfChildren() != 1) {
                 throw new ProgrammerError("actor(Type) must indicate precisely one type: " + view(current));
+            }
             actorType = actorType.getFirstChild();
 
             String rt = QueryAnalysisProvider.getGeneratedActorName(actorType);
@@ -284,10 +299,11 @@ public class Pass1FunctionInliner {
             if (type == HqlTokenTypes.DOT) {
                 fromWhere.addActor(actorType,
                     QueryProvider.getQueryAnalzyer(queryAnalysisProvider).getParameterSyntax());
-            } else
+            } else {
                 // the simple case: we simply add the parameter
                 // FIXME: in HQL the parameter syntax is a tree (: paamName) not an IDENT
                 rt = QueryProvider.getQueryAnalzyer(queryAnalysisProvider).getParameterSyntax() + rt;
+            }
 
             return ASTUtil.makeNode(HqlTokenTypes.IDENT, rt);
         }
@@ -311,15 +327,17 @@ public class Pass1FunctionInliner {
             AST lastAdded = null;
             for (AST a : getPath()) {
                 // we find queriess
-                if (a.getType() != HqlTokenTypes.QUERY)
+                if (a.getType() != HqlTokenTypes.QUERY) {
                     continue;
+                }
                 // we duplicate the FROM section of each query
                 AST originalFrom = a.getFirstChild().getFirstChild().getFirstChild();
                 AST toAdd = QueryAnalysisProvider.makeASTCopy(originalFrom);
                 if (lastAdded == null) {
                     from.setFirstChild(toAdd);
-                } else
+                } else {
                     lastAdded.setNextSibling(toAdd);
+                }
                 lastAdded = toAdd;
                 while (originalFrom.getNextSibling() != null) {
                     originalFrom = originalFrom.getNextSibling();
@@ -353,26 +371,31 @@ public class Pass1FunctionInliner {
             @Override
             public AST visit(AST a) {
                 // we are looking for non-this idents
-                if (a.getType() != HqlTokenTypes.IDENT || a.getText().equals("this"))
+                if (a.getType() != HqlTokenTypes.IDENT || a.getText().equals("this")) {
                     return a;
+                }
 
                 int top = getPath().size();
                 AST parent = getPath().get(top - 1);
 
                 // if we are part of a DOT tree, we must be the first
                 if (parent.getType() == HqlTokenTypes.DOT
-                        && ((getPath().get(top - 2).getType() == HqlTokenTypes.DOT) || parent.getFirstChild() != a))
+                        && ((getPath().get(top - 2).getType() == HqlTokenTypes.DOT) || parent.getFirstChild() != a)) {
                     return a;
+                }
 
                 // a dot may mean an MDD name, no need for this-adding
-                if (parent.getType() == HqlTokenTypes.DOT && getMdd(parent) != null)
+                if (parent.getType() == HqlTokenTypes.DOT && getMdd(parent) != null) {
                     return a;
+                }
                 // the ident may be a MDD name or a paramter name
-                if (getMdd(a.getText()) != null || func.getParameters().getFieldDefinition(a.getText()) != null)
+                if (getMdd(a.getText()) != null || func.getParameters().getFieldDefinition(a.getText()) != null) {
                     return a;
+                }
                 // the ident may be actor from actor(type)
-                if (a.getText().equals("actor") && getMdd(a.getNextSibling().getFirstChild()) != null)
+                if (a.getText().equals("actor") && getMdd(a.getNextSibling().getFirstChild()) != null) {
                     return a;
+                }
 
                 // FIXME: at this point we might still be a label defined in a FROM
                 // which has the same name as the a MDD field.
@@ -437,8 +460,9 @@ public class Pass1FunctionInliner {
 
             while ((query = rd.readLine()) != null) {
                 line++;
-                if (query.trim().startsWith("#"))
+                if (query.trim().startsWith("#")) {
                     continue;
+                }
 
                 AST firstAST = QueryAnalysisProvider.parseQuery(QueryAnalysisProvider.checkForFrom(query));
                 AST f = QueryAnalysisProvider.parseQuery(QueryAnalysisProvider.checkForFrom(query));

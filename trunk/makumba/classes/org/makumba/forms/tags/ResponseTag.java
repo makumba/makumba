@@ -68,8 +68,9 @@ public class ResponseTag extends javax.servlet.jsp.tagext.TagSupport {
                 session.removeAttribute(ResponderFactory.RESPONSE_FORMATTED_STRING_NAME + suffix);
             }
 
-            if (response != null)
+            if (response != null) {
                 pageContext.getOut().print(response);
+            }
         } catch (IOException e) {
             throw new RuntimeWrappedException(e);
         }

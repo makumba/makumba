@@ -45,12 +45,14 @@ public class Evaluator implements ComposedQuery.Evaluator {
         int last = 0;
         while (true) {
             begin = s.indexOf("#{", last);
-            if (begin == -1)
+            if (begin == -1) {
                 return ret.append(s.substring(last)).toString();
+            }
             ret.append(s.substring(last, begin));
             end = s.indexOf("}", begin + 2);
-            if (end == -1)
+            if (end == -1) {
                 throw new org.makumba.ProgrammerError("unpaired #{ in " + s);
+            }
             try {
                 ret.append(pc.getExpressionEvaluator().evaluate("$" + s.substring(begin + 1, end + 1), Object.class,
                     pc.getVariableResolver(), null)); // a:b() functions not supported yet

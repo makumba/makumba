@@ -50,8 +50,9 @@ public class ParserTest {
                 "org/makumba/providers/query/mql/queries.txt").getContent()));
             String query = null;
             while ((query = rd.readLine()) != null) {
-                if (query.startsWith("#automaticLeftJoin"))
+                if (query.startsWith("#automaticLeftJoin")) {
                     automaticLeftJoin = true;
+                }
                 if (!query.trim().startsWith("#")) {
                     analyseQuery(line, query, automaticLeftJoin);
                 }
@@ -143,14 +144,16 @@ public class ParserTest {
             }
 
             error(line + ":" + (mqlThr == null ? " only in" : "") + " OQL: " + t.getMessage() + " " + query);
-            if (mqlThr == null)
+            if (mqlThr == null) {
                 error(line + ": MQL SQL: " + mql_sql);
+            }
             return;
         }
         if (mqlThr != null) {
             error(line + ": only in MQL: " + mqlThr.getMessage() + " " + query);
-            if (!(mqlThr instanceof OQLParseError))
+            if (!(mqlThr instanceof OQLParseError)) {
                 mqlThr.printStackTrace();
+            }
         }
     }
 
@@ -175,7 +178,7 @@ public class ParserTest {
             }
             fieldsDone.add(s);
         }
-        if (mdd2 != null)
+        if (mdd2 != null) {
             for (String s : mdd2.getFieldNames()) {
                 if (!fieldsDone.contains(s)) {
                     FieldDefinition fd2 = mdd2.getFieldDefinition(s);
@@ -184,6 +187,7 @@ public class ParserTest {
                     sb.append("\n");
                 }
             }
+        }
     }
 
     private static void appendFieldDefinition(StringBuffer sb, FieldDefinition fd) {

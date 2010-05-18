@@ -173,8 +173,9 @@ public class MDDParser extends MDDBaseParser {
         }
 
         AST tree = parser.getAST();
-        if (tree != null)
+        if (tree != null) {
             shift(tree, expression);
+        }
 
         // System.out.println("/////////////// Expression parser");
         // MakumbaDumpASTVisitor visitor = new MakumbaDumpASTVisitor(false);
@@ -218,8 +219,9 @@ public class MDDParser extends MDDBaseParser {
         }
 
         AST tree = parser.getAST();
-        if (tree != null)
+        if (tree != null) {
             shiftHql(tree, expression, offset);
+        }
 
         /* FIXME we can't do this here because then we want to access the MDD from within the inliner and it doesn't exist yet
         // now that we did the parsing, we also try to inline the AST
@@ -241,20 +243,24 @@ public class MDDParser extends MDDBaseParser {
         ((MDDAST) toShift).setLine(parent.getLine());
         ((MDDAST) toShift).setCol(parent.getColumn() + toShift.getColumn());
 
-        if (toShift.getNextSibling() != null)
+        if (toShift.getNextSibling() != null) {
             shift(toShift.getNextSibling(), parent);
-        if (toShift.getFirstChild() != null)
+        }
+        if (toShift.getFirstChild() != null) {
             shift(toShift.getFirstChild(), parent);
+        }
     }
 
     private void shiftHql(AST toShift, AST parent, int offset) {
         ((Node) toShift).setLine(parent.getLine());
         ((Node) toShift).setCol(parent.getColumn() + toShift.getColumn() + offset);
 
-        if (toShift.getNextSibling() != null)
+        if (toShift.getNextSibling() != null) {
             shiftHql(toShift.getNextSibling(), parent, offset);
-        if (toShift.getFirstChild() != null)
+        }
+        if (toShift.getFirstChild() != null) {
             shiftHql(toShift.getFirstChild(), parent, offset);
+        }
     }
 
     @Override

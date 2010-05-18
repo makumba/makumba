@@ -47,8 +47,9 @@ public class SoftNamedResources extends NamedResources {
         NameValue nv = null;
         SoftReference<NameValue> sr = (SoftReference<NameValue>) values.get(hash);
         if (sr == null || (nv = sr.get()) == null) {
-            if (sr != null && nv == null)
+            if (sr != null && nv == null) {
                 diff--;
+            }
             values.put(hash, new SoftReference<NameValue>(nv = new NameValue(name, hash, f), queue));
             misses++;
         } else {
@@ -64,8 +65,9 @@ public class SoftNamedResources extends NamedResources {
 
     @Override
     public synchronized int size() {
-        while (queue.poll() != null)
+        while (queue.poll() != null) {
             diff++;
+        }
 
         // sanity check
         // int diff2=0;

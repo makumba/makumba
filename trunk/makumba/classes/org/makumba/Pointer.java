@@ -100,8 +100,9 @@ public class Pointer implements java.io.Serializable {
     static long crc(long v) {
         long r = 0;
         for (int i = 0; i < 32; i++) {
-            if ((v & 1) == 1)
+            if ((v & 1) == 1) {
                 r++;
+            }
             v = v >> 1;
         }
         return r;
@@ -135,15 +136,17 @@ public class Pointer implements java.io.Serializable {
         }
         n = l & 0xffffffffl;
         n = n ^ hc;
-        if (l >> 32 != (crc(n) & 0xfl))
+        if (l >> 32 != (crc(n) & 0xfl)) {
             throw new InvalidValueException("invalid external pointer for type " + type + " : " + externalForm);
+        }
     }
 
     /** see if this Pointer is equal with the object provided */
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Pointer))
+        if (!(o instanceof Pointer)) {
             return false;
+        }
         Pointer p = (Pointer) o;
         if (!p.getType().equals(getType())) {
             System.err.println("warning: " + new InvalidValueException(this, p));

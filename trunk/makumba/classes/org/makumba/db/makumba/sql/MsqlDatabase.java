@@ -39,8 +39,9 @@ public class MsqlDatabase extends org.makumba.db.makumba.sql.Database {
     protected String getTableName(String s) {
         // FIXME should have a special name resolver
         // s= super.getTableName(s);
-        if (s.charAt(0) == '_')
+        if (s.charAt(0) == '_') {
             s = "x" + s.substring(1);
+        }
         return s;
     }
 

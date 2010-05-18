@@ -37,15 +37,16 @@ public class NameCase {
                 wasSpaceChar = false;
                 wasLowerCase = false;
                 sb.append(c);
-            } else if (c == ' ')
+            } else if (c == ' ') {
                 if (!wasSpaceChar) {
                     wasSpace = true;
                     wasSpaceChar = true;
                     wasLowerCase = false;
                     sb.append(c);
-                } else
+                } else {
                     ;
-            else {
+                }
+            } else {
                 if (wasSpace) {
                     sb.append(Character.toUpperCase(c));
                     wasLowerCase = false;
@@ -65,9 +66,10 @@ public class NameCase {
             }
         }
         String ret = sb.toString();
-        if (!s.equals(ret))
+        if (!s.equals(ret)) {
             java.util.logging.Logger.getLogger("org.makumba.import").info(
                 "org.makumba.util.NameCase: " + s + " -> " + ret);
+        }
         return ret;
     }
 

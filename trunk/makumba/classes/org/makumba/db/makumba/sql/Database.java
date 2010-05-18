@@ -83,22 +83,28 @@ public class Database extends org.makumba.db.makumba.Database {
     }
 
     static public boolean supportsUTF8() {
-        if (requestUTF8 == false)
+        if (requestUTF8 == false) {
             return false;
-        if (sqlDrivers.getProperty(eng + ".utf8") == null)
+        }
+        if (sqlDrivers.getProperty(eng + ".utf8") == null) {
             return false;
-        if (sqlDrivers.getProperty(eng + ".utf8").equals("true"))
+        }
+        if (sqlDrivers.getProperty(eng + ".utf8").equals("true")) {
             return requestUTF8;
+        }
         return false;
     }
 
     static public boolean supportsForeignKeys() {
-        if (requestForeignKeys == false)
+        if (requestForeignKeys == false) {
             return false;
-        if (sqlDrivers.getProperty(eng + ".foreignKeys") == null)
+        }
+        if (sqlDrivers.getProperty(eng + ".foreignKeys") == null) {
             return false;
-        if (sqlDrivers.getProperty(eng + ".foreignKeys").equals("true"))
+        }
+        if (sqlDrivers.getProperty(eng + ".foreignKeys").equals("true")) {
             return requestForeignKeys;
+        }
         return false;
     }
 
@@ -176,8 +182,9 @@ public class Database extends org.makumba.db.makumba.Database {
         nrh = new NameResolverHook(this);
         try {
 
-            if (p.getProperty("encoding") != null && p.getProperty("encoding").equals("utf8"))
+            if (p.getProperty("encoding") != null && p.getProperty("encoding").equals("utf8")) {
                 requestUTF8 = true;
+            }
 
             // set engine
             eng = p.getProperty("#sqlEngine");
@@ -195,21 +202,25 @@ public class Database extends org.makumba.db.makumba.Database {
 
             for (Enumeration e = p.keys(); e.hasMoreElements();) {
                 s = (String) e.nextElement();
-                if (!s.startsWith("sql."))
+                if (!s.startsWith("sql.")) {
                     continue;
+                }
                 connectionConfig.put(s.substring(4), p.getProperty(s).trim());
             }
 
             String driver = p.getProperty("sql.driver");
 
-            if (p.getProperty("foreignKeys") != null && p.getProperty("foreignKeys").equals("true"))
+            if (p.getProperty("foreignKeys") != null && p.getProperty("foreignKeys").equals("true")) {
                 requestForeignKeys = true;
+            }
 
-            if (driver == null)
+            if (driver == null) {
                 driver = sqlDrivers.getProperty(getConfiguration("#sqlEngine"));
+            }
 
-            if (driver == null)
+            if (driver == null) {
                 driver = sqlDrivers.getProperty(url.substring(5, url.indexOf(':', 6)));
+            }
 
             java.util.logging.Logger.getLogger("org.makumba.db.init").info(
                 "Makumba " + MakumbaSystem.getVersion() + " INIT: " + url);
@@ -307,14 +318,15 @@ public class Database extends org.makumba.db.makumba.Database {
         boolean failed = false;
         try {
             ResultSet rs = dbc.getMetaData().getColumns(null, null, "%", null);
-            if (rs == null)
+            if (rs == null) {
                 failed = true;
-            else
+            } else {
                 while (rs.next()) {
                     String tn = rs.getString("TABLE_NAME");
                     Vector<Hashtable<String, Object>> v = c.get(tn);
-                    if (v == null)
+                    if (v == null) {
                         c.put(tn, v = new Vector<Hashtable<String, Object>>());
+                    }
                     Hashtable<String, Object> h = new Hashtable<String, Object>(5);
                     h.put("COLUMN_NAME", rs.getString("COLUMN_NAME"));
                     h.put("DATA_TYPE", new Integer(rs.getInt("DATA_TYPE")));
@@ -323,6 +335,7 @@ public class Database extends org.makumba.db.makumba.Database {
                     h.put("IS_NULLABLE", rs.getString("IS_NULLABLE"));
                     v.addElement(h);
                 }
+            }
             rs.close();
         } catch (SQLException e) {
             failed = true;
@@ -343,8 +356,9 @@ public class Database extends org.makumba.db.makumba.Database {
         String _url = "jdbc:";
         _url += eng + ":";
         String local = getEngineProperty(eng + ".localJDBC");
-        if (local == null || !local.equals("true"))
+        if (local == null || !local.equals("true")) {
             _url += "//" + p.getProperty("#host") + "/";
+        }
         return _url + p.getProperty("#database") + (supportsUTF8() ? "?useEncoding=true&characterEncoding=UTF-8" : "");
     }
 
@@ -374,10 +388,11 @@ public class Database extends org.makumba.db.makumba.Database {
         try {
             if ((tcs = getConfiguration(MakumbaTransactionProvider.TABLE_CLASS)) != null
                     || (tcs = sqlDrivers.getProperty(getConfiguration("#sqlEngine") + "."
-                            + MakumbaTransactionProvider.TABLE_CLASS)) != null)
+                            + MakumbaTransactionProvider.TABLE_CLASS)) != null) {
                 return Class.forName(tcs);
-            else
+            } else {
                 return getTableClass();
+            }
         } catch (Exception e) {
             throw new org.makumba.MakumbaError(e);
         }
@@ -395,13 +410,13 @@ public class Database extends org.makumba.db.makumba.Database {
         int n = s.length();
         for (int i = 0; i < n; i++) {
             char c = s.charAt(i);
-            if (c == '\'')
+            if (c == '\'') {
                 sb.append('\\');
-            else if (c == '\\')
+            } else if (c == '\\') {
                 sb.append('\\');
-            else if (c == '\"')
+            } else if (c == '\"') {
                 sb.append('\\');
-            else if (c == 0) {
+            } else if (c == 0) {
                 sb.append("\\0");
                 continue;
             }
@@ -424,8 +439,9 @@ public class Database extends org.makumba.db.makumba.Database {
      */
     protected void checkState(SQLException e, String state, String command) {
         state = sqlDrivers.getProperty(getConfiguration("#sqlEngine") + "." + state);
-        if (state != null && e.getSQLState().equals(state))
+        if (state != null && e.getSQLState().equals(state)) {
             return;
+        }
         java.util.logging.Logger.getLogger("org.makumba.db.init.tablechecking").log(java.util.logging.Level.SEVERE,
             "" + e.getSQLState(), e);
         throw new org.makumba.DBError(e, command);
@@ -443,8 +459,9 @@ public class Database extends org.makumba.db.makumba.Database {
             ps.close();
             return n;
         } catch (SQLException e) {
-            if (isDuplicateException(e))
+            if (isDuplicateException(e)) {
                 return -1;
+            }
             logException(e);
             throw new DBError(e);
         }
@@ -477,11 +494,13 @@ public class Database extends org.makumba.db.makumba.Database {
     }
 
     static void logException(SQLException e, DBConnection dbc, Level lev) {
-        if (!java.util.logging.Logger.getLogger("org.makumba.db.exception").isLoggable(lev))
+        if (!java.util.logging.Logger.getLogger("org.makumba.db.exception").isLoggable(lev)) {
             return;
+        }
         String log = "";
-        if (dbc != null)
+        if (dbc != null) {
             log = dbc.toString() + " ";
+        }
         for (SQLException se1 = e; se1 != null; se1 = se1.getNextException()) {
             log += se1.getMessage() + " SQL state: " + se1.getSQLState() + " error code :" + se1.getErrorCode() + "\n";
         }

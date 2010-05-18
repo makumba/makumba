@@ -47,15 +47,17 @@ public class QueryContext {
     public AST createFromElement(String path, AST alias, int joinType) throws SemanticException {
         addFrom(path, alias, joinType);
 
-        if (inTree == null)
+        if (inTree == null) {
             return inTree = (MqlNode) ASTUtil.create(walker.fact, MqlSqlWalker.FROM_FRAGMENT, "fromFragment");
-        else
+        } else {
             return null;
+        }
     }
 
     public void close() {
-        if (inTree != null)
+        if (inTree != null) {
             inTree.setTextList(getFrom());
+        }
     }
 
     private TextList getFrom() {
@@ -146,16 +148,18 @@ public class QueryContext {
         joins.addElement(new Join(l1, f1, name, f2, joinType));
         joinNames.put(l1 + "." + f1, name);
         setLabelType(name, type, location);
-        if (leftJoinedImplicit.contains(l1) && joinType == HqlSqlTokenTypes.LEFT_OUTER)
+        if (leftJoinedImplicit.contains(l1) && joinType == HqlSqlTokenTypes.LEFT_OUTER) {
             leftJoinedImplicit.add(name);
+        }
         return name;
     }
 
     private void addLabelField(String label) {
-        if (labels.get(label) != null)
+        if (labels.get(label) != null) {
             labelFields.add(label);
-        else
+        } else {
             parent.addLabelField(label);
+        }
     }
 
     /**
@@ -169,21 +173,24 @@ public class QueryContext {
     String join(String label, String field, String labelf, int joinType, AST location) throws SemanticException {
         // need protection to avoid repeating a join
         String s = joinNames.get(label + "." + field);
-        if (s != null)
+        if (s != null) {
             return s;
+        }
 
         DataDefinition foreign = null, sub = null;
         DataDefinition type = findLabelType(label);
         String index = type.getIndexPointerFieldName();
 
         FieldDefinition fi = type.getFieldDefinition(field);
-        if (fi == null)
+        if (fi == null) {
             throw new SemanticException("no such field \"" + field + "\" in makumba type \"" + type.getName() + "\"",
                     "", location.getLine(), location.getColumn());
+        }
 
         // if the label is defined in a parent, and this is a pointer, we let the parent do the join
-        if (fi.getType().startsWith("ptr") && labels.get(label) == null && parent != null)
+        if (fi.getType().startsWith("ptr") && labels.get(label) == null && parent != null) {
             return parent.join(label, field, labelf, joinType, location);
+        }
 
         try {
             foreign = fi.getForeignTable();
@@ -195,11 +202,13 @@ public class QueryContext {
         }
 
         String label2 = label;
-        if (labelf != null)
+        if (labelf != null) {
             label2 = labelf;
+        }
 
-        while (findLabelType(label2) != null)
+        while (findLabelType(label2) != null) {
             label2 += "x";
+        }
         if (joinType == -1 && leftJoinedImplicit.contains(label)) {
             joinType = HqlSqlTokenTypes.LEFT_OUTER;
         }
@@ -216,35 +225,39 @@ public class QueryContext {
                 return ret;
             }
         }
-        if (fi.getType().equals("ptr") || fi.getType().equals("ptrRel"))
+        if (fi.getType().equals("ptr") || fi.getType().equals("ptrRel")) {
             return addJoin(label, field, label2, foreign.getIndexPointerFieldName(), foreign, joinType, location);
-        else if (fi.getType().equals("ptrOne"))
+        } else if (fi.getType().equals("ptrOne")) {
             return addJoin(label, field, label2, sub.getIndexPointerFieldName(), sub, joinType, location);
-
-        else if (fi.getType().equals("setComplex") || fi.getType().equals("setintEnum")
-                || fi.getType().equals("setcharEnum"))
+        } else if (fi.getType().equals("setComplex") || fi.getType().equals("setintEnum")
+                || fi.getType().equals("setcharEnum")) {
             return addJoin(label, index, label2, index, sub, joinType, location);
-        else if (fi.getType().equals("set")) {
+        } else if (fi.getType().equals("set")) {
             label2 = label + "x";
-            while (findLabelType(label2) != null)
+            while (findLabelType(label2) != null) {
                 label2 += "x";
+            }
 
             addJoin(label, index, label2, index, sub, joinType, location);
             labels.put(label2, sub);
-            if (joinType == HqlSqlTokenTypes.LEFT_OUTER && leftJoinedImplicit.contains(label))
+            if (joinType == HqlSqlTokenTypes.LEFT_OUTER && leftJoinedImplicit.contains(label)) {
                 leftJoinedImplicit.add(label2);
+            }
 
             String label3 = label;
-            if (labelf != null)
+            if (labelf != null) {
                 label3 = labelf;
-            while (findLabelType(label3) != null)
+            }
+            while (findLabelType(label3) != null) {
                 label3 += "x";
+            }
 
             return addJoin(label2, sub.getSetMemberFieldName(), label3, foreign.getIndexPointerFieldName(), foreign,
                 joinType, location);
-        } else
+        } else {
             throw new SemanticException("\"" + field + "\" is not a set or pointer in makumba type \"" + type.getName()
                     + "\"", "", location.getLine(), location.getColumn());
+        }
     }
 
     public void addFrom(String frm, AST labelAST, int joinType) throws SemanticException {
@@ -276,9 +289,10 @@ public class QueryContext {
                 String field = iterator;
                 i = iterator.indexOf('.');
                 if (i == -1) {
-                    if (findLabelType(label) != null)
+                    if (findLabelType(label) != null) {
                         throw new SemanticException("label defined twice: " + label, "", labelAST.getLine(),
                                 labelAST.getColumn());
+                    }
                     join(lbl, field, label, joinType, labelAST);
                     break;
                 }
@@ -286,9 +300,10 @@ public class QueryContext {
                 lbl = join(lbl, field, null, joinType, labelAST);
             }
         } else {
-            if (findLabelType(frm) == null)
+            if (findLabelType(frm) == null) {
                 throw new antlr.SemanticException("could not find type \"" + frm + "\"", "", labelAST.getLine(),
                         labelAST.getColumn());
+            }
             aliases.put(label, frm);
         }
 
@@ -297,28 +312,32 @@ public class QueryContext {
     private String findLabel(String frm, String lbl, AST location) throws SemanticException {
         if (labels.get(lbl) == null) {
             String lbl1 = aliases.get(lbl);
-            if (lbl1 == null)
-                if (parent != null)
+            if (lbl1 == null) {
+                if (parent != null) {
                     lbl1 = parent.findLabel(frm, lbl, location);
-                else
+                } else {
                     throw new SemanticException("could not find type \"" + frm + "\" or label \"" + lbl + "\"", "",
                             location.getLine(), location.getColumn());
+                }
+            }
             lbl = lbl1;
         }
         return lbl;
     }
 
     private void setLabelType(String label, DataDefinition type, AST location) throws SemanticException {
-        if (findLabelType(label) != null)
+        if (findLabelType(label) != null) {
             throw new antlr.SemanticException("label defined twice: " + label, "", location.getLine(),
                     location.getColumn());
+        }
         labels.put(label, type);
     }
 
     DataDefinition findLabelType(String label) {
         DataDefinition d = labels.get(label);
-        if (d == null && parent != null)
+        if (d == null && parent != null) {
             return parent.findLabelType(label);
+        }
         return d;
     }
 
@@ -339,8 +358,9 @@ public class QueryContext {
             .append(" ").append(label);
             wroteRange = true;
 
-            if (joinClosely)
+            if (joinClosely) {
                 writeJoinsOf(label, ret);
+            }
         }
     }
 
@@ -378,8 +398,9 @@ public class QueryContext {
     }
 
     private void writeJoin(Join j, TextList ret) {
-        if (j.written)
+        if (j.written) {
             return;
+        }
         if (walker.optimizeJoins && !isFieldUsed(j)) {
             rewriteProjections(j);
             return;
@@ -408,10 +429,10 @@ public class QueryContext {
         .append(" ").append(j.label2);
 
         TextList cond = ret;
-        if (!isCorrelated(j))
+        if (!isCorrelated(j)) {
             // if this join is not correlating with a label from a superquery
             ret.append(" ON ");
-        else {
+        } else {
             // if we are correlated, we add a condition to the filters
             cond = new TextList();
             filters.add(cond);
@@ -437,8 +458,9 @@ public class QueryContext {
     }
 
     private TextList findLabelText(String label) {
-        if (labels.get(label) == null)
+        if (labels.get(label) == null) {
             return parent.findLabelText(label);
+        }
 
         return addLabelText(label, labels.get(label).getIndexPointerFieldName());
     }
@@ -459,8 +481,9 @@ public class QueryContext {
 
     public TextList selectLabel(String label, MqlNode node) {
         DataDefinition dd = labels.get(label);
-        if (dd == null)
+        if (dd == null) {
             return parent.selectLabel(label, node);
+        }
         String field = null;
         if (dd.getParentField() != null) {
             String stp = dd.getParentField().getType();
@@ -470,9 +493,10 @@ public class QueryContext {
                 labelFields.add(label);
                 node.setMakType(dd.getFieldDefinition(dd.getSetMemberFieldName()));
             }
-            if (stp.equals("setComplex"))
+            if (stp.equals("setComplex")) {
                 // there is no way to take out the joins for setComplex label selects
                 labelFields.add(label);
+            }
         }
         if (field == null) {
             field = dd.getIndexPointerFieldName();
@@ -509,9 +533,10 @@ public class QueryContext {
             return;
         }
 
-        if (labelType.getFieldDefinition(field) == null)
+        if (labelType.getFieldDefinition(field) == null) {
             throw new SemanticException("No such field " + field + " in " + labelType, "", mqlDotNode.getLine(),
                     mqlDotNode.getColumn());
+        }
 
         labelFields.add(label);
         mqlDotNode.setTextList(makeTextList(label, field));

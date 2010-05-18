@@ -55,8 +55,9 @@ public class Pass1ASTPrinter {
      *            string buffer result
      */
     private static void printRecursive(AST parent, AST ast, StringBuffer sb) {
-        if (ast == null)
+        if (ast == null) {
             return;
+        }
         space(sb);
         AST right;
         boolean noPar = false;
@@ -86,8 +87,9 @@ public class Pass1ASTPrinter {
 
                 // this will print all the next siblings like WHERE, ORDERBY, etc.
                 printRecursive(null, where, sb);
-                if (subquery)
+                if (subquery) {
                     sb.append(")");
+                }
                 break;
 
             case HqlTokenTypes.SELECT:
@@ -117,12 +119,14 @@ public class Pass1ASTPrinter {
             case HqlTokenTypes.IN_LIST:
                 noPar = ast.getFirstChild().getType() == HqlTokenTypes.ELEMENTS;
                 // no parantheses in IN_LIST if it contains elements
-                if (!noPar)
+                if (!noPar) {
                     sb.append('(');
+                }
                 // comma-separated children
                 printList(ast, ast.getFirstChild(), sb);
-                if (!noPar)
+                if (!noPar) {
                     sb.append(')');
+                }
                 break;
 
             case HqlTokenTypes.FROM:
@@ -169,10 +173,11 @@ public class Pass1ASTPrinter {
                 break;
 
             case HqlTokenTypes.EXPR_LIST:
-                if (sb.charAt(sb.length() - 1) == ' ')
+                if (sb.charAt(sb.length() - 1) == ' ') {
                     sb.setCharAt(sb.length() - 1, '(');
-                else
+                } else {
                     sb.append('(');
+                }
                 // comma-separated children
                 printList(ast, ast.getFirstChild(), sb);
                 sb.append(')');
@@ -221,8 +226,9 @@ public class Pass1ASTPrinter {
                 // we compare with the parent operator, if any
                 prio = checkPriority(parent, ast);
                 // if we are lower precedence, we print parantheses
-                if (prio)
+                if (prio) {
                     sb.append('(');
+                }
                 // disconnect first from second child
                 right = ast.getFirstChild().getNextSibling();
                 ast.getFirstChild().setNextSibling(null);
@@ -232,8 +238,9 @@ public class Pass1ASTPrinter {
                 printKeyword(ast, sb);
                 // print second child
                 printRecursive(ast, right, sb);
-                if (prio)
+                if (prio) {
                     sb.append(')');
+                }
                 break;
 
             case HqlTokenTypes.IS_NULL:
@@ -250,8 +257,9 @@ public class Pass1ASTPrinter {
 
         }
         // the end of case
-        if (parent != null && parent.getType() == HqlTokenTypes.CASE && ast.getNextSibling() == null)
+        if (parent != null && parent.getType() == HqlTokenTypes.CASE && ast.getNextSibling() == null) {
             sb.append(" end");
+        }
 
         // we then print the next sibling, with the same parent.
         // this tail recursion is ready to be eliminated but I leave it in for code clarity
@@ -265,47 +273,54 @@ public class Pass1ASTPrinter {
         int child = ast.getType();
 
         if (child == HqlTokenTypes.OR && //
-                parent == HqlTokenTypes.AND)
+                parent == HqlTokenTypes.AND) {
             return true;
+        }
         if ((child == HqlTokenTypes.AND || child == HqlTokenTypes.OR) && //
-                (parent == HqlTokenTypes.EQ || parent == HqlTokenTypes.NE || parent == HqlTokenTypes.NOT))
+                (parent == HqlTokenTypes.EQ || parent == HqlTokenTypes.NE || parent == HqlTokenTypes.NOT)) {
             return true;
+        }
         if ((child == HqlTokenTypes.PLUS || child == HqlTokenTypes.MINUS)
                 && //
                 (parent == HqlTokenTypes.STAR || parent == HqlTokenTypes.DIV) || parent == HqlTokenTypes.UNARY_MINUS
-                || parent == HqlTokenTypes.UNARY_PLUS)
-
+                || parent == HqlTokenTypes.UNARY_PLUS) {
             return true;
+        }
         return false;
 
     }
 
     // print a space if we didn't print already or we are not after an open para
     private static void space(StringBuffer sb) {
-        if (sb.length() == 0)
+        if (sb.length() == 0) {
             return;
+        }
         char last = sb.charAt(sb.length() - 1);
-        if (!(last == ' ' || last == '(' || last == ':' || last == '.'))
+        if (!(last == ' ' || last == '(' || last == ':' || last == '.')) {
             sb.append(' ');
+        }
     }
 
     private static void printKeyword(AST ast, StringBuffer sb) {
         // print spaces before and after, if we are not a dot
-        if (ast.getType() != HqlTokenTypes.DOT)
+        if (ast.getType() != HqlTokenTypes.DOT) {
             space(sb);
+        }
         // the indexOf(}) is used for {not}in and {not}like.
         // it normally returns -1, and then +1 it gives 0, i.e. the whole string
         sb.append(ast.getText().substring(ast.getText().lastIndexOf('}') + 1));
-        if (ast.getType() != HqlTokenTypes.DOT)
+        if (ast.getType() != HqlTokenTypes.DOT) {
             sb.append(' ');
+        }
     }
 
     /*
      * print a comma-separated list
      */
     private static void printList(AST parent, AST ast, StringBuffer sb) {
-        if (ast == null)
+        if (ast == null) {
             return;
+        }
         // disconnect first from second child
         AST right = ast.getNextSibling();
         ast.setNextSibling(null);
@@ -314,8 +329,9 @@ public class Pass1ASTPrinter {
         while (right != null) {
             // comma is not printed after DISTINCT, before ASC or DESC
             if (ast.getType() != HqlTokenTypes.DISTINCT && right.getType() != HqlTokenTypes.ASCENDING
-                    && right.getType() != HqlTokenTypes.DESCENDING)
+                    && right.getType() != HqlTokenTypes.DESCENDING) {
                 sb.append(",");
+            }
             // iterate in list
             ast = right;
             // disconnect next element
@@ -433,13 +449,14 @@ public class Pass1ASTPrinter {
                         System.err.println(line + ": plain: " + t + " " + query);
                     }
 
-                    if (inline)
+                    if (inline) {
                         try {
                             AST a = QueryProvider.getQueryAnalzyer("oql").inlineFunctions(query);
                             testPrinter(a, FunctionInliner.inline(query, QueryProvider.getQueryAnalzyer("oql")));
                         } catch (Throwable t) {
                             System.err.println(line + ": inlined: " + t + " " + query);
                         }
+                    }
                 }
                 line++;
             }

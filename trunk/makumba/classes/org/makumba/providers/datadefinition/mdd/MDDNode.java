@@ -114,8 +114,9 @@ public class MDDNode extends CommonAST {
         StringBuffer sb = new StringBuffer();
         sb.append("Type name: " + getName() + "\n");
         sb.append("Type origin: " + origin + "\n");
-        if (parent != null)
+        if (parent != null) {
             sb.append("Type parent: " + parent + "\n");
+        }
         if (titleField != null) {
             sb.append("Title field: " + titleField.getText());
         }

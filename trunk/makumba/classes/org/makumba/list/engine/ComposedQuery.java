@@ -166,8 +166,9 @@ public class ComposedQuery {
     public void init() {
         initKeysets();
         fromAnalyzerOQL = "SELECT 1 ";
-        if (getFromSection() != null)
+        if (getFromSection() != null) {
             fromAnalyzerOQL += "FROM " + getFromSection();
+        }
     }
 
     /**
@@ -204,8 +205,9 @@ public class ComposedQuery {
      *            the subquery
      */
     protected void addSubquery(ComposedSubquery q) {
-        if (subqueries == 0)
+        if (subqueries == 0) {
             prependFromToKeyset();
+        }
         subqueries++;
     }
 
@@ -219,14 +221,16 @@ public class ComposedQuery {
         projections.removeAllElements();
 
         // add the previous keyset
-        for (int i = 0; i < keyset.size(); i++)
+        for (int i = 0; i < keyset.size(); i++) {
             checkProjectionInteger(e.nextElement());
+        }
 
         for (StringTokenizer st = new StringTokenizer(sections[FROM] == null ? "" : sections[FROM], ","); st.hasMoreTokens();) {
             String label = st.nextToken().trim();
             int j = label.lastIndexOf(" ");
-            if (j == -1)
+            if (j == -1) {
                 throw new RuntimeException("invalid FROM");
+            }
             label = label.substring(j + 1).trim();
 
             label = qep.getPrimaryKeyNotation(label);
@@ -236,8 +240,9 @@ public class ComposedQuery {
             keyset.addElement(addProjection(label));
         }
 
-        while (e.hasMoreElements())
+        while (e.hasMoreElements()) {
             checkProjectionInteger(e.nextElement());
+        }
     }
 
     /**
@@ -292,8 +297,9 @@ public class ComposedQuery {
      */
     String checkProjection(String expr) {
         Integer i = checkProjectionInteger(expr);
-        if (i == null)
+        if (i == null) {
             return null;
+        }
         return columnName(i);
     }
 
@@ -317,14 +323,17 @@ public class ComposedQuery {
      * @return The checked expression, transformed according to the projections
      */
     String checkExpr(String str) {
-        if (str == null)
+        if (str == null) {
             return null;
-        if (str.trim().length() == 0)
+        }
+        if (str.trim().length() == 0) {
             return null;
-        if (!qep.selectGroupOrOrderAsLabels())
+        }
+        if (!qep.selectGroupOrOrderAsLabels()) {
             return str;
         // if(projections.size()==1)
         // new Throwable().printStackTrace();
+        }
 
         StringBuffer ret = new StringBuffer();
         String sep = "";
@@ -340,9 +349,10 @@ public class ComposedQuery {
             }
             // if the projection doesnt exist, this returns null, but it adds a new projection
             String p = checkProjection(s);
-            if (p == null)
+            if (p == null) {
                 // and the second time this doesn#t return null, but the projection name
                 p = checkProjection(s);
+            }
             ret.append(p).append(rest);
         }
         return ret.toString();
@@ -386,8 +396,9 @@ public class ComposedQuery {
             // VARFROM is not part of type analysis
             // (i.e. projections don't know about it)
             if (!typeAnalysisOnly && derivedSections.length == 5 && derivedSections[VARFROM] != null
-                    && derivedSections[VARFROM].trim().length() > 0)
+                    && derivedSections[VARFROM].trim().length() > 0) {
                 sb.append(",").append(derivedSections[VARFROM]);
+            }
         }
         if (!typeAnalysisOnly) {
             if ((o = derivedSections[WHERE]) != null && derivedSections[WHERE].trim().length() > 0) {
@@ -404,8 +415,9 @@ public class ComposedQuery {
             }
         }
         String ret = sb.toString();
-        if (!typeAnalysisOnly)
+        if (!typeAnalysisOnly) {
             return ret;
+        }
 
         // replace names with numbers
         /*        ArgumentReplacer ar = new ArgumentReplacer(ret);
@@ -437,8 +449,9 @@ public class ComposedQuery {
         analyze();
         String[] vars = new String[5];
         vars[0] = getFromSection();
-        for (int i = 1; i < 5; i++)
+        for (int i = 1; i < 5; i++) {
             vars[i] = derivedSections[i] == null ? null : v.evaluate(derivedSections[i]);
+        }
 
         if (derivedSections.length > STATIC_WHERE && StringUtils.isNotBlank(derivedSections[STATIC_WHERE])) {
             // add the static condition to the WHERE part
@@ -455,10 +468,12 @@ public class ComposedQuery {
     }
 
     public synchronized void analyze() {
-        if (projections.isEmpty())
+        if (projections.isEmpty()) {
             prependFromToKeyset();
-        if (typeAnalyzerOQL == null)
+        }
+        if (typeAnalyzerOQL == null) {
             typeAnalyzerOQL = computeQuery(derivedSections, true);
+        }
     }
 
     /**
