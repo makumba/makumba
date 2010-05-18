@@ -19,9 +19,9 @@ class ConfiguredDataSource {
     private String host;
 
     private String path;
-    
+
     private String hostAddress;
-    
+
     public String getHostAddress() {
         return hostAddress;
     }
@@ -82,7 +82,8 @@ class ConfiguredDataSource {
     }
 
     public String toString() {
-        return "dataSource:" + name + (host == null ? "": " host:" + hostAddress) + (path == null ? "" : " path:" + path);
+        return "dataSource:" + name + (host == null ? "" : " host:" + hostAddress)
+                + (path == null ? "" : " path:" + path);
     }
 
 }

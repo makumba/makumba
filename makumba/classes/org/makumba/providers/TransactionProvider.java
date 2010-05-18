@@ -27,7 +27,8 @@ public abstract class TransactionProvider implements SingletonHolder {
     static {
         for (int i = 0; i < transactionProviders.length; i += 2)
             try {
-                Method getInstance = Class.forName(transactionProviders[i + 1]).getDeclaredMethod("getInstance", new Class<?>[] {});
+                Method getInstance = Class.forName(transactionProviders[i + 1]).getDeclaredMethod("getInstance",
+                    new Class<?>[] {});
                 TransactionProvider tp = (TransactionProvider) getInstance.invoke(null, new Object[] {});
                 providerInstances.put(transactionProviders[i], tp);
             } catch (Throwable t) {
@@ -59,7 +60,7 @@ public abstract class TransactionProvider implements SingletonHolder {
     public Transaction getConnectionToDefault() {
         return getConnectionTo(getDefaultDataSourceName());
     }
-    
+
     /**
      * Opens a {@link Transaction} with the specified dataSource.
      * 
@@ -92,10 +93,10 @@ public abstract class TransactionProvider implements SingletonHolder {
         }
         return null;
     }
-    
+
     /** returns the query language according to the last connection **/
     protected String getQueryLanguage(TransactionProvider instance) {
-        switch(instance.getLastConnectionType()) {
+        switch (instance.getLastConnectionType()) {
             case makumba:
                 return providerInstances.get(DataSourceType.makumba.toString()).getQueryLanguageInternal();
             case hibernate:
@@ -106,7 +107,7 @@ public abstract class TransactionProvider implements SingletonHolder {
 
     /** returns the right CRUD provider according to the last connection **/
     protected CRUDOperationProvider getCRUD(TransactionProvider instance) {
-        switch(instance.getLastConnectionType()) {
+        switch (instance.getLastConnectionType()) {
             case makumba:
                 return providerInstances.get(DataSourceType.makumba.toString()).getCRUDInternal();
             case hibernate:
@@ -115,31 +116,30 @@ public abstract class TransactionProvider implements SingletonHolder {
         return null;
     }
 
-
     public String getDefaultDataSourceName() {
         return Configuration.getDefaultDataSourceName();
     }
 
     protected abstract Transaction getTransaction(String name);
-    
+
     protected abstract CRUDOperationProvider getCRUDInternal();
-    
+
     protected abstract String getQueryLanguageInternal();
-    
+
     protected abstract DataSourceType getLastConnectionType();
-    
+
     protected abstract void setLastConnectionType(DataSourceType type);
 
     public abstract CRUDOperationProvider getCRUD();
 
     public abstract String getQueryLanguage();
-    
+
     public abstract void closeDataSource(String dataSourceName);
-    
+
     public TransactionProvider() {
         org.makumba.commons.SingletonReleaser.register(this);
     }
-    
+
     public void release() {
         providerInstances.clear();
     }

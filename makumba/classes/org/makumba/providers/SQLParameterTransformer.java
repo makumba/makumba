@@ -22,7 +22,7 @@ public interface SQLParameterTransformer {
      * Initialises the SQLQueryGenerator. Called at resource configuration time
      */
     public void init(Map<String, Object> arguments);
-    
+
     /**
      * Provides the SQL query to be executed on the DBMS, with expanded and transformed parameters
      * 
@@ -39,14 +39,14 @@ public interface SQLParameterTransformer {
      * @return an object array containing the ordered parameter values
      */
     public Object[] toArgumentArray(Map<String, Object> arguments);
-    
+
     /**
      * Gets the types of the arguments
      * 
      * @return a DataDefinition with the types of all the arguments
      */
     public DataDefinition getSQLQueryArgumentTypes();
-    
+
     /**
      * The number of arguments of the query
      */

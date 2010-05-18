@@ -30,10 +30,10 @@ public abstract class QueryProvider implements SingletonHolder {
     private String dataSource;
 
     private QueryAnalysisProvider qap;
-    
+
     public QueryProvider() {
         org.makumba.commons.SingletonReleaser.register(this);
-        
+
         try {
             qap = analyzersByClass.get(getQueryAnalysisProviderClass());
         } catch (NullPointerException e) {
@@ -98,14 +98,15 @@ public abstract class QueryProvider implements SingletonHolder {
     public static QueryProvider makeQueryRunner(String string, String queryLang) {
         return makeQueryRunner(string, queryLang, null);
     }
+
     /**
      * Initalises the provider with the datasource
      * 
      * @param dataSource
      *            the source on which the query should be run
-     * @param a 
+     * @param a
      */
-    
+
     protected void init(String dataSource, Attributes a) {
         this.dataSource = dataSource;
     }
@@ -125,10 +126,10 @@ public abstract class QueryProvider implements SingletonHolder {
      *            until which record should results be returned
      * @return a Vector holding Dictionaries corresponding to a result
      */
-    public Vector<Dictionary<String, Object>> execute(String query, Map args, int offset, int limit){
+    public Vector<Dictionary<String, Object>> execute(String query, Map args, int offset, int limit) {
         return executeRaw(query, args, offset, limit);
     }
-    
+
     /**
      * Closes the environment, when all queries were executed
      */
@@ -142,7 +143,7 @@ public abstract class QueryProvider implements SingletonHolder {
     public String getDataSource() {
         return dataSource;
     }
-    
+
     public void release() {
         analyzersByClass.clear();
         analyzersByName.clear();
