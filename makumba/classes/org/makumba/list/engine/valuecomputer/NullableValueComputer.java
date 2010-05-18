@@ -18,6 +18,7 @@ class NullableValueComputer extends QueryValueComputer {
 
     /**
      * Makes a query that is identical to the parentQuery, but has expr as projection.
+     * 
      * @param parentListKey
      *            the key of the parent list
      * @param nullableExpr

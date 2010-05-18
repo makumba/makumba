@@ -36,9 +36,9 @@ public abstract class QueryValueComputer extends ValueComputer {
     public void makeQueryAtAnalysis(MultipleKey parentListKey, String keyDifference, String[] queryProps, String expr,
             PageCache pageCache) {
         this.expr = expr;
-        
+
         parentKey = parentListKey;
-        
+
         queryKey = new MultipleKey(parentKey, keyDifference);
 
         QueryTag.cacheQuery(pageCache, queryKey, queryProps, parentKey).checkProjectionInteger(expr);
@@ -51,6 +51,7 @@ public abstract class QueryValueComputer extends ValueComputer {
 
     /**
      * If other ValueComputers sharing the same valueQuery did not analyze it yet, we analyze it here.
+     * 
      * @param pageCache
      *            the page cache of the current page
      */
