@@ -15,8 +15,10 @@ public class FileRelations {
     public FileRelations(String relativeFilePath) {
         this.path = relativeFilePath;
         this.jspRelations = new HashMap<String, Vector<RelationOrigin>>();
-        this.javaRelations = new HashMap<String, Vector<RelationOrigin>>();;
-        this.mddRelations = new HashMap<String, Vector<RelationOrigin>>();;
+        this.javaRelations = new HashMap<String, Vector<RelationOrigin>>();
+        ;
+        this.mddRelations = new HashMap<String, Vector<RelationOrigin>>();
+        ;
     }
 
     private String path;
