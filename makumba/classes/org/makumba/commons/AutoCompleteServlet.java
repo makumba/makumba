@@ -141,8 +141,8 @@ public class AutoCompleteServlet extends HttpServlet {
                         + "WHERE " + titleExpr + " like '%" + value + "%' " + "ORDER BY title");
                 FieldDefinition titleFieldDef = dd.getFieldDefinition(fieldName).getPointedType().getFieldOrPointedFieldDefinition(
                     titleField);
-                if (titleFieldDef != null && titleFieldDef.getType().equals("ptr")) { // null if we have functions for
-                                                                                      // title fields
+                if (titleFieldDef != null && titleFieldDef.getType().equals("ptr")) { 
+                    // null if we have functions for title fields
                     titleExpr += ".id";
                 }
                 m.put("hql", "SELECT choice.id as choice, " + titleExpr + " as title FROM " + choiceType + " choice "

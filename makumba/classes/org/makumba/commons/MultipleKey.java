@@ -60,8 +60,11 @@ public class MultipleKey extends Vector<Object> implements Serializable {
 
     /**
      * Extends the Vector v and adds the object
-     * @param v An instance of Vector 
-     * @param o An object to be added
+     * 
+     * @param v
+     *            An instance of Vector
+     * @param o
+     *            An object to be added
      */
     public MultipleKey(Vector<Object> v, Object o) {
         this(v, v.size() + 1);

@@ -23,7 +23,6 @@
 
 package org.makumba.commons;
 
-
 interface NameValueReturner {
     Object getRes();
 }

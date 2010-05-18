@@ -39,23 +39,23 @@ import org.makumba.providers.TransactionProvider;
  * @author Cristian Bogdan
  */
 public class DbConnectionProvider {
-    
+
     private TransactionProvider tp;
-    
+
     Map<String, Transaction> connections = new HashMap<String, Transaction>(7);
 
     private Attributes contextAttributes;
 
     public Transaction getConnectionTo(String dbname) {
-        if(tp == null) {
+        if (tp == null) {
             tp = TransactionProvider.getInstance();
         }
-        
+
         Transaction db = connections.get(dbname);
         if (db == null) {
             connections.put(dbname, db = tp.getConnectionTo(dbname));
         }
-        ((TransactionImplementation)db).setContext(contextAttributes);
+        ((TransactionImplementation) db).setContext(contextAttributes);
         return db;
     }
 
@@ -71,21 +71,21 @@ public class DbConnectionProvider {
     protected void finalize() {
         close();
     }
-    
+
     public void setTransactionProvider(TransactionProvider tp) {
         this.tp = tp;
     }
-    
+
     public TransactionProvider getTransactionProvider() {
-        if(tp == null) {
+        if (tp == null) {
             tp = TransactionProvider.getInstance();
         }
         return tp;
     }
 
     public void setContext(Attributes attributes) {
-        contextAttributes=attributes;
-        
+        contextAttributes = attributes;
+
     }
 
 }

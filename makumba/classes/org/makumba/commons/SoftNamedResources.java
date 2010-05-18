@@ -33,9 +33,11 @@ import java.lang.ref.SoftReference;
  */
 public class SoftNamedResources extends NamedResources {
     private static final long serialVersionUID = 1L;
-    private ReferenceQueue<NameValue> queue= new ReferenceQueue<NameValue>();
-    private int diff=0;
-    
+
+    private ReferenceQueue<NameValue> queue = new ReferenceQueue<NameValue>();
+
+    private int diff = 0;
+
     public SoftNamedResources(String name, NamedResourceFactory f) {
         super(name, f);
     }
@@ -44,8 +46,8 @@ public class SoftNamedResources extends NamedResources {
     protected NameValue getNameValue(Object name, Object hash) {
         NameValue nv = null;
         SoftReference<NameValue> sr = (SoftReference<NameValue>) values.get(hash);
-        if (sr == null || (nv = sr.get()) == null){ 
-            if(sr!=null && nv==null)
+        if (sr == null || (nv = sr.get()) == null) {
+            if (sr != null && nv == null)
                 diff--;
             values.put(hash, new SoftReference<NameValue>(nv = new NameValue(name, hash, f), queue));
             misses++;
@@ -62,18 +64,18 @@ public class SoftNamedResources extends NamedResources {
 
     @Override
     public synchronized int size() {
-        while(queue.poll()!=null)
+        while (queue.poll() != null)
             diff++;
-        
+
         // sanity check
-//        int diff2=0;
-//        for (Object o:values.values())
-//            if (((SoftReference<NameValue>) o).get() == null) 
-//                diff2++;
-//        if(diff2!=diff)
-//            throw new IllegalStateException(diff+ "<>"+diff2+" out of " +super.size());
+        // int diff2=0;
+        // for (Object o:values.values())
+        // if (((SoftReference<NameValue>) o).get() == null)
+        // diff2++;
+        // if(diff2!=diff)
+        // throw new IllegalStateException(diff+ "<>"+diff2+" out of " +super.size());
         // end check
-    
-        return super.size()-diff;
+
+        return super.size() - diff;
     }
 }

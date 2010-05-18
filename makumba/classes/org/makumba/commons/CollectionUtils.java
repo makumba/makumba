@@ -39,7 +39,8 @@ public class CollectionUtils {
         for (int i = 0; i < array.length; i++) {
             String[] entry = array[i];
             if (entry.length < 2) {
-                throw new IllegalArgumentException("Array element " + i + ", '" + Arrays.toString(entry) + "', has a length less than 2");
+                throw new IllegalArgumentException("Array element " + i + ", '" + Arrays.toString(entry)
+                        + "', has a length less than 2");
             }
             map.put(entry[0], entry[1]);
         }

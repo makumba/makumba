@@ -27,7 +27,7 @@ import org.makumba.Pointer;
 
 /**
  * A SQL pointer, represents a pointer as a long, but only an int is needed...
- *
+ * 
  * @author Cristian Bogdan
  */
 public class SQLPointer extends Pointer {
