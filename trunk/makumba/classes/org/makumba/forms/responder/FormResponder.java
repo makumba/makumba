@@ -246,7 +246,7 @@ public class FormResponder extends Responder {
                 sb.append(" enctype=\"multipart/form-data\" ");
             }
             sb.append("style = \"display: inline; \""); // FIXME should merge this if another style is given in extra
-                                                        // formatting
+            // formatting
             sb.append(extraFormatting);
             sb.append(">");
 
