@@ -323,4 +323,19 @@ public class QueryExecution {
         return iterationGroupData.elementAt(iteration);
     }
 
+    public boolean hasValueChanged(int projectionIndex) {
+        if (iteration == 0) {
+            return true;
+        }
+        Object lastValue = iterationGroupData.elementAt(iteration - 1).data[projectionIndex];
+        return !currentListData().data[projectionIndex].equals(lastValue);
+    }
+
+    public boolean willValueChange(int projectionIndex) {
+        if (iteration + 1 == iterationGroupData.size()) {
+            return true;
+        }
+        Object nextValue = iterationGroupData.elementAt(iteration + 1).data[projectionIndex];
+        return !currentListData().data[projectionIndex].equals(nextValue);
+    }
 }
