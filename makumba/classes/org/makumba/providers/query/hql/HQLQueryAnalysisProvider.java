@@ -12,8 +12,10 @@ import antlr.collections.AST;
 public class HQLQueryAnalysisProvider extends QueryAnalysisProvider {
 
     @Override
-    public String getName(){ return "hql"; }
-    
+    public String getName() {
+        return "hql";
+    }
+
     @Override
     public QueryAnalysis getRawQueryAnalysis(String query) {
         return getHqlAnalyzer(query);

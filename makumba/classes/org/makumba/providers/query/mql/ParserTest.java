@@ -25,7 +25,7 @@ import antlr.collections.AST;
  * @version $Id: ParserTest.java,v 1.1 Aug 5, 2008 5:55:08 PM cristi Exp $
  */
 public class ParserTest {
-    
+
     private static Vector<String> errors = new Vector<String>();
 
     private static NameResolver nr;
@@ -43,15 +43,15 @@ public class ParserTest {
     }
 
     public static void main(String[] argv) {
-        boolean automaticLeftJoin=false;
+        boolean automaticLeftJoin = false;
         int line = 1;
         try {
             BufferedReader rd = new BufferedReader(new InputStreamReader((InputStream) ClassResource.get(
                 "org/makumba/providers/query/mql/queries.txt").getContent()));
             String query = null;
             while ((query = rd.readLine()) != null) {
-                if(query.startsWith("#automaticLeftJoin"))
-                    automaticLeftJoin=true;
+                if (query.startsWith("#automaticLeftJoin"))
+                    automaticLeftJoin = true;
                 if (!query.trim().startsWith("#")) {
                     analyseQuery(line, query, automaticLeftJoin);
                 }
@@ -64,7 +64,7 @@ public class ParserTest {
         System.err.println("analyzed " + line + " queries");
         System.err.println("**********************************");
         System.err.println("********** Found following errors:");
-        for(String e : errors) {
+        for (String e : errors) {
             System.err.println(e);
         }
 
@@ -99,21 +99,21 @@ public class ParserTest {
         boolean passedMql = false;
         Throwable thr = null;
         boolean printedError;
-        String mql_sql = null; 
+        String mql_sql = null;
 
         MqlQueryAnalysis mq = null;
         SQLParameterTransformer qG = null;
-        Throwable mqlThr=null;
+        Throwable mqlThr = null;
         try {
             mq = new MqlQueryAnalysis(query, false, automaticLeftJoin);
             qG = (SQLParameterTransformer) qG;
-            
+
             mql_sql = qG.getSQLQuery(nr).toLowerCase();
         } catch (Throwable t) {
-            mqlThr=t;
+            mqlThr = t;
         }
         try {
-            if (mqlThr==null) {
+            if (mqlThr == null) {
                 mql_sql = cleanUp(mql_sql, " ");
 
                 /* comparison with OLD mql parser. it's here to keep the mechanism in case we evolve to something else
@@ -138,35 +138,35 @@ public class ParserTest {
              * walker.setTypeComputer(new MddObjectType()); walker.setDebug(query); walker.statement(hql);
              */
         } catch (Throwable t) {
-            if(mqlThr!=null) {
+            if (mqlThr != null) {
                 error(line + ": MQL: " + mqlThr.getMessage() + " " + query);
             }
-            
-            error(line + ":"+(mqlThr==null?" only in":"")+" OQL: " + t.getMessage() + " " + query);
-            if(mqlThr==null)
-                error(line+": MQL SQL: "+mql_sql);
+
+            error(line + ":" + (mqlThr == null ? " only in" : "") + " OQL: " + t.getMessage() + " " + query);
+            if (mqlThr == null)
+                error(line + ": MQL SQL: " + mql_sql);
             return;
         }
-        if(mqlThr!=null){
+        if (mqlThr != null) {
             error(line + ": only in MQL: " + mqlThr.getMessage() + " " + query);
-            if(!(mqlThr instanceof OQLParseError))
+            if (!(mqlThr instanceof OQLParseError))
                 mqlThr.printStackTrace();
         }
     }
 
     private static void compareMdds(String what, StringBuffer sb, DataDefinition mdd1, DataDefinition mdd2) {
-        HashSet<String> fieldsDone= new HashSet<String>();
-        for(String s: mdd1.getFieldNames()){
-            FieldDefinition fd1= mdd1.getFieldDefinition(s);
-            FieldDefinition fd2= mdd2.getFieldDefinition(s);
-            
-            if(fd2==null){
+        HashSet<String> fieldsDone = new HashSet<String>();
+        for (String s : mdd1.getFieldNames()) {
+            FieldDefinition fd1 = mdd1.getFieldDefinition(s);
+            FieldDefinition fd2 = mdd2.getFieldDefinition(s);
+
+            if (fd2 == null) {
                 sb.append("extra MQL ").append(what).append(": ");
                 appendFieldDefinition(sb, fd1);
                 sb.append("\n");
                 continue;
             }
-            if(!fd1.isAssignableFrom(fd2) && !(fd1.getType().equals("boolean")&&fd2.getType().equals("int"))){
+            if (!fd1.isAssignableFrom(fd2) && !(fd1.getType().equals("boolean") && fd2.getType().equals("int"))) {
                 sb.append(what).append(" ").append(s).append(" MQL: ");
                 appendFieldDefinition(sb, fd1);
                 sb.append(" OQL: ");
@@ -175,21 +175,21 @@ public class ParserTest {
             }
             fieldsDone.add(s);
         }
-        if(mdd2!=null)
-        for(String s: mdd2.getFieldNames()){
-            if(!fieldsDone.contains(s)){
-                FieldDefinition fd2= mdd2.getFieldDefinition(s);
-                sb.append("extra OQL ").append(what).append(": ");
-                appendFieldDefinition(sb, fd2);
-                sb.append("\n");
+        if (mdd2 != null)
+            for (String s : mdd2.getFieldNames()) {
+                if (!fieldsDone.contains(s)) {
+                    FieldDefinition fd2 = mdd2.getFieldDefinition(s);
+                    sb.append("extra OQL ").append(what).append(": ");
+                    appendFieldDefinition(sb, fd2);
+                    sb.append("\n");
+                }
             }
-        }
     }
 
     private static void appendFieldDefinition(StringBuffer sb, FieldDefinition fd) {
         sb.append(fd.getName()).append("=").append(fd.getType());
     }
-    
+
     private static void error(String s) {
         System.err.println(s);
         errors.add(s);

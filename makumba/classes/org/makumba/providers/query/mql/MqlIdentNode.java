@@ -30,24 +30,23 @@ public class MqlIdentNode extends MqlNode {
         DataDefinition dd = walker.currentContext.findLabelType(label);
         if (dd == null) {
             MqlNode selectExpr = walker.currentContext.projectionLabelSearch.get(label);
-            if(selectExpr!=null){
-                checkAsIds= new ArrayList<String>();
+            if (selectExpr != null) {
+                checkAsIds = new ArrayList<String>();
                 checkAsIds.add(label);
                 // if we do this, we practically copy the select expression here
                 // then we don't need to check a label any more
-                //setTextList(selectExpr.text);
+                // setTextList(selectExpr.text);
                 setMakType(selectExpr.getMakType());
                 return;
             }
-            if(walker.knownLabels!=null && walker.knownLabels.getFieldDefinition(label)!=null){
+            if (walker.knownLabels != null && walker.knownLabels.getFieldDefinition(label) != null) {
                 setMakType(walker.knownLabels.getFieldDefinition(label));
                 return;
             }
-                
-                
+
             throw new SemanticException("Unknown label: " + label, "", getLine(), getColumn());
         }
-        
+
         setTextList(walker.currentContext.selectLabel(label, this));
     }
 }

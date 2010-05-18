@@ -23,8 +23,10 @@ public class MqlQueryAnalysisProvider extends QueryAnalysisProvider {
     }, true);
 
     @Override
-    public String getName(){ return "oql"; }
- 
+    public String getName() {
+        return "oql";
+    }
+
     @Override
     public QueryAnalysis getRawQueryAnalysis(String query) {
         return (QueryAnalysis) NamedResources.getStaticCache(parsedQueries).getResource(query);
@@ -32,10 +34,10 @@ public class MqlQueryAnalysisProvider extends QueryAnalysisProvider {
 
     @Override
     public QueryAnalysis getRawQueryAnalysis(String query, String insertIn) {
-        return (QueryAnalysis) NamedResources.getStaticCache(parsedQueries).getResource(MqlQueryAnalysis.formatQueryAndInsert(query, insertIn));
+        return (QueryAnalysis) NamedResources.getStaticCache(parsedQueries).getResource(
+            MqlQueryAnalysis.formatQueryAndInsert(query, insertIn));
     }
 
-    
     @Override
     public boolean selectGroupOrOrderAsLabels() {
         return false;
@@ -57,13 +59,13 @@ public class MqlQueryAnalysisProvider extends QueryAnalysisProvider {
     public String getParameterSyntax() {
         return "$";
     }
-    
+
     /** Transform OQL $x into :parameters, and record the parameter order */
     public static void transformOQLParameters(AST a, List<String> parameterOrder) {
         if (a == null)
             return;
         // MQL allows $some.param
-        if(a.getType() == HqlTokenTypes.DOT && a.getFirstChild().getText().startsWith("$")) {
+        if (a.getType() == HqlTokenTypes.DOT && a.getFirstChild().getText().startsWith("$")) {
             a.setType(HqlTokenTypes.IDENT);
             a.setText(a.getFirstChild().getText() + "." + a.getFirstChild().getNextSibling().getText());
             a.setFirstChild(null);
@@ -81,46 +83,45 @@ public class MqlQueryAnalysisProvider extends QueryAnalysisProvider {
             }
             parameterOrder.add(para.getText());
 
-            // we append in the tree to the parameter name the parameter position, 
+            // we append in the tree to the parameter name the parameter position,
             // to be able to retrieve the position, and thus identify the parameter at type analysis
             para.setText(para.getText() + "###" + (parameterOrder.size() - 1));
             a.setFirstChild(para);
             a.setText(":");
-        }else if (a.getType() == HqlTokenTypes.COLON && a.getFirstChild() != null
-                && a.getFirstChild().getType() == HqlTokenTypes.IDENT){
+        } else if (a.getType() == HqlTokenTypes.COLON && a.getFirstChild() != null
+                && a.getFirstChild().getType() == HqlTokenTypes.IDENT) {
             // we also accept : params though we might not know what to do with them later
             parameterOrder.add(a.getFirstChild().getText());
 
-            // we append in the tree to the parameter name the parameter position, 
+            // we append in the tree to the parameter name the parameter position,
             // to be able to retrieve the position, and thus identify the parameter at type analysis
             // unless this is a "valid" : param (result of function inlining)
-            if(a.getFirstChild().getText().indexOf("###") < 0 && !a.getFirstChild().getText().startsWith(MqlQueryAnalysis.MAKUMBA_PARAM)) {
+            if (a.getFirstChild().getText().indexOf("###") < 0
+                    && !a.getFirstChild().getText().startsWith(MqlQueryAnalysis.MAKUMBA_PARAM)) {
                 a.getFirstChild().setText(a.getFirstChild().getText() + "###" + (parameterOrder.size() - 1));
             }
         }
-        if(a.getType()==HqlTokenTypes.SELECT_FROM){
-           // first the SELECT part
-           transformOQLParameters(a.getFirstChild().getNextSibling(), parameterOrder);
-           // then the FROM part
-           transformOQLParameters(a.getFirstChild(), parameterOrder);           
-           // then the rest
-           transformOQLParameters(a.getNextSibling(), parameterOrder);            
+        if (a.getType() == HqlTokenTypes.SELECT_FROM) {
+            // first the SELECT part
+            transformOQLParameters(a.getFirstChild().getNextSibling(), parameterOrder);
+            // then the FROM part
+            transformOQLParameters(a.getFirstChild(), parameterOrder);
+            // then the rest
+            transformOQLParameters(a.getNextSibling(), parameterOrder);
 
-        }else{
+        } else {
             transformOQLParameters(a.getFirstChild(), parameterOrder);
             // we make sure we don't do "SELECT" again
-            if(a.getType()!=HqlTokenTypes.FROM)
+            if (a.getType() != HqlTokenTypes.FROM)
                 transformOQLParameters(a.getNextSibling(), parameterOrder);
-       }
+        }
     }
 
-    /** Transform the tree so that various OQL notations are still accepted
-     * replacement of = or <> NIL with IS (NOT) NULL
-     * OQL puts a 0.0+ in front of any AVG() expression 
-     * 
-     * This method also does various subquery transformations which are not OQL-specific, to support:
-     * size(), elements(), firstElement()... 
-     * */
+    /**
+     * Transform the tree so that various OQL notations are still accepted replacement of = or <> NIL with IS (NOT) NULL
+     * OQL puts a 0.0+ in front of any AVG() expression This method also does various subquery transformations which are
+     * not OQL-specific, to support: size(), elements(), firstElement()...
+     */
     public static void transformOQL(AST a) {
         if (a == null)
             return;
@@ -145,8 +146,7 @@ public class MqlQueryAnalysisProvider extends QueryAnalysisProvider {
             plus.setFirstChild(zero);
             zero.setNextSibling(a.getFirstChild());
             a.setFirstChild(plus);
-        } 
-        else if (a.getType() == HqlTokenTypes.ELEMENTS) {
+        } else if (a.getType() == HqlTokenTypes.ELEMENTS) {
             makeSubquery(a, a.getFirstChild());
         } else if (a.getType() == HqlTokenTypes.METHOD_CALL && a.getFirstChild().getText().toLowerCase().equals("size")) {
             makeSelect(a, HqlTokenTypes.COUNT, "count");
@@ -166,7 +166,7 @@ public class MqlQueryAnalysisProvider extends QueryAnalysisProvider {
         from.getNextSibling().setFirstChild(ASTUtil.makeNode(type, text));
         from.getNextSibling().getFirstChild().setFirstChild(ASTUtil.makeNode(HqlTokenTypes.IDENT, "makElementsLabel"));
     }
-    
+
     private static void makeSubquery(AST a, AST type) {
         a.setType(HqlTokenTypes.QUERY);
         a.setFirstChild(ASTUtil.makeNode(HqlTokenTypes.SELECT_FROM, "select"));
@@ -180,7 +180,5 @@ public class MqlQueryAnalysisProvider extends QueryAnalysisProvider {
     public QueryAnalysis getQueryAnalysis(AST pass1, DataDefinition knownLabels) {
         return new MqlQueryAnalysis(pass1, knownLabels);
     }
-
-
 
 }

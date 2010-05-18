@@ -15,10 +15,12 @@ public class MddObjectType implements ObjectType {
 
     /**
      * Based on a type name and a field name, this method attempts to return the type of the field
-     * @param type the type name, e.g. "general.Person"
-     * @param field the field name, e.g. "age"
-     * @return the type of the field, if it could be computed
      * 
+     * @param type
+     *            the type name, e.g. "general.Person"
+     * @param field
+     *            the field name, e.g. "age"
+     * @return the type of the field, if it could be computed
      */
     public Object determineType(String type, String field) throws RecognitionException, SemanticException {
         if (field == null)

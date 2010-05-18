@@ -63,7 +63,6 @@ public class FunctionInliner {
             System.out.println("===== inlining query " + query);
         }
 
-       
         AST ast = QueryAnalysisProvider.parseQuery(query);
 
         boolean inlined = false;
@@ -85,7 +84,6 @@ public class FunctionInliner {
 
         return ast;
     }
-
 
     private boolean inline(AST ast, boolean root) throws Throwable {
 
@@ -205,9 +203,9 @@ public class FunctionInliner {
             Hashtable<String, String> usedLabels = new Hashtable<String, String>();
             collectUsedLabels(ast, usedLabels);
 
-            // also try to remove duplicate paths (FROM some.Type t, some.Type _x_gen_0) introduced during the inlining process
+            // also try to remove duplicate paths (FROM some.Type t, some.Type _x_gen_0) introduced during the inlining
+            // process
             // we need to remove only those generated labels that result from putting QFs back into context
-            
 
             AST originalRange = findFrom(ast).getFirstChild();
 
@@ -455,7 +453,7 @@ public class FunctionInliner {
                 lastAlias = expandRangeElement(c.getPath(), range, false, null);
                 path = path.substring(0, path.indexOf("."));
             }
-            
+
             // generate a JOIN when the parent type of the QF is a subfield
             // this is necessary in order to have our QF tree accepted by the analyser on potential further inlinings
             if (isInSubfield) {
@@ -725,9 +723,10 @@ public class FunctionInliner {
 
                     int dot = functionCall.getPath().indexOf(".");
                     String label = functionCall.getPath().substring(0, dot > 0 ? dot : functionCall.getPath().length());
-                    
-                    if(debug) {
-                        System.out.println("replacing method call, FROM segment found to merge with, found label " + label);
+
+                    if (debug) {
+                        System.out.println("replacing method call, FROM segment found to merge with, found label "
+                                + label);
                     }
 
                     // if we have a constraint on the label of the function, we will not re-use the label
@@ -807,13 +806,15 @@ public class FunctionInliner {
      * want to avoid label collision but instead have label re-usage in that case we replace the to-be-reused label in
      * the additionalFrom before joining
      * 
-     * @param mergeSameRange whether or not to replace JOIN labels of the new tree with the labels of the same joins in the first tree
+     * @param mergeSameRange
+     *            whether or not to replace JOIN labels of the new tree with the labels of the same joins in the first
+     *            tree
      */
     private void join(AST from, AST additionalFrom, AST tree, String labelToReuse, boolean mergeSameRange) {
 
         Hashtable<String, AST> existingLabels = getLabels(from);
         Hashtable<String, AST> newLabels = getLabels(additionalFrom);
-        
+
         Hashtable<String, String> newLabelPaths = new Hashtable<String, String>();
 
         // we need to avoid label collision, i.e. if the same label is used in the additional FROM
@@ -832,8 +833,10 @@ public class FunctionInliner {
             } else if (existingLabels.containsKey(l) && l.equals(labelToReuse)) {
                 // remove the duplicate RANGE element from the additionalFrom so we don't have it twice in the end
                 removeRange(additionalFrom, newLabels, l);
-            } else if(newLabels.get(l) != null && newLabels.get(l).getFirstChild() != null && !l.startsWith(TEMPORARY_LABEL)){
-                // for all these labels that we couldn't treat earlier, keep them so that if they happen to be duplicated
+            } else if (newLabels.get(l) != null && newLabels.get(l).getFirstChild() != null
+                    && !l.startsWith(TEMPORARY_LABEL)) {
+                // for all these labels that we couldn't treat earlier, keep them so that if they happen to be
+                // duplicated
                 // we can merge them later on
                 String path = ASTUtil.getPath(newLabels.get(l).getFirstChild());
                 newLabelPaths.put(l, path);
@@ -852,27 +855,26 @@ public class FunctionInliner {
                 }
             }
         }
-        
-        
-        if(mergeSameRange) {
-            
+
+        if (mergeSameRange) {
+
             // merge stuff like
             //
-            // JOIN [32] 
-            //    . [15] 
-            //       m [120] 
-            //       item [120] 
-            //    it [69] 
-            // RANGE [84] 
-            //    . [15] 
-            //       m [120] 
-            //       item [120] 
-            //    _x_gen_0 [69] 
-            
-            for(String nl : newLabelPaths.keySet()) {
+            // JOIN [32]
+            // . [15]
+            // m [120]
+            // item [120]
+            // it [69]
+            // RANGE [84]
+            // . [15]
+            // m [120]
+            // item [120]
+            // _x_gen_0 [69]
+
+            for (String nl : newLabelPaths.keySet()) {
                 for (String el : existingLabels.keySet()) {
                     String path = ASTUtil.getPath(existingLabels.get(el).getFirstChild());
-                    if(newLabelPaths.get(nl).equals(path)) {
+                    if (newLabelPaths.get(nl).equals(path)) {
                         removeRange(additionalFrom, newLabels, nl);
                         labelsToReplace.put(nl, el);
                     }
@@ -894,7 +896,8 @@ public class FunctionInliner {
         AST additionalRange = additionalFrom.getFirstChild();
         AST parent = additionalRange;
         while (!additionalRange.getFirstChild().getNextSibling().getText().equals(
-            newLabels.get(l).getFirstChild().getNextSibling().getText()) && additionalRange.getNextSibling() != null) {
+            newLabels.get(l).getFirstChild().getNextSibling().getText())
+                && additionalRange.getNextSibling() != null) {
             additionalRange = additionalRange.getNextSibling();
             parent = additionalRange;
         }
@@ -935,7 +938,7 @@ public class FunctionInliner {
                     AST sibling = ast.getNextSibling();
                     AST newAST = ASTUtil.constructPath(fact, t);
                     newAST.setNextSibling(sibling);
-                    if(firstChild) {
+                    if (firstChild) {
                         parent.setFirstChild(newAST);
                     } else {
                         parent.setNextSibling(newAST);

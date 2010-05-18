@@ -6,21 +6,21 @@ import antlr.ASTFactory;
 import antlr.Token;
 import antlr.collections.AST;
 
-public class MqlSqlASTFactory extends ASTFactory  {
-    
+public class MqlSqlASTFactory extends ASTFactory {
+
     private MqlSqlWalker walker;
 
     public MqlSqlASTFactory(MqlSqlWalker mqlSqlWalker) {
-        walker= mqlSqlWalker;
+        walker = mqlSqlWalker;
     }
 
     @Override
     public Class getASTNodeType(int tokenType) {
-        switch ( tokenType ) {
+        switch (tokenType) {
             case HqlSqlTokenTypes.IDENT:
                 return MqlIdentNode.class;
             case HqlSqlTokenTypes.DOT:
-               return MqlDotNode.class;
+                return MqlDotNode.class;
             case HqlSqlTokenTypes.EQ:
             case HqlSqlTokenTypes.NE:
             case HqlSqlTokenTypes.LE:
@@ -34,15 +34,15 @@ public class MqlSqlASTFactory extends ASTFactory  {
             case HqlSqlTokenTypes.MINUS:
             case HqlSqlTokenTypes.STAR:
             case HqlSqlTokenTypes.DIV:
-                return MqlAritmeticNode.class;   
+                return MqlAritmeticNode.class;
             case HqlSqlTokenTypes.AND:
             case HqlSqlTokenTypes.OR:
-                return MqlLogicalNode.class; 
+                return MqlLogicalNode.class;
             default:
                 return MqlNode.class;
         }
     }
-    
+
     @Override
     protected AST createUsingCtor(Token token, String className) {
         Class c;
@@ -59,37 +59,36 @@ public class MqlSqlASTFactory extends ASTFactory  {
                 // Your AST must have default ctor to use this.
                 t = create(c);
             }
-        }
-        catch ( Exception e ) {
-            throw new IllegalArgumentException( "Invalid class or can't make instance, " + className );
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid class or can't make instance, " + className);
         }
         return t;
     }
-    
+
     /**
      * Actually instantiate the AST node.
-     *
-     * @param c The class to instantiate.
+     * 
+     * @param c
+     *            The class to instantiate.
      * @return The instantiated and initialized node.
      */
     @Override
     protected AST create(Class c) {
         AST t;
         try {
-            t = ( AST ) c.newInstance(); // make a new one
-            initializeNode( t );
-        }
-        catch ( Exception e ) {
-            error( "Can't create AST Node " + c.getName() );
+            t = (AST) c.newInstance(); // make a new one
+            initializeNode(t);
+        } catch (Exception e) {
+            error("Can't create AST Node " + c.getName());
             return null;
         }
         return t;
     }
 
     private void initializeNode(AST t) {
-        if(t instanceof MqlNode)
-            ((MqlNode)t).setWalker(walker);
-        
+        if (t instanceof MqlNode)
+            ((MqlNode) t).setWalker(walker);
+
     }
 
 }

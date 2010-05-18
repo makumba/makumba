@@ -22,19 +22,19 @@ public class MqlBinaryOperator extends MqlNode {
     private void analyze(MqlNode left, MqlNode right) {
         if (walker.error != null)
             return;
-        if(left.isFunctionCall() || right.isFunctionCall()) {
+        if (left.isFunctionCall() || right.isFunctionCall()) {
             return;
         }
         try {
             checkForOperandType(left);
             checkForOperandType(right);
             analyzeOperands(left, right);
-            if(walker.error != null && walker.error instanceof SemanticException) {
-                throw (SemanticException)walker.error;
+            if (walker.error != null && walker.error instanceof SemanticException) {
+                throw (SemanticException) walker.error;
             }
             analyzeOperands(right, left);
-            if(walker.error != null && walker.error instanceof SemanticException) {
-                throw (SemanticException)walker.error;
+            if (walker.error != null && walker.error instanceof SemanticException) {
+                throw (SemanticException) walker.error;
             }
 
             setMakType(left, right);
