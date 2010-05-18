@@ -38,7 +38,7 @@ public class DBError extends MakumbaError {
     public DBError(String explanation) {
         super(explanation);
     }
-    
+
     public DBError(String explanation, Throwable reason) {
         super(reason, explanation);
     }

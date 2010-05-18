@@ -27,15 +27,14 @@ package org.makumba;
  * Specifies interface for data transformation. Some of your application's class should implement this DataTransformer
  * in order to be used by Makumba during DB operations.
  * <p>
- * In your db configuration file (e.g. <code>localhost_mysql_myapp.properties</code>) it should be specified with a
- * line
+ * In your db configuration file (e.g. <code>localhost_mysql_myapp.properties</code>) it should be specified with a line
  * 
  * <pre class="example">
  *  insert#&lt;i&gt;makumba.Type&lt;/i&gt;=&lt;i&gt;yourClassThatImplementsDataTransformer&lt;/i&gt;
  * </pre>
  * 
- * to run your transformer (<code>yourClassThatImplementsDataTransformer</code>) on all the records of that makumba
- * type (<code><i>makumba.Type</i></code>) before being inserted into the database.
+ * to run your transformer (<code>yourClassThatImplementsDataTransformer</code>) on all the records of that makumba type
+ * (<code><i>makumba.Type</i></code>) before being inserted into the database.
  * <h3>Example</h3>
  * 
  * <pre class="example">

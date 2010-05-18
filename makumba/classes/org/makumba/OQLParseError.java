@@ -25,21 +25,21 @@ package org.makumba;
 
 /** An OQL parse error */
 public class OQLParseError extends MakumbaError {
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/** Construct an OQL parse error with the given explanation */
-	public OQLParseError(String explanation) {
-		super(explanation);
-	}
+    /** Construct an OQL parse error with the given explanation */
+    public OQLParseError(String explanation) {
+        super(explanation);
+    }
 
-	public OQLParseError(String explanation, Throwable cause) {
-		super(cause, cause.getMessage()+" "+explanation);
-	}
+    public OQLParseError(String explanation, Throwable cause) {
+        super(cause, cause.getMessage() + " " + explanation);
+    }
 
-	public OQLParseError(Error e) {
-		super("Error in OQL/HQL query: " + e.getMessage());
-	}
+    public OQLParseError(Error e) {
+        super("Error in OQL/HQL query: " + e.getMessage());
+    }
 }

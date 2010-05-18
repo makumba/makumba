@@ -34,7 +34,7 @@ import org.makumba.db.makumba.sql.Database;
 /**
  * This class provides utility methods to convert names from MDD types into their name in the data source. It also takes
  * into account properties passed in the database configuration.<br/>
-TODO document these properties
+ * TODO document these properties
  * 
  * @author Manuel Gay
  * @author Cristian Bogdan

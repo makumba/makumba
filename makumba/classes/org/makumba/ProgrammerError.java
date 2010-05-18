@@ -33,8 +33,9 @@ public class ProgrammerError extends MakumbaError {
     public ProgrammerError(String expl) {
         super(expl);
     }
+
     public ProgrammerError(Throwable cause, String expl) {
         super(cause, expl);
     }
-    
+
 }

@@ -33,8 +33,8 @@ import org.xml.sax.SAXException;
  * <ul>
  * <li>makumba.seed: the name of the seed file, used to locate the root folder of where makumba should place the
  * generated mappings and classes</li>
- * <li>prefix: the prefix of all the makumba generated mappings (i.e. the name of the folder where they will be
- * stored, also used as package name)</li>
+ * <li>prefix: the prefix of all the makumba generated mappings (i.e. the name of the folder where they will be stored,
+ * also used as package name)</li>
  * <li>makumba.mdd.root: the name of the folder in which the MDDs of the webapp are located. If none is provided, the
  * default value is "dataDefinitions".</li>
  * <li>makumba.mdd.list: a comma-separated list of MDDs that should be used. If none is provided, makumba will use all
@@ -66,16 +66,15 @@ public class HibernateSFManager {
     private static final String DEFAULT_PREFIX = "makumbaGeneratedMappings";
 
     private static final String DEFAULT_SEED = "Makumba.conf";
-    
+
     public static final String HIBERNATE_TRANSACTION_FACTORY = "hibernate.transaction.factory_class";
-    
+
     public static final String HIBERNATE_CURRENT_SESSION_CONTEXT = "hibernate.current_session_context_class";
 
     private static Vector<String> externalConfigurationResources = new Vector<String>();
-    
+
     private static HashMap<String, Vector<Class>> externalClasses = new HashMap<String, Vector<Class>>();
 
-    
     private static Configuration configuredConfiguration;
 
     private static Vector<String> generatedClasses;
@@ -112,55 +111,54 @@ public class HibernateSFManager {
 
         Map<String, String> properties = org.makumba.providers.Configuration.getDataSourceConfiguration(dataSource);
         Properties p = new Properties();
-        for(String property : properties.keySet()) {
+        for (String property : properties.keySet()) {
             String value = properties.get(property);
 
-            if(property.startsWith(TransactionProvider.CONNECTION_PREFIX)) {
+            if (property.startsWith(TransactionProvider.CONNECTION_PREFIX)) {
                 property = "hibernate." + property;
             }
-            if(value != null) {
+            if (value != null) {
                 p.put(property, value);
             }
         }
-        
-        // add the properties for the session management
-        //p.put(HIBERNATE_TRANSACTION_FACTORY, "org.hibernate.transaction.JDBCTransactionFactory");
-        //p.put(HIBERNATE_CURRENT_SESSION_CONTEXT, "thread");
 
+        // add the properties for the session management
+        // p.put(HIBERNATE_TRANSACTION_FACTORY, "org.hibernate.transaction.JDBCTransactionFactory");
+        // p.put(HIBERNATE_CURRENT_SESSION_CONTEXT, "thread");
 
         java.util.logging.Logger.getLogger("org.makumba.hibernate.sf").info(
             "Makumba Hibernate SessionFactory manager, Hibernate " + MakumbaSystem.getHibernateVersionNumber());
 
         Configuration cfg = new AnnotationConfiguration().setProperties(p);
-        
+
         HashMap<String, Vector<Class>> classes = new HashMap<String, Vector<Class>>();
-        
+
         for (String res : externalConfigurationResources) {
-            
-            if(res.indexOf("hbm.xml") > -1) {
+
+            if (res.indexOf("hbm.xml") > -1) {
                 cfg.addResource(res);
-                
+
             } else {
-            
+
                 String packageName = res.substring(0, res.lastIndexOf("."));
-                
-                if(!classes.containsKey(packageName)) {
+
+                if (!classes.containsKey(packageName)) {
                     classes.put(packageName, new Vector<Class>());
                 }
-                
+
                 try {
                     classes.get(packageName).add(Class.forName(res));
-                    
+
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
             }
         }
-        
-        for(String packageName : classes.keySet()) {
+
+        for (String packageName : classes.keySet()) {
             AnnotationConfiguration cfg1 = ((AnnotationConfiguration) cfg).addPackage(packageName);
             Vector<Class> packageClasses = classes.get(packageName);
-            for(int i = 0; i < packageClasses.size(); i++) {
+            for (int i = 0; i < packageClasses.size(); i++) {
                 cfg1.addAnnotatedClass(packageClasses.get(i));
             }
         }
@@ -221,7 +219,6 @@ public class HibernateSFManager {
         java.util.logging.Logger.getLogger("org.makumba.hibernate.sf").info(
             "Generating mappings under " + seedDir + File.separator + prefix);
 
-        
         try {
             // MddToMapping xot =
             new MddToMapping(dds, cfg, org.makumba.HibernateSFManager.findClassesRootFolder(seed), prefix, nr);
@@ -231,7 +228,7 @@ public class HibernateSFManager {
         } catch (SAXException e) {
             e.printStackTrace();
         }
-        
+
         java.util.logging.Logger.getLogger("org.makumba.hibernate.sf").info("building session factory");
         SessionFactory sessionFactory = cfg.buildSessionFactory();
 
@@ -265,12 +262,12 @@ public class HibernateSFManager {
 
     public static synchronized SessionFactory getSF() {
         String dataSource = TransactionProvider.getInstance().getDefaultDataSourceName();
-        
+
         java.util.logging.Logger.getLogger("org.makumba.hibernate.sf").info(
             "Initializing configuration from " + dataSource);
         return getSF(dataSource);
     }
-    
+
     public static Configuration getConfiguration(String cfgFilePath) {
         Configuration cfg = new Configuration().configure(cfgFilePath);
         return cfg;
@@ -294,13 +291,15 @@ public class HibernateSFManager {
     public static void setExternalConfigurationResources(Vector<String> resources) {
         externalConfigurationResources = resources;
     }
-    
+
     /**
      * Sets additional mapping classes (i.e. annotated classes) to be used by the Configuration
-     * @param mappingClasses a Map of Vectors, where the keys are package names and the vector elements classes, e.g.<br>
-     * test.animals<br>
-     *   Dog.class<br>
-     *   Cat.class<br>
+     * 
+     * @param mappingClasses
+     *            a Map of Vectors, where the keys are package names and the vector elements classes, e.g.<br>
+     *            test.animals<br>
+     *            Dog.class<br>
+     *            Cat.class<br>
      */
     public static void setExternalMappingClasses(HashMap<String, Vector<Class>> mappingClasses) {
         externalClasses = mappingClasses;

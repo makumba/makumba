@@ -35,9 +35,9 @@ import java.util.Map;
  */
 public class NotUniqueException extends InvalidValueException {
     private static final long serialVersionUID = 1L;
-    
+
     private Map<String, String> fields;
-    
+
     public NotUniqueException(String message) {
         super(message);
     }
@@ -52,12 +52,12 @@ public class NotUniqueException extends InvalidValueException {
         super(fd, "Allows only unique values - an entry with the value " + getValueForMessage(fd, value)
                 + " already exists!");
     }
-    
+
     /** gets the field-value pairs for the conflicting fields **/
     public Map<String, String> getFields() {
         return this.fields;
     }
-    
+
     public void setFields(Map<String, String> fields) {
         this.fields = fields;
     }
