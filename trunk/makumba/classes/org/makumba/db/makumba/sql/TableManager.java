@@ -255,7 +255,7 @@ public class TableManager extends Table {
         extraIndexes = (Hashtable<String, String[]>) indexes.clone();
 
         for (String string : dd.getFieldNames()) {
-            String fieldName = (String) string;
+            String fieldName = string;
             if (getFieldDefinition(fieldName).getType().startsWith("set"))
                 continue;
             onStartup(fieldName, config, dbc);
@@ -293,7 +293,7 @@ public class TableManager extends Table {
         if (!getDatabase().usesHibernateIndexes())
             if (alter)
                 for (Enumeration<String> ei = extraIndexes.keys(); ei.hasMoreElements();) {
-                    String indexName = (String) ei.nextElement();
+                    String indexName = ei.nextElement();
                     String syntax = "DROP INDEX " + indexName + " ON " + getDBName();
                     try {
                         Statement st = dbc.createStatement();
@@ -428,9 +428,9 @@ public class TableManager extends Table {
             here = ((DBConnectionWrapper) here).getWrapped();
         PreparedStatement ps = null;
         if (ignoreDbsv) {
-            ps = (PreparedStatement) ((SQLDBConnection) here).getPreparedStatement(preparedDeleteFromIgnoreDbsvString);
+            ps = ((SQLDBConnection) here).getPreparedStatement(preparedDeleteFromIgnoreDbsvString);
         } else {
-            ps = (PreparedStatement) ((SQLDBConnection) here).getPreparedStatement(preparedDeleteFromString);
+            ps = ((SQLDBConnection) here).getPreparedStatement(preparedDeleteFromString);
             try {
                 ps.setInt(1, source.getHostDatabase().getMinPointerValue());
                 ps.setInt(2, source.getHostDatabase().getMaxPointerValue());
@@ -464,7 +464,7 @@ public class TableManager extends Table {
             String dbfn = cs.columnName();
             boolean found = false;
             for (String string : dd.getFieldNames()) {
-                String fieldName = (String) string;
+                String fieldName = string;
                 if (getFieldDefinition(fieldName).getType().startsWith("set"))
                     continue;
                 if (getFieldDBName(fieldName).toLowerCase().equals(dbfn.toLowerCase())) {
@@ -604,7 +604,7 @@ public class TableManager extends Table {
         String comma = "";
 
         while (e.hasMoreElements()) {
-            String fieldName = (String) e.nextElement();
+            String fieldName = e.nextElement();
             if (getFieldDefinition(fieldName).getType().startsWith("set"))
                 continue;
             command.append(comma);
@@ -644,9 +644,9 @@ public class TableManager extends Table {
 
             PreparedStatement ps;
             if (wasIndex || !getSQLDatabase().isAutoIncrement())
-                ps = (PreparedStatement) ((SQLDBConnection) dbc).getPreparedStatement(preparedInsertString);
+                ps = ((SQLDBConnection) dbc).getPreparedStatement(preparedInsertString);
             else
-                ps = (PreparedStatement) ((SQLDBConnection) dbc).getPreparedStatement(preparedInsertAutoIncrementString);
+                ps = ((SQLDBConnection) dbc).getPreparedStatement(preparedInsertAutoIncrementString);
             int n = 0;
             for (String fieldName : dd.getFieldNames()) {
                 if (getFieldDefinition(fieldName).getType().startsWith("set"))
@@ -676,10 +676,10 @@ public class TableManager extends Table {
             // here if we have an error, we enrich it by finding the duplicates (which we assume is the only error one
             // can get at this stage of the insert)
             if (getSQLDatabase().exec(ps) == -1)
-                findDuplicates((SQLDBConnection) dbc, d);
+                findDuplicates(dbc, d);
 
             if (!wasIndex && getSQLDatabase().isAutoIncrement()) {
-                ps = (PreparedStatement) ((SQLDBConnection) dbc).getPreparedStatement(getQueryAutoIncrementSyntax());
+                ps = ((SQLDBConnection) dbc).getPreparedStatement(getQueryAutoIncrementSyntax());
                 ResultSet rs = ps.executeQuery();
                 rs.next();
                 d.put(indexField, new SQLPointer(getDataDefinition().getName(), rs.getInt(1)));
@@ -718,7 +718,7 @@ public class TableManager extends Table {
 
         // first we check all fields of the data definition
         for (String string : dd.getFieldNames()) {
-            String fieldName = (String) string;
+            String fieldName = string;
             Object val = d.get(fieldName);
             if (getFieldDefinition(fieldName).getType().startsWith("set"))
                 continue;
@@ -765,7 +765,7 @@ public class TableManager extends Table {
         if (dbc instanceof DBConnectionWrapper)
             dbc = ((DBConnectionWrapper) dbc).getWrapped();
 
-        PreparedStatement ps = (PreparedStatement) ((SQLDBConnection) dbc).getPreparedStatement(preparedDeleteString);
+        PreparedStatement ps = ((SQLDBConnection) dbc).getPreparedStatement(preparedDeleteString);
 
         // while(true)
         try {
@@ -796,7 +796,7 @@ public class TableManager extends Table {
         for (Enumeration<String> e = d.keys(); e.hasMoreElements();) {
             if (s.length() > 0)
                 command.append(",");
-            String fieldName = (String) e.nextElement();
+            String fieldName = e.nextElement();
             String fieldDBName = getFieldDBName(fieldName);
             if (fieldDBName == null)
                 throw new org.makumba.DBError(new Exception("no such field " + fieldDBName + " in " + this.getDBName()));
@@ -813,7 +813,7 @@ public class TableManager extends Table {
 
             int n = 1;
             for (Enumeration<String> e = d.keys(); e.hasMoreElements(); n++) {
-                String ss = (String) e.nextElement();
+                String ss = e.nextElement();
                 setUpdateArgument(ss/* (String) e.nextElement() */, st, n, d);
             }
 
@@ -821,7 +821,7 @@ public class TableManager extends Table {
 
             // exec closes the st
             if (getSQLDatabase().exec(st) == -1)
-                findDuplicates((SQLDBConnection) dbc, d);
+                findDuplicates(dbc, d);
             return;
         }// catch(ReconnectedException re) { continue; }
         catch (SQLException se) {
@@ -1601,7 +1601,7 @@ public class TableManager extends Table {
     // moved from FieldManager
     /** Examine DB indexes. */
     public boolean isIndexOk(String fieldName) {
-        Boolean b = (Boolean) indexes.get(getFieldDBIndexName(fieldName).toLowerCase());
+        Boolean b = indexes.get(getFieldDBIndexName(fieldName).toLowerCase());
         if (b != null)
             return (getFieldDefinition(fieldName).isUnique() == !b.booleanValue());
         return false;
@@ -1612,7 +1612,7 @@ public class TableManager extends Table {
     }
 
     public boolean isIndexOk(String[] fieldNames) {
-        Boolean b = (Boolean) indexes.get(StringUtils.concatAsString(fieldNames).toLowerCase());
+        Boolean b = indexes.get(StringUtils.concatAsString(fieldNames).toLowerCase());
         if (b != null)
             return (getDataDefinition().hasMultiUniqueKey(fieldNames));
         return false;
@@ -2113,7 +2113,7 @@ public class TableManager extends Table {
             Dictionary<String, Object> allFields) {
         dd.checkFieldNames(fieldsToCheck);
         for (String string : dd.getFieldNames()) {
-            String name = (String) string;
+            String name = string;
             if (fieldsToIgnore.get(name) == null) {
                 Object o = fieldsToCheck.get(name);
                 if (o != null) {

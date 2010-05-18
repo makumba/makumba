@@ -216,7 +216,7 @@ public class SearchTag extends FormTagBase {
             // iterate over all fields in the form
             Enumeration<String> enumeration = data.keys();
             while (enumeration.hasMoreElements()) {
-                String inputName = (String) enumeration.nextElement();
+                String inputName = enumeration.nextElement();
 
                 Object value = attributes.getAttribute(inputName);
 

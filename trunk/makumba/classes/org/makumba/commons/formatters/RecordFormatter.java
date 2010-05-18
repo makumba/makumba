@@ -66,7 +66,7 @@ public class RecordFormatter implements Serializable {
         expr = new String[dd.getFieldNames().size()];
 
         for (int i = 0; i < dd.getFieldNames().size(); i++) {
-            expr[i] = (String) names.get(dd.getFieldDefinition(i).getName());
+            expr[i] = names.get(dd.getFieldDefinition(i).getName());
         }
     }
 

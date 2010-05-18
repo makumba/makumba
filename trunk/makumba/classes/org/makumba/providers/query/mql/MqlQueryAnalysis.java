@@ -172,10 +172,10 @@ public class MqlQueryAnalysis implements QueryAnalysis {
     }
 
     public DataDefinition getLabelType(String labelName) {
-        String s1 = (String) aliases.get(labelName);
+        String s1 = aliases.get(labelName);
         if (s1 != null)
             labelName = s1;
-        return (DataDefinition) labels.get(labelName);
+        return labels.get(labelName);
     }
 
     public Map<String, DataDefinition> getLabelTypes() {

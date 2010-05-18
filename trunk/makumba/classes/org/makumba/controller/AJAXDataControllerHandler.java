@@ -112,7 +112,7 @@ public class AJAXDataControllerHandler extends ControllerHandler {
                             // TODO not sure if this works with multiple forms
                             fieldErrors.put(param + formName, errors);
                             for (Iterator<InvalidValueException> it = paramFieldErrors.iterator(); it.hasNext();) {
-                                InvalidValueException ive = (InvalidValueException) it.next();
+                                InvalidValueException ive = it.next();
                                 errors.put(ive.getShortMessage());
                             }
                         }

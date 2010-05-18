@@ -114,7 +114,7 @@ public class QueryExecution {
             throws LogicException {
         HashMap<MultipleKey, QueryExecution> executions = (HashMap<MultipleKey, QueryExecution>) pageContext.getAttribute(EXECUTIONS);
 
-        QueryExecution lqe = (QueryExecution) executions.get(key);
+        QueryExecution lqe = executions.get(key);
         if (lqe == null)
             executions.put(key, lqe = new QueryExecution(key, pageContext, offset, limit));
         return lqe;
@@ -128,7 +128,7 @@ public class QueryExecution {
             String defaultLimit) throws LogicException {
         HashMap<MultipleKey, QueryExecution> executions = (HashMap<MultipleKey, QueryExecution>) pageContext.getAttribute(EXECUTIONS);
 
-        QueryExecution lqe = (QueryExecution) executions.get(key);
+        QueryExecution lqe = executions.get(key);
         if (lqe == null)
             executions.put(key, lqe = new QueryExecution(key, pageContext, offset, limit, defaultLimit));
         return lqe;

@@ -205,13 +205,13 @@ public class MakumbaTransactionProvider extends TransactionProvider {
                     if (dbclass == null)
                         dbclass = "org.makumba.db.makumba.sql.Database";
                 }
-                p.put("db.name", (String) name);
+                p.put("db.name", name);
 
                 Object pr[] = { p };
 
                 try {
                     Database d = (Database) Class.forName(dbclass).getConstructor(theProp).newInstance(pr);
-                    d.dataSourceName = (String) name;
+                    d.dataSourceName = name;
                     d.initialiseTables(name);
 
                     // TODO: need to check if hibernate schema update is authorized. If yes, drop/adjust indexes from
@@ -280,7 +280,7 @@ public class MakumbaTransactionProvider extends TransactionProvider {
 
     @Override
     protected Transaction getTransaction(String name) {
-        return (DBConnectionWrapper) getDatabase(name).getDBConnection(name);
+        return getDatabase(name).getDBConnection(name);
     }
 
     @Override

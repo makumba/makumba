@@ -360,7 +360,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
     }
 
     public boolean isFileType() {
-        return subfield != null && ((DataDefinitionImpl) subfield).isFileSubfield;
+        return subfield != null && (subfield).isFileSubfield;
     }
 
     public boolean isIndexPointerField() {
@@ -404,7 +404,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
     public void addValidationRule(Collection<ValidationRule> rules) {
         if (rules != null) {
             for (ValidationRule validationRule : rules) {
-                addValidationRule((ValidationRule) validationRule);
+                addValidationRule(validationRule);
             }
         }
     }
@@ -861,7 +861,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
                 if (i > charEnumValues.size()) {
                     throw new RuntimeException("enumerator size is " + charEnumValues.size() + ", index is " + i);
                 }
-                return (String) charEnumValues.elementAt(i);
+                return charEnumValues.elementAt(i);
 
             default:
                 throw new RuntimeException("getNameAt works only for intEnum, setintEnum, charEnum and setcharEnum");
@@ -873,7 +873,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         if (type != FieldType.INTENUM && type != FieldType.SETINTENUM) {
             throw new RuntimeException("getNameFor works only for intEnum");
         }
-        return (String) intEnumValues.get(i);
+        return intEnumValues.get(i);
     }
 
     public Collection<String> getNames() {

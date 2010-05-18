@@ -122,7 +122,7 @@ public class WebappJSPQueryCrawler {
     private static String[] getFiles(String webappRoot, String[] skipPaths, FileFilter fileFilter) {
         ArrayList<String> allFilesInDirectory = FileUtils.getAllFilesInDirectory(webappRoot, skipPaths, fileFilter);
         Collections.sort(allFilesInDirectory);
-        String[] files = (String[]) allFilesInDirectory.toArray(new String[allFilesInDirectory.size()]);
+        String[] files = allFilesInDirectory.toArray(new String[allFilesInDirectory.size()]);
         return files;
     }
 

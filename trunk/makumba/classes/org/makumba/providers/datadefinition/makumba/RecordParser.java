@@ -292,7 +292,7 @@ public class RecordParser {
     /** Check whether all fields used in multiple uniqueness checks are defined in the data definition. */
     private void checkMultipleUniqueFields() {
         for (int i = 0; i < dd.getMultiFieldUniqueKeys().length; i++) {
-            DataDefinition.MultipleUniqueKeyDefinition multiUniqueKeyDefinition = (DataDefinition.MultipleUniqueKeyDefinition) dd.getMultiFieldUniqueKeys()[i];
+            DataDefinition.MultipleUniqueKeyDefinition multiUniqueKeyDefinition = dd.getMultiFieldUniqueKeys()[i];
             for (int j = 0; j < multiUniqueKeyDefinition.getFields().length; j++) {
                 String fieldName = multiUniqueKeyDefinition.getFields()[j];
 
@@ -331,8 +331,8 @@ public class RecordParser {
     }
 
     void setTitle() {
-        String origCmd = (String) text.getOriginal("!title");
-        String ttl = (String) text.remove("!title");
+        String origCmd = text.getOriginal("!title");
+        String ttl = text.remove("!title");
         String ttlt = null;
         if (ttl != null) {
             if (ttl.contains(".")) {
@@ -433,7 +433,7 @@ public class RecordParser {
 
             if (st.startsWith("!include")) {
                 String ok = text.getOriginal(st);
-                String incl = (String) text.remove(st);
+                String incl = text.remove(st);
                 line--;
                 String s = incl.trim();
                 java.net.URL u = findDataDefinition(s, "idd");
@@ -472,7 +472,7 @@ public class RecordParser {
         // keep the non-overriden ones with empty definiton to report a mdd
         // error
         for (String key : overridenFields) {
-            if (((String) text.get(key)).trim().length() == 0) {
+            if ((text.get(key)).trim().length() == 0) {
                 text.remove(key);
             }
         }
@@ -647,7 +647,7 @@ public class RecordParser {
                 mpe.add(fail("Could not find subfield '" + nm.substring(0, p) + "'", makeLine(subfields, nm)));
                 continue;
             }
-            String type = (String) fieldInfo.type;
+            String type = fieldInfo.type;
             if (type == null) {
                 mpe.add(fail("no such field in subfield definition", makeLine(subfields, nm)));
                 continue;
@@ -663,7 +663,7 @@ public class RecordParser {
 
     void treatSubfields() {
         for (String string : dd.getFieldNames()) {
-            String fieldName = (String) string;
+            String fieldName = string;
             parseSubfields(fieldName);
         }
     }
@@ -796,13 +796,13 @@ public class RecordParser {
     // moved from ptrOneParser
     public void parse_ptrOne_Subfields(String fieldName) {
         ptrOne_RecordParsers.get(fieldName).parse();
-        getFieldInfo(fieldName).extra2 = ((RecordParser) ptrOne_RecordParsers.get(fieldName)).dd.getTitleFieldName();
+        getFieldInfo(fieldName).extra2 = (ptrOne_RecordParsers.get(fieldName)).dd.getTitleFieldName();
     }
 
     // moved from setParser
     public void parse_set_Subfields(String fieldName) {
         if (getFieldInfo(fieldName).extra2 == null) {
-            getFieldInfo(fieldName).extra2 = subtableParser_subtables.get(fieldName).title = ((DataDefinition) setParser_settbls.get(fieldName)).getTitleFieldName();
+            getFieldInfo(fieldName).extra2 = subtableParser_subtables.get(fieldName).title = (setParser_settbls.get(fieldName)).getTitleFieldName();
         }
     }
 
@@ -856,7 +856,7 @@ public class RecordParser {
 
     // moved from setParser
     String add_set_Text(String fieldName, String nm, String origNm, String val) {
-        String s = acceptTitle(fieldName, nm, origNm, val, (DataDefinition) setParser_settbls.get(fieldName));
+        String s = acceptTitle(fieldName, nm, origNm, val, setParser_settbls.get(fieldName));
         if (s == null) {
             subtableParser_subtables.get(fieldName).title = val.trim();
         }
@@ -1348,7 +1348,7 @@ public class RecordParser {
                             groupList.add(matcher.group(j).trim());
                         }
                     }
-                    String[] groups = (String[]) groupList.toArray(new String[groupList.size()]);
+                    String[] groups = groupList.toArray(new String[groupList.size()]);
                     targetDD.addMultiUniqueKey(new DataDefinition.MultipleUniqueKeyDefinition(groups, line,
                             errorMessage));
                     java.util.logging.Logger.getLogger("org.makumba.datadefinition.makumba").finer(

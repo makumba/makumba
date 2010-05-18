@@ -85,7 +85,7 @@ public class CompositeValidationException extends RuntimeException {
     public String toString() {
         StringBuilder message = new StringBuilder("\n");
         for (Iterator<InvalidValueException> iter = exceptionsHash.values().iterator(); iter.hasNext();) {
-            InvalidValueException e = (InvalidValueException) iter.next();
+            InvalidValueException e = iter.next();
             message.append("<span class=\"invalidValueException\">").append(e.getMessage()).append("</span>");
             message.append("\n");
         }

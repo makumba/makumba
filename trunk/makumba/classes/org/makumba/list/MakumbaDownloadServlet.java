@@ -83,7 +83,7 @@ public class MakumbaDownloadServlet extends HttpServlet {
                     response.setHeader("Content-Disposition", "attachment; filename=\"" + name + "\"");
                 }
                 response.setContentType(contentType);
-                response.setContentLength(((Integer) contentLength).intValue());
+                response.setContentLength((contentLength).intValue());
 
                 content.writeTo(response.getOutputStream());
             } else {

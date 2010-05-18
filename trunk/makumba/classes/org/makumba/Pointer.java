@@ -108,7 +108,7 @@ public class Pointer implements java.io.Serializable {
 
     /** encode in external format */
     public String toExternalForm() {
-        long hc = (long) type.hashCode() & 0xffffffffl;
+        long hc = type.hashCode() & 0xffffffffl;
         return Long.toString((crc(n) & 0xfl) << 32 | n ^ hc, Character.MAX_RADIX);
     }
 
@@ -125,7 +125,7 @@ public class Pointer implements java.io.Serializable {
      */
     public Pointer(String type, String externalForm) {
         this.type = type;
-        long hc = (long) type.hashCode() & 0xffffffffl;
+        long hc = type.hashCode() & 0xffffffffl;
         long l = 0l;
         try {
             l = Long.parseLong(externalForm, Character.MAX_RADIX);
@@ -134,7 +134,7 @@ public class Pointer implements java.io.Serializable {
         }
         n = l & 0xffffffffl;
         n = n ^ hc;
-        if (l >> 32 != ((long) crc(n) & 0xfl))
+        if (l >> 32 != (crc(n) & 0xfl))
             throw new InvalidValueException("invalid external pointer for type " + type + " : " + externalForm);
     }
 

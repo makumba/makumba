@@ -59,7 +59,7 @@ public class LoginTag extends BodyTagSupport {
     static Dictionary<String, Integer> countValues(String[] parameterValues) {
         Dictionary<String, Integer> values = new Hashtable<String, Integer>();
         for (int i = 0; i < parameterValues.length; i++) {
-            Integer n = (Integer) values.get(parameterValues[i]);
+            Integer n = values.get(parameterValues[i]);
             if (n == null)
                 n = new Integer(1);
             else
@@ -144,14 +144,14 @@ public class LoginTag extends BodyTagSupport {
 
                     // for each unique value for this parameter... print as hidden input
                     for (Enumeration<String> ee = dParamValues.keys(); ee.hasMoreElements();) {
-                        String value = (String) ee.nextElement();
+                        String value = ee.nextElement();
 
                         // how many times is (paramName=value) among ALL params?
-                        int cntAllParam = ((Integer) dParamValues.get(value)).intValue();
+                        int cntAllParam = (dParamValues.get(value)).intValue();
                         int cntHiddenInput = cntAllParam;
 
                         if (dGetParams.get(name) != null && dGetParamValues.get(value) != null) {
-                            int cntGetParam = ((Integer) dGetParamValues.get(value)).intValue();
+                            int cntGetParam = (dGetParamValues.get(value)).intValue();
                             cntHiddenInput -= cntGetParam;
                         }
 

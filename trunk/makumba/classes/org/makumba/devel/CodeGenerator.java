@@ -244,7 +244,7 @@ public class CodeGenerator {
 
         Vector<FieldDefinition> fields = extractSetComplex(dd);
         for (int i = 0; i < fields.size(); i++) {
-            FieldDefinition fd = (FieldDefinition) fields.elementAt(i);
+            FieldDefinition fd = fields.elementAt(i);
             String handlerName = Logic.upperCase(dd.getName() + "->" + fd.getName());
             addOnAddHandler(sb, indent, handlerName);
             addOnEditHandler(sb, indent, handlerName);
@@ -380,7 +380,7 @@ public class CodeGenerator {
                 appendJSPLine(sb, indent, "<%-- Makumba Generator - START OF NORMAL FIELDS --%>");
                 // iterating over the normal fields
                 for (int i = 0; i < fields.size(); i++) {
-                    FieldDefinition fd = (FieldDefinition) fields.get(i);
+                    FieldDefinition fd = fields.get(i);
                     if (fd.isFixed() && fd.isNotNull() && fd.getType().equals("ptr")) {
                         // TODO?: make inputs for that pointer too
                     } else {
@@ -405,7 +405,7 @@ public class CodeGenerator {
 
                     DataServlet.logger.finer("DEBUG INFO: Number of sets of MDD " + dd + " is " + sets.size());
                     for (int i = 0; i < sets.size(); i++) {
-                        FieldDefinition fd = (FieldDefinition) sets.get(i);
+                        FieldDefinition fd = sets.get(i);
                         DataServlet.logger.finest("DEBUG INFO: Currently processing set with fieldname " + fd.getName()
                                 + " and type " + fd.getType());
 
@@ -490,7 +490,7 @@ public class CodeGenerator {
     private void generateInnerFieldFormCode(CodeGeneratorTemplate template, StringBuffer sb,
             Vector<FieldDefinition> innerFields, int indent) throws IOException {
         for (int i = 0; i < innerFields.size(); i++) {
-            FieldDefinition innerFd = (FieldDefinition) innerFields.get(i);
+            FieldDefinition innerFd = innerFields.get(i);
             appendJSPLine(sb, indent, template.beforeField);
             writeInput(sb, template, innerFd, indent);
         }
@@ -634,7 +634,7 @@ public class CodeGenerator {
             appendJSPLine(sb, indent, template.afterFormBegin);
             appendJSPLine(sb, indent, template.beforeField);
             for (int i = 0; i < innerFields.size(); i++) {
-                FieldDefinition innerFd = (FieldDefinition) innerFields.get(i);
+                FieldDefinition innerFd = innerFields.get(i);
                 appendJSPLine(sb, indent, template.beforeFieldName + innerFd.getName() + template.afterFieldName);
             }
             appendJSPLine(sb, indent, template.afterField);
@@ -645,7 +645,7 @@ public class CodeGenerator {
             // launching generation of inner fields
             for (int i = 0; i < innerFields.size(); i++) {
                 appendJSPLine(sb, indent, template.beforeFieldTag + "<mak:value expr=\"" + fd.getName() + "."
-                        + ((FieldDefinition) innerFields.get(i)).getName() + "\"/>" + template.afterFieldTag);
+                        + (innerFields.get(i)).getName() + "\"/>" + template.afterFieldTag);
             }
 
             appendJSPLine(sb, indent, template.afterField);

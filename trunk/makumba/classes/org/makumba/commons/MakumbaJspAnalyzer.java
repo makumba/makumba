@@ -359,7 +359,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
      */
     public void startTag(TagData td, Object status) {
         simpleTag(td, status);
-        ((ParseStatus) status).start((AnalysableTag) td.tagObject);
+        ((ParseStatus) status).start(td.tagObject);
     }
 
     /**

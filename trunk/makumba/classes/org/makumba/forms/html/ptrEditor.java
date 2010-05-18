@@ -129,7 +129,7 @@ public class ptrEditor extends choiceEditor {
     }
 
     public Object getOptionValue(RecordFormatter rf, int fieldIndex, Object options, int i) {
-        return ((ChoiceSet.Choice) ((ChoiceSet) options).get(i)).getValue();
+        return (((ChoiceSet) options).get(i)).getValue();
     }
 
     public String formatOptionValue(RecordFormatter rf, int fieldIndex, Object val) {
@@ -148,7 +148,7 @@ public class ptrEditor extends choiceEditor {
     }
 
     public String formatOptionTitle(RecordFormatter rf, int fieldIndex, Object options, int i) {
-        return ((ChoiceSet.Choice) ((ChoiceSet) options).get(i)).getTitle();
+        return (((ChoiceSet) options).get(i)).getTitle();
     }
 
     public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.commons.attributes.HttpParameters p,

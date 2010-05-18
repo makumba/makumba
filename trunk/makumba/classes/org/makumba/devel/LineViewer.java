@@ -744,7 +744,7 @@ public abstract class LineViewer implements SourceViewer {
      */
     public Class<?> findClass(String className) {
         Class<?> c = null;
-        String classNameTrial = (String) importedClasses.get(className);
+        String classNameTrial = importedClasses.get(className);
         if (classNameTrial != null) {
             try {
                 c = Class.forName(classNameTrial);

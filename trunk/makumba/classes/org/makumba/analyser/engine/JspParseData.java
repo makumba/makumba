@@ -325,7 +325,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
         treatIncludeDirective(includeDirective, start, end, analyzer);
 
         Map<String, String> m1 = parseAttributes(includeDirective, -1);
-        String fileName = (String) m1.get("file");
+        String fileName = m1.get("file");
         String dir = fileName.startsWith("/") ? root : host.file.getParent();
         host.include(new File(dir, fileName), position, includeDirective);
     }
@@ -607,7 +607,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
 
         for (Entry<String, String> entry : attributes.entrySet()) {
             Entry<String, String> me = entry;
-            String s = (String) me.getKey();
+            String s = me.getKey();
             String methodName = "set" + Character.toUpperCase(s.charAt(0)) + s.substring(1);
             try {
                 Method m = c.getMethod(methodName, argTypes);

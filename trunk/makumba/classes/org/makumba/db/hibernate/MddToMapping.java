@@ -46,7 +46,7 @@ public class MddToMapping {
         this.nr = nr;
 
         for (int i = 0; i < v.size(); i++)
-            generateMapping(ddp.getDataDefinition((String) v.elementAt(i)), cfg);
+            generateMapping(ddp.getDataDefinition(v.elementAt(i)), cfg);
         while (!mddsToDo.isEmpty())
             generateMapping(mddsToDo.removeFirst(), cfg);
     }

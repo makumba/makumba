@@ -46,7 +46,7 @@ public class delete {
                     Vector<String> v = org.makumba.MakumbaSystem.mddsInDirectory("dataDefinitions");
                     types = new String[v.size()];
                     for (int i = 0; i < v.size(); i++)
-                        types[i] = (String) v.elementAt(i);
+                        types[i] = v.elementAt(i);
                 } else {
                     types = new String[argv.length - 1];
                     System.arraycopy(argv, 1, types, 0, types.length);

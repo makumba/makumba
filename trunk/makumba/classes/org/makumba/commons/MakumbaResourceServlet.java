@@ -151,7 +151,7 @@ public class MakumbaResourceServlet extends HttpServlet {
                 }
 
                 while (entries.hasMoreElements()) {
-                    JarEntry entry = (JarEntry) entries.nextElement();
+                    JarEntry entry = entries.nextElement();
                     if (entry.getName().startsWith(relativeDirectory)) {
                         String s = entry.getName().substring(relativeDirectory.length());
                         while (s.length() > 0 && s.startsWith("/")) {

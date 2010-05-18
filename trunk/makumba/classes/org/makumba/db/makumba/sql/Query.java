@@ -73,7 +73,7 @@ public class Query implements org.makumba.db.makumba.Query {
      * @return the SQL query string to be sent to the database, given a set of arguments
      */
     public String getCommand(Map<String, Object> arguments) {
-        return MqlSQLParameterTransformer.getSQLQueryGenerator((MqlQueryAnalysis) qA, arguments).getSQLQuery(
+        return MqlSQLParameterTransformer.getSQLQueryGenerator(qA, arguments).getSQLQuery(
             db.getNameResolverHook());
     }
 
@@ -109,7 +109,7 @@ public class Query implements org.makumba.db.makumba.Query {
             // no need to send the query to the sql engine
             return getConstantResult(args, offset, limit);
 
-        MqlSQLParameterTransformer qG = MqlSQLParameterTransformer.getSQLQueryGenerator((MqlQueryAnalysis) qA, args);
+        MqlSQLParameterTransformer qG = MqlSQLParameterTransformer.getSQLQueryGenerator(qA, args);
 
         assigner = new ParameterAssigner(db, qA, qG);
 
@@ -201,7 +201,7 @@ public class Query implements org.makumba.db.makumba.Query {
 
     public int insert(Map<String, Object> args, DBConnection dbc) {
 
-        MqlSQLParameterTransformer qG = MqlSQLParameterTransformer.getSQLQueryGenerator((MqlQueryAnalysis) qA, args);
+        MqlSQLParameterTransformer qG = MqlSQLParameterTransformer.getSQLQueryGenerator(qA, args);
 
         assigner = new ParameterAssigner(db, qA, qG);
 

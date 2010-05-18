@@ -47,7 +47,7 @@ public class VarTEI extends TagExtraInfo {
         if (var != null)
             v.addElement(new VariableInfo(var, "java.lang.String", true, VariableInfo.AT_BEGIN));
 
-        return (VariableInfo[]) v.toArray(new VariableInfo[v.size()]);
+        return v.toArray(new VariableInfo[v.size()]);
     }
 
 }
