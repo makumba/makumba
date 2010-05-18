@@ -223,7 +223,7 @@ public class NameResolver {
         String tbname = config.getProperty(dd.getName());
 
         if (tbname == null) {
-            String key = Database.findConfig(config, dd.getName());
+            String key = org.makumba.db.makumba.Database.findConfig(config, dd.getName());
             String shortname = dd.getName();
             if (key != null) {
                 shortname = config.getProperty(key) + dd.getName().substring(key.length());

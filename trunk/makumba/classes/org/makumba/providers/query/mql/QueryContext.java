@@ -48,7 +48,7 @@ public class QueryContext {
         addFrom(path, alias, joinType);
 
         if (inTree == null) {
-            return inTree = (MqlNode) ASTUtil.create(walker.fact, MqlSqlWalker.FROM_FRAGMENT, "fromFragment");
+            return inTree = (MqlNode) ASTUtil.create(walker.fact, HqlSqlTokenTypes.FROM_FRAGMENT, "fromFragment");
         } else {
             return null;
         }

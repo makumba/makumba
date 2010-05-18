@@ -69,7 +69,7 @@ public class StringLengthValidationRule extends RangeValidationRule {
 
     /** Do some pattern matching tests. */
     public static void main(String[] args) {
-        Pattern p = Pattern.compile(StringLengthValidationRule.getAcceptedRules());
+        Pattern p = Pattern.compile(RangeValidationRule.getAcceptedRules());
         String[] rules = { "someField length [1..20]", "someField length [?..500]", "someField llngth [?..500]" };
         RegExpUtils.evaluate(p, rules);
     }

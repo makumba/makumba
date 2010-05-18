@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.collections.set.ListOrderedSet;
+import org.makumba.commons.tags.GenericMakumbaTag;
 import org.makumba.forms.tags.InputTag;
 
 /**
@@ -169,7 +170,7 @@ public class PageCache {
     public void cacheNeededResources(Object[] value) {
         Logger.getLogger("org.makumba.analyser.pagecache").finest(
             "Caching needed resource in pageCache " + hashCode() + ": " + Arrays.toString(value));
-        cacheSetValues(InputTag.NEEDED_RESOURCES, value);
+        cacheSetValues(GenericMakumbaTag.NEEDED_RESOURCES, value);
     }
 
     /** Retrieves a set from a specific set cache. */

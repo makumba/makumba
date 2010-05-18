@@ -355,7 +355,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
 
     @Override
     protected AST generateNamedParameter(AST delimiterNode, AST nameNode) throws SemanticException {
-        MqlNode para = (MqlNode) ASTUtil.create(fact, MqlSqlWalker.NAMED_PARAM, nameNode.getText());
+        MqlNode para = (MqlNode) ASTUtil.create(fact, HqlSqlTokenTypes.NAMED_PARAM, nameNode.getText());
         // old name will be preserved as para.originalText
         para.setText("?");
         return para;
@@ -363,7 +363,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
 
     @Override
     protected AST generatePositionalParameter(AST inputNode) throws SemanticException {
-        return ASTUtil.create(fact, MqlSqlWalker.PARAM, "?");
+        return ASTUtil.create(fact, HqlSqlTokenTypes.PARAM, "?");
     }
 
     void setParameterType(MqlNode param, FieldDefinition likewise) {

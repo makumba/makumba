@@ -3,6 +3,7 @@ package org.makumba.forms.validation;
 import java.util.Collection;
 
 import org.makumba.ValidationRule;
+import org.makumba.providers.datadefinition.mdd.MDDExpressionBaseParser;
 import org.makumba.providers.datadefinition.mdd.MDDExpressionParser;
 import org.makumba.providers.datadefinition.mdd.MDDTokenTypes;
 import org.makumba.providers.datadefinition.mdd.ValidationRuleNode;
@@ -76,7 +77,7 @@ public class MDDLiveValidationProvider extends LiveValidationProvider {
                             if (c.getComparisonExpression().getLhs_type() == MDDTokenTypes.UPPER
                                     || c.getComparisonExpression().getLhs_type() == MDDTokenTypes.LOWER) {
                                 arguments += "functionToApply: \""
-                                        + MDDExpressionParser._tokenNames[c.getComparisonExpression().getLhs_type()].toLowerCase()
+                                        + MDDExpressionBaseParser._tokenNames[c.getComparisonExpression().getLhs_type()].toLowerCase()
                                         + "\", ";
                                 validations.append(getValidationLine(inputVarName, "MakumbaValidate.StringComparison",
                                     rule, arguments));
