@@ -51,7 +51,9 @@ import org.makumba.commons.RuntimeWrappedException;
  * <li>you use the doAnalyzedStartTag() and doAnalyzedEndTag() instead of doStartTag() and doEndTag() methods</li>
  * <li>you cleanup all resources by overriding doAnalyzedCleanup(), without forgetting to call the super() method</li>
  * <li>you correctly describe the behavior of the tag by overriding the canHaveBody() and allowsIdenticalKey()</li>
- * <li>you check for the validity of attributes by overriding the registerPossibleAttributeValues() method, and registering possile attribute values using the registerAttributeValues(String attributeName, String... values) method.</li>
+ * <li>you check for the validity of attributes by overriding the registerPossibleAttributeValues() method, and
+ * registering possile attribute values using the registerAttributeValues(String attributeName, String... values)
+ * method.</li>
  * </ul>
  * 
  * @author Cristian Bogdan
@@ -69,13 +71,13 @@ public abstract class AnalysableTag extends AnalysableElement {
     public static final String TYPES = "org.makumba.types";
 
     private HashMap<String, String[]> attributeValues = new LinkedHashMap<String, String[]>();
-    
+
     /**
      * The TagData object holding the composite data collected by the analysis. It is set by the tag parser at analysis
      * time. It is set at runtime after the key is computed
      */
     public TagData tagData;
-    
+
     @Override
     public ElementData getElementData() {
         return this.tagData;
@@ -302,7 +304,7 @@ public abstract class AnalysableTag extends AnalysableElement {
             throw new ProgrammerError("The attribute '" + attributeName + "' can only be an $attribute or an int");
         }
     }
-    
+
     /**
      * Checks whether the given value is not blank, i.e. not null, and not an empty string or just contains whitespace,
      * and throws a descriptive programmer error otherwise
@@ -312,36 +314,41 @@ public abstract class AnalysableTag extends AnalysableElement {
             throw new ProgrammerError("The attribute '" + attributeName + "' can not be empty");
         }
     }
-    
+
     /**
-     * Override this in order to register possible attribute values using {@link #registerAttributeValues(String, String...)}.
-     * The registered attributes are checked before {@link #doStartAnalyze(PageCache)} and throw a {@link ProgrammerError} is
-     * thrown if the provided value is not allowed.
+     * Override this in order to register possible attribute values using
+     * {@link #registerAttributeValues(String, String...)}. The registered attributes are checked before
+     * {@link #doStartAnalyze(PageCache)} and throw a {@link ProgrammerError} is thrown if the provided value is not
+     * allowed.
      */
     protected void registerPossibleAttributeValues() {
     }
-    
+
     /**
      * Registers one attribute and several possible values
-     * @param attributeName the name of the attribute
-     * @param values a number of possible values the attribute can take
+     * 
+     * @param attributeName
+     *            the name of the attribute
+     * @param values
+     *            a number of possible values the attribute can take
      */
     protected final void registerAttributeValues(String attributeName, String... values) {
         attributeValues.put(attributeName, values);
     }
-    
+
     /**
      * Checks if the provided attribute values are correct. Called before {@link #doStartAnalyze(PageCache)}
      */
     public void checkAttributeValues() {
         registerPossibleAttributeValues();
-        
-        for(String attributeName : attributeValues.keySet()) {
+
+        for (String attributeName : attributeValues.keySet()) {
             String value = tagData.attributes.get(attributeName);
-            if(value != null) {
-                if(!org.makumba.commons.StringUtils.equalsAny(value, attributeValues.get(attributeName))) {
+            if (value != null) {
+                if (!org.makumba.commons.StringUtils.equalsAny(value, attributeValues.get(attributeName))) {
                     throw new ProgrammerError("Invalid value for attribute '" + attributeName + "': '" + value
-                        + "'. Allowed values are " + org.makumba.commons.StringUtils.toString(attributeValues.get(attributeName)));
+                            + "'. Allowed values are "
+                            + org.makumba.commons.StringUtils.toString(attributeValues.get(attributeName)));
                 }
             }
         }

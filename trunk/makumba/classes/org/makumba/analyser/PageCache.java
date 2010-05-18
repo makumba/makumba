@@ -49,7 +49,7 @@ public class PageCache {
     private HashMap<String, LinkedHashMap<Object, Object>> caches = new HashMap<String, LinkedHashMap<Object, Object>>();
 
     private HashMap<String, MultiValueMap> multiValueCaches = new HashMap<String, MultiValueMap>();
-    
+
     private HashMap<String, ListOrderedSet> setCaches = new HashMap<String, ListOrderedSet>();
 
     /**
@@ -98,12 +98,16 @@ public class PageCache {
     public Map<Object, Object> retrieveCache(String cacheName) {
         return caches.get(cacheName);
     }
-    
+
     /**
      * Caches an object in a cache capable of handling multiple unique values for one key
-     * @param cacheName the name of the cache
-     * @param key the key of the object to cache
-     * @param value the value of the object to cache, can be a single value or a collection
+     * 
+     * @param cacheName
+     *            the name of the cache
+     * @param key
+     *            the key of the object to cache
+     * @param value
+     *            the value of the object to cache, can be a single value or a collection
      */
     public void cacheMultiple(String cacheName, Object key, Object value) {
         MultiValueMap cache = multiValueCaches.get(cacheName);
@@ -111,21 +115,23 @@ public class PageCache {
             cache = new MultiValueMap();
             multiValueCaches.put(cacheName, cache);
         }
-        
-        if(! cache.containsValue(key, value)) {
-            if(value instanceof Collection) {
+
+        if (!cache.containsValue(key, value)) {
+            if (value instanceof Collection) {
                 cache.putAll(key, (Collection) value);
             } else {
                 cache.put(key, value);
             }
         }
     }
-    
+
     /**
      * Retrieves the values of a multivalue cache
      * 
-     * @param cacheName the name of the cache
-     * @param key the key of the object to retrieve
+     * @param cacheName
+     *            the name of the cache
+     * @param key
+     *            the key of the object to retrieve
      * @return a {@link Collection} of values
      */
     public Collection<Object> retrieveMultiple(String cacheName, Object key) {
@@ -135,7 +141,6 @@ public class PageCache {
         }
         return cache.getCollection(key);
     }
-    
 
     /**
      * Gets a whole multivalue cache
@@ -147,8 +152,7 @@ public class PageCache {
     public MultiValueMap retrieveMultiCache(String cacheName) {
         return multiValueCaches.get(cacheName);
     }
-        
-    
+
     /**
      * Caches several objects in a specific cache, using sets, i.e. not keeping duplicate values.
      */
@@ -167,7 +171,7 @@ public class PageCache {
             "Caching needed resource in pageCache " + hashCode() + ": " + Arrays.toString(value));
         cacheSetValues(InputTag.NEEDED_RESOURCES, value);
     }
-    
+
     /** Retrieves a set from a specific set cache. */
     public ListOrderedSet retrieveSetValues(String cacheName) {
         return setCaches.get(cacheName);
