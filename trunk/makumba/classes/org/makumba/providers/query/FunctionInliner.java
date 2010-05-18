@@ -49,7 +49,7 @@ public class FunctionInliner {
     private ArrayList<String> parameterExpr = new ArrayList<String>();
 
     private QueryFragmentFunction functionDefinition;
-    
+
     private DataDefinition calleeType;
 
     private String inlinedFunction;
@@ -278,8 +278,8 @@ public class FunctionInliner {
     public static final Pattern ident = Pattern.compile("[a-zA-Z]\\w*");
 
     public static String addThisToFunction(DataDefinition mdd, DataDefinition.QueryFragmentFunction func) {
-        String queryFragment= func.getQueryFragment();
-        StringBuffer sb = new StringBuffer();        
+        String queryFragment = func.getQueryFragment();
+        StringBuffer sb = new StringBuffer();
         Matcher m = ident.matcher(queryFragment);
         boolean found = false;
         while (m.find()) {
@@ -303,9 +303,10 @@ public class FunctionInliner {
                 break;
             }
 
-            //TODO: either look for other keywords (than end) or better rewrite this with ASTs
+            // TODO: either look for other keywords (than end) or better rewrite this with ASTs
             // if we have an actor we don't append "this"
-            if (before == '.' || id.equals("this") || id.equals("actor") || id.equals("end") || func.getParameters().getFieldDefinition(id) != null) {
+            if (before == '.' || id.equals("this") || id.equals("actor") || id.equals("end")
+                    || func.getParameters().getFieldDefinition(id) != null) {
                 continue;
             }
             if (mdd.getFieldDefinition(id) != null || after == '(' && mdd.getFunctions().getFunction(id) != null) {
@@ -314,11 +315,12 @@ public class FunctionInliner {
             }
         }
         m.appendTail(sb);
-    
-        if (found) 
-            java.util.logging.Logger.getLogger("org.makumba.db.query.inline").fine(queryFragment + " -> " + sb.toString());
+
+        if (found)
+            java.util.logging.Logger.getLogger("org.makumba.db.query.inline").fine(
+                queryFragment + " -> " + sb.toString());
 
         return sb.toString();
-    
+
     }
 }

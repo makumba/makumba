@@ -35,7 +35,6 @@ import antlr.collections.AST;
  * 
  * @author Cristian Bogdan
  * @author Manuel Gay
- * 
  * @since 0.5.5.10
  * @version $Id: OQLAnalyzer.java,v 2.1 2007/07/18 16:04:57 manuel_gay Exp $
  */
@@ -52,20 +51,22 @@ public interface QueryAnalysis {
      *         field the type and name of the second QL projection $2 etc.
      */
     DataDefinition getProjectionType();
-    
+
     /**
      * Gets the type of the fields between FROM and WHERE
-     * @return A DataDefinition containing in the first field the type and name of the first label, the second
-     *         field the type and name of the second label $2 etc.
+     * 
+     * @return A DataDefinition containing in the first field the type and name of the first label, the second field the
+     *         type and name of the second label $2 etc.
      */
     Map<String, DataDefinition> getLabelTypes();
 
     /**
-     * Gets the type of a label used within the query
-     * FIXME: remove, inline everywhere as getLabelTypes().get(labelName)
-     * for that to work, OQL and MQL need to put their aliases also in the Map returned by getLabelTypes()
-     * HQL does not support aliases in the first place
-     * @param labelName the name of the label
+     * Gets the type of a label used within the query FIXME: remove, inline everywhere as getLabelTypes().get(labelName)
+     * for that to work, OQL and MQL need to put their aliases also in the Map returned by getLabelTypes() HQL does not
+     * support aliases in the first place
+     * 
+     * @param labelName
+     *            the name of the label
      * @return The type of the label as declared in the FROM part of the query
      */
     DataDefinition getLabelType(String labelName);
@@ -73,19 +74,21 @@ public interface QueryAnalysis {
     /**
      * Gets the types of the query parameters, as resulted from the query analysis.
      * 
-     * @return A DataDefinition containing in the first field the type of the QL parameter mentioned first in the query. 
-     * Each mentioning of a parameter new will get a new field in this DataDefinition!  
+     * @return A DataDefinition containing in the first field the type of the QL parameter mentioned first in the query.
+     *         Each mentioning of a parameter new will get a new field in this DataDefinition!
      */
     DataDefinition getParameterTypes();
-    
+
     /**
      * Get the warnings resulted from query analysis
+     * 
      * @return a collection of warnings, as strings
      */
     public Collection<String> getWarnings();
 
     /**
      * return the pass1 (syntax) AST tree
+     * 
      * @return
      */
     AST getPass1Tree();

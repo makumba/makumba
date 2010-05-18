@@ -11,7 +11,7 @@ import org.makumba.commons.MultipleKey;
 
 /**
  * This provider aims at providing the data necessary for the Makumba forms to compute its results.
- *
+ * 
  * @author Manuel Gay
  * @version $Id: FormDataProvider.java,v 1.1 21.09.2007 09:40:27 Manuel Exp $
  */
@@ -79,9 +79,12 @@ public interface FormDataProvider {
     /**
      * Computes data at the beginning of form runtime.
      * 
-     * @param tag the FormTag that starts running
-     * @param pageCache the pageCache of the current page
-     * @param pageContext the pageContext in which the form is
+     * @param tag
+     *            the FormTag that starts running
+     * @param pageCache
+     *            the pageCache of the current page
+     * @param pageContext
+     *            the pageContext in which the form is
      * @return the base pointer expression corresponding to the current tag
      * @throws LogicException
      */
@@ -103,9 +106,13 @@ public interface FormDataProvider {
 
     /**
      * Gives the type corresponding to the base object of a tag, based on its name
-     * @param tag the tag for which we need to discover the tag
-     * @param pageCache the page cache of the current page
-     * @param baseObject the label of the object we want to discover
+     * 
+     * @param tag
+     *            the tag for which we need to discover the tag
+     * @param pageCache
+     *            the page cache of the current page
+     * @param baseObject
+     *            the label of the object we want to discover
      * @return the {@link DataDefinition} corresponding to the type of the object
      */
     public abstract DataDefinition getBasePointerType(AnalysableTag tag, PageCache pageCache, String baseObject);

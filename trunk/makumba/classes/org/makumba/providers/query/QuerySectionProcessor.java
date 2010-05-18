@@ -368,10 +368,11 @@ public class QuerySectionProcessor {
             // and name identically the labels that have same definition;
             // then check if all labels are the same and have identical definitions, and if all where conditions are
             // equivalent.
-            // for now we only check if things are identical or if the included FROM and WHERE are subqueries of the current ones
+            // for now we only check if things are identical or if the included FROM and WHERE are subqueries of the
+            // current ones
             // that's enough for actor expansion
-            return from!=null && from.indexOf(ins.from)!=-1
-                    && (ins.where == null && where == null || where != null && where.indexOf(ins.where)!=-1);
+            return from != null && from.indexOf(ins.from) != -1
+                    && (ins.where == null && where == null || where != null && where.indexOf(ins.where) != -1);
         }
     }
 
@@ -470,17 +471,17 @@ public class QuerySectionProcessor {
         // we never paranthesize [a.b.]function() or actor(...)
 
         Matcher func = allFunctionBegin.matcher(trimExpr);
-        if (func.find() && func.start()==0 && trimExpr.endsWith(")")){
-            int level=1;
-            for(int i=func.group().length(); i<trimExpr.length()-1; i++){
-                if(trimExpr.charAt(i)=='(')
+        if (func.find() && func.start() == 0 && trimExpr.endsWith(")")) {
+            int level = 1;
+            for (int i = func.group().length(); i < trimExpr.length() - 1; i++) {
+                if (trimExpr.charAt(i) == '(')
                     level++;
-                if(trimExpr.charAt(i)==')')
+                if (trimExpr.charAt(i) == ')')
                     level--;
-                if(level==0)
+                if (level == 0)
                     break;
             }
-            if(level==1)
+            if (level == 1)
                 return trimExpr;
         }
         // if there are already parantheses before and after the expression, we return

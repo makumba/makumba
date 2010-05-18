@@ -53,7 +53,7 @@ import antlr.collections.AST;
 public abstract class QueryAnalysisProvider {
 
     public abstract String getName();
-    
+
     protected abstract QueryAnalysis getRawQueryAnalysis(String query);
 
     protected QueryAnalysis getRawQueryAnalysis(String query, String insertIn) {
@@ -132,7 +132,7 @@ public abstract class QueryAnalysisProvider {
 
         return checkASTSetOrNullable(from, parsed.getFirstChild().getFirstChild().getNextSibling().getFirstChild());
     }
-    
+
     private Object checkASTSetOrNullable(String from, AST ast) {
         if (ast == null)
             return null;
@@ -213,7 +213,7 @@ public abstract class QueryAnalysisProvider {
     /** return the first character(s) in a parameter designator */
     public abstract String getParameterSyntax();
 
-    public static String getGeneratedActorName(AST actorType){
+    public static String getGeneratedActorName(AST actorType) {
         return "actor_" + ASTUtil.constructPath(actorType).replace('.', '_');
     }
 
@@ -230,9 +230,9 @@ public abstract class QueryAnalysisProvider {
         current2.setFirstChild(current1.getFirstChild());
         current2.setLine(current1.getLine());
         current2.setCol(current1.getColumn());
-    
+
         // FIXME: how about the text which the line and column refer to?
-    
+
         return current2;
     }
 
@@ -243,7 +243,7 @@ public abstract class QueryAnalysisProvider {
         private Stack<AST> path = new Stack<AST>();
 
         public ASTTransformVisitor(boolean repetitive) {
-            this.repetitive= repetitive;
+            this.repetitive = repetitive;
         }
 
         public boolean isRepetitive() {
@@ -297,13 +297,13 @@ public abstract class QueryAnalysisProvider {
     }
 
     /**
-     * A holder for FROM and WHERE sections to enrich a query, and the query enrichment code.
-     * Can be called repeatedly on the same query.
-     * FIXME: for now only adding to the root query is performed
+     * A holder for FROM and WHERE sections to enrich a query, and the query enrichment code. Can be called repeatedly
+     * on the same query. FIXME: for now only adding to the root query is performed
+     * 
      * @author cristi
      * @version $Id$
      */
-    public static class FromWhere{
+    public static class FromWhere {
 
         private List<AST> extraFrom = new ArrayList<AST>();
 
@@ -323,9 +323,10 @@ public abstract class QueryAnalysisProvider {
             extraWhere.add(where);
         }
 
-        Set<String> actors= new HashSet<String>();
+        Set<String> actors = new HashSet<String>();
+
         public void addActor(AST actorType, String paramSyntax) {
-            if(actors.contains(actorType))
+            if (actors.contains(actorType))
                 return;
             String act = getGeneratedActorName(actorType);
             // make an extra FROM
@@ -333,7 +334,7 @@ public abstract class QueryAnalysisProvider {
             range.setFirstChild(makeASTCopy(actorType));
             range.getFirstChild().setNextSibling(ASTUtil.makeNode(HqlTokenTypes.ALIAS, act));
 
-            //make an extra where
+            // make an extra where
             AST equal = ASTUtil.makeNode(HqlTokenTypes.EQ, "=");
             equal.setFirstChild(ASTUtil.makeNode(HqlTokenTypes.IDENT, act));
             // FIXME: in HQL the parameter syntax is a tree (: paamName) not an IDENT
@@ -341,6 +342,7 @@ public abstract class QueryAnalysisProvider {
 
             addFromWhere(range, equal);
         }
+
         /**
          * Add to a query the ranges and the where conditions that were found. The AST is assumed to be the root of a
          * query
@@ -380,6 +382,7 @@ public abstract class QueryAnalysisProvider {
         }
 
     }
+
     /**
      * Test method to compare two AST trees
      * 
@@ -443,8 +446,7 @@ public abstract class QueryAnalysisProvider {
         throw new OQLParseError("\r\nin " + errorLocationNumber + " query:\r\n" + query + errorLocation + errorLocation
                 + errorLocation, t);
     }
-    
-    
+
     /*
      * 
      * This is code from the old HQL pass1 parser invocation
@@ -557,8 +559,8 @@ public abstract class QueryAnalysisProvider {
         public SubqueryReductionVisitor() {
             super(true);
         }
-        
-        FromWhere fromWhere= new FromWhere();
+
+        FromWhere fromWhere = new FromWhere();
 
         public AST visit(AST current) {
             // we are after queries, but not the root query
@@ -588,7 +590,7 @@ public abstract class QueryAnalysisProvider {
             // TODO: postorder, depth-first traversal!
             // TODO: currently we only add to the root query, maybe we should add to the enclosing query, and flatten
             // iteratively
-            
+
             // TODO: left join when enriching the outer query in order not to mess up its result?
 
             // TODO: not inline queries with a groupBy, queries without a where
@@ -610,7 +612,7 @@ public abstract class QueryAnalysisProvider {
     }
 
     private static AST flatten(AST processedAST) {
-        SubqueryReductionVisitor s= new SubqueryReductionVisitor();
+        SubqueryReductionVisitor s = new SubqueryReductionVisitor();
         AST a = s.traverse(processedAST);
         s.fromWhere.addToTreeFromWhere(a);
         return a;
