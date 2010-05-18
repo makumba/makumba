@@ -1,23 +1,13 @@
 package org.makumba.list.functions;
 
-import java.util.Stack;
-
 import javax.servlet.jsp.PageContext;
 
 import org.makumba.LogicException;
-import org.makumba.MakumbaError;
-import org.makumba.ProgrammerError;
-import org.makumba.analyser.AnalysableElement;
-import org.makumba.analyser.AnalysableExpression;
-import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
-import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.StringUtils;
 import org.makumba.controller.http.MakumbaJspFactory;
-import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.valuecomputer.ValueComputer;
-import org.makumba.list.tags.QueryTag;
 import org.makumba.list.tags.ValueTag;
 
 /**
@@ -28,7 +18,7 @@ import org.makumba.list.tags.ValueTag;
  * @author Rudolf Mayer
  * @version $Id$
  */
-public class ValueFunction extends AnalysableExpression {
+public class ValueFunction extends GenericListValueFunction {
 
     private static final long serialVersionUID = 1L;
 
@@ -36,48 +26,7 @@ public class ValueFunction extends AnalysableExpression {
     public void analyze(PageCache pageCache) {
         checkNumberOfArguments(1);
         String expr = StringUtils.removeSingleQuote(elData.getArguments().get(0));
-
-        QueryTag parentList = getEnclosingList();
-        if (parentList == null) {
-            throw new ProgrammerError("Function '" + expression + "' needs to be enclosed in a LIST or OBJECT tag");
-        }
-
-        // analogously to ValueTag, we register a value computer
-        ValueComputer vc = ValueComputer.getValueComputerAtAnalysis(true, parentList.getTagKey(), expr, pageCache);
-        pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, key, vc);
-
-        // FIXME: the following code is similar to ValueTag.doStartAnalyze; unifying might make sense.
-        // if we add a projection to a query, we also cache this so that we know where the projection comes from (for
-        // the relation analysis)
-        ComposedQuery query = null;
-        try {
-            query = QueryTag.getQuery(pageCache, parentList.getTagKey());
-        } catch (MakumbaError me) {
-            // this happens when there is no query for this mak:value
-            // we ignore it, query will stay null anyway
-        }
-
-        if (query != null) {
-            pageCache.cache(MakumbaJspAnalyzer.PROJECTION_ORIGIN_CACHE, new MultipleKey(parentList.getTagKey(), expr),
-                key);
-        }
-    }
-
-    /**
-     * Tells the ValueComputer to finish analysis.
-     * 
-     * @param pageCache
-     *            the page cache of the current page
-     */
-    @Override
-    public void doEndAnalyze(PageCache pageCache) {
-        // analogously to ValueTag, we tell the value computer t a value computer
-        ValueComputer vc = (ValueComputer) pageCache.retrieve(MakumbaJspAnalyzer.VALUE_COMPUTERS, key);
-        vc.doEndAnalyze(pageCache);
-    }
-
-    private QueryTag getEnclosingList() {
-        return (QueryTag) findParentWithClass(QueryTag.class);
+        registerValueAtParentList(pageCache, expr, getEnclosingList());
     }
 
     @Override
@@ -90,21 +39,6 @@ public class ValueFunction extends AnalysableExpression {
     public Object resolve(PageContext pc, PageCache pageCache) throws LogicException {
         // TODO Auto-generated method stub
         return null;
-    }
-
-    @Override
-    public void setKey(PageCache pageCache) {
-        checkNumberOfArguments(1);
-        AnalysableTag parentList = getEnclosingList();
-        if (parentList == null) {
-            throw new ProgrammerError("Function '" + expression + "' needs to be enclosed in a LIST or OBJECT tag");
-        }
-        String expr = StringUtils.removeSingleQuote(elData.getArguments().get(0));
-        key = computeKey(expr, parentList.getTagKey());
-    }
-
-    private static MultipleKey computeKey(String expr, MultipleKey parentListKey) {
-        return new MultipleKey(parentListKey, expr.trim());
     }
 
     @Override
@@ -122,15 +56,8 @@ public class ValueFunction extends AnalysableExpression {
         //
 
         PageContext pageContext = MakumbaJspFactory.getPageContext();
-
-        // retrieve the key of the current mak:list from the stack of lists
-        Stack<MultipleKey> currentListKeyStack = QueryTag.getRunningQueryTagStack(pageContext);
-        MultipleKey parentListKey = currentListKeyStack.peek();
-
-        // retrieve the value computer for the expression from the pageCache
-        PageCache pageCache = AnalysableElement.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance());
-        ValueComputer vc = (ValueComputer) pageCache.retrieve(MakumbaJspAnalyzer.VALUE_COMPUTERS, computeKey(expr,
-            parentListKey));
+        MultipleKey parentListKey = getRunningListKey(pageContext);
+        ValueComputer vc = getValueComputer(expr, pageContext, parentListKey);
 
         if (vc != null) {
             try {
