@@ -47,11 +47,11 @@ public class KruseCalendarEditor implements CalendarEditorProvider {
 
         return sb;
     }
-    
+
     private static class SingletonHolder implements org.makumba.commons.SingletonHolder {
-        
-        public static CalendarEditorProvider singleton = new KruseCalendarEditor(); 
-        
+
+        public static CalendarEditorProvider singleton = new KruseCalendarEditor();
+
         public void release() {
             singleton = null;
         }

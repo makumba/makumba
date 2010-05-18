@@ -50,7 +50,6 @@ import org.makumba.commons.formatters.RecordFormatter;
 import org.makumba.providers.datadefinition.mdd.validation.ComparisonValidationRule;
 import org.makumba.providers.datadefinition.mdd.validation.MultiUniquenessValidationRule;
 
-
 /**
  * Editor of Makumba data. Each subclass knows how to format HTML <input> and <select> tags for each type of Makumba
  * data, and how to read their data from HTTP query strings in form responses.
@@ -103,7 +102,8 @@ public class RecordEditor extends RecordFormatter {
      * apply validation rules, and have relaxed validity constraints on type checks. E.g., they accept multiple values
      * for ptr or enum types.
      */
-    public Dictionary<String, Object> readFromSearchForm(HttpServletRequest req, String suffix, HashMap<String, String> lazyEvaluatedInputs) {
+    public Dictionary<String, Object> readFromSearchForm(HttpServletRequest req, String suffix,
+            HashMap<String, String> lazyEvaluatedInputs) {
         Dictionary<String, Object> data = new Hashtable<String, Object>();
         // will collect all exceptions from the field validity checks
         Vector<InvalidValueException> exceptions = new Vector<InvalidValueException>();
@@ -116,7 +116,8 @@ public class RecordEditor extends RecordFormatter {
             Object o = null;
             try {
                 FieldDefinition fd = dd.getFieldDefinition(i);
-                o = ((FieldEditor) formatterArray[i]).readFrom(this, i, RequestAttributes.getParameters(req), suffix, true);
+                o = ((FieldEditor) formatterArray[i]).readFrom(this, i, RequestAttributes.getParameters(req), suffix,
+                    true);
                 if (o != null) {
                     // if we have multiple values for pointers or enums
                     if (o instanceof Vector && (fd.isPointer() || fd.isEnumType())) {
@@ -146,8 +147,9 @@ public class RecordEditor extends RecordFormatter {
         }
         return data;
     }
-    
-    public Dictionary<String, Object> readFrom(HttpServletRequest req, String suffix, HashMap<String, String> lazyEvaluatedInputs) {
+
+    public Dictionary<String, Object> readFrom(HttpServletRequest req, String suffix,
+            HashMap<String, String> lazyEvaluatedInputs) {
         Dictionary<String, Object> data = new Hashtable<String, Object>();
         // will collect all exceptions from the field validity checks
         Vector<InvalidValueException> exceptions = new Vector<InvalidValueException>();
@@ -155,7 +157,6 @@ public class RecordEditor extends RecordFormatter {
         Hashtable<Integer, Object> validatedFields = new Hashtable<Integer, Object>();
         Hashtable<String, Object> validatedFieldsNameCache = new Hashtable<String, Object>();
         Hashtable<FieldDefinition, Object> validatedFieldsFdCache = new Hashtable<FieldDefinition, Object>();
-        
 
         // we validate all fields in two passes - first we validate data type integrity, i.e. we let makumba check if
         // the declared types in the MDD match with what we have in the form
@@ -175,11 +176,12 @@ public class RecordEditor extends RecordFormatter {
                     // check for not-null fields
                     // we don't check if the field is going to be lazily evaluated
                     // TODO maybe find a more robust way to make sure wether the field is to be lazily evaluated
-                    boolean lazyEvaluation = lazyEvaluatedInputs.containsValue(inputName.substring(0, inputName.indexOf(suffix)));
-                    
+                    boolean lazyEvaluation = lazyEvaluatedInputs.containsValue(inputName.substring(0,
+                        inputName.indexOf(suffix)));
+
                     if (fd.isNotNull() && !lazyEvaluation) {
                         String error = fd.getNotNullErrorMessage();
-                        if(error == null)
+                        if (error == null)
                             error = FieldDefinition.ERROR_NOT_NULL;
                         throw new InvalidValueException(inputName, error);
                     }
@@ -188,7 +190,7 @@ public class RecordEditor extends RecordFormatter {
                 // for string types (text, char) check not empty
                 if (fd.isNotEmpty() && fd.isStringType() && StringUtils.isEmpty(o.toString())) {
                     String error = fd.getNotEmptyErrorMessage();
-                    if(error == null)
+                    if (error == null)
                         error = FieldDefinition.ERROR_NOT_EMPTY;
 
                     throw new InvalidValueException(inputName, error);
@@ -196,11 +198,11 @@ public class RecordEditor extends RecordFormatter {
 
                 validatedFields.put(new Integer(i), o);
                 validatedFieldsNameCache.put(inputName, o);
-                
+
                 // FIXME caching the original FDs is not the most efficient thing to do
                 FieldDefinition originalFd = fd.getOriginalFieldDefinition();
-                
-                if(originalFd != null) {
+
+                if (originalFd != null) {
                     validatedFieldsFdCache.put(originalFd, o);
                 }
 
@@ -216,13 +218,13 @@ public class RecordEditor extends RecordFormatter {
 
         // in the second validation pass, we only validate those fields that passed the first check
         // on those, we apply the user-defined checks from the validation definition
-        
+
         // TODO once we have more than one multi-field validation rule type, abstract this to ValidationRule
         LinkedHashMap<ValidationRule, FieldDefinition> multiFieldValidationRules = new LinkedHashMap<ValidationRule, FieldDefinition>();
-        
+
         DbConnectionProvider prov = (DbConnectionProvider) req.getAttribute(RequestAttributes.PROVIDER_ATTRIBUTE);
         Transaction t = prov.getConnectionTo(prov.getTransactionProvider().getDefaultDataSourceName());
-        
+
         // STEP 1: go over all the fields and fetch validation rules
         for (int index = 0; index < validatedFieldsOrdered.size(); index++) {
             int i = (validatedFieldsOrdered.get(index)).intValue();
@@ -233,7 +235,7 @@ public class RecordEditor extends RecordFormatter {
             if (validationRules != null) {
                 for (ValidationRule validationRule : validationRules) {
                     ValidationRule rule = validationRule;
-                    
+
                     try { // evaluate each rule separately
 
                         // STEP 1-a: treat or fetch multi-field validation rules
@@ -259,11 +261,12 @@ public class RecordEditor extends RecordFormatter {
                             if (otherValue != null) {
                                 rule.validate(new Object[] { o, otherValue }, t);
                             }
-                        } else if (rule instanceof ComparisonValidationRule || rule instanceof MultiUniquenessValidationRule) {
+                        } else if (rule instanceof ComparisonValidationRule
+                                || rule instanceof MultiUniquenessValidationRule) {
                             // we just fetch the multi-field validation rules, do not treat them yet
                             multiFieldValidationRules.put(rule, fieldDefinition);
 
-                        // STEP 1-b: treat single-field validation rules
+                            // STEP 1-b: treat single-field validation rules
                         } else {
                             rule.validate(o, t);
                         }
@@ -280,7 +283,7 @@ public class RecordEditor extends RecordFormatter {
                 // if we have a file type data-definition, put all fields in the sub-record
                 HttpParameters parameters = RequestAttributes.getParameters(req);
                 Integer length = (Integer) parameters.getParameter(inputName + "_contentLength");
-                if(length > 0) {
+                if (length > 0) {
                     data.put(inputName + ".content", o);
                     data.put(inputName + ".contentType", parameters.getParameter(inputName + "_contentType"));
                     data.put(inputName + ".contentLength", parameters.getParameter(inputName + "_contentLength"));
@@ -293,25 +296,24 @@ public class RecordEditor extends RecordFormatter {
                         data.put(inputName + ".imageHeight", parameters.getParameter(inputName + "_imageHeight"));
                     }
                 }
-                    
+
             } else {
                 // the data is written in the dictionary without the suffix
                 data.put(inputName, o);
             }
-            
+
             RequestAttributes.setAttribute(req, FieldEditor.getInputName(this, i, suffix), o);
         }
-        
-        
+
         // STEP 2 - process multi-field validation rules
-        for(ValidationRule r : multiFieldValidationRules.keySet()) {
+        for (ValidationRule r : multiFieldValidationRules.keySet()) {
 
             LinkedHashMap<String, Object> values = new LinkedHashMap<String, Object>();
             boolean validate = true;
             // fetch the fields of the rule
-            for(String fieldName : r.getValidationRuleArguments()) {
+            for (String fieldName : r.getValidationRuleArguments()) {
                 // we have to append the suffix to the field name of the rule in order to find back our field
-                if(validatedFieldsNameCache.containsKey(fieldName + suffix)) {
+                if (validatedFieldsNameCache.containsKey(fieldName + suffix)) {
                     values.put(fieldName, validatedFieldsNameCache.get(fieldName + suffix));
                 } else {
                     // check if this field is maybe a pointed type
@@ -320,23 +322,26 @@ public class RecordEditor extends RecordFormatter {
                     DataDefinition ruleDD = r.getDataDefinition();
                     FieldDefinition ruleFd = ruleDD.getFieldOrPointedFieldDefinition(fieldName);
                     Object o = validatedFieldsFdCache.get(ruleFd);
-                    if(o != null) {
+                    if (o != null) {
                         values.put(fieldName, o);
                     } else {
-                        // FIXME what to do in this case? we don't have all the values for the validation rule, so we can't evaluate it.
-                        // we could maybe fetch the value of the field from the DB in some cases, pretty advanced stuff though.
+                        // FIXME what to do in this case? we don't have all the values for the validation rule, so we
+                        // can't evaluate it.
+                        // we could maybe fetch the value of the field from the DB in some cases, pretty advanced stuff
+                        // though.
                         // see also the comment at getUnassignedExceptions()
-                        // basically now that we have a transaction at our disposal, we can fetch the baseObject (__makumba__base__)
+                        // basically now that we have a transaction at our disposal, we can fetch the baseObject
+                        // (__makumba__base__)
                         // from the request and the type of the object from the responder (__makumba__responder__)
                         // then, do a query and fetch the other value...
                         validate = false;
                     }
                 }
             }
-            if(validate) {
+            if (validate) {
                 try {
                     r.validate(values, t);
-                } catch(InvalidValueException e) {
+                } catch (InvalidValueException e) {
                     exceptions.add(e);
                 }
             }

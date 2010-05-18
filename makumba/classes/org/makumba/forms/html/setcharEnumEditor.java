@@ -27,33 +27,34 @@ import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.RecordFormatter;
 
 public class setcharEnumEditor extends charEnumEditor {
-	
-	private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
-		static FieldEditor singleton = new setcharEnumEditor();
-		
-		public void release() {
+
+    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+        static FieldEditor singleton = new setcharEnumEditor();
+
+        public void release() {
             singleton = null;
         }
 
         public SingletonHolder() {
             org.makumba.commons.SingletonReleaser.register(this);
         }
-	}
+    }
 
-	/** Don't use this, use getInstance() */
-	protected setcharEnumEditor() {}
+    /** Don't use this, use getInstance() */
+    protected setcharEnumEditor() {
+    }
 
-	public static FieldFormatter getInstance() {
-		return SingletonHolder.singleton;
-	}
+    public static FieldFormatter getInstance() {
+        return SingletonHolder.singleton;
+    }
 
-	@Override
+    @Override
     public boolean isMultiple(RecordFormatter rf, int fieldIndex) {
-		return true;
-	}
+        return true;
+    }
 
-	@Override
+    @Override
     public int getDefaultSize(RecordFormatter rf, int fieldIndex) {
-		return rf.dd.getFieldDefinition(fieldIndex).getEnumeratorSize();
-	}
+        return rf.dd.getFieldDefinition(fieldIndex).getEnumeratorSize();
+    }
 }

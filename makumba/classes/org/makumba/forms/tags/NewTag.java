@@ -29,6 +29,7 @@ import org.makumba.forms.responder.ResponderOperation;
 
 /**
  * mak:new tag
+ * 
  * @author Cristian Bogdan
  * @version $Id$
  */
@@ -37,16 +38,17 @@ public class NewTag extends FormTagBase {
     private static final long serialVersionUID = 1L;
 
     public void setTagKey(PageCache pageCache) {
-        Object keyComponents[] = { type.getName(), handler, afterHandler, fdp.getParentListKey(this), formName, getClass() };
+        Object keyComponents[] = { type.getName(), handler, afterHandler, fdp.getParentListKey(this), formName,
+                getClass() };
         tagKey = new MultipleKey(keyComponents);
     }
-    
+
     @Override
     public ResponderOperation getResponderOperation(String operation) {
-        if(operation.equals("new")) {
-            return ResponderOperation.newOp ;
+        if (operation.equals("new")) {
+            return ResponderOperation.newOp;
         }
         return null;
     }
-    
+
 }

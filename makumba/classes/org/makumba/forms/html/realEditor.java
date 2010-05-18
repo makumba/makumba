@@ -38,7 +38,7 @@ public class realEditor extends intEditor {
 
     private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
         static FieldEditor singleton = new realEditor();
-        
+
         public void release() {
             singleton = null;
         }

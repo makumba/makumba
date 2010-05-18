@@ -11,13 +11,13 @@ import javax.servlet.http.HttpServletResponse;
  * @version $Id: Response.java,v 1.1 03.10.2007 17:58:45 Manuel Exp $
  */
 public class Response {
-    
+
     private HttpServletRequest request;
-    
+
     private HttpServletResponse response;
-    
+
     private Exception exception;
-    
+
     private String message;
 
     public Exception getException() {

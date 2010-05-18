@@ -35,7 +35,7 @@ public class intEnumEditor extends charEnumEditor {
 
     private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
         static FieldEditor singleton = new intEnumEditor();
-        
+
         public void release() {
             singleton = null;
         }
@@ -85,7 +85,7 @@ public class intEnumEditor extends charEnumEditor {
         if (!allowMultipleValues) {
             return readFrom(rf, fieldIndex, p, suffix);
         }
-        
+
         Object o = p.getParameter(getInputName(rf, fieldIndex, suffix));
         if (o instanceof Collection<?>) {
             // convert the generic collection to a collection of integer

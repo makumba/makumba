@@ -29,45 +29,46 @@ import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.RecordFormatter;
 
 public class setintEnumEditor extends setcharEnumEditor {
-	
-	private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
-		static FieldEditor singleton = new setintEnumEditor();
-		
-		public void release() {
+
+    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+        static FieldEditor singleton = new setintEnumEditor();
+
+        public void release() {
             singleton = null;
         }
 
         public SingletonHolder() {
             org.makumba.commons.SingletonReleaser.register(this);
         }
-	}
+    }
 
-	private setintEnumEditor() {}
+    private setintEnumEditor() {
+    }
 
-	public static FieldFormatter getInstance() {
-		return SingletonHolder.singleton;
-	}
+    public static FieldFormatter getInstance() {
+        return SingletonHolder.singleton;
+    }
 
-	@Override
+    @Override
     public Object getOptionValue(RecordFormatter rf, int fieldIndex, Object options, int i) {
-		return new Integer(rf.dd.getFieldDefinition(fieldIndex).getIntAt(i));
-	}
+        return new Integer(rf.dd.getFieldDefinition(fieldIndex).getIntAt(i));
+    }
 
-	@Override
+    @Override
     public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.commons.attributes.HttpParameters par,
-			String suffix) {
-		Object o = par.getParameter(getInputName(rf, fieldIndex, suffix));
+            String suffix) {
+        Object o = par.getParameter(getInputName(rf, fieldIndex, suffix));
 
-		if (o == null || o == org.makumba.Pointer.NullSet) {
+        if (o == null || o == org.makumba.Pointer.NullSet) {
             return o;
         }
-		if (o instanceof Vector) {
-			Vector v = (Vector) o;
-			for (int i = 0; i < v.size(); i++) {
+        if (o instanceof Vector) {
+            Vector v = (Vector) o;
+            for (int i = 0; i < v.size(); i++) {
                 v.setElementAt(toInt(rf, fieldIndex, v.elementAt(i)), i);
             }
-			return v;
-		}
-		return toInt(rf, fieldIndex, o);
-	}
+            return v;
+        }
+        return toInt(rf, fieldIndex, o);
+    }
 }

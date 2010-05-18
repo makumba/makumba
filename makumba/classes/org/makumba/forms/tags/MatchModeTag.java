@@ -218,7 +218,7 @@ public class MatchModeTag extends GenericMakumbaTag {
     public void setTagKey(PageCache pageCache) {
         tagKey = new MultipleKey(new Object[] { getCriterionTag().tagKey, id, matchModes, getClass() });
     }
-    
+
     @Override
     protected void registerPossibleAttributeValues() {
         registerAttributeValues("type", allowedTypes);

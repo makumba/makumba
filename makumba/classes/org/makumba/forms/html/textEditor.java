@@ -33,47 +33,48 @@ import org.makumba.commons.formatters.RecordFormatter;
 import org.makumba.forms.tags.SearchFieldTag;
 
 public class textEditor extends FieldEditor {
-	
-	private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
-		static FieldEditor singleton = new textEditor();
-		
-		public void release() {
+
+    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+        static FieldEditor singleton = new textEditor();
+
+        public void release() {
             singleton = null;
         }
 
         public SingletonHolder() {
             org.makumba.commons.SingletonReleaser.register(this);
         }
-	}
+    }
 
     private boolean forceInput;
 
-	private textEditor() {}
+    private textEditor() {
+    }
 
-	public static FieldFormatter getInstance() {
-		return SingletonHolder.singleton;
-	}
+    public static FieldFormatter getInstance() {
+        return SingletonHolder.singleton;
+    }
 
-	static String[] _params = { "default", "empty", "type", "rows", "cols", "forceInputStyle" };
+    static String[] _params = { "default", "empty", "type", "rows", "cols", "forceInputStyle" };
 
-	static String[][] _paramValues = { null, null, { "textarea", "file" },
-			null, null, SearchFieldTag.allowedSelectTypes };
+    static String[][] _paramValues = { null, null, { "textarea", "file" }, null, null,
+            SearchFieldTag.allowedSelectTypes };
 
-	@Override
+    @Override
     public String[] getAcceptedParams() {
-		return _params;
-	}
+        return _params;
+    }
 
-	@Override
+    @Override
     public String[][] getAcceptedValue() {
-		return _paramValues;
-	}
+        return _paramValues;
+    }
 
-	public String getParams(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
+    public String getParams(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
         return getIntParamString(rf, fieldIndex, formatParams, "rows")
                 + getIntParamString(rf, fieldIndex, formatParams, "cols");
     }
-    
+
     @Override
     public String format(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
         forceInput = StringUtils.equals(formatParams.get("forceInputStyle"), "input");
@@ -81,40 +82,35 @@ public class textEditor extends FieldEditor {
         return super.format(rf, fieldIndex, o, formatParams);
     }
 
-	@Override
+    @Override
     public String formatNull(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
         return formatNotNull(rf, fieldIndex, null, formatParams);
     }
 
-	@Override
-    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o,
-			Dictionary<String, Object> formatParams) {
-		if (isTextArea(rf, fieldIndex, formatParams)) {
-			return (forceInput ? "<INPUT type=\"text\"" : "<TEXTAREA") + " name=\""
-					+ getInputName(rf, fieldIndex, formatParams) + "\" "
-					+ getParams(rf, fieldIndex, formatParams)
-					+ getExtraFormatting(rf, fieldIndex, formatParams) + " >"
-					+ formatValue(rf, fieldIndex, o, formatParams)
-					+ (forceInput ? "</INPUT>" : "</TEXTAREA>");
-		} else {
-			return binaryEditor.fileInput(rf, fieldIndex, formatParams);
-		}
-	}
+    @Override
+    public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
+        if (isTextArea(rf, fieldIndex, formatParams)) {
+            return (forceInput ? "<INPUT type=\"text\"" : "<TEXTAREA") + " name=\""
+                    + getInputName(rf, fieldIndex, formatParams) + "\" " + getParams(rf, fieldIndex, formatParams)
+                    + getExtraFormatting(rf, fieldIndex, formatParams) + " >"
+                    + formatValue(rf, fieldIndex, o, formatParams) + (forceInput ? "</INPUT>" : "</TEXTAREA>");
+        } else {
+            return binaryEditor.fileInput(rf, fieldIndex, formatParams);
+        }
+    }
 
-	/**
-	 * Formats the value to appear in an input statement. For textarea type data
-	 * only!
-	 */
-	@Override
-    public String formatValue(RecordFormatter rf, int fieldIndex, Object o,
-			Dictionary<String, Object> formatParams) {
-	    if(o instanceof Text)
-	        o=((Text)o).getString();
-		String s = (o == null) ? null : HtmlUtils.string2html(o.toString());
-		return resetValueFormat(rf, fieldIndex, s, formatParams);
-	}
+    /**
+     * Formats the value to appear in an input statement. For textarea type data only!
+     */
+    @Override
+    public String formatValue(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
+        if (o instanceof Text)
+            o = ((Text) o).getString();
+        String s = (o == null) ? null : HtmlUtils.string2html(o.toString());
+        return resetValueFormat(rf, fieldIndex, s, formatParams);
+    }
 
-	boolean isTextArea(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
+    boolean isTextArea(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
         String s = (String) formatParams.get("type");
         if (s == null) {
             return true;

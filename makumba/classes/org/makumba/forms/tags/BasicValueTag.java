@@ -100,8 +100,7 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
     /**
      * Indicates if the given expression is a value
      * 
-     * @return <code>true</code> if the expression doesn't start with '$' and is not null, <code>false</code>
-     *         otherwise
+     * @return <code>true</code> if the expression doesn't start with '$' and is not null, <code>false</code> otherwise
      */
     protected boolean isValue(String exprexpression) {
         return exprexpression != null && !exprexpression.startsWith("$") && !isNull();
@@ -212,7 +211,7 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
 
         if (val != null)
             val = type.checkValue(val);
-        
+
         return computedValue(val, type);
     }
 
@@ -225,7 +224,7 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
      *            the type of the data
      */
     abstract int computedValue(Object o, FieldDefinition type) throws JspException, LogicException;
-    
+
     @Override
     protected void doAnalyzedCleanup() {
         super.doAnalyzedCleanup();

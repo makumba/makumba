@@ -43,7 +43,7 @@ public class ptrEditor extends choiceEditor {
 
     private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
         static FieldEditor singleton = new ptrEditor();
-        
+
         public void release() {
             singleton = null;
         }
@@ -76,7 +76,7 @@ public class ptrEditor extends choiceEditor {
         FieldDefinition titleFieldDef = rf.dd.getFieldDefinition(fieldIndex).getPointedType().getFieldOrPointedFieldDefinition(
             titleField);
         if (titleFieldDef != null && titleFieldDef.getType().equals("ptr")) { // null if we have functions for title
-                                                                              // fields
+            // fields
             titleExpr += ".id";
         }
         m.put("hql", "SELECT choice.id as choice, " + titleExpr + " as title FROM " + choiceType + " choice "

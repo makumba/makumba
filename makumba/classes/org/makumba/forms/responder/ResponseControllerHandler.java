@@ -30,9 +30,9 @@ public class ResponseControllerHandler extends ControllerHandler {
     public static final String MAKUMBA_FORM_VALIDATION_ERRORS = "__makumba__formValidationErrors__";
 
     public static final String MAKUMBA_FORM_RELOAD = "__makumba__formReload__";
-    
+
     public static final String MAKUMBA_FORM_ID = "__makumba__formId__";
-    
+
     public static final String MAKUMBA_FORM_PARTIAL_POSTBACK_EVENT = "__makumba__formPartialPostbackEvent__";
 
     public static final String MAKUMBA_FORM_RELOAD_PARAMS = "__makumba__formReload__parameters__";
@@ -48,7 +48,7 @@ public class ResponseControllerHandler extends ControllerHandler {
         Exception e = factory.getResponse((HttpServletRequest) req, (HttpServletResponse) resp);
         FormResponder responder = (FormResponder) factory.getFirstResponder(req);
         final boolean ajaxFormSubmission = responder != null && responder.triggerEvent != null;
-        if(ajaxFormSubmission) {
+        if (ajaxFormSubmission) {
             req.setAttribute(MAKUMBA_FORM_PARTIAL_POSTBACK_EVENT, responder.triggerEvent);
             req.setAttribute(MAKUMBA_FORM_ID, responder.formId);
         }
@@ -73,7 +73,8 @@ public class ResponseControllerHandler extends ControllerHandler {
 
             // we resolving exceptions when we are going to reload the form, and also when the form action page is the
             // same as the form origin page, i.e. when we do an implicit form "reload" (solves bug 1145)
-            if (shallReload || submittingToSamePage(responder.getOriginatingPageName(), absoluteAction) || ajaxFormSubmission) {
+            if (shallReload || submittingToSamePage(responder.getOriginatingPageName(), absoluteAction)
+                    || ajaxFormSubmission) {
 
                 logger.fine("CompositeValidationException: annotating form: " + responder.getShowFormAnnotated());
 
@@ -211,7 +212,8 @@ public class ResponseControllerHandler extends ControllerHandler {
     public static boolean shallReload(boolean reloadFormOnError, String action, String absoluteAction,
             String originatingPageName, String triggerEvent) {
         return reloadFormOnError && org.apache.commons.lang.StringUtils.isNotBlank(action)
-                && !submittingToSamePage(absoluteAction, originatingPageName) && org.apache.commons.lang.StringUtils.isBlank(triggerEvent);
+                && !submittingToSamePage(absoluteAction, originatingPageName)
+                && org.apache.commons.lang.StringUtils.isBlank(triggerEvent);
     }
 
     private static boolean submittingToSamePage(String absoluteAction, String originatingPageName) {

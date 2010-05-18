@@ -23,7 +23,6 @@
 
 package org.makumba.forms.tags;
 
-
 import org.makumba.ProgrammerError;
 import org.makumba.forms.responder.ResponderOperation;
 
@@ -60,7 +59,7 @@ public class DeleteTag extends EditTag {
     public void setPreserveWhitespace(String s) {
         this.preserveWhiteSpace = (s != null && s.equals("true"));
     }
-    
+
     public boolean getPreserveWhiteSpace() {
         return preserveWhiteSpace;
     }
@@ -76,10 +75,10 @@ public class DeleteTag extends EditTag {
 
     @Override
     public ResponderOperation getResponderOperation(String operation) {
-        if(operation.equals("deleteLink")) {
+        if (operation.equals("deleteLink")) {
             return ResponderOperation.deleteLinkOp;
-        } else if(operation.equals("deleteForm")) {
-            return ResponderOperation.deleteFormOp ;
+        } else if (operation.equals("deleteForm")) {
+            return ResponderOperation.deleteFormOp;
         }
         return null;
     }

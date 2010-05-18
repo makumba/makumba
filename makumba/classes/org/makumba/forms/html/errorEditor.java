@@ -29,28 +29,29 @@ import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.RecordFormatter;
 
 public class errorEditor extends FieldEditor {
-	
-	private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
-		static FieldEditor singleton = new errorEditor();
-		
-		public void release() {
+
+    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+        static FieldEditor singleton = new errorEditor();
+
+        public void release() {
             singleton = null;
         }
 
         public SingletonHolder() {
             org.makumba.commons.SingletonReleaser.register(this);
         }
-	}
+    }
 
-	private errorEditor() {}
+    private errorEditor() {
+    }
 
-	public static FieldFormatter getInstance() {
-		return SingletonHolder.singleton;
-	}
+    public static FieldFormatter getInstance() {
+        return SingletonHolder.singleton;
+    }
 
-	@Override
+    @Override
     public String formatShow(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParam) {
-		throw new org.makumba.commons.formatters.InvalidValueException(rf.expr[fieldIndex],
-				"cannot edit fields of type " + rf.dd.getFieldDefinition(fieldIndex).getType());
-	}
+        throw new org.makumba.commons.formatters.InvalidValueException(rf.expr[fieldIndex],
+                "cannot edit fields of type " + rf.dd.getFieldDefinition(fieldIndex).getType());
+    }
 }
