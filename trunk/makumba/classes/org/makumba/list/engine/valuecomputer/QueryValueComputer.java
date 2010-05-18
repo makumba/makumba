@@ -45,6 +45,7 @@ public abstract class QueryValueComputer extends ValueComputer {
     }
 
     /** The key of the query in which this value is a projection. Returns queryKey */
+    @Override
     MultipleKey getQueryKey() {
         return queryKey;
     }
@@ -55,6 +56,7 @@ public abstract class QueryValueComputer extends ValueComputer {
      * @param pageCache
      *            the page cache of the current page
      */
+    @Override
     public void doEndAnalyze(PageCache pageCache) {
         if (pageCache.retrieve(MakumbaJspAnalyzer.FORMATTERS, queryKey) == null) {
             ComposedQuery myQuery = QueryTag.getQuery(pageCache, queryKey);

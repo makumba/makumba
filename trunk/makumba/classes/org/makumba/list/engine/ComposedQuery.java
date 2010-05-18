@@ -470,6 +470,7 @@ public class ComposedQuery {
         projections.add(s);
     }
 
+    @Override
     public String toString() {
         return "Composed query: " + typeAnalyzerOQL;
     }

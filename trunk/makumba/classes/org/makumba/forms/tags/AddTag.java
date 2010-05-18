@@ -47,6 +47,7 @@ public class AddTag extends FormTagBase {
      * @param pageCache
      *            the page cache of the current page
      */
+    @Override
     public void setTagKey(PageCache pageCache) {
         Object[] keyComponents = { baseObject, field, handler, afterHandler, fdp.getParentListKey(this), formName,
                 getClass() };

@@ -35,6 +35,7 @@ public class UniquenessServlet extends HttpServlet {
 
     public static final SimpleDateFormat dfLastModified = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
 
+    @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         resp.setContentType("application/json");

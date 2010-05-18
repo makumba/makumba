@@ -79,6 +79,7 @@ public class WrappedException extends Exception {
     }
 
     /** print the stacktrace of the wrapped exception */
+    @Override
     public void printStackTrace() {
         try {
             t.printStackTrace();
@@ -88,6 +89,7 @@ public class WrappedException extends Exception {
     }
 
     /** print the stacktrace of the wrapped exception */
+    @Override
     public void printStackTrace(PrintStream ps) {
         try {
             t.printStackTrace(ps);
@@ -97,6 +99,7 @@ public class WrappedException extends Exception {
     }
 
     /** print the stacktrace of the wrapped exception */
+    @Override
     public void printStackTrace(PrintWriter ps) {
         try {
             t.printStackTrace(ps);
@@ -106,6 +109,7 @@ public class WrappedException extends Exception {
     }
 
     /** the class name of this exception, then the toString of the wrapped */
+    @Override
     public String toString() {
         try {
             return getClass().getName() + ": " + t.toString();

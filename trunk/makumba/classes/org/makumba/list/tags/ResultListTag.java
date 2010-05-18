@@ -117,6 +117,7 @@ public class ResultListTag extends QueryTag {
         super.setTagKey(pageCache);
     }
 
+    @Override
     public int doAnalyzedEndTag(PageCache pageCache) throws JspException {
         if (noResultsPresent && mode.equals(MODE_SEARCH)) { // no results ==> skip the list in search mode
             return SKIP_BODY;

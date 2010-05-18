@@ -36,6 +36,7 @@ public class MakumbaVersionTag extends TagSupport {
 
     private static final long serialVersionUID = 1L;
 
+    @Override
     public int doStartTag() throws JspException {
         try {
             pageContext.getOut().print(org.makumba.MakumbaSystem.getVersion());

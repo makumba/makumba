@@ -69,6 +69,7 @@ public class SourceSyntaxPoints {
     /** The path of the analyzed file */
     File file;
 
+    @Override
     public String toString() {
         return file.toString() + " " + offset;
     }
@@ -402,10 +403,12 @@ public class SourceSyntaxPoints {
         final Object extra1 = extra;
 
         SyntaxPoint point = new SyntaxPoint(start) {
+            @Override
             public String getType() {
                 return type1;
             }
 
+            @Override
             public Object getOtherInfo() {
                 return extra1;
             }

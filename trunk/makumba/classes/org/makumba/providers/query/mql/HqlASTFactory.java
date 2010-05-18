@@ -20,6 +20,7 @@ public class HqlASTFactory extends ASTFactory {
      *            The token type.
      * @return Class - The AST node class to instantiate.
      */
+    @Override
     public Class getASTNodeType(int tokenType) {
         return Node.class;
     }

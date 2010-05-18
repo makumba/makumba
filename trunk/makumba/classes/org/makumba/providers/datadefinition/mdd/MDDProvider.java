@@ -23,14 +23,17 @@ public class MDDProvider extends DataDefinitionProvider {
         webappRoot = w;
     }
 
+    @Override
     public DataDefinition getDataDefinition(String typeName) {
         return getMDD(typeName.replaceAll("__", "->"));
     }
 
+    @Override
     public DataDefinition getVirtualDataDefinition(String name) {
         return new DataDefinitionImpl(name.replaceAll("__", "->"));
     }
 
+    @Override
     public FieldDefinition makeFieldDefinition(String name, String definition) {
 
         String def = name.replaceAll("__", "->") + "=" + definition.replaceAll("__", "->");
@@ -38,6 +41,7 @@ public class MDDProvider extends DataDefinitionProvider {
             name.replaceAll("__", "->"));
     }
 
+    @Override
     public FieldDefinition makeFieldOfType(String name, String type) {
 
         if (type.startsWith("ptr ")) {
@@ -47,18 +51,22 @@ public class MDDProvider extends DataDefinitionProvider {
         return new FieldDefinitionImpl(name.replaceAll("__", "->"), type.replaceAll("__", "->"));
     }
 
+    @Override
     public FieldDefinition makeFieldOfType(String name, String type, String description) {
         return new FieldDefinitionImpl(name.replaceAll("__", "->"), type.replaceAll("__", "->"), description);
     }
 
+    @Override
     public FieldDefinition makeFieldWithName(String name, FieldDefinition type) {
         return new FieldDefinitionImpl(name.replaceAll("__", "->"), type);
     }
 
+    @Override
     public FieldDefinition makeFieldWithName(String name, FieldDefinition type, String description) {
         return new FieldDefinitionImpl(name.replaceAll("__", "->"), type, description);
     }
 
+    @Override
     public Vector<String> getDataDefinitionsInDefaultLocations() {
         return getDataDefinitionsInDefaultLocations((String[]) null);
     }

@@ -38,6 +38,7 @@ public class NullObject implements Serializable {
         this.s = s;
     }
 
+    @Override
     public String toString() {
         return s;
     }

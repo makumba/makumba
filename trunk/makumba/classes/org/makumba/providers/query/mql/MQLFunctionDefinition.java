@@ -185,6 +185,7 @@ class NowFunction extends MQLFunctionDefinition {
         super("now", "date", new String[] {});
     }
 
+    @Override
     public TextList render(List<TextList> args) {
         // FIXME: MySQL specific
         return super.render(args);

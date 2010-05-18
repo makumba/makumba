@@ -713,6 +713,7 @@ public class TableManager extends Table {
         }
     }
 
+    @Override
     public void findDuplicates(DBConnection dbc, Dictionary<String, Object> d) {
         CompositeValidationException notUnique = new CompositeValidationException();
 

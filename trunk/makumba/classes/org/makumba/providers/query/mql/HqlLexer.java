@@ -29,15 +29,18 @@ class HqlLexer extends HqlBaseLexer {
         super(in);
     }
 
+    @Override
     public void setTokenObjectClass(String cl) {
         // Ignore the token class name parameter, and use a specific token class.
         super.setTokenObjectClass(HqlToken.class.getName());
     }
 
+    @Override
     protected void setPossibleID(boolean possibleID) {
         this.possibleID = possibleID;
     }
 
+    @Override
     protected Token makeToken(int i) {
         HqlToken token = (HqlToken) super.makeToken(i);
         token.setPossibleID(possibleID);
@@ -45,16 +48,19 @@ class HqlLexer extends HqlBaseLexer {
         return token;
     }
 
+    @Override
     public int testLiteralsTable(int i) {
         int ttype = super.testLiteralsTable(i);
         return ttype;
     }
 
+    @Override
     public void panic() {
         // overriden to avoid System.exit
         panic("CharScanner: panic");
     }
 
+    @Override
     public void panic(String s) {
         // overriden to avoid System.exit
         throw new OQLParseError(s);

@@ -45,6 +45,7 @@ public class OptionTag extends BasicValueTag implements BodyTag {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setTagKey(PageCache pageCache) {
         expr = valueExprOriginal;
         if (expr == null)
@@ -58,6 +59,7 @@ public class OptionTag extends BasicValueTag implements BodyTag {
         return (InputTag) findAncestorWithClass(this, InputTag.class);
     }
 
+    @Override
     FieldDefinition getTypeFromContext(PageCache pageCache) {
         FieldDefinition t = (FieldDefinition) pageCache.retrieve(MakumbaJspAnalyzer.INPUT_TYPES, getInput().tagKey);
 
@@ -68,6 +70,7 @@ public class OptionTag extends BasicValueTag implements BodyTag {
         return org.makumba.MakumbaSystem.makeFieldDefinition("dummy", "ptr " + t.getForeignTable().getName());
     }
 
+    @Override
     public void doStartAnalyze(PageCache pageCache) {
         if (getInput() == null)
             throw new ProgrammerError("\'option\' tag must be enclosed in a 'input' tag");
@@ -84,6 +87,7 @@ public class OptionTag extends BasicValueTag implements BodyTag {
         bodyContent = bc;
     }
 
+    @Override
     public int doAnalyzedStartTag(PageCache pageCache) {
         return EVAL_BODY_BUFFERED;
     }
@@ -98,6 +102,7 @@ public class OptionTag extends BasicValueTag implements BodyTag {
      * @throws JspException
      * @throws {@link LogicException}
      */
+    @Override
     int computedValue(Object val, FieldDefinition type) throws JspException, org.makumba.LogicException {
         getInput().checkBodyContentForNonWhitespace();
         if (isNull())

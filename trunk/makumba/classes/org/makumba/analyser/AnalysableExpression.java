@@ -47,6 +47,7 @@ public abstract class AnalysableExpression extends AnalysableElement {
         this.parent = parent;
     }
 
+    @Override
     public AnalysableTag getParent() {
         return this.parent;
     }

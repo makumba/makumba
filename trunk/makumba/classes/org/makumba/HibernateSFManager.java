@@ -97,6 +97,7 @@ public class HibernateSFManager {
 
             private static final long serialVersionUID = 1L;
 
+            @Override
             protected Object makeResource(Object nm, Object hashName) throws Exception {
                 return makeSF((String) nm);
             }

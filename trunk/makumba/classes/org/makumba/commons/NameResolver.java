@@ -107,6 +107,7 @@ public class NameResolver {
 
         private static NameResolver defaultNameResolver = new NameResolver();
 
+        @Override
         public String toString() {
             return toString(defaultNameResolver);
         }

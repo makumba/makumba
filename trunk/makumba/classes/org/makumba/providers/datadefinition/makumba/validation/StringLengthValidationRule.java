@@ -61,6 +61,7 @@ public class StringLengthValidationRule extends RangeValidationRule {
         }
     }
 
+    @Override
     public String toString() {
         return "" + fieldName + " " + getOperator() + " [" + lowerLimitString + ".." + upperLimitString + "]";
     }

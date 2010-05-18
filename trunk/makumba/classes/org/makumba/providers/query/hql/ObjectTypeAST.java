@@ -60,6 +60,7 @@ public class ObjectTypeAST extends ExprTypeAST {
         setDescription(pointer.getText());
     }
 
+    @Override
     public String getObjectType() {
         return objectType;
     }

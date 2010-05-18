@@ -22,6 +22,7 @@ public final class ASTUtil {
      * 
      * @deprecated (tell clover to ignore this)
      */
+    @Deprecated
     private ASTUtil() {
     }
 

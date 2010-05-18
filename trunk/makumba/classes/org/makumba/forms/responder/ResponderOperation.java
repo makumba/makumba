@@ -217,6 +217,7 @@ public abstract class ResponderOperation implements java.io.Serializable {
             return FormOperationType.DELETE;
         }
 
+        @Override
         public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
                 throws LogicException {
             return Logic.doDelete(resp.getController(), resp.getBasePointerType(),
@@ -224,6 +225,7 @@ public abstract class ResponderOperation implements java.io.Serializable {
                         resp.getDatabase()), resp.getDatabase(), getConnectionProvider(req, resp.getController()));
         }
 
+        @Override
         public String verify(Responder resp) {
             return null;
         }

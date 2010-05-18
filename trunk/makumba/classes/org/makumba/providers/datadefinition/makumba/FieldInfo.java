@@ -248,6 +248,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
                 && getForeignTable().getName().equals(fi.getForeignTable().getName());
     }
 
+    @Override
     public String toString() {
         return getType();
     }

@@ -115,6 +115,7 @@ public class ValueTag extends GenericListTag {
      * @param pageCache
      *            the page cache of the current page
      */
+    @Override
     public void setTagKey(PageCache pageCache) {
         addToParentListKey(expr.trim());
     }
@@ -125,6 +126,7 @@ public class ValueTag extends GenericListTag {
      * @param pageCache
      *            the page cache of the current page
      */
+    @Override
     public void doStartAnalyze(PageCache pageCache) {
 
         pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, tagKey, ValueComputer.getValueComputerAtAnalysis(true,
@@ -207,6 +209,7 @@ public class ValueTag extends GenericListTag {
      * @param pageCache
      *            the page cache of the current page
      */
+    @Override
     public void doEndAnalyze(PageCache pageCache) {
         ValueComputer vc = (ValueComputer) pageCache.retrieve(MakumbaJspAnalyzer.VALUE_COMPUTERS, tagKey);
         vc.doEndAnalyze(pageCache);
@@ -244,6 +247,7 @@ public class ValueTag extends GenericListTag {
      * @throws JspException
      * @throws LogicException
      */
+    @Override
     public int doAnalyzedStartTag(PageCache pageCache) throws JspException, org.makumba.LogicException {
 
         StringBuffer sb = new StringBuffer();
@@ -389,6 +393,7 @@ public class ValueTag extends GenericListTag {
      * 
      * @return A String holding the value in a form useful for debugging
      */
+    @Override
     public String toString() {
         return "VALUE expr=" + expr + " parameters: " + params;
     }

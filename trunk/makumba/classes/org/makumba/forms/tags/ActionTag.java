@@ -50,6 +50,7 @@ public class ActionTag extends GenericMakumbaTag implements BodyTag {
     /**
      * Indicates if the tag needs the page cache
      */
+    @Override
     protected boolean needPageCache() {
         return false;
     }
@@ -60,10 +61,12 @@ public class ActionTag extends GenericMakumbaTag implements BodyTag {
      * @param pageCache
      *            the page cache of the current page
      */
+    @Override
     public int doAnalyzedStartTag(PageCache pageCache) {
         return EVAL_BODY_BUFFERED;
     }
 
+    @Override
     public void doStartAnalyze(PageCache pageCache) {
         FormTagBase form = (FormTagBase) findAncestorWithClass(this, FormTagBase.class);
         if (form == null)
@@ -75,6 +78,7 @@ public class ActionTag extends GenericMakumbaTag implements BodyTag {
     public void doInitBody() {
     }
 
+    @Override
     public int doAnalyzedEndTag(PageCache pageCache) throws JspException {
         FormTagBase form = (FormTagBase) findAncestorWithClass(this, FormTagBase.class);
         form.responder.setAction(bodyContent.getString());

@@ -149,6 +149,7 @@ public class MDDParser extends MDDBaseParser {
         }
     }
 
+    @Override
     protected AST parseExpression(AST expression) {
 
         Reader in = new StringReader(expression.getText());

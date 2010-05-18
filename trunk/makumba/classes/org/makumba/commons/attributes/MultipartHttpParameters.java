@@ -67,9 +67,11 @@ import eu.medsea.util.MimeUtil;
 public class MultipartHttpParameters extends HttpParameters {
     Hashtable<String, Object> parameters = new Hashtable<String, Object>();
 
+    @Override
     void computeAtStart() {
     }
 
+    @Override
     public boolean knownAtStart(String s) {
         return parameters.get(s) != null;
     }
@@ -203,6 +205,7 @@ public class MultipartHttpParameters extends HttpParameters {
      *            the query string
      * @return An Object holding the parameters
      */
+    @Override
     public Object getParameter(String s) {
         return compose(parameters.get(s), super.getParameter(s));
     }

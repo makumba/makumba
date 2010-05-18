@@ -41,6 +41,7 @@ public class OrderedProperties extends Dictionary<String, String> {
 
     Hashtable<String, String> content = new Hashtable<String, String>();
 
+    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer("{");
         Enumeration<String> e = keys();
@@ -55,14 +56,17 @@ public class OrderedProperties extends Dictionary<String, String> {
         return sb.append('}').toString();
     }
 
+    @Override
     public Enumeration<String> elements() {
         return ((Hashtable<String, String>) content.clone()).elements();
     }
 
+    @Override
     public String get(Object key) {
         return content.get(key);
     }
 
+    @Override
     public Enumeration<String> keys() {
         return ((Vector) ks.clone()).elements();
     }
@@ -75,6 +79,7 @@ public class OrderedProperties extends Dictionary<String, String> {
         return ks.elementAt(i);
     }
 
+    @Override
     public String remove(Object key) {
         ks.removeElement(key);
         orig.remove(key);
@@ -96,6 +101,7 @@ public class OrderedProperties extends Dictionary<String, String> {
         return o;
     }
 
+    @Override
     public String put(String key, String value) {
         return putLast(key, key, value);
     }
@@ -104,10 +110,12 @@ public class OrderedProperties extends Dictionary<String, String> {
         return get(s);
     }
 
+    @Override
     public int size() {
         return content.size();
     }
 
+    @Override
     public boolean isEmpty() {
         return content.isEmpty();
     }

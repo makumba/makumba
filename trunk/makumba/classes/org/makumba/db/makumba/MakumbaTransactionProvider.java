@@ -135,6 +135,7 @@ public class MakumbaTransactionProvider extends TransactionProvider {
          * Configure the Database. If a JDBC Connection URL is given, this one will be used, otherwise, it will be built
          * internally from host, port, engine and database.
          */
+        @Override
         protected Object makeResource(Object nm) {
             Properties p = new Properties();
             String name = (String) nm;
@@ -227,6 +228,7 @@ public class MakumbaTransactionProvider extends TransactionProvider {
         }
     });
 
+    @Override
     public Transaction getConnectionTo(String name) {
         return super.getConnectionTo(name, this);
     }
@@ -270,10 +272,12 @@ public class MakumbaTransactionProvider extends TransactionProvider {
         getDatabase(whereDB).deleteFrom(provenienceDB, typeNames, ignoreDbsv);
     }
 
+    @Override
     public String getQueryLanguage() {
         return super.getQueryLanguage(this);
     }
 
+    @Override
     public CRUDOperationProvider getCRUD() {
         return super.getCRUD(this);
     }

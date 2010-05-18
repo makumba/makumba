@@ -63,6 +63,7 @@ public class CriterionTag extends GenericMakumbaTag implements BodyTag {
      * @param pageCache
      *            the page cache of the current page
      */
+    @Override
     public void doStartAnalyze(PageCache pageCache) {
         if (fields == null) {
             throw new ProgrammerError("fields attribute is required");

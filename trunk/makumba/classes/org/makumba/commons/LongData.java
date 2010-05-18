@@ -144,6 +144,7 @@ public class LongData {
             return new BufferedInputStream(new FileInputStream(temp));
         }
 
+        @Override
         protected void finalize() {
             temp.delete();
         }

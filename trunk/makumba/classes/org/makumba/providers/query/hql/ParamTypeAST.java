@@ -8,6 +8,7 @@ public class ParamTypeAST extends ExprTypeAST {
         setText(name);
     }
 
+    @Override
     public int getDataType() {
         return ExprTypeAST.PARAMETER;
     }

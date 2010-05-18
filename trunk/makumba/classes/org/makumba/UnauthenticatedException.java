@@ -51,6 +51,7 @@ public class UnauthenticatedException extends UnauthorizedException {
         this.attName = s;
     }
 
+    @Override
     public String getMessage() {
         return super.getMessage();
     }

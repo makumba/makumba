@@ -37,6 +37,7 @@ public class NewTag extends FormTagBase {
 
     private static final long serialVersionUID = 1L;
 
+    @Override
     public void setTagKey(PageCache pageCache) {
         Object keyComponents[] = { type.getName(), handler, afterHandler, fdp.getParentListKey(this), formName,
                 getClass() };

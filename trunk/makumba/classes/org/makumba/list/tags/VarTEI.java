@@ -36,6 +36,7 @@ import javax.servlet.jsp.tagext.VariableInfo;
  * @version $Id$
  */
 public class VarTEI extends TagExtraInfo {
+    @Override
     public VariableInfo[] getVariableInfo(TagData data) {
         Vector<VariableInfo> v = new Vector<VariableInfo>();
 

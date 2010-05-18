@@ -139,6 +139,7 @@ public class Text {
     }
 
     /** converts the text content to a string */
+    @Override
     public String toString() {
         ByteArrayOutputStream bo = new ByteArrayOutputStream(len < FILE_LIMIT ? len : FILE_LIMIT);
         try {
@@ -226,6 +227,7 @@ public class Text {
     }
 
     /** Indicates whether the other object is "equal to" this Text. */
+    @Override
     public boolean equals(Object other) {
         if (other == null)
             return false;

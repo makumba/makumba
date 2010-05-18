@@ -214,6 +214,7 @@ public abstract class SyntaxPoint implements Comparable<SyntaxPoint> {
      *            the object to be compared with
      * @return <code>true</code> if the two objects are equal, <code>false</code> otherwise
      */
+    @Override
     public boolean equals(Object o) {
         SyntaxPoint sp = (SyntaxPoint) o;
         return sp != null && position == sp.position && begin == sp.begin && getType() == sp.getType();
@@ -224,6 +225,7 @@ public abstract class SyntaxPoint implements Comparable<SyntaxPoint> {
      * 
      * @return The computed hashcode
      */
+    @Override
     public int hashCode() {
         return position * getType().hashCode() * (begin ? 1 : -1);
     }
@@ -233,6 +235,7 @@ public abstract class SyntaxPoint implements Comparable<SyntaxPoint> {
      * 
      * @return A String that can be used for debugging
      */
+    @Override
     public String toString() {
         return "" + position + ":" + (begin ? "<" + getType() : getType() + ">");
     }
@@ -252,11 +255,13 @@ public abstract class SyntaxPoint implements Comparable<SyntaxPoint> {
         }
 
         /** returns the begining */
+        @Override
         public Object getOtherInfo() {
             return _begin;
         }
 
         /** returns same type as the begining */
+        @Override
         public String getType() {
             return _begin.getType();
         }

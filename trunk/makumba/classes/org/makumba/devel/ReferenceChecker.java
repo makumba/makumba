@@ -55,6 +55,7 @@ public class ReferenceChecker extends HttpServlet {
         return executeIntQuery(sqlConnection, query);
     }
 
+    @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         DBConnection connection = null;
         DBConnection connectionHolder = null;

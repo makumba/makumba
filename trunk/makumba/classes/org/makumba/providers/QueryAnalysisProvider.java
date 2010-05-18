@@ -562,6 +562,7 @@ public abstract class QueryAnalysisProvider {
 
         FromWhere fromWhere = new FromWhere();
 
+        @Override
         public AST visit(AST current) {
             // we are after queries, but not the root query
             if (current.getType() != HqlTokenTypes.QUERY || getPath().size() == 0)

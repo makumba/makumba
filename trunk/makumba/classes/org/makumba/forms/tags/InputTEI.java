@@ -34,6 +34,7 @@ import javax.servlet.jsp.tagext.VariableInfo;
  * @version $Id$
  */
 public class InputTEI extends TagExtraInfo {
+    @Override
     public VariableInfo[] getVariableInfo(TagData data) {
 
         String var = data.getAttributeString("nameVar");

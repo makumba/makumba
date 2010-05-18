@@ -115,14 +115,17 @@ public class EmptyLineFilter implements Filter {
             baStream = new ByteArrayOutputStream();
         }
 
+        @Override
         public void write(int i) throws java.io.IOException {
             baStream.write(i);
         }
 
+        @Override
         public void write(byte[] b, int off, int len) throws IOException {
             baStream.write(b, off, len);
         }
 
+        @Override
         public void close() throws java.io.IOException {
             if (!closed) {
                 processStream();
@@ -131,6 +134,7 @@ public class EmptyLineFilter implements Filter {
             }
         }
 
+        @Override
         public void flush() throws java.io.IOException {
             if (baStream.size() != 0) {
                 if (!closed) {
@@ -170,10 +174,12 @@ public class EmptyLineFilter implements Filter {
             tpWriter = new EmptyLineFilterPrintWriter(tpStream);
         }
 
+        @Override
         public ServletOutputStream getOutputStream() throws java.io.IOException {
             return tpStream;
         }
 
+        @Override
         public PrintWriter getWriter() throws java.io.IOException {
             return tpWriter;
         }
@@ -188,6 +194,7 @@ public class EmptyLineFilter implements Filter {
             this.outStream = out;
         }
 
+        @Override
         public void write(char[] buf, int off, int len) {
             // we modify the call and send the content directly to the output stream
             try {

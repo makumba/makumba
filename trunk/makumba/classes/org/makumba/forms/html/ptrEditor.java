@@ -61,6 +61,7 @@ public class ptrEditor extends choiceEditor {
         return SingletonHolder.singleton;
     }
 
+    @Override
     public void onStartup(RecordFormatter rf, int fieldIndex) {
         ((RecordEditor) rf).db[fieldIndex] = ((RecordEditor) rf).database;
         Map<String, String> m = new HashMap<String, String>();
@@ -84,6 +85,7 @@ public class ptrEditor extends choiceEditor {
 
     }
 
+    @Override
     public Object getOptions(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
 
         ChoiceSet c = (ChoiceSet) formatParams.get(ChoiceSet.PARAMNAME);
@@ -124,14 +126,17 @@ public class ptrEditor extends choiceEditor {
         return c;
     }
 
+    @Override
     public int getOptionsLength(RecordFormatter rf, int fieldIndex, Object opts) {
         return ((ChoiceSet) opts).size();
     }
 
+    @Override
     public Object getOptionValue(RecordFormatter rf, int fieldIndex, Object options, int i) {
         return (((ChoiceSet) options).get(i)).getValue();
     }
 
+    @Override
     public String formatOptionValue(RecordFormatter rf, int fieldIndex, Object val) {
         if (val == Pointer.Null)
             return "";
@@ -143,14 +148,17 @@ public class ptrEditor extends choiceEditor {
         return ((Pointer) val).toExternalForm();
     }
 
+    @Override
     public String formatOptionValue(RecordFormatter rf, int fieldIndex, Object opts, int i, Object val) {
         return formatOptionValue(rf, fieldIndex, val);
     }
 
+    @Override
     public String formatOptionTitle(RecordFormatter rf, int fieldIndex, Object options, int i) {
         return (((ChoiceSet) options).get(i)).getTitle();
     }
 
+    @Override
     public Object readFrom(RecordFormatter rf, int fieldIndex, org.makumba.commons.attributes.HttpParameters p,
             String suffix) {
         Object o = super.readFrom(rf, fieldIndex, p, suffix);
@@ -159,10 +167,12 @@ public class ptrEditor extends choiceEditor {
         return o;
     }
 
+    @Override
     public boolean isMultiple(RecordFormatter rf, int fieldIndex) {
         return false;
     }
 
+    @Override
     public int getDefaultSize(RecordFormatter rf, int fieldIndex) {
         return 1;
     }

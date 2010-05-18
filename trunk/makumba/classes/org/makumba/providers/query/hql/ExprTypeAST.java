@@ -73,6 +73,7 @@ public class ExprTypeAST extends CommonAST {
         dataType = type;
     }
 
+    @Override
     public String getText() {
         String s = super.getText();
         if (identifier != null) {

@@ -60,6 +60,7 @@ public class AutoCompleteServlet extends HttpServlet {
 
     public static final String RESOURCE_PATH_JAVASCRIPT = "javaScript/";
 
+    @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         resp.setContentType("text/html");

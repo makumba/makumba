@@ -39,10 +39,12 @@ public class charViewer extends FieldViewer {
             { "raw", "htmlescape", "stripHTML", "urlencode", "wiki", "auto" }, null, null, null,
             { "true", "false", "auto" } };
 
+    @Override
     public String[] getAcceptedParams() {
         return params;
     }
 
+    @Override
     public String[][] getAcceptedValue() {
         return paramValues;
     }
@@ -66,6 +68,7 @@ public class charViewer extends FieldViewer {
         return SingletonHolder.singleton;
     }
 
+    @Override
     public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
         String txt = o.toString();
         String html = (String) formatParams.get("html");

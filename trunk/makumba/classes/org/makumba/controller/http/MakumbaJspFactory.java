@@ -83,6 +83,7 @@ public class MakumbaJspFactory extends JspFactory {
         return fact;
     }
 
+    @Override
     public String toString() {
         return "mak factory decorating " + fact;
     }

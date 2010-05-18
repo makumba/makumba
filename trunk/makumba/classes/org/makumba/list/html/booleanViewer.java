@@ -40,10 +40,12 @@ public class booleanViewer extends FieldViewer {
 
     static String[][] paramValues = { null };
 
+    @Override
     public String[] getAcceptedParams() {
         return params;
     }
 
+    @Override
     public String[][] getAcceptedValue() {
         return paramValues;
     }
@@ -67,6 +69,7 @@ public class booleanViewer extends FieldViewer {
         return SingletonHolder.singleton;
     }
 
+    @Override
     public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
         return ((Boolean) o) ? "Yes" : "No";
     }

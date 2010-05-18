@@ -109,6 +109,7 @@ public class MDDNode extends CommonAST {
         functions.put(function.getName(), function);
     }
 
+    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("Type name: " + getName() + "\n");

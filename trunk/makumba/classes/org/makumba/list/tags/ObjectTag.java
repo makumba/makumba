@@ -38,6 +38,7 @@ public class ObjectTag extends QueryTag {
 
     private static final long serialVersionUID = 1L;
 
+    @Override
     protected void setNumberOfIterations(int max) throws JspException {
         if (max > 1)
             throw new MakumbaJspException(this, "Object tag should have only one result");
