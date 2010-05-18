@@ -14,27 +14,22 @@ import java.util.Locale;
 import org.makumba.FieldDefinition;
 
 /**
- * @author Bart
- * 
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
+ * @author Bart TODO To change the template for this generated type comment go to Window - Preferences - Java - Code
+ *         Style - Code Templates
  */
 public class OdbcjetV4TableManager extends OdbcjetTableManager {
 
-	//moved from odbcjet.v4.dateTimeManager, .timestampManager
-	static DateFormat odbcDate = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss",
-			Locale.UK);
+    // moved from odbcjet.v4.dateTimeManager, .timestampManager
+    static DateFormat odbcDate = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss", Locale.UK);
 
-	//Moved from odbcjet.v4.dateTimeManager
-	@Override
+    // Moved from odbcjet.v4.dateTimeManager
+    @Override
     public String writeConstant(String fieldName, Object o) {
-		switch (getFieldDefinition(fieldName).getIntegerType()) {
-		case FieldDefinition._date:
-			return "\'"
-					+ odbcDate.format(new Timestamp(((java.util.Date) o)
-							.getTime())) + "\'";
-		default:
-			return super.writeConstant(fieldName, o);
-		}
-	}
+        switch (getFieldDefinition(fieldName).getIntegerType()) {
+            case FieldDefinition._date:
+                return "\'" + odbcDate.format(new Timestamp(((java.util.Date) o).getTime())) + "\'";
+            default:
+                return super.writeConstant(fieldName, o);
+        }
+    }
 }

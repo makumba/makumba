@@ -42,16 +42,17 @@ public class SQLDBConnection extends DBConnection {
 
     private Connection conn;
 
-    SQLDBConnection(org.makumba.db.makumba.Database db, TransactionProvider tp, PooledDataSource pooledDataSource) throws SQLException {
+    SQLDBConnection(org.makumba.db.makumba.Database db, TransactionProvider tp, PooledDataSource pooledDataSource)
+            throws SQLException {
         super(db, tp);
         n = nconn++;
         makeConnection(pooledDataSource);
     }
 
     private void makeConnection(PooledDataSource pooledDataSource) throws SQLException {
-        
+
         conn = pooledDataSource.getConnection();
-        
+
         if (conn.getMetaData().supportsTransactions())
             conn.setAutoCommit(false);
         if (conn.getMetaData().supportsTransactionIsolationLevel(Database.DESIRED_TRANSACTION_LEVEL))

@@ -23,14 +23,11 @@
 
 package org.makumba.db.makumba.sql;
 
-
-
 public class MsSqlTableManager extends org.makumba.db.makumba.sql.TableManager {
-	
-	
-	@Override
+
+    @Override
     protected String getColumnAlterKeyword() {
-		return "ALTER COLUMN";
-	}
-	
+        return "ALTER COLUMN";
+    }
+
 }

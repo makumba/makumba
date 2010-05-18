@@ -23,15 +23,17 @@
 
 package org.makumba.db.makumba.sql;
 
-/** this exception is thrown during operation with PreparedStatements when a lost connection is
- * detected and reconection is succesful */
-public class ReconnectedException extends org.makumba.commons.RuntimeWrappedException
-{
-  /**
+/**
+ * this exception is thrown during operation with PreparedStatements when a lost connection is detected and reconection
+ * is succesful
+ */
+public class ReconnectedException extends org.makumba.commons.RuntimeWrappedException {
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-public ReconnectedException(java.sql.SQLException se){super(se); }
+    public ReconnectedException(java.sql.SQLException se) {
+        super(se);
+    }
 }
-

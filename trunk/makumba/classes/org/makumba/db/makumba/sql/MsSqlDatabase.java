@@ -21,90 +21,82 @@
 //  $Name$
 /////////////////////////////////////
 
-
 package org.makumba.db.makumba.sql;
+
 import java.sql.SQLException;
 import java.util.Properties;
 
 import org.makumba.DBError;
 import org.makumba.db.makumba.DBConnection;
 
-
 /** the database adapter for Microsoft SQL Server */
-public class MsSqlDatabase extends org.makumba.db.makumba.sql.Database
-{
+public class MsSqlDatabase extends org.makumba.db.makumba.sql.Database {
 
-  /** calls super and adds DB-specific properties */
-  public MsSqlDatabase(Properties p) 
-    { 
-	  super(addProperties(p));
-	}
+    /** calls super and adds DB-specific properties */
+    public MsSqlDatabase(Properties p) {
+        super(addProperties(p));
+    }
 
-	private static Properties addProperties(Properties p) {
-		//set the database name - mssql jdbc driver does not use it in jdbc url, but as additional property: 
-		//DatabaseName=myAppDbName
-		p.put("sql.DatabaseName", p.getProperty("#database"));
+    private static Properties addProperties(Properties p) {
+        // set the database name - mssql jdbc driver does not use it in jdbc url, but as additional property:
+        // DatabaseName=myAppDbName
+        p.put("sql.DatabaseName", p.getProperty("#database"));
 
-		// we make sure that sql.SelectMethod=Cursor is sent to mssql in the connection properties
-		p.put("sql.SelectMethod", "Cursor");
-		return p;
-	}
+        // we make sure that sql.SelectMethod=Cursor is sent to mssql in the connection properties
+        p.put("sql.SelectMethod", "Cursor");
+        return p;
+    }
 
-	
-	@Override
+    @Override
     protected String getJdbcUrl(Properties p) {
-		// makumba mssql implementation accepts stuff like localhost_mssql_makumba.properties
-		//which needs to be converted to JDBC url for MS jdbc driver: 
-		//jdbc:microsoft:sqlserver://server_name:1433
-		//or in case with named instances: servername!instancename_mssql_makumba.properties
-		//which needs to give url:
-		//jdbc:microsoft:sqlserver://server_name\\instance_name
-		String url="jdbc:microsoft:sqlserver://";
-		String host = p.getProperty("#host");
-		host = host.replaceAll("!","\\\\");
-		url +=host;
-		return url;
-	}
+        // makumba mssql implementation accepts stuff like localhost_mssql_makumba.properties
+        // which needs to be converted to JDBC url for MS jdbc driver:
+        // jdbc:microsoft:sqlserver://server_name:1433
+        // or in case with named instances: servername!instancename_mssql_makumba.properties
+        // which needs to give url:
+        // jdbc:microsoft:sqlserver://server_name\\instance_name
+        String url = "jdbc:microsoft:sqlserver://";
+        String host = p.getProperty("#host");
+        host = host.replaceAll("!", "\\\\");
+        url += host;
+        return url;
+    }
 
-	//Solving http://bugs.best.eu.org/show_bug.cgi?id=905
-	@Override
+    // Solving http://bugs.best.eu.org/show_bug.cgi?id=905
+    @Override
     protected DBConnection makeDBConnection() {
-		SQLDBConnection dbc=(SQLDBConnection)super.makeDBConnection();
-		try
-		{
-			java.sql.Statement s = dbc.createStatement();
-			s.execute("SET QUOTED_IDENTIFIER OFF");
-		} catch (SQLException e) {
-			logException(e);
-			throw new DBError(e);
-		}
-		return dbc;
-	}
+        SQLDBConnection dbc = (SQLDBConnection) super.makeDBConnection();
+        try {
+            java.sql.Statement s = dbc.createStatement();
+            s.execute("SET QUOTED_IDENTIFIER OFF");
+        } catch (SQLException e) {
+            logException(e);
+            throw new DBError(e);
+        }
+        return dbc;
+    }
 
-	
-	/*
-	protected boolean isDuplicateException(SQLException e) {
-		return e.getMessage().toLowerCase().indexOf("violation of unique index") != -1;
-	}
-	*/
+    /*
+    protected boolean isDuplicateException(SQLException e) {
+    	return e.getMessage().toLowerCase().indexOf("violation of unique index") != -1;
+    }
+    */
 
-
-	/** MS SQL Server uses incompatible sytax, see http://blog.daemon.com.au/archives/000301.html */
-	@Override
+    /** MS SQL Server uses incompatible sytax, see http://blog.daemon.com.au/archives/000301.html */
+    @Override
     public boolean supportsLimitInQuery() {
-		return false;
-	}
+        return false;
+    }
 
-/*	
-	public String getLimitSyntax() {
-		//return 	" LIMIT ? OFFSET ?";
-		return 	" TOP (?) ";
-	}
-	
-	public boolean isLimitOffsetFirst() {
-		return true;
-	}
-*/
+    /*	
+    	public String getLimitSyntax() {
+    		//return 	" LIMIT ? OFFSET ?";
+    		return 	" TOP (?) ";
+    	}
+    	
+    	public boolean isLimitOffsetFirst() {
+    		return true;
+    	}
+    */
 
-	
 }

@@ -67,22 +67,22 @@ public class MySqlDatabase extends org.makumba.db.makumba.sql.Database {
             return se.getMessage();
         }
     }
-    
+
     @Override
     public Map<String, String> getDuplicateFields(SQLException e) {
         // we get an error message of the kind
         // Duplicate entry '11-a@b.com' for key 'age_email'
-        
+
         Map<String, String> res = new HashMap<String, String>();
 
         String[] error = e.getMessage().split("'");
         String[] values = error[1].split("-");
         String[] fields = error[3].split("_");
 
-        for(int i = 0; i < fields.length; i++) {
+        for (int i = 0; i < fields.length; i++) {
             res.put(fields[i], values[i]);
         }
-        
+
         return res;
     }
 

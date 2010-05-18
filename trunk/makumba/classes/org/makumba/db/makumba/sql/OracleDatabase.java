@@ -22,30 +22,35 @@
 /////////////////////////////////////
 
 package org.makumba.db.makumba.sql;
+
 import java.util.Properties;
 
 /** the database adapter for PostgreSQL */
-public class OracleDatabase extends org.makumba.db.makumba.sql.Database
-{
-  /** simply calls super */
-  public OracleDatabase(Properties p) 
-    { super(p); }
+public class OracleDatabase extends org.makumba.db.makumba.sql.Database {
+    /** simply calls super */
+    public OracleDatabase(Properties p) {
+        super(p);
+    }
 
-  protected int getMaxTableNameLength() {return 30; }
-  protected int getMaxFieldNameLength() {return 30; }
+    protected int getMaxTableNameLength() {
+        return 30;
+    }
 
-//TODO now in sqlEngines.properties -->OK?
-//  /** returns oracle RecordManager */
-//  protected Class getTableClass()
-//  { return org.makumba.db.sql.oracle.RecordManager.class; }
+    protected int getMaxFieldNameLength() {
+        return 30;
+    }
 
-  @Override
-protected String getJdbcUrl(Properties p)
-  {
-    String host=p.getProperty("#host");
-    if(host.indexOf(':')<0) //no port specified
-	host=host+":1521";  //define default port (must be specified)
-    return "jdbc:oracle:thin:@//"+host+"/"+p.getProperty("#database");
-  }
+    // TODO now in sqlEngines.properties -->OK?
+    // /** returns oracle RecordManager */
+    // protected Class getTableClass()
+    // { return org.makumba.db.sql.oracle.RecordManager.class; }
+
+    @Override
+    protected String getJdbcUrl(Properties p) {
+        String host = p.getProperty("#host");
+        if (host.indexOf(':') < 0) // no port specified
+            host = host + ":1521"; // define default port (must be specified)
+        return "jdbc:oracle:thin:@//" + host + "/" + p.getProperty("#database");
+    }
 
 }

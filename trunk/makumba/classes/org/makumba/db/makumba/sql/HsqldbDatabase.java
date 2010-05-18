@@ -21,53 +21,51 @@
 //  $Name$
 /////////////////////////////////////
 
-
 package org.makumba.db.makumba.sql;
+
 import java.sql.SQLException;
 import java.util.Properties;
 
 //this file was based in the Claudspace... so it needs to be
 
 /** the database adapter for Hsqldb */
-public class HsqldbDatabase extends org.makumba.db.makumba.sql.Database
-{
-	
-	@Override
+public class HsqldbDatabase extends org.makumba.db.makumba.sql.Database {
+
+    @Override
     protected String getJdbcUrl(Properties p) {
-		// makumba hsqldb implementation accepts stuff like localhost_hsql_path_to_some_dir.properties
-		String s=super.getJdbcUrl(p);
-		String dbn= p.getProperty("#database");
-		dbn=dbn.replace('_','/');
-		int n = s.lastIndexOf(':');
-		return s.substring(0,n+1)+dbn;
-	}
-	
-  /** simply calls super */
-  public HsqldbDatabase(Properties p) 
-    { 
-	  super(addShutdown(p));
-	}
+        // makumba hsqldb implementation accepts stuff like localhost_hsql_path_to_some_dir.properties
+        String s = super.getJdbcUrl(p);
+        String dbn = p.getProperty("#database");
+        dbn = dbn.replace('_', '/');
+        int n = s.lastIndexOf(':');
+        return s.substring(0, n + 1) + dbn;
+    }
 
-	private static Properties addShutdown(Properties p) {
-		// we make sure that shutdown=true is sent to Hsqldb in the connection properties
-		// this ensures db files cleanup when makumba goes down
-		p.put("sql.shutdown", "true");
-		return p;
-	}
+    /** simply calls super */
+    public HsqldbDatabase(Properties p) {
+        super(addShutdown(p));
+    }
 
-	@Override
+    private static Properties addShutdown(Properties p) {
+        // we make sure that shutdown=true is sent to Hsqldb in the connection properties
+        // this ensures db files cleanup when makumba goes down
+        p.put("sql.shutdown", "true");
+        return p;
+    }
+
+    @Override
     public boolean isDuplicateException(SQLException e) {
-		return e.getMessage().toLowerCase().indexOf("violation of unique index") != -1;
-	}
+        return e.getMessage().toLowerCase().indexOf("violation of unique index") != -1;
+    }
 
-	@Override
+    @Override
     public String getLimitSyntax() {
-		return 	" LIMIT ? OFFSET ?";
-	}
+        return " LIMIT ? OFFSET ?";
+    }
 
-	@Override
+    @Override
     public boolean isLimitOffsetFirst() {
-		return false;
-	}
-	
+        return false;
+    }
+
 }
