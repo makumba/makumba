@@ -220,7 +220,7 @@ public class ComposedQuery {
 
         // add the previous keyset
         for (int i = 0; i < keyset.size(); i++)
-            checkProjectionInteger((String) e.nextElement());
+            checkProjectionInteger(e.nextElement());
 
         for (StringTokenizer st = new StringTokenizer(sections[FROM] == null ? "" : sections[FROM], ","); st.hasMoreTokens();) {
             String label = st.nextToken().trim();
@@ -237,7 +237,7 @@ public class ComposedQuery {
         }
 
         while (e.hasMoreElements())
-            checkProjectionInteger((String) e.nextElement());
+            checkProjectionInteger(e.nextElement());
     }
 
     /**
@@ -248,7 +248,7 @@ public class ComposedQuery {
      * @return A String containing the projection
      */
     public String getProjectionAt(int n) {
-        return (String) projections.elementAt(n);
+        return projections.elementAt(n);
     }
 
     /**
@@ -273,7 +273,7 @@ public class ComposedQuery {
      * @return The index of the added projection
      */
     public Integer checkProjectionInteger(String expr) {
-        Integer index = (Integer) projectionExpr.get(expr);
+        Integer index = projectionExpr.get(expr);
         if (index == null) {
             addProjection(expr);
             // FIXME: if DISTINCT is true, need to recompute the keyset and notify the subqueries to recompute their
@@ -361,8 +361,8 @@ public class ComposedQuery {
         String groups = null;
         String orders = null;
         if (!typeAnalysisOnly) {
-            groups = checkExpr((String) derivedSections[GROUPBY]);
-            orders = checkExpr((String) derivedSections[ORDERBY]);
+            groups = checkExpr(derivedSections[GROUPBY]);
+            orders = checkExpr(derivedSections[ORDERBY]);
         }
 
         StringBuffer sb = new StringBuffer();

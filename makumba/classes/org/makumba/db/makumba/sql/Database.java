@@ -312,7 +312,7 @@ public class Database extends org.makumba.db.makumba.Database {
             else
                 while (rs.next()) {
                     String tn = rs.getString("TABLE_NAME");
-                    Vector<Hashtable<String, Object>> v = (Vector<Hashtable<String, Object>>) c.get(tn);
+                    Vector<Hashtable<String, Object>> v = c.get(tn);
                     if (v == null)
                         c.put(tn, v = new Vector<Hashtable<String, Object>>());
                     Hashtable<String, Object> h = new Hashtable<String, Object>(5);
@@ -401,7 +401,7 @@ public class Database extends org.makumba.db.makumba.Database {
                 sb.append('\\');
             else if (c == '\"')
                 sb.append('\\');
-            else if ((int) c == 0) {
+            else if (c == 0) {
                 sb.append("\\0");
                 continue;
             }

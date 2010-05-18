@@ -71,9 +71,9 @@ public class HibernateTransaction extends TransactionImplementation {
             HibernateSFManager.HIBERNATE_CURRENT_SESSION_CONTEXT);
 
         if (useCurrentSession) {
-            this.s = ((SessionFactory) ((HibernateTransactionProvider) hibernateTransactionProvider).getHibernateSessionFactory(dataSource)).getCurrentSession();
+            this.s = ((SessionFactory) (hibernateTransactionProvider).getHibernateSessionFactory(dataSource)).getCurrentSession();
         } else {
-            this.s = ((SessionFactory) ((HibernateTransactionProvider) hibernateTransactionProvider).getHibernateSessionFactory(dataSource)).openSession();
+            this.s = ((SessionFactory) (hibernateTransactionProvider).getHibernateSessionFactory(dataSource)).openSession();
             s.setCacheMode(CacheMode.IGNORE);
         }
         beginTransaction();
@@ -198,7 +198,7 @@ public class HibernateTransaction extends TransactionImplementation {
                 if (HibernateCRUDOperationProvider.isInteger(m.getReturnType().getName())) {
                     return new Integer(p.getId());
                 } else if (HibernateCRUDOperationProvider.isLong(m.getReturnType().getName())) {
-                    return (Long) (p.longValue());
+                    return (p.longValue());
                 }
 
             } catch (ClassNotFoundException cnfe) {

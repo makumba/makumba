@@ -679,13 +679,13 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     public String getNameAt(int i) {
         switch (getIntegerType()) {
             case FieldDefinition._charEnum:
-                return (String) ((Vector<String>) this.extra1).elementAt(i);
+                return ((Vector<String>) this.extra1).elementAt(i);
             case FieldDefinition._intEnum:
-                return (String) ((Vector<String>) this.extra2).elementAt(i);
+                return ((Vector<String>) this.extra2).elementAt(i);
             case FieldDefinition._setCharEnum:
-                return (String) ((Vector<String>) getEnum().extra1).elementAt(i);
+                return ((Vector<String>) getEnum().extra1).elementAt(i);
             case FieldDefinition._setIntEnum:
-                return (String) ((Vector<String>) getEnum().extra2).elementAt(i);
+                return ((Vector<String>) getEnum().extra2).elementAt(i);
             default:
                 throw new RuntimeException("Shouldn't be here");
         }
@@ -1043,7 +1043,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
 
     // moved from setHandler
     FieldDefinition pointerToForeign() {
-        return getSubtable().getFieldDefinition((String) getSubtable().getFieldNames().elementAt(4));
+        return getSubtable().getFieldDefinition(getSubtable().getFieldNames().elementAt(4));
     }
 
     /**
@@ -1235,7 +1235,7 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
     public void addValidationRule(Collection<ValidationRule> rules) {
         if (rules != null) {
             for (ValidationRule validationRule : rules) {
-                addValidationRule((ValidationRule) validationRule);
+                addValidationRule(validationRule);
             }
         }
     }

@@ -106,7 +106,7 @@ public class ParserTest {
         Throwable mqlThr = null;
         try {
             mq = new MqlQueryAnalysis(query, false, automaticLeftJoin);
-            qG = (SQLParameterTransformer) qG;
+            qG = qG;
 
             mql_sql = qG.getSQLQuery(nr).toLowerCase();
         } catch (Throwable t) {

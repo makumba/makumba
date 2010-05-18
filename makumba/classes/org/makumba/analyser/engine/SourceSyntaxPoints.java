@@ -199,11 +199,11 @@ public class SourceSyntaxPoints {
      * @return A String containing the text at the indicated line
      */
     public String getLineText(int n) {
-        SyntaxPoint line = (SyntaxPoint) lineBeginnings.get(n - 1);
+        SyntaxPoint line = lineBeginnings.get(n - 1);
         if (n == lineBeginnings.size())
             return originalText.substring(line.getOriginalPosition());
 
-        SyntaxPoint nextline = (SyntaxPoint) lineBeginnings.get(n);
+        SyntaxPoint nextline = lineBeginnings.get(n);
 
         return originalText.substring(line.getOriginalPosition(), nextline.getOriginalPosition() - 1);
     }
@@ -261,7 +261,7 @@ public class SourceSyntaxPoints {
         // we add a fileBeginning
         int n = fileBeginningIndexes.size() - 1;
         // replace the one at the end, for some reason
-        if (((Integer) fileBeginningIndexes.get(n)).intValue() == position)
+        if ((fileBeginningIndexes.get(n)).intValue() == position)
             fileBeginnings.set(n, sf);
         else {
             // add one at the end
@@ -359,7 +359,7 @@ public class SourceSyntaxPoints {
      *            the syntax point to be filled in
      */
     void setLineAndColumn(SyntaxPoint point) {
-        SyntaxPoint lineBegin = (SyntaxPoint) lineBeginnings.get((-1) * Collections.binarySearch(lineBeginnings, point)
+        SyntaxPoint lineBegin = lineBeginnings.get((-1) * Collections.binarySearch(lineBeginnings, point)
                 - 2);
         point.line = lineBegin.line;
         point.column = point.position - lineBegin.position + 1;
@@ -376,7 +376,7 @@ public class SourceSyntaxPoints {
         int index = Collections.binarySearch(fileBeginningIndexes, new Integer(position - offset));
         if (index < 0)
             index = -index - 2;
-        return (SourceSyntaxPoints) fileBeginnings.get(index);
+        return fileBeginnings.get(index);
     }
 
     /**
@@ -500,7 +500,7 @@ public class SourceSyntaxPoints {
     public SyntaxPoint[] getSyntaxPoints() {
         ArrayList<SyntaxPoint> list = new ArrayList<SyntaxPoint>(syntaxPoints);
         Collections.sort(list);
-        SyntaxPoint[] result = (SyntaxPoint[]) list.toArray(new SyntaxPoint[syntaxPoints.size()]);
+        SyntaxPoint[] result = list.toArray(new SyntaxPoint[syntaxPoints.size()]);
         // the following is needed to pass by a bug occuring to sorting (TextLine begin&end on the same line&column are
         // switched)
         // preferably, this would be done on creation of the Treeset, but i failed to fix the problem there

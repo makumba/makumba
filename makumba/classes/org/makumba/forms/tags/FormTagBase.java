@@ -509,7 +509,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
                 if (field != null)
                     responder.setAddField(field);
                 if (!"add".equals(getOperation()))
-                    responder.setNewType(((FormTagBase) findParentForm()).type);
+                    responder.setNewType((findParentForm()).type);
 
                 break;
         }

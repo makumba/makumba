@@ -41,7 +41,7 @@ public class RecordViewer extends RecordFormatter {
     private static final long serialVersionUID = 1L;
 
     public RecordViewer(ComposedQuery q) {
-        dd = (DataDefinition) q.getResultType();
+        dd = q.getResultType();
         initFormatters();
 
         expr = new String[dd.getFieldNames().size()];

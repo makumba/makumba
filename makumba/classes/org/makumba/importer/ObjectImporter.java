@@ -330,7 +330,7 @@ public class ObjectImporter {
         }
         Iterator<Integer> f = dd.getFieldDefinition(fieldName).getValues().iterator();
         for (String v : dd.getFieldDefinition(fieldName).getNames()) {
-            Integer i = (Integer) f.next();
+            Integer i = f.next();
             if (v.equals(s)) {
                 return i;
             }

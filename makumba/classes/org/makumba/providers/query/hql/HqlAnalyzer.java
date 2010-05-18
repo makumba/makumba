@@ -136,7 +136,7 @@ public class HqlAnalyzer implements QueryAnalysis {
     }
 
     public DataDefinition getLabelType(String labelName) {
-        String labelTypeName = (String) walker.getLabelTypes().get(labelName);
+        String labelTypeName = walker.getLabelTypes().get(labelName);
         if (labelTypeName == null)
             throw new OQLParseError(" unknown label " + labelName + " in query " + query);
         return ddp.getDataDefinition(labelTypeName);
@@ -196,7 +196,7 @@ public class HqlAnalyzer implements QueryAnalysis {
     }
 
     String getTypeName(int i) {
-        return (String) integerTypeMap.get(new Integer(i));
+        return integerTypeMap.get(new Integer(i));
     }
 
     public String toString() {

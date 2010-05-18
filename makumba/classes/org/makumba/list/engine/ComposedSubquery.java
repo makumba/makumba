@@ -133,7 +133,7 @@ public class ComposedSubquery extends ComposedQuery {
         keysetLabels = (Vector<String>) superQuery.keysetLabels.clone();
 
         for (Enumeration<String> e = keysetLabels.elements(); e.hasMoreElements();)
-            addProjection((String) e.nextElement());
+            addProjection(e.nextElement());
         previousKeyset.addElement(superQuery.keyset);
 
         // we're all set now, no more need for the super query

@@ -169,7 +169,7 @@ public class ReferenceChecker extends HttpServlet {
         Collections.sort(mdds);
         w.println("<div style=\"float:right; border: 1px solid #000; margin: 0px 0px 20px 20px; padding: 5px; background: #ddd;\">");
         for (String string : mdds) {
-            String mddName = (String) string;
+            String mddName = string;
             w.println("<a href=\"#" + mddName + "\">" + mddName + "</a><br/>");
         }
         w.println("</div>");

@@ -134,8 +134,8 @@ public class ErrorFormatter {
                 // ==> not every JSP exception is a compilation error!! i.e. many runtime exceptions are wrapped into
                 // JSP exceptions
                 // ==> as a quick fix, we treat those as unknown errors
-                if (isRuntimeJspErrors((ServletException) t)) {
-                    treatJspRuntimeException(original, (ServletException) t, wr, req, this.servletContext,
+                if (isRuntimeJspErrors(t)) {
+                    treatJspRuntimeException(original, t, wr, req, this.servletContext,
                         printHeaderFooter);
                     return;
                 } else {
@@ -152,7 +152,7 @@ public class ErrorFormatter {
                                 // make new throwable, but keep original class just in case
                                 // need to use reflection - no methods to clone or set message available in Throwable
                                 String message = t.getMessage() + "\n\n" + original.getMessage();
-                                t1 = (Throwable) t.getClass().getConstructor(String.class).newInstance(message);
+                                t1 = t.getClass().getConstructor(String.class).newInstance(message);
                                 t1.setStackTrace(t.getStackTrace());
                                 t = t1;
                             } catch (Throwable e) {
@@ -185,7 +185,7 @@ public class ErrorFormatter {
                     // make new throwable, but keep original class to preserve as much as possible
                     // need to use reflection - no methods to clone or set message available in Throwable class.
                     String message = t.getMessage() + "\n\n" + original.getMessage();
-                    t1 = (Throwable) t.getClass().getConstructor(String.class).newInstance(message);
+                    t1 = t.getClass().getConstructor(String.class).newInstance(message);
                     t1.setStackTrace(t.getStackTrace());
                 } catch (Throwable e) {
                     // if we do not find a standard constructor, make a new throwable
@@ -198,7 +198,7 @@ public class ErrorFormatter {
             // FIXME this is duplicated code from above to get this working with Jetty.
             // the problem is that tomcat has a specific way of wrapping exceptions, which jetty does not because it
             // direclty uses Jasper
-            if (isRuntimeJspErrors((ServletException) original)) {
+            if (isRuntimeJspErrors(original)) {
                 treatJspRuntimeException(original, t, wr, req, this.servletContext, printHeaderFooter);
                 return;
 

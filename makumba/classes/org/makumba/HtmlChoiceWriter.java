@@ -263,7 +263,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
 
         for (; itv.hasNext() && itl.hasNext();) {
             Object val = itv.next();
-            String label = (String) itl.next();
+            String label = itl.next();
             if (val == null)
                 throw new ProgrammerError("Non-option text " + label
                         + " found. Non-otion text cannot break simple SELECTs. Use type=\"tickbox\" instead");
@@ -299,7 +299,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
 
         for (; itv.hasNext() && itl.hasNext();) {
             Object val = itv.next();
-            String label = (String) itl.next();
+            String label = itl.next();
             if (val == null) {
                 selectStatement.append(label);
                 if (selectStarted) {
@@ -347,13 +347,13 @@ public class HtmlChoiceWriter extends HtmlUtils {
         int optionCount = 0;
         for (; itv.hasNext() && itl.hasNext();) {
             inputStatement.append(sep);
-            String label = (String) itl.next();
+            String label = itl.next();
             Object val = itv.next();
             if (val == null) {
                 inputStatement.append(label);
                 continue;
             }
-            String value = (String) val.toString();
+            String value = val.toString();
             boolean yn_selected = Arrays.binarySearch(_selectedValues, value) >= 0;
             // show option if selected or not-deprecated
             if (yn_selected || Arrays.binarySearch(_deprecatedValues, value) < 0) {
@@ -427,8 +427,8 @@ public class HtmlChoiceWriter extends HtmlUtils {
         Iterator<String> itl = labels.iterator();
 
         for (; itv.hasNext();) {
-            String value = (String) itv.next().toString();
-            String label = (String) itl.next();
+            String value = itv.next().toString();
+            String label = itl.next();
             if (yn_convert2Html) {
                 value = HtmlUtils.string2html(value);
                 label = HtmlUtils.string2html(label);

@@ -274,7 +274,7 @@ public class NameResolver {
      */
     private static boolean checkDuplicateFieldName(String name, DataDefinition dd, HashMap<String, String> resolvedCache) {
         for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
-            String fieldName = (String) e.nextElement();
+            String fieldName = e.nextElement();
             if (dd.getFieldDefinition(fieldName).getType().startsWith("set"))
                 continue;
             if (resolvedCache.get(fieldName) != null
@@ -298,7 +298,7 @@ public class NameResolver {
 
         for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
 
-            String name = (String) e.nextElement();
+            String name = e.nextElement();
 
             if (dd.getFieldDefinition(name).getType().startsWith("set"))
                 continue;

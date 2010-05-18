@@ -50,7 +50,7 @@ public class ReservedKeywords {
         String reserved = new String();
         Iterator<String> i = reservedKeywords.iterator();
         while (i.hasNext()) {
-            reserved += (String) i.next();
+            reserved += i.next();
             if (i.hasNext()) {
                 reserved += ", ";
             }

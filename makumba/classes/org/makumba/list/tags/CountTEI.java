@@ -53,7 +53,7 @@ public class CountTEI extends TagExtraInfo {
         if (var != null)
             v.addElement(new VariableInfo(var, "java.lang.Integer", true, VariableInfo.AT_END));
 
-        return (VariableInfo[]) v.toArray(new VariableInfo[v.size()]);
+        return v.toArray(new VariableInfo[v.size()]);
     }
 
 }

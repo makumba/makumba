@@ -89,7 +89,7 @@ public abstract class DBConnection extends TransactionImplementation {
     }
 
     public void unlock(String symbol) {
-        Pointer p = (Pointer) locks.get(symbol);
+        Pointer p = locks.get(symbol);
         if (p == null)
             throw new ProgrammerError(symbol + " not locked in connection " + this);
         deleteLock(symbol);
@@ -104,7 +104,7 @@ public abstract class DBConnection extends TransactionImplementation {
 
     protected void unlockAll() {
         for (Iterator<String> i = locks.keySet().iterator(); i.hasNext();) {
-            deleteLock((String) i.next());
+            deleteLock(i.next());
         }
     }
 

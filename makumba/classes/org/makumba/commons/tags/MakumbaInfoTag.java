@@ -303,7 +303,7 @@ public class MakumbaInfoTag extends TagSupport {
             TreeSet<String> treeSet = new TreeSet<String>(m.keySet());
 
             for (Iterator<String> iterator = treeSet.iterator(); iterator.hasNext();) {
-                String nm = (String) iterator.next();
+                String nm = iterator.next();
                 Object o = m.get(nm);
 
                 out.println("  <tr bgcolor=\"#" + ((line++ % 2 == 0) ? "eeeeee" : "ffffff") + "\">");
@@ -378,7 +378,7 @@ public class MakumbaInfoTag extends TagSupport {
                     out.print("*******");
                 } else if (key.endsWith("path")) {
                     out.print(props.getProperty(key).replace(sysprops.getProperty("path.separator").charAt(0), '\n'));
-                } else if (((String) props.getProperty(key)).startsWith("http://")) {
+                } else if ((props.getProperty(key)).startsWith("http://")) {
                     out.print("<a href=" + props.getProperty(key) + ">" + props.getProperty(key) + "</a>");
                 } else {
                     out.print(props.getProperty(key));

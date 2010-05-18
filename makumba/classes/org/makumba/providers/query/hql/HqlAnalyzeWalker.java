@@ -164,7 +164,7 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
 
         String functionCall = fc.getText().toUpperCase();
 
-        return new ExprTypeAST(((Integer) methodTypes.get(functionCall)).intValue());
+        return new ExprTypeAST((methodTypes.get(functionCall)).intValue());
 
     }
 

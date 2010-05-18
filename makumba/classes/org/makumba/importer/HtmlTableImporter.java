@@ -130,7 +130,7 @@ public class HtmlTableImporter {
 
         for (int i = 0; i < fieldOrder.length; i++) {
             if (data.elementAt(i) != null) {
-                Object o = imp.getValue(fieldOrder[i], (String) data.elementAt(i), db, null);
+                Object o = imp.getValue(fieldOrder[i], data.elementAt(i), db, null);
                 if (o != null) {
                     d.put(fieldOrder[i], o);
                 }

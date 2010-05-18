@@ -303,7 +303,7 @@ public class RelationCrawler {
             ArrayList<String> allFilesInDirectory = FileUtils.getAllFilesInDirectory(webappRoot, skipPaths,
                 new MakumbaRelatedFileFilter());
             Collections.sort(allFilesInDirectory);
-            files = (String[]) allFilesInDirectory.toArray(new String[allFilesInDirectory.size()]);
+            files = allFilesInDirectory.toArray(new String[allFilesInDirectory.size()]);
         }
 
         RelationCrawler rc = getRelationCrawler(webappRoot, targetDatabase, forceDatabase, URLprefix == null ? ""

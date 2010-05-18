@@ -68,11 +68,11 @@ public class OrderedProperties extends Dictionary<String, String> {
     }
 
     public String getOriginal(String key) {
-        return (String) orig.get(key);
+        return orig.get(key);
     }
 
     public String keyAt(int i) {
-        return (String) ks.elementAt(i);
+        return ks.elementAt(i);
     }
 
     public String remove(Object key) {
@@ -101,7 +101,7 @@ public class OrderedProperties extends Dictionary<String, String> {
     }
 
     public String getProperty(String s) {
-        return (String) get(s);
+        return get(s);
     }
 
     public int size() {
