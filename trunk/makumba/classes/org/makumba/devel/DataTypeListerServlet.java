@@ -38,6 +38,7 @@ public class DataTypeListerServlet extends DataServlet {
         toolLocation = Configuration.getDataListerLocation();
     }
 
+    @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.doGet(request, response);
 
@@ -88,7 +89,7 @@ public class DataTypeListerServlet extends DataServlet {
                 writer.println("      <select size=\"1\" name=\"titleField\">");
                 for (int i = 3; i < fields.size(); i++) {
                     FieldDefinition fdAll = dd.getFieldDefinition(i);
-                    String e = (String) fields.elementAt(i);
+                    String e = fields.elementAt(i);
                     writer.print("          <option value=\"" + e + "\" ");
                     if (e.equals(titleField)) {
                         writer.print("selected");
@@ -102,7 +103,7 @@ public class DataTypeListerServlet extends DataServlet {
                 writer.println("      <select size=\"1\" name=\"otherField\">");
                 for (int i = 3; i < fields.size(); i++) {
                     FieldDefinition fdAll = dd.getFieldDefinition(i);
-                    String e = (String) fields.elementAt(i);
+                    String e = fields.elementAt(i);
                     writer.print("          <option value=\"" + e + "\" ");
                     if (e.equals(otherField)) {
                         writer.print("selected");
@@ -122,8 +123,9 @@ public class DataTypeListerServlet extends DataServlet {
 
                 String what = "";
                 for (int i = 3; i < fields.size(); i++) {
-                    if (i > 3)
+                    if (i > 3) {
                         what = what + ", ";
+                    }
                     what = what + "obj." + fields.elementAt(i) + " AS " + fields.elementAt(i); // col\"+(i+1);
                 }
 
@@ -193,8 +195,9 @@ public class DataTypeListerServlet extends DataServlet {
         if (u == null) {
             u = RecordParser.findDataDefinitionOrDirectory(virtualPath, "idd");
         }
-        if (u == null)
+        if (u == null) {
             throw new FileNotFoundException(virtualPath);
+        }
         String realPath = u.getFile();
         File dir = new File(realPath);
         String relativeDirectory = dir.getName();
@@ -214,8 +217,7 @@ public class DataTypeListerServlet extends DataServlet {
         // process and display files
         String[] list = dir.list();
         Arrays.sort(list);
-        for (int i = 0; i < list.length; i++) {
-            String s = list[i];
+        for (String s : list) {
             if (s.indexOf(".") != -1 && s.endsWith("dd")) {
                 String ddname = pathInfo + s;
                 ddname = ddname.substring(1, ddname.lastIndexOf(".")).replace('/', '.');

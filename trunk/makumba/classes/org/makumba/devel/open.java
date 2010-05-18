@@ -44,16 +44,18 @@ public class open {
     public static void main(String[] argv) {
         Database d = null;
         try {
-            if (argv.length == 0)
+            if (argv.length == 0) {
                 d = MakumbaTransactionProvider.getDatabase(Configuration.getDefaultDataSourceName());
-            else
+            } else {
                 d = MakumbaTransactionProvider.getDatabase(argv[0]);
+            }
             String[] tables;
             if (argv.length < 2) {
                 Vector<String> v = DataDefinitionProvider.getInstance().getDataDefinitionsInDefaultLocations();
                 tables = new String[v.size()];
-                for (int i = 0; i < v.size(); i++)
-                    tables[i] = (String) v.elementAt(i);
+                for (int i = 0; i < v.size(); i++) {
+                    tables[i] = v.elementAt(i);
+                }
             } else {
                 tables = new String[argv.length - 1];
                 System.arraycopy(argv, 1, tables, 0, tables.length);
@@ -69,8 +71,9 @@ public class open {
         } catch (Throwable t) {
             t.printStackTrace();
         } finally {
-            if (d != null)
+            if (d != null) {
                 d.close();
+            }
         }
     }
 }

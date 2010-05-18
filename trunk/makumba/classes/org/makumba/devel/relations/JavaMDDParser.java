@@ -80,8 +80,9 @@ public class JavaMDDParser {
             BufferedReader rd = new BufferedReader(new FileReader(file));
             char[] buffer = new char[2048];
             int n;
-            while ((n = rd.read(buffer)) != -1)
+            while ((n = rd.read(buffer)) != -1) {
                 sb.append(buffer, 0, n);
+            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {

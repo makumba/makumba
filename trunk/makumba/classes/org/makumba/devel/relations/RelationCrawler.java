@@ -312,8 +312,8 @@ public class RelationCrawler {
         // while we crawl, we adjust the MDD provider root to the webapp root
         RecordInfo.setWebappRoot(webappRoot);
 
-        for (int i = 0; i < files.length; i++) {
-            rc.crawl(files[i]);
+        for (String file : files) {
+            rc.crawl(file);
         }
 
         // we set it back to null after the crawling and clean the cache
@@ -472,8 +472,9 @@ public class RelationCrawler {
                     tr2.insert("org.makumba.devel.relations.Relation", relationInfo);
 
                 } finally {
-                    if (tr2 != null)
+                    if (tr2 != null) {
                         tr2.close();
+                    }
                 }
             }
         }

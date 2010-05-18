@@ -134,8 +134,9 @@ public abstract class LineViewer implements SourceViewer {
 
     /** if this resource is actually a directory, returns not null */
     public File getDirectory() {
-        if (dir != null && dir.isDirectory())
+        if (dir != null && dir.isDirectory()) {
             return dir;
+        }
         return null;
     }
 
@@ -144,13 +145,15 @@ public abstract class LineViewer implements SourceViewer {
     }
 
     void readFromURL(java.net.URL u) throws IOException {
-        if (u == null)
+        if (u == null) {
             throw new FileNotFoundException(virtualPath);
+        }
         realPath = u.getFile();
         try {
             dir = new File(realPath);
-            if (!dir.isDirectory())
+            if (!dir.isDirectory()) {
                 reader = new InputStreamReader(new FileInputStream(dir));
+            }
         } catch (FileNotFoundException fnfe) {
             realPath = null;
             reader = new InputStreamReader((InputStream) u.getContent());
@@ -226,18 +229,20 @@ public abstract class LineViewer implements SourceViewer {
     public void printPageEnd(PrintWriter writer) throws IOException {
         writer.println("\n</pre>");
         footer(writer);
-        if (printHeaderFooter)
+        if (printHeaderFooter) {
             writer.println("\n</body></html>");
+        }
     }
 
     /**
      * Write the beginning of the page to the given writer.
      */
     public void printPageBegin(PrintWriter writer) throws IOException {
-        if (realPath != null && virtualPath != null)
+        if (realPath != null && virtualPath != null) {
             title = virtualPath + "";
-        else if (StringUtils.isBlank(title))
+        } else if (StringUtils.isBlank(title)) {
             title = "";
+        }
         if (printHeaderFooter) {
             DevelUtils.writePageBegin(writer);
             DevelUtils.writeStylesAndScripts(writer, contextPath);
@@ -453,8 +458,9 @@ public abstract class LineViewer implements SourceViewer {
 
     public void printLine(PrintWriter printWriter, String s, String toPrint) throws IOException {
         String t = getLineTag(s);
-        if (t != null)
+        if (t != null) {
             printWriter.print("<a name=\"" + t + "\"></a>");
+        }
         printWriter.print(toPrint);
 
         // not sure of this fix...was "<br>"
@@ -663,8 +669,9 @@ public abstract class LineViewer implements SourceViewer {
         } catch (Throwable t) {
             return null;
         }
-        if (org.makumba.commons.ClassResource.get(c.getName().replace('.', '/') + ".java") != null)
+        if (org.makumba.commons.ClassResource.get(c.getName().replace('.', '/') + ".java") != null) {
             return c;
+        }
         return null;
     }
 
@@ -747,9 +754,9 @@ public abstract class LineViewer implements SourceViewer {
             }
         }
         if (c == null) {
-            for (int i = 0; i < importedPackages.length; i++) {
+            for (String importedPackage : importedPackages) {
                 try {
-                    classNameTrial = importedPackages[i] + className;
+                    classNameTrial = importedPackage + className;
                     c = Class.forName(classNameTrial);
                     return c;
                 } catch (Throwable throwable) {
@@ -815,9 +822,9 @@ public abstract class LineViewer implements SourceViewer {
         String[] patterns = new String[] { p1, p2, p3, p4 };
         // patternLineNumbers=new String[] {w1,w2};
         System.out.println("pattern: " + patternUrl.pattern());
-        for (int i = 0; i < patterns.length; i++) {
-            System.out.println("\n!!!trying\n---" + patterns[i] + " ---");
-            Matcher m = patternUrl.matcher(patterns[i]);
+        for (String pattern : patterns) {
+            System.out.println("\n!!!trying\n---" + pattern + " ---");
+            Matcher m = patternUrl.matcher(pattern);
 
             while (m.find()) {
                 System.out.print(m.group() + " - ");

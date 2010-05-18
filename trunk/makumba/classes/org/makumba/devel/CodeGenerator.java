@@ -89,8 +89,8 @@ public class CodeGenerator {
     static {
         allCodeTypes = new String[] { TYPE_NEWFORM, TYPE_ADDFORM, TYPE_EDITFORM, TYPE_LIST, TYPE_OBJECT, TYPE_DELETE,
                 TYPE_BUSINESS_LOGICS };
-        for (int i = 0; i < allCodeTypes.length; i++) {
-            nameToTypeMapping.put(allCodeTypes[i], allCodeTypes[i]);
+        for (String allCodeType : allCodeTypes) {
+            nameToTypeMapping.put(allCodeType, allCodeType);
         }
     }
 
@@ -144,14 +144,14 @@ public class CodeGenerator {
             throw new DataDefinitionNotFoundError("Could not find such a data defintion");
         }
 
-        for (int i = 0; i < ALL_PROCESSABLE_TYPES.length; i++) {
-            String fileName = path + getFileNameFromObject(dd, ALL_PROCESSABLE_TYPES[i]);
+        for (String element : ALL_PROCESSABLE_TYPES) {
+            String fileName = path + getFileNameFromObject(dd, element);
             File f = new File(fileName);
             FileWriter fw = new FileWriter(f);
             BufferedWriter out = new BufferedWriter(fw);
             StringBuffer sb = new StringBuffer();
             String action = getLabelNameFromDataDefinition(dd) + "View.jsp";
-            new CodeGenerator().generateCode(sb, ALL_PROCESSABLE_TYPES[i], dd, action, template,
+            new CodeGenerator().generateCode(sb, element, dd, action, template,
                 MakumbaJspAnalyzer.QL_OQL);
             out.write(sb.toString());
             out.close();

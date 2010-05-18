@@ -67,16 +67,16 @@ public class WebappJSPAnalysisCrawler {
 
         ArrayList<String> allFilesInDirectory = FileUtils.getAllFilesInDirectory(webappRoot, skipPaths, filter);
         Collections.sort(allFilesInDirectory);
-        String[] files = (String[]) allFilesInDirectory.toArray(new String[allFilesInDirectory.size()]);
+        String[] files = allFilesInDirectory.toArray(new String[allFilesInDirectory.size()]);
 
-        for (int i = 0; i < files.length; i++) {
-            JspParseData jpd = JspParseData.getParseData(webappRoot, files[i], JspRelationsAnalyzer.getInstance());
+        for (String file : files) {
+            JspParseData jpd = JspParseData.getParseData(webappRoot, file, JspRelationsAnalyzer.getInstance());
             try {
                 jpd.getAnalysisResult(new RelationParseStatus());
             } catch (Throwable t) {
                 // page analysis failed
-                logger.warning("Page analysis for page " + files[i] + " failed due to error: " + t.getMessage());
-                JSPAnalysisErrors.put(files[i], t);
+                logger.warning("Page analysis for page " + file + " failed due to error: " + t.getMessage());
+                JSPAnalysisErrors.put(file, t);
             }
         }
         RelationCrawler.writeJSPAnalysisError(analysisOutputFile, JSPAnalysisErrors, files.length);

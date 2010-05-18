@@ -79,7 +79,7 @@ public class JSPRelationMiner extends RelationMiner {
         if (tagDataCache != null) {
             Iterator<Object> it2 = tagDataCache.keySet().iterator();
             while (it2.hasNext()) {
-                Object tagKey = (Object) it2.next(); // tagData key = tag key
+                Object tagKey = it2.next(); // tagData key = tag key
                 TagData tagData = (TagData) tagDataCache.get(tagKey);
 
                 computeJSPMDDFormRelations(path, pageCache, tagDataCache, tagKey, tagData);
@@ -260,7 +260,7 @@ public class JSPRelationMiner extends RelationMiner {
         Map<String, DataDefinition> labelTypes = cq.getFromLabelTypes();
         Set<String> labels = labelTypes.keySet();
         for (String labelName : labels) {
-            TagData td = (TagData) pageCache.retrieve(MakumbaJspAnalyzer.TAG_DATA_CACHE, (MultipleKey) queryKey);
+            TagData td = (TagData) pageCache.retrieve(MakumbaJspAnalyzer.TAG_DATA_CACHE, queryKey);
 
             // if td is null it means that we have a dummy query, not interesting to us
             if (td != null) {
@@ -296,8 +296,8 @@ public class JSPRelationMiner extends RelationMiner {
         // let's see where the projections of the queries come from
         Vector<String> projections = cq.getProjections();
 
-        for (Iterator<String> iterator = projections.iterator(); iterator.hasNext();) {
-            String projectionExpr = (String) iterator.next();
+        for (String string : projections) {
+            String projectionExpr = string;
             MultipleKey valueTagKey = (MultipleKey) pageCache.retrieve(MakumbaJspAnalyzer.PROJECTION_ORIGIN_CACHE,
                 new MultipleKey((MultipleKey) queryKey, projectionExpr));
 
