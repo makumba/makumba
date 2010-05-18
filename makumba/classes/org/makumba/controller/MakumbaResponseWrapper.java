@@ -65,7 +65,8 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
     @Override
     public PrintWriter getWriter() throws IOException {
         // we do the header modifications only for .jsp files
-        if (request.getRequestURI().endsWith(".jsp") && request.getAttribute(javax.servlet.jsp.PageContext.EXCEPTION) == null) {
+        if (request.getRequestURI().endsWith(".jsp")
+                && request.getAttribute(javax.servlet.jsp.PageContext.EXCEPTION) == null) {
             if (makumbaWriter == null) {
                 originalWriter = super.getWriter();
                 makumbaWriter = new MakumbaPrintWriter(originalWriter);
@@ -80,8 +81,8 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
     /** Process the requested resources, and split them into CSS and JavaScript resources */
     public void initResourceReplacements() {
         // TODO: maybe do some clever checking which resources are actually already in the header, and skip those...
-        PageCache pageCache = AnalysableElement.getPageCache(request, request.getSession().getServletContext().getRealPath(
-            "/"), MakumbaJspAnalyzer.getInstance());
+        PageCache pageCache = AnalysableElement.getPageCache(request,
+            request.getSession().getServletContext().getRealPath("/"), MakumbaJspAnalyzer.getInstance());
         if (pageCache != null) {
             ListOrderedSet resources = pageCache.retrieveSetValues(FormTagBase.NEEDED_RESOURCES);
             if (resources != null) {
