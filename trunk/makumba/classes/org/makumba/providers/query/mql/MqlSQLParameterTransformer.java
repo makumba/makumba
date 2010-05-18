@@ -3,7 +3,6 @@ package org.makumba.providers.query.mql;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -93,9 +92,9 @@ public class MqlSQLParameterTransformer implements SQLParameterTransformer {
 
         ArrayList<Object> res = new ArrayList<Object>();
 
-        for (Iterator<String> e = qA.getParameterOrder().iterator(); e.hasNext();) {
+        for (String string : qA.getParameterOrder()) {
 
-            Object o = getArgumentValue(e.next(), arguments);
+            Object o = getArgumentValue(string, arguments);
 
             if (o instanceof List<?>) {
                 List<?> v = (List<?>) o;

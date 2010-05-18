@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Dictionary;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
@@ -113,8 +112,7 @@ public class AutoCompleteServlet extends HttpServlet {
 
                 if (v.size() > 0) {
                     String result = "<ul>";
-                    for (Iterator<Dictionary<String, Object>> iterator = v.iterator(); iterator.hasNext();) {
-                        Dictionary<String, Object> dictionary = iterator.next();
+                    for (Dictionary<String, Object> dictionary : v) {
                         String possibility = (String) dictionary.get("possibility");
                         result += "<li>" + possibility + "</li>";
                     }
@@ -154,8 +152,7 @@ public class AutoCompleteServlet extends HttpServlet {
 
                 if (v.size() > 0) {
                     String result = "<ul>";
-                    for (Iterator<Dictionary<String, Object>> iterator = v.iterator(); iterator.hasNext();) {
-                        Dictionary<String, Object> dictionary = iterator.next();
+                    for (Dictionary<String, Object> dictionary : v) {
                         result += "<li id=\"" + ((Pointer) dictionary.get("choice")).toExternalForm() + "\">"
                                 + (String) dictionary.get("title") + "</li>";
                     }

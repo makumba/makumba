@@ -547,10 +547,10 @@ public class QuerySectionProcessor {
         String[] queries = { "SELECT m.id AS col1,it.project.color AS col2,m.TS_create AS col3,it.project.id AS col4,it.subject AS col5 FROM projman.Message m JOIN m.item it WHERE (not exists(FROM projman.Item i join i.events  e WHERE  i=m.item AND e.who=:principal AND e.type IN (0, 2,3) )) AND m.ofMyBusiness() ORDER BY m.TS_create desc "
         //
         };
-        for (int i = 0; i < queries.length; i++) {
-            java.util.regex.Matcher m = FunctionInliner.functionBegin.matcher(queries[i]);
+        for (String querie : queries) {
+            java.util.regex.Matcher m = FunctionInliner.functionBegin.matcher(querie);
             if (m.find()) {
-                new QuerySectionProcessor(queries[i], 0);
+                new QuerySectionProcessor(querie, 0);
             }
         }
 

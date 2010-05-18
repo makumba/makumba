@@ -63,12 +63,12 @@ public class FileUtils {
             return;
         }
         final File[] fileList = f.listFiles(filter);
-        for (int i = 0; i < fileList.length; i++) {
-            if (fileList[i].isDirectory()) {
-                processFilesInDirectory(root, skipPaths, fileList[i], allFiles, filter);
+        for (File element : fileList) {
+            if (element.isDirectory()) {
+                processFilesInDirectory(root, skipPaths, element, allFiles, filter);
             } else {
                 try {
-                    String fileName = fileList[i].getCanonicalPath().substring(root.length());
+                    String fileName = element.getCanonicalPath().substring(root.length());
                     if (StringUtils.startsWith(fileName, skipPaths)) {
                         logger.info("Skipping file " + fileName + ", indicated in skip-list "
                                 + Arrays.toString(skipPaths));
@@ -76,7 +76,7 @@ public class FileUtils {
                         allFiles.add(fileName);
                     }
                 } catch (IOException e) {
-                    logger.warning("Could not compute canonical path for " + fileList[i].getAbsolutePath());
+                    logger.warning("Could not compute canonical path for " + element.getAbsolutePath());
                 }
             }
         }

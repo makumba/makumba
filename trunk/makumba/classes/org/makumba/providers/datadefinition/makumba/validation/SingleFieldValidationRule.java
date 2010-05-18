@@ -32,8 +32,8 @@ public abstract class SingleFieldValidationRule extends BasicValidationRule {
 
     /** Checks whether the rule is applicable for the given field types. */
     public boolean checkApplicability() throws ValidationDefinitionParseError {
-        for (int i = 0; i < allowedTypes.length; i++) {
-            if (allowedTypes[i] == fd.getIntegerType()) {
+        for (int allowedType : allowedTypes) {
+            if (allowedType == fd.getIntegerType()) {
                 return true;
             }
         }

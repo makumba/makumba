@@ -149,8 +149,8 @@ public class JSONObject {
      */
     public JSONObject(JSONObject jo, String[] names) throws JSONException {
         this();
-        for (int i = 0; i < names.length; i += 1) {
-            putOnce(names[i], jo.opt(names[i]));
+        for (String name : names) {
+            putOnce(name, jo.opt(name));
         }
     }
 
@@ -294,9 +294,8 @@ public class JSONObject {
         }
 
         Method[] methods = includeSuperClass ? klass.getMethods() : klass.getDeclaredMethods();
-        for (int i = 0; i < methods.length; i += 1) {
+        for (Method method : methods) {
             try {
-                Method method = methods[i];
                 if (Modifier.isPublic(method.getModifiers())) {
                     String name = method.getName();
                     String key = "";
@@ -361,8 +360,7 @@ public class JSONObject {
     public JSONObject(Object object, String names[]) {
         this();
         Class c = object.getClass();
-        for (int i = 0; i < names.length; i += 1) {
-            String name = names[i];
+        for (String name : names) {
             try {
                 putOpt(name, c.getField(name).get(object));
             } catch (Exception e) {

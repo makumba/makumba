@@ -30,7 +30,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -259,8 +258,7 @@ public class SourceSyntaxPoints {
         content = sb.toString();
 
         // we move the position of all SyntaxPoints that occur after the include
-        for (Iterator<SyntaxPoint> i = syntaxPoints.iterator(); i.hasNext();) {
-            SyntaxPoint sp = i.next();
+        for (SyntaxPoint sp : syntaxPoints) {
             if (sp.position > position + offset && !sp.getType().equals("JSPIncludeDirective")) {
                 sp.moveByInclude(delta);
             }
@@ -465,8 +463,7 @@ public class SourceSyntaxPoints {
         if (file.lastModified() != lastChanged) {
             return false;
         }
-        for (Iterator<SourceSyntaxPoints> i = fileBeginnings.iterator(); i.hasNext();) {
-            SourceSyntaxPoints ss = i.next();
+        for (SourceSyntaxPoints ss : fileBeginnings) {
             if (ss != this && !ss.unchanged()) {
                 return false;
             }
@@ -534,8 +531,7 @@ public class SourceSyntaxPoints {
     }
 
     public void discardPoints() {
-        for (Iterator<SourceSyntaxPoints> i = fileBeginnings.iterator(); i.hasNext();) {
-            SourceSyntaxPoints s = i.next();
+        for (SourceSyntaxPoints s : fileBeginnings) {
             if (s != this) {
                 s.discardPoints();
             }

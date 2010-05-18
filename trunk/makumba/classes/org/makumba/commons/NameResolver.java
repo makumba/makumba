@@ -24,7 +24,6 @@
 package org.makumba.commons;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Properties;
 
@@ -283,8 +282,7 @@ public class NameResolver {
      * @return <code>true</code> if such a field already exists, <code>false</code> otherwise
      */
     private static boolean checkDuplicateFieldName(String name, DataDefinition dd, HashMap<String, String> resolvedCache) {
-        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
-            String fieldName = e.nextElement();
+        for (String fieldName : dd.getFieldNames()) {
             if (dd.getFieldDefinition(fieldName).getType().startsWith("set")) {
                 continue;
             }
@@ -308,9 +306,7 @@ public class NameResolver {
         HashMap<String, String> resolvedCache;
         resolvedCache = new HashMap<String, String>();
 
-        for (Enumeration<String> e = dd.getFieldNames().elements(); e.hasMoreElements();) {
-
-            String name = e.nextElement();
+        for (String name : dd.getFieldNames()) {
 
             if (dd.getFieldDefinition(name).getType().startsWith("set")) {
                 continue;

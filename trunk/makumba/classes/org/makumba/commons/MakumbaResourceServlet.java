@@ -121,8 +121,7 @@ public class MakumbaResourceServlet extends HttpServlet {
                 // process and display files
                 String[] list = file.list();
                 Arrays.sort(list);
-                for (int i = 0; i < list.length; i++) {
-                    String s = list[i];
+                for (String s : list) {
                     File f = new File(file.getAbsolutePath() + File.separator + s);
                     if (f.isFile()) {
                         writer.println("<b><a href=\"" + s + "\">" + s + "</a></b>");
@@ -243,9 +242,9 @@ public class MakumbaResourceServlet extends HttpServlet {
     }
 
     public static String getContentType(URL url) {
-        for (int i = 0; i < imageContentTypes.length; i++) {
-            if (url.getFile().endsWith("." + imageContentTypes[i])) {
-                return "image / " + imageContentTypes[i];
+        for (String imageContentType : imageContentTypes) {
+            if (url.getFile().endsWith("." + imageContentType)) {
+                return "image / " + imageContentType;
             }
         }
         if (url.getFile().endsWith(".css")) {
@@ -258,8 +257,8 @@ public class MakumbaResourceServlet extends HttpServlet {
     }
 
     public static boolean isImageType(URL url) {
-        for (int i = 0; i < imageContentTypes.length; i++) {
-            if (url.getFile().endsWith("." + imageContentTypes[i])) {
+        for (String imageContentType : imageContentTypes) {
+            if (url.getFile().endsWith("." + imageContentType)) {
                 return true;
             }
         }

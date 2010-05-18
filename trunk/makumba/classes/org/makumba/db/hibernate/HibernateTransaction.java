@@ -165,8 +165,7 @@ public class HibernateTransaction extends TransactionImplementation {
             }
         } else {
             Map<String, Object> args1 = paramsToMap(args);
-            for (Iterator<String> i = args1.keySet().iterator(); i.hasNext();) {
-                String key = i.next();
+            for (String key : args1.keySet()) {
                 q.setParameter(key, weaklyTreatParamType(args1.get(key)));
 
             }
@@ -423,8 +422,7 @@ public class HibernateTransaction extends TransactionImplementation {
 
     private void setNamedParameters(Map args, DataDefinition paramsDef, org.hibernate.Query q) {
         String[] queryParams = q.getNamedParameters();
-        for (int i = 0; i < queryParams.length; i++) {
-            String paramName = queryParams[i];
+        for (String paramName : queryParams) {
             Object paramValue = args.get(paramName);
 
             FieldDefinition paramDef = paramsDef.getFieldDefinition(paramName);

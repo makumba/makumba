@@ -134,9 +134,9 @@ public class HQLQueryProvider extends QueryProvider {
 
         languages.clear();
         Dictionary<String, Object> language = new Hashtable<String, Object>();
-        for (int i = 0; i < languageData.length; i++) {
-            language.put("name", languageData[i][0]);
-            language.put("isoCode", languageData[i][1]);
+        for (String[] element : languageData) {
+            language.put("name", element[0]);
+            language.put("isoCode", element[1]);
             languages.add(db.insert("test.Language", language));
         }
 

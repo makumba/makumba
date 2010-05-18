@@ -31,9 +31,9 @@ public class DetectHQLTokenTypes {
         }
         out.println("Hql");
         Field flds[] = c.getFields();
-        for (int i = 0; i < flds.length; i++) {
+        for (Field fld : flds) {
             try {
-                out.println(flds[i].getName() + "=" + flds[i].getInt(null));
+                out.println(fld.getName() + "=" + fld.getInt(null));
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
             } catch (IllegalAccessException e) {
