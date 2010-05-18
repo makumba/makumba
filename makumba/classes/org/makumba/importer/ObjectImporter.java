@@ -198,7 +198,8 @@ public class ObjectImporter {
                 sw.write(buffer, 0, n);
             }
             String content = sw.toString().toString();
-            java.util.logging.Logger.getLogger("org.makumba.import").finest(ri.importFrom(content, null, null).toString());
+            java.util.logging.Logger.getLogger("org.makumba.import").finest(
+                ri.importFrom(content, null, null).toString());
         }
     }
 
@@ -529,7 +530,8 @@ public class ObjectImporter {
     }
 
     // moved from FieldImporter
-    public void importFieldTo(String fieldName, Dictionary<String, Object> d, String s, Transaction db, Pointer[] indexes) {
+    public void importFieldTo(String fieldName, Dictionary<String, Object> d, String s, Transaction db,
+            Pointer[] indexes) {
         try {
             if (isIgnored(fieldName) || !isFieldMarked(fieldName)) {
                 return;

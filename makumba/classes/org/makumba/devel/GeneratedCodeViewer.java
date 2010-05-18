@@ -172,14 +172,14 @@ public class GeneratedCodeViewer extends jspViewer {
 
             // initialise file handlers
             String rootPath = request.getSession().getServletContext().getRealPath("/");
-            
+
             String alternatePath = System.getProperty("makumba.project.path");
-            if(alternatePath != null) {
+            if (alternatePath != null) {
                 alternatePath = new File(alternatePath).getAbsolutePath() + File.separator;
                 alternateFileRoot = new File(alternatePath + File.separator + GENERATED_CODE_DIRECTORY);
                 alternateFileRoot.mkdirs();
             }
-            
+
             fileRoot = new File(rootPath + File.separator + GENERATED_CODE_DIRECTORY);
             fileRoot.mkdirs();
             File allPagesFile = null;
@@ -208,7 +208,7 @@ public class GeneratedCodeViewer extends jspViewer {
                     boolean hasSuperLogic = new File(logicPath + "Logic.java").exists();
                     codeGenerator.generateJavaBusinessLogicCode(dd, packageName, hasSuperLogic, selectedCodeTypes, sb);
                     generatedCodeFile = new File(fileRoot, logicFileName);
-                    if(alternateFileRoot != null) {
+                    if (alternateFileRoot != null) {
                         alternateCodeFile = new File(alternateFileRoot, logicFileName);
                     }
                     allPages.append("\n " + CODE_TYPE_DELIM + "  " + selectableCodeTypes.get(generatingType) + "  "
@@ -233,7 +233,7 @@ public class GeneratedCodeViewer extends jspViewer {
                     String fileName = GENERATED_CODE_DIRECTORY + File.separator + pageName;
 
                     generatedCodeFile = new File(fileRoot, pageName);
-                    if(alternateFileRoot != null) {
+                    if (alternateFileRoot != null) {
                         alternateCodeFile = new File(alternateFileRoot, pageName);
                     }
 
@@ -248,16 +248,15 @@ public class GeneratedCodeViewer extends jspViewer {
                 writer.write(sb.toString());
                 writer.flush();
                 writer.close();
-                
+
                 // if alternate file path is indicated, also write to the other file
-                if(alternateFileRoot != null) {
+                if (alternateFileRoot != null) {
                     System.out.println("Writing to alternate location " + alternateCodeFile.getAbsoluteFile());
                     FileWriter alternateWriter = new FileWriter(alternateCodeFile);
                     alternateWriter.write(sb.toString());
                     alternateWriter.flush();
                     alternateWriter.close();
                 }
-                
 
             }
             // more than one page --> write all pages file & display it's source
@@ -278,7 +277,6 @@ public class GeneratedCodeViewer extends jspViewer {
             if (allPagesFile != null) {
                 allPagesFile.delete();
             }
-            
 
         } catch (DataDefinitionNotFoundError e) {
             caughtError = e;

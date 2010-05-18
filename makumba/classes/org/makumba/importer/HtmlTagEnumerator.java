@@ -29,6 +29,7 @@ import java.io.Reader;
 
 /**
  * This class is a utility class which enumerates HTML tags of a given Reader.
+ * 
  * @author Cristian Bogdan
  * @version $Id$
  */

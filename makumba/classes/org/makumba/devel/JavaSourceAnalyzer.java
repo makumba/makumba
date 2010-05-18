@@ -27,33 +27,34 @@ import org.makumba.analyser.interfaces.JavaAnalyzer;
 
 /**
  * @author Rudolf Mayer
- *  
  */
 public class JavaSourceAnalyzer implements JavaAnalyzer {
-	
-	private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
-		static JavaAnalyzer singleton = new JavaSourceAnalyzer();
-		
-		public void release() {
+
+    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+        static JavaAnalyzer singleton = new JavaSourceAnalyzer();
+
+        public void release() {
             singleton = null;
         }
 
         public SingletonHolder() {
             org.makumba.commons.SingletonReleaser.register(this);
         }
-	}
+    }
 
-	private JavaSourceAnalyzer() {}
+    private JavaSourceAnalyzer() {
+    }
 
-	public static JavaAnalyzer getInstance() {
-		return SingletonHolder.singleton;
-	}
+    public static JavaAnalyzer getInstance() {
+        return SingletonHolder.singleton;
+    }
 
     /**
      * make a status holder, which is passed to all other methods
      * 
      * @param initStatus
-     *            an initial status to be passed to the JspAnalyzer. for example, the pageContext for an example-based analyzer
+     *            an initial status to be passed to the JspAnalyzer. for example, the pageContext for an example-based
+     *            analyzer
      */
     public Object makeStatusHolder(Object initStatus) {
         return null;

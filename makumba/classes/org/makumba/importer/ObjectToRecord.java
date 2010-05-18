@@ -185,7 +185,8 @@ public class ObjectToRecord {
     }
 
     /** import an integer from a hashtable */
-    public static void importInteger(String java, String mdd, Hashtable<String, String> hjava, Hashtable<String, Integer> hmdd) {
+    public static void importInteger(String java, String mdd, Hashtable<String, String> hjava,
+            Hashtable<String, Integer> hmdd) {
         String s = hjava.remove(java);
         if (s == null) {
             return;
@@ -203,7 +204,8 @@ public class ObjectToRecord {
     }
 
     /** import an string from a hashtable */
-    public static void importString(String java, String mdd, Hashtable<String, String> hjava, Hashtable<String, String> hmdd) {
+    public static void importString(String java, String mdd, Hashtable<String, String> hjava,
+            Hashtable<String, String> hmdd) {
         String s = hjava.remove(java);
         if (s == null) {
             return;
@@ -216,7 +218,8 @@ public class ObjectToRecord {
     static Integer one = new Integer(1);
 
     /** import a boolean choice from a hashtable */
-    public static void importBoolean(String java, String mdd, Hashtable<String, String> hjava, Hashtable<String, Integer> hmdd, String on) {
+    public static void importBoolean(String java, String mdd, Hashtable<String, String> hjava,
+            Hashtable<String, Integer> hmdd, String on) {
         String s = hjava.remove(java);
         hmdd.put(mdd, zero);
         if (s == null) {

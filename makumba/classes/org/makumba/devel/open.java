@@ -35,8 +35,8 @@ import org.makumba.providers.DataDefinitionProvider;
  * <p>
  * Usage: <code>java org.makumba.devel.open [source [type1 [type2 ...] ] ]</code>
  * </p>
- * If no source is specified the default data source is used. If not types
- * are specified, all MDDs found in the webapp are processed.
+ * If no source is specified the default data source is used. If not types are specified, all MDDs found in the webapp
+ * are processed.
  * 
  * @author Cristian Bogdan
  */

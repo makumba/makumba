@@ -25,7 +25,8 @@ public class DevelUtils {
     /** Write the page footer to the given writer. */
     public static void printDeveloperSupportFooter(PrintWriter w) throws IOException {
         w.println("<hr><font size=\"-1\"><a href=\"http://www.makumba.org\">Makumba</a> developer support; version:"
-                + org.makumba.MakumbaSystem.getVersion() + " " + Configuration.getRemoteDataSourceConfigurationPath() + "</font>");
+                + org.makumba.MakumbaSystem.getVersion() + " " + Configuration.getRemoteDataSourceConfigurationPath()
+                + "</font>");
     }
 
     public static void writeScripts(PrintWriter w, String contextPath) {
@@ -86,11 +87,11 @@ public class DevelUtils {
     }
 
     public static void printPageHeader(PrintWriter w, String title) throws IOException {
-        printPageHeader(w, title, null, null,null, null);
+        printPageHeader(w, title, null, null, null, null);
     }
 
-    public static void printPageHeader(PrintWriter w, String title, String virtualPath, String realPath, String otherHeaderInfo,
-            String repositoryLink) throws IOException {
+    public static void printPageHeader(PrintWriter w, String title, String virtualPath, String realPath,
+            String otherHeaderInfo, String repositoryLink) throws IOException {
         w.println("<body bgcolor=white>");
         w.println("<table width=\"100%\" bgcolor=\"lightblue\">");
         w.println("<tr>");
@@ -124,8 +125,8 @@ public class DevelUtils {
                             + ": disabled </span><br/>");
                 } else {
                     w.print("<a href=\"" + contextPath + Configuration.getMakumbaToolsLocation()
-                            + Configuration.getMakumbaToolsPathConfigProperty(key) + "\">" + allGenericDeveloperToolsMap.get(key)
-                            + "</a><br/>");
+                            + Configuration.getMakumbaToolsPathConfigProperty(key) + "\">"
+                            + allGenericDeveloperToolsMap.get(key) + "</a><br/>");
                 }
             }
         }

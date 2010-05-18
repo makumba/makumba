@@ -22,27 +22,25 @@
 /////////////////////////////////////
 
 package org.makumba.devel;
+
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/** This class offers a way for web applications (like Parade) 
- * to communicate to the makumba webapp.
- * For now, the only sensible thing done is to set the logging root
+/**
+ * This class offers a way for web applications (like Parade) to communicate to the makumba webapp. For now, the only
+ * sensible thing done is to set the logging root
  */
-public class SystemServlet extends HttpServlet
-{
-  /**
+public class SystemServlet extends HttpServlet {
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-public void service(HttpServletRequest req, HttpServletResponse resp)
-  {
-    String s=(String)req.getAttribute("org.makumba.systemServlet.command");
-    if("setLoggingRoot".equals(s))
-      {
-	org.makumba.MakumbaSystem.setLoggingRoot((String)req.getAttribute("org.makumba.systemServlet.param1"));
-      }
-  }
+    public void service(HttpServletRequest req, HttpServletResponse resp) {
+        String s = (String) req.getAttribute("org.makumba.systemServlet.command");
+        if ("setLoggingRoot".equals(s)) {
+            org.makumba.MakumbaSystem.setLoggingRoot((String) req.getAttribute("org.makumba.systemServlet.param1"));
+        }
+    }
 }

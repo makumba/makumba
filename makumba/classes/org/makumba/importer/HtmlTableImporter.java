@@ -40,9 +40,9 @@ import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
 
 /**
- * Utility class making it possible to import data from a HTML table into a Makumba-based database.
- * This class was created in order to import data from a Lotus Notes database, since there was no other
- * mean to extract data than this one.
+ * Utility class making it possible to import data from a HTML table into a Makumba-based database. This class was
+ * created in order to import data from a Lotus Notes database, since there was no other mean to extract data than this
+ * one.
  * 
  * @author Cristian Bogdan
  * @version $Id$
@@ -81,7 +81,8 @@ public class HtmlTableImporter {
                 try {
                     db.insert(type, importVector());
                 } catch (InvalidValueException e) {
-                    java.util.logging.Logger.getLogger("org.makumba.import").warning("record not inserted --> " + e.getMessage());
+                    java.util.logging.Logger.getLogger("org.makumba.import").warning(
+                        "record not inserted --> " + e.getMessage());
                 }
             }
         }
@@ -149,15 +150,16 @@ public class HtmlTableImporter {
      * logger, with {@link java.util.logging.Level#INFO} logging level.
      */
     public static void _delete(String whereDB, String provenienceDB, String[] typeNames, boolean ignoreDbsv) {
-        ((MakumbaTransactionProvider)MakumbaTransactionProvider.getInstance())._delete(whereDB, provenienceDB, typeNames, ignoreDbsv);
+        ((MakumbaTransactionProvider) MakumbaTransactionProvider.getInstance())._delete(whereDB, provenienceDB,
+            typeNames, ignoreDbsv);
     }
 
     /**
      * Deletes the records of certain types that originate from a certain database. Useful for failed imports or copies.
      * The database configuration must have admin# confirmations that match each of the indicated types. Use _delete(d,
      * d, ...) for databases that need re-import of data of certain types. Deletion is logged (see
-     * {@link java.util.logging.Logger}, {@link org.makumba.MakumbaSystem#setLoggingRoot(java.lang.String)}) in the
-     * <b><code>"db.admin.delete"</code></b> logger, with {@link java.util.logging.Level#INFO} logging level.
+     * {@link java.util.logging.Logger}, {@link org.makumba.MakumbaSystem#setLoggingRoot(java.lang.String)}) in the <b>
+     * <code>"db.admin.delete"</code></b> logger, with {@link java.util.logging.Level#INFO} logging level.
      */
     public static void _delete(String whereDB, String provenienceDB, String[] typeNames) {
         _delete(whereDB, provenienceDB, typeNames, false);
@@ -167,7 +169,8 @@ public class HtmlTableImporter {
         String[] args = new String[argv.length - 4];
         System.arraycopy(argv, 4, args, 0, args.length);
 
-        new HtmlTableImporter(TransactionProvider.getInstance().getConnectionTo(argv[0]), DataDefinitionProvider.getInstance().getDataDefinition(argv[1]),
-                new BufferedReader(new InputStreamReader(new FileInputStream(argv[2]))), argv[3], args);
+        new HtmlTableImporter(TransactionProvider.getInstance().getConnectionTo(argv[0]),
+                DataDefinitionProvider.getInstance().getDataDefinition(argv[1]), new BufferedReader(
+                        new InputStreamReader(new FileInputStream(argv[2]))), argv[3], args);
     }
 }

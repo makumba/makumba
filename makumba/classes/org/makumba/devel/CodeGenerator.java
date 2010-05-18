@@ -356,8 +356,8 @@ public class CodeGenerator {
                     appendLine(sb, "<mak:object from=\"" + dd + " " + labelName + "\" where=\"" + labelName
                             + (queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL) ? "=$" : ".id=:") + labelName + "\">");
                     appendLine(sb, "<mak:value expr=\"" + labelName
-                            + (queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL) ? "" : ".id") + "\" printVar=\"" + labelName
-                            + "Pointer\" />");
+                            + (queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL) ? "" : ".id") + "\" printVar=\""
+                            + labelName + "Pointer\" />");
                     appendJSPLine(sb, indent, template.beforePageHeader + StringUtils.upperCaseBeginning(labelName)
                             + " <i><mak:value expr=\"" + labelName + "." + dd.getTitleFieldName() + "\" /></i>"
                             + template.afterPageHeader);
@@ -365,8 +365,8 @@ public class CodeGenerator {
                     appendLine(sb, "<mak:object from=\"" + dd + " " + labelName + "\" where=\"" + labelName
                             + (queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL) ? "=$" : ".id=:") + labelName + "\">");
                     appendLine(sb, "<mak:value expr=\"" + labelName
-                            + (queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL) ? "" : ".id") + "\" printVar=\"" + labelName
-                            + "Pointer\" />");
+                            + (queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL) ? "" : ".id") + "\" printVar=\""
+                            + labelName + "Pointer\" />");
                     appendJSPLine(sb, indent, template.beforePageHeader + "Edit "
                             + StringUtils.upperCaseBeginning(labelName) + " <i><mak:value expr=\"" + labelName + "."
                             + dd.getTitleFieldName() + "\" /></i>" + template.afterPageHeader);
@@ -605,7 +605,8 @@ public class CodeGenerator {
             appendJSPLine(sb, indent, "<mak:list from=\"" + labelName + "." + fd.getName() + " " + fd.getName()
                     + "\" >");
             indent++;
-            appendJSPLine(sb, indent, "<mak:editForm object=\"" + fd.getName() + "\" action=\"" + action + "\" method=\"post\">");
+            appendJSPLine(sb, indent, "<mak:editForm object=\"" + fd.getName() + "\" action=\"" + action
+                    + "\" method=\"post\">");
             indent++;
             appendJSPLine(sb, indent, template.afterFormBegin);
 
@@ -705,12 +706,12 @@ public class CodeGenerator {
         if (type == TYPE_NEWFORM || type == TYPE_EDITFORM) {
             writeInput(sb, template, fd, indent);
         } else if (type == TYPE_OBJECT) {
-            
+
             String fieldName = fd.getName();
             if (fd.getDescription() != null && !fd.getDescription().equals("")) {
                 fieldName = fd.getDescription();
             }
-            
+
             appendJSPLine(sb, indent, template.beforeFieldName + fieldName + template.afterFieldName);
             appendJSP(sb, indent, template.beforeFieldTag);
             append(sb, "<mak:value expr=\"" + labelName + "." + fd.getName() + "\"/>");

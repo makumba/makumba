@@ -54,7 +54,7 @@ public class DataPointerValueConverter extends DataServlet {
     public final static int FROM_EXTERNAL = 20;
 
     public final static int FROM_DBSV = 30;
-    
+
     public DataPointerValueConverter() {
         toolLocation = Configuration.getObjectIdConverterLocation();
     }
@@ -78,7 +78,7 @@ public class DataPointerValueConverter extends DataServlet {
         if (paramFromType != null && paramFromType.equals("dbsv")) {
             mode = FROM_DBSV;
         }
-        
+
         PrintWriter writer = response.getWriter();
         DevelUtils.writePageBegin(writer);
         DevelUtils.writeStylesAndScripts(writer, contextPath);
@@ -142,12 +142,12 @@ public class DataPointerValueConverter extends DataServlet {
             } else if (paramFromType.equals("dbsv")) {
                 try {
                     Integer dbsv = Integer.parseInt(paramValue.split(":")[0]);
-                    Integer uid =  Integer.parseInt(paramValue.split(":")[1]);
+                    Integer uid = Integer.parseInt(paramValue.split(":")[1]);
                     pointer = new SQLPointer(paramDataType, dbsv, uid);
                 } catch (NumberFormatException e) {
                     writer.println("<span style=\"color: red;\">The Pointer value given is not in DBSV format ('DBSV:UID')!</span>");
                     e.printStackTrace();
-                }  
+                }
             } else {
                 writer.println("<span style=\"color: red;\">Invalid form type param!</span>");
             }

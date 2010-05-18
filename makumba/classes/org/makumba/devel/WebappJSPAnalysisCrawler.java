@@ -45,14 +45,14 @@ public class WebappJSPAnalysisCrawler {
     public static final FileFilter filter = new JSPFileFilter();
 
     public static void main(String[] args) {
-        
+
         CommandLine line = parseCrawlParams(args, WebappJSPAnalysisCrawler.class.getName());
 
         String webappRoot = line.getOptionValue("w");
         String[] skipPaths = line.getOptionValues("s");
-        
+
         // this seems to be a bug in commons CLI
-        if(skipPaths == null) {
+        if (skipPaths == null) {
             skipPaths = new String[] {};
         }
         String analysisOutputFile = line.getOptionValue("o", "analysis-errors.txt");
@@ -83,37 +83,40 @@ public class WebappJSPAnalysisCrawler {
         System.out.println("\n\nCrawling finished, took: "
                 + ReadableFormatter.readableAge(System.currentTimeMillis() - beginDate.getTime()));
     }
-    
+
     public static CommandLine parseCrawlParams(String[] args, String name) {
         Options options = new Options();
-        
+
         Option webappRootOption = new Option("w", "root", true, "the root of the makumba webapp to crawl");
-        Option skipPathsOption = new Option("s", "skipPaths", true, "a list of paths to be skipped during the crawling, separated by a comma");
+        Option skipPathsOption = new Option("s", "skipPaths", true,
+                "a list of paths to be skipped during the crawling, separated by a comma");
         skipPathsOption.setValueSeparator(',');
-        Option analysisOutput = new Option("o", "output", true, "the file in which the output of the analysis should be written");
-        Option queryOutput = new Option("q", "queryOutputFile", true, "the file in which the crawled queries should be written");
-        
+        Option analysisOutput = new Option("o", "output", true,
+                "the file in which the output of the analysis should be written");
+        Option queryOutput = new Option("q", "queryOutputFile", true,
+                "the file in which the crawled queries should be written");
+
         options.addOption(webappRootOption);
         options.addOption(skipPathsOption);
         options.addOption(analysisOutput);
         options.addOption(queryOutput);
-        
+
         HelpFormatter formatter = new HelpFormatter();
-        
+
         CommandLineParser parser = new PosixParser();
         CommandLine line = null;
-        
+
         try {
             line = parser.parse(options, args);
-        } catch(ParseException p) {
+        } catch (ParseException p) {
             System.out.println("Error while executing the crawler: " + p.getMessage());
             System.out.println();
             formatter.printHelp("java " + name + "[OPTION]... [FILE]...", options);
             System.exit(-1);
         }
-        
+
         return line;
-        
+
     }
 
 }

@@ -19,28 +19,26 @@ import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.ServletObjects;
 
 /**
- * This handler lets the request go to the filter chain and then catches all kind of exceptions after it.
- * The exceptions are then handled by the {@link ErrorFormatter}.
+ * This handler lets the request go to the filter chain and then catches all kind of exceptions after it. The exceptions
+ * are then handled by the {@link ErrorFormatter}. It should be the first one of the filter handlers. If disabled, the
+ * "raw" exception is thrown. TODO the login should not be triggered directly in here, but somewhere else
  * 
- * It should be the first one of the filter handlers. If disabled, the "raw" exception is thrown.
- * 
- * TODO the login should not be triggered directly in here, but somewhere else
- *  
  * @author Manuel Gay
  * @author Rudolf Mayer
  * @author Filip Kis
  * @version $Id: ErrorFilter.java,v 1.1 12.10.2007 18:17:00 Manuel Exp $
  */
 public class ErrorControllerHandler extends ControllerHandler {
-    
+
     public static final String ORIGINAL_REQUEST = "org.makumba.originalRequest";
 
     @Override
-    public boolean beforeFilter(ServletRequest request, ServletResponse response, FilterConfig conf, ServletObjects httpServletObjects) {
-        
+    public boolean beforeFilter(ServletRequest request, ServletResponse response, FilterConfig conf,
+            ServletObjects httpServletObjects) {
+
         if (wasException((HttpServletRequest) request))
             return false;
-        
+
         return true;
     }
 
@@ -49,13 +47,13 @@ public class ErrorControllerHandler extends ControllerHandler {
         treatException(e, (HttpServletRequest) request, (HttpServletResponse) response, conf);
         return false;
     }
-    
+
     /**
      * Treats an exception that occurred during the request. Displays the exception and sets an attribute corresponding
-     * to it. The exception is displayed either in custom "error.jsp" set by the user in the folder
-     * of the page that throw an exception or any parent root. In this case, three attributes (mak_error_title, mak_error_description
-     * , mak_error_realpath) are set so that the user can place use them in the custom page freely.
-     * If the custom page is not found the error is show in the TagExceptionFilter. 
+     * to it. The exception is displayed either in custom "error.jsp" set by the user in the folder of the page that
+     * throw an exception or any parent root. In this case, three attributes (mak_error_title, mak_error_description ,
+     * mak_error_realpath) are set so that the user can place use them in the custom page freely. If the custom page is
+     * not found the error is show in the TagExceptionFilter.
      * 
      * @param t
      *            the Throwable corresponding to the exception
@@ -67,16 +65,17 @@ public class ErrorControllerHandler extends ControllerHandler {
     public void treatException(Throwable t, HttpServletRequest req, HttpServletResponse resp, FilterConfig conf) {
         resp.setContentType("text/html");
         // sometimes tomcat wraps the RuntimeWrappedException in a JasperException (which extends ServletException)
-        if (t instanceof ServletException && ((ServletException)t).getRootCause() instanceof RuntimeWrappedException) {
-            t = ((ServletException)t).getRootCause();
+        if (t instanceof ServletException && ((ServletException) t).getRootCause() instanceof RuntimeWrappedException) {
+            t = ((ServletException) t).getRootCause();
         }
         if (t instanceof RuntimeWrappedException) {
             t = ((RuntimeWrappedException) t).getCause();
         }
         req.setAttribute(javax.servlet.jsp.PageContext.EXCEPTION, t);
-        
-        if (req.getAttribute("org.makumba.exceptionTreated") == null && !(t instanceof UnauthenticatedException && login(req, resp))) {
-        try {
+
+        if (req.getAttribute("org.makumba.exceptionTreated") == null
+                && !(t instanceof UnauthenticatedException && login(req, resp))) {
+            try {
 
                 String errorPage = getPage(req, req.getServletPath(), "error.jsp");
 
@@ -138,39 +137,39 @@ public class ErrorControllerHandler extends ControllerHandler {
         setWasException(req);
         req.setAttribute("org.makumba.exceptionTreated", "yes");
     }
+
     /**
      * Computes the login page from a servletPath
      * 
-     * @param req 
-     *          the http request corresponding to the current access
+     * @param req
+     *            the http request corresponding to the current access
      * @param servletPath
      *            the path of the servlet we are in
      * @return A String containing the path to the login page
      */
     public static String getLoginPage(HttpServletRequest req, String servletPath) {
-        return getPage(req,servletPath,"login.jsp");
+        return getPage(req, servletPath, "login.jsp");
     }
 
     /**
-     * Computes any page from a servletPath, used to compute login,
-     * error or any other default page
-     *
+     * Computes any page from a servletPath, used to compute login, error or any other default page
+     * 
      * @param req
-     *          the http request corresponding to the current access
+     *            the http request corresponding to the current access
      * @param servletPath
-     *          the path of the servlet we are in
+     *            the path of the servlet we are in
      * @param pageName
-     *          the name of the page we are looking for
+     *            the name of the page we are looking for
      * @return
      */
-    
+
     public static String getPage(HttpServletRequest req, String servletPath, String pageName) {
-        
-        //FIXME: This doesn't work in the webapps, it returns the path of the last context
-        //alphabetically and not the one you are in:
-        //String root = conf.getServletContext().getRealPath("/");
+
+        // FIXME: This doesn't work in the webapps, it returns the path of the last context
+        // alphabetically and not the one you are in:
+        // String root = conf.getServletContext().getRealPath("/");
         String root = req.getSession().getServletContext().getRealPath("/");
-        
+
         String virtualRoot = "/";
         String page = null;
 
@@ -197,7 +196,7 @@ public class ErrorControllerHandler extends ControllerHandler {
      */
     protected static boolean login(HttpServletRequest req, HttpServletResponse resp) {
         // the request path may be modified by the filter, we take it as is
-        String login = getLoginPage(req,req.getServletPath());
+        String login = getLoginPage(req, req.getServletPath());
 
         if (login == null)
             return false;
@@ -226,7 +225,7 @@ public class ErrorControllerHandler extends ControllerHandler {
     public void setWasException(HttpServletRequest req) {
         req.setAttribute("org.makumba.wasException", "yes");
     }
-    
+
     /**
      * Tests if there was an exception during the request
      * 
