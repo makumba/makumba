@@ -50,7 +50,6 @@ public class ValueComputer {
      * 
      * @param isValue
      *            whether this value computer is called from a value evaluator (mak:value expr, EL Value)
-     * 
      * @param parentListKey
      *            the key of the parent list
      * @param expr
@@ -58,8 +57,8 @@ public class ValueComputer {
      * @param pageCache
      *            the page cache of the page
      */
-    public static ValueComputer getValueComputerAtAnalysis(boolean isValue, MultipleKey parentListKey,
-            String expr, PageCache pageCache) {
+    public static ValueComputer getValueComputerAtAnalysis(boolean isValue, MultipleKey parentListKey, String expr,
+            PageCache pageCache) {
         expr = expr.trim();
         Object check = QueryTag.getQuery(pageCache, parentListKey).checkExprSetOrNullable(expr);
 
@@ -71,16 +70,16 @@ public class ValueComputer {
 
         if (check instanceof FieldDefinition)
             set = (FieldDefinition) check;
-        
-        if(set != null) {
+
+        if (set != null) {
             return new SetValueComputer(isValue, parentListKey, set, expr, pageCache);
         }
-        
+
         // nullable queries are handled via LEFT JOIN in MQL, but not in HQL
-        if(MakumbaJspAnalyzer.isHQLPage(pageCache) && nullableExpr != null) {
+        if (MakumbaJspAnalyzer.isHQLPage(pageCache) && nullableExpr != null) {
             return new NullableValueComputer(parentListKey, nullableExpr, expr, pageCache);
         }
-        
+
         return new ValueComputer(parentListKey, expr, pageCache);
     }
 
@@ -168,8 +167,8 @@ public class ValueComputer {
         Object o = getValue(running.getPageContext());
         String s = null;
         if (running.getPrintVar() != null || running.getVar() == null) {
-            s = ((RecordViewer) pageCache.retrieve(MakumbaJspAnalyzer.FORMATTERS, getQueryKey())).format(projectionIndex,
-                o, running.getParams());
+            s = ((RecordViewer) pageCache.retrieve(MakumbaJspAnalyzer.FORMATTERS, getQueryKey())).format(
+                projectionIndex, o, running.getParams());
         }
 
         if (running.getVar() != null)
@@ -184,32 +183,32 @@ public class ValueComputer {
             }
         }
     }
-    
+
     public String getFormattedValue(ValueTag running, PageCache pageCache) throws JspException, LogicException {
         Object o = getValue(running.getPageContext());
         String s = null;
         if (running.getPrintVar() != null || running.getVar() == null) {
-            s = ((RecordViewer) pageCache.retrieve(MakumbaJspAnalyzer.FORMATTERS, getQueryKey())).format(projectionIndex,
-                o, running.getParams());
+            s = ((RecordViewer) pageCache.retrieve(MakumbaJspAnalyzer.FORMATTERS, getQueryKey())).format(
+                projectionIndex, o, running.getParams());
         }
         return s;
-        
+
     }
 
     public FieldDefinition getType() {
         return type;
     }
-    
+
     public int getProjectionIndex() {
         return projectionIndex;
     }
 
     public static boolean isPointer(PageCache pageCache, MultipleKey parentListKey, String expr) {
-        ComposedQuery cq=  QueryTag.getQuery(pageCache, parentListKey);  
+        ComposedQuery cq = QueryTag.getQuery(pageCache, parentListKey);
         // if it's a set, it's gonna be treated later
-        if(cq.checkExprSetOrNullable(expr) instanceof FieldDefinition)
+        if (cq.checkExprSetOrNullable(expr) instanceof FieldDefinition)
             return false;
-        return cq.qep.getQueryAnalysis("SELECT "+expr+" FROM "+cq.getFromSection()).
-            getProjectionType().getFieldDefinition(0).getType().equals("ptr");
+        return cq.qep.getQueryAnalysis("SELECT " + expr + " FROM " + cq.getFromSection()).getProjectionType().getFieldDefinition(
+            0).getType().equals("ptr");
     }
 }

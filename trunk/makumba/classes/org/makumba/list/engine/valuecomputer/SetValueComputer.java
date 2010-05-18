@@ -43,23 +43,25 @@ public class SetValueComputer extends QueryValueComputer {
      * @param pageCache
      *            the page cache of the current page
      */
-    SetValueComputer(boolean isValue, MultipleKey parentListKey, FieldDefinition set, String setExpr, PageCache pageCache) {
-        boolean hql= MakumbaJspAnalyzer.getQueryLanguage(pageCache).equals("hql");
-        
+    SetValueComputer(boolean isValue, MultipleKey parentListKey, FieldDefinition set, String setExpr,
+            PageCache pageCache) {
+        boolean hql = MakumbaJspAnalyzer.getQueryLanguage(pageCache).equals("hql");
+
         type = set;
         String label = setExpr.replace('.', '_');
         String queryProps[] = new String[5];
-        queryProps[ComposedQuery.FROM] = (hql?"JOIN ":"")+ setExpr + " " + label;
+        queryProps[ComposedQuery.FROM] = (hql ? "JOIN " : "") + setExpr + " " + label;
 
         if (isValue) {
-            if(set.getType().equals("set"))
+            if (set.getType().equals("set"))
                 name = label + "." + set.getForeignTable().getTitleFieldName();
-            else // setintEnum or setcharEnum
-                name= label+"."+  set.getSubtable().getTitleFieldName();
+            else
+                // setintEnum or setcharEnum
+                name = label + "." + set.getSubtable().getTitleFieldName();
             queryProps[ComposedQuery.ORDERBY] = name;
         }
 
-        makeQueryAtAnalysis(parentListKey, set.getName(), queryProps, label+(hql?".id":""), pageCache);
+        makeQueryAtAnalysis(parentListKey, set.getName(), queryProps, label + (hql ? ".id" : ""), pageCache);
 
         if (isValue)
             QueryTag.getQuery(pageCache, queryKey).checkProjectionInteger(name);
@@ -67,6 +69,7 @@ public class SetValueComputer extends QueryValueComputer {
 
     /**
      * Computes nameIndex
+     * 
      * @param pageCache
      *            the page cache of the current page
      */
@@ -147,4 +150,3 @@ public class SetValueComputer extends QueryValueComputer {
         }
     }
 }
-
