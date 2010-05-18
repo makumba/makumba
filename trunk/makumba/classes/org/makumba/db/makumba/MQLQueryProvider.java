@@ -9,10 +9,9 @@ import org.makumba.Transaction;
 import org.makumba.db.TransactionImplementation;
 import org.makumba.providers.QueryProvider;
 
-
-
 public class MQLQueryProvider extends QueryProvider {
     public static final String MQLQUERY_ANALYSIS_PROVIDER = "org.makumba.providers.query.mql.MqlQueryAnalysisProvider";
+
     private Transaction tr;
 
     @Override
@@ -20,10 +19,9 @@ public class MQLQueryProvider extends QueryProvider {
         return MQLQUERY_ANALYSIS_PROVIDER;
     }
 
-    
     @Override
     public Vector<Dictionary<String, Object>> executeRaw(String query, Map args, int offset, int limit) {
-       return tr.executeQuery(query, args, offset, limit);
+        return tr.executeQuery(query, args, offset, limit);
     }
 
     @Override
@@ -35,6 +33,6 @@ public class MQLQueryProvider extends QueryProvider {
     protected void init(String dataSource, Attributes a) {
         super.init(dataSource, a);
         tr = MakumbaTransactionProvider.getInstance().getConnectionTo(dataSource);
-        ((TransactionImplementation)tr).setContext(a);
-    } 
+        ((TransactionImplementation) tr).setContext(a);
+    }
 }

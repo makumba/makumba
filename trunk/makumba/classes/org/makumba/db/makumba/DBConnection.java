@@ -49,15 +49,15 @@ import org.makumba.providers.TransactionProvider;
  * @version $Id$
  */
 public abstract class DBConnection extends TransactionImplementation {
-   
+
     protected String dataSource;
-    
+
     protected org.makumba.db.makumba.Database db;
-    
+
     protected DBConnection(TransactionProvider tp) {
         super(tp);
-    }//for the wrapper
-    
+    }// for the wrapper
+
     public DBConnection(Database database, TransactionProvider tp) {
         this(tp);
         this.db = database;
@@ -128,7 +128,7 @@ public abstract class DBConnection extends TransactionImplementation {
         sb.append(" FROM " + p.getType() + " p WHERE p=$1");
         return sb;
     }
-    
+
     protected Vector<Dictionary<String, Object>> executeReadQuery(Pointer p, StringBuffer sb) {
         Object[] params = { p };
         Vector<Dictionary<String, Object>> v = executeQuery(sb.toString(), params);
@@ -155,12 +155,12 @@ public abstract class DBConnection extends TransactionImplementation {
         }
         return null;
     }
-    
+
     /** mass insert of a record **/
     public Vector<Pointer> insert(String type, Collection<Dictionary<String, Object>> data) {
         throw new MakumbaError("Not implemented");
     }
- 
+
     /**
      * Execute a parametrized OQL query.
      * 
@@ -171,7 +171,7 @@ public abstract class DBConnection extends TransactionImplementation {
         return ((Query) getHostDatabase().queries.getResource(k)).execute(paramsToMap(args), this, offset, limit);
 
     }
-    
+
     protected int insertFromQueryImpl(String type, String OQL, Object args) {
         Object[] k = { OQL, type };
         return ((Query) getHostDatabase().queries.getResource(k)).insert(paramsToMap(args), this);
@@ -180,8 +180,8 @@ public abstract class DBConnection extends TransactionImplementation {
     public Vector<Dictionary<String, Object>> executeQuery(String OQL, Object args) {
         return executeQuery(OQL, args, 0, -1);
     }
- 
-    static final String whereDelim=" ##### ";
+
+    static final String whereDelim = " ##### ";
 
     /**
      * Execute a parametrized update or delete. A null set means "delete"
@@ -191,33 +191,34 @@ public abstract class DBConnection extends TransactionImplementation {
     @Override
     public int executeUpdate(String type, String set, String where, Object args) {
         if (set != null && set.trim().length() == 0) {
-            throw new org.makumba.OQLParseError("Invalid empty update 'set' section in: UPDATE "+type+" SET (empty!) WHERE "+where);
+            throw new org.makumba.OQLParseError("Invalid empty update 'set' section in: UPDATE " + type
+                    + " SET (empty!) WHERE " + where);
         }
 
         if (where != null && where.trim().length() == 0) {
             where = null;
         }
-        
-        Object[] multi = { type, (set==null?"":set)+whereDelim+(where==null?"":where), whereDelim };
+
+        Object[] multi = { type, (set == null ? "" : set) + whereDelim + (where == null ? "" : where), whereDelim };
 
         return ((Update) getHostDatabase().updates.getResource(multi)).execute(this, paramsToMap(args));
     }
-    
+
     public Query getQuery(String OQL) {
         Object[] k = { OQL, "" };
         return ((Query) getHostDatabase().queries.getResource(k));
     }
-    
+
     @Override
     public String getNullConstant() {
         return "nil";
     }
-    
+
     @Override
     public String getDataSource() {
         return this.dataSource;
     }
-    
+
     // FIXME should be done at construction time, but due to nature of how DB is now it's not possible
     public void setDataSource(String dataSource) {
         this.dataSource = dataSource;

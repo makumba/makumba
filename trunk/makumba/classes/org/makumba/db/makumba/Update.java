@@ -27,11 +27,11 @@ import java.util.Map;
 
 /**
  * A delete, or update, prepared for execution
- *
+ * 
  * @author Cristian Bogdan
  */
 public interface Update {
-    
+
     /** Executes the query with the given arguments */
     public int execute(DBConnection dbc, Map<String, Object> args);
 }

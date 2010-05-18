@@ -22,6 +22,7 @@
 /////////////////////////////////////
 
 package org.makumba.db.makumba;
+
 import java.util.Dictionary;
 import java.util.Map;
 import java.util.Vector;
@@ -30,12 +31,11 @@ import java.util.Vector;
  * A query prepared for execution. Returns all its results at once, in a Vector
  * 
  * @author Cristian Bogdan
- * */
-public interface Query
-{
-  /** Execute the query with the given arguments */
-  public Vector<Dictionary<String, Object>> execute(Map<String, Object> args, DBConnection dbc, int offset, int limit);
+ */
+public interface Query {
+    /** Execute the query with the given arguments */
+    public Vector<Dictionary<String, Object>> execute(Map<String, Object> args, DBConnection dbc, int offset, int limit);
 
-  public int insert(Map<String, Object> args, DBConnection dbc);
+    public int insert(Map<String, Object> args, DBConnection dbc);
 
 }

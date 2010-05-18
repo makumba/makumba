@@ -54,7 +54,7 @@ import org.makumba.providers.datadefinition.mdd.MDDProvider;
 
 /**
  * Abstract {@link Transaction}, with helper methods for both concrete implementations
- *
+ * 
  * @version $Id: TransactionImplementation.java,v 1.1 Jun 15, 2008 3:31:07 PM rudi Exp $
  */
 public abstract class TransactionImplementation implements Transaction {
@@ -86,7 +86,7 @@ public abstract class TransactionImplementation implements Transaction {
 
     /**
      * Executes an UPDATE statement or a DELETE FROM statement, depending on the value of set.
-     *
+     * 
      * @param type
      *            the type on which to perform the operation
      * @param set
@@ -138,7 +138,7 @@ public abstract class TransactionImplementation implements Transaction {
     /**
      * Deletes in the form delete("general.Person p", "p=$1", params) NOTE that this method does not delete subsets and
      * subrecords
-     *
+     * 
      * @return the number of records affected
      */
     public int delete(String from, String where, Object parameters) {
@@ -172,7 +172,7 @@ public abstract class TransactionImplementation implements Transaction {
     /**
      * Insert a record in a subset (1-N set) or subrecord (1-1 pointer) of the given record. For 1-1 pointers, if
      * another subrecord existed, it is deleted.
-     *
+     * 
      * @return a Pointer to the inserted record
      */
     public Pointer insert(Pointer base, String field, Dictionary<String, Object> data) {
@@ -284,7 +284,7 @@ public abstract class TransactionImplementation implements Transaction {
     /**
      * updates in the form update("general.Person p", "p.birthdate=$1", "p=$2", params) NOTE that this method does not
      * delete subrecords if their pointers are nullified
-     *
+     * 
      * @return the number of records affected
      */
     public int update(String from, String set, String where, Object parameters) {

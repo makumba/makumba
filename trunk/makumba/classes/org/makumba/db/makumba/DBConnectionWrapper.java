@@ -34,7 +34,7 @@ import org.makumba.providers.TransactionProvider;
 
 /**
  * A wrapper for db connections, used to provide a temporary that holds a reference to a permanent DBConnection
- *
+ * 
  * @author Cristian Bogdan
  * @author Stefan Baebler
  * @author Manuel Gay
@@ -45,6 +45,7 @@ public class DBConnectionWrapper extends DBConnection {
     // uncomment this if you want to know where the unclosed connections are created
     // maybe this can become a devel feature?
     Throwable t;
+
     Date created;
 
     public DBConnection getWrapped() {
@@ -58,7 +59,7 @@ public class DBConnectionWrapper extends DBConnection {
     DBConnectionWrapper(DBConnection wrapped, String dataSource, TransactionProvider tp) {
         this(tp);
         t = new Throwable();
-        created= new Date();
+        created = new Date();
         this.wrapped = wrapped;
         this.dataSource = dataSource;
     }
@@ -75,7 +76,8 @@ public class DBConnectionWrapper extends DBConnection {
         return getWrapped().read(ptr, fields);
     }
 
-    public java.util.Vector<Dictionary<String, Object>> executeQuery(String OQL, Object parameterValues, int offset, int limit) {
+    public java.util.Vector<Dictionary<String, Object>> executeQuery(String OQL, Object parameterValues, int offset,
+            int limit) {
         return getWrapped().executeQuery(OQL, parameterValues, offset, limit);
     }
 
@@ -87,10 +89,10 @@ public class DBConnectionWrapper extends DBConnection {
         return getWrapped().insert(host, subsetField, data);
     }
 
- 	public int insertFromQuery(String type, String OQL, Object parameterValues){
+    public int insertFromQuery(String type, String OQL, Object parameterValues) {
         return getWrapped().insertFromQuery(type, OQL, parameterValues);
     }
-    
+
     public int update(Pointer ptr, java.util.Dictionary<String, Object> fieldsToChange) {
         return getWrapped().update(ptr, fieldsToChange);
     }
@@ -126,33 +128,35 @@ public class DBConnectionWrapper extends DBConnection {
     }
 
     public synchronized void close() {
-        try{
+        try {
             getWrapped().setContext(null);
             commit();
-            // we close the connection here - in fact since it's a connection wrapped by the c3p0 pool it will not be closed but returned
+            // we close the connection here - in fact since it's a connection wrapped by the c3p0 pool it will not be
+            // closed but returned
             // to the pool
             getWrapped().close();
-        } finally{
+        } finally {
             wrapped = ClosedDBConnection.getInstance();
         }
     }
 
     protected synchronized void finalize() {
-        if (wrapped != ClosedDBConnection.getInstance()){
+        if (wrapped != ClosedDBConnection.getInstance()) {
             java.util.logging.Logger.getLogger("org.makumba.db").severe(
                 "Makumba connection " + getName() + " not closed\n" + getCreationStack());
             close();
         }
     }
+
     @Override
     public void setContext(Attributes a) {
         getWrapped().setContext(a);
     }
-    
+
     public String getCreationStack() {
         StringWriter sbw = new StringWriter();
         PrintWriter output = new PrintWriter(sbw);
-        output.print("connection created on" +created+ " with stacktrace: ");
+        output.print("connection created on" + created + " with stacktrace: ");
         t.printStackTrace(output);
         return sbw.toString();
     }
@@ -167,7 +171,7 @@ public class DBConnectionWrapper extends DBConnection {
 class ClosedDBConnection extends DBConnectionWrapper {
     private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
         static DBConnection singleton = new ClosedDBConnection(null);
-        
+
         public void release() {
             singleton = null;
         }

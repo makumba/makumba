@@ -94,17 +94,17 @@ public abstract class Database {
     static protected boolean supportsForeignKeys() {
         return requestForeignKeys;
     }
-    
+
     protected abstract void closeResourcePool();
-    
+
     protected abstract int getResourcePoolSize();
-    
+
     protected abstract int getOpenedConnections();
-    
+
     protected abstract int getIdleConnections();
-    
+
     protected abstract DBConnection getPooledDBConnection();
-    
+
     public void close() {
         java.util.logging.Logger.getLogger("org.makumba.db.init").info(
             "closing  " + getName() + "\n\tat "
@@ -134,7 +134,7 @@ public abstract class Database {
     protected abstract DBConnection makeDBConnection();
 
     public abstract boolean isDuplicateException(SQLException e);
-    
+
     public abstract Map<String, String> getDuplicateFields(SQLException e);
 
     // ---------------------------------------------------
@@ -170,7 +170,7 @@ public abstract class Database {
         if (v.equals("idle_connections")) {
             return String.valueOf(getIdleConnections());
         }
-        if(v.equals("jdbc_connections")) {
+        if (v.equals("jdbc_connections")) {
             return String.valueOf(getOpenedConnections());
         }
         return config.getProperty(v);
@@ -191,12 +191,13 @@ public abstract class Database {
                 throw new org.makumba.ConfigurationError("Either dbsv or autoIncrement can be specified");
             }
             if (config.get("dbsv") != null) {
-                
+
                 Long dbsvTest = new Long(config.getProperty("dbsv"));
-                if(dbsvTest > 127) {
-                    throw new ConfigurationError("The DBSV cannot be larger than 127, provided value is " + config.getProperty("dbsv"));
+                if (dbsvTest > 127) {
+                    throw new ConfigurationError("The DBSV cannot be larger than 127, provided value is "
+                            + config.getProperty("dbsv"));
                 }
-                
+
                 dbsv = new Integer(config.getProperty("dbsv")).intValue();
             } else if (config.get("autoIncrement") != null) {
                 autoIncrement = true;
@@ -214,7 +215,7 @@ public abstract class Database {
             config.put("alter#org.makumba.devel.relations.Relation", "true");
             config.put("alter#org.makumba.devel.relations.WebappDatabase", "true");
             config.put("alter#org.makumba.devel.relations.RelationOrigin", "true");
-            
+
         } catch (Exception e) {
             throw new org.makumba.MakumbaError(e);
         }
@@ -292,8 +293,8 @@ public abstract class Database {
         int n = name.indexOf("->");
         if (n == -1) {
             return getTable(ddp.getDataDefinition(name));
-        // the abstract level doesn't return recordInfo for subtables (->) since it is supposed they are managed via
-        // their parent tables. the current DB api doesn't provide that.
+            // the abstract level doesn't return recordInfo for subtables (->) since it is supposed they are managed via
+            // their parent tables. the current DB api doesn't provide that.
         }
 
         Table t = getTable(name.substring(0, n));
@@ -408,7 +409,8 @@ public abstract class Database {
         DBConnection c = getDBConnection();
         DBConnection sourceDB = MakumbaTransactionProvider.getDatabase(source).getDBConnection();
         try {
-            Vector<Dictionary<String, Object>> v = sourceDB.executeQuery("SELECT c.name AS name FROM org.makumba.db.Catalog c", null);
+            Vector<Dictionary<String, Object>> v = sourceDB.executeQuery(
+                "SELECT c.name AS name FROM org.makumba.db.Catalog c", null);
             String[] _tables = new String[v.size()];
 
             for (int i = 0; i < _tables.length; i++) {
@@ -466,7 +468,8 @@ public abstract class Database {
         }
         DBConnection c = getDBConnection();
         try {
-            Enumeration<Dictionary<String, Object>> e = c.executeQuery("SELECT c FROM org.makumba.db.makumba.Catalog c WHERE c.name=$1", s).elements();
+            Enumeration<Dictionary<String, Object>> e = c.executeQuery(
+                "SELECT c FROM org.makumba.db.makumba.Catalog c WHERE c.name=$1", s).elements();
             if (!e.hasMoreElements()) {
                 Dictionary<String, Object> h = new Hashtable<String, Object>(3);
                 h.put("name", s);
@@ -543,7 +546,7 @@ public abstract class Database {
     }
 
     public void initialiseTables(String name) {
-        tables = new NamedResources("Database tables for " + name, tableFactory);        
+        tables = new NamedResources("Database tables for " + name, tableFactory);
     }
 
 }
