@@ -3,11 +3,11 @@ package org.makumba;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.Vector;
+
 import javassist.CannotCompileException;
 import javassist.NotFoundException;
 

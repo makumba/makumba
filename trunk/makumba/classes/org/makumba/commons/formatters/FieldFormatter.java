@@ -27,7 +27,6 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.makumba.ProgrammerError;
 import org.makumba.forms.html.FieldEditor;
 

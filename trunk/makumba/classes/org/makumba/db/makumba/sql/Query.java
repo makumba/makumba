@@ -40,9 +40,7 @@ import org.makumba.NoSuchFieldException;
 import org.makumba.db.makumba.DBConnection;
 import org.makumba.db.makumba.MQLQueryProvider;
 import org.makumba.providers.DataDefinitionProvider;
-import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
-import org.makumba.providers.SQLParameterTransformer;
 import org.makumba.providers.query.mql.MqlQueryAnalysis;
 import org.makumba.providers.query.mql.MqlSQLParameterTransformer;
 

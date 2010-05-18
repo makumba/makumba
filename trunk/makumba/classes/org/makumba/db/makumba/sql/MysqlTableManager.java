@@ -28,7 +28,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.makumba.FieldDefinition;
-import org.makumba.db.makumba.sql.SQLDBConnection;
 
 public class MysqlTableManager extends org.makumba.db.makumba.sql.TableManager {
     @Override

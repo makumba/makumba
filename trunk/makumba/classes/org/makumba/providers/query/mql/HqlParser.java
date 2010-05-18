@@ -2,6 +2,10 @@ package org.makumba.providers.query.mql;
 
 import java.io.StringReader;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.makumba.OQLParseError;
+
 import antlr.ASTPair;
 import antlr.MismatchedTokenException;
 import antlr.RecognitionException;
@@ -9,9 +13,6 @@ import antlr.Token;
 import antlr.TokenStream;
 import antlr.TokenStreamException;
 import antlr.collections.AST;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.makumba.OQLParseError;
 
 /** Makumba adaptation of the original class in org.hibernate.hql.ast. 
  * To update, check the differences with the .original file in this repository 

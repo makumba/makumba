@@ -1,10 +1,5 @@
 package org.makumba.providers.datadefinition.mdd;
 
-import org.makumba.commons.NameResolver;
-import org.makumba.providers.QueryAnalysis;
-import org.makumba.providers.QueryAnalysisProvider;
-import org.makumba.providers.QueryProvider;
-import org.makumba.providers.TransactionProvider;
 
 public class MDDParserTest {
 

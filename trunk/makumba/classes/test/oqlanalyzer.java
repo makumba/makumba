@@ -23,14 +23,14 @@
 
 package test;
 
-import org.makumba.providers.QueryAnalysis;
-import org.makumba.providers.QueryAnalysisProvider;
-import org.makumba.providers.QueryProvider;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
+
+import org.makumba.providers.QueryAnalysis;
+import org.makumba.providers.QueryAnalysisProvider;
+import org.makumba.providers.QueryProvider;
 
 public class oqlanalyzer extends TestCase {
 

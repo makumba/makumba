@@ -1,7 +1,7 @@
 package org.makumba.providers.query.mql;
 
-import antlr.collections.AST;
 import antlr.Token;
+import antlr.collections.AST;
 
 /** Makumba adaptation of the original class in org.hibernate.hql.ast.tree. 
  * To update, check the differences with the .original file in this repository 

@@ -1,7 +1,6 @@
 package org.makumba.providers.query.mql;
 
 import org.makumba.MakumbaError;
-import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.datadefinition.mdd.MakumbaDumpASTVisitor;
 
 import antlr.collections.AST;

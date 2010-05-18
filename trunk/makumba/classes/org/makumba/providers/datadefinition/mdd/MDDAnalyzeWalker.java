@@ -10,6 +10,7 @@ import org.makumba.providers.datadefinition.mdd.validation.ComparisonValidationR
 import org.makumba.providers.datadefinition.mdd.validation.MultiUniquenessValidationRule;
 import org.makumba.providers.datadefinition.mdd.validation.RangeValidationRule;
 import org.makumba.providers.datadefinition.mdd.validation.RegExpValidationRule;
+
 import antlr.collections.AST;
 
 /**

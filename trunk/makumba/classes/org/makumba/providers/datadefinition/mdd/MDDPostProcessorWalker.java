@@ -1,18 +1,14 @@
 package org.makumba.providers.datadefinition.mdd;
 
 import java.util.HashMap;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.MakumbaError;
-import org.makumba.DataDefinition.QueryFragmentFunction;
-import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.datadefinition.mdd.ComparisonExpressionNode.ComparisonType;
 import org.makumba.providers.datadefinition.mdd.validation.ComparisonValidationRule;
 import org.makumba.providers.datadefinition.mdd.validation.MultiUniquenessValidationRule;
-import org.makumba.providers.query.mql.HqlParser;
 
 import antlr.collections.AST;
 

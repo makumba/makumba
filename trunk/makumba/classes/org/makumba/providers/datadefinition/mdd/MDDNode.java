@@ -3,9 +3,11 @@ package org.makumba.providers.datadefinition.mdd;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+
 import org.makumba.DataDefinition;
 import org.makumba.ValidationRule;
 import org.makumba.DataDefinition.MultipleUniqueKeyDefinition;
+
 import antlr.CommonAST;
 import antlr.collections.AST;
 

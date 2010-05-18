@@ -2,13 +2,13 @@ package test;
 
 import java.io.IOException;
 
+import junit.framework.Test;
+
 import org.makumba.ProgrammerError;
 
 import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebRequest;
-
-import junit.framework.Test;
 
 public class MakumbaWebTestSetup extends MakumbaTestSetup {
 

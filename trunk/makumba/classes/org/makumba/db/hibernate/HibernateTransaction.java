@@ -34,7 +34,6 @@ import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProvider;
-import org.makumba.providers.query.FunctionInliner;
 import org.makumba.providers.query.Pass1ASTPrinter;
 import org.makumba.providers.query.hql.HqlAnalyzer;
 

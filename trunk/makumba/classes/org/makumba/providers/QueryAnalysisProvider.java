@@ -31,14 +31,11 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.hibernate.hql.ast.ParseErrorHandler;
-import org.hibernate.hql.ast.QuerySyntaxException;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidFieldTypeException;
 import org.makumba.OQLParseError;
 import org.makumba.commons.RegExpUtils;
-import org.makumba.providers.datadefinition.mdd.MakumbaDumpASTVisitor;
 import org.makumba.providers.query.FunctionInliner;
 import org.makumba.providers.query.Pass1FunctionInliner;
 import org.makumba.providers.query.mql.ASTUtil;
