@@ -193,12 +193,11 @@ public abstract class BasicValidationRule implements ValidationRule, Serializabl
     public static ArrayList<String> getValidationRuleOperators() {
         return operators;
     }
-    
-    
+
     public Collection<String> getValidationRuleArguments() {
         throw new RuntimeException("not implemented");
     }
-    
+
     public DataDefinition getDataDefinition() {
         throw new RuntimeException("not implemented");
     }
