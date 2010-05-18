@@ -188,13 +188,13 @@ public class tableHibernate extends TestCase {
 
         v = db.executeQuery(readIntSet, ptr);
         assertEquals(2, v.size());
-        assertEquals(new Integer(0), (v.elementAt(0)).get("member"));
-        assertEquals(new Integer(1), (v.elementAt(1)).get("member"));
+        assertEquals(new Integer(0), v.elementAt(0).get("member"));
+        assertEquals(new Integer(1), v.elementAt(1).get("member"));
 
         v = db.executeQuery(readCharSet, ptr);
         assertEquals(v.size(), 2);
-        assertEquals("e", (v.elementAt(0)).get("member"));
-        assertEquals("f", (v.elementAt(1)).get("member"));
+        assertEquals("e", v.elementAt(0).get("member"));
+        assertEquals("f", v.elementAt(1).get("member"));
 
         assertEquals(create, pc.get("TS_modify"));
         assertTrue(now.getTime() - create.getTime() < 3 * epsilon);
@@ -282,9 +282,9 @@ public class tableHibernate extends TestCase {
         assertNotNull(set1);
         Vector<Dictionary<String, Object>> v = db.executeQuery(subsetQuery, ptr);
         assertEquals(1, v.size());
-        assertEquals("home", (v.elementAt(0)).get("col1"));
-        assertEquals(set1, (v.elementAt(0)).get("col2"));
-        assertEquals("home", (v.elementAt(0)).get("col3"));
+        assertEquals("home", v.elementAt(0).get("col1"));
+        assertEquals(set1, v.elementAt(0).get("col2"));
+        assertEquals("home", v.elementAt(0).get("col3"));
 
         p.put("description", "away");
 
@@ -293,10 +293,10 @@ public class tableHibernate extends TestCase {
         assertEquals("away", db.read(set2, subsetFields).get("description"));
         v = db.executeQuery(subsetQuery, ptr);
         assertEquals(2, v.size());
-        assertEquals("away", (v.elementAt(0)).get("col1"));
-        assertEquals(set2, (v.elementAt(0)).get("col2"));
-        assertEquals("home", (v.elementAt(1)).get("col1"));
-        assertEquals(set1, (v.elementAt(1)).get("col2"));
+        assertEquals("away", v.elementAt(0).get("col1"));
+        assertEquals(set2, v.elementAt(0).get("col2"));
+        assertEquals("home", v.elementAt(1).get("col1"));
+        assertEquals(set1, v.elementAt(1).get("col2"));
     }
 
     public void testSetMemberUpdate() {
@@ -310,10 +310,10 @@ public class tableHibernate extends TestCase {
         assertEquals("somewhere", db.read(set2, subsetFields).get("description"));
         v = db.executeQuery(subsetQuery, ptr);
         assertEquals(v.size(), 2);
-        assertEquals("home", (v.elementAt(0)).get("col1"));
-        assertEquals(set1, (v.elementAt(0)).get("col2"));
-        assertEquals("somewhere", (v.elementAt(1)).get("col1"));
-        assertEquals(set2, (v.elementAt(1)).get("col2"));
+        assertEquals("home", v.elementAt(0).get("col1"));
+        assertEquals(set1, v.elementAt(0).get("col2"));
+        assertEquals("somewhere", v.elementAt(1).get("col1"));
+        assertEquals(set2, v.elementAt(1).get("col2"));
     }
 
     public void testSetMemberDelete() {
@@ -321,8 +321,8 @@ public class tableHibernate extends TestCase {
         assertNull(db.read(set1, subsetFields));
         Vector<Dictionary<String, Object>> v = db.executeQuery(subsetQuery, ptr);
         assertEquals(1, v.size());
-        assertEquals("somewhere", (v.elementAt(0)).get("col1"));
-        assertEquals(set2, (v.elementAt(0)).get("col2"));
+        assertEquals("somewhere", v.elementAt(0).get("col1"));
+        assertEquals(set2, v.elementAt(0).get("col2"));
 
         // we put it back
         Dictionary<String, Object> p = new Hashtable<String, Object>();
@@ -380,7 +380,7 @@ public class tableHibernate extends TestCase {
                 Dictionary<String, Object> d = result.elementAt(j);
                 if (d.get("name").equals(element)) {
                     for (int k = 0; j < result1.size(); k++) {
-                        if ((result1.elementAt(k)).get("col1").equals(d.get("k"))) {
+                        if (result1.elementAt(k).get("col1").equals(d.get("k"))) {
                             result1.removeElementAt(k);
                             break;
                         }
@@ -485,11 +485,11 @@ public class tableHibernate extends TestCase {
 
         v = db.executeQuery(readIntSet, ptr);
         assertEquals(1, v.size());
-        assertEquals(new Integer(2), (v.elementAt(0)).get("member"));
+        assertEquals(new Integer(2), v.elementAt(0).get("member"));
 
         v = db.executeQuery(readCharSet, ptr);
         assertEquals(1, v.size());
-        assertEquals("d", (v.elementAt(0)).get("member"));
+        assertEquals("d", v.elementAt(0).get("member"));
     }
 
     public void testDelete() {

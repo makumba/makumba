@@ -437,7 +437,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
      */
     private void evaluateTitle() {
         if (titleFieldExpr == null) {
-            String ptrIndexName = (String) (Arrays.asList(fields.keySet().toArray())).get(0);
+            String ptrIndexName = (String) Arrays.asList(fields.keySet().toArray()).get(0);
 
             // check if we have a "name" field
             if (fields.containsKey("name")) {
@@ -456,7 +456,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
                 // if this happens to be an MDD which points to itself we may have to use the following trick to get the
                 // right title
             } else if (fields.keySet().size() == 3 && postponedFields.keySet().size() > 0) {
-                titleField = (String) (Arrays.asList(postponedFields.keySet().toArray())).get(0);
+                titleField = (String) Arrays.asList(postponedFields.keySet().toArray()).get(0);
             } else {
                 titleField = getFirstNonPointerFieldName(0);
 
@@ -482,14 +482,14 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
         String field = null;
         int initial = index;
         while (field == null && index < fields.size()) {
-            FieldDefinition titleDef = (FieldDefinition) (Arrays.asList(fields.values().toArray())).get(index);
+            FieldDefinition titleDef = (FieldDefinition) Arrays.asList(fields.values().toArray()).get(index);
             if (titleDef.isPointer() || titleDef.isSetType()) {
                 index++;
                 continue;
             }
             field = titleDef.getName();
         }
-        String initialName = (String) (Arrays.asList(fields.keySet().toArray())).get(initial);
+        String initialName = (String) Arrays.asList(fields.keySet().toArray()).get(initial);
         boolean isPtrOrSet = fields.get(initialName).isPointer() || fields.get(initialName).isSetType();
         if (field == null && !isPtrOrSet) {
             field = initialName;

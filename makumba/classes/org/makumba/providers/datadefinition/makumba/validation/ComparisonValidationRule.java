@@ -108,9 +108,9 @@ public class ComparisonValidationRule extends BasicValidationRule {
         if (functionName != null) {
             o1 = applyFunction(o1, functionName);
         }
-        boolean numberComparison = (o1 instanceof Number && o2 instanceof Number);
-        boolean dateComparison = (o1 instanceof Date && o2 instanceof Date);
-        boolean stringComparison = (o1 instanceof String && o2 instanceof String);
+        boolean numberComparison = o1 instanceof Number && o2 instanceof Number;
+        boolean dateComparison = o1 instanceof Date && o2 instanceof Date;
+        boolean stringComparison = o1 instanceof String && o2 instanceof String;
         if (!numberComparison && !dateComparison && !stringComparison) {
             return false; // TODO: think of throwing some "cannot validate exception"
         }

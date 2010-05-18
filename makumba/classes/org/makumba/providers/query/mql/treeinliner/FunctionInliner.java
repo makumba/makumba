@@ -214,9 +214,9 @@ public class FunctionInliner {
                 String path = ASTUtil.getPath(originalRange.getFirstChild().getNextSibling());
 
                 // is this a temporary RANGE or JOIN?
-                boolean isTemporary = (originalRange.getType() == HqlSqlTokenTypes.JOIN && ASTUtil.getPath(
-                    originalRange.getFirstChild()).startsWith(TEMPORARY_LABEL))
-                        || (originalRange.getType() == HqlSqlTokenTypes.RANGE && path.startsWith(TEMPORARY_LABEL));
+                boolean isTemporary = originalRange.getType() == HqlSqlTokenTypes.JOIN && ASTUtil.getPath(
+                    originalRange.getFirstChild()).startsWith(TEMPORARY_LABEL)
+                        || originalRange.getType() == HqlSqlTokenTypes.RANGE && path.startsWith(TEMPORARY_LABEL);
 
                 if (!usedLabels.containsKey(path) || isTemporary) {
                     if (parent != null) {
@@ -328,7 +328,7 @@ public class FunctionInliner {
 
                     boolean isParameter = arg.getType() == HqlSqlTokenTypes.NAMED_PARAM
                             || arg.getType() == HqlSqlTokenTypes.PARAM
-                            || (arg.getType() == HqlSqlTokenTypes.IDENT && arg.getText().startsWith("$"));
+                            || arg.getType() == HqlSqlTokenTypes.IDENT && arg.getText().startsWith("$");
 
                     // if this is a function call itself we will need to inline it
                     if (arg.getText().startsWith("methodCallPlaceholder_")) {

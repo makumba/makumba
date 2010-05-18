@@ -146,7 +146,7 @@ public class charEditor extends FieldEditor {
     /** Formats the value to appear in an input statement. */
     @Override
     public String formatValue(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
-        return HtmlUtils.string2html(resetValueFormat(rf, fieldIndex, (o == null) ? null : o.toString(), formatParams));
+        return HtmlUtils.string2html(resetValueFormat(rf, fieldIndex, o == null ? null : o.toString(), formatParams));
     }
 
     /*

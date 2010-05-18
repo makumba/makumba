@@ -180,7 +180,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
      * regarded as 'true'.
      */
     public void setMultiple(String mult) {
-        _ismultiple = (mult != null && mult.indexOf("multiple") >= 0);
+        _ismultiple = mult != null && mult.indexOf("multiple") >= 0;
     }
 
     /** Sets the size of the choice control. Relevant for 'select' controls only, not for tickbox controls. */
@@ -256,8 +256,8 @@ public class HtmlChoiceWriter extends HtmlUtils {
      * applies. If selectedValues has more than 1 element, then only the first is considered as selected value.
      */
     public String getSelectOne() {
-        boolean yn_convert2Html = (_convert2Html == TXT2HTML);
-        String selectedValue = (_selectedValues.length != 0) ? _selectedValues[0] : null;
+        boolean yn_convert2Html = _convert2Html == TXT2HTML;
+        String selectedValue = _selectedValues.length != 0 ? _selectedValues[0] : null;
         Iterator<String> itv = _values;
         Iterator<String> itl = _labels;
 
@@ -293,7 +293,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
      * smaller applies.
      */
     public String getSelectMultiple() {
-        boolean yn_convert2Html = (_convert2Html == TXT2HTML);
+        boolean yn_convert2Html = _convert2Html == TXT2HTML;
         Iterator<String> itv = _values;
         Iterator<String> itl = _labels;
 
@@ -343,7 +343,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
      *            is either "RADIO" or "CHECKBOX"
      */
     private String makeCheckboxOrRadio(String type) {
-        boolean yn_convert2Html = (_convert2Html == TXT2HTML);
+        boolean yn_convert2Html = _convert2Html == TXT2HTML;
         Iterator<String> itv = _values;
         Iterator<String> itl = _labels;
 
@@ -424,7 +424,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
             throw new IllegalArgumentException("error: values, labels not equal length");
         }
 
-        boolean yn_convert2Html = (convert2Html == TXT2HTML);
+        boolean yn_convert2Html = convert2Html == TXT2HTML;
 
         StringBuffer selectStatement = new StringBuffer(512);
         selectStatement.append("<SELECT NAME=\"" + name + "\" " + literalHtml + ">\n");
@@ -462,7 +462,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
             throw new IllegalArgumentException("error: values, labels not equal length");
         }
 
-        boolean yn_convert2Html = (convert2Html == TXT2HTML);
+        boolean yn_convert2Html = convert2Html == TXT2HTML;
 
         StringBuffer selectStatement = new StringBuffer(512);
         selectStatement.append("<SELECT NAME=\"" + name + "\" " + literalHtml + ">\n");
@@ -523,7 +523,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
             Arrays.sort(selectedValues); // necessary for binarysearch. This changes the inputted array!
         }
 
-        boolean yn_convert2Html = (convert2Html == TXT2HTML);
+        boolean yn_convert2Html = convert2Html == TXT2HTML;
 
         StringBuffer selectStatement = new StringBuffer(512);
         selectStatement.append("<SELECT MULTIPLE NAME=\"" + name + "\" SIZE=\"" + size + "\" " + literalHtml + ">\n");
@@ -535,7 +535,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
                 value = HtmlUtils.string2html(value);
                 label = HtmlUtils.string2html(label);
             }
-            String selected = (Arrays.binarySearch(selectedValues, value) < 0) ? "" : " SELECTED";
+            String selected = Arrays.binarySearch(selectedValues, value) < 0 ? "" : " SELECTED";
             selectStatement.append("\t<OPTION VALUE=\"" + value + "\"" + selected + ">" + label + "</OPTION>\n");
         }
         selectStatement.append("</SELECT>");
@@ -622,7 +622,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
             Arrays.sort(selectedValues); // necessary for binarysearch. This changes the inputted array!
         }
 
-        boolean yn_convert2Html = (convert2Html == TXT2HTML);
+        boolean yn_convert2Html = convert2Html == TXT2HTML;
 
         StringBuffer inputStatement = new StringBuffer(512);
         int j = -1; // j cycles through optionSeparator[]
@@ -636,7 +636,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
                 value = HtmlUtils.string2html(value);
                 label = HtmlUtils.string2html(label);
             }
-            String selected = (Arrays.binarySearch(selectedValues, value) < 0) ? " " : " CHECKED ";
+            String selected = Arrays.binarySearch(selectedValues, value) < 0 ? " " : " CHECKED ";
             inputStatement.append("VALUE=\"" + value + "\"" + selected + ">" + checkboxLabelSeparator + label
                     + optionSeparator[j]);
         }

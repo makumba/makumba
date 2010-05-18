@@ -76,7 +76,7 @@ public class booleanEditor extends choiceEditor {
     @Override
     public String formatValue(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
 
-        String s = (o == null) ? null : (((Boolean) o) ? "Yes" : "No");
+        String s = o == null ? null : (Boolean) o ? "Yes" : "No";
         return resetValueFormat(rf, fieldIndex, s, formatParams);
     }
 
@@ -102,7 +102,7 @@ public class booleanEditor extends choiceEditor {
 
     @Override
     public String formatOptionTitle(RecordFormatter rf, int fieldIndex, Object options, int i) {
-        return (i == 0 ? "Yes" : "No");
+        return i == 0 ? "Yes" : "No";
     }
 
     @Override
@@ -140,7 +140,7 @@ public class booleanEditor extends choiceEditor {
 
     private boolean booleanValue(Object val, RecordFormatter rf, int fieldIndex) {
         if (val instanceof Boolean) {
-            return ((Boolean) val);
+            return (Boolean) val;
         } else if (val instanceof String) {
             String v = (String) val;
             if (v.equals("true") || v.equals("yes") || v.equals("on")) {
@@ -173,7 +173,7 @@ public class booleanEditor extends choiceEditor {
 
     @Override
     public Object getOptionValue(RecordFormatter rf, int fieldIndex, Object options, int i) {
-        return (i == 0 ? true : false);
+        return i == 0 ? true : false;
     }
 
     @Override

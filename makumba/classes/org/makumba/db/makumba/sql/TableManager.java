@@ -176,10 +176,10 @@ public class TableManager extends Table {
 
     protected void checkStructure(SQLDBConnection dbc, Properties config) {
         String s = Database.findConfig(config, "admin#" + getDataDefinition().getName());
-        admin = (s != null && config.getProperty(s).trim().equals("true"));
+        admin = s != null && config.getProperty(s).trim().equals("true");
 
         s = Database.findConfig(config, "alter#" + getDataDefinition().getName());
-        alter = (s != null && config.getProperty(s).trim().equals("true"));
+        alter = s != null && config.getProperty(s).trim().equals("true");
 
         java.util.logging.Logger.getLogger("org.makumba.db.init.tablechecking").info(
             getDatabase().getName() + ": checking " + getDataDefinition().getName() + " as " + tbname);
@@ -699,7 +699,7 @@ public class TableManager extends Table {
                             + "\" could not assign value \""
                             + d.get(fieldName)
                             + "\" "
-                            + (d.get(fieldName) != null ? ("of type \"" + d.get(fieldName).getClass().getName() + "\"")
+                            + (d.get(fieldName) != null ? "of type \"" + d.get(fieldName).getClass().getName() + "\""
                                     : ""));
 
                 }
@@ -1584,7 +1584,7 @@ public class TableManager extends Table {
     }
 
     public String write_boolean_Constant(String fieldName, Object o) {
-        return ((Boolean) o) ? "1" : "0";
+        return (Boolean) o ? "1" : "0";
     }
 
     // moved from dateTimeManager
@@ -1674,7 +1674,7 @@ public class TableManager extends Table {
     public boolean isIndexOk(String fieldName) {
         Boolean b = indexes.get(getFieldDBIndexName(fieldName).toLowerCase());
         if (b != null) {
-            return (getFieldDefinition(fieldName).isUnique() == !b.booleanValue());
+            return getFieldDefinition(fieldName).isUnique() == !b.booleanValue();
         }
         return false;
     } // end isIndexOk()
@@ -1686,7 +1686,7 @@ public class TableManager extends Table {
     public boolean isIndexOk(String[] fieldNames) {
         Boolean b = indexes.get(StringUtils.concatAsString(fieldNames).toLowerCase());
         if (b != null) {
-            return (getDataDefinition().hasMultiUniqueKey(fieldNames));
+            return getDataDefinition().hasMultiUniqueKey(fieldNames);
         }
         return false;
     }
@@ -1763,7 +1763,7 @@ public class TableManager extends Table {
         // for foreign keys
 
         String type = getFieldDefinition(fieldName).getType();
-        if (((type.equals("ptr") || type.equals("ptrOne") || type.equals("ptrRel")) && !hasForeignKey(fieldName))) {
+        if ((type.equals("ptr") || type.equals("ptrOne") || type.equals("ptrRel")) && !hasForeignKey(fieldName)) {
             // System.out.println("We need a foreign key for " + brief);
 
             try {
@@ -2000,7 +2000,7 @@ public class TableManager extends Table {
                 String subField = fields[i].substring(0, fields[i].indexOf("."));
                 String fieldName = fields[i].substring(fields[i].indexOf(".") + 1);
                 DataDefinition pointedType = dd.getFieldDefinition(subField).getPointedType();
-                TableManager otherTable = ((TableManager) getDatabase().getTable(pointedType));
+                TableManager otherTable = (TableManager) getDatabase().getTable(pointedType);
                 String otherProjection = pointedType.getName().replace('.', '_');
 
                 if (!alreadyAdded.contains(subField)) { // if this is a new table
@@ -2029,13 +2029,13 @@ public class TableManager extends Table {
         try {
             // now we need to set the parameters for the query
             for (int i = 0; i < fields.length; i++) {
-                int n = (i + 1);
+                int n = i + 1;
                 if (fields[i].indexOf(".") != -1) { // is it a field in a different table
                     String subField = fields[i].substring(0, fields[i].indexOf("."));
                     String fieldName = fields[i].substring(fields[i].indexOf(".") + 1);
                     DataDefinition pointedType = dd.getFieldDefinition(subField).getPointedType();
                     // then we use the table manager of that table to set the value
-                    TableManager otherTable = ((TableManager) getDatabase().getTable(pointedType));
+                    TableManager otherTable = (TableManager) getDatabase().getTable(pointedType);
                     if (values[i] != null) {
                         otherTable.setUpdateArgument(fieldName, ps, n, values[i]);
                     } else {

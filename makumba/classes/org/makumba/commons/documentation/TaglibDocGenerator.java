@@ -185,7 +185,7 @@ public class TaglibDocGenerator {
         }
         PrintWriter propWriter = new PrintWriter(new FileWriter(props, false));
         propWriter.append("#JSPWiki page properties for page " + generatedFileName + "\n");
-        propWriter.append("#" + (new Date()).toString() + "\n");
+        propWriter.append("#" + new Date().toString() + "\n");
         propWriter.append("author=TaglibReferenceGenerator");
         propWriter.flush();
         propWriter.close();
@@ -501,7 +501,7 @@ public class TaglibDocGenerator {
                 props.createNewFile();
                 PrintWriter propWriter = new PrintWriter(new FileWriter(props, false));
                 propWriter.append("#JSPWiki page properties for page " + StringUtils.capitalize(exportName) + "\n");
-                propWriter.append("#" + (new Date()).toString() + "\n");
+                propWriter.append("#" + new Date().toString() + "\n");
                 propWriter.append("author=TaglibReferenceGenerator" + "\n");
 
                 propWriter.flush();

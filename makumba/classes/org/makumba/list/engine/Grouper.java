@@ -94,7 +94,7 @@ public class Grouper extends Hashtable {
         keyStack = new MultipleKey[max];
         stack[0] = this;
 
-        long diff = (new Date().getTime() - l);
+        long diff = new Date().getTime() - l;
 
         // if(diff>20)
         java.util.logging.Logger.getLogger("org.makumba.db.query.performance.grouping").fine("grouping " + diff + " ms");

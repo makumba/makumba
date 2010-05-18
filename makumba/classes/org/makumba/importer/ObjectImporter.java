@@ -235,7 +235,7 @@ public class ObjectImporter {
             }
 
             if (v.size() == 1) {
-                return (v.elementAt(0)).get("col1");
+                return v.elementAt(0).get("col1");
             }
 
             warningField(fieldName, "no join results for \"" + s + "\"");

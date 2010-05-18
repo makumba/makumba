@@ -139,7 +139,7 @@ public class CodeGenerator {
 
         try {
             // FIXME - this should get the datadefinition of the MDDs in a given context
-            dd = (DataDefinitionProvider.getInstance()).getDataDefinition(object);
+            dd = DataDefinitionProvider.getInstance().getDataDefinition(object);
         } catch (Throwable t) {
             throw new DataDefinitionNotFoundError("Could not find such a data defintion");
         }
@@ -645,7 +645,7 @@ public class CodeGenerator {
             // launching generation of inner fields
             for (int i = 0; i < innerFields.size(); i++) {
                 appendJSPLine(sb, indent, template.beforeFieldTag + "<mak:value expr=\"" + fd.getName() + "."
-                        + (innerFields.get(i)).getName() + "\"/>" + template.afterFieldTag);
+                        + innerFields.get(i).getName() + "\"/>" + template.afterFieldTag);
             }
 
             appendJSPLine(sb, indent, template.afterField);

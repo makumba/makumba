@@ -55,7 +55,7 @@ public class StringUtils {
 
     /** Checks whether an Object is null or has, after trimming, a length == 0. */
     public static boolean isEmpty(Object o) {
-        return o == null || (o instanceof String && org.apache.commons.lang.StringUtils.isEmpty((String) o));
+        return o == null || o instanceof String && org.apache.commons.lang.StringUtils.isEmpty((String) o);
     }
 
     /**
@@ -80,7 +80,7 @@ public class StringUtils {
         }
         for (int i = 0; i < array.length; i++) {
             b.append(array[i]);
-            if (i < (array.length - 1)) {
+            if (i < array.length - 1) {
                 b.append(delimeter);
             }
         }
@@ -126,7 +126,7 @@ public class StringUtils {
         StringBuffer b = new StringBuffer();
         for (int i = 0; i < array.length; i++) {
             b.append(array[i]);
-            if (i < (array.length - 1)) {
+            if (i < array.length - 1) {
                 b.append(delim);
             }
         }

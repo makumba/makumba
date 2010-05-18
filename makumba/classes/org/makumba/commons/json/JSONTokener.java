@@ -185,7 +185,7 @@ public class JSONTokener {
 
         try {
             int len;
-            while ((pos < n) && ((len = reader.read(buffer, pos, n - pos)) != -1)) {
+            while (pos < n && (len = reader.read(buffer, pos, n - pos)) != -1) {
                 pos += len;
             }
         } catch (IOException exc) {

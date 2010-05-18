@@ -163,7 +163,7 @@ public abstract class AnalysableElement extends TagSupport {
 
         Object result = parseData.getAnalysisResult(null);
 
-        if ((result instanceof Throwable)) {
+        if (result instanceof Throwable) {
             if (result instanceof MakumbaError) {
                 throw (MakumbaError) result;
             }
@@ -251,9 +251,9 @@ public abstract class AnalysableElement extends TagSupport {
         for (Object key : tagDataCache.keySet()) {
             TagData td = (TagData) tagDataCache.get(key);
             boolean correctClass = klass == null || klass.isAssignableFrom(td.getTagObject().getClass());
-            boolean direction = (before && td.before(elData)) || !before && td.after(elData);
+            boolean direction = before && td.before(elData) || !before && td.after(elData);
             if (direction && correctClass) {
-                if (tagData == null || ((before && td.after(tagData)) || (!before && td.before(tagData)))) {
+                if (tagData == null || before && td.after(tagData) || !before && td.before(tagData)) {
                     tagData = td;
                 }
             }

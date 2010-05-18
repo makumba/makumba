@@ -162,8 +162,8 @@ public class ErrorFormatter {
                     }
                     title = "JSP Compilation error";
                     for (Object[] element : errors) {
-                        if ((((Class<?>) element[0])).isInstance(t) || t1 != null
-                                && (((Class<?>) element[0])).isInstance(t = t1)) {
+                        if (((Class<?>) element[0]).isInstance(t) || t1 != null
+                                && ((Class<?>) element[0]).isInstance(t = t1)) {
                             title = "Makumba " + element[1] + " error";
                         }
                     }
@@ -211,7 +211,7 @@ public class ErrorFormatter {
         }
 
         for (Object[] element : errors) {
-            if ((((Class<?>) element[0])).isInstance(t) || t1 != null && (((Class<?>) element[0])).isInstance(t = t1)) {
+            if (((Class<?>) element[0]).isInstance(t) || t1 != null && ((Class<?>) element[0]).isInstance(t = t1)) {
                 title = "Makumba " + element[1] + " error";
                 knownError(title, t, original, req, wr);
                 return;
@@ -317,7 +317,7 @@ public class ErrorFormatter {
         String hiddenBody = null;
 
         // we check whether this exception is a logic exception thrown at controller, or is a foreign key error
-        if (((t instanceof LogicException && ((LogicException) t).isControllerOriginated()) || t instanceof ForeignKeyError)
+        if ((t instanceof LogicException && ((LogicException) t).isControllerOriginated() || t instanceof ForeignKeyError)
                 && findNonMakumbaRootCause(t) != -1) {
             // TODO: // maybe this should not be just for logic exception and foreign key error, but for everything in
             // general?
@@ -582,7 +582,7 @@ public class ErrorFormatter {
             return "JSP compilation error:\n" + formatElementData(req) + t.getMessage();
         }
         for (Object[] element : errors) {
-            if ((((Class<?>) element[0])).isInstance(t) || t1 != null && (((Class<?>) element[0])).isInstance(t = t1)) {
+            if (((Class<?>) element[0]).isInstance(t) || t1 != null && ((Class<?>) element[0]).isInstance(t = t1)) {
                 return "Makumba " + element[1] + " error:\n" + formatElementData(req) + t.getMessage();
             }
         }

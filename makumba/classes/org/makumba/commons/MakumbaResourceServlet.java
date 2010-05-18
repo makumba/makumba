@@ -111,7 +111,7 @@ public class MakumbaResourceServlet extends HttpServlet {
                 SourceViewControllerHandler.printDirlistingHeader(writer, file.getCanonicalPath(), relativeDirectory,
                     req.getContextPath(), null);
 
-                if (!(relativeDirectory.equals(resourceDirectory))) {
+                if (!relativeDirectory.equals(resourceDirectory)) {
                     writer.println("<b><a href=\"../\">../</a></b> (up one level)");
                 }
 

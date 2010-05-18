@@ -223,7 +223,7 @@ public class JSONObject {
      *            A map object that can be used to initialize the contents of the JSONObject.
      */
     public JSONObject(Map map) {
-        this.map = (map == null) ? new HashMap() : map;
+        this.map = map == null ? new HashMap() : map;
     }
 
     /**
@@ -293,7 +293,7 @@ public class JSONObject {
             includeSuperClass = false;
         }
 
-        Method[] methods = (includeSuperClass) ? klass.getMethods() : klass.getDeclaredMethods();
+        Method[] methods = includeSuperClass ? klass.getMethods() : klass.getDeclaredMethods();
         for (int i = 0; i < methods.length; i += 1) {
             try {
                 Method method = methods[i];
@@ -490,9 +490,9 @@ public class JSONObject {
      */
     public boolean getBoolean(String key) throws JSONException {
         Object o = get(key);
-        if (o.equals(Boolean.FALSE) || (o instanceof String && ((String) o).equalsIgnoreCase("false"))) {
+        if (o.equals(Boolean.FALSE) || o instanceof String && ((String) o).equalsIgnoreCase("false")) {
             return false;
-        } else if (o.equals(Boolean.TRUE) || (o instanceof String && ((String) o).equalsIgnoreCase("true"))) {
+        } else if (o.equals(Boolean.TRUE) || o instanceof String && ((String) o).equalsIgnoreCase("true")) {
             return true;
         }
         throw new JSONException("JSONObject[" + quote(key) + "] is not a Boolean.");
@@ -1112,7 +1112,7 @@ public class JSONObject {
                     sb.append("\\r");
                     break;
                 default:
-                    if (c < ' ' || (c >= '\u0080' && c < '\u00a0') || (c >= '\u2000' && c < '\u2100')) {
+                    if (c < ' ' || c >= '\u0080' && c < '\u00a0' || c >= '\u2000' && c < '\u2100') {
                         t = "000" + Integer.toHexString(c);
                         sb.append("\\u" + t.substring(t.length() - 4));
                     } else {
@@ -1174,7 +1174,7 @@ public class JSONObject {
          */
 
         char b = s.charAt(0);
-        if ((b >= '0' && b <= '9') || b == '.' || b == '-' || b == '+') {
+        if (b >= '0' && b <= '9' || b == '.' || b == '-' || b == '+') {
             if (b == '0') {
                 if (s.length() > 2 && (s.charAt(1) == 'x' || s.charAt(1) == 'X')) {
                     try {

@@ -379,7 +379,7 @@ public class Database extends org.makumba.db.makumba.Database {
 
     @Override
     public int getMaxPointerValue() {
-        return ((getDbsv() + 1) << SQLPointer.getMaskOrder()) - 1;
+        return (getDbsv() + 1 << SQLPointer.getMaskOrder()) - 1;
     }
 
     @Override

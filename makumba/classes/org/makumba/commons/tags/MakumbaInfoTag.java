@@ -158,7 +158,7 @@ public class MakumbaInfoTag extends TagSupport {
                     String managerLocation = "http://localhost:" + tomcatPort + (tomcatLoc.startsWith("/") ? "" : "/")
                             + tomcatLoc + (tomcatLoc.endsWith("/") ? "" : "/") + "manager/list";
                     try { // --> connect
-                        HttpURLConnection uc = (HttpURLConnection) (new URL(managerLocation)).openConnection();
+                        HttpURLConnection uc = (HttpURLConnection) new URL(managerLocation).openConnection();
                         uc.setRequestProperty("connection", "close");
                         uc.setRequestProperty("Authorization", "Basic "
                                 + Base64.encode((username + ":" + password).getBytes()));
@@ -221,7 +221,7 @@ public class MakumbaInfoTag extends TagSupport {
             out.println("    <td>");
             out.println("      <table border=\"0\" cellspacing=\"3\" cellpadding=\"3\">");
 
-            String serverUpSince = ReadableFormatter.readableAge((new Date()).getTime()
+            String serverUpSince = ReadableFormatter.readableAge(new Date().getTime()
                     - new Date(System.getProperty(startupProp)).getTime());
             String serverURL = request.getScheme() + "://" + request.getServerName() + ":" + port;
 
@@ -234,14 +234,14 @@ public class MakumbaInfoTag extends TagSupport {
             printSystemInfoRow(out, "Server is up since", System.getProperty(startupProp) + "</b>(" + serverUpSince
                     + " ago)");
             printSystemInfoRow(out, "Last application (re)load", df.format(MakumbaSystem.loadingTime) + "("
-                    + ReadableFormatter.readableAge((new Date()).getTime() - MakumbaSystem.loadingTime.getTime())
+                    + ReadableFormatter.readableAge(new Date().getTime() - MakumbaSystem.loadingTime.getTime())
                     + " ago)");
             printSystemInfoRow(out, "Server time", df.format(new Date()));
             printSystemInfoRow(out, "Active sessions", activeSessions);
             printSystemInfoRow(out, "Server protocol, name and port", "<a href=\"" + serverURL + "\">" + serverURL
                     + "</a>");
             printSystemInfoRow(out, "Server software", pageContext.getServletContext().getServerInfo());
-            out.println("        <tr bgcolor=\"#" + ((line++ % 2 == 0) ? "eeeeee" : "ffffff") + "\">");
+            out.println("        <tr bgcolor=\"#" + (line++ % 2 == 0 ? "eeeeee" : "ffffff") + "\">");
             out.print("          <td colspan=\"2\">");
             if (StringUtils.equals(request.getParameter("garbageCollection"), "true")) {
                 System.gc();
@@ -307,7 +307,7 @@ public class MakumbaInfoTag extends TagSupport {
                 String nm = iterator.next();
                 Object o = m.get(nm);
 
-                out.println("  <tr bgcolor=\"#" + ((line++ % 2 == 0) ? "eeeeee" : "ffffff") + "\">");
+                out.println("  <tr bgcolor=\"#" + (line++ % 2 == 0 ? "eeeeee" : "ffffff") + "\">");
                 out.println("    <td>" + nm + "</td>");
 
                 if (o instanceof int[]) {
@@ -324,11 +324,11 @@ public class MakumbaInfoTag extends TagSupport {
             out.println("</table>");
 
             out.println("<h2>User Session</h2>");
-            out.print("Created: " + ReadableFormatter.readableAge((new Date()).getTime() - session.getCreationTime())
+            out.print("Created: " + ReadableFormatter.readableAge(new Date().getTime() - session.getCreationTime())
                     + " ago ");
             out.println("(" + session.getCreationTime() + ")<br/>");
             out.print("Last Accessed: "
-                    + ReadableFormatter.readableAge((new Date()).getTime() - session.getLastAccessedTime()) + " ago ");
+                    + ReadableFormatter.readableAge(new Date().getTime() - session.getLastAccessedTime()) + " ago ");
             out.println("(" + session.getLastAccessedTime() + ")<br>");
             out.print("Max inactive interval:" + ReadableFormatter.readableAge(session.getMaxInactiveInterval() * 1000));
             out.println("(" + session.getMaxInactiveInterval() + ")<br>");
@@ -341,7 +341,7 @@ public class MakumbaInfoTag extends TagSupport {
             while (attribs.hasMoreElements()) {
                 String key = (String) attribs.nextElement();
 
-                out.println("  <tr bgcolor=\"#" + ((line++ % 2 == 0) ? "eeeeee" : "ffffff") + "\">");
+                out.println("  <tr bgcolor=\"#" + (line++ % 2 == 0 ? "eeeeee" : "ffffff") + "\">");
                 out.println("    <td valign=\"top\">" + key + ":</td>");
                 Object o = session.getAttribute(key);
                 if (o instanceof Text) {
@@ -371,7 +371,7 @@ public class MakumbaInfoTag extends TagSupport {
         line = 0;
         while (enprop.hasMoreElements()) {
             String key = enprop.nextElement();
-            out.println("  <tr bgcolor=\"#" + ((line++ % 2 == 0) ? "eeeeee" : "ffffff") + "\">");
+            out.println("  <tr bgcolor=\"#" + (line++ % 2 == 0 ? "eeeeee" : "ffffff") + "\">");
             out.println("    <td valign=\"top\">" + key + "</td>");
             out.print("    <td><pre>");
             if (key != null) {
@@ -379,7 +379,7 @@ public class MakumbaInfoTag extends TagSupport {
                     out.print("*******");
                 } else if (key.endsWith("path")) {
                     out.print(props.getProperty(key).replace(sysprops.getProperty("path.separator").charAt(0), '\n'));
-                } else if ((props.getProperty(key)).startsWith("http://")) {
+                } else if (props.getProperty(key).startsWith("http://")) {
                     out.print("<a href=" + props.getProperty(key) + ">" + props.getProperty(key) + "</a>");
                 } else {
                     out.print(props.getProperty(key));
@@ -394,7 +394,7 @@ public class MakumbaInfoTag extends TagSupport {
 
     public void printMakumbaPropertyRow(JspWriter out, String key, String value) throws IOException {
         StringBuffer sb = new StringBuffer();
-        sb.append("  <tr bgcolor=\"#" + ((line++ % 2 == 0) ? "eeeeee" : "ffffff") + "\">");
+        sb.append("  <tr bgcolor=\"#" + (line++ % 2 == 0 ? "eeeeee" : "ffffff") + "\">");
         sb.append("    <td>" + key + "</td>");
         sb.append("    <td><code>" + value + "</code></td>");
         sb.append("  </tr>");
@@ -403,7 +403,7 @@ public class MakumbaInfoTag extends TagSupport {
 
     public void printSystemInfoRow(JspWriter out, String key, String value) throws IOException {
         StringBuffer sb = new StringBuffer();
-        sb.append("        <tr bgcolor=\"#" + ((line++ % 2 == 0) ? "eeeeee" : "ffffff") + "\">");
+        sb.append("        <tr bgcolor=\"#" + (line++ % 2 == 0 ? "eeeeee" : "ffffff") + "\">");
         sb.append("          <td>" + key + ":&nbsp;&nbsp;&nbsp;</td>");
         sb.append("          <td>" + value + "</td>");
         sb.append("        </tr>");

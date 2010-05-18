@@ -50,7 +50,7 @@ public class MakumbaJspFactory extends JspFactory {
 
             JspFactory fact = JspFactory.getDefaultFactory();
             if (fact != null) {
-                if (!(fact.getClass().getName().endsWith("MakumbaJspFactory"))) {
+                if (!fact.getClass().getName().endsWith("MakumbaJspFactory")) {
                     JspFactory.setDefaultFactory(new MakumbaJspFactory(fact));
                 } else {
                     throw new IllegalStateException("Cannot use JspFactory from old classloader!");

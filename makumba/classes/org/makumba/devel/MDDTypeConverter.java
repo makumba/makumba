@@ -159,7 +159,7 @@ public class MDDTypeConverter {
         if (connection instanceof DBConnectionWrapper) {
             connection = ((DBConnectionWrapper) connection).getWrapped();
         }
-        SQLDBConnection sqlConnection = ((SQLDBConnection) connection);
+        SQLDBConnection sqlConnection = (SQLDBConnection) connection;
         Statement statement = sqlConnection.createStatement();
         int execute = statement.executeUpdate(sql);
         sqlConnection.commit();

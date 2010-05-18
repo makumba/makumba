@@ -242,7 +242,7 @@ public class Pass1FunctionInliner {
             // now we visit the function AST and replace "this" with the callee tree
             AST ret = funcAST;
             if (!isStatic) {
-                ret = (new ASTTransformVisitor(false) {
+                ret = new ASTTransformVisitor(false) {
                     @Override
                     public AST visit(AST node) {
                         // for each "this" node, we put the callee instead
@@ -252,11 +252,11 @@ public class Pass1FunctionInliner {
                         return node;
                     }
 
-                }).traverse(funcAST);
+                }.traverse(funcAST);
             }
 
             // then we visit the function more, and replace parameter names with parameter expressions
-            ret = (new ASTTransformVisitor(false) {
+            ret = new ASTTransformVisitor(false) {
                 @Override
                 public AST visit(AST node) {
                     // for each parameter node, we put the param expression instead
@@ -270,7 +270,7 @@ public class Pass1FunctionInliner {
                     }
                     return node;
                 }
-            }).traverse(ret);
+            }.traverse(ret);
 
             getPath().pop(); // pop the dot
             getPath().pop(); // pop the method_call
@@ -380,7 +380,7 @@ public class Pass1FunctionInliner {
 
                 // if we are part of a DOT tree, we must be the first
                 if (parent.getType() == HqlTokenTypes.DOT
-                        && ((getPath().get(top - 2).getType() == HqlTokenTypes.DOT) || parent.getFirstChild() != a)) {
+                        && (getPath().get(top - 2).getType() == HqlTokenTypes.DOT || parent.getFirstChild() != a)) {
                     return a;
                 }
 

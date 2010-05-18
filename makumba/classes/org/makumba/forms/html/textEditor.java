@@ -107,7 +107,7 @@ public class textEditor extends FieldEditor {
         if (o instanceof Text) {
             o = ((Text) o).getString();
         }
-        String s = (o == null) ? null : HtmlUtils.string2html(o.toString());
+        String s = o == null ? null : HtmlUtils.string2html(o.toString());
         return resetValueFormat(rf, fieldIndex, s, formatParams);
     }
 

@@ -231,9 +231,9 @@ public class RequestAttributes implements Attributes {
      */
     public boolean hasAttribute(String s) {
         try {
-            return (checkSessionForAttribute(s) != RequestAttributes.notFound
+            return checkSessionForAttribute(s) != RequestAttributes.notFound
                     || checkServletLoginForAttribute(s) != RequestAttributes.notFound
-                    || checkLogicForAttribute(s) != RequestAttributes.notFound || checkParameterForAttribute(s) != RequestAttributes.notFound);
+                    || checkLogicForAttribute(s) != RequestAttributes.notFound || checkParameterForAttribute(s) != RequestAttributes.notFound;
         } catch (LogicException e) {
             return false;
         }

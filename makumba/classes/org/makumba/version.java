@@ -118,8 +118,8 @@ public class version {
         // System.out.println("versionDewey=" + getVersionDewey());
         System.out.println("date=" + new java.util.Date());
         try {
-            System.out.println("buildhost=" + (java.net.InetAddress.getLocalHost()).getHostName() + " ("
-                    + (java.net.InetAddress.getLocalHost()).getHostAddress() + ")");
+            System.out.println("buildhost=" + java.net.InetAddress.getLocalHost().getHostName() + " ("
+                    + java.net.InetAddress.getLocalHost().getHostAddress() + ")");
         } catch (Exception e) {
             System.out.println("buildhost=unknown.host");
         }

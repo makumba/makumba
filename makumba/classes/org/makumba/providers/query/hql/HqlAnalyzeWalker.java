@@ -59,7 +59,7 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
 
             if (labelType == null) {
                 throw new SemanticException("Unknown label: " + label + "\n"
-                        + (new NoSuchFieldException(label)).getStackTrace());
+                        + new NoSuchFieldException(label).getStackTrace());
             }
             while (true) {
                 int dot1 = type.indexOf('.', dot + 1);
@@ -177,7 +177,7 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
 
         String functionCall = fc.getText().toUpperCase();
 
-        return new ExprTypeAST((methodTypes.get(functionCall)).intValue());
+        return new ExprTypeAST(methodTypes.get(functionCall).intValue());
 
     }
 

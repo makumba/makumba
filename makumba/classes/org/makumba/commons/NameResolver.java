@@ -191,7 +191,7 @@ public class NameResolver {
         }
 
         if (!addUnderscore) {
-            name = ("." + name.toLowerCase()); // OLDSUPPORT
+            name = "." + name.toLowerCase(); // OLDSUPPORT
         }
         // "/general/Person"->"_general_person"
         name = name.replace('.', '_').replace('(', '_').replace(')', '_').replace('>', '_').replace('-', '_');
@@ -205,7 +205,7 @@ public class NameResolver {
         {
             String hash = Integer.toString(name.hashCode(), Character.MAX_RADIX).replace('-', '_');
             String shortname = name.substring(0, getMaxTableNameLength() - 3 - hash.length());
-            return (shortname + "___" + hash);
+            return shortname + "___" + hash;
         }
     }
 
@@ -269,7 +269,7 @@ public class NameResolver {
         {
             String hash = Integer.toString(name.hashCode(), Character.MAX_RADIX).replace('-', '_');
             String shortname = name.substring(0, getMaxFieldNameLength() - 3 - hash.length());
-            return (shortname + "___" + hash);
+            return shortname + "___" + hash;
         }
     }
 

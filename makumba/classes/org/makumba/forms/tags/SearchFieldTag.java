@@ -93,7 +93,7 @@ public class SearchFieldTag extends InputTag {
                     "'forceInputStyle' attribute with value 'multiple' is only valid for 'ptr' and 'intEnum'/'charEnum' types, field is of type '"
                             + fd.getType() + "'!");
         }
-        if (StringUtils.equals("forceInputStyle", "single") && fd != null && !(fd.isSetType())) {
+        if (StringUtils.equals("forceInputStyle", "single") && fd != null && !fd.isSetType()) {
             throw new ProgrammerError(
                     "'forceInputStyle' attribute with value 'single' is only valid for 'set' and 'setIntEnum'/'setCharEnum' types, field is of type '"
                             + fd.getType() + "'!");

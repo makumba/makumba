@@ -572,7 +572,7 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
         sb.append("getTitleFieldName() " + getTitleFieldName() + "\n");
         sb.append("getIndexPointerFieldName() " + getIndexPointerFieldName() + "\n");
         sb.append("getParentField()\n");
-        sb.append((getParentField()) + "\n");
+        sb.append(getParentField() + "\n");
         sb.append("getSetMemberFieldName() " + getSetMemberFieldName() + "\n");
         sb.append("getSetOwnerFieldName() " + getSetOwnerFieldName() + "\n");
         sb.append("lastModified() " + lastModified() + "\n");

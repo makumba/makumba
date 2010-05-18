@@ -184,7 +184,7 @@ public class ResponseControllerHandler extends ControllerHandler {
 
             @Override
             public String getServletPath() {
-                HttpServletRequest httpServletRequest = ((HttpServletRequest) getRequest());
+                HttpServletRequest httpServletRequest = (HttpServletRequest) getRequest();
                 String originatingPage = responder.getOriginatingPageName();
                 String contextPath = httpServletRequest.getContextPath();
                 if (submittingToSamePage(contextPath, originatingPage)) {

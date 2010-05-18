@@ -57,7 +57,7 @@ public class DataTypeListerServlet extends DataServlet {
         }
 
         try {
-            dd = (DataDefinitionProvider.getInstance()).getDataDefinition(virtualPath);
+            dd = DataDefinitionProvider.getInstance().getDataDefinition(virtualPath);
         } catch (Throwable e) {
         }
         if (dd == null) { // make a directory listing
@@ -138,13 +138,13 @@ public class DataTypeListerServlet extends DataServlet {
                     writer.println("<td>" + (i + 1) + "</td>");
                     writer.println("<td>");
                     writer.println("<a href=\"" + contextPath + Configuration.getDataViewerLocation() + "/" + type
-                            + "?ptr=" + ((Pointer) (results.elementAt(i)).get("ptr")).toExternalForm() + "\">");
+                            + "?ptr=" + ((Pointer) results.elementAt(i).get("ptr")).toExternalForm() + "\">");
                     Dictionary<String, Object> dictionary = results.elementAt(i);
                     Object value = dictionary.get("title");
                     if (value == null || value.equals("")) {
                         value = "<i>[none]</i>";
                     } else if (value instanceof Pointer) {
-                        Pointer pointer = ((Pointer) value);
+                        Pointer pointer = (Pointer) value;
                         value = DevelUtils.writePointerValueLink(contextPath, pointer);
                     }
                     writer.println(value);
@@ -156,7 +156,7 @@ public class DataTypeListerServlet extends DataServlet {
                     if (otherValue == null || otherValue.equals("")) {
                         otherValue = "<i>[none]</i>";
                     } else if (otherValue instanceof Pointer) {
-                        Pointer pointer = ((Pointer) otherValue);
+                        Pointer pointer = (Pointer) otherValue;
                         otherValue = DevelUtils.writePointerValueLink(contextPath, pointer);
                     }
                     writer.println(otherValue);

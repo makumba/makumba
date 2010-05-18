@@ -85,7 +85,7 @@ public class intEditor extends charEditor {
         // note: only diff with charEditor.formatValue is not calling
         // string2html
         // maybe can just as well not redefine this method?
-        String s = (o == null) ? null : o.toString();
+        String s = o == null ? null : o.toString();
         return resetValueFormat(rf, fieldIndex, s, formatParams);
     }
 
@@ -135,8 +135,8 @@ public class intEditor extends charEditor {
                 // for all MDD providers.
                 // right now, we check manually for the old and new MDD parsers
                 if (validationRule instanceof NumberRangeValidationRule // old MDD parser
-                        || (validationRule instanceof RangeValidationRule // new MDD parser
-                        && ((RangeValidationRule) validationRule).getValidationType() == ValidationType.RANGE)) {
+                        || validationRule instanceof RangeValidationRule // new MDD parser
+                        && ((RangeValidationRule) validationRule).getValidationType() == ValidationType.RANGE) {
                     int lower;
                     int upper;
                     if (validationRule instanceof NumberRangeValidationRule) {// old MDD parser

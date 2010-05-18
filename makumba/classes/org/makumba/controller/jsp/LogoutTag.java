@@ -131,7 +131,7 @@ public class LogoutTag extends TagSupport {
         }
 
         // if at the end of s, or pattern ends with wildcard, the match is successful.
-        return (pos == s.length() || pattern.endsWith("*"));
+        return pos == s.length() || pattern.endsWith("*");
     }
 
 }

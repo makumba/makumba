@@ -104,7 +104,7 @@ public abstract class DataServlet extends HttpServlet {
             w.println("      <span class=\"active\">Pointer value converter</span>");
         }
         w.println("      &nbsp;&nbsp;&nbsp;");
-        if ((mode == MODE_LIST && !type.equals("")) || mode == MODE_VIEW) {
+        if (mode == MODE_LIST && !type.equals("") || mode == MODE_VIEW) {
             w.println("      <a href=\"" + browsePath + "\">browse</a>");
             w.println("      &nbsp;&nbsp;&nbsp;");
             w.println("      <span class=\"active\">data</span>");

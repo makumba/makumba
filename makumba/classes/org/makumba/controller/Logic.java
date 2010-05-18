@@ -376,10 +376,10 @@ public class Logic {
         Method m = null;
         // JASPER: I don't understand why this way of looking up a method is different frmo the others
         try {
-            m = (controller.getClass().getMethod("find" + firstUpper(attname), argDb));
+            m = controller.getClass().getMethod("find" + firstUpper(attname), argDb);
         } catch (Exception e) {
             if (m == null) {
-                m = (controller.getClass().getMethod("find" + firstUpper(attname), argDbOld));
+                m = controller.getClass().getMethod("find" + firstUpper(attname), argDbOld);
                 java.util.logging.Logger.getLogger("org.makumba.controller").fine(
                     "The use of Database is deprecated. Use Transaction instead.");
             }
@@ -569,7 +569,7 @@ public class Logic {
 
     public static String getFilePath(java.net.URL u) {
         try {
-            return new java.io.File((u.getFile())).getCanonicalPath();
+            return new java.io.File(u.getFile()).getCanonicalPath();
         } catch (java.io.IOException ioe) {
             throw new org.makumba.commons.RuntimeWrappedException(ioe);
         }
@@ -731,7 +731,7 @@ public class Logic {
         if (opName == null) {
             return null;
         }
-        if ((controller instanceof LogicNotFoundException)) {
+        if (controller instanceof LogicNotFoundException) {
             throw new ProgrammerError("there is no controller object to look for the Form handler method " + opName);
         }
 

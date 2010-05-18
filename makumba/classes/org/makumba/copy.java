@@ -91,7 +91,7 @@ public class copy {
      * <code>"db.admin.copy"</code></b> logger, with {@link java.util.logging.Level#INFO} logging level.
      */
     public static void _copy(String sourceDB, String destinationDB, String[] typeNames, boolean ignoreDbsv) {
-        ((MakumbaTransactionProvider) (MakumbaTransactionProvider.getInstance()))._copy(sourceDB, destinationDB,
+        ((MakumbaTransactionProvider) MakumbaTransactionProvider.getInstance())._copy(sourceDB, destinationDB,
             typeNames, ignoreDbsv);
     }
 

@@ -166,7 +166,7 @@ public abstract class Table // extends RecordHandler
 
                     @Override
                     public long longValue() {
-                        return ((dbsv + 1) << MASK_ORDER) - 1;
+                        return (dbsv + 1 << MASK_ORDER) - 1;
                     }
                 };
             }
@@ -188,7 +188,7 @@ public abstract class Table // extends RecordHandler
         }
         System.out.print("|\n ");
         System.out.flush();
-        float step = ((float) v.size() / BAR);
+        float step = (float) v.size() / BAR;
 
         int stars = 0;
         Hashtable<String, Object> data = new Hashtable<String, Object>(23);

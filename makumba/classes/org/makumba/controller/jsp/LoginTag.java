@@ -152,11 +152,11 @@ public class LoginTag extends BodyTagSupport {
                         String value = ee.nextElement();
 
                         // how many times is (paramName=value) among ALL params?
-                        int cntAllParam = (dParamValues.get(value)).intValue();
+                        int cntAllParam = dParamValues.get(value).intValue();
                         int cntHiddenInput = cntAllParam;
 
                         if (dGetParams.get(name) != null && dGetParamValues.get(value) != null) {
-                            int cntGetParam = (dGetParamValues.get(value)).intValue();
+                            int cntGetParam = dGetParamValues.get(value).intValue();
                             cntHiddenInput -= cntGetParam;
                         }
 

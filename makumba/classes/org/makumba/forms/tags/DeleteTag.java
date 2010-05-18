@@ -44,7 +44,7 @@ public class DeleteTag extends EditTag {
 
     @Override
     protected boolean allowEmptyBody() {
-        return (widget != null && widget.equals("deleteForm"));
+        return widget != null && widget.equals("deleteForm");
     }
 
     public void setWidget(String w) {
@@ -57,7 +57,7 @@ public class DeleteTag extends EditTag {
     }
 
     public void setPreserveWhitespace(String s) {
-        this.preserveWhiteSpace = (s != null && s.equals("true"));
+        this.preserveWhiteSpace = s != null && s.equals("true");
     }
 
     public boolean getPreserveWhiteSpace() {

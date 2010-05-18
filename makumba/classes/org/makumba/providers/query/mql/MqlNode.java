@@ -367,7 +367,7 @@ public class MqlNode extends CommonAST {
         String arg1 = s.substring(1, s.length() - 1);
         Object o = null;
         try {
-            o = (left.getMakType()).checkValue(arg1);
+            o = left.getMakType().checkValue(arg1);
         } catch (org.makumba.InvalidValueException e) {
             // walker.printer.showAst(right, walker.pw);
             throw new SemanticException(e.getMessage(), "", getLine(), getColumn());

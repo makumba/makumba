@@ -150,7 +150,7 @@ public class ObjectToRecord {
 
             for (Enumeration<String> e = fields.keys(); e.hasMoreElements();) {
                 String s = e.nextElement();
-                Object value = (fields.get(s)).get(o);
+                Object value = fields.get(s).get(o);
 
                 if (value != null) {
                     if (!value.getClass().getName().startsWith("java")) {

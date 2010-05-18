@@ -218,7 +218,7 @@ public abstract class DBConnection extends TransactionImplementation {
 
     public Query getQuery(String OQL) {
         Object[] k = { OQL, "" };
-        return ((Query) getHostDatabase().queries.getResource(k));
+        return (Query) getHostDatabase().queries.getResource(k);
     }
 
     @Override

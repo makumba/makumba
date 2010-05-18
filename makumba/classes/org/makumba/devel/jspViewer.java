@@ -366,9 +366,9 @@ public class jspViewer extends LineViewer {
                     } else {// we have any other taglib tag
                         String tagType = lineText.substring(currentSyntaxPoint.getOriginalColumn(currentLineLength));
 
-                        if ((isTagOfPrefix(tagType, makTagPrefix)) && hideMakumba
-                                || (isTagOfPrefix(tagType, jstlCoreTagPrefix)) && hideJSTLCore
-                                || (isTagOfPrefix(tagType, jstlFormatTagPrefix)) && hideJSTLFormat) {
+                        if (isTagOfPrefix(tagType, makTagPrefix) && hideMakumba
+                                || isTagOfPrefix(tagType, jstlCoreTagPrefix) && hideJSTLCore
+                                || isTagOfPrefix(tagType, jstlFormatTagPrefix) && hideJSTLFormat) {
                             shallWrite = false;
                         }
 

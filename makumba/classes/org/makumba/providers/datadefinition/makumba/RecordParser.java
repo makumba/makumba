@@ -390,7 +390,7 @@ public class RecordParser {
         // if a webappRoot was passed, we fetch the MDDs from there, not using the CP
         if (RecordInfo.webappRoot != null) {
             File f = new File(RecordInfo.webappRoot);
-            if (!f.exists() || (f.exists() && !f.isDirectory())) {
+            if (!f.exists() || f.exists() && !f.isDirectory()) {
                 throw new MakumbaError("webappRoot " + RecordInfo.webappRoot
                         + " does not appear to be a valid directory");
             }
@@ -473,7 +473,7 @@ public class RecordParser {
         // keep the non-overriden ones with empty definiton to report a mdd
         // error
         for (String key : overridenFields) {
-            if ((text.get(key)).trim().length() == 0) {
+            if (text.get(key).trim().length() == 0) {
                 text.remove(key);
             }
         }
@@ -594,7 +594,7 @@ public class RecordParser {
                 } else {
                     String paramName = element.trim().split(" ")[1].trim();
                     if (paramType.equals("char[]")) { // we substitute char[] with the max char length
-                        paramType = ("char[255]");
+                        paramType = "char[255]";
                     }
                     ddParams.addField(new FieldInfo(paramName, paramType));
                 }
@@ -797,13 +797,13 @@ public class RecordParser {
     // moved from ptrOneParser
     public void parse_ptrOne_Subfields(String fieldName) {
         ptrOne_RecordParsers.get(fieldName).parse();
-        getFieldInfo(fieldName).extra2 = (ptrOne_RecordParsers.get(fieldName)).dd.getTitleFieldName();
+        getFieldInfo(fieldName).extra2 = ptrOne_RecordParsers.get(fieldName).dd.getTitleFieldName();
     }
 
     // moved from setParser
     public void parse_set_Subfields(String fieldName) {
         if (getFieldInfo(fieldName).extra2 == null) {
-            getFieldInfo(fieldName).extra2 = subtableParser_subtables.get(fieldName).title = (setParser_settbls.get(fieldName)).getTitleFieldName();
+            getFieldInfo(fieldName).extra2 = subtableParser_subtables.get(fieldName).title = setParser_settbls.get(fieldName).getTitleFieldName();
         }
     }
 

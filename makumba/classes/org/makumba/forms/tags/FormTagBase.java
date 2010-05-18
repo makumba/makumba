@@ -514,7 +514,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
                     responder.setAddField(field);
                 }
                 if (!"add".equals(getOperation())) {
-                    responder.setNewType((findParentForm()).type);
+                    responder.setNewType(findParentForm().type);
                 }
 
                 break;
@@ -630,7 +630,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
             bodyContent.getEnclosingWriter().print(sb.toString());
             if (findParentForm() != null) {
                 java.util.logging.Logger.getLogger("org.makumba.taglib.performance").fine(
-                    "form time: " + ((new java.util.Date().getTime() - starttime)));
+                    "form time: " + (new java.util.Date().getTime() - starttime));
             }
 
             // retrieves the form dependency graph from the cache
