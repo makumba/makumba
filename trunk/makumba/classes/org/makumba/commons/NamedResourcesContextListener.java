@@ -67,11 +67,10 @@ public class NamedResourcesContextListener implements javax.servlet.ServletConte
         }
 
     }
-    
+
     /** nullifies all static references to singleton instances **/
     private void releaseSingletons() {
         SingletonReleaser.releaseAll();
-        
-        
+
     }
 }

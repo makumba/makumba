@@ -153,21 +153,21 @@ public class ParseStatus {
      *            the {@link ELData}
      */
     void addExpression(AnalysableExpression e, ELData ed) {
-        
+
         // what's important for a makumba EL expression is to know its parent tag
         if (!parents.isEmpty()) {
             e.setParent(parents.get(parents.size() - 1));
         } else {
             e.setParent(null);
         }
-        
+
         e.setKey(pageCache);
-        
+
         pageCache.cache(MakumbaJspAnalyzer.EL_CACHE, e.getKey(), e);
         pageCache.cache(MakumbaJspAnalyzer.EL_DATA_CACHE, e.getKey(), ed);
-        
+
         e.analyze(pageCache);
-        
+
         elements.add(e);
 
     }

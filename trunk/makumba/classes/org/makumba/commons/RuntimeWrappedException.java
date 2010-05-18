@@ -23,12 +23,10 @@
 
 package org.makumba.commons;
 
-
 /**
  * Wraps an exception to throw it further as a RuntimeException. Stacktraces of this exception will actually print the
- * stracktrace of the wrapped exception.
- * 
- * TODO: this can be done in a more standard way since Java 1.4, so this should be refactored.
+ * stracktrace of the wrapped exception. TODO: this can be done in a more standard way since Java 1.4, so this should be
+ * refactored.
  */
 public class RuntimeWrappedException extends RuntimeException {
 
@@ -38,7 +36,7 @@ public class RuntimeWrappedException extends RuntimeException {
     public RuntimeWrappedException(Throwable e) {
         super(e);
     }
-    
+
     public RuntimeWrappedException(String message) {
         super(message);
     }

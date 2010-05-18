@@ -27,6 +27,7 @@ import java.net.URL;
 
 /**
  * This is a utility class which simply returns the URL of a java resource.
+ * 
  * @author Cristian Bogdan
  * @version $Id$
  */

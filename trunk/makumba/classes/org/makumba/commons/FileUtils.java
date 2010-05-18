@@ -81,7 +81,7 @@ public class FileUtils {
             }
         }
     }
-    
+
     /** Gets an input stream from a file-system file or JAR file */
     public static InputStream getInputStream(URL url) throws IOException {
         if (!url.toExternalForm().startsWith("jar:")) {

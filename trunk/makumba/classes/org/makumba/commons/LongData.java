@@ -38,6 +38,7 @@ import java.io.Reader;
 
 /**
  * This class accumulates a stream of data, and if it gets long, it automatically saves it in a file
+ * 
  * @author Cristian Bogdan
  */
 public class LongData {

@@ -24,14 +24,14 @@
 package org.makumba.commons;
 
 /**
- * Simple interface that makes it possible to release singletons (by e.g. nullifying their static reference) for classes that
- * use Singletons so that GC can occur.
+ * Simple interface that makes it possible to release singletons (by e.g. nullifying their static reference) for classes
+ * that use Singletons so that GC can occur.
  * 
  * @author Manuel Gay
  * @version $Id$
  */
 public interface SingletonHolder {
-    
+
     public void release();
 
 }

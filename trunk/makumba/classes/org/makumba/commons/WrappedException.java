@@ -32,16 +32,15 @@ import java.io.PrintWriter;
  * 
  * @author Cristian Bogdan
  * @author Manuel Gay
- * 
  * @version $Id$
  */
-
 
 public class WrappedException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
     Throwable t;
+
     private boolean controllerOriginated = false;
 
     /** wrap the given exception */
@@ -71,12 +70,12 @@ public class WrappedException extends Exception {
     public Throwable getReason() {
         return t;
     }
-    
+
     /**
      * checks whether this exception originated in Controller or at the JSP level
      */
     public boolean isControllerOriginated() {
-      return controllerOriginated;
+        return controllerOriginated;
     }
 
     /** print the stacktrace of the wrapped exception */
