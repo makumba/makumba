@@ -61,10 +61,11 @@ public class LoginTag extends BodyTagSupport {
         Dictionary<String, Integer> values = new Hashtable<String, Integer>();
         for (int i = 0; i < parameterValues.length; i++) {
             Integer n = values.get(parameterValues[i]);
-            if (n == null)
+            if (n == null) {
                 n = new Integer(1);
-            else
+            } else {
                 n = new Integer(n.intValue() + 1);
+            }
             values.put(parameterValues[i], n);
         }
         return values;
@@ -89,8 +90,9 @@ public class LoginTag extends BodyTagSupport {
 
             // retrieve the path info on original request
             String pathInfo = req.getPathInfo();
-            if (pathInfo == null)
+            if (pathInfo == null) {
                 pathInfo = "";
+            }
 
             // retrieve the query string on original request
             String varInfo = req.getQueryString();
@@ -141,8 +143,9 @@ public class LoginTag extends BodyTagSupport {
 
                     // count the unique values for this parameter in the GET-QueryString
                     Dictionary<String, Integer> dGetParamValues = null;
-                    if (dGetParams.get(name) != null)
+                    if (dGetParams.get(name) != null) {
                         dGetParamValues = countValues((String[]) dGetParams.get(name));
+                    }
 
                     // for each unique value for this parameter... print as hidden input
                     for (Enumeration<String> ee = dParamValues.keys(); ee.hasMoreElements();) {

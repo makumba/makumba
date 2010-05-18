@@ -48,8 +48,9 @@ public class OracleDatabase extends org.makumba.db.makumba.sql.Database {
     @Override
     protected String getJdbcUrl(Properties p) {
         String host = p.getProperty("#host");
-        if (host.indexOf(':') < 0) // no port specified
+        if (host.indexOf(':') < 0) {
             host = host + ":1521"; // define default port (must be specified)
+        }
         return "jdbc:oracle:thin:@//" + host + "/" + p.getProperty("#database");
     }
 

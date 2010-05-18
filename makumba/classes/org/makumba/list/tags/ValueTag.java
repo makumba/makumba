@@ -231,11 +231,13 @@ public class ValueTag extends GenericListTag {
             pageCache.cacheNeededResources(new String[] { "makumba-editinplace.js" });
         }
 
-        if (var != null)
+        if (var != null) {
             setType(pageCache, var, vc.getType());
+        }
 
-        if (printVar != null)
+        if (printVar != null) {
             setType(pageCache, printVar, MakumbaSystem.makeFieldOfType(printVar, "char"));
+        }
 
     }
 

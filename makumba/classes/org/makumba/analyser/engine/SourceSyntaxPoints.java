@@ -160,8 +160,9 @@ public class SourceSyntaxPoints {
             }
         }
 
-        if (client.getIncludePattern() != null)
+        if (client.getIncludePattern() != null) {
             include();
+        }
     }
 
     /**
@@ -175,10 +176,12 @@ public class SourceSyntaxPoints {
         for (int i = 0; i < max; i++) {
             // if found "\r\n" then treat together as one line break.
             if (originalText.charAt(i) == '\r') {
-                if (i + 1 < max && originalText.charAt(i + 1) == '\n')
+                if (i + 1 < max && originalText.charAt(i + 1) == '\n') {
                     i++;
-            } else if (originalText.charAt(i) != '\n')
+                }
+            } else if (originalText.charAt(i) != '\n') {
                 continue;
+            }
 
             // found a linebreak
             addSyntaxPointsLine(start, i, "TextLine", new Integer(line));
@@ -187,8 +190,9 @@ public class SourceSyntaxPoints {
         }
 
         // treat the last line (not ending with '\n')
-        if (start < max)
+        if (start < max) {
             addSyntaxPointsLine(start, max, "TextLine", new Integer(line));
+        }
     }
 
     /**
@@ -201,8 +205,9 @@ public class SourceSyntaxPoints {
      */
     public String getLineText(int n) {
         SyntaxPoint line = lineBeginnings.get(n - 1);
-        if (n == lineBeginnings.size())
+        if (n == lineBeginnings.size()) {
             return originalText.substring(line.getOriginalPosition());
+        }
 
         SyntaxPoint nextline = lineBeginnings.get(n);
 
@@ -215,8 +220,9 @@ public class SourceSyntaxPoints {
     void include() {
         while (true) {
             Matcher m = client.getIncludePattern().matcher(content);
-            if (!m.find())
+            if (!m.find()) {
                 return;
+            }
 
             // we add syntax points for the @include directive
             SyntaxPoint end = addSyntaxPoints(m.start() + offset, m.end() + offset, "JSPIncludeDirective",
@@ -255,16 +261,17 @@ public class SourceSyntaxPoints {
         // we move the position of all SyntaxPoints that occur after the include
         for (Iterator<SyntaxPoint> i = syntaxPoints.iterator(); i.hasNext();) {
             SyntaxPoint sp = i.next();
-            if (sp.position > position + offset && !sp.getType().equals("JSPIncludeDirective"))
+            if (sp.position > position + offset && !sp.getType().equals("JSPIncludeDirective")) {
                 sp.moveByInclude(delta);
+            }
         }
 
         // we add a fileBeginning
         int n = fileBeginningIndexes.size() - 1;
         // replace the one at the end, for some reason
-        if ((fileBeginningIndexes.get(n)).intValue() == position)
+        if ((fileBeginningIndexes.get(n)).intValue() == position) {
             fileBeginnings.set(n, sf);
-        else {
+        } else {
             // add one at the end
             fileBeginningIndexes.add(position);
             fileBeginnings.add(sf);
@@ -299,8 +306,9 @@ public class SourceSyntaxPoints {
         StringBuffer uncommentedContent = new StringBuffer();
         while (m.find()) {
             uncommentedContent.append(content.substring(endOfLast, m.start()));
-            for (int i = m.start(); i < m.end(); i++)
+            for (int i = m.start(); i < m.end(); i++) {
                 uncommentedContent.append(' ');
+            }
             endOfLast = m.end();
             java.util.logging.Logger.getLogger("org.makumba.syntaxpoint.comment").fine(
                 "UNCOMMENT " + patternName + " : " + m.group());
@@ -335,10 +343,11 @@ public class SourceSyntaxPoints {
      */
     public SyntaxPoint.End addSyntaxPoints(int start, int end, String type, Object extra) {
         SourceSyntaxPoints ssp = findSourceFile(start);
-        if (ssp == this)
+        if (ssp == this) {
             return addSyntaxPoints1(start, end, type, extra);
-        else
+        } else {
             return ssp.addSyntaxPoints(start, end, type, extra);
+        }
     }
 
     SyntaxPoint.End addSyntaxPoints1(int start, int end, String type, Object extra) {
@@ -375,8 +384,9 @@ public class SourceSyntaxPoints {
      */
     SourceSyntaxPoints findSourceFile(int position) {
         int index = Collections.binarySearch(fileBeginningIndexes, new Integer(position - offset));
-        if (index < 0)
+        if (index < 0) {
             index = -index - 2;
+        }
         return fileBeginnings.get(index);
     }
 
@@ -452,12 +462,14 @@ public class SourceSyntaxPoints {
      * @return <code>false</code> if unchanged, <code>true</code> otherwise
      */
     boolean unchanged() {
-        if (file.lastModified() != lastChanged)
+        if (file.lastModified() != lastChanged) {
             return false;
+        }
         for (Iterator<SourceSyntaxPoints> i = fileBeginnings.iterator(); i.hasNext();) {
             SourceSyntaxPoints ss = i.next();
-            if (ss != this && !ss.unchanged())
+            if (ss != this && !ss.unchanged()) {
                 return false;
+            }
         }
         return true;
     }
@@ -475,8 +487,9 @@ public class SourceSyntaxPoints {
             BufferedReader rd = new BufferedReader(new FileReader(file));
             char[] buffer = new char[2048];
             int n;
-            while ((n = rd.read(buffer)) != -1)
+            while ((n = rd.read(buffer)) != -1) {
                 sb.append(buffer, 0, n);
+            }
         } catch (FileNotFoundException e) {
             String msg = "File '" + file.getName() + "' not found.\n\t(" + e.getMessage() + ")";
             if (includeDirective != null) {
@@ -523,8 +536,9 @@ public class SourceSyntaxPoints {
     public void discardPoints() {
         for (Iterator<SourceSyntaxPoints> i = fileBeginnings.iterator(); i.hasNext();) {
             SourceSyntaxPoints s = i.next();
-            if (s != this)
+            if (s != this) {
                 s.discardPoints();
+            }
         }
         content = originalText = null;
         fileBeginningIndexes = null;

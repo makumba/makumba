@@ -165,12 +165,14 @@ public class HibernateSFManager {
         }
 
         String seed, prefix;
-        if ((seed = cfg.getProperty("makumba.seed")) == null)
+        if ((seed = cfg.getProperty("makumba.seed")) == null) {
             seed = DEFAULT_SEED;
+        }
         String seedDir = findClassesRootFolder(seed);
 
-        if ((prefix = cfg.getProperty("makumba.prefix")) == null)
+        if ((prefix = cfg.getProperty("makumba.prefix")) == null) {
             prefix = DEFAULT_PREFIX;
+        }
 
         String mddList;
         Vector<String> dds = new Vector<String>();
@@ -240,8 +242,9 @@ public class HibernateSFManager {
             SchemaUpdate schemaUpdate = new SchemaUpdate(cfg);
             schemaUpdate.execute(true, true);
             java.util.logging.Logger.getLogger("org.makumba.hibernate.sf").info("Schema update finished");
-        } else
+        } else {
             java.util.logging.Logger.getLogger("org.makumba.hibernate.sf").info("skipping schema update");
+        }
 
         configuredConfiguration = cfg;
 
@@ -254,8 +257,9 @@ public class HibernateSFManager {
     private static Vector<String> getDefaultMDDs(Configuration cfg) {
         Vector<String> dds;
         String mddRoot;
-        if ((mddRoot = cfg.getProperty("mdd.root")) == null)
+        if ((mddRoot = cfg.getProperty("mdd.root")) == null) {
             mddRoot = "dataDefinitions";
+        }
         java.util.logging.Logger.getLogger("org.makumba.hibernate.sf").info("Working with the MDDs under " + mddRoot);
         dds = org.makumba.MakumbaSystem.mddsInDirectory(mddRoot);
         return dds;

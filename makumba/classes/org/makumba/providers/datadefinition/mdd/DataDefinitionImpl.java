@@ -225,10 +225,12 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
 
                     // add enum field
                     String type = "";
-                    if (field.type == FieldType.SETINTENUM)
+                    if (field.type == FieldType.SETINTENUM) {
                         type = "intEnum";
-                    if (field.type == FieldType.SETCHARENUM)
+                    }
+                    if (field.type == FieldType.SETCHARENUM) {
                         type = "charEnum";
+                    }
 
                     FieldDefinitionImpl enumField = new FieldDefinitionImpl(ENUM_FIELD_NAME, type);
                     enumField.charEnumValues = field.charEnumValues;
@@ -306,8 +308,9 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
         }
 
         int s = pointed.indexOf("->");
-        if (s != -1)
+        if (s != -1) {
             pointed = pointed.substring(s + 2);
+        }
 
         pointed = shortName(pointed);
 
@@ -341,8 +344,9 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
      */
     private String getPointerName(String typeName, FieldDefinitionImpl subField) {
         int s = typeName.indexOf("->");
-        if (s != -1)
+        if (s != -1) {
             typeName = typeName.substring(s + 2);
+        }
 
         typeName = shortName(typeName);
 
@@ -360,8 +364,9 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
 
         name = shortName(name);
         int j = name.lastIndexOf("->");
-        if (j > -1)
+        if (j > -1) {
             name = name.substring(j + 2);
+        }
 
         indexName = name;
 
@@ -720,8 +725,9 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
         sb.append("   == origin: " + origin + "\n");
         sb.append("   == indexName: " + indexName + "\n");
         sb.append("   == titleField: " + titleField + "\n");
-        if (parent != null)
+        if (parent != null) {
             sb.append("   == parent: " + parent.getName() + "\n");
+        }
         sb.append("   == parentFieldName: " + fieldNameInParent + "\n");
         sb.append("   == isFileSubfield: " + isFileSubfield + "\n");
         sb.append("\n   === Fields \n\n");

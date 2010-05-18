@@ -129,8 +129,9 @@ public class RequestAttributes implements Attributes {
     }
 
     public RequestAttributes(Object controller, HttpServletRequest req, String db) throws LogicException {
-        if (db == null)
+        if (db == null) {
             db = getRequestDatabase();
+        }
         this.request = req;
         this.controller = controller;
 
@@ -144,8 +145,9 @@ public class RequestAttributes implements Attributes {
                 Logic.doInit(controller, this, db, getConnectionProvider(req));
             } catch (UnauthorizedException e) {
                 // if we are not in the login page
-                if (!req.getServletPath().endsWith("login.jsp"))
+                if (!req.getServletPath().endsWith("login.jsp")) {
                     throw e;
+                }
             }
         }
     }
@@ -209,10 +211,11 @@ public class RequestAttributes implements Attributes {
 
         Object value = ss.getAttribute(s);
         ss.setAttribute(s, o);
-        if (o == null)
+        if (o == null) {
             ss.setAttribute(snull, "null");
-        else
+        } else {
             ss.removeAttribute(snull);
+        }
         return value;
     }
 
@@ -298,20 +301,24 @@ public class RequestAttributes implements Attributes {
      */
     public Object getAttribute(String s) throws LogicException {
         Object o = checkSessionForAttribute(s);
-        if (o != notFound)
+        if (o != notFound) {
             return o;
+        }
 
         o = checkServletLoginForAttribute(s);
-        if (o != notFound)
+        if (o != notFound) {
             return o;
+        }
 
         o = checkLogicForAttribute(s);
-        if (o != notFound)
+        if (o != notFound) {
             return o;
+        }
 
         o = checkParameterForAttribute(s);
-        if (o != notFound)
+        if (o != notFound) {
             return o;
+        }
 
         throw new AttributeNotFoundException(s, true);
     }
@@ -321,15 +328,19 @@ public class RequestAttributes implements Attributes {
         HttpSession ss = request.getSession(true);
 
         Object value = ss.getAttribute(s);
-        if (value != null)
+        if (value != null) {
             return value;
-        if (ss.getAttribute(snull) != null)
+        }
+        if (ss.getAttribute(snull) != null) {
             return null;
+        }
         value = request.getAttribute(s);
-        if (value != null)
+        if (value != null) {
             return value;
-        if (request.getAttribute(snull) != null)
+        }
+        if (request.getAttribute(snull) != null) {
             return null;
+        }
         return notFound;
     }
 
@@ -352,12 +363,14 @@ public class RequestAttributes implements Attributes {
                 MakumbaActorHashMap mp = (MakumbaActorHashMap) value;
                 value = mp.get(s);
                 for (Map.Entry<String, Object> entr : mp.entrySet()) {
-                    if (entr.getKey().equals(s))
+                    if (entr.getKey().equals(s)) {
                         value = entr.getValue();
-                    if (entr.getValue() == Pointer.Null)
+                    }
+                    if (entr.getValue() == Pointer.Null) {
                         removeFromSession(entr.getKey(), ss);
-                    else
+                    } else {
                         ss.setAttribute(entr.getKey(), entr.getValue());
+                    }
                 }
             }
             if (value == null || value == Pointer.Null) {
@@ -389,8 +402,9 @@ public class RequestAttributes implements Attributes {
 
     public Object checkParameterForAttribute(String s) {
         Object value = getParameters(request).getParameter(s);
-        if (value != null)
+        if (value != null) {
             return value;
+        }
         return notFound;
     }
 

@@ -185,8 +185,9 @@ public class HtmlChoiceWriter extends HtmlUtils {
 
     /** Sets the size of the choice control. Relevant for 'select' controls only, not for tickbox controls. */
     public void setSize(int n) {
-        if (n > 0)
+        if (n > 0) {
             _size = n;
+        }
     }
 
     /**
@@ -222,8 +223,9 @@ public class HtmlChoiceWriter extends HtmlUtils {
      * the options.
      */
     public void setOptionSeparator(String[] s) {
-        if (s != null && s.length > 0)
+        if (s != null && s.length > 0) {
             _optionSeparator = s;
+        }
     }
 
     /**
@@ -232,8 +234,9 @@ public class HtmlChoiceWriter extends HtmlUtils {
      * the options.
      */
     public void setOptionSeparator(List<String> s) {
-        if (s != null && s.size() > 0)
+        if (s != null && s.size() > 0) {
             _optionSeparator = (String[]) s.toArray();
+        }
     }
 
     /**
@@ -264,9 +267,10 @@ public class HtmlChoiceWriter extends HtmlUtils {
         for (; itv.hasNext() && itl.hasNext();) {
             Object val = itv.next();
             String label = itl.next();
-            if (val == null)
+            if (val == null) {
                 throw new ProgrammerError("Non-option text " + label
                         + " found. Non-otion text cannot break simple SELECTs. Use type=\"tickbox\" instead");
+            }
             String value = val.toString();
             boolean yn_selected = value.equals(selectedValue);
             // show option if selected or not-deprecated
@@ -308,8 +312,9 @@ public class HtmlChoiceWriter extends HtmlUtils {
                 selectStarted = false;
                 continue;
             }
-            if (!selectStarted)
+            if (!selectStarted) {
                 selectStatement.append(selectString);
+            }
             selectStarted = true;
             String value = val.toString();
 
@@ -324,8 +329,9 @@ public class HtmlChoiceWriter extends HtmlUtils {
                 selectStatement.append("\t<OPTION VALUE=\"" + value + "\"" + selected + ">" + label + "</OPTION>\n");
             }
         }
-        if (selectStarted)
+        if (selectStarted) {
             selectStatement.append("</SELECT>");
+        }
 
         return selectStatement.toString();
     }

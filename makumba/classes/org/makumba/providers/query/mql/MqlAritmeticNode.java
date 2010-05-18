@@ -20,11 +20,13 @@ public class MqlAritmeticNode extends MqlBinaryOperator {
     @Override
     protected void analyzeOperands(MqlNode left, MqlNode right) throws SemanticException {
         // FIXME: we make sure that int+real= real and real+int= real, maybe only the latter is needed
-        if (returnType != null)
+        if (returnType != null) {
             return;
+        }
         returnType = left;
-        if (checkParam(left, right))
+        if (checkParam(left, right)) {
             return;
+        }
         if (right.getMakType().getType().equals("int") && left.getMakType().getType().equals("real")) {
             returnType = left;
             return;

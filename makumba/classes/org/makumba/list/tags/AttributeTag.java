@@ -82,25 +82,29 @@ public class AttributeTag extends GenericMakumbaTag {
         } catch (Throwable t1) {
             t = t1;
         }
-        if (t != null)
+        if (t != null) {
             if (exceptionVar == null) {
                 throw new RuntimeWrappedException(t);
             } else {
                 pageContext.setAttribute(exceptionVar, t);
-                if (t instanceof AttributeNotFoundException)
+                if (t instanceof AttributeNotFoundException) {
                     pageContext.setAttribute(name + "_null", "null");
+                }
             }
-        if (var == null)
+        }
+        if (var == null) {
             if (t == null) {
                 try {
                     pageContext.getOut().print(o);
                 } catch (java.io.IOException e) {
                     throw new JspException(e.toString());
                 }
-            } else
+            } else {
                 ;
-        else
+            }
+        } else {
             PageAttributes.setAttribute(pageContext, var, o);
+        }
 
         return EVAL_BODY_INCLUDE;
     }

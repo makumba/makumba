@@ -115,8 +115,9 @@ public class QueryExecution {
         HashMap<MultipleKey, QueryExecution> executions = (HashMap<MultipleKey, QueryExecution>) pageContext.getAttribute(EXECUTIONS);
 
         QueryExecution lqe = executions.get(key);
-        if (lqe == null)
+        if (lqe == null) {
             executions.put(key, lqe = new QueryExecution(key, pageContext, offset, limit));
+        }
         return lqe;
     }
 
@@ -129,8 +130,9 @@ public class QueryExecution {
         HashMap<MultipleKey, QueryExecution> executions = (HashMap<MultipleKey, QueryExecution>) pageContext.getAttribute(EXECUTIONS);
 
         QueryExecution lqe = executions.get(key);
-        if (lqe == null)
+        if (lqe == null) {
             executions.put(key, lqe = new QueryExecution(key, pageContext, offset, limit, defaultLimit));
+        }
         return lqe;
     }
 
@@ -263,10 +265,11 @@ public class QueryExecution {
      */
 
     public int dataSize() {
-        if (iterationGroupData == null || iterationGroupData.size() == 0)
+        if (iterationGroupData == null || iterationGroupData.size() == 0) {
             return 0;
-        else
+        } else {
             return iterationGroupData.size();
+        }
     }
 
     /**
@@ -279,8 +282,9 @@ public class QueryExecution {
     public int onParentIteration() {
         getIterationGroupData();
         int n = dataSize();
-        if (n != 0)
+        if (n != 0) {
             currentDataSet.push(currentListData());
+        }
         return n;
     }
 

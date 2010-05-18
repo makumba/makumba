@@ -48,8 +48,9 @@ public class OptionTag extends BasicValueTag implements BodyTag {
     @Override
     public void setTagKey(PageCache pageCache) {
         expr = valueExprOriginal;
-        if (expr == null)
+        if (expr == null) {
             expr = "nil";
+        }
         // a pretty long key but i can't come with a better idea
         Object[] keyComponents = { expr.trim(), getInput().tagKey, fdp.getParentListKey(this) };
         tagKey = new MultipleKey(keyComponents);
@@ -64,16 +65,18 @@ public class OptionTag extends BasicValueTag implements BodyTag {
         FieldDefinition t = (FieldDefinition) pageCache.retrieve(MakumbaJspAnalyzer.INPUT_TYPES, getInput().tagKey);
 
         // for now, only sets and pointers are accepted
-        if (!(t.getType().startsWith("set") || t.getType().startsWith("ptr")))
+        if (!(t.getType().startsWith("set") || t.getType().startsWith("ptr"))) {
             throw new ProgrammerError("Only set and pointer <mak:input > can have options inside");
+        }
 
         return org.makumba.MakumbaSystem.makeFieldDefinition("dummy", "ptr " + t.getForeignTable().getName());
     }
 
     @Override
     public void doStartAnalyze(PageCache pageCache) {
-        if (getInput() == null)
+        if (getInput() == null) {
             throw new ProgrammerError("\'option\' tag must be enclosed in a 'input' tag");
+        }
         getInput().isChoser = true;
         super.doStartAnalyze(pageCache);
     }
@@ -105,8 +108,9 @@ public class OptionTag extends BasicValueTag implements BodyTag {
     @Override
     int computedValue(Object val, FieldDefinition type) throws JspException, org.makumba.LogicException {
         getInput().checkBodyContentForNonWhitespace();
-        if (isNull())
+        if (isNull()) {
             val = org.makumba.Pointer.Null;
+        }
         getInput().choiceSet.add(val, bodyContent == null ? "" : bodyContent.getString(), false, false);
         valueExprOriginal = dataType = expr = null;
         return EVAL_PAGE;

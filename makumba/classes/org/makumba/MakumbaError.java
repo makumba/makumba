@@ -61,16 +61,18 @@ public class MakumbaError extends Error {
     /** Print the stacktrace of the reason exception, if any, otherwise print a normal stack trace */
     @Override
     public void printStackTrace() {
-        if (explanation != null)
+        if (explanation != null) {
             System.out.println(explanation);
+        }
         super.printStackTrace();
     }
 
     /** Print the stacktrace of the reason exception, if any, otherwise print a normal stack trace */
     @Override
     public void printStackTrace(PrintStream ps) {
-        if (explanation != null)
+        if (explanation != null) {
             ps.println(explanation);
+        }
 
         super.printStackTrace(ps);
     }
@@ -78,8 +80,9 @@ public class MakumbaError extends Error {
     /** Print the stacktrace of the reason exception, if any, otherwise print a normal stack trace */
     @Override
     public void printStackTrace(PrintWriter ps) {
-        if (explanation != null)
+        if (explanation != null) {
             ps.println(explanation);
+        }
         super.printStackTrace(ps);
     }
 

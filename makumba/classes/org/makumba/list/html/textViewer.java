@@ -71,8 +71,9 @@ public class textViewer extends FieldViewer {
 
     @Override
     public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
-        if (o instanceof Text)
+        if (o instanceof Text) {
             o = ((Text) o).getString();
+        }
         String txt = o.toString();
         String html = (String) formatParams.get("html");
         String format = (String) formatParams.get("format");
@@ -103,17 +104,19 @@ public class textViewer extends FieldViewer {
         }
 
         int n = getIntParam(rf, fieldIndex, formatParams, "longLineLength");
-        if (n == -1)
+        if (n == -1) {
             n = screenLength;
+        }
 
-        if (HtmlUtils.maxLineLength(txt) > n)
+        if (HtmlUtils.maxLineLength(txt) > n) {
             // special text formatting
             return HtmlUtils.text2html(txt, startSeparator, endSeparator);
-        else if (txt.indexOf('\n') < 0)
+        } else if (txt.indexOf('\n') < 0) {
             // single, short line of text
             return HtmlUtils.string2html(txt);
-        else
+        } else {
             // else: text preformatted
             return "<pre style=\"margin:0px\">" + HtmlUtils.string2html(txt) + "</pre>";
+        }
     }
 }

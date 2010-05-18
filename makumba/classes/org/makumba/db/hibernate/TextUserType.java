@@ -23,10 +23,12 @@ public class TextUserType implements UserType {
     }
 
     public boolean equals(Object x, Object y) {
-        if (x == y)
+        if (x == y) {
             return true;
-        if (x == null || y == null)
+        }
+        if (x == null || y == null) {
             return false;
+        }
         return x.equals(y);
     }
 
@@ -42,8 +44,9 @@ public class TextUserType implements UserType {
             SQLException {
         Text text = null;
         InputStream is = resultSet.getBinaryStream(names[0]);
-        if (resultSet.wasNull())
+        if (resultSet.wasNull()) {
             return null;
+        }
         text = Text.getText(is);
         return text;
     }

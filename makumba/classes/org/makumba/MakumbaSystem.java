@@ -316,8 +316,9 @@ public class MakumbaSystem {
             s = System.getProperty("makumba.displayTimeZone");
         } catch (SecurityException e) {
         } // for applets
-        if (s != null)
+        if (s != null) {
             return java.util.TimeZone.getTimeZone(s);
+        }
         return java.util.TimeZone.getDefault();
 
     }

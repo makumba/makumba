@@ -104,8 +104,9 @@ public class textEditor extends FieldEditor {
      */
     @Override
     public String formatValue(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
-        if (o instanceof Text)
+        if (o instanceof Text) {
             o = ((Text) o).getString();
+        }
         String s = (o == null) ? null : HtmlUtils.string2html(o.toString());
         return resetValueFormat(rf, fieldIndex, s, formatParams);
     }

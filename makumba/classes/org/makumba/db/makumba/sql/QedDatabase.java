@@ -57,8 +57,9 @@ public class QedDatabase extends org.makumba.db.makumba.sql.Database {
         String qedEng = p.getProperty("#sqlEngine");
         qedUrl += qedEng + ":";
         String local = getEngineProperty(qedEng + ".localJDBC");
-        if (local == null || !local.equals("true"))
+        if (local == null || !local.equals("true")) {
             qedUrl += "//" + p.getProperty("#host") + "/";
+        }
         return qedUrl + p.getProperty("#database");
     }
 

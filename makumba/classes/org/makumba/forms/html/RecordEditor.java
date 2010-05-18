@@ -181,8 +181,9 @@ public class RecordEditor extends RecordFormatter {
 
                     if (fd.isNotNull() && !lazyEvaluation) {
                         String error = fd.getNotNullErrorMessage();
-                        if (error == null)
+                        if (error == null) {
                             error = FieldDefinition.ERROR_NOT_NULL;
+                        }
                         throw new InvalidValueException(inputName, error);
                     }
                     o = fd.getNull();
@@ -190,8 +191,9 @@ public class RecordEditor extends RecordFormatter {
                 // for string types (text, char) check not empty
                 if (fd.isNotEmpty() && fd.isStringType() && StringUtils.isEmpty(o.toString())) {
                     String error = fd.getNotEmptyErrorMessage();
-                    if (error == null)
+                    if (error == null) {
                         error = FieldDefinition.ERROR_NOT_EMPTY;
+                    }
 
                     throw new InvalidValueException(inputName, error);
                 }

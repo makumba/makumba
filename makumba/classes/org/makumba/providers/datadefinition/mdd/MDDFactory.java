@@ -253,8 +253,9 @@ public class MDDFactory {
      * Throws a {@link DataDefinitionParseError} at parse time
      */
     protected void doThrow(Throwable t, AST debugTree, String typeName) throws DataDefinitionParseError {
-        if (t == null)
+        if (t == null) {
             return;
+        }
 
         // we already have a DataDefinitionParse error, just throw it further
         if (t instanceof DataDefinitionParseError) {

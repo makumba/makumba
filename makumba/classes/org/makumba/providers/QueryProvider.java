@@ -49,7 +49,7 @@ public abstract class QueryProvider implements SingletonHolder {
      * Puts the QueryEnvironmentExecutionProviders into a Map
      */
     static {
-        for (int i = 0; i < queryProviders.length; i += 2)
+        for (int i = 0; i < queryProviders.length; i += 2) {
             try {
                 QueryProvider qp = (QueryProvider) Class.forName(queryProviders[i + 1]).newInstance();
                 QueryAnalysisProvider qa = (QueryAnalysisProvider) Class.forName(qp.getQueryAnalysisProviderClass()).newInstance();
@@ -59,6 +59,7 @@ public abstract class QueryProvider implements SingletonHolder {
             } catch (Throwable t) {
                 t.printStackTrace();
             }
+        }
     }
 
     /**

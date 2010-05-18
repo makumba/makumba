@@ -60,8 +60,9 @@ public abstract class GenericListTag extends GenericMakumbaTag {
         try {
             return super.doEndTag();
         } finally {
-            if (findAncestorWithClass(this, GenericListTag.class) == null)
+            if (findAncestorWithClass(this, GenericListTag.class) == null) {
                 pageContext.removeAttribute(MakumbaJspAnalyzer.DS_ATTR);
+            }
 
         }
     }
@@ -74,9 +75,10 @@ public abstract class GenericListTag extends GenericMakumbaTag {
      */
     public void addToParentListKey(Object o) {
         AnalysableTag parentList = QueryTag.getParentList(this);
-        if (parentList == null)
+        if (parentList == null) {
             throw new org.makumba.ProgrammerError(
                     "VALUE tags, INPUT, FORM, OPTION or IF tags that compute a value should always be enclosed in a LIST or OBJECT tag");
+        }
         tagKey = new MultipleKey(parentList.getTagKey(), o);
     }
 
@@ -98,8 +100,9 @@ public abstract class GenericListTag extends GenericMakumbaTag {
      */
     public static String getDataSourceName(PageContext pc) {
         String ds = (String) pc.getAttribute(MakumbaJspAnalyzer.DS_ATTR);
-        if (ds == null)
+        if (ds == null) {
             return TransactionProvider.getInstance().getDefaultDataSourceName();
+        }
         return ds;
     }
 
@@ -112,9 +115,10 @@ public abstract class GenericListTag extends GenericMakumbaTag {
      * @throws JspException
      */
     protected void onlyRootArgument(String s) throws JspException {
-        if (findAncestorWithClass(this, GenericListTag.class) != null)
+        if (findAncestorWithClass(this, GenericListTag.class) != null) {
             throw new RuntimeWrappedException(new MakumbaJspException(this, "the " + s
                     + " argument cannot be set for non-root makumba tags"));
+        }
     }
 
     /**
@@ -126,7 +130,8 @@ public abstract class GenericListTag extends GenericMakumbaTag {
      */
     public void setDb(String db) throws JspException {
         onlyRootArgument("db");
-        if (pageContext != null)
+        if (pageContext != null) {
             pageContext.setAttribute(MakumbaJspAnalyzer.DS_ATTR, db);
+        }
     }
 }

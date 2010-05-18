@@ -33,7 +33,7 @@ public abstract class DataDefinitionProvider implements SingletonHolder {
      * Puts the TransactionProviders into a Map
      */
     static {
-        for (int i = 0; i < dataDefinitionProviders.length; i += 2)
+        for (int i = 0; i < dataDefinitionProviders.length; i += 2) {
             try {
                 Method getInstance = Class.forName(dataDefinitionProviders[i + 1]).getDeclaredMethod("getInstance",
                     new Class<?>[] {});
@@ -42,6 +42,7 @@ public abstract class DataDefinitionProvider implements SingletonHolder {
             } catch (Throwable t) {
                 t.printStackTrace();
             }
+        }
     }
 
     public DataDefinitionProvider() {
@@ -214,8 +215,9 @@ public abstract class DataDefinitionProvider implements SingletonHolder {
                     mdds.add(s);
                 } else {
                     java.io.File f = new java.io.File(dir, s);
-                    if (f.isDirectory())
+                    if (f.isDirectory()) {
                         fillMdds(baselength, f, mdds);
+                    }
                 }
             }
         }

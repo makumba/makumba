@@ -22,8 +22,9 @@ public class ObjectTypeAST extends ExprTypeAST {
         String type = null;
         if (lhs instanceof ObjectTypeAST) {
             type = ((ObjectTypeAST) lhs).getObjectType();
-            if (type == null)
+            if (type == null) {
                 throw new SemanticException("unknown alias: " + lhs + " in property reference: " + "of " + rhs);
+            }
         } else {
             type = (String) aliasTypes.get(lhs.getText());
             if (type == null) {
@@ -33,9 +34,9 @@ public class ObjectTypeAST extends ExprTypeAST {
         }
 
         Object computedType = "";
-        if (rhs == null)
+        if (rhs == null) {
             computedType = typeComputer.determineType(type, null);
-        else {
+        } else {
             setDescription(rhs.getText());
             computedType = typeComputer.determineType(type, rhs.getText());
 
@@ -53,8 +54,9 @@ public class ObjectTypeAST extends ExprTypeAST {
 
     public ObjectTypeAST(AST pointer, Map aliasTypes) throws SemanticException {
         String type = (String) aliasTypes.get(pointer.getText());
-        if (type == null)
+        if (type == null) {
             throw new SemanticException("unknown alias: " + pointer.getText());
+        }
 
         setObjectType(type);
         setDescription(pointer.getText());

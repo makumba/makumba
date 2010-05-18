@@ -42,8 +42,9 @@ public class HQLQueryAnalysisProvider extends QueryAnalysisProvider {
 
     @Override
     public FieldDefinition getAlternativeField(DataDefinition dd, String fn) {
-        if (fn.equals("id"))
+        if (fn.equals("id")) {
             return dd.getFieldDefinition(dd.getIndexPointerFieldName());
+        }
         return null;
 
     }
@@ -51,8 +52,9 @@ public class HQLQueryAnalysisProvider extends QueryAnalysisProvider {
     @Override
     public String getPrimaryKeyNotation(String label) {
         // this is specific to Hibernate: we add '.id' in order to get the id as in makumba
-        if (label.indexOf('.') == -1)
+        if (label.indexOf('.') == -1) {
             label += ".id";
+        }
         return label;
     }
 

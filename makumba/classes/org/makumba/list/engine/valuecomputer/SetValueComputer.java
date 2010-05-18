@@ -53,18 +53,20 @@ public class SetValueComputer extends QueryValueComputer {
         queryProps[ComposedQuery.FROM] = (hql ? "JOIN " : "") + setExpr + " " + label;
 
         if (isValue) {
-            if (set.getType().equals("set"))
+            if (set.getType().equals("set")) {
                 name = label + "." + set.getForeignTable().getTitleFieldName();
-            else
+            } else {
                 // setintEnum or setcharEnum
                 name = label + "." + set.getSubtable().getTitleFieldName();
+            }
             queryProps[ComposedQuery.ORDERBY] = name;
         }
 
         makeQueryAtAnalysis(parentListKey, set.getName(), queryProps, label + (hql ? ".id" : ""), pageCache);
 
-        if (isValue)
+        if (isValue) {
             QueryTag.getQuery(pageCache, queryKey).checkProjectionInteger(name);
+        }
     }
 
     /**
@@ -76,8 +78,9 @@ public class SetValueComputer extends QueryValueComputer {
     @Override
     public void doEndAnalyze(PageCache pageCache) {
         super.doEndAnalyze(pageCache);
-        if (name != null)
+        if (name != null) {
             nameIndex = QueryTag.getQuery(pageCache, queryKey).checkProjectionInteger(name).intValue();
+        }
     }
 
     /**
@@ -93,8 +96,9 @@ public class SetValueComputer extends QueryValueComputer {
         int n = ex.dataSize();
         Vector<Object> v = new Vector<Object>();
 
-        for (ex.iteration = 0; ex.iteration < n; ex.iteration++)
+        for (ex.iteration = 0; ex.iteration < n; ex.iteration++) {
             v.addElement(ex.currentListData().data[projectionIndex]);
+        }
         return v;
     }
 
@@ -116,31 +120,37 @@ public class SetValueComputer extends QueryValueComputer {
         int n = ex.dataSize();
         Vector<Object> v = null;
 
-        if (running.getVar() != null)
+        if (running.getVar() != null) {
             v = new Vector<Object>();
+        }
 
         String sep = "";
         StringBuffer print = new StringBuffer();
         for (ex.iteration = 0; ex.iteration < n; ex.iteration++) {
             print.append(sep);
             sep = ",";
-            if (running.getVar() != null)
+            if (running.getVar() != null) {
                 v.addElement(ex.currentListData().data[projectionIndex]);
+            }
             print.append(ex.currentListData().data[nameIndex]);
         }
         String s = print.toString();
 
         // replace by 'default' or 'empty' if necessary
-        if (n == 0 && running.getParams().get("default") != null)
+        if (n == 0 && running.getParams().get("default") != null) {
             s = (String) running.getParams().get("default");
+        }
 
-        if (s.length() == 0 && running.getParams().get("empty") != null)
+        if (s.length() == 0 && running.getParams().get("empty") != null) {
             s = (String) running.getParams().get("empty");
+        }
 
-        if (running.getVar() != null)
+        if (running.getVar() != null) {
             PageAttributes.setAttribute(running.getPageContext(), running.getVar(), v);
-        if (running.getPrintVar() != null)
+        }
+        if (running.getPrintVar() != null) {
             running.getPageContext().setAttribute(running.getPrintVar(), s);
+        }
         if (running.getPrintVar() == null && running.getVar() == null) {
             try {
                 running.getPageContext().getOut().print(s);

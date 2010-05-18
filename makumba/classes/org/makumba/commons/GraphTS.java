@@ -45,9 +45,11 @@ public class GraphTS {
         vertexList = new Vertex[MAX_VERTS];
         matrix = new int[MAX_VERTS][MAX_VERTS];
         numVerts = 0;
-        for (int i = 0; i < MAX_VERTS; i++)
-            for (int k = 0; k < MAX_VERTS; k++)
+        for (int i = 0; i < MAX_VERTS; i++) {
+            for (int k = 0; k < MAX_VERTS; k++) {
                 matrix[i][k] = 0;
+            }
+        }
         sortedArray = new MultipleKey[MAX_VERTS]; // sorted vert labels
     }
 
@@ -116,26 +118,31 @@ public class GraphTS {
     public void deleteVertex(int delVert) {
         if (delVert != numVerts - 1) // if not last vertex, delete from vertexList
         {
-            for (int j = delVert; j < numVerts - 1; j++)
+            for (int j = delVert; j < numVerts - 1; j++) {
                 vertexList[j] = vertexList[j + 1];
+            }
 
-            for (int row = delVert; row < numVerts - 1; row++)
+            for (int row = delVert; row < numVerts - 1; row++) {
                 moveRowUp(row, numVerts);
+            }
 
-            for (int col = delVert; col < numVerts - 1; col++)
+            for (int col = delVert; col < numVerts - 1; col++) {
                 moveColLeft(col, numVerts - 1);
+            }
         }
         numVerts--; // one less vertex
     }
 
     private void moveRowUp(int row, int length) {
-        for (int col = 0; col < length; col++)
+        for (int col = 0; col < length; col++) {
             matrix[row][col] = matrix[row + 1][col];
+        }
     }
 
     private void moveColLeft(int col, int length) {
-        for (int row = 0; row < length; row++)
+        for (int row = 0; row < length; row++) {
             matrix[row][col] = matrix[row][col + 1];
+        }
     }
 
     public static void main(String[] args) {

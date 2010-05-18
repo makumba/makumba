@@ -149,27 +149,30 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
 
         if (dataType != null) {
             dataTypeInfo = ddp.makeFieldDefinition("dummyName", dataType);
-            if (contextType != null && !contextType.isAssignableFrom(dataTypeInfo))
+            if (contextType != null && !contextType.isAssignableFrom(dataTypeInfo)) {
                 throw new ProgrammerError("declared data type '" + dataType
                         + "' not compatible with the type computed from context '" + contextType + "'");
+            }
         }
 
         if (isValue()) {
             type = fdp.onBasicValueEndAnalyze(getTagKey(), pageCache);
         }
-        if (isAttribute())
+        if (isAttribute()) {
             type = (FieldDefinition) pageCache.retrieve(AnalysableTag.TYPES, expr.substring(1));
+        }
 
         String fieldName = "";
         if (this instanceof InputTag) {
             fieldName = "Field <" + ((InputTag) this).name + ">: ";
         }
 
-        if (type != null && dataTypeInfo != null && !dataTypeInfo.isAssignableFrom(type))
+        if (type != null && dataTypeInfo != null && !dataTypeInfo.isAssignableFrom(type)) {
             throw new ProgrammerError(
                     fieldName
                             + "computed type for INPUT is different from the indicated dataType. The dataType is indicated to '"
                             + dataType + "' type computed is '" + type + "'");
+        }
 
         if (type != null && contextType != null && !contextType.isAssignableFrom(type)) {
             String contextTypeStr = contextType.getType();
@@ -188,13 +191,15 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
 
         }
 
-        if (type == null && contextType == null && dataTypeInfo == null)
+        if (type == null && contextType == null && dataTypeInfo == null) {
             throw new ProgrammerError(fieldName
                     + "cannot determine input type. Please specify the type using dataType=...");
+        }
 
         // we give priority to the type as computed from the form
-        if (contextType == null)
+        if (contextType == null) {
             contextType = dataTypeInfo != null ? dataTypeInfo : type;
+        }
 
         pageCache.cache(MakumbaJspAnalyzer.INPUT_TYPES, tagKey, contextType);
     }
@@ -205,15 +210,17 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
         FieldDefinition type = (FieldDefinition) pageCache.retrieve(MakumbaJspAnalyzer.INPUT_TYPES, tagKey);
         Object val = null;
 
-        if (isValue())
+        if (isValue()) {
             val = fdp.getValue(getTagKey(), getPageContext(), pageCache);
+        }
 
         if (isAttribute()) {
             val = PageAttributes.getAttributes(pageContext).getAttribute(expr.substring(1));
         }
 
-        if (val != null)
+        if (val != null) {
             val = type.checkValue(val);
+        }
 
         return computedValue(val, type);
     }

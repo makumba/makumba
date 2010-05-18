@@ -52,8 +52,9 @@ public class MakumbaJspFactory extends JspFactory {
             if (fact != null) {
                 if (!(fact.getClass().getName().endsWith("MakumbaJspFactory"))) {
                     JspFactory.setDefaultFactory(new MakumbaJspFactory(fact));
-                } else
+                } else {
                     throw new IllegalStateException("Cannot use JspFactory from old classloader!");
+                }
 
                 checker = noop;
             }
@@ -71,8 +72,9 @@ public class MakumbaJspFactory extends JspFactory {
      */
     static void reset() {
         JspFactory current = JspFactory.getDefaultFactory();
-        if (!(current instanceof MakumbaJspFactory))
+        if (!(current instanceof MakumbaJspFactory)) {
             return;
+        }
         pageContextStack = null;
         JspFactory.setDefaultFactory(((MakumbaJspFactory) current).getDecorated());
     }
@@ -105,8 +107,9 @@ public class MakumbaJspFactory extends JspFactory {
         // we hang the pageContext in a threadLocal stack
         PageContext pageContext = fact.getPageContext(servlet, request, response, errorPageURL, needsSession, buffer,
             autoflush);
-        if (pageContextStack.get() == null)
+        if (pageContextStack.get() == null) {
             pageContextStack.set(new Stack<PageContext>());
+        }
         pageContextStack.get().push(pageContext);
 
         // and also trigger page analysis

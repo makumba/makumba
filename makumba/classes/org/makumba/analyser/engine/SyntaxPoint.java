@@ -186,8 +186,9 @@ public abstract class SyntaxPoint implements Comparable<SyntaxPoint> {
     public int compareTo(SyntaxPoint sp) {
         int n = position - sp.position;
 
-        if (n != 0) // order by position
+        if (n != 0) {
             return n;
+        }
 
         if (begin == sp.begin) /*
                                  * two things begin at the same place? strange. but possible, e.g. lines can begin or
@@ -196,10 +197,12 @@ public abstract class SyntaxPoint implements Comparable<SyntaxPoint> {
                                  * else.
                                  */
         {
-            if (sp.getType().equals("TextLine"))
+            if (sp.getType().equals("TextLine")) {
                 return sp.begin ? 1 : -1;
-            if (getType().equals("TextLine"))
+            }
+            if (getType().equals("TextLine")) {
                 return begin ? -1 : 1;
+            }
             return getType().compareTo(sp.getType()); // a random, really...
         }
 

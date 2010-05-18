@@ -41,12 +41,14 @@ public class VarTEI extends TagExtraInfo {
         Vector<VariableInfo> v = new Vector<VariableInfo>();
 
         String var = data.getAttributeString("var");
-        if (var != null)
+        if (var != null) {
             v.addElement(new VariableInfo(var, "java.lang.Object", true, VariableInfo.AT_BEGIN));
+        }
 
         var = data.getAttributeString("printVar");
-        if (var != null)
+        if (var != null) {
             v.addElement(new VariableInfo(var, "java.lang.String", true, VariableInfo.AT_BEGIN));
+        }
 
         return v.toArray(new VariableInfo[v.size()]);
     }

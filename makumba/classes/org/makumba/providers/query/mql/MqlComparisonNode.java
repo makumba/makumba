@@ -20,10 +20,12 @@ public class MqlComparisonNode extends MqlBinaryOperator {
 
     @Override
     protected void analyzeOperands(MqlNode left, MqlNode right) throws SemanticException {
-        if (checkParam(left, right))
+        if (checkParam(left, right)) {
             return;
-        if (rewroteOperand)
+        }
+        if (rewroteOperand) {
             return;
+        }
         rewroteOperand = checkAndRewriteOperand(left, right);
     }
 

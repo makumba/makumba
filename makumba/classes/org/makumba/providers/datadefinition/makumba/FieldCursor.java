@@ -52,8 +52,9 @@ public class FieldCursor {
 
     void skipBlank() {
         try {
-            while (Character.isWhitespace(toParse.charAt(index)))
+            while (Character.isWhitespace(toParse.charAt(index))) {
                 index++;
+            }
         } catch (StringIndexOutOfBoundsException e) {
         }
     }
@@ -75,16 +76,18 @@ public class FieldCursor {
 
     /** expect the string to follow */
     public void expect(String s) throws DataDefinitionParseError {
-        if (!lookup(s))
+        if (!lookup(s)) {
             throw fail(s + " expected");
+        }
     }
 
     /** expect the whitespace */
     public void expectWhitespace() throws DataDefinitionParseError {
         int indexBefore = index;
         skipBlank();
-        if (indexBefore == index)
+        if (indexBefore == index) {
             throw fail("some whitespace expected");
+        }
     }
 
     /** a type name */
@@ -94,23 +97,26 @@ public class FieldCursor {
 
     public String expectTypeLiteral() throws DataDefinitionParseError {
         String ret = lookupTypeLiteral();
-        if (ret == null)
+        if (ret == null) {
             throw fail("type expected");
+        }
         return ret;
     }
 
     /** an enumerator name */
     public String lookupEnumName() throws DataDefinitionParseError {
         skipBlank();
-        if (!lookup("\""))
+        if (!lookup("\"")) {
             throw fail("\"expected");
+        }
         return upToExpect("\"");
     }
 
     public String expectEnumName() throws DataDefinitionParseError {
         String ret = lookupEnumName();
-        if (ret == null)
+        if (ret == null) {
             throw fail("enumerator name expected");
+        }
         return ret;
     }
 
@@ -127,13 +133,15 @@ public class FieldCursor {
                     || c == '/'
                     // <<
                     || c == '>' // needed to allow T->f for hibernate type analyzer
-            )
+            ) {
                 end++;
+            }
         } catch (StringIndexOutOfBoundsException siob) {
         }
 
-        if (end == index)
+        if (end == index) {
             return null;
+        }
         return upTo(end);
     }
 
@@ -143,12 +151,14 @@ public class FieldCursor {
         int end = index;
 
         try {
-            while (Character.isLetter(toParse.charAt(end)))
+            while (Character.isLetter(toParse.charAt(end))) {
                 end++;
+            }
         } catch (StringIndexOutOfBoundsException siob) {
         }
-        if (end == index)
+        if (end == index) {
             return null;
+        }
 
         return upTo(end);
     }
@@ -159,15 +169,18 @@ public class FieldCursor {
         int end = index;
 
         try {
-            if (toParse.charAt(end) == '-') // allow a leading -
+            if (toParse.charAt(end) == '-') {
                 end++;
-            while (Character.isDigit(toParse.charAt(end)))
+            }
+            while (Character.isDigit(toParse.charAt(end))) {
                 end++;
+            }
         } catch (StringIndexOutOfBoundsException siob) {
         }
 
-        if (end == index)
+        if (end == index) {
             return null;
+        }
 
         try {
             return new Integer(upTo(end));
@@ -178,8 +191,9 @@ public class FieldCursor {
 
     public Integer expectInteger() throws DataDefinitionParseError {
         Integer i = lookupInteger();
-        if (i == null)
+        if (i == null) {
             throw fail("Integer expected");
+        }
         return i;
     }
 
@@ -187,17 +201,20 @@ public class FieldCursor {
         skipBlank();
         int end = index;
         try {
-            if (!Character.isLetter(toParse.charAt(end)))
+            if (!Character.isLetter(toParse.charAt(end))) {
                 return null;
+            }
             end++;
             char c;
 
-            while (Character.isDigit(c = toParse.charAt(end)) || Character.isLetter(c) || c == '_' || c == '-')
+            while (Character.isDigit(c = toParse.charAt(end)) || Character.isLetter(c) || c == '_' || c == '-') {
                 end++;
+            }
         } catch (StringIndexOutOfBoundsException siob) {
         }
-        if (end == index)
+        if (end == index) {
             return null;
+        }
 
         return upTo(end);
     }
@@ -223,8 +240,9 @@ public class FieldCursor {
     DataDefinition lookupTableSpecifier() throws DataDefinitionParseError {
         int beg = index;
         String path = lookupTableName();
-        if (path == null)
+        if (path == null) {
             return null;
+        }
 
         DataDefinition ri = null;
         try {
@@ -249,21 +267,24 @@ public class FieldCursor {
         String s = lookupEnumName();
         int ln;
 
-        if (s != null)
+        if (s != null) {
             while (true) {
                 ln = s.length();
-                if (valueset.contains(s))
+                if (valueset.contains(s)) {
                     throw fail("repeated name: " + s);
+                }
 
                 valueset.addElement(s);
-                if (ln > len)
+                if (ln > len) {
                     len = ln;
+                }
                 if (lookup(",")) {
                     s = expectEnumName();
                     continue;
                 }
                 break;
             }
+        }
         if (lookup("}")) {
             fi.extra2 = new Integer(len);
             return;
@@ -281,25 +302,29 @@ public class FieldCursor {
         fi.extra3 = deprset;
 
         String s = lookupEnumName();
-        if (s != null)
+        if (s != null) {
             while (true) {
-                if (nameset.contains(s))
+                if (nameset.contains(s)) {
                     throw fail("repeated name: " + s);
+                }
 
                 nameset.addElement(s);
                 expect("=");
                 Integer val = expectInteger();
                 valueset.addElement(val);
-                if (lookup("deprecated"))
+                if (lookup("deprecated")) {
                     deprset.addElement(val);
+                }
                 if (lookup(",")) {
                     s = expectEnumName();
                     continue;
                 }
                 break;
             }
-        if (!lookup("}"))
+        }
+        if (!lookup("}")) {
             throw fail("deprecated or , or } epxected");
+        }
     }
 
     /*
@@ -314,8 +339,9 @@ public class FieldCursor {
             }
         }
         try {
-            if (toParse.substring(index).trim().length() != 0)
+            if (toParse.substring(index).trim().length() != 0) {
                 throw fail("end of definition expected");
+            }
         } catch (StringIndexOutOfBoundsException siobe) {
         }
 

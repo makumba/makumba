@@ -55,10 +55,11 @@ public class Text {
             s = System.getProperty("makumba.long-content");
         } catch (SecurityException se) {
         } // for applets
-        if (s != null)
+        if (s != null) {
             FILE_LIMIT = Integer.parseInt(s.trim());
-        else
+        } else {
             FILE_LIMIT = 32768;
+        }
     }
 
     /**
@@ -108,14 +109,16 @@ public class Text {
 
     /** Read the text content as a binary stream. Recommended for long content */
     public InputStream toBinaryStream() {
-        if (source == null)
+        if (source == null) {
             throw new MakumbaError("texts indicated by stream can only be consumed once");
-        if (ld != null)
+        }
+        if (ld != null) {
             try {
                 return ld.getInputStream();
             } catch (IOException e) {
                 throw new RuntimeWrappedException(e);
             }
+        }
         InputStream s = source;
         source = null;
         return s;
@@ -127,14 +130,18 @@ public class Text {
 
     /** convenience method for making a text out of another Text, InputStream, String, or byte[] */
     public static Text getText(Object value) {
-        if (value instanceof Text)
+        if (value instanceof Text) {
             return (Text) value;
-        if (value instanceof java.io.InputStream)
+        }
+        if (value instanceof java.io.InputStream) {
             return new Text((InputStream) value);
-        if (value instanceof String)
+        }
+        if (value instanceof String) {
             return new Text((String) value);
-        if (value instanceof byte[])
+        }
+        if (value instanceof byte[]) {
             return new Text((byte[]) value);
+        }
         throw new InvalidValueException("unsupported type to make text of " + value.getClass());
     }
 
@@ -163,10 +170,12 @@ public class Text {
     }
 
     public String toShortString(int length) {
-        if (length > len)
+        if (length > len) {
             length = len;
-        if (length > FILE_LIMIT)
+        }
+        if (length > FILE_LIMIT) {
             length = FILE_LIMIT;
+        }
         ByteArrayOutputStream bo = new ByteArrayOutputStream(length + 20);
 
         InputStream is = toBinaryStream();
@@ -175,8 +184,9 @@ public class Text {
             try {
 
                 int n = is.read(b, 0, b.length);
-                if (n != -1)
+                if (n != -1) {
                     bo.write(b, 0, n);
+                }
                 bo.write("... (length: ".getBytes());
                 bo.write(new Integer(len).toString().getBytes());
                 bo.write(")".getBytes());
@@ -199,8 +209,9 @@ public class Text {
 
         try {
             int n;
-            while ((n = is.read(b, 0, b.length)) != -1)
+            while ((n = is.read(b, 0, b.length)) != -1) {
                 o.write(b, 0, n);
+            }
         } finally {
             o.close();
             is.close();
@@ -213,12 +224,14 @@ public class Text {
         try {
             int n, m;
             int i = 0;
-            while ((n = is.read()) != -1)
+            while ((n = is.read()) != -1) {
                 if (n != (m = is1.read())) {
                     java.util.logging.Logger.getLogger("org.makumba.debug.abstr").severe(m + " " + n + " " + i);
                     return false;
-                } else
+                } else {
                     i++;
+                }
+            }
             return is1.read() == -1;
         } finally {
             is.close();
@@ -229,12 +242,15 @@ public class Text {
     /** Indicates whether the other object is "equal to" this Text. */
     @Override
     public boolean equals(Object other) {
-        if (other == null)
+        if (other == null) {
             return false;
-        if (this.getClass() != other.getClass())
+        }
+        if (this.getClass() != other.getClass()) {
             return false;
-        if (this.length() != ((Text) other).length())
+        }
+        if (this.length() != ((Text) other).length()) {
             return false;
+        }
         try {
             return this.compare(((Text) other).toBinaryStream());
         } catch (IOException e) {

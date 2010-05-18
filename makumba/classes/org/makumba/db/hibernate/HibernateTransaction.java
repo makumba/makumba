@@ -103,21 +103,24 @@ public class HibernateTransaction extends TransactionImplementation {
         while (e.hasMoreElements()) {
             Object o = e.nextElement();
             DataDefinition r = ddp.getDataDefinition(p.getType());
-            if (!(o instanceof String))
+            if (!(o instanceof String)) {
                 throw new org.makumba.NoSuchFieldException(r,
                         "Dictionaries passed to makumba DB operations should have String keys. Key <" + o
                                 + "> is of type " + o.getClass() + r.getName());
+            }
             FieldDefinition fieldDefinition = r.getFieldDefinition((String) o);
-            if (fieldDefinition == null)
+            if (fieldDefinition == null) {
                 throw new org.makumba.NoSuchFieldException(r, (String) o);
+            }
             String s = (String) o;
             sb.append(separator).append("p.");
-            if (fieldDefinition.getType().equals("ptrIndex"))
+            if (fieldDefinition.getType().equals("ptrIndex")) {
                 sb.append("id");
-            else {
+            } else {
                 sb.append(s);
-                if (fieldDefinition.getType().startsWith("ptr"))
+                if (fieldDefinition.getType().startsWith("ptr")) {
                     sb.append(".id");
+                }
             }
 
             sb.append(" as ").append(s);
@@ -306,8 +309,9 @@ public class HibernateTransaction extends TransactionImplementation {
         }
 
         // a better way to detect named parameters
-        if (namedParam.matcher(query).find())
+        if (namedParam.matcher(query).find()) {
             args = paramsToMap(args);
+        }
 
         if (args != null && args instanceof Map) {
             setNamedParameters((Map) args, paramsDef, q);
@@ -456,8 +460,9 @@ public class HibernateTransaction extends TransactionImplementation {
                     Double val = paramValue instanceof String ? Double.parseDouble((String) paramValue)
                             : (Double) paramValue;
                     q.setParameter(paramName, val);
-                } else
+                } else {
                     q.setParameter(paramName, paramValue);
+                }
             }
         }
     }

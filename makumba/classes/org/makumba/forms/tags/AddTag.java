@@ -87,8 +87,9 @@ public class AddTag extends FormTagBase {
     @Override
     String getOperation() {
         FormTagBase parent = findParentForm();
-        if ((parent instanceof NewTag) && baseObject.equals(parent.formName))
+        if ((parent instanceof NewTag) && baseObject.equals(parent.formName)) {
             return "addToNew";
+        }
         return "add";
     }
 

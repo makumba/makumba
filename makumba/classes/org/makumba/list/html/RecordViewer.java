@@ -46,8 +46,9 @@ public class RecordViewer extends RecordFormatter {
 
         expr = new String[dd.getFieldNames().size()];
 
-        for (int i = 0; i < dd.getFieldNames().size(); i++)
+        for (int i = 0; i < dd.getFieldNames().size(); i++) {
             expr[i] = q.getProjectionAt(i);
+        }
     }
 
     public RecordViewer(DataDefinition ri, Hashtable<String, String> h) {
@@ -56,13 +57,14 @@ public class RecordViewer extends RecordFormatter {
 
     @Override
     protected String applyParameters(FieldFormatter ff, Dictionary<String, Object> formatParams, String s) {
-        if (formatParams.get("urlEncode") != null)
+        if (formatParams.get("urlEncode") != null) {
             try {
                 return java.net.URLEncoder.encode(s, "UTF-8");
             } catch (UnsupportedEncodingException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
+        }
         return s;
     }
 

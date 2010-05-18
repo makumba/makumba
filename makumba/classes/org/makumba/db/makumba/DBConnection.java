@@ -93,8 +93,9 @@ public abstract class DBConnection extends TransactionImplementation {
     @Override
     public void unlock(String symbol) {
         Pointer p = locks.get(symbol);
-        if (p == null)
+        if (p == null) {
             throw new ProgrammerError(symbol + " not locked in connection " + this);
+        }
         deleteLock(symbol);
     }
 
@@ -119,12 +120,14 @@ public abstract class DBConnection extends TransactionImplementation {
         while (e.hasMoreElements()) {
             Object o = e.nextElement();
             DataDefinition r = ddp.getDataDefinition(p.getType());
-            if (!(o instanceof String))
+            if (!(o instanceof String)) {
                 throw new org.makumba.NoSuchFieldException(r,
                         "Dictionaries passed to makumba DB operations should have String keys. Key <" + o
                                 + "> is of type " + o.getClass() + r.getName());
-            if (r.getFieldDefinition((String) o) == null)
+            }
+            if (r.getFieldDefinition((String) o) == null) {
                 throw new org.makumba.NoSuchFieldException(r, (String) o);
+            }
             String s = (String) o;
             sb.append(separator).append("p.").append(s).append(" as ").append(s);
             separator = ",";

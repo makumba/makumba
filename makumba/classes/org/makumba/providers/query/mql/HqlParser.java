@@ -50,8 +50,9 @@ public final class HqlParser extends HqlBaseParser {
 
     @Override
     public void reportError(String s) {
-        if (error == null)
+        if (error == null) {
             error = new RecognitionException(s);
+        }
     }
 
     @Override
@@ -113,8 +114,9 @@ public final class HqlParser extends HqlBaseParser {
      */
     @Override
     public AST negateNode(AST x) {
-        if (error != null)
+        if (error != null) {
             return null;
+        }
         // TODO: switch statements are always evil! We already had bugs because
         // of forgotten token types. Use polymorphism for this!
         switch (x.getType()) {

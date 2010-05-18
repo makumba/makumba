@@ -53,10 +53,12 @@ public class SQLDBConnection extends DBConnection {
 
         conn = pooledDataSource.getConnection();
 
-        if (conn.getMetaData().supportsTransactions())
+        if (conn.getMetaData().supportsTransactions()) {
             conn.setAutoCommit(false);
-        if (conn.getMetaData().supportsTransactionIsolationLevel(Database.DESIRED_TRANSACTION_LEVEL))
+        }
+        if (conn.getMetaData().supportsTransactionIsolationLevel(Database.DESIRED_TRANSACTION_LEVEL)) {
             conn.setTransactionIsolation(Database.DESIRED_TRANSACTION_LEVEL);
+        }
 
         if (org.makumba.db.makumba.sql.Database.supportsUTF8()) {
             Statement st = this.createStatement();

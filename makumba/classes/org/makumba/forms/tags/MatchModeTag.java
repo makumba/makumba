@@ -200,10 +200,12 @@ public class MatchModeTag extends GenericMakumbaTag {
         String type = (String) params.get("type");
         try {
             if (StringUtils.equalsAny(type, new String[] { "radio" })) {
-                if (elementSeparator != null)
+                if (elementSeparator != null) {
                     hcw.setOptionSeparator(elementSeparator);
-                if (labelSeparator != null)
+                }
+                if (labelSeparator != null) {
                     hcw.setTickLabelSeparator(labelSeparator);
+                }
                 pageContext.getOut().println(hcw.getRadioSelect());
             } else {
                 pageContext.getOut().println(hcw.getSelect());

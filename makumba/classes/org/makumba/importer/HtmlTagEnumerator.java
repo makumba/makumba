@@ -59,8 +59,9 @@ public class HtmlTagEnumerator {
     public boolean next() throws IOException {
         int c;
 
-        if (ended)
+        if (ended) {
             return false;
+        }
         while ((c = source.read()) != -1) {
             if (c == '<') {
                 lastString = string.toString();
@@ -72,10 +73,11 @@ public class HtmlTagEnumerator {
                 tag = new StringBuffer();
                 inTag = false;
                 return true;
-            } else if (inTag)
+            } else if (inTag) {
                 tag.append((char) c);
-            else
+            } else {
                 string.append((char) c);
+            }
         }
         source.close();
         ended = true;
@@ -93,10 +95,12 @@ public class HtmlTagEnumerator {
     public String getTagType() {
         String s = lastTag.trim();
         int i = 0;
-        if (s.startsWith("/"))
+        if (s.startsWith("/")) {
             i = 1;
-        while (i < s.length() && Character.isLetter(s.charAt(i)))
+        }
+        while (i < s.length() && Character.isLetter(s.charAt(i))) {
             i++;
+        }
         return s.substring(0, i);
     }
 

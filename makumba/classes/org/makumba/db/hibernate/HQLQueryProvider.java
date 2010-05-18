@@ -127,8 +127,9 @@ public class HQLQueryProvider extends QueryProvider {
     private static boolean populated = false;
 
     private static void populateDatabase(org.makumba.Transaction db) {
-        if (populated)
+        if (populated) {
             return;
+        }
         populated = true;
 
         languages.clear();

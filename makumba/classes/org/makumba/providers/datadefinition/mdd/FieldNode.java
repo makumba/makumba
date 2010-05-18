@@ -146,8 +146,9 @@ public class FieldNode extends MDDAST {
         }
         sb.append("== Modifiers: " + (fixed ? "fixed " : "") + (unique ? "unique " : "") + (notNull ? "not null " : "")
                 + (notEmpty ? "not empty " : "") + "\n");
-        if (description != null)
+        if (description != null) {
             sb.append("== Description: " + description + "\n");
+        }
         if (subfield != null) {
             sb.append("\n== Subfield detail" + "\n\n");
             sb.append(subfield.toString() + "\n");

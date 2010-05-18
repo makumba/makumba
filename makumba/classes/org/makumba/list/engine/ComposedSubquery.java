@@ -54,13 +54,15 @@ public class ComposedSubquery extends ComposedQuery {
         concat(derivedSections, superQuery.derivedSections, sections, WHERE, " AND ", true);
         // concat(derivedSections, superQuery.derivedSections, sections, GROUPBY, ",", false);
         String gpb = sections[GROUPBY];
-        if (gpb != null)
+        if (gpb != null) {
             derivedSections[GROUPBY] = gpb;
+        }
 
         // concat(derivedSections, superQuery.derivedSections, sections, "ORDERBY", ",");
         String order = sections[ORDERBY];
-        if (order != null)
+        if (order != null) {
             derivedSections[ORDERBY] = order;
+        }
     }
 
     /**
@@ -71,15 +73,18 @@ public class ComposedSubquery extends ComposedQuery {
      */
     void deriveFrom(int n) {
         derivedSections[n] = superQuery.derivedSections[n];
-        if (sections[n] != null)
-            if (derivedSections[n] != null)
-                if (sections[n].trim().toLowerCase().startsWith("join"))
+        if (sections[n] != null) {
+            if (derivedSections[n] != null) {
+                if (sections[n].trim().toLowerCase().startsWith("join")) {
                     // FIXME: this seems to be a dirty fix...maybe the separator should be join in all cases?
                     derivedSections[n] += " " + sections[n];
-                else
+                } else {
                     derivedSections[n] += "," + sections[n];
-            else
+                }
+            } else {
                 derivedSections[n] = sections[n];
+            }
+        }
     }
 
     /**
@@ -106,11 +111,13 @@ public class ComposedSubquery extends ComposedQuery {
         }
         String s1 = h1[what];
         String s2 = h2[what];
-        if (s1 != null && s1.trim().length() == 0)
+        if (s1 != null && s1.trim().length() == 0) {
             s1 = null;
+        }
 
-        if (s2 != null && s2.trim().length() == 0)
+        if (s2 != null && s2.trim().length() == 0) {
             s2 = null;
+        }
 
         if (s1 == null && s2 != null) {
             result[what] = s2;
@@ -120,8 +127,9 @@ public class ComposedSubquery extends ComposedQuery {
             result[what] = s1;
             return;
         }
-        if (s2 != null && s1 != null)
+        if (s2 != null && s1 != null) {
             result[what] = lp + s1 + rp + sep + lp + s2 + rp;
+        }
     }
 
     /**
@@ -133,8 +141,9 @@ public class ComposedSubquery extends ComposedQuery {
         keyset = (Vector<Integer>) superQuery.keyset.clone();
         keysetLabels = (Vector<String>) superQuery.keysetLabels.clone();
 
-        for (Enumeration<String> e = keysetLabels.elements(); e.hasMoreElements();)
+        for (Enumeration<String> e = keysetLabels.elements(); e.hasMoreElements();) {
             addProjection(e.nextElement());
+        }
         previousKeyset.addElement(superQuery.keyset);
 
         // we're all set now, no more need for the super query

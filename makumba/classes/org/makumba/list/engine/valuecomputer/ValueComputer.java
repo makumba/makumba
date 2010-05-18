@@ -65,11 +65,13 @@ public class ValueComputer {
         FieldDefinition set = null;
         String nullableExpr = null;
 
-        if (check instanceof String)
+        if (check instanceof String) {
             nullableExpr = (String) check;
+        }
 
-        if (check instanceof FieldDefinition)
+        if (check instanceof FieldDefinition) {
             set = (FieldDefinition) check;
+        }
 
         if (set != null) {
             return new SetValueComputer(isValue, parentListKey, set, expr, pageCache);
@@ -136,8 +138,9 @@ public class ValueComputer {
         ComposedQuery q = QueryTag.getQuery(pageCache, getQueryKey());
         projectionIndex = q.checkProjectionInteger(expr).intValue();
 
-        if (type == null) // if type is not set in the constructor
+        if (type == null) {
             type = q.getResultType().getFieldDefinition(projectionIndex);
+        }
     }
 
     /**
@@ -171,10 +174,12 @@ public class ValueComputer {
                 projectionIndex, o, running.getParams());
         }
 
-        if (running.getVar() != null)
+        if (running.getVar() != null) {
             PageAttributes.setAttribute(running.getPageContext(), running.getVar(), o);
-        if (running.getPrintVar() != null)
+        }
+        if (running.getPrintVar() != null) {
             running.getPageContext().setAttribute(running.getPrintVar(), s);
+        }
         if (running.getPrintVar() == null && running.getVar() == null) {
             try {
                 running.getPageContext().getOut().print(s);
@@ -206,8 +211,9 @@ public class ValueComputer {
     public static boolean isPointer(PageCache pageCache, MultipleKey parentListKey, String expr) {
         ComposedQuery cq = QueryTag.getQuery(pageCache, parentListKey);
         // if it's a set, it's gonna be treated later
-        if (cq.checkExprSetOrNullable(expr) instanceof FieldDefinition)
+        if (cq.checkExprSetOrNullable(expr) instanceof FieldDefinition) {
             return false;
+        }
         return cq.qep.getQueryAnalysis("SELECT " + expr + " FROM " + cq.getFromSection()).getProjectionType().getFieldDefinition(
             0).getType().equals("ptr");
     }

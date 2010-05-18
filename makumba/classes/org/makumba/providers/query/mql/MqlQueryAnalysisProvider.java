@@ -46,8 +46,9 @@ public class MqlQueryAnalysisProvider extends QueryAnalysisProvider {
 
     @Override
     public FieldDefinition getAlternativeField(DataDefinition dd, String fn) {
-        if (fn.equals("id"))
+        if (fn.equals("id")) {
             return dd.getFieldDefinition(dd.getIndexPointerFieldName());
+        }
         return null;
     }
 
@@ -63,8 +64,9 @@ public class MqlQueryAnalysisProvider extends QueryAnalysisProvider {
 
     /** Transform OQL $x into :parameters, and record the parameter order */
     public static void transformOQLParameters(AST a, List<String> parameterOrder) {
-        if (a == null)
+        if (a == null) {
             return;
+        }
         // MQL allows $some.param
         if (a.getType() == HqlTokenTypes.DOT && a.getFirstChild().getText().startsWith("$")) {
             a.setType(HqlTokenTypes.IDENT);
@@ -113,8 +115,9 @@ public class MqlQueryAnalysisProvider extends QueryAnalysisProvider {
         } else {
             transformOQLParameters(a.getFirstChild(), parameterOrder);
             // we make sure we don't do "SELECT" again
-            if (a.getType() != HqlTokenTypes.FROM)
+            if (a.getType() != HqlTokenTypes.FROM) {
                 transformOQLParameters(a.getNextSibling(), parameterOrder);
+            }
         }
     }
 
@@ -124,8 +127,9 @@ public class MqlQueryAnalysisProvider extends QueryAnalysisProvider {
      * not OQL-specific, to support: size(), elements(), firstElement()...
      */
     public static void transformOQL(AST a) {
-        if (a == null)
+        if (a == null) {
             return;
+        }
         if (a.getType() == HqlTokenTypes.EQ || a.getType() == HqlTokenTypes.NE) {
             // replacement of = or <> NIL with IS (NOT) NULL
             if (MqlQueryAnalysis.isNil(a.getFirstChild())) {

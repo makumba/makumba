@@ -86,8 +86,9 @@ public class MqlSqlASTFactory extends ASTFactory {
     }
 
     private void initializeNode(AST t) {
-        if (t instanceof MqlNode)
+        if (t instanceof MqlNode) {
             ((MqlNode) t).setWalker(walker);
+        }
 
     }
 

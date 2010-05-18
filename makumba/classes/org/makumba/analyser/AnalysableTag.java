@@ -152,8 +152,9 @@ public abstract class AnalysableTag extends AnalysableElement {
      * @return A String containing information about the page
      */
     public String getPageTextInfo() {
-        if (tagData == null)
+        if (tagData == null) {
             return "";
+        }
         try {
             return tagData.getSourceSyntaxPoints().getFile().getCanonicalPath() + ":" + tagData.getStartLine() + ":"
                     + tagData.getStartColumn() + ":" + tagData.getEndLine() + ":" + tagData.getEndColumn();
@@ -204,13 +205,16 @@ public abstract class AnalysableTag extends AnalysableElement {
         PageCache pageCache = null;
         // FIXME: need to check if this is still needed, it was here only if the tag was root...
         if (pageContext.getAttribute(PageContext.EXCEPTION, PageContext.REQUEST_SCOPE) != null
-                && !(pageContext.getAttribute(PageContext.EXCEPTION, PageContext.REQUEST_SCOPE) instanceof CompositeValidationException))
+                && !(pageContext.getAttribute(PageContext.EXCEPTION, PageContext.REQUEST_SCOPE) instanceof CompositeValidationException)) {
             getRequest().setAttribute("org.makumba.wasException", "yes");
+        }
         if ("yes".equals(getRequest().getAttribute("org.makumba.wasException"))
-                && !(pageContext.getAttribute(PageContext.EXCEPTION, PageContext.REQUEST_SCOPE) instanceof CompositeValidationException))
+                && !(pageContext.getAttribute(PageContext.EXCEPTION, PageContext.REQUEST_SCOPE) instanceof CompositeValidationException)) {
             return SKIP_PAGE;
-        if (needPageCache())
+        }
+        if (needPageCache()) {
             pageCache = AnalysableElement.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance());
+        }
         setTagKey(pageCache);
         if (pageCache != null) {
             tagData = (TagData) pageCache.retrieve(MakumbaJspAnalyzer.TAG_DATA_CACHE, tagKey);
@@ -237,11 +241,13 @@ public abstract class AnalysableTag extends AnalysableElement {
     @Override
     public int doEndTag() throws JspException {
         try {
-            if ("yes".equals(getRequest().getAttribute("org.makumba.wasException")))
+            if ("yes".equals(getRequest().getAttribute("org.makumba.wasException"))) {
                 return SKIP_PAGE;
+            }
             PageCache pageCache = null;
-            if (needPageCache())
+            if (needPageCache()) {
                 pageCache = AnalysableElement.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance());
+            }
             if (tagData != null) {
                 setRunningElementData(tagData);
                 getThreadElementStack().pop();
