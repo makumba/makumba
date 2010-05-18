@@ -47,7 +47,7 @@ public class RelationCrawler {
     private String webappRoot;
 
     private String targetDatabase;
-    
+
     private Pointer targetDatabasePointer;
 
     private boolean forceDatabase;
@@ -69,7 +69,7 @@ public class RelationCrawler {
     private String URLprefix;
 
     private String URLroot;
-    
+
     private boolean relationTypeDetail = false;
 
     private TransactionProvider tp = TransactionProvider.getInstance();
@@ -92,29 +92,32 @@ public class RelationCrawler {
      *            the prefix of the relation URL, e.g. "file://"
      * @param URLroot
      *            the root of the relation, e.g. a webapp name
-     * @param relationTypeDetail TODO
+     * @param relationTypeDetail
+     *            TODO
      * @return a {@link RelationCrawler} instance
      */
     public static RelationCrawler getRelationCrawler(String webappRoot, String targetDatabase, boolean forcetarget,
             String URLprefix, String URLroot, boolean relationTypeDetail) {
         RelationCrawler instance = relationCrawlers.get(webappRoot + targetDatabase + forcetarget + URLprefix + URLroot);
         if (instance == null) {
-            
-            if(URLprefix == null || URLprefix.trim().length() == 0) {
+
+            if (URLprefix == null || URLprefix.trim().length() == 0) {
                 URLprefix = "file://";
             }
-            
-            instance = new RelationCrawler(webappRoot, targetDatabase, forcetarget, URLprefix, URLroot, relationTypeDetail);
+
+            instance = new RelationCrawler(webappRoot, targetDatabase, forcetarget, URLprefix, URLroot,
+                    relationTypeDetail);
             relationCrawlers.put(webappRoot + targetDatabase + forcetarget + URLprefix + URLroot, instance);
         }
         return instance;
     }
-    
+
     /**
      * Gets the default target database, can be set using the org.makumba.devel.relations.databaseName JVM property.
      */
     public static String getDefaultTargetDatabase() {
-        return System.getProperty(RelationCrawler.DATABASE_NAME_KEY) == null ? TransactionProvider.getInstance().getDefaultDataSourceName() : System.getProperty(RelationCrawler.DATABASE_NAME_KEY);
+        return System.getProperty(RelationCrawler.DATABASE_NAME_KEY) == null ? TransactionProvider.getInstance().getDefaultDataSourceName()
+                : System.getProperty(RelationCrawler.DATABASE_NAME_KEY);
     }
 
     private RelationCrawler(String webappRoot, String targetDatabase, boolean forcetarget, String URLprefix,
@@ -225,20 +228,27 @@ public class RelationCrawler {
      *            </ul>
      */
     public static void main(String[] args) {
-        
+
         // create CLI options
         Options options = new Options();
-        
+
         Option webappRootOption = new Option("w", "root", true, "the root of the makumba webapp to crawl");
-        Option targetDb = new Option("d", "database", true, "the name of the target database where the relations should be stored");
+        Option targetDb = new Option("d", "database", true,
+                "the name of the target database where the relations should be stored");
         targetDb.setRequired(true);
-        Option forceDb = new Option("f", "forceDb", false, "indicates whether the target database should be forced: if set to true, even if relations were previously written to another database, this will force writing them to the indicated database");
+        Option forceDb = new Option(
+                "f",
+                "forceDb",
+                false,
+                "indicates whether the target database should be forced: if set to true, even if relations were previously written to another database, this will force writing them to the indicated database");
         Option urlPrefix = new Option("p", "urlPrefix", true, "the prefix given to the file URL, e.g. \"file://\"");
         Option urlRoot = new Option("u", "urlRoot", true, "the root of the URL, e.g. the name of the crawled webapp");
-        Option skipPathsOption = new Option("s", "skipPaths", true, "a list of paths to be skipped during the crawling, separated by a comma");
+        Option skipPathsOption = new Option("s", "skipPaths", true,
+                "a list of paths to be skipped during the crawling, separated by a comma");
         skipPathsOption.setValueSeparator(',');
-        Option typeDetail = new Option("t", "relationTypeDetail", false, "whether or not to save the detailed type of the relation, if set to false, 'dependsOn' is used");
-        
+        Option typeDetail = new Option("t", "relationTypeDetail", false,
+                "whether or not to save the detailed type of the relation, if set to false, 'dependsOn' is used");
+
         options.addOption(webappRootOption);
         options.addOption(targetDb);
         options.addOption(forceDb);
@@ -246,35 +256,35 @@ public class RelationCrawler {
         options.addOption(urlRoot);
         options.addOption(skipPathsOption);
         options.addOption(typeDetail);
-        
+
         HelpFormatter formatter = new HelpFormatter();
-        
+
         CommandLineParser parser = new PosixParser();
         CommandLine line = null;
-        
+
         try {
             line = parser.parse(options, args);
-        } catch(ParseException p) {
+        } catch (ParseException p) {
             System.out.println("Error while executing the relation crawler: " + p.getMessage());
             System.out.println();
             formatter.printHelp("java " + RelationCrawler.class.getName() + " [OPTION]... [FILE]...", options);
             System.exit(-1);
         }
-        
+
         String webappRoot = line.getOptionValue("w", ".");
         String targetDatabase = line.getOptionValue("d");
         boolean forceDatabase = Boolean.parseBoolean(line.getOptionValue("f", "false"));
         String URLprefix = line.getOptionValue("p", "");
         String URLroot = line.getOptionValue("u", "");
         String[] skipPaths = line.getOptionValues("s");
-        
+
         // this seems to be a bug in commons CLI
-        if(skipPaths == null) {
+        if (skipPaths == null) {
             skipPaths = new String[] {};
         }
         boolean relationTypeDetail = Boolean.parseBoolean(line.getOptionValue("t", "false"));
         String[] files = line.getArgs();
-        
+
         System.out.println("Starting relation crawler, config:");
         System.out.println("\twebappRoot: " + webappRoot);
         System.out.println("\ttargetDatabase: " + targetDatabase);
@@ -348,16 +358,18 @@ public class RelationCrawler {
 
     /**
      * Adds a relation which will later on be written to the database
+     * 
      * @param toFile
      *            the path to the file there is a relation with
-     * @param type TODO
+     * @param type
+     *            TODO
      * @param relationData
      *            the relation data
      */
     protected void addRelation(String fromFile, String toFile, String type, Dictionary<String, Object> relationData) {
-        
-        if(!fromFile.equals(toFile)) {
-            
+
+        if (!fromFile.equals(toFile)) {
+
             Map<String, Vector<Dictionary<String, Object>>> dic;
             Vector<Dictionary<String, Object>> v;
             if ((dic = detectedRelations.get(toFile)) != null) {
@@ -380,8 +392,9 @@ public class RelationCrawler {
     /**
      * Writes the relations to the database. This should be called after crawling is done.
      * 
-     * @param updateExistingRelations if <code>true</code>, recomputes existing relations one by one, if <code>false<code>, flush all the previous relations
-     * 
+     * @param updateExistingRelations
+     *            if <code>true</code>, recomputes existing relations one by one, if
+     *            <code>false<code>, flush all the previous relations
      */
     public void writeRelationsToDb(boolean updateExistingRelations) {
         // here we save all the computed relations to the relations database
@@ -389,13 +402,13 @@ public class RelationCrawler {
         Map<String, Map<String, Vector<Dictionary<String, Object>>>> relations = getDetectedRelations();
 
         Pointer webappPointer = determineRelationsDatabase(tp, forceDatabase, true);
-        
+
         /* FIXME this does not work because of a bug in Hibernate
         if(!updateExistingRelations) {
             deleteExistingRelations(webappPointer);
         }
         */
-        
+
         // now we insert the records into the relations table, in the right database
         for (String typeAndtoFile : relations.keySet()) {
             String toFile = typeAndtoFile.substring(typeAndtoFile.indexOf("#") + 1);
@@ -407,36 +420,39 @@ public class RelationCrawler {
                 relationInfo.put("type", type);
                 relationInfo.put("fromFile", fromFile);
 
-                String fromURL = this.URLprefix + (this.URLroot.startsWith("/") ? this.URLroot.substring(1) : this.URLroot)
-                + (this.URLroot.endsWith("/") || fromFile.startsWith("/") ? "" : "/") + fromFile;
-                String toURL = this.URLprefix + (this.URLroot.startsWith("/") ? this.URLroot.substring(1) : this.URLroot)
+                String fromURL = this.URLprefix
+                        + (this.URLroot.startsWith("/") ? this.URLroot.substring(1) : this.URLroot)
+                        + (this.URLroot.endsWith("/") || fromFile.startsWith("/") ? "" : "/") + fromFile;
+                String toURL = this.URLprefix
+                        + (this.URLroot.startsWith("/") ? this.URLroot.substring(1) : this.URLroot)
                         + (this.URLroot.endsWith("/") || toFile.startsWith("/") ? "" : "/") + toFile;
 
-                Logger.getLogger("org.makumba.devel.relations").info("Writing relation "+fromURL + " -(" + type + ")-> " + toURL);
+                Logger.getLogger("org.makumba.devel.relations").info(
+                    "Writing relation " + fromURL + " -(" + type + ")-> " + toURL);
 
                 // now we insert the records into the relations table, in the right database
                 Transaction tr2 = null;
 
                 try {
                     tr2 = tp.getConnectionTo(targetDatabase);
-                    
-                    if(updateExistingRelations) {
-                        
+
+                    if (updateExistingRelations) {
+
                         // we check if there's already such a relation in the database
-    
+
                         String oqlQuery = "SELECT relation AS relation FROM org.makumba.devel.relations.Relation relation WHERE relation.toFile = $1 AND relation.fromFile = $2 and relation.webapp.webappRoot = $3";
                         String hqlQuery = "SELECT relation.id AS relation FROM org.makumba.devel.relations.Relation relation JOIN relation.webapp webapp WHERE relation.toFile = ? AND relation.fromFile = ? AND webapp.webappRoot = ?";
                         Object[] args = { toFile, fromFile, webappRoot };
                         Vector<Dictionary<String, Object>> previousRelation = tr2.executeQuery(
                             tp.getQueryLanguage().equals("oql") ? oqlQuery : hqlQuery, args);
-    
+
                         if (previousRelation.size() > 0) {
                             // we delete the previous relation origin
                             Pointer previousRelationPtr = (Pointer) previousRelation.get(0).get("relation");
                             deleteRelation(tr2, previousRelationPtr);
                         }
                     }
-                    
+
                     // build relation
                     relationInfo.put("toFile", toFile);
                     relationInfo.put("fromURL", fromURL);
@@ -456,7 +472,8 @@ public class RelationCrawler {
                     tr2.insert("org.makumba.devel.relations.Relation", relationInfo);
 
                 } finally {
-                    if(tr2 != null) tr2.close();
+                    if (tr2 != null)
+                        tr2.close();
                 }
             }
         }
@@ -469,22 +486,23 @@ public class RelationCrawler {
         try {
             tr = tp.getConnectionTo(targetDatabase);
 
-        
-        // delete all previous relations of this webapp
-        // FIXME make this work with hibernate
-        String oqlWhere1 = "o in (select r.origin from org.makumba.devel.relations.Relation r where r.webapp = $1)";
-        String hqlWhere1 = "o in (select r.origin from org.makumba.devel.relations.Relation r where r.webapp.id = ?)";
-        
-        String oqlWhere2 = "relation.webapp = $1";
-        String hqlWhere2 = "relation.webapp.id = ?";
-        tr.delete("org.makumba.devel.relations.Relation relation", tp.getQueryLanguage().equals("oql") ? oqlWhere2 : hqlWhere2, new Object[] { webappPointer });
+            // delete all previous relations of this webapp
+            // FIXME make this work with hibernate
+            String oqlWhere1 = "o in (select r.origin from org.makumba.devel.relations.Relation r where r.webapp = $1)";
+            String hqlWhere1 = "o in (select r.origin from org.makumba.devel.relations.Relation r where r.webapp.id = ?)";
 
-        tr.delete("org.makumba.devel.relations.RelationOrigin o", tp.getQueryLanguage().equals("oql") ? oqlWhere1 : hqlWhere1, new Object[] { webappPointer });
-        
-        tr.commit();
-        
+            String oqlWhere2 = "relation.webapp = $1";
+            String hqlWhere2 = "relation.webapp.id = ?";
+            tr.delete("org.makumba.devel.relations.Relation relation", tp.getQueryLanguage().equals("oql") ? oqlWhere2
+                    : hqlWhere2, new Object[] { webappPointer });
+
+            tr.delete("org.makumba.devel.relations.RelationOrigin o", tp.getQueryLanguage().equals("oql") ? oqlWhere1
+                    : hqlWhere1, new Object[] { webappPointer });
+
+            tr.commit();
+
         } finally {
-            if(tr != null) {
+            if (tr != null) {
                 tr.close();
             }
         }
@@ -498,16 +516,15 @@ public class RelationCrawler {
 
         // we now delete the relation itself
         tr2.delete(previousRelationPtr);
-        
+
         // then we delete the origins it pointed to
         for (Dictionary<String, Object> dictionary : previousRelationOrigin) {
             tr2.delete((Pointer) dictionary.get("origin"));
         }
 
     }
-    
+
     /**
-     * 
      * Checks whether this webapp has already been crawled
      */
     public boolean wasCrawled() {
@@ -523,12 +540,14 @@ public class RelationCrawler {
      * @param forceDestination
      *            whether or not to force the database to write to. If enabled, will also update the relations database
      *            record in the default database.
-     * @param createDefaultRecord whether the default database name should be used if there is no existing record for this webappRoot
+     * @param createDefaultRecord
+     *            whether the default database name should be used if there is no existing record for this webappRoot
      * @return a Pointer to the record in the default database that points to the relations database
      */
-    private Pointer determineRelationsDatabase(TransactionProvider tp, boolean forceDestination, boolean createDefaultRecord) {
+    private Pointer determineRelationsDatabase(TransactionProvider tp, boolean forceDestination,
+            boolean createDefaultRecord) {
 
-        if(targetDatabasePointer != null) {
+        if (targetDatabasePointer != null) {
             return targetDatabasePointer;
         }
 
@@ -578,7 +597,6 @@ public class RelationCrawler {
             tp.getQueryLanguage().equals("oql") ? oqlQuery : hqlQuery, new String[] { webappRoot });
         return databaseLocation;
     }
-
 
     /**
      * Deletes the dependency relations of this file

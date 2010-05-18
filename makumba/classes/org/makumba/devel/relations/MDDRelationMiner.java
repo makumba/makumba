@@ -24,11 +24,10 @@ public class MDDRelationMiner extends RelationMiner {
     public void crawl(String path) {
         DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
 
-        
-        if(path.startsWith("/")) {
+        if (path.startsWith("/")) {
             path = path.substring(1);
         }
-        
+
         String mddPath;
         if (path.replace(File.separator, "/").startsWith(DEFAULT_DATADEFINITIONS_PATH)) {
             mddPath = path.substring(DEFAULT_DATADEFINITIONS_PATH.length());
@@ -59,7 +58,8 @@ public class MDDRelationMiner extends RelationMiner {
                 }
             }
         } catch (Throwable e) {
-            logger.warning("Error while crawling MDD at path "+path+" having as type "+type+": "+e.getMessage());
+            logger.warning("Error while crawling MDD at path " + path + " having as type " + type + ": "
+                    + e.getMessage());
         }
 
     }

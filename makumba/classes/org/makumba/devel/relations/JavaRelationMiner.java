@@ -36,9 +36,9 @@ public class JavaRelationMiner extends RelationMiner {
 
     @Override
     public void crawl(String path) {
-        
-        if(!new File(rc.getWebappRoot() + File.separator + path).exists()) {
-            logger.warning("Java file "+path + " does not exist in webapp "+rc.getWebappRoot());
+
+        if (!new File(rc.getWebappRoot() + File.separator + path).exists()) {
+            logger.warning("Java file " + path + " does not exist in webapp " + rc.getWebappRoot());
             return;
         }
 
@@ -54,24 +54,26 @@ public class JavaRelationMiner extends RelationMiner {
 
         // FIXME: this should use MQL to do analysis
         // that will work for both HQL and MQL (and thus OQL) queries
-        // the query parsers already know well which MDDs and relations are used, they could simply be asked to produce the list
+        // the query parsers already know well which MDDs and relations are used, they could simply be asked to produce
+        // the list
         // that would be just one method in QueryaAnalysis (or in MqlQueryAnalysis directly!) instead of three as it was
         for (String query : queries) {
             // FIXME for the moment, we only have OQL queries in BL. but this won't be necessarily true in the future.
             MqlQueryAnalysis qA = null;
             try {
-                 qA = (MqlQueryAnalysis)QueryProvider.getQueryAnalzyer(MakumbaJspAnalyzer.QL_OQL).getQueryAnalysis(query);
-            } catch(MakumbaError me) {
-                String s = "Could not parse query "+query+" from file "+path+": "+me.getMessage();
+                qA = (MqlQueryAnalysis) QueryProvider.getQueryAnalzyer(MakumbaJspAnalyzer.QL_OQL).getQueryAnalysis(
+                    query);
+            } catch (MakumbaError me) {
+                String s = "Could not parse query " + query + " from file " + path + ": " + me.getMessage();
                 logger.warning(s);
                 continue;
-            } catch(NullPointerException npe) {
-                String s = "Could not parse query "+query+" from file "+path+": "+npe.getMessage();
+            } catch (NullPointerException npe) {
+                String s = "Could not parse query " + query + " from file " + path + ": " + npe.getMessage();
                 logger.warning(s);
                 continue;
-                
+
             }
-                       
+
             Vector<String> projections = qA.getProjectionType().getFieldNames();
             for (String expr : projections) {
                 String field = qA.getFieldOfExpr(expr);
@@ -92,16 +94,16 @@ public class JavaRelationMiner extends RelationMiner {
                         dd = qA.getTypeOfExprField(realExpr);
                     }
                 }
-                
-                if(dd == null) {
-                    logger.warning("Could not parse query "+query+ " from file "+path);
+
+                if (dd == null) {
+                    logger.warning("Could not parse query " + query + " from file " + path);
                 } else {
                     String type = dd.getName();
                     if (type.indexOf("->") > -1) {
                         field = type.substring(type.indexOf("->") + 2) + "." + field;
                         type = type.substring(0, type.indexOf("->"));
                     }
-                    
+
                     addJava2MDDRelation(path, type, expr, field, query);
                 }
             }

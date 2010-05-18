@@ -19,14 +19,11 @@ import org.makumba.providers.datadefinition.makumba.RecordInfo;
 
 /**
  * Tool that triggers the crawling of a context, if it wasn't crawled previously.<br>
- * To be used by the developer tools.
- * <br>
- * TODO: implement a way to flush all the relations in order to re-crawl, using e.g. a param. needs to have a new method in RelationCrawler that runs a "delete from..."
- * 
+ * To be used by the developer tools. <br>
+ * TODO: implement a way to flush all the relations in order to re-crawl, using e.g. a param. needs to have a new method
+ * in RelationCrawler that runs a "delete from..."
  * 
  * @author Manuel Gay
- * 
- * 
  * @version $Id: RelationCrawlerTool.java,v 1.1 Oct 19, 2008 5:18:46 PM manu Exp $
  */
 public class RelationCrawlerTool extends HttpServlet {
@@ -34,21 +31,22 @@ public class RelationCrawlerTool extends HttpServlet {
 
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        
+
         // fetch parameters
         String webappRoot = req.getSession().getServletContext().getRealPath("/");
-        if(webappRoot.endsWith("/"))
+        if (webappRoot.endsWith("/"))
             webappRoot = webappRoot.substring(0, webappRoot.length() - 1);
 
         // initialise crawler
-        RelationCrawler rc = RelationCrawler.getRelationCrawler(webappRoot, RelationCrawler.getDefaultTargetDatabase(), false, "file://", req.getContextPath().startsWith("/") ? req.getContextPath() : "root", false);
-        
+        RelationCrawler rc = RelationCrawler.getRelationCrawler(webappRoot, RelationCrawler.getDefaultTargetDatabase(),
+            false, "file://", req.getContextPath().startsWith("/") ? req.getContextPath() : "root", false);
+
         // crawl
         Date beginDate = new Date();
         Logger.getLogger("org.makumba.devel.relations").info("\nCrawling starts at " + beginDate + "\n");
 
-        
-        ArrayList<String> allFilesInDirectory = FileUtils.getAllFilesInDirectory(webappRoot, new String[] {}, new MakumbaRelatedFileFilter());
+        ArrayList<String> allFilesInDirectory = FileUtils.getAllFilesInDirectory(webappRoot, new String[] {},
+            new MakumbaRelatedFileFilter());
         Collections.sort(allFilesInDirectory);
         String[] files = (String[]) allFilesInDirectory.toArray(new String[allFilesInDirectory.size()]);
 
@@ -64,16 +62,17 @@ public class RelationCrawlerTool extends HttpServlet {
         NamedResources.cleanStaticCache(RecordInfo.infos);
 
         rc.writeRelationsToDb(false);
-        
-        Logger.getLogger("org.makumba.devel.relations").info("\n\nCrawling finished, took: "
-            + ReadableFormatter.readableAge(System.currentTimeMillis() - beginDate.getTime()));
 
-        //RelationCrawler.writeJSPAnalysisError(webappRoot + File.separator + "analysis-errors.txt", rc.getJSPAnalysisErrors(), rc.getJSPCrawlCount());
+        Logger.getLogger("org.makumba.devel.relations").info(
+            "\n\nCrawling finished, took: "
+                    + ReadableFormatter.readableAge(System.currentTimeMillis() - beginDate.getTime()));
 
+        // RelationCrawler.writeJSPAnalysisError(webappRoot + File.separator + "analysis-errors.txt",
+        // rc.getJSPAnalysisErrors(), rc.getJSPCrawlCount());
 
-        Logger.getLogger("org.makumba.devel.relations").info("\n\nWriting to database finished, total time: "
-            + ReadableFormatter.readableAge(System.currentTimeMillis() - beginDate.getTime()));
-        
+        Logger.getLogger("org.makumba.devel.relations").info(
+            "\n\nWriting to database finished, total time: "
+                    + ReadableFormatter.readableAge(System.currentTimeMillis() - beginDate.getTime()));
 
         // go back to the page that called us
         resp.sendRedirect(req.getHeader("referer"));

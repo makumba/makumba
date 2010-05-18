@@ -38,7 +38,6 @@ public class JSPRelationMiner extends RelationMiner {
 
     private Pattern expression = Pattern.compile("[a-zA-Z]\\w*(?:\\.\\w+)?");
 
-
     @Override
     public void crawl(String path) {
         JspParseData jpd = JspParseData.getParseData(rc.getWebappRoot(), path, JspRelationsAnalyzer.getInstance());
@@ -47,8 +46,7 @@ public class JSPRelationMiner extends RelationMiner {
             pageCache = (PageCache) jpd.getAnalysisResult(new RelationParseStatus());
         } catch (Throwable t) {
             // page analysis failed
-            logger.warning(
-                "Page analysis for page " + path + " failed due to error: " + t.getMessage());
+            logger.warning("Page analysis for page " + path + " failed due to error: " + t.getMessage());
             rc.addJSPAnalysisError(path, t);
             return;
         }
@@ -69,7 +67,8 @@ public class JSPRelationMiner extends RelationMiner {
                     try {
                         computeJSPMDDLabelRelations(path, pageCache, queryKey, cq);
                     } catch (RuntimeException e) {
-                        System.out.println("Could not compute JSP<->MDD label relation for " + path + ": " + e.getMessage());
+                        System.out.println("Could not compute JSP<->MDD label relation for " + path + ": "
+                                + e.getMessage());
                     }
                 }
             }
@@ -88,9 +87,8 @@ public class JSPRelationMiner extends RelationMiner {
 
             }
         }
-        
+
     }
-    
 
     /**
      * Computes the relations between two JSP pages, based on a tag (jsp:include or
@@ -148,7 +146,8 @@ public class JSPRelationMiner extends RelationMiner {
             }
 
             // we only look at the input tags
-            if (tag instanceof InputTag && !(tag instanceof SearchFieldTag)) { // skip search field tags. FIXME: at least for now
+            if (tag instanceof InputTag && !(tag instanceof SearchFieldTag)) { // skip search field tags. FIXME: at
+                                                                               // least for now
                 MultipleKey formTagKey = ((InputTag) tag).getForm().getTagKey();
 
                 String baseObjectType = (String) pageCache.retrieve(MakumbaJspAnalyzer.BASE_POINTER_TYPES, formTagKey);
@@ -157,13 +156,15 @@ public class JSPRelationMiner extends RelationMiner {
                 if (baseObjectType == null) {
                     baseObjectType = ((TagData) tagDataCache.get(formTagKey)).attributes.get("type");
                 }
-                
-                // this may be the case when a mak:input is used inside of a mak:form - there we can't really get the type so we ignore it
-                if(baseObjectType == null) {
+
+                // this may be the case when a mak:input is used inside of a mak:form - there we can't really get the
+                // type so we ignore it
+                if (baseObjectType == null) {
                     return;
                 }
 
-                FieldDefinition tagFieldType = (FieldDefinition) pageCache.retrieve(MakumbaJspAnalyzer.INPUT_TYPES, tagKey);
+                FieldDefinition tagFieldType = (FieldDefinition) pageCache.retrieve(MakumbaJspAnalyzer.INPUT_TYPES,
+                    tagKey);
                 String expr = tagData.attributes.get("field") == null ? tagData.attributes.get("name")
                         : tagData.attributes.get("field");
 
@@ -177,17 +178,20 @@ public class JSPRelationMiner extends RelationMiner {
                     String ql = MakumbaJspAnalyzer.getQueryLanguage(pageCache);
                     if (ql.equals("oql")) {
                         try {
-                            qA = QueryProvider.getQueryAnalzyer(TransactionProvider.getInstance().getQueryLanguage()).getQueryAnalysis(typeDeterminationQuery);
+                            qA = QueryProvider.getQueryAnalzyer(TransactionProvider.getInstance().getQueryLanguage()).getQueryAnalysis(
+                                typeDeterminationQuery);
                         } catch (OQLParseError e) {
-                            logger.warning("Could not determine type using query "+typeDeterminationQuery+" in file "+fromFile);
+                            logger.warning("Could not determine type using query " + typeDeterminationQuery
+                                    + " in file " + fromFile);
                             return;
-                            
+
                         }
                     } else if (ql.equals("hql")) {
                         try {
-                        qA = HQLQueryAnalysisProvider.getHqlAnalyzer(typeDeterminationQuery);
+                            qA = HQLQueryAnalysisProvider.getHqlAnalyzer(typeDeterminationQuery);
                         } catch (RuntimeWrappedException e) {
-                            logger.warning("Could not determine type using query "+typeDeterminationQuery+" in file "+fromFile);
+                            logger.warning("Could not determine type using query " + typeDeterminationQuery
+                                    + " in file " + fromFile);
                             return;
                         }
                     }
@@ -255,7 +259,7 @@ public class JSPRelationMiner extends RelationMiner {
 
         Map<String, DataDefinition> labelTypes = cq.getFromLabelTypes();
         Set<String> labels = labelTypes.keySet();
-        for (String labelName : labels) {            
+        for (String labelName : labels) {
             TagData td = (TagData) pageCache.retrieve(MakumbaJspAnalyzer.TAG_DATA_CACHE, (MultipleKey) queryKey);
 
             // if td is null it means that we have a dummy query, not interesting to us
@@ -272,7 +276,7 @@ public class JSPRelationMiner extends RelationMiner {
             }
         }
     }
-    
+
     /**
      * Computes relations between the projections in a makumba page (mak:values) and the fields of an MDD. It determines
      * which tag is responsible for which projection expression in a {@link ComposedQuery} of a page, as well as the
@@ -294,8 +298,8 @@ public class JSPRelationMiner extends RelationMiner {
 
         for (Iterator<String> iterator = projections.iterator(); iterator.hasNext();) {
             String projectionExpr = (String) iterator.next();
-            MultipleKey valueTagKey = (MultipleKey) pageCache.retrieve(MakumbaJspAnalyzer.PROJECTION_ORIGIN_CACHE, new MultipleKey(
-                    (MultipleKey) queryKey, projectionExpr));
+            MultipleKey valueTagKey = (MultipleKey) pageCache.retrieve(MakumbaJspAnalyzer.PROJECTION_ORIGIN_CACHE,
+                new MultipleKey((MultipleKey) queryKey, projectionExpr));
 
             // if we don't get anything here it means that this CQ is not interesting for us
             if (valueTagKey != null) {
@@ -306,10 +310,10 @@ public class JSPRelationMiner extends RelationMiner {
                 DataDefinition projectionParentType = null;
                 try {
                     projectionParentType = ((MqlQueryAnalysis) cq.qep.getQueryAnalysis(cq.getTypeAnalyzerQuery())).getTypeOfExprField(projectionExpr);
-                } catch(RuntimeWrappedException e) {
-                    rc.addJSPAnalysisError(fromFile, e.getCause() == null ? e: e.getCause());
+                } catch (RuntimeWrappedException e) {
+                    rc.addJSPAnalysisError(fromFile, e.getCause() == null ? e : e.getCause());
                 } catch (RuntimeException e1) {
-                    rc.addJSPAnalysisError(fromFile, e1.getCause() == null ? e1: e1.getCause());
+                    rc.addJSPAnalysisError(fromFile, e1.getCause() == null ? e1 : e1.getCause());
                 }
 
                 // this is due to a count(something) or sum(something) etc.
@@ -324,29 +328,29 @@ public class JSPRelationMiner extends RelationMiner {
                         }
                         field = ((MqlQueryAnalysis) cq.qep.getQueryAnalysis(cq.getTypeAnalyzerQuery())).getFieldOfExpr(realExpr);
                         try {
-                        projectionParentType = ((MqlQueryAnalysis) cq.qep.getQueryAnalysis(cq.getTypeAnalyzerQuery())).getTypeOfExprField(realExpr);
-                        } catch(RuntimeWrappedException rwe) {
-                            logger.warning("Error getting relations for JSP query "+cq.toString()+" while trying to get the type of the parent of the projection "+realExpr);
+                            projectionParentType = ((MqlQueryAnalysis) cq.qep.getQueryAnalysis(cq.getTypeAnalyzerQuery())).getTypeOfExprField(realExpr);
+                        } catch (RuntimeWrappedException rwe) {
+                            logger.warning("Error getting relations for JSP query " + cq.toString()
+                                    + " while trying to get the type of the parent of the projection " + realExpr);
                         }
                     } else {
                         // this is something like p.indiv.age + 3
                         projectionExpr = getAnalysableExpression(projectionExpr);
                         try {
-                            projectionParentType =((MqlQueryAnalysis) cq.qep.getQueryAnalysis(cq.getTypeAnalyzerQuery())).getTypeOfExprField(projectionExpr);
-                        } catch(RuntimeWrappedException e) {
-                            rc.addJSPAnalysisError(fromFile, e.getCause() == null ? e: e.getCause());
+                            projectionParentType = ((MqlQueryAnalysis) cq.qep.getQueryAnalysis(cq.getTypeAnalyzerQuery())).getTypeOfExprField(projectionExpr);
+                        } catch (RuntimeWrappedException e) {
+                            rc.addJSPAnalysisError(fromFile, e.getCause() == null ? e : e.getCause());
                         } catch (RuntimeException e1) {
-                            rc.addJSPAnalysisError(fromFile, e1.getCause() == null ? e1: e1.getCause());
+                            rc.addJSPAnalysisError(fromFile, e1.getCause() == null ? e1 : e1.getCause());
                         }
 
                     }
                 }
 
                 if (projectionParentType == null) {
-                    logger.warning(
-                        "Error while crawling file " + fromFile
-                                + ": could not figure out type of the parent of field pointed by expression "
-                                + projectionExpr);
+                    logger.warning("Error while crawling file " + fromFile
+                            + ": could not figure out type of the parent of field pointed by expression "
+                            + projectionExpr);
                     continue;
                 }
 
@@ -372,10 +376,12 @@ public class JSPRelationMiner extends RelationMiner {
             }
         }
     }
-    
+
     /**
      * Gets a "pure" expression in a complex expression string, e.g. "p.inidiv.name * 3.0"
-     * @param expr the expression to clean
+     * 
+     * @param expr
+     *            the expression to clean
      * @return an expression that can be analysed further on
      */
     private String getAnalysableExpression(String expr) {
@@ -385,9 +391,8 @@ public class JSPRelationMiner extends RelationMiner {
             match = expr.substring(m.start(), m.end());
         }
         return match;
-        
+
     }
-    
 
     /**
      * Adds a JSP -> MDD relation
