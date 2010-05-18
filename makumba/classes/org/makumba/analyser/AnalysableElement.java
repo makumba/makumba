@@ -23,7 +23,7 @@ import org.makumba.commons.MakumbaJspAnalyzer;
  * <br>
  * This class contains a number of utility methods that help retrieving the currently analyzed or running JSP element
  * (tag or EL expression). This is useful when providing accurate error messages to the user.
- *
+ * 
  * @author Manuel Gay
  * @author Rudolf Mayer
  * @version $Id: AnalysableElement.java,v 1.1 Jan 27, 2010 11:49:06 AM manu Exp $
@@ -85,7 +85,7 @@ public abstract class AnalysableElement extends TagSupport {
 
     /**
      * Gets the data of the currently analyzed element for this thread
-     *
+     * 
      * @return an {@link ElementData} describing the currently analyzed element
      */
     public static ElementData getAnalyzedElementData() {
@@ -94,7 +94,7 @@ public abstract class AnalysableElement extends TagSupport {
 
     /**
      * Sets the element data of the currently analyzed element for this thread
-     *
+     * 
      * @param data
      *            the {@link ElementData} of the currently analyzed element
      */
@@ -104,7 +104,7 @@ public abstract class AnalysableElement extends TagSupport {
 
     /**
      * Gets the data of the currently running element for this thread
-     *
+     * 
      * @return an {@link ElementData} describing the currently running element
      */
     public static ElementData getRunningElementData() {
@@ -113,7 +113,7 @@ public abstract class AnalysableElement extends TagSupport {
 
     /**
      * Sets the element data of the currently running element for this thread
-     *
+     * 
      * @param data
      *            the {@link ElementData} of the currently running element
      */
@@ -123,7 +123,7 @@ public abstract class AnalysableElement extends TagSupport {
 
     /**
      * Gets the stack of elements currently running in this thread
-     *
+     * 
      * @return a Stack of {@link ElementData}
      */
     public static Stack<ElementData> getThreadElementStack() {
@@ -136,7 +136,7 @@ public abstract class AnalysableElement extends TagSupport {
 
     /**
      * Gets the first tag data found in the stack
-     *
+     * 
      * @return the {@link TagData} of the first enclosing tag found in the stack or null if none was found
      */
     static public TagData getCurrentBodyTagData() {
@@ -179,7 +179,7 @@ public abstract class AnalysableElement extends TagSupport {
     /**
      * Static method to get the PageCache object for the current page. Constructs a new one if none found. We put this
      * as static, as we may have to export it to packages like org.makumba.controller.jsp
-     *
+     * 
      * @param pageContext
      *            The PageContext object of the current page
      * @param analyzer
