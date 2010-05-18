@@ -12,13 +12,17 @@ public class ExprTypeAST extends CommonAST {
     private static final long serialVersionUID = 1L;
 
     int dataType;
+
     private String identifier;
+
     private String description;
+
     private Object extraTypeInfo;
-    
+
     public void setIdentifier(String i) {
         this.identifier = i;
     }
+
     /*
     
     public static final int _ptr = 0;
@@ -41,31 +45,38 @@ public class ExprTypeAST extends CommonAST {
     public static final int _setIntEnum = 17;
     
     */
-    
-    
-    static public final int NULL=-1;
-    static public final int INT=4;
-    static public final int STRING=6;
+
+    static public final int NULL = -1;
+
+    static public final int INT = 4;
+
+    static public final int STRING = 6;
+
     static public final int DATE = 9;
-    static public final int LONGSTRING=8;
-    static public final int DOUBLE=15;
-    static public final int BOOLEAN=16;
-    
-    static public final int LONG=4;
-    static public final int FLOAT=3;
-    
-    static public final int PARAMETER=100;
-    
-    public ExprTypeAST() { }
-    
-    public ExprTypeAST(int type){
-        dataType=type;
+
+    static public final int LONGSTRING = 8;
+
+    static public final int DOUBLE = 15;
+
+    static public final int BOOLEAN = 16;
+
+    static public final int LONG = 4;
+
+    static public final int FLOAT = 3;
+
+    static public final int PARAMETER = 100;
+
+    public ExprTypeAST() {
     }
-    
+
+    public ExprTypeAST(int type) {
+        dataType = type;
+    }
+
     public String getText() {
         String s = super.getText();
-        if(identifier != null) {
-            s+=" as "+identifier;
+        if (identifier != null) {
+            s += " as " + identifier;
         }
         return s;
     }
@@ -81,7 +92,7 @@ public class ExprTypeAST extends CommonAST {
     public void setDataType(int dataType) {
         this.dataType = dataType;
     }
-    
+
     public String getObjectType() {
         return null;
     }

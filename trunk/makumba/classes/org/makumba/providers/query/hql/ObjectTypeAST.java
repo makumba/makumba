@@ -16,15 +16,14 @@ public class ObjectTypeAST extends ExprTypeAST {
     private static final long serialVersionUID = 1L;
 
     private String objectType;
-    
+
     public ObjectTypeAST(AST lhs, AST rhs, Map aliasTypes, ObjectType typeComputer) throws RecognitionException {
         super(-2);
         String type = null;
         if (lhs instanceof ObjectTypeAST) {
-            type = ((ObjectTypeAST)lhs).getObjectType();
-            if(type==null)
-                throw new SemanticException("unknown alias: " + lhs + " in property reference: "
-                    +"of " + rhs);
+            type = ((ObjectTypeAST) lhs).getObjectType();
+            if (type == null)
+                throw new SemanticException("unknown alias: " + lhs + " in property reference: " + "of " + rhs);
         } else {
             type = (String) aliasTypes.get(lhs.getText());
             if (type == null) {
@@ -34,29 +33,29 @@ public class ObjectTypeAST extends ExprTypeAST {
         }
 
         Object computedType = "";
-        if(rhs==null)
+        if (rhs == null)
             computedType = typeComputer.determineType(type, null);
         else {
             setDescription(rhs.getText());
             computedType = typeComputer.determineType(type, rhs.getText());
-            
+
         }
-        
-        //System.out.println("GOT TYPE: " + computedType);
+
+        // System.out.println("GOT TYPE: " + computedType);
 
         if (computedType instanceof String) {
             setObjectType(computedType.toString());
-        }else{
+        } else {
             setExtraTypeInfo(computedType);
-            setDataType(typeComputer.getTypeOf(computedType));   
+            setDataType(typeComputer.getTypeOf(computedType));
         }
     }
-    
+
     public ObjectTypeAST(AST pointer, Map aliasTypes) throws SemanticException {
         String type = (String) aliasTypes.get(pointer.getText());
-        if(type==null)
+        if (type == null)
             throw new SemanticException("unknown alias: " + pointer.getText());
-            
+
         setObjectType(type);
         setDescription(pointer.getText());
     }

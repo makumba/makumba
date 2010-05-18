@@ -94,11 +94,11 @@ public class MqlNode extends CommonAST {
     public void setNextSibling(AST a) {
         super.setNextSibling(a);
         if (father != null) {
- /*         
-			FIXME: this feels natural to do but it fails...
-			i think all the non-first-children are fatherless!  
-			if(a!=null)
-                ((MqlNode) a).setFather(father);*/
+            /*         
+            		FIXME: this feels natural to do but it fails...
+            		i think all the non-first-children are fatherless!  
+            		if(a!=null)
+                           ((MqlNode) a).setFather(father);*/
             father.addCheckedIds((MqlNode) a);
             father.oneMoreChild((MqlNode) a);
         }
@@ -142,7 +142,8 @@ public class MqlNode extends CommonAST {
             // processing of the right operand, we look for parameters or strings to rewrite
             do {
                 if (checkParam(leftHandSide, inListMember)) {
-                    // FIXME: this is too strict. as long as we have one element on the left or right which is not a param, we are ok
+                    // FIXME: this is too strict. as long as we have one element on the left or right which is not a
+                    // param, we are ok
                     if (leftParam) {
                         walker.error = new SemanticException("cannot have paramters on both sides of IN", "",
                                 getLine(), getColumn());
@@ -185,7 +186,7 @@ public class MqlNode extends CommonAST {
                 }
                 // otherwise this child is the first projection and we set the type to it
                 return child.getMakType();
-         
+
             case HqlSqlTokenTypes.AGGREGATE:
             case HqlSqlTokenTypes.UNARY_MINUS:
             case HqlSqlTokenTypes.UNARY_PLUS:

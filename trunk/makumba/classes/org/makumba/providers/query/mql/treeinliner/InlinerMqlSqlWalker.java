@@ -170,11 +170,11 @@ public class InlinerMqlSqlWalker extends MqlSqlWalker {
     protected AST lookupProperty(AST dot, boolean root, boolean inSelect) throws SemanticException {
         // moved from the grammar file
         // ****** MQL addition: we don't lookup the properties if we have a function call
-        //boolean isFunctionCall = (#lhs != null && #lhs.getText().startsWith("methodCallPlaceholder_"));
+        // boolean isFunctionCall = (#lhs != null && #lhs.getText().startsWith("methodCallPlaceholder_"));
         // FIXME: cristi: I don't know if finding the left-hand-side is correct like this
-        // but lhs can be obtained from dot in any case 
-        AST lhs= dot.getFirstChild().getNextSibling();
-        if(lhs!=null && lhs.getText().startsWith("methodCallPlaceholder_"))
+        // but lhs can be obtained from dot in any case
+        AST lhs = dot.getFirstChild().getNextSibling();
+        if (lhs != null && lhs.getText().startsWith("methodCallPlaceholder_"))
             return dot;
         return super.lookupProperty(dot, root, inSelect);
     }

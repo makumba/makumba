@@ -7,10 +7,9 @@ public class ParamTypeAST extends ExprTypeAST {
         super(type);
         setText(name);
     }
-    
+
     public int getDataType() {
         return ExprTypeAST.PARAMETER;
     }
-
 
 }
