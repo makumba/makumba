@@ -1,4 +1,4 @@
-package org.makumba.commons.documentation;
+package org.makumba.documentation;
 
 import java.util.Map;
 

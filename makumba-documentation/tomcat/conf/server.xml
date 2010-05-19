@@ -33,25 +33,21 @@
   <Service name="Catalina">
   
     <!-- Define a non-SSL HTTP/1.1 Connector on port 9090 -->
-    <Connector URIEncoding="UTF-8" useBodyEncodingForURI="true" 
-port="9090"               maxThreads="150" minSpareThreads="5" maxSpareThreads="75"
+    <Connector URIEncoding="UTF-8" useBodyEncodingForURI="true"
+               port="9090" maxThreads="150" minSpareThreads="5" maxSpareThreads="75"
                enableLookups="false" redirectPort="9443" acceptCount="100"
                connectionTimeout="20000" disableUploadTimeout="true" />
 
     <!-- Define the top level container in our container hierarchy -->
     <Engine name="Catalina" defaultHost="localhost">
 
-
       <Realm className="org.apache.catalina.realm.MemoryRealm" />
 
       <!-- Define the default virtual host
            Note: XML Schema validation will not work with Xerces 2.2.
        -->
-      <Host name="localhost" debug="0" 
-       unpackWARs="true" autoDeploy="true"
-       xmlValidation="false" xmlNamespaceAware="false" appBase="temp">
-    
-      </Host>
+      <Host name="localhost" unpackWARs="true" autoDeploy="true"
+       xmlValidation="false" xmlNamespaceAware="false" appBase="webapps" />
 
     </Engine>
 

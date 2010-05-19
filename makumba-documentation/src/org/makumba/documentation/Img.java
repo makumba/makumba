@@ -18,7 +18,7 @@
     specific language governing permissions and limitations
     under the License.  
  */
-package org.makumba.commons.documentation;
+package org.makumba.documentation;
 
 import java.util.*;
 import com.ecyrd.jspwiki.*;

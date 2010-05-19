@@ -1,4 +1,4 @@
-package org.makumba.commons.documentation;
+package org.makumba.documentation;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -99,6 +99,8 @@ public class InsertCategoryMenu extends AbstractReferralPlugin implements WikiPl
             String wikiMarkup = "[{MenuTreePlugin menuPage='" + toBeInserted + "Menu" + "'}]";
             String html = context.getEngine().textToHTML(context, wikiMarkup);
             
+            // commented out for now as we don't have the menu integration in API
+            /*
             // FIXME make this either a param or a jspwiki.properties param
             if(toBeInserted.equals("CategoryDocumentation")) {
                 // generate a file that can be used by the API docs
@@ -118,7 +120,7 @@ public class InsertCategoryMenu extends AbstractReferralPlugin implements WikiPl
                     }
                     
                 }
-            }
+            }*/
             
             return html;
         }

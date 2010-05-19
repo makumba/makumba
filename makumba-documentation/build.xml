@@ -1,7 +1,12 @@
 <project name="makumba-documentation" default="compile" basedir=".">
 
   <property file="build.properties" />
-  <property name="build.dir" value="bin/" />
+
+  <property name="src.dir" value="src" />
+  <property name="build.dir" value="bin" />
+  <property name="deploy.dir" value="tomcat/webapps" />
+  <property name="webapp.dir" value="JSPWiki" />
+
 
   <!-- classpath for starting the JSPWiki tomcat -->
   <path id="tomcat.class.path">
@@ -29,7 +34,8 @@
 
 
   <target name="compile" description="compile all java files">
-    <javac srcdir="src" destdir="bin" source="1.5" target="1.5" debug="on">
+    <mkdir dir="${build.dir}"/>
+    <javac srcdir="${src.dir}" destdir="bin" source="1.5" target="1.5" debug="on">
       <classpath refid="project.class.path" />
     </javac>
   </target>
@@ -38,6 +44,16 @@
     <mkdir dir="work" />
     <antcall target="makeJSPWikiProperties" />
     <antcall target="copyWikiPlugins" />
+  </target>
+
+  <target name="clean">
+    <delete file="${basedir}/JSPWiki/WEB-INF/jspwiki.properties" />
+    <delete includeemptydirs="true" failonerror="false">
+      <fileset dir="${build.dir}" />
+      <fileset dir="${basedir}/JSPWiki/WEB-INF/classes/org/makumba/documentation">
+        <include name="Box*.class,Insert*.class,Img*.class,API*.class,DEV*.class,JAVA*.class,HTML*.class" />
+      </fileset>
+    </delete>
   </target>
 
   <target name="makeJSPWikiProperties" description="generates JSPWiki properties file for local use">
@@ -56,20 +72,40 @@
     <filter filtersfile="JSPWiki/WEB-INF/jspwiki.properties.template" />
 
     <!-- Copy the template in order to replace the version token filter -->
-    <copy file="JSPWiki/WEB-INF/jspwiki.properties.template" tofile="JSPWiki/WEB-INF/jspwiki.properties" filtering="on" overwrite="true" />
+    <copy file="${basedir}/JSPWiki/WEB-INF/jspwiki.properties.template" tofile="${basedir}/JSPWiki/WEB-INF/jspwiki.properties" filtering="on" overwrite="true" />
   </target>
 
 
   <target name="copyWikiPlugins" description="compiles and copies the plugins to the JSPWiki folder">
-
-    <copy todir="JSPWiki/WEB-INF/classes/org/makumba/commons/documentation">
-      <fileset dir="${build.dir}/org/makumba/commons/documentation/" includes="Box*.class,Insert*.class,Img*.class,API*.class,DEV*.class,JAVA*.class,HTML*.class" />
+    <copy todir="${basedir}/JSPWiki/WEB-INF/classes/org/makumba/documentation">
+      <fileset dir="${build.dir}/org/makumba/documentation/" includes="Box*.class,Insert*.class,Img*.class,API*.class,DEV*.class,JAVA*.class,HTML*.class" />
     </copy>
-
   </target>
 
-  
-  <target name="tomcat-wiki" description="start the tomcat to deploy JSPwiki">
+
+  <target name="create-war">
+    <echo>Creating the JSPWiki war file</echo>
+    <delete file="${build.dir}/ROOT.war" />
+    <war destfile="${build.dir}/ROOT.war" webxml="${webapp.dir}/WEB-INF/web.xml" update="true">
+      <fileset dir="${webapp.dir}/">
+        <exclude name="WEB-INF/classes/*" />
+        <exclude name="WEB-INF/lib/*" />
+      </fileset>
+      <lib dir="${webapp.dir}/WEB-INF/lib" />
+      <classes dir="${webapp.dir}/WEB-INF/classes" />
+    </war>
+  </target>
+
+  <target name="deploy-war">
+    <echo>Deploying the JSPWiki war file</echo>
+    <delete file="${deploy.dir}/ROOT.war" />
+    <delete dir="${deploy.dir}/ROOT" />
+    <antcall target="create-war" />
+    <copy file="${build.dir}/ROOT.war" toFile="${deploy.dir}/ROOT.war" />
+    <sleep seconds="8" />
+  </target>
+
+  <target name="tomcat-start" depends="create-war, deploy-war">
     <echo>Java home in build: ${java.home}</echo>
     <java classname="org.apache.catalina.startup.Bootstrap" fork="yes" classpathref="tomcat.class.path" append="true">
       <jvmarg value="-Dcatalina.home=${tomcat.home}" />
@@ -81,9 +117,6 @@
       <jvmarg value="-client" />
       <arg value="start" />
     </java>
-    <!-- give tomcat time to start up -->
-    <sleep seconds="5" />
-
   </target>
 
   <target name="tomcat-stop" description="stops the tomcat">
