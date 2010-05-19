@@ -24,6 +24,7 @@ package org.makumba.commons;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Vector;
 
 /**
  * @author Rudolf Mayer
@@ -45,6 +46,14 @@ public class CollectionUtils {
             map.put(entry[0], entry[1]);
         }
         return map;
+    }
+
+    public static <T> Vector<T> toVector(T... array) {
+        Vector<T> vec = new Vector<T>();
+        for (T element : array) {
+            vec.add(element);
+        }
+        return vec;
     }
 
 }

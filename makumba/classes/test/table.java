@@ -38,6 +38,7 @@ import junit.framework.TestSuite;
 import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.Transaction;
+import org.makumba.commons.CollectionUtils;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
 
@@ -177,15 +178,10 @@ public class table extends TestCase {
         p.put("indiv.surname", "doe");
         p.put("extraData.something", "else");
 
-        Vector<Integer> setintElem = new Vector<Integer>();
-        setintElem.addElement(new Integer(1));
-        setintElem.addElement(new Integer(0));
-
-        Vector<String> setcharElem = new Vector<String>();
-        setcharElem.addElement("f");
-        setcharElem.addElement("e");
-
+        Vector<Integer> setintElem = CollectionUtils.toVector(1, 0);
         p.put("intSet", setintElem);
+
+        Vector<String> setcharElem = CollectionUtils.toVector("f", "e");
         p.put("charSet", setcharElem);
 
         ptr = db.insert("test.Person", p);
@@ -546,13 +542,10 @@ public class table extends TestCase {
         String val = "A completely new guy";
         pmod.put("indiv.name", val);
 
-        Vector<Integer> setintElem = new Vector<Integer>();
-        setintElem.addElement(new Integer(2));
-
-        Vector<String> setcharElem = new Vector<String>();
-        setcharElem.addElement("d");
-
+        Vector<Integer> setintElem = CollectionUtils.toVector(2);
         pmod.put("intSet", setintElem);
+
+        Vector<String> setcharElem = CollectionUtils.toVector("d");
         pmod.put("charSet", setcharElem);
 
         int updateReturn = db.update(ptr, pmod);
