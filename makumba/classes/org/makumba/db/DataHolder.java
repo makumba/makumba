@@ -30,13 +30,13 @@ public class DataHolder {
     private TransactionProvider tp;
 
     /** dictionary holding the data used for the operation, and on which operations are performed */
-    Dictionary<String, Object> dictionnary = new Hashtable<String, Object>();
+    Hashtable<String, Object> dictionnary = new Hashtable<String, Object>();
 
     /** dictionary holding subrecords, i.e. each key gives access to a hashtable of fields */
-    Dictionary<String, DataHolder> subrecords = new Hashtable<String, DataHolder>(); // contains data holders
+    Hashtable<String, DataHolder> subrecords = new Hashtable<String, DataHolder>(); // contains data holders
 
     /** dictionary holding the data which has to be performed on sets */
-    Dictionary<String, Object> sets = new Hashtable<String, Object>(); // contains vectors
+    Hashtable<String, Object> sets = new Hashtable<String, Object>(); // contains vectors
 
     /** all the fields to be processed */
     private Dictionary<String, Object> fullData;
@@ -81,8 +81,7 @@ public class DataHolder {
                 }
 
                 // if this field is a set, we add it to our dictionary of sets
-                if (fi.getType().equals("set") || fi.getType().equals("setintEnum")
-                        || fi.getType().equals("setcharEnum")) {
+                if (fi.isSetType()) {
                     Object v = dictionnary.remove(s); // remove from our dictionary, as it was treated
                     fi.checkValue(v);
                     sets.put(s, v);
