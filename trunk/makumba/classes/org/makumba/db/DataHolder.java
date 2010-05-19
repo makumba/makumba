@@ -99,9 +99,7 @@ public class DataHolder {
         }
 
         // we check what is left (in the subrecords)
-        for (Enumeration<String> e = subfieldsTemp.keys(); e.hasMoreElements();) {
-
-            String fld = e.nextElement();
+        for (String fld : subfieldsTemp.keySet()) {
             FieldDefinition fd = typeDef.getFieldDefinition(fld);
 
             if (fd == null) {
