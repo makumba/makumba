@@ -1,4 +1,4 @@
-package org.makumba.commons.documentation;
+package org.makumba.documentation;
 
 public class DEV extends API {
     
