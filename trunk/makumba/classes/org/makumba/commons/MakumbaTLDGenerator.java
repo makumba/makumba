@@ -78,21 +78,14 @@ public class MakumbaTLDGenerator {
             }
             if (StringUtils.equalsAny(tag.getName(), "tag", "function")) {
                 boolean isTag = tag.getName().equals("tag");
-
-                Element name = tag.element("name");
-                String tagName = name.getText();
+                String tagName = tag.element("name").getText();
 
                 for (Element tagContent : (List<Element>) tag.elements()) {
 
                     if (tagContent.getName().equals("attribute")) {
                         if (tagContent.attributeValue("name") != null
                                 || tagContent.attributeValue("specifiedIn") != null) { // have a referring attribute
-                            Element newTag = getReferencedAttributes(processedTags, errorMsg, tag, tagName, tagContent);
-                            tagContent.setAttributes(newTag.attributes());
-                            final List<Element> elements = newTag.elements();
-                            for (Element element : elements) {
-                                tagContent.add((Element) element.clone());
-                            }
+                            replaceReferencedAttribute(processedTags, errorMsg, tagName, tagContent);
                         } else { // normal attribute
                             for (Element attributeContent : (List<Element>) tagContent.elements()) {
                                 String inheritedFrom = null;
@@ -200,10 +193,47 @@ public class MakumbaTLDGenerator {
 
     }
 
+    /**
+     * Replaces the content of a tag attribute using "specifiedIn" by the actual content
+     * 
+     * @param processedTags
+     *            the hashmap of already processed tags
+     * @param errorMsg
+     *            the error message appearing in case the referenced attribute can't be found
+     * @param tagName
+     *            the name of the parent tag
+     * @param attributeTagContent
+     *            the content of the attribute
+     */
+    public static void replaceReferencedAttribute(HashMap<String, Element> processedTags, final String errorMsg,
+            String tagName, Element attributeTagContent) {
+        Element newTag = getReferencedAttributes(processedTags, errorMsg, tagName, attributeTagContent);
+        attributeTagContent.setAttributes(newTag.attributes());
+        final List<Element> elements = newTag.elements();
+        for (Element element : elements) {
+            attributeTagContent.add((Element) element.clone());
+        }
+    }
+
+    /**
+     * Retrieves the attribute referenced via "specifiedIn"
+     * 
+     * @param processedTags
+     *            the hashmap of already processed tags
+     * @param errorMsg
+     *            the error message appearing in case the referenced attribute can't be found
+     * @param tag
+     *            the parent tag
+     * @param tagName
+     *            the name of the parent tag
+     * @param attributeTagContent
+     *            the content of the attribute
+     * @return a copy of the attribute Element, enriched with the "inheritedFrom" attribute to track origin
+     */
     public static Element getReferencedAttributes(HashMap<String, Element> processedTags, final String errorMsg,
-            Element tag, String tagName, Element tagContent) {
-        String specifiedIn = tagContent.attributeValue("specifiedIn");
-        String attribute = tagContent.attributeValue("name");
+            String tagName, Element attributeTagContent) {
+        String specifiedIn = attributeTagContent.attributeValue("specifiedIn");
+        String attribute = attributeTagContent.attributeValue("name");
         Element copyFrom = processedTags.get(specifiedIn);
         if (copyFrom == null) {
             System.out.println(errorMsg + "tag '" + tagName

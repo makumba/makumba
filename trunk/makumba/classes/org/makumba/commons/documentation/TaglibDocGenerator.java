@@ -92,25 +92,40 @@ public class TaglibDocGenerator {
         // get all the tag and function elements
         for (Iterator<Element> i = root.elementIterator(); i.hasNext();) {
             Element e = i.next();
+            boolean isTag = e.getName().equals("tag") && !e.elementText("name").equals("rickroll");
+            boolean isFunction = e.getName().equals("function");
+
+            final String errorMsg = "Error processing element ";
 
             // keep names in separate places
-            if (e.getName().equals("tag") && !e.elementText("name").equals("rickroll")) {
+            if (isTag) {
                 tagNames.add(e.elementText("name"));
             }
-            if (e.getName().equals("function")) {
+            if (isFunction) {
                 functionNames.add(e.elementText("name"));
+            }
+
+            // pre-processing for referred attributes: modify the document tree to include referenced attributes
+            if (isTag) {
+                for (Element tagContent : (List<Element>) e.elements()) {
+                    if (tagContent.getName().equals("attribute")) {
+                        if (tagContent.attributeValue("name") != null
+                                || tagContent.attributeValue("specifiedIn") != null) {
+                            // have a referring attribute
+                            MakumbaTLDGenerator.replaceReferencedAttribute(processedElements, errorMsg, e.element(
+                                "name").getText(), tagContent);
+                        }
+                    }
+                }
             }
 
             // generate tag doc
             try {
-                if (e.getName().equals("tag") && !e.elementText("name").equals("rickroll")) {
-                    generateTagFile(e, true);
-                } else if (e.getName().equals("function")) {
-                    generateTagFile(e, false);
+                if (isTag || isFunction) {
+                    generateTagFile(e, isTag);
                 }
             } catch (FileNotFoundException io) {
-                System.err.println("Cannot find file " + io.getMessage());
-                io.printStackTrace();
+                System.err.println("Cannot find file: " + io.getMessage());
             } catch (IOException io2) {
                 throw new RuntimeException("Cannot create generated file", io2);
             } finally {
@@ -125,6 +140,11 @@ public class TaglibDocGenerator {
         Collections.sort(tagNames);
         Collections.sort(functionNames);
 
+        generateIndexFile(tagNames, functionNames);
+
+    }
+
+    private void generateIndexFile(List<String> tagNames, List<String> functionNames) {
         // generate index page for all tags
         File taglibIndexFile = new File(this.outputDir.getAbsolutePath() + File.separator + "TagIndex.txt");
 
@@ -152,7 +172,6 @@ public class TaglibDocGenerator {
         } catch (IOException io) {
             throw new RuntimeException("Cannot create index file", io);
         }
-
     }
 
     /**
@@ -327,7 +346,7 @@ public class TaglibDocGenerator {
 
                     Element includedAttribute = MakumbaTLDGenerator.getReferencedAttributes(this.processedElements,
                         "Error processing attribute " + a.attributeValue("name") + " of tag "
-                                + element.elementText("name") + ": ", element, element.elementText("name"), a);
+                                + element.elementText("name") + ": ", element.elementText("name"), a);
                     if (includedAttribute == null) {
                         System.err.println("Warning: could not retrieve the included attribue "
                                 + a.attributeValue("name") + ", skipping the attribute");
