@@ -22,6 +22,7 @@
 /////////////////////////////////////
 package org.makumba.db;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Dictionary;
@@ -35,6 +36,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.makumba.Attributes;
 import org.makumba.CompositeValidationException;
 import org.makumba.DBError;
+import org.makumba.FieldValueDiff;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidFieldTypeException;
@@ -215,6 +217,62 @@ public abstract class TransactionImplementation implements Transaction {
         }
 
         return updated;
+    }
+
+    public ArrayList<FieldValueDiff> updateWithValueDiff(Pointer ptr, Dictionary<String, Object> fieldsToChange) {
+        DataDefinition dd = DataDefinitionProvider.getInstance().getDataDefinition(ptr.getType());
+
+        ArrayList<String> fields = new ArrayList<String>();
+        ArrayList<String> sets = new ArrayList<String>();
+
+        // read the current values for the non-set fields of the MDD from the DB, by composing a query
+        StringBuilder proj = new StringBuilder();
+        for (Enumeration<String> e = fieldsToChange.keys(); e.hasMoreElements();) {
+            String fldName = e.nextElement();
+            FieldDefinition fieldDefinition = dd.getFieldOrPointedFieldDefinition(fldName);
+
+            if (fieldDefinition.isSetType()) {
+                // set types will be treated later
+                sets.add(fldName);
+            } else {
+                if (proj.length() > 0) {
+                    proj.append(", ");
+                }
+                proj.append("o.").append(fldName);
+                fields.add(fldName);
+            }
+        }
+
+        // execute the query
+        String query = "SELECT " + proj.toString() + " FROM " + ptr.getType() + " o WHERE o=$1";
+        Vector<Dictionary<String, Object>> oldValuesVec = executeQuery(query.toString(), ptr);
+        Dictionary<String, Object> oldValues = oldValuesVec.firstElement();
+
+        ArrayList<FieldValueDiff> res = new ArrayList<FieldValueDiff>();
+
+        // process the normal changes
+        for (int col = 0; col < fields.size(); col++) {
+            String fldName = fields.get(col);
+            FieldDefinition fieldDefinition = dd.getFieldOrPointedFieldDefinition(fldName);
+            Object newValue = fieldsToChange.get(fldName);
+            Object oldValue = oldValues.get("col" + (col + 1));
+            if (!newValue.equals(oldValue)) {
+                res.add(new FieldValueDiff(fldName, fieldDefinition, oldValue, newValue));
+            }
+        }
+
+        // process the changes on sets
+        for (String setFieldName : sets) {
+            FieldDefinition fieldDefinition = dd.getFieldOrPointedFieldDefinition(setFieldName);
+            Vector<?> oldValue = readSetValues(ptr, setFieldName);
+            Vector<?> newValue = (Vector<?>) fieldsToChange.get(setFieldName);
+            if (!newValue.equals(oldValue)) {
+                res.add(new FieldValueDiff(setFieldName, fieldDefinition, oldValue, newValue));
+            }
+        }
+
+        update(ptr, fieldsToChange);
+        return res;
     }
 
     public int updateSet(Pointer basePointer, String setName, Collection<?> addElements, Collection<?> removeElements) {
