@@ -15,7 +15,7 @@ public class MqlSqlASTFactory extends ASTFactory {
     }
 
     @Override
-    public Class getASTNodeType(int tokenType) {
+    public Class<? extends MqlNode> getASTNodeType(int tokenType) {
         switch (tokenType) {
             case HqlSqlTokenTypes.IDENT:
                 return MqlIdentNode.class;
@@ -45,6 +45,9 @@ public class MqlSqlASTFactory extends ASTFactory {
 
     @Override
     protected AST createUsingCtor(Token token, String className) {
+        // FIXME/TODO: why is this method overriding? the only difference seems to be in
+        // ASTFActory: c = Utils.loadClass(className);
+        // MqlSqlASTFactory: c = Class.forName(className);
         Class c;
         AST t;
         try {
