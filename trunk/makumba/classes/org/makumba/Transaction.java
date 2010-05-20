@@ -25,6 +25,7 @@ package org.makumba;
 
 import java.util.Collection;
 import java.util.Dictionary;
+import java.util.List;
 import java.util.Vector;
 
 import org.makumba.providers.TransactionProvider;
@@ -282,6 +283,8 @@ public interface Transaction extends Database {
      * @see Pointer#NullSet
      */
     public int update(Pointer ptr, java.util.Dictionary<String, Object> fieldsToChange);
+
+    public List<FieldValueDiff> updateWithValueDiff(Pointer ptr, java.util.Dictionary<String, Object> fieldsToChange);
 
     /**
      * Update in the form <code>update("general.Person p", "p.birthdate=$1", "p=$2", params)</code> . <br>

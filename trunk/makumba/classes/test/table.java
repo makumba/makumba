@@ -25,16 +25,21 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.makumba.FieldValueDiff;
+import org.makumba.DataDefinition;
 import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.Transaction;
@@ -571,6 +576,63 @@ public class table extends TestCase {
         v = db.executeQuery(readCharSet, ptr);
         assertEquals(1, v.size());
         assertEquals("d", v.elementAt(0).get("member"));
+    }
+
+    public void testUpdateX() {
+        ArrayList<FieldValueDiff> expectedChanges = new ArrayList<FieldValueDiff>();
+        Hashtable<String, Object> pmod = new Hashtable<String, Object>();
+
+        DataDefinition dd = DataDefinitionProvider.getInstance().getDataDefinition(ptr.getType());
+
+        String fieldName = "indiv.name";
+        String newName = "Still the same guy";
+        pmod.put(fieldName, newName);
+        expectedChanges.add(new FieldValueDiff(fieldName, dd.getFieldOrPointedFieldDefinition(fieldName),
+                "A completely new guy", newName));
+
+        String fieldSurname = "indiv.surname";
+        String newSurname = "D'oh";
+        pmod.put(fieldSurname, newSurname);
+        expectedChanges.add(new FieldValueDiff(fieldSurname, dd.getFieldOrPointedFieldDefinition(fieldSurname), "doe",
+                newSurname));
+
+        pmod.put("weight", new Double(85.7d));
+
+        String fieldIntSet = "intSet";
+        Vector<Integer> setintElem = CollectionUtils.toVector(1, 1);
+        pmod.put(fieldIntSet, setintElem);
+        expectedChanges.add(new FieldValueDiff(fieldIntSet, dd.getFieldOrPointedFieldDefinition(fieldIntSet),
+                CollectionUtils.toVector(2), setintElem));
+
+        String fieldCharSet = "charSet";
+        Vector<String> setcharElem = CollectionUtils.toVector("e", "f");
+        pmod.put(fieldCharSet, setcharElem);
+        expectedChanges.add(new FieldValueDiff(fieldCharSet, dd.getFieldOrPointedFieldDefinition(fieldCharSet),
+                CollectionUtils.toVector("d"), setcharElem));
+
+        List<FieldValueDiff> res = db.updateWithValueDiff(ptr, pmod);
+
+        Collections.sort(expectedChanges);
+        Collections.sort(res);
+        assertEquals(res, expectedChanges);
+
+        Vector<Dictionary<String, Object>> v = db.executeQuery(readPerson, ptr);
+        assertEquals(1, v.size());
+
+        Dictionary<String, Object> modc = v.elementAt(0);
+
+        assertNotNull(modc);
+        assertEquals(newName, modc.get("name"));
+        assertEquals(newSurname, modc.get("surname"));
+        assertNotNull(db.read(ptrOne, ptrOneFields));
+
+        v = db.executeQuery(readIntSet, ptr);
+        assertEquals(setintElem.size(), v.size());
+        assertEquals(setintElem, db.readIntEnumValues(ptr, fieldIntSet));
+
+        v = db.executeQuery(readCharSet, ptr);
+        assertEquals(setcharElem.size(), v.size());
+        assertEquals(setcharElem, db.readIntEnumValues(ptr, fieldCharSet));
     }
 
     public void testDelete() {
