@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Vector;
+import java.util.regex.Matcher;
 
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
@@ -211,7 +212,7 @@ public class MDDProvider extends DataDefinitionProvider {
                 throw new MakumbaError("webappRoot " + webappRoot + " does not appear to be a valid directory");
             }
             String mddPath = webappRoot + "/WEB-INF/classes/dataDefinitions/" + s.replace('.', '/') + "." + ext;
-            File mdd = new File(mddPath.replaceAll("/", File.separator));
+            File mdd = new File(mddPath.replaceAll("/", Matcher.quoteReplacement(File.separator)));
             if (mdd.exists()) {
                 try {
                     u = new java.net.URL("file://" + mdd.getAbsolutePath());

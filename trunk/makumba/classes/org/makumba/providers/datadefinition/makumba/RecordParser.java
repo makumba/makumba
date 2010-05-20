@@ -396,7 +396,7 @@ public class RecordParser {
             }
             String mddPath = RecordInfo.webappRoot + "/WEB-INF/classes/dataDefinitions/" + s.replace('.', '/') + "."
                     + ext;
-            File mdd = new File(mddPath.replaceAll("/", File.separator));
+            File mdd = new File(mddPath.replaceAll("/", Matcher.quoteReplacement(File.separator)));
             if (mdd.exists()) {
                 try {
                     u = new java.net.URL("file://" + mdd.getAbsolutePath());
@@ -699,7 +699,7 @@ public class RecordParser {
         } else if (uconn.getClass().getName().endsWith("JarURLConnection")) {
             JarFile jf = ((JarURLConnection) uconn).getJarFile();
 
-            // jar:file:/home/manu/workspace/parade2/webapp/WEB-INF/lib/makumba.jar!/org/makumba/devel/relations/Relation
+            //jar:file:/home/manu/workspace/parade2/webapp/WEB-INF/lib/makumba.jar!/org/makumba/devel/relations/Relation
             // .mdd
             String[] jarURL = u.toExternalForm().split("!");
 
