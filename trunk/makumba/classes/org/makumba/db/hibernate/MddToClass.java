@@ -21,6 +21,8 @@ import javassist.bytecode.ConstPool;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.ClassMemberValue;
 
+import javax.persistence.ManyToMany;
+
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.commons.NameResolver;
@@ -283,7 +285,7 @@ public class MddToClass {
         cc.writeFile("build");
 
         Class<?> A = Class.forName("A");
-        System.out.println(A.getField("myField").getAnnotations()[0]);
+        System.out.println(A.getField("myField").getAnnotation(ManyToMany.class));
 
     }
 }
