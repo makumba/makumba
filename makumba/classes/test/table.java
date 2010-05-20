@@ -578,7 +578,7 @@ public class table extends TestCase {
         assertEquals("d", v.elementAt(0).get("member"));
     }
 
-    public void testUpdateX() {
+    public void testUpdateWithDiff() {
         ArrayList<FieldValueDiff> expectedChanges = new ArrayList<FieldValueDiff>();
         Hashtable<String, Object> pmod = new Hashtable<String, Object>();
 
