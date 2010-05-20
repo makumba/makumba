@@ -47,7 +47,7 @@ import org.makumba.version;
  */
 public class MakumbaTLDGenerator {
 
-    private static final String TAGLIB_SKELETON = "taglib-skeleton.tld.tmpl";
+    private static final String TAGLIB_SKELETON = "skeleton/taglib-skeleton.tld";
 
     private static final String TAGLIB_MAK = "taglib.tld";
 

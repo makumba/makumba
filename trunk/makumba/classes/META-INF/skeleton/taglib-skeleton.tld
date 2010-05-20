@@ -980,6 +980,14 @@ Values are none (displayed in <mak:response/>), before (before the input), after
       <comments>Fixed, mandatory.</comments>
     </attribute>
 
+    <attribute>
+      <name>recordChangesIn</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>In which variable to record the changed values in</description>
+      <comments>Fixed, optional.</comments>
+    </attribute>
+
     <attribute name="handler" specifiedIn="form" />
     <attribute name="action" specifiedIn="form" />
     <attribute name="method" specifiedIn="form" />
