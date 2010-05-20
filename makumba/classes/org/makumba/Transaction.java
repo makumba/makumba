@@ -317,7 +317,7 @@ public interface Transaction extends Database {
      * Java methods, and basically does the following steps:
      * <ol>
      * <li>Read all the existing values of the field <code>setName</code> of the object <code>basePointer</code> into a
-     * collection, using {@link #readExternalSetElements(Pointer, String)}</li>
+     * collection, using {@link #readExternalSetValues(Pointer, String)}</li>
      * <li>Remove the set elements specified in the parameter <code>deleteElements</code></li>
      * <li>Add the set elements specified in the parameter <code>newElements</code></li>
      * <li>Use {@link #update(Pointer, Dictionary)} to write the new set values to the database</li>
@@ -352,7 +352,11 @@ public interface Transaction extends Database {
      *            the name of the external set in the type of basePointer
      * @return A {@link Vector} containing the {@link Pointer} of the external set
      */
-    public Vector<Pointer> readExternalSetElements(Pointer basePointer, String setName);
+    public Vector<Pointer> readExternalSetValues(Pointer basePointer, String setName);
+
+    public Vector<Integer> readIntEnumValues(Pointer basePointer, String setName);
+
+    public Vector<String> readCharEnumValues(Pointer basePointer, String setName);
 
     /**
      * Delete the record pointed by the given pointer. If the pointer is a 1-1, the pointer in the base record is set to

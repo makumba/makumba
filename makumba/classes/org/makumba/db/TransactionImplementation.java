@@ -219,7 +219,7 @@ public abstract class TransactionImplementation implements Transaction {
 
     public int updateSet(Pointer basePointer, String setName, Collection<?> addElements, Collection<?> removeElements) {
         // read the set's current values from db
-        final Vector<Pointer> setElements = readExternalSetElements(basePointer, setName);
+        final Vector<Pointer> setElements = readExternalSetValues(basePointer, setName);
 
         // get the set type
         final FieldDefinition fdSet = MDDProvider.getMDD(basePointer.getType()).getFieldDefinition(setName);
@@ -247,15 +247,28 @@ public abstract class TransactionImplementation implements Transaction {
         return update(basePointer, d);
     }
 
-    public Vector<Pointer> readExternalSetElements(Pointer basePointer, String setName) {
+    public Vector<Pointer> readExternalSetValues(Pointer basePointer, String setName) {
+        return readSetValues(basePointer, setName);
+    }
+
+    public Vector<Integer> readIntEnumValues(Pointer basePointer, String setName) {
+        return readSetValues(basePointer, setName);
+    }
+
+    public Vector<String> readCharEnumValues(Pointer basePointer, String setName) {
+        return readSetValues(basePointer, setName);
+    }
+
+    protected <T> Vector<T> readSetValues(Pointer basePointer, String setName) {
         String label = "setElement";
         Vector<Dictionary<String, Object>> v = executeQuery("SELECT " + label + " as " + label + " FROM "
                 + basePointer.getType() + " o, o." + setName + " " + label + " WHERE o=$1", basePointer);
-        Vector<Pointer> currentElements = new Vector<Pointer>(v.size());
+
+        Vector<T> vec = new Vector<T>();
         for (Dictionary<String, Object> dictionary : v) {
-            currentElements.add((Pointer) dictionary.get(label));
+            vec.add((T) dictionary.get(label));
         }
-        return currentElements;
+        return vec;
     }
 
     private void treatNotUniqueException(String type, NotUniqueException nue) {
