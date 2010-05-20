@@ -13,7 +13,7 @@ import org.makumba.providers.TransactionProvider;
 
 /**
  * Tests methods that manipulate sets in the {@link Transaction} interface, specifically
- * {@link Transaction#readExternalSetElements(Pointer, String)} and
+ * {@link Transaction#readExternalSetValues(Pointer, String)} and
  * {@link Transaction#updateSet(Pointer, String, java.util.Collection, java.util.Collection)}.<br>
  * FIXME: maybe this should be together with {@link table}
  * 
@@ -45,7 +45,7 @@ public class ExternalSetAPITest extends TestCase {
         Transaction t = TransactionProvider.getInstance().getConnectionToDefault();
         try {
             // compare newly read with already known set elements
-            assertEquals(t.readExternalSetElements(person, setName), speaks);
+            assertEquals(t.readExternalSetValues(person, setName), speaks);
         } finally {
             if (t != null) {
                 t.close();
@@ -64,7 +64,7 @@ public class ExternalSetAPITest extends TestCase {
             final Vector<Pointer> speaksNew = new Vector<Pointer>(speaks);
             speaksNew.remove(removedLanguage);
 
-            assertEquals(t.readExternalSetElements(person, setName), speaksNew);
+            assertEquals(t.readExternalSetValues(person, setName), speaksNew);
         } finally {
             if (t != null) {
                 t.close();
@@ -84,7 +84,7 @@ public class ExternalSetAPITest extends TestCase {
             speaksNew.remove(removedLanguage);
             speaksNew.add(removedLanguage);
 
-            assertEquals(t.readExternalSetElements(person, setName), speaksNew);
+            assertEquals(t.readExternalSetValues(person, setName), speaksNew);
         } finally {
             if (t != null) {
                 t.close();
