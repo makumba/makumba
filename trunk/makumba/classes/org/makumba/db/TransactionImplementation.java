@@ -36,9 +36,9 @@ import org.apache.commons.collections.CollectionUtils;
 import org.makumba.Attributes;
 import org.makumba.CompositeValidationException;
 import org.makumba.DBError;
-import org.makumba.FieldValueDiff;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
+import org.makumba.FieldValueDiff;
 import org.makumba.InvalidFieldTypeException;
 import org.makumba.LogicException;
 import org.makumba.MakumbaError;
@@ -265,8 +265,8 @@ public abstract class TransactionImplementation implements Transaction {
         for (String setFieldName : sets) {
             FieldDefinition fieldDefinition = dd.getFieldOrPointedFieldDefinition(setFieldName);
             Vector<?> oldValue = readSetValues(ptr, setFieldName);
-            Vector<?> newValue = (Vector<?>) fieldsToChange.get(setFieldName);
-            if (!newValue.equals(oldValue)) {
+            Object newValue = fieldsToChange.get(setFieldName);
+            if (!(newValue.equals(oldValue) || newValue == Pointer.NullSet && oldValue.size() == 0)) {
                 res.add(new FieldValueDiff(setFieldName, fieldDefinition, oldValue, newValue));
             }
         }
