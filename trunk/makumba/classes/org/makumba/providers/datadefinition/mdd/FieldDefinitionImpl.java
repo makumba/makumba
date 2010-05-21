@@ -19,6 +19,7 @@ import org.makumba.InvalidValueException;
 import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.ValidationRule;
+import org.makumba.commons.CollectionUtils;
 import org.makumba.commons.StringUtils;
 import org.makumba.providers.DataDefinitionProvider;
 
@@ -572,6 +573,12 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
                     return vect;
 
                 case SETCHARENUM:
+
+                    // may just have one value
+                    if (value != null && value instanceof String) {
+                        checkCharEnum(value);
+                        return CollectionUtils.toVector(value);
+                    }
 
                     normalCheck(value);
                     v = (Vector) value;
