@@ -689,27 +689,30 @@
 	http://ant.apache.org/manual/OptionalTasks/junit.html
 	-->
 
-	<target name="test.junit" depends="compile">
-		<junit fork="no" outputtoformatters="false">
+	<target name="test.junit" depends="compile" description="runs the junit test and writes xml reports to test-reports/">
+	    <mkdir dir="${basedir}/test-reports"/>
+	    <junit fork="no" outputtoformatters="true">
 			<classpath refid="test.class.path" />
-			<formatter type="plain" usefile="false" />
-			<test name="test.mdd" />
-			<test name="test.table" />
-			<test name="test.config" />
-			<test name="test.ExternalSetAPITest" />
-			<test name="test.hqlanalyzer" />
-			<test name="test.lock" />
-			<test name="test.oqlanalyzer" />
-			<test name="test.QueryGenerationTest" />
+			<formatter type="xml" usefile="true" />
+			<test name="test.mdd" todir="${basedir}/test-reports/"/>
+			<test name="test.table" todir="${basedir}/test-reports/" />
+			<test name="test.config" todir="${basedir}/test-reports/" />
+			<test name="test.ExternalSetAPITest" todir="${basedir}/test-reports/" />
+			<test name="test.hqlanalyzer" todir="${basedir}/test-reports/" />
+			<test name="test.lock" todir="${basedir}/test-reports/" />
+			<test name="test.oqlanalyzer" todir="${basedir}/test-reports/" />
+			<test name="test.QueryGenerationTest" todir="${basedir}/test-reports/" />
 		</junit>
 	</target>
+  
 	<target name="test.junit-hql" depends="compile">
-		<junit fork="true" outputtoformatters="false">
+		<junit fork="true" outputtoformatters="true">
 			<classpath refid="test.class.path" />
-			<formatter type="plain" usefile="false" />
-			<test name="test.tableHibernate" />
+            <formatter type="xml" usefile="true" />
+			<test name="test.tableHibernate" todir="${basedir}/test-reports/" />
 		</junit>
 	</target>
+  
 	<target name="deployTests">
 		<fail unless="test.deploy">Cannot find test.deploy. Set it in build.properties or via the command line</fail>
 		<delete file="${test.deploy}/tests.war" />
@@ -719,6 +722,7 @@
 		<!-- wait for deploy -->
 		<sleep seconds="8" />
 	</target>
+  
 	<target name="test.jsp">
 		<!-- this will set test.port to a default value, if it is not set -->
 		<property name="test.port" value="8080" />
@@ -727,11 +731,11 @@
 		<junit fork="no">
 			<sysproperty key="cactus.contextURL" value="http://localhost:${test.port}/tests" />
 			<classpath refid="test.class.path" />
-			<formatter type="plain" usefile="false" />
+			<formatter type="xml" usefile="true" />
 			<!-- test name="test.selenium.TestListMQL" /-->
-			<test name="test.concurrency.ConcurrentTest" />
-			<test name="test.tags.FormsOQLTest" />
-			<test name="test.tags.ListOQLTest" />
+			<test name="test.concurrency.ConcurrentTest" todir="${basedir}/test-reports" />
+			<test name="test.tags.FormsOQLTest" todir="${basedir}/test-reports" />
+			<test name="test.tags.ListOQLTest" todir="${basedir}/test-reports" />
 		</junit>
 	</target>
 
@@ -744,9 +748,9 @@
 		<junit fork="no">
 			<sysproperty key="cactus.contextURL" value="http://localhost:${test.port}/tests" />
 			<classpath refid="test.class.path" />
-			<formatter type="plain" usefile="false" />
-			<test name="test.tags.ListHQLTest" />
-			<test name="test.tags.FormsHQLTest" />
+            <formatter type="xml" usefile="true" />
+			<test name="test.tags.ListHQLTest" todir="${basedir}/test-reports" />
+			<test name="test.tags.FormsHQLTest" todir="${basedir}/test-reports" />
 		</junit>
 		<replace file="webapps/tests/WEB-INF/classes/Makumba.conf" token="defaultDataSource=testDatabaseHibernate" value="defaultDataSource=testDatabase" />
 	</target>
@@ -905,6 +909,8 @@ The JSP tests will deploy on another dir, which can be configured via the proper
 			<classpath>
 				<pathelement path="lib/test/${tomcatNumber}-bootstrap.jar" />
 				<pathelement path="lib/common/commons-logging-api.jar" />
+			    <!-- we statically link the mysql connector, add other connectors here if necessary -->
+			    <pathelement path="lib/db/mysql-connector-java-5.1.6-bin.jar" />
 			</classpath>
 			<jvmarg value="-Dcatalina.home=${tomcatHome}" />
 			<jvmarg value="-Dcatalina.base=${catalinaBase}" />
