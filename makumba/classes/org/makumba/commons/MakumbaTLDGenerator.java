@@ -100,6 +100,7 @@ public class MakumbaTLDGenerator {
                                 }
 
                                 if (attributeContent.getName().equals("description")) {
+
                                     // insert the description
                                     String descriptionFileName = "";
                                     if (inheritedFrom != null) {
@@ -116,16 +117,18 @@ public class MakumbaTLDGenerator {
                                     File d = new File(documentationPath + File.separator + descriptionFileName + ".txt");
                                     if (!d.exists()) {
                                         System.err.println("Could not find attribute description file " + d);
-                                        continue;
                                     }
+
                                     String desc = "";
-                                    try {
-                                        desc = readFileAsString(d.getAbsolutePath());
-                                    } catch (IOException e) {
-                                        System.err.println("Could not read attribute description file " + d);
+
+                                    if (d.exists()) {
+                                        try {
+                                            desc = readFileAsString(d.getAbsolutePath());
+                                        } catch (IOException e) {
+                                            System.err.println("Could not read attribute description file " + d);
+                                        }
                                     }
                                     attributeContent.setText(desc.trim());
-
                                 }
                             }
                         }
@@ -207,7 +210,7 @@ public class MakumbaTLDGenerator {
      */
     public static void replaceReferencedAttribute(HashMap<String, Element> processedTags, final String errorMsg,
             String tagName, Element attributeTagContent) {
-        Element newTag = getReferencedAttributes(processedTags, errorMsg, tagName, attributeTagContent);
+        Element newTag = getReferencedAttributes(processedTags, errorMsg, tagName, attributeTagContent, false);
         attributeTagContent.setAttributes(newTag.attributes());
         final List<Element> elements = newTag.elements();
         for (Element element : elements) {
@@ -222,16 +225,18 @@ public class MakumbaTLDGenerator {
      *            the hashmap of already processed tags
      * @param errorMsg
      *            the error message appearing in case the referenced attribute can't be found
-     * @param tag
-     *            the parent tag
      * @param tagName
      *            the name of the parent tag
      * @param attributeTagContent
      *            the content of the attribute
+     * @param addOrigin
+     *            TODO
+     * @param tag
+     *            the parent tag
      * @return a copy of the attribute Element, enriched with the "inheritedFrom" attribute to track origin
      */
     public static Element getReferencedAttributes(HashMap<String, Element> processedTags, final String errorMsg,
-            String tagName, Element attributeTagContent) {
+            String tagName, Element attributeTagContent, boolean addOrigin) {
         String specifiedIn = attributeTagContent.attributeValue("specifiedIn");
         String attribute = attributeTagContent.attributeValue("name");
         Element copyFrom = processedTags.get(specifiedIn);
@@ -248,8 +253,10 @@ public class MakumbaTLDGenerator {
             System.exit(-1);
         }
 
-        // enrich the element so it knows where it was copied from
-        element.addAttribute("inheritedFrom", specifiedIn);
+        if (addOrigin) {
+            // enrich the element so it knows where it was copied from
+            element.addAttribute("inheritedFrom", specifiedIn);
+        }
 
         return element;
     }

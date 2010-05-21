@@ -346,7 +346,7 @@ public class TaglibDocGenerator {
 
                     Element includedAttribute = MakumbaTLDGenerator.getReferencedAttributes(this.processedElements,
                         "Error processing attribute " + a.attributeValue("name") + " of tag "
-                                + element.elementText("name") + ": ", element.elementText("name"), a);
+                                + element.elementText("name") + ": ", element.elementText("name"), a, true);
                     if (includedAttribute == null) {
                         System.err.println("Warning: could not retrieve the included attribue "
                                 + a.attributeValue("name") + ", skipping the attribute");
