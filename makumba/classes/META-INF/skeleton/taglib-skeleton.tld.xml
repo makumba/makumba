@@ -982,7 +982,7 @@ Values are none (displayed in <mak:response/>), before (before the input), after
 
     <attribute>
       <name>recordChangesIn</name>
-      <required>true</required>
+      <required>false</required>
       <rtexprvalue>false</rtexprvalue>
       <description>In which variable to record the changed values in</description>
       <comments>Fixed, optional.</comments>
