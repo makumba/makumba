@@ -36,6 +36,7 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.makumba.CompositeValidationException;
 import org.makumba.DataDefinition;
 import org.makumba.InvalidValueException;
@@ -161,6 +162,8 @@ public abstract class Responder implements java.io.Serializable {
     /** order of the forms in the page * */
     protected ArrayList<String> formOrder;
 
+    protected String recordChangesIn;
+
     protected HashMap<String, String> defaultMatchModes = new HashMap<String, String>();
 
     public String getDefaultMatchMode(String inputName) {
@@ -267,6 +270,14 @@ public abstract class Responder implements java.io.Serializable {
         return showFormAnnotated;
     }
 
+    public void setRecordChangesIn(String recordChangesIn) {
+        this.recordChangesIn = recordChangesIn;
+    }
+
+    public String getRecordChangesIn() {
+        return recordChangesIn;
+    }
+
     public String getTriggerEvent() {
         return triggerEvent;
     }
@@ -351,7 +362,7 @@ public abstract class Responder implements java.io.Serializable {
         return basePointerType + message + multipleSubmitErrorMsg + resultAttribute + database + operation
                 + controller.getClass().getName() + handler + addField + newType + reloadFormOnError
                 + originatingPageNameWithoutResponder + showFormAnnotated + clientSideValidation + defaultMatchModes
-                + resultLabel + triggerEvent;
+                + resultLabel + triggerEvent + (StringUtils.isNotBlank(recordChangesIn) ? recordChangesIn : "");
     }
 
     /** get the integer key of this form, and register it if not already registered */
