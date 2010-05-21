@@ -20,10 +20,11 @@ import org.makumba.analyser.PageCache;
 import org.makumba.analyser.TagData;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
-import org.makumba.commons.json.JSONObject;
 import org.makumba.commons.tags.GenericMakumbaTag;
 import org.makumba.forms.responder.Responder;
 import org.makumba.list.engine.valuecomputer.ValueComputer;
+
+import com.google.gson.Gson;
 
 /**
  * mak:section tag, capable of rendering its content dynamically and reloading it via AJAX callbacks <br>
@@ -58,6 +59,8 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
     private String[] eventAction = new String[] { "show", "hide", "reload" };
 
     private BodyContent bodyContent;
+
+    Gson gson = new Gson();
 
     public String getName() {
         return name;
@@ -458,22 +461,21 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
      * TODO make this smarter, i.e. detect which parameters come from a form
      */
     private String getQueryParameters(HttpServletRequest req) {
-
         if (req.getParameter(Responder.responderName) != null) {
-            return new JSONObject().toString();
+            return gson.toJson("");
         }
-        return new JSONObject(req.getParameterMap()).toString();
+        return gson.toJson(req.getParameterMap());
     }
 
     // {div1: 'reload', div2: 'show', div3: 'reload', div4: 'hide' }
     private String getIdEventToType(PageCache pageCache) {
         Map<Object, Object> idevent_to_type = pageCache.retrieveCache(MakumbaJspAnalyzer.SECTION_IDEVENT_TO_TYPE);
-        return new JSONObject(idevent_to_type).toString();
+        return gson.toJson(idevent_to_type);
     }
 
     private String getEventToId(PageCache pageCache) {
         MultiValueMap eventToId = pageCache.retrieveMultiCache(MakumbaJspAnalyzer.SECTION_EVENT_TO_ID);
-        return new JSONObject(eventToId).toString();
+        return gson.toJson(eventToId);
     }
 
     private QueryTag getParentListTag() {
