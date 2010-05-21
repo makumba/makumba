@@ -31,16 +31,19 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.logging.Level;
 
+import org.apache.commons.lang.StringUtils;
 import org.makumba.Attributes;
 import org.makumba.CompositeValidationException;
 import org.makumba.DataDefinition;
 import org.makumba.Database;
+import org.makumba.FieldValueDiff;
 import org.makumba.InvalidValueException;
 import org.makumba.LogicException;
 import org.makumba.LogicInvocationError;
@@ -765,13 +768,14 @@ public class Logic {
         }
     }
 
-    public static Pointer doEdit(Object controller, String handlerName, String afterHandlerName, String typename,
-            Pointer p, Dictionary<String, Object> data, Attributes a, String dbName, DbConnectionProvider dbcp)
-            throws LogicException {
+    public static List<FieldValueDiff> doEdit(Object controller, String handlerName, String afterHandlerName,
+            String typename, Pointer p, Dictionary<String, Object> data, Attributes a, String dbName,
+            DbConnectionProvider dbcp, String recordChangesIn) throws LogicException {
         Transaction db = dbcp.getConnectionTo(dbName);
         Object[] editArg = { p, data, a, db };
         Method edit = null;
         Method afterEdit = null;
+        List<FieldValueDiff> diff = null;
 
         if (!(controller instanceof LogicNotFoundException)) {
             edit = getMethod(handlerName, editArgs, editArgsOld, controller);
@@ -789,11 +793,15 @@ public class Logic {
             if (edit != null) {
                 edit.invoke(controller, editArg);
             }
-            db.update(p, data);
+            if (StringUtils.isNotBlank(recordChangesIn)) {
+                diff = db.updateWithValueDiff(p, data);
+            } else {
+                db.update(p, data);
+            }
             if (afterEdit != null) {
                 afterEdit.invoke(controller, editArg);
             }
-            return p;
+            return diff;
         } catch (IllegalAccessException g) {
             throw new LogicInvocationError(g);
         } catch (InvocationTargetException f) {
