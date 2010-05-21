@@ -329,7 +329,7 @@
 		<antcall target="version" />
 		<java classname="org.makumba.version" fork="true" output="manifest-replace.properties">
 			<classpath>
-				<pathelement path="classes/" />
+				<pathelement path="${build.path}" />
 				<pathelement path="${java.class.path}" />
 			</classpath>
 		</java>
