@@ -1,7 +1,12 @@
 package org.makumba.forms.responder;
 
+import java.util.Dictionary;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
+import org.makumba.FieldValueDiff;
 import org.makumba.LogicException;
 import org.makumba.Pointer;
 import org.makumba.commons.DbConnectionProvider;
@@ -93,10 +98,18 @@ public abstract class ResponderOperation implements java.io.Serializable {
                 afterHandlerName = "after_edit" + Logic.upperCase(resp.getBasePointerType());
             }
 
-            return Logic.doEdit(resp.getController(), handlerName, afterHandlerName, resp.getBasePointerType(),
-                resp.getHttpBasePointer(req, suffix), resp.getHttpData(req, suffix), new RequestAttributes(
-                        resp.getController(), req, resp.getDatabase()), resp.getDatabase(), getConnectionProvider(req,
-                    resp.getController()));
+            String recordChangesIn = resp.getRecordChangesIn();
+            Pointer basePointer = resp.getHttpBasePointer(req, suffix);
+            Dictionary<String, Object> httpData = resp.getHttpData(req, suffix);
+            List<FieldValueDiff> diff = Logic.doEdit(resp.getController(), handlerName, afterHandlerName,
+                resp.getBasePointerType(), basePointer, httpData, new RequestAttributes(resp.getController(), req,
+                        resp.getDatabase()), resp.getDatabase(), getConnectionProvider(req, resp.getController()),
+                recordChangesIn);
+            if (StringUtils.isNotBlank(recordChangesIn)) {
+                req.setAttribute(recordChangesIn, diff);
+            }
+            System.out.println("ResponderOperation.editOp, request: " + req.hashCode());
+            return basePointer;
         }
 
         @Override
