@@ -1,6 +1,7 @@
 package org.makumba.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -15,15 +16,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.makumba.CompositeValidationException;
 import org.makumba.InvalidValueException;
-import org.makumba.MakumbaError;
 import org.makumba.commons.ControllerHandler;
 import org.makumba.commons.ServletObjects;
-import org.makumba.commons.json.JSONArray;
-import org.makumba.commons.json.JSONException;
-import org.makumba.commons.json.JSONObject;
 import org.makumba.forms.responder.ResponderFactory;
 import org.makumba.forms.responder.ResponseControllerHandler;
 import org.makumba.list.tags.SectionTag;
+
+import com.google.gson.Gson;
 
 /**
  * ControllerHandler that handles AJAX-related data writing<br/>
@@ -35,6 +34,8 @@ import org.makumba.list.tags.SectionTag;
 public class AJAXDataControllerHandler extends ControllerHandler {
 
     final Logger logger = java.util.logging.Logger.getLogger("org.makumba.controller");
+
+    Gson gson = new Gson();
 
     @Override
     public boolean beforeFilter(ServletRequest request, ServletResponse response, FilterConfig conf,
@@ -71,7 +72,7 @@ public class AJAXDataControllerHandler extends ControllerHandler {
             }
 
             try {
-                response.getWriter().append(new JSONObject(data).toString());
+                response.getWriter().append(gson.toJson(data));
                 response.getWriter().flush();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -85,7 +86,7 @@ public class AJAXDataControllerHandler extends ControllerHandler {
             logger.fine("partial form postback");
 
             CompositeValidationException v = (CompositeValidationException) req.getAttribute(ResponseControllerHandler.MAKUMBA_FORM_VALIDATION_ERRORS);
-            String message = (String) req.getAttribute(ResponderFactory.RESPONSE_STRING_NAME);
+            // String message = (String) req.getAttribute(ResponderFactory.RESPONSE_STRING_NAME);
             String formattedMessage = (String) req.getAttribute(ResponderFactory.RESPONSE_FORMATTED_STRING_NAME);
             String formName = (String) req.getAttribute(ResponseControllerHandler.MAKUMBA_FORM_ID);
 
@@ -99,19 +100,19 @@ public class AJAXDataControllerHandler extends ControllerHandler {
                     // for the first one we do something a bit hackish, i.e. we use the parameters of the serialized
                     // forms to get all the inputs
 
-                    JSONObject o = new JSONObject();
-                    JSONObject fieldErrors = new JSONObject();
+                    HashMap<String, Object> o = new HashMap<String, Object>();
+                    HashMap<Object, ArrayList<String>> fieldErrors = new HashMap<Object, ArrayList<String>>();
                     Enumeration<String> params = req.getParameterNames();
                     while (params.hasMoreElements()) {
                         String param = params.nextElement();
                         if (v.getExceptions(param) != null) {
                             Collection<InvalidValueException> paramFieldErrors = v.getExceptions(param);
-                            JSONArray errors = new JSONArray();
+                            ArrayList<String> errors = new ArrayList<String>();
                             // store the message with the input ID as key
                             // TODO not sure if this works with multiple forms
                             fieldErrors.put(param + formName, errors);
                             for (InvalidValueException ive : paramFieldErrors) {
-                                errors.put(ive.getShortMessage());
+                                errors.add(ive.getShortMessage());
                             }
                         }
                     }
@@ -121,12 +122,12 @@ public class AJAXDataControllerHandler extends ControllerHandler {
                     o.put("message", formattedMessage);
                     response.reset();
                     response.setContentType("application/json");
-                    logger.fine("writing error information: " + o.toString());
-                    response.getWriter().print(o.toString());
+                    logger.fine("writing error information: " + gson.toJson(o));
+                    response.getWriter().print(gson.toJson(o));
                     response.getWriter().flush();
                 } else {
                     // respond by giving the name of the event
-                    JSONObject o = new JSONObject();
+                    HashMap<String, String> o = new HashMap<String, String>();
                     o.put("event", partialPostback);
                     o.put("message", formattedMessage);
                     // FIXME this does not seem to work for certain form submissions such as multiple forms, the
@@ -134,12 +135,10 @@ public class AJAXDataControllerHandler extends ControllerHandler {
                     // partly written already before we could do anything
                     response.reset();
                     response.setContentType("application/json");
-                    response.getWriter().print(o.toString());
-                    logger.fine("writing event: " + o.toString());
+                    logger.fine("writing event: " + gson.toJson(o));
+                    response.getWriter().print(gson.toJson(o));
                     response.getWriter().flush();
                 }
-            } catch (JSONException je) {
-                throw new MakumbaError(je);
             } catch (IOException e) {
                 e.printStackTrace();
             }
