@@ -507,6 +507,54 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         compareToFileWithTestName(response);
     }
 
+    public void beginMakEditFormWithDiff(Request request) throws Exception {
+        WebForm form = getFormInJsp("/forms-oql/testMakEditFormWithDiff.jsp");
+        // change some values
+        form.setParameter("indiv.surname", "D'oh");
+        form.setParameter("weight", "57.5");
+        form.setParameter("intSet", "1");
+        form.setParameter("charSet", new String[] { "e", "f" });
+
+        // TODO: read HTTP unit documents carefully.
+        // not sure if that is the most elegant / intended solution
+        // but, we want to save this specific form submission for later evaluation
+        // cause the WebResponse passed in endMakSearchForm is not from this submission
+        // we could also do the comparison here, though, and leave the endMakSearchForm method empty
+        submissionResponse = form.submit();
+    }
+
+    public void testMakEditFormWithDiff() throws ServletException, IOException {
+        // we need to have this method, even if it is empty; otherwise, the test is not run
+    }
+
+    public void endMakEditFormWithDiff(WebResponse response) throws Exception {
+        compareToFileWithTestName(submissionResponse);
+    }
+
+    public void beginMakEditFormWithDiffRevert(Request request) throws Exception {
+        WebForm form = getFormInJsp("/forms-oql/testMakEditFormWithDiff.jsp");
+        // change the values to as they were before
+        form.setParameter("indiv.surname", "von Neumann");
+        form.setParameter("weight", "85.7");
+        form.setParameter("intSet", new String[] { "0", "1" });
+        form.removeParameter("charSet");
+
+        // TODO: read HTTP unit documents carefully.
+        // not sure if that is the most elegant / intended solution
+        // but, we want to save this specific form submission for later evaluation
+        // cause the WebResponse passed in endMakSearchForm is not from this submission
+        // we could also do the comparison here, though, and leave the endMakSearchForm method empty
+        submissionResponse = form.submit();
+    }
+
+    public void testMakEditFormWithDiffRevert() throws ServletException, IOException {
+        // we need to have this method, even if it is empty; otherwise, the test is not run
+    }
+
+    public void endMakEditFormWithDiffRevert(WebResponse response) throws Exception {
+        compareToFileWithTestName(submissionResponse);
+    }
+
     public void beginLogin(Request request) throws Exception {
         WebForm form = getFormInJsp("/login/testLogin.jsp", false);
         form.setParameter("username", "manu");
