@@ -566,7 +566,7 @@ public class TaglibDocGenerator {
     private Node checkNodeExists(Element element, String nodeName) {
         Node n = element.element(nodeName);
         if (n == null) {
-            throw new RuntimeException("No <" + nodeName + "> element found in taglib-skeleton.tld for element "
+            throw new RuntimeException("No <" + nodeName + "> element found in taglib-skeleton.tld.xml for element "
                     + element.elementText("name"));
         }
         return n;
