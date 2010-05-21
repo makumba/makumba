@@ -80,6 +80,7 @@
 	</path>
 
 	<property file="build.properties" />
+    <property name="build.path" value="build/" />
 
 	<path id="test.class.path">
 		<path refid="project.class.path" />
