@@ -575,7 +575,9 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     /**
      * Lets the responder write the pre- and postamble for the form, and writes the bodyContent inside. Resets all the
-     * variables.
+     * variables.<br/>
+     * FIXME: this method has a lot of code specific to subclasses, i.e. delete or search forms. It might be better to
+     * override this method in the subclasses
      * 
      * @param pageCache
      *            the page cache of the current page
@@ -604,6 +606,11 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
                 bodyContent.getEnclosingWriter().print(bodyContent.getString().trim());
             } else {
                 bodyContent.writeOut(bodyContent.getEnclosingWriter());
+            }
+
+            // for an edit form, copy the record changes value to the responder
+            if (this instanceof EditTag && !(this instanceof DeleteTag)) {
+                responder.setRecordChangesIn(((EditTag) this).recordChangesIn);
             }
 
             // write client side validation, but only for edit operations (not search) & not delete links

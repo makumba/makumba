@@ -33,6 +33,8 @@ import org.makumba.forms.responder.ResponderOperation;
  */
 public class EditTag extends FormTagBase {
 
+    String recordChangesIn;
+
     private static final long serialVersionUID = 1L;
 
     @Override
@@ -41,5 +43,9 @@ public class EditTag extends FormTagBase {
             return ResponderOperation.editOp;
         }
         return null;
+    }
+
+    public void setRecordChangesIn(String recordChangesIn) {
+        this.recordChangesIn = recordChangesIn;
     }
 }
