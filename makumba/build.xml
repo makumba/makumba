@@ -856,7 +856,7 @@
 					<exclude name="**/makumba*.jar" />
 				</fileset>
 			</classpath>
-			<arg value="./classes/META-INF/skeleton/taglib-skeleton.tld" />
+			<arg value="./classes/META-INF/skeleton/taglib-skeleton.tld.xml" />
 			<arg value="${documentation.path}/wikidoc" />
 		</java>
 	</target>
