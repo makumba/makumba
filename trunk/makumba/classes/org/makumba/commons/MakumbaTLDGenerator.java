@@ -47,7 +47,7 @@ import org.makumba.version;
  */
 public class MakumbaTLDGenerator {
 
-    private static final String TAGLIB_SKELETON = "skeleton/taglib-skeleton.tld.xml";
+    public static final String TAGLIB_SKELETON = "taglib-skeleton.tld";
 
     private static final String TAGLIB_MAK = "taglib.tld";
 
@@ -62,7 +62,7 @@ public class MakumbaTLDGenerator {
         SAXReader saxReader = new SAXReader();
         Document document = null;
         final String sourcePath = new File(args[0]) + File.separator + TAGLIB_SKELETON;
-        final String documentationPath = new File(args[1]).getAbsolutePath();
+        final String documentationPath = new File(args[2]).getAbsolutePath();
         try {
             document = saxReader.read(sourcePath);
         } catch (DocumentException e) {
@@ -163,7 +163,7 @@ public class MakumbaTLDGenerator {
         }
 
         // generate the clean TLD
-        String tldPath = args[0] + File.separator + TAGLIB_MAK;
+        String tldPath = args[1] + File.separator + TAGLIB_MAK;
         System.out.println("Writing general Makumba TLD at path " + tldPath);
         try {
             XMLWriter output = new XMLWriter(new FileWriter(new File(tldPath)), new OutputFormat("", false));
@@ -178,7 +178,7 @@ public class MakumbaTLDGenerator {
         Document hibernateTLD = document;
         hibernateTLD.getRootElement().element("uri").setText(HIBERNATE_TLD_URI);
 
-        String hibernateTldPath = args[0] + File.separator + TAGLIB_HIBERNATE;
+        String hibernateTldPath = args[1] + File.separator + TAGLIB_HIBERNATE;
         System.out.println("Writing hibernate Makumba TLD at path " + hibernateTldPath);
         try {
             XMLWriter output = new XMLWriter(new FileWriter(new File(hibernateTldPath)), new OutputFormat("", false));

@@ -47,7 +47,7 @@ public class TaglibDocGenerator {
 
     public static void main(String[] args) {
 
-        String inputXMLPath = args[0];
+        String inputXMLPath = args[0] + File.separator + MakumbaTLDGenerator.TAGLIB_SKELETON;
         String outputPath = args[1];
 
         new TaglibDocGenerator(inputXMLPath, outputPath);
@@ -566,7 +566,7 @@ public class TaglibDocGenerator {
     private Node checkNodeExists(Element element, String nodeName) {
         Node n = element.element(nodeName);
         if (n == null) {
-            throw new RuntimeException("No <" + nodeName + "> element found in taglib-skeleton.tld.xml for element "
+            throw new RuntimeException("No <" + nodeName + "> element found in taglib-skeleton.tld for element "
                     + element.elementText("name"));
         }
         return n;
