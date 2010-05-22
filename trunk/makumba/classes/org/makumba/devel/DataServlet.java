@@ -29,6 +29,8 @@ public abstract class DataServlet extends HttpServlet {
 
     public static final int MODE_QUERY = 30;
 
+    public static final int MODE_ERROR_LOG = 50;
+
     public static final int MODE_VIEW = 20;
 
     public static final int MODE_CONVERTOR = 40;
@@ -93,6 +95,10 @@ public abstract class DataServlet extends HttpServlet {
             w.println("      <span style=\"font-size: x-large\">Query translater & executer</span><br>");
             w.println("      <span style=\"font-size: small\">Insert your query in OQl here, and get the created SQL and the results of the query.</span>");
             toolKey = Configuration.KEY_DATA_QUERY_TOOL;
+        } else if (mode == MODE_ERROR_LOG) {
+            w.println("      <span style=\"font-size: x-large\">Error log viewer</span><br>");
+            w.println("      <span style=\"font-size: small\">List of Makumba errors</span>");
+            toolKey = Configuration.KEY_ERRORLOG_VIEWER;
         } else if (mode == MODE_CONVERTOR) {
             w.println("      <span style=\"font-size: x-large\">Makumba Pointer value convertor</span>");
             w.println("<br>in Makumba database: " + dataBaseName);
