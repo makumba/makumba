@@ -4,6 +4,7 @@ import javax.servlet.jsp.PageContext;
 
 import org.makumba.LogicException;
 import org.makumba.ProgrammerError;
+import org.makumba.analyser.AnalysableElement;
 import org.makumba.analyser.AnalysableExpression;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.StringUtils;
@@ -33,7 +34,7 @@ public class CountFunctions extends AnalysableExpression {
         } else if (expression.equals("lastCount")) {
             checkNumberOfArguments(0);
             // check that there is a mak:list/object before lastCount()
-            if (getElementBefore(pageCache, elData, QueryTag.class) == null) {
+            if (AnalysableElement.getElementBefore(pageCache, elData, QueryTag.class) == null) {
                 throw new ProgrammerError("Function '" + expression + "' on " + elData.getLocation()
                         + " needs to be *after* a LIST or OBJECT tag");
             }
@@ -50,7 +51,7 @@ public class CountFunctions extends AnalysableExpression {
             checkNumberOfArguments(1);
             // check that the mak:list/object specified exists
             String id = StringUtils.removeSingleQuote(elData.getArguments().get(0));
-            checkTagFound(pageCache, "id", id, QueryTag.class);
+            AnalysableElement.checkTagFound(pageCache, "id", id, QueryTag.class);
         }
     }
 
