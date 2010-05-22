@@ -15,6 +15,6 @@
 </listAttribute>
 <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.makumba.commons.MakumbaTLDGenerator"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="${project_loc}/classes/META-INF/ ${project_loc}/doc-jspwiki/wikidoc"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="${project_loc} ${project_loc}/classes/META-INF/ ${project_loc}/doc-jspwiki/wikidoc"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="makumba"/>
 </launchConfiguration>

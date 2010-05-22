@@ -835,6 +835,7 @@
 	<target name="generateTLDs" description="generates the TLD files, should be called before making a JAR file">
 		<java classname="org.makumba.commons.MakumbaTLDGenerator" fork="true" dir=".">
 			<classpath refid="project.class.path.complete" />
+			<arg value="${basedir}" />
 			<arg value="${basedir}/classes/META-INF" />
 			<arg value="${documentation.path}/wikidoc/" />
 		</java>
@@ -857,7 +858,7 @@
 					<exclude name="**/makumba*.jar" />
 				</fileset>
 			</classpath>
-			<arg value="./classes/META-INF/skeleton/taglib-skeleton.tld.xml" />
+			<arg value="${basedir}" />
 			<arg value="${documentation.path}/wikidoc" />
 		</java>
 	</target>
