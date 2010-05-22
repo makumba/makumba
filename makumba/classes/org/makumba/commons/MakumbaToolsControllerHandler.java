@@ -150,6 +150,8 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
                 "Runs a detection of file relations between JSP, MDD and Java Business Logics",
                 Configuration.KEY_RELATION_CRAWLER, Configuration.getMakumbaRelationCrawlerLocation(),
                 request.getContextPath());
+            writeDescr(w, "Error Log viewer", "List logged makumba errors", Configuration.KEY_ERRORLOG_VIEWER,
+                Configuration.getErrorLogViewerLocation(), request.getContextPath());
             writeDescr(w, "Makumba Cache Cleaner",
                 "Cleans all internal Makumba caches, like queries, data-definitions.<br/>"
                         + "Useful during development, to avoid having to restart the servlet container.",

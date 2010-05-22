@@ -109,6 +109,8 @@ public class Configuration implements Serializable {
     public static final String KEY_REFERENCE_CHECKER = "referenceChecker";
 
     public static final String KEY_RELATION_CRAWLER = "relationCrawler";
+    
+    public static final String KEY_ERRORLOG_VIEWER = "errorLogViewer";
 
     // source code repository links
     public static final String KEY_REPOSITORY_URL = "repositoryURL";
@@ -143,7 +145,7 @@ public class Configuration implements Serializable {
             { KEY_MDD_VIEWER, "Mdd viewer" }, { KEY_JAVA_VIEWER, "Business logics viewer" },
             { KEY_DATA_LISTER, "Data browser" }, { KEY_DATA_QUERY_TOOL, "Data query" },
             { KEY_OBJECT_ID_CONVERTER, "Pointer value converter" }, { KEY_REFERENCE_CHECKER, "Reference checker" },
-            { KEY_RELATION_CRAWLER, "Relation crawler" } });
+            { KEY_RELATION_CRAWLER, "Relation crawler" }, { KEY_ERRORLOG_VIEWER, "Error log viewer" } });
 
     public static Map<String, String> getAllGenericDeveloperToolsMap() {
         return allGenericDeveloperToolsMap;
@@ -410,6 +412,10 @@ public class Configuration implements Serializable {
         return getCompletePath(applicationConfig.getProperty("makumbaToolPaths", KEY_RELATION_CRAWLER));
     }
 
+    public static String getErrorLogViewerLocation() {
+        return getCompletePath(applicationConfig.getProperty("makumbaToolPaths", KEY_ERRORLOG_VIEWER));
+    }
+    
     public static String getMakumbaUniqueLocation() {
         return getMakumbaToolsLocation()
                 + applicationConfig.getProperty("makumbaToolPaths", KEY_MAKUMBA_UNIQUENESS_VALIDATOR);
