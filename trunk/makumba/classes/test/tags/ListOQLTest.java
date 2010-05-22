@@ -63,12 +63,12 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     // FIXME this is a bug/behaviour that might need to be fixed (see http://bugs.makumba.org/show_bug.cgi?id=1201)
-    public void testShouldFailMakListCountClosedList() throws ServletException, IOException {
+    public void testMakListCountClosedList() throws ServletException, IOException {
         // FIXME: jsp name not the same as test name
         pageContext.include("list-oql/testMakListCountClosedList.jsp");
     }
 
-    public void endShouldFailMakListCountClosedList(WebResponse response) throws Exception {
+    public void endMakListCountClosedList(WebResponse response) throws Exception {
         compareToFileWithTestName(response);
     }
 
