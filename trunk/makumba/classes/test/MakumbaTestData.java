@@ -66,11 +66,11 @@ public class MakumbaTestData {
 
     }
 
-    final ArrayList<Pointer> languages = new ArrayList<Pointer>();
+    public final ArrayList<Pointer> languages = new ArrayList<Pointer>();
 
     Pointer person;
 
-    Pointer brother;
+    public Pointer brother;
 
     public void insertPerson(Transaction t) {
         Hashtable<String, Object> p = new Hashtable<String, Object>();
@@ -166,7 +166,7 @@ public class MakumbaTestData {
         }
     }
 
-    protected void insertLanguages(Transaction t) {
+    public void insertLanguages(Transaction t) {
         languages.clear();
         Dictionary<String, Object> p = new Hashtable<String, Object>();
         for (String[] element : languageData) {
@@ -177,7 +177,7 @@ public class MakumbaTestData {
         }
     }
 
-    protected void deleteLanguages(Transaction t) {
+    public void deleteLanguages(Transaction t) {
         String query = "SELECT " + (t.getTransactionProvider().getQueryLanguage().equals("oql") ? "l" : "l.id")
                 + " AS l FROM test.Language l";
         Vector<Dictionary<String, Object>> v = t.executeQuery(query, new Object[] {});

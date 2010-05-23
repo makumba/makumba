@@ -696,14 +696,14 @@
 	    <junit fork="no" outputtoformatters="true">
 			<classpath refid="test.class.path" />
 			<formatter type="xml" usefile="true" />
-			<test name="test.MddTest" todir="${basedir}/test-reports/"/>
-			<test name="test.TableTest" todir="${basedir}/test-reports/" />
-			<test name="test.ConfigurationTest" todir="${basedir}/test-reports/" />
-			<test name="test.ExternalSetAPITest" todir="${basedir}/test-reports/" />
-			<test name="test.HqlAnalyzerTest" todir="${basedir}/test-reports/" />
-			<test name="test.LockTest" todir="${basedir}/test-reports/" />
-			<test name="test.MqlAnalyzerTest" todir="${basedir}/test-reports/" />
-			<test name="test.QueryGenerationTest" todir="${basedir}/test-reports/" />
+			<test name="test.component.MddTest" todir="${basedir}/test-reports/"/>
+			<test name="test.component.TableTest" todir="${basedir}/test-reports/" />
+			<test name="test.component.ConfigurationTest" todir="${basedir}/test-reports/" />
+			<test name="test.component.ExternalSetAPITest" todir="${basedir}/test-reports/" />
+			<test name="test.component.HqlAnalyzerTest" todir="${basedir}/test-reports/" />
+			<test name="test.component.LockTest" todir="${basedir}/test-reports/" />
+			<test name="test.component.MqlAnalyzerTest" todir="${basedir}/test-reports/" />
+			<test name="test.component.QueryGenerationTest" todir="${basedir}/test-reports/" />
 		</junit>
 	</target>
   
@@ -711,7 +711,7 @@
 		<junit fork="true" outputtoformatters="true">
 			<classpath refid="test.class.path" />
             <formatter type="xml" usefile="true" />
-			<test name="test.TableHibernateTest" todir="${basedir}/test-reports/" />
+			<test name="test.component.TableHibernateTest" todir="${basedir}/test-reports/" />
 		</junit>
 	</target>
   
@@ -735,7 +735,7 @@
 			<classpath refid="test.class.path" />
 			<formatter type="xml" usefile="true" />
 			<!-- test name="test.selenium.TestListMQL" /-->
-			<test name="test.concurrency.ConcurrentTest" todir="${basedir}/test-reports" />
+			<test name="test.component.ConcurrentTest" todir="${basedir}/test-reports" />
 			<test name="test.tags.FormsOQLTest" todir="${basedir}/test-reports" />
 			<test name="test.tags.ListOQLTest" todir="${basedir}/test-reports" />
 		</junit>
@@ -771,7 +771,7 @@
 			<formatter type="plain" usefile="false" />
 			<test name="test.tags.FormsOQLTest" />
 			<test name="test.tags.ListOQLTest" />
-			<test name="test.TableTest" />
+			<test name="test.component.TableTest" />
 		</junit>
 		<replace file="webapps/tests/WEB-INF/classes/Makumba.conf" token="defaultDataSource=testHsqldb" value="defaultDataSource=testDatabase" />
 	</target>
