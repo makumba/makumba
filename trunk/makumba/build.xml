@@ -696,13 +696,13 @@
 	    <junit fork="no" outputtoformatters="true">
 			<classpath refid="test.class.path" />
 			<formatter type="xml" usefile="true" />
-			<test name="test.mdd" todir="${basedir}/test-reports/"/>
-			<test name="test.table" todir="${basedir}/test-reports/" />
-			<test name="test.config" todir="${basedir}/test-reports/" />
+			<test name="test.MddTest" todir="${basedir}/test-reports/"/>
+			<test name="test.TableTest" todir="${basedir}/test-reports/" />
+			<test name="test.ConfigurationTest" todir="${basedir}/test-reports/" />
 			<test name="test.ExternalSetAPITest" todir="${basedir}/test-reports/" />
-			<test name="test.hqlanalyzer" todir="${basedir}/test-reports/" />
-			<test name="test.lock" todir="${basedir}/test-reports/" />
-			<test name="test.oqlanalyzer" todir="${basedir}/test-reports/" />
+			<test name="test.HqlAnalyzerTest" todir="${basedir}/test-reports/" />
+			<test name="test.LockTest" todir="${basedir}/test-reports/" />
+			<test name="test.MqlAnalyzerTest" todir="${basedir}/test-reports/" />
 			<test name="test.QueryGenerationTest" todir="${basedir}/test-reports/" />
 		</junit>
 	</target>
@@ -711,7 +711,7 @@
 		<junit fork="true" outputtoformatters="true">
 			<classpath refid="test.class.path" />
             <formatter type="xml" usefile="true" />
-			<test name="test.tableHibernate" todir="${basedir}/test-reports/" />
+			<test name="test.TableHibernateTest" todir="${basedir}/test-reports/" />
 		</junit>
 	</target>
   
@@ -771,7 +771,7 @@
 			<formatter type="plain" usefile="false" />
 			<test name="test.tags.FormsOQLTest" />
 			<test name="test.tags.ListOQLTest" />
-			<test name="test.table" />
+			<test name="test.TableTest" />
 		</junit>
 		<replace file="webapps/tests/WEB-INF/classes/Makumba.conf" token="defaultDataSource=testHsqldb" value="defaultDataSource=testDatabase" />
 	</target>
@@ -800,13 +800,13 @@
 		<java jar="lib/test/selenium-server.jar" fork="true" />
 	</target>
 
-	<target name="createTestData">
+	<target name="createTestData" description="Populates the database with test data">
 		<java classname="test.MakumbaTestData" fork="true" classpath="classes" classpathref="project.class.path.complete">
 			<arg value="create" />
 		</java>
 	</target>
 
-	<target name="deleteTestData">
+	<target name="deleteTestData" description="Deletes the test data from the database">
 		<java classname="test.MakumbaTestData" fork="true" classpath="classes" classpathref="project.class.path.complete">
 			<arg value="delete" />
 		</java>

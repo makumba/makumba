@@ -33,14 +33,14 @@ import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 
-public class hqlanalyzer extends TestCase {
+public class HqlAnalyzerTest extends TestCase {
 
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }
 
     public static Test suite() {
-        return new TestSuite(hqlanalyzer.class);
+        return new TestSuite(HqlAnalyzerTest.class);
     }
 
     @Override

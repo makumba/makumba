@@ -32,14 +32,14 @@ import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 
-public class oqlanalyzer extends TestCase {
+public class MqlAnalyzerTest extends TestCase {
 
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }
 
     public static Test suite() {
-        return new TestSuite(oqlanalyzer.class);
+        return new TestSuite(MqlAnalyzerTest.class);
     }
 
     @Override

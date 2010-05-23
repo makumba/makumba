@@ -38,8 +38,8 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.makumba.FieldValueDiff;
 import org.makumba.DataDefinition;
+import org.makumba.FieldValueDiff;
 import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.Transaction;
@@ -53,13 +53,13 @@ import org.makumba.providers.TransactionProvider;
  * @author Cristian Bogdan
  * @author Manuel Gay
  */
-public class table extends TestCase {
+public class TableTest extends TestCase {
 
     static Transaction db;
 
     static long epsilon = 2000;
 
-    public table(String name) {
+    public TableTest(String name) {
         super(name);
     }
 
@@ -68,7 +68,7 @@ public class table extends TestCase {
     }
 
     public static Test suite() {
-        return new TestSuite(table.class);
+        return new TestSuite(TableTest.class);
     }
 
     @Override

@@ -46,13 +46,13 @@ import org.makumba.providers.TransactionProvider;
  * 
  * @author Cristian Bogdan
  */
-public class tableHibernate extends TestCase {
+public class TableHibernateTest extends TestCase {
 
     static Transaction db;
 
     static long epsilon = 2000;
 
-    public tableHibernate(String name) {
+    public TableHibernateTest(String name) {
         super(name);
     }
 
@@ -61,7 +61,7 @@ public class tableHibernate extends TestCase {
     }
 
     public static Test suite() {
-        return new TestSuite(tableHibernate.class);
+        return new TestSuite(TableHibernateTest.class);
     }
 
     @Override

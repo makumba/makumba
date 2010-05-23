@@ -27,17 +27,17 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.makumba.Transaction;
+import org.makumba.ConfigurationError;
+import org.makumba.MakumbaSystem;
 import org.makumba.providers.TransactionProvider;
 
 /**
- * Testing locking related operations run "ant test.lock" from a number of consoles to test locks
+ * Testing configuration related operations
  * 
- * @author cristi
+ * @author Stefan Baebler
  */
-public class lock extends TestCase {
-
-    public lock(String name) {
+public class ConfigurationTest extends TestCase {
+    public ConfigurationTest(String name) {
         super(name);
     }
 
@@ -46,30 +46,22 @@ public class lock extends TestCase {
     }
 
     public static Test suite() {
-        return new TestSuite(lock.class);
+        return new TestSuite(ConfigurationTest.class);
     }
 
-    Transaction db;
+    private TransactionProvider tp = TransactionProvider.getInstance();
 
-    @Override
-    public void setUp() {
-        TransactionProvider tp = TransactionProvider.getInstance();
-        db = tp.getConnectionTo(tp.getDefaultDataSourceName());
+    public void testBuildInfo() {
+        System.out.println("\nTesting Makumba version: " + MakumbaSystem.getVersion() + "\n		   built on: "
+                + MakumbaSystem.getBuildDate() + "\n	       using locale: " + MakumbaSystem.getLocale());
     }
 
-    @Override
-    public void tearDown() {
-        db.close();
-    }
-
-    public void testLock() {
-        System.out.println("locking");
-        db.lock("something");
-        System.out.println("waiting");
+    public void disabledTestNoDefaultDB() {
         try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
+            String defaultDB = tp.getDefaultDataSourceName();
+            fail("Should raise ConfigFileError, but found: " + defaultDB);
+        } catch (ConfigurationError e) {
         }
-        System.out.println("closing");
     }
+
 }

@@ -17,7 +17,7 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 //
 //  -------------
-//  $Id: mdd.java 2589 2008-06-15 13:23:17Z rosso_nero $
+//  $Id: MddTest.java 2589 2008-06-15 13:23:17Z rosso_nero $
 //  $Name$
 /////////////////////////////////////
 
@@ -36,18 +36,18 @@ import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.datadefinition.mdd.MDDProvider;
 
 /**
- * Testing mdd handling & parsing
+ * Testing MddTest handling & parsing
  * 
  * @author Stefan Baebler
  * @author Manuel Gay
  */
-public class mdd extends TestCase {
+public class MddTest extends TestCase {
 
     private DataDefinitionProvider ddp = MDDProvider.getInstance();
 
-    public mdd(String name) {
+    public MddTest(String name) {
         super(name);
-        Configuration.setPropery("dataSourceConfig", "dataDefinitionProvider", "mdd");
+        Configuration.setPropery("dataSourceConfig", "dataDefinitionProvider", "MddTest");
     }
 
     public static void main(String[] args) {
@@ -55,7 +55,7 @@ public class mdd extends TestCase {
     }
 
     public static Test suite() {
-        return new TestSuite(mdd.class);
+        return new TestSuite(MddTest.class);
     }
 
     public void testMdd() {
