@@ -15,7 +15,7 @@ import org.makumba.providers.TransactionProvider;
  * Tests methods that manipulate sets in the {@link Transaction} interface, specifically
  * {@link Transaction#readExternalSetValues(Pointer, String)} and
  * {@link Transaction#updateSet(Pointer, String, java.util.Collection, java.util.Collection)}.<br>
- * FIXME: maybe this should be together with {@link table}
+ * FIXME: maybe this should be together with {@link TableTest}
  * 
  * @author Rudolf Mayer
  * @version $Id$

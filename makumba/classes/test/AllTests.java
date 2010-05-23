@@ -24,44 +24,41 @@
 package test;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
+import junit.framework.TestResult;
 import junit.framework.TestSuite;
-
-import org.makumba.ConfigurationError;
-import org.makumba.MakumbaSystem;
-import org.makumba.providers.TransactionProvider;
+import test.concurrency.ConcurrentTest;
+import test.tags.FormsHQLTest;
+import test.tags.FormsOQLTest;
+import test.tags.ListHQLTest;
+import test.tags.ListOQLTest;
 
 /**
- * Testing configuration related operations
+ * TestSuite that runs all the Makumba tests
  * 
  * @author Stefan Baebler
+ * @author Manuel Gay
  */
-public class config extends TestCase {
-    public config(String name) {
-        super(name);
-    }
+public class AllTests {
 
     public static void main(String[] args) {
-        junit.textui.TestRunner.run(suite());
-    }
-
-    public static Test suite() {
-        return new TestSuite(config.class);
-    }
-
-    private TransactionProvider tp = TransactionProvider.getInstance();
-
-    public void testBuildInfo() {
-        System.out.println("\nTesting Makumba version: " + MakumbaSystem.getVersion() + "\n		   built on: "
-                + MakumbaSystem.getBuildDate() + "\n	       using locale: " + MakumbaSystem.getLocale());
-    }
-
-    public void disabledTestNoDefaultDB() {
-        try {
-            String defaultDB = tp.getDefaultDataSourceName();
-            fail("Should raise ConfigFileError, but found: " + defaultDB);
-        } catch (ConfigurationError e) {
+        System.out.println("Makumba test suite: Running all tests...");
+        TestResult tr = junit.textui.TestRunner.run(suite());
+        if (!tr.wasSuccessful()) {
+            System.exit(1); // report an error
         }
     }
 
+    public static Test suite() {
+        TestSuite suite = new TestSuite("All JUnit Tests for Makumba");
+        suite.addTest(ConfigurationTest.suite());
+        suite.addTest(MddTest.suite());
+        suite.addTest(TableTest.suite());
+        suite.addTest(TableHibernateTest.suite());
+        suite.addTest(ListOQLTest.suite());
+        suite.addTest(FormsOQLTest.suite());
+        suite.addTest(ListHQLTest.suite());
+        suite.addTest(FormsHQLTest.suite());
+        suite.addTest(ConcurrentTest.suite());
+        return suite;
+    }
 }

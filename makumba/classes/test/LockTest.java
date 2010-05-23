@@ -24,41 +24,52 @@
 package test;
 
 import junit.framework.Test;
-import junit.framework.TestResult;
+import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import test.concurrency.ConcurrentTest;
-import test.tags.FormsHQLTest;
-import test.tags.FormsOQLTest;
-import test.tags.ListHQLTest;
-import test.tags.ListOQLTest;
+
+import org.makumba.Transaction;
+import org.makumba.providers.TransactionProvider;
 
 /**
- * TestSuite that runs all the Makumba tests
+ * Testing locking related operations run "ant test.LockTest" from a number of consoles to test locks
  * 
- * @author Stefan Baebler
- * @author Manuel Gay
+ * @author cristi
  */
-public class all {
+public class LockTest extends TestCase {
+
+    public LockTest(String name) {
+        super(name);
+    }
 
     public static void main(String[] args) {
-        System.out.println("Makumba test suite: Running all tests...");
-        TestResult tr = junit.textui.TestRunner.run(suite());
-        if (!tr.wasSuccessful()) {
-            System.exit(1); // report an error
-        }
+        junit.textui.TestRunner.run(suite());
     }
 
     public static Test suite() {
-        TestSuite suite = new TestSuite("All JUnit Tests for Makumba");
-        suite.addTest(config.suite());
-        suite.addTest(mdd.suite());
-        suite.addTest(table.suite());
-        suite.addTest(tableHibernate.suite());
-        suite.addTest(ListOQLTest.suite());
-        suite.addTest(FormsOQLTest.suite());
-        suite.addTest(ListHQLTest.suite());
-        suite.addTest(FormsHQLTest.suite());
-        suite.addTest(ConcurrentTest.suite());
-        return suite;
+        return new TestSuite(LockTest.class);
+    }
+
+    Transaction db;
+
+    @Override
+    public void setUp() {
+        TransactionProvider tp = TransactionProvider.getInstance();
+        db = tp.getConnectionTo(tp.getDefaultDataSourceName());
+    }
+
+    @Override
+    public void tearDown() {
+        db.close();
+    }
+
+    public void testLock() {
+        System.out.println("locking");
+        db.lock("something");
+        System.out.println("waiting");
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+        }
+        System.out.println("closing");
     }
 }
