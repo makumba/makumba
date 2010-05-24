@@ -1,4 +1,4 @@
-package test;
+package org.makumba.test;
 
 import junit.extensions.TestSetup;
 import junit.framework.Test;

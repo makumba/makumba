@@ -21,20 +21,21 @@
 //  $Name$
 /////////////////////////////////////
 
-package test;
+package org.makumba.test;
+
+import org.makumba.test.component.ConcurrentTest;
+import org.makumba.test.component.ConfigurationTest;
+import org.makumba.test.component.MddTest;
+import org.makumba.test.component.TableHibernateTest;
+import org.makumba.test.component.TableTest;
 
 import junit.framework.Test;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
-import test.component.ConcurrentTest;
-import test.component.ConfigurationTest;
-import test.component.MddTest;
-import test.component.TableHibernateTest;
-import test.component.TableTest;
-import test.tags.FormsHQLTest;
-import test.tags.FormsOQLTest;
-import test.tags.ListHQLTest;
-import test.tags.ListOQLTest;
+import org.makumba.test.tags.FormsHQLTest;
+import org.makumba.test.tags.FormsOQLTest;
+import org.makumba.test.tags.ListHQLTest;
+import org.makumba.test.tags.ListOQLTest;
 
 /**
  * TestSuite that runs all the Makumba tests

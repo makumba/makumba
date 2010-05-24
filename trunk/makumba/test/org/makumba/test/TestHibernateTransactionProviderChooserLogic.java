@@ -1,4 +1,4 @@
-package test;
+package org.makumba.test;
 
 public class TestHibernateTransactionProviderChooserLogic {
 
