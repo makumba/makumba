@@ -383,8 +383,6 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         String tempDir = new File(getClass().getResource("/").toURI()).getParent() + "/tomcat/work/Catalina/localhost/"
                 + contextPath;
 
-        System.out.println("************** " + new File(getClass().getResource("/").toURI()));
-
         ResponderFactory responderFactory = ResponderFactory.getInstance();
         responderFactory.setResponderWorkingDir(tempDir, contextPath);
 
