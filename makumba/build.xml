@@ -95,7 +95,8 @@
 		<pathelement location="lib/test/jetty/jetty-6.1.3.jar" />
 		<pathelement location="lib/test/jetty/jetty-util-6.1.3.jar" />
 		<pathelement location="lib/optional/javax.persistence.jar" />
-
+		
+		<pathelement location="${test.dir}/" />
 		<pathelement location="${basedir}/build" />
 	</path>
 
