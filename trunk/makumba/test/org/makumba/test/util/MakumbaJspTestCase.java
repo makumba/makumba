@@ -1,4 +1,4 @@
-package test.util;
+package org.makumba.test.util;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -25,9 +25,9 @@ import junit.framework.TestSuite;
 
 import org.apache.cactus.JspTestCase;
 import org.apache.cactus.Request;
+import org.makumba.test.MakumbaWebTestSetup;
 import org.xml.sax.SAXException;
 
-import test.MakumbaWebTestSetup;
 import bmsi.util.Diff;
 import bmsi.util.DiffPrint;
 
@@ -72,7 +72,7 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
         File f = getExpectedResult(testName);
 
         if (!f.exists()) {
-            throw new Exception("Couldn't find the comparison file in classes/test/expected/" + testName
+            throw new Exception("Couldn't find the comparison file in test/org/makumba/test/expected/" + testName
                     + EXPECTED_RESULT_EXTENSION
                     + " - create it first using the fetchValidTestResult(String result) method!");
         }
@@ -133,7 +133,7 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
                 p.setOutput(stringWriter);
                 p.print_script(script);
                 System.out.println("**** '>' marks lines added in the test result, '<' lines in the expected result (in file "
-                        + "classes/test/expected/" + testName + EXPECTED_RESULT_EXTENSION + ") *****");
+                        + "test/org/makumba/test/expected/" + testName + EXPECTED_RESULT_EXTENSION + ") *****");
                 System.out.println(stringWriter.toString());
             } catch (Exception e) { // if there is an error in the Diff calculation, we fall back to the old display
                 System.out.println("======================== Expected ========================");
@@ -147,7 +147,7 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
     }
 
     private File getExpectedResult(String testName) {
-        File f = new File("classes/test/expected/" + testName + EXPECTED_RESULT_EXTENSION);
+        File f = new File("test/org/makumba/test/expected/" + testName + EXPECTED_RESULT_EXTENSION);
         return f;
     }
 
