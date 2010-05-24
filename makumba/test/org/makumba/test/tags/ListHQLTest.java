@@ -1,4 +1,4 @@
-package test.tags;
+package org.makumba.test.tags;
 
 import java.io.IOException;
 
@@ -8,7 +8,7 @@ import junit.framework.Test;
 
 import org.xml.sax.SAXException;
 
-import test.util.MakumbaJspTestCase;
+import org.makumba.test.util.MakumbaJspTestCase;
 
 import com.meterware.httpunit.WebResponse;
 
