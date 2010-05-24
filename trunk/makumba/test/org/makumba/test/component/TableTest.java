@@ -18,7 +18,7 @@
 //
 //  -------------
 
-package test.component;
+package org.makumba.test.component;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -46,8 +46,8 @@ import org.makumba.Transaction;
 import org.makumba.commons.CollectionUtils;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
+import org.makumba.test.MakumbaTestData;
 
-import test.MakumbaTestData;
 
 /**
  * Testing table operations, using new MDD parser

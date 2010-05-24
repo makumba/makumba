@@ -1,4 +1,4 @@
-package test.component;
+package org.makumba.test.component;
 
 import java.util.Arrays;
 import java.util.Vector;
@@ -10,8 +10,8 @@ import junit.framework.TestSuite;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.providers.TransactionProvider;
+import org.makumba.test.MakumbaTestSetup;
 
-import test.MakumbaTestSetup;
 
 /**
  * Tests methods that manipulate sets in the {@link Transaction} interface, specifically

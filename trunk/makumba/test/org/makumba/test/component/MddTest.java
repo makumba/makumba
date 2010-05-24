@@ -21,7 +21,7 @@
 //  $Name$
 /////////////////////////////////////
 
-package test.component;
+package org.makumba.test.component;
 
 import java.util.Vector;
 

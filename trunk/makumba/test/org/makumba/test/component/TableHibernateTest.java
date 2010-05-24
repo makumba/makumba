@@ -18,7 +18,7 @@
 //
 //  -------------
 
-package test.component;
+package org.makumba.test.component;
 
 import java.io.BufferedInputStream;
 import java.io.File;

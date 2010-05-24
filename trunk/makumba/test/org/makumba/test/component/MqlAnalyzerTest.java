@@ -21,7 +21,7 @@
 //  $Name$
 /////////////////////////////////////
 
-package test.component;
+package org.makumba.test.component;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
