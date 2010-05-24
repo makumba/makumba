@@ -1,5 +1,66 @@
 <project name="Makumba" default="compile" basedir=".">
 
+  <!-- Properties and task definitions -->
+  
+  <property file="build.properties" />
+  
+  <property environment="env" />
+  <property name="temp.dir" value="work/temp" />
+  <property name="build.dir" value="build" />
+  <property name="test.dir" value="test" />
+  <property name="src.dir" value="classes" />
+  
+
+  <property name="jar.place" value="." />
+  <property name="build.compiler.emacs" value="true" />
+
+    <!-- jikes as default compiler
+        <property name="build.compiler" value="jikes" /> -->
+    <!-- jikes options for ant -emacs  -->
+
+
+    <taskdef resource="svntask.properties">
+        <classpath>
+            <fileset dir="${basedir}/lib/building/">
+                <include name="svnant.jar" />
+                <include name="svnClientAdapter.jar" />
+                <include name="svnjavahl.jar" />
+            </fileset>
+        </classpath>
+    </taskdef>
+
+    <taskdef resource="net/sf/antcontrib/antlib.xml">
+        <classpath>
+            <fileset dir="lib/building/" includes="ant-contrib-*.jar" />
+        </classpath>
+    </taskdef>
+
+    <taskdef resource="net/sf/antcontrib/antlib.xml">
+        <classpath>
+            <fileset dir="lib/building/" includes="ant-contrib-*.jar" />
+        </classpath>
+    </taskdef>
+
+    <!-- it's normal that this taskdef issues a warning, see the doMavenDeploy task for more info -->
+    <taskdef resource="org/apache/commons/openpgp/ant/antlib.xml" uri="antlib:org.apache.commons.openpgp.ant">
+        <classpath>
+            <fileset dir="lib/building/">
+                <include name="commons-openpgp-1.0-SNAPSHOT.jar" />
+                <include name="bcpg-jdk15-145.jar" />
+                <include name="bcprov-jdk15-145.jar" />
+            </fileset>
+        </classpath>
+    </taskdef>
+
+
+    <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant">
+        <classpath>
+            <fileset dir="lib/building/" includes="maven-ant-tasks-2.1.0.jar" />
+        </classpath>
+    </typedef>
+
+  
+  
 	<!-- Path definitions -->
 
 	<path id="project.class.path">
@@ -79,13 +140,11 @@
 			<include name="webapps/tests/WEB-INF/classes/Makumba.conf" />
 		</fileset>
 	</path>
-
-	<property file="build.properties" />
-    <property name="build.path" value="build/" />
-
+	
 	<path id="test.class.path">
 		<path refid="project.class.path" />
 		<pathelement path="classes" />
+        <pathelement path="${test.dir}/org/makumba" />
 		<pathelement path="webapps/tests/WEB-INF/classes" />
 		<fileset dir="lib/db">
 			<include name="*.jar" />
@@ -102,56 +161,6 @@
 		</fileset>
 	</path>
 
-	<!-- Properties and task definitions -->
-
-	<!-- jikes as default compiler
-       	<property name="build.compiler" value="jikes" /> -->
-	<!-- jikes options for ant -emacs  -->
-
-	<property environment="env" />
-	<property name="build.compiler.emacs" value="true" />
-	<property name="temp.dir" value="work/temp" />
-	<property name="jar.place" value="." />
-
-	<taskdef resource="svntask.properties">
-		<classpath>
-			<fileset dir="${basedir}/lib/building/">
-				<include name="svnant.jar" />
-				<include name="svnClientAdapter.jar" />
-				<include name="svnjavahl.jar" />
-			</fileset>
-		</classpath>
-	</taskdef>
-
-	<taskdef resource="net/sf/antcontrib/antlib.xml">
-		<classpath>
-			<fileset dir="lib/building/" includes="ant-contrib-*.jar" />
-		</classpath>
-	</taskdef>
-
-	<taskdef resource="net/sf/antcontrib/antlib.xml">
-		<classpath>
-			<fileset dir="lib/building/" includes="ant-contrib-*.jar" />
-		</classpath>
-	</taskdef>
-
-	<!-- it's normal that this taskdef issues a warning, see the doMavenDeploy task for more info -->
-	<taskdef resource="org/apache/commons/openpgp/ant/antlib.xml" uri="antlib:org.apache.commons.openpgp.ant">
-		<classpath>
-			<fileset dir="lib/building/">
-				<include name="commons-openpgp-1.0-SNAPSHOT.jar" />
-				<include name="bcpg-jdk15-145.jar" />
-				<include name="bcprov-jdk15-145.jar" />
-			</fileset>
-		</classpath>
-	</taskdef>
-
-
-	<typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant">
-		<classpath>
-			<fileset dir="lib/building/" includes="maven-ant-tasks-2.1.0.jar" />
-		</classpath>
-	</typedef>
 
 
 
@@ -160,7 +169,7 @@
 	<!-- Targets for Eclipse workspace set-up -->
 
 	<target name="install">
-		<mkdir dir="build/" />
+		<mkdir dir="${build.dir}" />
 		<mkdir dir="work/temp" />
 		<mkdir dir="tomcat/temp" />
 		<mkdir dir="work/generated-hibernate-classes" />
@@ -168,11 +177,11 @@
 	</target>
 
 	<target name="checkHqlTokens">
-		<property name="build.path" value="build" />
+		<property name="build.dir" value="build" />
 
 		<condition property="hqlTokenDetection.notRequired">
 			<and>
-				<uptodate targetfile="${build.path}/org/makumba/providers/query/hql/DetectHQLTokenTypes.class">
+				<uptodate targetfile="${build.dir}/org/makumba/providers/query/hql/DetectHQLTokenTypes.class">
 					<srcfiles dir="${basedir}/classes/org/makumba/providers/query/hql" includes="DetectHQLTokenTypes.java" />
 				</uptodate>
 				<uptodate targetfile="${basedir}/classes/org/makumba/providers/query/hql/HqlTokenTypes.txt">
@@ -184,8 +193,8 @@
 
 
 	<target name="detectHqlTokens" depends="checkHqlTokens" unless="hqlTokenDetection.notRequired">
-		<property name="build.path" value="build" />
-		<javac srcdir="classes" destdir="${build.path}" includes="org/makumba/providers/query/hql/DetectHQLTokenTypes.java">
+		<property name="build.dir" value="build" />
+		<javac srcdir="classes" destdir="${build.dir}" includes="org/makumba/providers/query/hql/DetectHQLTokenTypes.java">
 			<classpath refid="project.class.path" />
 		</javac>
 		<java classname="org.makumba.providers.query.hql.DetectHQLTokenTypes" failonerror="true" dir="." fork="true" taskname="detecting tokens">
@@ -318,7 +327,6 @@
 			<fileset dir="work" />
 			<fileset dir="." includes="manifest-replace.properties,manifest.mf" />
 			<fileset dir="." includes="manifest-replace.properties,manifest.mf" />
-			<fileset dir="${forrest.plugins-dir}/plugins/org.apache.forrest.plugin.input.wiki" />
 		</delete>
 		<mkdir dir="build" />
 	</target>
@@ -330,7 +338,7 @@
 		<antcall target="version" />
 		<java classname="org.makumba.version" fork="true" output="manifest-replace.properties">
 			<classpath>
-				<pathelement path="${build.path}" />
+				<pathelement path="${build.dir}" />
 				<pathelement path="${java.class.path}" />
 			</classpath>
 		</java>
@@ -378,49 +386,6 @@
 			<fileset dir="." includes="COPYING.txt" defaultExcludes="no" excludes="queries.txt" />
 			<metainf dir="classes/META-INF" includes="**/*.tld" defaultExcludes="no" />
 		</jar>
-	</target>
-
-	<target name="testJar" description="make a jar in ./lib containing the test classes">
-		<mkdir dir="${jar.place}/lib" />
-		<jar jarfile="${jar.place}/lib/mak-test.jar">
-			<fileset dir="build" includes="test/**/*.class" defaultExcludes="no" />
-			<fileset dir="classes" includes="test/**/*.mdd" defaultExcludes="no" />
-		</jar>
-	</target>
-
-	<target name="testWar" depends="jar, testJar">
-		<delete file="build/tests.war" />
-		<property name="webapp.source" value="webapps" />
-		<war destfile="build/tests.war" webxml="${webapp.source}/tests/WEB-INF/web.xml.dynamic" update="true">
-			<fileset dir="${webapp.source}/tests">
-				<exclude name="WEB-INF/**/*" />
-			</fileset>
-			<lib dir="lib/core">
-				<include name="*.jar" />
-			</lib>
-			<lib dir="lib/common">
-				<!-- do note that servlet-api.jar, jsp-api.jar, el-api.jar must not be included! -->
-				<include name="jstl*.jar" />
-				<include name="dom4*.jar" />
-			</lib>
-			<lib dir="lib/optional/hibernate/">
-				<include name="*.jar" />
-			</lib>
-			<lib dir="lib/optional/">
-				<include name="hsqldb.jar" />
-			</lib>
-			<lib dir="lib/test">
-				<include name="aspectjrt.jar" />
-				<include name="cactus.jar" />
-				<include name="junit.jar" />
-				<include name="httpunit.jar" />
-			</lib>
-			<lib dir="lib">
-				<include name="makumba.jar" />
-				<include name="mak-test.jar" />
-			</lib>
-			<classes dir="${webapp.source}/tests/WEB-INF/classes" includes="Makumba.conf" />
-		</war>
 	</target>
 
 	<target name="release" description="makes a new makumba release with the given tag">
@@ -687,6 +652,8 @@
 
 	</target>
 
+  
+  
 	<!-- Targets for JUNIT testing 
 	http://ant.apache.org/manual/OptionalTasks/junit.html
 	-->
@@ -696,14 +663,14 @@
 	    <junit fork="no" outputtoformatters="true">
 			<classpath refid="test.class.path" />
 			<formatter type="xml" usefile="true" />
-			<test name="test.component.MddTest" todir="${basedir}/test-reports/"/>
-			<test name="test.component.TableTest" todir="${basedir}/test-reports/" />
-			<test name="test.component.ConfigurationTest" todir="${basedir}/test-reports/" />
-			<test name="test.component.ExternalSetAPITest" todir="${basedir}/test-reports/" />
-			<test name="test.component.HqlAnalyzerTest" todir="${basedir}/test-reports/" />
-			<test name="test.component.LockTest" todir="${basedir}/test-reports/" />
-			<test name="test.component.MqlAnalyzerTest" todir="${basedir}/test-reports/" />
-			<test name="test.component.QueryGenerationTest" todir="${basedir}/test-reports/" />
+			<test name="org.makumba.test.component.MddTest" todir="${basedir}/test-reports/"/>
+			<test name="org.makumba.test.component.TableTest" todir="${basedir}/test-reports/" />
+			<test name="org.makumba.test.component.ConfigurationTest" todir="${basedir}/test-reports/" />
+			<test name="org.makumba.test.component.ExternalSetAPITest" todir="${basedir}/test-reports/" />
+			<test name="org.makumba.test.component.HqlAnalyzerTest" todir="${basedir}/test-reports/" />
+			<test name="org.makumba.test.component.LockTest" todir="${basedir}/test-reports/" />
+			<test name="org.makumba.test.component.MqlAnalyzerTest" todir="${basedir}/test-reports/" />
+			<test name="org.makumba.test.component.QueryGenerationTest" todir="${basedir}/test-reports/" />
 		</junit>
 	</target>
   
@@ -711,7 +678,7 @@
 		<junit fork="true" outputtoformatters="true">
 			<classpath refid="test.class.path" />
             <formatter type="xml" usefile="true" />
-			<test name="test.component.TableHibernateTest" todir="${basedir}/test-reports/" />
+			<test name="org.makumba.test.component.TableHibernateTest" todir="${basedir}/test-reports/" />
 		</junit>
 	</target>
   
@@ -720,7 +687,7 @@
 		<delete file="${test.deploy}/tests.war" />
 		<!-- the war is packed while tomcat undeploys -->
 		<antcall target="testWar" />
-		<copy file="build/tests.war" toFile="${test.deploy}/tests.war" />
+		<copy file="${build.dir}/tests.war" toFile="${test.deploy}/tests.war" />
 		<!-- wait for deploy -->
 		<sleep seconds="8" />
 	</target>
@@ -734,10 +701,9 @@
 			<sysproperty key="cactus.contextURL" value="http://localhost:${test.port}/tests" />
 			<classpath refid="test.class.path" />
 			<formatter type="xml" usefile="true" />
-			<!-- test name="test.selenium.TestListMQL" /-->
-			<test name="test.component.ConcurrentTest" todir="${basedir}/test-reports" />
-			<test name="test.tags.FormsOQLTest" todir="${basedir}/test-reports" />
-			<test name="test.tags.ListOQLTest" todir="${basedir}/test-reports" />
+			<test name="org.makumba.test.component.ConcurrentTest" todir="${basedir}/test-reports" />
+			<test name="org.makumba.test.tags.FormsOQLTest" todir="${basedir}/test-reports" />
+			<test name="org.makumba.test.tags.ListOQLTest" todir="${basedir}/test-reports" />
 		</junit>
 	</target>
 
@@ -751,8 +717,8 @@
 			<sysproperty key="cactus.contextURL" value="http://localhost:${test.port}/tests" />
 			<classpath refid="test.class.path" />
             <formatter type="xml" usefile="true" />
-			<test name="test.tags.ListHQLTest" todir="${basedir}/test-reports" />
-			<test name="test.tags.FormsHQLTest" todir="${basedir}/test-reports" />
+			<test name="org.makumba.test.tags.ListHQLTest" todir="${basedir}/test-reports" />
+			<test name="org.makumba.test.tags.FormsHQLTest" todir="${basedir}/test-reports" />
 		</junit>
 		<replace file="webapps/tests/WEB-INF/classes/Makumba.conf" token="defaultDataSource=testDatabaseHibernate" value="defaultDataSource=testDatabase" />
 	</target>
@@ -769,9 +735,9 @@
 			<sysproperty key="cactus.contextURL" value="http://localhost:${test.port}/tests" />
 			<classpath refid="test.class.path" />
 			<formatter type="plain" usefile="false" />
-			<test name="test.tags.FormsOQLTest" />
-			<test name="test.tags.ListOQLTest" />
-			<test name="test.component.TableTest" />
+			<test name="org.makumba.test.tags.FormsOQLTest" />
+			<test name="org.makumba.test.tags.ListOQLTest" />
+			<test name="org.makumba.test.component.TableTest" />
 		</junit>
 		<replace file="webapps/tests/WEB-INF/classes/Makumba.conf" token="defaultDataSource=testHsqldb" value="defaultDataSource=testDatabase" />
 	</target>
@@ -793,6 +759,50 @@
 	<target name="hsqldb.cleandb">
 		<delete dir="hsqldata" />
 	</target>
+  
+
+  <target name="testJar" description="make a jar in ./lib containing the test classes">
+      <mkdir dir="${jar.place}/lib" />
+      <jar jarfile="${jar.place}/lib/mak-test.jar">
+          <fileset dir="${test.dir}" includes="org/makumba/test/**/*.class" defaultExcludes="no" />
+          <fileset dir="${src.dir}" includes="org/makumba/test/**/*.mdd" defaultExcludes="no" />
+      </jar>
+  </target>
+
+  <target name="testWar" depends="jar, testJar">
+      <delete file="${build.dir}/tests.war" />
+      <property name="webapp.source" value="webapps" />
+      <war destfile="${build.dir}/tests.war" webxml="${webapp.source}/tests/WEB-INF/web.xml.dynamic" update="true">
+          <fileset dir="${webapp.source}/tests">
+              <exclude name="WEB-INF/**/*" />
+          </fileset>
+          <lib dir="lib/core">
+              <include name="*.jar" />
+          </lib>
+          <lib dir="lib/common">
+              <!-- do note that servlet-api.jar, jsp-api.jar, el-api.jar must not be included! -->
+              <include name="jstl*.jar" />
+              <include name="dom4*.jar" />
+          </lib>
+          <lib dir="lib/optional/hibernate/">
+              <include name="*.jar" />
+          </lib>
+          <lib dir="lib/optional/">
+              <include name="hsqldb.jar" />
+          </lib>
+          <lib dir="lib/test">
+              <include name="aspectjrt.jar" />
+              <include name="cactus.jar" />
+              <include name="junit.jar" />
+              <include name="httpunit.jar" />
+          </lib>
+          <lib dir="lib">
+              <include name="makumba.jar" />
+              <include name="mak-test.jar" />
+          </lib>
+          <classes dir="${webapp.source}/tests/WEB-INF/classes" includes="Makumba.conf" />
+      </war>
+  </target>
 
 	<!-- Targets for Selenium testing -->
 
@@ -851,7 +861,7 @@
 	<target name="generateTaglibDoc" description="generates the taglib documentation wiki files">
 		<java classname="org.makumba.commons.documentation.TaglibDocGenerator" fork="true">
 			<classpath>
-				<pathelement path="build/" />
+				<pathelement path="${build.dir}" />
 				<pathelement path="${java.class.path}" />
 				<fileset dir="${basedir}/lib">
 					<include name="**/*.jar" />
