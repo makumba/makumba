@@ -1,5 +1,0 @@
-age = int
-
-size = int
-
-range(age,size) {1..2} : "Error message"
