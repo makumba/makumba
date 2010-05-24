@@ -1,4 +1,4 @@
-package test.selenium;
+package org.makumba.test.selenium;
 
 import java.io.IOException;
 
@@ -6,7 +6,8 @@ import javax.servlet.ServletException;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import test.MakumbaWebTestSetup;
+
+import org.makumba.test.MakumbaWebTestSetup;
 
 import com.thoughtworks.selenium.SeleneseTestCase;
 
