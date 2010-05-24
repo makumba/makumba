@@ -1,4 +1,4 @@
-package test.util;
+package org.makumba.test.util;
 
 import java.io.File;
 
