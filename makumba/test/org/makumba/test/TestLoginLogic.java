@@ -1,4 +1,4 @@
-package test;
+package org.makumba.test;
 
 import org.makumba.AttributeNotFoundException;
 import org.makumba.Attributes;

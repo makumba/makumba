@@ -1,4 +1,4 @@
-package test;
+package org.makumba.test;
 
 import java.util.ArrayList;
 import java.util.Date;
