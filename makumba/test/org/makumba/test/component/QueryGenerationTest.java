@@ -1,4 +1,4 @@
-package test.component;
+package org.makumba.test.component;
 
 import java.util.Dictionary;
 import java.util.HashMap;
@@ -12,8 +12,8 @@ import junit.framework.TestSuite;
 import org.makumba.InvalidValueException;
 import org.makumba.Transaction;
 import org.makumba.providers.TransactionProvider;
+import org.makumba.test.MakumbaTestSetup;
 
-import test.MakumbaTestSetup;
 
 /**
  * Unit tests for the query generation process (from MQL to SQL, including parameter rewriting)

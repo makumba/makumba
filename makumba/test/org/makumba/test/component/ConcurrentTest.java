@@ -1,4 +1,4 @@
-package test.component;
+package org.makumba.test.component;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -13,9 +13,8 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.makumba.commons.RuntimeWrappedException;
-
-import test.MakumbaTestSetup;
-import test.MakumbaWebTestSetup;
+import org.makumba.test.MakumbaTestSetup;
+import org.makumba.test.MakumbaWebTestSetup;
 
 /**
  * Test case for concurrent access on a mak:list, later also on a mak:form
