@@ -24,7 +24,6 @@ import org.makumba.Transaction;
 import org.makumba.commons.DbConnectionProvider;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.attributes.RequestAttributes;
-import org.makumba.test.tags.FormsOQLTest;
 
 
 /**
