@@ -21,7 +21,7 @@
 //  $Name$
 /////////////////////////////////////
 
-package test.tags;
+package org.makumba.test.tags;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,10 +40,9 @@ import org.apache.cactus.Request;
 import org.apache.commons.collections.CollectionUtils;
 import org.makumba.commons.NamedResources;
 import org.makumba.forms.responder.ResponderFactory;
+import org.makumba.test.MakumbaTestData;
+import org.makumba.test.util.MakumbaJspTestCase;
 import org.xml.sax.SAXException;
-
-import test.MakumbaTestData;
-import test.util.MakumbaJspTestCase;
 
 import com.meterware.httpunit.HTMLElement;
 import com.meterware.httpunit.WebForm;
@@ -383,6 +382,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         String contextPath = "tests";
         String tempDir = new File(getClass().getResource("/").toURI()).getParent() + "/tomcat/work/Catalina/localhost/"
                 + contextPath;
+
         ResponderFactory responderFactory = ResponderFactory.getInstance();
         responderFactory.setResponderWorkingDir(tempDir, contextPath);
 

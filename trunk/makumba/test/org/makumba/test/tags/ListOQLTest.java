@@ -1,11 +1,12 @@
-package test.tags;
+package org.makumba.test.tags;
 
 import java.io.IOException;
 
 import javax.servlet.ServletException;
 
 import junit.framework.Test;
-import test.util.MakumbaJspTestCase;
+
+import org.makumba.test.util.MakumbaJspTestCase;
 
 import com.meterware.httpunit.WebResponse;
 
