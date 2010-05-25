@@ -1191,7 +1191,7 @@ The JSP tests will deploy on another dir, which can be configured via the proper
 			<replacevalue>
 				<![CDATA[///////////////////////////////
 //  Makumba, Makumba tag library
-//  Copyright (C) 2000-2008  http://www.makumba.org
+//  Copyright (C) 2000-2010  http://www.makumba.org
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -1217,73 +1217,8 @@ package org.makumba]]>
 		</replace>
 	</target>
 
+	<!-- Targets for API documentation -->
 
-	<target name="statcvs" description="generate CVS statistics with StatCVS">
-		<echo>Get StatCVS, http://statcvs.sf.net/:
-            cd .. (you should be in sources/ afterwards)
-            cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/statcvs login
-            cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/statcvs co statcvs
-            Get needed libs from: http://belnet.dl.sourceforge.net/sourceforge/statcvs/developer-libs-0.7.zip
-            ..and unzip them into statcvs/lib directory.
-            cd statcvs
-            ant compile
-            ant dist
-
-            yep, ant could do all this automagically in a seperate target getStatCvs ;)
-            note: statistics looks better if you update the sources first (cvs update)
-        </echo>
-		<mkdir dir="./doc/statcvs" />
-		<cvs command="log" dest="." output="./doc/statcvs/cvs.log" />
-		<!--property name="java.awt.headless" value="true" /-->
-		<java classname="net.sf.statcvs.Main" fork="yes">
-			<arg line="-title Makumba -output-dir ./doc/statcvs -viewcvs http://cvs.makumba.org ./doc/statcvs/cvs.log ." />
-			<classpath>
-				<fileset dir="../statcvs/">
-					<include name="**/*.jar" />
-				</fileset>
-				<!--path refid="project.class.path"/-->
-			</classpath>
-		</java>
-	</target>
-
-
-	<!-- Targets for old HTML documentation and API documentation -->
-
-	<target name="publishDoc" description="publishes the documentation (and website)">
-		<antcall target="zipdoc" />
-		<antcall target="uploadMadeDoc" />
-	</target>
-
-	<target name="uploadMadeDoc" description="uploads the documentation (and website) made by zipdoc or a failed publishDoc">
-		<echo>updating zip for distribution</echo>
-		<echo>make sure you have the necessary libraries to run the FTP task! you can install them by running "ant
-            installAntFtp" with the right permissions to access your ANT_HOME dir</echo>
-		<ftp server="download.makumba.org" userid="ftp-mak" password="ftp-mak" remotedir="makumba/doc/download" binary="yes" verbose="true">
-			<fileset dir="lib" includes="makumbadoc.zip" />
-		</ftp>
-	</target>
-
-	<target name="zipdoc" description="makes the documentation and zips it">
-		<delete file="${temp.dir}/makumbadoc.zip" />
-		<antcall target="javadoc" />
-		<fileset id="wwwdocs" dir="..">
-			<include name="makumba/CHANGELOG.txt" />
-			<include name="makumba/COPYING.txt" />
-			<include name="makumba/README.txt" />
-			<include name="makumba/doc/**" />
-			<exclude name="makumba/doc/api/API_users_guide.html" />
-		</fileset>
-
-		<!-- make sure the files to be published are readable to everyone (zip keeps permissions, bug 329) -->
-		<chmod perm="ugo+r" type="both">
-			<fileset refid="wwwdocs" />
-		</chmod>
-		<zip zipfile="${temp.dir}/makumbadoc.zip">
-			<fileset refid="wwwdocs" />
-		</zip>
-		<copy file="${temp.dir}/makumbadoc.zip" tofile="lib/makumbadoc.zip" />
-
-	</target>
 
 	<target name="javadoc" description="generates documentation">
 		<tstamp>
@@ -1374,4 +1309,42 @@ package org.makumba]]>
 <fixcrlf srcDir="." includes="**/*.jsp, **/*.mdd, **/*.idd, **/*.java, **/*.properties" />
 </target>
 
+	<target name="publishDoc" description="publishes the documentation (and website)">
+		<antcall target="zipdoc" />
+		<antcall target="uploadMadeDoc" />
+	</target>
+
+	<target name="uploadMadeDoc" description="uploads the documentation (and website) made by zipdoc or a failed publishDoc">
+		<echo>updating zip for distribution</echo>
+		<echo>make sure you have the necessary libraries to run the FTP task! you can install them by running "ant
+            installAntFtp" with the right permissions to access your ANT_HOME dir</echo>
+		<ftp server="download.makumba.org" userid="ftp-mak" password="ftp-mak" remotedir="makumba/doc/download" binary="yes" verbose="true">
+			<fileset dir="lib" includes="makumbadoc.zip" />
+		</ftp>
+	</target>
+
+	<target name="zipdoc" description="makes the documentation and zips it">
+		<delete file="${temp.dir}/makumbadoc.zip" />
+		<antcall target="javadoc" />
+		<fileset id="wwwdocs" dir="..">
+			<include name="makumba/CHANGELOG.txt" />
+			<include name="makumba/COPYING.txt" />
+			<include name="makumba/README.txt" />
+			<include name="makumba/doc/**" />
+			<exclude name="makumba/doc/api/API_users_guide.html" />
+		</fileset>
+
+		<!-- make sure the files to be published are readable to everyone (zip keeps permissions, bug 329) -->
+		<chmod perm="ugo+r" type="both">
+			<fileset refid="wwwdocs" />
+		</chmod>
+		<zip zipfile="${temp.dir}/makumbadoc.zip">
+			<fileset refid="wwwdocs" />
+		</zip>
+		<copy file="${temp.dir}/makumbadoc.zip" tofile="lib/makumbadoc.zip" />
+
+	</target>
+
+	
+	
 </project>
