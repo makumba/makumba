@@ -27,7 +27,7 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
 
     DataDefinition knownLabels;
 
-    private boolean allowLogicalExprInSelect = false;
+    private boolean allowLogicalExprInSelect = true;
 
     @Override
     void checkLogicalExprInSelect(AST logical) throws SemanticException {
