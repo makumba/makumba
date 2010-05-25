@@ -1,69 +1,62 @@
 <project name="Makumba" default="compile" basedir=".">
 
-  <!-- Properties and task definitions -->
-  
-  <property file="build.properties" />
-  
-  <property environment="env" />
-  <property name="temp.dir" value="work/temp" />
-  <property name="build.dir" value="build" />
-  <property name="test.dir" value="test" />
-  <property name="src.dir" value="classes" />
-  
+	<!-- Properties and task definitions -->
 
-  <property name="jar.place" value="." />
-  <property name="build.compiler.emacs" value="true" />
+	<property file="build.properties" />
 
-    <!-- jikes as default compiler
-        <property name="build.compiler" value="jikes" /> -->
-    <!-- jikes options for ant -emacs  -->
+	<property environment="env" />
 
+	<property name="temp.dir" value="work/temp" />
+	<property name="build.dir" value="build" />
+	<property name="test.dir" value="test" />
+	<property name="src.dir" value="classes" />
+	<property name="jar.dir" value="." />
 
-    <taskdef resource="svntask.properties">
-        <classpath>
-            <fileset dir="${basedir}/lib/building/">
-                <include name="svnant.jar" />
-                <include name="svnClientAdapter.jar" />
-                <include name="svnjavahl.jar" />
-            </fileset>
-        </classpath>
-    </taskdef>
+	<property name="build.compiler.emacs" value="true" />
 
-    <taskdef resource="net/sf/antcontrib/antlib.xml">
-        <classpath>
-            <fileset dir="lib/building/" includes="ant-contrib-*.jar" />
-        </classpath>
-    </taskdef>
+	<taskdef resource="svntask.properties">
+		<classpath>
+			<fileset dir="${basedir}/lib/building/">
+				<include name="svnant.jar" />
+				<include name="svnClientAdapter.jar" />
+				<include name="svnjavahl.jar" />
+			</fileset>
+		</classpath>
+	</taskdef>
 
-    <taskdef resource="net/sf/antcontrib/antlib.xml">
-        <classpath>
-            <fileset dir="lib/building/" includes="ant-contrib-*.jar" />
-        </classpath>
-    </taskdef>
+	<taskdef resource="net/sf/antcontrib/antlib.xml">
+		<classpath>
+			<fileset dir="lib/building/" includes="ant-contrib-*.jar" />
+		</classpath>
+	</taskdef>
 
-    <!-- it's normal that this taskdef issues a warning, see the doMavenDeploy task for more info -->
-    <taskdef resource="org/apache/commons/openpgp/ant/antlib.xml" uri="antlib:org.apache.commons.openpgp.ant">
-        <classpath>
-            <fileset dir="lib/building/">
-                <include name="commons-openpgp-1.0-SNAPSHOT.jar" />
-                <include name="bcpg-jdk15-145.jar" />
-                <include name="bcprov-jdk15-145.jar" />
-            </fileset>
-        </classpath>
-    </taskdef>
+	<taskdef resource="net/sf/antcontrib/antlib.xml">
+		<classpath>
+			<fileset dir="lib/building/" includes="ant-contrib-*.jar" />
+		</classpath>
+	</taskdef>
 
+	<taskdef resource="org/apache/commons/openpgp/ant/antlib.xml" uri="antlib:org.apache.commons.openpgp.ant">
+		<classpath>
+			<fileset dir="lib/building/">
+				<include name="commons-openpgp-1.0-SNAPSHOT.jar" />
+				<include name="bcpg-jdk15-145.jar" />
+				<include name="bcprov-jdk15-145.jar" />
+			</fileset>
+		</classpath>
+	</taskdef>
 
-    <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant">
-        <classpath>
-            <fileset dir="lib/building/" includes="maven-ant-tasks-2.1.0.jar" />
-        </classpath>
-    </typedef>
+	<typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant">
+		<classpath>
+			<fileset dir="lib/building/" includes="maven-ant-tasks-2.1.0.jar" />
+		</classpath>
+	</typedef>
 
-  
-  
 	<!-- Path definitions -->
 
 	<path id="project.class.path">
+		<pathelement location="${basedir}/build" />
+
 		<pathelement location="lib/core/commons-fileupload-1.1.1.jar" />
 		<pathelement location="lib/core/commons-io-1.1.jar" />
 		<pathelement location="lib/core/commons-collections-3.2.jar" />
@@ -95,15 +88,16 @@
 		<pathelement location="lib/test/jetty/jetty-6.1.3.jar" />
 		<pathelement location="lib/test/jetty/jetty-util-6.1.3.jar" />
 		<pathelement location="lib/optional/javax.persistence.jar" />
-		
-		<pathelement location="${test.dir}/" />
-		<pathelement location="${basedir}/build" />
 	</path>
 
 	<path id="project.class.path.complete">
 		<pathelement path="${java.class.path}" />
 		<pathelement location="classes" />
 		<pathelement location="webapps/tests/WEB-INF/classes/" />
+		<pathelement location="${basedir}/build" />
+		<fileset dir="${basedir}">
+			<include name="webapps/tests/WEB-INF/classes/Makumba.conf" />
+		</fileset>
 
 		<pathelement location="lib/core/antlr-2.7.6.jar" />
 		<pathelement location="lib/core/c3p0-0.9.1.jar" />
@@ -134,18 +128,12 @@
 		<pathelement location="lib/test/selenium-java-client-driver.jar" />
 		<pathelement location="lib/test/jetty/jetty-6.1.3.jar" />
 		<pathelement location="lib/test/jetty/jetty-util-6.1.3.jar" />
-
-		<pathelement location="${basedir}/build" />
-
-		<fileset dir="${basedir}">
-			<include name="webapps/tests/WEB-INF/classes/Makumba.conf" />
-		</fileset>
 	</path>
-	
+
 	<path id="test.class.path">
 		<path refid="project.class.path" />
 		<pathelement path="classes" />
-        <pathelement path="${test.dir}/org/makumba" />
+		<pathelement path="${test.dir}/org/makumba" />
 		<pathelement path="webapps/tests/WEB-INF/classes" />
 		<fileset dir="lib/db">
 			<include name="*.jar" />
@@ -161,11 +149,6 @@
 			<exclude name="*bootstrap.jar" />
 		</fileset>
 	</path>
-
-
-
-
-
 
 	<!-- Targets for Eclipse workspace set-up -->
 
@@ -192,8 +175,7 @@
 		</condition>
 	</target>
 
-
-	<target name="detectHqlTokens" depends="checkHqlTokens" unless="hqlTokenDetection.notRequired">
+	<target name="detectHqlTokens" depends="checkHqlTokens" unless="hqlTokenDetection.notRequired" description="Generates HQL token types file, necessary for compiling the HQL grammar">
 		<property name="build.dir" value="build" />
 		<javac srcdir="classes" destdir="${build.dir}" includes="org/makumba/providers/query/hql/DetectHQLTokenTypes.java">
 			<classpath refid="project.class.path" />
@@ -217,12 +199,9 @@
 		</echo>
 	</target>
 
-
 	<!-- Targets for Makumba compilation and building -->
 
-
-	<!-- check if the HQL/MQL/MDD grammar has changed since last parser generation-->
-	<target name="checkAntlr">
+	<target name="checkAntlr" description="checks if the HQL/MQL/MDD grammar has changed since last parser generation">
 		<condition property="antlr.notRequired">
 			<and>
 				<uptodate targetfile="${basedir}/classes/org/makumba/providers/query/hql/HqlAnalyzeBaseWalker.java">
@@ -249,14 +228,13 @@
 				<uptodate targetfile="${basedir}/classes/org/makumba/providers/datadefinition/mdd/MDDPostProcessorBaseWalker.java">
 					<srcfiles dir="${basedir}/classes/org/makumba/providers/datadefinition/mdd" includes="**/mdd-postprocess.g" />
 				</uptodate>
-
 			</and>
 		</condition>
 	</target>
 
 
-	<!-- if the HQL/MQL/MDD grammar has changed, call antlr to re-generate the parser -->
-	<target name="ANTLRParserGeneration" depends="checkAntlr, install, detectHqlTokens" unless="antlr.notRequired">
+	<target name="ANTLRParserGeneration" depends="checkAntlr, install, detectHqlTokens" unless="antlr.notRequired"
+			description="if the HQL/MQL/MDD grammar has changed, call antlr to re-generate the parser">
 
 		<java classname="antlr.Tool" fork="true" dir="classes/org/makumba/providers/query/hql" failonerror="true" taskname="antlr">
 			<classpath refid="project.class.path" />
@@ -378,10 +356,10 @@
 	</target>
 
 	<target name="jarOnly" description="make a jar in ./lib, w/o first compiling and generating the TLD">
-		<mkdir dir="${jar.place}/lib" />
+		<mkdir dir="${jar.dir}/lib" />
 
 		<antcall target="makeManifest" />
-		<jar jarfile="${jar.place}/lib/makumba.jar" manifest="manifest.mf">
+		<jar jarfile="${jar.dir}/lib/makumba.jar" manifest="manifest.mf">
 			<fileset dir="classes" includes="makumbaResources/javaScript/*.js, makumbaResources/css/*.css, makumbaResources/image/*.*, org/makumba/**/*.mdd, Makumba.conf.default, org/**/*.properties, org/makumba/devel/codeTemplates/*.properties" defaultExcludes="no" excludes="**/**/SEED.txt, META-INF/*skeleton*" />
 			<fileset dir="build" includes="org/**/*.class" defaultExcludes="no" excludes="**/**/SEED.txt" />
 			<fileset dir="." includes="COPYING.txt" defaultExcludes="no" excludes="queries.txt" />
@@ -421,7 +399,6 @@
 		<echo>e.g. ant release -Dtag=makumba-0_8_2_1 -Duser=manuel_gay -Dpassword=XXX</echo>
 	</target>
 
-
 	<target name="makeJar" if="tag" description="makes the jar and a src tarball of the given version">
 		<antcall target="makeTag" />
 		<antcall target="checkoutJar" />
@@ -445,7 +422,7 @@
 	</target>
 
 	<target name="packageJar" if="tag" description="Makes the JAR from the checked-out sources and the source zip">
-		<mkdir dir="${jar.place}/lib" />
+		<mkdir dir="${jar.dir}/lib" />
 		<mkdir dir="work/makumba.distrib/makumba/build/" />
 
 		<!-- make the source tarball: -->
@@ -469,19 +446,19 @@
 		<!-- make the jar: -->
 		<java classname="org.apache.tools.ant.Main" fork="true" dir="work/makumba.distrib/makumba/" taskname="buildingJar">
 			<classpath refid="project.class.path.complete" />
-			<sysproperty key="jar.place" path="${jar.place}" />
+			<sysproperty key="jar.dir" path="${jar.dir}" />
 			<sysproperty key="release" value="true" />
 			<arg value="jar" />
 		</java>
 
 		<!-- make the template application archive: -->
 		<antcall target="makeTemplate" />
-		<copy file="${jar.place}/lib/makumba.jar" tofile="${jar.place}/lib/${tag}.jar" />
+		<copy file="${jar.dir}/lib/makumba.jar" tofile="${jar.dir}/lib/${tag}.jar" />
 	</target>
 
 	<target name="makeTemplate">
 		<!-- first copy the new makumba.jar (just to be sure): -->
-		<copy file="${jar.place}/lib/makumba.jar" tofile="work/makumba.distrib/makumba-template/WebContent/WEB-INF/lib/makumba.jar" overwrite="true" />
+		<copy file="${jar.dir}/lib/makumba.jar" tofile="work/makumba.distrib/makumba-template/WebContent/WEB-INF/lib/makumba.jar" overwrite="true" />
 
 		<zip zipfile="lib/${tag}-template.zip">
 			<fileset dir="work/makumba.distrib/">
@@ -495,7 +472,7 @@
 		<mkdir dir="work/makumba.distrib" />
 		<delete dir="work/makumba.distrib/makumba/" />
 		<antcall target="makeJar">
-			<param name="jar.place" value="." />
+			<param name="jar.dir" value="." />
 		</antcall>
 		<antcall target="uploadMadeJar" />
 	</target>
@@ -513,10 +490,8 @@
 	</target>
 
 	<target name="ftpMadeJar">
-
 		<mkdir dir="work/" />
-
-		<copy file="${jar.place}/lib/${tag}.jar" tofile="work/makumba.jar" />
+		<copy file="${jar.dir}/lib/${tag}.jar" tofile="work/makumba.jar" />
 
 		<ftp server="download.makumba.org" userid="ftp-mak" password="ftp-mak" remotedir="makumba/doc/download" binary="yes" verbose="true">
 			<fileset dir="lib/">
@@ -579,7 +554,7 @@
 
 	<target name="doMavenDeploy" if="doDeploy" xmlns:artifact="urn:maven-artifact-ant" xmlns:openpgp="antlib:org.apache.commons.openpgp.ant">
 
-		<copy file="${jar.place}/lib/${tag}.jar" tofile="work/makumba.jar" />
+		<copy file="${jar.dir}/lib/${tag}.jar" tofile="work/makumba.jar" />
 
 		<artifact:remoteRepository id="sonatype.release" url="http://oss.sonatype.org/service/local/staging/deploy/maven2/">
 			<releases enabled="true" />
@@ -591,7 +566,6 @@
 		<propertyregex property="release.version" input="${tag}" regexp="makumba-*" replace="" casesensitive="false" />
 
 		<propertyregex property="release.version" input="${release.version}" regexp="_" replace="." global="true" override="true" casesensitive="false" />
-
 
 		<!-- in-memory POM definition -->
 		<artifact:pom id="makumba-memory.project" groupId="org.makumba" artifactId="makumba" version="${release.version}" name="makumba" description="A framework for rapid and sustainable web-development" url="http://www.makumba.org">
@@ -627,7 +601,7 @@
 		<echo>Signing makumba.jar and release-pom.xml</echo>
 		<echo>This may fail if you didn't set up your JVM correctly, make sure you read the comments in build.xml!</echo>
 
-		<!--
+	<!--
       ANT support for signature is not mature yet, but it works.
       - you need to have the public and private key files for this (makumba-secring.gpg, makumba-pubring.gpg)
       - additionally, you need to set up the BouncyCastle provider in your JVM:
@@ -635,7 +609,7 @@
         - Find java.security in /path_to_your_jvm/jre/lib/security
         - Add security.provider.9=org.bouncycastle.jce.provider.BouncyCastleProvider (or .10, or .11, ...)
         - Add the bcprov-jdk16-145.jar and bcpg-jdk16-145.jar to /path_to_your_jvm/jre/lib/ext (they're in lib/building/)
-      -->
+	-->
 		<openpgp:signer secring="${basedir}/makumba-secring.gpg" pubring="${basedir}/makumba-pubring.gpg" password="${keyphrase}" keyid="BA693BED" asciiarmor="true">
 			<fileset dir="${basedir}/work/">
 				<include name="release-pom.xml" />
@@ -653,18 +627,16 @@
 
 	</target>
 
-  
-  
 	<!-- Targets for JUNIT testing 
 	http://ant.apache.org/manual/OptionalTasks/junit.html
 	-->
 
 	<target name="test.junit" depends="compile" description="runs the junit test and writes xml reports to test-reports/">
-	    <mkdir dir="${basedir}/test-reports"/>
-	    <junit fork="no" outputtoformatters="true">
+		<mkdir dir="${basedir}/test-reports" />
+		<junit fork="no" outputtoformatters="true">
 			<classpath refid="test.class.path" />
 			<formatter type="xml" usefile="true" />
-			<test name="org.makumba.test.component.MddTest" todir="${basedir}/test-reports/"/>
+			<test name="org.makumba.test.component.MddTest" todir="${basedir}/test-reports/" />
 			<test name="org.makumba.test.component.TableTest" todir="${basedir}/test-reports/" />
 			<test name="org.makumba.test.component.ConfigurationTest" todir="${basedir}/test-reports/" />
 			<test name="org.makumba.test.component.ExternalSetAPITest" todir="${basedir}/test-reports/" />
@@ -674,15 +646,15 @@
 			<test name="org.makumba.test.component.QueryGenerationTest" todir="${basedir}/test-reports/" />
 		</junit>
 	</target>
-  
+
 	<target name="test.junit-hql" depends="compile">
 		<junit fork="true" outputtoformatters="true">
 			<classpath refid="test.class.path" />
-            <formatter type="xml" usefile="true" />
+			<formatter type="xml" usefile="true" />
 			<test name="org.makumba.test.component.TableHibernateTest" todir="${basedir}/test-reports/" />
 		</junit>
 	</target>
-  
+
 	<target name="deployTests">
 		<fail unless="test.deploy">Cannot find test.deploy. Set it in build.properties or via the command line</fail>
 		<delete file="${test.deploy}/tests.war" />
@@ -692,7 +664,7 @@
 		<!-- wait for deploy -->
 		<sleep seconds="8" />
 	</target>
-  
+
 	<target name="test.jsp">
 		<!-- this will set test.port to a default value, if it is not set -->
 		<property name="test.port" value="8080" />
@@ -717,13 +689,12 @@
 		<junit fork="no">
 			<sysproperty key="cactus.contextURL" value="http://localhost:${test.port}/tests" />
 			<classpath refid="test.class.path" />
-            <formatter type="xml" usefile="true" />
+			<formatter type="xml" usefile="true" />
 			<test name="org.makumba.test.tags.ListHQLTest" todir="${basedir}/test-reports" />
 			<test name="org.makumba.test.tags.FormsHQLTest" todir="${basedir}/test-reports" />
 		</junit>
 		<replace file="webapps/tests/WEB-INF/classes/Makumba.conf" token="defaultDataSource=testDatabaseHibernate" value="defaultDataSource=testDatabase" />
 	</target>
-
 
 	<target name="test.hsqldb">
 		<!-- this will set test.port to a default value, if it is not set -->
@@ -760,50 +731,50 @@
 	<target name="hsqldb.cleandb">
 		<delete dir="hsqldata" />
 	</target>
-  
 
-  <target name="testJar" description="make a jar in ./lib containing the test classes">
-      <mkdir dir="${jar.place}/lib" />
-      <jar jarfile="${jar.place}/lib/mak-test.jar">
-          <fileset dir="${test.dir}" includes="org/makumba/test/**/*.class" defaultExcludes="no" />
-          <fileset dir="${src.dir}" includes="org/makumba/test/**/*.mdd" defaultExcludes="no" />
-      </jar>
-  </target>
 
-  <target name="testWar" depends="jar, testJar">
-      <delete file="${build.dir}/tests.war" />
-      <property name="webapp.source" value="webapps" />
-      <war destfile="${build.dir}/tests.war" webxml="${webapp.source}/tests/WEB-INF/web.xml.dynamic" update="true">
-          <fileset dir="${webapp.source}/tests">
-              <exclude name="WEB-INF/**/*" />
-          </fileset>
-          <lib dir="lib/core">
-              <include name="*.jar" />
-          </lib>
-          <lib dir="lib/common">
-              <!-- do note that servlet-api.jar, jsp-api.jar, el-api.jar must not be included! -->
-              <include name="jstl*.jar" />
-              <include name="dom4*.jar" />
-          </lib>
-          <lib dir="lib/optional/hibernate/">
-              <include name="*.jar" />
-          </lib>
-          <lib dir="lib/optional/">
-              <include name="hsqldb.jar" />
-          </lib>
-          <lib dir="lib/test">
-              <include name="aspectjrt.jar" />
-              <include name="cactus.jar" />
-              <include name="junit.jar" />
-              <include name="httpunit.jar" />
-          </lib>
-          <lib dir="lib">
-              <include name="makumba.jar" />
-              <include name="mak-test.jar" />
-          </lib>
-          <classes dir="${webapp.source}/tests/WEB-INF/classes" includes="Makumba.conf" />
-      </war>
-  </target>
+	<target name="testJar" description="make a jar in ./lib containing the test classes">
+		<mkdir dir="${jar.dir}/lib" />
+		<jar jarfile="${jar.dir}/lib/mak-test.jar">
+			<fileset dir="${test.dir}" includes="org/makumba/test/**/*.class" defaultExcludes="no" />
+			<fileset dir="${src.dir}" includes="org/makumba/test/**/*.mdd" defaultExcludes="no" />
+		</jar>
+	</target>
+
+	<target name="testWar" depends="jar, testJar">
+		<delete file="${build.dir}/tests.war" />
+		<property name="webapp.source" value="webapps" />
+		<war destfile="${build.dir}/tests.war" webxml="${webapp.source}/tests/WEB-INF/web.xml.dynamic" update="true">
+			<fileset dir="${webapp.source}/tests">
+				<exclude name="WEB-INF/**/*" />
+			</fileset>
+			<lib dir="lib/core">
+				<include name="*.jar" />
+			</lib>
+			<lib dir="lib/common">
+				<!-- do note that servlet-api.jar, jsp-api.jar, el-api.jar must not be included! -->
+				<include name="jstl*.jar" />
+				<include name="dom4*.jar" />
+			</lib>
+			<lib dir="lib/optional/hibernate/">
+				<include name="*.jar" />
+			</lib>
+			<lib dir="lib/optional/">
+				<include name="hsqldb.jar" />
+			</lib>
+			<lib dir="lib/test">
+				<include name="aspectjrt.jar" />
+				<include name="cactus.jar" />
+				<include name="junit.jar" />
+				<include name="httpunit.jar" />
+			</lib>
+			<lib dir="lib">
+				<include name="makumba.jar" />
+				<include name="mak-test.jar" />
+			</lib>
+			<classes dir="${webapp.source}/tests/WEB-INF/classes" includes="Makumba.conf" />
+		</war>
+	</target>
 
 	<!-- Targets for Selenium testing -->
 
@@ -823,25 +794,7 @@
 		</java>
 	</target>
 
-
-
-
-
 	<!-- Targets for TLD generation -->
-
-	<target name="make12tld">
-		<copy file="classes/META-INF/taglib.tld" tofile="classes/META-INF/taglib.tld-1_2" overwrite="true" />
-		<replace file="classes/META-INF/taglib.tld-1_2" summary="true">
-			<replacefilter token="DTD JSP Tag Library 1.1" value="DTD JSP Tag Library 1.2" />
-			<replacefilter token="http://java.sun.com/j2ee/dtds/web-jsptaglibrary_1_1.dtd" value="http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd" />
-			<replacefilter token="jspversion>" value="jsp-version>" />
-			<replacefilter token="shortname>" value="short-name>" />
-			<replacefilter token="info>" value="description>" />
-			<replacefilter token="tagclass>" value="tag-class>" />
-			<replacefilter token="teiclass>" value="tei-class>" />
-			<replacefilter token="bodycontent>" value="body-content>" />
-		</replace>
-	</target>
 
 	<target name="generateTLDs" description="generates the TLD files, should be called before making a JAR file">
 		<java classname="org.makumba.commons.MakumbaTLDGenerator" fork="true" dir=".">
@@ -856,25 +809,6 @@
 		<copy file="classes/META-INF/taglib-hibernate.tld" tofile="webapps/tests/WEB-INF/taglib-hibernate.tld" overwrite="true" />
 	</target>
 
-
-
-	<!-- Target for documentation with JSPWiki -->
-	<target name="generateTaglibDoc" description="generates the taglib documentation wiki files">
-		<java classname="org.makumba.commons.documentation.TaglibDocGenerator" fork="true">
-			<classpath>
-				<pathelement path="${build.dir}" />
-				<pathelement path="${java.class.path}" />
-				<fileset dir="${basedir}/lib">
-					<include name="**/*.jar" />
-					<exclude name="**/makumba*.jar" />
-				</fileset>
-			</classpath>
-			<arg value="${basedir}" />
-			<arg value="${documentation.path}/wikidoc" />
-		</java>
-	</target>
-
-  
 	<target name="beforeContainer">
 		<echo>Starting servlet container. Java home in build: ${java.home}
 In case of problems, in order to see the output, consider setting tomcat.spawn to false in build.properties
@@ -923,8 +857,8 @@ The JSP tests will deploy on another dir, which can be configured via the proper
 			<classpath>
 				<pathelement path="lib/test/${tomcatNumber}-bootstrap.jar" />
 				<pathelement path="lib/common/commons-logging-api.jar" />
-			    <!-- we statically link the mysql connector, add other connectors here if necessary -->
-			    <pathelement path="lib/db/mysql-connector-java-5.1.6-bin.jar" />
+				<!-- we statically link the mysql connector, add other connectors here if necessary -->
+				<pathelement path="lib/db/mysql-connector-java-5.1.6-bin.jar" />
 			</classpath>
 			<jvmarg value="-Dcatalina.home=${tomcatHome}" />
 			<jvmarg value="-Dcatalina.base=${catalinaBase}" />
@@ -1044,8 +978,6 @@ The JSP tests will deploy on another dir, which can be configured via the proper
 		<delete includeEmptyDirs="true" failonerror="false">
 			<fileset dir="source/list" />
 		</delete>
-
-
 	</target>
 
 	<target name="makeFormSource" depends="clean">
@@ -1066,8 +998,6 @@ The JSP tests will deploy on another dir, which can be configured via the proper
 		<delete includeEmptyDirs="true" failonerror="false">
 			<fileset dir="source/forms" />
 		</delete>
-
-
 	</target>
 
 	<target name="makeCommonsCompiled" depends="jarAnalyser, jarMDDProvider, jarCommons, jarDB">
@@ -1093,12 +1023,10 @@ The JSP tests will deploy on another dir, which can be configured via the proper
 		</delete>
 	</target>
 
-
-
 	<target name="jarList" description="make a jar for the list in ./lib" depends="compileList">
-		<mkdir dir="${jar.place}/lib" />
+		<mkdir dir="${jar.dir}/lib" />
 		<antcall target="makeManifest" />
-		<jar jarfile="${jar.place}/lib/makumba-list.jar" manifest="manifest.mf">
+		<jar jarfile="${jar.dir}/lib/makumba-list.jar" manifest="manifest.mf">
 			<fileset dir="classes" includes="org/makumba/list/**/*.class" defaultExcludes="no" />
 			<fileset dir="." includes="COPYING.txt" defaultExcludes="no" />
 			<metainf dir="classes/META-INF" includes="taglib-list-oql.tld,taglib-list-hql.tld" defaultExcludes="no" />
@@ -1106,9 +1034,9 @@ The JSP tests will deploy on another dir, which can be configured via the proper
 	</target>
 
 	<target name="jarForms" description="make a jar for the forms in ./lib" depends="compileForms">
-		<mkdir dir="${jar.place}/lib" />
+		<mkdir dir="${jar.dir}/lib" />
 		<antcall target="makeManifest" />
-		<jar jarfile="${jar.place}/lib/makumba-forms.jar" manifest="manifest.mf">
+		<jar jarfile="${jar.dir}/lib/makumba-forms.jar" manifest="manifest.mf">
 			<fileset dir="classes" includes="org/makumba/forms/**/*.class" defaultExcludes="no" />
 			<fileset dir="." includes="COPYING.txt" defaultExcludes="no" />
 			<metainf dir="classes/META-INF" includes="taglib-forms.tld" defaultExcludes="no" />
@@ -1116,27 +1044,27 @@ The JSP tests will deploy on another dir, which can be configured via the proper
 	</target>
 
 	<target name="jarAnalyser" description="make a jar for the analyser in ./lib" depends="compileAnalyser">
-		<mkdir dir="${jar.place}/lib" />
+		<mkdir dir="${jar.dir}/lib" />
 		<antcall target="makeManifest" />
-		<jar jarfile="${jar.place}/lib/makumba-analyser.jar" manifest="manifest.mf">
+		<jar jarfile="${jar.dir}/lib/makumba-analyser.jar" manifest="manifest.mf">
 			<fileset dir="classes" includes="org/makumba/analyser/**/*.class" defaultExcludes="no" />
 			<fileset dir="." includes="COPYING.txt" defaultExcludes="no" />
 		</jar>
 	</target>
 
 	<target name="jarMDDProvider" description="make a jar for the MDD provider in ./lib" depends="compileMDDProvider">
-		<mkdir dir="${jar.place}/lib" />
+		<mkdir dir="${jar.dir}/lib" />
 		<antcall target="makeManifest" />
-		<jar jarfile="${jar.place}/lib/makumba-datadefinitionprovider.jar" manifest="manifest.mf">
+		<jar jarfile="${jar.dir}/lib/makumba-datadefinitionprovider.jar" manifest="manifest.mf">
 			<fileset dir="classes" includes="org/makumba/providers/datadefinition/makumba/**/*.class" defaultExcludes="no" />
 			<fileset dir="." includes="COPYING.txt" defaultExcludes="no" />
 		</jar>
 	</target>
 
 	<target name="jarDB" description="make a jar for the rest in ./lib" depends="compile">
-		<mkdir dir="${jar.place}/lib" />
+		<mkdir dir="${jar.dir}/lib" />
 		<antcall target="makeManifest" />
-		<jar jarfile="${jar.place}/lib/makumba-db.jar" manifest="manifest.mf">
+		<jar jarfile="${jar.dir}/lib/makumba-db.jar" manifest="manifest.mf">
 			<fileset dir="classes" includes="org/makumba/*.class, org/makumba/commons/**/*.class, org/makumba/db/*/*.class, org/makumba/providers/*.class" defaultExcludes="no" />
 			<fileset dir="." includes="COPYING.txt" defaultExcludes="no" />
 		</jar>
@@ -1144,24 +1072,22 @@ The JSP tests will deploy on another dir, which can be configured via the proper
 
 
 	<target name="jarCommons" description="make a jar for the rest in ./lib" depends="compile">
-		<mkdir dir="${jar.place}/lib" />
+		<mkdir dir="${jar.dir}/lib" />
 		<antcall target="makeManifest" />
-		<jar jarfile="${jar.place}/lib/makumba-commons.jar" manifest="manifest.mf">
+		<jar jarfile="${jar.dir}/lib/makumba-commons.jar" manifest="manifest.mf">
 			<fileset dir="classes" includes="org/makumba/*.class, org/makumba/commons/**/*.class, org/makumba/controller/**/*.class, org/makumba/providers/*.class" defaultExcludes="no" />
 			<fileset dir="." includes="COPYING.txt" defaultExcludes="no" />
 		</jar>
 	</target>
 
-
 	<target name="jarRest" description="make a jar for the rest in ./lib" depends="compileRest">
-		<mkdir dir="${jar.place}/lib" />
+		<mkdir dir="${jar.dir}/lib" />
 		<antcall target="makeManifest" />
-		<jar jarfile="${jar.place}/lib/makumba-rest.jar" manifest="manifest.mf">
+		<jar jarfile="${jar.dir}/lib/makumba-rest.jar" manifest="manifest.mf">
 			<fileset dir="classes" includes="org/makumba/**/*.mdd, org/**/*.class, org/**/*.properties, org/makumba/devel/codeTemplates/*.properties" excludes="org/makumba/list/**/*.class, org/makumba/forms/**/*.class, org/makumba/analyser/**/*.class, org/makumba/providers/datadefinition/makumba/**/*.class" defaultExcludes="no" />
 			<fileset dir="." includes="COPYING.txt" defaultExcludes="no" />
 		</jar>
 	</target>
-
 
 	<!-- Miscallaneous targets -->
 
@@ -1217,8 +1143,22 @@ package org.makumba]]>
 		</replace>
 	</target>
 
-	<!-- Targets for API documentation -->
+	<!-- Target for documentation with JSPWiki and API documentation  -->
 
+	<target name="generateTaglibDoc" description="generates the taglib documentation wiki files">
+		<java classname="org.makumba.commons.documentation.TaglibDocGenerator" fork="true">
+			<classpath>
+				<pathelement path="${build.dir}" />
+				<pathelement path="${java.class.path}" />
+				<fileset dir="${basedir}/lib">
+					<include name="**/*.jar" />
+					<exclude name="**/makumba*.jar" />
+				</fileset>
+			</classpath>
+			<arg value="${basedir}" />
+			<arg value="${documentation.path}/wikidoc" />
+		</java>
+	</target>
 
 	<target name="javadoc" description="generates documentation">
 		<tstamp>
@@ -1226,8 +1166,8 @@ package org.makumba]]>
 		</tstamp>
 
 		<echo>- copying scripts /doc/scripts</echo>
-		<copy file="${jar.place}/classes/makumbaResources/javaScript/kruseCalendarPopup_combined.js" tofile="${jar.place}/doc/scripts/kruseCalendarPopup_combined.js" />
-		<copy file="${jar.place}/classes/makumbaResources/javaScript/makumbaDateFunctions.js" tofile="${jar.place}/doc/scripts/makumbaDateFunctions.js" />
+		<copy file="${jar.dir}/classes/makumbaResources/javaScript/kruseCalendarPopup_combined.js" tofile="${jar.dir}/doc/scripts/kruseCalendarPopup_combined.js" />
+		<copy file="${jar.dir}/classes/makumbaResources/javaScript/makumbaDateFunctions.js" tofile="${jar.dir}/doc/scripts/makumbaDateFunctions.js" />
 		<echo>- generating doc/api</echo>
 		<loadfile property="leftMenuContent" srcfile="${documentation.path}/JSPWiki/api/leftMenu.html" />
 
@@ -1239,8 +1179,8 @@ package org.makumba]]>
 	
 	once it works, one can add 
 	<div id='sidemenu'>${leftMenuContent}</div>
-	back in the bottom definition below		    
--->
+	back in the bottom definition below
+	-->
 			<bottom>
 				<![CDATA[
 			<div class='pageFooter'>
@@ -1309,42 +1249,53 @@ package org.makumba]]>
 <fixcrlf srcDir="." includes="**/*.jsp, **/*.mdd, **/*.idd, **/*.java, **/*.properties" />
 </target>
 
-	<target name="publishDoc" description="publishes the documentation (and website)">
-		<antcall target="zipdoc" />
-		<antcall target="uploadMadeDoc" />
-	</target>
+<target name="publishDoc" description="publishes the documentation (and website)">
+<antcall target="zipdoc" />
+<antcall target="uploadMadeDoc" />
+</target>
 
-	<target name="uploadMadeDoc" description="uploads the documentation (and website) made by zipdoc or a failed publishDoc">
-		<echo>updating zip for distribution</echo>
-		<echo>make sure you have the necessary libraries to run the FTP task! you can install them by running "ant
-            installAntFtp" with the right permissions to access your ANT_HOME dir</echo>
-		<ftp server="download.makumba.org" userid="ftp-mak" password="ftp-mak" remotedir="makumba/doc/download" binary="yes" verbose="true">
-			<fileset dir="lib" includes="makumbadoc.zip" />
-		</ftp>
-	</target>
+<target name="uploadMadeDoc" description="uploads the documentation (and website) made by zipdoc or a failed publishDoc">
+<echo>updating zip for distribution</echo>
+<echo>make sure you have the necessary libraries to run the FTP task! you can install them by running "ant
+	            installAntFtp" with the right permissions to access your ANT_HOME dir</echo>
+<ftp server="download.makumba.org" userid="ftp-mak" password="ftp-mak" remotedir="makumba/doc/download" binary="yes" verbose="true">
+	<fileset dir="lib" includes="makumbadoc.zip" />
+</ftp>
+</target>
 
-	<target name="zipdoc" description="makes the documentation and zips it">
-		<delete file="${temp.dir}/makumbadoc.zip" />
-		<antcall target="javadoc" />
-		<fileset id="wwwdocs" dir="..">
-			<include name="makumba/CHANGELOG.txt" />
-			<include name="makumba/COPYING.txt" />
-			<include name="makumba/README.txt" />
-			<include name="makumba/doc/**" />
-			<exclude name="makumba/doc/api/API_users_guide.html" />
-		</fileset>
+<target name="zipdoc" description="makes the documentation and zips it">
+<delete file="${temp.dir}/makumbadoc.zip" />
+<antcall target="javadoc" />
+<fileset id="wwwdocs" dir="..">
+	<include name="makumba/CHANGELOG.txt" />
+	<include name="makumba/COPYING.txt" />
+	<include name="makumba/README.txt" />
+	<include name="makumba/doc/**" />
+	<exclude name="makumba/doc/api/API_users_guide.html" />
+</fileset>
 
-		<!-- make sure the files to be published are readable to everyone (zip keeps permissions, bug 329) -->
-		<chmod perm="ugo+r" type="both">
-			<fileset refid="wwwdocs" />
-		</chmod>
-		<zip zipfile="${temp.dir}/makumbadoc.zip">
-			<fileset refid="wwwdocs" />
-		</zip>
-		<copy file="${temp.dir}/makumbadoc.zip" tofile="lib/makumbadoc.zip" />
+<!-- make sure the files to be published are readable to everyone (zip keeps permissions, bug 329) -->
+<chmod perm="ugo+r" type="both">
+	<fileset refid="wwwdocs" />
+</chmod>
+<zip zipfile="${temp.dir}/makumbadoc.zip">
+	<fileset refid="wwwdocs" />
+</zip>
+<copy file="${temp.dir}/makumbadoc.zip" tofile="lib/makumbadoc.zip" />
+</target>
 
-	</target>
+<target name="make12tld">
+<copy file="classes/META-INF/taglib.tld" tofile="classes/META-INF/taglib.tld-1_2" overwrite="true" />
+<replace file="classes/META-INF/taglib.tld-1_2" summary="true">
+	<replacefilter token="DTD JSP Tag Library 1.1" value="DTD JSP Tag Library 1.2" />
+	<replacefilter token="http://java.sun.com/j2ee/dtds/web-jsptaglibrary_1_1.dtd" value="http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd" />
+	<replacefilter token="jspversion>" value="jsp-version>" />
+	<replacefilter token="shortname>" value="short-name>" />
+	<replacefilter token="info>" value="description>" />
+	<replacefilter token="tagclass>" value="tag-class>" />
+	<replacefilter token="teiclass>" value="tei-class>" />
+	<replacefilter token="bodycontent>" value="body-content>" />
+</replace>
+</target>
 
-	
-	
 </project>
