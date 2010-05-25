@@ -126,7 +126,8 @@ public abstract class QueryAnalysisProvider {
             }
 
             // now we write the type (path) and the label, which is its next sibling
-            from += separator + ASTUtil.constructPath(type) + " " + type.getNextSibling();
+            String tp = type.getType() == HqlTokenTypes.DOT ? ASTUtil.constructPath(type) : type.getText();
+            from += separator + tp + " " + type.getNextSibling();
             separator = ", ";
             fromAST = fromAST.getNextSibling();
         }
