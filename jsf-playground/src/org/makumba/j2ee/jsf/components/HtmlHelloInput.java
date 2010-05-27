@@ -1,4 +1,4 @@
-package org.makumba.jsf.test.components;
+package org.makumba.j2ee.jsf.components;
 
 import java.io.IOException;
 import java.util.Map;

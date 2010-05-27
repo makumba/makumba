@@ -1,1 +1,1 @@
-JSF playground application. You will need tomcat 6 in order to run it as a WTP project.
+J2EE playground application. You will need tomcat 6 in order to run it as a WTP project.
