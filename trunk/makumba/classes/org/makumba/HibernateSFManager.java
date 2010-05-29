@@ -17,12 +17,12 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.tool.hbm2ddl.SchemaUpdate;
-import org.makumba.commons.ClassResource;
 import org.makumba.commons.NameResolver;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.db.hibernate.MddToClass;
 import org.makumba.db.hibernate.MddToMapping;
+import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
 import org.xml.sax.SAXException;
 
@@ -80,17 +80,6 @@ public class HibernateSFManager {
     private static Vector<String> generatedClasses;
 
     private static NameResolver nr;
-
-    public static String findClassesRootFolder(String locatorSeed) {
-        String rootFolder = "";
-        try {
-            rootFolder = new File(ClassResource.get(locatorSeed).getFile()).getParentFile().getCanonicalPath();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return rootFolder;
-    }
 
     public static int sessionFactories = NamedResources.makeStaticCache("hibernate session factory",
         new NamedResourceFactory() {
@@ -168,7 +157,7 @@ public class HibernateSFManager {
         if ((seed = cfg.getProperty("makumba.seed")) == null) {
             seed = DEFAULT_SEED;
         }
-        String seedDir = findClassesRootFolder(seed);
+        String seedDir = DataDefinitionProvider.findClassesRootFolder(seed);
 
         if ((prefix = cfg.getProperty("makumba.prefix")) == null) {
             prefix = DEFAULT_PREFIX;
@@ -211,7 +200,7 @@ public class HibernateSFManager {
 
         try {
             // MddToClass jot =
-            new MddToClass(dds, seedDir, nr);
+            new MddToClass(dds, seedDir);
         } catch (CannotCompileException e) {
             e.printStackTrace();
         } catch (NotFoundException e) {
@@ -224,7 +213,7 @@ public class HibernateSFManager {
 
         try {
             // MddToMapping xot =
-            new MddToMapping(dds, cfg, org.makumba.HibernateSFManager.findClassesRootFolder(seed), prefix, nr);
+            new MddToMapping(dds, cfg, DataDefinitionProvider.findClassesRootFolder(seed), prefix, nr);
 
         } catch (TransformerConfigurationException e) {
             e.printStackTrace();
