@@ -92,7 +92,7 @@ public class MddToMapping {
 
         takenColumnNames = new HashSet<String>();
         columnNames = new HashMap<String, Object>();
-        String filename = nr.arrowToDoubleUnderscore(dd.getName()) + ".hbm.xml";
+        String filename = NameResolver.arrowToDoubleUnderscore(dd.getName()) + ".hbm.xml";
 
         /*
         //checks if the MDD has to be generated
