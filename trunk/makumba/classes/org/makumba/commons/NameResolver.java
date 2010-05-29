@@ -31,8 +31,7 @@ import org.makumba.DataDefinition;
 
 /**
  * This class provides utility methods to convert names from MDD types into their name in the data source. It also takes
- * into account properties passed in the database configuration.<br/>
- * TODO document these properties
+ * into account properties passed in the database configuration. TODO document these properties
  * 
  * @author Manuel Gay
  * @author Cristian Bogdan
@@ -332,23 +331,15 @@ public class NameResolver {
         return 64;
     }
 
-    public String dotToUnderscore(String name) {
-        return name.replaceAll("\\.", "_");
+    public static String dotToUnderscore(String name) {
+        return name.replace('.', '_');
     }
 
-    public String arrowToDot(String name) {
-        return name.replaceAll("->", ".");
-    }
-
-    public String arrowToDoubleDot(String name) {
-        return name.replaceAll("->", "..");
-    }
-
-    public String arrowToDoubleUnderscore(String name) {
+    public static String arrowToDoubleUnderscore(String name) {
         return name.replaceAll("->", "__");
     }
 
-    public String checkReserved(String name) {
+    public static String checkReserved(String name) {
         // check if this is a java reserved keyword, not to annoy the class generator
         if (ReservedKeywords.getReservedKeywords().contains(name)) {
             return arrowToDoubleUnderscore(name + "_");
