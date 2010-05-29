@@ -80,7 +80,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
             DataDefinition dd = ddp.getDataDefinition(type);
 
-            String name = nr.arrowToDoubleUnderscore(dd.getName());
+            String name = NameResolver.arrowToDoubleUnderscore(dd.getName());
 
             if (dd.getName().indexOf("->") > -1 && HibernateSFManager.getFullyQualifiedName(name) == null) {
 
@@ -203,7 +203,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
         while (fields.hasMoreElements()) {
             String fieldName = fields.nextElement();
 
-            String fieldNameInClass = nr.checkReserved(fieldName);
+            String fieldNameInClass = NameResolver.checkReserved(fieldName);
 
             Object fieldValue = data.get(fieldName);
             FieldDefinition fd = dd.getFieldDefinition(fieldName);
@@ -321,7 +321,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
     }
 
     private Class<?> getPointerClass(String type) throws ClassNotFoundException {
-        return Class.forName(nr.arrowToDoubleUnderscore(HibernateSFManager.getFullyQualifiedName(type)));
+        return Class.forName(NameResolver.arrowToDoubleUnderscore(HibernateSFManager.getFullyQualifiedName(type)));
     }
 
     @Override
@@ -453,7 +453,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
             HibernateTransaction ht = (HibernateTransaction) t;
 
-            String name = nr.arrowToDoubleUnderscore(dd.getName());
+            String name = NameResolver.arrowToDoubleUnderscore(dd.getName());
 
             Class<?> recordClass = null;
             recordClass = Class.forName(HibernateSFManager.getFullyQualifiedName(name));
