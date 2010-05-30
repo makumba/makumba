@@ -747,6 +747,13 @@
 	<target name="testWar" depends="jar, testJar">
 		<delete file="${build.dir}/tests.war" />
 		<property name="webapp.source" value="webapps" />
+		
+		<delete dir="${build.dir}/war-classes" />
+		<mkdir dir="${build.dir}/war-classes/dataDefinitions/test" />
+		<copy todir="${build.dir}/war-classes/dataDefinitions/test">
+			<fileset dir="${test.dir}/org/makumba/test" includes="*.mdd" />
+		</copy>
+		
 		<war destfile="${build.dir}/tests.war" webxml="${webapp.source}/tests/WEB-INF/web.xml.dynamic" update="true">
 			<fileset dir="${webapp.source}/tests">
 				<exclude name="WEB-INF/**/*" />
@@ -776,6 +783,8 @@
 				<include name="mak-test.jar" />
 			</lib>
 			<classes dir="${webapp.source}/tests/WEB-INF/classes" includes="Makumba.conf" />
+			<classes dir="${build.dir}/war-classes" />
+
 		</war>
 	</target>
 
