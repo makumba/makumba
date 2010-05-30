@@ -307,6 +307,9 @@
 			<fileset dir="META-INF" />
 			<fileset dir="lib" includes="makumba.jar,makumba-*-template.zip" />
 			<fileset dir="work" />
+			<fileset dir="webapps/tests/WEB-INF/classes/makumbaGeneratedMappings" />
+			<fileset dir="webapps/tests/WEB-INF/classes/test" />
+			<fileset dir="webapps/tests/WEB-INF/classes/org" />
 			<fileset dir="." includes="manifest-replace.properties,manifest.mf" />
 			<fileset dir="." includes="manifest-replace.properties,manifest.mf" />
 		</delete>
