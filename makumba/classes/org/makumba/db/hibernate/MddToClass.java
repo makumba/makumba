@@ -40,16 +40,19 @@ public class MddToClass {
 
     private final DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
 
-    public MddToClass(Vector<String> v, String generationPath) throws CannotCompileException, NotFoundException,
-            IOException {
+    private NameResolver nr;
+
+    public MddToClass(Vector<String> v, String generationPath, NameResolver nr) throws CannotCompileException,
+            NotFoundException, IOException {
+        this.nr = nr;
         this.generatedClassPath = generationPath;
         for (int i = 0; i < v.size(); i++) {
             generateClass(ddp.getDataDefinition(v.elementAt(i)));
-            v.set(i, NameResolver.arrowToDoubleUnderscore(v.get(i)));
+            v.set(i, nr.arrowToDoubleUnderscore(v.get(i)));
         }
         while (!mddsToDo.isEmpty()) {
             DataDefinition first = mddsToDo.removeFirst();
-            String name = NameResolver.arrowToDoubleUnderscore(first.getName());
+            String name = nr.arrowToDoubleUnderscore(first.getName());
             if (!v.contains(name)) {
                 v.add(name);
             }
@@ -93,13 +96,13 @@ public class MddToClass {
         switch (fd.getIntegerType()) {
             case FieldDefinition._ptr:
             case FieldDefinition._ptrOne:
-                type = NameResolver.arrowToDoubleUnderscore(fd.getPointedType().getName());
+                type = nr.arrowToDoubleUnderscore(fd.getPointedType().getName());
                 break;
             case FieldDefinition._set:
                 type = "java.util.Collection";
                 break;
         }
-        name = NameResolver.checkReserved(name);
+        name = nr.checkReserved(name);
         cc.addField(CtField.make("private " + type + " " + name + ";", cc));
         cc.addMethod(CtNewMethod.getter("get" + name, CtField.make("private " + type + " " + name + ";", cc)));
         cc.addMethod(CtNewMethod.setter("set" + name, CtField.make("private " + type + " " + name + ";", cc)));
@@ -113,7 +116,7 @@ public class MddToClass {
 
             // checks if the class has to be generated
             File checkFile = new File(generatedClassPath + java.io.File.separator
-                    + NameResolver.arrowToDoubleUnderscore(dd.getName()).replace('.', File.separatorChar) + ".class");
+                    + nr.dotToUnderscore(nr.arrowToDoubleUnderscore(dd.getName())) + "_.class");
             if (checkFile.exists()) {
 
                 if (dd.lastModified() < checkFile.lastModified()) {
@@ -123,7 +126,7 @@ public class MddToClass {
 
             ClassPool cp = ClassPool.getDefault();
             cp.insertClassPath(new ClassClassPath(this.getClass()));
-            CtClass cc = cp.makeClass(NameResolver.arrowToDoubleUnderscore(dd.getName()));
+            CtClass cc = cp.makeClass(nr.arrowToDoubleUnderscore(dd.getName()));
             cc.stopPruning(true);
 
             String type = null;
@@ -132,7 +135,7 @@ public class MddToClass {
             for (int i = 0; i < dd.getFieldNames().size(); i++) {
                 Object[] append = new Object[2];
                 FieldDefinition fd = dd.getFieldDefinition(i);
-                name = NameResolver.arrowToDoubleUnderscore(fd.getName());
+                name = nr.arrowToDoubleUnderscore(fd.getName());
                 switch (fd.getIntegerType()) {
                     case FieldDefinition._intEnum:
                         // type="enum";
@@ -155,7 +158,7 @@ public class MddToClass {
                     case FieldDefinition._ptr:
                     case FieldDefinition._ptrOne:
                         mddsToDo.add(fd.getPointedType());
-                        append[0] = NameResolver.arrowToDoubleUnderscore(dd.getName());
+                        append[0] = nr.arrowToDoubleUnderscore(dd.getName());
                         append[1] = fd;
                         appendToClass.add(append);
                         continue;
@@ -253,8 +256,8 @@ public class MddToClass {
     }
 
     private void addFields(CtClass cc, String type, String name) throws CannotCompileException {
-        type = NameResolver.arrowToDoubleUnderscore(type);
-        name = NameResolver.checkReserved(NameResolver.arrowToDoubleUnderscore(name));
+        type = nr.arrowToDoubleUnderscore(type);
+        name = nr.checkReserved(nr.arrowToDoubleUnderscore(name));
         cc.addField(CtField.make("private " + type + " " + name + ";", cc));
         cc.addMethod(CtNewMethod.getter("get" + name, CtField.make("private " + type + " " + name + ";", cc)));
         cc.addMethod(CtNewMethod.setter("set" + name, CtField.make("private " + type + " " + name + ";", cc)));
