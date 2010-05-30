@@ -11,7 +11,9 @@ import org.makumba.ConfigurationError;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionParseError;
 import org.makumba.FieldDefinition;
+import org.makumba.commons.ClassResource;
 import org.makumba.commons.SingletonHolder;
+import org.makumba.db.hibernate.MddToClass;
 
 /**
  * This class is a facade for creating different kinds of DataDefinitionProviders. Its constructor knows from a
@@ -65,9 +67,14 @@ public abstract class DataDefinitionProvider implements SingletonHolder {
         providerInstances.clear();
     }
 
-    /**
-     * Gets the data definition defined by the given type.
-     */
+    public static void makeClass(Vector<String> v) {
+        try {
+            new MddToClass(v, findClassesRootFolder("Makumba.conf"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public abstract DataDefinition getDataDefinition(String typeName);
 
     public abstract DataDefinition getVirtualDataDefinition(String name);
@@ -221,6 +228,16 @@ public abstract class DataDefinitionProvider implements SingletonHolder {
                 }
             }
         }
+    }
+
+    public static String findClassesRootFolder(String locatorSeed) {
+        String rootFolder = "";
+        try {
+            rootFolder = new File(ClassResource.get(locatorSeed).getFile()).getParentFile().getCanonicalPath();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return rootFolder;
     }
 
     /**
