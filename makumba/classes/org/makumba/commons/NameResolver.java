@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Properties;
 
 import org.makumba.DataDefinition;
+import org.makumba.MakumbaError;
 
 /**
  * This class provides utility methods to convert names from MDD types into their name in the data source. It also takes
@@ -52,6 +53,12 @@ public class NameResolver {
         if (config == null) {
             config = new Properties();
         }
+    }
+
+    public NameResolver(Properties configurationProperties, DataDefinition dd) {
+        this(configurationProperties);
+        makeTypeCache(dd);
+
     }
 
     public String getKey() {
@@ -135,7 +142,7 @@ public class NameResolver {
             if (field != null) {
                 return nr.resolveFieldName(dd, field);
             } else {
-                return nr.resolveTypeName(dd);
+                return nr.resolveTypeName(dd.getName());
             }
         }
     }
@@ -144,12 +151,12 @@ public class NameResolver {
      * Resolves the database level name for a type, based on Makumba business rules and specific configuration done by
      * the user.
      * 
-     * @param dd
-     *            the {@link DataDefinition} corresponding to the type to resolve
+     * @param typeName
+     *            the name of the type to resolve
      * @return the database level name for this type
      */
-    public String resolveTypeName(DataDefinition dd) {
-        return getTableNameFromConfig(config, dd);
+    public String resolveTypeName(String typeName) {
+        return getTableNameFromConfig(config, typeName);
     }
 
     /**
@@ -168,6 +175,26 @@ public class NameResolver {
             resolvedCache = makeTypeCache(dd);
         }
         return resolvedCache.get(fieldName);
+    }
+
+    /**
+     * Resolves the database level for a field, given a type name. Use this method only if you previously initialized
+     * all types you need resolution for via {@link #initializeType(DataDefinition)}
+     * 
+     * @param typeName
+     *            the name of the type
+     * @param fieldName
+     *            the name of the field to resolve
+     * @return the database level name for this field
+     */
+    public String resolveFieldName(String typeName, String fieldName) {
+        HashMap<String, String> resolvedCache = fieldDBNames.get(typeName);
+        if (resolvedCache == null) {
+            throw new MakumbaError("No cache for name resolution of type '" + typeName
+                    + "' found. Please report to developers.");
+        }
+        return resolvedCache.get(fieldName);
+
     }
 
     /**
@@ -217,14 +244,14 @@ public class NameResolver {
      *            the {@link DataDefinition} corresponding to the type
      * @return the name of the table as specified in the configuration
      */
-    public String getTableNameFromConfig(Properties config, DataDefinition dd) {
-        String tbname = config.getProperty(dd.getName());
+    public String getTableNameFromConfig(Properties config, String typeName) {
+        String tbname = config.getProperty(typeName);
 
         if (tbname == null) {
-            String key = org.makumba.db.makumba.Database.findConfig(config, dd.getName());
-            String shortname = dd.getName();
+            String key = org.makumba.db.makumba.Database.findConfig(config, typeName);
+            String shortname = typeName;
             if (key != null) {
-                shortname = config.getProperty(key) + dd.getName().substring(key.length());
+                shortname = config.getProperty(key) + typeName.substring(key.length());
             }
 
             tbname = getTypeNameInSource(shortname);
@@ -293,8 +320,15 @@ public class NameResolver {
     }
 
     /**
-     * Creates a cache containing the resolved field names for the given type. FIXME: 2 threads may be doing this at the
-     * same time, but they'll achieve the same result so that's OK
+     * Initializes the NameResolver for the given type
+     */
+    public void initializeType(DataDefinition dd) {
+        makeTypeCache(dd);
+    }
+
+    /**
+     * Creates a cache containing the resolved field names for the given type.<br>
+     * FIXME: 2 threads may be doing this at the same time, but they'll achieve the same result so that's OK
      * 
      * @param dd
      *            the {@link DataDefinition} corresponding to the type
@@ -310,7 +344,7 @@ public class NameResolver {
                 continue;
             }
 
-            String resolved = config.getProperty(getTableNameFromConfig(config, dd) + "->" + name);
+            String resolved = config.getProperty(getTableNameFromConfig(config, dd.getName()) + "->" + name);
             if (resolved == null) {
                 resolved = checkReserved(getFieldNameInSource(name));
                 while (checkDuplicateFieldName(resolved, dd, resolvedCache)) {

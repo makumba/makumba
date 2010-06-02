@@ -82,6 +82,8 @@ public class Configuration implements Serializable {
 
     public static final String RECORDINFO_DATADEFINITIONPROVIDER = "recordinfo";
 
+    public static final String GENERATE_ENTITY_CLASSES = "generateEntityClasses";
+
     // calendar editor
     public static final String KEY_CALENDAR_EDITOR = "calendarEditor";
 
@@ -109,7 +111,7 @@ public class Configuration implements Serializable {
     public static final String KEY_REFERENCE_CHECKER = "referenceChecker";
 
     public static final String KEY_RELATION_CRAWLER = "relationCrawler";
-    
+
     public static final String KEY_ERRORLOG_VIEWER = "errorLogViewer";
 
     // source code repository links
@@ -306,6 +308,11 @@ public class Configuration implements Serializable {
         return applicationConfig.getProperty("providers", KEY_QUERYFUNCTIONINLINER);
     }
 
+    public static boolean getGenerateEntityClasses() {
+        String g = applicationConfig.getProperty("providers", GENERATE_ENTITY_CLASSES);
+        return g != null && g.equals("true");
+    }
+
     /**
      * Gives the default database layer to use
      * 
@@ -415,7 +422,7 @@ public class Configuration implements Serializable {
     public static String getErrorLogViewerLocation() {
         return getCompletePath(applicationConfig.getProperty("makumbaToolPaths", KEY_ERRORLOG_VIEWER));
     }
-    
+
     public static String getMakumbaUniqueLocation() {
         return getMakumbaToolsLocation()
                 + applicationConfig.getProperty("makumbaToolPaths", KEY_MAKUMBA_UNIQUENESS_VALIDATOR);

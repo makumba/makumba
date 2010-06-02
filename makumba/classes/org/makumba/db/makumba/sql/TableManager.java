@@ -163,7 +163,7 @@ public class TableManager extends Table {
     /** the SQL table opening. might call create() or alter() */
     protected void setTableAndFieldNames(NameResolver nr) {
 
-        tbname = nr.resolveTypeName(dd);
+        tbname = nr.resolveTypeName(dd.getName());
 
     }
 

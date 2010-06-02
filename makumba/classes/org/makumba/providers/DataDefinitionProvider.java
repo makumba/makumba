@@ -4,6 +4,7 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Vector;
 
@@ -12,8 +13,11 @@ import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionParseError;
 import org.makumba.FieldDefinition;
 import org.makumba.commons.ClassResource;
+import org.makumba.commons.NameResolver;
 import org.makumba.commons.SingletonHolder;
-import org.makumba.db.hibernate.MddToClass;
+import org.makumba.providers.bytecode.AbstractClassWriter;
+import org.makumba.providers.bytecode.EntityClassGenerator;
+import org.makumba.providers.bytecode.JavassistClassWriter;
 
 /**
  * This class is a facade for creating different kinds of DataDefinitionProviders. Its constructor knows from a
@@ -32,7 +36,7 @@ public abstract class DataDefinitionProvider implements SingletonHolder {
     static final Map<String, DataDefinitionProvider> providerInstances = new HashMap<String, DataDefinitionProvider>();
 
     /**
-     * Puts the TransactionProviders into a Map
+     * Puts the DataDefinition providers into a Map
      */
     static {
         for (int i = 0; i < dataDefinitionProviders.length; i += 2) {
@@ -56,7 +60,7 @@ public abstract class DataDefinitionProvider implements SingletonHolder {
      */
     public static DataDefinitionProvider getInstance() {
         if (providerInstances.get(Configuration.getDataDefinitionProvider()) == null) {
-            throw new ConfigurationError("Unknwon data definition provider '"
+            throw new ConfigurationError("Unknown data definition provider '"
                     + Configuration.getDataDefinitionProvider() + "', eligible values are: "
                     + providerInstances.keySet());
         }
@@ -67,15 +71,14 @@ public abstract class DataDefinitionProvider implements SingletonHolder {
         providerInstances.clear();
     }
 
-    public static void makeClass(Vector<String> v) {
-        try {
-            new MddToClass(v, findClassesRootFolder("Makumba.conf"));
-        } catch (Exception e) {
-            e.printStackTrace();
+    public DataDefinition getDataDefinition(String typeName) {
+        if (!classesGenerated && !isGenerating && Configuration.getGenerateEntityClasses()) {
+            generateEntityClasses();
+            classesGenerated = true;
         }
-    }
 
-    public abstract DataDefinition getDataDefinition(String typeName);
+        return null;
+    }
 
     public abstract DataDefinition getVirtualDataDefinition(String name);
 
@@ -230,16 +233,6 @@ public abstract class DataDefinitionProvider implements SingletonHolder {
         }
     }
 
-    public static String findClassesRootFolder(String locatorSeed) {
-        String rootFolder = "";
-        try {
-            rootFolder = new File(ClassResource.get(locatorSeed).getFile()).getParentFile().getCanonicalPath();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return rootFolder;
-    }
-
     /**
      * This method finds a field definition with the given name within the given data definition. The difference to a
      * simple {@link DataDefinition#getFieldDefinition(String)} is that the field name can be of the form
@@ -264,6 +257,91 @@ public abstract class DataDefinitionProvider implements SingletonHolder {
                     + "' not defined in type " + dd.getName() + "!", lineWithDefinition);
         }
         return fd;
+    }
+
+    /***
+     * Methods related to the refactoring from DataDefinition/FieldDefinition to Class/FieldMetadata.<br>
+     * Will probably move somewhere else or stay here but under a different name.
+     ***/
+
+    /** have the entity classes already been generated? **/
+    private static boolean classesGenerated = false;
+
+    /** are we generating the classes at the moment ? **/
+    private static boolean isGenerating = false;
+
+    /**
+     * Generates the classes for all Java entities based on the MDDs of the web-application
+     */
+    public void generateEntityClasses() {
+        generateEntityClasses(getDataDefinitionsInDefaultLocations());
+    }
+
+    public void generateEntityClasses(Vector<String> dds) {
+        // FIXME concurrency on this method
+
+        isGenerating = true;
+
+        Map<String, Vector<FieldDataDTO>> entities = new LinkedHashMap<String, Vector<FieldDataDTO>>();
+        NameResolver nr = new NameResolver(); // FIXME find a way to pass the properties
+
+        for (String type : dds) {
+            Vector<FieldDataDTO> fields = getFieldDataDTOs(type);
+            entities.put(getDataDefinition(type).getName(), fields);
+            nr.initializeType(getDataDefinition(type));
+        }
+
+        try {
+            AbstractClassWriter ac = new JavassistClassWriter();
+            new EntityClassGenerator(entities, findClassesRootFolder("Makumba.conf"), ac, nr);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        isGenerating = false;
+    }
+
+    // TODO this method is here because we do not want the EntityResolver to know about DataDefinition
+    // it should move away once the NameResolver works with FieldGroups
+    public void initializeNameResolver(NameResolver nr, String typeName) {
+        nr.initializeType(getDataDefinition(typeName));
+    }
+
+    /**
+     * Given a type, returns a vector of {@link FieldDataDTO} representing the fields of this type
+     */
+    public Vector<FieldDataDTO> getFieldDataDTOs(String type) {
+        Vector<FieldDataDTO> fields = new Vector<FieldDataDTO>();
+
+        for (String field : getDataDefinition(type).getFieldNames()) {
+            FieldDefinition fd = getDataDefinition(type).getFieldDefinition(field);
+
+            String relatedTypeName = fd.getIntegerType() == FieldDefinition._ptr
+                    || fd.getIntegerType() == FieldDefinition._ptrOne || fd.getIntegerType() == FieldDefinition._ptrRel
+                    || fd.isSetType() ? fd.getPointedType().getName() : null;
+            String mappingTableName = fd.isSetType() ? fd.getSubtable().getName() : null;
+            String setMappingColumnName = fd.getIntegerType() == FieldDefinition._set ? fd.getSubtable().getSetMemberFieldName()
+                    : null;
+            int charLength = fd.getIntegerType() == FieldDefinition._char ? fd.getWidth() : -1;
+
+            FieldDataDTO f = new FieldDataDTO(field, fd.getIntegerType(), relatedTypeName, mappingTableName,
+                    setMappingColumnName, charLength);
+            fields.add(f);
+        }
+        return fields;
+    }
+
+    /**
+     * Finds the folder in which the classes should be generated based on a seed file
+     */
+    public static String findClassesRootFolder(String locatorSeed) {
+        String rootFolder = "";
+        try {
+            rootFolder = new File(ClassResource.get(locatorSeed).getFile()).getParentFile().getCanonicalPath();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return rootFolder;
     }
 
 }

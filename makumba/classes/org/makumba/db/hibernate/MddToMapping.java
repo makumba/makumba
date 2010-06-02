@@ -135,9 +135,9 @@ public class MddToMapping {
 
         /* class definition */
         atts.clear();
-        atts.addAttribute("", "", "name", "", nr.arrowToDoubleUnderscore(dd.getName()));
+        atts.addAttribute("", "", "name", "", NameResolver.arrowToDoubleUnderscore(dd.getName()));
         // TODO: might actually work without toLowerCase()
-        atts.addAttribute("", "", "table", "", nr.resolveTypeName(dd));
+        atts.addAttribute("", "", "table", "", nr.resolveTypeName(dd.getName()));
         hd.startElement("", "", "class", atts);
 
         for (int i = 0; i < dd.getFieldNames().size(); i++) {
@@ -151,13 +151,13 @@ public class MddToMapping {
                 case FieldDefinition._dateModify:
                 case FieldDefinition._dateCreate:
                 case FieldDefinition._date:
-                    atts.addAttribute("", "", "name", "", nr.checkReserved(fd.getName()));
+                    atts.addAttribute("", "", "name", "", NameResolver.checkReserved(fd.getName()));
                     atts.addAttribute("", "", "column", "", columnName(dd, fd.getName()));
                     hd.startElement("", "", "property", atts);
                     hd.endElement("", "", "property");
                     break;
                 case FieldDefinition._char:
-                    atts.addAttribute("", "", "name", "", nr.checkReserved(fd.getName()));
+                    atts.addAttribute("", "", "name", "", NameResolver.checkReserved(fd.getName()));
                     hd.startElement("", "", "property", atts);
                     atts.clear();
                     atts.addAttribute("", "", "name", "", columnName(dd, fd.getName()));
@@ -167,16 +167,17 @@ public class MddToMapping {
                     hd.endElement("", "", "property");
                     break;
                 case FieldDefinition._ptr:
-                    atts.addAttribute("", "", "name", "", nr.checkReserved(fd.getName()));
+                    atts.addAttribute("", "", "name", "", NameResolver.checkReserved(fd.getName()));
                     atts.addAttribute("", "", "column", "", columnName(dd, fd.getName()));
                     atts.addAttribute("", "", "cascade", "", "all");
-                    atts.addAttribute("", "", "class", "", nr.arrowToDoubleUnderscore(fd.getPointedType().getName()));
+                    atts.addAttribute("", "", "class", "",
+                        NameResolver.arrowToDoubleUnderscore(fd.getPointedType().getName()));
                     hd.startElement("", "", "many-to-one", atts);
                     hd.endElement("", "", "many-to-one");
                     mddsToDo.add(fd.getPointedType());
                     break;
                 case FieldDefinition._ptrOne:
-                    atts.addAttribute("", "", "name", "", nr.checkReserved(fd.getName()));
+                    atts.addAttribute("", "", "name", "", NameResolver.checkReserved(fd.getName()));
                     atts.addAttribute("", "", "column", "", columnName(dd, fd.getName()));
                     atts.addAttribute("", "", "cascade", "", "all");
                     atts.addAttribute("", "", "unique", "", "true");
@@ -195,7 +196,7 @@ public class MddToMapping {
                     hd.endElement("", "", "id");
                     break;
                 case FieldDefinition._text:
-                    atts.addAttribute("", "", "name", "", nr.checkReserved(fd.getName()));
+                    atts.addAttribute("", "", "name", "", NameResolver.checkReserved(fd.getName()));
                     atts.addAttribute("", "", "type", "", "org.makumba.db.hibernate.TextUserType");
                     hd.startElement("", "", "property", atts);
                     atts.clear();
@@ -206,7 +207,7 @@ public class MddToMapping {
                     hd.endElement("", "", "property");
                     break;
                 case FieldDefinition._binary:
-                    atts.addAttribute("", "", "name", "", nr.checkReserved(fd.getName()));
+                    atts.addAttribute("", "", "name", "", NameResolver.checkReserved(fd.getName()));
                     atts.addAttribute("", "", "type", "", "org.makumba.db.hibernate.TextUserType");
                     hd.startElement("", "", "property", atts);
                     atts.clear();
@@ -217,7 +218,7 @@ public class MddToMapping {
                     hd.endElement("", "", "property");
                     break;
                 case FieldDefinition._boolean:
-                    atts.addAttribute("", "", "name", "", nr.checkReserved(fd.getName()));
+                    atts.addAttribute("", "", "name", "", NameResolver.checkReserved(fd.getName()));
                     hd.startElement("", "", "property", atts);
                     atts.clear();
                     atts.addAttribute("", "", "name", "", columnName(dd, fd.getName()));
@@ -226,8 +227,8 @@ public class MddToMapping {
                     hd.endElement("", "", "property");
                     break;
                 case FieldDefinition._set:
-                    atts.addAttribute("", "", "name", "", nr.checkReserved(fd.getName()));
-                    atts.addAttribute("", "", "table", "", nr.resolveTypeName(fd.getSubtable()));
+                    atts.addAttribute("", "", "name", "", NameResolver.checkReserved(fd.getName()));
+                    atts.addAttribute("", "", "table", "", nr.resolveTypeName(fd.getSubtable().getName()));
                     atts.addAttribute("", "", "cascade", "", "all"); // ""
                     atts.addAttribute("", "", "inverse", "", "false"); // "all-delete-orphan"
                     hd.startElement("", "", "bag", atts);
@@ -236,7 +237,8 @@ public class MddToMapping {
                     hd.startElement("", "", "key", atts);
                     hd.endElement("", "", "key");
                     atts.clear();
-                    atts.addAttribute("", "", "class", "", nr.arrowToDoubleUnderscore(fd.getPointedType().getName()));
+                    atts.addAttribute("", "", "class", "",
+                        NameResolver.arrowToDoubleUnderscore(fd.getPointedType().getName()));
 
                     // TODO: "formula" works around hibernate bug 572
                     // http://opensource2.atlassian.com/projects/hibernate/browse/HHH-572
@@ -251,7 +253,7 @@ public class MddToMapping {
                 case FieldDefinition._setComplex:
                 case FieldDefinition._setCharEnum:
                 case FieldDefinition._setIntEnum:
-                    atts.addAttribute("", "", "name", "", nr.checkReserved(fd.getName()));
+                    atts.addAttribute("", "", "name", "", NameResolver.checkReserved(fd.getName()));
                     atts.addAttribute("", "", "inverse", "", "true");
                     atts.addAttribute("", "", "cascade", "", "none");
                     hd.startElement("", "", "bag", atts);
@@ -260,7 +262,8 @@ public class MddToMapping {
                     hd.startElement("", "", "key", atts);
                     hd.endElement("", "", "key");
                     atts.clear();
-                    atts.addAttribute("", "", "class", "", nr.arrowToDoubleUnderscore(fd.getPointedType().getName()));
+                    atts.addAttribute("", "", "class", "",
+                        NameResolver.arrowToDoubleUnderscore(fd.getPointedType().getName()));
                     hd.startElement("", "", "one-to-many", atts);
                     hd.endElement("", "", "one-to-many");
                     hd.endElement("", "", "bag");
@@ -271,9 +274,10 @@ public class MddToMapping {
                 case FieldDefinition._ptrRel:
                     /* do we need to add a mapping to the parent field? */
                     atts.clear();
-                    atts.addAttribute("", "", "name", "", nr.checkReserved(fd.getName()));
+                    atts.addAttribute("", "", "name", "", NameResolver.checkReserved(fd.getName()));
                     atts.addAttribute("", "", "column", "", columnName(dd, fd.getName()));
-                    atts.addAttribute("", "", "class", "", nr.arrowToDoubleUnderscore(fd.getPointedType().getName()));
+                    atts.addAttribute("", "", "class", "",
+                        NameResolver.arrowToDoubleUnderscore(fd.getPointedType().getName()));
                     hd.startElement("", "", "many-to-one", atts);
                     hd.endElement("", "", "many-to-one");
 

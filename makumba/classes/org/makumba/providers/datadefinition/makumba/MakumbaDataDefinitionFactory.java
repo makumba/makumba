@@ -15,6 +15,7 @@ public class MakumbaDataDefinitionFactory extends DataDefinitionProvider {
 
     @Override
     public DataDefinition getDataDefinition(String typeName) {
+        super.getDataDefinition(typeName);
         return RecordInfo.getRecordInfo(typeName.replaceAll("__", "->"));
     }
 
