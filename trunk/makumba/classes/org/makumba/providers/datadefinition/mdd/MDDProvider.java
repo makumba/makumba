@@ -26,6 +26,7 @@ public class MDDProvider extends DataDefinitionProvider {
 
     @Override
     public DataDefinition getDataDefinition(String typeName) {
+        super.getDataDefinition(typeName);
         return getMDD(typeName.replaceAll("__", "->"));
     }
 
