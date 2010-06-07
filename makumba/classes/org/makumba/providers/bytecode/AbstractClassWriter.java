@@ -19,11 +19,11 @@ public abstract class AbstractClassWriter {
     public abstract Clazz createClass(String fullyQualifiedName);
 
     /**
-     * Returns true if class is already generated
+     * Returns the last generation date in milliseconds, -1 if the file was not generated
      */
-    public boolean wasGenerated(String fullyQualifiedName, String generatedClassesPath) {
+    public long getLastGenerationTime(String fullyQualifiedName, String generatedClassesPath) {
         File checkFile = new File(getClassFilePath(fullyQualifiedName, generatedClassesPath));
-        return checkFile.exists();
+        return checkFile.exists() ? checkFile.lastModified() : -1;
     }
 
     /**

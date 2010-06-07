@@ -325,7 +325,7 @@ public abstract class DataDefinitionProvider implements SingletonHolder {
             int charLength = fd.getIntegerType() == FieldDefinition._char ? fd.getWidth() : -1;
 
             FieldDataDTO f = new FieldDataDTO(field, fd.getIntegerType(), relatedTypeName, mappingTableName,
-                    setMappingColumnName, charLength);
+                    setMappingColumnName, charLength, fd.isFixed(), fd.isNotNull(), fd.isNotEmpty(), fd.isUnique());
             fields.add(f);
         }
         return fields;

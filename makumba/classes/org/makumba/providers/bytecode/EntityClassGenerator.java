@@ -17,10 +17,6 @@ import org.makumba.providers.bytecode.AbstractClassWriter.AbstractAnnotation;
 
 /**
  * Generator for entity classes using the JPA annotations.<br>
- * TODO fix enum_ name (see FIXME later), check the naming of fields<br>
- * TODO map field modifiers not null, unique, fixes to their JPA equivalent<br>
- * TODO appropriate and JPA-mappable type for org.makumba.Text for binary fields, should be a streaming type to not
- * overload memory<br>
  * 
  * @author Manuel Gay
  * @version $Id: EntityClassGenerator.java,v 1.1 May 30, 2010 6:43:20 PM manu Exp $
@@ -40,6 +36,10 @@ public class EntityClassGenerator {
     private static final String MANY_TO_MANY = "javax.persistence.ManyToMany";
 
     private static final String COLUMN = "javax.persistence.Column";
+
+    private static final String BASIC = "javax.persistence.Basic";
+
+    private static final String LOB = "javax.persistence.Lob";
 
     private final String generatedClassesPath;
 
@@ -98,10 +98,10 @@ public class EntityClassGenerator {
             entitiesDone.add(entityName);
 
             // checks if the class has to be generated
-            if (classWriter.wasGenerated(entityName, generatedClassesPath)) {
+            if (classWriter.getLastGenerationTime(entityName, generatedClassesPath) > -1) {
 
                 /*
-                 * FIXME? With the current data structure we don't know the last modification data of the MDD
+                 * FIXME? With the current data structure we don't know the last modification date of the MDD
                  * 
                 if (dd.lastModified() < checkFile.lastModified()) {
                     return;
@@ -205,9 +205,6 @@ public class EntityClassGenerator {
                 fieldName = NameResolver.arrowToDoubleUnderscore(field.getName());
                 fieldType = className(fieldType);
 
-                // FIXME this is needed for the case of e.g. enum (in intSet and charSet) but blows up
-                // name = NameResolver.checkReserved(NameResolver.arrowToDoubleUnderscore(name));
-
                 classWriter.addField(clazz, fieldName, fieldType);
 
                 // second switch - add the mapping meta-data
@@ -225,6 +222,7 @@ public class EntityClassGenerator {
     private Vector<AbstractClassWriter.AbstractAnnotation> generateAnnotations(String entityName, String name,
             String primaryKeyPropertyName, FieldDataDTO field) {
         Vector<AbstractClassWriter.AbstractAnnotation> a = new Vector<AbstractAnnotation>();
+        AbstractAnnotation aa = null;
         switch (field.getType()) {
 
             case FieldDefinition._int:
@@ -234,25 +232,27 @@ public class EntityClassGenerator {
             case FieldDefinition._dateModify:
             case FieldDefinition._dateCreate:
             case FieldDefinition._date:
-                addAnnotation(COLUMN, a).addAttribute("name", columnName(entityName, name));
+            case FieldDefinition._boolean:
+                aa = addColumn(entityName, name, a);
+                addModifiers(aa, field);
                 break;
             case FieldDefinition._char:
-                addAnnotation(COLUMN, a).addAttribute("name", columnName(entityName, name)).addAttribute("length",
-                    String.valueOf(field.getCharacterLenght()));
+                aa = addColumn(entityName, name, a).addAttribute("length", String.valueOf(field.getCharacterLenght()));
+                addModifiers(aa, field);
                 break;
             case FieldDefinition._ptr:
-                addAnnotation(COLUMN, a).addAttribute("name", columnName(entityName, name)).addAttribute("cascade",
-                    "all");
+                aa = addColumn(entityName, name, a).addAttribute("cascade", "all");
                 try {
                     addAnnotation(MANY_TO_ONE, a).addAttribute("targetEntity",
                         Class.forName(field.getRelatedTypeName()));
                 } catch (ClassNotFoundException e2) {
                     e2.printStackTrace();
                 }
+                addModifiers(aa, field);
                 break;
             case FieldDefinition._ptrOne:
-                addAnnotation(COLUMN, a).addAttribute("name", columnName(entityName, name)).addAttribute("cascade",
-                    "all").addAttribute("unique", true);
+                aa = addColumn(entityName, name, a).addAttribute("cascade", "all").addAttribute("unique", true);
+                addModifiers(aa, field);
                 addAnnotation(MANY_TO_ONE, a);
                 break;
             case FieldDefinition._ptrIndex:
@@ -260,16 +260,17 @@ public class EntityClassGenerator {
                 addAnnotation("javax.persistence.GeneratedValue", a).addAttribute("strategy",
                     javax.persistence.GenerationType.IDENTITY);
                 break;
-            case FieldDefinition._text: // FIXME not sure the definition mapping will fly
-                addAnnotation(COLUMN, a).addAttribute("name", columnName(entityName, name)).addAttribute(
-                    "columnDefinition", "longtext");
+            case FieldDefinition._text: // not sure the definition mapping will fly
+                aa = addColumn(entityName, name, a).addAttribute("columnDefinition", "longtext");
+                addModifiers(aa, field);
+                addAnnotation(BASIC, a).addAttribute("fetch", javax.persistence.FetchType.LAZY);
+                addAnnotation(LOB, a);
                 break;
-            case FieldDefinition._binary: // FIXME not sure the definition mapping will fly
-                addAnnotation(COLUMN, a).addAttribute("name", columnName(entityName, name)).addAttribute(
-                    "columnDefinition", "longblob");
-                break;
-            case FieldDefinition._boolean:
-                addAnnotation(COLUMN, a).addAttribute("name", columnName(entityName, name));
+            case FieldDefinition._binary: // not sure the definition mapping will fly
+                aa = addColumn(entityName, name, a).addAttribute("columnDefinition", "longblob");
+                addModifiers(aa, field);
+                addAnnotation(BASIC, a).addAttribute("fetch", javax.persistence.FetchType.LAZY);
+                addAnnotation(LOB, a);
                 break;
             case FieldDefinition._set:
                 try {
@@ -315,6 +316,23 @@ public class EntityClassGenerator {
         return a;
     }
 
+    private AbstractAnnotation addColumn(String entityName, String name,
+            Vector<AbstractClassWriter.AbstractAnnotation> a) {
+        return addAnnotation(COLUMN, a).addAttribute("name", columnName(entityName, name));
+    }
+
+    private void addModifiers(AbstractAnnotation aa, FieldDataDTO field) {
+        if (field.isFixed()) {
+            aa.addAttribute("updatable", false);
+        }
+        if (field.isNotNull()) {
+            aa.addAttribute("nullable", false);
+        }
+        if (field.isUnique()) {
+            aa.addAttribute("unique", true);
+        }
+    }
+
     /**
      * Append a field to an existing class
      */
@@ -338,7 +356,6 @@ public class EntityClassGenerator {
                 type = "java.util.Collection";
                 break;
         }
-        name = NameResolver.checkReserved(name);
 
         classWriter.appendField(className(entityName), StringUtils.capitalize(name), type, generatedClassesPath);
 
