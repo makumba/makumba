@@ -31,6 +31,7 @@ import javax.persistence.ManyToMany;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.makumba.MakumbaError;
+import org.makumba.commons.NameResolver;
 
 public class JavassistClassWriter extends AbstractClassWriter {
 
@@ -38,18 +39,11 @@ public class JavassistClassWriter extends AbstractClassWriter {
     public void addField(Clazz clazz, String name, String type) {
 
         CtClass cc = (CtClass) clazz.getClassObjectReference();
-
         try {
-            cc.addField(CtField.make("private " + type + " " + name + ";", cc));
-            cc.addMethod(CtNewMethod.getter("get" + StringUtils.capitalize(name), CtField.make("private " + type + " "
-                    + name + ";", cc)));
-            cc.addMethod(CtNewMethod.setter("set" + StringUtils.capitalize(name), CtField.make("private " + type + " "
-                    + name + ";", cc)));
+            addField(name, type, cc);
         } catch (CannotCompileException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
     }
 
     @Override
@@ -144,13 +138,7 @@ public class JavassistClassWriter extends AbstractClassWriter {
         try {
             cc = cp.get(fullyQualifiedClassName);
             cc.defrost();
-
-            cc.addField(CtField.make("private " + type + " " + fieldName + ";", cc));
-            cc.addMethod(CtNewMethod.getter("get" + fieldName, CtField.make("private " + type + " " + fieldName + ";",
-                cc)));
-            cc.addMethod(CtNewMethod.setter("set" + fieldName, CtField.make("private " + type + " " + fieldName + ";",
-                cc)));
-
+            addField(fieldName, type, cc);
             cc.writeFile(generatedClassPath);
 
         } catch (NotFoundException e) {
@@ -163,7 +151,15 @@ public class JavassistClassWriter extends AbstractClassWriter {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
 
+    private void addField(String name, String type, CtClass cc) throws CannotCompileException {
+        String fieldName = NameResolver.checkReserved(name);
+        cc.addField(CtField.make("private " + type + " " + fieldName + ";", cc));
+        cc.addMethod(CtNewMethod.getter("get" + StringUtils.capitalize(name), CtField.make("private " + type + " "
+                + fieldName + ";", cc)));
+        cc.addMethod(CtNewMethod.setter("set" + StringUtils.capitalize(name), CtField.make("private " + type + " "
+                + fieldName + ";", cc)));
     }
 
     @Override
@@ -232,7 +228,6 @@ public class JavassistClassWriter extends AbstractClassWriter {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
     }
 
     public static void main(String argv[]) throws Exception {

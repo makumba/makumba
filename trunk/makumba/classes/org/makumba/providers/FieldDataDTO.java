@@ -25,8 +25,18 @@ public class FieldDataDTO {
 
     private final int characterLenght;
 
+    // modifiers
+    protected boolean fixed;
+
+    protected boolean notNull;
+
+    protected boolean notEmpty;
+
+    protected boolean unique;
+
     public FieldDataDTO(String name, int type, String relatedTypeName, String mappingTable,
-            String setMappingColumnName, int characterLength) {
+            String setMappingColumnName, int characterLength, boolean fixed, boolean notNull, boolean notEmpty,
+            boolean unique) {
         super();
         this.name = name;
         this.type = type;
@@ -34,6 +44,26 @@ public class FieldDataDTO {
         this.mappingTableName = mappingTable;
         this.characterLenght = characterLength;
         this.setMappingColumnName = setMappingColumnName;
+        this.fixed = fixed;
+        this.notNull = notNull;
+        this.notEmpty = notEmpty;
+        this.unique = unique;
+    }
+
+    public boolean isFixed() {
+        return fixed;
+    }
+
+    public boolean isNotNull() {
+        return notNull;
+    }
+
+    public boolean isNotEmpty() {
+        return notEmpty;
+    }
+
+    public boolean isUnique() {
+        return unique;
     }
 
     /**
