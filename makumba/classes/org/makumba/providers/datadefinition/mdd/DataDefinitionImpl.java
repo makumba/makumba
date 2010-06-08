@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.Vector;
 
 import org.makumba.DataDefinition;
+import org.makumba.DataDefinitionParseError;
 import org.makumba.FieldDefinition;
 import org.makumba.QueryFragmentFunctions;
 import org.makumba.ValidationDefinition;
@@ -558,6 +559,10 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
             String subFieldName = fieldName.substring(0, indexOf);
             fieldName = fieldName.substring(indexOf + 1);
             FieldDefinition fieldDefinition = dd.getFieldDefinition(subFieldName);
+            if (fieldDefinition == null) {
+                throw new DataDefinitionParseError("Field '" + fieldName + "' not defined in type " + dd.getName()
+                        + "!");
+            }
             dd = fieldDefinition.getPointedType();
         }
         return dd.getFieldDefinition(fieldName);

@@ -16,7 +16,6 @@ import javassist.NotFoundException;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.AttributeInfo;
 import javassist.bytecode.ClassFile;
-import javassist.bytecode.ClassFileWriter;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.AnnotationMemberValue;
@@ -218,7 +217,7 @@ public class JavassistClassWriter extends AbstractClassWriter {
 
         try {
             CtClass cc = (CtClass) clazz.getClassObjectReference();
-            ClassFileWriter.print(cc.getClassFile());
+            // ClassFileWriter.print(cc.getClassFile());
             cc.writeFile(generatedClassPath);
 
         } catch (CannotCompileException e) {

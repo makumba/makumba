@@ -198,6 +198,7 @@ public class EntityClassGenerator {
                 }
 
                 if (skipToNext) {
+                    skipToNext = false;
                     continue; // skip loop
                 }
 

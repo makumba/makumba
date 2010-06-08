@@ -10,19 +10,26 @@ import java.util.Vector;
 
 import org.makumba.ConfigurationError;
 import org.makumba.DataDefinition;
-import org.makumba.DataDefinitionParseError;
 import org.makumba.FieldDefinition;
+import org.makumba.FieldGroup;
+import org.makumba.FieldMetadata;
+import org.makumba.TypeMetadata;
 import org.makumba.commons.ClassResource;
 import org.makumba.commons.NameResolver;
 import org.makumba.commons.SingletonHolder;
 import org.makumba.providers.bytecode.AbstractClassWriter;
 import org.makumba.providers.bytecode.EntityClassGenerator;
 import org.makumba.providers.bytecode.JavassistClassWriter;
+import org.makumba.providers.datadefinition.FieldGroupImpl;
+import org.makumba.providers.datadefinition.FieldMetadataImpl;
+import org.makumba.providers.datadefinition.TypeMetadataImpl;
 
 /**
  * This class is a facade for creating different kinds of DataDefinitionProviders. Its constructor knows from a
  * Configuration (or in the future maybe through other means) which implementation to use, and provides this
- * implementation methods to its client, without revealing the implementation used.
+ * implementation methods to its client, without revealing the implementation used.<br>
+ * FIXME caching using named resources for getTypeMetadata and getFieldGroup<br>
+ * TODO improved caching for FieldMetadata (later)<br>
  * 
  * @author Manuel Gay
  * @version $Id$
@@ -76,7 +83,6 @@ public abstract class DataDefinitionProvider implements SingletonHolder {
             generateEntityClasses();
             classesGenerated = true;
         }
-
         return null;
     }
 
@@ -233,32 +239,6 @@ public abstract class DataDefinitionProvider implements SingletonHolder {
         }
     }
 
-    /**
-     * This method finds a field definition with the given name within the given data definition. The difference to a
-     * simple {@link DataDefinition#getFieldDefinition(String)} is that the field name can be of the form
-     * field.subfield.otherSubfield, over an arbitrary number of levels.
-     */
-    public static final FieldDefinition getFieldDefinition(DataDefinition dd, String fieldName,
-            String lineWithDefinition) throws DataDefinitionParseError {
-        DataDefinition checkedDataDef = dd;
-
-        // treat sub-fields
-        int indexOf = -1;
-        while ((indexOf = fieldName.indexOf(".")) != -1) {
-            // we have a sub-record-field
-            String subFieldName = fieldName.substring(0, indexOf);
-            fieldName = fieldName.substring(indexOf + 1);
-            checkedDataDef = checkedDataDef.getFieldDefinition(subFieldName).getPointedType();
-        }
-
-        FieldDefinition fd = checkedDataDef.getFieldDefinition(fieldName);
-        if (fd == null) {
-            throw new DataDefinitionParseError(checkedDataDef.getName(), "Field '" + fieldName
-                    + "' not defined in type " + dd.getName() + "!", lineWithDefinition);
-        }
-        return fd;
-    }
-
     /***
      * Methods related to the refactoring from DataDefinition/FieldDefinition to Class/FieldMetadata.<br>
      * Will probably move somewhere else or stay here but under a different name.
@@ -270,11 +250,39 @@ public abstract class DataDefinitionProvider implements SingletonHolder {
     /** are we generating the classes at the moment ? **/
     private static boolean isGenerating = false;
 
+    private HashMap<String, TypeMetadata> simpleTypeMetadataCache = new HashMap<String, TypeMetadata>();
+
+    private HashMap<String, FieldGroup> simpleFieldGroupCache = new HashMap<String, FieldGroup>();
+
+    public TypeMetadata getTypeMetadata(String typeName) {
+        // FIXME named resources caching
+        if (!simpleTypeMetadataCache.containsKey(typeName)) {
+            simpleTypeMetadataCache.put(typeName, new TypeMetadataImpl(typeName));
+        }
+        return simpleTypeMetadataCache.get(typeName);
+    }
+
+    public FieldGroup getFieldGroup(String typeName) {
+        // FIXME named resources caching
+        if (!simpleFieldGroupCache.containsKey(typeName)) {
+            DataDefinition dd = getDataDefinition(typeName);
+            LinkedHashMap<String, FieldMetadata> fields = new LinkedHashMap<String, FieldMetadata>();
+            for (String fieldName : dd.getFieldNames()) {
+                // TODO FieldMetaData construction optimization and caching
+                fields.put(fieldName, new FieldMetadataImpl(typeName, fieldName));
+            }
+            simpleFieldGroupCache.put(typeName, new FieldGroupImpl(fields));
+        }
+        return simpleFieldGroupCache.get(typeName);
+    }
+
     /**
      * Generates the classes for all Java entities based on the MDDs of the web-application
      */
     public void generateEntityClasses() {
-        generateEntityClasses(getDataDefinitionsInDefaultLocations());
+        // FIXME organize the test MDDs better and remove this after development is over
+        generateEntityClasses(getDataDefinitionsInDefaultLocations("test.brokenMdds", "test.IndividualOld",
+            "test.PersonOld", "test.ParserTest", "test.ParserComparison", "test.Functions"));
     }
 
     public void generateEntityClasses(Vector<String> dds) {

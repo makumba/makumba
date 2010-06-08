@@ -1,11 +1,11 @@
 package org.makumba;
 
-import java.util.Iterator;
+import java.util.Collection;
 
 public interface FieldGroup {
 
     public FieldMetadata getField(String name);
 
-    public Iterator<FieldMetadata> getFields();
+    public Collection<FieldMetadata> getFields();
 
 }
