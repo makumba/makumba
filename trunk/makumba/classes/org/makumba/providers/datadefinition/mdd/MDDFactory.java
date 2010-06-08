@@ -294,7 +294,11 @@ public class MDDFactory {
         String line = "";
         for (int i = 0; i < lineNumber; i++) {
             try {
-                line = errorReaders.get(typeName).readLine();
+                if (errorReaders.get(typeName) == null) {
+                    line = "";
+                } else {
+                    line = errorReaders.get(typeName).readLine();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

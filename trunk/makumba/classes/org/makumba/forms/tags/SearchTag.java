@@ -254,7 +254,7 @@ public class SearchTag extends FormTagBase {
 
                 if (notEmpty(value)) { // we only regard fields that have a value entered
                     String[] multiFieldSearchCriterion = resp.getMultiFieldSearchCriterion(inputName);
-                    FieldDefinition fd = DataDefinitionProvider.getFieldDefinition(dd, inputName, inputName);
+                    FieldDefinition fd = dd.getFieldOrPointedFieldDefinition(inputName);
 
                     if (where.length() > 0) { // combine different fields with AND
                         where += " AND ";

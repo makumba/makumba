@@ -699,7 +699,7 @@ public class RecordParser {
         } else if (uconn.getClass().getName().endsWith("JarURLConnection")) {
             JarFile jf = ((JarURLConnection) uconn).getJarFile();
 
-            //jar:file:/home/manu/workspace/parade2/webapp/WEB-INF/lib/makumba.jar!/org/makumba/devel/relations/Relation
+            // jar:file:/home/manu/workspace/parade2/webapp/WEB-INF/lib/makumba.jar!/org/makumba/devel/relations/Relation
             // .mdd
             String[] jarURL = u.toExternalForm().split("!");
 
@@ -1289,12 +1289,12 @@ public class RecordParser {
                 // check all possible validation types
                 if (StringUtils.equals(operation, RegExpValidationRule.getOperator())) {
                     // regexp validation
-                    FieldDefinition fd = DataDefinitionProvider.getFieldDefinition(targetDD, fieldName, line);
+                    FieldDefinition fd = getFieldDefinition(targetDD, fieldName, line);
                     rule = new RegExpValidationRule(fd, fieldName, ruleName, errorMessage, ruleDef);
 
                 } else if (StringUtils.equals(operation, NumberRangeValidationRule.getOperator())) {
                     // number (int or real) validation
-                    FieldDefinition fd = DataDefinitionProvider.getFieldDefinition(targetDD, fieldName, line);
+                    FieldDefinition fd = getFieldDefinition(targetDD, fieldName, line);
                     matcher = RangeValidationRule.getMatcher(ruleDef);
                     if (!matcher.matches()) {
                         throw new ValidationDefinitionParseError("", "Illegal range definition", line);
@@ -1304,7 +1304,7 @@ public class RecordParser {
 
                 } else if (StringUtils.equals(operation, StringLengthValidationRule.getOperator())) {
                     // string lenght (char or text) validation
-                    FieldDefinition fd = DataDefinitionProvider.getFieldDefinition(targetDD, fieldName, line);
+                    FieldDefinition fd = getFieldDefinition(targetDD, fieldName, line);
                     matcher = RangeValidationRule.getMatcher(ruleDef);
                     if (!matcher.matches()) {
                         throw new ValidationDefinitionParseError("", "Illegal range definition", line);
@@ -1327,7 +1327,7 @@ public class RecordParser {
                         functionName = BasicValidationRule.extractFunctionNameFromStatement(fieldName);
                         fieldName = BasicValidationRule.extractFunctionArgument(fieldName);
                     }
-                    FieldDefinition fd = DataDefinitionProvider.getFieldDefinition(targetDD, fieldName, line);
+                    FieldDefinition fd = getFieldDefinition(targetDD, fieldName, line);
                     String operator = matcher.group(2).trim();
                     String compareTo = matcher.group(3).trim();
                     if (fd.getIntegerType() == FieldDefinition._date
@@ -1335,7 +1335,7 @@ public class RecordParser {
                         // we have a comparison to a date constant / expression
                         rule = new ComparisonValidationRule(fd, fieldName, compareTo, ruleName, errorMessage, operator);
                     } else {
-                        FieldDefinition otherFd = DataDefinitionProvider.getFieldDefinition(targetDD, compareTo, line);
+                        FieldDefinition otherFd = getFieldDefinition(targetDD, compareTo, line);
                         rule = new ComparisonValidationRule(fd, fieldName, functionName, otherFd, compareTo, ruleName,
                                 errorMessage, operator);
                     }
@@ -1380,6 +1380,15 @@ public class RecordParser {
             throw mpe;
         }
         // System.out.println("Finished parsing validation definition '" + name + "'.");
+    }
+
+    private FieldDefinition getFieldDefinition(DataDefinition dd, String fieldName, String lineWithDefinition)
+            throws DataDefinitionParseError {
+        try {
+            return dd.getFieldOrPointedFieldDefinition(fieldName);
+        } catch (DataDefinitionParseError e) {
+            throw new DataDefinitionParseError(e.getMessage(), lineWithDefinition);
+        }
     }
 
     public static void main(String[] args) {
