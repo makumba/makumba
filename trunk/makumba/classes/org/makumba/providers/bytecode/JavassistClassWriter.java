@@ -22,6 +22,7 @@ import javassist.bytecode.annotation.AnnotationMemberValue;
 import javassist.bytecode.annotation.BooleanMemberValue;
 import javassist.bytecode.annotation.ClassMemberValue;
 import javassist.bytecode.annotation.EnumMemberValue;
+import javassist.bytecode.annotation.IntegerMemberValue;
 import javassist.bytecode.annotation.MemberValue;
 import javassist.bytecode.annotation.StringMemberValue;
 
@@ -48,8 +49,9 @@ public class JavassistClassWriter extends AbstractClassWriter {
     @Override
     public void addClassAnnotations(Clazz clazz, Vector<AbstractAnnotation> annotations) {
         CtClass cc = (CtClass) clazz.getClassObjectReference();
-        cc.getClassFile().addAttribute(constructAnnotationAttributeInfo(clazz, annotations));
-
+        ClassFile cf = cc.getClassFile();
+        cf.addAttribute(constructAnnotationAttributeInfo(clazz, annotations));
+        cf.setVersionToJava5();
     }
 
     @Override
@@ -119,6 +121,10 @@ public class JavassistClassWriter extends AbstractClassWriter {
                 BooleanMemberValue bmv = new BooleanMemberValue(cp);
                 bmv.setValue((Boolean) v);
                 mv = bmv;
+            } else if (v instanceof Integer) {
+                IntegerMemberValue imv = new IntegerMemberValue(cp);
+                imv.setValue((Integer) v);
+                mv = imv;
             } else {
                 throw new MakumbaError("Error while trying to construct annotation: unhandled type "
                         + v.getClass().getName());
@@ -175,6 +181,7 @@ public class JavassistClassWriter extends AbstractClassWriter {
             Clazz clazz = new Clazz(fullyQualifiedClassName);
             clazz.setClassObjectReference(cc);
             addMethodAnnotations(clazz, methodName, annotations);
+            cc.getClassFile().setVersionToJava5();
 
             cc.writeFile(generatedClassPath);
 
