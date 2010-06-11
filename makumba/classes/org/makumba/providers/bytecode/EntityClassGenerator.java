@@ -238,7 +238,7 @@ public class EntityClassGenerator {
                 addModifiers(aa, field);
                 break;
             case FieldDefinition._char:
-                aa = addColumn(entityName, name, a).addAttribute("length", String.valueOf(field.getCharacterLenght()));
+                aa = addColumn(entityName, name, a).addAttribute("length", field.getCharacterLenght());
                 addModifiers(aa, field);
                 break;
             case FieldDefinition._ptr:
