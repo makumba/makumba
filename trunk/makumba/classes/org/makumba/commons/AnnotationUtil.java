@@ -39,7 +39,9 @@ public class AnnotationUtil {
     public static void main(String... args) throws Exception {
         Vector<Long> times = new Vector<Long>();
 
-        for (int i = 0; i < 100000; i++) {
+        final int READS = 100000;
+
+        for (int i = 0; i < READS; i++) {
             long start = System.currentTimeMillis();
             Class<?> c = Class.forName("test.Language");
             Method m = c.getDeclaredMethod("getIsoCode", null);
@@ -52,7 +54,7 @@ public class AnnotationUtil {
         for (Long l : times) {
             sum += l;
         }
-        System.out.println("Average/read for 100000 reads: " + sum / 1000 + " ms");
+        System.out.println("Average/read for " + READS + " reads: " + sum / READS + " ms");
 
     }
 
