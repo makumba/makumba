@@ -26,7 +26,6 @@ public class FieldPropertyRegister extends AbstractBooleanAspectRegister {
         Class<?> c = Class.forName("test.Language");
         System.out.println(c.getName());
         Method m = c.getDeclaredMethod("getIsoCode", null);
-        Method me[] = c.getDeclaredMethods();
         FieldPropertyRegister mr = new FieldPropertyRegister();
         mr.registerAspects();
         System.out.println(mr.isUnique(m));
