@@ -2,13 +2,13 @@ package org.makumba.providers;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
 import org.apache.commons.collections.map.MultiValueMap;
 import org.makumba.MakumbaError;
+import org.makumba.commons.AnnotationUtil;
 
 /**
  * Registry for simple boolean aspects. Makes it possible to plug-in in matching conditions based on a return type,
@@ -57,7 +57,8 @@ public abstract class AbstractBooleanAspectRegister {
 
             if (m instanceof Method) {
                 Method me = (Method) m;
-                matches = me.isAnnotationPresent(a.getAnnotation());
+                Class<? extends Annotation> annotationClass = a.getAnnotationClass();
+                matches = me.isAnnotationPresent(annotationClass);
                 if (!matches) {
                     continue;
                 }
@@ -65,32 +66,12 @@ public abstract class AbstractBooleanAspectRegister {
                     return matches;
                 }
 
-                Annotation an = me.getAnnotation(a.getAnnotation());
-                try {
-                    Method propertyGetter = an.getClass().getMethod(a.getAnnotationPropertyName(), emptyClassArray);
-                    Object propertyValue = propertyGetter.invoke(an, emptyObjectArray);
-                    matches = propertyValue.equals(a.getAnnotationPropertyValue());
-                    if (!matches) {
-                        continue;
-                    } else {
-                        return matches;
-                    }
-
-                } catch (SecurityException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (NoSuchMethodException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (IllegalArgumentException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                Object v = AnnotationUtil.readAttributeValue(me, annotationClass, a.getAnnotationPropertyName());
+                matches = v.equals(a.getAnnotationPropertyValue());
+                if (!matches) {
+                    continue;
+                } else {
+                    return matches;
                 }
 
             } else if (m instanceof Field) {
@@ -110,7 +91,7 @@ public abstract class AbstractBooleanAspectRegister {
 
         private Class<?> type;
 
-        private Class<? extends Annotation> annotation;
+        private Class<? extends Annotation> annotationClass;
 
         private String annotationPropertyName;
 
@@ -124,8 +105,8 @@ public abstract class AbstractBooleanAspectRegister {
             return type;
         }
 
-        public Class<? extends Annotation> getAnnotation() {
-            return annotation;
+        public Class<? extends Annotation> getAnnotationClass() {
+            return annotationClass;
         }
 
         public String getAnnotationPropertyName() {
@@ -136,12 +117,12 @@ public abstract class AbstractBooleanAspectRegister {
             return annotationPropertyValue;
         }
 
-        public Aspect(String name, Class<?> type, Class<? extends Annotation> annotation,
+        public Aspect(String name, Class<?> type, Class<? extends Annotation> annotationClass,
                 String annotationPropertyName, Object annotationPropertyValue) {
             super();
             this.name = name;
             this.type = type;
-            this.annotation = annotation;
+            this.annotationClass = annotationClass;
             this.annotationPropertyName = annotationPropertyName;
             this.annotationPropertyValue = annotationPropertyValue;
         }
