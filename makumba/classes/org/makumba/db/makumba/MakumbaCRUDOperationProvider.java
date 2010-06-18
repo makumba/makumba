@@ -27,6 +27,7 @@ public class MakumbaCRUDOperationProvider extends CRUDOperationProvider {
     public void checkInsert(Transaction t, String type, Dictionary<String, Object> fieldsToCheck,
             Dictionary<String, DataHolder> fieldsToIgnore, Dictionary<String, Object> allFields) {
         Table table = ((DBConnection) t).db.getTable(ddp.getDataDefinition(type).getName());
+        checkFieldNames(fieldsToCheck, table.dd);
         table.checkInsert(fieldsToCheck, fieldsToIgnore, allFields);
     }
 
