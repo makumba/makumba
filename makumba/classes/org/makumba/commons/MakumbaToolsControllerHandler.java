@@ -195,9 +195,6 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
             writeDescr(w, "Database layer",
                 "The default database layer to use for Transactions (Makumba or Hibernate)",
                 Configuration.KEY_DEFAULT_DATABASE_LAYER, Configuration.getDefaultDatabaseLayer());
-            writeDescr(w, "Data Definition provider",
-                "The provider used to read and parse the makumba data definitions",
-                Configuration.KEY_DATADEFINITIONPROVIDER, Configuration.getDataDefinitionProvider());
             writeDescr(w, "Query Function Inliner provider", "The module inlining MDD functions",
                 Configuration.KEY_QUERYFUNCTIONINLINER, Configuration.getQueryInliner());
             writeDescr(w, "Repository URL",
