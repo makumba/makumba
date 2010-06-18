@@ -34,7 +34,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.makumba.analyser.engine.TomcatJsp;
-import org.makumba.providers.datadefinition.mdd.MDDProvider;
+import org.makumba.providers.DataDefinitionProvider;
 
 /**
  * the error viewer. To be used from TagExceptionServlet.
@@ -95,9 +95,8 @@ public class errorViewer extends LineViewer {
             if (token.indexOf(".") != -1) {
                 Integer lineNumber = null;
 
-                // FIXME should not depend directly on MDDProvider
-                if (searchMDD && MDDProvider.findDataDefinition(token, "mdd") != null
-                        || MDDProvider.findDataDefinition(token, "idd") != null) {
+                if (searchMDD && DataDefinitionProvider.findDataDefinition(token, "mdd") != null
+                        || DataDefinitionProvider.findDataDefinition(token, "idd") != null) {
                     result.append(formatMDDLink(token));
                 } else if (searchJavaClasses && (javaClass = findClassSimple(token)) != null) {
                     String substring = source.substring(indexAfter).trim();

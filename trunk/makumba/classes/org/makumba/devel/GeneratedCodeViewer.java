@@ -31,7 +31,6 @@ import org.makumba.controller.Logic;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
-import org.makumba.providers.datadefinition.mdd.MDDProvider;
 
 /**
  * Implements servlet-based an interface to {@link CodeGenerator}, and displays the generated JSP code.
@@ -120,9 +119,9 @@ public class GeneratedCodeViewer extends jspViewer {
             virtualPath = "/";
         }
         // FIXME should not depend directly on MDDProvider
-        java.net.URL u = MDDProvider.findDataDefinitionOrDirectory(virtualPath, "mdd");
+        java.net.URL u = DataDefinitionProvider.findDataDefinitionOrDirectory(virtualPath, "mdd");
         if (u == null) {
-            u = MDDProvider.findDataDefinitionOrDirectory(virtualPath, "idd");
+            u = DataDefinitionProvider.findDataDefinitionOrDirectory(virtualPath, "idd");
         }
         virtualPath = virtualPath.substring(1);
 

@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.MakumbaError;
+import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.datadefinition.mdd.ComparisonExpressionNode.ComparisonType;
 import org.makumba.providers.datadefinition.mdd.validation.ComparisonValidationRule;
 import org.makumba.providers.datadefinition.mdd.validation.MultiUniquenessValidationRule;
@@ -109,7 +110,7 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
                     } else {
                         // if it's a pointer, let's check if we can make something out of it
                         try {
-                            DataDefinition pointed = MDDProvider.getMDD(n.pointedType);
+                            DataDefinition pointed = DataDefinitionProvider.getMDD(n.pointedType);
                             if (pointed.getFieldDefinition(fieldInPointed) == null) {
                                 factory.doThrow(this.typeName, "Field " + fieldInPointed + " does not exist in type "
                                         + pointed.getName(), ast);

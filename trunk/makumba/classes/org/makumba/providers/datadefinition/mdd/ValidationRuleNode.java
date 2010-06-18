@@ -8,6 +8,7 @@ import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.Transaction;
 import org.makumba.ValidationRule;
+import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.datadefinition.mdd.validation.ComparisonValidationRule;
 
 import antlr.collections.AST;
@@ -135,11 +136,11 @@ public class ValidationRuleNode extends MDDAST implements ValidationRule, Compar
     }
 
     public FieldDefinition getValidationRuleArgumentType(String fieldName) {
-        return MDDProvider.getMDD(mdd.getName()).getFieldOrPointedFieldDefinition(fieldName);
+        return DataDefinitionProvider.getMDD(mdd.getName()).getFieldOrPointedFieldDefinition(fieldName);
     }
 
     public DataDefinition getDataDefinition() {
-        return MDDProvider.getMDD(mdd.name);
+        return DataDefinitionProvider.getMDD(mdd.name);
     }
 
     public String getLowerBound() {

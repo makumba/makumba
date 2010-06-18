@@ -21,7 +21,6 @@ import org.makumba.db.makumba.DBConnection;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
-import org.makumba.providers.datadefinition.mdd.MDDProvider;
 
 /**
  * This class lists data for a specific MDD, resp. displays an MDD broswer if no MDD is passed as parameter.
@@ -191,9 +190,9 @@ public class DataTypeListerServlet extends DataServlet {
             return;
         }
         // FIXME should not depend directly on MDDProvider
-        java.net.URL u = MDDProvider.findDataDefinitionOrDirectory(virtualPath, "mdd");
+        java.net.URL u = DataDefinitionProvider.findDataDefinitionOrDirectory(virtualPath, "mdd");
         if (u == null) {
-            u = MDDProvider.findDataDefinitionOrDirectory(virtualPath, "idd");
+            u = DataDefinitionProvider.findDataDefinitionOrDirectory(virtualPath, "idd");
         }
         if (u == null) {
             throw new FileNotFoundException(virtualPath);

@@ -44,7 +44,7 @@ import org.makumba.commons.formatters.InvalidValueException;
 import org.makumba.commons.formatters.RecordFormatter;
 import org.makumba.commons.formatters.dateFormatter;
 import org.makumba.forms.tags.BasicValueTag;
-import org.makumba.providers.datadefinition.mdd.MDDProvider;
+import org.makumba.providers.DataDefinitionProvider;
 
 public class dateEditor extends FieldEditor {
 
@@ -331,8 +331,8 @@ public class dateEditor extends FieldEditor {
     public static Object readFrom(String name, HttpParameters pr) {
         if (pr.getParameter(name + "_IntervalValue") != null) {
             // read from an interval input
-            return readFromInterval(pr, name, name + "_null", MDDProvider.getInstance().makeFieldOfType("dummyDate",
-                "date").getDefaultValue());
+            return readFromInterval(pr, name, name + "_null", DataDefinitionProvider.getInstance().makeFieldOfType(
+                "dummyDate", "date").getDefaultValue());
         } else {
             // read from classic multi-input
             Calendar c = new GregorianCalendar(org.makumba.MakumbaSystem.getTimeZone());

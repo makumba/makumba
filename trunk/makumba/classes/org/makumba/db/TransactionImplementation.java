@@ -52,7 +52,6 @@ import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProvider;
-import org.makumba.providers.datadefinition.mdd.MDDProvider;
 
 /**
  * Abstract {@link Transaction}, with helper methods for both concrete implementations
@@ -280,7 +279,8 @@ public abstract class TransactionImplementation implements Transaction {
         final Vector<Pointer> setElements = readExternalSetValues(basePointer, setName);
 
         // get the set type
-        final FieldDefinition fdSet = MDDProvider.getMDD(basePointer.getType()).getFieldDefinition(setName);
+        final FieldDefinition fdSet = DataDefinitionProvider.getInstance().getDataDefinition(basePointer.getType()).getFieldDefinition(
+            setName);
         final DataDefinition setDD = fdSet.getPointedType();
         final FieldDefinition setDDPointer = setDD.getFieldDefinition(setDD.getIndexPointerFieldName());
 

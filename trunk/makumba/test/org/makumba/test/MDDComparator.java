@@ -13,7 +13,7 @@ import java.util.zip.ZipFile;
 import org.apache.commons.io.FileUtils;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
-import org.makumba.providers.datadefinition.mdd.MDDProvider;
+import org.makumba.providers.DataDefinitionProvider;
 
 /**
  * Compares MDDs provided by two separate MDD providers<br>
@@ -51,7 +51,7 @@ public class MDDComparator {
                 }
 
                 // RecordInfo.setWebappRoot(app.getPath());
-                MDDProvider.setWebappRoot(app.getPath());
+                DataDefinitionProvider.setWebappRoot(app.getPath());
 
                 Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zf.entries();
                 while (entries.hasMoreElements()) {
@@ -71,7 +71,7 @@ public class MDDComparator {
                     DataDefinition dd1 = null;
                     DataDefinition dd2 = null;
                     try {
-                        dd1 = MDDProvider.getMDD(type);
+                        dd1 = DataDefinitionProvider.getInstance().getDataDefinition(type);
                     } catch (Throwable t) {
                         System.err.println("MDDProvider error on " + type + " : " + t.getMessage());
                     }

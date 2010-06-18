@@ -33,7 +33,6 @@ import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.DataDefinitionParseError;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
-import org.makumba.providers.datadefinition.mdd.MDDProvider;
 
 /**
  * Testing MddTest handling & parsing
@@ -43,7 +42,7 @@ import org.makumba.providers.datadefinition.mdd.MDDProvider;
  */
 public class MddTest extends TestCase {
 
-    private DataDefinitionProvider ddp = MDDProvider.getInstance();
+    private DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
 
     public MddTest(String name) {
         super(name);
