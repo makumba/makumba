@@ -38,7 +38,7 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
         DataDefinition dd = ddp.getDataDefinition(type);
 
-        dd.checkFieldNames(fieldsToCheck);
+        checkFieldNames(fieldsToCheck, dd);
         for (String string : dd.getFieldNames()) {
             String name = string;
             if (fieldsToIgnore.get(name) == null) {

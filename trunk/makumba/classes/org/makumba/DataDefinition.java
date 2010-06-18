@@ -26,9 +26,7 @@
 package org.makumba;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Dictionary;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -101,32 +99,20 @@ public interface DataDefinition {
     /** Add a new field definition. Works only for temporary data definitions */
     public void addField(FieldDefinition fd);
 
-    /** Checks whether all fieldnames exist in the database */
-    public void checkFieldNames(Dictionary<String, Object> d);
-
-    /** Checks whether a record can be updated * */
-    public void checkUpdate(String fieldName, Dictionary<String, Object> d);
-
     /** Indicates when the data definition was modified the last time */
     public long lastModified();
 
     /** Get the validation definition associated with this data definition. */
     public ValidationDefinition getValidationDefinition();
 
-    /** Get all multiple-feld uniqueness definition. */
+    /** Get all multiple-field uniqueness definition. */
     public MultipleUniqueKeyDefinition[] getMultiFieldUniqueKeys();
 
-    /** Add a multiple-feld uniqueness definition. */
+    /** Add a multiple-field uniqueness definition. */
     public void addMultiUniqueKey(MultipleUniqueKeyDefinition definition);
 
     /** Check whether this data definition has a multi-field uniqe key defined with the given fields. */
     public boolean hasMultiUniqueKey(String[] fieldNames);
-
-    /** Gets all the fields that are references to other tables, i.e. pointers and some types of sets. */
-    public ArrayList<FieldDefinition> getReferenceFields();
-
-    /** Gets all the fields that have the unique modifier. */
-    public ArrayList<FieldDefinition> getUniqueFields();
 
     /** returns all functions in this data definition. */
     public QueryFragmentFunctions getFunctions();

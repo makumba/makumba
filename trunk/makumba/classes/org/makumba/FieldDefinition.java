@@ -103,7 +103,7 @@ public interface FieldDefinition {
     /** The null value for this type */
     public Object getNull();
 
-    /** Tells wether this field has a description in the MDD */
+    /** Tells whether this field has a description in the MDD */
     public boolean hasDescription();
 
     /** Returns field's description */
@@ -286,9 +286,6 @@ public interface FieldDefinition {
 
     /** check if the corresponding field from the dictionary can be inserted */
     public void checkInsert(Dictionary<String, Object> d);
-
-    /** check if the corresponding field from the dictionary can be updated */
-    public void checkUpdate(Dictionary<String, Object> d);
 
     /** returns the deprecated values for intEnum */
     public Vector<String> getDeprecatedValues();

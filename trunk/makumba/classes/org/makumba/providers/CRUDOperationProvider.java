@@ -5,11 +5,14 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import org.makumba.CompositeValidationException;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidFieldTypeException;
+import org.makumba.InvalidValueException;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
+import org.makumba.commons.StringUtils;
 import org.makumba.db.DataHolder;
 import org.makumba.db.TransactionImplementation;
 
@@ -177,16 +180,60 @@ public abstract class CRUDOperationProvider {
         DataDefinition dd = ddp.getDataDefinition(type);
 
         // we check if we can perform the update
-        dd.checkFieldNames(fieldsToCheck);
+        checkFieldNames(fieldsToCheck, dd);
         for (String string : dd.getFieldNames()) {
             String name = string;
             if (fieldsToIgnore.get(name) == null) {
-                dd.checkUpdate(name, fieldsToCheck);
+                checkUpdate(dd, name, fieldsToCheck);
             }
         }
         return dd;
     }
 
     public abstract int update1(Transaction t, Pointer p, DataDefinition typeDef, Dictionary<String, Object> dic);
+
+    private void checkUpdate(DataDefinition dd, String fieldName, Dictionary<String, Object> d) {
+        Object o = d.get(fieldName);
+        if (o != null) {
+            switch (dd.getFieldDefinition(fieldName).getIntegerType()) {
+                case FieldDefinition._dateCreate:
+                    throw new org.makumba.InvalidValueException(dd.getFieldDefinition(fieldName),
+                            "you cannot update a creation date");
+                case FieldDefinition._dateModify:
+                    throw new org.makumba.InvalidValueException(dd.getFieldDefinition(fieldName),
+                            "you cannot update a modification date");
+                case FieldDefinition._ptrIndex:
+                    throw new org.makumba.InvalidValueException(dd.getFieldDefinition(fieldName),
+                            "you cannot update an index pointer");
+                default:
+                    checkUpdate(dd.getFieldDefinition(fieldName), d);
+            }
+        }
+    }
+
+    private void checkUpdate(FieldDefinition fd, Dictionary<String, Object> d) {
+        Object o = d.get(fd.getName());
+        if (fd.isNotEmpty() && StringUtils.isEmpty(o)) {
+            // FIXME: call this in RecordEditor.readFrom, to have more possible exceptions gathered at once
+            throw new CompositeValidationException(new InvalidValueException(fd, FieldDefinition.ERROR_NOT_EMPTY));
+        }
+        if (o == null) {
+            return;
+        }
+        if (fd.isFixed()) {
+            // FIXME: call this in RecordEditor.readFrom, to have more possible exceptions gathered at once
+            throw new CompositeValidationException(new InvalidValueException(fd, "You cannot update a fixed field"));
+        }
+        d.put(fd.getName(), fd.checkValue(o));
+    }
+
+    public void checkFieldNames(Dictionary<String, Object> d, DataDefinition dd) {
+        for (Enumeration<String> e = d.keys(); e.hasMoreElements();) {
+            String s = e.nextElement();
+            if (dd.getFieldDefinition(s) == null) {
+                throw new org.makumba.NoSuchFieldException(dd, s);
+            }
+        }
+    }
 
 }
