@@ -33,6 +33,13 @@ import org.apache.commons.lang.StringUtils;
 import org.makumba.MakumbaError;
 import org.makumba.commons.NameResolver;
 
+/**
+ * TODO optimize memory consumption if possible, read {@link ClassPool} documentation<br>
+ * TODO support for writing array annotation values<br>
+ * 
+ * @author manu
+ * @version $Id: JavassistClassWriter.java,v 1.1 Jun 18, 2010 4:12:07 PM manu Exp $
+ */
 public class JavassistClassWriter extends AbstractClassWriter {
 
     @Override
@@ -56,24 +63,22 @@ public class JavassistClassWriter extends AbstractClassWriter {
 
     @Override
     public void addMethodAnnotations(Clazz clazz, String methodName, Vector<AbstractAnnotation> annotations) {
-        CtMethod fld = null;
+        CtMethod m = null;
         CtClass cc = (CtClass) clazz.getClassObjectReference();
-        for (CtMethod cm : cc.getMethods()) {
-            if (cm.getName().equals(methodName)) {
-                fld = cm;
-            }
-        }
-        if (fld == null) {
+        try {
+            m = cc.getDeclaredMethod(methodName);
+        } catch (NotFoundException e) {
             throw new MakumbaError("Method " + methodName + " not found in class " + clazz.getName());
         }
 
-        fld.getMethodInfo().addAttribute(constructAnnotationAttributeInfo(clazz, annotations));
+        m.getMethodInfo().addAttribute(constructAnnotationAttributeInfo(clazz, annotations));
     }
 
     private AttributeInfo constructAnnotationAttributeInfo(Clazz clazz, Vector<AbstractAnnotation> annotations) {
         CtClass cc = (CtClass) clazz.getClassObjectReference();
         ClassFile cf = cc.getClassFile();
         ConstPool cp = cf.getConstPool();
+
         AnnotationsAttribute attr = new AnnotationsAttribute(cp, AnnotationsAttribute.visibleTag);
 
         for (AbstractAnnotation aa : annotations) {
@@ -92,6 +97,11 @@ public class JavassistClassWriter extends AbstractClassWriter {
 
         Annotation a = new Annotation(annotationName, cp);
 
+        // FIXME what if there are several nested annotations for the _same_ attribute?
+        // I guess we need to make a ArrayMemberValue
+        // for now this can't happen because we get a Map anyway, so we are kind of screwed unless we start
+        // using a MultiValueMap
+
         for (String attribute : annotationAttributes.keySet()) {
             Object v = annotationAttributes.get(attribute);
             MemberValue mv = null;
@@ -103,10 +113,6 @@ public class JavassistClassWriter extends AbstractClassWriter {
                 AnnotationMemberValue amv = new AnnotationMemberValue(cp);
                 Annotation na = addAnnotation(nestedAnnotation.getName(), cp, nestedAnnotation.getAttribues());
                 amv.setValue(na);
-                // FIXME what if there are several nested annotations for the _same_ attribute?
-                // I guess we need to make a ArrayMemberValue
-                // for now this can't happen because we get a Map anyway, so we are kind of screwed unless we start
-                // using a MultiValueMap
                 mv = amv;
             } else if (v instanceof Enum<?>) {
                 EnumMemberValue emv = new EnumMemberValue(cp);
@@ -129,6 +135,7 @@ public class JavassistClassWriter extends AbstractClassWriter {
                 throw new MakumbaError("Error while trying to construct annotation: unhandled type "
                         + v.getClass().getName());
             }
+
             a.addMemberValue(attribute, mv);
         }
         return a;
@@ -143,17 +150,22 @@ public class JavassistClassWriter extends AbstractClassWriter {
         try {
             cc = cp.get(fullyQualifiedClassName);
             cc.defrost();
+
+            // remove the field if it already exists
+            try {
+                cc.getDeclaredMethod("get" + StringUtils.capitalize(fieldName));
+                removeField(fieldName, type, cc);
+            } catch (NotFoundException nfe) {
+                // ignore
+            }
             addField(fieldName, type, cc);
             cc.writeFile(generatedClassPath);
 
         } catch (NotFoundException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (CannotCompileException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -165,6 +177,17 @@ public class JavassistClassWriter extends AbstractClassWriter {
                 + fieldName + ";", cc)));
         cc.addMethod(CtNewMethod.setter("set" + StringUtils.capitalize(name), CtField.make("private " + type + " "
                 + fieldName + ";", cc)));
+    }
+
+    private void removeField(String name, String type, CtClass cc) throws CannotCompileException {
+        String fieldName = NameResolver.checkReserved(name);
+        try {
+            cc.removeMethod(cc.getDeclaredMethod("get" + StringUtils.capitalize(name)));
+            cc.removeMethod(cc.getDeclaredMethod("set" + StringUtils.capitalize(name)));
+            cc.removeField(cc.getField(fieldName));
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
