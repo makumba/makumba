@@ -45,7 +45,7 @@ public class FunctionNode extends MDDAST {
 
     public void addParameter(String paramName, FieldType type, String pointedType) {
         if (type == FieldType.PTR) {
-            DataDefinition pointedDD = MDDProvider.getMDD(pointedType);
+            DataDefinition pointedDD = DataDefinitionProvider.getMDD(pointedType);
             parameters.addField(DataDefinitionProvider.getInstance().makeFieldWithName(paramName,
                 pointedDD.getFieldDefinition(pointedDD.getIndexPointerFieldName())));
         } else {

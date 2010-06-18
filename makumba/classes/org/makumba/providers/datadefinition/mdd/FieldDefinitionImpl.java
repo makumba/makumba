@@ -903,7 +903,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
             case PTRREL:
             case SET:
                 if (this.pointed == null) {
-                    this.pointed = MDDProvider.getMDD(pointedType);
+                    this.pointed = DataDefinitionProvider.getMDD(pointedType);
                 }
                 return this.pointed;
             default:

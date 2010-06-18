@@ -31,7 +31,6 @@ import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.datadefinition.mdd.DataDefinitionImpl;
 import org.makumba.providers.datadefinition.mdd.FieldType;
-import org.makumba.providers.datadefinition.mdd.MDDProvider;
 
 /**
  * This class provides a developer tool to convert from single relational or enum types (intEnum, ptr) to set types
@@ -86,7 +85,7 @@ public class MDDTypeConverter {
         // step 1: make sure the DB is in synch with the mdd, by asking makumba to check it
         d.openTable(mdd.getName());
 
-        URL url = MDDProvider.findDataDefinition(mddName, "mdd");
+        URL url = DataDefinitionProvider.findDataDefinition(mddName, "mdd");
         File f = new File(url.toURI());
 
         // step 2: modify the MDD, in the file on disk.

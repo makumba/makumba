@@ -30,8 +30,8 @@ import org.makumba.commons.FileUtils;
 import org.makumba.commons.NamedResources;
 import org.makumba.commons.ReadableFormatter;
 import org.makumba.devel.relations.FileRelations.RelationOrigin;
+import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
-import org.makumba.providers.datadefinition.mdd.MDDProvider;
 
 /**
  * This crawler looks for relations between Makumba files and stores them in a database table.<br>
@@ -310,15 +310,15 @@ public class RelationCrawler {
                 : URLprefix, URLroot == null ? "" : URLroot, relationTypeDetail);
 
         // while we crawl, we adjust the MDD provider root to the webapp root
-        MDDProvider.setWebappRoot(webappRoot);
+        DataDefinitionProvider.setWebappRoot(webappRoot);
 
         for (String file : files) {
             rc.crawl(file);
         }
 
         // we set it back to null after the crawling and clean the cache
-        MDDProvider.setWebappRoot(null);
-        NamedResources.cleanStaticCache(MDDProvider.infos);
+        DataDefinitionProvider.setWebappRoot(null);
+        NamedResources.cleanStaticCache(DataDefinitionProvider.infos);
 
         System.out.println("\n\nCrawling finished, took: "
                 + ReadableFormatter.readableAge(System.currentTimeMillis() - beginDate.getTime()));

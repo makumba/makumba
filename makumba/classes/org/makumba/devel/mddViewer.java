@@ -42,7 +42,6 @@ import org.makumba.commons.RegExpUtils;
 import org.makumba.controller.Logic;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
-import org.makumba.providers.datadefinition.mdd.MDDProvider;
 
 /**
  * This class implements a viewer for MDD syntax highlighting.<br>
@@ -61,9 +60,9 @@ public class mddViewer extends LineViewer {
         setSearchLevels(false, false, false, true);
         contextPath = req.getContextPath();
         virtualPath = DevelUtils.getVirtualPath(req, Configuration.getMddViewerLocation());
-        java.net.URL u = MDDProvider.findDataDefinitionOrDirectory(virtualPath, "mdd");
+        java.net.URL u = DataDefinitionProvider.findDataDefinitionOrDirectory(virtualPath, "mdd");
         if (u == null) {
-            u = MDDProvider.findDataDefinitionOrDirectory(virtualPath, "idd");
+            u = DataDefinitionProvider.findDataDefinitionOrDirectory(virtualPath, "idd");
         }
         readFromURL(u);
         virtualPath = virtualPath.substring(1);

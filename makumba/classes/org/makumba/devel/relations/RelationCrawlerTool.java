@@ -15,7 +15,7 @@ import org.makumba.commons.FileUtils;
 import org.makumba.commons.NamedResources;
 import org.makumba.commons.ReadableFormatter;
 import org.makumba.devel.relations.RelationCrawler.MakumbaRelatedFileFilter;
-import org.makumba.providers.datadefinition.mdd.MDDProvider;
+import org.makumba.providers.DataDefinitionProvider;
 
 /**
  * Tool that triggers the crawling of a context, if it wasn't crawled previously.<br>
@@ -52,15 +52,15 @@ public class RelationCrawlerTool extends HttpServlet {
         String[] files = allFilesInDirectory.toArray(new String[allFilesInDirectory.size()]);
 
         // while we crawl, we adjust the MDD provider root to the webapp root
-        MDDProvider.setWebappRoot(webappRoot);
+        DataDefinitionProvider.setWebappRoot(webappRoot);
 
         for (String file : files) {
             rc.crawl(file);
         }
 
         // we set it back to null after the crawling and clean the cache
-        MDDProvider.setWebappRoot(null);
-        NamedResources.cleanStaticCache(MDDProvider.infos);
+        DataDefinitionProvider.setWebappRoot(null);
+        NamedResources.cleanStaticCache(DataDefinitionProvider.infos);
 
         rc.writeRelationsToDb(false);
 

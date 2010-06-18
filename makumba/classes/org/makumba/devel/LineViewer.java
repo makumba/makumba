@@ -53,7 +53,7 @@ import org.makumba.devel.relations.FileRelations;
 import org.makumba.devel.relations.RelationCrawler;
 import org.makumba.devel.relations.FileRelations.RelationOrigin;
 import org.makumba.providers.Configuration;
-import org.makumba.providers.datadefinition.mdd.MDDProvider;
+import org.makumba.providers.DataDefinitionProvider;
 
 /**
  * a viewer that shows everything per line
@@ -532,8 +532,8 @@ public abstract class LineViewer implements SourceViewer {
             } else if (token.indexOf("java.sun.com") != -1) {
                 result.append(formatSunTaglibLink(token));
                 // FIXME should not depend directly on MDDProvider but instead be provided by DataDefinitionProvider
-            } else if (searchMDD && MDDProvider.findDataDefinition(token, "mdd") != null
-                    || MDDProvider.findDataDefinition(token, "idd") != null) {
+            } else if (searchMDD && DataDefinitionProvider.findDataDefinition(token, "mdd") != null
+                    || DataDefinitionProvider.findDataDefinition(token, "idd") != null) {
                 result.append(formatMDDLink(token));
             } else if (searchJavaClasses && (javaClass = findClassSimple(token)) != null) {
                 result.append(formatClassLink(javaClass.getName(), token, null));

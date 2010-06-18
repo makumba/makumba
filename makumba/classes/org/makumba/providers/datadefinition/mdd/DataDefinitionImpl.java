@@ -114,7 +114,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
      * Builds the {@link DataDefinitionImpl} based on the {@link MDDNode}. This step needs to be done separately, as a
      * MDD may refer to itself (through ptr or set).
      */
-    protected void build() {
+    public void build() {
         this.name = parent != null ? parent.getName() : mddNode.getName();
         this.ptrSubfield = mddNode.ptrSubfield;
         this.origin = mddNode.origin;
@@ -232,7 +232,8 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
                     if (!secondPass && field.getPointedType() == this) {
                         // if the DD points to itself, we postpone the evaluation of this field or we get into an
                         // endless loop
-                        // we keep a reference to the name of the previous field, in order to be able to place it back in
+                        // we keep a reference to the name of the previous field, in order to be able to place it back
+                        // in
                         // the right order afterwards
                         postponedFields.put(f.name + "####" + (previousFieldName == null ? "" : previousFieldName), f);
                         previousFieldName = f.getName();
@@ -532,6 +533,10 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
 
     public String getName() {
         return (parent != null ? parent.getName() : name) + (ptrSubfield == null ? "" : ptrSubfield);
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getTitleFieldName() {

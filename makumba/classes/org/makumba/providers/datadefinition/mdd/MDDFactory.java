@@ -13,6 +13,7 @@ import java.util.HashMap;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.DataDefinitionParseError;
+import org.makumba.providers.DataDefinitionProvider;
 
 import antlr.ANTLRException;
 import antlr.RecognitionException;
@@ -308,7 +309,7 @@ public class MDDFactory {
     }
 
     private URL getDataDefinitionURL(String typeName, String extension) throws DataDefinitionNotFoundError {
-        URL u = MDDProvider.findDataDefinition(typeName, extension);
+        URL u = DataDefinitionProvider.findDataDefinition(typeName, extension);
         if (u == null) {
             throw new DataDefinitionNotFoundError(typeName);
         }

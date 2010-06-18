@@ -6,6 +6,7 @@ import java.util.HashMap;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
+import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.datadefinition.mdd.validation.ComparisonValidationRule;
 import org.makumba.providers.datadefinition.mdd.validation.MultiUniquenessValidationRule;
 import org.makumba.providers.datadefinition.mdd.validation.RangeValidationRule;
@@ -83,7 +84,7 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
         AST pointedType = type.getFirstChild();
         if (strictTypeCheck) {
             // we check if we can find this type
-            URL u = MDDProvider.findDataDefinition(pointedType.getText(), "mdd");
+            URL u = DataDefinitionProvider.findDataDefinition(pointedType.getText(), "mdd");
             if (u == null) {
                 factory.doThrow(this.typeName, "could not find type " + pointedType.getText(), pointedType);
             }
