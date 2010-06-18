@@ -9,11 +9,10 @@ import org.makumba.FieldDefinition;
 import org.makumba.ValidationRule;
 import org.makumba.commons.StringUtils;
 import org.makumba.forms.html.FieldEditor;
-import org.makumba.providers.datadefinition.makumba.validation.ComparisonValidationRule;
-import org.makumba.providers.datadefinition.makumba.validation.NumberRangeValidationRule;
-import org.makumba.providers.datadefinition.makumba.validation.RangeValidationRule;
-import org.makumba.providers.datadefinition.makumba.validation.RegExpValidationRule;
-import org.makumba.providers.datadefinition.makumba.validation.StringLengthValidationRule;
+import org.makumba.providers.datadefinition.mdd.MDDExpressionBaseParser;
+import org.makumba.providers.datadefinition.mdd.MDDTokenTypes;
+import org.makumba.providers.datadefinition.mdd.ValidationRuleNode;
+import org.makumba.providers.datadefinition.mdd.validation.ComparisonValidationRule;
 
 /**
  * This class implements java-script based client side validation using the <i>LiveValidation</i> library. For more
@@ -101,44 +100,68 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
             Collection<ValidationRule> validationRules, StringBuffer validations, String inputVarName) {
 
         for (ValidationRule validationRule : validationRules) {
-            ValidationRule rule = validationRule;
+            ValidationRuleNode rule = (ValidationRuleNode) validationRule;
 
-            if (rule instanceof StringLengthValidationRule) {
-                validations.append(getValidationLine(inputVarName, "Validate.Length", rule,
-                    getRangeLimits((RangeValidationRule) rule)));
-            } else if (rule instanceof NumberRangeValidationRule) {
-                validations.append(getValidationLine(inputVarName, "Validate.Numericality", rule,
-                    getRangeLimits((RangeValidationRule) rule)));
-            } else if (rule instanceof RegExpValidationRule) {
-                validations.append(getValidationLine(inputVarName, "Validate.Format", rule, "pattern: /^"
-                        + ((RegExpValidationRule) rule).getRegExp() + "$/i, "));
-            } else if (rule instanceof ComparisonValidationRule) {
-                ComparisonValidationRule c = (ComparisonValidationRule) rule;
+            switch (rule.getValidationType()) {
 
-                // FIXME: need to implement date comparisons
-                if (c.getFieldDefinition().isDateType()) {
-                    continue;
-                }
+                case LENGTH:
+                    validations.append(getValidationLine(inputVarName, "Validate.Length", rule, getRangeLimits(
+                        rule.getLowerBound(), rule.getUpperBound())));
+                    break;
+                case RANGE:
+                    validations.append(getValidationLine(inputVarName, "Validate.Numericality", rule, getRangeLimits(
+                        rule.getLowerBound(), rule.getUpperBound())));
+                    break;
+                case REGEX:
+                    validations.append(getValidationLine(inputVarName, "Validate.Format", rule, "pattern: /^"
+                            + rule.getExpression() + "$/i, "));
+                    break;
+                case COMPARISON:
 
-                String arguments = "element1: \"" + c.getFieldName() + formIdentifier + "\", element2: \""
-                        + c.getOtherFieldName() + formIdentifier + "\", comparisonOperator: \""
-                        + c.getCompareOperator() + "\", ";
+                    ComparisonValidationRule c = (ComparisonValidationRule) rule;
+                    String lhs = c.getComparisonExpression().getLhs();
+                    String rhs = c.getComparisonExpression().getRhs();
+                    String operator = c.getComparisonExpression().getOperator();
 
-                // FIXME: implement a modification for comparison rules with greater / less than comparison as in
-                // MDDLiveValidationProvider
-
-                if (c.getFieldDefinition().isNumberType()) {
-                    validations.append(getValidationLine(inputVarName, "MakumbaValidate.NumberComparison", rule,
-                        arguments));
-                } else if (c.getFieldDefinition().isDateType()) {
-                    // TODO: implement!
-                } else if (c.getFieldDefinition().isStringType()) {
-                    if (c.getFunctionName() != null && c.getFunctionName().length() > 0) {
-                        arguments += "functionToApply: \"" + c.getFunctionName() + "\", ";
-                        validations.append(getValidationLine(inputVarName, "MakumbaValidate.StringComparison", rule,
-                            arguments));
+                    // For comparison rules, if we do a greater / less than comparison, we have to check whether we are
+                    // adding the live validation for the first or the second argument in the rule
+                    // Depending on this, we have to invert the rule for the live validation provider by swapping the
+                    // variable names & inverting the comparison operator
+                    if (!(lhs + formIdentifier).equals(inputName) && !c.getComparisonExpression().isEqualityOperator()) {
+                        String temp = lhs;
+                        lhs = rhs;
+                        rhs = temp;
+                        operator = c.getComparisonExpression().getInvertedOperator();
                     }
-                }
+
+                    String arguments = "element1: \"" + lhs + formIdentifier + "\", element2: \"" + rhs
+                            + formIdentifier + "\", comparisonOperator: \"" + operator + "\", ";
+
+                    switch (c.getComparisonExpression().getComparisonType()) {
+
+                        // FIXME: need to implement date comparisons
+                        case DATE:
+                            continue;
+
+                        case NUMBER:
+                            validations.append(getValidationLine(inputVarName, "MakumbaValidate.NumberComparison",
+                                rule, arguments));
+                            break;
+
+                        case STRING:
+                            if (c.getComparisonExpression().getLhs_type() == MDDTokenTypes.UPPER
+                                    || c.getComparisonExpression().getLhs_type() == MDDTokenTypes.LOWER) {
+                                arguments += "functionToApply: \""
+                                        + MDDExpressionBaseParser._tokenNames[c.getComparisonExpression().getLhs_type()].toLowerCase()
+                                        + "\", ";
+                                validations.append(getValidationLine(inputVarName, "MakumbaValidate.StringComparison",
+                                    rule, arguments));
+                            }
+
+                            break;
+                    }
+
+                    break;
             }
         }
     }
@@ -196,12 +219,6 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
             String arguments) {
         return inputVarName + ".add( " + validationType + " , { " + arguments + " failureMessage: \"" + failureMessage
                 + "\" } );\n";
-    }
-
-    private String getRangeLimits(RangeValidationRule rule) {
-        String lower = rule.getLowerLimitString();
-        String upper = rule.getUpperLimitString();
-        return getRangeLimits(lower, upper);
     }
 
     protected String getRangeLimits(String lower, String upper) {

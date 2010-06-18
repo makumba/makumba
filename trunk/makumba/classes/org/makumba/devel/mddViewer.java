@@ -28,24 +28,25 @@ import java.io.LineNumberReader;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.ValidationDefinition;
-import org.makumba.ValidationRule;
+import org.makumba.commons.RegExpUtils;
 import org.makumba.controller.Logic;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
-import org.makumba.providers.datadefinition.makumba.RecordParser;
-import org.makumba.providers.datadefinition.makumba.validation.BasicValidationRule;
-import org.makumba.providers.datadefinition.makumba.validation.ComparisonValidationRule;
+import org.makumba.providers.datadefinition.mdd.MDDProvider;
 
 /**
- * This class implements a viewer for MDD syntax highlighting.
+ * This class implements a viewer for MDD syntax highlighting.<br>
+ * FIXME the syntax of validation rules and function definitions needs to be adapted
  */
 public class mddViewer extends LineViewer {
 
@@ -60,9 +61,9 @@ public class mddViewer extends LineViewer {
         setSearchLevels(false, false, false, true);
         contextPath = req.getContextPath();
         virtualPath = DevelUtils.getVirtualPath(req, Configuration.getMddViewerLocation());
-        java.net.URL u = RecordParser.findDataDefinitionOrDirectory(virtualPath, "mdd");
+        java.net.URL u = MDDProvider.findDataDefinitionOrDirectory(virtualPath, "mdd");
         if (u == null) {
-            u = RecordParser.findDataDefinitionOrDirectory(virtualPath, "idd");
+            u = MDDProvider.findDataDefinitionOrDirectory(virtualPath, "idd");
         }
         readFromURL(u);
         virtualPath = virtualPath.substring(1);
@@ -183,9 +184,9 @@ public class mddViewer extends LineViewer {
         StringBuffer result = new StringBuffer();
         String closeLine = "";
         int current = 0;
-        if (RecordParser.isValidationRule(s)) {
+        if (isValidationRule(s)) {
             return parseValidationLine(s);
-        } else if (RecordParser.isFunction(s)) {
+        } else if (isFunction(s)) {
             return parseFunctionLine(s);
         }
         s = htmlEscape(s);
@@ -270,16 +271,16 @@ public class mddViewer extends LineViewer {
         while (tokenizer.hasMoreElements()) {
             String token = tokenizer.nextToken();
             ValidationDefinition vd = dd.getValidationDefinition();
-            if (BasicValidationRule.getValidationRuleOperators().contains(token.trim())) {
+            if (ArrayUtils.contains(basicValidationRuleOperators, token.trim())) {
                 result.append("<span style=\"color:blue; font-weight: bold;\">" + htmlEscape(token) + "</span>");
             } else if (token.equals(";")) {
                 endsWithComment = true;
                 result.append("</span> <span style=\"color:green\">" + htmlEscape(token)
                         + htmlEscape(tokenizer.nextToken("")) + "</span>");
             } else {
-                if (token.trim().startsWith(ComparisonValidationRule.now)
-                        || token.trim().startsWith(ComparisonValidationRule.dateFunction)) {
+                if (token.trim().startsWith(now) || token.trim().startsWith(dateFunction)) {
                     Object value = "Error retrieving value!";
+                    /*
                     if (ruleName != null && dd != null && vd != null) {
                         ValidationRule rule = vd.getValidationRule(ruleName);
                         if (rule != null && rule instanceof ComparisonValidationRule
@@ -287,11 +288,12 @@ public class mddViewer extends LineViewer {
                             value = ((ComparisonValidationRule) rule).evaluateExpression();
                         }
                     }
+                    */
                     String id = "validationRule" + validationRuleCounter;
                     result.append("<a class=\"mddDateFunction\" title=\"" + value
                             + "\" onclick=\"javascript:toggleDateFunctionDisplay(" + id + ");\">");
                     result.append(htmlEscape(token));
-                    if (token.trim().startsWith(ComparisonValidationRule.dateFunction)) {
+                    if (token.trim().startsWith(dateFunction)) {
                         while ((token = tokenizer.nextToken()).indexOf(")") == -1) {
                             result.append(htmlEscape(token));
                         }
@@ -323,16 +325,16 @@ public class mddViewer extends LineViewer {
         while (tokenizer.hasMoreElements()) {
             String token = tokenizer.nextToken();
             ValidationDefinition vd = dd.getValidationDefinition();
-            if (BasicValidationRule.getValidationRuleOperators().contains(token.trim())) {
+            if (ArrayUtils.contains(basicValidationRuleOperators, token.trim())) {
                 result.append("<span style=\"color:blue; font-weight: bold;\">" + htmlEscape(token) + "</span>");
             } else if (token.equals(";")) {
                 endsWithComment = true;
                 result.append("</span> <span style=\"color:green\">" + htmlEscape(token)
                         + htmlEscape(tokenizer.nextToken("")) + "</span>");
             } else {
-                if (token.trim().startsWith(ComparisonValidationRule.now)
-                        || token.trim().startsWith(ComparisonValidationRule.dateFunction)) {
+                if (token.trim().startsWith(now) || token.trim().startsWith(dateFunction)) {
                     Object value = "Error retrieving value!";
+                    /*
                     if (ruleName != null && dd != null && vd != null) {
                         ValidationRule rule = vd.getValidationRule(ruleName);
                         if (rule != null && rule instanceof ComparisonValidationRule
@@ -340,11 +342,12 @@ public class mddViewer extends LineViewer {
                             value = ((ComparisonValidationRule) rule).evaluateExpression();
                         }
                     }
+                    */
                     String id = "validationRule" + validationRuleCounter;
                     result.append("<a class=\"mddDateFunction\" title=\"" + value
                             + "\" onclick=\"javascript:toggleDateFunctionDisplay(" + id + ");\">");
                     result.append(htmlEscape(token));
-                    if (token.trim().startsWith(ComparisonValidationRule.dateFunction)) {
+                    if (token.trim().startsWith(dateFunction)) {
                         while ((token = tokenizer.nextToken()).indexOf(")") == -1) {
                             result.append(htmlEscape(token));
                         }
@@ -375,6 +378,87 @@ public class mddViewer extends LineViewer {
         if (dd != null && dd.getFunctions().size() > 0) {
             w.println("<a href=\"javascript:toggleFunctionDisplay();\">Hide functions</a>");
         }
+    }
+
+    /**
+     * Regluar expressions for syntax highlighting of validation rules and functions.<br>
+     * FIXME these do not yet recognize the new syntax of VRs
+     */
+
+    public static final String now = "$now";
+
+    public static final String today = "$today";
+
+    public static final String dateFunction = "date(";
+
+    private static final String[] basicValidationRuleOperators = new String[] { "matches", "range", "length", "compare" };
+
+    public static final String VALIDATION_INDICATOR = "%";
+
+    // regular expressions for multi-field uni
+    public static final String multiUniqueRegExpElement = RegExpUtils.LineWhitespaces + "(" + RegExpUtils.fieldName
+            + ")" + RegExpUtils.LineWhitespaces;
+
+    public static final String multiUniqueRegExpElementRepeatment = "(?:" + RegExpUtils.LineWhitespaces + "," + "(?:"
+            + multiUniqueRegExpElement + "))*";
+
+    public static final String multiUniqueRegExp = RegExpUtils.LineWhitespaces + "(?:" + multiUniqueRegExpElement + ")"
+            + multiUniqueRegExpElementRepeatment + RegExpUtils.LineWhitespaces;
+
+    public static final Pattern multiUniquePattern = Pattern.compile(multiUniqueRegExp);
+
+    public static final String validationRuleErrorMessageSeparatorChar = " : ";
+
+    // regular expressions for validation definitions //
+    public static final String validationDefinitionRegExp = RegExpUtils.LineWhitespaces + "(" + RegExpUtils.fieldName
+            + ")" + RegExpUtils.LineWhitespaces + VALIDATION_INDICATOR + "(matches|length|range|compare|unique)"
+            + RegExpUtils.LineWhitespaces + "=" + RegExpUtils.LineWhitespaces + "(.+)" + RegExpUtils.LineWhitespaces
+            + validationRuleErrorMessageSeparatorChar + RegExpUtils.LineWhitespaces + ".+";
+
+    public static final Pattern validationDefinitionPattern = Pattern.compile(validationDefinitionRegExp);
+
+    // regular expressions for function definitions //
+    public static final String funcDefParamTypeRegExp = "(?:char|char\\[\\]|int|real|date|intEnum|charEnum|text|binary|ptr|set|setIntEnum|setCharEnum|ptr)";
+
+    public static final String funcDefParamValueRegExp = "(?:\\d+|" + RegExpUtils.fieldName + ")";
+
+    /** defines "int a" or "int 5". */
+    public static final String funcDefParamRegExp = funcDefParamTypeRegExp + RegExpUtils.minOneLineWhitespace
+            + funcDefParamValueRegExp + "(?:" + RegExpUtils.minOneLineWhitespace + funcDefParamValueRegExp + ")?";
+
+    /** treats (int a, char b, ...) */
+    public static final String funcDefParamRepeatRegExp = "\\((" + "(?:" + funcDefParamRegExp + ")" + "(?:"
+            + RegExpUtils.LineWhitespaces + "," + RegExpUtils.LineWhitespaces + funcDefParamRegExp + ")*"
+            + RegExpUtils.LineWhitespaces + ")?\\)";
+
+    /** treats function(params) { queryFragment } errorMessage. */
+    public static final String funcDefRegExp = "(" + RegExpUtils.fieldName + "%)?" + "(" + RegExpUtils.fieldName + ")"
+            + funcDefParamRepeatRegExp + RegExpUtils.LineWhitespaces + "\\{" + RegExpUtils.LineWhitespaces
+            + "(.[^\\}]+)" + RegExpUtils.LineWhitespaces + "(?:\\}" + RegExpUtils.LineWhitespaces + "(.*))?";
+
+    public static final Pattern funcDefPattern = Pattern.compile(funcDefRegExp);
+
+    public static final String ruleDefRegExp = "(" + RegExpUtils.fieldName + ")" + "\\(" + RegExpUtils.LineWhitespaces
+            + "(?:" + RegExpUtils.fieldName + ")" + "(?:" + RegExpUtils.LineWhitespaces + ","
+            + RegExpUtils.LineWhitespaces + RegExpUtils.fieldName + ")*" + RegExpUtils.LineWhitespaces + "\\)"
+            + RegExpUtils.LineWhitespaces + "\\{" + RegExpUtils.LineWhitespaces + "(.[^\\}]+)"
+            + RegExpUtils.LineWhitespaces + "(?:\\}" + RegExpUtils.LineWhitespaces + "(.*))?";
+
+    public static final Pattern ruleDefPattern = Pattern.compile(ruleDefRegExp);
+
+    public static final String constraintDefRegExp = "(" + RegExpUtils.fieldName + ")" + "\\." + "("
+            + RegExpUtils.fieldName + ")" + RegExpUtils.LineWhitespaces + "((.*))?";
+
+    public static final Pattern constraintDefPattern = Pattern.compile(constraintDefRegExp);
+
+    public static final Pattern ident = Pattern.compile("[a-zA-Z]\\w*");
+
+    public static boolean isValidationRule(String s) {
+        return validationDefinitionPattern.matcher(s).matches();
+    }
+
+    public static boolean isFunction(String s) {
+        return funcDefPattern.matcher(s).matches();
     }
 
 }

@@ -241,30 +241,7 @@ public class RecordEditor extends RecordFormatter {
                     try { // evaluate each rule separately
 
                         // STEP 1-a: treat or fetch multi-field validation rules
-
-                        // FIXME this is an old validation rule, once we switch, remove this
-                        if (rule instanceof org.makumba.providers.datadefinition.makumba.validation.ComparisonValidationRule
-                                && !((org.makumba.providers.datadefinition.makumba.validation.ComparisonValidationRule) rule).isCompareToExpression()) {
-                            FieldDefinition otherFd = ((org.makumba.providers.datadefinition.makumba.validation.ComparisonValidationRule) rule).getOtherFd();
-                            Object otherValue = validatedFieldsNameCache.get(otherFd.getName());
-                            if (otherValue == null) { // check if the other field definition is maybe in a pointed type
-                                // do this by checking if it equals any of the original field definitions the form field
-                                // definitions are made of
-                                // FIXME: this seems like a hack. maybe on making the new field definition, the
-                                // validation rules should be adapted too?
-                                for (String field : dd.getFieldNames()) {
-                                    FieldDefinition fd = dd.getFieldDefinition(field).getOriginalFieldDefinition();
-                                    if (otherFd == fd) {
-                                        otherValue = o;
-                                        break;
-                                    }
-                                }
-                            }
-                            if (otherValue != null) {
-                                rule.validate(new Object[] { o, otherValue }, t);
-                            }
-                        } else if (rule instanceof ComparisonValidationRule
-                                || rule instanceof MultiUniquenessValidationRule) {
+                        if (rule instanceof ComparisonValidationRule || rule instanceof MultiUniquenessValidationRule) {
                             // we just fetch the multi-field validation rules, do not treat them yet
                             multiFieldValidationRules.put(rule, fieldDefinition);
 

@@ -25,7 +25,7 @@ import org.makumba.forms.responder.Responder;
 import org.makumba.forms.responder.ResponderOperation;
 import org.makumba.forms.responder.ResponseControllerHandler;
 import org.makumba.providers.DataDefinitionProvider;
-import org.makumba.providers.datadefinition.makumba.FieldInfo;
+import org.makumba.providers.datadefinition.mdd.FieldType;
 
 /**
  * This class provides a search form. It slightly differs from other forms in the way that it uses it's own tags, namely
@@ -179,7 +179,7 @@ public class SearchTag extends FormTagBase {
 
         private boolean isSingleValue(Object value) {
             return value != null && !(value instanceof Vector) && !Pointer.isNullObject(value)
-                    && value.toString().length() > 0 && !value.equals(FieldInfo.emptyDate);
+                    && value.toString().length() > 0 && !value.equals(FieldType.emptyDate());
         }
 
         /**

@@ -197,7 +197,7 @@ public class MDDProvider extends DataDefinitionProvider {
      *            the extension (e.g. mdd)
      * @return a URL to the MDD file, null if none was found
      */
-    private static URL findDataDefinitionOrDirectory(String s, String ext) {
+    public static URL findDataDefinitionOrDirectory(String s, String ext) {
         java.net.URL u = null;
         if (s.startsWith("/")) {
             s = s.substring(1);

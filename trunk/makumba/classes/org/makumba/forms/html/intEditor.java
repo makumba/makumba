@@ -34,7 +34,6 @@ import org.makumba.commons.StringUtils;
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.InvalidValueException;
 import org.makumba.commons.formatters.RecordFormatter;
-import org.makumba.providers.datadefinition.makumba.validation.NumberRangeValidationRule;
 import org.makumba.providers.datadefinition.mdd.ValidationType;
 import org.makumba.providers.datadefinition.mdd.validation.RangeValidationRule;
 
@@ -131,21 +130,11 @@ public class intEditor extends charEditor {
         } else if (StringUtils.equalsAny(formatParams.get("type"), "select", "radio")) {
             Collection<ValidationRule> validationRules = rf.dd.getFieldDefinition(fieldIndex).getValidationRules();
             for (ValidationRule validationRule : validationRules) {
-                // FIXME: there should be an interface indicating range validation rules, so this could work generically
-                // for all MDD providers.
-                // right now, we check manually for the old and new MDD parsers
-                if (validationRule instanceof NumberRangeValidationRule // old MDD parser
-                        || validationRule instanceof RangeValidationRule // new MDD parser
+                if (validationRule instanceof RangeValidationRule
                         && ((RangeValidationRule) validationRule).getValidationType() == ValidationType.RANGE) {
-                    int lower;
-                    int upper;
-                    if (validationRule instanceof NumberRangeValidationRule) {// old MDD parser
-                        lower = ((NumberRangeValidationRule) validationRule).getLowerLimit().intValue();
-                        upper = ((NumberRangeValidationRule) validationRule).getUpperLimit().intValue();
-                    } else {// new MDD parser
-                        lower = Integer.parseInt(((RangeValidationRule) validationRule).getLowerBound());
-                        upper = Integer.parseInt(((RangeValidationRule) validationRule).getUpperBound());
-                    }
+                    int lower = Integer.parseInt(((RangeValidationRule) validationRule).getLowerBound());
+                    int upper = Integer.parseInt(((RangeValidationRule) validationRule).getUpperBound());
+
                     HtmlChoiceWriter writer = new HtmlChoiceWriter(getInputName(rf, fieldIndex, formatParams));
                     ArrayList<String> values = new ArrayList<String>();
                     for (int i = lower; i <= upper; i += stepSize) {

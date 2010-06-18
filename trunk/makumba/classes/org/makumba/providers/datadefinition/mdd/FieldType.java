@@ -82,7 +82,7 @@ public enum FieldType {
 
     private static Date emptyDate;
 
-    private static Date emptyDate() {
+    public static Date emptyDate() {
         if (emptyDate == null) {
             Calendar c = new GregorianCalendar(org.makumba.MakumbaSystem.getTimeZone());
             c.clear();

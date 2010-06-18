@@ -1,7 +1,6 @@
 package org.makumba.providers;
 
 import java.io.File;
-import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -16,66 +15,38 @@ import org.makumba.FieldMetadata;
 import org.makumba.TypeMetadata;
 import org.makumba.commons.ClassResource;
 import org.makumba.commons.NameResolver;
-import org.makumba.commons.SingletonHolder;
 import org.makumba.providers.bytecode.AbstractClassWriter;
 import org.makumba.providers.bytecode.EntityClassGenerator;
 import org.makumba.providers.bytecode.JavassistClassWriter;
 import org.makumba.providers.datadefinition.FieldGroupImpl;
 import org.makumba.providers.datadefinition.FieldMetadataImpl;
 import org.makumba.providers.datadefinition.TypeMetadataImpl;
+import org.makumba.providers.datadefinition.mdd.MDDProvider;
 
 /**
  * This class is a facade for creating different kinds of DataDefinitionProviders. Its constructor knows from a
  * Configuration (or in the future maybe through other means) which implementation to use, and provides this
  * implementation methods to its client, without revealing the implementation used.<br>
  * FIXME caching using named resources for getTypeMetadata and getFieldGroup<br>
+ * FIXME unify with MDDProvider<br>
  * TODO improved caching for FieldMetadata (later)<br>
  * 
  * @author Manuel Gay
  * @version $Id$
  */
-public abstract class DataDefinitionProvider implements SingletonHolder {
-
-    private static String[] dataDefinitionProviders = { Configuration.MDD_DATADEFINITIONPROVIDER,
-            "org.makumba.providers.datadefinition.mdd.MDDProvider", Configuration.RECORDINFO_DATADEFINITIONPROVIDER,
-            "org.makumba.providers.datadefinition.makumba.MakumbaDataDefinitionFactory" };
-
-    static final Map<String, DataDefinitionProvider> providerInstances = new HashMap<String, DataDefinitionProvider>();
-
-    /**
-     * Puts the DataDefinition providers into a Map
-     */
-    static {
-        for (int i = 0; i < dataDefinitionProviders.length; i += 2) {
-            try {
-                Method getInstance = Class.forName(dataDefinitionProviders[i + 1]).getDeclaredMethod("getInstance",
-                    new Class<?>[] {});
-                DataDefinitionProvider tp = (DataDefinitionProvider) getInstance.invoke(null, new Object[] {});
-                providerInstances.put(dataDefinitionProviders[i], tp);
-            } catch (Throwable t) {
-                t.printStackTrace();
-            }
-        }
-    }
+public abstract class DataDefinitionProvider {
 
     public DataDefinitionProvider() {
-
     }
 
     /**
      * Gives an instance of a {@link DataDefinitionProvider}.
      */
     public static DataDefinitionProvider getInstance() {
-        if (providerInstances.get(Configuration.getDataDefinitionProvider()) == null) {
-            throw new ConfigurationError("Unknown data definition provider '"
-                    + Configuration.getDataDefinitionProvider() + "', eligible values are: "
-                    + providerInstances.keySet());
+        if (Configuration.getDataDefinitionProvider() == Configuration.RECORDINFO_DATADEFINITIONPROVIDER) {
+            throw new ConfigurationError("The 'recordinfo' data definition provider no longer exists in makumba");
         }
-        return providerInstances.get(Configuration.getDataDefinitionProvider());
-    }
-
-    public void release() {
-        providerInstances.clear();
+        return MDDProvider.getInstance();
     }
 
     public DataDefinition getDataDefinition(String typeName) {
