@@ -2,7 +2,6 @@ package org.makumba.providers.bytecode;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -13,7 +12,6 @@ import org.makumba.MakumbaError;
 import org.makumba.commons.NameResolver;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.FieldDataDTO;
-import org.makumba.providers.bytecode.AbstractClassWriter.AbstractAnnotation;
 
 /**
  * Generator for entity classes using the JPA annotations.<br>
@@ -49,7 +47,7 @@ public class EntityClassGenerator {
 
     private final LinkedHashMap<String, Vector<FieldDataDTO>> entitiesToDo = new LinkedHashMap<String, Vector<FieldDataDTO>>();
 
-    private final LinkedList<Object[]> appendToClass = new LinkedList<Object[]>();
+    private final LinkedHashMap<String, FieldDataDTO> appendToClass = new LinkedHashMap<String, FieldDataDTO>();
 
     private final DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
 
@@ -80,10 +78,12 @@ public class EntityClassGenerator {
             generateClass(firstEntityName, firstEntity, false);
         }
 
-        while (!appendToClass.isEmpty()) {
-            Object[] append = appendToClass.removeFirst();
-            ddp.initializeNameResolver(nr, (String) append[0]);
-            appendToClass((String) append[0], (FieldDataDTO) append[1]);
+        for (String key : appendToClass.keySet()) {
+            String entity = key.substring(0, key.indexOf("####"));
+            FieldDataDTO f = appendToClass.get(key);
+            String primaryKeyPropertyName = key.substring(key.lastIndexOf("####") + 4);
+            ddp.initializeNameResolver(nr, entity);
+            appendToClass(entity, f, primaryKeyPropertyName);
         }
     }
 
@@ -109,7 +109,7 @@ public class EntityClassGenerator {
                 */
             }
 
-            AbstractClassWriter.Clazz clazz = classWriter.createClass(className(entityName));
+            Clazz clazz = classWriter.createClass(className(entityName));
 
             // write the @Entity annotation
             Vector<AbstractAnnotation> classAnnotations = new Vector<AbstractAnnotation>();
@@ -124,7 +124,6 @@ public class EntityClassGenerator {
             String primaryKeyPropertyName = null; // keep this for other field mappings that may need it
 
             for (int i = 0; i < fields.size(); i++) {
-                Object[] append = new Object[2];
                 FieldDataDTO field = fields.get(i);
 
                 // first switch
@@ -150,11 +149,7 @@ public class EntityClassGenerator {
                     case FieldDefinition._ptr:
                     case FieldDefinition._ptrOne:
                         entitiesToDo.put(field.getRelatedTypeName(), ddp.getFieldDataDTOs(field.getRelatedTypeName()));
-
-                        // append getter and setter once the foreign class has been generated
-                        append[0] = entityName;
-                        append[1] = field;
-                        appendToClass.add(append);
+                        postponeFieldGeneration(entityName, field, primaryKeyPropertyName);
                         skipToNext = true;
                         break;
                     case FieldDefinition._ptrRel:
@@ -182,11 +177,7 @@ public class EntityClassGenerator {
                     case FieldDefinition._setCharEnum:
                     case FieldDefinition._setIntEnum:
                         entitiesToDo.put(field.getRelatedTypeName(), ddp.getFieldDataDTOs(field.getRelatedTypeName()));
-
-                        // append getter and setter once the foreign class has been generated
-                        append[0] = entityName;
-                        append[1] = field;
-                        appendToClass.add(append);
+                        postponeFieldGeneration(entityName, field, primaryKeyPropertyName);
                         skipToNext = true;
                         break;
                     default:
@@ -209,7 +200,7 @@ public class EntityClassGenerator {
                 classWriter.addField(clazz, fieldName, fieldType);
 
                 // second switch - add the mapping meta-data
-                Vector<AbstractClassWriter.AbstractAnnotation> a = generateAnnotations(entityName, fieldName,
+                Vector<AbstractAnnotation> a = generateAnnotations(entityName, fieldName,
                     primaryKeyPropertyName, field);
 
                 // add all annotations to the getter method
@@ -220,9 +211,9 @@ public class EntityClassGenerator {
         }
     }
 
-    private Vector<AbstractClassWriter.AbstractAnnotation> generateAnnotations(String entityName, String name,
+    private Vector<AbstractAnnotation> generateAnnotations(String entityName, String name,
             String primaryKeyPropertyName, FieldDataDTO field) {
-        Vector<AbstractClassWriter.AbstractAnnotation> a = new Vector<AbstractAnnotation>();
+        Vector<AbstractAnnotation> a = new Vector<AbstractAnnotation>();
         AbstractAnnotation aa = null;
         switch (field.getType()) {
 
@@ -278,11 +269,11 @@ public class EntityClassGenerator {
                     addAnnotation(MANY_TO_MANY, a).addAttribute("mappedBy", "primaryKey").addAttribute("targetEntity",
                         Class.forName(field.getRelatedTypeName()));
                 } catch (ClassNotFoundException e1) {
-                    e1.printStackTrace();
+                    postponeFieldGeneration(entityName, field, primaryKeyPropertyName);
                 }
 
                 // see http://java.sun.com/javaee/6/docs/api/javax/persistence/JoinTable.html
-                AbstractClassWriter.AbstractAnnotation joinTable = addAnnotation(JOIN_TABLE, a).addAttribute("name",
+                AbstractAnnotation joinTable = addAnnotation(JOIN_TABLE, a).addAttribute("name",
                     tableName(field.getMappingTableName())).addAttribute("cascade", javax.persistence.CascadeType.ALL);
 
                 // || Type1_PK || Type1_PK_M | Type2_PK_M || Type2_PK ||
@@ -304,7 +295,7 @@ public class EntityClassGenerator {
                         "mappedBy", "primaryKey").addAttribute("targetEntity",
                         Class.forName(className(field.getRelatedTypeName())));
                 } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
+                    postponeFieldGeneration(entityName, field, primaryKeyPropertyName);
                 }
                 break;
             case FieldDefinition._ptrRel:
@@ -317,8 +308,15 @@ public class EntityClassGenerator {
         return a;
     }
 
+    /**
+     * recover by appending the field to the ones to be processed later on
+     */
+    private void postponeFieldGeneration(String entityName, FieldDataDTO field, String primaryKeyPropertyName) {
+        appendToClass.put(entityName + "####" + field.getName() + "####" + primaryKeyPropertyName, field);
+    }
+
     private AbstractAnnotation addColumn(String entityName, String name,
-            Vector<AbstractClassWriter.AbstractAnnotation> a) {
+            Vector<AbstractAnnotation> a) {
         return addAnnotation(COLUMN, a).addAttribute("name", columnName(entityName, name));
     }
 
@@ -337,18 +335,14 @@ public class EntityClassGenerator {
     /**
      * Append a field to an existing class
      */
-    public void appendToClass(String entityName, FieldDataDTO field) {
+    public void appendToClass(String entityName, FieldDataDTO field, String primaryKeyPropertyName) {
 
         String type = null;
         String name = field.getName();
-        String primaryKeyPropertyName = null;
         switch (field.getType()) {
             case FieldDefinition._ptr:
             case FieldDefinition._ptrOne:
                 type = className(field.getRelatedTypeName());
-                break;
-            case FieldDefinition._ptrIndex:
-                primaryKeyPropertyName = name;
                 break;
             case FieldDefinition._set:
             case FieldDefinition._setIntEnum:
@@ -358,7 +352,7 @@ public class EntityClassGenerator {
                 break;
         }
 
-        classWriter.appendField(className(entityName), StringUtils.capitalize(name), type, generatedClassesPath);
+        classWriter.appendField(className(entityName), name, type, generatedClassesPath);
 
         Vector<AbstractAnnotation> annotations = generateAnnotations(entityName, name, primaryKeyPropertyName, field);
         classWriter.appendAnnotations(className(entityName), "get" + StringUtils.capitalize(name), annotations,
@@ -366,9 +360,9 @@ public class EntityClassGenerator {
 
     }
 
-    private AbstractClassWriter.AbstractAnnotation addAnnotation(String name,
-            Vector<AbstractClassWriter.AbstractAnnotation> v) {
-        AbstractClassWriter.AbstractAnnotation b = classWriter.createAnnotation(name);
+    private AbstractAnnotation addAnnotation(String name,
+            Vector<AbstractAnnotation> v) {
+        AbstractAnnotation b = classWriter.createAnnotation(name);
         v.add(b);
         return b;
     }

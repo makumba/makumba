@@ -7,6 +7,10 @@ import java.util.Vector;
 
 import javax.persistence.Column;
 
+import org.makumba.providers.bytecode.AbstractClassReader;
+import org.makumba.providers.bytecode.Clazz;
+import org.makumba.providers.bytecode.JavassistClassReader;
+
 public class AnnotationUtil {
 
     private final static Class<?>[] emptyClassArray = new Class<?>[] {};
@@ -37,9 +41,12 @@ public class AnnotationUtil {
     }
 
     public static void main(String... args) throws Exception {
-        Vector<Long> times = new Vector<Long>();
 
         final int READS = 100000;
+
+        System.out.println("==== Annotation reading via classloader & reflection");
+
+        Vector<Long> times = new Vector<Long>();
 
         for (int i = 0; i < READS; i++) {
             long start = System.currentTimeMillis();
@@ -55,6 +62,27 @@ public class AnnotationUtil {
             sum += l;
         }
         System.out.println("Average/read for " + READS + " reads: " + sum / READS + " ms");
+        System.out.println("Total time for " + READS + " reads: " + sum + " ms");
+
+        times.clear();
+
+        System.out.println("==== Annotation reading via javassist");
+
+        for (int i = 0; i < READS; i++) {
+            long start = System.currentTimeMillis();
+            AbstractClassReader acv = new JavassistClassReader();
+            Clazz clazz = acv.getClass("test.Language");
+            Object value = acv.getAnnotationValue(Column.class, "unique", "getIsoCode", clazz);
+            long end = System.currentTimeMillis();
+            times.add(end - start);
+        }
+
+        long sum2 = 0;
+        for (Long l : times) {
+            sum2 += l;
+        }
+        System.out.println("Average/read for " + READS + " reads: " + sum2 / READS + " ms");
+        System.out.println("Total time for " + READS + " reads: " + sum2 + " ms");
 
     }
 

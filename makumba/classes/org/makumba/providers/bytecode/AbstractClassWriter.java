@@ -1,8 +1,6 @@
 package org.makumba.providers.bytecode;
 
 import java.io.File;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Vector;
 
 /**
@@ -72,7 +70,7 @@ public abstract class AbstractClassWriter {
     public abstract void writeClass(Clazz clazz, String generatedClassesPath);
 
     /**
-     * Appends a field to an existing class
+     * Appends a field to an existing class, replaces it if it already exists.
      */
     public abstract void appendField(String fullyQualifiedClassName, String fieldName, String type,
             String generatedClassPath);
@@ -83,83 +81,8 @@ public abstract class AbstractClassWriter {
     public abstract void appendAnnotations(String fullyQualifiedClassName, String methodName,
             Vector<AbstractAnnotation> annotations, String generatedClassPath);
 
-    class Clazz {
-
-        private String name;
-
-        private Object classObjectReference;
-
-        public Clazz(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return this.name;
-        }
-
-        public Object getClassObjectReference() {
-            return classObjectReference;
-        }
-
-        public void setClassObjectReference(Object classObjectReference) {
-            this.classObjectReference = classObjectReference;
-        }
-    }
-
     public AbstractAnnotation createAnnotation(String name) {
         return new AbstractAnnotation(name);
-    }
-
-    /**
-     * An abstract annotation to which attributes and nested attributes can be added
-     */
-    class AbstractAnnotation {
-        private String name;
-
-        private Map<String, Object> attributes;
-
-        public AbstractAnnotation(String name) {
-            this.name = name;
-            this.attributes = new LinkedHashMap<String, Object>();
-        }
-
-        /**
-         * Adds an annotation attribute
-         * 
-         * @param name
-         *            the name of the attribute
-         * @param value
-         *            the value of the attribute
-         * @return the {@link AbstractAnnotation} to which the attribute was added
-         */
-        public AbstractAnnotation addAttribute(String name, Object value) {
-            this.attributes.put(name, value);
-            return this;
-        }
-
-        /**
-         * Adds a nested annotation to a given attribute. Currently only one nested annotation per attribute is
-         * supported!
-         * 
-         * @param attributeName
-         *            the name of the annotation attribute into which the nested annotation should be added
-         * @param annotationName
-         *            the name of the nested annotation
-         * @return the {@link AbstractAnnotation} corresponding to the nested annotation
-         */
-        public AbstractAnnotation addNestedAnnotation(String attributeName, String annotationName) {
-            AbstractAnnotation an = new AbstractAnnotation(annotationName);
-            this.attributes.put(attributeName, an);
-            return an;
-        }
-
-        public String getName() {
-            return this.name;
-        }
-
-        public Map<String, Object> getAttribues() {
-            return this.attributes;
-        }
     }
 
 }

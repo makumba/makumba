@@ -8,7 +8,9 @@ import java.util.Collection;
 
 import org.apache.commons.collections.map.MultiValueMap;
 import org.makumba.MakumbaError;
-import org.makumba.commons.AnnotationUtil;
+import org.makumba.providers.bytecode.AbstractClassReader;
+import org.makumba.providers.bytecode.Clazz;
+import org.makumba.providers.bytecode.JavassistClassReader;
 
 /**
  * Registry for simple boolean aspects. Makes it possible to plug-in in matching conditions based on a return type,
@@ -24,6 +26,8 @@ public abstract class AbstractBooleanAspectRegister {
     private final static Object[] emptyObjectArray = new Object[] {};
 
     protected MultiValueMap aspects = new MultiValueMap();
+
+    protected AbstractClassReader r = new JavassistClassReader();
 
     protected void registerAspect(String name, Class<?> type, Class<? extends Annotation> annotation,
             String annotationPropertyName, Object annotationPropertyValue) {
@@ -66,12 +70,18 @@ public abstract class AbstractBooleanAspectRegister {
                     return matches;
                 }
 
-                Object v = AnnotationUtil.readAttributeValue(me, annotationClass, a.getAnnotationPropertyName());
-                matches = v.equals(a.getAnnotationPropertyValue());
-                if (!matches) {
-                    continue;
-                } else {
-                    return matches;
+                try {
+                    // FIXME cache lookups, at least the clazz lookups
+                    Clazz clazz = r.getClass(me.getDeclaringClass().getName());
+                    Object v = r.getAnnotationValue(annotationClass, a.getAnnotationPropertyName(), me.getName(), clazz);
+                    matches = v.equals(a.getAnnotationPropertyValue());
+                    if (!matches) {
+                        continue;
+                    } else {
+                        return matches;
+                    }
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
                 }
 
             } else if (m instanceof Field) {
