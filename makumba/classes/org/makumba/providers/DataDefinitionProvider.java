@@ -7,7 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Vector;
 
-import org.makumba.ConfigurationError;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.FieldGroup;
@@ -43,9 +42,6 @@ public abstract class DataDefinitionProvider {
      * Gives an instance of a {@link DataDefinitionProvider}.
      */
     public static DataDefinitionProvider getInstance() {
-        if (Configuration.getDataDefinitionProvider() == Configuration.RECORDINFO_DATADEFINITIONPROVIDER) {
-            throw new ConfigurationError("The 'recordinfo' data definition provider no longer exists in makumba");
-        }
         return MDDProvider.getInstance();
     }
 

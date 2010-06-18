@@ -74,13 +74,7 @@ public class Configuration implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public static final String KEY_DATADEFINITIONPROVIDER = "dataDefinitionProvider";
-
     public static final String KEY_QUERYFUNCTIONINLINER = "queryFunctionInliner";
-
-    public static final String MDD_DATADEFINITIONPROVIDER = "mdd";
-
-    public static final String RECORDINFO_DATADEFINITIONPROVIDER = "recordinfo";
 
     public static final String GENERATE_ENTITY_CLASSES = "generateEntityClasses";
 
@@ -293,15 +287,6 @@ public class Configuration implements Serializable {
      */
     public static void setPropery(String section, String key, String value) {
         applicationConfig.getSection(section).setProperty(key, value);
-    }
-
-    /**
-     * Gives the data definition provider implementation to use
-     * 
-     * @return a String containing the class name of the data definition provider implementation
-     */
-    public static String getDataDefinitionProvider() {
-        return applicationConfig.getProperty("providers", KEY_DATADEFINITIONPROVIDER);
     }
 
     public static String getQueryInliner() {
