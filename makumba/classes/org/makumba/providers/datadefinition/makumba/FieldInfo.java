@@ -335,23 +335,6 @@ public class FieldInfo implements java.io.Serializable, FieldDefinition {
         }
     }
 
-    /** check if the value can be assigned */
-    public void checkUpdate(Dictionary<String, Object> d) {
-        Object o = d.get(getName());
-        if (isNotEmpty() && StringUtils.isEmpty(o)) {
-            // FIXME: call this in RecordEditor.readFrom, to have more possible exceptions gathered at once
-            throw new CompositeValidationException(new InvalidValueException(this, ERROR_NOT_EMPTY));
-        }
-        if (o == null) {
-            return;
-        }
-        if (isFixed()) {
-            // FIXME: call this in RecordEditor.readFrom, to have more possible exceptions gathered at once
-            throw new CompositeValidationException(new InvalidValueException(this, "You cannot update a fixed field"));
-        }
-        d.put(getName(), checkValue(o));
-    }
-
     /**
      * Get deprecated values of the enumerator, works only for intEnum type.
      * 

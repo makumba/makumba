@@ -2193,7 +2193,6 @@ public class TableManager extends Table {
     @Override
     public void checkInsert(Dictionary<String, Object> fieldsToCheck, Dictionary<String, DataHolder> fieldsToIgnore,
             Dictionary<String, Object> allFields) {
-        dd.checkFieldNames(fieldsToCheck);
         for (String string : dd.getFieldNames()) {
             String name = string;
             if (fieldsToIgnore.get(name) == null) {

@@ -439,22 +439,6 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         }
     }
 
-    public void checkUpdate(Dictionary<String, Object> d) {
-        Object o = d.get(getName());
-        if (isNotEmpty() && StringUtils.isEmpty(o)) {
-            // FIXME: call this in RecordEditor.readFrom, to have more possible exceptions gathered at once
-            throw new CompositeValidationException(new InvalidValueException(this, ERROR_NOT_EMPTY));
-        }
-        if (o == null) {
-            return;
-        }
-        if (isFixed()) {
-            // FIXME: call this in RecordEditor.readFrom, to have more possible exceptions gathered at once
-            throw new CompositeValidationException(new InvalidValueException(this, "You cannot update a fixed field"));
-        }
-        d.put(getName(), checkValue(o));
-    }
-
     public Object checkValue(Object value) {
 
         if (!value.equals(getNull())) {

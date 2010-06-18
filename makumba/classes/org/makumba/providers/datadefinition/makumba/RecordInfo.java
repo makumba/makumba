@@ -25,10 +25,7 @@
 
 package org.makumba.providers.datadefinition.makumba;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Properties;
@@ -319,28 +316,6 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
         return new Vector<String>(fieldOrder);
     }
 
-    public ArrayList<FieldDefinition> getReferenceFields() {
-        ArrayList<FieldDefinition> l = new ArrayList<FieldDefinition>();
-        for (FieldDefinition fieldDefinition : fields.values()) {
-            FieldDefinition fd = fieldDefinition;
-            if (fd.isPointer() || fd.isExternalSet() || fd.isComplexSet()) {
-                l.add(fd);
-            }
-        }
-        return l;
-    }
-
-    public ArrayList<FieldDefinition> getUniqueFields() {
-        ArrayList<FieldDefinition> l = new ArrayList<FieldDefinition>();
-        for (FieldDefinition fieldDefinition : fields.values()) {
-            FieldDefinition fd = fieldDefinition;
-            if (fd.isUnique() && !fd.isIndexPointerField()) {
-                l.add(fd);
-            }
-        }
-        return l;
-    }
-
     /** returns the field info associated with a name */
     public FieldDefinition getFieldDefinition(String nm) {
         return fields.get(nm);
@@ -443,16 +418,6 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
         return setField;
     }
 
-    // moved from RecordHandler
-    public void checkFieldNames(Dictionary<String, Object> d) {
-        for (Enumeration<String> e = d.keys(); e.hasMoreElements();) {
-            String s = e.nextElement();
-            if (this.getFieldDefinition(s) == null) {
-                throw new org.makumba.NoSuchFieldException(this, s);
-            }
-        }
-    }
-
     @Override
     public String toString() {
         return getName();
@@ -513,29 +478,6 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
         return multiFieldUniqueList.get(fieldNames) != null;
     }
 
-    public void checkUpdate(String fieldName, Dictionary<String, Object> d) {
-        Object o = d.get(fieldName);
-        if (o != null) {
-            switch (getFieldDefinition(fieldName).getIntegerType()) {
-                case FieldDefinition._dateCreate:
-                    throw new org.makumba.InvalidValueException(getFieldDefinition(fieldName),
-                            "you cannot update a creation date");
-                case FieldDefinition._dateModify:
-                    throw new org.makumba.InvalidValueException(getFieldDefinition(fieldName),
-                            "you cannot update a modification date");
-                case FieldDefinition._ptrIndex:
-                    throw new org.makumba.InvalidValueException(getFieldDefinition(fieldName),
-                            "you cannot update an index pointer");
-                default:
-                    base_checkUpdate(fieldName, d);
-            }
-        }
-    }
-
-    private void base_checkUpdate(String fieldName, Dictionary<String, Object> d) {
-        getFieldDefinition(fieldName).checkUpdate(d);
-    }
-
     public QueryFragmentFunctions getFunctions() {
         return functions;
     }
@@ -579,10 +521,6 @@ public class RecordInfo implements java.io.Serializable, DataDefinition, Validat
         sb.append("getFieldDefinition()\n");
         for (String n : getFieldNames()) {
             sb.append(((FieldInfo) getFieldDefinition(n)).getStructure() + "\n");
-        }
-        sb.append("getReferenceFields()\n");
-        for (FieldDefinition fi : getReferenceFields()) {
-            sb.append(((FieldInfo) fi).getStructure() + "\n");
         }
 
         return sb.toString();

@@ -2,15 +2,14 @@ package org.makumba.providers.datadefinition.mdd;
 
 import java.io.Serializable;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.collections.map.ListOrderedMap;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionParseError;
 import org.makumba.FieldDefinition;
@@ -71,7 +70,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
     /** name of the field that holds the relational pointer to the parent field **/
     protected String setOwnerFieldName;
 
-    protected LinkedHashMap<String, FieldDefinition> fields = new LinkedHashMap<String, FieldDefinition>();
+    protected ListOrderedMap fields = new ListOrderedMap();
 
     protected LinkedHashMap<String, ValidationRule> validationRules = new LinkedHashMap<String, ValidationRule>();
 
@@ -145,6 +144,27 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
         // finally also add the postponed fields, which basically are fields that in some way point to this DD
         addFieldNodes(postponedFields, true);
 
+        // re-order fields so they appear in the natural order of the MDD
+        // this is necessary since postponed fields are added last
+        Set<String> postponedKeySet = postponedFields.keySet();
+        while (postponedKeySet.size() != 0) {
+            String key = postponedKeySet.iterator().next();
+            String postponed = key.substring(0, key.indexOf("####"));
+            String previous = key.substring(key.indexOf("####") + 4);
+            for (int i = 0; i < fields.size(); i++) {
+                if (previous.length() == 0) {
+                    fields.put(i, postponed, postponedFields.get(key));
+                    continue;
+                }
+                String fieldName = (String) fields.keyList().get(i);
+                if (fieldName.equals(previous)) {
+                    int oldIndex = fields.indexOf(postponed);
+                    Object v = fields.remove(oldIndex);
+                    fields.put(i + 1, postponed, v);
+                    postponedKeySet.remove(key);
+                }
+            }
+        }
     }
 
     /**
@@ -191,6 +211,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
      * FieldDefinition due to a conflict with the getType() type with ANTLR.
      */
     private void addFieldNodes(LinkedHashMap<String, FieldNode> fields, boolean secondPass) {
+        String previousFieldName = null;
         for (FieldNode f : fields.values()) {
             FieldDefinitionImpl field = new FieldDefinitionImpl(this, f);
 
@@ -211,7 +232,10 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
                     if (!secondPass && field.getPointedType() == this) {
                         // if the DD points to itself, we postpone the evaluation of this field or we get into an
                         // endless loop
-                        postponedFields.put(f.name, f);
+                        // we keep a reference to the name of the previous field, in order to be able to place it back in
+                        // the right order afterwards
+                        postponedFields.put(f.name + "####" + (previousFieldName == null ? "" : previousFieldName), f);
+                        previousFieldName = f.getName();
                         continue;
                     }
 
@@ -248,6 +272,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
                 default:
                     addField(field);
             }
+            previousFieldName = f.getName();
         }
     }
 
@@ -451,19 +476,20 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
 
                 if (titleField == null) {
                     // there was no non-pointer or non-set field in the MDD, so we take the ptrIndex
-                    titleField = fields.get(ptrIndexName).getName();
+                    titleField = ((FieldDefinition) fields.get(ptrIndexName)).getName();
                 }
 
                 // if this happens to be an MDD which points to itself we may have to use the following trick to get the
                 // right title
             } else if (fields.keySet().size() == 3 && postponedFields.keySet().size() > 0) {
-                titleField = (String) Arrays.asList(postponedFields.keySet().toArray()).get(0);
+                String key = (String) Arrays.asList(postponedFields.keySet().toArray()).get(0);
+                titleField = key.substring(0, key.indexOf("####"));
             } else {
                 titleField = getFirstNonPointerFieldName(0);
 
                 if (titleField == null) {
                     // there was no non-pointer or non-set field in the MDD, so we take the ptrIndex
-                    titleField = fields.get(ptrIndexName).getName();
+                    titleField = ((FieldDefinition) fields.get(ptrIndexName)).getName();
                 }
 
             }
@@ -491,7 +517,8 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
             field = titleDef.getName();
         }
         String initialName = (String) Arrays.asList(fields.keySet().toArray()).get(initial);
-        boolean isPtrOrSet = fields.get(initialName).isPointer() || fields.get(initialName).isSetType();
+        boolean isPtrOrSet = ((FieldDefinition) fields.get(initialName)).isPointer()
+                || ((FieldDefinition) fields.get(initialName)).isSetType();
         if (field == null && !isPtrOrSet) {
             field = initialName;
         } else if (field == null && isPtrOrSet) {
@@ -532,7 +559,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
     }
 
     public FieldDefinition getFieldDefinition(String name) {
-        return fields.get(name);
+        return (FieldDefinition) fields.get(name);
     }
 
     public FieldDefinition getFieldDefinition(int n) {
@@ -592,30 +619,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
         return indexName;
     }
 
-    public ArrayList<FieldDefinition> getReferenceFields() {
-        ArrayList<FieldDefinition> l = new ArrayList<FieldDefinition>();
-        for (FieldDefinition fieldDefinition : fields.values()) {
-            FieldDefinition fd = fieldDefinition;
-            if (fd.isPointer() || fd.isExternalSet() || fd.isComplexSet()) {
-                l.add(fd);
-            }
-        }
-        return l;
-    }
-
-    public ArrayList<FieldDefinition> getUniqueFields() {
-        ArrayList<FieldDefinition> l = new ArrayList<FieldDefinition>();
-        for (FieldDefinition fieldDefinition : fields.values()) {
-            FieldDefinition fd = fieldDefinition;
-            if (fd.isUnique() && !fd.isIndexPointerField()) {
-                l.add(fd);
-            }
-        }
-        return l;
-    }
-
     /** methods related to multiple uniqueness keys **/
-
     public void addMultiUniqueKey(MultipleUniqueKeyDefinition definition) {
         multiFieldUniqueList.put(definition.getFields(), definition);
     }
@@ -630,35 +634,6 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
     }
 
     /** methods for checks **/
-
-    public void checkFieldNames(Dictionary<String, Object> d) {
-        for (Enumeration<String> e = d.keys(); e.hasMoreElements();) {
-            String s = e.nextElement();
-            if (this.getFieldDefinition(s) == null) {
-                throw new org.makumba.NoSuchFieldException(this, s);
-            }
-        }
-    }
-
-    // TODO refactor this, use Makumba type
-    public void checkUpdate(String fieldName, Dictionary<String, Object> d) {
-        Object o = d.get(fieldName);
-        if (o != null) {
-            switch (getFieldDefinition(fieldName).getIntegerType()) {
-                case FieldDefinition._dateCreate:
-                    throw new org.makumba.InvalidValueException(getFieldDefinition(fieldName),
-                            "you cannot update a creation date");
-                case FieldDefinition._dateModify:
-                    throw new org.makumba.InvalidValueException(getFieldDefinition(fieldName),
-                            "you cannot update a modification date");
-                case FieldDefinition._ptrIndex:
-                    throw new org.makumba.InvalidValueException(getFieldDefinition(fieldName),
-                            "you cannot update an index pointer");
-                default:
-                    getFieldDefinition(fieldName).checkUpdate(d);
-            }
-        }
-    }
 
     public QueryFragmentFunctions getFunctions() {
         return functions;
@@ -737,7 +712,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
         sb.append("   == isFileSubfield: " + isFileSubfield + "\n");
         sb.append("\n   === Fields \n\n");
 
-        for (FieldDefinition f : fields.values()) {
+        for (Object f : fields.values()) {
             sb.append(f.toString() + "\n");
         }
 
@@ -781,10 +756,6 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
         sb.append("getFieldDefinition()\n");
         for (String n : getFieldNames()) {
             sb.append(((FieldDefinitionImpl) getFieldDefinition(n)).getStructure() + "\n");
-        }
-        sb.append("getReferenceFields()\n");
-        for (FieldDefinition fi : getReferenceFields()) {
-            sb.append(((FieldDefinitionImpl) fi).getStructure() + "\n");
         }
 
         return sb.toString();

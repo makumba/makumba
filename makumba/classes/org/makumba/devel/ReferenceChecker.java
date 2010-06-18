@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Stack;
@@ -191,7 +192,7 @@ public class ReferenceChecker extends HttpServlet {
                         + Configuration.getMddViewerLocation() + "/" + mddName + "\">" + mddName + "</a> ("
                         + count(sqlConnection, dd) + ")</h3>");
                 w.println("<ul>");
-                for (FieldDefinition f : dd.getReferenceFields()) {
+                for (FieldDefinition f : getReferenceFields(dd)) {
                     w.println("<li>");
                     w.println(f.getName() + " = " + f.getType());
                     if (f.isPointer()) {
@@ -234,7 +235,7 @@ public class ReferenceChecker extends HttpServlet {
                 }
                 w.println("</ul>");
                 w.println("<ul>");
-                for (FieldDefinition f : dd.getUniqueFields()) {
+                for (FieldDefinition f : getUniqueFields(dd)) {
                     w.println("<li>");
                     w.println(new StringBuilder(f.getName()).append(": ").append(
                         printUniqueKey(getSqlTable(dd).isIndexOk(f.getName()))));
@@ -275,6 +276,28 @@ public class ReferenceChecker extends HttpServlet {
 
     private TableManager getSqlTable(DataDefinition dd) {
         return (TableManager) MakumbaTransactionProvider.getDatabase(dbName).getTable(dd);
+    }
+
+    private ArrayList<FieldDefinition> getReferenceFields(DataDefinition dd) {
+        ArrayList<FieldDefinition> l = new ArrayList<FieldDefinition>();
+        for (String fieldDefinitionName : dd.getFieldNames()) {
+            FieldDefinition fd = dd.getFieldDefinition(fieldDefinitionName);
+            if (fd.isPointer() || fd.isExternalSet() || fd.isComplexSet()) {
+                l.add(fd);
+            }
+        }
+        return l;
+    }
+
+    private ArrayList<FieldDefinition> getUniqueFields(DataDefinition dd) {
+        ArrayList<FieldDefinition> l = new ArrayList<FieldDefinition>();
+        for (String fieldDefinitionName : dd.getFieldNames()) {
+            FieldDefinition fd = dd.getFieldDefinition(fieldDefinitionName);
+            if (fd.isUnique() && !fd.isIndexPointerField()) {
+                l.add(fd);
+            }
+        }
+        return l;
     }
 
     private void printBrokenRefsInTable(SQLDBConnection sqlConnection, String contextPath, PrintWriter w, String param,
