@@ -20,6 +20,7 @@ import org.apache.commons.cli.PosixParser;
 import org.apache.commons.io.FileUtils;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
+import org.makumba.LogicException;
 import org.makumba.commons.NamedResources;
 import org.makumba.db.makumba.DBConnection;
 import org.makumba.db.makumba.DBConnectionWrapper;
@@ -42,7 +43,7 @@ import org.makumba.providers.datadefinition.mdd.FieldType;
 public class MDDTypeConverter {
 
     public static void main(String[] args) throws IOException, URISyntaxException, CloneNotSupportedException,
-            SQLException {
+            SQLException, LogicException {
         // create CLI options
         Options options = new Options();
 
@@ -52,10 +53,14 @@ public class MDDTypeConverter {
         fieldNameOption.setRequired(true);
         Option targetTypeOption = new Option("t", "targetType", true, "the target type of the field");
         targetTypeOption.setRequired(true);
+        Option sqlOnlyOption = new Option("s", "sqlOnly", false,
+                "only generate the SQL conversion scripts, don't do any MDD modifications");
+        targetTypeOption.setRequired(true);
 
         options.addOption(mddNameOption);
         options.addOption(fieldNameOption);
         options.addOption(targetTypeOption);
+        options.addOption(sqlOnlyOption);
 
         HelpFormatter formatter = new HelpFormatter();
 
@@ -65,7 +70,7 @@ public class MDDTypeConverter {
         try {
             line = parser.parse(options, args);
         } catch (ParseException p) {
-            System.out.println("Error while executing the mdd refactoring crawler: " + p.getMessage());
+            System.out.println("Error parsing the options for the MDD field type converter: " + p.getMessage());
             System.out.println();
             formatter.printHelp("java " + MDDTypeConverter.class.getName() + " [OPTION]... [FILE]...", options);
             System.exit(-1);
@@ -74,67 +79,122 @@ public class MDDTypeConverter {
         String mddName = line.getOptionValue("m");
         String fieldName = line.getOptionValue("f", "");
         String targetTypeString = line.getOptionValue("t", "");
+        boolean sqlOnly = line.hasOption("s");
+
+        if (sqlOnly) {
+            Logger.getLogger("org.makumba.devel").info(
+                "Generating only SQL scripts, not doing any MDD/DB modifications");
+        }
 
         // check if we have a correct field type
         FieldType.valueOf(targetTypeString.toUpperCase());
 
         DataDefinition mdd = DataDefinitionProvider.getInstance().getDataDefinition(mddName);
+        FieldDefinition fd = mdd.getFieldDefinition(fieldName);
+
+        // check if we have a correct source and target field type
+        if (fd.getIntegerType() == FieldDefinition._intEnum) {
+            if (!targetTypeString.equals("set int")) {
+                throw new LogicException("Unknown target field type " + targetTypeString + " for source type "
+                        + fd.getDataType() + ". Valid type is 'set int'.");
+            }
+        } else if (fd.getIntegerType() == FieldDefinition._ptr) {
+            if (!targetTypeString.equals("set")) {
+                throw new LogicException("Unknown target field type " + targetTypeString + " for source type "
+                        + fd.getDataType() + ". Valid type is 'set'.");
+            }
+        } else {
+            throw new LogicException("Unknown source field type " + fd.getType());
+        }
 
         Database d = MakumbaTransactionProvider.getDatabase(Configuration.getDefaultDataSourceName());
 
-        // step 1: make sure the DB is in synch with the mdd, by asking makumba to check it
-        d.openTable(mdd.getName());
+        if (!sqlOnly) {
 
-        URL url = DataDefinitionProvider.findDataDefinition(mddName, "mdd");
-        File f = new File(url.toURI());
+            // step 1: make sure the DB is in synch with the mdd, by asking makumba to check it
+            d.openTable(mdd.getName());
 
-        // step 2: modify the MDD, in the file on disk.
-        // This doesn't work well if we have an intEnum which is defined by a macro type
+            URL url = DataDefinitionProvider.findDataDefinition(mddName, "mdd");
+            File f = new File(url.toURI());
+            Logger.getLogger("org.makumba.devel").info("Reading MDD from " + f.getAbsolutePath());
 
-        // step 2.1: backup existing file
-        File tempFile = File.createTempFile(mdd.getName() + "_old", ".mdd");
-        FileUtils.copyFile(f, tempFile);
+            // step 2: modify the MDD, in the file on disk.
+            // This doesn't work well if we have an intEnum which is defined by a macro type
 
-        String encoding = System.getProperty("file.encoding");
-        List<String> lines = FileUtils.readLines(f, encoding);
-        String[] fileContents = lines.toArray(new String[lines.size()]);
+            // step 2.1: backup existing file
+            File tempFile = File.createTempFile(mdd.getName() + "_old", ".mdd");
+            FileUtils.copyFile(f, tempFile);
+            Logger.getLogger("org.makumba.devel").info("Making backup copy to " + tempFile.getAbsolutePath());
 
-        // step 2.2: find the thing to modify
-        for (int i = 0; i < fileContents.length; i++) {
-            String s = fileContents[i];
-            String sFieldName = s.trim();
-            if (s.contains("=")) {
-                sFieldName = sFieldName.substring(0, s.indexOf("=")).trim();
-            }
-            if (sFieldName.equals(fieldName.trim())) {
-                FieldDefinition fd = mdd.getFieldDefinition(fieldName);
-                // need to replace the type
-                if (fd.getIntegerType() == FieldDefinition._intEnum) {
-                    // TODO: make sure we replace the correct place, and not part of the field name..
-                    final String sNew = s.replace("int", "set int");
-                    if (s.equals(sNew) || !sNew.trim().startsWith(fieldName)) { // did not managed to replace the type
-                        Logger.getLogger("org.makumba.debug.abstr").warning(
-                            "The changes could not be written back to the MDD, most probably as the type for '"
-                                    + fieldName + "' is  defined via a macro type.");
-                    } else {
-                        // step 2.3: found the line, managed to replace it: write back to the file
-                        fileContents[i] = sNew;
-                        FileUtils.writeLines(f, encoding, Arrays.asList(fileContents));
-                        // clean the caches, so we read the MDD again
-                        NamedResources.cleanupStaticCaches();
-                    }
+            String encoding = System.getProperty("file.encoding");
+            List<String> lines = FileUtils.readLines(f, encoding);
+            String[] fileContents = lines.toArray(new String[lines.size()]);
+
+            // step 2.2: find the thing to modify
+            Logger.getLogger("org.makumba.devel").info("Searching for field " + fieldName);
+            boolean found = false;
+            for (int i = 0; i < fileContents.length; i++) {
+                String s = fileContents[i];
+                String sFieldName = s.trim();
+                if (s.contains("=")) {
+                    sFieldName = sFieldName.substring(0, s.indexOf("=")).trim();
                 }
-                break;
+                if (sFieldName.equals(fieldName.trim())) {
+                    FieldDefinition fdTemp = mdd.getFieldDefinition(fieldName);
+                    // need to replace the type
+                    if (fdTemp.getIntegerType() == FieldDefinition._intEnum) {
+                        // TODO: make sure we replace the correct place, and not part of the field name..
+                        final String sNew = s.replace("int", "set int");
+                        if (s.equals(sNew) || !sNew.trim().startsWith(fieldName)) { // did not managed to replace the
+                            // type
+                            Logger.getLogger("org.makumba.debug.abstr").warning(
+                                "The changes could not be written back to the MDD, most probably as the type for '"
+                                        + fieldName + "' is defined via a macro type.");
+                        } else {
+                            // step 2.3: found the line, managed to replace it: write back to the file
+                            fileContents[i] = sNew;
+                            FileUtils.writeLines(f, encoding, Arrays.asList(fileContents));
+                            // clean the caches, so we read the MDD again
+                            NamedResources.cleanupStaticCaches();
+                        }
+                    } else if (fdTemp.getIntegerType() == FieldDefinition._ptr) {
+                        // TODO: make sure we replace the correct place, and not part of the field name..
+                        final String sNew = s.replace("ptr", "set");
+                        if (s.equals(sNew) || !sNew.trim().startsWith(fieldName)) { // did not managed to replace the
+                            // type
+                            Logger.getLogger("org.makumba.debug.abstr").warning(
+                                "The changes could not be written back to the MDD, most probably as the type for '"
+                                        + fieldName + "' is defined via a macro type.");
+                        } else {
+                            // step 2.3: found the line, managed to replace it: write back to the file
+                            fileContents[i] = sNew;
+                            FileUtils.writeLines(f, encoding, Arrays.asList(fileContents));
+                            // clean the caches, so we read the MDD again
+                            NamedResources.cleanupStaticCaches();
+                        }
+                    }
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                throw new LogicException("Did not find field among MDD contents:\n" + fileContents);
             }
         }
 
         mdd = DataDefinitionProvider.getInstance().getDataDefinition(mddName);
-        System.out.println(mdd.getFieldDefinition(fieldName));
+        fd = mdd.getFieldDefinition(fieldName);
 
-        FieldDefinition fd = mdd.getFieldDefinition(fieldName);
+        Logger.getLogger("org.makumba.devel").info("Changed field type to: " + fd.getDataType());
+        if (!fd.getType().equals(targetTypeString)) {
+            throw new LogicException("Unexpected target field type " + fd.getType() + ", expected " + targetTypeString);
+        }
 
-        // step 3: trigger the DB changes
-        d.openTable(fd.getSubtable().getName());
+        if (!sqlOnly) {
+            // step 3: trigger the DB changes
+            d.openTable(fd.getSubtable().getName());
+        }
 
         // step 4: copy the data
         TableManager parentTable = (TableManager) d.getTable(mddName);
@@ -145,24 +205,32 @@ public class MDDTypeConverter {
         String subIndexName = subTable.getFieldDBName(fd.getSubtable().getIndexPointerFieldName());
 
         // step 4.1: compose the insert statement
-        String sql = "INSERT INTO " + subTableName + " (" + parentIndexName + ", " + subIndexName
-                + ", TS_create_, TS_modify_" + ", " + subTable.getFieldDBName(DataDefinitionImpl.ENUM_FIELD_NAME)
-                + ") SELECT " + parentIndexName + ", " + parentIndexName + ", TS_create_, TS_modify_, " + subIndexName
-                + " FROM " + parentTableName + ";";
-
+        String sql = null;
+        if (fd.getIntegerType() == FieldDefinition._intEnum) {
+            sql = "INSERT INTO " + subTableName + " (" + parentIndexName + ", " + subIndexName
+                    + ", TS_create_, TS_modify_" + ", " + subTable.getFieldDBName(DataDefinitionImpl.ENUM_FIELD_NAME)
+                    + ") SELECT " + parentIndexName + ", " + parentIndexName + ", TS_create_, TS_modify_, "
+                    + subIndexName + " FROM " + parentTableName + ";";
+        } else if (fd.getIntegerType() == FieldDefinition._ptr) {
+            sql = "INSERT INTO " + subTableName + " (" + parentIndexName + ", " + subIndexName
+                    + ", TS_create_, TS_modify_" + ", " + fieldName + ") SELECT " + parentIndexName + ", "
+                    + parentIndexName + ", TS_create_, TS_modify_, " + subIndexName + " FROM " + parentTableName + ";";
+        }
         System.out.println(sql);
 
-        // step 4.2: execute the inser
-        // can not do that with the DataBase/Transaction class, need an SQLDBConnection
-        DBConnection connection = d.getDBConnection();
-        if (connection instanceof DBConnectionWrapper) {
-            connection = ((DBConnectionWrapper) connection).getWrapped();
+        if (!sqlOnly) {
+            // step 4.2: execute the insert
+            // can not do that with the DataBase/Transaction class, need an SQLDBConnection
+            DBConnection connection = d.getDBConnection();
+            if (connection instanceof DBConnectionWrapper) {
+                connection = ((DBConnectionWrapper) connection).getWrapped();
+            }
+            SQLDBConnection sqlConnection = (SQLDBConnection) connection;
+            Statement statement = sqlConnection.createStatement();
+            int execute = statement.executeUpdate(sql);
+            sqlConnection.commit();
+            sqlConnection.close();
+            System.out.println("Executed update statement, " + execute + " rows affected.");
         }
-        SQLDBConnection sqlConnection = (SQLDBConnection) connection;
-        Statement statement = sqlConnection.createStatement();
-        int execute = statement.executeUpdate(sql);
-        sqlConnection.commit();
-        sqlConnection.close();
-        System.out.println("Executed update statement, " + execute + " rows affected.");
     }
 }
