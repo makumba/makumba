@@ -3,7 +3,6 @@ package org.makumba.providers.query.mql;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Set;
@@ -69,8 +68,6 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
 
     protected QueryContext rootContext;
 
-    protected HashMap<String, FunctionCall> orderedFunctionCalls = new HashMap<String, FunctionCall>();
-
     boolean hasSubqueries;
 
     String query;
@@ -117,14 +114,6 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         if (error == null) {
             error = new RecognitionException(s);
         }
-    }
-
-    /** makes sure we don't override another function call with the same signature but in a different place **/
-    protected void addFunctionCall(FunctionCall c) {
-        while (orderedFunctionCalls.get(c.getKey()) != null) {
-            c = c.incrementId();
-        }
-        orderedFunctionCalls.put(c.getKey(), c);
     }
 
     // TODO: whatever happened to inSelect? we should not change so much the original grammar and methods
