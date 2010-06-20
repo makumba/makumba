@@ -467,7 +467,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
      * and for use of expressions
      */
     private void evaluateTitle() {
-        if (titleFieldExpr == null) {
+        if (titleFieldExpr == null && functions.getFunction("title") == null) {
             String ptrIndexName = (String) Arrays.asList(fields.keySet().toArray()).get(0);
 
             // check if we have a "name" field
@@ -498,12 +498,21 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
                 }
 
             }
+        } else if (titleFieldExpr == null && functions.getFunction("title") != null) {
+            // we have a title() function defined
+            titleField = "title()";
         } else if (titleFieldType == TitleFieldType.FUNCTION) {
             QueryFragmentFunction f = functions.getFunction(titleFieldExpr);
             // TODO here we could inline a function call from title
             titleField = f.getName() + "()"; // f.getQueryFragment();
         } else {
             titleField = titleFieldExpr;
+        }
+
+        // in the end, we also make the title field available as title() function if it was not defined that way
+        if (functions.getFunction("title") == null) {
+            functions.addFunction("title", new QueryFragmentFunction(this, "title", "", titleField,
+                    ddp.getVirtualDataDefinition("Parameters for function title"), ""));
         }
     }
 

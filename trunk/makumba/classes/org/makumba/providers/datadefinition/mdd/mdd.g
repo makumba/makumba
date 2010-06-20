@@ -494,11 +494,16 @@ nativeValidationRuleMessage
 //////////////// FUNCTIONS
 
 functionDeclaration { AST p = null; }
-	: (s:atom {#s.setType(SESSIONVAR_NAME);} PERCENT!)? a:atom {#a.setType(FUNCTION_NAME);} d:functionArgumentDeclaration p = b:parsedFunctionBody (errorMessage)? (FIELDCOMMENT!)?
+	: (s:atom {#s.setType(SESSIONVAR_NAME);} PERCENT!)? a:functionName {#a.setType(FUNCTION_NAME);} d:functionArgumentDeclaration p = b:parsedFunctionBody (errorMessage)? (FIELDCOMMENT!)?
 	{
 		#functionDeclaration = #(#[FUNCTION, "function"], #functionDeclaration);
 		addParsedFunction(#functionDeclaration, #p);
 	}
+	;
+
+functionName
+	: atom
+	| keyword
 	;
 
 functionArgumentDeclaration
