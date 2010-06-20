@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.LinkedHashMap;
 
 import org.makumba.DataDefinition;
+import org.makumba.QueryFragmentFunction;
 import org.makumba.ValidationRule;
 import org.makumba.DataDefinition.MultipleUniqueKeyDefinition;
 
@@ -54,7 +55,7 @@ public class MDDNode extends CommonAST {
 
     protected LinkedHashMap<Object, MultipleUniqueKeyDefinition> multiFieldUniqueList = new LinkedHashMap<Object, MultipleUniqueKeyDefinition>();
 
-    protected LinkedHashMap<String, DataDefinition.QueryFragmentFunction> functions = new LinkedHashMap<String, DataDefinition.QueryFragmentFunction>();
+    protected LinkedHashMap<String, QueryFragmentFunction> functions = new LinkedHashMap<String, QueryFragmentFunction>();
 
     public MDDNode(String name, URL origin) {
         this.setName(name);
@@ -102,7 +103,7 @@ public class MDDNode extends CommonAST {
     }
 
     public void addFunction(FunctionNode funct, AST parsedFunction) {
-        DataDefinition.QueryFragmentFunction function = new DataDefinition.QueryFragmentFunction(null, funct.name,
+        QueryFragmentFunction function = new QueryFragmentFunction(null, funct.name,
                 funct.sessionVariableName, funct.queryFragment, funct.parameters, funct.errorMessage, parsedFunction);
         funct.function = function;
         functions.put(function.getName(), function);

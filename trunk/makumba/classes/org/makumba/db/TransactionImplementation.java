@@ -48,6 +48,7 @@ import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.Transaction;
 import org.makumba.UnauthenticatedException;
+import org.makumba.FieldDefinition.FieldErrorMessageType;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryProvider;
@@ -336,10 +337,10 @@ public abstract class TransactionImplementation implements Transaction {
         if (nue.getFields().size() == 1) {
             // see if we have a custom message for this field
             FieldDefinition fd = dd.getFieldDefinition(nue.getFields().keySet().iterator().next());
-            if (fd.getNotUniqueErrorMessage() == null) {
+            if (fd.getErrorMessage(FieldErrorMessageType.NOT_UNIQUE) == null) {
                 cve.addException(new NotUniqueException(fd, nue.getFields().get(fd.getName())));
             } else {
-                cve.addException(new NotUniqueException(fd.getNotUniqueErrorMessage()));
+                cve.addException(new NotUniqueException(fd.getErrorMessage(FieldErrorMessageType.NOT_UNIQUE)));
             }
         } else {
             // multi-field uniqueness exception

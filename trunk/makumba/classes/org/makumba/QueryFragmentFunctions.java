@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
-import org.makumba.DataDefinition.QueryFragmentFunction;
 
 /**
  * This class works as a store for the query functions of a {@link DataDefinition}. It provides methods to get all or

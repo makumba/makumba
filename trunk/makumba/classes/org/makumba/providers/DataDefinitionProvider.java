@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -17,7 +18,10 @@ import org.makumba.FieldDefinition;
 import org.makumba.FieldGroup;
 import org.makumba.FieldMetadata;
 import org.makumba.MakumbaError;
+import org.makumba.QueryFragmentFunctions;
 import org.makumba.TypeMetadata;
+import org.makumba.ValidationDefinition;
+import org.makumba.ValidationRule;
 import org.makumba.commons.ClassResource;
 import org.makumba.commons.NameResolver;
 import org.makumba.commons.NamedResourceFactory;
@@ -75,7 +79,7 @@ public class DataDefinitionProvider {
     }
 
     /**
-     * returns the record info with the given absolute name
+     * Gets the data definition with the given absolute name
      * 
      * @throws org.makumba.DataDefinitionNotFoundError
      *             if the name is not a valid record info name
@@ -88,6 +92,28 @@ public class DataDefinitionProvider {
             classesGenerated = true;
         }
         return getMDD(typeName.replaceAll("__", "->"));
+    }
+
+    /**
+     * Gets the validation definition of the given type
+     */
+    public ValidationDefinition getValidationDefinition(String typeName) {
+        // for the moment, the implementation of the validation definition and the data definition is the same
+        return (ValidationDefinition) getDataDefinition(typeName);
+    }
+
+    // TODO this is a temporary method, as long as virtual DataDefinition-s are being used that should be replaced with
+    // FieldGroups. so this method should instead use FieldMetadata or even the type & field name to identify the field
+    public Collection<ValidationRule> getValidationRules(FieldDefinition fd) {
+        return ((FieldDefinitionImpl) fd).getValidationRules();
+    }
+
+    /**
+     * Gets all the query functions defined for this type
+     */
+    public QueryFragmentFunctions getQueryFragmentFunctions(String typeName) {
+        // for the moment, the implementation of the validation definition and the query fragment definition is the same
+        return ((DataDefinitionImpl) getDataDefinition(typeName)).getFunctions();
     }
 
     public DataDefinition getVirtualDataDefinition(String name) {
@@ -424,17 +450,6 @@ public class DataDefinitionProvider {
         return rootFolder;
     }
 
-    /***
-     * Methods related to the refactoring from DataDefinition/FieldDefinition to Class/FieldMetadata.<br>
-     * Will probably move somewhere else or stay here but under a different name.
-     ***/
-
-    /** have the entity classes already been generated? **/
-    private static boolean classesGenerated = false;
-
-    /** are we generating the classes at the moment ? **/
-    private static boolean isGenerating = false;
-
     private static String webappRoot;
 
     public static int infos = NamedResources.makeStaticCache("MDDs parsed", new NamedResourceFactory() {
@@ -465,6 +480,17 @@ public class DataDefinitionProvider {
         }
 
     });
+
+    /***
+     * Methods related to the refactoring from DataDefinition/FieldDefinition to Class/FieldMetadata.<br>
+     * Will probably move somewhere else or stay here but under a different name.
+     ***/
+
+    /** have the entity classes already been generated? **/
+    private static boolean classesGenerated = false;
+
+    /** are we generating the classes at the moment ? **/
+    private static boolean isGenerating = false;
 
     private HashMap<String, TypeMetadata> simpleTypeMetadataCache = new HashMap<String, TypeMetadata>();
 
@@ -497,8 +523,8 @@ public class DataDefinitionProvider {
      */
     public void generateEntityClasses() {
         // FIXME organize the test MDDs better and remove this after development is over
-        generateEntityClasses(getDataDefinitionsInDefaultLocations("test.brokenMdds", "test.IndividualOld",
-            "test.PersonOld", "test.ParserTest", "test.ParserComparison", "test.Functions"));
+        generateEntityClasses(getDataDefinitionsInDefaultLocations("test.brokenMdds", "test.ParserTest",
+            "test.Functions"));
     }
 
     public void generateEntityClasses(Vector<String> dds) {

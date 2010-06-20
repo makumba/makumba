@@ -42,11 +42,13 @@ import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.Transaction;
 import org.makumba.ValidationRule;
+import org.makumba.FieldDefinition.FieldErrorMessageType;
 import org.makumba.commons.DbConnectionProvider;
 import org.makumba.commons.attributes.HttpParameters;
 import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.RecordFormatter;
+import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.datadefinition.mdd.validation.ComparisonValidationRule;
 import org.makumba.providers.datadefinition.mdd.validation.MultiUniquenessValidationRule;
 
@@ -180,7 +182,7 @@ public class RecordEditor extends RecordFormatter {
                         inputName.indexOf(suffix)));
 
                     if (fd.isNotNull() && !lazyEvaluation) {
-                        String error = fd.getNotNullErrorMessage();
+                        String error = fd.getErrorMessage(FieldErrorMessageType.NOT_NULL);
                         if (error == null) {
                             error = FieldDefinition.ERROR_NOT_NULL;
                         }
@@ -190,7 +192,7 @@ public class RecordEditor extends RecordFormatter {
                 }
                 // for string types (text, char) check not empty
                 if (fd.isNotEmpty() && fd.isStringType() && StringUtils.isEmpty(o.toString())) {
-                    String error = fd.getNotEmptyErrorMessage();
+                    String error = fd.getErrorMessage(FieldErrorMessageType.NOT_EMPTY);
                     if (error == null) {
                         error = FieldDefinition.ERROR_NOT_EMPTY;
                     }
@@ -232,7 +234,8 @@ public class RecordEditor extends RecordFormatter {
             int i = validatedFieldsOrdered.get(index).intValue();
             FieldDefinition fieldDefinition = dd.getFieldDefinition(i);
             Object o = validatedFields.get(validatedFieldsOrdered.get(index));
-            Collection<ValidationRule> validationRules = fieldDefinition.getValidationRules();
+            Collection<ValidationRule> validationRules = DataDefinitionProvider.getInstance().getValidationRules(
+                fieldDefinition);
 
             if (validationRules != null) {
                 for (ValidationRule validationRule : validationRules) {

@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Vector;
 
 import org.makumba.DataDefinition;
+import org.makumba.QueryFragmentFunction;
 import org.makumba.providers.query.mql.ASTUtil;
 import org.makumba.providers.query.mql.FunctionCall;
 import org.makumba.providers.query.mql.MqlNode;
@@ -85,7 +86,7 @@ public class InlinerMqlSqlWalker extends MqlSqlWalker {
             type = rootContext.getLabels().values().iterator().next();
         }
 
-        DataDefinition.QueryFragmentFunction funct = type.getFunctionOrPointedFunction(additionalPath);
+        QueryFragmentFunction funct = type.getFunctionOrPointedFunction(additionalPath);
 
         // we didn't find the function in the MDD, so it might be a MQL function
         // we ignore actors as they will be processed by the inliner

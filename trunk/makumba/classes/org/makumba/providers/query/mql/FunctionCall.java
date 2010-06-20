@@ -3,11 +3,11 @@ package org.makumba.providers.query.mql;
 import java.util.Vector;
 
 import org.makumba.DataDefinition;
-import org.makumba.DataDefinition.QueryFragmentFunction;
+import org.makumba.QueryFragmentFunction;
 
 public class FunctionCall {
 
-    private DataDefinition.QueryFragmentFunction function;
+    private QueryFragmentFunction function;
 
     private boolean isMQLFunction;
 
@@ -42,7 +42,7 @@ public class FunctionCall {
         this.isInWhere = isInWhere;
     }
 
-    public DataDefinition.QueryFragmentFunction getFunction() {
+    public QueryFragmentFunction getFunction() {
         return function;
     }
 

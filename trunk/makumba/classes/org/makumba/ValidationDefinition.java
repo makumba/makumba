@@ -33,6 +33,7 @@ import java.util.Collection;
  * @version $Id$
  */
 public interface ValidationDefinition {
+
     /** Name of this validation definition, normally the same */
     public String getName();
 
@@ -41,15 +42,6 @@ public interface ValidationDefinition {
 
     /** Get the validation rule with the given rule name. */
     public ValidationRule getValidationRule(String ruledName);
-
-    /** Add a new rule for the given field. */
-    public void addRule(String fieldName, ValidationRule rule);
-
-    /** Add several rules for the given field. */
-    public void addRule(String fieldName, Collection<ValidationRule> rules);
-
-    /** Get the data definition associated with this validation definition. */
-    public DataDefinition getDataDefinition();
 
     public boolean hasValidationRules();
 

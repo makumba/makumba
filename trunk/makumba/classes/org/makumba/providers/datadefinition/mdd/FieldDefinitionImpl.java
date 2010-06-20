@@ -16,6 +16,7 @@ import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
+import org.makumba.MakumbaError;
 import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.ValidationRule;
@@ -401,14 +402,6 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
     }
 
     /** methods for validation rules **/
-
-    public void addValidationRule(Collection<ValidationRule> rules) {
-        if (rules != null) {
-            for (ValidationRule validationRule : rules) {
-                addValidationRule(validationRule);
-            }
-        }
-    }
 
     public void addValidationRule(ValidationRule rule) {
         validationRules.put(rule.getRuleName(), rule);
@@ -1176,6 +1169,27 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         sb.append("---  end structure of " + getName());
 
         return sb.toString();
+    }
+
+    public String getErrorMessage(FieldErrorMessageType t) {
+        switch (t) {
+            case NOT_A_NUMBER:
+                return this.NaNError;
+            case NOT_NULL:
+                return this.notNullError;
+            case NOT_UNIQUE:
+                return this.uniqueError;
+            case NOT_EMPTY:
+                return this.notEmptyError;
+            case NOT_INT:
+                return this.notIntError;
+            case NOT_REAL:
+                return this.notRealError;
+            case NOT_BOOLEAN:
+                return this.notBooleanError;
+            default:
+                throw new MakumbaError("no such error message");
+        }
     }
 
     public String getNotANumberErrorMessage() {

@@ -12,7 +12,7 @@ import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.FieldDefinition;
 import org.makumba.ProgrammerError;
-import org.makumba.DataDefinition.QueryFragmentFunction;
+import org.makumba.QueryFragmentFunction;
 import org.makumba.commons.ClassResource;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
@@ -42,8 +42,8 @@ public class Pass1FunctionInliner {
             String s = (String) name;
             DataDefinition calleeType = DataDefinitionProvider.getInstance().getDataDefinition(
                 s.substring(0, s.indexOf(' ')));
-            QueryFragmentFunction func = calleeType.getFunctions().getFunction(
-                s.substring(s.indexOf(' ') + 1, s.lastIndexOf(' ')));
+            QueryFragmentFunction func = DataDefinitionProvider.getInstance().getQueryFragmentFunctions(
+                calleeType.getName()).getFunction(s.substring(s.indexOf(' ') + 1, s.lastIndexOf(' ')));
             AST pass1 = parseAndAddThis(calleeType, func);
             String provider = s.substring(s.lastIndexOf(' ') + 1);
 
@@ -174,7 +174,8 @@ public class Pass1FunctionInliner {
             }
 
             // now we can retrieve the function
-            QueryFragmentFunction func = calleeType.getFunctions().getFunction(methodName);
+            QueryFragmentFunction func = DataDefinitionProvider.getInstance().getQueryFragmentFunctions(
+                calleeType.getName()).getFunction(methodName);
 
             if (func == null) {
                 throw new ProgrammerError("Unknown function '" + methodName + "' in type " + calleeType.getName());
@@ -402,7 +403,8 @@ public class Pass1FunctionInliner {
                 // to check for that, we can invoke findType() for that label
                 // however i am not sure whether such a label is legal
                 if (calleeType.getFieldDefinition(a.getText()) != null
-                        || calleeType.getFunctions().getFunction(a.getText()) != null) {
+                        || DataDefinitionProvider.getInstance().getQueryFragmentFunctions(calleeType.getName()).getFunction(
+                            a.getText()) != null) {
                     // make a dot and a this ident.
                     AST ret = ASTUtil.makeNode(HqlTokenTypes.DOT, ".");
                     AST thisAST = ASTUtil.makeNode(HqlTokenTypes.IDENT, "this");

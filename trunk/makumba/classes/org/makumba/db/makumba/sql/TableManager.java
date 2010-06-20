@@ -49,6 +49,7 @@ import org.makumba.NotUniqueException;
 import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.DataDefinition.MultipleUniqueKeyDefinition;
+import org.makumba.FieldDefinition.FieldErrorMessageType;
 import org.makumba.commons.NameResolver;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.SQLPointer;
@@ -762,10 +763,10 @@ public class TableManager extends Table {
             }
             if (checkDuplicate(fieldName, dbc, d)) {
                 FieldDefinition fd = dd.getFieldDefinition(fieldName);
-                if (fd.getNotUniqueErrorMessage() == null) {
+                if (fd.getErrorMessage(FieldErrorMessageType.NOT_UNIQUE) == null) {
                     notUnique.addException(new NotUniqueException(getFieldDefinition(fieldName), val));
                 } else {
-                    notUnique.addException(new NotUniqueException(fd.getNotUniqueErrorMessage()));
+                    notUnique.addException(new NotUniqueException(fd.getErrorMessage(FieldErrorMessageType.NOT_UNIQUE)));
                 }
             }
         }
