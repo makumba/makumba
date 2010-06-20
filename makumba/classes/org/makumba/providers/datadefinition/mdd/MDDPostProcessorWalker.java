@@ -62,6 +62,13 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
     protected void checkTitleField(AST titleField) {
         TitleFieldNode title = (TitleFieldNode) titleField;
 
+        // check if we have a function called title() in the MDD
+        if (mdd.functions.containsKey("title")) {
+            factory.doThrow(this.typeName,
+                "Duplicate title definition: you cannot both declare a !title statement and a title() function",
+                titleField);
+        }
+
         // titleField can be a field name or a function
         switch (title.titleType) {
 

@@ -580,5 +580,4 @@ public class DataDefinitionProvider {
         }
         return fields;
     }
-
 }

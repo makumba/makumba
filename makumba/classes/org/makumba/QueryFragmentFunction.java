@@ -7,7 +7,6 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Vector;
 
-import antlr.collections.AST;
 
 /**
  * This class represents a makumba query fragment function
@@ -25,20 +24,14 @@ public class QueryFragmentFunction implements Serializable {
 
     private String queryFragment;
 
-    private AST parsedQueryFragment;
-
     private DataDefinition parameters;
 
     private String errorMessage;
 
     private DataDefinition holder;
 
-    public AST getParsedQueryFragment() {
-        return parsedQueryFragment;
-    }
-
     public QueryFragmentFunction(DataDefinition holder, String name, String sessionVariableName, String queryFragment,
-            DataDefinition parameters, String errorMessage, AST parsedQueryFragment) {
+            DataDefinition parameters, String errorMessage) {
         super();
         this.name = name;
         this.sessionVariableName = sessionVariableName;
@@ -49,7 +42,6 @@ public class QueryFragmentFunction implements Serializable {
         } else {
             this.errorMessage = "";
         }
-        this.parsedQueryFragment = parsedQueryFragment;
         this.holder = holder;
     }
 
