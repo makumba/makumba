@@ -51,6 +51,7 @@ import org.makumba.LogicNotFoundException;
 import org.makumba.MakumbaError;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
+import org.makumba.QueryFragmentFunction;
 import org.makumba.Transaction;
 import org.makumba.UnauthenticatedException;
 import org.makumba.UnauthorizedException;
@@ -423,10 +424,10 @@ public class Logic {
             }
         }
 
-        DataDefinition.QueryFragmentFunction match = null;
+        QueryFragmentFunction match = null;
         MakumbaActorHashMap matchValues = null;
         QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer(dbcp.getTransactionProvider().getQueryLanguage());
-        nextFunction: for (DataDefinition.QueryFragmentFunction f : dd.getFunctions().getActorFunctions()) {
+        nextFunction: for (QueryFragmentFunction f : ddp.getQueryFragmentFunctions(dd.getName()).getActorFunctions()) {
             MakumbaActorHashMap values = new MakumbaActorHashMap();
             DataDefinition params = f.getParameters();
             if (match != null && match.getParameters().getFieldNames().size() > params.getFieldNames().size()) {
@@ -445,7 +446,8 @@ public class Logic {
             matchValues = values;
         }
         if (match == null) {
-            if (dd.getFunctions().getActorFunctions().size() == 0) { // if we have no actor function at all
+            if (ddp.getQueryFragmentFunctions(dd.getName()).getActorFunctions().size() == 0) { // if we have no actor
+                // function at all
                 // report this as programmer error
                 throw new ProgrammerError("No fitting actor() function was found in " + type);
             } else {
@@ -514,7 +516,7 @@ public class Logic {
             throws ProgrammerError {
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("x", p);
-        for (DataDefinition.QueryFragmentFunction g : dd.getFunctions().getSessionFunctions()) {
+        for (QueryFragmentFunction g : ddp.getQueryFragmentFunctions(dd.getName()).getSessionFunctions()) {
             StringBuffer fc = new StringBuffer();
             fc.append("SELECT x.").append(g.getName()).append("() AS col1 FROM ").append(type).append(" x WHERE x=").append(
                 qap.getParameterSyntax()).append("x");
@@ -543,7 +545,7 @@ public class Logic {
         for (String s : dd.getFieldNames()) {
             ret.add(att + "_" + s);
         }
-        for (DataDefinition.QueryFragmentFunction g : dd.getFunctions().getSessionFunctions()) {
+        for (QueryFragmentFunction g : ddp.getQueryFragmentFunctions(dd.getName()).getSessionFunctions()) {
             ret.add(att + "_" + g.getName());
         }
         return ret;

@@ -8,7 +8,7 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidFieldTypeException;
 import org.makumba.ProgrammerError;
-import org.makumba.DataDefinition.QueryFragmentFunction;
+import org.makumba.QueryFragmentFunction;
 import org.makumba.commons.RegExpUtils;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysisProvider;
@@ -105,7 +105,8 @@ public class FunctionInliner {
                 possibleMdd = possibleMdd.substring(0, n);
                 calleeType = DataDefinitionProvider.getInstance().getDataDefinition(possibleMdd.trim());
                 if (calleeType != null) {
-                    functionDefinition = calleeType.getFunctions().getFunction(possibleFunction.trim());
+                    functionDefinition = ddp.getQueryFragmentFunctions(calleeType.getName()).getFunction(
+                        possibleFunction.trim());
                 } else {
                     throw new org.makumba.DataDefinitionNotFoundError(possibleMdd);
                 }
@@ -129,7 +130,7 @@ public class FunctionInliner {
             int dot1 = referenceSequence.indexOf(".", dot + 1);
             if (dot1 == -1) {
                 String fn = referenceSequence.substring(dot + 1);
-                functionDefinition = calleeType.getFunctions().getFunction(fn);
+                functionDefinition = ddp.getQueryFragmentFunctions(calleeType.getName()).getFunction(fn);
                 if (functionDefinition == null) {
                     throw new ProgrammerError(fn + " is not a function in " + calleeType.getName());
                 }
@@ -277,7 +278,7 @@ public class FunctionInliner {
 
     public static final Pattern ident = Pattern.compile("[a-zA-Z]\\w*");
 
-    public static String addThisToFunction(DataDefinition mdd, DataDefinition.QueryFragmentFunction func) {
+    public static String addThisToFunction(DataDefinition mdd, QueryFragmentFunction func) {
         String queryFragment = func.getQueryFragment();
         StringBuffer sb = new StringBuffer();
         Matcher m = ident.matcher(queryFragment);
@@ -309,7 +310,8 @@ public class FunctionInliner {
                     || func.getParameters().getFieldDefinition(id) != null) {
                 continue;
             }
-            if (mdd.getFieldDefinition(id) != null || after == '(' && mdd.getFunctions().getFunction(id) != null) {
+            if (mdd.getFieldDefinition(id) != null || after == '('
+                    && ddp.getQueryFragmentFunctions(mdd.getName()).getFunction(id) != null) {
                 m.appendReplacement(sb, "this." + id);
                 found = true;
             }

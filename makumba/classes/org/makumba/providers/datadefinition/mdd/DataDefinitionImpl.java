@@ -13,9 +13,11 @@ import org.apache.commons.collections.map.ListOrderedMap;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionParseError;
 import org.makumba.FieldDefinition;
+import org.makumba.QueryFragmentFunction;
 import org.makumba.QueryFragmentFunctions;
 import org.makumba.ValidationDefinition;
 import org.makumba.ValidationRule;
+import org.makumba.providers.DataDefinitionProvider;
 
 /**
  * Implementation of the {@link DataDefinition} interface.<br>
@@ -29,6 +31,8 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
     private static final long serialVersionUID = 5973863780194787175L;
 
     public static final String ENUM_FIELD_NAME = "enum";
+
+    private transient DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
 
     /** name of the data definition **/
     protected String name;
@@ -199,7 +203,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
                                 + v.getRuleName());
                     }
                 }
-                fd.addValidationRule(v);
+                ((FieldDefinitionImpl) fd).addValidationRule(v);
             }
         }
 
@@ -616,7 +620,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
             FieldDefinition fieldDefinition = dd.getFieldDefinition(subFieldName);
             dd = fieldDefinition.getPointedType();
         }
-        return dd.getFunctions().getFunction(fieldName);
+        return ddp.getQueryFragmentFunctions(dd.getName()).getFunction(fieldName);
     }
 
     /** which is the name of the index field, if any? */
@@ -637,8 +641,6 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
         return multiFieldUniqueList.values().toArray(
             new MultipleUniqueKeyDefinition[multiFieldUniqueList.values().size()]);
     }
-
-    /** methods for checks **/
 
     public QueryFragmentFunctions getFunctions() {
         return functions;
@@ -669,16 +671,8 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
         return this;
     }
 
-    public void addRule(String fieldName, Collection<ValidationRule> rules) {
-        getFieldDefinition(fieldName).addValidationRule(rules);
-    }
-
-    public void addRule(String fieldName, ValidationRule rule) {
-        getFieldDefinition(fieldName).addValidationRule(rule);
-    }
-
     public Collection<ValidationRule> getValidationRules(String fieldName) {
-        return getFieldDefinition(fieldName).getValidationRules();
+        return ((FieldDefinitionImpl) getFieldDefinition(fieldName)).getValidationRules();
     }
 
     public boolean hasValidationRules() {
@@ -735,7 +729,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
 
         sb.append("\n   === Functions \n\n");
 
-        for (DataDefinition.QueryFragmentFunction f : functions.getFunctions()) {
+        for (QueryFragmentFunction f : functions.getFunctions()) {
             sb.append(f.toString() + "\n");
         }
 

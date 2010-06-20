@@ -34,6 +34,7 @@ import org.makumba.commons.StringUtils;
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.InvalidValueException;
 import org.makumba.commons.formatters.RecordFormatter;
+import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.datadefinition.mdd.ValidationType;
 import org.makumba.providers.datadefinition.mdd.validation.RangeValidationRule;
 
@@ -128,7 +129,8 @@ public class intEditor extends charEditor {
             // spinner.append("</div>\n");
             return spinner.toString();
         } else if (StringUtils.equalsAny(formatParams.get("type"), "select", "radio")) {
-            Collection<ValidationRule> validationRules = rf.dd.getFieldDefinition(fieldIndex).getValidationRules();
+            Collection<ValidationRule> validationRules = DataDefinitionProvider.getInstance().getValidationRules(
+                rf.dd.getFieldDefinition(fieldIndex));
             for (ValidationRule validationRule : validationRules) {
                 if (validationRule instanceof RangeValidationRule
                         && ((RangeValidationRule) validationRule).getValidationType() == ValidationType.RANGE) {

@@ -7,8 +7,10 @@ import java.util.Set;
 
 import org.makumba.FieldDefinition;
 import org.makumba.ValidationRule;
+import org.makumba.FieldDefinition.FieldErrorMessageType;
 import org.makumba.commons.StringUtils;
 import org.makumba.forms.html.FieldEditor;
+import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.datadefinition.mdd.MDDExpressionBaseParser;
 import org.makumba.providers.datadefinition.mdd.MDDTokenTypes;
 import org.makumba.providers.datadefinition.mdd.ValidationRuleNode;
@@ -24,6 +26,8 @@ import org.makumba.providers.datadefinition.mdd.validation.ComparisonValidationR
 public class LiveValidationProvider implements ClientsideValidationProvider, Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private transient DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
 
     /**
      * Gathers all validation object definitions and calls to it, e.g.<br>
@@ -44,7 +48,7 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
     /** Initialises a field, basically does create the variables and calls for this field. */
     public void initField(String inputName, String formIdentifier, FieldDefinition fieldDefinition, boolean validateLive) {
         inputName = inputName + formIdentifier;
-        Collection<ValidationRule> validationRules = fieldDefinition.getValidationRules();
+        Collection<ValidationRule> validationRules = ddp.getValidationRules(fieldDefinition);
         int size = validationRules != null ? validationRules.size() : 1;
         StringBuffer validations = new StringBuffer(100 + size * 50);
         String inputVarName = inputName.replaceAll("\\.", "__") + "Validation";
@@ -57,22 +61,30 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
         if (fieldDefinition.isNotNull() && !fieldDefinition.isDateType()) {
             // FIXME: not-null check for dates needed
             // FIXME: fix for checkboxes (and radio buttons?) needed?
-            validations.append(getValidationLine(inputVarName, "Validate.Presence",
-                fieldDefinition.getNotNullErrorMessage() != null ? fieldDefinition.getNotNullErrorMessage()
+            validations.append(getValidationLine(
+                inputVarName,
+                "Validate.Presence",
+                fieldDefinition.getErrorMessage(FieldErrorMessageType.NOT_NULL) != null ? fieldDefinition.getErrorMessage(FieldErrorMessageType.NOT_NULL)
                         : FieldDefinition.ERROR_NOT_NULL));
         } else if (fieldDefinition.isNotEmpty()) { // add a length validation, minimum length 1
-            validations.append(getValidationLine(inputVarName, "Validate.Length",
-                fieldDefinition.getNotEmptyErrorMessage() != null ? fieldDefinition.getNotEmptyErrorMessage()
+            validations.append(getValidationLine(
+                inputVarName,
+                "Validate.Length",
+                fieldDefinition.getErrorMessage(FieldErrorMessageType.NOT_EMPTY) != null ? fieldDefinition.getErrorMessage(FieldErrorMessageType.NOT_EMPTY)
                         : FieldDefinition.ERROR_NOT_EMPTY, getRangeLimits("1", "?")));
         }
 
         if (fieldDefinition.isIntegerType()) {
-            validations.append(getValidationLine(inputVarName, "Validate.Numericality",
-                fieldDefinition.getNotIntErrorMessage() != null ? fieldDefinition.getNotIntErrorMessage()
+            validations.append(getValidationLine(
+                inputVarName,
+                "Validate.Numericality",
+                fieldDefinition.getErrorMessage(FieldErrorMessageType.NOT_INT) != null ? fieldDefinition.getErrorMessage(FieldErrorMessageType.NOT_INT)
                         : FieldEditor.ERROR_NO_INT, "onlyInteger: true,"));
         } else if (fieldDefinition.isRealType()) {
-            validations.append(getValidationLine(inputVarName, "Validate.Numericality",
-                fieldDefinition.getNotRealErrorMessage() != null ? fieldDefinition.getNotRealErrorMessage()
+            validations.append(getValidationLine(
+                inputVarName,
+                "Validate.Numericality",
+                fieldDefinition.getErrorMessage(FieldErrorMessageType.NOT_REAL) != null ? fieldDefinition.getErrorMessage(FieldErrorMessageType.NOT_REAL)
                         : FieldEditor.ERROR_NO_REAL));
         }
 
@@ -81,8 +93,10 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
         }
 
         if (fieldDefinition.isUnique() && !fieldDefinition.isDateType()) {
-            validations.append(getValidationLine(inputVarName, "MakumbaValidate.Uniqueness",
-                fieldDefinition.getNotUniqueErrorMessage() != null ? fieldDefinition.getNotUniqueErrorMessage()
+            validations.append(getValidationLine(
+                inputVarName,
+                "MakumbaValidate.Uniqueness",
+                fieldDefinition.getErrorMessage(FieldErrorMessageType.NOT_UNIQUE) != null ? fieldDefinition.getErrorMessage(FieldErrorMessageType.NOT_UNIQUE)
                         : FieldDefinition.ERROR_NOT_UNIQUE, "table: \"" + fieldDefinition.getDataDefinition().getName()
                         + "\", " + "field: \"" + fieldDefinition.getName() + "\", "));
         }

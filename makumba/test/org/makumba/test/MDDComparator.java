@@ -205,14 +205,6 @@ public class MDDComparator {
             check("isComplexSet()", t, f, fd1.isComplexSet(), fd2.isComplexSet());
             check("isPointer()", t, f, fd1.isPointer(), fd2.isPointer());
             check("isStringType()", t, f, fd1.isStringType(), fd2.isStringType());
-            check("getNotNullErrorMessage()", t, f, fd1.getNotNullErrorMessage(), fd2.getNotNullErrorMessage());
-            check("getNotANumberErrorMessage()", t, f, fd1.getNotANumberErrorMessage(), fd2.getNotANumberErrorMessage());
-            check("getNotUniqueErrorMessage()", t, f, fd1.getNotUniqueErrorMessage(), fd2.getNotUniqueErrorMessage());
-            check("getNotEmptyErrorMessage()", t, f, fd1.getNotEmptyErrorMessage(), fd2.getNotEmptyErrorMessage());
-            check("getNotUniqueErrorMessage()", t, f, fd1.getNotUniqueErrorMessage(), fd2.getNotUniqueErrorMessage());
-            check("getNotIntErrorMessage()", t, f, fd1.getNotIntErrorMessage(), fd2.getNotIntErrorMessage());
-            check("getNotRealErrorMessage()", t, f, fd1.getNotRealErrorMessage(), fd2.getNotRealErrorMessage());
-            check("getNotBooleanErrorMessage()", t, f, fd1.getNotBooleanErrorMessage(), fd2.getNotBooleanErrorMessage());
             check("isDefaultField()", t, f, fd1.isDefaultField(), fd2.isDefaultField());
             check("shouldEditBySingleInput()", t, f, fd1.shouldEditBySingleInput(), fd2.shouldEditBySingleInput());
 

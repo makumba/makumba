@@ -55,6 +55,8 @@ public class mddViewer extends LineViewer {
 
     private DataDefinition dd = null;
 
+    private DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
+
     public mddViewer(HttpServletRequest req) throws Exception {
         super(true, req);
         setSearchLevels(false, false, false, true);
@@ -68,7 +70,7 @@ public class mddViewer extends LineViewer {
         virtualPath = virtualPath.substring(1);
 
         try {
-            dd = DataDefinitionProvider.getInstance().getDataDefinition(virtualPath);
+            dd = ddp.getDataDefinition(virtualPath);
         } catch (DataDefinitionNotFoundError nf) {
             // FIXME: this is probably an include, we ignore it alltogether
         } catch (MakumbaError pe) {
@@ -270,7 +272,7 @@ public class mddViewer extends LineViewer {
         StringTokenizer tokenizer = new StringTokenizer(s, " ", true);
         while (tokenizer.hasMoreElements()) {
             String token = tokenizer.nextToken();
-            ValidationDefinition vd = dd.getValidationDefinition();
+            ValidationDefinition vd = ddp.getValidationDefinition(dd.getName());
             if (ArrayUtils.contains(basicValidationRuleOperators, token.trim())) {
                 result.append("<span style=\"color:blue; font-weight: bold;\">" + htmlEscape(token) + "</span>");
             } else if (token.equals(";")) {
@@ -318,10 +320,11 @@ public class mddViewer extends LineViewer {
 
     @Override
     protected void writeAdditionalLinks(PrintWriter w) {
-        if (dd != null && dd.getValidationDefinition() != null && dd.getValidationDefinition().hasValidationRules()) {
+        if (dd != null && ddp.getValidationDefinition(dd.getName()) != null
+                && ddp.getValidationDefinition(dd.getName()).hasValidationRules()) {
             w.println("<a href=\"javascript:toggleValidtionRuleDisplay();\">Hide validation rules</a>");
         }
-        if (dd != null && dd.getFunctions().size() > 0) {
+        if (dd != null && ddp.getQueryFragmentFunctions(dd.getName()).getFunctions().size() > 0) {
             w.println("<a href=\"javascript:toggleFunctionDisplay();\">Hide functions</a>");
         }
     }

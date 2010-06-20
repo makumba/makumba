@@ -27,12 +27,9 @@ package org.makumba;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Vector;
 
 import org.makumba.commons.StringUtils;
 
-import antlr.collections.AST;
 
 /**
  * Information about a makumba data definition as obtained from an MDD file or the structure of an MQL query result.
@@ -102,9 +99,6 @@ public interface DataDefinition {
     /** Indicates when the data definition was modified the last time */
     public long lastModified();
 
-    /** Get the validation definition associated with this data definition. */
-    public ValidationDefinition getValidationDefinition();
-
     /** Get all multiple-field uniqueness definition. */
     public MultipleUniqueKeyDefinition[] getMultiFieldUniqueKeys();
 
@@ -113,111 +107,6 @@ public interface DataDefinition {
 
     /** Check whether this data definition has a multi-field uniqe key defined with the given fields. */
     public boolean hasMultiUniqueKey(String[] fieldNames);
-
-    /** returns all functions in this data definition. */
-    public QueryFragmentFunctions getFunctions();
-
-    class QueryFragmentFunction implements Serializable {
-        private static final long serialVersionUID = 1L;
-
-        private String name;
-
-        private String sessionVariableName;
-
-        private String queryFragment;
-
-        private AST parsedQueryFragment;
-
-        private DataDefinition parameters;
-
-        private String errorMessage;
-
-        private DataDefinition holder;
-
-        public AST getParsedQueryFragment() {
-            return parsedQueryFragment;
-        }
-
-        public QueryFragmentFunction(DataDefinition holder, String name, String sessionVariableName,
-                String queryFragment, DataDefinition parameters, String errorMessage, AST parsedQueryFragment) {
-            super();
-            this.name = name;
-            this.sessionVariableName = sessionVariableName;
-            this.queryFragment = queryFragment;
-            this.parameters = parameters;
-            if (errorMessage != null) {
-                this.errorMessage = errorMessage;
-            } else {
-                this.errorMessage = "";
-            }
-            this.parsedQueryFragment = parsedQueryFragment;
-            this.holder = holder;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public DataDefinition getHoldingDataDefinition() {
-            return holder;
-        }
-
-        public void setHoldingDataDefinition(DataDefinition holder) {
-            this.holder = holder;
-        }
-
-        public String getSessionVariableName() {
-            return sessionVariableName;
-        }
-
-        public DataDefinition getParameters() {
-            return parameters;
-        }
-
-        public String getQueryFragment() {
-            return queryFragment;
-        }
-
-        public String getErrorMessage() {
-            return errorMessage;
-        }
-
-        public boolean isActorFunction() {
-            return getName().startsWith("actor");
-        }
-
-        public boolean isSubquery() {
-            return getQueryFragment().toUpperCase().startsWith("SELECT ");
-        }
-
-        public boolean isSessionFunction() {
-            return !isActorFunction() && getParameters().getFieldNames().size() == 0;
-        }
-
-        @Override
-        public String toString() {
-            String s = "";
-            Vector<String> fieldNames = getParameters().getFieldNames();
-            for (Iterator<String> iter = fieldNames.iterator(); iter.hasNext();) {
-                String name = iter.next();
-                s += getParameters().getFieldDefinition(name).getType() + " " + name;
-                if (iter.hasNext()) {
-                    s += ", ";
-                }
-            }
-            s += "";
-            return (org.apache.commons.lang.StringUtils.isNotBlank(sessionVariableName) ? sessionVariableName + "%"
-                    : "")
-                    + getName()
-                    + "("
-                    + s
-                    + ") { "
-                    + queryFragment.trim()
-                    + " } "
-                    + (org.apache.commons.lang.StringUtils.isNotBlank(errorMessage) ? ":\"" + errorMessage + "\"" : "");
-        }
-
-    }
 
     /** Data structure holding the definition of a mult-field unique key. */
     class MultipleUniqueKeyDefinition implements Serializable {

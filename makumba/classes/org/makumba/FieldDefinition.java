@@ -25,7 +25,6 @@
 
 package org.makumba;
 
-import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Vector;
 
@@ -344,37 +343,10 @@ public interface FieldDefinition {
     /** returns whether this field is a string type, i.e. char or text. */
     public boolean isStringType();
 
-    /** Returns all the validation rules connected to this field. */
-    public Collection<ValidationRule> getValidationRules();
+    public enum FieldErrorMessageType {
+        NOT_NULL, NOT_A_NUMBER, NOT_UNIQUE, NOT_EMPTY, NOT_INT, NOT_REAL, NOT_BOOLEAN
+    }
 
-    /** Adds a new validation rule to this field. */
-    public void addValidationRule(ValidationRule rule);
-
-    /** adds several new validation rules to this field. */
-    public void addValidationRule(Collection<ValidationRule> rules);
-
-    /** gets the error message for not null field, if specified **/
-    public String getNotNullErrorMessage();
-
-    /** gets the error message for the not a number field constraint, if specified **/
-    public String getNotANumberErrorMessage();
-
-    /** gets the error message for the not unique field constraint, if specified **/
-    public String getNotUniqueErrorMessage();
-
-    /** gets the error message for the not empty field constraint, if specified **/
-    public String getNotEmptyErrorMessage();
-
-    /** gets the error message for the not an int field constraint, if specified **/
-    public String getNotIntErrorMessage();
-
-    /** gets the error message for the not a real field constraint, if specified **/
-    public String getNotRealErrorMessage();
-
-    /** gets the error message for the not a boolean field constraint, if specified **/
-    public String getNotBooleanErrorMessage();
-
-    /** gets the language of this field **/
-    // public String getLanguage();
-
+    /** gets the error message for a certain kind of field error **/
+    public String getErrorMessage(FieldErrorMessageType t);
 }

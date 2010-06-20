@@ -2,7 +2,7 @@ package org.makumba.providers.datadefinition.mdd;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
-import org.makumba.DataDefinition.QueryFragmentFunction;
+import org.makumba.QueryFragmentFunction;
 import org.makumba.providers.DataDefinitionProvider;
 
 import antlr.collections.AST;
