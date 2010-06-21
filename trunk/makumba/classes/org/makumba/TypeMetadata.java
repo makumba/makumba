@@ -6,4 +6,6 @@ public interface TypeMetadata {
 
     public Class<?> getClazz();
 
+    public Object getAspect(MetadataAspect a);
+
 }
