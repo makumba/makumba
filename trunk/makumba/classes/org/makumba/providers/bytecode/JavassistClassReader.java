@@ -12,17 +12,19 @@ import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.AnnotationMemberValue;
+import javassist.bytecode.annotation.ArrayMemberValue;
 import javassist.bytecode.annotation.BooleanMemberValue;
 import javassist.bytecode.annotation.ClassMemberValue;
 import javassist.bytecode.annotation.EnumMemberValue;
 import javassist.bytecode.annotation.IntegerMemberValue;
+import javassist.bytecode.annotation.MemberValue;
 import javassist.bytecode.annotation.StringMemberValue;
 
 import org.makumba.MakumbaError;
 
 /**
  * TODO optimize memory consumption if possible, read {@link ClassPool} documentation<br>
- * TODO support for reading array annotation values<br>
+ * TODO method reading --> combined method & field reading<br>
  * 
  * @author manu
  * @version $Id: JavassistClassReader.java,v 1.1 Jun 18, 2010 4:10:53 PM manu Exp $
@@ -80,17 +82,18 @@ public class JavassistClassReader extends AbstractClassReader {
         Set<String> members = annotation.getMemberNames();
         for (String m : members) {
 
-            Object value = readAttributeValue(annotation, m);
+            Object v = annotation.getMemberValue(m);
+            if (v == null) {
+                throw new MakumbaError("Attribute '" + m + "' not found");
+            }
+            Object value = readAttributeValue(v);
             aa.addAttribute(m, value);
         }
     }
 
-    private Object readAttributeValue(Annotation annotation, String m) throws MakumbaError {
+    private Object readAttributeValue(Object v) throws MakumbaError {
         Object value = null;
-        Object v = annotation.getMemberValue(m);
-        if (v == null) {
-            throw new MakumbaError("Attribute '" + m + "' not found");
-        }
+
         if (v instanceof StringMemberValue) {
             value = ((StringMemberValue) v).getValue();
         } else if (v instanceof IntegerMemberValue) {
@@ -107,6 +110,14 @@ public class JavassistClassReader extends AbstractClassReader {
             value = ((ClassMemberValue) v).getValue();
         } else if (v instanceof BooleanMemberValue) {
             value = ((BooleanMemberValue) v).getValue();
+        } else if (v instanceof ArrayMemberValue) {
+            ArrayMemberValue amv = (ArrayMemberValue) v;
+            MemberValue[] mvs = amv.getValue();
+            Object[] val = new Object[mvs.length];
+            for (int i = 0; i < mvs.length; i++) {
+                val[i] = readAttributeValue(mvs[i]);
+            }
+            value = val;
         } else {
             throw new MakumbaError("Unimplemented type " + v.getClass());
         }
@@ -117,7 +128,11 @@ public class JavassistClassReader extends AbstractClassReader {
     public Object getAnnotationValue(Class<?> annotationClass, String attributeName, String methodName, Clazz clazz) {
         for (Annotation a : readVisibleAnnotations(methodName, clazz)) {
             if (a.getTypeName().equals(annotationClass.getName())) {
-                return readAttributeValue(a, attributeName);
+                Object v = a.getMemberValue(attributeName);
+                if (v == null) {
+                    throw new MakumbaError("Attribute '" + attributeName + "' not found");
+                }
+                return readAttributeValue(v);
             }
         }
         return null;

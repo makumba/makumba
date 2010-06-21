@@ -1,5 +1,7 @@
 package org.makumba.providers;
 
+import java.util.LinkedHashMap;
+
 import org.makumba.providers.bytecode.EntityClassGenerator;
 
 /**
@@ -16,6 +18,8 @@ public class FieldDataDTO {
     private final String name;
 
     private final int type;
+
+    private final String description;
 
     private final String relatedTypeName;
 
@@ -34,12 +38,19 @@ public class FieldDataDTO {
 
     protected boolean unique;
 
-    public FieldDataDTO(String name, int type, String relatedTypeName, String mappingTable,
+    // enum
+    protected LinkedHashMap<Integer, String> intEnumValues = new LinkedHashMap<Integer, String>();
+
+    protected LinkedHashMap<Integer, String> intEnumValuesDeprecated = new LinkedHashMap<Integer, String>();
+
+    public FieldDataDTO(String name, int type, String description, String relatedTypeName, String mappingTable,
             String setMappingColumnName, int characterLength, boolean fixed, boolean notNull, boolean notEmpty,
-            boolean unique) {
+            boolean unique, LinkedHashMap<Integer, String> intEnumValues,
+            LinkedHashMap<Integer, String> intEnumValuesDeprecated) {
         super();
         this.name = name;
         this.type = type;
+        this.description = description;
         this.relatedTypeName = relatedTypeName;
         this.mappingTableName = mappingTable;
         this.characterLenght = characterLength;
@@ -48,6 +59,8 @@ public class FieldDataDTO {
         this.notNull = notNull;
         this.notEmpty = notEmpty;
         this.unique = unique;
+        this.intEnumValues = intEnumValues;
+        this.intEnumValuesDeprecated = intEnumValuesDeprecated;
     }
 
     public boolean isFixed() {
@@ -109,6 +122,18 @@ public class FieldDataDTO {
      */
     public int getCharacterLenght() {
         return characterLenght;
+    }
+
+    public LinkedHashMap<Integer, String> getIntEnumValues() {
+        return intEnumValues;
+    }
+
+    public LinkedHashMap<Integer, String> getIntEnumValuesDeprecated() {
+        return intEnumValuesDeprecated;
+    }
+
+    public String getDescription() {
+        return this.description;
     }
 
 }

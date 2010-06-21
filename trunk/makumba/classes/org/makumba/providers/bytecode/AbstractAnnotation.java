@@ -1,20 +1,24 @@
 package org.makumba.providers.bytecode;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.commons.collections.map.MultiValueMap;
+
 /**
- * An abstract annotation
+ * An abstract annotation object, useful to read/write annotations<br>
+ * 
+ * @author manu
+ * @version $Id: AbstractAnnotation.java,v 1.1 Jun 21, 2010 3:24:36 PM manu Exp $
  */
 public class AbstractAnnotation {
 
     private String name;
 
-    private Map<String, Object> attributes;
+    private MultiValueMap attributes;
 
     public AbstractAnnotation(String name) {
         this.name = name;
-        this.attributes = new LinkedHashMap<String, Object>();
+        this.attributes = new MultiValueMap();
     }
 
     /**
@@ -37,12 +41,12 @@ public class AbstractAnnotation {
     }
 
     /**
-     * Adds an annotation attribute
+     * Adds an annotation attribute, with support for multiple values
      * 
      * @param name
      *            the name of the attribute
      * @param value
-     *            the value of the attribute
+     *            the value of the attribute. Can be a collection.
      * @return the {@link AbstractAnnotation} to which the attribute was added
      */
     public AbstractAnnotation addAttribute(String name, Object value) {
@@ -51,7 +55,7 @@ public class AbstractAnnotation {
     }
 
     /**
-     * Adds a nested annotation to a given attribute. Currently only one nested annotation per attribute is supported!
+     * Adds a nested annotation to a given attribute.
      * 
      * @param attributeName
      *            the name of the annotation attribute into which the nested annotation should be added

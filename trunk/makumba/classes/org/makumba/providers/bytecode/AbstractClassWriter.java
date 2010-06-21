@@ -29,6 +29,9 @@ public abstract class AbstractClassWriter {
      */
     public abstract void addField(Clazz clazz, String name, String type);
 
+    /**
+     * Adds annotations to a class
+     */
     public abstract void addClassAnnotations(Clazz clazz, Vector<AbstractAnnotation> annotations);
 
     /**
@@ -81,6 +84,9 @@ public abstract class AbstractClassWriter {
     public abstract void appendAnnotations(String fullyQualifiedClassName, String methodName,
             Vector<AbstractAnnotation> annotations, String generatedClassPath);
 
+    /**
+     * Creates a new annotation with a given name
+     */
     public AbstractAnnotation createAnnotation(String name) {
         return new AbstractAnnotation(name);
     }
