@@ -574,8 +574,10 @@ public class DataDefinitionProvider {
                     : null;
             int charLength = fd.getIntegerType() == FieldDefinition._char ? fd.getWidth() : -1;
 
-            FieldDataDTO f = new FieldDataDTO(field, fd.getIntegerType(), relatedTypeName, mappingTableName,
-                    setMappingColumnName, charLength, fd.isFixed(), fd.isNotNull(), fd.isNotEmpty(), fd.isUnique());
+            FieldDataDTO f = new FieldDataDTO(field, fd.getIntegerType(), fd.getDescription(), relatedTypeName,
+                    mappingTableName, setMappingColumnName, charLength, fd.isFixed(), fd.isNotNull(), fd.isNotEmpty(),
+                    fd.isUnique(), ((FieldDefinitionImpl) fd).getIntEnumValues(),
+                    ((FieldDefinitionImpl) fd).getIntEnumValuesDeprecated());
             fields.add(f);
         }
         return fields;

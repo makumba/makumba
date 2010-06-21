@@ -1,6 +1,7 @@
 package org.makumba.providers.bytecode;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Vector;
 
@@ -19,6 +20,7 @@ import javassist.bytecode.ClassFile;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.AnnotationMemberValue;
+import javassist.bytecode.annotation.ArrayMemberValue;
 import javassist.bytecode.annotation.BooleanMemberValue;
 import javassist.bytecode.annotation.ClassMemberValue;
 import javassist.bytecode.annotation.EnumMemberValue;
@@ -35,7 +37,6 @@ import org.makumba.commons.NameResolver;
 
 /**
  * TODO optimize memory consumption if possible, read {@link ClassPool} documentation<br>
- * TODO support for writing array annotation values<br>
  * 
  * @author manu
  * @version $Id: JavassistClassWriter.java,v 1.1 Jun 18, 2010 4:12:07 PM manu Exp $
@@ -94,51 +95,64 @@ public class JavassistClassWriter extends AbstractClassWriter {
     }
 
     private Annotation addAnnotation(String annotationName, ConstPool cp, Map<String, Object> annotationAttributes) {
-
         Annotation a = new Annotation(annotationName, cp);
-
-        // FIXME what if there are several nested annotations for the _same_ attribute?
-        // I guess we need to make a ArrayMemberValue
-        // for now this can't happen because we get a Map anyway, so we are kind of screwed unless we start
-        // using a MultiValueMap
-
         for (String attribute : annotationAttributes.keySet()) {
             Object v = annotationAttributes.get(attribute);
-            MemberValue mv = null;
-            if (v instanceof String) {
-                mv = new StringMemberValue((String) v, cp);
-            } else if (v instanceof AbstractAnnotation) {
-                // nested annotations, oh joy!
-                AbstractAnnotation nestedAnnotation = (AbstractAnnotation) v;
-                AnnotationMemberValue amv = new AnnotationMemberValue(cp);
-                Annotation na = addAnnotation(nestedAnnotation.getName(), cp, nestedAnnotation.getAttribues());
-                amv.setValue(na);
-                mv = amv;
-            } else if (v instanceof Enum<?>) {
-                EnumMemberValue emv = new EnumMemberValue(cp);
-                emv.setType(((Enum<?>) v).getClass().getName());
-                emv.setValue(((Enum<?>) v).name());
-                mv = emv;
-            } else if (v instanceof Class<?>) {
-                ClassMemberValue cmv = new ClassMemberValue(cp);
-                cmv.setValue(((Class<?>) v).getName());
-                mv = cmv;
-            } else if (v instanceof Boolean) {
-                BooleanMemberValue bmv = new BooleanMemberValue(cp);
-                bmv.setValue((Boolean) v);
-                mv = bmv;
-            } else if (v instanceof Integer) {
-                IntegerMemberValue imv = new IntegerMemberValue(cp);
-                imv.setValue((Integer) v);
-                mv = imv;
-            } else {
-                throw new MakumbaError("Error while trying to construct annotation: unhandled type "
-                        + v.getClass().getName());
-            }
-
+            MemberValue mv = getMemberValue(cp, v);
             a.addMemberValue(attribute, mv);
         }
         return a;
+    }
+
+    private MemberValue getMemberValue(ConstPool cp, Object v) throws MakumbaError {
+        MemberValue mv = null;
+        if (v instanceof String) {
+            mv = new StringMemberValue((String) v, cp);
+        } else if (v instanceof AbstractAnnotation) {
+            // nested annotations, oh joy!
+            AbstractAnnotation nestedAnnotation = (AbstractAnnotation) v;
+            AnnotationMemberValue amv = new AnnotationMemberValue(cp);
+            Annotation na = addAnnotation(nestedAnnotation.getName(), cp, nestedAnnotation.getAttribues());
+            amv.setValue(na);
+            mv = amv;
+        } else if (v instanceof Enum<?>) {
+            EnumMemberValue emv = new EnumMemberValue(cp);
+            emv.setType(((Enum<?>) v).getClass().getName());
+            emv.setValue(((Enum<?>) v).name());
+            mv = emv;
+        } else if (v instanceof Class<?>) {
+            ClassMemberValue cmv = new ClassMemberValue(cp);
+            cmv.setValue(((Class<?>) v).getName());
+            mv = cmv;
+        } else if (v instanceof Boolean) {
+            BooleanMemberValue bmv = new BooleanMemberValue(cp);
+            bmv.setValue((Boolean) v);
+            mv = bmv;
+        } else if (v instanceof Integer) {
+            IntegerMemberValue imv = new IntegerMemberValue(cp);
+            imv.setValue((Integer) v);
+            mv = imv;
+        } else if (v instanceof Collection<?>) {
+            Collection<?> c = (Collection<?>) v;
+            // multi-value map ends up putting everything into a collection so we see if we
+            // really need an array here or not
+            if (c.size() == 1) {
+                mv = getMemberValue(cp, c.iterator().next());
+            } else {
+                ArrayMemberValue amv = new ArrayMemberValue(cp);
+                Vector<MemberValue> r = new Vector<MemberValue>();
+                for (Object o : c) {
+                    MemberValue omv = getMemberValue(cp, o);
+                    r.add(omv);
+                }
+                amv.setValue(r.toArray(new MemberValue[] {}));
+                mv = amv;
+            }
+        } else {
+            throw new MakumbaError("Error while trying to construct annotation: unhandled type "
+                    + v.getClass().getName());
+        }
+        return mv;
     }
 
     @Override
