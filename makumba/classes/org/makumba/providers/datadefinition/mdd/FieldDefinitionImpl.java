@@ -1192,32 +1192,12 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         }
     }
 
-    public String getNotANumberErrorMessage() {
-        return this.NaNError;
+    public LinkedHashMap<Integer, String> getIntEnumValues() {
+        return intEnumValues;
     }
 
-    public String getNotNullErrorMessage() {
-        return this.notNullError;
-    }
-
-    public String getNotUniqueErrorMessage() {
-        return this.uniqueError;
-    }
-
-    public String getNotEmptyErrorMessage() {
-        return this.notEmptyError;
-    }
-
-    public String getNotIntErrorMessage() {
-        return this.notIntError;
-    }
-
-    public String getNotRealErrorMessage() {
-        return this.notRealError;
-    }
-
-    public String getNotBooleanErrorMessage() {
-        return this.notBooleanError;
+    public LinkedHashMap<Integer, String> getIntEnumValuesDeprecated() {
+        return intEnumValuesDeprecated;
     }
 
 }

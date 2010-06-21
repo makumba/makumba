@@ -15,22 +15,65 @@ import org.makumba.Pointer;
  */
 public enum FieldType {
 
-    PTR("ptr", 0, Pointer.class, Pointer.Null, null, "pointer"), PTRREL("ptrRel", 1, Pointer.class, Pointer.Null, null,
-            "pointer"), PTRONE("ptrOne", 2, Pointer.class, Pointer.Null, null, "pointer"), PTRINDEX("ptrIndex", 3,
-            Pointer.class, Pointer.Null, null, "pointer"), INT("int", 4, java.lang.Integer.class, Pointer.NullInteger,
-            new Integer(0), "int"), INTENUM("intEnum", 5, java.lang.Integer.class, Pointer.NullInteger, new Integer(0),
-            "int"), CHAR("char", 6, java.lang.String.class, Pointer.NullString, "", "char"), CHARENUM("charEnum", 7,
-            java.lang.String.class, Pointer.NullString, "", "char"), TEXT("text", 8, org.makumba.Text.class,
-            Pointer.NullText, "", "text"), DATE("date", 9, java.util.Date.class, Pointer.NullDate,
-            FieldType.emptyDate(), "datetime"), DATECREATE("dateCreate", 10, java.util.Date.class, Pointer.NullDate,
-            FieldType.emptyDate(), "timestamp"), DATEMODIFY("dateModify", 11, java.util.Date.class, Pointer.NullDate,
-            FieldType.emptyDate(), "timestamp"), SET("set", 12, java.util.Vector.class, Pointer.NullSet, null, "set"), SETCOMPLEX(
-            "setComplex", 13, null, Pointer.Null, null, "null"), NIL("nil", 14, null, null, null, null), REAL("real",
-            15, java.lang.Double.class, Pointer.NullReal, new Double(0d), "real"), SETCHARENUM("setcharEnum", 16,
-            java.util.Vector.class, Pointer.NullSet, null, "setchar"), SETINTENUM("setintEnum", 17,
-            java.util.Vector.class, Pointer.NullSet, null, "setint"), BINARY("binary", 18, org.makumba.Text.class,
-            Pointer.NullText, "", "binary"), BOOLEAN("boolean", 19, java.lang.Boolean.class, Pointer.NullBoolean,
-            false, "boolean"), FILE("file", 20, null, Pointer.NullText, null, null),
+    // pointer
+    PTR("ptr", 0, Pointer.class, Pointer.Null, null, "pointer"),
+
+    // relation pointer, in mapping tables
+    PTRREL("ptrRel", 1, Pointer.class, Pointer.Null, null, "pointer"),
+
+    // pointer to a sub-record
+    PTRONE("ptrOne", 2, Pointer.class, Pointer.Null, null, "pointer"),
+
+    // primary key
+    PTRINDEX("ptrIndex", 3, Pointer.class, Pointer.Null, null, "pointer"),
+
+    // integer
+    INT("int", 4, java.lang.Integer.class, Pointer.NullInteger, new Integer(0), "int"),
+
+    // enumerated integer
+    INTENUM("intEnum", 5, java.lang.Integer.class, Pointer.NullInteger, new Integer(0), "int"),
+
+    // character
+    CHAR("char", 6, java.lang.String.class, Pointer.NullString, "", "char"),
+
+    // enumerated character
+    CHARENUM("charEnum", 7, java.lang.String.class, Pointer.NullString, "", "char"),
+
+    // long text
+    TEXT("text", 8, org.makumba.Text.class, Pointer.NullText, "", "text"),
+
+    // date
+    DATE("date", 9, java.util.Date.class, Pointer.NullDate, FieldType.emptyDate(), "datetime"),
+
+    // record creation date
+    DATECREATE("dateCreate", 10, java.util.Date.class, Pointer.NullDate, FieldType.emptyDate(), "timestamp"),
+
+    // record modification date
+    DATEMODIFY("dateModify", 11, java.util.Date.class, Pointer.NullDate, FieldType.emptyDate(), "timestamp"),
+
+    // set
+    SET("set", 12, java.util.Vector.class, Pointer.NullSet, null, "set"),
+
+    // sub-set
+    SETCOMPLEX("setComplex", 13, null, Pointer.Null, null, "null"), NIL("nil", 14, null, null, null, null),
+
+    // real number
+    REAL("real", 15, java.lang.Double.class, Pointer.NullReal, new Double(0d), "real"),
+
+    // set of char enum
+    SETCHARENUM("setcharEnum", 16, java.util.Vector.class, Pointer.NullSet, null, "setchar"),
+
+    // set of int enum
+    SETINTENUM("setintEnum", 17, java.util.Vector.class, Pointer.NullSet, null, "setint"),
+
+    // binary date
+    BINARY("binary", 18, org.makumba.Text.class, Pointer.NullText, "", "binary"),
+
+    // boolean
+    BOOLEAN("boolean", 19, java.lang.Boolean.class, Pointer.NullBoolean, false, "boolean"),
+
+    // file type with file meta-data
+    FILE("file", 20, null, Pointer.NullText, null, null),
 
     // this is not a real type, it's needed for the HQL layer to work
     PARAMETER("parameter", 100, Object.class, Pointer.Null, null, "parameter");

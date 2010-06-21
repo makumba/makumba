@@ -6,11 +6,15 @@ import org.apache.commons.lang.StringUtils;
 import org.makumba.FieldDefinition;
 import org.makumba.FieldMetadata;
 import org.makumba.MakumbaError;
+import org.makumba.MetadataAspect;
 import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.MetadataAspectReader;
 
 public class FieldMetadataImpl implements FieldMetadata {
 
     private final DataDefinitionProvider ddp;
+
+    private final MetadataAspectReader r;
 
     private Member member;
 
@@ -28,6 +32,7 @@ public class FieldMetadataImpl implements FieldMetadata {
 
     public FieldMetadataImpl() {
         this.ddp = DataDefinitionProvider.getInstance();
+        this.r = MetadataAspectReader.getInstance();
     }
 
     public FieldMetadataImpl(String typeName, String fieldName) {
@@ -54,8 +59,24 @@ public class FieldMetadataImpl implements FieldMetadata {
         }
 
     }
-    // public FieldMetadata(String scalarType){...}
 
+    // public FieldMetadata(String scalarType){...}
     // public FieldMetadata(TypeMetadata pointTo){...}
+
+    public Integer getIntegerAspect(MetadataAspect a) {
+        return r.readIntegerAspectValue(member, a);
+    }
+
+    public String getStringAspect(MetadataAspect a) {
+        return r.readStringAspectValue(member, a);
+    }
+
+    public Boolean getBooleanAspect(MetadataAspect a) {
+        return r.readBooleanAspectValue(member, a);
+    }
+
+    public Object getAspect(MetadataAspect a) {
+        return r.readAspectValue(member, a);
+    }
 
 }
