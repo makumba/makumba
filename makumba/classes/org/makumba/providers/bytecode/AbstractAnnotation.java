@@ -1,7 +1,5 @@
 package org.makumba.providers.bytecode;
 
-import java.util.Map;
-
 import org.apache.commons.collections.map.MultiValueMap;
 
 /**
@@ -36,7 +34,7 @@ public class AbstractAnnotation {
      * @return the map of attributes, where the key is the name of the attribute. the value can also be another
      *         {@link AbstractAnnotation}
      */
-    public Map<String, Object> getAttribues() {
+    public MultiValueMap getAttribues() {
         return this.attributes;
     }
 

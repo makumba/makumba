@@ -72,7 +72,7 @@ public class AnnotationUtil {
             long start = System.currentTimeMillis();
             AbstractClassReader acv = new JavassistClassReader();
             Clazz clazz = acv.getClass("test.Language");
-            Object value = acv.getAnnotationValue(Column.class, "unique", "getIsoCode", clazz);
+            Object value = acv.getAnnotationAttributeValue(Column.class, "unique", "getIsoCode", clazz);
             long end = System.currentTimeMillis();
             times.add(end - start);
         }

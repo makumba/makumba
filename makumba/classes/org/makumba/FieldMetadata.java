@@ -8,12 +8,12 @@ public interface FieldMetadata {
 
     public Member getField();
 
-    public String getStringAspect(MetadataAspect a);
+    public String getStringAspectValue(MetadataAspect a);
 
-    public Integer getIntegerAspect(MetadataAspect a);
+    public Integer getIntegerAspectValue(MetadataAspect a);
 
-    public Boolean getBooleanAspect(MetadataAspect a);
+    public Boolean getBooleanAspectValue(MetadataAspect a);
 
-    public Object getAspect(MetadataAspect a);
+    public Object getAspectValue(MetadataAspect a);
 
 }

@@ -5,13 +5,13 @@ import org.makumba.MakumbaError;
 import org.makumba.MetadataAspect;
 import org.makumba.TypeMetadata;
 import org.makumba.providers.DataDefinitionProvider;
-import org.makumba.providers.MetadataAspectReader;
+import org.makumba.providers.AnnotationMetadataReader;
 
 public class TypeMetadataImpl implements TypeMetadata {
 
     private final DataDefinitionProvider ddp;
 
-    private final MetadataAspectReader r;
+    private final AnnotationMetadataReader r;
 
     private Class<?> clazz;
 
@@ -27,7 +27,7 @@ public class TypeMetadataImpl implements TypeMetadata {
 
     public TypeMetadataImpl(String typeName) {
         this.ddp = DataDefinitionProvider.getInstance();
-        this.r = MetadataAspectReader.getInstance();
+        this.r = AnnotationMetadataReader.getInstance();
         this.dd = ddp.getDataDefinition(typeName);
         try {
             this.clazz = Class.forName(typeName);

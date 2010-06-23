@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.Vector;
@@ -15,18 +16,24 @@ import org.makumba.CompositeValidationException;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.FieldDefinition;
+import org.makumba.FieldMetadata;
 import org.makumba.InvalidValueException;
 import org.makumba.MakumbaError;
+import org.makumba.MetadataAspect;
 import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.ValidationRule;
+import org.makumba.annotations.MessageType;
 import org.makumba.commons.CollectionUtils;
 import org.makumba.commons.StringUtils;
 import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.datadefinition.MakumbaAnnotationReader;
 
 public class FieldDefinitionImpl implements FieldDefinition, Serializable {
 
     private static final long serialVersionUID = 1595860664381445238L;
+
+    private MakumbaAnnotationReader mar = MakumbaAnnotationReader.getInstance();
 
     // basic field info
     protected DataDefinitionImpl mdd;
@@ -262,6 +269,58 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
             this.subfield = new DataDefinitionImpl(f.getName(), f.subfield, mdd);
             this.subfield.build();
         }
+    }
+
+    /** constructor used when creating the {@link DataDefinitionImpl} from a java field **/
+    public FieldDefinitionImpl(DataDefinitionImpl mdd, FieldMetadata m) {
+        this.mdd = mdd;
+        this.name = m.getField().getName();
+        this.fixed = !m.getBooleanAspectValue(MetadataAspect.UNIQUE);
+        // this.notEmpty = f.notEmpty;
+        this.notNull = m.getBooleanAspectValue(MetadataAspect.NULLABLE);
+        this.unique = m.getBooleanAspectValue(MetadataAspect.UNIQUE);
+
+        HashMap<MessageType, String> messages = mar.getMessages(m);
+        this.uniqueError = messages.get(MessageType.UNIQUE_ERROR);
+        this.notNullError = messages.get(MessageType.NULLABLE_ERROR);
+        this.NaNError = messages.get(MessageType.NaN_ERROR);
+        this.notIntError = messages.get(MessageType.INT_ERROR);
+        this.notRealError = messages.get(MessageType.REAL_ERROR);
+        this.notBooleanError = messages.get(MessageType.BOOLEAN_ERROR);
+
+        this.charLength = m.getIntegerAspectValue(MetadataAspect.LENGTH);
+        this.description = m.getStringAspectValue(MetadataAspect.DESCRIPTION);
+        // this.defaultValue = f.defaultValue;
+
+        // this.type = f.makumbaType;
+
+        this.intEnumValues = mar.getEnumValues(m);
+        this.intEnumValuesDeprecated = mar.getDeprecatedEnumValues(m);
+        // this.charEnumValues = f.charEnumValues;
+        // this.charEnumValuesDeprecated = f.charEnumValuesDeprecated;
+
+        /*
+
+        this.type = f.makumbaType;
+        this.intEnumValues = f.intEnumValues;
+        this.intEnumValuesDeprecated = f.intEnumValuesDeprecated;
+        this.charEnumValues = f.charEnumValues;
+        this.charEnumValuesDeprecated = f.charEnumValuesDeprecated;
+        this.pointedType = f.pointedType;
+        this.validationRules = f.validationRules;
+
+        // store names of original field definition and data definition; see getOriginalFieldDefinition() for details
+        if (getDataDefinition() != null && !getDataDefinition().isTemporary()) {
+            originalFieldDefinitionParent = getDataDefinition().getName();
+            originalFieldDefinitionName = getName();
+        }
+
+        // we have to transform the subfield MDDNode into a DataDefinitionImpl
+        if (f.subfield != null) {
+            this.subfield = new DataDefinitionImpl(f.getName(), f.subfield, mdd);
+            this.subfield.build();
+        }
+        */
     }
 
     /** methods for base fields **/

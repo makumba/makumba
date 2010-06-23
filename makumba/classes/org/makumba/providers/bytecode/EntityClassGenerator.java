@@ -9,6 +9,7 @@ import java.util.Vector;
 import org.apache.commons.lang.StringUtils;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
+import org.makumba.annotations.MessageType;
 import org.makumba.commons.NameResolver;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.FieldDataDTO;
@@ -44,6 +45,10 @@ public class EntityClassGenerator {
     private static final String MAKUMBA_ENUM_ELEMENT = "org.makumba.annotations.E";
 
     private static final String DESCRIPTION = "org.makumba.annotations.Description";
+
+    private static final String MESSAGE = "org.makumba.annotations.Message";
+
+    private static final String MESSAGES = "org.makumba.annotations.Messages";
 
     private final String generatedClassesPath;
 
@@ -228,17 +233,20 @@ public class EntityClassGenerator {
             case FieldDefinition._boolean:
                 column = addColumn(entityName, name, a);
                 addModifiers(column, field);
+                addMessages(a, field);
                 addDescription(a, field);
                 break;
             case FieldDefinition._intEnum:
                 column = addColumn(entityName, name, a);
                 addModifiers(column, field);
                 addDescription(a, field);
+                addMessages(a, field);
                 addIntEnum(field, a);
                 break;
             case FieldDefinition._char:
                 column = addColumn(entityName, name, a).addAttribute("length", field.getCharacterLenght());
                 addDescription(a, field);
+                addMessages(a, field);
                 addModifiers(column, field);
                 break;
             case FieldDefinition._ptr:
@@ -246,17 +254,24 @@ public class EntityClassGenerator {
                 try {
                     addAnnotation(MANY_TO_ONE, a).addAttribute("targetEntity",
                         Class.forName(field.getRelatedTypeName()));
-                } catch (ClassNotFoundException e2) {
-                    e2.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    postponeFieldGeneration(entityName, field, primaryKeyPropertyName);
                 }
                 addModifiers(column, field);
+                addMessages(a, field);
                 addDescription(a, field);
                 break;
             case FieldDefinition._ptrOne:
                 column = addColumn(entityName, name, a).addAttribute("cascade", "all").addAttribute("unique", true);
                 addModifiers(column, field);
                 addDescription(a, field);
-                addAnnotation(MANY_TO_ONE, a);
+                addMessages(a, field);
+                try {
+                    addAnnotation(MANY_TO_ONE, a).addAttribute("targetEntity",
+                        Class.forName(field.getRelatedTypeName()));
+                } catch (ClassNotFoundException e) {
+                    postponeFieldGeneration(entityName, field, primaryKeyPropertyName);
+                }
                 break;
             case FieldDefinition._ptrIndex:
                 column = addAnnotation(ID, a).addAttribute("column", columnName(entityName, name));
@@ -269,6 +284,7 @@ public class EntityClassGenerator {
                 column = addColumn(entityName, name, a).addAttribute("columnDefinition", "longtext");
                 addModifiers(column, field);
                 addDescription(a, field);
+                addMessages(a, field);
                 addAnnotation(BASIC, a).addAttribute("fetch", javax.persistence.FetchType.LAZY);
                 addAnnotation(LOB, a);
                 break;
@@ -276,6 +292,7 @@ public class EntityClassGenerator {
                 column = addColumn(entityName, name, a).addAttribute("columnDefinition", "longblob");
                 addModifiers(column, field);
                 addDescription(a, field);
+                addMessages(a, field);
                 addAnnotation(BASIC, a).addAttribute("fetch", javax.persistence.FetchType.LAZY);
                 addAnnotation(LOB, a);
                 break;
@@ -369,6 +386,21 @@ public class EntityClassGenerator {
         if (field.isUnique()) {
             aa.addAttribute("unique", true);
         }
+    }
+
+    private void addMessages(Vector<AbstractAnnotation> a, FieldDataDTO field) {
+        if (field.getMessages().size() > 0) {
+            AbstractAnnotation m = addAnnotation(MESSAGES, a);
+            Vector<AbstractAnnotation> messages = new Vector<AbstractAnnotation>();
+            for (MessageType t : field.getMessages().keySet()) {
+                if (field.getMessages().get(t) != null) {
+                    addAnnotation(MESSAGE, messages).addAttribute("type", t).addAttribute("message",
+                        field.getMessages().get(t));
+                }
+            }
+            m.addAttribute("value", messages);
+        }
+
     }
 
     /**
