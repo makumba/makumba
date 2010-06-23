@@ -564,20 +564,8 @@ public class DataDefinitionProvider {
         Vector<FieldDataDTO> fields = new Vector<FieldDataDTO>();
 
         for (String field : getDataDefinition(type).getFieldNames()) {
-            FieldDefinition fd = getDataDefinition(type).getFieldDefinition(field);
-
-            String relatedTypeName = fd.getIntegerType() == FieldDefinition._ptr
-                    || fd.getIntegerType() == FieldDefinition._ptrOne || fd.getIntegerType() == FieldDefinition._ptrRel
-                    || fd.isSetType() ? fd.getPointedType().getName() : null;
-            String mappingTableName = fd.isSetType() ? fd.getSubtable().getName() : null;
-            String setMappingColumnName = fd.getIntegerType() == FieldDefinition._set ? fd.getSubtable().getSetMemberFieldName()
-                    : null;
-            int charLength = fd.getIntegerType() == FieldDefinition._char ? fd.getWidth() : -1;
-
-            FieldDataDTO f = new FieldDataDTO(field, fd.getIntegerType(), fd.getDescription(), relatedTypeName,
-                    mappingTableName, setMappingColumnName, charLength, fd.isFixed(), fd.isNotNull(), fd.isNotEmpty(),
-                    fd.isUnique(), ((FieldDefinitionImpl) fd).getIntEnumValues(),
-                    ((FieldDefinitionImpl) fd).getIntEnumValuesDeprecated());
+            FieldDefinitionImpl fd = (FieldDefinitionImpl) getDataDefinition(type).getFieldDefinition(field);
+            FieldDataDTO f = new FieldDataDTO(fd);
             fields.add(f);
         }
         return fields;

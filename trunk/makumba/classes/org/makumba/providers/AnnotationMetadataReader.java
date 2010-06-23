@@ -12,25 +12,26 @@ import org.makumba.providers.bytecode.JavassistClassReader;
 /**
  * Class capable of reading class/member meta-data in a structured/pluggable way.<br>
  * TODO pluggable reader mechanism for complex aspect values<br>
- * TODO read class annotations<br>
+ * TODO read class annotations: wrappers around this Reader that are then used in the code in order to read aspects in a
+ * specialised way<br>
  * 
  * @author Manuel Gay
  * @version $Id: MetadataAspectReader.java,v 1.1 Jun 21, 2010 3:14:06 PM manu Exp $
  */
-public class MetadataAspectReader {
+public class AnnotationMetadataReader {
 
-    private static MetadataAspectReader instance = null;
+    private static AnnotationMetadataReader instance = null;
 
-    public static MetadataAspectReader getInstance() {
+    public static AnnotationMetadataReader getInstance() {
         if (instance == null) {
-            instance = new MetadataAspectReader();
+            instance = new AnnotationMetadataReader();
         }
         return instance;
     }
 
     private AbstractClassReader r;
 
-    private MetadataAspectReader() {
+    private AnnotationMetadataReader() {
         r = new JavassistClassReader();
     }
 
@@ -72,22 +73,7 @@ public class MetadataAspectReader {
             e.printStackTrace();
         }
 
-        Object v = null;
-
-        switch (a.getType()) {
-            case SIMPLE:
-            case ARRAY:
-                v = r.getAnnotationValue(a.getAnnotationClass(), a.getAttributeName(), m.getName(), clazz);
-                break;
-            case ANNOTATION_ARRAY:
-                // @MakumbaEnum({@E(key = 5, value = "some"), @E(key = 6, value ="someother", deprecated=true)})
-                v = r.getAnnotationValue(a.getAnnotationClass(), a.getAttributeName(), m.getName(), clazz);
-
-                // TODO pluggable mechanism for reading the object model of the annotation
-                // here we get AbstractAnnotation-s
-
-                break;
-        }
+        Object v = r.getAnnotationAttributeValue(a.getAnnotationClass(), a.getAttributeName(), m.getName(), clazz);
 
         return v;
     }

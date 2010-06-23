@@ -1,8 +1,13 @@
 package org.makumba.providers;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import org.makumba.FieldDefinition;
+import org.makumba.FieldDefinition.FieldErrorMessageType;
+import org.makumba.annotations.MessageType;
 import org.makumba.providers.bytecode.EntityClassGenerator;
+import org.makumba.providers.datadefinition.mdd.FieldDefinitionImpl;
 
 /**
  * A Data Transfer Object that ensures decoupling between the {@link EntityClassGenerator} and the concrete
@@ -43,24 +48,32 @@ public class FieldDataDTO {
 
     protected LinkedHashMap<Integer, String> intEnumValuesDeprecated = new LinkedHashMap<Integer, String>();
 
-    public FieldDataDTO(String name, int type, String description, String relatedTypeName, String mappingTable,
-            String setMappingColumnName, int characterLength, boolean fixed, boolean notNull, boolean notEmpty,
-            boolean unique, LinkedHashMap<Integer, String> intEnumValues,
-            LinkedHashMap<Integer, String> intEnumValuesDeprecated) {
-        super();
-        this.name = name;
-        this.type = type;
-        this.description = description;
-        this.relatedTypeName = relatedTypeName;
-        this.mappingTableName = mappingTable;
-        this.characterLenght = characterLength;
-        this.setMappingColumnName = setMappingColumnName;
-        this.fixed = fixed;
-        this.notNull = notNull;
-        this.notEmpty = notEmpty;
-        this.unique = unique;
-        this.intEnumValues = intEnumValues;
-        this.intEnumValuesDeprecated = intEnumValuesDeprecated;
+    // messages
+    protected HashMap<MessageType, String> messages = new HashMap<MessageType, String>();
+
+    public FieldDataDTO(FieldDefinitionImpl fd) {
+        this.name = fd.getName();
+        this.type = fd.getIntegerType();
+        this.description = fd.getDescription();
+        this.relatedTypeName = fd.getIntegerType() == FieldDefinition._ptr
+                || fd.getIntegerType() == FieldDefinition._ptrOne || fd.getIntegerType() == FieldDefinition._ptrRel
+                || fd.isSetType() ? fd.getPointedType().getName() : null;
+        this.mappingTableName = fd.isSetType() ? fd.getSubtable().getName() : null;
+        this.setMappingColumnName = fd.getIntegerType() == FieldDefinition._set ? fd.getSubtable().getSetMemberFieldName()
+                : null;
+        this.characterLenght = fd.getIntegerType() == FieldDefinition._char ? fd.getWidth() : -1;
+        this.fixed = fd.isFixed();
+        this.notNull = fd.isNotNull();
+        this.notEmpty = fd.isNotEmpty();
+        this.unique = fd.isUnique();
+        this.intEnumValues = fd.getIntEnumValues();
+        this.intEnumValuesDeprecated = fd.getIntEnumValuesDeprecated();
+        this.messages.put(MessageType.UNIQUE_ERROR, fd.getErrorMessage(FieldErrorMessageType.NOT_UNIQUE));
+        this.messages.put(MessageType.NULLABLE_ERROR, fd.getErrorMessage(FieldErrorMessageType.NOT_NULL));
+        this.messages.put(MessageType.INT_ERROR, fd.getErrorMessage(FieldErrorMessageType.NOT_INT));
+        this.messages.put(MessageType.BOOLEAN_ERROR, fd.getErrorMessage(FieldErrorMessageType.NOT_BOOLEAN));
+        this.messages.put(MessageType.NaN_ERROR, fd.getErrorMessage(FieldErrorMessageType.NOT_A_NUMBER));
+        this.messages.put(MessageType.REAL_ERROR, fd.getErrorMessage(FieldErrorMessageType.NOT_REAL));
     }
 
     public boolean isFixed() {
@@ -134,6 +147,10 @@ public class FieldDataDTO {
 
     public String getDescription() {
         return this.description;
+    }
+
+    public HashMap<MessageType, String> getMessages() {
+        return messages;
     }
 
 }
