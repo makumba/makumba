@@ -125,7 +125,8 @@ public class JavassistClassReader extends AbstractClassReader {
     }
 
     @Override
-    public Object getAnnotationValue(Class<?> annotationClass, String attributeName, String methodName, Clazz clazz) {
+    public Object getAnnotationAttributeValue(Class<?> annotationClass, String attributeName, String methodName,
+            Clazz clazz) {
         for (Annotation a : readVisibleAnnotations(methodName, clazz)) {
             if (a.getTypeName().equals(annotationClass.getName())) {
                 Object v = a.getMemberValue(attributeName);
@@ -146,7 +147,7 @@ public class JavassistClassReader extends AbstractClassReader {
             Vector<AbstractAnnotation> v = acv.getAnnotations("getBirthdate", clazz);
             for (AbstractAnnotation abstractAnnotation : v) {
                 System.out.println("Found annotation '" + abstractAnnotation.getName() + "' with following attributes");
-                for (String m : abstractAnnotation.getAttribues().keySet()) {
+                for (Object m : abstractAnnotation.getAttribues().keySet()) {
                     System.out.println("== Attribute '" + m + "' with value '"
                             + abstractAnnotation.getAttribues().get(m) + "'");
                 }

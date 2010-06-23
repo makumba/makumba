@@ -16,7 +16,7 @@ public abstract class AbstractClassReader {
 
     public abstract Vector<AbstractAnnotation> getAnnotations(String methodName, Clazz clazz);
 
-    public abstract Object getAnnotationValue(Class<?> annotationClass, String attributeName, String methodName,
+    public abstract Object getAnnotationAttributeValue(Class<?> annotationClass, String attributeName, String methodName,
             Clazz clazz);
 
 }
