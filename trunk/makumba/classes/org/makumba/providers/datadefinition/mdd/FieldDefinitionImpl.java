@@ -33,7 +33,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
 
     private static final long serialVersionUID = 1595860664381445238L;
 
-    private MakumbaAnnotationReader mar = MakumbaAnnotationReader.getInstance();
+    private transient MakumbaAnnotationReader mar = MakumbaAnnotationReader.getInstance();
 
     // basic field info
     protected DataDefinitionImpl mdd;
