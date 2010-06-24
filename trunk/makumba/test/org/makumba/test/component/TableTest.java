@@ -46,8 +46,7 @@ import org.makumba.Transaction;
 import org.makumba.commons.CollectionUtils;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
-import org.makumba.test.MakumbaTestData;
-
+import org.makumba.test.util.MakumbaTestData;
 
 /**
  * Testing table operations, using new MDD parser
@@ -111,9 +110,9 @@ public class TableTest extends TestCase {
 
     String readPerson2 = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.weight as weight, p.brother as brother, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData as extraData, p.comment as comment, p.picture AS picture FROM test.Person p WHERE p= $1";
 
-    String readToy1 = "SELECT t.name AS name, t.color AS color, t.serial AS serial FROM test.AllTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers t WHERE t = $1";
+    String readToy1 = "SELECT t.name AS name, t.color AS color, t.serial AS serial FROM test.validMdds.AllTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers t WHERE t = $1";
 
-    String readToy2 = "SELECT t.name AS name, t.color AS color, t.serial AS serial, t.relatedToy AS relatedToy FROM test.AllTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers t WHERE t = $1";
+    String readToy2 = "SELECT t.name AS name, t.color AS color, t.serial AS serial, t.relatedToy AS relatedToy FROM test.validMdds.AllTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers t WHERE t = $1";
 
     String readIntSet = "SELECT i as member FROM test.Person p, p.intSet i WHERE p=$1 ORDER BY i";
 
@@ -310,11 +309,12 @@ public class TableTest extends TestCase {
         r.put("color", "red");
         r.put("serial", "mak111");
 
-        fptr = db.insert("test.AllTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers", r);
+        fptr = db.insert("test.validMdds.AllTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers", r);
 
         // check if he got inserted
         assertNotNull(fptr);
-        assertEquals(fptr.getType(), "test.AllTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers");
+        assertEquals(fptr.getType(),
+            "test.validMdds.AllTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers");
 
         Vector<Dictionary<String, Object>> v = db.executeQuery(readToy1, fptr);
         // System.out.println(v.size());
@@ -328,9 +328,10 @@ public class TableTest extends TestCase {
         r.put("color", "rosa");
         r.put("serial", "mak121");
 
-        fptr1 = db.insert("test.AllTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers", r);
+        fptr1 = db.insert("test.validMdds.AllTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers", r);
         assertNotNull(fptr1);
-        assertEquals(fptr.getType(), "test.AllTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers");
+        assertEquals(fptr.getType(),
+            "test.validMdds.AllTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers");
 
         // check if it links to the first one correctly
         v = db.executeQuery(readToy2, fptr1);

@@ -13,8 +13,8 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.makumba.commons.RuntimeWrappedException;
-import org.makumba.test.MakumbaTestSetup;
-import org.makumba.test.MakumbaWebTestSetup;
+import org.makumba.test.util.MakumbaTestSetup;
+import org.makumba.test.util.MakumbaWebTestSetup;
 
 /**
  * Test case for concurrent access on a mak:list, later also on a mak:form

@@ -25,7 +25,6 @@ import junit.framework.TestSuite;
 
 import org.apache.cactus.JspTestCase;
 import org.apache.cactus.Request;
-import org.makumba.test.MakumbaWebTestSetup;
 import org.xml.sax.SAXException;
 
 import bmsi.util.Diff;

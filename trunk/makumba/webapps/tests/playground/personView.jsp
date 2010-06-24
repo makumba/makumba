@@ -72,10 +72,6 @@ response:<mak:response/><br>
       <td><mak:value expr="person.picture"/></td>
     </tr>
     <tr>
-      <th>favouriteToy</th>
-      <td><mak:value expr="person.favouriteToy"/></td>
-    </tr>
-    <tr>
       <th>brother</th>
       <td><mak:value expr="person.brother"/></td>
     </tr>
