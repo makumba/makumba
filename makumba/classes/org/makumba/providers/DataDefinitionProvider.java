@@ -116,6 +116,13 @@ public class DataDefinitionProvider {
         return ((DataDefinitionImpl) getDataDefinition(typeName)).getFunctions();
     }
 
+    /**
+     * makes a virtual data definition which is not parsed from a MDD
+     * 
+     * @param name
+     *            the name of the data definition to create
+     * @return a new virtual {@link DataDefinition} instance
+     */
     public DataDefinition getVirtualDataDefinition(String name) {
         return new DataDefinitionImpl(name.replaceAll("__", "->"));
     }
