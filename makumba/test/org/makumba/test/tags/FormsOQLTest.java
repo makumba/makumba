@@ -40,8 +40,8 @@ import org.apache.cactus.Request;
 import org.apache.commons.collections.CollectionUtils;
 import org.makumba.commons.NamedResources;
 import org.makumba.forms.responder.ResponderFactory;
-import org.makumba.test.MakumbaTestData;
 import org.makumba.test.util.MakumbaJspTestCase;
+import org.makumba.test.util.MakumbaTestData;
 import org.xml.sax.SAXException;
 
 import com.meterware.httpunit.HTMLElement;

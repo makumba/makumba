@@ -22,5 +22,5 @@ optional/hibernate
   all the hibernate-related libs as well as its dependencies. needs cleaning up.
   
 test/
-  libraries for testing (JUnit, Cactus, Selenium, ...)
+  libraries for testing (JUnit, Cactus, ...)
   

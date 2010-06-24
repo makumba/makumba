@@ -10,7 +10,7 @@ import junit.framework.TestSuite;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.providers.TransactionProvider;
-import org.makumba.test.MakumbaTestSetup;
+import org.makumba.test.util.MakumbaTestSetup;
 
 
 /**

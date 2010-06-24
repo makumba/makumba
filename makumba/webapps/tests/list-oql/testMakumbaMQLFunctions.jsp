@@ -1,7 +1,7 @@
 <%@page contentType="text/html"%>
 <%@page pageEncoding="utf-8"%>
 
-<%@page import="org.makumba.test.MakumbaTestData"%><html>
+<%@page import="org.makumba.test.util.MakumbaTestData"%><html>
 <head><title>Makumba MQL Functions</title></head>
 <body>
 

@@ -84,7 +84,6 @@
 		<pathelement location="lib/test/junit.jar" />
 		<pathelement location="lib/test/cactus.jar" />
 		<pathelement location="lib/test/httpunit.jar" />
-		<pathelement location="lib/test/selenium-java-client-driver.jar" />
 		<pathelement location="lib/test/jetty/jetty-6.1.3.jar" />
 		<pathelement location="lib/test/jetty/jetty-util-6.1.3.jar" />
 		<pathelement location="lib/optional/javax.persistence.jar" />
@@ -125,7 +124,6 @@
 		<pathelement location="lib/test/diff-bmsi.jar" />
 		<pathelement location="lib/test/junit.jar" />
 		<pathelement location="lib/test/httpunit.jar" />
-		<pathelement location="lib/test/selenium-java-client-driver.jar" />
 		<pathelement location="lib/test/jetty/jetty-6.1.3.jar" />
 		<pathelement location="lib/test/jetty/jetty-util-6.1.3.jar" />
 	</path>
@@ -751,12 +749,6 @@
 		<delete file="${build.dir}/tests.war" />
 		<property name="webapp.source" value="webapps" />
 		
-		<delete dir="${build.dir}/war-classes" />
-		<mkdir dir="${build.dir}/war-classes/dataDefinitions/test" />
-		<copy todir="${build.dir}/war-classes/dataDefinitions/test">
-			<fileset dir="${test.dir}/org/makumba/test" includes="*.mdd" />
-		</copy>
-		
 		<war destfile="${build.dir}/tests.war" webxml="${webapp.source}/tests/WEB-INF/web.xml.dynamic" update="true">
 			<fileset dir="${webapp.source}/tests">
 				<exclude name="WEB-INF/**/*" />
@@ -785,26 +777,18 @@
 				<include name="makumba.jar" />
 				<include name="mak-test.jar" />
 			</lib>
-			<classes dir="${webapp.source}/tests/WEB-INF/classes" includes="Makumba.conf" />
-			<classes dir="${build.dir}/war-classes" />
-
+			<classes dir="${webapp.source}/tests/WEB-INF/classes" />
 		</war>
 	</target>
 
-	<!-- Targets for Selenium testing -->
-
-	<target name="runSeleniumServer">
-		<java jar="lib/test/selenium-server.jar" fork="true" />
-	</target>
-
 	<target name="createTestData" description="Populates the database with test data">
-		<java classname="test.MakumbaTestData" fork="true" classpath="classes" classpathref="project.class.path.complete">
+		<java classname="test.util.MakumbaTestData" fork="true" classpath="classes" classpathref="project.class.path.complete">
 			<arg value="create" />
 		</java>
 	</target>
 
 	<target name="deleteTestData" description="Deletes the test data from the database">
-		<java classname="test.MakumbaTestData" fork="true" classpath="classes" classpathref="project.class.path.complete">
+		<java classname="test.util.MakumbaTestData" fork="true" classpath="classes" classpathref="project.class.path.complete">
 			<arg value="delete" />
 		</java>
 	</target>

@@ -12,7 +12,7 @@ import junit.framework.TestSuite;
 import org.makumba.InvalidValueException;
 import org.makumba.Transaction;
 import org.makumba.providers.TransactionProvider;
-import org.makumba.test.MakumbaTestSetup;
+import org.makumba.test.util.MakumbaTestSetup;
 
 
 /**
