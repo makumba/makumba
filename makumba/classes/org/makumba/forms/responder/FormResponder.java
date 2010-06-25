@@ -245,12 +245,17 @@ public class FormResponder extends Responder {
             if (multipart) {
                 sb.append(" enctype=\"multipart/form-data\" ");
             }
-            sb.append("style = \"display: inline; \""); // FIXME should merge this if another style is given in extra
-            // formatting
-            sb.append(extraFormatting);
+            sb.append("style = \"display: inline; \"");
             sb.append(">");
 
-            sb.append("<input type=\"submit\" ").append("value=\"");
+            sb.append("<input type=\"submit\" ");
+
+            // formatting - we add it to the button instead of the form as per #986
+            // this makes sense as a deleteForm renders as only visible element a button and hence any formatting should
+            // be applied to it
+            sb.append(extraFormatting + " ");
+
+            sb.append("value=\"");
 
         } else {
             // a root form, translates into an HTML form
