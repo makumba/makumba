@@ -531,7 +531,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
                                             + "' was passed as a Java Long type (probably through a JSTL or Java statement)"
                                             + " and its value is higher than the maximum value of a Java Integer, thus it can't be properly stored.");
                         } else {
-                            return ((Long) value).intValue();
+                            return l.intValue();
                         }
                     }
                 case INTENUM:
