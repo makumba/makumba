@@ -520,11 +520,19 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
                     if (value instanceof Integer) {
                         return value;
                     } else { // if it is a Long, we convert it to an Integer
-                        // FIXME: this might potentially mean losing some data, if the Long is too long for an Integer
-                        // Solution: Either makumba stores the date as long, or we throw an error if the value is too
-                        // big?
-                        // See: http://bugs.best.eu.org/1071
-                        return ((Long) value).intValue();
+                        Long l = (Long) value;
+                        if (l > Integer.MAX_VALUE) {
+                            throw new InvalidValueException(
+                                    this,
+                                    "int '"
+                                            + this.name
+                                            + "' with value '"
+                                            + l
+                                            + "' was passed as a Java Long type (probably through a JSTL or Java statement)"
+                                            + " and its value is higher than the maximum value of a Java Integer, thus it can't be properly stored.");
+                        } else {
+                            return ((Long) value).intValue();
+                        }
                     }
                 case INTENUM:
                     return checkIntEnum(value);
