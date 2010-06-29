@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import javax.faces.component.FacesComponent;
+import javax.faces.component.NamingContainer;
 import javax.faces.component.UIInput;
 import javax.faces.component.UINamingContainer;
 import javax.faces.context.FacesContext;
@@ -16,8 +17,8 @@ import javax.faces.context.ResponseWriter;
  * @author manu
  */
 @FacesComponent(value = "HtmlHelloInput")
-public class HtmlHelloInput extends UIInput {
-
+public class HtmlHelloInput extends UIInput implements NamingContainer {
+	
     @Override
     public void encodeEnd(FacesContext context) throws IOException {
         String clientId = getClientId(context);
