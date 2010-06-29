@@ -782,13 +782,13 @@
 	</target>
 
 	<target name="createTestData" description="Populates the database with test data">
-		<java classname="test.util.MakumbaTestData" fork="true" classpath="classes" classpathref="project.class.path.complete">
+		<java classname="org.makumba.test.util.MakumbaTestData" fork="true" classpath="classes" classpathref="project.class.path.complete">
 			<arg value="create" />
 		</java>
 	</target>
 
 	<target name="deleteTestData" description="Deletes the test data from the database">
-		<java classname="test.util.MakumbaTestData" fork="true" classpath="classes" classpathref="project.class.path.complete">
+		<java classname="org.makumba.test.util.MakumbaTestData" fork="true" classpath="classes" classpathref="project.class.path.complete">
 			<arg value="delete" />
 		</java>
 	</target>
