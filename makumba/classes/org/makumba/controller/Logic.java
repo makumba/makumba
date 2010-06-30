@@ -654,8 +654,7 @@ public class Logic {
 
         Transaction db = dbcp.getConnectionTo(dbName);
         Method init = getMethod("checkAttributes", argDb, argDbOld, controller);
-        Method oldInit = getMethod("requiredAttributes", noClassArgs, controller);
-        if (init == null && oldInit == null) {
+        if (init == null) {
             return;
         }
         if (init != null) {
@@ -672,36 +671,6 @@ public class Logic {
                 }
                 throw new LogicInvocationError(g);
             }
-        } else {
-            java.util.logging.Logger.getLogger("org.makumba.controller").warning(
-                "requiredAttributes() is deprecated. Use checkAttributes(Attributes a, Database db) instead");
-            Object attrs = null;
-            try {
-                attrs = oldInit.invoke(controller, noObjectArgs);
-            } catch (IllegalAccessException g) {
-                throw new LogicInvocationError(g);
-            } catch (InvocationTargetException f) {
-                db.rollback();
-                Throwable g = f.getTargetException();
-                if (g instanceof LogicException) {
-                    throw (LogicException) g;
-                }
-                throw new LogicInvocationError(g);
-            }
-            if (attrs == null) {
-                return;
-            }
-            if (attrs instanceof String) {
-                a.getAttribute((String) attrs);
-                return;
-            }
-            if (attrs instanceof String[]) {
-                for (int i = 0; i < ((String[]) attrs).length; i++) {
-                    a.getAttribute(((String[]) attrs)[i]);
-                }
-                return;
-            }
-            return;
         }
     }
 

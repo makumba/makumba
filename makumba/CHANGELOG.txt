@@ -39,7 +39,7 @@ manu: changes in org.makumba.DataDefinition: getReferenceFields() and getUniqueF
 manu: changes in org.makumba.FieldDefinition: checkUpdate() moved to CRUDOperationProvider
 manu: regular expression validation rules are now in quotes, fixes #1192
       ===> this means that matches() validation rules need to be updated, the expression of the regular expression needs to be in quotes
-
+manu: Drop support of "requiredAttributes" as deprecated alternative to checkAttributes. Fixes #611.
 
 NOT TO BE RELEASED YET (need more testing)
 manu: auto-complete for mak:input (char and ptr)
