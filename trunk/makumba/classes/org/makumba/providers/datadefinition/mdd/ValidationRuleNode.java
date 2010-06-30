@@ -57,12 +57,6 @@ public class ValidationRuleNode extends MDDAST implements ValidationRule, Compar
         this.mdd = mdd;
     }
 
-    public ValidationRuleNode(MDDNode mdd, AST originAST, FieldNode field) {
-        this(mdd, originAST);
-        this.field = field;
-        this.arguments.add(field.name);
-    }
-
     public ValidationRuleNode(MDDNode mdd, AST originAST, ValidationType type, FieldNode parentField) {
         this(mdd, originAST);
         this.type = type;

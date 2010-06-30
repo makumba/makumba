@@ -18,6 +18,7 @@ manu: date now accepted as field name in antlr MDD parser, also fields starting 
 manu: fix in DataDefinitionImpl affecting the order of consecutive self-referring sets in getFieldNames()
 manu: improving checkValue so that it throws an exception when a Long value is bigger than the maximal value an Integer can take. fixes #1071
 manu: check for number of arguments to single-field validation rules, fixes #1239
+manu: regular expression validation rules are now in quotes, fixes #1192
 
 NEW FEATURES
 rudi: annotating the list-tags in the JSP viewer with the queries they generated
