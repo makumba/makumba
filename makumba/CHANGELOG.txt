@@ -16,7 +16,8 @@ rudi/cristi: fixing type computation for case-when, especially when there was no
 rudi/cristi: some date fields (maybe those resulting from function calls) returned a byte-array, treating that in TableManager
 manu: date now accepted as field name in antlr MDD parser, also fields starting with low... accepted (by incresing lexer lookahead to avoid collision with 'lower' keyword)
 manu: fix in DataDefinitionImpl affecting the order of consecutive self-referring sets in getFieldNames()
-manu: improving checkValue so that it throws an exception when a Long value is bigger than the maximal value an Integer can take. fixes 1071
+manu: improving checkValue so that it throws an exception when a Long value is bigger than the maximal value an Integer can take. fixes #1071
+manu: check for number of arguments to single-field validation rules, fixes #1239
 
 NEW FEATURES
 rudi: annotating the list-tags in the JSP viewer with the queries they generated
@@ -31,6 +32,7 @@ manu: EntityClassGenerator, generating JPA-annotated POJO classes based on MDDs
 manu: javassist-based reader for method annotations
 
 SPECIAL CHANGES
+cristi: first-pass query inliner
 manu: moved org.makumba.providers.datadefinition.makumba.* to attic.
       ===> this means that dataDefinitionProvider=recordinfo in the provider section of Makumba.conf is no longer working.
 manu: changes in org.makumba.DataDefinition: getReferenceFields() and getUniqueFields() are moved to ReferenceChecker, checkUpdate() and checkFieldNames() to CRUDOperationProvider

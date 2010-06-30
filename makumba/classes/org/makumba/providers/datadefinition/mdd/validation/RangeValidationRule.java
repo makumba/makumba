@@ -3,7 +3,6 @@ package org.makumba.providers.datadefinition.mdd.validation;
 import org.makumba.InvalidValueException;
 import org.makumba.Text;
 import org.makumba.Transaction;
-import org.makumba.providers.datadefinition.mdd.FieldNode;
 import org.makumba.providers.datadefinition.mdd.MDDNode;
 import org.makumba.providers.datadefinition.mdd.ValidationRuleNode;
 import org.makumba.providers.datadefinition.mdd.ValidationType;
@@ -18,8 +17,8 @@ public class RangeValidationRule extends ValidationRuleNode {
 
     private Number upperLimit;
 
-    public RangeValidationRule(MDDNode mdd, AST originAST, FieldNode field, ValidationType type) {
-        super(mdd, originAST, field);
+    public RangeValidationRule(MDDNode mdd, AST originAST, ValidationType type) {
+        super(mdd, originAST);
         this.type = type;
     }
 

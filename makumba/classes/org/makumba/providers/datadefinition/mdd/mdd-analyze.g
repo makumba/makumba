@@ -60,12 +60,15 @@ options {
     protected void addSubfield(FieldNode parent, FieldNode field) { }
         
     // create and set validation rule
-    protected ValidationRuleNode createSingleFieldValidationRule(AST originAST, String fieldName, ValidationType type, FieldNode subField) { return null; }
+    protected ValidationRuleNode createSingleFieldValidationRule(AST originAST, ValidationType type, FieldNode subField) { return null; }
     
     protected ValidationRuleNode createMultiFieldValidationRule(AST originAST, ValidationType type, FieldNode subField) { return null; }
      
     // add validation rule arguments, i.e. field names that should be checked
     protected void addValidationRuleArgument(String name, ValidationRuleNode n) { }
+    
+    // checks the validity of a single field validation rule
+    protected void checkSingleFieldValidationRuleArguments(AST originAST, FieldNode subField, ValidationRuleNode n) { }
      
     // check if rule can be applied to fields
     protected void checkRuleApplicability(ValidationRuleNode validation) { }
@@ -239,7 +242,7 @@ validationRuleDeclaration[FieldNode subField]
 
 comparisonValidationRule[FieldNode subField] returns [ValidationRuleNode v = null;]
 	: #(c:COMPARE {v = createMultiFieldValidationRule(#c, ValidationType.COMPARISON, subField); }
-		(fn:FUNCTION_ARGUMENT {addValidationRuleArgument(#fn.getText(), v);})*
+		validationRuleArguments[v]
 		ce:COMPARE_EXPRESSION
 		{
 			v.comparisonExpression = (ComparisonExpressionNode) #ce_in;
@@ -248,38 +251,41 @@ comparisonValidationRule[FieldNode subField] returns [ValidationRuleNode v = nul
 	;
 
 multiUniquenessValidationRule[FieldNode subField] returns [ValidationRuleNode v = null;]
-    : #(u:UNIQUE {v = createMultiFieldValidationRule(#u, ValidationType.UNIQUENESS, subField); } (fn:FUNCTION_ARGUMENT {addValidationRuleArgument(#fn.getText(), v);})* )
+    : #(u:UNIQUE {v = createMultiFieldValidationRule(#u, ValidationType.UNIQUENESS, subField); } validationRuleArguments[v])
     ;
 
 rangeValidationRule[FieldNode subField] returns [ValidationRuleNode v = null; ]
-	: #(RANGE fn:FUNCTION_ARGUMENT rl:RANGE_FROM ru:RANGE_TO)
+	: #(r:RANGE {v = createSingleFieldValidationRule(#r, ValidationType.RANGE, subField);} validationRuleArguments[v] rl:RANGE_FROM ru:RANGE_TO)
 	
 	{
-      	v = createSingleFieldValidationRule(#fn, #fn.getText(), ValidationType.RANGE, subField);
+      	checkSingleFieldValidationRuleArguments(#r, subField, v);
       	v.lowerBound = #rl.getText();
       	v.upperBound = #ru.getText();
     }
 	;
 
 lengthValidationRule[FieldNode subField] returns [ValidationRuleNode v = null; ]
-	: #(LENGTH fn:FUNCTION_ARGUMENT rl:RANGE_FROM ru:RANGE_TO)
+	: #(l:LENGTH {v = createSingleFieldValidationRule(#l, ValidationType.RANGE, subField);} validationRuleArguments[v] rl:RANGE_FROM ru:RANGE_TO)
 	
 	{
-      	v = createSingleFieldValidationRule(#fn, #fn.getText(), ValidationType.LENGTH, subField);
+      	checkSingleFieldValidationRuleArguments(#l, subField, v);
       	v.lowerBound = #rl.getText();
       	v.upperBound = #ru.getText();
     }
 	;
 	
 regexValidationRule[FieldNode subField] returns [ValidationRuleNode v = null; ]
-	: #(MATCHES fn:FUNCTION_ARGUMENT b:FUNCTION_BODY)
+	: #(m:MATCHES {v = createSingleFieldValidationRule(#m, ValidationType.RANGE, subField);} validationRuleArguments[v] b:FUNCTION_BODY)
 	
 	{
-		v = createSingleFieldValidationRule(#fn, #fn.getText(), ValidationType.REGEX, subField);
+		checkSingleFieldValidationRuleArguments(#m, subField, v);
 		v.expression = #b.getText();
 	}
 	;
-
+	
+validationRuleArguments[ValidationRuleNode v]
+	: (fn:FUNCTION_ARGUMENT {addValidationRuleArgument(#fn.getText(), v);})*
+	;
 
 nativeValidationRuleMessage!
     : fn:FIELDNAME e:errorType m:NATIVE_MESSAGE { addNativeValidationRuleMessage(#fn, #e, #m.getText()); }
