@@ -115,7 +115,7 @@ public class DataHolder {
             // if this field is a ptrOne (in the same table), i.e. a subrecord (not external record)
             if (!fd.getType().equals("ptrOne") && (!fd.isNotNull() || !fd.isFixed())) {
                 throw new InvalidFieldTypeException(fd,
-                        "subpointer or base pointer, so it cannot be used for composite insert/edit");
+                        "subpointer or fixed pointer, so it cannot be used for composite insert/edit");
             }
 
             // we recursively add the subfield to our fields
