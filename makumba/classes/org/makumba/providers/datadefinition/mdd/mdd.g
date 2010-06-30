@@ -296,8 +296,8 @@ tokens {
     	   reportError("Incorrect value for number");
     }
     
-    private String removeQuotation(String s) {
-    	return s.substring(1, s.length() -1);
+    private void removeQuotation(AST a) {
+    	a.setText(a.getText().substring(1, a.getText().length() -1));
     }
     
     protected String typeName;
@@ -415,7 +415,7 @@ fieldComment
 	;
 
 errorMessage
-	: COLON! m:STRING_LITERAL {#m.setType(MESSAGE); #m.setText(removeQuotation(#m.getText())); }
+	: COLON! m:STRING_LITERAL {#m.setType(MESSAGE); removeQuotation(#m); }
 	;
     
 modifier
@@ -468,7 +468,7 @@ rangeValidationRuleDeclaration
 	;
 
 regexValidationRuleDeclaration
-	: MATCHES^ functionArguments functionBody
+	: MATCHES^ functionArguments f:functionBody {removeQuotation(#f);}
 	;
 
 // unique(field1, field2) : "These need to be unique"
@@ -488,7 +488,7 @@ nativeValidationRuleMessage
       | NOTBOOLEAN
       )
       EQ!
-      m:STRING_LITERAL {#m.setType(NATIVE_MESSAGE); #m.setText(removeQuotation(#m.getText())); }
+      m:STRING_LITERAL {#m.setType(NATIVE_MESSAGE); removeQuotation(#m); }
     ;
 
 //////////////// FUNCTIONS

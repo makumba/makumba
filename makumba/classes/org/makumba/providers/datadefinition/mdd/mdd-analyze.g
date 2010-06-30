@@ -255,27 +255,25 @@ multiUniquenessValidationRule[FieldNode subField] returns [ValidationRuleNode v 
     ;
 
 rangeValidationRule[FieldNode subField] returns [ValidationRuleNode v = null; ]
-	: #(r:RANGE {v = createSingleFieldValidationRule(#r, ValidationType.RANGE, subField);} validationRuleArguments[v] rl:RANGE_FROM ru:RANGE_TO)
-	
+	: #(r:RANGE {v = createSingleFieldValidationRule(#r, ValidationType.RANGE, subField);} validationRuleArguments[v] rl:RANGE_FROM ru:RANGE_TO
 	{
-      	checkSingleFieldValidationRuleArguments(#r, subField, v);
       	v.lowerBound = #rl.getText();
       	v.upperBound = #ru.getText();
-    }
+      	checkSingleFieldValidationRuleArguments(#r, subField, v);
+    })
 	;
 
 lengthValidationRule[FieldNode subField] returns [ValidationRuleNode v = null; ]
-	: #(l:LENGTH {v = createSingleFieldValidationRule(#l, ValidationType.RANGE, subField);} validationRuleArguments[v] rl:RANGE_FROM ru:RANGE_TO)
-	
+	: #(l:LENGTH {v = createSingleFieldValidationRule(#l, ValidationType.LENGTH, subField);} validationRuleArguments[v] rl:RANGE_FROM ru:RANGE_TO
 	{
-      	checkSingleFieldValidationRuleArguments(#l, subField, v);
       	v.lowerBound = #rl.getText();
       	v.upperBound = #ru.getText();
-    }
+      	checkSingleFieldValidationRuleArguments(#l, subField, v);
+    })
 	;
 	
 regexValidationRule[FieldNode subField] returns [ValidationRuleNode v = null; ]
-	: #(m:MATCHES {v = createSingleFieldValidationRule(#m, ValidationType.RANGE, subField);} validationRuleArguments[v] b:FUNCTION_BODY)
+	: #(m:MATCHES {v = createSingleFieldValidationRule(#m, ValidationType.REGEX, subField);} validationRuleArguments[v] b:FUNCTION_BODY)
 	
 	{
 		checkSingleFieldValidationRuleArguments(#m, subField, v);
