@@ -226,8 +226,30 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
     }
 
     @Override
-    protected ValidationRuleNode createSingleFieldValidationRule(AST originAST, String fieldName, ValidationType type,
-            FieldNode subField) {
+    protected ValidationRuleNode createSingleFieldValidationRule(AST originAST, ValidationType type, FieldNode subField) {
+
+        switch (type) {
+            case RANGE:
+            case LENGTH:
+                return new RangeValidationRule(mdd, originAST, type);
+            case REGEX:
+                return new RegExpValidationRule(mdd, originAST, type);
+            default:
+                throw new RuntimeException("no matching validation rule found");
+        }
+    }
+
+    @Override
+    protected void checkSingleFieldValidationRuleArguments(AST originAST, FieldNode subField, ValidationRuleNode n) {
+
+        if (n.arguments.size() == 0) {
+            factory.doThrow(this.typeName, "No field provided", originAST);
+        }
+        if (n.arguments.size() > 1) {
+            factory.doThrow(this.typeName, "Too many fields provided for single-field validation rule", originAST);
+        }
+
+        String fieldName = n.arguments.get(0);
 
         // if fieldNode is not null, we got the FieldNode of a subfield, and hence fetch the field from there
         FieldNode f = null;
@@ -243,18 +265,11 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
                 factory.doThrow(this.typeName, "Field " + fieldName + " does not exist in type " + mdd.getName(),
                     originAST);
             }
-
         }
 
-        switch (type) {
-            case RANGE:
-            case LENGTH:
-                return new RangeValidationRule(mdd, originAST, f, type);
-            case REGEX:
-                return new RegExpValidationRule(mdd, originAST, f, type);
-            default:
-                throw new RuntimeException("no matching validation rule found");
-        }
+        // set the field
+        n.field = f;
+
     }
 
     @Override
