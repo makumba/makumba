@@ -18,7 +18,6 @@ manu: date now accepted as field name in antlr MDD parser, also fields starting 
 manu: fix in DataDefinitionImpl affecting the order of consecutive self-referring sets in getFieldNames()
 manu: improving checkValue so that it throws an exception when a Long value is bigger than the maximal value an Integer can take. fixes #1071
 manu: check for number of arguments to single-field validation rules, fixes #1239
-manu: regular expression validation rules are now in quotes, fixes #1192
 
 NEW FEATURES
 rudi: annotating the list-tags in the JSP viewer with the queries they generated
@@ -38,6 +37,9 @@ manu: moved org.makumba.providers.datadefinition.makumba.* to attic.
       ===> this means that dataDefinitionProvider=recordinfo in the provider section of Makumba.conf is no longer working.
 manu: changes in org.makumba.DataDefinition: getReferenceFields() and getUniqueFields() are moved to ReferenceChecker, checkUpdate() and checkFieldNames() to CRUDOperationProvider
 manu: changes in org.makumba.FieldDefinition: checkUpdate() moved to CRUDOperationProvider
+manu: regular expression validation rules are now in quotes, fixes #1192
+      ===> this means that matches() validation rules need to be updated, the expression of the regular expression needs to be in quotes
+
 
 NOT TO BE RELEASED YET (need more testing)
 manu: auto-complete for mak:input (char and ptr)
