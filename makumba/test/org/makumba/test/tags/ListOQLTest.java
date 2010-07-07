@@ -5,8 +5,10 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 
 import junit.framework.Test;
+import junit.framework.TestSuite;
 
 import org.makumba.test.util.MakumbaJspTestCase;
+import org.makumba.test.util.MakumbaTestSetup;
 
 import com.meterware.httpunit.WebResponse;
 
@@ -19,13 +21,27 @@ import com.meterware.httpunit.WebResponse;
  */
 public class ListOQLTest extends MakumbaJspTestCase {
 
-    {
-        recording = false;
-        jspDir = "list-oql";
+    @Override
+    protected String getJspDir() {
+        return "list-oql";
+    }
+
+    @Override
+    protected MakumbaTestSetup getSetup() {
+        return setup;
+    }
+
+    static Suite setup;
+
+    private static final class Suite extends MakumbaTestSetup {
+        private Suite(Test arg0) {
+            super(arg0, "oql");
+        }
     }
 
     public static Test suite() {
-        return makeSuite(ListOQLTest.class, "oql");
+        setup = new Suite(new TestSuite(ListOQLTest.class));
+        return setup;
     }
 
     public void testTomcat() {
@@ -36,7 +52,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakObjectTag(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMakListTag() throws ServletException, IOException {
@@ -44,7 +60,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakListTag(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMakListCount() throws ServletException, IOException {
@@ -52,7 +68,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakListCount(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMakListCountMultiNestedLists() throws ServletException, IOException {
@@ -60,7 +76,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakListCountMultiNestedLists(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     // FIXME this is a bug/behaviour that might need to be fixed (see http://bugs.makumba.org/show_bug.cgi?id=1201)
@@ -70,7 +86,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakListCountClosedList(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMakListMaxResults() throws ServletException, IOException {
@@ -78,7 +94,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakListMaxResults(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMakListNextCount() throws ServletException, IOException {
@@ -86,7 +102,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakListNextCount(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMakListNextCountById() throws ServletException, IOException {
@@ -94,7 +110,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakListNextCountById(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMakListNextCountNestedList() throws ServletException, IOException {
@@ -102,7 +118,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakListNextCountNestedList(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMakListNextCountAfterMultiNestedList() throws ServletException, IOException {
@@ -110,7 +126,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakListNextCountAfterMultiNestedList(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMakListNextCountAsymmetricNestedList() throws ServletException, IOException {
@@ -118,7 +134,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakListNextCountAsymmetricNestedList(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMakListNextCountMultiNestedList() throws ServletException, IOException {
@@ -126,7 +142,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakListNextCountMultiNestedList(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMakListPointerComparison() throws ServletException, IOException {
@@ -134,7 +150,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakListPointerComparison(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMakListInSetPointers() throws ServletException, IOException {
@@ -143,7 +159,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakListInSetPointers(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMakValueChar() throws ServletException, IOException {
@@ -151,7 +167,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakValueChar(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMakValueDate() throws ServletException, IOException {
@@ -159,7 +175,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakValueDate(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMakValueInt() throws ServletException, IOException {
@@ -167,7 +183,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakValueInt(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMakValueDouble() throws ServletException, IOException {
@@ -175,7 +191,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakValueDouble(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMakValueText() throws ServletException, IOException {
@@ -183,7 +199,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakValueText(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMakValueSet() throws ServletException, IOException {
@@ -191,7 +207,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakValueSet(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMakValueFunction() throws Exception {
@@ -199,7 +215,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakValueFunction(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMakValueFunctionAndTag() throws Exception {
@@ -207,7 +223,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakValueFunctionAndTag(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMakValueChangeFunctions() throws Exception {
@@ -215,7 +231,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakValueChangeFunctions(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     /*
@@ -234,7 +250,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMQLFunctions(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMakumbaMQLFunctions() throws ServletException, IOException {
@@ -242,7 +258,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakumbaMQLFunctions(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMakPagination() throws ServletException, IOException {
@@ -251,7 +267,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakPagination(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMakPaginationGroupBy() throws ServletException, IOException {
@@ -260,7 +276,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakPaginationGroupBy(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMDDFunctions() throws ServletException, IOException {
@@ -268,7 +284,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMDDFunctions(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMakValueDistinct() throws ServletException, IOException {
@@ -276,7 +292,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakValueDistinct(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMakListAggregation() throws ServletException, IOException {
@@ -284,7 +300,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakListAggregation(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMDDFunctions2() throws ServletException, IOException {
@@ -292,7 +308,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMDDFunctions2(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMDDFunctionsPointers() throws ServletException, IOException {
@@ -300,7 +316,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMDDFunctionsPointers(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testSectionSimple() throws ServletException, IOException {
@@ -308,7 +324,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endSectionSimple(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testSectionList() throws ServletException, IOException {
@@ -317,7 +333,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endSectionList(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testSectionListExpr() throws ServletException, IOException {
@@ -326,7 +342,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endSectionListExpr(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testNotInSet() throws ServletException, IOException {
@@ -335,7 +351,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endNotInSet(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testParamMultiple() throws ServletException, IOException {
@@ -343,7 +359,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endParamMultiple(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testParamDifferentTypes() throws ServletException, IOException {
@@ -351,7 +367,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endParamDifferentTypes(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testParamRepeatedAssignement() throws ServletException, IOException {
@@ -359,6 +375,6 @@ public class ListOQLTest extends MakumbaJspTestCase {
     }
 
     public void endParamRepeatedAssignement(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 }

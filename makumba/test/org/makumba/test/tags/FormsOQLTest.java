@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Dictionary;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -35,13 +36,16 @@ import java.util.Vector;
 import javax.servlet.ServletException;
 
 import junit.framework.Test;
+import junit.framework.TestSuite;
 
 import org.apache.cactus.Request;
 import org.apache.commons.collections.CollectionUtils;
+import org.makumba.Transaction;
 import org.makumba.commons.NamedResources;
 import org.makumba.forms.responder.ResponderFactory;
 import org.makumba.test.util.MakumbaJspTestCase;
 import org.makumba.test.util.MakumbaTestData;
+import org.makumba.test.util.MakumbaTestSetup;
 import org.xml.sax.SAXException;
 
 import com.meterware.httpunit.HTMLElement;
@@ -54,18 +58,33 @@ import com.meterware.httpunit.WebResponse;
  * @version $Id$
  */
 public class FormsOQLTest extends MakumbaJspTestCase {
-    {
-        recording = false;
-        jspDir = "forms-oql";
+
+    @Override
+    protected String getJspDir() {
+        return "forms-oql";
+    }
+
+    @Override
+    protected MakumbaTestSetup getSetup() {
+        return setup;
+    }
+
+    static Suite setup;
+
+    private static final class Suite extends MakumbaTestSetup {
+        private Suite(Test arg0) {
+            super(arg0, "oql");
+        }
+    }
+
+    public static Test suite() {
+        setup = new Suite(new TestSuite(FormsOQLTest.class));
+        return setup;
     }
 
     private WebResponse submissionResponse;
 
     private static final String namePersonIndivSurname = "Makumbian";
-
-    public static Test suite() {
-        return makeSuite(FormsOQLTest.class, "oql");
-    }
 
     public void testDbReset() {
         System.err.println("cleaning caches");
@@ -80,11 +99,11 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakNewForm(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void beginMakAddForm(Request request) throws Exception {
-        WebForm form = getFormInJspWithTestName();
+        WebForm form = getFormInJspWithTestName(false);
         // set the input field "email" to "bartolomeus@rogue.be"
         form.setParameter("email", "bartolomeus@rogue.be");
         // submit the form
@@ -96,7 +115,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakAddForm(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMakEditForm() throws ServletException, IOException {
@@ -104,7 +123,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakEditForm(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMakForm() throws ServletException, IOException, SAXException {
@@ -112,7 +131,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakForm(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testBug946() throws ServletException, IOException, SAXException {
@@ -120,7 +139,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endBug946(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testBug1115() throws ServletException, IOException, SAXException {
@@ -128,7 +147,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endBug1115(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMakFormRepeatedForms() throws ServletException, IOException, SAXException {
@@ -137,7 +156,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakRepeatedForms(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testFormNestedForms() throws ServletException, IOException, SAXException {
@@ -146,7 +165,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endNestedForms(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testFormMakNewFile() throws ServletException, IOException, SAXException {
@@ -155,7 +174,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakNewFile(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testFormMakNewBinary() throws ServletException, IOException, SAXException {
@@ -164,11 +183,11 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakNewBinary(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void beginMakAddToNewForm(Request request) throws Exception {
-        WebForm form = getFormInJspWithTestName();
+        WebForm form = getFormInJspWithTestName(false);
         // set the inputs in the add-to-new form
         form.setParameter("indiv.name", MakumbaTestData.namePersonIndivName_AddToNew);
         form.setParameter("description_1", "addToNewDescription");
@@ -182,12 +201,36 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakAddToNewForm(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
+    }
+
+    public void beginMakAddToNewFormValidation(Request request) throws Exception {
+        WebForm form = getFormInJspWithTestName(false);
+        // set the inputs in the add-to-new form
+        form.setParameter("indiv.name", MakumbaTestData.namePersonIndivName_AddToNewValidation);
+        form.setParameter("description_1", "a"); // too short, should fail
+        form.setParameter("email_1", "addToNew@makumba.org");
+        // submit the form
+        form.submit();
+    }
+
+    public void testMakAddToNewFormValidation() throws ServletException, IOException {
+        includeJspWithTestName();
+    }
+
+    public void endMakAddToNewFormValidation(WebResponse response) throws Exception {
+        compareToFileWithTestName(response, false);
+
+        Transaction t = setup.getTransaction();
+        Vector<Dictionary<String, Object>> v = t.executeQuery(
+            "select p.indiv.name as name from test.Person p where p.indiv.name = $1",
+            new Object[] { MakumbaTestData.namePersonIndivName_AddToNewValidation });
+        assertEquals(0, v.size());
     }
 
     public void beginMakSearchForm(Request request) throws Exception {
         // FIXME: jsp name not the same as test name
-        WebForm form = getFormInJsp("/forms-oql/testMakSearchForm.jsp");
+        WebForm form = getFormInJsp("/forms-oql/testMakSearchForm.jsp", false);
         // set the inputs in the add-to-new form
         form.setParameter("indiv.name", "a");
 
@@ -204,12 +247,12 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakSearchForm(WebResponse response) throws Exception {
-        compareToFileWithTestName(submissionResponse);
+        compareToFileWithTestName(submissionResponse, false);
     }
 
     public void beginMakSearchForm2(Request request) throws Exception {
         // FIXME: jsp name not the same as test name
-        WebForm form = getFormInJsp("/forms-oql/testMakSearchForm2.jsp");
+        WebForm form = getFormInJsp("/forms-oql/testMakSearchForm2.jsp", false);
         // set the inputs in the add-to-new form
         form.setParameter("indiv.name", "a");
 
@@ -226,12 +269,12 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakSearchForm2(WebResponse response) throws Exception {
-        compareToFileWithTestName(submissionResponse);
+        compareToFileWithTestName(submissionResponse, false);
     }
 
     public void beginMakSearchForm3(Request request) throws Exception {
         // FIXME: jsp name not the same as test name
-        WebForm form = getFormInJsp("/forms-oql/testMakSearchForm3.jsp");
+        WebForm form = getFormInJsp("/forms-oql/testMakSearchForm3.jsp", false);
 
         // TODO: read HTTP unit documents carefully.
         // not sure if that is the most elegant / intended solution
@@ -246,7 +289,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakSearchForm3(WebResponse response) throws Exception {
-        compareToFileWithTestName(submissionResponse);
+        compareToFileWithTestName(submissionResponse, false);
     }
 
     public void testMakSearchFormDefaultMatchMode() throws ServletException, IOException, SAXException {
@@ -254,12 +297,12 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakSearchFormDefaultMatchMode(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void beginMakSearchFormInSet(Request request) throws Exception {
         // FIXME: jsp name not the same as test name
-        WebForm form = getFormInJsp("/forms-oql/testMakSearchFormInSet.jsp");
+        WebForm form = getFormInJsp("/forms-oql/testMakSearchFormInSet.jsp", false);
 
         // select all gender options ([0, 1], as defined in the MDD test.Person
         form.setParameter("gender", form.getOptionValues("gender"));
@@ -280,11 +323,11 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakSearchFormInSet(WebResponse response) throws Exception {
-        compareToFileWithTestName(submissionResponse);
+        compareToFileWithTestName(submissionResponse, false);
     }
 
     public void beginFormAnnotation(Request request) throws Exception {
-        WebForm form = getFormInJspWithTestName();
+        WebForm form = getFormInJspWithTestName(false);
         // set the inputs in the add-to-new form
         form.setParameter("indiv.name", "name");
         form.setParameter("indiv.surname", "surname");
@@ -315,7 +358,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 
     public void beginMakSearchFormFilterMode(Request request) throws Exception {
         // FIXME: jsp name not the same as test name
-        WebForm form = getFormInJsp("/forms-oql/testMakSearchFormFilterMode.jsp");
+        WebForm form = getFormInJsp("/forms-oql/testMakSearchFormFilterMode.jsp", false);
         // set the inputs in the add-to-new form
         form.setParameter("indiv.name", "v");
 
@@ -332,12 +375,12 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakSearchFormFilterMode(WebResponse response) throws Exception {
-        compareToFileWithTestName(submissionResponse);
+        compareToFileWithTestName(submissionResponse, false);
     }
 
     public void beginMakSearchFormStaticWhere(Request request) throws Exception {
         // FIXME: jsp name not the same as test name
-        WebForm form = getFormInJsp("/forms-oql/testMakSearchFormStaticWhere.jsp");
+        WebForm form = getFormInJsp("/forms-oql/testMakSearchFormStaticWhere.jsp", false);
         // set the inputs in the add-to-new form
         form.setParameter("indiv.name", "h");
 
@@ -354,7 +397,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakSearchFormStaticWhere(WebResponse response) throws Exception {
-        compareToFileWithTestName(submissionResponse);
+        compareToFileWithTestName(submissionResponse, false);
     }
 
     public void testFormAnnotation() throws ServletException, IOException {
@@ -362,11 +405,11 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endFormAnnotation(WebResponse response) throws Exception {
-        compareToFileWithTestName(submissionResponse);
+        compareToFileWithTestName(submissionResponse, false);
     }
 
     public void beginFormResponderOrder(Request request) throws Exception {
-        WebResponse resp = getJspResponse("/forms-oql/beginMakNestedNewForms.jsp", true);
+        WebResponse resp = getJspResponse("/forms-oql/beginMakNestedNewForms.jsp", true, false);
 
         // read all the inputs with responder codes, store them in an array
         HTMLElement[] responderElements = resp.getElementsWithAttribute("name", "__makumba__responder__");
@@ -425,7 +468,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endClientSideValidationMultipleForms(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testMakInputTypes() throws ServletException, IOException, SAXException {
@@ -433,7 +476,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakInputTypes(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testCalendarEditor() throws ServletException, IOException, SAXException {
@@ -441,11 +484,11 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endCalendarEditor(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void beginMakNestedNewFormsSimple(Request request) throws Exception {
-        WebForm form = getFormInJspWithTestName();
+        WebForm form = getFormInJspWithTestName(false);
         // set the inputs in the add-to-new form
         form.setParameter("indiv.name", MakumbaTestData.namePersonIndivName_FirstBrother);
         form.setParameter("indiv.surname", "Person");
@@ -465,11 +508,11 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakNestedNewFormsSimple(WebResponse response) throws Exception {
-        compareToFileWithTestName(submissionResponse);
+        compareToFileWithTestName(submissionResponse, false);
     }
 
     public void beginMakNestedNewAndEditFormsSimple(Request request) throws Exception {
-        WebForm form = getFormInJspWithTestName();
+        WebForm form = getFormInJspWithTestName(false);
         // set the inputs in the add-to-new form
         form.setParameter("indiv.name", MakumbaTestData.namePersonIndivName_StepBrother);
         form.setParameter("indiv.surname", namePersonIndivSurname);
@@ -487,7 +530,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakNestedNewAndEditFormsSimple(WebResponse response) throws Exception {
-        compareToFileWithTestName(submissionResponse);
+        compareToFileWithTestName(submissionResponse, false);
     }
 
     public void testMakSubmit() throws ServletException, IOException {
@@ -495,7 +538,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakSubmit(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     /** TODO this is not a real test, we should test for the result of the response of the partial postback **/
@@ -504,11 +547,11 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakFormAjax(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void beginMakEditFormWithDiff(Request request) throws Exception {
-        WebForm form = getFormInJsp("/forms-oql/testMakEditFormWithDiff.jsp");
+        WebForm form = getFormInJsp("/forms-oql/testMakEditFormWithDiff.jsp", false);
         // change some values
         form.setParameter("indiv.surname", "D'oh");
         form.setParameter("weight", "57.5");
@@ -528,11 +571,11 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakEditFormWithDiff(WebResponse response) throws Exception {
-        compareToFileWithTestName(submissionResponse);
+        compareToFileWithTestName(submissionResponse, false);
     }
 
     public void beginMakEditFormWithDiffRevert(Request request) throws Exception {
-        WebForm form = getFormInJsp("/forms-oql/testMakEditFormWithDiff.jsp");
+        WebForm form = getFormInJsp("/forms-oql/testMakEditFormWithDiff.jsp", false);
         // change the values to as they were before
         form.setParameter("indiv.surname", "von Neumann");
         form.setParameter("weight", "85.7");
@@ -552,11 +595,11 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakEditFormWithDiffRevert(WebResponse response) throws Exception {
-        compareToFileWithTestName(submissionResponse);
+        compareToFileWithTestName(submissionResponse, false);
     }
 
     public void beginLogin(Request request) throws Exception {
-        WebForm form = getFormInJsp("/login/testLogin.jsp", false);
+        WebForm form = getFormInJsp("/login/testLogin.jsp", false, false);
         form.setParameter("username", "manu");
         form.setParameter("password", "secret");
         // submit the form
@@ -568,6 +611,6 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endLogin(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 }

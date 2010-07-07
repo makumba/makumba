@@ -29,23 +29,10 @@ public class MakumbaTestSetup extends TestSetup {
     @Override
     protected void setUp() {
 
-        TransactionProvider tp = null;
-        Transaction db = null;
-
-        if (transactionProviderType == null) {
+        Transaction db = getTransaction();
+        if (db == null) {
             return;
         }
-        if (transactionProviderType.equals("oql")) {
-            System.err.println("cleaning caches");
-            NamedResources.cleanStaticCache("Databases open");
-
-            tp = TransactionProvider.getInstance();
-            db = tp.getConnectionTo(tp.getDefaultDataSourceName());
-        } else if (transactionProviderType.equals("hql")) {
-            tp = HibernateTransactionProvider.getInstance();
-            db = tp.getConnectionTo("testDatabaseHibernate");
-        }
-
         testData.insertLanguages(db);
         testData.insertPerson(db);
 
@@ -62,21 +49,28 @@ public class MakumbaTestSetup extends TestSetup {
     @Override
     public void tearDown() {
 
-        // do your one-time tear down here!
-        TransactionProvider tp = null;
-        Transaction db = null;
-
-        if (transactionProviderType.equals("oql")) {
-            tp = TransactionProvider.getInstance();
-            db = tp.getConnectionTo(tp.getDefaultDataSourceName());
-        } else if (transactionProviderType.equals("hql")) {
-            tp = HibernateTransactionProvider.getInstance();
-            db = tp.getConnectionTo("testDatabaseHibernate");
+        Transaction db = getTransaction();
+        if (db == null) {
+            return;
         }
-
         testData.deletePersonsAndIndividuals(db);
         testData.deleteLanguages(db);
         db.close();
+
+        System.err.println("cleaning caches");
+        NamedResources.cleanStaticCache("Databases open");
+    }
+
+    public Transaction getTransaction() {
+        if (transactionProviderType == null) {
+            return null;
+        }
+        if (transactionProviderType.equals("oql")) {
+            return TransactionProvider.getInstance().getConnectionToDefault();
+        } else if (transactionProviderType.equals("hql")) {
+            return HibernateTransactionProvider.getInstance().getConnectionTo("testDatabaseHibernate");
+        }
+        return null;
     }
 
 }
