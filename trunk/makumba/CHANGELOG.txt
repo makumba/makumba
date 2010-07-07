@@ -19,6 +19,9 @@ manu: fix in DataDefinitionImpl affecting the order of consecutive self-referrin
 manu: improving checkValue so that it throws an exception when a Long value is bigger than the maximal value an Integer can take. fixes #1071
 manu: check for number of arguments to single-field validation rules, fixes #1239
 manu: better error message for impossible composite update/insert, fixes #656
+manu: fix for non-applied single-field validation rules in a subfield applying to a field having the same name as a field of the parent
+manu: fixing #1242
+manu: fixing testing mechanism, test cases can record their comparison files one by one (not globally anymore)
 
 NEW FEATURES
 rudi: annotating the list-tags in the JSP viewer with the queries they generated
