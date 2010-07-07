@@ -5,10 +5,11 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 
 import junit.framework.Test;
-
-import org.xml.sax.SAXException;
+import junit.framework.TestSuite;
 
 import org.makumba.test.util.MakumbaJspTestCase;
+import org.makumba.test.util.MakumbaTestSetup;
+import org.xml.sax.SAXException;
 
 import com.meterware.httpunit.WebResponse;
 
@@ -21,13 +22,27 @@ import com.meterware.httpunit.WebResponse;
  */
 public class ListHQLTest extends MakumbaJspTestCase {
 
-    {
-        recording = false;
-        jspDir = "list-hql";
+    @Override
+    protected String getJspDir() {
+        return "list-hql";
+    }
+
+    @Override
+    protected MakumbaTestSetup getSetup() {
+        return setup;
+    }
+
+    static Suite setup;
+
+    private static final class Suite extends MakumbaTestSetup {
+        private Suite(Test arg0) {
+            super(arg0, "hql");
+        }
     }
 
     public static Test suite() {
-        return makeSuite(ListHQLTest.class, "hql");
+        setup = new Suite(new TestSuite(ListHQLTest.class));
+        return setup;
     }
 
     public void testTomcat() {
@@ -38,7 +53,7 @@ public class ListHQLTest extends MakumbaJspTestCase {
     }
 
     public void endHibernateMakObjectTag(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testHibernateMakListTag() throws ServletException, IOException {
@@ -46,7 +61,7 @@ public class ListHQLTest extends MakumbaJspTestCase {
     }
 
     public void endHibernateMakListTag(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testHibernateMakValueChar() throws ServletException, IOException {
@@ -54,7 +69,7 @@ public class ListHQLTest extends MakumbaJspTestCase {
     }
 
     public void endHibernateMakValueChar(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testHibernateMakValueDate() throws ServletException, IOException {
@@ -62,7 +77,7 @@ public class ListHQLTest extends MakumbaJspTestCase {
     }
 
     public void endHibernateMakValueDate(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testHibernateMakValueInt() throws ServletException, IOException {
@@ -70,7 +85,7 @@ public class ListHQLTest extends MakumbaJspTestCase {
     }
 
     public void endHibernateMakValueInt(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testHibernateMakValueDouble() throws ServletException, IOException {
@@ -78,7 +93,7 @@ public class ListHQLTest extends MakumbaJspTestCase {
     }
 
     public void endHibernateMakValueDouble(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testHibernateMakValueText() throws ServletException, IOException {
@@ -86,7 +101,7 @@ public class ListHQLTest extends MakumbaJspTestCase {
     }
 
     public void endHibernateMakValueText(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testHibernateMakValueSet() throws ServletException, IOException {
@@ -94,7 +109,7 @@ public class ListHQLTest extends MakumbaJspTestCase {
     }
 
     public void endHibernateMakValueSet(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     /*
@@ -115,7 +130,7 @@ public class ListHQLTest extends MakumbaJspTestCase {
     }
 
     public void endHibernateMakIf(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
 }

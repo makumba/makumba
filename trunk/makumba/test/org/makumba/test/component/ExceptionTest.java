@@ -5,7 +5,10 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 
 import junit.framework.Test;
+import junit.framework.TestSuite;
+
 import org.makumba.test.util.MakumbaJspTestCase;
+import org.makumba.test.util.MakumbaTestSetup;
 
 import com.meterware.httpunit.WebResponse;
 
@@ -18,13 +21,27 @@ import com.meterware.httpunit.WebResponse;
  */
 public class ExceptionTest extends MakumbaJspTestCase {
 
-    {
-        recording = false;
-        jspDir = "exceptions";
+    static Suite setup;
+
+    @Override
+    protected String getJspDir() {
+        return "exceptions";
+    }
+
+    @Override
+    protected MakumbaTestSetup getSetup() {
+        return setup;
+    }
+
+    private static final class Suite extends MakumbaTestSetup {
+        private Suite(Test arg0) {
+            super(arg0, "oql");
+        }
     }
 
     public static Test suite() {
-        return makeSuite(ExceptionTest.class, null);
+        setup = new Suite(new TestSuite(ExceptionTest.class));
+        return setup;
     }
 
     public void testTomcat() {
@@ -35,7 +52,7 @@ public class ExceptionTest extends MakumbaJspTestCase {
     }
 
     public void endArrayIndexException(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testCompilationError() throws ServletException, IOException {
@@ -43,7 +60,7 @@ public class ExceptionTest extends MakumbaJspTestCase {
     }
 
     public void endCompilationError(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testDataDefinitionNotFoundException() throws ServletException, IOException {
@@ -51,7 +68,7 @@ public class ExceptionTest extends MakumbaJspTestCase {
     }
 
     public void endDataDefinitionNotFoundException(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testNoSuchFieldException() throws ServletException, IOException {
@@ -59,7 +76,7 @@ public class ExceptionTest extends MakumbaJspTestCase {
     }
 
     public void endNoSuchFieldException(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testNullPointerException() throws ServletException, IOException {
@@ -67,7 +84,7 @@ public class ExceptionTest extends MakumbaJspTestCase {
     }
 
     public void endNullPointerException(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     public void testNumberFormatException() throws ServletException, IOException {
@@ -75,6 +92,6 @@ public class ExceptionTest extends MakumbaJspTestCase {
     }
 
     public void endNumberFormatException(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 }

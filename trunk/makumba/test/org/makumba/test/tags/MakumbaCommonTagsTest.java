@@ -8,22 +8,39 @@ import javax.servlet.jsp.tagext.BodyContent;
 
 import junit.framework.Assert;
 import junit.framework.Test;
+import junit.framework.TestSuite;
 
 import org.apache.cactus.Request;
 import org.makumba.commons.tags.MakumbaVersionTag;
 import org.makumba.test.util.MakumbaJspTestCase;
+import org.makumba.test.util.MakumbaTestSetup;
 
 import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebResponse;
 
 public class MakumbaCommonTagsTest extends MakumbaJspTestCase {
-    {
-        recording = false;
-        jspDir = "login";
+
+    @Override
+    protected String getJspDir() {
+        return "login";
+    }
+
+    @Override
+    protected MakumbaTestSetup getSetup() {
+        return setup;
+    }
+
+    static Suite setup;
+
+    private static final class Suite extends MakumbaTestSetup {
+        private Suite(Test arg0) {
+            super(arg0, "oql");
+        }
     }
 
     public static Test suite() {
-        return makeSuite(MakumbaCommonTagsTest.class, "oql");
+        setup = new Suite(new TestSuite(MakumbaCommonTagsTest.class));
+        return setup;
     }
 
     public void testVersionTag() throws JspException, IOException {
@@ -41,7 +58,7 @@ public class MakumbaCommonTagsTest extends MakumbaJspTestCase {
     }
 
     public void beginLogin(Request request) throws Exception {
-        WebForm form = getFormInJsp("/login/testLogin.jsp", false);
+        WebForm form = getFormInJsp("/login/testLogin.jsp", false, false);
         // we try to login
         form.setParameter("username", "manu");
         form.setParameter("password", "secret");
@@ -54,7 +71,7 @@ public class MakumbaCommonTagsTest extends MakumbaJspTestCase {
     }
 
     public void endLogin(WebResponse response) throws Exception {
-        compareToFileWithTestName(response);
+        compareToFileWithTestName(response, false);
     }
 
     /*

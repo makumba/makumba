@@ -45,6 +45,8 @@ public class MakumbaTestData {
 
     public final static String namePersonIndivName_AddToNew = "addToNewPerson";
 
+    public final static String namePersonIndivName_AddToNewValidation = "addToNewPersonValidation";
+
     public static final String namePersonIndivName_FirstBrother = "firstBrother";
 
     public static final String namePersonIndivName_SecondBrother = "secondBrother";
