@@ -183,8 +183,24 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
             ValidationRuleNode n = (ValidationRuleNode) v;
 
             for (String field : v.getValidationRuleArguments()) {
-                FieldDefinition fd = this.getFieldOrPointedFieldDefinition(field);
-                if (fd == null) {
+
+                // TODO treat external sets if one day we have validation rules applying to them
+                // TODO think whether that mechanism can be simplified & be unified with the one that assigns fields
+                // from the parser
+
+                FieldDefinition fd = null;
+
+                // we first check if we are not in a subfield
+                // there can be two cases
+                // - we are a single validation rule which applies to one field that is member of a subfield, thus
+                // belonging to it
+                // - we are a multi-field validation rule which is member of a subfield. in that case, "field" is
+                // actually the parent field, not a member field
+
+                if (n.field != null
+                        && (n.field.mdd.fieldNameInParent.length() > 0 || n.field.subfield != null
+                                && n.field.subfield.fieldNameInParent.length() > 0)) {
+
                     // we are in a subfield
                     FieldDefinition subFd = this.getFieldDefinition(n.field.mdd.fieldNameInParent);
                     if (subFd == null) {
@@ -195,14 +211,17 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
                                     + v.getRuleName());
                         }
                     }
-
                     fd = subFd.getSubtable().getFieldDefinition(field);
 
-                    if (fd == null) {
-                        throw new RuntimeException("could not retrieve field definition for validation rule "
-                                + v.getRuleName());
-                    }
+                } else {
+                    fd = this.getFieldOrPointedFieldDefinition(field);
                 }
+
+                if (fd == null) {
+                    throw new RuntimeException("could not retrieve field definition for validation rule "
+                            + v.getRuleName());
+                }
+
                 ((FieldDefinitionImpl) fd).addValidationRule(v);
             }
         }
@@ -511,8 +530,10 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
 
         // in the end, we also make the title field available as title() function if it was not defined that way
         if (functions.getFunction("title") == null) {
-            functions.addFunction("title", new QueryFragmentFunction(this, "title", "", titleField,
-                    ddp.getVirtualDataDefinition("Parameters for function title"), ""));
+            functions.addFunction(
+                "title",
+                new QueryFragmentFunction(this, "title", "", titleField,
+                        ddp.getVirtualDataDefinition("Parameters for function title"), ""));
         }
     }
 

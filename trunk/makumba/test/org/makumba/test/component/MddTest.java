@@ -23,14 +23,17 @@
 
 package org.makumba.test.component;
 
+import java.util.Collection;
 import java.util.Vector;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.DataDefinitionParseError;
+import org.makumba.ValidationRule;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 
@@ -142,6 +145,22 @@ public class MddTest extends TestCase {
             fail("\n  Tested " + mdds.size() + " broken MDDs, but " + errors.size() + " reported wrong/no error: "
                     + errors.toString());
         }
+    }
+
+    public void testValidationRuleSubField() {
+        DataDefinition dd = DataDefinitionProvider.getInstance().getDataDefinition(
+            "test.validMdds.NestedValidationRule");
+        Collection<ValidationRule> r = DataDefinitionProvider.getInstance().getValidationRules(
+            dd.getFieldDefinition("address").getSubtable().getFieldDefinition("number"));
+        assertEquals(1, r.size());
+    }
+
+    public void testValidationRuleSubFieldSameNameAsInParent() {
+        DataDefinition dd = DataDefinitionProvider.getInstance().getDataDefinition(
+            "test.validMdds.NestedValidationRule");
+        Collection<ValidationRule> r = DataDefinitionProvider.getInstance().getValidationRules(
+            dd.getFieldDefinition("address").getSubtable().getFieldDefinition("email"));
+        assertEquals(1, r.size());
     }
 
 }
