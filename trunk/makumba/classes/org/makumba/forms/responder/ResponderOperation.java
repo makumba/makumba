@@ -6,9 +6,11 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.makumba.CompositeValidationException;
 import org.makumba.FieldValueDiff;
 import org.makumba.LogicException;
 import org.makumba.Pointer;
+import org.makumba.Transaction;
 import org.makumba.commons.DbConnectionProvider;
 import org.makumba.commons.attributes.RequestAttributes;
 import org.makumba.controller.Logic;
@@ -102,13 +104,12 @@ public abstract class ResponderOperation implements java.io.Serializable {
             Pointer basePointer = resp.getHttpBasePointer(req, suffix);
             Dictionary<String, Object> httpData = resp.getHttpData(req, suffix);
             List<FieldValueDiff> diff = Logic.doEdit(resp.getController(), handlerName, afterHandlerName,
-                resp.getBasePointerType(), basePointer, httpData, new RequestAttributes(resp.getController(), req,
-                        resp.getDatabase()), resp.getDatabase(), getConnectionProvider(req, resp.getController()),
-                recordChangesIn);
+                resp.getBasePointerType(), basePointer, httpData,
+                new RequestAttributes(resp.getController(), req, resp.getDatabase()), resp.getDatabase(),
+                getConnectionProvider(req, resp.getController()), recordChangesIn);
             if (StringUtils.isNotBlank(recordChangesIn)) {
                 req.setAttribute(recordChangesIn, diff);
             }
-            System.out.println("ResponderOperation.editOp, request: " + req.hashCode());
             return basePointer;
         }
 
@@ -151,10 +152,23 @@ public abstract class ResponderOperation implements java.io.Serializable {
                 afterHandlerName = "after_add" + Logic.upperCase(resp.getNewType() + "->" + resp.getAddField());
             }
 
+            Dictionary<String, Object> data = null;
+            try {
+                data = resp.getHttpData(req, suffix);
+            } catch (CompositeValidationException cve) {
+                // we had a validation exception while running the add form
+                // thus we need to roll back the creation of the new form object
+                Transaction t = getConnectionProvider(req, resp.getController()).getConnectionTo(resp.getDatabase());
+                t.rollback();
+
+                // we throw the cve further
+                throw cve;
+            }
+
             // otherwise, we add to the new object
-            return Logic.doAdd(resp.getController(), handlerName, afterHandlerName, resp.getNewType() + "->"
-                    + resp.getAddField(), (Pointer) resultFromNew, resp.getHttpData(req, suffix),
-                new RequestAttributes(resp.getController(), req, resp.getDatabase()), resp.getDatabase(),
+            return Logic.doAdd(resp.getController(), handlerName, afterHandlerName,
+                resp.getNewType() + "->" + resp.getAddField(), (Pointer) resultFromNew, data, new RequestAttributes(
+                        resp.getController(), req, resp.getDatabase()), resp.getDatabase(),
                 getConnectionProvider(req, resp.getController()));
         }
 
@@ -234,8 +248,9 @@ public abstract class ResponderOperation implements java.io.Serializable {
         public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
                 throws LogicException {
             return Logic.doDelete(resp.getController(), resp.getBasePointerType(),
-                resp.getHttpBasePointer(req, suffix), new RequestAttributes(resp.getController(), req,
-                        resp.getDatabase()), resp.getDatabase(), getConnectionProvider(req, resp.getController()));
+                resp.getHttpBasePointer(req, suffix),
+                new RequestAttributes(resp.getController(), req, resp.getDatabase()), resp.getDatabase(),
+                getConnectionProvider(req, resp.getController()));
         }
 
         @Override
@@ -257,8 +272,9 @@ public abstract class ResponderOperation implements java.io.Serializable {
         public Object respondTo(HttpServletRequest req, Responder resp, String suffix, String parentSuffix)
                 throws LogicException {
             return Logic.doDelete(resp.getController(), resp.getBasePointerType(),
-                resp.getHttpBasePointer(req, suffix), new RequestAttributes(resp.getController(), req,
-                        resp.getDatabase()), resp.getDatabase(), getConnectionProvider(req, resp.getController()));
+                resp.getHttpBasePointer(req, suffix),
+                new RequestAttributes(resp.getController(), req, resp.getDatabase()), resp.getDatabase(),
+                getConnectionProvider(req, resp.getController()));
         }
 
         @Override
