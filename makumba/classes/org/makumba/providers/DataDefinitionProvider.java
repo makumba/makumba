@@ -139,6 +139,7 @@ public class DataDefinitionProvider {
     public FieldDefinition makeFieldDefinition(String name, String definition) {
 
         String def = name.replaceAll("__", "->") + "=" + definition.replaceAll("__", "->");
+        // FIXME should not use a new MDD for this / should not put the name as the one of the field for the type name!
         return MDDFactory.getInstance().getVirtualDataDefinition(name.replaceAll("__", "->"), def).getFieldDefinition(
             name.replaceAll("__", "->"));
     }
