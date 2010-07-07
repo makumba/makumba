@@ -228,12 +228,17 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
     @Override
     protected ValidationRuleNode createSingleFieldValidationRule(AST originAST, ValidationType type, FieldNode subField) {
 
+        MDDNode parent = mdd;
+        if (subField != null) {
+            parent = subField.mdd;
+        }
+
         switch (type) {
             case RANGE:
             case LENGTH:
-                return new RangeValidationRule(mdd, originAST, type);
+                return new RangeValidationRule(parent, originAST, type);
             case REGEX:
-                return new RegExpValidationRule(mdd, originAST, type);
+                return new RegExpValidationRule(parent, originAST, type);
             default:
                 throw new RuntimeException("no matching validation rule found");
         }
@@ -269,7 +274,6 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
 
         // set the field
         n.field = f;
-
     }
 
     @Override
