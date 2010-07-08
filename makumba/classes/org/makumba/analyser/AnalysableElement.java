@@ -45,12 +45,12 @@ public abstract class AnalysableElement extends TagSupport {
     /**
      * Initializes the element data thread stack, and loads previous analysis state if there was any
      */
-    public static void initializeThread(HttpSession session) {
+    public static void initializeThread(HttpSession session, String key) {
         getThreadElementStack().clear();
         runningElement.set(null);
         analyzedElement.set(null);
 
-        Object[] analysisState = (Object[]) session.getServletContext().getAttribute(ANALYSIS_STATE + session.getId());
+        Object[] analysisState = (Object[]) session.getServletContext().getAttribute(key);
 
         if (analysisState != null) {
             analyzedElement.set((ElementData) analysisState[0]);
@@ -72,15 +72,11 @@ public abstract class AnalysableElement extends TagSupport {
         }
     }
 
-    public static void keepAnalysisState(HttpSession session) {
-        // FIXME manu: I suspect that getThreadElementStack() is not properly serialized or needs to be cloned in order
-        // to stay in the analysis state
+    public static void keepAnalysisState(HttpSession session, String key) {
         Object[] analysisState = new Object[] { analyzedElement.get(), runningElement.get(), getThreadElementStack(),
                 jspParser.get() };
-        // we save the state in the servlet context, thus we won't have problems if the application server crashes and
-        // tries to re-build the session from these
-        // non-serializable objects
-        session.getServletContext().setAttribute(ANALYSIS_STATE + session.getId(), analysisState);
+        // we save the state in the servlet context, thus we won't have problems if the application server crashes
+        session.getServletContext().setAttribute(key, analysisState);
     }
 
     /**
