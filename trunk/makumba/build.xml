@@ -392,7 +392,7 @@
 		<echo>Making release ${tag} and using sourceforge user ${user} in order to perform upload to FRS.</echo>
 
 		<antcall target="generateTLDs">
-			<property name="release" value="true" />
+			<param name="release" value="true" />
 		</antcall>
 		<antcall target="makeJar" />
 		<antcall target="uploadMadeJar" />
