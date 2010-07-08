@@ -11,6 +11,7 @@
 	<property name="test.dir" value="test" />
 	<property name="src.dir" value="classes" />
 	<property name="jar.dir" value="." />
+	<property name="lib.dir" value="lib" />
 
 	<property name="build.compiler.emacs" value="true" />
 
@@ -1257,12 +1258,14 @@ package org.makumba]]>
 		</jar>
  	</target>
 	
-	<target name="jarSource" if="tag">
-		<jar jarfile="lib/${tag}-source.jar">
-			<fileset dir="work/makumba.distrib/">
+	<target name="jarSources" if="tag">
+		<unzip src="${lib.dir}/${tag}-src.zip" dest="work/sources"/>
+		<jar jarfile="${lib.dir}/${tag}-sources.jar">
+			<fileset dir="work/sources/">
 				<include name="makumba/**" />
 			</fileset>
 		</jar>
+		<delete dir="work/sources" />
 	</target>
 
 	
