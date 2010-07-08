@@ -465,8 +465,8 @@ public abstract class QueryAnalysisProvider {
                 errorLocation = sb.toString();
             }
         }
-        throw new OQLParseError("\r\nin " + errorLocationNumber + " query:\r\n" + query + errorLocation + errorLocation
-                + errorLocation, t);
+        throw new OQLParseError("\r\n\r\nin " + errorLocationNumber + " query:\r\n\r\n" + query + errorLocation
+                + errorLocation + errorLocation, t);
     }
 
     /*
