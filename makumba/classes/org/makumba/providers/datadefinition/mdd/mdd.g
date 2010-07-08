@@ -468,7 +468,7 @@ rangeValidationRuleDeclaration
 	;
 
 regexValidationRuleDeclaration
-	: MATCHES^ functionArguments f:functionBody {removeQuotation(#f);}
+	: MATCHES^ functionArguments f:functionBody // {removeQuotation(#f);}
 	;
 
 // unique(field1, field2) : "These need to be unique"
