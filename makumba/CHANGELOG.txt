@@ -22,6 +22,8 @@ manu: better error message for impossible composite update/insert, fixes #656
 manu: fix for non-applied single-field validation rules in a subfield applying to a field having the same name as a field of the parent
 manu: fixing #1242
 manu: fixing testing mechanism, test cases can record their comparison files one by one (not globally anymore)
+manu: fixing #1240
+manu: applying database transaction rollback in case of form validation errors for all form operations, as otherwise this may lead to an inconsistent db state
 
 NEW FEATURES
 rudi: annotating the list-tags in the JSP viewer with the queries they generated
@@ -41,8 +43,6 @@ manu: moved org.makumba.providers.datadefinition.makumba.* to attic.
       ===> this means that dataDefinitionProvider=recordinfo in the provider section of Makumba.conf is no longer working.
 manu: changes in org.makumba.DataDefinition: getReferenceFields() and getUniqueFields() are moved to ReferenceChecker, checkUpdate() and checkFieldNames() to CRUDOperationProvider
 manu: changes in org.makumba.FieldDefinition: checkUpdate() moved to CRUDOperationProvider
-manu: regular expression validation rules are now in quotes, fixes #1192
-      ===> this means that matches() validation rules need to be updated, the expression of the regular expression needs to be in quotes
 manu: Drop support of "requiredAttributes" as deprecated alternative to checkAttributes. Fixes #611.
 
 NOT TO BE RELEASED YET (need more testing)
