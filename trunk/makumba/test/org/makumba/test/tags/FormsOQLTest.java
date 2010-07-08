@@ -221,11 +221,18 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     public void endMakAddToNewFormValidation(WebResponse response) throws Exception {
         compareToFileWithTestName(response, false);
 
-        Transaction t = setup.getTransaction();
-        Vector<Dictionary<String, Object>> v = t.executeQuery(
-            "select p.indiv.name as name from test.Person p where p.indiv.name = $1",
-            new Object[] { MakumbaTestData.namePersonIndivName_AddToNewValidation });
-        assertEquals(0, v.size());
+        Transaction t = null;
+        try {
+            t = setup.getTransaction();
+            Vector<Dictionary<String, Object>> v = t.executeQuery(
+                "select p.indiv.name as name from test.Person p where p.indiv.name = $1",
+                new Object[] { MakumbaTestData.namePersonIndivName_AddToNewValidation });
+            assertEquals(0, v.size());
+        } finally {
+            if (t != null) {
+                t.close();
+            }
+        }
     }
 
     public void beginMakSearchForm(Request request) throws Exception {

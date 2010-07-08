@@ -37,12 +37,18 @@ public class MakumbaTestSetup extends TestSetup {
         testData.insertPerson(db);
 
         /*
-         * Just a dummy select, so the test_Person__extraData_ is mentioned in the client side part of the tests. If
+         * This is a dummy select, so the test_Person__charSet_ is mentioned in the client side part of the tests. If
          * this is not done, the server side and the client side will attempt to insert the same primary key in the
          * catalog table (because they use the same DBSV, because they use the same database connection file).
+         * The last table that an insert is going to be attempted on needs to be queried for here, this may change if more tables are 
+         * added.
          */
-        String query = "SELECT p.extraData.something FROM test.Person p WHERE 1=0";
-        db.executeQuery(query, null);
+        // String query = "SELECT p.extraData.something FROM test.Person p WHERE 1=0";
+        // String query1 = "SELECT l.name FROM test.Person p, p.address a, a.languages l WHERE 1=0";
+
+        String query2 = "SELECT count(*) FROM test.Person p, p.charSet c WHERE 1=0";
+        db.executeQuery(query2, null);
+
         db.close();
     }
 
