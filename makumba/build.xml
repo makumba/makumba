@@ -430,13 +430,22 @@
 		<mkdir dir="${jar.dir}/lib" />
 		<mkdir dir="work/makumba.distrib/makumba/build/" />
 
-		<!-- make the source tarball: -->
+		<!-- make the source tarball and jar: -->
 		<zip zipfile="lib/${tag}-src.zip">
 			<fileset dir="work/makumba.distrib/">
 				<include name="makumba/**" />
 			</fileset>
 		</zip>
 
+		<jar jarfile="lib/${tag}-sources.jar">
+			<fileset dir="work/makumba.distrib/">
+				<include name="makumba/**" />
+			</fileset>
+		</jar>
+		
+		<!-- make the javadoc jar -->
+		<antcall target="jarJavadoc" />
+		
 		<!-- compile files necessary for making the release -->
 		<javac srcdir="work/makumba.distrib/makumba/classes" destdir="work/makumba.distrib/makumba/build" source="1.5" target="1.5" debug="on" includes="org/makumba/version.java">
 			<classpath>
@@ -571,11 +580,7 @@
 
 		<!-- preparing jar, javadoc and sources -->
 		<copy file="${lib.dir}/${tag}.jar" tofile="work/makumba.jar" />
-		
-		<antcall target="jarSources" />
 		<copy file="${lib.dir}/${tag}-sources.jar" tofile="work/makumba-${release.version}-sources.jar" />
-				
-		<antcall target="jarJavadoc" />
 		<copy file="${lib.dir}/${tag}-javadoc.jar" tofile="work/makumba-${release.version}-javadoc.jar" />
 
 		
@@ -626,6 +631,8 @@
 			<fileset dir="${basedir}/work/">
 				<include name="release-pom.xml" />
 				<include name="makumba.jar" />
+				<include name="makumba-${release.version}-sources.jar" />
+				<include name="makumba-${release.version}-javadoc.jar" />
 			</fileset>
 		</openpgp:signer>
 
@@ -633,8 +640,10 @@
 		<artifact:deploy file="work/makumba.jar">
 			<attach file="work/makumba.jar.asc" type="jar.asc" />
 			<attach file="work/release-pom.xml.asc" type="pom.asc" />
-			<attach file="work/makumba-${release.version}-sources.jar" type="jar" />
-			<attach file="work/makumba-${release.version}-javadoc.jar" type="jar" />
+			<attach file="work/makumba-${release.version}-sources.jar" type="java-source" />
+			<attach file="work/makumba-${release.version}-sources.jar.asc" type="jar.asc" classifier="sources" />
+			<attach file="work/makumba-${release.version}-javadoc.jar" type="javadoc" />
+			<attach file="work/makumba-${release.version}-javadoc.jar.asc" type="jar.asc" classifier="javadoc" />
 			<remoteRepository refid="sonatype.release" />
 			<pom refid="makumba.project" />
 		</artifact:deploy>
@@ -1257,18 +1266,6 @@ package org.makumba]]>
 			<fileset dir="${documentation.path}/JSPWiki/api-developer/" />
 		</jar>
  	</target>
-	
-	<target name="jarSources" if="tag">
-		<unzip src="${lib.dir}/${tag}-src.zip" dest="work/sources"/>
-		<jar jarfile="${lib.dir}/${tag}-sources.jar">
-			<fileset dir="work/sources/">
-				<include name="makumba/**" />
-			</fileset>
-		</jar>
-		<delete dir="work/sources" />
-	</target>
-
-	
 
 <!-- Old / deprectated targets -->
 
