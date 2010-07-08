@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.TreeSet;
@@ -42,7 +43,10 @@ import org.makumba.ProgrammerError;
  * @author Cristian Bogdan
  * @version $Id$
  */
-public class SourceSyntaxPoints {
+public class SourceSyntaxPoints implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     public static interface PreprocessorClient {
         public void treatInclude(int position, String includeDirective, SyntaxPoint start, SyntaxPoint end,
                 SourceSyntaxPoints host);

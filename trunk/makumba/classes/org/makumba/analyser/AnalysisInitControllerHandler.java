@@ -46,7 +46,7 @@ public class AnalysisInitControllerHandler extends ControllerHandler {
     public boolean beforeFilter(ServletRequest request, ServletResponse response, FilterConfig conf,
             ServletObjects httpServletObjects) {
 
-        AnalysableElement.initializeThread(((HttpServletRequest) request).getSession());
+        AnalysableElement.initializeThread(((HttpServletRequest) request).getSession(), getAnalysisStateKey(request));
         return true;
     }
 
@@ -59,27 +59,25 @@ public class AnalysisInitControllerHandler extends ControllerHandler {
     @Override
     public void finalize(ServletRequest request, ServletResponse response) {
         HttpSession session = ((HttpServletRequest) request).getSession();
+        String key = getAnalysisStateKey(request);
         if (hadError) {
             // keep the state of the previous analysis so we can display errors even when reloading the page
-
-            // FIXME commented out for the moment
-            // this feature has two issues:
-            // - we need to also use the page URL as an identifier for the analysis state attribute, or else a user
-            // loading two different pages may get an error on a working
-            // page for the non-working one
-            // - the stack saved by AnalysableElement#keepAnalysisState() is probably not saved correctly, leading to a
-            // EmptyStackException in nested tags (e.g. lists).
-            // AnalysableElement.keepAnalysisState(session);
+            AnalysableElement.keepAnalysisState(session, key);
         } else {
             // first remove the state object from the session
-            if (session.getServletContext().getAttribute(AnalysableElement.ANALYSIS_STATE + session.getId()) != null) {
-                session.getServletContext().removeAttribute(AnalysableElement.ANALYSIS_STATE + session.getId());
+            if (session.getServletContext().getAttribute(key) != null) {
+                session.getServletContext().removeAttribute(key);
             }
             // then initialize the thread, it won't reload the state this time
-            AnalysableElement.initializeThread(session);
+            AnalysableElement.initializeThread(session, key);
 
             // finally discard the parsing data
             AnalysableElement.discardJSPParsingData();
         }
+    }
+
+    private String getAnalysisStateKey(ServletRequest request) {
+        return AnalysableElement.ANALYSIS_STATE + ((HttpServletRequest) request).getRequestURI()
+                + ((HttpServletRequest) request).getSession().getId();
     }
 }
