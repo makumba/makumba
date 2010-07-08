@@ -8,6 +8,18 @@
 TO BE RELEASED IMMEDIATELY (No need for more testing)
 -----------------------------------------------
 
+NOT TO BE RELEASED YET (need more testing)
+manu: auto-complete for mak:input (char and ptr)
+manu, marius: edit-in-place for mak:input and mak:list ("editable" attribute). Is yet to be finished.
+
+------------------------------------------
+- add your changes -
+
+<!-- ============================================================================= -->
+<!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
+
+0.9 8 Jul 2010
+
 FIXES
 manu: fixing release mechanism broken due to build path change
 manu: allowing multi-types also for different pointer types
@@ -45,15 +57,6 @@ manu: changes in org.makumba.DataDefinition: getReferenceFields() and getUniqueF
 manu: changes in org.makumba.FieldDefinition: checkUpdate() moved to CRUDOperationProvider
 manu: Drop support of "requiredAttributes" as deprecated alternative to checkAttributes. Fixes #611.
 
-NOT TO BE RELEASED YET (need more testing)
-manu: auto-complete for mak:input (char and ptr)
-manu, marius: edit-in-place for mak:input and mak:list ("editable" attribute). Is yet to be finished.
-
-------------------------------------------
-- add your changes -
-
-<!-- ============================================================================= -->
-<!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
 0.8.2.7.4 2 Apr 2010
 manu: fixing bug: multi-type parameters are accepted again
 manu: optimising new query generation
