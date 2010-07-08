@@ -1,0 +1,16 @@
+!!!Libraries
+
+If you choose not to build your project with maven by using the makumba maven archetype (as described in the [QuickStart], here is the libraries you will need in order to run makumba:
+
+||Name||Version||JAR file name
+|[ANTLR v2|http://www.antlr2.org/]|2.7.6|antlr-2.7.6.jar
+|[C3P0|http://sourceforge.net/projects/c3p0/]|0.9.1|c3p0-0.9.1.jar
+|[Apache Commons CLI|http://commons.apache.org/cli/]|1.2|commons-cli-1.2.jar
+|[Apache Commons Collections|http://commons.apache.org/collections/]|3.2|commons-collections-3.2.jar
+|[Apache Commons Configuration|http://commons.apache.org/configuration/]|1.6|commons-configuration-1.6.jar
+|[Apache Commons Fileupload|http://commons.apache.org/fileupload/]|1.1.1|commons-fileupload-1.1.1.jar
+|[Apache Commons IO|http://commons.apache.org/io/]|1.1|commons-io-1.1.jar
+|[Apache Commons Lang|http://commons.apache.org/lang/]|2.3|commons-lang-2.3.jar
+|[MIME Util|http://sourceforge.net/projects/mime-util/]|2.1.3|mime-util.jar
+
+%%(display:hidden;) [Category Configuration] %%

@@ -1,0 +1,24 @@
+[{ALLOW view Documentation}]
+[{ALLOW edit Documentation}]
+
+!!!Meta
+
+This is the meta-makumba site, where we talk about the documentation itself: guidelines, howto, etc...
+
+!!Readme first
+
+* [Meta Guidelines - guidelines for the Meta section|MetaGuidelines]
+* [Documentation Guidelines|MetaDocumentationGuidelines]
+
+!!TODO
+* [Documentation TODO|MetaDocumentationTodo]
+
+!!Blog
+* [{WeblogEntryPlugin page='Blog' entrytext='Create new blog post'}]
+
+!!HowTo
+''Various how-to documents related to makumba-meta''
+
+* [Maven repository and deployment|MetaMavenRepositoryHowTo]
+
+%%(display:none;)[Category Meta|CategoryMeta]%%

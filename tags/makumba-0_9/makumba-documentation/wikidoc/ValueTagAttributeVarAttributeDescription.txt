@@ -1,0 +1,1 @@
+The value of the expression is set to a new java.lang.Object variable by this name, as well as to a page-scope attribute, also by the same name (accessible as $attributename).

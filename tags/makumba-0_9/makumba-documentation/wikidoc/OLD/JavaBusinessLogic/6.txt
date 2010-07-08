@@ -1,0 +1,126 @@
+[{TableOfContents}]
+
+!!!Introduction
+
+Makumba Business Logic (BL) is executed at form submission time. It makes it possible to perform additional validation, data manipulation and other processing tasks. Makumba BL is associated with JSP pages through a special discovery mechanism, and further through the usage of so-called handler methods. Data manipulation can be performed using the most important makumba API elements.
+
+!!!Business Logic discovery
+Each JSP page will determine its handler class on first access, after being compiled. If the class changes on disk, a web-app reload is generally needed for the new class to take effect.
+
+The handler is "discovered" by decomposing the full path of the JSP page, and finding a class with a matching name. Decomposition breaks the full path at every capital letter, or forward slash. For example, with the page path /employee/profile/personalProfile.jsp, the following criteria are applied, in order:
+|| Criterion ||	Java classes checked for
+| page name | EmployeeProfilePersonalProfileLogic
+| caps parts of page/directory name | EmployeeProfilePersonalLogic
+| directory name | EmployeeProfile
+| parent directory name(s) | EmployeeLogic, Logic
+
+The class name prefix (e.g. java package name) can be regulated per parts of the site in in the [Makumba.conf configuration file|MakumbaConfiguration#BusinessLogicPackagesBusinessLogicPackages], in the [[businessLogicPackages] section. For example, the section can contain:
+
+%%prettify
+{{{
+/employee = org.myCompany.employee
+/makumba = org.makumba
+/=test
+}}}%%
+
+[{Table
+
+|| path || Java classes checked for
+| /employee/profile/index.jsp 
+| org.myCompany.employee.ProfilePersonalProfileLogic\\
+org.myCompany.ProfileLogic\\
+org.myCompany.Logic
+
+| /makumba/tests/x.jsp 
+| org.makumba.TestsXLogic\\
+org.makumba.TestsLogic\\
+org.makumba.Logic
+
+| /some.jsp 
+| test.SomeLogic\\
+test.Logic
+
+}]
+
+There are good reasons to take into account the name of the response page of a form when looking for the business logic. Still, it is the name of the page that contains the form which matters, not the name of the action page. It is good practice for both pages to actually have the same handler class.
+
+!!!Business Logic handler methods
+On form submission, the data in the form can be accessed for validation and processing purposes. Depending on the action at hand, there are different kind of generic handlers that can be used. It is also possible to define custom handlers.
+
+!!Generic handler methods
+
+These are the handlers used by [mak:newForm|newFormTag], [mak:editForm|EditFormTag], [mak:addForm|AddFormTag] and [mak:delete|DeleteTag]. Their name is constructed on the handler type, the action type, and the type of the MDD that is being processed by the form.
+
+When creating, editing, adding to and deleting the type company.Project, the generic handler methods are:
+
+[{Table
+
+|| action || generic handler methods
+| new 	
+| %%code on_newCompanyProject(Dictionary<String, Object> d, Attributes a, Transaction t) {}%% \\
+%%code after_newCompanyProject(Pointer p, Dictionary<String, Object> d, Attributes a, Transaction t) {}%%
+
+| add 	
+| %%code on_addCompanyProject(Pointer p, Dictionary<String, Object> d, Attributes a, Transaction t) {}%% \\
+%%code after_addCompanyProject(Pointer p, Dictionary<String, Object> d, Attributes a, Transaction t) {}%% \\
+
+| edit 	
+| %%code on_editCompanyProject(Pointer p, Dictionary<String, Object> d, Attributes a, Transaction t) {}%% \\
+%%code after_editCompanyProject(Pointer p, Dictionary<String, Object> d, Attributes a, Transaction t) {}%%
+
+| delete 	
+| %%code on_deleteCompanyProject(Pointer p, Attributes a, Transaction t) {}%% \\
+%%code after_deleteCompanyProject(Pointer p, Attributes a, Transaction t) {}
+
+}]
+
+
+These methods make it possible to access the form data contained in the Dictionary object and the page and request data held by the Attributes object. Additional queries and/or operations on the database can be performed using the Transaction, whilst the Pointer is a relational object that uniquely identifies the record that is being manipulated.
+
+
+!!Custom handler methods
+
+When using the [mak:form|FormTag] tag, it is possible to define custom handler methods by specifying their name in the handler attribute of the tag.
+
+These handler methods need to have the following signature
+
+%%prettify
+{{{
+public void handlerMethod(Dictionary<String, Object> formFields, Attributes restOfArguments, Transaction t) { }
+}}}%%
+
+The handler can then be placed in the Business Logic file corresponding to the page.
+
+
+!!!Main Makumba API elements
+
+!!Pointer
+A Makumba Pointer is an object that uniquely identifies a database record. It can have different forms:
+* the internal form, which is used by Makumba to access the object in the database
+* the Java form, as Pointer object
+* the external form, which is a 7 character long string that uniquely identifies the record and its type. This form is mostly used in JSP pages, as CGI parameters.
+
+For instance, let’s consider the following JSP page listProjects.jsp:
+
+%%prettify
+{{{
+<%@ taglib uri="http://www.makumba.org/presentation" prefix="mak"%>
+
+<mak:list from=”company.Project p” where=”p = $project”>
+    <mak:value expr=”p.name” />, pointer: <mak:value expr=”p” /><br />
+    <mak:value expr=”p” var=”projectPointer” />
+</mak:list>
+}}}%%
+
+This page can then be called with the following URI: %%Code listProjects.jsp?projects=nxdcdc2%%
+
+%%code nxdcdc2%% is the external form of the Makumba pointer to a specific record.
+
+The %%Code <mak:value expr="p" />%% will also print this string, whereas the second [mak:value|ValueTag] will not result in any printed result, but will make "projectPointer" accessible as a Java page attribute inside the [mak:list|ListTag], having Pointer as its type. It could then be used by casting it to a Pointer, however, this is rarely needed, since the "project" page parameter can be used in all Makumba tags through the %%Code $project%% attribute.
+
+!!Attributes
+
+!!Transaction
+
+
+%%(display:none;)[Category Documentation]%%
