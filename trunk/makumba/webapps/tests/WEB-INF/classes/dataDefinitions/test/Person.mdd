@@ -71,7 +71,7 @@ intSet= set int {"a"=0, "b"=1, "c"=2 }
 charSet=set char{ "d", "e", "f" }
 
 email = char[40]
-matches(email) { ".+@.+\.[a-z]+|^[ ]*$" } : "Email address is not valid!"
+matches(email) { .+@.+\.[a-z]+|^[ ]*$ } : "Email address is not valid!"
 
 address=set			 ;Addresses
   address->!title=description
@@ -92,7 +92,7 @@ address=set			 ;Addresses
   address->languages = set test.Language ; languages spoken in that address
   address->length(description) {3..?} : "Description must be at least 3 letters long!"
   address->someFunction() { 1 + 2 } : "Some nested message"
-  address->matches(homepage) { "http://.+" } : "the homepage must start with http://"
+  address->matches(homepage) { http://.+ } : "the homepage must start with http://"
   address->compare(description) { lower(description) != description } : "Description cannot all be lower case!"
 
 
