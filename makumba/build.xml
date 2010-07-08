@@ -558,8 +558,6 @@
 
 	<target name="doMavenDeploy" if="doDeploy" xmlns:artifact="urn:maven-artifact-ant" xmlns:openpgp="antlib:org.apache.commons.openpgp.ant">
 
-		<copy file="${jar.dir}/lib/${tag}.jar" tofile="work/makumba.jar" />
-
 		<artifact:remoteRepository id="sonatype.release" url="http://oss.sonatype.org/service/local/staging/deploy/maven2/">
 			<releases enabled="true" />
 			<snapshots enabled="false" />
@@ -568,9 +566,18 @@
 
 		<!-- compute the version from the tag -->
 		<propertyregex property="release.version" input="${tag}" regexp="makumba-*" replace="" casesensitive="false" />
-
 		<propertyregex property="release.version" input="${release.version}" regexp="_" replace="." global="true" override="true" casesensitive="false" />
 
+		<!-- preparing jar, javadoc and sources -->
+		<copy file="${lib.dir}/${tag}.jar" tofile="work/makumba.jar" />
+		
+		<antcall target="jarSources" />
+		<copy file="${lib.dir}/${tag}-sources.jar" tofile="work/makumba-${release.version}-sources.jar" />
+				
+		<antcall target="jarJavadoc" />
+		<copy file="${lib.dir}/${tag}-javadoc.jar" tofile="work/makumba-${release.version}-javadoc.jar" />
+
+		
 		<!-- in-memory POM definition -->
 		<artifact:pom id="makumba-memory.project" groupId="org.makumba" artifactId="makumba" version="${release.version}" name="makumba" description="A framework for rapid and sustainable web-development" url="http://www.makumba.org">
 
@@ -582,7 +589,8 @@
 			<dependency groupid="commons-lang" artifactid="commons-lang" version="2.3" scope="runtime" />
 			<dependency groupid="c3p0" artifactid="c3p0" version="0.9.1.2" scope="runtime" />
 			<dependency groupid="eu.medsea.mimeutil" artifactid="mime-util" version="2.1.3" scope="runtime" />
-
+			<dependency groupid="com.google.code.gson" artifactid="gson" version="1.4" scope="runtime" />
+		
 			<license name="LGPL" url="http://www.gnu.org/copyleft/lesser.html" />
 			<scm url="http://svn.makumba.sourceforge.net/" connection="http://svn.makumba.sourceforge.net/" />
 
@@ -597,9 +605,8 @@
 		<delete file="work/release-pom.xml" />
 		<delete file="work/makumba.jar.asc" />
 		<delete file="work/release-pom.xml.asc" />
-
+		
 		<artifact:writepom file="work/release-pom.xml" pomrefid="makumba-memory.project" />
-
 		<artifact:pom file="work/release-pom.xml" id="makumba.project" />
 
 		<echo>Signing makumba.jar and release-pom.xml</echo>
@@ -625,6 +632,8 @@
 		<artifact:deploy file="work/makumba.jar">
 			<attach file="work/makumba.jar.asc" type="jar.asc" />
 			<attach file="work/release-pom.xml.asc" type="pom.asc" />
+			<attach file="work/makumba-${release.version}-sources.jar" type="jar" />
+			<attach file="work/makumba-${release.version}-javadoc.jar" type="jar" />
 			<remoteRepository refid="sonatype.release" />
 			<pom refid="makumba.project" />
 		</artifact:deploy>
@@ -1168,7 +1177,7 @@ package org.makumba]]>
 		<copy file="${jar.dir}/classes/makumbaResources/javaScript/kruseCalendarPopup_combined.js" tofile="${jar.dir}/doc/scripts/kruseCalendarPopup_combined.js" />
 		<copy file="${jar.dir}/classes/makumbaResources/javaScript/makumbaDateFunctions.js" tofile="${jar.dir}/doc/scripts/makumbaDateFunctions.js" />
 		<echo>- generating doc/api</echo>
-		<loadfile property="leftMenuContent" srcfile="${documentation.path}/JSPWiki/api/leftMenu.html" />
+		<!-- <loadfile property="leftMenuContent" srcfile="${documentation.path}/JSPWiki/api/leftMenu.html" /> -->
 
 		<javadoc destdir="${documentation.path}/JSPWiki/api" sourcepath="classes" packagenames="org.makumba" notree="true" noindex="true" nohelp="true" windowtitle="Makumba" classpathref="project.class.path" Version="true" Author="true" additionalparam="-breakiterator" doctitle="Makumba API Documentation" stylesheetfile="${documentation.path}/JSPWiki/templates/makumba/jspwiki-api.css">
 			<!--
@@ -1241,6 +1250,22 @@ package org.makumba]]>
 </javadoc>
 
 </target>
+	
+	<target name="jarJavadoc" if="tag" depends="javadoc">
+		<jar jarfile="lib/${tag}-javadoc.jar">
+			<fileset dir="${documentation.path}/JSPWiki/api-developer/" />
+		</jar>
+ 	</target>
+	
+	<target name="jarSource" if="tag">
+		<jar jarfile="lib/${tag}-source.jar">
+			<fileset dir="work/makumba.distrib/">
+				<include name="makumba/**" />
+			</fileset>
+		</jar>
+	</target>
+
+	
 
 <!-- Old / deprectated targets -->
 
