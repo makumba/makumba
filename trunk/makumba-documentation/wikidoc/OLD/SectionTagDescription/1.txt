@@ -1,1 +1,0 @@
-A section that can be hidden, shown or reloaded using events. It enables partial page rendering via AJAX post-back.

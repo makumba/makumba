@@ -1,1 +1,0 @@
-Only for date types. Defaults to <code>true</code> resp. the default value specified in the Makumba configuration.

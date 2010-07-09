@@ -1,1 +1,0 @@
-Enclosed inside a %%code <mak:criterion>%%, generates an input for that criterion. This tag is based on the %%code <mak:input />%% tag, and provides additionally the following attributes:
