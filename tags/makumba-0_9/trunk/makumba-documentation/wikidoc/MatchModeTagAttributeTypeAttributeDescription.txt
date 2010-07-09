@@ -1,3 +1,0 @@
-HTML input type to be used: 
-* "select" (drop-down)
-* "radio" (radio buttons)

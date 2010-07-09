@@ -1,7 +1,0 @@
-[{Code
-  
-<mak:searchForm in="company.Employee" name="searchEmployee">
-    <mak:criterion fields="name"> ... </mak:criterion>
-</mak:searchForm>
-
-}]
