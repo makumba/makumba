@@ -1,0 +1,1 @@
+Only for text. Current implementation is buggy: separator is added before every long line, instead of between every long line.

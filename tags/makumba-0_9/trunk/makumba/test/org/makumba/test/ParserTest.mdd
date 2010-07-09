@@ -1,0 +1,80 @@
+# this is a single line comment
+
+#!title = name
+!type.genTyp=int{"Female"=0, "Male"=1}
+
+# included data definition
+!include = validMdds.Included
+
+overrideIt=char[22]
+removeIt=
+
+# here come the field
+name = not null unique char[233] ; comment very long
+name2 = ptr ParserTest
+
+# now we have a setComplex!
+name3 = set
+name3->!title = subname1 ;test
+name3-> subname1 = unique char[232] ; subcomment1
+name3-> subname2 = genTyp ; subcomment2
+name3->!include = validMdds.Included
+name3->overrideIt=char[22]
+#name3->subImage = file
+name3->length(subname1) {1..2} : "this is an error message"
+
+name4 = char[255] ;comment4
+age = unique int ; age of someone
+
+name5 = int {"Male" = 10, "Female" = 20, "Shemale" = 30 deprecated}
+name6 = char {"Some", "Other", "Value"}
+
+setint = set int {"Male" = 10, "Female" = 20, "Shemale" = 30 deprecated}
+setchar = set char {"Some", "Other", "Value"}
+
+#image = file
+
+testSetInt = set int{"Female"=0, "Male"=1}
+testSet = set ParserTest
+
+
+
+# simple validation rules
+range(age) {15..18} : "Must be at least 15 years old and at most 18!"
+matches(name4) { http://.+ } : "the homepage must start with http://"
+
+length(name4) {1..?} : "name4 must not be empty"
+unique(name2, name) : "these need to be unique!"
+
+compare(name) { lower(name) = name } : "Name must not have capital letters"
+
+myFunction(char[] arg, char[] arg2) { actor() }
+
+subquery() { SELECT o.name FROM other o }
+
+myOtherFunction(char[] arg) { name4 + arg }
+
+yetAnotherFunction() { name4 + ' and ' + name4 }
+
+actor() { name4 = name4 }
+
+# from POC
+#actor(char[] user) {username=user}
+#actor(char[] admin) {username=admin}
+#actor(char[] user, char[] pass) {username=user AND this.passowrd=pass}
+
+anInt() {  4 + 3 }
+
+other = ptr ParserComparison
+
+education=set
+  education->!title=faculty
+  education->typeofstud=char{"Undergraduate", "Postgraduate"} ;Type
+  education->startdate=date           ;Starting date
+  education->finishdate=date              ;Finishing date
+  education->faculty=char[100]        ;Faculty
+  education->minimumlength=int{"unknown/no minimum"=0, "1 year"=1, "2 years"=2, "3 years"=3, "4 years"=4, "5 years"=5, "6 years"=6, "7 years"=7, "8 years"=8, "9 years"=9, "10 years"=10}         ;Minimum length
+  education->title=int              ;Title of degree(in your language)
+  education->entitle=char[100]        ;Title of degree(in English)
+  education->thesis=text              ;Subject of thesis and promotor
+
