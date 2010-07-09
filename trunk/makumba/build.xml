@@ -395,6 +395,7 @@
 		<antcall target="generateTLDs">
 			<param name="release" value="true" />
 		</antcall>
+		<antcall target="makeTag" />
 		<antcall target="makeJar" />
 		<antcall target="uploadMadeJar" />
 	</target>
@@ -405,7 +406,6 @@
 	</target>
 
 	<target name="makeJar" if="tag" description="makes the jar and a src tarball of the given version">
-		<antcall target="makeTag" />
 		<antcall target="checkoutJar" />
 		<antcall target="packageJar" />
 		<delete dir="work/makumba.distrib" />
