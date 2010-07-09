@@ -1,0 +1,29 @@
+body {
+   margin: 0;
+   padding: 0;
+   background-color: #EAECEE;
+   font-family: Verdana, sans-serif;
+   font-size: 0.9em;
+}
+#container {
+   margin: 0 auto;
+   padding: 0 20px 10px 20px;
+   border: 1px solid #666666;
+   width: 865px; 
+   background: #FFFFFF;
+   padding-top: 10px;
+}
+#footer {
+   clear: both;
+   text-align: center;
+   color: #666666;
+   font-size: 0.85em;
+}
+code {
+   font-size: 1.1em;
+}
+
+span.invalid {
+   padding-left: 3px;
+   color: red;
+}

@@ -1,0 +1,19 @@
+!How to use Makumba
+
+This part of the site is aimed at explaining how to use Makumba. In contrary to the [Reference Documentation|Documentation] that is more technical, this part of the site will show you how to use Makumba in order to build powerful webapps with a minimum of effort through a number of examples, and link to the reference documentation when needed, so that you can discover Makumba in a more "hands-on" fashion.
+
+In order to get started, read further on the following topics:
+
+* [Makumba manifesto|MakumbaManifesto]
+* [Defining the data model|DataModelHowto]
+* [Displaying data|DisplayingDataHowto]
+* [Creating and editing data|CreatingEditingHowto]
+* [Multiple lists and forms|MultipleListsAndFormsHowto]
+* [Advanced features|AdvancedFeaturesHowto]
+* [Search forms|SearchFormsHowto]
+* [MDD functions|MDDFunctionsHowto]
+* [Authentication and authorisation|AuthenticationAuthorizationHowto]
+* [Layout and navigation|LayoutHowto]
+
+
+%%(display:none;)[Category Usage]%%

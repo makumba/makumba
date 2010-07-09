@@ -1,0 +1,8 @@
+email = char
+matches(email) { ".+@.+\.[a-z]+|^[ ]*$" } : "Email address is not valid!"
+
+address = set
+address->number = int
+address->range(number) {0..5} : "Error!"
+address->email = char
+address->matches(email) { ".+@.+\.[a-z]+|^[ ]*$" } : "Email address is not valid!"

@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+   xmlns:h="http://java.sun.com/jsf/html"
+   xmlns:f="http://java.sun.com/jsf/core"
+   xmlns:c="http://java.sun.com/jsp/jstl/core"
+   xmlns:ui="http://java.sun.com/jsf/facelets"
+   xmlns:playground="http://www.makumba.org/playground"
+   template="/WEB-INF/templates/default.xhtml">
+
+    <ui:define name="content">
+
+    <h2>ui:repeat</h2>
+    <p>The following values come from the org.makumba.jsf.test.HelloWorld bean:</p>
+    
+    <ul>
+    <ui:repeat value="#{helloWorld.list}" var="myVariable">
+      <li>#{myVariable}</li>
+    </ui:repeat>
+    </ul>
+
+    <hr />
+
+    <h2>forms with partial post-back and bean validation</h2>
+    <p>Bean validation enforces annotation-based constraints defined on the model class.</p>
+
+    <h:form id="bv">
+      <table>
+        <f:ajax render="letterMessage">
+          <tr>
+            <th style="text-align: right;"><h:outputLabel for="letters" value="Letters (ajax validation):" /></th>
+            <td><h:inputText id="letters" value="#{helloWorld.letters}" /><h:message id="letterMessage" for="letters" errorClass="invalid" /></td>
+          </tr>
+        </f:ajax>
+        <tr>
+          <th style="text-align: right;"><h:outputLabel for="numbers" value="Numbers:" /></th>
+          <td><h:inputText id="numbers" value="#{helloWorld.numbers}" /> <h:message for="numbers" errorClass="invalid" /></td>
+        </tr>
+        <tr>
+          <th style="text-align: right;"><h:outputLabel for="email" value="Email:" /></th>
+          <td><h:inputText id="email" value="#{helloWorld.email}" />
+          <h:message for="email" errorClass="invalid" /></td>
+        </tr>
+      </table>
+      
+      <p>
+        <h:commandButton id="check" action="check" value="Check values" />
+        <h:outputText value=" All clear!" rendered="#{facesContext.postback and empty facesContext.messageList}" style="color: green;" />
+      </p>
+    </h:form>
+    
+    <hr />
+    
+    <h2>custom tags</h2>
+
+    HtmlHelloWorld tag without attribute: <playground:helloworld /> <br />
+    HtmlHellowWorld tag with attribute: <playground:helloworld message="Scala" /> <br />
+
+    Form and HtmlHelloInput:
+    <h:form>
+      <playground:helloinput id="myInput" />
+    </h:form>
+
+  </ui:define>
+</ui:composition>
