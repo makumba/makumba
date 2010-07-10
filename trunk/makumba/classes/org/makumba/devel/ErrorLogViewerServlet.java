@@ -54,11 +54,11 @@ public class ErrorLogViewerServlet extends DataServlet {
 
     public final int QUERY_LANGUAGE_OQL = 10;
 
-    private final String ERROR_LOG_MDD = "org.makumba.controller.errorLog";
+    private final String ERROR_LOG_MDD = "org.makumba.controller.ErrorLog";
 
     private final String ERROR_LOG_MDD_LABEL = "errorLog";
 
-    private final String FIELD1 = "errorLog";
+    private final String FIELD1 = "ErrorLog";
 
     private final String FIELD1_LABEL = "ErrorLog";
 
