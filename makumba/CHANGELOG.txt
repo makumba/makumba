@@ -23,6 +23,9 @@ manu, marius: edit-in-place for mak:input and mak:list ("editable" attribute). I
 FIXES
 manu: removing runtime dependency to javassist
 
+NEW FEATURES
+manu: activating error log viewer by default in the makumba tools
+
 0.9 8 Jul 2010
 
 FIXES
