@@ -18,6 +18,11 @@ manu, marius: edit-in-place for mak:input and mak:list ("editable" attribute). I
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
 
+0.9.0.1 10 Jul 2010
+
+FIXES
+manu: removing runtime dependency to javassist
+
 0.9 8 Jul 2010
 
 FIXES
