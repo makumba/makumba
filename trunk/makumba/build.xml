@@ -568,6 +568,10 @@
 
 	<target name="doMavenDeploy" if="doDeploy" xmlns:artifact="urn:maven-artifact-ant" xmlns:openpgp="antlib:org.apache.commons.openpgp.ant">
 
+		<!-- clean up -->
+		<delete file="work/*.asc" />
+		<delete file="work/release-pom.xml" />
+		
 		<artifact:remoteRepository id="sonatype.release" url="http://oss.sonatype.org/service/local/staging/deploy/maven2/">
 			<releases enabled="true" />
 			<snapshots enabled="false" />
@@ -579,10 +583,9 @@
 		<propertyregex property="release.version" input="${release.version}" regexp="_" replace="." global="true" override="true" casesensitive="false" />
 
 		<!-- preparing jar, javadoc and sources -->
-		<copy file="${lib.dir}/${tag}.jar" tofile="work/makumba.jar" />
-		<copy file="${lib.dir}/${tag}-sources.jar" tofile="work/makumba-${release.version}-sources.jar" />
-		<copy file="${lib.dir}/${tag}-javadoc.jar" tofile="work/makumba-${release.version}-javadoc.jar" />
-
+		<copy file="${lib.dir}/${tag}.jar" tofile="work/makumba.jar" overwrite="true" />
+		<copy file="${lib.dir}/${tag}-sources.jar" tofile="work/makumba-${release.version}-sources.jar" overwrite="true" />
+		<copy file="${lib.dir}/${tag}-javadoc.jar" tofile="work/makumba-${release.version}-javadoc.jar" overwrite="true" />
 		
 		<!-- in-memory POM definition -->
 		<artifact:pom id="makumba-memory.project" groupId="org.makumba" artifactId="makumba" version="${release.version}" name="makumba" description="A framework for rapid and sustainable web-development" url="http://www.makumba.org">
@@ -608,10 +611,6 @@
 		</artifact:pom>
 
 		<!-- write the POM on disk -->
-		<delete file="work/release-pom.xml" />
-		<delete file="work/makumba.jar.asc" />
-		<delete file="work/release-pom.xml.asc" />
-		
 		<artifact:writepom file="work/release-pom.xml" pomrefid="makumba-memory.project" />
 		<artifact:pom file="work/release-pom.xml" id="makumba.project" />
 
