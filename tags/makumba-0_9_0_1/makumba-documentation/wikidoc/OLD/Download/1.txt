@@ -1,0 +1,8 @@
+!!!Download
+
+Makumba is [open source software|http://www.opensource.org/]. Both source code and binaries can be downloaded under the terms of [GNU Lesser General Public License (LGPL)|http://www.gnu.org/copyleft/lesser.html].
+
+You can __[download Makumba at Sourceforge|http://sourceforge.net/project/showfiles.php?group_id=25704]__
+
+
+%%(display:none;)[Category Download]%%

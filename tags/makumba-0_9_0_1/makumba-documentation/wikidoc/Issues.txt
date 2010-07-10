@@ -1,0 +1,10 @@
+Here you can find the list of some of issues reported during makumba development and possible fixes or workarounds. 
+
+[{TableOfContents}]
+
+!!!"Unable to compile class for JSP" error on tests
+When running the JUnit tests in Windows environment some tests may throw a ''JasperException: Unable to compile class for JSP''. It happens most often if the tests are run immediately one after another. The cause of the error is most likely an antivirus software that scans the generated test class files and when the test needs to destroy them it can't because they are locked. 
+
+The solution is to run the tests with more delay in between or just run few time until the error disappears. Another solutions is to disable the antivirus, but it's not recommended.
+
+%%(display:none;) [Category Documentation]%%

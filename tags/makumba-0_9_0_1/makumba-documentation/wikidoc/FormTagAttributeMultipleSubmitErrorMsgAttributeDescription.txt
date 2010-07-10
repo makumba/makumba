@@ -1,0 +1,1 @@
+Enables multiple form submission prevention, and sets the given value as the error message.
