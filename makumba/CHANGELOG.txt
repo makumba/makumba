@@ -8,6 +8,9 @@
 TO BE RELEASED IMMEDIATELY (No need for more testing)
 -----------------------------------------------
 
+FIXES
+manu: throwing a ConfigurationException in MakumbaJSPFactory when the controller filter is not mapped or does not apply (instead of a NPE)
+
 NOT TO BE RELEASED YET (need more testing)
 manu: auto-complete for mak:input (char and ptr)
 manu, marius: edit-in-place for mak:input and mak:list ("editable" attribute). Is yet to be finished.
