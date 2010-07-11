@@ -1,1 +1,0 @@
-Toggles range searching on the field(s)

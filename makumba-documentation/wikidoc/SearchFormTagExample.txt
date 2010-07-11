@@ -1,6 +1,0 @@
-%%prettify
-{{{
-<mak:searchForm in="company.Company" name="searchCompany">
-    ...
-</mak:searchForm>
-}}}%%

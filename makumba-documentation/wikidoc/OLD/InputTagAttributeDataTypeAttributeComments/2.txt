@@ -1,1 +1,0 @@
-Can be char, char[xx], int, date, text, ptr Type, set Type
