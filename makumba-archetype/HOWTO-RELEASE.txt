@@ -2,6 +2,7 @@ PREREQUISITES
 =============
 - gpg installed on your system so that the maven gpg plugin can use it
 - the makumba public & private keys imported on your system
+- don't use maven 2.2.0 since it contains a bug and generates invalid checksums
 
 - Sonatype user and password must be configured in ~.m2/settings.xml:
 
@@ -23,5 +24,5 @@ COMMANDS
 ========
 
 mvn release:prepare -Dusername=<SF user> -Dpassword=<SF password>
-mvn release:perform -Darguments="-Dgpg.passphrase=<makumba passphrase>"
+mvn release:perform -Darguments="-Dgpg.passphrase=<makumba passphrase> -Dgpg.keyname=makumba-devel@lists.sourceforge.net"
 
