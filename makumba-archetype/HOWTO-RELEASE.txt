@@ -1,8 +1,9 @@
-mvn release:prepare -Dusername=<SF user> -Dpassword=<SF password>
+PREREQUISITES
+=============
+- gpg installed on your system so that the maven gpg plugin can use it
+- the makumba public & private keys imported on your system
 
-mvn release:perform -Darguments="-Dgpg.passphrase=<makumba passphrase>"
-
-Note: Sonatype user and password must be configured in ~.m2/settings.xml:
+- Sonatype user and password must be configured in ~.m2/settings.xml:
 
 <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -16,3 +17,11 @@ Note: Sonatype user and password must be configured in ~.m2/settings.xml:
     </server>
   </servers>
 </settings>
+
+
+COMMANDS
+========
+
+mvn release:prepare -Dusername=<SF user> -Dpassword=<SF password>
+mvn release:perform -Darguments="-Dgpg.passphrase=<makumba passphrase>"
+
