@@ -30,6 +30,8 @@ import javax.servlet.jsp.JspEngineInfo;
 import javax.servlet.jsp.JspFactory;
 import javax.servlet.jsp.PageContext;
 
+import org.makumba.ConfigurationError;
+
 /**
  * A JSP factory that wraps the default factory from the servlet container.<br>
  * This is needed for Makumba to find out when a page begins and ends, and to store its pageContext.
@@ -136,6 +138,12 @@ public class MakumbaJspFactory extends JspFactory {
     }
 
     public static PageContext getPageContext() {
+
+        if (pageContextStack.get() == null) {
+            throw new ConfigurationError(
+                    "Could not retrieve pageContext from MakumbaJspFactory. Make sure that the makumba controller filter is correctly configured in your web.xml file and that it is also applied.");
+        }
+
         return pageContextStack.get().peek();
     }
 }
