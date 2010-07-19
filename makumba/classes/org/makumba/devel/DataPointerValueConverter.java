@@ -37,6 +37,7 @@ import org.makumba.Pointer;
 import org.makumba.commons.SQLPointer;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.DeveloperTool;
 import org.makumba.providers.TransactionProvider;
 
 /**
@@ -56,13 +57,13 @@ public class DataPointerValueConverter extends DataServlet {
     public final static int FROM_DBSV = 30;
 
     public DataPointerValueConverter() {
-        toolLocation = Configuration.getObjectIdConverterLocation();
+        toolLocation = Configuration.getToolLocation(DeveloperTool.OBJECT_ID_CONVERTER);
     }
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.doGet(request, response);
-        browsePath = contextPath + Configuration.getObjectIdConverterLocation();
+        browsePath = contextPath + Configuration.getToolLocation(DeveloperTool.OBJECT_ID_CONVERTER);
 
         String paramDataType = request.getParameter("dataType");
         String paramValue = request.getParameter("value");

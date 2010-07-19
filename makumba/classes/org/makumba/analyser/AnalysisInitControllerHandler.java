@@ -58,21 +58,24 @@ public class AnalysisInitControllerHandler extends ControllerHandler {
 
     @Override
     public void finalize(ServletRequest request, ServletResponse response) {
-        HttpSession session = ((HttpServletRequest) request).getSession();
-        String key = getAnalysisStateKey(request);
-        if (hadError) {
-            // keep the state of the previous analysis so we can display errors even when reloading the page
-            AnalysableElement.keepAnalysisState(session, key);
-        } else {
-            // first remove the state object from the session
-            if (session.getServletContext().getAttribute(key) != null) {
-                session.getServletContext().removeAttribute(key);
-            }
-            // then initialize the thread, it won't reload the state this time
-            AnalysableElement.initializeThread(session, key);
+        if (!response.isCommitted()) {
 
-            // finally discard the parsing data
-            AnalysableElement.discardJSPParsingData();
+            HttpSession session = ((HttpServletRequest) request).getSession();
+            String key = getAnalysisStateKey(request);
+            if (hadError) {
+                // keep the state of the previous analysis so we can display errors even when reloading the page
+                AnalysableElement.keepAnalysisState(session, key);
+            } else {
+                // first remove the state object from the session
+                if (session.getServletContext().getAttribute(key) != null) {
+                    session.getServletContext().removeAttribute(key);
+                }
+                // then initialize the thread, it won't reload the state this time
+                AnalysableElement.initializeThread(session, key);
+
+                // finally discard the parsing data
+                AnalysableElement.discardJSPParsingData();
+            }
         }
     }
 

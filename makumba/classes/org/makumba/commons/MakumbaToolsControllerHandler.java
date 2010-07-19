@@ -40,6 +40,8 @@ import org.makumba.devel.relations.RelationCrawlerTool;
 import org.makumba.forms.responder.ValueEditor;
 import org.makumba.list.MakumbaDownloadServlet;
 import org.makumba.providers.Configuration;
+import org.makumba.providers.DeveloperTool;
+import org.makumba.providers.MakumbaServlet;
 
 /**
  * Handle access to makumba tools, like the {@link UniquenessServlet}.
@@ -55,25 +57,25 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
         HttpServletResponse response = (HttpServletResponse) res;
 
         String path = request.getRequestURI().replace(request.getContextPath(), "");
-        if (path.startsWith(Configuration.getMakumbaUniqueLocation())) {
+        if (path.startsWith(Configuration.getServletLocation(MakumbaServlet.UNIQUENESS))) {
             new UniquenessServlet().doGet(request, response);
             return false;
-        } else if (path.startsWith(Configuration.getMakumbaAutoCompleteLocation())) {
+        } else if (path.startsWith(Configuration.getServletLocation(MakumbaServlet.AUTOCOMPLETE))) {
             new AutoCompleteServlet().doGet(request, response);
             return false;
-        } else if (path.startsWith(Configuration.getMakumbaResourcesLocation())) {
+        } else if (path.startsWith(Configuration.getServletLocation(MakumbaServlet.RESOURCES))) {
             new MakumbaResourceServlet().doGet(request, response);
             return false;
-        } else if (path.startsWith(Configuration.getMakumbaDownloadLocation())) {
+        } else if (path.startsWith(Configuration.getServletLocation(MakumbaServlet.DOWNLOAD))) {
             new MakumbaDownloadServlet().doGet(request, response);
             return false;
-        } else if (path.startsWith(Configuration.getMakumbaValueEditorLocation())) {
+        } else if (path.startsWith(Configuration.getServletLocation(MakumbaServlet.VALUE_EDITOR))) {
             new ValueEditor().doPost(request, response);
             return false;
-        } else if (path.startsWith(Configuration.getMakumbaRelationCrawlerLocation())) {
+        } else if (path.startsWith(Configuration.getServletLocation(MakumbaServlet.RELATION_CRAWLER))) {
             new RelationCrawlerTool().doPost(request, response);
             return false;
-        } else if (path.startsWith(Configuration.getMakumbaCacheCleanerLocation())) {
+        } else if (path.startsWith(Configuration.getToolLocation(DeveloperTool.CACHE_CLEANER))) {
             // check if there is a specific cache
             String cacheName = request.getParameter("cacheName");
             ArrayList<String> cacheNames = NamedResources.getActiveCacheNames();
@@ -124,54 +126,19 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
             w.println("<p>This page gives you a short overview on the configuration of this Makumba installation and basic information on the tools available.</p>");
 
             writeSectionHeader(w, "Location", "Makumba Tools");
-            writeDescr(w, "DataDefinition viewer", "View data definitions", Configuration.KEY_MDD_VIEWER,
-                Configuration.getMddViewerLocation(), request.getContextPath());
-            writeDescr(w, "Java Viewer", "View Java Business Logics", Configuration.KEY_JAVA_VIEWER,
-                Configuration.getJavaViewerLocation(), request.getContextPath());
-            writeDescr(w, "Logic Discovery", "View Business Logics associated with a certain page",
-                Configuration.KEY_LOGIC_DISCOVERY, Configuration.getLogicDiscoveryViewerLocation(),
-                request.getContextPath());
-            writeDescr(w, "Code generator", "Generate forms & lists from data definitions",
-                Configuration.KEY_CODE_GENERATOR, Configuration.getCodeGeneratorLocation(), request.getContextPath());
-            writeDescr(w, "Data query", "Free-form OQL queries", Configuration.KEY_DATA_QUERY_TOOL,
-                Configuration.getDataQueryLocation(), request.getContextPath());
-            writeDescr(w, "Data lister", "List data from a certain type", Configuration.KEY_DATA_LISTER,
-                Configuration.getDataListerLocation(), request.getContextPath());
-            writeDescr(w, "Object viewer", "View a specific object", Configuration.KEY_DATA_OBJECT_VIEWER,
-                Configuration.getDataViewerLocation(), request.getContextPath());
-            writeDescr(w, "Pointer value converter", "Convert pointer values between internal/external/DB form",
-                Configuration.KEY_OBJECT_ID_CONVERTER, Configuration.getObjectIdConverterLocation(),
-                request.getContextPath());
-            writeDescr(w, "Reference Checker",
-                "Checks creation the status of foreign and unique keys and displays broken references",
-                Configuration.KEY_REFERENCE_CHECKER, Configuration.getReferenceCheckerLocation(),
-                request.getContextPath());
-            writeDescr(w, "Relation Crawler",
-                "Runs a detection of file relations between JSP, MDD and Java Business Logics",
-                Configuration.KEY_RELATION_CRAWLER, Configuration.getMakumbaRelationCrawlerLocation(),
-                request.getContextPath());
-            writeDescr(w, "Error Log viewer", "List logged makumba errors", Configuration.KEY_ERRORLOG_VIEWER,
-                Configuration.getErrorLogViewerLocation(), request.getContextPath());
-            writeDescr(w, "Makumba Cache Cleaner",
-                "Cleans all internal Makumba caches, like queries, data-definitions.<br/>"
-                        + "Useful during development, to avoid having to restart the servlet container.",
-                Configuration.KEY_MAKUMBA_CACHE_CLEANER, Configuration.getMakumbaCacheCleanerLocation(),
-                request.getContextPath());
+            for (DeveloperTool t : DeveloperTool.values()) {
+                writeDescr(w, t.getName(), t.getDescription(), t.getKey(), Configuration.getToolLocation(t),
+                    request.getContextPath());
+            }
             w.println("</table>");
 
             writeSectionHeader(w, "Location", "Makumba servlets");
-            writeDescr(w, "Download", "Download of file-type data", Configuration.KEY_MAKUMBA_DOWNLOAD,
-                Configuration.getMakumbaDownloadLocation(), request.getContextPath());
-            writeDescr(w, "Resources",
-                "Resources (javaScript, images,...) needed for calendar editor, live-validation, ...",
-                Configuration.KEY_MAKUMBA_RESOURCES, Configuration.getMakumbaResourcesLocation(),
-                request.getContextPath());
-            writeDescr(w, "Uniqueness", "AJAX uniqueness check", Configuration.KEY_MAKUMBA_UNIQUENESS_VALIDATOR,
-                Configuration.getMakumbaUniqueLocation(), request.getContextPath());
-            writeDescr(w, "Autocomplete", "AJAX autcomplete", Configuration.KEY_MAKUMBA_AUTOCOMPLETE,
-                Configuration.getMakumbaAutoCompleteLocation(), request.getContextPath());
-            writeDescr(w, "Value Editor", "Tool for edit-in-place", Configuration.KEY_MAKUMBA_VALUE_EDITOR,
-                Configuration.getMakumbaValueEditorLocation(), request.getContextPath());
+
+            for (MakumbaServlet s : MakumbaServlet.values()) {
+                writeDescr(w, s.getName(), s.getDescription(), s.getKey(), Configuration.getServletLocation(s),
+                    request.getContextPath());
+            }
+
             w.println("</table>");
 
             writeSectionHeader(w, "Value", "Controller settings");

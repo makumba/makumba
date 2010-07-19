@@ -39,6 +39,7 @@ import org.makumba.Transaction;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.db.makumba.DBConnection;
 import org.makumba.providers.Configuration;
+import org.makumba.providers.DeveloperTool;
 import org.makumba.providers.TransactionProvider;
 
 /**
@@ -87,13 +88,13 @@ public class ErrorLogViewerServlet extends DataServlet {
     private final String FIELD7_LABEL = "MakumbaController";
 
     public ErrorLogViewerServlet() {
-        toolLocation = Configuration.getErrorLogViewerLocation();
+        toolLocation = Configuration.getToolLocation(DeveloperTool.ERRORLOG_VIEWER);
     }
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.doGet(request, response);
-        browsePath = contextPath + Configuration.getDataListerLocation();
+        browsePath = contextPath + Configuration.getToolLocation(DeveloperTool.DATA_LISTER);
 
         String orderByField = request.getParameter("orderByField");
         if (orderByField == null || orderByField.equals("")) {

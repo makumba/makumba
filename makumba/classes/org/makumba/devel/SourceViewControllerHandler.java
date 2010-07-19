@@ -39,6 +39,7 @@ import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.makumba.commons.ControllerHandler;
 import org.makumba.commons.ServletObjects;
 import org.makumba.providers.Configuration;
+import org.makumba.providers.DeveloperTool;
 
 /**
  * invoke the necessary SourceViewer, depending on the type of the source the architecture should change, and be
@@ -68,13 +69,13 @@ public class SourceViewControllerHandler extends ControllerHandler {
         String requestURI = req.getRequestURI();
         String path = requestURI.replace(req.getContextPath(), "");
         SourceViewer sw = null;
-        if (path.startsWith(Configuration.getMddViewerLocation())) {
+        if (path.startsWith(Configuration.getToolLocation(DeveloperTool.MDD_VIEWER))) {
             sw = new mddViewer(req);
-        } else if (path.startsWith(Configuration.getJavaViewerLocation())) {
+        } else if (path.startsWith(Configuration.getToolLocation(DeveloperTool.JAVA_VIEWER))) {
             sw = new javaViewer(req);
-        } else if (path.startsWith(Configuration.getLogicDiscoveryViewerLocation())) {
+        } else if (path.startsWith(Configuration.getToolLocation(DeveloperTool.LOGIC_DISCOVERY))) {
             sw = new logicViewer(req);
-        } else if (path.startsWith(Configuration.getCodeGeneratorLocation())) {
+        } else if (path.startsWith(Configuration.getToolLocation(DeveloperTool.CODE_GENERATOR))) {
             sw = new GeneratedCodeViewer(req);
         } else if (path.endsWith(".jspx") || path.endsWith(".jsps") || path.endsWith(".jspxp")) {
             sw = new jspViewer(req);
@@ -99,8 +100,9 @@ public class SourceViewControllerHandler extends ControllerHandler {
             }
 
             if (sw instanceof GeneratedCodeViewer && requestURI.endsWith("/")) {
-                String location = requestURI.substring((req.getContextPath() + Configuration.getCodeGeneratorLocation()).length() + 1);
-                res.sendRedirect(req.getContextPath() + Configuration.getMddViewerLocation() + location);
+                String location = requestURI.substring((req.getContextPath() + Configuration.getToolLocation(DeveloperTool.CODE_GENERATOR)).length() + 1);
+                res.sendRedirect(req.getContextPath() + Configuration.getToolLocation(DeveloperTool.MDD_VIEWER)
+                        + location);
                 return false;
             }
 
@@ -113,7 +115,7 @@ public class SourceViewControllerHandler extends ControllerHandler {
             }
             res.setContentType("text/html");
             printDirlistingHeader(w, dir.getCanonicalPath(), relativeDirectory, req.getContextPath(),
-                sw instanceof javaViewer ? Configuration.KEY_JAVA_VIEWER : Configuration.KEY_MDD_VIEWER);
+                sw instanceof javaViewer ? DeveloperTool.JAVA_VIEWER.getKey() : DeveloperTool.MDD_VIEWER.getKey());
 
             if (!(relativeDirectory.equals("classes") || relativeDirectory.equals("classes/dataDefinitions"))) {
                 w.println("<b><a href=\"../\">../</a></b> (up one level)");
@@ -137,9 +139,11 @@ public class SourceViewControllerHandler extends ControllerHandler {
                 String[] list = dir.list(new SuffixFileFilter(new String[] { ".idd", ".mdd" }));
                 Arrays.sort(list);
                 for (String element : list) {
-                    String s = DevelUtils.getVirtualPath(req, Configuration.getMddViewerLocation()) + element;
+                    String s = DevelUtils.getVirtualPath(req, Configuration.getToolLocation(DeveloperTool.MDD_VIEWER))
+                            + element;
                     s = s.substring(1, s.lastIndexOf(".")).replace('/', '.');
-                    String addr = req.getContextPath() + Configuration.getMddViewerLocation() + "/" + s;
+                    String addr = req.getContextPath() + Configuration.getToolLocation(DeveloperTool.MDD_VIEWER) + "/"
+                            + s;
                     w.println("<a href=\"" + addr + "\">" + element + "</a>");
                 }
             } else {

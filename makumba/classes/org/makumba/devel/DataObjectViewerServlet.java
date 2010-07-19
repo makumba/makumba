@@ -42,6 +42,7 @@ import org.makumba.db.makumba.Database;
 import org.makumba.db.makumba.sql.SQLDBConnection;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.DeveloperTool;
 import org.makumba.providers.TransactionProvider;
 
 /**
@@ -56,13 +57,13 @@ public class DataObjectViewerServlet extends DataServlet {
     private static final long serialVersionUID = 1L;
 
     public DataObjectViewerServlet() {
-        toolLocation = Configuration.getDataViewerLocation();
+        toolLocation = Configuration.getToolLocation(DeveloperTool.OBJECT_VIEWER);
     }
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.doGet(request, response);
-        browsePath = contextPath + Configuration.getDataListerLocation() + "/" + browsePath;
+        browsePath = contextPath + Configuration.getToolLocation(DeveloperTool.DATA_LISTER) + "/" + browsePath;
 
         PrintWriter writer = response.getWriter();
         DevelUtils.writePageBegin(writer);
@@ -71,14 +72,24 @@ public class DataObjectViewerServlet extends DataServlet {
 
         DataDefinition dd = null;
 
-        dataPointer = new Pointer(type, request.getParameter("ptr"));
+        if (request.getParameter("ptr") != null) {
+            dataPointer = new Pointer(type, request.getParameter("ptr"));
+        } else {
+            writePageContentHeader(type, writer, null, MODE_LIST);
+            writer.println("No object to browse provided, use the dataLister in order to browse records");
+            DevelUtils.writePageEnd(writer);
+            return;
+        }
 
         try {
             dd = DataDefinitionProvider.getInstance().getDataDefinition(type);
         } catch (Throwable e) {
         }
         if (dd == null) {
-
+            writePageContentHeader(type, writer, null, MODE_LIST);
+            writer.println("No valid type selected");
+            DevelUtils.writePageEnd(writer);
+            return;
         } else {
             TransactionProvider tp = TransactionProvider.getInstance();
             Transaction t = tp.getConnectionTo(tp.getDefaultDataSourceName());
@@ -92,8 +103,7 @@ public class DataObjectViewerServlet extends DataServlet {
                 SQLDBConnection sqlConnection = (SQLDBConnection) t;
                 Database hostDatabase = sqlConnection.getHostDatabase();
 
-                String dataBaseName = t.getName();
-                writePageContentHeader(type, writer, dataBaseName, MODE_LIST);
+                writePageContentHeader(type, writer, t.getName(), MODE_LIST);
                 writer.println("<br/>");
 
                 Vector<FieldDefinition> fields = DataServlet.getAllFieldDefinitions(dd);

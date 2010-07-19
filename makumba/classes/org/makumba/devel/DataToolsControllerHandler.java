@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.makumba.commons.ControllerHandler;
 import org.makumba.commons.ServletObjects;
 import org.makumba.providers.Configuration;
+import org.makumba.providers.DeveloperTool;
 
 /**
  * Handle access to the data tools.
@@ -48,22 +49,22 @@ public class DataToolsControllerHandler extends ControllerHandler {
         HttpServletResponse response = (HttpServletResponse) res;
 
         String path = request.getRequestURI().replace(request.getContextPath(), "");
-        if (path.startsWith(Configuration.getDataQueryLocation())) {
+        if (path.startsWith(Configuration.getToolLocation(DeveloperTool.DATA_QUERY))) {
             new DataQueryServlet().doGet(request, response);
             return false;
-        } else if (path.startsWith(Configuration.getDataListerLocation())) {
+        } else if (path.startsWith(Configuration.getToolLocation(DeveloperTool.DATA_LISTER))) {
             new DataTypeListerServlet().doGet(request, response);
             return false;
-        } else if (path.startsWith(Configuration.getDataViewerLocation())) {
+        } else if (path.startsWith(Configuration.getToolLocation(DeveloperTool.OBJECT_VIEWER))) {
             new DataObjectViewerServlet().doGet(request, response);
             return false;
-        } else if (path.startsWith(Configuration.getObjectIdConverterLocation())) {
+        } else if (path.startsWith(Configuration.getToolLocation(DeveloperTool.OBJECT_ID_CONVERTER))) {
             new DataPointerValueConverter().doGet(request, response);
             return false;
-        } else if (path.startsWith(Configuration.getReferenceCheckerLocation())) {
+        } else if (path.startsWith(Configuration.getToolLocation(DeveloperTool.REFERENCE_CHECKER))) {
             new ReferenceChecker().doGet(request, response);
             return false;
-        } else if (path.startsWith(Configuration.getErrorLogViewerLocation())) {
+        } else if (path.startsWith(Configuration.getToolLocation(DeveloperTool.ERRORLOG_VIEWER))) {
             new ErrorLogViewerServlet().doGet(request, response);
             return false;
         } else {

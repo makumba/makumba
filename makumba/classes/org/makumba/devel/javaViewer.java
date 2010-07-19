@@ -43,6 +43,7 @@ import org.makumba.analyser.engine.TomcatJsp;
 import org.makumba.commons.StringUtils;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.DeveloperTool;
 
 /**
  * the java viewer. It should be a filter from another (mb third-party) viewer that links known .java and .mdd sources.
@@ -72,7 +73,7 @@ public class javaViewer extends LineViewer {
         jspClasspath = TomcatJsp.getContextCompiledJSPDir(request.getSession().getServletContext());
 
         contextPath = req.getContextPath();
-        virtualPath = DevelUtils.getVirtualPath(req, Configuration.getJavaViewerLocation());
+        virtualPath = DevelUtils.getVirtualPath(req, Configuration.getToolLocation(DeveloperTool.JAVA_VIEWER));
         if (virtualPath == null) {
             virtualPath = "/";
         } else {
@@ -252,18 +253,18 @@ public class javaViewer extends LineViewer {
                                 try {
                                     dd = ddp.getDataDefinition(mddName);
                                     writer.print(parts[0] + "<a href=\"" + contextPath
-                                            + Configuration.getMddViewerLocation() + dd.getName() + "\" title=\"'"
-                                            + parts[2] + "'-handler for " + dd.getName() + "\" class=\"classLink\">"
-                                            + parts[1] + "</a>");
+                                            + Configuration.getToolLocation(DeveloperTool.MDD_VIEWER) + dd.getName()
+                                            + "\" title=\"'" + parts[2] + "'-handler for " + dd.getName()
+                                            + "\" class=\"classLink\">" + parts[1] + "</a>");
                                 } catch (DataDefinitionNotFoundError e) {
                                     mddName = findMddNameFromHandler(parts[1], true);
                                     try {
                                         dd = ddp.getDataDefinition(mddName);
                                         DataDefinition parentDd = dd.getParentField().getDataDefinition();
                                         writer.print(parts[0] + "<a href=\"" + contextPath
-                                                + Configuration.getMddViewerLocation() + "/" + parentDd.getName()
-                                                + "\" title=\"'" + parts[2] + "'-handler for " + dd.getName()
-                                                + "\" class=\"classLink\">" + parts[1] + "</a>");
+                                                + Configuration.getToolLocation(DeveloperTool.MDD_VIEWER) + "/"
+                                                + parentDd.getName() + "\" title=\"'" + parts[2] + "'-handler for "
+                                                + dd.getName() + "\" class=\"classLink\">" + parts[1] + "</a>");
                                     } catch (DataDefinitionNotFoundError e1) {
                                         // do nothing, just don't use this possible MDD
                                     } catch (NullPointerException e1) {
@@ -375,14 +376,14 @@ public class javaViewer extends LineViewer {
             p = p.substring(0, p.indexOf(".java"));
         }
         p = p.replaceAll("\\.", "/");
-        String path = contextPath + Configuration.getJavaViewerLocation() + p.substring(0, p.lastIndexOf('/') + 1);
+        String path = contextPath + Configuration.getToolLocation(DeveloperTool.JAVA_VIEWER) + p.substring(0, p.lastIndexOf('/') + 1);
         if (path.startsWith("/")) {
             path = path.substring(1);
         }
         w.println("&nbsp;&nbsp;&nbsp;");
         w.println("<a href=\"/" + path + "\"><font color=\"darkblue\">browse</font></a>");
         w.println("&nbsp;&nbsp;&nbsp;");
-        DevelUtils.writeDevelUtilLinks(w, Configuration.KEY_JAVA_VIEWER, contextPath);
+        DevelUtils.writeDevelUtilLinks(w, DeveloperTool.JAVA_VIEWER.getKey(), contextPath);
         w.println("</td>");
     }
 

@@ -15,6 +15,7 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
 import org.makumba.providers.Configuration;
+import org.makumba.providers.DeveloperTool;
 
 /**
  * This class provides basic functionality for data viewing and querying servlets.
@@ -61,7 +62,7 @@ public abstract class DataServlet extends HttpServlet {
             virtualPath = "/";
         }
 
-        // URL-decode the type, to preserver a potential "->" in the type name (indicating a setComplex/ptrOne)
+        // URL-decode the type, to preserve a potential "->" in the type name (indicating a setComplex/ptrOne)
         type = URLDecoder.decode(virtualPath, System.getProperty("file.encoding"));
         if (type.startsWith("/")) {
             type = type.substring(1);
@@ -77,8 +78,8 @@ public abstract class DataServlet extends HttpServlet {
         String toolKey = null;
         if (mode == MODE_VIEW || mode == MODE_LIST) {
             if (type != null && !type.equals("")) {
-                w.println("      <a href=\"" + contextPath + Configuration.getMddViewerLocation() + "/" + type
-                        + "\"><span style=\"font-size: x-large\"><span style=\"color: darkblue;\">" + type
+                w.println("      <a href=\"" + contextPath + Configuration.getToolLocation(DeveloperTool.MDD_VIEWER)
+                        + "/" + type + "\"><span style=\"font-size: x-large\"><span style=\"color: darkblue;\">" + type
                         + "</span></a> data</span>");
             } else {
                 w.println("      <span style=\"font-size: large; color: darkblue;\">Browse to select type for data listing</span>");
@@ -89,20 +90,24 @@ public abstract class DataServlet extends HttpServlet {
                         + "</span> | <span title=\"Database value\" style=\"border-bottom:thin dotted;\">"
                         + dataPointer.longValue() + "</span>)</i>");
             }
-            w.println("<br>in Makumba database: " + dataBaseName);
-            toolKey = Configuration.KEY_DATA_LISTER;
+            if (dataBaseName != null) {
+                w.println("<br>in Makumba database: " + dataBaseName);
+            }
+            toolKey = DeveloperTool.DATA_LISTER.getKey();
         } else if (mode == MODE_QUERY) {
             w.println("      <span style=\"font-size: x-large\">Query translater & executer</span><br>");
             w.println("      <span style=\"font-size: small\">Insert your query in OQl here, and get the created SQL and the results of the query.</span>");
-            toolKey = Configuration.KEY_DATA_QUERY_TOOL;
+            toolKey = DeveloperTool.DATA_QUERY.getKey();
         } else if (mode == MODE_ERROR_LOG) {
             w.println("      <span style=\"font-size: x-large\">Error log viewer</span><br>");
             w.println("      <span style=\"font-size: small\">List of Makumba errors</span>");
-            toolKey = Configuration.KEY_ERRORLOG_VIEWER;
+            toolKey = DeveloperTool.ERRORLOG_VIEWER.getKey();
         } else if (mode == MODE_CONVERTOR) {
             w.println("      <span style=\"font-size: x-large\">Makumba Pointer value convertor</span>");
-            w.println("<br>in Makumba database: " + dataBaseName);
-            toolKey = Configuration.KEY_OBJECT_ID_CONVERTER;
+            if (dataBaseName != null) {
+                w.println("<br>in Makumba database: " + dataBaseName);
+            }
+            toolKey = DeveloperTool.OBJECT_ID_CONVERTER.getKey();
         }
         w.println("    </td>");
         w.println("    <td align=\"right\" valign=\"top\" style=\"padding: 5px; padding-top: 10px\">");
