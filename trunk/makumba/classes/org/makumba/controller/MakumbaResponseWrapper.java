@@ -19,6 +19,7 @@ import org.makumba.commons.tags.GenericMakumbaTag;
 import org.makumba.forms.validation.LiveValidationProvider;
 import org.makumba.list.tags.SectionTag;
 import org.makumba.providers.Configuration;
+import org.makumba.providers.MakumbaServlet;
 
 /**
  * This class provides a wrapper around a {@link HttpServletResponse}, and modifies on the fly some of the output to be
@@ -58,14 +59,17 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
         super(response);
         this.request = request;
         makumbaStyleSheet = "<link rel=\"StyleSheet\" type=\"text/css\" media=\"all\" href=\""
-                + request.getContextPath() + Configuration.getMakumbaResourcesLocation() + "/"
+                + request.getContextPath() + Configuration.getServletLocation(MakumbaServlet.RESOURCES) + "/"
                 + MakumbaResourceServlet.RESOURCE_PATH_CSS + "makumba.css\"/>";
     }
 
     @Override
     public PrintWriter getWriter() throws IOException {
         // we do the header modifications only for .jsp files
+        // and only if we are not doing something related to makumba tools
         if (request.getRequestURI().endsWith(".jsp")
+                && !request.getRequestURI().startsWith(
+                    request.getContextPath() + Configuration.getMakumbaToolsLocation())
                 && request.getAttribute(javax.servlet.jsp.PageContext.EXCEPTION) == null) {
             if (makumbaWriter == null) {
                 originalWriter = super.getWriter();
@@ -90,11 +94,11 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
                     String resource = (String) object;
                     if (resource.endsWith(".js")) {
                         javaScriptResources += "  <script type=\"text/javascript\" src=\"" + request.getContextPath()
-                                + Configuration.getMakumbaResourcesLocation() + "/javaScript/" + resource
-                                + "\"></script>\n";
+                                + Configuration.getServletLocation(MakumbaServlet.RESOURCES) + "/javaScript/"
+                                + resource + "\"></script>\n";
                     } else if (resource.endsWith(".css")) {
                         cssResources += "\n  <link rel=\"StyleSheet\" type=\"text/css\" media=\"all\" href=\""
-                                + request.getContextPath() + Configuration.getMakumbaResourcesLocation()
+                                + request.getContextPath() + Configuration.getServletLocation(MakumbaServlet.RESOURCES)
                                 + "/css/makumbaDevelStyles.css\"/>";
                     }
                 }

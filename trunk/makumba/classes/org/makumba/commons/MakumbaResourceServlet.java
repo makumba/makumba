@@ -51,6 +51,7 @@ import org.makumba.devel.SourceViewControllerHandler;
 import org.makumba.forms.html.KruseCalendarEditor;
 import org.makumba.forms.validation.LiveValidationProvider;
 import org.makumba.providers.Configuration;
+import org.makumba.providers.MakumbaServlet;
 
 /**
  * This servlet provides resources needed by makumba, e.g. JavaScript for the date editor {@link KruseCalendarEditor}
@@ -78,7 +79,7 @@ public class MakumbaResourceServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String servletPath = req.getContextPath() + Configuration.getMakumbaResourcesLocation();
+        String servletPath = req.getContextPath() + Configuration.getServletLocation(MakumbaServlet.RESOURCES);
         String requestURI = req.getRequestURI();
         String resource = requestURI.substring(requestURI.indexOf(servletPath) + servletPath.length());
         URL url = ClassResource.get(resourceDirectory + resource);
@@ -222,14 +223,15 @@ public class MakumbaResourceServlet extends HttpServlet {
                     }
 
                     if (cachedResource.toString().contains(MakumbaResourceServlet.PLACEHOLDER_UNIQUENESS_SERVLET_PATH)) {
-                        String uniquenessPath = req.getContextPath() + Configuration.getMakumbaUniqueLocation();
+                        String uniquenessPath = req.getContextPath()
+                                + Configuration.getServletLocation(MakumbaServlet.UNIQUENESS);
                         output = output.replaceAll(MakumbaResourceServlet.PLACEHOLDER_UNIQUENESS_SERVLET_PATH,
                             uniquenessPath);
                     }
 
                     if (cachedResource.toString().contains(PLACEHOLDER_RESOURCE_PATH)) {
                         output = output.replaceAll(PLACEHOLDER_RESOURCE_PATH,
-                            Configuration.getMakumbaResourcesLocation());
+                            Configuration.getServletLocation(MakumbaServlet.RESOURCES));
                     }
 
                     outputStream.print(output);

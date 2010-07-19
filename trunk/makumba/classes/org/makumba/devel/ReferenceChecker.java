@@ -27,6 +27,7 @@ import org.makumba.db.makumba.sql.SQLDBConnection;
 import org.makumba.db.makumba.sql.TableManager;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.DeveloperTool;
 import org.makumba.providers.TransactionProvider;
 
 /**
@@ -82,11 +83,11 @@ public class ReferenceChecker extends HttpServlet {
             }
             DevelUtils.writePageEnd(w);
         } finally {
-            if (connection != null) {
-                connection.close();
-            }
             if (connectionHolder != null) {
                 connectionHolder.close();
+            }
+            if (connection != null) {
+                connection.close();
             }
         }
     }
@@ -189,8 +190,8 @@ public class ReferenceChecker extends HttpServlet {
             try {
                 DataDefinition dd = MakumbaSystem.getDataDefinition(mddName);
                 w.println("<h3><a name=\"" + mddName + "\" href=\"" + contextPath
-                        + Configuration.getMddViewerLocation() + "/" + mddName + "\">" + mddName + "</a> ("
-                        + count(sqlConnection, dd) + ")</h3>");
+                        + Configuration.getToolLocation(DeveloperTool.MDD_VIEWER) + "/" + mddName + "\">" + mddName
+                        + "</a> (" + count(sqlConnection, dd) + ")</h3>");
                 w.println("<ul>");
                 for (FieldDefinition f : getReferenceFields(dd)) {
                     w.println("<li>");
@@ -354,7 +355,7 @@ public class ReferenceChecker extends HttpServlet {
         w.println("</td>");
 
         w.println("<td align=\"right\">");
-        DevelUtils.writeDevelUtilLinks(w, Configuration.KEY_REFERENCE_CHECKER, contextPath);
+        DevelUtils.writeDevelUtilLinks(w, DeveloperTool.REFERENCE_CHECKER.getKey(), contextPath);
         w.println("</td>");
 
         w.println("</tr>");

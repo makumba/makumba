@@ -20,6 +20,7 @@ import org.makumba.Transaction;
 import org.makumba.db.makumba.DBConnection;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.DeveloperTool;
 import org.makumba.providers.TransactionProvider;
 
 /**
@@ -34,7 +35,7 @@ public class DataTypeListerServlet extends DataServlet {
     protected static final long serialVersionUID = 1L;
 
     public DataTypeListerServlet() {
-        toolLocation = Configuration.getDataListerLocation();
+        toolLocation = Configuration.getToolLocation(DeveloperTool.DATA_LISTER);
     }
 
     @Override
@@ -136,8 +137,9 @@ public class DataTypeListerServlet extends DataServlet {
                     writer.println("<tr class=\"" + (i % 2 == 0 ? "even" : "odd") + "\">");
                     writer.println("<td>" + (i + 1) + "</td>");
                     writer.println("<td>");
-                    writer.println("<a href=\"" + contextPath + Configuration.getDataViewerLocation() + "/" + type
-                            + "?ptr=" + ((Pointer) results.elementAt(i).get("ptr")).toExternalForm() + "\">");
+                    writer.println("<a href=\"" + contextPath
+                            + Configuration.getToolLocation(DeveloperTool.OBJECT_VIEWER) + "/" + type + "?ptr="
+                            + ((Pointer) results.elementAt(i).get("ptr")).toExternalForm() + "\">");
                     Dictionary<String, Object> dictionary = results.elementAt(i);
                     Object value = dictionary.get("title");
                     if (value == null || value.equals("")) {
@@ -183,7 +185,7 @@ public class DataTypeListerServlet extends DataServlet {
 
     private void doDirectoryListing(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
             throws IOException, FileNotFoundException {
-        String servletPath = request.getContextPath() + Configuration.getDataListerLocation();
+        String servletPath = request.getContextPath() + Configuration.getToolLocation(DeveloperTool.DATA_LISTER);
         String requestURI = request.getRequestURI();
         String pathInfo = requestURI.substring(requestURI.indexOf(servletPath) + servletPath.length());
         if (DevelUtils.redirected(request, response, pathInfo)) {
@@ -220,7 +222,7 @@ public class DataTypeListerServlet extends DataServlet {
             if (s.indexOf(".") != -1 && s.endsWith("dd")) {
                 String ddname = pathInfo + s;
                 ddname = ddname.substring(1, ddname.lastIndexOf(".")).replace('/', '.');
-                String addr = contextPath + Configuration.getDataListerLocation() + "/" + ddname;
+                String addr = contextPath + Configuration.getToolLocation(DeveloperTool.DATA_LISTER) + "/" + ddname;
                 writer.println("<a href=\"" + addr + "\">" + s + "</a>");
             }
         }

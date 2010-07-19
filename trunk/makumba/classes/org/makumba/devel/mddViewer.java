@@ -42,6 +42,7 @@ import org.makumba.commons.RegExpUtils;
 import org.makumba.controller.Logic;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.DeveloperTool;
 
 /**
  * This class implements a viewer for MDD syntax highlighting.<br>
@@ -61,7 +62,7 @@ public class mddViewer extends LineViewer {
         super(true, req);
         setSearchLevels(false, false, false, true);
         contextPath = req.getContextPath();
-        virtualPath = DevelUtils.getVirtualPath(req, Configuration.getMddViewerLocation());
+        virtualPath = DevelUtils.getVirtualPath(req, Configuration.getToolLocation(DeveloperTool.MDD_VIEWER));
         java.net.URL u = DataDefinitionProvider.findDataDefinitionOrDirectory(virtualPath, "mdd");
         if (u == null) {
             u = DataDefinitionProvider.findDataDefinitionOrDirectory(virtualPath, "idd");
@@ -141,7 +142,7 @@ public class mddViewer extends LineViewer {
 
         // link to code generator
         if (dd != null) {
-            w.print("<a style=\"color: darkblue;\" href=\"" + contextPath + Configuration.getCodeGeneratorLocation()
+            w.print("<a style=\"color: darkblue;\" href=\"" + contextPath + Configuration.getToolLocation(DeveloperTool.CODE_GENERATOR)
                     + "/" + virtualPath + "\">code generator</a>&nbsp;&nbsp;&nbsp;");
         } else if (dir.getName().endsWith(".idd")) { // we don't have a BL for for idd's
             w.print("<span style=\"color:gray;\" title=\"There's no code to be generated for .idd files!\">code generator</span>&nbsp;&nbsp;&nbsp;");
@@ -151,7 +152,7 @@ public class mddViewer extends LineViewer {
         w.print("<a style=\"color: darkblue;\" href=\"" + browsePath + "\">browse</a>&nbsp;&nbsp;&nbsp;");
 
         w.println("&nbsp;&nbsp;&nbsp;");
-        DevelUtils.writeDevelUtilLinks(w, Configuration.KEY_MDD_VIEWER, contextPath);
+        DevelUtils.writeDevelUtilLinks(w, DeveloperTool.MDD_VIEWER.getKey(), contextPath);
 
         w.println("</td>");
     }

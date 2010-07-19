@@ -3,7 +3,6 @@ package org.makumba.devel;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Map;
 
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +12,8 @@ import org.apache.commons.lang.StringUtils;
 import org.makumba.Pointer;
 import org.makumba.commons.MakumbaResourceServlet;
 import org.makumba.providers.Configuration;
+import org.makumba.providers.DeveloperTool;
+import org.makumba.providers.MakumbaServlet;
 
 /**
  * This class combines some methods to print pages used by various developer support tools in package org.makumba.devel.
@@ -30,14 +31,15 @@ public class DevelUtils {
     }
 
     public static void writeScripts(PrintWriter w, String contextPath) {
-        w.println("<script type=\"text/javascript\" src=\"" + contextPath + Configuration.getMakumbaResourcesLocation()
-                + "/" + MakumbaResourceServlet.RESOURCE_PATH_JAVASCRIPT + "makumbaDevelScripts.js\"></script>\n");
+        w.println("<script type=\"text/javascript\" src=\"" + contextPath
+                + Configuration.getServletLocation(MakumbaServlet.RESOURCES) + "/"
+                + MakumbaResourceServlet.RESOURCE_PATH_JAVASCRIPT + "makumbaDevelScripts.js\"></script>\n");
     }
 
     public static void writeStyles(PrintWriter w, String contextPath) {
         w.println("<link rel=\"StyleSheet\" type=\"text/css\" media=\"all\" href=\"" + contextPath
-                + Configuration.getMakumbaResourcesLocation() + "/" + MakumbaResourceServlet.RESOURCE_PATH_CSS
-                + "makumbaDevelStyles.css\"/>");
+                + Configuration.getServletLocation(MakumbaServlet.RESOURCES) + "/"
+                + MakumbaResourceServlet.RESOURCE_PATH_CSS + "makumbaDevelStyles.css\"/>");
     }
 
     public static void writeStylesAndScripts(PrintWriter w, String contextPath) {
@@ -76,8 +78,8 @@ public class DevelUtils {
         }
         result += " <span style=\"color: green; afont-size: x-small;\">[";
         boolean haveTitle = StringUtils.isNotBlank(pointerTitle);
-        result += "<a href=\"" + contextPath + Configuration.getDataViewerLocation() + "/" + pointer.getType()
-                + "?ptr=" + pointer.toExternalForm() + "\" style=\"color: green\" title=\""
+        result += "<a href=\"" + contextPath + Configuration.getToolLocation(DeveloperTool.OBJECT_VIEWER) + "/"
+                + pointer.getType() + "?ptr=" + pointer.toExternalForm() + "\" style=\"color: green\" title=\""
                 + (haveTitle ? "Pointer: " + pointer.toExternalForm() + "; " : "") + "Database Value: "
                 + pointer.longValue() + "; DBSV|Unique Index: " + pointer.getDbsv() + "|" + pointer.getUid() + "\">"
                 + (haveTitle ? pointerTitle : pointer.toExternalForm()) + "</a>";
@@ -115,18 +117,16 @@ public class DevelUtils {
     }
 
     public static void writeDevelUtilLinks(PrintWriter w, String toolKey, String contextPath) {
-        Map<String, String> allGenericDeveloperToolsMap = Configuration.getAllGenericDeveloperToolsMap();
         w.println("<a href=\"javascript:toggleElementDisplay(developerTools);\">Other tools</a>");
         w.println("<div id=\"developerTools\" class=\"popup\" style=\"display: none; right: 8px;\">");
-        for (String key : allGenericDeveloperToolsMap.keySet()) {
-            if (!key.equals(toolKey)) {
-                if (Configuration.getMakumbaToolsPathConfigProperty(key).equals(Configuration.PROPERTY_NOT_SET)) {
-                    w.print("<span style=\"color: grey\">" + allGenericDeveloperToolsMap.get(key)
-                            + ": disabled </span><br/>");
-                } else {
+        for (DeveloperTool t : DeveloperTool.values()) {
+            if (!t.getKey().equals(toolKey) && t.isGeneric()) {
+                if (Configuration.getMakumbaToolsPathConfigProperty(t.getKey()).equals(Configuration.PROPERTY_NOT_SET)) {
+                    w.print("<span style=\"color: grey\">" + t.getName() + ": disabled </span><br/>");
+                } else if (t.isGeneric()) {
                     w.print("<a href=\"" + contextPath + Configuration.getMakumbaToolsLocation()
-                            + Configuration.getMakumbaToolsPathConfigProperty(key) + "\">"
-                            + allGenericDeveloperToolsMap.get(key) + "</a><br/>");
+                            + Configuration.getMakumbaToolsPathConfigProperty(t.getKey()) + "\">" + t.getName()
+                            + "</a><br/>");
                 }
             }
         }

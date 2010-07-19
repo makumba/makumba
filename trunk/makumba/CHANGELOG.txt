@@ -10,6 +10,11 @@ TO BE RELEASED IMMEDIATELY (No need for more testing)
 
 FIXES
 manu: throwing a ConfigurationException in MakumbaJSPFactory when the controller filter is not mapped or does not apply (instead of a NPE)
+manu: copying fix from RecordParser in findDataDefinitionOrDirectory method of MDDProvider, should fix some bugs in developer tools relying on this behavior
+
+INTERNAL CHANGES
+manu: refactoring Configuration: developer tools and servlets are registered in enums, making maintenance easier;
+      changing the way Configuration is built by introducing a DTO (first step to programmatic configuration)
 
 NOT TO BE RELEASED YET (need more testing)
 manu: auto-complete for mak:input (char and ptr)

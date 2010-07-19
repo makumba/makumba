@@ -53,6 +53,7 @@ import org.makumba.db.makumba.sql.Database;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.tags.QueryTag;
 import org.makumba.providers.Configuration;
+import org.makumba.providers.DeveloperTool;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
@@ -136,7 +137,7 @@ public class jspViewer extends LineViewer {
         jspSourceViewExtension = _servletPath.substring(_servletPath.length() - extraLength());
         realPath = servletContext.getRealPath(virtualPath);
         _servletPath = _servletPath.substring(0, _servletPath.indexOf(".")) + ".jsp";
-        logicPath = contextPath + Configuration.getLogicDiscoveryViewerLocation() + _servletPath;
+        logicPath = contextPath + Configuration.getToolLocation(DeveloperTool.LOGIC_DISCOVERY) + _servletPath;
         hasLogic = !(org.makumba.controller.Logic.getLogic(_servletPath) instanceof org.makumba.LogicNotFoundException);
         jspClasspath = TomcatJsp.getContextCompiledJSPDir(servletContext);
 
@@ -158,7 +159,8 @@ public class jspViewer extends LineViewer {
         String compiledJSPFile = findCompiledJSPClassName(TomcatJsp.getFullCompiledJSPDir(servletContext), virtualPath);
         if (compiledJSPFile != null) {
             additionalHeaderInfo = "<a style=\"font-size:smaller;\" href=\"" + request.getContextPath()
-                    + Configuration.getJavaViewerLocation() + "/" + compiledJSPFile + "\">[Compiled Version]</a>";
+                    + Configuration.getToolLocation(DeveloperTool.JAVA_VIEWER) + "/" + compiledJSPFile
+                    + "\">[Compiled Version]</a>";
         }
 
         reader = new FileReader(realPath);

@@ -30,6 +30,7 @@ import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.controller.Logic;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.DeveloperTool;
 import org.makumba.providers.TransactionProvider;
 
 /**
@@ -114,7 +115,7 @@ public class GeneratedCodeViewer extends jspViewer {
         setSearchLevels(false, false, false, true);
 
         contextPath = request.getContextPath();
-        virtualPath = DevelUtils.getVirtualPath(req, Configuration.getCodeGeneratorLocation());
+        virtualPath = DevelUtils.getVirtualPath(req, Configuration.getToolLocation(DeveloperTool.CODE_GENERATOR));
         if (virtualPath == null) {
             virtualPath = "/";
         }
@@ -288,9 +289,10 @@ public class GeneratedCodeViewer extends jspViewer {
     @Override
     public void intro(PrintWriter w) {
         initTemplates();
-        String browsePath = contextPath + Configuration.getMddViewerLocation()
+        String browsePath = contextPath + Configuration.getToolLocation(DeveloperTool.MDD_VIEWER)
                 + virtualPath.replace('.', '/').substring(0, virtualPath.lastIndexOf('.') + 1);
-        String mddViewerPath = contextPath + Configuration.getMddViewerLocation() + "/" + virtualPath;
+        String mddViewerPath = contextPath + Configuration.getToolLocation(DeveloperTool.MDD_VIEWER) + "/"
+                + virtualPath;
         // link to validation definition, if existing
 
         w.println("<td align=\"right\" valign=\"top\" style=\"padding: 5px; padding-top: 10px\" nowrap=\"nowrap\">");
@@ -299,7 +301,7 @@ public class GeneratedCodeViewer extends jspViewer {
         w.println("<a style=\"color: darkblue;\"href=\"" + browsePath + "\">browse</a>&nbsp;&nbsp;&nbsp;");
 
         w.println("&nbsp;&nbsp;&nbsp;");
-        DevelUtils.writeDevelUtilLinks(w, Configuration.KEY_MDD_VIEWER, contextPath);
+        DevelUtils.writeDevelUtilLinks(w, DeveloperTool.MDD_VIEWER.getKey(), contextPath);
 
         w.println("</td>");
     }
@@ -413,7 +415,7 @@ public class GeneratedCodeViewer extends jspViewer {
             }
         }
         if (new File(classesDirectory.getPath() + logicDir + logicFileName).exists()) {
-            w.println("|&nbsp;<a target=\"_blank\" href=\"" + contextPath + Configuration.getJavaViewerLocation()
+            w.println("|&nbsp;<a target=\"_blank\" href=\"" + contextPath + Configuration.getToolLocation(DeveloperTool.JAVA_VIEWER)
                     + logicDir + logicFileName + "\"><i>" + logicFileName + "</i></a>");
             w.println("</span>");
         }

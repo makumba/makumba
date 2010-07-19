@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.makumba.commons.ControllerHandler;
 import org.makumba.commons.ServletObjects;
 import org.makumba.providers.Configuration;
+import org.makumba.providers.DeveloperTool;
 
 public class FilterConditionControllerHandler extends ControllerHandler {
 
@@ -20,10 +21,11 @@ public class FilterConditionControllerHandler extends ControllerHandler {
         String uri = req.getRequestURI();
 
         // accesses to the source viewer are not filtered
-        if (uri.startsWith(Configuration.getMakumbaToolsLocation() + Configuration.getMddViewerLocation())
+        if (uri.startsWith(Configuration.getMakumbaToolsLocation()
+                + Configuration.getToolLocation(DeveloperTool.MDD_VIEWER))
                 || uri.startsWith(Configuration.getMakumbaToolsLocation()
-                        + Configuration.getLogicDiscoveryViewerLocation())
-                || uri.startsWith(Configuration.getMakumbaToolsLocation() + Configuration.getJavaViewerLocation())) {
+                        + Configuration.getToolLocation(DeveloperTool.LOGIC_DISCOVERY))
+                || uri.startsWith(Configuration.getMakumbaToolsLocation() + Configuration.getToolLocation(DeveloperTool.JAVA_VIEWER))) {
             return false;
         }
         String file = null;

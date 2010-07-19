@@ -54,6 +54,8 @@ import org.makumba.devel.relations.RelationCrawler;
 import org.makumba.devel.relations.FileRelations.RelationOrigin;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.DeveloperTool;
+import org.makumba.providers.MakumbaServlet;
 
 /**
  * a viewer that shows everything per line
@@ -315,11 +317,12 @@ public abstract class LineViewer implements SourceViewer {
                         // TODO make nicer, i.e. display something else while it crawls using some JS
                         // TODO: simply deactivating calling the crawler again would be a first step..
                         writer.println("No relations have been computed for this webapp.");
-                        if (Configuration.getMakumbaRelationCrawlerLocation().equals(Configuration.PROPERTY_NOT_SET)) {
+                        if (Configuration.getServletLocation(MakumbaServlet.RELATION_CRAWLER).equals(
+                            Configuration.PROPERTY_NOT_SET)) {
                             writer.print("<br/><span style=\"color: grey; font-size: smaller\">Manually triggering crawling is disabled</span>");
                         } else {
                             writer.println("<br><a href=\"" + request.getContextPath()
-                                    + Configuration.getMakumbaRelationCrawlerLocation()
+                                    + Configuration.getServletLocation(MakumbaServlet.RELATION_CRAWLER)
                                     + "\">Crawl now</a> (this will take some time)");
                         }
                     } else {
@@ -381,11 +384,11 @@ public abstract class LineViewer implements SourceViewer {
             return contextPath + "/" + fileName + jspSourceViewExtension;
         } else if (fileType.equals(TYPE_MDD)) {
             fileName = removeFilenamePrefixes(fileName);
-            return contextPath + Configuration.getMddViewerLocation() + "/"
+            return contextPath + Configuration.getToolLocation(DeveloperTool.MDD_VIEWER) + "/"
                     + fileName.replaceAll(".mdd", "").replaceAll("/", ".");
         } else if (fileType.equals(TYPE_JAVA)) {
             fileName = removeFilenamePrefixes(fileName);
-            return contextPath + Configuration.getJavaViewerLocation() + "/" + fileName;
+            return contextPath + Configuration.getToolLocation(DeveloperTool.JAVA_VIEWER) + "/" + fileName;
         }
         return fileName;
     }
@@ -576,11 +579,11 @@ public abstract class LineViewer implements SourceViewer {
      */
     public String formatClassLink(String qualifiedClassName, String className, Integer lineNumber) {
         if (lineNumber != null) {
-            return "<a href=\"" + contextPath + Configuration.getJavaViewerLocation() + "/" + qualifiedClassName + "#"
-                    + lineNumber + "\">" + className + "</a>";
+            return "<a href=\"" + contextPath + Configuration.getToolLocation(DeveloperTool.JAVA_VIEWER) + "/"
+                    + qualifiedClassName + "#" + lineNumber + "\">" + className + "</a>";
         } else {
-            return "<a href=\"" + contextPath + Configuration.getJavaViewerLocation() + "/" + qualifiedClassName
-                    + "\">" + className + "</a>";
+            return "<a href=\"" + contextPath + Configuration.getToolLocation(DeveloperTool.JAVA_VIEWER) + "/"
+                    + qualifiedClassName + "\">" + className + "</a>";
         }
     }
 
@@ -590,7 +593,7 @@ public abstract class LineViewer implements SourceViewer {
      */
     public String formatMDDLink(String mddName) {
         return "<a class=\"classlink\" title=\"DataDefinition '" + mddName + "'\" href=\"" + contextPath
-                + Configuration.getMddViewerLocation() + "/" + mddName + "\">" + mddName + "</a>";
+                + Configuration.getToolLocation(DeveloperTool.MDD_VIEWER) + "/" + mddName + "\">" + mddName + "</a>";
     }
 
     /**
@@ -800,7 +803,8 @@ public abstract class LineViewer implements SourceViewer {
                     s += "#" + methodName + "()";
                 }
             } else {
-                s += contextPath + Configuration.getJavaViewerLocation() + "/" + c.getName().replace('.', '/');
+                s += contextPath + Configuration.getToolLocation(DeveloperTool.JAVA_VIEWER) + "/"
+                        + c.getName().replace('.', '/');
             }
             return s + "\" title=\"" + (methodName != null ? "Method in " : "") + c.getName() + "\">" + displayName
                     + "</a>";
