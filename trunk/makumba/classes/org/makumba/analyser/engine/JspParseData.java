@@ -163,7 +163,10 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
      * Releases parsing data that is useful during analysis and for error handling, but not needed anymore afterwards
      */
     public synchronized void discardParsingData() {
-        syntaxPoints.discardPoints();
+        // if they were not already discarded
+        if (syntaxPoints != null) {
+            syntaxPoints.discardPoints();
+        }
     }
 
     /**
