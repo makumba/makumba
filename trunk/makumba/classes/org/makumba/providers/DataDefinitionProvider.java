@@ -401,7 +401,7 @@ public class DataDefinitionProvider {
 
     /**
      * Looks up a data definition. First tries to see if an arbitrary webapp root path was passed, if not uses the
-     * classpath
+     * classpath. Must specify a filename, not a directory (or package), see bug 173.
      * 
      * @param s
      *            the name of the type
@@ -438,6 +438,14 @@ public class DataDefinitionProvider {
 
         if (u == null) {
             u = org.makumba.commons.ClassResource.get(("dataDefinitions/" + s.replace('.', '/') + "." + ext));
+
+            // this is maybe a directory?
+            // FIXME: this doesn't work if the MDDs are not in the dataDefinitions directory, but in the classes folder
+            // directly
+            if (u == null) {
+                u = org.makumba.commons.ClassResource.get(("dataDefinitions" + (s.length() == 0 ? "" : "/") + s));
+            }
+
             if (u == null) {
                 u = org.makumba.commons.ClassResource.get((s.replace('.', '/') + "." + ext));
             }
