@@ -250,7 +250,9 @@ public abstract class AnalysableTag extends AnalysableElement {
             }
             if (tagData != null) {
                 setRunningElementData(tagData);
-                getThreadElementStack().pop();
+                if (!getThreadElementStack().isEmpty()) {
+                    getThreadElementStack().pop();
+                }
             }
             return doAnalyzedEndTag(pageCache);
         } catch (LogicException e) {
