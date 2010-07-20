@@ -49,6 +49,7 @@ public abstract class AnalysableElement extends TagSupport {
         getThreadElementStack().clear();
         runningElement.set(null);
         analyzedElement.set(null);
+        jspParser.set(null);
 
         Object[] analysisState = (Object[]) session.getServletContext().getAttribute(key);
 
@@ -57,7 +58,6 @@ public abstract class AnalysableElement extends TagSupport {
             runningElement.set((ElementData) analysisState[1]);
             elementStack.set((Stack<ElementData>) analysisState[2]);
             jspParser.set((JspParseData) analysisState[3]);
-
         }
     }
 
