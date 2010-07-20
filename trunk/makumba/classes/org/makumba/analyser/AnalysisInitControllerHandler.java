@@ -40,7 +40,7 @@ import org.makumba.commons.ServletObjects;
  */
 public class AnalysisInitControllerHandler extends ControllerHandler {
 
-    private boolean hadError = false;
+    private static final String HAD_ERROR = "org.makumba.analysisInit.hadError";
 
     @Override
     public boolean beforeFilter(ServletRequest request, ServletResponse response, FilterConfig conf,
@@ -52,7 +52,7 @@ public class AnalysisInitControllerHandler extends ControllerHandler {
 
     @Override
     public boolean onError(ServletRequest request, ServletResponse response, Throwable e, FilterConfig conf) {
-        hadError = true;
+        request.setAttribute(HAD_ERROR, new Boolean(true));
         return true;
     }
 
@@ -62,7 +62,7 @@ public class AnalysisInitControllerHandler extends ControllerHandler {
 
             HttpSession session = ((HttpServletRequest) request).getSession();
             String key = getAnalysisStateKey(request);
-            if (hadError) {
+            if (request.getAttribute(HAD_ERROR) != null && (Boolean) request.getAttribute(HAD_ERROR)) {
                 // keep the state of the previous analysis so we can display errors even when reloading the page
                 AnalysableElement.keepAnalysisState(session, key);
             } else {
