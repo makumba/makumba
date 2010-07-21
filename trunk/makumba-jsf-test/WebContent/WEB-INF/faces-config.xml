@@ -7,9 +7,6 @@
 	xsi:schemaLocation="
       http://java.sun.com/xml/ns/javaee
       http://java.sun.com/xml/ns/javaee/web-facesconfig_2_0.xsd">
-	<component>
-		<component-type>makumbaList</component-type>
-		<component-class>org.makumba.jsf.ListComponent</component-class>
-	</component>
+
 
 </faces-config>
