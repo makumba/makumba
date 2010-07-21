@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<facelet-taglib xmlns="http://java.sun.com/xml/ns/javaee"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facelettaglibrary_2_0.xsd"
+                version="2.0">
+    <description>makumba JSF taglib</description>
+    <namespace>http://www.makumba.org/jsf</namespace>
+    
+    <tag>
+        <description>mak:list</description>
+        <tag-name>list</tag-name>
+        <component>
+        	<component-type>makumbaList</component-type>
+        	<handler-class>org.makumba.jsf.ListTagHandler</handler-class>
+        </component>
+        
+        <attribute>
+            <description>from</description>
+            <name>from</name>
+            <required>false</required>
+            <type>int</type>
+        </attribute>
+        
+        
+        
+        <attribute>
+            <description>
+
+
+                &lt;div class="changed_added_2_0"&gt;
+
+                &lt;p&gt;Read-write property setting the offset from the
+                beginning of the
+                collection from which to start the iteration. If not set, this
+                offset
+                is not considered and iteration will start at the beginning of
+                the
+                collection.&lt;/p&gt;
+
+                &lt;/div&gt;
+
+            </description>
+            <name>offset</name>
+            <required>false</required>
+            <type>int</type>
+        </attribute>
+        <attribute>
+            <description>
+
+
+                &lt;div class="changed_added_2_0"&gt;
+
+                &lt;p&gt;Read-write property setting the size of the collection
+                to iterate.
+                If this value is less than the actual size of the collection, a
+                &lt;code&gt;FacesException&lt;/code&gt; must be thrown.&lt;/p&gt;
+
+                &lt;/div&gt;
+
+            </description>
+            <name>size</name>
+            <required>false</required>
+            <type>int</type>
+        </attribute>
+        <attribute>
+            <description>
+
+                &lt;div class="changed_added_2_0"&gt;&lt;p&gt;Iteration
+                will only process every step items of the collection,
+                starting with the first one.&lt;/p&gt;&lt;/div&gt;
+
+            </description>
+            <name>step</name>
+            <required>false</required>
+            <type>int</type>
+        </attribute>
+        <attribute>
+            <description>
+
+
+                &lt;div class="changed_added_2_0"&gt;
+
+                &lt;p&gt;The name of a collection of items that this tag
+                iterates over. The
+                collection may be a &lt;code&gt;List&lt;/code&gt;, &lt;code&gt;array&lt;/code&gt;,
+                &lt;code&gt;java.sql.ResultSet&lt;/code&gt;, or an individual
+                java Object. If the
+                collection is null, this tag does nothing.&lt;/p&gt;
+
+                &lt;/div&gt;
+
+            </description>
+            <name>value</name>
+            <required>true</required>
+            <type>java.lang.Object</type>
+        </attribute>
+        <attribute>
+            <description>
+
+                &lt;div class="changed_added_2_0"&gt;&lt;p&gt;Name of the
+                exported scoped variable for the current item of the
+                iteration. This scoped variable has nested
+                visibility. Its type depends on the object of the
+                underlying collection&lt;/p&gt;&lt;/div&gt;
+
+            </description>
+            <name>var</name>
+            <required>true</required>
+            <type>java.lang.Object</type>
+        </attribute>
+        <attribute>
+            <description>
+
+                &lt;div class="changed_added_2_0"&gt;&lt;p&gt;Name of the
+                exported request scoped variable for the status of the
+                iteration. Object is a POJO with the following read-only
+                JavaBeans properties. This scoped variable has nested
+                visibility.&lt;/p&gt;
+
+                &lt;p&gt;&lt;code&gt;begin&lt;/code&gt; of type Integer&lt;/p&gt;
+
+                &lt;p&gt;&lt;code&gt;end&lt;/code&gt; of type Integer&lt;/p&gt;
+
+                &lt;p&gt;&lt;code&gt;index&lt;/code&gt; of type int&lt;/p&gt;
+
+                &lt;p&gt;&lt;code&gt;step&lt;/code&gt; of type Integer&lt;/p&gt;
+
+                &lt;p&gt;&lt;code&gt;even&lt;/code&gt; of type boolean&lt;/p&gt;
+
+                &lt;p&gt;&lt;code&gt;odd&lt;/code&gt; of type boolean&lt;/p&gt;
+
+                &lt;p&gt;&lt;code&gt;first&lt;/code&gt; of type boolean&lt;/p&gt;
+
+                &lt;p&gt;&lt;code&gt;last&lt;/code&gt; of type boolean&lt;/p&gt;
+
+                &lt;/div&gt;
+
+            </description>
+            <name>varStatus</name>
+            <required>false</required>
+            <type>java.lang.Object</type>
+        </attribute>
+    </tag>
+        
+</facelet-taglib>

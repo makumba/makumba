@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.launching.macosx.MacOSXType/JVM 1.6.0 (MacOS X Default)">
+		<attributes>
+			<attribute name="owner.project.facets" value="jst.java"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry kind="lib" path="lib/el-impl-2.1.2-b04.jar"/>
+	<classpathentry kind="lib" path="lib/jsf-api.jar" sourcepath="lib-src/mojarra-2.0.2-FCS-source.zip"/>
+	<classpathentry kind="lib" path="lib/jsf-impl.jar" sourcepath="lib-src/mojarra-2.0.2-FCS-source.zip"/>
+	<classpathentry kind="lib" path="lib/jstl-api-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/jstl-impl-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/el-api-2.1.2-b04.jar"/>
+	<classpathentry kind="output" path="build/classes"/>
+</classpath>
