@@ -1,0 +1,8 @@
+Note that the label of result objects is assumed to be "o" by default!
+
+[{Code
+
+<mak:resultList resultsFrom="searchEmployee">
+    Name: <mak:value expr="o.name"/> <mak:value expr="o.surname"/><br/>
+</mak:resultList>
+}]

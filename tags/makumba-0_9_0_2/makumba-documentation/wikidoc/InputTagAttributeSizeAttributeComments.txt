@@ -1,0 +1,1 @@
+Only for char[], int (size of the textbox) and set, ptr (height of the select)
