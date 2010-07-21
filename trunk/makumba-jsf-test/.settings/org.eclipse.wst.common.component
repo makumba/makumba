@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="makumba-jsf-test">
+        <wb-resource deploy-path="/" source-path="/WebContent"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <dependent-module archiveName="makumba-jsf.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/makumba-jsf/makumba-jsf">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <property name="context-root" value="makumba-jsf-test"/>
+        <property name="java-output-path" value="/makumba-jsf-test/build/classes"/>
+    </wb-module>
+</project-modules>
