@@ -12,7 +12,6 @@ import javax.faces.view.facelets.TagHandler;
  * {@link TagHandler} for mak:list
  * 
  * @author manu
- * 
  */
 public class ListTagHandler extends ComponentHandler {
 
@@ -21,9 +20,7 @@ public class ListTagHandler extends ComponentHandler {
 
         FacesContext context = FacesContext.getCurrentInstance();
         Application app = context.getApplication();
-        app
-                .addComponent("makumbaList",
-                        "org.makumba.jsf.UIRepeatListComponent");
+        app.addComponent("makumbaList", "org.makumba.jsf.UIRepeatListComponent");
 
         // example code to add a phase listener dynamically:
 
@@ -43,8 +40,7 @@ public class ListTagHandler extends ComponentHandler {
     }
 
     @Override
-    public void onComponentPopulated(FaceletContext ctx, UIComponent c,
-            UIComponent parent) {
+    public void onComponentPopulated(FaceletContext ctx, UIComponent c, UIComponent parent) {
         // this method is called after rendering starts but before the
         // rendering finished, so it is a good moment to listen for analysis
         AnalysisListener.install(ctx.getFacesContext());
