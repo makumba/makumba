@@ -3,6 +3,7 @@ package org.makumba.jsf;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -13,6 +14,9 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.visit.VisitCallback;
 import javax.faces.component.visit.VisitContext;
 import javax.faces.component.visit.VisitResult;
+import javax.faces.context.FacesContext;
+
+import org.makumba.el.MakumbaData;
 
 import com.sun.faces.facelets.compiler.UIInstructions;
 import com.sun.faces.facelets.component.UIRepeat;
@@ -22,6 +26,28 @@ public class UIRepeatListComponent extends UIRepeat {
     public UIRepeatListComponent() {
         // example forcing a value on the UIRepeat
         setValue(new Object[] { "a", "b" });
+    }
+
+    @Override
+    public void encodeBegin(FacesContext context) throws IOException {
+        super.encodeBegin(context);
+
+        // example data available within the context of the tag
+        MakumbaData p = new MakumbaData();
+        Map<String, Object> person = p.getWrapped();
+        person.put("name", "John");
+        person.put("surname", "Doe");
+        person.put("age", new Integer(46));
+        person.put("gender", "male");
+        FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put("p", p);
+    }
+
+    @Override
+    public void encodeEnd(FacesContext context) throws IOException {
+        super.encodeEnd(context);
+
+        FacesContext.getCurrentInstance().getExternalContext().getRequestMap().remove("p");
+
     }
 
     public void analyze() {
