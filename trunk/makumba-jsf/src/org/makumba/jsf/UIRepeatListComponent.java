@@ -11,9 +11,6 @@ import java.util.Map;
 
 import javax.el.ValueExpression;
 import javax.faces.component.UIComponent;
-import javax.faces.component.visit.VisitCallback;
-import javax.faces.component.visit.VisitContext;
-import javax.faces.component.visit.VisitResult;
 import javax.faces.context.FacesContext;
 
 import org.makumba.el.MakumbaData;
@@ -22,25 +19,6 @@ import com.sun.faces.facelets.compiler.UIInstructions;
 import com.sun.faces.facelets.component.UIRepeat;
 
 public class UIRepeatListComponent extends UIRepeat {
-
-    public UIRepeatListComponent() {
-        // example forcing a value on the UIRepeat
-        setValue(new Object[] { "a", "b" });
-    }
-
-    @Override
-    public void encodeBegin(FacesContext context) throws IOException {
-        super.encodeBegin(context);
-
-        // example data available within the context of the tag
-        MakumbaData p = new MakumbaData();
-        Map<String, Object> person = p.getWrapped();
-        person.put("name", "John");
-        person.put("surname", "Doe");
-        person.put("age", new Integer(46));
-        person.put("gender", "male");
-        FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put("p", p);
-    }
 
     @Override
     public void encodeEnd(FacesContext context) throws IOException {
@@ -53,32 +31,11 @@ public class UIRepeatListComponent extends UIRepeat {
     public void analyze() {
 
         System.out.println(this.getClass());
-
         final List<ExprTuple> expressions = new ArrayList<ExprTuple>();
-
-        // iterate over all the children and find the value expressions they
-        // declare
-        this.visitTree(VisitContext.createVisitContext(getFacesContext()), new VisitCallback() {
-
-            @Override
-            public VisitResult visit(VisitContext context, UIComponent target) {
-
-                if (target instanceof UIInstructions) {
-                    // FIXME this is highly Mojarra-dependent and quite a hack
-                    expressions.addAll(findFloatingExpressions((UIInstructions) target).values());
-                } else if (target instanceof ValueComponent) {
-                    expressions.addAll(findMakValueExpressions((ValueComponent) target).values());
-                } else {
-                    expressions.addAll(findComponentExpressions(target).values());
-                }
-                return VisitResult.ACCEPT;
-            }
-
-        });
+        visit(expressions, this);
 
         for (ExprTuple c : expressions) {
-            System.out.println("** Child component " + c.getComponent().getClass());
-            System.out.println("** Expression " + c.getExpr());
+            // System.out.println("** Child component " + c.getComponent().getClass() + " expression " + c.getExpr());
         }
 
         // check whether we have not computed the queries of this mak:list group
@@ -98,6 +55,35 @@ public class UIRepeatListComponent extends UIRepeat {
 
         // execute the queries and prepare the DataModel
         // use setValue() to give the DataModel to the UIRepeat
+
+        // example forcing a value on the UIRepeat
+        setValue(new Object[] { "a", "b" });
+
+        // example data available within the context of the tag
+        MakumbaData p = new MakumbaData();
+        Map<String, Object> person = p.getWrapped();
+        person.put("name", "John");
+        person.put("surname", "Doe");
+        person.put("age", new Integer(46));
+        person.put("gender", "male");
+        FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put("p", p);
+
+    }
+
+    static private void visit(List<ExprTuple> expressions, UIComponent target) {
+        // System.out.println(target);
+
+        if (target instanceof UIInstructions) {
+            // FIXME this is highly Mojarra-dependent and quite a hack
+            expressions.addAll(findFloatingExpressions((UIInstructions) target).values());
+        } else if (target instanceof ValueComponent) {
+            expressions.addAll(findMakValueExpressions((ValueComponent) target).values());
+        } else {
+            expressions.addAll(findComponentExpressions(target).values());
+        }
+        for (UIComponent kid : target.getChildren()) {
+            visit(expressions, kid);
+        }
     }
 
     /**
@@ -109,14 +95,14 @@ public class UIRepeatListComponent extends UIRepeat {
      *            the {@link UIComponent} of which the properties should be searched for EL expressions
      * @return a map of {@link ExprTuple} keyed by property name
      */
-    private Map<String, ExprTuple> findComponentExpressions(UIComponent component) {
+    static private Map<String, ExprTuple> findComponentExpressions(UIComponent component) {
         Map<String, ExprTuple> result = new LinkedHashMap<String, ExprTuple>();
 
         try {
             PropertyDescriptor[] pd = Introspector.getBeanInfo(component.getClass()).getPropertyDescriptors();
             for (PropertyDescriptor p : pd) {
                 // we try to see if this is a ValueExpression by probing it
-                ValueExpression ve = this.getValueExpression(p.getName());
+                ValueExpression ve = component.getValueExpression(p.getName());
                 if (ve != null) {
                     result.put(p.getName(), new ExprTuple(trimExpression(ve.getExpressionString()), component));
                 }
@@ -142,7 +128,7 @@ public class UIRepeatListComponent extends UIRepeat {
      *            the {@link UIInstructions} which should be searched for EL expressions.
      * @return a map of {@link ExprTuple} keyed by property name
      */
-    private Map<String, ExprTuple> findFloatingExpressions(UIInstructions component) {
+    static private Map<String, ExprTuple> findFloatingExpressions(UIInstructions component) {
         Map<String, ExprTuple> result = new LinkedHashMap<String, ExprTuple>();
 
         String txt = component.toString();
@@ -182,7 +168,7 @@ public class UIRepeatListComponent extends UIRepeat {
      *            the mak:value component
      * @return a map of {@link ExprTuple} keyed by property name
      */
-    private Map<String, ExprTuple> findMakValueExpressions(ValueComponent component) {
+    static private Map<String, ExprTuple> findMakValueExpressions(ValueComponent component) {
 
         // go thru all properties as for normal components, and also take into account non-EL (literal) expr values
         Map<String, ExprTuple> result = findComponentExpressions(component);
@@ -197,11 +183,11 @@ public class UIRepeatListComponent extends UIRepeat {
         return result;
     }
 
-    private String trimExpression(String expr) {
+    static private String trimExpression(String expr) {
         return expr.substring(2, expr.length() - 1);
     }
 
-    class ExprTuple {
+    static class ExprTuple {
         private String expr;
 
         private UIComponent component;
