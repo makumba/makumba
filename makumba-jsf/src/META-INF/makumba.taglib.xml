@@ -27,59 +27,6 @@
             <type>int</type>
         </attribute>
         
-        
-        
-        <attribute>
-            <description>
-
-
-                &lt;div class="changed_added_2_0"&gt;
-
-                &lt;p&gt;Read-write property setting the offset from the
-                beginning of the
-                collection from which to start the iteration. If not set, this
-                offset
-                is not considered and iteration will start at the beginning of
-                the
-                collection.&lt;/p&gt;
-
-                &lt;/div&gt;
-
-            </description>
-            <name>offset</name>
-            <required>false</required>
-            <type>int</type>
-        </attribute>
-        <attribute>
-            <description>
-
-
-                &lt;div class="changed_added_2_0"&gt;
-
-                &lt;p&gt;Read-write property setting the size of the collection
-                to iterate.
-                If this value is less than the actual size of the collection, a
-                &lt;code&gt;FacesException&lt;/code&gt; must be thrown.&lt;/p&gt;
-
-                &lt;/div&gt;
-
-            </description>
-            <name>size</name>
-            <required>false</required>
-            <type>int</type>
-        </attribute>
-        <attribute>
-            <description>
-
-                &lt;div class="changed_added_2_0"&gt;&lt;p&gt;Iteration
-                will only process every step items of the collection,
-                starting with the first one.&lt;/p&gt;&lt;/div&gt;
-
-            </description>
-            <name>step</name>
-            <required>false</required>
-            <type>int</type>
-        </attribute>
         <attribute>
             <description>
 
