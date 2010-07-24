@@ -36,8 +36,6 @@
     
     <h2>custom tags</h2>
         
-    Makumba!<br/>
-    
     <ul>
     <mak:list value="#{helloWorld.list}" var="myVariable">
       <li>#{myVariable}</li>
@@ -46,10 +44,12 @@
       <li><mak:value expr="#{mak:expr('p.surname')}" /></li>
       <li><h:outputText value="#{mak:expr('p.surname')}" /> </li>
       <li>#{mak:expr("p.size")}</li>
+      <li>Hey, some real data: #{p.name} #{p.surname} is #{p.age} years old and it's a bloody #{p.gender}</li>
     </mak:list>
     </ul>
     <br/>
-    EL function: #{mak:expr("p.age")}
+    EL function: #{mak:expr("p.age")}<br/>
+    Hey, some real data but outside of the list (won't work): #{p.name} #{p.surname} is #{p.age} years old and it's a bloody #{p.gender}
 
 
   </ui:define>
