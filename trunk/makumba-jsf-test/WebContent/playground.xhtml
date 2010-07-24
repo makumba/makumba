@@ -28,8 +28,14 @@
     <ul>
     <mak:list value="#{helloWorld.list}" var="myVariable">
       <li>#{myVariable}</li>
+      <li><mak:value expr="p.name" /></li>
+      <li><mak:value expr="#{helloWorld.name}" /></li>
+      <li><h:outputText value="#{mak:expr('p.surname')}" /> </li>
+      <li>#{mak:expr("p.size")}</li>
     </mak:list>
     </ul>
+    <br/>
+    EL function: #{mak:expr("p.age")}
 
 
   </ui:define>

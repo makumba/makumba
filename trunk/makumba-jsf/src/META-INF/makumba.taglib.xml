@@ -6,6 +6,12 @@
     <description>makumba JSF taglib</description>
     <namespace>http://www.makumba.org/jsf</namespace>
     
+    <function>
+        <function-name>expr</function-name>
+        <function-class>org.makumba.el.MakumbaFunctions</function-class>
+        <function-signature>java.lang.String expr(java.lang.String)</function-signature>
+    </function>
+    
     <tag>
         <description>mak:list</description>
         <tag-name>list</tag-name>
@@ -141,5 +147,24 @@
             <type>java.lang.Object</type>
         </attribute>
     </tag>
+    
+    
+    <tag>
+        <description>mak:value</description>
+        <tag-name>value</tag-name>
+        <component>
+        	<component-type>makumbaValue</component-type>
+        	<handler-class>org.makumba.jsf.ValueTagHandler</handler-class>
+        </component>
+        
+        <attribute>
+            <description>MQL expression</description>
+            <name>expr</name>
+            <required>true</required>
+            <type>java.lang.Object</type>
+        </attribute>
+    </tag>
+    
+    
         
 </facelet-taglib>

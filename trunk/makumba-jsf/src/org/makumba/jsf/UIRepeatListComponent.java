@@ -4,7 +4,9 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.el.ValueExpression;
 import javax.faces.component.UIComponent;
@@ -37,12 +39,15 @@ public class UIRepeatListComponent extends UIRepeat {
 
                 if (target instanceof UIInstructions) {
                     // FIXME this is highly Mojarra-dependent and quite a hack
-                    expressions.addAll(findFloatingExpressions((UIInstructions) target));
+                    expressions.addAll(findFloatingExpressions((UIInstructions) target).values());
+                } else if (target instanceof ValueComponent) {
+                    expressions.addAll(findMakValueExpressions((ValueComponent) target).values());
                 } else {
-                    expressions.addAll(findComponentExpressions(target));
+                    expressions.addAll(findComponentExpressions(target).values());
                 }
                 return VisitResult.ACCEPT;
             }
+
         });
 
         for (ExprTuple c : expressions) {
@@ -76,10 +81,10 @@ public class UIRepeatListComponent extends UIRepeat {
      * 
      * @param component
      *            the {@link UIComponent} of which the properties should be searched for EL expressions
-     * @return a list of {@link ExprTuple}
+     * @return a map of {@link ExprTuple} keyed by property name
      */
-    protected List<ExprTuple> findComponentExpressions(UIComponent component) {
-        List<ExprTuple> result = new ArrayList<ExprTuple>();
+    private Map<String, ExprTuple> findComponentExpressions(UIComponent component) {
+        Map<String, ExprTuple> result = new LinkedHashMap<String, ExprTuple>();
 
         try {
             PropertyDescriptor[] pd = Introspector.getBeanInfo(component.getClass()).getPropertyDescriptors();
@@ -87,7 +92,7 @@ public class UIRepeatListComponent extends UIRepeat {
                 // we try to see if this is a ValueExpression by probing it
                 ValueExpression ve = this.getValueExpression(p.getName());
                 if (ve != null) {
-                    result.add(new ExprTuple(trimExpression(ve.getExpressionString()), component));
+                    result.put(p.getName(), new ExprTuple(trimExpression(ve.getExpressionString()), component));
                 }
             }
 
@@ -109,10 +114,10 @@ public class UIRepeatListComponent extends UIRepeat {
      * 
      * @param component
      *            the {@link UIInstructions} which should be searched for EL expressions.
-     * @return a list of {@link ExprTuple}
+     * @return a map of {@link ExprTuple} keyed by property name
      */
-    private List<ExprTuple> findFloatingExpressions(UIInstructions component) {
-        List<ExprTuple> result = new ArrayList<ExprTuple>();
+    private Map<String, ExprTuple> findFloatingExpressions(UIInstructions component) {
+        Map<String, ExprTuple> result = new LinkedHashMap<String, ExprTuple>();
 
         String txt = component.toString();
         // see if it has some EL
@@ -122,7 +127,45 @@ public class UIRepeatListComponent extends UIRepeat {
             int e = txt.indexOf("}");
             if (e > -1) {
                 txt = txt.substring(0, e);
-                result.add(new ExprTuple(txt, component));
+
+                // we may have a mak:expr EL function here
+                int f = txt.indexOf("mak:expr(");
+                if (f > -1) {
+                    txt = txt.substring(f + 9);
+                    int fe = txt.indexOf(")");
+                    if (fe > -1) {
+                        txt = txt.substring(0, fe);
+
+                        // trim surrounding quotes, might need to be more robust
+                        txt = txt.substring(1, txt.length() - 1);
+
+                        result.put(txt, new ExprTuple(txt, component));
+                    }
+                } else {
+                    result.put(txt, new ExprTuple(txt, component));
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Finds QL expressions inside a mak:value component
+     * 
+     * @param component
+     *            the mak:value component
+     * @return a map of {@link ExprTuple} keyed by property name
+     */
+    private Map<String, ExprTuple> findMakValueExpressions(ValueComponent component) {
+
+        // go thru all properties as for normal components, and also take into account non-EL (literal) expr values
+        Map<String, ExprTuple> result = findComponentExpressions(component);
+        if (!result.containsKey("expr")) {
+            if (component.getExpr() == null) {
+                // FIXME ProgrammerError
+                throw new RuntimeException("no expr provided in mak:value!");
+            } else {
+                result.put("expr", new ExprTuple(component.getExpr(), component));
             }
         }
         return result;
