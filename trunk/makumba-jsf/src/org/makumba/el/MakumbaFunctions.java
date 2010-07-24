@@ -1,6 +1,6 @@
 package org.makumba.el;
 
-import javax.el.ELContext;
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 
 /**
@@ -12,12 +12,16 @@ public class MakumbaFunctions {
 
     public static String expr(String expr) {
         FacesContext ctx = FacesContext.getCurrentInstance();
-        ELContext elCtx = ctx.getELContext();
-        System.out.println("MakumbaFunctions.expr() FacesContext renderResponse " + ctx.getRenderResponse());
-        System.out.println("MakumbaFunctions.expr() FacesContext responseComplete " + ctx.getResponseComplete());
-        System.out.println("MakumbaFunctions.expr() FacesContext currentPhaseId " + ctx.getCurrentPhaseId());
+        // System.out.println("MakumbaFunctions.expr() " + expr);
+        // System.out.println("MakumbaFunctions.expr() FacesContext renderResponse " + ctx.getRenderResponse());
+        // System.out.println("MakumbaFunctions.expr() FacesContext responseComplete " + ctx.getResponseComplete());
+        // System.out.println("MakumbaFunctions.expr() FacesContext currentPhaseId " + ctx.getCurrentPhaseId());
 
-        String component = elCtx.getELResolver().getValue(elCtx, "component", "class").toString();
+        // from ze book, page 98
+        UIComponent component = ctx.getApplication().evaluateExpressionGet(ctx, "#{component}", UIComponent.class);
+
+        // ELContext elCtx = ctx.getELContext();
+        // Object component = elCtx.getELResolver().getValue(elCtx, "component", "class");
 
         return "mak:expr(" + expr + ") nested in component " + component;
     }
