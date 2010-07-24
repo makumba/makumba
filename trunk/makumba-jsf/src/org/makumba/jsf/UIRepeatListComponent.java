@@ -1,16 +1,10 @@
-/*
- * Created on Jul 23, 2010
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 package org.makumba.jsf;
 
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.el.ValueExpression;
 import javax.faces.component.UIComponent;
@@ -32,7 +26,7 @@ public class UIRepeatListComponent extends UIRepeat {
 
         System.out.println(this.getClass());
 
-        final Map<UIComponent, Map<String, String>> expressions = new HashMap<UIComponent, Map<String, String>>();
+        final List<ExprTuple> expressions = new ArrayList<ExprTuple>();
 
         // iterate over all the children and find the value expressions they
         // declare
@@ -43,20 +37,17 @@ public class UIRepeatListComponent extends UIRepeat {
 
                 if (target instanceof UIInstructions) {
                     // FIXME this is highly Mojarra-dependent and quite a hack
-                    expressions.put(target, findFloatingExpressions((UIInstructions) target));
+                    expressions.addAll(findFloatingExpressions((UIInstructions) target));
                 } else {
-                    expressions.put(target, findComponentExpressions(target));
+                    expressions.addAll(findComponentExpressions(target));
                 }
                 return VisitResult.ACCEPT;
             }
         });
 
-        for (UIComponent c : expressions.keySet()) {
-            System.out.println("** Child component " + c.getClass());
-            for (String p : expressions.get(c).keySet()) {
-                System.out.println("   ** Property '" + p + "' with value expression '" + expressions.get(c).get(p)
-                        + "'");
-            }
+        for (ExprTuple c : expressions) {
+            System.out.println("** Child component " + c.getComponent().getClass());
+            System.out.println("** Expression " + c.getExpr());
         }
 
         // check whether we have not computed the queries of this mak:list group
@@ -85,10 +76,10 @@ public class UIRepeatListComponent extends UIRepeat {
      * 
      * @param component
      *            the {@link UIComponent} of which the properties should be searched for EL expressions
-     * @return a map of the property names and their expression
+     * @return a list of {@link ExprTuple}
      */
-    protected Map<String, String> findComponentExpressions(UIComponent component) {
-        Map<String, String> result = new HashMap<String, String>();
+    protected List<ExprTuple> findComponentExpressions(UIComponent component) {
+        List<ExprTuple> result = new ArrayList<ExprTuple>();
 
         try {
             PropertyDescriptor[] pd = Introspector.getBeanInfo(component.getClass()).getPropertyDescriptors();
@@ -96,7 +87,7 @@ public class UIRepeatListComponent extends UIRepeat {
                 // we try to see if this is a ValueExpression by probing it
                 ValueExpression ve = this.getValueExpression(p.getName());
                 if (ve != null) {
-                    result.put(p.getName(), trimExpression(ve.getExpressionString()));
+                    result.add(new ExprTuple(trimExpression(ve.getExpressionString()), component));
                 }
             }
 
@@ -118,9 +109,10 @@ public class UIRepeatListComponent extends UIRepeat {
      * 
      * @param component
      *            the {@link UIInstructions} which should be searched for EL expressions.
+     * @return a list of {@link ExprTuple}
      */
-    private Map<String, String> findFloatingExpressions(UIInstructions component) {
-        Map<String, String> result = new HashMap<String, String>();
+    private List<ExprTuple> findFloatingExpressions(UIInstructions component) {
+        List<ExprTuple> result = new ArrayList<ExprTuple>();
 
         String txt = component.toString();
         // see if it has some EL
@@ -130,7 +122,7 @@ public class UIRepeatListComponent extends UIRepeat {
             int e = txt.indexOf("}");
             if (e > -1) {
                 txt = txt.substring(0, e);
-                result.put(txt, txt);
+                result.add(new ExprTuple(txt, component));
             }
         }
         return result;
@@ -138,6 +130,34 @@ public class UIRepeatListComponent extends UIRepeat {
 
     private String trimExpression(String expr) {
         return expr.substring(2, expr.length() - 1);
+    }
+
+    class ExprTuple {
+        private String expr;
+
+        private UIComponent component;
+
+        public String getExpr() {
+            return expr;
+        }
+
+        public void setExpr(String expr) {
+            this.expr = expr;
+        }
+
+        public UIComponent getComponent() {
+            return component;
+        }
+
+        public void setComponent(UIComponent component) {
+            this.component = component;
+        }
+
+        public ExprTuple(String expr, UIComponent component) {
+            super();
+            this.expr = expr;
+            this.component = component;
+        }
     }
 
 }
