@@ -19,6 +19,19 @@
     </ul>
 
     <hr />
+    
+    <h2>EL experiments</h2>
+    Traversing a map with the map EL resolver:
+    <ul>
+    	<li>helloWorld.maps.key1: #{helloWorld.maps.key1}</li>
+    	<li>helloWorld.maps.key2: #{helloWorld.maps.key2}</li>
+    	<li>helloWorld.maps.key3: #{helloWorld.maps.key3}</li>
+    	<li>helloWorld.maps.key3.key11: #{helloWorld.maps.key3.key11}</li>
+    	<li>helloWorld.maps.key13.key22 #{helloWorld.maps.key3.key22}</li>
+    	
+    </ul>
+    
+    <hr />
 
     
     <h2>custom tags</h2>
@@ -30,6 +43,7 @@
       <li>#{myVariable}</li>
       <li><mak:value expr="p.name" /></li>
       <li><mak:value expr="#{helloWorld.name}" /></li>
+      <li><mak:value expr="#{mak:expr('p.surname')}" /></li>
       <li><h:outputText value="#{mak:expr('p.surname')}" /> </li>
       <li>#{mak:expr("p.size")}</li>
     </mak:list>
