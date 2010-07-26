@@ -7,9 +7,24 @@ import java.util.List;
 import java.util.Map;
 
 import javax.el.ELContext;
+import javax.el.ELException;
 import javax.el.ELResolver;
 import javax.el.PropertyNotWritableException;
 
+import org.makumba.Pointer;
+import org.makumba.jsf.UIRepeatListComponent;
+
+/**
+ * FIXME race condition (?) in {@link UIRepeatListComponent} on first evalutation of one expression<br>
+ * FIXME for ptr projections such as #{p}, return something alike to Java's [Object@REFERENCE String instead of the
+ * placeholder or the ptr<br>
+ * TODO implement p.id<br>
+ * TODO test the resolution of p.ptr.field when nothing before is selected<br>
+ * TODO refactor and introduce a decoupling from the list to fetch the data, so a unit test can be written with a mock
+ * list/data provider<br>
+ * 
+ * @author manu
+ */
 public class MakumbaELResolver extends ELResolver {
 
     public MakumbaELResolver() {
@@ -19,16 +34,21 @@ public class MakumbaELResolver extends ELResolver {
     @Override
     public Class<?> getType(ELContext context, Object base, Object property) {
 
+        // TODO when implementing setValue
+
         // as per reference
         if (context == null) {
             throw new NullPointerException();
         }
 
-        // TODO
-        if (base != null && base instanceof Map) {
+        if (base != null && base instanceof LabelPlaceholder && property == null) {
             context.setPropertyResolved(true);
             return Object.class;
         }
+        if (base != null && base instanceof LabelPlaceholder && property != null) {
+            // fetch value of property and return its type
+        }
+
         return null;
     }
 
@@ -42,14 +62,59 @@ public class MakumbaELResolver extends ELResolver {
 
         if (base == null && property != null) {
             // lookup property in parent list, if it's a label we set a placeholder here
+            UIRepeatListComponent list = UIRepeatListComponent.getCurrentlyRunning();
+            Object value = list.getExpressionValue(property.toString());
+            if (value != null && value instanceof Pointer) {
+                base = new LabelPlaceholder(property.toString());
+                context.setPropertyResolved(true);
+
+                // return the placeholder
+                return base;
+            } else if (value != null) {
+                // ??
+                throw new ELException("Should not be here");
+            }
         }
 
         if (base != null && base instanceof LabelPlaceholder) {
-            context.setPropertyResolved(true);
-            LabelPlaceholder map = (LabelPlaceholder) base;
+            LabelPlaceholder placeholder = (LabelPlaceholder) base;
 
-            // TODO return stuff
-            return null;
+            // check with parent list if placeholderlabel.property exists.
+            UIRepeatListComponent list = UIRepeatListComponent.getCurrentlyRunning();
+            String path = placeholder.getLabel() + "." + property.toString();
+            Object value = list.getExpressionValue(path);
+            if (value != null) {
+
+                if (value instanceof Pointer) {
+                    base = new LabelPlaceholder(path);
+                    context.setPropertyResolved(true);
+                    // return the placeholder
+                    return base;
+                } else {
+                    context.setPropertyResolved(true);
+                    return value;
+                }
+
+            } else {
+
+                boolean found = false;
+                for (String s : list.getCurrentProjections()) {
+                    if (s.startsWith(path)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) {
+                    // set a placeholder
+                    base = new LabelPlaceholder(path);
+                    context.setPropertyResolved(true);
+                    // return the placeholder
+                    return base;
+                } else {
+                    throw new ELException("Field '" + property + "' of '" + base + "' does not exist");
+                }
+
+            }
         }
         return null;
     }
