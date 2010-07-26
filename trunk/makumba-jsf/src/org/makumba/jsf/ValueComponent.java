@@ -16,7 +16,7 @@ public class ValueComponent extends UIComponentBase {
     private String expr;
 
     // not cached since the cost of retrieving is very small
-    private int exprIndex = -1;
+    private Integer exprIndex;
 
     @Override
     public String getFamily() {
@@ -53,14 +53,15 @@ public class ValueComponent extends UIComponentBase {
     public void encodeBegin(FacesContext context) throws IOException {
         // System.out.println("ValueComponent.encodeBegin()");
         ResponseWriter writer = context.getResponseWriter();
-        writer.startElement("div", this);
         UIRepeatListComponent currentlyRunning = UIRepeatListComponent.getCurrentlyRunning();
-        if (exprIndex == -1) {
+        if (exprIndex == null) {
             // this will be preserved in all parent list iterations
-            exprIndex = currentlyRunning.composedQuery.checkProjectionInteger(getExpr());
+            exprIndex = currentlyRunning.getExpressionIndex(getExpr());
         }
-        writer.writeText(currentlyRunning.getExpressionValue(exprIndex).toString(), null);
-        writer.endElement("div");
+        Object value = currentlyRunning.getExpressionValue(exprIndex);
+        // writer.startElement("div", this);
+        writer.writeText(value.toString(), null);
+        // writer.endElement("div");
     }
 
     @Override
