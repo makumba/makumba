@@ -2,7 +2,6 @@ package org.makumba.jsf;
 
 import java.io.IOException;
 
-import javax.el.ValueExpression;
 import javax.faces.component.UIComponentBase;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
@@ -15,6 +14,9 @@ import javax.faces.context.ResponseWriter;
 public class ValueComponent extends UIComponentBase {
 
     private String expr;
+
+    // not cached since the cost of retrieving is very small
+    private int exprIndex = -1;
 
     @Override
     public String getFamily() {
@@ -29,10 +31,11 @@ public class ValueComponent extends UIComponentBase {
         if (this.expr != null) {
             return this.expr;
         }
-        ValueExpression ve = getValueExpression("expr");
-        if (ve != null) {
-            return (String) ve.getValue(getFacesContext().getELContext());
-        }
+        // this doesn't seem right, expr should be a constant, otherwise the analysis is useless
+        // ValueExpression ve = getValueExpression("expr");
+        // if (ve != null) {
+        // return (String) ve.getValue(getFacesContext().getELContext());
+        // }
         return null;
     }
 
@@ -52,7 +55,11 @@ public class ValueComponent extends UIComponentBase {
         ResponseWriter writer = context.getResponseWriter();
         writer.startElement("div", this);
         UIRepeatListComponent currentlyRunning = UIRepeatListComponent.getCurrentlyRunning();
-        writer.writeText(currentlyRunning.getExpressionValue(getExpr()).toString(), null);
+        if (exprIndex == -1) {
+            // this will be preserved in all parent list iterations
+            exprIndex = currentlyRunning.composedQuery.checkProjectionInteger(getExpr());
+        }
+        writer.writeText(currentlyRunning.getExpressionValue(exprIndex).toString(), null);
         writer.endElement("div");
     }
 
@@ -61,5 +68,4 @@ public class ValueComponent extends UIComponentBase {
         // System.out.println("ValueComponent.encodeEnd()");
         super.encodeEnd(context);
     }
-
 }
