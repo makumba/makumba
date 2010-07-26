@@ -32,7 +32,6 @@ import java.util.Vector;
 import org.apache.commons.lang.StringUtils;
 import org.makumba.DataDefinition;
 import org.makumba.LogicException;
-import org.makumba.list.tags.QueryTag;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 
@@ -445,7 +444,7 @@ public class ComposedQuery {
      *            how many times should this query be ran
      * @throws LogicException
      */
-    public Grouper execute(QueryProvider qep, Map args, Evaluator v, int offset, int limit) throws LogicException {
+    public Grouper execute(QueryProvider qep, Map args, Evaluator v, int offset, int limit) {
         analyze();
         String[] vars = new String[5];
         vars[0] = getFromSection();

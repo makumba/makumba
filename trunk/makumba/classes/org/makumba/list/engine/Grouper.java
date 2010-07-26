@@ -24,6 +24,7 @@
 package org.makumba.list.engine;
 
 import java.util.Date;
+import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -52,7 +53,7 @@ public class Grouper extends Hashtable {
      * @param e
      *            the Enumeration of dictionaries containing the data
      */
-    public Grouper(Vector<Vector<Integer>> keyNameSets, Enumeration e) {
+    public Grouper(Vector<Vector<Integer>> keyNameSets, Enumeration<Dictionary<String, Object>> e) {
         this.keyNameSets = keyNameSets;
         long l = new Date().getTime();
 
@@ -113,7 +114,7 @@ public class Grouper extends Hashtable {
      *            a Vector of Dictionaries representing a set of key values each
      * @return A Vector associated with the given keysets
      */
-    public Vector getData(Vector keyData) {
+    public Vector<ArrayMap> getData(Vector<Dictionary<String, Object>> keyData) {
         int i = 0;
         for (; i < max; i++) {
             keyStack[i] = getKey(i, ((ArrayMap) keyData.elementAt(i)).data);
