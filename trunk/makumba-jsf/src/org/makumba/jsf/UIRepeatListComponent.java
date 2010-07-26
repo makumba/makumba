@@ -9,9 +9,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.Vector;
 
 import javax.el.ValueExpression;
 import javax.faces.component.UIComponent;
+import javax.faces.component.visit.VisitCallback;
+import javax.faces.component.visit.VisitContext;
+import javax.faces.component.visit.VisitResult;
 import javax.faces.context.FacesContext;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
@@ -52,8 +56,43 @@ public class UIRepeatListComponent extends UIRepeat {
     // data from current iteration of the parent list
     List<ArrayMap> iterationGroupData;
 
+    // FLAGS, should be taken from configuration
+    /**
+     * We can execute the queries of a mak:list group either in the same transaction or separately. In JSP they are
+     * executed separately and no major issues were found. In JSF we test executing them together but we provide this
+     * flag.
+     */
+    private boolean useSeparateTransactions() {
+        return false;
+    }
+
+    /**
+     * Should be true in production and false in development. Tells whether we should recompute the queries at every
+     * load. It may be possible to detect automatically whether the view script has changed. If it changes only a bit,
+     * the keys don't change much.
+     */
+    private boolean useCaches() {
+        return false;
+    }
+
+    // END OF FLAGS
+
+    public UIRepeatListComponent() {
+        // to allow proper visiting during analysis
+        setValue(new Object());
+        setEnd(0);
+    }
+
     // current iteration of this list
-    protected ArrayMap currrentData;
+    protected ArrayMap currentData;
+
+    public ComposedQuery getComposedQuery() {
+        return composedQuery;
+    }
+
+    public Vector<String> getProjections() {
+        return getComposedQuery().getProjections();
+    }
 
     public void setFrom(String s) {
         queryProps[ComposedQuery.FROM] = s;
@@ -113,8 +152,6 @@ public class UIRepeatListComponent extends UIRepeat {
         return (UIRepeatListComponent) c;
     }
 
-    UIRepeatListComponent parent;
-
     @Override
     public void encodeAll(FacesContext context) throws IOException {
         iterationGroupData = listData.getData(getCurrentDataStack());
@@ -132,9 +169,9 @@ public class UIRepeatListComponent extends UIRepeat {
                 if (rowIndex >= 0 && rowIndex < iterationGroupData.size()) {
                     // pop old value:
                     getCurrentDataStack().pop();
-                    currrentData = iterationGroupData.get(rowIndex);
+                    currentData = iterationGroupData.get(rowIndex);
                     // push new value:
-                    getCurrentDataStack().push(currrentData);
+                    getCurrentDataStack().push(currentData);
                 }
                 super.setRowIndex(rowIndex);
 
@@ -142,7 +179,9 @@ public class UIRepeatListComponent extends UIRepeat {
         };
 
         setValue(dm);
-        parent = getCurrentlyRunning();
+        setEnd(iterationGroupData.size());
+
+        UIRepeatListComponent parent = getCurrentlyRunning();
         FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(CURRENT_LIST, this);
 
         super.encodeAll(context);
@@ -166,37 +205,37 @@ public class UIRepeatListComponent extends UIRepeat {
     static int composedQueries = NamedResources.makeStaticCache("JSF ComposedQueries", new NamedResourceFactory() {
         @Override
         public Object getHashObject(Object o) {
-            return ((UIRepeatListComponent) ((Object[]) o)[1]).getCacheKey();
+            return ((UIRepeatListComponent) o).getCacheKey();
         }
 
         @Override
         public Object makeResource(Object o, Object hashName) throws Throwable {
-            UIRepeatListComponent comp = (UIRepeatListComponent) ((Object[]) o)[1];
-            if (((Object[]) o)[0] == null) {
-                // no parent, we are root
-                comp.composedQuery = new ComposedQuery(comp.queryProps, comp.getQueryLanguage());
-
-            } else {
-                comp.composedQuery = new ComposedSubquery(comp.queryProps,
-                        ((UIRepeatListComponent) ((Object[]) o)[0]).composedQuery, comp.getQueryLanguage());
-            }
-            comp.composedQuery.init();
-            UIRepeatListComponent.findExpressionsInChildren(comp, comp);
-            comp.composedQuery.analyze();
-
+            UIRepeatListComponent comp = (UIRepeatListComponent) o;
+            comp.computeComposedQuery();
             return comp.composedQuery;
         }
     });
 
     public void analyze() {
-        composedQuery = (ComposedQuery) NamedResources.getStaticCache(composedQueries).getResource(
-            new Object[] { null, this });
+        readComposedQuery();
 
-        for (UIComponent kid : this.getChildren()) {
-            analyzeChildrenLists(this, this, kid);
+        final QueryProvider qep = useSeparateTransactions() ? null : getQueryExecutionProvider();
+
+        try {
+            visitTree(VisitContext.createVisitContext(FacesContext.getCurrentInstance()), new VisitCallback() {
+                @Override
+                public VisitResult visit(VisitContext context, UIComponent target) {
+                    if (target instanceof UIRepeatListComponent) {
+                        ((UIRepeatListComponent) target).executeQuery(qep);
+                    }
+                    return VisitResult.ACCEPT;
+                }
+            });
+        } finally {
+            if (qep != null) {
+                qep.close();
+            }
         }
-        executeQuery();
-
         FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(CURRENT_DATA,
             new Stack<Dictionary<String, Object>>());
 
@@ -204,40 +243,79 @@ public class UIRepeatListComponent extends UIRepeat {
 
     }
 
-    private void analyzeWithRoot(UIRepeatListComponent root, UIRepeatListComponent parent) {
-        // TODO: check if limits or offsets were declared, this is illegal for sublists
-        composedQuery = (ComposedQuery) NamedResources.getStaticCache(composedQueries).getResource(
-            new Object[] { parent, this });
+    private void readComposedQuery() {
+        if (composedQuery == null) {
+            if (useCaches()) {
+                composedQuery = (ComposedQuery) NamedResources.getStaticCache(composedQueries).getResource(this);
+            } else {
+                computeComposedQuery();
+            }
+        }
+    }
 
-        executeQuery();
+    void computeComposedQuery() {
+        UIRepeatListComponent parent = this.findMakListParent(true);
+        if (parent == null) {
+            // no parent, we are root
+            this.composedQuery = new ComposedQuery(this.queryProps, this.getQueryLanguage());
+        } else {
+            this.composedQuery = new ComposedSubquery(this.queryProps, parent.composedQuery, this.getQueryLanguage());
+        }
+        this.composedQuery.init();
+        this.findExpressionsInChildren();
+        if (parent == null) {
+            this.analyzeMakListGroup();
+        }
+        this.composedQuery.analyze();
+        // System.out.println(this.composedQuery);
+    }
+
+    void analyzeMakListGroup() {
+        visitTree(VisitContext.createVisitContext(FacesContext.getCurrentInstance()), new VisitCallback() {
+            @Override
+            public VisitResult visit(VisitContext context, UIComponent target) {
+                if (target != UIRepeatListComponent.this && target instanceof UIRepeatListComponent) {
+                    ((UIRepeatListComponent) target).readComposedQuery();
+                }
+                return VisitResult.ACCEPT;
+            }
+        });
     }
 
     static final ComposedQuery.Evaluator evaluator = new ComposedQuery.Evaluator() {
-
         @Override
         public String evaluate(String s) {
             FacesContext ctx = FacesContext.getCurrentInstance();
             // FIXME: no clue if this is what we should do here
             return ctx.getApplication().evaluateExpressionGet(ctx, s, String.class);
         }
-
     };
 
     // TODO: fix a proper query parameter map
     static final Map args = new HashMap();
 
-    private void executeQuery() {
-        QueryProvider qep = QueryProvider.makeQueryRunner(TransactionProvider.getInstance().getDefaultDataSourceName(),
-            getQueryLanguage());
+    private void executeQuery(QueryProvider qep) {
+        // by now the query was cached so we fetch it
+        readComposedQuery();
+        if (useSeparateTransactions()) {
+            qep = getQueryExecutionProvider();
+        }
 
         try {
             listData = composedQuery.execute(qep, args, evaluator, offset, limit);
         } finally {
-            qep.close();
+            if (useSeparateTransactions()) {
+                qep.close();
+            }
         }
     }
 
-    private String getQueryLanguage() {
+    private QueryProvider getQueryExecutionProvider() {
+        return QueryProvider.makeQueryRunner(TransactionProvider.getInstance().getDefaultDataSourceName(),
+            getQueryLanguage());
+    }
+
+    public String getQueryLanguage() {
         // TODO: get the query language from taglib URI, taglib name, or configuration
         return "oql";
     }
@@ -253,36 +331,29 @@ public class UIRepeatListComponent extends UIRepeat {
     }
 
     public Object getExpressionValue(int exprIndex) {
-        return currrentData.data[exprIndex];
+        return currentData.data[exprIndex];
     }
 
-    static private void analyzeChildrenLists(UIRepeatListComponent root, UIRepeatListComponent parent, UIComponent c) {
-        if (c instanceof UIRepeatListComponent) {
-            ((UIRepeatListComponent) c).analyzeWithRoot(root, parent);
-            parent = (UIRepeatListComponent) c;
-        }
-        for (UIComponent kid : c.getChildren()) {
-            analyzeChildrenLists(root, parent, kid);
-        }
-    }
+    void findExpressionsInChildren() {
+        visitTree(VisitContext.createVisitContext(FacesContext.getCurrentInstance()), new VisitCallback() {
+            @Override
+            public VisitResult visit(VisitContext context, UIComponent target) {
+                if (target instanceof UIRepeatListComponent && target != UIRepeatListComponent.this) {
+                    return VisitResult.REJECT;
+                }
 
-    static private void findExpressionsInChildren(UIRepeatListComponent parent, UIComponent target) {
-        // System.out.println(target);
+                // System.out.println(target);
 
-        if (target instanceof UIInstructions) {
-            findFloatingExpressions(parent, (UIInstructions) target);
-        } else if (target instanceof ValueComponent) {
-            findMakValueExpressions(parent, (ValueComponent) target);
-        } else {
-            findComponentExpressions(parent, target);
-        }
-        for (UIComponent kid : target.getChildren()) {
-            if (kid instanceof UIRepeatListComponent) {
-                // this component will analyze its own kids
-                continue;
+                if (target instanceof UIInstructions) {
+                    findFloatingExpressions((UIInstructions) target);
+                } else if (target instanceof ValueComponent) {
+                    findMakValueExpressions((ValueComponent) target);
+                } else {
+                    findComponentExpressions(target);
+                }
+                return VisitResult.ACCEPT;
             }
-            findExpressionsInChildren(parent, kid);
-        }
+        });
     }
 
     /**
@@ -294,7 +365,7 @@ public class UIRepeatListComponent extends UIRepeat {
      *            the {@link UIComponent} of which the properties should be searched for EL expressions
      * @return a map of {@link ExprTuple} keyed by property name
      */
-    static private void findComponentExpressions(UIRepeatListComponent parent, UIComponent component) {
+    private void findComponentExpressions(UIComponent component) {
 
         try {
             PropertyDescriptor[] pd = Introspector.getBeanInfo(component.getClass()).getPropertyDescriptors();
@@ -302,7 +373,7 @@ public class UIRepeatListComponent extends UIRepeat {
                 // we try to see if this is a ValueExpression by probing it
                 ValueExpression ve = component.getValueExpression(p.getName());
                 if (ve != null) {
-                    parent.addExpression(trimExpression(ve.getExpressionString()), true);
+                    addExpression(trimExpression(ve.getExpressionString()), true);
                 }
             }
 
@@ -325,7 +396,7 @@ public class UIRepeatListComponent extends UIRepeat {
      *            the {@link UIInstructions} which should be searched for EL expressions.
      * @return a map of {@link ExprTuple} keyed by property name
      */
-    static private void findFloatingExpressions(UIRepeatListComponent parent, UIInstructions component) {
+    private void findFloatingExpressions(UIInstructions component) {
 
         String txt = component.toString();
         // see if it has some EL
@@ -347,10 +418,10 @@ public class UIRepeatListComponent extends UIRepeat {
                         // trim surrounding quotes, might need to be more robust
                         txt = txt.substring(1, txt.length() - 1);
 
-                        parent.addExpression(txt, false);
+                        addExpression(txt, false);
                     }
                 } else {
-                    parent.addExpression(txt, true);
+                    addExpression(txt, true);
                 }
             }
         }
@@ -363,17 +434,17 @@ public class UIRepeatListComponent extends UIRepeat {
      *            the mak:value component
      * @return a map of {@link ExprTuple} keyed by property name
      */
-    static private void findMakValueExpressions(UIRepeatListComponent parent, ValueComponent component) {
+    private void findMakValueExpressions(ValueComponent component) {
 
         // go thru all properties as for normal components, and also take into account non-EL (literal) expr values
-        findComponentExpressions(parent, component);
+        findComponentExpressions(component);
         if (component.getExpr() == null) {
             // FIXME ProgrammerError
             throw new RuntimeException("no expr provided in mak:value!");
         } else {
             // TODO: setvalue expression
             // TODO: nullable value? i guess that's not in use any longer
-            parent.addExpression(component.getExpr(), false);
+            addExpression(component.getExpr(), false);
         }
 
     }
