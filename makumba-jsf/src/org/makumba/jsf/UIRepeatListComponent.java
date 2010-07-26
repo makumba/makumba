@@ -21,6 +21,7 @@ import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.view.facelets.FaceletException;
 
+import org.makumba.ProgrammerError;
 import org.makumba.commons.ArrayMap;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
@@ -62,7 +63,7 @@ public class UIRepeatListComponent extends UIRepeat {
      * executed separately and no major issues were found. In JSF we test executing them together but we provide this
      * flag.
      */
-    private boolean useSeparateTransactions() {
+    public boolean useSeparateTransactions() {
         return false;
     }
 
@@ -71,7 +72,7 @@ public class UIRepeatListComponent extends UIRepeat {
      * load. It may be possible to detect automatically whether the view script has changed. If it changes only a bit,
      * the keys don't change much.
      */
-    private boolean useCaches() {
+    public boolean useCaches() {
         return false;
     }
 
@@ -326,8 +327,25 @@ public class UIRepeatListComponent extends UIRepeat {
         composedQuery.checkProjectionInteger(expr);
     }
 
+    Integer getExpressionIndex(String expr) {
+        Integer exprIndex = composedQuery.checkProjectionInteger(expr);
+        if (exprIndex == null) {
+            if (useCaches()) {
+                // FIXME: a better mak:list description
+                throw new ProgrammerError("<mak:list> does not know the expression " + expr
+                        + ", turn caches off, or try reloading the page, it might work.");
+            } else {
+                // second call should return not null
+                // however, we should never get here since a page analysis is done every request
+                // so the expression must be known
+                exprIndex = composedQuery.checkProjectionInteger(expr);
+            }
+        }
+        return exprIndex;
+    }
+
     public Object getExpressionValue(String expr) {
-        return getExpressionValue(composedQuery.checkProjectionInteger(expr));
+        return getExpressionValue(getExpressionIndex(expr));
     }
 
     public Object getExpressionValue(int exprIndex) {
@@ -416,8 +434,10 @@ public class UIRepeatListComponent extends UIRepeat {
                         txt = txt.substring(0, fe);
 
                         // trim surrounding quotes, might need to be more robust
+                        // TODO: decide whether we want to support dynamic function expressions
+                        // if not, check that txt is precisely a 'string' or "string"
+                        // to support dynamic function expressions, an evaluator should be applied here
                         txt = txt.substring(1, txt.length() - 1);
-
                         addExpression(txt, false);
                     }
                 } else {
