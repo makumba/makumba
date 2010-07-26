@@ -7,12 +7,14 @@ import java.util.List;
 import java.util.Map;
 
 import javax.el.ELContext;
-import javax.el.ELException;
 import javax.el.ELResolver;
 import javax.el.PropertyNotWritableException;
 
 import org.makumba.Pointer;
 import org.makumba.jsf.UIRepeatListComponent;
+import org.makumba.providers.QueryAnalysis;
+import org.makumba.providers.QueryAnalysisProvider;
+import org.makumba.providers.QueryProvider;
 
 /**
  * FIXME race condition (?) in {@link UIRepeatListComponent} on first evalutation of one expression<br>
@@ -24,6 +26,7 @@ import org.makumba.jsf.UIRepeatListComponent;
  * list/data provider<br>
  * 
  * @author manu
+ * @author cristi
  */
 public class MakumbaELResolver extends ELResolver {
 
@@ -41,11 +44,11 @@ public class MakumbaELResolver extends ELResolver {
             throw new NullPointerException();
         }
 
-        if (base != null && base instanceof LabelPlaceholder && property == null) {
+        if (base != null && base instanceof ExpressionPathPlaceholder && property == null) {
             context.setPropertyResolved(true);
             return Object.class;
         }
-        if (base != null && base instanceof LabelPlaceholder && property != null) {
+        if (base != null && base instanceof ExpressionPathPlaceholder && property != null) {
             // fetch value of property and return its type
         }
 
@@ -60,36 +63,45 @@ public class MakumbaELResolver extends ELResolver {
             throw new NullPointerException();
         }
 
+        UIRepeatListComponent list = UIRepeatListComponent.getCurrentlyRunning();
+
         if (base == null && property != null) {
             // lookup property in parent list, if it's a label we set a placeholder here
-            UIRepeatListComponent list = UIRepeatListComponent.getCurrentlyRunning();
-            Object value = list.getExpressionValue(property.toString());
-            if (value != null && value instanceof Pointer) {
-                base = new LabelPlaceholder(property.toString());
+            if (list.getProjections().contains(property.toString())) {
+                // this can only be a label projection, so it's gonna be a pointer
+                Pointer value = (Pointer) list.getExpressionValue(property.toString());
                 context.setPropertyResolved(true);
-
-                // return the placeholder
-                return base;
-            } else if (value != null) {
-                // ??
-                throw new ELException("Should not be here");
+                return new ExpressionPathPlaceholder(value, property.toString());
+            } else {
+                // it's not a projection but it may be a label, we check for that
+                QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer(list.getQueryLanguage());
+                QueryAnalysis qa = qap.getQueryAnalysis(list.getComposedQuery().getTypeAnalyzerQuery());
+                if (qa.getLabelTypes().get(property.toString()) != null) {
+                    context.setPropertyResolved(true);
+                    return new ExpressionPathPlaceholder(qa, property.toString());
+                } else {
+                    return null;
+                }
             }
         }
 
-        if (base != null && base instanceof LabelPlaceholder) {
-            LabelPlaceholder placeholder = (LabelPlaceholder) base;
+        if (base != null && base instanceof ExpressionPathPlaceholder) {
+            ExpressionPathPlaceholder placeholder = (ExpressionPathPlaceholder) base;
 
             // check with parent list if placeholderlabel.property exists.
-            UIRepeatListComponent list = UIRepeatListComponent.getCurrentlyRunning();
-            String path = placeholder.getLabel() + "." + property.toString();
-            Object value = list.getExpressionValue(path);
-            if (value != null) {
+            ExpressionPathPlaceholder mine = new ExpressionPathPlaceholder(placeholder, property.toString());
 
-                if (value instanceof Pointer) {
-                    base = new LabelPlaceholder(path);
+            if (list.getProjections().contains(mine.getExpressionPath())) {
+
+                Object value = list.getExpressionValue(mine.getExpressionPath());
+
+                if (value instanceof Pointer && !"id".equals(property)) {
+                    // TODO: instead of checking the value, we can inquire the query whether the field is a pointer
                     context.setPropertyResolved(true);
+                    // TODO: we could actually set the value in the placeholder, for whatever it could be useful
+
                     // return the placeholder
-                    return base;
+                    return mine;
                 } else {
                     context.setPropertyResolved(true);
                     return value;
@@ -98,20 +110,21 @@ public class MakumbaELResolver extends ELResolver {
             } else {
 
                 boolean found = false;
-                for (String s : list.getCurrentProjections()) {
-                    if (s.startsWith(path)) {
+                for (String s : list.getProjections()) {
+                    if (s.startsWith(mine.getExpressionPath())) {
                         found = true;
                         break;
                     }
                 }
                 if (found) {
                     // set a placeholder
-                    base = new LabelPlaceholder(path);
                     context.setPropertyResolved(true);
                     // return the placeholder
-                    return base;
+                    return mine;
                 } else {
-                    throw new ELException("Field '" + property + "' of '" + base + "' does not exist");
+                    // maybe there is another resolver that can solve this?
+                    // throw new ELException("Field '" + property + "' of '" + base + "' does not exist");
+                    return null;
                 }
 
             }
@@ -126,7 +139,16 @@ public class MakumbaELResolver extends ELResolver {
         if (context == null) {
             throw new NullPointerException();
         }
+        // if base is null, and we have a label with the property name, i think we should return "not writable"
+        // same goes when the base is a placeholder and the property is .id
 
+        // for the case where we have placeholder and a property:
+        // if placeholder has no pointer but just a query and label, we run
+        // placeholder.basePointer= SELECT label FROM placeholder.query.from WHERE placeholder.query.where
+
+        // then placeholder has a pointer, so we call
+        // transaction.update(placeholder.basePointer, placeholder.fieldDotField, newValue)
+        // we can probably collect such calls from the entire request
         throw new PropertyNotWritableException();
     }
 
@@ -177,21 +199,42 @@ public class MakumbaELResolver extends ELResolver {
         return null;
     }
 
-    class LabelPlaceholder {
-
+    class ExpressionPathPlaceholder {
+        // everything starts from a label
         private String label;
 
-        public LabelPlaceholder(String label) {
-            super();
+        // we either keep its pointer value, or a query through which the label can be resolved
+        private QueryAnalysis qa;
+
+        private Pointer basePointer;
+
+        // after that, comes the field.field path to the desired property
+        private String fieldDotField = "";
+
+        public ExpressionPathPlaceholder(Pointer p, String label) {
             this.label = label;
+            this.basePointer = p;
         }
 
-        public String getLabel() {
-            return label;
+        public ExpressionPathPlaceholder(QueryAnalysis qa, String label) {
+            this.label = label;
+            this.qa = qa;
         }
 
-        public void setLabel(String label) {
-            this.label = label;
+        public ExpressionPathPlaceholder(ExpressionPathPlaceholder expr, String field) {
+            this.basePointer = expr.basePointer;
+            this.label = expr.label;
+            this.fieldDotField = expr.fieldDotField + "." + field;
         }
+
+        public String getExpressionPath() {
+            return label + fieldDotField;
+        }
+
+        @Override
+        public String toString() {
+            return (basePointer != null ? basePointer : qa) + " " + getExpressionPath();
+        }
+
     }
 }
