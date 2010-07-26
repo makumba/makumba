@@ -21,5 +21,6 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/makumba-jsf/lib-src/el-impl-2.2.1-b03-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry combineaccessrules="false" kind="src" path="/makumba"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
