@@ -20,79 +20,125 @@
         	<handler-class>org.makumba.jsf.ListTagHandler</handler-class>
         </component>
         
-        <attribute>
-            <description>from</description>
-            <name>from</name>
-            <required>false</required>
-            <type>int</type>
-        </attribute>
         
-        <attribute>
-            <description>
+            <attribute>
+      <name>from</name>
+      <required>true</required>
+      <type>java.lang.String</type>
+ 
+     <description></description>
+      
+    </attribute>
 
+    <attribute>
+      <name>variableFrom</name>
+      <required>false</required>
+      <description></description>
+      <type>java.lang.String</type>
+      
+    </attribute>
 
-                &lt;div class="changed_added_2_0"&gt;
+    <attribute>
+      <name>where</name>
+      <required>false</required>
+      <description></description>
+      <type>java.lang.String</type>
+      
+    </attribute>
 
-                &lt;p&gt;The name of a collection of items that this tag
-                iterates over. The
-                collection may be a &lt;code&gt;List&lt;/code&gt;, &lt;code&gt;array&lt;/code&gt;,
-                &lt;code&gt;java.sql.ResultSet&lt;/code&gt;, or an individual
-                java Object. If the
-                collection is null, this tag does nothing.&lt;/p&gt;
+    <attribute>
+      <name>orderBy</name>
+      <required>false</required>
+      <description></description>
+      <type>java.lang.String</type>
+      
+    </attribute>
 
-                &lt;/div&gt;
+    <attribute>
+      <name>groupBy</name>
+      <required>false</required>
+      <description></description>
+      <type>java.lang.String</type>
+      
+    </attribute>
 
-            </description>
-            <name>value</name>
-            <required>true</required>
-            <type>java.lang.Object</type>
-        </attribute>
-        <attribute>
-            <description>
+    <attribute>
+      <name>db</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description></description>
+      <type>java.lang.String</type>
+      
+    </attribute>
 
-                &lt;div class="changed_added_2_0"&gt;&lt;p&gt;Name of the
-                exported scoped variable for the current item of the
-                iteration. This scoped variable has nested
-                visibility. Its type depends on the object of the
-                underlying collection&lt;/p&gt;&lt;/div&gt;
+    <attribute>
+      <name>offset</name>
+      <required>false</required>
+      <description></description>
+      <type>int</type>
+      
+    </attribute>
 
-            </description>
-            <name>var</name>
-            <required>true</required>
-            <type>java.lang.Object</type>
-        </attribute>
-        <attribute>
-            <description>
+    <attribute>
+      <name>limit</name>
+      <required>false</required>
+      <description></description>
+      <type>int</type>
+      
+    </attribute>
 
-                &lt;div class="changed_added_2_0"&gt;&lt;p&gt;Name of the
-                exported request scoped variable for the status of the
-                iteration. Object is a POJO with the following read-only
-                JavaBeans properties. This scoped variable has nested
-                visibility.&lt;/p&gt;
+    <attribute>
+      <name>defaultLimit</name>
+      <required>false</required>
+      <description></description>
+      <type>int</type>
+      
+    </attribute>
+<!-- 
+    <attribute>
+      <name>authorize</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description></description>
+      
+    </attribute>
 
-                &lt;p&gt;&lt;code&gt;begin&lt;/code&gt; of type Integer&lt;/p&gt;
+    <attribute>
+      <name>editable</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description></description>
+      
+    </attribute>
 
-                &lt;p&gt;&lt;code&gt;end&lt;/code&gt; of type Integer&lt;/p&gt;
+    <attribute>
+      <name>logicClass</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description></description>
+      
+    </attribute>
 
-                &lt;p&gt;&lt;code&gt;index&lt;/code&gt; of type int&lt;/p&gt;
-
-                &lt;p&gt;&lt;code&gt;step&lt;/code&gt; of type Integer&lt;/p&gt;
-
-                &lt;p&gt;&lt;code&gt;even&lt;/code&gt; of type boolean&lt;/p&gt;
-
-                &lt;p&gt;&lt;code&gt;odd&lt;/code&gt; of type boolean&lt;/p&gt;
-
-                &lt;p&gt;&lt;code&gt;first&lt;/code&gt; of type boolean&lt;/p&gt;
-
-                &lt;p&gt;&lt;code&gt;last&lt;/code&gt; of type boolean&lt;/p&gt;
-
-                &lt;/div&gt;
-
-            </description>
-            <name>varStatus</name>
-            <required>false</required>
-            <type>java.lang.Object</type>
-        </attribute>
+    <attribute>
+      <name>editPage</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description></description>
+      
+    </attribute>
+ -->
+ 
+     
+    <attribute>
+      <name>separator</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description></description>
+      <type>java.lang.String</type>
+ 
+      
+    </attribute>
+           
     </tag>
     
     

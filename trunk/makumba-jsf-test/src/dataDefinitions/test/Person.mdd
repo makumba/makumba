@@ -1,0 +1,157 @@
+
+!type.yesNo=int{"No"=0, "Yes"=1}
+!type.genTyp=int{"Female"=0, "Male"=1}
+!title= fullName()
+
+indiv = unique fixed not null ptr test.Individual ;lala
+
+birthdate=date		 ;Birthdate
+compare(birthdate) { birthdate <= date($now, $now, $now - 15, 0, 0, 0) } : "You have to be at least 15 years old!"
+compare(birthdate) { birthdate >= date($now, $now, $now - 105, 0, 0, 0) } : "Maximum age is 105!"
+
+firstSex = date
+
+myapp_username=char[80] ; username for this user
+
+password=char[80] ; password for this user
+
+beginDate = date;
+
+#beginDate%compare = beginDate >= $now : "Begin date can't be in the past!"
+#beginDate%compare = beginDate >= date($now,$now,$now - 5) : "Begin date can't be longer than 5 years ago!"
+
+gender=genTyp		 ;Gender
+all=char[25]             ;test a reserved word
+field=char[80]           ;another reserved word
+
+militarySucksAndEverybodyKnowsItButDoesNotSpeakOutLoudAboutIt=yesNo           ;A very long fieldname
+driver=yesNo		 ;Driving Licence
+
+age=int				;Age
+range(age) { 12..99 } : "Age must be between 12 and 99!"
+
+makumbaTillDeath = not null yesNo   ; makumbian or not
+designer = yesNo    ; are you a designer?
+
+weight=real ; weight in kilos
+
+# test some QL functions as field names
+length=int ; height in cm
+max=int ; max value
+
+hobbies=text             ;Hobbies
+length(hobbies) {1..?} : "Hobbies must not be empty!"
+
+comment=text         ;Comments
+
+picture=binary      ;Picture of the person
+
+someAttachment=file
+
+brother= ptr test.Person
+
+extraData=ptr
+extraData->something=char[20]
+extraData->what=int
+
+range(length) { 0..200 } : "You can't be taller than 2 meters"
+
+
+#for uniqness tests:
+uniqInt=unique int		            ;test int uniqness
+uniqChar=unique char[33]	        ;test char uniqness
+uniqDate=unique date		        ;test date uniqness
+uniqPtr=unique ptr test.Language    ;test ptr uniqness
+
+uniqChar.unique = "There can only be a unique char"
+
+speaks=set test.Language
+intSet= set int {"a"=0, "b"=1, "c"=2 }
+
+charSet=set char{ "d", "e", "f" }
+
+email = char[40]
+matches(email) { .+@.+\.[a-z]+|^[ ]*$ } : "Email address is not valid!"
+
+address=set			 ;Addresses
+  address->!title=description
+  address->description=char[30]	;Description (home address, study-time address, ...)
+  address->streetno=char[100]	      ;Street  
+  address->zipcode=char[10]		;Zipcode
+  address->city=char[40]		;City
+  address->country=char[20]             ;Country
+  address->phone=char[20]		;Phone
+  address->fax=char[20]			;Fax
+  address->email=char[40]		;E-Mail
+  address->usagestart=date		;Use from
+  address->usageend=date		;Use till
+  address->homepage=char[50]
+  address->sth=ptr
+  address->sth->aaa=char[20]
+  address->sth->someSuperNestedFunction() { 1 + 2 } : "Some nested nested message"
+  address->languages = set test.Language ; languages spoken in that address
+  address->length(description) {3..?} : "Description must be at least 3 letters long!"
+  address->someFunction() { 1 + 2 } : "Some nested message"
+  address->matches(homepage) { http://.+ } : "the homepage must start with http://"
+  address->compare(description) { lower(description) != description } : "Description cannot all be lower case!"
+
+
+toys=set
+  toys->name=char[30]
+  
+groupMembers = set test.Person
+
+# comparison validation rules spanning over more than one field
+compare(weight, age) { weight < age } : "Your weight can't be higher than your age!" ; comment
+compare(firstSex, birthdate) { firstSex >= birthdate } : "Can't have sex before you'are born!"
+compare(email) { lower(email) = email } : "E-mail address must be all lower case!"
+compare(indiv.name) { lower(indiv.name) != indiv.name } : "Your name can't be all lower cases!"
+
+# multi-field uniqueness keys
+unique(age, email) : "age and email need to be unique!" ;comment
+unique(indiv.name, indiv.surname) : "name and surname need to be unique!"
+#unique(age, indiv) : "can't have the same age and be the same person!"
+
+
+someFunction(char[] b) { count(address) > 0 } : "You need to specify an address" ; comment
+someOtherFunction(int age, char[] b) { this.age > age } : "You are too young!"
+functionWithPointer(ptr test.Individual i, int age, char[] b) { this.age > age } : "You are too young!"
+functionWithPointerIsThatPerson(ptr test.Individual i) { i=indiv } : "You are not that person!"
+someFunctionWithParams(int param, int param2, int param3) { age+param > 20 } : "You are too young!"
+nameMin2CharsLong() { character_length(indiv.name) > 2 } : "Your name is not long enough!"
+nameMin4CharsLong() { character_length(indiv.name) > 4 } : "Your name is not long enough!"
+nameMin3CharsLong() { indiv.nameMin3CharsLong() } : "Your name is not long enough!"
+someTest(){ actor(test.Person) }
+allNamesMin2CharsLong() { character_length(indiv.name) > 2 AND character_length(indiv.surname) > 2 } : "Your name or surname is not long enough!"
+oneNameMin2CharsLong() { character_length(indiv.name) > 2 OR character_length(indiv.surname) > 2 } : "Your name and surname is not long enough!"
+
+fullName() { indiv.fullName() } ; comment
+indi(){ indiv } ; a function that returns pointer
+
+testCaseWhen() { case when this.indiv <> NIL then this.indiv.fullName() else 'noName' end }  
+testCaseWhen2() { CASE WHEN this.indiv <> NIL THEN this.indiv.fullName() WHEN this.indiv.name <> NIL THEN indiv.name ELSE CASE WHEN this.indiv.surname <> NIL THEN indiv.surname END END }  
+
+actor(char[] username, char[] password) { myapp_username=username AND this.password=password }
+actor2(char[] username, char[] password) { indiv.someusername=username AND this.password=password }
+
+score(char term) { test.Functions.scoreMatch(term, this.indiv.name)  }
+
+# the function below is a simpler version of scoreMatch above, using case-when in a switch like manner, rather than as if-then-else
+# at least in MySQL this should work, but it fails to pass the MQL anaylsis
+# see bug entry 1178 (http://bugs.makumba.org/show_bug.cgi?id=1178) 
+scoreMatchSimple(char term, char value) { case when value=term then 1.0 when value like concat(term, '%') then 0.8 when value like concat('%', term) then 0.6 when value like concat('%', term, '%') then 0.5 else 0 end }
+
+doesSpeak(char language) { ( case when exists(FROM speaks s WHERE s.name=language) then 'yeah' else 'hell no!' end )  } 
+doesSpeak2(char language) { ( case when exists(FROM speaks s WHERE s.name=language) then (SELECT s.name FROM speaks s WHERE s.name=language) else 'hell no!' end )  }
+languageCheck() { concat('English? ', doesSpeak('English'), '; German? ', doesSpeak('German') ) } 
+
+toughToMDDView() { concat('English? ', doesSpeak('English'), '; German? ', doesSpeak('German') ) } ; this is tough to detect 
+toughToMDDView2() { concat('English? ', doesSpeak('English'), '; German? ', doesSpeak('German') ) } : "Some message" ; this is even tougher to detect, and not highlight the error message as comment... 
+
+#getLanguage2(char code) { s.name FROM speaks s WHERE s.isoCode=code }
+getLanguage(char code) { ( SELECT distinct s.name FROM speaks s WHERE s.isoCode=code ) }
+languageNames() { concat(getLanguage('en'), ' ') } 
+
+birthdayWithin12Months() { now() > dateSub(birthdate, 12, 'month') }
+birthdayBefore(char monthDay) { dayOfYear(birthdate) >= dayOfYear(str_to_date(monthDay, '%Y-%m-%d')) }
+

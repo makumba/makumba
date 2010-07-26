@@ -48,16 +48,17 @@ public class ValueComponent extends UIComponentBase {
 
     @Override
     public void encodeBegin(FacesContext context) throws IOException {
-        System.out.println("ValueComponent.encodeBegin()");
+        // System.out.println("ValueComponent.encodeBegin()");
         ResponseWriter writer = context.getResponseWriter();
         writer.startElement("div", this);
-        writer.writeText("mak:value expr " + getExpr(), null);
+        UIRepeatListComponent currentlyRunning = UIRepeatListComponent.getCurrentlyRunning();
+        writer.writeText(currentlyRunning.getExpressionValue(getExpr()).toString(), null);
         writer.endElement("div");
     }
 
     @Override
     public void encodeEnd(FacesContext context) throws IOException {
-        System.out.println("ValueComponent.encodeEnd()");
+        // System.out.println("ValueComponent.encodeEnd()");
         super.encodeEnd(context);
     }
 
