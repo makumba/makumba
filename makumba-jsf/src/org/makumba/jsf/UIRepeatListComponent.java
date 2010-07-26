@@ -18,6 +18,8 @@ import javax.faces.model.ListDataModel;
 import javax.faces.view.facelets.FaceletException;
 
 import org.makumba.commons.ArrayMap;
+import org.makumba.commons.NamedResourceFactory;
+import org.makumba.commons.NamedResources;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.ComposedSubquery;
 import org.makumba.list.engine.Grouper;
@@ -39,9 +41,9 @@ public class UIRepeatListComponent extends UIRepeat {
 
     String separator = "";
 
+    // TODO: no clue what defaultLimit does
     int offset = 0, limit = -1, defaultLimit;
 
-    // TODO:cache
     ComposedQuery composedQuery;
 
     // all data, from all iterations of the parent list
@@ -55,6 +57,11 @@ public class UIRepeatListComponent extends UIRepeat {
 
     public void setFrom(String s) {
         queryProps[ComposedQuery.FROM] = s;
+    }
+
+    protected Object getCacheKey() {
+        // TODO: find an implementation-independent cache key
+        return this.getAttributes().get("com.sun.faces.facelets.MARK_ID");
     }
 
     public void setVariableFrom(String s) {
@@ -110,35 +117,37 @@ public class UIRepeatListComponent extends UIRepeat {
 
     @Override
     public void encodeAll(FacesContext context) throws IOException {
+        iterationGroupData = listData.getData(getCurrentDataStack());
+
+        if (iterationGroupData == null) {
+            return;
+        }
+
+        // push a placeholder, it will be popped at first iteration
+        getCurrentDataStack().push(NOTHING);
+
+        DataModel<ArrayMap> dm = new ListDataModel<ArrayMap>(iterationGroupData) {
+            @Override
+            public void setRowIndex(int rowIndex) {
+                if (rowIndex >= 0 && rowIndex < iterationGroupData.size()) {
+                    // pop old value:
+                    getCurrentDataStack().pop();
+                    currrentData = iterationGroupData.get(rowIndex);
+                    // push new value:
+                    getCurrentDataStack().push(currrentData);
+                }
+                super.setRowIndex(rowIndex);
+
+            }
+        };
+
+        setValue(dm);
         parent = getCurrentlyRunning();
         FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(CURRENT_LIST, this);
 
-        iterationGroupData = listData.getData(getCurrentDataStack());
-
-        if (iterationGroupData != null) {
-            // push a placeholder, it will be popped at first iteration
-            getCurrentDataStack().push(NOTHING);
-
-            DataModel<ArrayMap> dm = new ListDataModel<ArrayMap>(iterationGroupData) {
-                @Override
-                public void setRowIndex(int rowIndex) {
-                    if (rowIndex >= 0 && rowIndex < iterationGroupData.size()) {
-                        // pop old value:
-                        getCurrentDataStack().pop();
-                        currrentData = iterationGroupData.get(rowIndex);
-                        // push new value:
-                        getCurrentDataStack().push(currrentData);
-                    }
-                    super.setRowIndex(rowIndex);
-
-                }
-            };
-
-            setValue(dm);
-            super.encodeAll(context);
-            // this list is done, no more current value in stack
-            getCurrentDataStack().pop();
-        }
+        super.encodeAll(context);
+        // this list is done, no more current value in stack
+        getCurrentDataStack().pop();
         FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(CURRENT_LIST, parent);
     }
 
@@ -154,22 +163,36 @@ public class UIRepeatListComponent extends UIRepeat {
 
     }
 
+    static int composedQueries = NamedResources.makeStaticCache("JSF ComposedQueries", new NamedResourceFactory() {
+        @Override
+        public Object getHashObject(Object o) {
+            return ((UIRepeatListComponent) ((Object[]) o)[1]).getCacheKey();
+        }
+
+        @Override
+        public Object makeResource(Object o, Object hashName) throws Throwable {
+            UIRepeatListComponent comp = (UIRepeatListComponent) ((Object[]) o)[1];
+            if (((Object[]) o)[0] == null) {
+                // no parent, we are root
+                comp.composedQuery = new ComposedQuery(comp.queryProps, comp.getQueryLanguage());
+
+            } else {
+                comp.composedQuery = new ComposedSubquery(comp.queryProps,
+                        ((UIRepeatListComponent) ((Object[]) o)[0]).composedQuery, comp.getQueryLanguage());
+            }
+            comp.composedQuery.init();
+            UIRepeatListComponent.findExpressionsInChildren(comp, comp);
+            comp.composedQuery.analyze();
+
+            return comp.composedQuery;
+        }
+    });
+
     public void analyze() {
+        composedQuery = (ComposedQuery) NamedResources.getStaticCache(composedQueries).getResource(
+            new Object[] { null, this });
 
-        System.out.println(this.getClass());
-
-        // for (ExprTuple c : expressions) {
-        // System.out.println("** Child component " + c.getComponent().getClass() + " expression " + c.getExpr());
-        // }
-
-        // check whether we have not computed the queries of this mak:list group
-        // before
-        // if so, retrieve them from cache
-
-        composedQuery = new ComposedQuery(queryProps, getQueryLanguage());
-        composedQuery.init();
-        findExpressionsInChildren(this, this);
-        for (UIComponent kid : getChildren()) {
+        for (UIComponent kid : this.getChildren()) {
             analyzeChildrenLists(this, this, kid);
         }
         executeQuery();
@@ -183,10 +206,8 @@ public class UIRepeatListComponent extends UIRepeat {
 
     private void analyzeWithRoot(UIRepeatListComponent root, UIRepeatListComponent parent) {
         // TODO: check if limits or offsets were declared, this is illegal for sublists
-        composedQuery = new ComposedSubquery(queryProps, parent.composedQuery, getQueryLanguage());
-        composedQuery.init();
-
-        findExpressionsInChildren(this, this);
+        composedQuery = (ComposedQuery) NamedResources.getStaticCache(composedQueries).getResource(
+            new Object[] { parent, this });
 
         executeQuery();
     }
@@ -228,7 +249,11 @@ public class UIRepeatListComponent extends UIRepeat {
     }
 
     public Object getExpressionValue(String expr) {
-        return currrentData.data[composedQuery.checkProjectionInteger(expr)];
+        return getExpressionValue(composedQuery.checkProjectionInteger(expr));
+    }
+
+    public Object getExpressionValue(int exprIndex) {
+        return currrentData.data[exprIndex];
     }
 
     static private void analyzeChildrenLists(UIRepeatListComponent root, UIRepeatListComponent parent, UIComponent c) {
