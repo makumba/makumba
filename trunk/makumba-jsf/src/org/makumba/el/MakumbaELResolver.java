@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.el.ELContext;
+import javax.el.ELException;
 import javax.el.ELResolver;
 import javax.el.PropertyNotWritableException;
 
@@ -122,9 +123,9 @@ public class MakumbaELResolver extends ELResolver {
                     // return the placeholder
                     return mine;
                 } else {
-                    // maybe there is another resolver that can solve this?
-                    // throw new ELException("Field '" + property + "' of '" + base + "' does not exist");
-                    return null;
+                    throw new ELException("Field '" + property + "' of '" + base + "' is not known."
+                            + (list.useCaches() ? " Turn caches off or try reloading the page." : ""));
+                    // TODO we could even check here whether the property would makes sense in the query
                 }
 
             }
@@ -223,6 +224,7 @@ public class MakumbaELResolver extends ELResolver {
 
         public ExpressionPathPlaceholder(ExpressionPathPlaceholder expr, String field) {
             this.basePointer = expr.basePointer;
+            this.qa = expr.qa;
             this.label = expr.label;
             this.fieldDotField = expr.fieldDotField + "." + field;
         }
