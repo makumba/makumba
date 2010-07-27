@@ -11,11 +11,10 @@
 
     <mak:list from="test.Person p">
       
-      <li><mak:value expr="p.indiv.name" /></li>
-      #{p.indiv.name}
-      <mak:list from="p.speaks l">
-          <mak:value expr="l.name"/> #{mak:expr('l.isoCode')}
-      </mak:list>
+      <li><mak:value expr="p.indiv.name" /> #{p.indiv.surname}</li>
+      <ul><mak:list from="p.speaks l">
+          <li><mak:value expr="l.name"/> #{mak:expr('l.isoCode')}</li>
+      </mak:list></ul>
     </mak:list>
 
 
