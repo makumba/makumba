@@ -23,11 +23,12 @@
 
 package org.makumba.list.engine;
 
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.makumba.DataDefinition;
@@ -79,10 +80,10 @@ public class ComposedQuery {
     int subqueries = 0;
 
     /** The projections made in this query */
-    Vector<String> projections = new Vector<String>();
+    List<String> projections = new ArrayList<String>();
 
     /** The expression associated to each projection */
-    Hashtable<String, Integer> projectionExpr = new Hashtable<String, Integer>();
+    Map<String, Integer> projectionExpr = new HashMap<String, Integer>();
 
     /** Standard index for the FROM query section */
     public static final int FROM = 0;
@@ -116,19 +117,19 @@ public class ComposedQuery {
      * The keyset defining the primary key for this query. Normally the primary key is made of the keys declared in
      * FROM, in this query and all the parent queries. Keys are kept as integers (indexes)
      */
-    Vector<Integer> keyset;
+    List<Integer> keyset;
 
     /** The keyset of all the parent queries */
-    Vector<Vector<Integer>> previousKeyset;
+    List<List<Integer>> previousKeyset;
 
     /** The labels of the keyset */
-    Vector<String> keysetLabels;
+    List<String> keysetLabels;
 
     /** A Vector containing an empty vector. Used for empty keysets */
-    static Vector<Vector<Integer>> empty;
+    static List<List<Integer>> empty;
     static {
-        empty = new Vector<Vector<Integer>>();
-        empty.addElement(new Vector<Integer>());
+        empty = new ArrayList<List<Integer>>();
+        empty.add(new ArrayList<Integer>());
     }
 
     /**
@@ -193,8 +194,8 @@ public class ComposedQuery {
      */
     protected void initKeysets() {
         previousKeyset = empty;
-        keyset = new Vector<Integer>();
-        keysetLabels = new Vector<String>();
+        keyset = new ArrayList<Integer>();
+        keysetLabels = new ArrayList<String>();
     }
 
     /**
@@ -216,12 +217,12 @@ public class ComposedQuery {
      */
     protected void prependFromToKeyset() {
         projectionExpr.clear();
-        Enumeration<String> e = ((Vector<String>) projections.clone()).elements();
-        projections.removeAllElements();
+        Iterator<String> e = new ArrayList<String>(projections).iterator();
+        projections.clear();
 
         // add the previous keyset
         for (int i = 0; i < keyset.size(); i++) {
-            checkProjectionInteger(e.nextElement());
+            checkProjectionInteger(e.next());
         }
 
         for (StringTokenizer st = new StringTokenizer(sections[FROM] == null ? "" : sections[FROM], ","); st.hasMoreTokens();) {
@@ -234,13 +235,13 @@ public class ComposedQuery {
 
             label = qep.getPrimaryKeyNotation(label);
 
-            keysetLabels.addElement(label);
+            keysetLabels.add(label);
 
-            keyset.addElement(addProjection(label));
+            keyset.add(addProjection(label));
         }
 
-        while (e.hasMoreElements()) {
-            checkProjectionInteger(e.nextElement());
+        while (e.hasNext()) {
+            checkProjectionInteger(e.next());
         }
     }
 
@@ -252,7 +253,7 @@ public class ComposedQuery {
      * @return A String containing the projection
      */
     public String getProjectionAt(int n) {
-        return projections.elementAt(n);
+        return projections.get(n);
     }
 
     /**
@@ -264,7 +265,7 @@ public class ComposedQuery {
      */
     Integer addProjection(String expr) {
         Integer index = new Integer(projections.size());
-        projections.addElement(expr);
+        projections.add(expr);
         projectionExpr.put(expr, index);
         return index;
     }
@@ -444,7 +445,7 @@ public class ComposedQuery {
      *            how many times should this query be ran
      * @throws LogicException
      */
-    public Grouper execute(QueryProvider qep, Map args, Evaluator v, int offset, int limit) {
+    public Grouper execute(QueryProvider qep, Map<String, Object> args, Evaluator v, int offset, int limit) {
         analyze();
         String[] vars = new String[5];
         vars[0] = getFromSection();
@@ -463,7 +464,7 @@ public class ComposedQuery {
             }
         }
 
-        return new Grouper(previousKeyset, qep.execute(computeQuery(vars, false), args, offset, limit).elements());
+        return new Grouper(previousKeyset, qep.execute(computeQuery(vars, false), args, offset, limit).iterator());
     }
 
     public synchronized void analyze() {
@@ -508,7 +509,7 @@ public class ComposedQuery {
      * 
      * @return a {@link Vector} containing the projections of this ComposedQuery
      */
-    public Vector<String> getProjections() {
+    public List<String> getProjections() {
         return projections;
     }
 

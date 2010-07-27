@@ -23,7 +23,8 @@
 
 package org.makumba.list.engine;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A subquery of a composed query
@@ -136,14 +137,14 @@ public class ComposedSubquery extends ComposedQuery {
      */
     @Override
     protected void initKeysets() {
-        previousKeyset = (Vector) superQuery.previousKeyset.clone();
-        keyset = (Vector<Integer>) superQuery.keyset.clone();
-        keysetLabels = (Vector<String>) superQuery.keysetLabels.clone();
+        previousKeyset = new ArrayList<List<Integer>>(superQuery.previousKeyset);
+        keyset = new ArrayList<Integer>(superQuery.keyset);
+        keysetLabels = new ArrayList<String>(superQuery.keysetLabels);
 
         for (String string : keysetLabels) {
             addProjection(string);
         }
-        previousKeyset.addElement(superQuery.keyset);
+        previousKeyset.add(superQuery.keyset);
 
         // we're all set now, no more need for the super query
         superQuery = null;
