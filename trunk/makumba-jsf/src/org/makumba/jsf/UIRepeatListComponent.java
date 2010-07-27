@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -94,7 +93,7 @@ public class UIRepeatListComponent extends UIRepeat {
         return composedQuery;
     }
 
-    public Vector<String> getProjections() {
+    public List<String> getProjections() {
         return getComposedQuery().getProjections();
     }
 

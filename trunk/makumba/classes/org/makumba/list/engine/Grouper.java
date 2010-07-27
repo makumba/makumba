@@ -23,14 +23,34 @@
 
 package org.makumba.list.engine;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Vector;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.makumba.commons.ArrayMap;
 import org.makumba.commons.MultipleKey;
+
+class ListOrMap {
+
+    List<ArrayMap> list = new ArrayList<ArrayMap>();
+
+    Map<MultipleKey, ListOrMap> map = new HashMap<MultipleKey, ListOrMap>();
+
+    @Override
+    public String toString() {
+        if (!list.isEmpty()) {
+            return list.toString();
+        }
+        if (!map.isEmpty()) {
+            return map.toString();
+        }
+        return "0";
+    }
+}
 
 /**
  * This class groups data coming in an Enumeration of Dictionaries. Grouping is done in more levels, each level is
@@ -39,11 +59,13 @@ import org.makumba.commons.MultipleKey;
  * 
  * @author Cristian Bogdan
  */
-public class Grouper extends Hashtable {
+public class Grouper {
 
     private static final long serialVersionUID = 1L;
 
-    Vector<Vector<Integer>> keyNameSets;
+    List<List<Integer>> keyNameSets;
+
+    ListOrMap content = new ListOrMap();
 
     /**
      * Groups the given data according to the given key sets.
@@ -53,15 +75,15 @@ public class Grouper extends Hashtable {
      * @param e
      *            the Enumeration of dictionaries containing the data
      */
-    public Grouper(Vector<Vector<Integer>> keyNameSets, Enumeration<Dictionary<String, Object>> e) {
+    public Grouper(List<List<Integer>> keyNameSets, Iterator<Dictionary<String, Object>> e) {
         this.keyNameSets = keyNameSets;
         long l = new Date().getTime();
 
         // for all read records
-        while (e.hasMoreElements()) {
-            ArrayMap data = (ArrayMap) e.nextElement();
-            Hashtable h = this;
-            Hashtable h1;
+        while (e.hasNext()) {
+            ArrayMap data = (ArrayMap) e.next();
+            ListOrMap h = content;
+            ListOrMap h1;
             int i = 0;
             int _max = keyNameSets.size() - 1;
             MultipleKey mk;
@@ -72,28 +94,28 @@ public class Grouper extends Hashtable {
                 mk = getKey(i, data.data);
 
                 // get the subresult associated with it, make a new one if none exists
-                h1 = (Hashtable) h.get(mk);
+                h1 = h.map.get(mk);
                 if (h1 == null) {
-                    h1 = new Hashtable();
-                    h.put(mk, h1);
+                    h1 = new ListOrMap();
+                    h.map.put(mk, h1);
                 }
                 h = h1;
             }
 
             // insert the data in the subresult
             mk = getKey(i, data.data);
-            Vector v = (Vector) h.get(mk);
-            if (v == null) {
-                v = new Vector();
-                h.put(mk, v);
+            ListOrMap lv = h.map.get(mk);
+            if (lv == null) {
+                lv = new ListOrMap();
+                h.map.put(mk, lv);
             }
-            v.addElement(data);
+            lv.list.add(data);
         }
 
         max = keyNameSets.size() - 1;
-        stack = new Hashtable[max + 1];
+        stack = new ListOrMap[max + 1];
         keyStack = new MultipleKey[max];
-        stack[0] = this;
+        stack[0] = content;
 
         long diff = new Date().getTime() - l;
 
@@ -103,7 +125,7 @@ public class Grouper extends Hashtable {
 
     int max;
 
-    Hashtable[] stack;
+    ListOrMap[] stack;
 
     MultipleKey[] keyStack;
 
@@ -114,18 +136,22 @@ public class Grouper extends Hashtable {
      *            a Vector of Dictionaries representing a set of key values each
      * @return A Vector associated with the given keysets
      */
-    public Vector<ArrayMap> getData(Vector<Dictionary<String, Object>> keyData) {
+    public List<ArrayMap> getData(List<Dictionary<String, Object>> keyData) {
         int i = 0;
         for (; i < max; i++) {
-            keyStack[i] = getKey(i, ((ArrayMap) keyData.elementAt(i)).data);
-            stack[i + 1] = (Hashtable) stack[i].get(keyStack[i]);
+            keyStack[i] = getKey(i, ((ArrayMap) keyData.get(i)).data);
+            stack[i + 1] = stack[i].map.get(keyStack[i]);
             if (stack[i + 1] == null) {
                 return null;
             }
         }
-        Vector v = (Vector) stack[i].remove(getKey(i, ((ArrayMap) keyData.elementAt(i)).data));
-        for (; i > 0 && stack[i].isEmpty(); i--) {
-            stack[i - 1].remove(keyStack[i - 1]);
+        ListOrMap lm = stack[i].map.remove(getKey(i, ((ArrayMap) keyData.get(i)).data));
+        List<ArrayMap> v = null;
+        if (lm != null) {
+            v = lm.list;
+        }
+        for (; i > 0 && stack[i].map.isEmpty(); i--) {
+            stack[i - 1].map.remove(keyStack[i - 1]);
         }
         return v;
     }
@@ -140,6 +166,6 @@ public class Grouper extends Hashtable {
      * @return A MultipleKey holding the values
      */
     protected MultipleKey getKey(int n, Object[] data) {
-        return new MultipleKey((Vector) keyNameSets.elementAt(n), data);
+        return new MultipleKey(keyNameSets.get(n), data);
     }
 }

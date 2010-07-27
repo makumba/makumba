@@ -25,8 +25,8 @@ package org.makumba.list.engine;
 
 import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Stack;
-import java.util.Vector;
 
 import javax.servlet.jsp.PageContext;
 
@@ -53,7 +53,7 @@ public class QueryExecution {
     Grouper listData;
 
     /** The part of listData iterated for a certain parent iteration */
-    Vector<ArrayMap> iterationGroupData;
+    List<ArrayMap> iterationGroupData;
 
     /** The index of iteration within the iteration group */
     public int iteration;
@@ -324,14 +324,14 @@ public class QueryExecution {
      * @return The current listData
      */
     public ArrayMap currentListData() {
-        return iterationGroupData.elementAt(iteration);
+        return iterationGroupData.get(iteration);
     }
 
     public boolean hasValueChanged(int projectionIndex) {
         if (iteration == 0) {
             return true;
         }
-        Object lastValue = iterationGroupData.elementAt(iteration - 1).data[projectionIndex];
+        Object lastValue = iterationGroupData.get(iteration - 1).data[projectionIndex];
         return !currentListData().data[projectionIndex].equals(lastValue);
     }
 
@@ -339,7 +339,7 @@ public class QueryExecution {
         if (iteration + 1 == iterationGroupData.size()) {
             return true;
         }
-        Object nextValue = iterationGroupData.elementAt(iteration + 1).data[projectionIndex];
+        Object nextValue = iterationGroupData.get(iteration + 1).data[projectionIndex];
         return !currentListData().data[projectionIndex].equals(nextValue);
     }
 }
