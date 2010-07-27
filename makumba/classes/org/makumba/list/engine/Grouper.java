@@ -57,13 +57,31 @@ class ListOrMap {
 
     @Override
     public String toString() {
-        if (list != null && !list.isEmpty()) {
+        if (list != null) {
             return list.toString();
         }
-        if (map != null && !map.isEmpty()) {
-            return map.toString();
+        return map.toString();
+    }
+
+    public String toStringTree(String prefix) {
+        StringBuffer lines = new StringBuffer();
+
+        if (list != null) {
+            for (ArrayMap x : list) {
+                lines.append(prefix);
+                for (Object o : x.data) {
+                    lines.append(o).append("\t");
+                }
+                lines.append("\n");
+            }
+            return lines.toString();
         }
-        return "0";
+        for (Map.Entry<MultipleKey, ListOrMap> entry : map.entrySet()) {
+            lines.append(prefix).append(entry.getKey()).append("\n");
+            lines.append(entry.getValue().toStringTree(prefix + "\t")).append("\n");
+
+        }
+        return lines.toString();
     }
 }
 
@@ -184,5 +202,10 @@ public class Grouper {
      */
     protected MultipleKey getKey(int n, Object[] data) {
         return new MultipleKey(keyNameSets.get(n), data);
+    }
+
+    @Override
+    public String toString() {
+        return "Grouper with keys " + keyNameSets + "\n" + content.toStringTree("");
     }
 }
