@@ -34,18 +34,33 @@ import java.util.Map;
 import org.makumba.commons.ArrayMap;
 import org.makumba.commons.MultipleKey;
 
+/**
+ * The grouper is a tree, with maps containing other maps, or lists. Lists are tree leaves.
+ * 
+ * @author cristi
+ * @version $Id$
+ */
 class ListOrMap {
 
-    List<ArrayMap> list = new ArrayList<ArrayMap>();
+    List<ArrayMap> list;
 
-    Map<MultipleKey, ListOrMap> map = new HashMap<MultipleKey, ListOrMap>();
+    Map<MultipleKey, ListOrMap> map;
+
+    public ListOrMap(List<ArrayMap> list) {
+        this.list = list;
+    }
+
+    public ListOrMap() {
+        // map is default
+        map = new HashMap<MultipleKey, ListOrMap>();
+    }
 
     @Override
     public String toString() {
-        if (!list.isEmpty()) {
+        if (list != null && !list.isEmpty()) {
             return list.toString();
         }
-        if (!map.isEmpty()) {
+        if (map != null && !map.isEmpty()) {
             return map.toString();
         }
         return "0";
@@ -53,9 +68,9 @@ class ListOrMap {
 }
 
 /**
- * This class groups data coming in an Enumeration of Dictionaries. Grouping is done in more levels, each level is
- * defined by a set of keys of the dictionary. Elements of each group come in a Vector that is guaranteed to respect the
- * order in the original enumeration.
+ * This class groups data coming in an Iterator of Dictionaries. Grouping is done in more levels, each level is defined
+ * by a set of keys of the dictionary. Elements of each group come in a List that is guaranteed to respect the order in
+ * the original Iterator.
  * 
  * @author Cristian Bogdan
  */
@@ -71,12 +86,13 @@ public class Grouper {
      * Groups the given data according to the given key sets.
      * 
      * @param keyNameSets
-     *            a Vector of Vectors of Strings that represents key names
+     *            a List of Lists of Integers that represents indexes in data sets
      * @param e
-     *            the Enumeration of dictionaries containing the data
+     *            the Iterator of dictionaries containing the data
      */
     public Grouper(List<List<Integer>> keyNameSets, Iterator<Dictionary<String, Object>> e) {
         this.keyNameSets = keyNameSets;
+        max = keyNameSets.size() - 1;
         long l = new Date().getTime();
 
         // for all read records
@@ -85,11 +101,11 @@ public class Grouper {
             ListOrMap h = content;
             ListOrMap h1;
             int i = 0;
-            int _max = keyNameSets.size() - 1;
+
             MultipleKey mk;
 
             // find the subresult where this record has to be inserted
-            for (; i < _max; i++) {
+            for (; i < max; i++) {
                 // make a keyset value
                 mk = getKey(i, data.data);
 
@@ -106,13 +122,12 @@ public class Grouper {
             mk = getKey(i, data.data);
             ListOrMap lv = h.map.get(mk);
             if (lv == null) {
-                lv = new ListOrMap();
+                lv = new ListOrMap(new ArrayList<ArrayMap>());
                 h.map.put(mk, lv);
             }
             lv.list.add(data);
         }
 
-        max = keyNameSets.size() - 1;
         stack = new ListOrMap[max + 1];
         keyStack = new MultipleKey[max];
         stack[0] = content;
@@ -129,12 +144,14 @@ public class Grouper {
 
     MultipleKey[] keyStack;
 
+    // TODO: provide deletion as an option, to be able to reiterate the grouper.
+
     /**
-     * Gets the Vector associated with the given keysets. The returned data is deleted from the Grouper.
+     * Gets the List associated with the given keysets. The returned data is deleted from the Grouper.
      * 
      * @param keyData
-     *            a Vector of Dictionaries representing a set of key values each
-     * @return A Vector associated with the given keysets
+     *            a List of Dictionaries representing a set of key values each
+     * @return A List associated with the given keysets
      */
     public List<ArrayMap> getData(List<Dictionary<String, Object>> keyData) {
         int i = 0;
