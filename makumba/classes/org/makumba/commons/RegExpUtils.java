@@ -65,6 +65,8 @@ public class RegExpUtils {
 
     public static final String fieldNameAndSpaces = fieldName + LineWhitespaces;
 
+    public static final String dotPath = "[a-zA-Z]" + word + "*" + "(?:\\.\\w+)*";
+
     public static String or(String[] options) {
         String s = "(";
         for (int i = 0; i < options.length; i++) {

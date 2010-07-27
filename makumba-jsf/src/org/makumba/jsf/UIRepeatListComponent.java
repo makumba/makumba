@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.el.ValueExpression;
 import javax.faces.component.UIComponent;
@@ -25,6 +27,7 @@ import org.makumba.ProgrammerError;
 import org.makumba.commons.ArrayMap;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
+import org.makumba.commons.RegExpUtils;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.ComposedSubquery;
 import org.makumba.list.engine.Grouper;
@@ -324,6 +327,7 @@ public class UIRepeatListComponent extends UIRepeat {
     private void addExpression(String expr, boolean canBeInvalid) {
         // TODO: analyze the expression in the composedquery. mak:value and mak:expr() expressions may not be invalid,
         // while other EL expressions may be invalid, in which case they are not added
+        System.out.println(expr);
         composedQuery.checkProjectionInteger(expr);
     }
 
@@ -381,7 +385,6 @@ public class UIRepeatListComponent extends UIRepeat {
      * 
      * @param component
      *            the {@link UIComponent} of which the properties should be searched for EL expressions
-     * @return a map of {@link ExprTuple} keyed by property name
      */
     private void findComponentExpressions(UIComponent component) {
 
@@ -401,6 +404,13 @@ public class UIRepeatListComponent extends UIRepeat {
         }
     }
 
+    private final static Pattern ELExprFunctionPattern = Pattern.compile("\\w+:expr\\(" + RegExpUtils.LineWhitespaces
+            + "(\\'[^\\']+\\')" + RegExpUtils.LineWhitespaces + "?\\)");
+
+    private final static Pattern JSFELPattern = Pattern.compile("\\#\\{[^\\}]*\\}");
+
+    private final static Pattern dotPathPattern = Pattern.compile(RegExpUtils.dotPath);
+
     /**
      * Finds the 'floating' EL expressions that are not a property of a component, but are directly part of the view
      * body. Since {@link UIInstructions} sometimes not only return the EL expression but also some surrounding HTML
@@ -412,37 +422,45 @@ public class UIRepeatListComponent extends UIRepeat {
      * 
      * @param component
      *            the {@link UIInstructions} which should be searched for EL expressions.
-     * @return a map of {@link ExprTuple} keyed by property name
      */
     private void findFloatingExpressions(UIInstructions component) {
 
         String txt = component.toString();
-        // see if it has some EL
-        int n = txt.indexOf("#{");
-        if (n > -1) {
-            txt = txt.substring(n + 2);
-            int e = txt.indexOf("}");
-            if (e > -1) {
-                txt = txt.substring(0, e);
 
-                // we may have a mak:expr EL function here
-                int f = txt.indexOf("mak:expr(");
-                if (f > -1) {
-                    txt = txt.substring(f + 9);
-                    int fe = txt.indexOf(")");
-                    if (fe > -1) {
-                        txt = txt.substring(0, fe);
+        // find EL expressions
+        Matcher elExprMatcher = JSFELPattern.matcher(txt);
+        while (elExprMatcher.find()) {
+            String elExprTxt = elExprMatcher.group();
+            elExprTxt.substring(2, elExprTxt.length() - 1);
 
-                        // trim surrounding quotes, might need to be more robust
-                        // TODO: decide whether we want to support dynamic function expressions
-                        // if not, check that txt is precisely a 'string' or "string"
-                        // to support dynamic function expressions, an evaluator should be applied here
-                        txt = txt.substring(1, txt.length() - 1);
-                        addExpression(txt, false);
-                    }
+            // first we find functions inside of it
+            Matcher exprFuncMatcher = ELExprFunctionPattern.matcher(elExprTxt);
+
+            // TODO find the prefix for the makumba namespace, for now we assume it is 'mak'
+            while (exprFuncMatcher.find()) {
+                String elFuncTxt = exprFuncMatcher.group();
+                System.out.println("UIRepeatListComponent.findFloatingExpressions() " + elFuncTxt);
+
+                // add the EL expression as expression, assuming it starts with "mak"
+                if (elFuncTxt.startsWith("mak")) {
+                    elFuncTxt = elFuncTxt.substring("mak:expr(".length(), elFuncTxt.length() - 1);
+
+                    // TODO: decide whether we want to support dynamic function expressions
+                    // if not, check that txt is precisely a 'string' or "string"
+                    // to support dynamic function expressions, an evaluator should be applied here
+                    elFuncTxt = elFuncTxt.substring(1, elFuncTxt.length() - 1);
+                    addExpression(elFuncTxt, false);
                 } else {
-                    addExpression(txt, true);
+                    // TODO logger warning or namespace resolution
                 }
+            }
+            // remove the EL function calls from the global expression to avoid wrong matches of the rest
+            elExprTxt = exprFuncMatcher.replaceAll("");
+
+            // we now have a cleared expression, we check for paths like "p.name"
+            Matcher dotPathMatcher = dotPathPattern.matcher(elExprTxt);
+            while (dotPathMatcher.find()) {
+                addExpression(dotPathMatcher.group(), true);
             }
         }
     }
@@ -452,7 +470,6 @@ public class UIRepeatListComponent extends UIRepeat {
      * 
      * @param component
      *            the mak:value component
-     * @return a map of {@link ExprTuple} keyed by property name
      */
     private void findMakValueExpressions(ValueComponent component) {
 
