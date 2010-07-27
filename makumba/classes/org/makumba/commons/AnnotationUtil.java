@@ -51,7 +51,7 @@ public class AnnotationUtil {
         for (int i = 0; i < READS; i++) {
             long start = System.currentTimeMillis();
             Class<?> c = Class.forName("test.Language");
-            Method m = c.getDeclaredMethod("getIsoCode", null);
+            Method m = c.getDeclaredMethod("getIsoCode", (Class<?>[]) null);
             Object v = readAttributeValue(m, Column.class, "unique");
             long end = System.currentTimeMillis();
             times.add(end - start);

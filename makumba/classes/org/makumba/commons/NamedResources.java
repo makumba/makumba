@@ -26,7 +26,6 @@ package org.makumba.commons;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -60,7 +59,7 @@ public class NamedResources implements java.io.Serializable {
 
     String name;
 
-    Map values = new HashMap();
+    Map<Object, Object> values = new HashMap<Object, Object>();
 
     int hits, misses;
 
@@ -77,7 +76,7 @@ public class NamedResources implements java.io.Serializable {
         }
         staticCaches.clear();
         for (int i = 0; i < allCaches.size(); i++) {
-            ((java.lang.ref.WeakReference) allCaches.elementAt(i)).clear();
+            ((java.lang.ref.WeakReference<?>) allCaches.elementAt(i)).clear();
         }
         allCaches.clear();
         staticCaches = new ArrayList<NamedResources>();
@@ -161,7 +160,7 @@ public class NamedResources implements java.io.Serializable {
      *            the index of the cache to be cleaned
      */
     public static void cleanStaticCache(int n) {
-        staticCaches.get(n).values = new HashMap();
+        staticCaches.get(n).values = new HashMap<Object, Object>();
     }
 
     public static void cleanStaticCache(String name) {
@@ -283,10 +282,10 @@ public class NamedResources implements java.io.Serializable {
      * Closes each contained object by calling its close() method, if any
      */
     void closeContent() {
-        for (Iterator i = values.keySet().iterator(); i.hasNext();) {
-            Object nvo = values.get(i.next());
+        for (Object element : values.keySet()) {
+            Object nvo = values.get(element);
             if (nvo instanceof java.lang.ref.Reference) {
-                nvo = ((java.lang.ref.Reference) nvo).get();
+                nvo = ((java.lang.ref.Reference<?>) nvo).get();
                 if (nvo == null) {
                     continue;
                 }

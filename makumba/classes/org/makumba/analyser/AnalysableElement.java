@@ -51,13 +51,13 @@ public abstract class AnalysableElement extends TagSupport {
         analyzedElement.set(null);
         jspParser.set(null);
 
-        Object[] analysisState = (Object[]) session.getServletContext().getAttribute(key);
+        AnalysisState analysisState = (AnalysisState) session.getServletContext().getAttribute(key);
 
         if (analysisState != null) {
-            analyzedElement.set((ElementData) analysisState[0]);
-            runningElement.set((ElementData) analysisState[1]);
-            elementStack.set((Stack<ElementData>) analysisState[2]);
-            jspParser.set((JspParseData) analysisState[3]);
+            analyzedElement.set(analysisState.analyzedElement);
+            runningElement.set(analysisState.runningElement);
+            elementStack.set(analysisState.elementStack);
+            jspParser.set(analysisState.jspParser);
         }
     }
 
@@ -72,9 +72,29 @@ public abstract class AnalysableElement extends TagSupport {
         }
     }
 
+    static class AnalysisState {
+
+        private ElementData analyzedElement;
+
+        private ElementData runningElement;
+
+        private Stack<ElementData> elementStack;
+
+        private JspParseData jspParser;
+
+        public AnalysisState(ElementData analyzedElement, ElementData runningElement, Stack<ElementData> elementStack,
+                JspParseData jspParser) {
+            this.analyzedElement = analyzedElement;
+            this.runningElement = runningElement;
+            this.elementStack = elementStack;
+            this.jspParser = jspParser;
+        }
+
+    }
+
     public static void keepAnalysisState(HttpSession session, String key) {
-        Object[] analysisState = new Object[] { analyzedElement.get(), runningElement.get(), getThreadElementStack(),
-                jspParser.get() };
+        AnalysisState analysisState = new AnalysisState(analyzedElement.get(), runningElement.get(),
+                getThreadElementStack(), jspParser.get());
         // we save the state in the servlet context, thus we won't have problems if the application server crashes
         session.getServletContext().setAttribute(key, analysisState);
     }
