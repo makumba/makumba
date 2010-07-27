@@ -45,8 +45,8 @@ public class SoftNamedResources extends NamedResources {
     @Override
     protected NameValue getNameValue(Object name, Object hash) {
         NameValue nv = null;
-        SoftReference<NameValue> sr = (SoftReference<NameValue>) values.get(hash);
-        if (sr == null || (nv = sr.get()) == null) {
+        SoftReference<?> sr = (SoftReference<?>) values.get(hash);
+        if (sr == null || (nv = (NameValue) sr.get()) == null) {
             if (sr != null && nv == null) {
                 diff--;
             }
