@@ -5,9 +5,9 @@ import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -294,7 +294,7 @@ public class JSPRelationMiner extends RelationMiner {
     private void computeJSPMDDProjectionRelations(String fromFile, PageCache pageCache, Object queryKey,
             ComposedQuery cq) {
         // let's see where the projections of the queries come from
-        Vector<String> projections = cq.getProjections();
+        List<String> projections = cq.getProjections();
 
         for (String string : projections) {
             String projectionExpr = string;
