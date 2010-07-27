@@ -327,7 +327,6 @@ public class UIRepeatListComponent extends UIRepeat {
     private void addExpression(String expr, boolean canBeInvalid) {
         // TODO: analyze the expression in the composedquery. mak:value and mak:expr() expressions may not be invalid,
         // while other EL expressions may be invalid, in which case they are not added
-        System.out.println(expr);
         composedQuery.checkProjectionInteger(expr);
     }
 
@@ -439,7 +438,6 @@ public class UIRepeatListComponent extends UIRepeat {
             // TODO find the prefix for the makumba namespace, for now we assume it is 'mak'
             while (exprFuncMatcher.find()) {
                 String elFuncTxt = exprFuncMatcher.group();
-                System.out.println("UIRepeatListComponent.findFloatingExpressions() " + elFuncTxt);
 
                 // add the EL expression as expression, assuming it starts with "mak"
                 if (elFuncTxt.startsWith("mak")) {
