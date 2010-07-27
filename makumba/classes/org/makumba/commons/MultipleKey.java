@@ -24,8 +24,9 @@
 package org.makumba.commons;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Dictionary;
-import java.util.Vector;
+import java.util.List;
 
 /**
  * Holds the values for a group of fields. Every element of a MultipleKey holds an Object. In case of a null value being
@@ -34,7 +35,7 @@ import java.util.Vector;
  * @author Cristian Bogdan
  * @version $Id$
  */
-public class MultipleKey extends Vector<Object> implements Serializable {
+public class MultipleKey extends ArrayList<Object> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -47,14 +48,14 @@ public class MultipleKey extends Vector<Object> implements Serializable {
         super(size);
     }
 
-    public MultipleKey(Vector<Object> v) {
+    public MultipleKey(List<Object> v) {
         this(v, v.size());
     }
 
-    public MultipleKey(Vector<Object> v, int size) {
+    public MultipleKey(List<Object> v, int size) {
         super(size);
-        for (; elementCount < v.size(); elementCount++) {
-            elementData[elementCount] = checkNull(v.elementAt(elementCount));
+        for (Object o : v) {
+            add(checkNull(o));
         }
     }
 
@@ -66,7 +67,7 @@ public class MultipleKey extends Vector<Object> implements Serializable {
      * @param o
      *            An object to be added
      */
-    public MultipleKey(Vector<Object> v, Object o) {
+    public MultipleKey(List<Object> v, Object o) {
         this(v, v.size() + 1);
         setAt(o, v.size());
     }
@@ -75,10 +76,10 @@ public class MultipleKey extends Vector<Object> implements Serializable {
         this(o, o.length);
     }
 
-    public MultipleKey(Object o[], int size) {
+    public MultipleKey(Object array[], int size) {
         super(size);
-        for (; elementCount < o.length; elementCount++) {
-            elementData[elementCount] = checkNull(o[elementCount]);
+        for (Object o : array) {
+            add(checkNull(o));
         }
     }
 
@@ -90,7 +91,7 @@ public class MultipleKey extends Vector<Object> implements Serializable {
      * @param data
      *            The dictionary containing the values of the keys
      */
-    public MultipleKey(Vector<Object> keys, Dictionary<String, Object> data) {
+    public MultipleKey(List<String> keys, Dictionary<String, Object> data) {
         this(keys, data, keys.size());
     }
 
@@ -104,10 +105,10 @@ public class MultipleKey extends Vector<Object> implements Serializable {
      * @param size
      *            The size of the MultipleKey object to be constructed
      */
-    public MultipleKey(Vector<Object> keys, Dictionary<String, Object> data, int size) {
+    public MultipleKey(List<String> keys, Dictionary<String, Object> data, int size) {
         super(size);
-        for (; elementCount < keys.size(); elementCount++) {
-            elementData[elementCount] = checkNull(data.get(keys.elementAt(elementCount)));
+        for (String key : keys) {
+            add(checkNull(data.get(key)));
         }
     }
 
@@ -119,7 +120,7 @@ public class MultipleKey extends Vector<Object> implements Serializable {
      * @param data
      *            The object array containing the values of the keys
      */
-    public MultipleKey(Vector<Object> indexes, Object[] data) {
+    public MultipleKey(List<Integer> indexes, Object[] data) {
         this(indexes, data, indexes.size());
     }
 
@@ -133,18 +134,18 @@ public class MultipleKey extends Vector<Object> implements Serializable {
      * @param size
      *            The size of the MultipleKey object to be constructed
      */
-    public MultipleKey(Vector<Object> indexes, Object[] data, int size) {
+    public MultipleKey(List<Integer> indexes, Object[] data, int size) {
         super(size);
-        for (; elementCount < indexes.size(); elementCount++) {
-            elementData[elementCount] = checkNull(data[((Integer) indexes.elementAt(elementCount)).intValue()]);
+        for (Integer i : indexes) {
+            add(checkNull(data[i]));
         }
     }
 
     public void setAt(Object o, int n) {
-        if (elementCount <= n) {
-            elementCount = n + 1;
+        while (size() <= n) {
+            add(theNull);
         }
-        elementData[n] = checkNull(o);
+        set(n, checkNull(o));
     }
 
     protected Object checkNull(Object o) {
@@ -159,8 +160,8 @@ public class MultipleKey extends Vector<Object> implements Serializable {
      */
     @Override
     public boolean equals(Object o) {
-        for (int i = 0; i < elementCount; i++) {
-            if (!((MultipleKey) o).elementAt(i).equals(elementData[i])) {
+        for (int i = 0; i < size(); i++) {
+            if (!((MultipleKey) o).get(i).equals(get(i))) {
                 return false;
             }
         }
@@ -175,8 +176,8 @@ public class MultipleKey extends Vector<Object> implements Serializable {
     @Override
     public int hashCode() {
         int ret = 0;
-        for (int i = 0; i < elementCount; i++) {
-            ret += elementData[i].hashCode();
+        for (int i = 0; i < size(); i++) {
+            ret += get(i).hashCode();
         }
         return ret;
     }
