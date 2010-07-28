@@ -3,11 +3,8 @@ package org.makumba.jsf;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.io.IOException;
 import java.util.Dictionary;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,6 +15,7 @@ import javax.faces.component.visit.VisitCallback;
 import javax.faces.component.visit.VisitContext;
 import javax.faces.component.visit.VisitResult;
 import javax.faces.context.FacesContext;
+import javax.faces.event.PhaseId;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.view.facelets.FaceletException;
@@ -59,6 +57,8 @@ public class UIRepeatListComponent extends UIRepeat {
     // current iteration of this list
     transient ArrayMap currentData;
 
+    private UIRepeatListComponent parent;
+
     // FLAGS, should be taken from configuration
     /**
      * We can execute the queries of a mak:list group either in the same transaction or separately. In JSP they are
@@ -79,16 +79,6 @@ public class UIRepeatListComponent extends UIRepeat {
     }
 
     // END OF FLAGS
-
-    public UIRepeatListComponent() {
-        // to allow proper visiting during analysis
-        setNullModel();
-    }
-
-    private void setNullModel() {
-        setValue("");
-        setEnd(0);
-    }
 
     public ComposedQuery getComposedQuery() {
         return composedQuery;
@@ -156,8 +146,7 @@ public class UIRepeatListComponent extends UIRepeat {
         return (UIRepeatListComponent) c;
     }
 
-    @Override
-    public void encodeAll(FacesContext context) throws IOException {
+    private boolean beforeIteration() {
         if (findMakListParent(true) == null) {
             startMakListGroup();
         }
@@ -166,7 +155,7 @@ public class UIRepeatListComponent extends UIRepeat {
         final List<ArrayMap> iterationGroupData = listData.getData(getCurrentDataStack(), false);
 
         if (iterationGroupData == null) {
-            return;
+            return false;
         }
 
         // push a placeholder, it will be popped at first iteration
@@ -185,26 +174,50 @@ public class UIRepeatListComponent extends UIRepeat {
 
                 super.setRowIndex(rowIndex);
                 if (rowIndex >= iterationGroupData.size()) {
-                    // data iteration is done
-                    // we set the model to something dummy that will allow tree visiting but not more
-                    // this will allow UIRepeat to save and restore its state (and perform other visiting) undisturbed
-                    // by our data
-                    setNullModel();
+                    // nothing but we could use this to replace afterIteration()
                 }
 
             }
         };
 
         setValue(dm);
+        setBegin(0);
         setEnd(iterationGroupData.size());
 
-        UIRepeatListComponent parent = getCurrentlyRunning();
+        parent = getCurrentlyRunning();
         FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(CURRENT_LIST, this);
 
-        super.encodeAll(context);
+        return true;
+    }
+
+    private void afterIteration() {
         // this list is done, no more current value in stack
         getCurrentDataStack().pop();
         FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(CURRENT_LIST, parent);
+    }
+
+    @Override
+    public void process(FacesContext context, PhaseId p) {
+        if (!beforeIteration()) {
+            return;
+        }
+        try {
+            super.process(context, p);
+        } finally {
+            afterIteration();
+        }
+    }
+
+    @Override
+    public boolean visitTree(VisitContext context, VisitCallback callback) {
+        if (!beforeIteration()) {
+            return false;
+        }
+        try {
+            return super.visitTree(context, callback);
+        } finally {
+            afterIteration();
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -242,13 +255,22 @@ public class UIRepeatListComponent extends UIRepeat {
         // TODO: consider removing
     }
 
+    static void visitStaticTree(UIComponent target, VisitCallback c) {
+        if (c.visit(null, target) == VisitResult.REJECT) {
+            return;
+        }
+        for (UIComponent kid : target.getChildren()) {
+            visitStaticTree(kid, c);
+        }
+    }
+
     public void startMakListGroup() {
         readComposedQuery();
 
         final QueryProvider qep = useSeparateTransactions() ? null : getQueryExecutionProvider();
 
         try {
-            visitTree(VisitContext.createVisitContext(FacesContext.getCurrentInstance()), new VisitCallback() {
+            visitStaticTree(this, new VisitCallback() {
                 @Override
                 public VisitResult visit(VisitContext context, UIComponent target) {
                     if (target instanceof UIRepeatListComponent) {
@@ -297,7 +319,7 @@ public class UIRepeatListComponent extends UIRepeat {
     }
 
     void analyzeMakListGroup() {
-        visitTree(VisitContext.createVisitContext(FacesContext.getCurrentInstance()), new VisitCallback() {
+        visitStaticTree(this, new VisitCallback() {
             @Override
             public VisitResult visit(VisitContext context, UIComponent target) {
                 if (target != UIRepeatListComponent.this && target instanceof UIRepeatListComponent) {
@@ -317,9 +339,6 @@ public class UIRepeatListComponent extends UIRepeat {
         }
     };
 
-    // TODO: fix a proper query parameter map
-    static final Map args = new HashMap();
-
     private void executeQuery(QueryProvider qep) {
 
         if (listData != null) {
@@ -334,7 +353,7 @@ public class UIRepeatListComponent extends UIRepeat {
         }
 
         try {
-            listData = composedQuery.execute(qep, args, evaluator, offset, limit);
+            listData = composedQuery.execute(qep, null, evaluator, offset, limit);
         } finally {
             if (useSeparateTransactions()) {
                 qep.close();
@@ -384,7 +403,7 @@ public class UIRepeatListComponent extends UIRepeat {
     }
 
     void findExpressionsInChildren() {
-        visitTree(VisitContext.createVisitContext(FacesContext.getCurrentInstance()), new VisitCallback() {
+        visitStaticTree(this, new VisitCallback() {
             @Override
             public VisitResult visit(VisitContext context, UIComponent target) {
                 if (target instanceof UIRepeatListComponent && target != UIRepeatListComponent.this) {
@@ -536,8 +555,15 @@ public class UIRepeatListComponent extends UIRepeat {
         if (faces == null) {
             throw new NullPointerException();
         }
+
         Object[] state = new Object[8];
         state[0] = super.saveState(faces);
+
+        // what a hack! we use our knowledge of UIRepeat to remove the value from its state
+        // because it is not serializable, and is not needed anyway
+        // setValue(null) is not equivalent, as we might iterate again after saveState()
+        ((Object[]) state[0])[7] = null;
+
         state[1] = listData;
         state[2] = composedQuery;
         // TODO: save other needed stuff
