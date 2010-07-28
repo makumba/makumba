@@ -65,6 +65,9 @@ public class MakumbaELResolver extends ELResolver {
         }
 
         UIRepeatListComponent list = UIRepeatListComponent.getCurrentlyRunning();
+        if (list == null) {
+            return null;
+        }
 
         if (base == null && property != null) {
             // lookup property in parent list, if it's a label we set a placeholder here
