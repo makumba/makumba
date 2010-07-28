@@ -46,10 +46,19 @@ public class MakumbaELResolver extends ELResolver {
 
         if (base != null && base instanceof ExpressionPathPlaceholder && property == null) {
             context.setPropertyResolved(true);
-            return Object.class;
+            // it was object, i think pointer is correct, not sure.
+            // maybe a pointer converter will be needed then
+            return Pointer.class;
         }
         if (base != null && base instanceof ExpressionPathPlaceholder && property != null) {
-            // fetch value of property and return its type
+            Object o = getValue(context, base, property).getClass();
+            if (o == null) {
+                return null;
+            }
+            context.setPropertyResolved(true);
+
+            // returning o.getClass() will lead to "error setting value ... for null converter"
+            return Object.class;
         }
 
         return null;
@@ -57,7 +66,6 @@ public class MakumbaELResolver extends ELResolver {
 
     @Override
     public Object getValue(ELContext context, Object base, Object property) {
-        System.out.println(base + " " + property);
         // as per reference
         if (context == null) {
             throw new NullPointerException();
