@@ -472,6 +472,7 @@ public class UIRepeatListComponent extends UIRepeat {
     private void findFloatingExpressions(UIInstructions component) {
 
         String txt = component.toString();
+        String prefix = (String) getFacesContext().getAttributes().get(ListTagHandler.TAG_PREFIX);
 
         // find EL expressions
         Matcher elExprMatcher = JSFELPattern.matcher(txt);
@@ -482,13 +483,11 @@ public class UIRepeatListComponent extends UIRepeat {
             // first we find functions inside of it
             Matcher exprFuncMatcher = ELExprFunctionPattern.matcher(elExprTxt);
 
-            // TODO find the prefix for the makumba namespace, for now we assume it is 'mak'
             while (exprFuncMatcher.find()) {
                 String elFuncTxt = exprFuncMatcher.group();
 
-                // add the EL expression as expression, assuming it starts with "mak"
-                if (elFuncTxt.startsWith("mak")) {
-                    elFuncTxt = elFuncTxt.substring("mak:expr(".length(), elFuncTxt.length() - 1);
+                if (elFuncTxt.startsWith(prefix)) {
+                    elFuncTxt = elFuncTxt.substring(prefix.length() + ":expr(".length(), elFuncTxt.length() - 1);
 
                     // TODO: decide whether we want to support dynamic function expressions
                     // if not, check that txt is precisely a 'string' or "string"
