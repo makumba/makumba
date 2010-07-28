@@ -51,13 +51,13 @@ public class UIRepeatListComponent extends UIRepeat {
     // TODO: no clue what defaultLimit does
     int offset = 0, limit = -1, defaultLimit;
 
-    ComposedQuery composedQuery;
+    transient ComposedQuery composedQuery;
 
     // all data, from all iterations of the parent list
-    Grouper listData;
+    transient Grouper listData;
 
-    // data from current iteration of the parent list
-    List<ArrayMap> iterationGroupData;
+    // current iteration of this list
+    transient ArrayMap currentData;
 
     // FLAGS, should be taken from configuration
     /**
@@ -82,12 +82,13 @@ public class UIRepeatListComponent extends UIRepeat {
 
     public UIRepeatListComponent() {
         // to allow proper visiting during analysis
-        setValue(new Object());
-        setEnd(0);
+        setNullModel();
     }
 
-    // current iteration of this list
-    protected ArrayMap currentData;
+    private void setNullModel() {
+        setValue("");
+        setEnd(0);
+    }
 
     public ComposedQuery getComposedQuery() {
         return composedQuery;
@@ -157,7 +158,11 @@ public class UIRepeatListComponent extends UIRepeat {
 
     @Override
     public void encodeAll(FacesContext context) throws IOException {
-        iterationGroupData = listData.getData(getCurrentDataStack());
+        if (findMakListParent(true) == null) {
+            startMakListGroup();
+        }
+
+        final List<ArrayMap> iterationGroupData = listData.getData(getCurrentDataStack());
 
         if (iterationGroupData == null) {
             return;
@@ -176,7 +181,15 @@ public class UIRepeatListComponent extends UIRepeat {
                     // push new value:
                     getCurrentDataStack().push(currentData);
                 }
+
                 super.setRowIndex(rowIndex);
+                if (rowIndex >= iterationGroupData.size()) {
+                    // data iteration is done
+                    // we set the model to something dummy that will allow tree visiting but not more
+                    // this will allow UIRepeat to save and restore its state (and perform other visiting) undisturbed
+                    // by our data
+                    setNullModel();
+                }
 
             }
         };
@@ -220,6 +233,15 @@ public class UIRepeatListComponent extends UIRepeat {
     });
 
     public void analyze() {
+        // this method is called only for root mak:lists, thus it would be good for triggering analysis and executing
+        // queries
+        // however for some reason it is called twice if APPLY_REQUEST_VALUES 2 PROCESS_VALIDATIONS 3 and
+        // UPDATE_MODEL_VALUES 4 are executed.
+        // thus analysis is now done in encodeAll() (i.e. at the latest possible moment)
+        // TODO: consider removing
+    }
+
+    public void startMakListGroup() {
         readComposedQuery();
 
         final QueryProvider qep = useSeparateTransactions() ? null : getQueryExecutionProvider();
@@ -486,5 +508,4 @@ public class UIRepeatListComponent extends UIRepeat {
     static private String trimExpression(String expr) {
         return expr.substring(2, expr.length() - 1);
     }
-
 }
