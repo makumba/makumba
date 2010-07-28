@@ -9,7 +9,6 @@ import java.util.Map;
 import javax.el.ELContext;
 import javax.el.ELException;
 import javax.el.ELResolver;
-import javax.el.PropertyNotWritableException;
 
 import org.makumba.Pointer;
 import org.makumba.jsf.UIRepeatListComponent;
@@ -58,7 +57,7 @@ public class MakumbaELResolver extends ELResolver {
 
     @Override
     public Object getValue(ELContext context, Object base, Object property) {
-
+        System.out.println(base + " " + property);
         // as per reference
         if (context == null) {
             throw new NullPointerException();
@@ -143,6 +142,14 @@ public class MakumbaELResolver extends ELResolver {
         if (context == null) {
             throw new NullPointerException();
         }
+
+        if (base instanceof ExpressionPathPlaceholder) {
+            System.out.println(base + "." + property + "=" + val);
+            context.setPropertyResolved(true);
+        }
+
+        return;
+
         // if base is null, and we have a label with the property name, i think we should return "not writable"
         // same goes when the base is a placeholder and the property is .id
 
@@ -153,7 +160,7 @@ public class MakumbaELResolver extends ELResolver {
         // then placeholder has a pointer, so we call
         // transaction.update(placeholder.basePointer, placeholder.fieldDotField, newValue)
         // we can probably collect such calls from the entire request
-        throw new PropertyNotWritableException();
+        // throw new PropertyNotWritableException();
     }
 
     @Override
