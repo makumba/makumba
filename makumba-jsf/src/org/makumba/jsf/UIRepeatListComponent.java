@@ -161,8 +161,9 @@ public class UIRepeatListComponent extends UIRepeat {
         if (findMakListParent(true) == null) {
             startMakListGroup();
         }
-
-        final List<ArrayMap> iterationGroupData = listData.getData(getCurrentDataStack());
+        // TODO: check whether we really want to keep the data in the grouper after iteration
+        // this is only useful before a postback which will not request this list to re-render
+        final List<ArrayMap> iterationGroupData = listData.getData(getCurrentDataStack(), false);
 
         if (iterationGroupData == null) {
             return;
@@ -320,6 +321,12 @@ public class UIRepeatListComponent extends UIRepeat {
     static final Map args = new HashMap();
 
     private void executeQuery(QueryProvider qep) {
+
+        if (listData != null) {
+            // TODO: add configuration and detection for the case where we need to re-run the query
+            // e.g. when only one mak:list of a group is re-run
+            return;
+        }
         // by now the query was cached so we fetch it
         readComposedQuery();
         if (useSeparateTransactions()) {
@@ -507,5 +514,33 @@ public class UIRepeatListComponent extends UIRepeat {
 
     static private String trimExpression(String expr) {
         return expr.substring(2, expr.length() - 1);
+    }
+
+    @Override
+    public void restoreState(FacesContext faces, Object object) {
+        if (faces == null) {
+            throw new NullPointerException();
+        }
+        if (object == null) {
+            return;
+        }
+        Object[] state = (Object[]) object;
+        super.restoreState(faces, state[0]);
+        // noinspection unchecked
+        this.listData = (Grouper) state[1];
+        this.composedQuery = (ComposedQuery) state[2];
+    }
+
+    @Override
+    public Object saveState(FacesContext faces) {
+        if (faces == null) {
+            throw new NullPointerException();
+        }
+        Object[] state = new Object[8];
+        state[0] = super.saveState(faces);
+        state[1] = listData;
+        state[2] = composedQuery;
+        // TODO: save other needed stuff
+        return state;
     }
 }
