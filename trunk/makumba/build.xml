@@ -10,6 +10,7 @@
 	<property name="build.dir" value="build" />
 	<property name="test.dir" value="test" />
 	<property name="src.dir" value="classes" />
+	<property name="test-webapp-src.dir" value="webapps/tests/WEB-INF/classes" />
 	<property name="jar.dir" value="." />
 	<property name="lib.dir" value="lib" />
 
@@ -283,12 +284,16 @@
 	</target>
 
 	<target name="compile" depends="ANTLRParserGeneration" description="compile all java files">
-		<javac srcdir="classes" destdir="build" source="1.5" target="1.5" debug="on">
+		<javac srcdir="${src.dir}" destdir="build" source="1.5" target="1.5" debug="on">
 			<classpath refid="project.class.path" />
 		</javac>
-        <javac srcdir="test" destdir="build" source="1.5" target="1.5" debug="on">
-                <classpath refid="project.class.path" />
+		<javac srcdir="${test.dir}" destdir="build" source="1.5" target="1.5" debug="on">
+			<classpath refid="project.class.path" />
+		</javac>
+        <javac srcdir="${test-webapp-src.dir}" destdir="build" source="1.5" target="1.5" debug="on">
+        	<classpath refid="project.class.path" />
         </javac>
+
 	</target>
 
 	<target name="run" depends="" description="Run a java class">
@@ -307,8 +312,7 @@
 			<fileset dir="lib" includes="makumba.jar,makumba-*-template.zip" />
 			<fileset dir="work" />
 			<fileset dir="webapps/tests/WEB-INF/classes/makumbaGeneratedMappings" />
-			<fileset dir="webapps/tests/WEB-INF/classes/test" />
-			<fileset dir="webapps/tests/WEB-INF/classes/org" />
+			<fileset dir="webapps/tests/WEB-INF/classes/**/*.class" />
 			<fileset dir="." includes="manifest-replace.properties,manifest.mf" />
 			<fileset dir="." includes="manifest-replace.properties,manifest.mf" />
 		</delete>
