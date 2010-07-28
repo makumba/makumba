@@ -172,23 +172,38 @@ public class Grouper {
      * @return A List associated with the given keysets
      */
     public List<ArrayMap> getData(List<Dictionary<String, Object>> keyData) {
+        return getData(keyData, true);
+    }
+
+    public List<ArrayMap> getData(List<Dictionary<String, Object>> keyData, boolean remove) {
+
         int i = 0;
         for (; i < max; i++) {
-            keyStack[i] = getKey(i, ((ArrayMap) keyData.get(i)).data);
+            keyStack[i] = getKeyFromData(keyData, i);
             stack[i + 1] = stack[i].map.get(keyStack[i]);
             if (stack[i + 1] == null) {
                 return null;
             }
         }
-        ListOrMap lm = stack[i].map.remove(getKey(i, ((ArrayMap) keyData.get(i)).data));
+        MultipleKey key = getKeyFromData(keyData, i);
+        ListOrMap lm = stack[i].map.get(key);
+        if (remove) {
+            stack[i].map.remove(key);
+        }
         List<ArrayMap> v = null;
         if (lm != null) {
             v = lm.list;
         }
-        for (; i > 0 && stack[i].map.isEmpty(); i--) {
-            stack[i - 1].map.remove(keyStack[i - 1]);
+        if (remove) {
+            for (; i > 0 && stack[i].map.isEmpty(); i--) {
+                stack[i - 1].map.remove(keyStack[i - 1]);
+            }
         }
         return v;
+    }
+
+    private MultipleKey getKeyFromData(List<Dictionary<String, Object>> keyData, int i) {
+        return getKey(i, ((ArrayMap) keyData.get(i)).data);
     }
 
     /**
