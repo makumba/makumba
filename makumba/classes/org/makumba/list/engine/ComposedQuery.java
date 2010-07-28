@@ -23,6 +23,7 @@
 
 package org.makumba.list.engine;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,7 +44,8 @@ import org.makumba.providers.QueryProvider;
  * @author Cristian Bogdan
  * @version $Id$
  */
-public class ComposedQuery {
+public class ComposedQuery implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     /**
      * Interface for an Evaluator which can evaluate expressions

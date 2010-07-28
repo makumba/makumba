@@ -23,6 +23,7 @@
 
 package org.makumba.commons;
 
+import java.io.Serializable;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -32,7 +33,9 @@ import java.util.Hashtable;
  * 
  * @author Cristian Bogdan
  */
-public class ArrayMap extends Dictionary<String, Object> {
+public class ArrayMap extends Dictionary<String, Object> implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     public Object[] data;
 
     Dictionary<String, Integer> keyIndex;
