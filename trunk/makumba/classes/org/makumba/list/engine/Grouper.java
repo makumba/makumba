@@ -23,6 +23,7 @@
 
 package org.makumba.list.engine;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Dictionary;
@@ -40,7 +41,8 @@ import org.makumba.commons.MultipleKey;
  * @author cristi
  * @version $Id$
  */
-class ListOrMap {
+class ListOrMap implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     List<ArrayMap> list;
 
@@ -92,8 +94,10 @@ class ListOrMap {
  * 
  * @author Cristian Bogdan
  */
-public class Grouper {
+public class Grouper implements Serializable {
 
+    // TODO: serializing the data means that on webapp reload all data of all active pages is saved.
+    // maybe we should simply serialize a dummy which should tell the class clients to re-run their query
     private static final long serialVersionUID = 1L;
 
     List<List<Integer>> keyNameSets;
