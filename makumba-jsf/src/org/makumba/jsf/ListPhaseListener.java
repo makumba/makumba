@@ -19,7 +19,7 @@ public class ListPhaseListener implements PhaseListener {
 
     @Override
     public void beforePhase(PhaseEvent event) {
-        // System.out.println("before " + event.getPhaseId());
+        System.out.println("before " + event.getPhaseId());
     }
 
     @Override

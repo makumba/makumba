@@ -9,38 +9,23 @@
 
     <ui:define name="content">
 
+  <h:form id="bv">
     <mak:list from="test.Person p" id="list">
       
       <li><mak:value expr="p.indiv.name" /> #{p.indiv.surname}</li>
       <ul><mak:list from="p.speaks l">
           <li><mak:value expr="l.name"/> #{mak:expr('l.isoCode')}</li>
       </mak:list></ul>
-    </mak:list>
- 
-  <h:form id="bv">
-      <table>
-        <f:ajax render="letterMessage">
+   
+        <f:ajax render="list">
           <tr>
-            <th style="text-align: right;"><h:outputLabel for="letters" value="Letters (ajax validation):" /></th>
-            <td><h:inputText id="letters" value="#{helloWorld.letters}" /><h:message id="letterMessage" for="letters" errorClass="invalid" /></td>
+            <th style="text-align: right;"><h:outputLabel for="surname" value="Letters (ajax validation):" /></th>
+            <td><h:inputText id="surname" value="#{p.indiv.surname}" /><h:message for="surname" errorClass="invalid" /></td>
           </tr>
         </f:ajax>
-        <tr>
-          <th style="text-align: right;"><h:outputLabel for="numbers" value="Numbers:" /></th>
-          <td><h:inputText id="numbers" value="#{helloWorld.numbers}" /> <h:message for="numbers" errorClass="invalid" /></td>
-        </tr>
-        <tr>
-          <th style="text-align: right;"><h:outputLabel for="email" value="Email:" /></th>
-          <td><h:inputText id="email" value="#{helloWorld.email}" />
-          <h:message for="email" errorClass="invalid" /></td>
-        </tr>
-      </table>
-      
-      <p>
-        <h:commandButton id="check" action="check" value="Check values" />
-        <h:outputText value=" All clear!" rendered="#{facesContext.postback and empty facesContext.messageList}" style="color: green;" />
-      </p>
-    </h:form>
+    </mak:list>
+ 
+   </h:form>
 
   </ui:define>
 </ui:composition>
