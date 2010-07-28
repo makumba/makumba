@@ -557,12 +557,12 @@ public class UIRepeatListComponent extends UIRepeat {
         }
 
         Object[] state = new Object[8];
-        state[0] = super.saveState(faces);
+        Object o = getValue();
 
-        // what a hack! we use our knowledge of UIRepeat to remove the value from its state
-        // because it is not serializable, and is not needed anyway
-        // setValue(null) is not equivalent, as we might iterate again after saveState()
-        ((Object[]) state[0])[7] = null;
+        // we avoid serialization of the value which is a ListDataModel, non-serializable and not needed anyway
+        setValue(null);
+        state[0] = super.saveState(faces);
+        setValue(o);
 
         state[1] = listData;
         state[2] = composedQuery;
