@@ -107,8 +107,7 @@ public class AutoCompleteServlet extends HttpServlet {
                 String query = "select p." + fieldName + " as possibility from " + typeName + " p where p." + fieldName
                         + " like '" + value + "%' group by p." + fieldName;
 
-                Vector<Dictionary<String, Object>> v = new Vector<Dictionary<String, Object>>();
-                v = qp.execute(query, null, 0, -1);
+                Vector<Dictionary<String, Object>> v = qp.execute(query, null, 0, -1);
 
                 if (v.size() > 0) {
                     String result = "<ul>";
