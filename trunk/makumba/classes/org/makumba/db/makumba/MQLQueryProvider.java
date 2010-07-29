@@ -20,7 +20,7 @@ public class MQLQueryProvider extends QueryProvider {
     }
 
     @Override
-    public Vector<Dictionary<String, Object>> executeRaw(String query, Map args, int offset, int limit) {
+    public Vector<Dictionary<String, Object>> executeRaw(String query, Map<String, Object> args, int offset, int limit) {
         return tr.executeQuery(query, args, offset, limit);
     }
 
