@@ -59,6 +59,12 @@ public class UIRepeatListComponent extends UIRepeat {
 
     private UIRepeatListComponent parent;
 
+    private String prefix;
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+    }
+
     // FLAGS, should be taken from configuration
     /**
      * We can execute the queries of a mak:list group either in the same transaction or separately. In JSP they are
@@ -147,6 +153,7 @@ public class UIRepeatListComponent extends UIRepeat {
     }
 
     private boolean beforeIteration() {
+
         if (findMakListParent(true) == null) {
             startMakListGroup();
         }
@@ -472,7 +479,6 @@ public class UIRepeatListComponent extends UIRepeat {
     private void findFloatingExpressions(UIInstructions component) {
 
         String txt = component.toString();
-        String prefix = (String) getFacesContext().getAttributes().get(ListTagHandler.TAG_PREFIX);
 
         // find EL expressions
         Matcher elExprMatcher = JSFELPattern.matcher(txt);
