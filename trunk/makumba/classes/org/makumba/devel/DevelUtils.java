@@ -121,12 +121,11 @@ public class DevelUtils {
         w.println("<div id=\"developerTools\" class=\"popup\" style=\"display: none; right: 8px;\">");
         for (DeveloperTool t : DeveloperTool.values()) {
             if (!t.getKey().equals(toolKey) && t.isGeneric()) {
-                if (Configuration.getMakumbaToolsPathConfigProperty(t.getKey()).equals(Configuration.PROPERTY_NOT_SET)) {
+                if (Configuration.getToolLocation(t) == null) {
                     w.print("<span style=\"color: grey\">" + t.getName() + ": disabled </span><br/>");
                 } else if (t.isGeneric()) {
                     w.print("<a href=\"" + contextPath + Configuration.getMakumbaToolsLocation()
-                            + Configuration.getMakumbaToolsPathConfigProperty(t.getKey()) + "\">" + t.getName()
-                            + "</a><br/>");
+                            + Configuration.getToolLocation(t) + "\">" + t.getName() + "</a><br/>");
                 }
             }
         }
