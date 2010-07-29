@@ -10,8 +10,6 @@ TO BE RELEASED IMMEDIATELY (No need for more testing)
 
 NOT TO BE RELEASED YET (need more testing)
 manu: auto-complete for mak:input (char and ptr)
-manu, marius: edit-in-place for mak:input and mak:list ("editable" attribute). Is yet to be finished.
-
 
 ------------------------------------------
 - add your changes -
