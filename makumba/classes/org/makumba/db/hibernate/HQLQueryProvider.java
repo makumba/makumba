@@ -1,6 +1,5 @@
 package org.makumba.db.hibernate;
 
-import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -43,7 +42,7 @@ public class HQLQueryProvider extends QueryProvider {
     }
 
     @Override
-    public Vector<Dictionary<String, Object>> executeRaw(String query, Map args, int offset, int limit) {
+    public Vector<Dictionary<String, Object>> executeRaw(String query, Map<String, Object> args, int offset, int limit) {
         return transaction.executeQuery(query, args, offset, limit);
     }
 
@@ -52,7 +51,7 @@ public class HQLQueryProvider extends QueryProvider {
         transaction.close();
     }
 
-    public static String printQueryResults(Vector v) {
+    public static String printQueryResults(Vector<Dictionary<String, Object>> v) {
         String result = "";
         for (int i = 0; i < v.size(); i++) {
             result += "Row " + i + ":" + v.elementAt(i) + "\n";
@@ -78,7 +77,7 @@ public class HQLQueryProvider extends QueryProvider {
         v.add(new Integer(2));
         v.add(new Integer(3));
         v.add(new Integer(4));
-        Map<String, Serializable> params = new HashMap<String, Serializable>();
+        Map<String, Object> params = new HashMap<String, Object>();
         params.put("date", new Timestamp(new GregorianCalendar(1970, 1, 1).getTimeInMillis()));
         params.put("name", "Cristian");
         params.put("someInt", new Integer(1));
@@ -112,10 +111,6 @@ public class HQLQueryProvider extends QueryProvider {
     static Pointer brother;
 
     static Pointer address;
-
-    static Dictionary pc;
-
-    static Vector v;
 
     static String readPerson = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.gender AS gender, p.uniqChar AS uniqChar, p.uniqInt AS uniqInt, p.birthdate AS birthdate, p.weight AS weight, p.TS_modify AS TS_modify, p.TS_create AS TS_create, p.comment AS comment, a.description AS description, a.email AS email, a.usagestart AS usagestart FROM test.Person p, p.address a WHERE p= $1";
 
