@@ -61,6 +61,12 @@ public class Configuration implements Serializable {
 
     public static final String PLACEHOLDER_CONTEXT_PATH = "_CONTEXT_PATH_";
 
+    private static final String PATH = "path";
+
+    private static final String HOST = "host";
+
+    private static final String DATA_SOURCE = "dataSource";
+
     public static final String KEY_CLIENT_SIDE_VALIDATION = "clientSideValidation";
 
     public static final String KEY_RELOAD_FORM_ON_ERROR = "reloadFormOnError";
@@ -84,7 +90,7 @@ public class Configuration implements Serializable {
 
     public static final String KEY_CALENDAR_EDITOR_LINK = "calendarEditorLink";
 
-    public static final String KEY_TOOLS_LOCATION = "path";
+    public static final String KEY_TOOLS_LOCATION = PATH;
 
     // source code repository links
     public static final String KEY_REPOSITORY_URL = "repositoryURL";
@@ -94,7 +100,17 @@ public class Configuration implements Serializable {
     // error logging to the database
     public static final String KEY_DB_ERROR_LOG = "logErrors";
 
+    // default dataSource
+    private static ConfiguredDataSource defaultDataSource = null;
+
+    // all the dataSource-s described in the config file
     private static Map<String, ConfiguredDataSource> configuredDataSources = new HashMap<String, ConfiguredDataSource>();
+
+    // a cache for the host & path based resolution of data sources
+    private static Map<String, ConfiguredDataSource> resolvedConfiguredDataSources = new HashMap<String, ConfiguredDataSource>();
+
+    // the key of the current dataSource, host and path the webapp runs on
+    private static String remoteDataSourceConfigurationPath = "";
 
     private static MakumbaINIConfiguration defaultConfig;
 
@@ -136,17 +152,22 @@ public class Configuration implements Serializable {
 
     }
 
-    public static String getMakumbaToolsLocation() {
-        final String property = d.makumbaToolsLocation;
-        return property.endsWith("/") ? property.substring(0, property.length() - 1) : property;
+    /**
+     * Sets a given property, for a specific section
+     * 
+     * @param section
+     *            the name of the configuration section
+     * @param key
+     *            the key of the property
+     * @param value
+     *            the value of the property
+     */
+    public static void setPropery(String section, String key, String value) {
+        applicationConfig.getSection(section).setProperty(key, value);
     }
 
-    public static String getToolLocation(DeveloperTool t) {
-        return getCompletePath(d.developerToolsLocations.get(t));
-    }
-
-    public static String getServletLocation(MakumbaServlet s) {
-        return getCompletePath(d.servletLocations.get(s));
+    public static String getApplicationConfigurationSource() {
+        return applicationConfig != null ? applicationConfig.getSource() : null;
     }
 
     static {
@@ -188,6 +209,157 @@ public class Configuration implements Serializable {
         }
     }
 
+    /**
+     * Gives the data definition provider implementation to use
+     * 
+     * @return a String containing the class name of the data definition provider implementation
+     */
+    public static String getDataDefinitionProvider() {
+        return d.dataDefinitionProvider;
+    }
+
+    /**
+     * Gives the query inliner implementation to use
+     * 
+     * @return a String containing the type of query inliner implementation to use
+     */
+    public static String getQueryInliner() {
+        return d.queryInliner;
+    }
+
+    /**
+     * Whether or not to generate JPA entity classes
+     */
+    public static boolean getGenerateEntityClasses() {
+        return d.generateEntityClasses;
+    }
+
+    /**
+     * Gives the default database layer to use
+     * 
+     * @return "makumba" or "hibernate"
+     */
+    public static String getDefaultDatabaseLayer() {
+        synchronized (loadLock) {
+            return d.defaultDatabaseLayer;
+        }
+    }
+
+    public static String getClientSideValidationDefault() {
+        return d.defaultClientSideValidation;
+    }
+
+    public static boolean getReloadFormOnErrorDefault() {
+        return d.defaultReloadFormOnError;
+    }
+
+    public static String getDefaultFormAnnotation() {
+        return d.defaultFormAnnotation;
+    }
+
+    public static boolean getCalendarEditorDefault() {
+        return d.defaultCalendarEditor;
+    }
+
+    public static String getDefaultCalendarEditorLink(String contextPath) {
+        return d.calendarEditorLink.replaceAll(PLACEHOLDER_CONTEXT_PATH, contextPath);
+    }
+
+    public static Map<String, String> getLogicPackages() {
+        return d.logicPackages;
+    }
+
+    public static Map<String, String> getAuthorizationDefinitions() {
+        return d.authorizationDefinitions;
+    }
+
+    public static String getMakumbaToolsLocation() {
+        final String property = d.makumbaToolsLocation;
+        return property.endsWith("/") ? property.substring(0, property.length() - 1) : property;
+    }
+
+    public static String getToolLocation(DeveloperTool t) {
+        return getCompletePath(d.developerToolsLocations.get(t));
+    }
+
+    public static String getServletLocation(MakumbaServlet s) {
+        return getCompletePath(d.servletLocations.get(s));
+    }
+
+    public static String getRepositoryURL() {
+        return d.repositoryURL;
+    }
+
+    public static String getRepositoryLinkText() {
+        return d.repositoryLinkText;
+    }
+
+    public static boolean getErrorLog() {
+        return d.errorLog;
+    }
+
+    public static Map<String, String> getJavaViewerSyntaxStyles() {
+        return d.javaViewerSyntaxStyles;
+    }
+
+    public static Map<String, String> getJspViewerSyntaxStyles() {
+        return d.jspViewerSyntaxStyles;
+    }
+
+    public static Map<String, String> getJspViewerSyntaxStylesTags() {
+        return d.jspViewerSyntaxStylesTags;
+    }
+
+    public static Map<String, Map<String, String>> getInternalCodeGeneratorTemplates() {
+        return d.internalCodeGeneratorTemplates;
+    }
+
+    public static Map<String, Map<String, String>> getApplicationSpecificCodeGeneratorTemplates() {
+        return d.applicationSpecificCodeGeneratorTemplates;
+    }
+
+    private static String getCompletePath(String path) {
+        return StringUtils.isBlank(path) || path.equals(PROPERTY_NOT_SET) ? PROPERTY_NOT_SET
+                : getMakumbaToolsLocation() + path;
+    }
+
+    /**
+     * Returns the configuration for a specific dataSource. If more than one dataSource with the same name are found,
+     * performs lookup.
+     */
+    public static Map<String, String> getDataSourceConfiguration(String dataSourceName) {
+        ConfiguredDataSource conf = lookupDataSource(dataSourceName);
+        return conf.getProperties();
+    }
+
+    /**
+     * Gives the type of the data source (makumba or hibernate)
+     */
+    public static DataSourceType getDataSourceType(String dataSourceName) {
+        return lookupDataSource(dataSourceName).getType();
+    }
+
+    /**
+     * Gives the name of the default data source, according to following determination method:
+     * <ol>
+     * <li>If only one dataSource is configured, this one is used</li>
+     * <li>If several dataSources of the same name are configured and contain lookup parameters (host, working
+     * directory, ...), the one that matches the machine on which it runs is used</li>
+     * <li>The defaultDataSource named in the dataSourceConfig section is used</li>
+     * </ol>
+     * 
+     * @return the name of the dataSource to use by default
+     */
+    public static String getDefaultDataSourceName() {
+        return getDefaultDataSource().getName();
+
+    }
+
+    /** the configuration properties of the default data source **/
+    public static Map<String, String> getDefaultDataSourceConfiguration() {
+        return getDefaultDataSource().getProperties();
+    }
+
     /** builds the data sources for the configuration. **/
     private static void buildConfiguredDataSources() {
         for (Iterator<String> iterator = applicationConfig.getSections().iterator(); iterator.hasNext();) {
@@ -215,17 +387,17 @@ public class Configuration implements Serializable {
                 String tokenName = token.substring(0, n);
                 String tokenValue = token.substring(n + 1);
 
-                if (org.makumba.commons.StringUtils.equalsAny(tokenName, "dataSource", "host", "path")) {
+                if (org.makumba.commons.StringUtils.equalsAny(tokenName, DATA_SOURCE, HOST, PATH)) {
 
                     if (StringUtils.isBlank(tokenValue)) {
                         throw new ConfigurationError("Property " + tokenName + " has no value");
                     }
 
-                    if (tokenName.equals("dataSource")) {
+                    if (tokenName.equals(DATA_SOURCE)) {
                         name = tokenValue;
-                    } else if (tokenName.equals("host")) {
+                    } else if (tokenName.equals(HOST)) {
                         host = tokenValue;
-                    } else if (tokenName.equals("path")) {
+                    } else if (tokenName.equals(PATH)) {
                         path = tokenValue;
                     }
                 } else {
@@ -270,160 +442,6 @@ public class Configuration implements Serializable {
         return c;
     }
 
-    /**
-     * Sets a given property, for a specific section
-     * 
-     * @param section
-     *            the name of the configuration section
-     * @param key
-     *            the key of the property
-     * @param value
-     *            the value of the property
-     */
-    public static void setPropery(String section, String key, String value) {
-        applicationConfig.getSection(section).setProperty(key, value);
-    }
-
-    public static String getMakumbaToolsPathConfigProperty(String key) {
-        return applicationConfig.getProperty("makumbaToolPaths", key);
-    }
-
-    public static String getApplicationConfigurationSource() {
-        return applicationConfig != null ? applicationConfig.getSource() : null;
-    }
-
-    /**
-     * Gives the data definition provider implementation to use
-     * 
-     * @return a String containing the class name of the data definition provider implementation
-     */
-    public static String getDataDefinitionProvider() {
-        return d.dataDefinitionProvider;
-    }
-
-    public static String getQueryInliner() {
-        return d.queryInliner;
-    }
-
-    public static boolean getGenerateEntityClasses() {
-        return d.generateEntityClasses;
-    }
-
-    /**
-     * Gives the default database layer to use
-     * 
-     * @return "makumba" or "hibernate"
-     */
-    public static String getDefaultDatabaseLayer() {
-        synchronized (loadLock) {
-            return d.defaultDatabaseLayer;
-        }
-    }
-
-    public static String getClientSideValidationDefault() {
-        return d.defaultClientSideValidation;
-    }
-
-    public static boolean getReloadFormOnErrorDefault() {
-        return d.defaultReloadFormOnError;
-    }
-
-    public static String getDefaultFormAnnotation() {
-        return d.defaultFormAnnotation;
-    }
-
-    public static boolean getCalendarEditorDefault() {
-        return d.defaultCalendarEditor;
-    }
-
-    public static String getDefaultCalendarEditorLink(String contextPath) {
-        return d.calendarEditorLink.replaceAll(PLACEHOLDER_CONTEXT_PATH, contextPath);
-    }
-
-    public static String getRepositoryURL() {
-        return d.repositoryURL;
-    }
-
-    public static String getRepositoryLinkText() {
-        return d.repositoryLinkText;
-    }
-
-    public static boolean getErrorLog() {
-        return d.errorLog;
-    }
-
-    public static Map<String, String> getJavaViewerSyntaxStyles() {
-        return d.javaViewerSyntaxStyles;
-    }
-
-    public static Map<String, String> getJspViewerSyntaxStyles() {
-        return d.jspViewerSyntaxStyles;
-    }
-
-    public static Map<String, String> getJspViewerSyntaxStylesTags() {
-        return d.jspViewerSyntaxStylesTags;
-    }
-
-    public static Map<String, Map<String, String>> getInternalCodeGeneratorTemplates() {
-        return d.internalCodeGeneratorTemplates;
-    }
-
-    public static Map<String, Map<String, String>> getApplicationSpecificCodeGeneratorTemplates() {
-        return d.applicationSpecificCodeGeneratorTemplates;
-    }
-
-    public static Map<String, String> getLogicPackages() {
-        return d.logicPackages;
-    }
-
-    public static Map<String, String> getAuthorizationDefinitions() {
-        return d.authorizationDefinitions;
-    }
-
-    private static String getCompletePath(String path) {
-        return StringUtils.isBlank(path) || path.equals(PROPERTY_NOT_SET) ? PROPERTY_NOT_SET
-                : getMakumbaToolsLocation() + path;
-    }
-
-    /**
-     * Returns the configuration for a specific dataSource. If more than one dataSource with the same name are found,
-     * performs lookup.
-     */
-    public static Map<String, String> getDataSourceConfiguration(String dataSourceName) {
-        ConfiguredDataSource conf = lookupDataSource(dataSourceName);
-        return conf.getProperties();
-    }
-
-    /**
-     * Gives the type of the data source (makumba or hibernate)
-     */
-    public static DataSourceType getDataSourceType(String dataSourceName) {
-        return lookupDataSource(dataSourceName).getType();
-    }
-
-    private static ConfiguredDataSource defaultDataSource = null;
-
-    /**
-     * Gives the name of the default data source, according to following determination method:
-     * <ol>
-     * <li>If only one dataSource is configured, this one is used</li>
-     * <li>If several dataSources of the same name are configured and contain lookup parameters (host, working
-     * directory, ...), the one that matches the machine on which it runs is used</li>
-     * <li>The defaultDataSource named in the dataSourceConfig section is used</li>
-     * </ol>
-     * 
-     * @return the name of the dataSource to use by default
-     */
-    public static String getDefaultDataSourceName() {
-        return getDefaultDataSource().getName();
-
-    }
-
-    /** the configuration properties of the default data source **/
-    public static Map<String, String> getDefaultDataSourceConfiguration() {
-        return getDefaultDataSource().getProperties();
-    }
-
     /** the configuration of the default data source **/
     private static ConfiguredDataSource getDefaultDataSource() {
 
@@ -432,7 +450,6 @@ public class Configuration implements Serializable {
             String defaultDataSourceName = globalProperties.get("defaultDataSource");
 
             if (defaultDataSourceName != null) {
-
                 // we fetch the default one
                 for (String c : configuredDataSources.keySet()) {
                     if (c.equals("dataSource:" + defaultDataSourceName)
@@ -445,7 +462,6 @@ public class Configuration implements Serializable {
                 // nothing found?
                 throw new ConfigurationError("Default dataSource " + defaultDataSourceName
                         + " not found in Makumba.conf");
-
             }
 
             // first we check if there is maybe only one dataSource, in that case we take it as default
@@ -500,10 +516,6 @@ public class Configuration implements Serializable {
 
     }
 
-    private static Map<String, ConfiguredDataSource> resolvedConfiguredDataSources = new HashMap<String, ConfiguredDataSource>();
-
-    private static String remoteDataSourceConfigurationPath = "";
-
     public static String getRemoteDataSourceConfigurationPath() {
         return remoteDataSourceConfigurationPath;
     }
@@ -522,7 +534,6 @@ public class Configuration implements Serializable {
 
         ConfiguredDataSource result = resolvedConfiguredDataSources.get(dataSourceName);
         if (result == null) {
-
             try {
 
                 String host = InetAddress.getLocalHost().getCanonicalHostName();
@@ -531,7 +542,6 @@ public class Configuration implements Serializable {
                 String alternatePath = u != null ? u.toString() : null;
                 if (alternatePath != null && alternatePath.startsWith("file:")) {
                     alternatePath = alternatePath.substring("file:".length());
-
                 }
 
                 String thisConfiguration1 = "dataSource:" + dataSourceName + " host:" + host + " path:" + path;
@@ -551,7 +561,6 @@ public class Configuration implements Serializable {
                 }
 
                 if (result == null) {
-
                     for (String k : configuredDataSources.keySet()) {
                         if (thisConfiguration2.startsWith(k) && k.length() > maxKey.length()
                                 && k.startsWith("dataSource:" + dataSourceName + " ")) {
@@ -561,7 +570,6 @@ public class Configuration implements Serializable {
                     }
 
                     if (result == null) {
-
                         // there was no dataSource:<name> path: ... found
                         // we fall back to the simple one
                         result = configuredDataSources.get("dataSource:" + dataSourceName);
