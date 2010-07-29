@@ -13,8 +13,6 @@ import javax.faces.view.facelets.TagHandler;
  */
 public class ListTagHandler extends ComponentHandler {
 
-    public static final String TAG_PREFIX = "org.makumba.tagPrefix";
-
     public ListTagHandler(ComponentConfig config) {
         super(config);
     }
