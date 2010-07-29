@@ -1,8 +1,9 @@
 package org.makumba.jsf;
 
-import javax.faces.context.FacesContext;
+import javax.faces.component.UIComponent;
 import javax.faces.view.facelets.ComponentConfig;
 import javax.faces.view.facelets.ComponentHandler;
+import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.TagHandler;
 
 /**
@@ -16,9 +17,12 @@ public class ListTagHandler extends ComponentHandler {
 
     public ListTagHandler(ComponentConfig config) {
         super(config);
-        // save the prefix for re-use in the list
-        // it's safe to do it here as this constructor is only called once, when the view is compiled
-        FacesContext.getCurrentInstance().getAttributes().put(TAG_PREFIX,
-            getTag().getQName().substring(0, getTag().getQName().indexOf(":")));
     }
+
+    @Override
+    public void onComponentCreated(FaceletContext ctx, UIComponent c, UIComponent parent) {
+        super.onComponentCreated(ctx, c, parent);
+        ((UIRepeatListComponent) c).setPrefix(getTag().getQName().substring(0, getTag().getQName().indexOf(":")));
+    }
+
 }
