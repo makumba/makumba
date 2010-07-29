@@ -79,8 +79,8 @@ public class NamedResources implements java.io.Serializable {
             ((java.lang.ref.WeakReference<?>) allCaches.elementAt(i)).clear();
         }
         allCaches.clear();
-        staticCaches = new ArrayList<NamedResources>();
-        allCaches = new Vector<WeakReference<NamedResources>>();
+        staticCaches = null;
+        allCaches = null;
     }
 
     /** Clean all static caches, so their content will be re-initialized when needed. */
