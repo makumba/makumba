@@ -120,30 +120,6 @@ Can be a Rtexpr <%= ...%>]]></comments>
     </attribute>
 
     <attribute>
-      <name>editable</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>logicClass</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>editPage</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
       <name>countVar</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
@@ -193,9 +169,6 @@ Can be a Rtexpr <%= ...%>]]></comments>
     <attribute name="id" specifiedIn="list" />
     <attribute name="db" specifiedIn="list" />
     <attribute name="authorize" specifiedIn="list" />
-    <attribute name="editable" specifiedIn="list" />
-    <attribute name="logicClass" specifiedIn="list" />
-    <attribute name="editPage" specifiedIn="list" />
     <attribute name="countVar" specifiedIn="list" />
     <attribute name="maxCountVar" specifiedIn="list" />
   </tag>
@@ -454,30 +427,6 @@ Example, the ellipsis is an image of approx 3 characters wide. ellipsis="<img sr
       <description>The character string to print if the normal printed output would be empty (i.e. zero-length string).
         Therefore, this is also used for case expr=NULL and default="".</description>
       <comments>Rtexpr</comments>
-    </attribute>
-
-    <attribute>
-      <name>editable</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>logicClass</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
-    </attribute>
-
-    <attribute>
-      <name>editPage</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description>Document me please</description>
-      <comments>Document me please</comments>
     </attribute>
 
   </tag>

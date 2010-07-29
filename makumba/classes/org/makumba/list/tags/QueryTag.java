@@ -74,8 +74,6 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
     String offset, limit;
 
-    String editable, logicClass, editPage;
-
     private int defaultOffset = 0;
 
     private String defaultLimit = "-1";
@@ -152,30 +150,6 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
     public void setAuthorize(String s) {
         this.authorize = s;
-    }
-
-    public void setEditable(String s) {
-        editable = s.trim();
-    }
-
-    public String getLogicClass() {
-        return logicClass;
-    }
-
-    public void setLogicClass(String logicClass) {
-        this.logicClass = logicClass;
-    }
-
-    public String getEditPage() {
-        return editPage;
-    }
-
-    public void setEditPage(String editPage) {
-        this.editPage = editPage;
-    }
-
-    public String getEditable() {
-        return this.editable;
     }
 
     public int getLimitInt() {
