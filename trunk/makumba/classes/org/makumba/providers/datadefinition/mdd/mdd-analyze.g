@@ -5,7 +5,7 @@ header {
     import org.apache.commons.collections.map.ListOrderedMap;
 }
 
-class MDDAnalyzeBaseWalker extends TreeParser;
+{@SuppressWarnings("all")} class MDDAnalyzeBaseWalker extends TreeParser;
 
 options {
     importVocab=MDD;

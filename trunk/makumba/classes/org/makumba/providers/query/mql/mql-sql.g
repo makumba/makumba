@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 }
 
-/**
+{/**
  * Hibernate Query Language to SQL Tree Transform.<br>
  * This is a tree grammar that transforms an HQL AST into a intermediate SQL AST
  * with bindings to Hibernate interfaces (Queryable, etc.).  The Hibernate specific methods
@@ -21,7 +21,7 @@ import java.util.logging.Level;
  * <i>DO NOT EDIT THE GENERATED JAVA SOURCE CODE.</i>
  * @author Joshua Davis (joshua@hibernate.org)
  */
-class MqlSqlBaseWalker extends TreeParser;
+@SuppressWarnings("all")} class MqlSqlBaseWalker extends TreeParser;
 
 options
 {

@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 
 }
-/**
+{/**
  * SQL Generator Tree Parser, providing SQL rendering of SQL ASTs produced by the previous phase, HqlSqlWalker.  All
  * syntax decoration such as extra spaces, lack of spaces, extra parens, etc. should be added by this class.
  * <br>
@@ -17,7 +17,7 @@ import java.util.logging.Level;
  * code into a sub-class that will override some of the methods, just like the other two grammars in this system.
  * @author Joshua Davis (joshua@hibernate.org)
  */
-class MqlSqlGeneratorBase extends TreeParser;
+@SuppressWarnings("all")} class MqlSqlGeneratorBase extends TreeParser;
 
 options {
 	// Note: importVocab and exportVocab cause ANTLR to share the token type numbers between the

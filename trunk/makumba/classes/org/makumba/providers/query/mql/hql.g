@@ -8,6 +8,7 @@ package org.makumba.providers.query.mql;
  * */
 
 }
+{
 /**
  * Hibernate Query Language Grammar
  * <br>
@@ -18,7 +19,7 @@ package org.makumba.providers.query.mql;
  * Text from the original reference BNF is prefixed with '//##'.
  * @author Joshua Davis (pgmjsd@sourceforge.net)
  */
-class HqlBaseParser extends Parser;
+@SuppressWarnings("all")} class HqlBaseParser extends Parser;
 
 options
 {
