@@ -24,7 +24,6 @@ import org.makumba.Transaction;
 import org.makumba.commons.DbConnectionProvider;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.attributes.RequestAttributes;
-import org.makumba.test.tags.FormsOQLTest;
 
 /**
  * This factory handles the creation, caching and retrieval of Responder objects.
@@ -224,7 +223,7 @@ public class ResponderFactory {
 
     /**
      * Additional method to set a responder directory, used in the JUnit tests in
-     * {@link FormsOQLTest#beginFormResponderOrder}.
+     * {@link org.makumba.test.tags.FormsOQLTest#beginFormResponderOrder}.
      */
     public void setResponderWorkingDir(String tempDir, String contextPath) {
         cacheManager.setResponderWorkingDir(tempDir, contextPath);
