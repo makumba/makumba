@@ -1,5 +1,6 @@
-#Tue Oct 07 18:54:54 CEST 2008
+#Mon Jul 19 13:32:29 CEST 2010
 eclipse.preferences.version=1
+validateFragments=false
 validation.actions-missing-required-attribute=1
 validation.actions-non-empty-inline-tag=2
 validation.actions-unknown-attribute=2
@@ -10,8 +11,8 @@ validation.directive-taglib-duplicate-prefixes-same-uris=-1
 validation.directive-taglib-missing-prefix=1
 validation.directive-taglib-missing-uri-or-tagdir=1
 validation.directive-taglib-unresolvable-uri-or-tagdir=1
-validation.el-general-syntax=1
-validation.el-lexical-failure=-1
+validation.el-general-syntax=2
+validation.el-lexical-failure=2
 validation.java-=-1
 validation.java-local-variable-is-never-used=-1
 validation.java-null-local-variable-reference=-1
@@ -25,3 +26,4 @@ validation.translation-tei-message=1
 validation.translation-usebean-ambiguous-type-info=2
 validation.translation-usebean-invalid-id=1
 validation.translation-usebean-missing-type-info=1
+validation.use-project-settings=true
