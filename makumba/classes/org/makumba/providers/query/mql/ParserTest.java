@@ -107,9 +107,10 @@ public class ParserTest {
         Throwable mqlThr = null;
         try {
             mq = new MqlQueryAnalysis(query, false, automaticLeftJoin);
-            qG = qG;
 
-            mql_sql = qG.getSQLQuery(nr).toLowerCase();
+            // FIXME: no clue what happens here but as the compiler says, qG can only be null
+            // qG = qG;
+            // mql_sql = qG.getSQLQuery(nr).toLowerCase();
         } catch (Throwable t) {
             mqlThr = t;
         }
