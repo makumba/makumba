@@ -11,9 +11,8 @@ import org.makumba.list.engine.QueryExecution;
 import org.makumba.list.tags.QueryTag;
 
 /**
- * Provides the mak:hasValueChanged('expr') and mak:willValueChange('expr') methods.<br/>
- * These methods will tell whether a specific expression has changed resp. will change its value from the previous resp.
- * in the next iteration.
+ * Provides the mak:hasValueChanged('expr') and mak:willValueChange('expr') methods.<br/> These methods will tell
+ * whether a specific expression has changed resp. will change its value from the previous resp. in the next iteration.
  * 
  * @author Rudolf Mayer
  * @version $Id$
@@ -50,7 +49,7 @@ public class ValueChangeFunctions extends GenericListValueFunction {
         try {
             PageContext pageContext = MakumbaJspFactory.getPageContext();
             MultipleKey parentListKey = getRunningListKey(pageContext);
-            QueryExecution execution = QueryExecution.getFor(parentListKey, pageContext, null, null);
+            QueryExecution execution = QueryExecution.getFor(parentListKey, pageContext, null, null, null);
             return execution.hasValueChanged(getValueComputer(expr, pageContext, parentListKey).getProjectionIndex());
         } catch (LogicException e) {
             // TODO proper error handling
@@ -63,7 +62,7 @@ public class ValueChangeFunctions extends GenericListValueFunction {
         try {
             PageContext pageContext = MakumbaJspFactory.getPageContext();
             MultipleKey parentListKey = getRunningListKey(pageContext);
-            QueryExecution execution = QueryExecution.getFor(parentListKey, pageContext, null, null);
+            QueryExecution execution = QueryExecution.getFor(parentListKey, pageContext, null, null, null);
             return execution.willValueChange(getValueComputer(expr, pageContext, parentListKey).getProjectionIndex());
         } catch (LogicException e) {
             // TODO proper error handling
