@@ -655,7 +655,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
             MultipleKey keyMaxResults = (MultipleKey) servletRequest.getAttribute(standardMaxResultsKey);
             PageCache pageCache = AnalysableElement.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance());
             try {
-                QueryExecution exec = QueryExecution.getFor(keyMaxResults, pageContext, null, null);
+                QueryExecution exec = QueryExecution.getFor(keyMaxResults, pageContext, null, null, null);
                 int dataSize = exec.getIterationGroupData();
                 MultipleKey tagKey = (MultipleKey) keyMaxResults.clone();
                 tagKey.remove(standardMaxResultsVar);
@@ -708,9 +708,9 @@ public class QueryTag extends GenericListTag implements IterationTag {
     }
 
     /**
-     * Gives the total number of iterations of the next iterationGroup.<br/>
-     * Invoking this method in the JSP page will cause this mak:list/object to pre-execute it's query, for the number of
-     * iterations to be known before the tag will actually be executed.
+     * Gives the total number of iterations of the next iterationGroup.<br/> Invoking this method in the JSP page will
+     * cause this mak:list/object to pre-execute it's query, for the number of iterations to be known before the tag
+     * will actually be executed.
      * 
      * @return The total number of iterations that will be performed within the next iterationGroup
      */
@@ -722,9 +722,9 @@ public class QueryTag extends GenericListTag implements IterationTag {
     }
 
     /**
-     * Gives the total number of iterations of the next iterationGroup.<br/>
-     * Invoking this method in the JSP page will cause this mak:list/object to pre-execute it's query, for the number of
-     * iterations to be known before the tag will actually be executed.
+     * Gives the total number of iterations of the next iterationGroup.<br/> Invoking this method in the JSP page will
+     * cause this mak:list/object to pre-execute it's query, for the number of iterations to be known before the tag
+     * will actually be executed.
      * 
      * @param id
      *            the ID of the mak:list/object to relate to
@@ -817,7 +817,9 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
     /** Gets the stack of currently running (nested) Query Tags from the pageContext */
     public static Stack<MultipleKey> getRunningQueryTagStack(PageContext pageContext) {
-        return (Stack<MultipleKey>) pageContext.getRequest().getAttribute(runningListKeyStack);
+        @SuppressWarnings("unchecked")
+        Stack<MultipleKey> attribute = (Stack<MultipleKey>) pageContext.getRequest().getAttribute(runningListKeyStack);
+        return attribute;
     }
 
     private static QueryTag findNextTag(List<TagData> queryTags, final MultipleKey currentListKey) {
