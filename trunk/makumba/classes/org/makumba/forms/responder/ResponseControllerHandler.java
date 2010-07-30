@@ -128,8 +128,10 @@ public class ResponseControllerHandler extends ControllerHandler {
                 }
 
                 // we also need to store the parameters, i.e. what was already filled in the form
-                Map<Object, Object> paramMap = new HashMap<Object, Object>();
-                paramMap.putAll(req.getParameterMap());
+                @SuppressWarnings("unchecked")
+                Map<String, Object> parameterMap = req.getParameterMap();
+                Map<String, Object> paramMap = new HashMap<String, Object>(parameterMap);
+
                 paramMap.remove(Responder.responderName);
 
                 session.setAttribute(MAKUMBA_FORM_RELOAD_PARAMS + suffix, paramMap);

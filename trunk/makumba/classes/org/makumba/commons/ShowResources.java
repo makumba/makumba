@@ -90,7 +90,7 @@ public class ShowResources {
     private static void listDirResources(File dir, List<URL> resources) throws MalformedURLException {
         File[] files = dir.listFiles();
         for (File file : files) {
-            resources.add(file.toURL());
+            resources.add(file.toURI().toURL());
             if (file.isDirectory()) {
                 listDirResources(file, resources);
             }

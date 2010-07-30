@@ -64,6 +64,7 @@ public class FormResponder extends Responder {
             Dictionary<String, Object> data = editor.readFrom(req, suffix, lazyEvaluatedInputs);
 
             // then, fill in values from unresolved inputs (i.e. from nested forms)
+            @SuppressWarnings("unchecked")
             HashMap<String, Object> results = (HashMap<String, Object>) req.getAttribute(Responder.FORM_RESULTS);
             if (lazyEvaluatedInputs != null) { // check for != null to be on the safe side
                 for (String key : lazyEvaluatedInputs.keySet()) {
@@ -103,7 +104,7 @@ public class FormResponder extends Responder {
     /** Format a field using the editor, and grow the editor as needed */
     public String format(String fname, FieldDefinition ftype, Object fval, Hashtable<String, Object> formatParams,
             String extraFormatting, Object formIdentifier) {
-        Dictionary<String, Object> paramCopy = (Dictionary<String, Object>) formatParams.clone();
+        Dictionary<String, Object> paramCopy = toDictionary(formatParams.clone());
 
         // appending the ID to the extra formatting params seems like a bit of a hack here.. but it also the fastest..
         // don't do it for dates (a date is several inputs, need _0, _1, _2, ..) and radio / checkbox / tickbox
@@ -148,6 +149,11 @@ public class FormResponder extends Responder {
         }
         max++;
         return display ? editor.format(max - 1, fval, paramCopy) : "";
+    }
+
+    @SuppressWarnings("unchecked")
+    private Dictionary<String, Object> toDictionary(Object o) {
+        return (Dictionary<String, Object>) o;
     }
 
     @Override

@@ -118,7 +118,9 @@ public class PageCache {
 
         if (!cache.containsValue(key, value)) {
             if (value instanceof Collection) {
-                cache.putAll(key, (Collection) value);
+                @SuppressWarnings("unchecked")
+                Collection<Object> v = (Collection<Object>) value;
+                cache.putAll(key, v);
             } else {
                 cache.put(key, value);
             }
@@ -139,7 +141,9 @@ public class PageCache {
         if (cache == null) {
             return null;
         }
-        return cache.getCollection(key);
+        @SuppressWarnings("unchecked")
+        Collection<Object> collection = cache.getCollection(key);
+        return collection;
     }
 
     /**

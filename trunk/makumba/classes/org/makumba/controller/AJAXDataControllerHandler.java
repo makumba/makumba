@@ -25,8 +25,7 @@ import org.makumba.list.tags.SectionTag;
 import com.google.gson.Gson;
 
 /**
- * ControllerHandler that handles AJAX-related data writing<br/>
- * FIXME does not seem to work for multiple forms
+ * ControllerHandler that handles AJAX-related data writing<br/> FIXME does not seem to work for multiple forms
  * 
  * @author Manuel Gay
  * @version $Id: ResponseModifierControllerHandler.java,v 1.1 Dec 25, 2009 10:05:55 PM manu Exp $
@@ -63,11 +62,14 @@ public class AJAXDataControllerHandler extends ControllerHandler {
 
             // fetch data from request context
             Map<String, String> data = new HashMap<String, String>();
+            @SuppressWarnings("unchecked")
             Enumeration<String> keys = req.getAttributeNames();
             while (keys.hasMoreElements()) {
                 String key = keys.nextElement();
                 if (key.startsWith(SectionTag.MAKUMBA_EVENT + "###" + event)) {
-                    data.putAll((Map<String, String>) req.getAttribute(key));
+                    @SuppressWarnings("unchecked")
+                    Map<String, String> attribute = (Map<String, String>) req.getAttribute(key);
+                    data.putAll(attribute);
                 }
             }
 
@@ -102,6 +104,7 @@ public class AJAXDataControllerHandler extends ControllerHandler {
 
                     HashMap<String, Object> o = new HashMap<String, Object>();
                     HashMap<Object, ArrayList<String>> fieldErrors = new HashMap<Object, ArrayList<String>>();
+                    @SuppressWarnings("unchecked")
                     Enumeration<String> params = req.getParameterNames();
                     while (params.hasMoreElements()) {
                         String param = params.nextElement();

@@ -83,7 +83,9 @@ public class JavassistClassWriter extends AbstractClassWriter {
         AnnotationsAttribute attr = new AnnotationsAttribute(cp, AnnotationsAttribute.visibleTag);
 
         for (AbstractAnnotation aa : annotations) {
-            Annotation a = addAnnotation(aa.getName(), cp, aa.getAttribues());
+            @SuppressWarnings("unchecked")
+            Map<String, Object> attribues = aa.getAttribues();
+            Annotation a = addAnnotation(aa.getName(), cp, attribues);
             if (attr.getAnnotations().length > 0) {
                 Annotation[] anns = (Annotation[]) ArrayUtils.add(attr.getAnnotations(), a);
                 attr.setAnnotations(anns);
@@ -112,7 +114,9 @@ public class JavassistClassWriter extends AbstractClassWriter {
             // nested annotations, oh joy!
             AbstractAnnotation nestedAnnotation = (AbstractAnnotation) v;
             AnnotationMemberValue amv = new AnnotationMemberValue(cp);
-            Annotation na = addAnnotation(nestedAnnotation.getName(), cp, nestedAnnotation.getAttribues());
+            @SuppressWarnings("unchecked")
+            Map<String, Object> attribues = nestedAnnotation.getAttribues();
+            Annotation na = addAnnotation(nestedAnnotation.getName(), cp, attribues);
             amv.setValue(na);
             mv = amv;
         } else if (v instanceof Enum<?>) {

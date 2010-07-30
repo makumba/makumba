@@ -325,7 +325,9 @@ public abstract class TransactionImplementation implements Transaction {
 
         Vector<T> vec = new Vector<T>();
         for (Dictionary<String, Object> dictionary : v) {
-            vec.add((T) dictionary.get(label));
+            @SuppressWarnings("unchecked")
+            T e = (T) dictionary.get(label);
+            vec.add(e);
         }
         return vec;
     }
@@ -398,9 +400,13 @@ public abstract class TransactionImplementation implements Transaction {
             }
             e = v.elements();
         } else if (flds instanceof Vector) {
-            e = ((Vector) flds).elements();
+            @SuppressWarnings("unchecked")
+            Vector<String> vector = (Vector<String>) flds;
+            e = vector.elements();
         } else if (flds instanceof Enumeration) {
-            e = (Enumeration) flds;
+            @SuppressWarnings("unchecked")
+            Enumeration<String> flds2 = (Enumeration<String>) flds;
+            e = flds2;
         } else if (flds instanceof String[]) {
             Vector<String> v = new Vector<String>();
             String[] fl = (String[]) flds;
@@ -520,14 +526,16 @@ public abstract class TransactionImplementation implements Transaction {
 
     protected Map<String, Object> paramsToMap1(Object args) {
         if (args instanceof Map) {
-            return (Map<String, Object>) args;
+            @SuppressWarnings("unchecked")
+            Map<String, Object> args2 = (Map<String, Object>) args;
+            return args2;
         }
         Map<String, Object> ret = new HashMap<String, Object>();
         if (args == null) {
             return ret;
         }
         if (args instanceof Collection) {
-            args = ((Collection) args).toArray();
+            args = ((Collection<?>) args).toArray();
         }
         if (args instanceof Object[]) {
             for (int j = 0; j < ((Object[]) args).length; j++) {

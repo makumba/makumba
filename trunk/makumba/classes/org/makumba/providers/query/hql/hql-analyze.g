@@ -64,14 +64,14 @@ tokens
 		  
 		  AST deriveFunctionCallExpr(AST fc, AST e) throws antlr.RecognitionException{  return fc; 	  	 }
 	
-	  java.util.Map aliasTypes= new java.util.HashMap();
-	   java.util.Map paramTypes= new java.util.HashMap();
+	  java.util.Map<String, String> aliasTypes= new java.util.HashMap<String, String>();
+	   java.util.Map<String, ExprTypeAST> paramTypes= new java.util.HashMap<String, ExprTypeAST>();
 	  	  
-	  java.util.Stack stackAliases = new java.util.Stack();
+	  java.util.Stack<java.util.Map<String, String>> stackAliases = new java.util.Stack<java.util.Map<String, String>>();
 	  
 		  void setAliasType(AST alias, String path) throws antlr.RecognitionException{}
  
-  void getReturnTypes(AST a, java.util.Stack stackAliases) throws antlr.RecognitionException { }
+  void getReturnTypes(AST a, java.util.Stack<java.util.Map<String, String>> stackAliases) throws antlr.RecognitionException { }
 	void checkLogicalExprInSelect(AST logical) throws SemanticException{}	  		
 
 	private int level = 0;

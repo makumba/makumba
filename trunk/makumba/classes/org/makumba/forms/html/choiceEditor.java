@@ -25,7 +25,6 @@ package org.makumba.forms.html;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -112,19 +111,21 @@ public abstract class choiceEditor extends FieldEditor {
             }
         }
 
-        Vector value;
+        Vector<Object> value;
         o = getValueOrDefault(rf, fieldIndex, o, formatParams);
         if (o instanceof Vector) {
-            value = (Vector) o;
+            @SuppressWarnings("unchecked")
+            Vector<Object> o2 = (Vector<Object>) o;
+            value = o2;
         } else {
-            value = new Vector(1);
+            value = new Vector<Object>(1);
             if (o != null) {
                 value.addElement(o);
             }
         }
 
         // we clean up null values
-        for (Iterator i = value.iterator(); i.hasNext();) {
+        for (Iterator<?> i = value.iterator(); i.hasNext();) {
             if (i.next() == Pointer.Null) {
                 if (shouldRemoveNullValue(rf, fieldIndex)) {
                     i.remove();
@@ -227,8 +228,7 @@ public abstract class choiceEditor extends FieldEditor {
         } else { // hidden
 
             StringBuffer sb = new StringBuffer();
-            for (Enumeration f = value.elements(); f.hasMoreElements();) {
-                Object val = f.nextElement();
+            for (Object val : value) {
                 sb.append("<input type=\"hidden\" name=\"").append(inputName).append("\" value=\"").append(
                     formatOptionValue(rf, fieldIndex, val)).append("\">");
             }

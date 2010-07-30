@@ -31,6 +31,7 @@ import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
@@ -220,8 +221,14 @@ public class MakumbaInfoTag extends TagSupport {
             out.println("    <td>");
             out.println("      <table border=\"0\" cellspacing=\"3\" cellpadding=\"3\">");
 
-            String serverUpSince = ReadableFormatter.readableAge(new Date().getTime()
-                    - new Date(System.getProperty(startupProp)).getTime());
+            String serverUpSince = null;
+            try {
+                serverUpSince = ReadableFormatter.readableAge(new Date().getTime()
+                        - new SimpleDateFormat().parse(System.getProperty(startupProp)).getTime());
+            } catch (ParseException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             String serverURL = request.getScheme() + "://" + request.getServerName() + ":" + port;
 
             line = 0;
@@ -331,13 +338,14 @@ public class MakumbaInfoTag extends TagSupport {
             out.print("Max inactive interval:" + ReadableFormatter.readableAge(session.getMaxInactiveInterval() * 1000));
             out.println("(" + session.getMaxInactiveInterval() + ")<br>");
 
-            Enumeration attribs = session.getAttributeNames();
+            @SuppressWarnings("unchecked")
+            Enumeration<String> attribs = session.getAttributeNames();
             out.println("<table border=\"0\" cellspacing=\"3\" cellpadding=\"3\">");
             out.println("  <tr bgcolor=\"#cccccc\"> <th>Attribute</th> <th>Value</th> <th>Class</th> </tr>");
 
             line = 0;
             while (attribs.hasMoreElements()) {
-                String key = (String) attribs.nextElement();
+                String key = attribs.nextElement();
 
                 out.println("  <tr bgcolor=\"#" + (line++ % 2 == 0 ? "eeeeee" : "ffffff") + "\">");
                 out.println("    <td valign=\"top\">" + key + ":</td>");
@@ -361,6 +369,7 @@ public class MakumbaInfoTag extends TagSupport {
     }
 
     private void printProperties(JspWriter out, Properties props) throws IOException {
+        @SuppressWarnings("unchecked")
         Enumeration<String> enprop = (Enumeration<String>) props.propertyNames();
 
         out.println("<table border=\"0\" cellspacing=\"3\" cellpadding=\"3\">");

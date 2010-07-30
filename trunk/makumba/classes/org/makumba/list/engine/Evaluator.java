@@ -53,13 +53,19 @@ public class Evaluator implements ComposedQuery.Evaluator {
             if (end == -1) {
                 throw new org.makumba.ProgrammerError("unpaired #{ in " + s);
             }
-            try {
-                ret.append(pc.getExpressionEvaluator().evaluate("$" + s.substring(begin + 1, end + 1), Object.class,
-                    pc.getVariableResolver(), null)); // a:b() functions not supported yet
-            } catch (javax.servlet.jsp.el.ELException ele) {
-                throw new org.makumba.ProgrammerError(ele.toString());
-            }
+
+            ret.append(evaluateJSP(s.substring(begin + 1, end + 1)));
             last = end + 1;
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    private Object evaluateJSP(String expr) {
+        try {
+            return pc.getExpressionEvaluator().evaluate("$" + expr, Object.class, pc.getVariableResolver(), null);
+            // a:b() functions not supported yet
+        } catch (javax.servlet.jsp.el.ELException ele) {
+            throw new org.makumba.ProgrammerError(ele.toString());
         }
     }
 }

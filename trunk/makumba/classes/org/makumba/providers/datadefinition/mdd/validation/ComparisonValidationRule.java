@@ -42,7 +42,9 @@ public class ComparisonValidationRule extends ValidationRuleNode {
         if (!(value instanceof LinkedHashMap)) {
             throw new MakumbaError("can't validate multi-field validation rule without right argument type, dude!");
         } else {
-            values = (LinkedHashMap<String, Object>) value;
+            @SuppressWarnings("unchecked")
+            LinkedHashMap<String, Object> value2 = (LinkedHashMap<String, Object>) value;
+            values = value2;
         }
 
         Object left = null;

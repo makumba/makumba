@@ -52,7 +52,7 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
                 throw new DataDefinitionNotFoundError(type);
             }
             String label = type.substring(0, dot);
-            String labelType = (String) aliasTypes.get(label);
+            String labelType = aliasTypes.get(label);
             if (labelType == null && knownLabels != null && knownLabels.getFieldDefinition(label) != null) {
                 labelType = knownLabels.getFieldDefinition(label).getPointedType().getName();
             }
@@ -245,7 +245,7 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
 
     /** this method is called when the SELECT section (projections) is parsed */
     @Override
-    void getReturnTypes(AST r, java.util.Stack stackAliases) throws RecognitionException {
+    void getReturnTypes(AST r, java.util.Stack<java.util.Map<String, String>> stackAliases) throws RecognitionException {
         if (isSubQuery()) {
             return;
         }
@@ -259,7 +259,7 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
     void beforeStatement(String statementName, int statementType) {
         super.beforeStatement(statementName, statementType);
         if (isSubQuery()) {
-            HashMap aliasTypes1 = (HashMap) ((HashMap) aliasTypes).clone();
+            HashMap<String, String> aliasTypes1 = new HashMap<String, String>(aliasTypes);
             stackAliases.push(aliasTypes);
             aliasTypes = aliasTypes1;
         }
@@ -268,7 +268,7 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
     @Override
     void afterStatementCompletion(String statementName) {
         if (isSubQuery()) {
-            aliasTypes = (HashMap) stackAliases.pop();
+            aliasTypes = stackAliases.pop();
         }
         super.afterStatementCompletion(statementName);
     }
@@ -277,11 +277,11 @@ public class HqlAnalyzeWalker extends HqlAnalyzeBaseWalker {
         return aliasTypes;
     }
 
-    public Map getParameterTypes() {
+    public Map<String, ExprTypeAST> getParameterTypes() {
         return paramTypes;
     }
 
-    public List getResult() {
+    public List<AST> getResult() {
         return result;
     }
 

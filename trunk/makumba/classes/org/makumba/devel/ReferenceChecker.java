@@ -188,7 +188,7 @@ public class ReferenceChecker extends HttpServlet {
             String mddName = stack.pop();
 
             try {
-                DataDefinition dd = MakumbaSystem.getDataDefinition(mddName);
+                DataDefinition dd = DataDefinitionProvider.getInstance().getDataDefinition(mddName);
                 w.println("<h3><a name=\"" + mddName + "\" href=\"" + contextPath
                         + Configuration.getToolLocation(DeveloperTool.MDD_VIEWER) + "/" + mddName + "\">" + mddName
                         + "</a> (" + count(sqlConnection, dd) + ")</h3>");

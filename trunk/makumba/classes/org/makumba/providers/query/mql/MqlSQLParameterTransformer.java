@@ -217,6 +217,7 @@ public class MqlSQLParameterTransformer implements SQLParameterTransformer {
 
             Object[] multi = (Object[]) name;
             MqlQueryAnalysis qA = (MqlQueryAnalysis) multi[0];
+            @SuppressWarnings("unchecked")
             Map<String, Object> args = (Map<String, Object>) multi[1];
 
             StringBuffer sb = new StringBuffer();
@@ -242,12 +243,13 @@ public class MqlSQLParameterTransformer implements SQLParameterTransformer {
             }
 
             return qA.getQuery() + " " + sb.toString();
-        };
+        }
 
         @Override
         protected Object makeResource(Object name, Object hashName) throws Throwable {
             Object[] multi = (Object[]) name;
             MqlQueryAnalysis qA = (MqlQueryAnalysis) multi[0];
+            @SuppressWarnings("unchecked")
             Map<String, Object> args = (Map<String, Object>) multi[1];
 
             return new MqlSQLParameterTransformer(qA);
@@ -256,6 +258,7 @@ public class MqlSQLParameterTransformer implements SQLParameterTransformer {
         @Override
         protected void configureResource(Object name, Object hashName, Object resource) throws Throwable {
             Object[] multi = (Object[]) name;
+            @SuppressWarnings("unchecked")
             Map<String, Object> args = (Map<String, Object>) multi[1];
 
             ((MqlSQLParameterTransformer) resource).init(args);

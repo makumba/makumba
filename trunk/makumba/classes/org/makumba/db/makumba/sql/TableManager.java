@@ -34,8 +34,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -209,13 +213,13 @@ public class TableManager extends Table {
         }
     }
 
-    Hashtable<String, Boolean> indexes = new Hashtable<String, Boolean>();
+    Map<String, Boolean> indexes = new HashMap<String, Boolean>();
 
     Boolean parsedForeignKeys = false;
 
     Hashtable<String, String[]> foreignKeys = new Hashtable<String, String[]>();
 
-    Hashtable<String, String[]> extraIndexes;
+    Set<String> extraIndexes;
 
     private boolean autoIncrementAlter;
 
@@ -257,7 +261,7 @@ public class TableManager extends Table {
             throw new DBError(e);
         }
 
-        extraIndexes = (Hashtable<String, String[]>) indexes.clone();
+        extraIndexes = new HashSet<String>(indexes.keySet());
 
         for (String string : dd.getFieldNames()) {
             String fieldName = string;
@@ -268,7 +272,7 @@ public class TableManager extends Table {
         }
 
         // now process multi-field indices
-        MultipleUniqueKeyDefinition[] multiFieldUniqueKeys = getDataDefinition().getMultiFieldUniqueKeys();
+        DataDefinition.MultipleUniqueKeyDefinition[] multiFieldUniqueKeys = getDataDefinition().getMultiFieldUniqueKeys();
         for (int i = 0; i < multiFieldUniqueKeys.length; i++) {
             String[] fieldNames = multiFieldUniqueKeys[i].getFields();
             if (!multiFieldUniqueKeys[i].isKeyOverSubfield() && !isIndexOk(fieldNames)) {
@@ -298,8 +302,7 @@ public class TableManager extends Table {
 
         if (!getDatabase().usesHibernateIndexes()) {
             if (alter) {
-                for (Enumeration<String> ei = extraIndexes.keys(); ei.hasMoreElements();) {
-                    String indexName = ei.nextElement();
+                for (String indexName : extraIndexes) {
                     String syntax = "DROP INDEX " + indexName + " ON " + getDBName();
                     try {
                         Statement st = dbc.createStatement();
@@ -314,8 +317,8 @@ public class TableManager extends Table {
             } else {
                 StringBuffer extraList = new StringBuffer();
                 String separator = "";
-                for (Enumeration<String> ei = extraIndexes.keys(); ei.hasMoreElements();) {
-                    extraList.append(separator).append(ei.nextElement());
+                for (String x : extraIndexes) {
+                    extraList.append(separator).append(x);
                     separator = ", ";
                 }
                 if (extraList.length() > 0) {
@@ -733,9 +736,11 @@ public class TableManager extends Table {
                 d.remove("TS_modify");
             }
             return ret;
-        }/*
+        }
+        /*
           * catch(ReconnectedException re) { prepareStatements(); continue; }
           */
+
         // catch(SQLException e) { throw new org.makumba.DBError (e); }
         catch (Throwable t) {
             // we wrap errors into a DB error, except CompositeValidationException, which will be handled separately

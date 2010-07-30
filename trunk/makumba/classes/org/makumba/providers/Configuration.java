@@ -29,7 +29,6 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Map.Entry;
@@ -362,8 +361,9 @@ public class Configuration implements Serializable {
 
     /** builds the data sources for the configuration. **/
     private static void buildConfiguredDataSources() {
-        for (Iterator<String> iterator = applicationConfig.getSections().iterator(); iterator.hasNext();) {
-            String section = iterator.next();
+        @SuppressWarnings("unchecked")
+        java.util.Set<String> sections = applicationConfig.getSections();
+        for (String section : sections) {
 
             // expect something like
             // dataSource:<name> host:<host> path:<path> web-app:<web-app>

@@ -32,6 +32,7 @@ import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
+import org.makumba.providers.DataDefinitionProvider;
 
 /**
  * mak:option tag
@@ -69,7 +70,7 @@ public class OptionTag extends BasicValueTag implements BodyTag {
             throw new ProgrammerError("Only set and pointer <mak:input > can have options inside");
         }
 
-        return org.makumba.MakumbaSystem.makeFieldDefinition("dummy", "ptr " + t.getForeignTable().getName());
+        return DataDefinitionProvider.getInstance().makeFieldDefinition("dummy", "ptr " + t.getForeignTable().getName());
     }
 
     @Override

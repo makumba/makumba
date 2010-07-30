@@ -79,15 +79,15 @@ public class JavassistClassReader extends AbstractClassReader {
     private void readAnnotations(Vector<AbstractAnnotation> result, Annotation annotation) {
         AbstractAnnotation aa = new AbstractAnnotation(annotation.getTypeName());
         result.add(aa);
-        Set<String> members = annotation.getMemberNames();
-        for (String m : members) {
+        Set<?> members = annotation.getMemberNames();
+        for (Object m : members) {
 
-            Object v = annotation.getMemberValue(m);
+            Object v = annotation.getMemberValue((String) m);
             if (v == null) {
                 throw new MakumbaError("Attribute '" + m + "' not found");
             }
             Object value = readAttributeValue(v);
-            aa.addAttribute(m, value);
+            aa.addAttribute((String) m, value);
         }
     }
 

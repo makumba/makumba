@@ -23,11 +23,13 @@
 
 package org.makumba.list.html;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Dictionary;
 
 import org.apache.commons.lang.StringUtils;
 import org.makumba.HtmlUtils;
 import org.makumba.Text;
+import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.InvalidValueException;
 import org.makumba.commons.formatters.RecordFormatter;
@@ -87,7 +89,11 @@ public class textViewer extends FieldViewer {
                 && HtmlUtils.detectHtml(txt) || StringUtils.equals(format, "auto") && HtmlUtils.detectHtml(txt)) {
             return txt;
         } else if (StringUtils.equals(format, "urlencode")) {
-            return java.net.URLEncoder.encode(txt);
+            try {
+                return java.net.URLEncoder.encode(txt, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeWrappedException(e);
+            }
         }
 
         if (StringUtils.equals(format, "stripHTML")) {

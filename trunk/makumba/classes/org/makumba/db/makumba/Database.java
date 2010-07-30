@@ -318,7 +318,7 @@ public abstract class Database {
     /** finds the longest configuration string that matches the pattern and returns the associated property */
     public static String findConfig(Properties cnf, String pattern) {
         String ret = null;
-        for (Enumeration e = cnf.keys(); e.hasMoreElements();) {
+        for (Enumeration<Object> e = cnf.keys(); e.hasMoreElements();) {
             String key = (String) e.nextElement();
             if (pattern.startsWith(key) && (ret == null || ret.length() < key.length())) {
                 ret = key;

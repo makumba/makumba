@@ -42,7 +42,6 @@ import org.apache.commons.lang.StringUtils;
 import org.makumba.Attributes;
 import org.makumba.CompositeValidationException;
 import org.makumba.DataDefinition;
-import org.makumba.Database;
 import org.makumba.FieldValueDiff;
 import org.makumba.InvalidValueException;
 import org.makumba.LogicException;
@@ -71,7 +70,9 @@ public class Logic {
     private static DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
 
     static public String getSearchMessage(String cls) {
-        return (String) ((Hashtable) NamedResources.getStaticCache(logix).getSupplementary()).get(cls);
+        @SuppressWarnings("unchecked")
+        Hashtable<String, String> hashtable = (Hashtable<String, String>) NamedResources.getStaticCache(logix).getSupplementary();
+        return hashtable.get(cls);
     }
 
     public static Object getController(String className) {
@@ -125,7 +126,7 @@ public class Logic {
     static int logix = NamedResources.makeStaticCache("Business logic classes", new NamedResourceFactory() {
         private static final long serialVersionUID = 1L;
         {
-            supplementary = new Hashtable();
+            supplementary = new Hashtable<Object, Object>();
         }
 
         @Override
@@ -217,7 +218,9 @@ public class Logic {
             }
 
             java.util.logging.Logger.getLogger("org.makumba.controller").info(msg);
-            ((Hashtable) supplementary).put(p, msg);
+            @SuppressWarnings("unchecked")
+            Hashtable<Object, Object> supl = (Hashtable<Object, Object>) supplementary;
+            supl.put(p, msg);
             Object foundClass = nameToObject.get(lastFound.getClass().getName());
             if (foundClass != null) {
                 return foundClass;
@@ -364,7 +367,8 @@ public class Logic {
         return NamedResources.getStaticCache(logix).getResource(path);
     }
 
-    static Class<?>[] argDbOld = { Attributes.class, Database.class };
+    @SuppressWarnings("deprecation")
+    static Class<?>[] argDbOld = { Attributes.class, org.makumba.Database.class };
 
     static Class<?>[] argDb = { Attributes.class, Transaction.class };
 
@@ -551,11 +555,13 @@ public class Logic {
         return ret;
     }
 
-    static Class<?>[] editArgsOld = { Pointer.class, Dictionary.class, Attributes.class, Database.class };
+    @SuppressWarnings("deprecation")
+    static Class<?>[] editArgsOld = { Pointer.class, Dictionary.class, Attributes.class, org.makumba.Database.class };
 
     static Class<?>[] editArgs = { Pointer.class, Dictionary.class, Attributes.class, Transaction.class };
 
-    static Class<?>[] opArgsOld = { Dictionary.class, Attributes.class, Database.class };
+    @SuppressWarnings("deprecation")
+    static Class<?>[] opArgsOld = { Dictionary.class, Attributes.class, org.makumba.Database.class };
 
     static Class<?>[] opArgs = { Dictionary.class, Attributes.class, Transaction.class };
 
@@ -785,7 +791,8 @@ public class Logic {
         }
     }
 
-    static Class<?>[] deleteArgsOld = { Pointer.class, Attributes.class, Database.class };
+    @SuppressWarnings("deprecation")
+    static Class<?>[] deleteArgsOld = { Pointer.class, Attributes.class, org.makumba.Database.class };
 
     static Class<?>[] deleteArgs = { Pointer.class, Attributes.class, Transaction.class };
 
@@ -879,7 +886,8 @@ public class Logic {
         }
     }
 
-    static Class<?>[] newArgsOld = { Dictionary.class, Attributes.class, Database.class };
+    @SuppressWarnings("deprecation")
+    static Class<?>[] newArgsOld = { Dictionary.class, Attributes.class, org.makumba.Database.class };
 
     static Class<?>[] newArgs = { Dictionary.class, Attributes.class, Transaction.class };
 

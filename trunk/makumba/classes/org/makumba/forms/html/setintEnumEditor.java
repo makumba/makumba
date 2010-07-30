@@ -63,7 +63,8 @@ public class setintEnumEditor extends setcharEnumEditor {
             return o;
         }
         if (o instanceof Vector) {
-            Vector v = (Vector) o;
+            @SuppressWarnings("unchecked")
+            Vector<Object> v = (Vector<Object>) o;
             for (int i = 0; i < v.size(); i++) {
                 v.setElementAt(toInt(rf, fieldIndex, v.elementAt(i)), i);
             }

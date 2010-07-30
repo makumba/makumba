@@ -186,7 +186,7 @@ public class ListFormDataProvider implements FormDataProvider {
         // if we have a dummy query, we simulate an iteration
         if (pageCache.retrieve(MakumbaJspAnalyzer.QUERY, tagKey) != null) {
             QueryExecution.startListGroup(pageContext);
-            QueryExecution.getFor(tagKey, pageContext, null, null).onParentIteration();
+            QueryExecution.getFor(tagKey, pageContext, null, null, null).onParentIteration();
         }
 
     }

@@ -93,7 +93,7 @@ public class PageAttributes implements Attributes {
         String s = "";
         for (int i = 0; i < scopes.length; i++) {
             s += scopeNames[i] + ": {";
-            Enumeration enumeration = pageContext.getAttributeNamesInScope(scopes[i]);
+            Enumeration<?> enumeration = pageContext.getAttributeNamesInScope(scopes[i]);
             while (enumeration.hasMoreElements()) {
                 String name = (String) enumeration.nextElement();
                 s += name + "=";
