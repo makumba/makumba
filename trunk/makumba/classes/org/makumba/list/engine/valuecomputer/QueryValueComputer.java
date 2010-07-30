@@ -77,9 +77,9 @@ public abstract class QueryValueComputer extends ValueComputer {
      * @return The QueryExecution that will give us the data
      */
     QueryExecution runQuery(PageContext pageContext) throws LogicException {
-        QueryExecution ex = QueryExecution.getFor(queryKey, pageContext, null, null);
+        QueryExecution ex = QueryExecution.getFor(queryKey, pageContext, null, null, null);
 
-        QueryExecution parentEx = QueryExecution.getFor(parentKey, pageContext, null, null);
+        QueryExecution parentEx = QueryExecution.getFor(parentKey, pageContext, null, null, null);
 
         // if the valueQuery's iterationGroup for this parentIteration was not computed, do it now...
         if (parentEx.valueQueryData.get(queryKey) == null) {
