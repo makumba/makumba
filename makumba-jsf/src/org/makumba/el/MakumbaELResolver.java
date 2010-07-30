@@ -187,8 +187,8 @@ public class MakumbaELResolver extends ELResolver {
     public Iterator<FeatureDescriptor> getFeatureDescriptors(ELContext context, Object base) {
 
         if (base != null && base instanceof Map) {
-            Map map = (Map) base;
-            Iterator iter = map.keySet().iterator();
+            Map<?, ?> map = (Map<?, ?>) base;
+            Iterator<?> iter = map.keySet().iterator();
             List<FeatureDescriptor> list = new ArrayList<FeatureDescriptor>();
             while (iter.hasNext()) {
                 Object key = iter.next();
