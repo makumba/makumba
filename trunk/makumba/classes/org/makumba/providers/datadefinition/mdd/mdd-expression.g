@@ -2,13 +2,14 @@ header {
     package org.makumba.providers.datadefinition.mdd;
 }
 
-class MDDExpressionBaseParser extends Parser;
+{@SuppressWarnings("all")} class MDDExpressionBaseParser extends Parser;
 
 options {
 		importVocab=MDD;
         buildAST=true;
         k = 3;
 }
+
 
 {
 
