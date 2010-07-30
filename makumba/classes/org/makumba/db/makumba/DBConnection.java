@@ -239,7 +239,7 @@ public abstract class DBConnection extends TransactionImplementation {
         if (args == null) {
             return new Object[] {};
         } else if (args instanceof Vector) {
-            Vector v = (Vector) args;
+            Vector<?> v = (Vector<?>) args;
             Object[] param = new Object[v.size()];
             v.copyInto(param);
             return param;

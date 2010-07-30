@@ -187,7 +187,7 @@ public interface FieldDefinition {
      * @exception ClassCastException
      *                for other types
      */
-    public java.util.Collection getValues();
+    public java.util.Collection<?> getValues();
 
     /**
      * Get the names of an enumerated field. Works only for intEnum, charEnum types
@@ -344,7 +344,13 @@ public interface FieldDefinition {
     public boolean isStringType();
 
     public enum FieldErrorMessageType {
-        NOT_NULL, NOT_A_NUMBER, NOT_UNIQUE, NOT_EMPTY, NOT_INT, NOT_REAL, NOT_BOOLEAN
+        NOT_NULL,
+        NOT_A_NUMBER,
+        NOT_UNIQUE,
+        NOT_EMPTY,
+        NOT_INT,
+        NOT_REAL,
+        NOT_BOOLEAN
     }
 
     /** gets the error message for a certain kind of field error **/

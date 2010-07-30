@@ -96,7 +96,7 @@ public class HibernateTransaction extends TransactionImplementation {
     }
 
     @Override
-    protected StringBuffer writeReadQuery(Pointer p, Enumeration e) {
+    protected StringBuffer writeReadQuery(Pointer p, Enumeration<String> e) {
         StringBuffer sb = new StringBuffer();
         sb.append("SELECT ");
         String separator = "";
@@ -126,12 +126,12 @@ public class HibernateTransaction extends TransactionImplementation {
             sb.append(" as ").append(s);
             separator = ",";
         }
-        sb.append(" FROM " + nr.arrowToDoubleUnderscore(p.getType()) + " p WHERE p.id=?");
+        sb.append(" FROM " + NameResolver.arrowToDoubleUnderscore(p.getType()) + " p WHERE p.id=?");
         return sb;
     }
 
     @Override
-    protected Vector executeReadQuery(Pointer p, StringBuffer sb) {
+    protected Vector<Dictionary<String, Object>> executeReadQuery(Pointer p, StringBuffer sb) {
 
         return executeQuery(sb.toString(), p);
     }
@@ -313,7 +313,7 @@ public class HibernateTransaction extends TransactionImplementation {
         }
 
         if (args != null && args instanceof Map) {
-            setNamedParameters((Map) args, paramsDef, q);
+            setNamedParameters((Map<?, ?>) args, paramsDef, q);
         } else if (args != null) {
             setOrderedParameters(args, paramsDef, q);
         }
@@ -338,7 +338,7 @@ public class HibernateTransaction extends TransactionImplementation {
      * @param list
      * @return
      */
-    private Vector<Dictionary<String, Object>> getConvertedQueryResult(QueryAnalysis analyzer, List list) {
+    private Vector<Dictionary<String, Object>> getConvertedQueryResult(QueryAnalysis analyzer, List<?> list) {
         DataDefinition dataDef = analyzer.getProjectionType();
         Vector<Dictionary<String, Object>> results = new Vector<Dictionary<String, Object>>(list.size());
 
@@ -349,7 +349,7 @@ public class HibernateTransaction extends TransactionImplementation {
         }
 
         int i = 1;
-        for (Iterator iter = list.iterator(); iter.hasNext(); i++) {
+        for (Iterator<?> iter = list.iterator(); iter.hasNext(); i++) {
             Object resultRow = iter.next();
             Object[] resultFields;
             if (!(resultRow instanceof Object[])) { // our query result has only one field
@@ -420,7 +420,7 @@ public class HibernateTransaction extends TransactionImplementation {
         }
     }
 
-    private void setNamedParameters(Map args, DataDefinition paramsDef, org.hibernate.Query q) {
+    private void setNamedParameters(Map<?, ?> args, DataDefinition paramsDef, org.hibernate.Query q) {
         String[] queryParams = q.getNamedParameters();
         for (String paramName : queryParams) {
             Object paramValue = args.get(paramName);
@@ -429,7 +429,7 @@ public class HibernateTransaction extends TransactionImplementation {
 
             // FIXME: check if the type of the actual parameter is in accordance with paramDef
             if (paramValue instanceof Vector) {
-                q.setParameterList(paramName, (Collection) paramValue);
+                q.setParameterList(paramName, (Collection<?>) paramValue);
             } else if (paramValue instanceof Date) {
                 q.setParameter(paramName, paramValue, Hibernate.TIMESTAMP);
             } else if (paramValue instanceof Integer) {
@@ -479,7 +479,7 @@ public class HibernateTransaction extends TransactionImplementation {
     @Override
     public String transformTypeName(String name) {
 
-        return nr.arrowToDoubleUnderscore(name);
+        return NameResolver.arrowToDoubleUnderscore(name);
     }
 
     @Override
@@ -520,7 +520,7 @@ public class HibernateTransaction extends TransactionImplementation {
         if (args == null) {
             return new Object[] {};
         } else if (args instanceof Vector) {
-            Vector v = (Vector) args;
+            Vector<?> v = (Vector<?>) args;
             Object[] param = new Object[v.size()];
             v.copyInto(param);
             return param;

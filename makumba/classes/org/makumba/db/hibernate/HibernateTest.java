@@ -52,7 +52,8 @@ public class HibernateTest {
         // tx.commit();
         //		
         // Query q =
-        // session.createQuery("UPDATE test.Person SET indiv.name = :newName WHERE indiv.name = :oldName").setString("newName",
+        // session.createQuery("UPDATE test.Person SET indiv.name = :newName WHERE indiv.name = :oldName").setString(
+        // "newName",
         // "Johannes").setString("oldName", "Bart");
 
         // SELECT p would select the whole test.Person!
@@ -65,7 +66,8 @@ public class HibernateTest {
         // FROM test.Person p, p.intSet s, p.speaks l does not pass the HQL-SQL parser
         // SELECT s will select the whole enumerator rather than just the value!
         // Query q =
-        // session.createQuery("SELECT s.enum, s1.name FROM test.Person p JOIN p.intSet s JOIN p.speaks s1 WHERE p.indiv.name = 'Bart'");
+        // session.createQuery(
+        // "SELECT s.enum, s1.name FROM test.Person p JOIN p.intSet s JOIN p.speaks s1 WHERE p.indiv.name = 'Bart'");
 
         // FROM test.Person p, p.address a does not pass the HQL-SQL parser
         // Query q =
@@ -78,7 +80,7 @@ public class HibernateTest {
         // a more automatic pointer join
         Query q = session.createQuery("SELECT p.name, p.surname FROM general.Person p WHERE p.surname='Mayer'");
 
-        List list = q.list();
+        List<?> list = q.list();
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i) == null) {
                 continue;

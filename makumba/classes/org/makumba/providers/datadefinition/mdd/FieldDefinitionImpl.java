@@ -564,7 +564,8 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
 
                     normalCheck(value);
 
-                    Vector<Object> v = (Vector) value;
+                    @SuppressWarnings("unchecked")
+                    Vector<Object> v = (Vector<Object>) value;
 
                     FieldDefinition ptr = getForeignTable().getFieldDefinition(
                         getForeignTable().getIndexPointerFieldName());
@@ -599,7 +600,10 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
                     }
 
                     normalCheck(value);
-                    vect = (Vector) value;
+
+                    @SuppressWarnings("unchecked")
+                    Vector<Object> value2 = (Vector<Object>) value;
+                    vect = value2;
 
                     for (int i = 0; i < vect.size(); i++) {
                         if (vect.elementAt(i) == null || vect.elementAt(i).equals(org.makumba.Pointer.NullInteger)) {
@@ -620,7 +624,9 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
                     }
 
                     normalCheck(value);
-                    v = (Vector) value;
+                    @SuppressWarnings("unchecked")
+                    Vector<Object> value3 = (Vector<Object>) value;
+                    v = value3;
 
                     for (int i = 0; i < v.size(); i++) {
                         if (v.elementAt(i) == null || v.elementAt(i).equals(org.makumba.Pointer.NullString)) {
@@ -937,7 +943,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
 
     }
 
-    public Collection getValues() {
+    public Collection<?> getValues() {
         switch (type) {
             case INTENUM:
             case SETINTENUM:

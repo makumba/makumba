@@ -114,13 +114,13 @@ public class LoginTag extends BodyTagSupport {
             //
 
             // we read the GET parameters in a Dictionary => we will avoid printing them as hidden POST param
-            Dictionary dGetParams = new Hashtable(); // default: empty
+            Dictionary<String, Object> dGetParams = new Hashtable<String, Object>(); // default: empty
             if (req.getQueryString() != null) {
                 // System.out.println(HttpUtils.parseQueryString(req.getQueryString())+"\n");
                 // The official replacement for parseQueryString is req.getParameterMap()
                 // Problem is, that will give us both the GET and the POST params.
                 // So we use the deprecated method.
-                dGetParams = javax.servlet.http.HttpUtils.parseQueryString(req.getQueryString());
+                dGetParams = parseQueryString(req);
             }
 
             // Note on use of Request object (fred)
@@ -132,8 +132,10 @@ public class LoginTag extends BodyTagSupport {
             // => UNUSED ServletRequest pcReq = pageContext.getRequest();
 
             // for every parameter
-            for (Enumeration e = req.getParameterNames(); e.hasMoreElements();) { // ! was pcReq
-                String name = (String) e.nextElement();
+            @SuppressWarnings("unchecked")
+            Enumeration<String> parameterNames = req.getParameterNames();
+            for (Enumeration<String> e = parameterNames; e.hasMoreElements();) { // ! was pcReq
+                String name = e.nextElement();
 
                 // username and password are ignored, new ones should exist in the login form
                 if (!name.equals("username") && !name.equals("password")) {
@@ -178,6 +180,11 @@ public class LoginTag extends BodyTagSupport {
             throw new JspException(e.toString());
         }
 
+    }
+
+    @SuppressWarnings( { "deprecation", "unchecked" })
+    private static Hashtable<String, Object> parseQueryString(HttpServletRequest req) {
+        return javax.servlet.http.HttpUtils.parseQueryString(req.getQueryString());
     }
 
     /** appends a /FORM to the tag body, closing the login form */

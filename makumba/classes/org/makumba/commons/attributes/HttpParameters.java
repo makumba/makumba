@@ -46,7 +46,7 @@ public class HttpParameters {
 
     Hashtable<Object, Object> atStart;
 
-    Map<Object, Object> reloadedParameters = null;
+    Map<?, ?> reloadedParameters = null;
 
     public boolean knownAtStart(String s) {
         return atStart.get(s) != null;
@@ -57,7 +57,7 @@ public class HttpParameters {
         computeAtStart();
     }
 
-    public HttpParameters(HttpServletRequest req, Map<Object, Object> additionalParams) {
+    public HttpParameters(HttpServletRequest req, Map<?, ?> additionalParams) {
         request = req;
         reloadedParameters = additionalParams;
         computeAtStart();
@@ -67,7 +67,7 @@ public class HttpParameters {
     void computeAtStart() {
         atStart = new Hashtable<Object, Object>();
         Object dummy = new Object();
-        for (Enumeration e = request.getParameterNames(); e.hasMoreElements();) {
+        for (Enumeration<?> e = request.getParameterNames(); e.hasMoreElements();) {
             atStart.put(e.nextElement(), dummy);
         }
     }
@@ -125,10 +125,10 @@ public class HttpParameters {
 
     public ArrayList<String> getParametersStartingWith(String s) {
         ArrayList<String> result = new ArrayList<String>();
-        Enumeration<String> parameterNames = request.getParameterNames();
+        Enumeration<?> parameterNames = request.getParameterNames();
 
         while (parameterNames.hasMoreElements()) {
-            String param = parameterNames.nextElement();
+            String param = (String) parameterNames.nextElement();
             if (param.startsWith(s)) {
                 result.add(param);
             }
@@ -138,7 +138,7 @@ public class HttpParameters {
         // otherwise we might set a parameter with multiple values whereas it really should have only one
         // this is especially the case for URL GET parameters
         if (reloadedParameters != null) {
-            Iterator<Object> i = reloadedParameters.keySet().iterator();
+            Iterator<?> i = reloadedParameters.keySet().iterator();
             while (i.hasNext()) {
                 String param = (String) i.next();
                 if (param.startsWith(s) && !result.contains(param)) {

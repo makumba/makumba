@@ -77,7 +77,10 @@ public class RecordEditor extends RecordFormatter {
         super(ri, h, isSearchForm, formIdentifier);
         this.database = database;
         db = new String[ri.getFieldNames().size()];
-        query = new Map[ri.getFieldNames().size()];
+
+        @SuppressWarnings("unchecked")
+        Map<String, String>[] maps = new Map[ri.getFieldNames().size()];
+        query = maps;
     }
 
     public ArrayList<InvalidValueException> getUnassignedExceptions(CompositeValidationException e,
@@ -125,8 +128,10 @@ public class RecordEditor extends RecordFormatter {
                     if (o instanceof Vector && (fd.isPointer() || fd.isEnumType())) {
                         // we treat them by iterating over the vector and checking each value separately
                         // thus, we don't need to modify fs.checkValue(o)
-                        for (int j = 0; j < ((Vector) o).size(); j++) {
-                            ((Vector) o).set(j, fd.checkValue(((Vector) o).get(j)));
+                        @SuppressWarnings("unchecked")
+                        Vector<Object> v = (Vector<Object>) o;
+                        for (int j = 0; j < v.size(); j++) {
+                            v.set(j, fd.checkValue(v.get(j)));
                         }
                     } else {
                         o = fd.checkValue(o);

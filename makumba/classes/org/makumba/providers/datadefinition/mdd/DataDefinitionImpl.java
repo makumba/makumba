@@ -51,7 +51,8 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
 
     /** the type of the title expression **/
     protected enum TitleFieldType {
-        FIELD, FUNCTION
+        FIELD,
+        FUNCTION
     };
 
     protected TitleFieldType titleFieldType;
@@ -530,10 +531,8 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
 
         // in the end, we also make the title field available as title() function if it was not defined that way
         if (functions.getFunction("title") == null) {
-            functions.addFunction(
-                "title",
-                new QueryFragmentFunction(this, "title", "", titleField,
-                        ddp.getVirtualDataDefinition("Parameters for function title"), ""));
+            functions.addFunction("title", new QueryFragmentFunction(this, "title", "", titleField,
+                    ddp.getVirtualDataDefinition("Parameters for function title"), ""));
         }
     }
 
@@ -608,6 +607,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
         return (FieldDefinition) fields.values().toArray()[n];
     }
 
+    @SuppressWarnings("unchecked")
     public Vector<String> getFieldNames() {
         return new Vector<String>(fields.keySet());
     }

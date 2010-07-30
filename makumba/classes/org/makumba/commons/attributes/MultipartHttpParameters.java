@@ -96,7 +96,7 @@ public class MultipartHttpParameters extends HttpParameters {
         ServletFileUpload upload = new ServletFileUpload(factory);
 
         // Parse the request
-        List items = null;
+        List<?> items = null;
         try {
             items = upload.parseRequest(request);
         } catch (FileUploadException e1) {
@@ -104,7 +104,7 @@ public class MultipartHttpParameters extends HttpParameters {
         }
 
         // Process the uploaded items
-        Iterator iter = items.iterator();
+        Iterator<?> iter = items.iterator();
         while (iter.hasNext()) {
             DiskFileItem item = (DiskFileItem) iter.next();
 
@@ -186,7 +186,7 @@ public class MultipartHttpParameters extends HttpParameters {
         Object o = parameters.get(name);
         if (o != null) {
             if (o instanceof Vector) {
-                ((Vector) o).addElement(value);
+                addToVector(o, value);
             } else {
                 Vector<Object> v = new Vector<Object>();
                 v.addElement(o);
@@ -230,16 +230,16 @@ public class MultipartHttpParameters extends HttpParameters {
 
         if (a1 instanceof Vector) {
             if (a2 instanceof Vector) {
-                for (Enumeration e = ((Vector) a2).elements(); e.hasMoreElements();) {
-                    ((Vector) a1).addElement(e.nextElement());
+                for (Enumeration<?> e = ((Vector<?>) a2).elements(); e.hasMoreElements();) {
+                    addToVector(a1, e.nextElement());
                 }
                 return a1;
             } else {
-                ((Vector) a1).addElement(a2);
+                addToVector(a1, a2);
                 return a1;
             }
         } else if (a2 instanceof Vector) {
-            ((Vector) a2).addElement(a1);
+            addToVector(a2, a1);
             return a2;
         } else {
             Vector<Object> v = new Vector<Object>();
@@ -247,5 +247,10 @@ public class MultipartHttpParameters extends HttpParameters {
             v.addElement(a2);
             return v;
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void addToVector(Object a1, Object a2) {
+        ((Vector<Object>) a1).addElement(a2);
     }
 }

@@ -200,7 +200,7 @@ public class Database extends org.makumba.db.makumba.Database {
 
             String s;
 
-            for (Enumeration e = p.keys(); e.hasMoreElements();) {
+            for (Enumeration<Object> e = p.keys(); e.hasMoreElements();) {
                 s = (String) e.nextElement();
                 if (!s.startsWith("sql.")) {
                     continue;

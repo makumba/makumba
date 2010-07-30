@@ -28,13 +28,13 @@ import java.io.PrintWriter;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.collections.EnumerationUtils;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.commons.RuntimeWrappedException;
@@ -140,10 +140,10 @@ public class DataQueryServlet extends DataServlet {
                 // the projection names are only present if that row also has a non-null value
                 // thus, let's search over all rows, and merge the keys together
 
-                LinkedHashSet<String> projections = new LinkedHashSet<String>();
+                Set<String> projections = new LinkedHashSet<String>();
                 for (int i = 0; i < results.size(); i++) {
                     Dictionary<String, Object> d = results.get(i);
-                    projections.addAll(EnumerationUtils.toList(d.keys()));
+                    projections.addAll(java.util.Collections.list(d.keys()));
                 }
 
                 // now iterate over all results

@@ -327,6 +327,7 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
                 }
 
                 // store all the stuff in a map in the request context
+                @SuppressWarnings("unchecked")
                 Map<String, String> sectionData = (Map<String, String>) pageContext.getRequest().getAttribute(
                     MAKUMBA_EVENT + "###" + eventName + exprValue);
                 if (sectionData == null) {

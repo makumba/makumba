@@ -65,8 +65,8 @@ public class LogoutTag extends TagSupport {
             List<String> removableAttributes = new ArrayList<String>();
 
             // It's illegal (ConcurrentModificationException) to removeAttribute() while enumating
-            for (Enumeration e = pageContext.getAttributeNamesInScope(PageContext.SESSION_SCOPE); e.hasMoreElements();) {
-                String name = (String) e.nextElement();
+            for (Enumeration<String> e = pageContext.getAttributeNamesInScope(PageContext.SESSION_SCOPE); e.hasMoreElements();) {
+                String name = e.nextElement();
                 if (match(name, attr)) {
                     removableAttributes.add(name);
                 }

@@ -154,7 +154,9 @@ public abstract class DataServlet extends HttpServlet {
                 }
             }
         }
-        return new Vector[] { fields, sets };
+        @SuppressWarnings("unchecked")
+        Vector<FieldDefinition>[] vectors = new Vector[] { fields, sets };
+        return vectors;
     }
 
     public static Vector<FieldDefinition> getAllFieldDefinitions(DataDefinition dd) {

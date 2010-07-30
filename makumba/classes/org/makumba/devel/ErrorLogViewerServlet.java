@@ -33,7 +33,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.collections.EnumerationUtils;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.commons.RuntimeWrappedException;
@@ -165,7 +164,7 @@ public class ErrorLogViewerServlet extends DataServlet {
                 LinkedHashSet<String> projections = new LinkedHashSet<String>();
                 for (int i = 0; i < results.size(); i++) {
                     Dictionary<String, Object> d = results.get(i);
-                    projections.addAll(EnumerationUtils.toList(d.keys()));
+                    projections.addAll(java.util.Collections.list(d.keys()));
                 }
 
                 // now iterate over all results

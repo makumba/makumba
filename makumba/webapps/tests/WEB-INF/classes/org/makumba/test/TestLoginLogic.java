@@ -2,18 +2,18 @@ package org.makumba.test;
 
 import org.makumba.AttributeNotFoundException;
 import org.makumba.Attributes;
-import org.makumba.Database;
 import org.makumba.LogicException;
+import org.makumba.Transaction;
 import org.makumba.UnauthenticatedException;
 
 public class TestLoginLogic {
 
-    public void checkAttributes(Attributes a, Database db) throws LogicException {
+    public void checkAttributes(Attributes a, Transaction db) throws LogicException {
         a.getAttribute("testAttribute");
 
     }
 
-    public Object findTestAttribute(Attributes a, Database db) throws LogicException {
+    public Object findTestAttribute(Attributes a, Transaction db) throws LogicException {
         try {
             a.getAttribute("username");
             a.getAttribute("password");

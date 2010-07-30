@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -90,8 +89,7 @@ public class TaglibDocGenerator {
         List<String> functionNames = new ArrayList<String>();
 
         // get all the tag and function elements
-        for (Iterator<Element> i = root.elementIterator(); i.hasNext();) {
-            Element e = i.next();
+        for (Element e : getElementList(root)) {
             boolean isTag = e.getName().equals("tag") && !e.elementText("name").equals("rickroll");
             boolean isFunction = e.getName().equals("function");
 
@@ -107,7 +105,7 @@ public class TaglibDocGenerator {
 
             // pre-processing for referred attributes: modify the document tree to include referenced attributes
             if (isTag) {
-                for (Element tagContent : (List<Element>) e.elements()) {
+                for (Element tagContent : getElementList(e)) {
                     if (tagContent.getName().equals("attribute")) {
                         if (tagContent.attributeValue("name") != null
                                 || tagContent.attributeValue("specifiedIn") != null) {
@@ -322,7 +320,7 @@ public class TaglibDocGenerator {
         s.append("!!Attributes");
         s.newLine();
 
-        List<Element> attributes = element.elements("attribute");
+        List<Element> attributes = getElementList(element);
         if (attributes.size() == 0) {
             s.append("This tag has no attributes");
             s.newLine();
@@ -369,6 +367,11 @@ public class TaglibDocGenerator {
             s.append("}]");
             s.newLine();
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Element> getElementList(Element element) {
+        return element.elements("attribute");
     }
 
     private void generateAttributeRow(Element attribute, BufferedWriter s, GenericAttributeTuple genericAttributeTuple,

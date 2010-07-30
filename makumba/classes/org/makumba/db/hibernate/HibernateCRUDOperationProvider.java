@@ -9,7 +9,6 @@ import java.util.Date;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.Iterator;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
@@ -95,7 +94,9 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
                 Method m = c.getMethod("get" + fieldNameInClass, new Class[] {});
 
-                Collection<Object> col = (Collection) m.invoke(baseObject, new Object[] {});
+                @SuppressWarnings("unchecked")
+                Collection<Object> invoke = (Collection<Object>) m.invoke(baseObject, new Object[] {});
+                Collection<Object> col = invoke;
                 if (col == null) {
                     col = new HashSet<Object>();
                     m = c.getMethod("set" + fieldNameInClass, new Class[] { Collection.class });
@@ -328,8 +329,8 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
         if (fi.getType().equals("set")) {
 
             try {
-
-                Collection values = (Collection) val;
+                @SuppressWarnings("unchecked")
+                Collection<Pointer> values = (Collection<Pointer>) val;
                 if (values.isEmpty()) {
                     return;
                 }
@@ -340,16 +341,18 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
 
                 Method m = c.getMethod("get" + getFieldNameInClass(c, fi.getName()), new Class[] {});
 
-                Collection<Object> col = (Collection) m.invoke(baseObject, new Object[] {});
+                @SuppressWarnings("unchecked")
+                Collection<Object> invoke = (Collection<Object>) m.invoke(baseObject, new Object[] {});
+                Collection<Object> col = invoke;
                 if (col == null) {
-                    col = new HashSet();
+                    col = new HashSet<Object>();
                     m = c.getMethod("set" + fi.getName(), new Class[] { Collection.class });
                     m.invoke(baseObject, new Object[] { col });
                 }
 
                 // we convert all the pointers to objects so Hibernate can handle them
-                for (Iterator i = values.iterator(); i.hasNext();) {
-                    Pointer p = (Pointer) i.next();
+                for (Pointer p : values) {
+
                     Class<?> c1 = getPointerClass(p.getType());
                     col.add(getPointedObject(t, c1, p));
                 }

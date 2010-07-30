@@ -17,7 +17,8 @@ public class ObjectTypeAST extends ExprTypeAST {
 
     private String objectType;
 
-    public ObjectTypeAST(AST lhs, AST rhs, Map aliasTypes, ObjectType typeComputer) throws RecognitionException {
+    public ObjectTypeAST(AST lhs, AST rhs, Map<String, String> aliasTypes, ObjectType typeComputer)
+            throws RecognitionException {
         super(-2);
         String type = null;
         if (lhs instanceof ObjectTypeAST) {
@@ -26,7 +27,7 @@ public class ObjectTypeAST extends ExprTypeAST {
                 throw new SemanticException("unknown alias: " + lhs + " in property reference: " + "of " + rhs);
             }
         } else {
-            type = (String) aliasTypes.get(lhs.getText());
+            type = aliasTypes.get(lhs.getText());
             if (type == null) {
                 throw new SemanticException("unknown alias: " + lhs.getText() + " in property reference: "
                         + lhs.getText() + "." + rhs.getText());
@@ -52,8 +53,8 @@ public class ObjectTypeAST extends ExprTypeAST {
         }
     }
 
-    public ObjectTypeAST(AST pointer, Map aliasTypes) throws SemanticException {
-        String type = (String) aliasTypes.get(pointer.getText());
+    public ObjectTypeAST(AST pointer, Map<String, String> aliasTypes) throws SemanticException {
+        String type = aliasTypes.get(pointer.getText());
         if (type == null) {
             throw new SemanticException("unknown alias: " + pointer.getText());
         }

@@ -575,9 +575,8 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     /**
      * Lets the responder write the pre- and postamble for the form, and writes the bodyContent inside. Resets all the
-     * variables.<br/>
-     * FIXME: this method has a lot of code specific to subclasses, i.e. delete or search forms. It might be better to
-     * override this method in the subclasses
+     * variables.<br/> FIXME: this method has a lot of code specific to subclasses, i.e. delete or search forms. It
+     * might be better to override this method in the subclasses
      * 
      * @param pageCache
      *            the page cache of the current page
@@ -652,8 +651,10 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
             }
             rootForm.responders.put(this.getTagKey(), responder.getResponderValue());
 
-            responder.setLazyEvaluatedInputs((HashMap<String, String>) pageCache.retrieve(
-                MakumbaJspAnalyzer.LAZY_EVALUATED_INPUTS, getTagKey()));
+            @SuppressWarnings("unchecked")
+            HashMap<String, String> retrieve = (HashMap<String, String>) pageCache.retrieve(
+                MakumbaJspAnalyzer.LAZY_EVALUATED_INPUTS, getTagKey());
+            responder.setLazyEvaluatedInputs(retrieve);
 
             if (findParentForm() == null) { // we are in the end of the root form - all child forms have a responder by
                 // now
@@ -731,6 +732,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         throw new RuntimeException("Houston, problem");
     }
 
+    @SuppressWarnings("unchecked")
     public HashMap<String, MultipleKey> getNestedFormNames(PageCache pageCache) {
         return (HashMap<String, MultipleKey>) pageCache.retrieve(MakumbaJspAnalyzer.NESTED_FORM_NAMES,
             findRootForm().getTagKey());

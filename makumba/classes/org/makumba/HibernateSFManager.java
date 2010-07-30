@@ -73,7 +73,7 @@ public class HibernateSFManager {
 
     private static Vector<String> externalConfigurationResources = new Vector<String>();
 
-    private static HashMap<String, Vector<Class>> externalClasses = new HashMap<String, Vector<Class>>();
+    private static HashMap<String, Vector<Class<?>>> externalClasses = new HashMap<String, Vector<Class<?>>>();
 
     private static Configuration configuredConfiguration;
 
@@ -121,7 +121,7 @@ public class HibernateSFManager {
 
         Configuration cfg = new AnnotationConfiguration().setProperties(p);
 
-        HashMap<String, Vector<Class>> classes = new HashMap<String, Vector<Class>>();
+        HashMap<String, Vector<Class<?>>> classes = new HashMap<String, Vector<Class<?>>>();
 
         for (String res : externalConfigurationResources) {
 
@@ -133,7 +133,7 @@ public class HibernateSFManager {
                 String packageName = res.substring(0, res.lastIndexOf("."));
 
                 if (!classes.containsKey(packageName)) {
-                    classes.put(packageName, new Vector<Class>());
+                    classes.put(packageName, new Vector<Class<?>>());
                 }
 
                 try {
@@ -147,7 +147,7 @@ public class HibernateSFManager {
 
         for (String packageName : classes.keySet()) {
             AnnotationConfiguration cfg1 = ((AnnotationConfiguration) cfg).addPackage(packageName);
-            Vector<Class> packageClasses = classes.get(packageName);
+            Vector<Class<?>> packageClasses = classes.get(packageName);
             for (int i = 0; i < packageClasses.size(); i++) {
                 cfg1.addAnnotatedClass(packageClasses.get(i));
             }
@@ -295,12 +295,12 @@ public class HibernateSFManager {
      *            Dog.class<br>
      *            Cat.class<br>
      */
-    public static void setExternalMappingClasses(HashMap<String, Vector<Class>> mappingClasses) {
+    public static void setExternalMappingClasses(HashMap<String, Vector<Class<?>>> mappingClasses) {
         externalClasses = mappingClasses;
     }
 
     public static String getFullyQualifiedName(String className) {
-        return (String) configuredConfiguration.getImports().get(nr.arrowToDoubleUnderscore(className));
+        return (String) configuredConfiguration.getImports().get(NameResolver.arrowToDoubleUnderscore(className));
     }
 
     public static Vector<String> getGeneratedClasses() {

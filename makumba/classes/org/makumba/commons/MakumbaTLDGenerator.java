@@ -71,7 +71,7 @@ public class MakumbaTLDGenerator {
         final String errorMsg = "Error processing '" + sourcePath + "': ";
 
         Element root = document.getRootElement();
-        for (Element tag : (List<Element>) root.elements()) {
+        for (Element tag : getElementList(root)) {
             if (tag.getName().equals("description")) {
                 // update makumba version place-holder
                 tag.setText(tag.getText().replace("@version@", version.getVersion()));
@@ -80,14 +80,14 @@ public class MakumbaTLDGenerator {
                 boolean isTag = tag.getName().equals("tag");
                 String tagName = tag.element("name").getText();
 
-                for (Element tagContent : (List<Element>) tag.elements()) {
+                for (Element tagContent : getElementList(tag)) {
 
                     if (tagContent.getName().equals("attribute")) {
                         if (tagContent.attributeValue("name") != null
                                 || tagContent.attributeValue("specifiedIn") != null) { // have a referring attribute
                             replaceReferencedAttribute(processedTags, errorMsg, tagName, tagContent);
                         } else { // normal attribute
-                            for (Element attributeContent : (List<Element>) tagContent.elements()) {
+                            for (Element attributeContent : getElementList(tagContent)) {
                                 String inheritedFrom = null;
                                 if (attributeContent.getName().equals("inheritedFrom")) {
                                     inheritedFrom = attributeContent.getText();
@@ -196,6 +196,11 @@ public class MakumbaTLDGenerator {
 
     }
 
+    @SuppressWarnings("unchecked")
+    private static List<Element> getElementList(Element list) {
+        return list.elements();
+    }
+
     /**
      * Replaces the content of a tag attribute using "specifiedIn" by the actual content
      * 
@@ -212,7 +217,7 @@ public class MakumbaTLDGenerator {
             String tagName, Element attributeTagContent) {
         Element newTag = getReferencedAttributes(processedTags, errorMsg, tagName, attributeTagContent, false);
         attributeTagContent.setAttributes(newTag.attributes());
-        final List<Element> elements = newTag.elements();
+        final List<Element> elements = getElementList(newTag);
         for (Element element : elements) {
             attributeTagContent.add((Element) element.clone());
         }
@@ -262,7 +267,7 @@ public class MakumbaTLDGenerator {
     }
 
     private static Element getAttributeFromTag(Element tag, String attribute) {
-        for (Element tagContent : (List<Element>) tag.elements()) {
+        for (Element tagContent : getElementList(tag)) {
             if (tagContent.getName().equals("attribute")) {
                 if (tagContent.element("name") != null && tagContent.element("name").getText().equals(attribute)) {
                     return (Element) tagContent.clone();

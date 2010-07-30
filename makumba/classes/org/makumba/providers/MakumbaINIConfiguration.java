@@ -72,9 +72,9 @@ public class MakumbaINIConfiguration extends HierarchicalINIConfiguration {
         if (s == null) {
             throw new ConfigurationError("Section " + section + " does not exist in Makumba.conf");
         }
-        java.util.Iterator<String> i = s.getKeys();
+        java.util.Iterator<?> i = s.getKeys();
         while (i.hasNext()) {
-            String k = i.next();
+            String k = (String) i.next();
             String originalK = k;
             // the ini configuration escapes the property delimiters so we have to unescape them here
             if (k.indexOf("..") > 0) {
@@ -107,8 +107,9 @@ public class MakumbaINIConfiguration extends HierarchicalINIConfiguration {
 
     public Map<String, Map<String, String>> getPropertiesStartingWith(String sectionPrefix) {
         LinkedHashMap<String, Map<String, String>> res = new LinkedHashMap<String, Map<String, String>>();
-        final Set<String> sectionNames = getSections();
-        for (String section : sectionNames) {
+        final Set<?> sectionNames = getSections();
+        for (Object s : sectionNames) {
+            String section = (String) s;
             if (section.startsWith(sectionPrefix)) {
                 res.put(section.substring(sectionPrefix.length()), getPropertiesAsMap(section));
             }

@@ -84,12 +84,12 @@ public class RequestAttributes implements Attributes {
         return (RequestAttributes) req.getAttribute(ATTRIBUTES_NAME);
     }
 
-    static Map<Object, Object> getFormRedirectionResponseParameters(HttpServletRequest req) {
+    static Map<?, ?> getFormRedirectionResponseParameters(HttpServletRequest req) {
         final HttpServletRequest httpServletRequest = req;
         final HttpSession session = httpServletRequest.getSession();
         final String suffix = "_" + httpServletRequest.getRequestURI();
 
-        Map<Object, Object> sessionMap = (Map<Object, Object>) session.getAttribute(ResponseControllerHandler.MAKUMBA_FORM_RELOAD_PARAMS
+        Map<?, ?> sessionMap = (Map<?, ?>) session.getAttribute(ResponseControllerHandler.MAKUMBA_FORM_RELOAD_PARAMS
                 + suffix);
         if (sessionMap == null) {
             return null;
@@ -177,7 +177,7 @@ public class RequestAttributes implements Attributes {
         return (HttpParameters) req.getAttribute(PARAMETERS_NAME);
     }
 
-    public static HttpParameters makeParameters(HttpServletRequest req, Map<Object, Object> reloadedParams) {
+    public static HttpParameters makeParameters(HttpServletRequest req, Map<?, ?> reloadedParams) {
         if (req.getContentType() != null && req.getContentType().indexOf("multipart") != -1) {
             return new MultipartHttpParameters(req);
         }
@@ -248,6 +248,7 @@ public class RequestAttributes implements Attributes {
         String s = "Makumba Atributes:\n";
         s += "\tSession: {";
         HttpSession ss = request.getSession(true);
+        @SuppressWarnings("unchecked")
         Enumeration<String> enumSession = ss.getAttributeNames();
         while (enumSession.hasMoreElements()) {
             String key = enumSession.nextElement();
@@ -259,7 +260,7 @@ public class RequestAttributes implements Attributes {
             }
         }
         s += "}\n";
-
+        @SuppressWarnings("unchecked")
         Enumeration<String> enumRequest = request.getAttributeNames();
         s += "\tRequest: {";
         while (enumRequest.hasMoreElements()) {
@@ -271,8 +272,9 @@ public class RequestAttributes implements Attributes {
                 s += ", ";
             }
         }
-        s += "}\n";
 
+        s += "}\n";
+        @SuppressWarnings("unchecked")
         Enumeration<String> enumParams = request.getParameterNames();
         s += "\tParameters: {";
         while (enumParams.hasMoreElements()) {
@@ -415,8 +417,11 @@ public class RequestAttributes implements Attributes {
      */
     public Map<String, Object> toMap() {
         HttpSession ss = request.getSession(true);
+        @SuppressWarnings("unchecked")
         Enumeration<String> enumSession = ss.getAttributeNames();
+        @SuppressWarnings("unchecked")
         Enumeration<String> enumRequest = request.getAttributeNames();
+        @SuppressWarnings("unchecked")
         Enumeration<String> enumParams = request.getParameterNames();
 
         Map<String, Object> allAttributes = new HashMap<String, Object>();

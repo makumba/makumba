@@ -328,9 +328,9 @@ public class ObjectImporter {
         if (s.trim().length() == 0) {
             return null;
         }
-        Iterator<Integer> f = dd.getFieldDefinition(fieldName).getValues().iterator();
+        Iterator<?> f = dd.getFieldDefinition(fieldName).getValues().iterator();
         for (String v : dd.getFieldDefinition(fieldName).getNames()) {
-            Integer i = f.next();
+            Integer i = (Integer) f.next();
             if (v.equals(s)) {
                 return i;
             }
@@ -639,7 +639,7 @@ public class ObjectImporter {
     // moved from dateImporter
     public void configure_date_Field(String fieldName, Properties markers) {
         base_configureField(fieldName, markers);
-        for (Enumeration e = markers.keys(); e.hasMoreElements();) {
+        for (Enumeration<?> e = markers.keys(); e.hasMoreElements();) {
             String s = (String) e.nextElement();
             if (s.startsWith(fieldName + ".format")) {
                 SimpleDateFormat dateFormat = new SimpleDateFormat(markers.getProperty(s).trim(),

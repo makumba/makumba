@@ -5,7 +5,7 @@ import antlr.ASTFactory;
 public class MDDASTFactory extends ASTFactory {
 
     @Override
-    public Class getASTNodeType(int tokenType) {
+    public Class<?> getASTNodeType(int tokenType) {
 
         switch (tokenType) {
             case MDDTokenTypes.TITLEFIELD:

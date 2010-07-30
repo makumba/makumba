@@ -24,7 +24,7 @@ import org.makumba.Transaction;
 import org.makumba.commons.DbConnectionProvider;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.attributes.RequestAttributes;
-
+import org.makumba.test.tags.FormsOQLTest;
 
 /**
  * This factory handles the creation, caching and retrieval of Responder objects.
@@ -76,7 +76,9 @@ public class ResponderFactory {
             if (o instanceof String) {
                 set.add((String) o);
             } else {
-                set.addAll((Vector) o);
+                @SuppressWarnings("unchecked")
+                Vector<String> o2 = (Vector<String>) o;
+                set.addAll(o2);
             }
         }
 
@@ -365,6 +367,7 @@ public class ResponderFactory {
 
         // store the results from each responder, needed for nested new/add forms wanting to refer to newly created
         // objects
+        @SuppressWarnings("unchecked")
         HashMap<String, Object> responderResults = (HashMap<String, Object>) req.getAttribute(Responder.FORM_RESULTS);
         if (responderResults == null) {
             responderResults = new HashMap<String, Object>();

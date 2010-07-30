@@ -102,7 +102,7 @@ public abstract class CRUDOperationProvider {
         deleteSet(t, base, fi);
 
         // if the new value is empty, we simply return
-        if (val == null || val == Pointer.NullSet || ((Vector) val).size() == 0) {
+        if (val == null || val == Pointer.NullSet || ((Vector<?>) val).size() == 0) {
             return;
         }
 
@@ -111,13 +111,13 @@ public abstract class CRUDOperationProvider {
 
     public void updateSet1(Transaction t, Pointer base, FieldDefinition fi, Object val) {
         // we update the set with the new values
-        Vector values = (Vector) val;
+        Vector<?> values = (Vector<?>) val;
 
         Dictionary<String, Object> data = new Hashtable<String, Object>(10);
         data.put(fi.getSubtable().getSetOwnerFieldName(), base);
 
-        for (Enumeration e = values.elements(); e.hasMoreElements();) {
-            data.put(fi.getSubtable().getSetMemberFieldName(), e.nextElement());
+        for (Object element : values) {
+            data.put(fi.getSubtable().getSetMemberFieldName(), element);
             insert(t, fi.getSubtable().getName(), data);
         }
     }

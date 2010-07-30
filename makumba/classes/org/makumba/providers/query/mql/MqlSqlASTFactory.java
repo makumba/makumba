@@ -48,12 +48,12 @@ public class MqlSqlASTFactory extends ASTFactory {
         // FIXME/TODO: why is this method overriding? the only difference seems to be in
         // ASTFActory: c = Utils.loadClass(className);
         // MqlSqlASTFactory: c = Class.forName(className);
-        Class c;
+        Class<?> c;
         AST t;
         try {
             c = Class.forName(className);
-            Class[] tokenArgType = new Class[] { antlr.Token.class };
-            Constructor ctor = c.getConstructor(tokenArgType);
+            Class<?>[] tokenArgType = new Class[] { antlr.Token.class };
+            Constructor<?> ctor = c.getConstructor(tokenArgType);
             if (ctor != null) {
                 t = (AST) ctor.newInstance(new Object[] { token }); // make a new one
                 initializeNode(t);
@@ -75,6 +75,7 @@ public class MqlSqlASTFactory extends ASTFactory {
      *            The class to instantiate.
      * @return The instantiated and initialized node.
      */
+    @SuppressWarnings("unchecked")
     @Override
     protected AST create(Class c) {
         AST t;

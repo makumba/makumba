@@ -29,7 +29,6 @@ import java.util.Vector;
 import org.makumba.DBError;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
-import org.makumba.MakumbaSystem;
 import org.makumba.db.makumba.DBConnection;
 import org.makumba.db.makumba.DBConnectionWrapper;
 import org.makumba.db.makumba.Database;
@@ -73,7 +72,7 @@ public class checkForeignKeys {
             for (int i = 0; i < tables.length; i++) {
                 System.out.println("\n**** Checking foreign keys of MDD '" + tables[i] + "', #" + (i + 1) + " of "
                         + tables.length + "\n");
-                DataDefinition dd = MakumbaSystem.getDataDefinition(tables[i]);
+                DataDefinition dd = DataDefinitionProvider.getInstance().getDataDefinition(tables[i]);
                 try {
                     TableManager table = (TableManager) d.getTable(dd.getName());
                     processDataDefinition(d, sqlConnection, dd, table);

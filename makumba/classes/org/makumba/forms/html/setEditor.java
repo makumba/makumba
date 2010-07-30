@@ -81,12 +81,14 @@ public class setEditor extends ptrEditor {
             String suffix) {
         Object o = super.readFrom(rf, fieldIndex, p, suffix);
         if (o == null) {
-            return new Vector();
+            return new Vector<Object>();
         }
 
         /* we remove all nulls from the input */
         if (o instanceof Vector) {
-            for (java.util.Iterator i = ((Vector) o).iterator(); i.hasNext();) {
+            @SuppressWarnings("unchecked")
+            Vector<Object> v = (Vector<Object>) o;
+            for (java.util.Iterator<Object> i = v.iterator(); i.hasNext();) {
                 if ("".equals(i.next())) {
                     i.remove();
                 }

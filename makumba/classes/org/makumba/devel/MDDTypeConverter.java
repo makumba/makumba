@@ -127,6 +127,7 @@ public class MDDTypeConverter {
             Logger.getLogger("org.makumba.devel").info("Making backup copy to " + tempFile.getAbsolutePath());
 
             String encoding = System.getProperty("file.encoding");
+            @SuppressWarnings("unchecked")
             List<String> lines = FileUtils.readLines(f, encoding);
             String[] fileContents = lines.toArray(new String[lines.size()]);
 

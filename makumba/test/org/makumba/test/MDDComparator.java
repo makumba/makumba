@@ -53,6 +53,7 @@ public class MDDComparator {
                 // RecordInfo.setWebappRoot(app.getPath());
                 DataDefinitionProvider.setWebappRoot(app.getPath());
 
+                @SuppressWarnings("unchecked")
                 Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zf.entries();
                 while (entries.hasMoreElements()) {
                     ZipEntry ze = entries.nextElement();
@@ -105,7 +106,7 @@ public class MDDComparator {
      * Extract all corpus MDDs in a zip file
      */
     private static void extractMDDsFile(ZipFile zf, File tempDir) throws IOException {
-
+        @SuppressWarnings("unchecked")
         Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zf.entries();
         while (entries.hasMoreElements()) {
             ZipEntry ze = entries.nextElement();

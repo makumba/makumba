@@ -51,6 +51,7 @@ import org.makumba.providers.TransactionProvider;
  * @see org.makumba.MakumbaSystem#getConnectionTo(java.lang.String)
  * @since makumba-0.5
  */
+@SuppressWarnings("deprecation")
 public interface Transaction extends Database {
     /**
      * Read fields of a record. Database querying is logged (see {@link java.util.logging.Logger},
@@ -320,10 +321,10 @@ public interface Transaction extends Database {
      * Java methods, and basically does the following steps:
      * <ol>
      * <li>Read all the existing values of the field <code>setName</code> of the object <code>basePointer</code> into a
-     * collection, using {@link #readExternalSetValues(Pointer, String)}</li>
-     * <li>Remove the set elements specified in the parameter <code>deleteElements</code></li>
-     * <li>Add the set elements specified in the parameter <code>newElements</code></li>
-     * <li>Use {@link #update(Pointer, Dictionary)} to write the new set values to the database</li>
+     * collection, using {@link #readExternalSetValues(Pointer, String)}</li> <li>Remove the set elements specified in
+     * the parameter <code>deleteElements</code></li> <li>Add the set elements specified in the parameter <code>
+     * newElements</code></li> <li>Use {@link #update(Pointer, Dictionary)} to write the new set values to the database
+     * </li>
      * </ol>
      * 
      * @param basePointer
@@ -345,8 +346,8 @@ public interface Transaction extends Database {
      * shortcut to other Makumba API and Java methods, and basically does the following steps:
      * <ol>
      * <li>Run {@link #executeQuery(String, Object)} to read all the values of the field <code>setName</code> of the
-     * object <code>basePointer</code>.</li>
-     * <li>Convert the resulting <code>Vector<Dictionary<String, Object>></code> into a <code>Vector<Pointer></code></li>
+     * object <code>basePointer</code>.</li> <li>Convert the resulting <code>Vector<Dictionary<String, Object>></code>
+     * into a <code>Vector<Pointer></code></li>
      * </ol>
      * 
      * @param basePointer

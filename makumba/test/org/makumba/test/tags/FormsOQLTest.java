@@ -27,8 +27,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.Dictionary;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -341,16 +342,21 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         form.setParameter("age", "invalidInt");
         form.setParameter("weight", "invalidReal");
         form.setParameter("email", "invalidEmail");
-        final Date first = new Date(90, 0, 1);
-        form.setParameter("firstSex_0", String.valueOf(first.getDate()));
-        form.setParameter("firstSex_1", String.valueOf(first.getMonth()));
-        form.setParameter("firstSex_2", String.valueOf(first.getYear() + 1900));
-        form.setParameter("birthdate_0", String.valueOf(MakumbaTestData.birthdateJohn.getDate()));
-        form.setParameter("birthdate_1", String.valueOf(MakumbaTestData.birthdateJohn.getMonth()));
-        form.setParameter("birthdate_2", String.valueOf(MakumbaTestData.birthdateJohn.getYear() + 1800));
-        form.setParameter("uniqDate_0", String.valueOf(MakumbaTestData.birthdateJohn.getDate()));
-        form.setParameter("uniqDate_1", String.valueOf(MakumbaTestData.birthdateJohn.getMonth()));
-        form.setParameter("uniqDate_2", String.valueOf(MakumbaTestData.birthdateJohn.getYear() + 1900));
+        GregorianCalendar first = new GregorianCalendar(1990, 0, 1);
+        form.setParameter("firstSex_0", String.valueOf(first.get(Calendar.DAY_OF_MONTH)));
+        form.setParameter("firstSex_1", String.valueOf(first.get(Calendar.MONTH)));
+        form.setParameter("firstSex_2", String.valueOf(first.get(Calendar.YEAR)));
+
+        GregorianCalendar john = new GregorianCalendar();
+        john.setTime(MakumbaTestData.birthdateJohn);
+        form.setParameter("birthdate_0", String.valueOf(john.get(Calendar.DAY_OF_MONTH)));
+        form.setParameter("birthdate_1", String.valueOf(john.get(Calendar.MONTH)));
+        form.setParameter("birthdate_2", String.valueOf(john.get(Calendar.YEAR) - 100));
+
+        form.setParameter("uniqDate_0", String.valueOf(john.get(Calendar.DAY_OF_MONTH)));
+        form.setParameter("uniqDate_1", String.valueOf(john.get(Calendar.MONTH)));
+        form.setParameter("uniqDate_2", String.valueOf(john.get(Calendar.YEAR)));
+
         form.setParameter("hobbies", " ");
         form.setParameter("uniqInt", MakumbaTestData.uniqInt.toString());
         form.setParameter("uniqChar", MakumbaTestData.uniqChar);
