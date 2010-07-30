@@ -2,10 +2,10 @@ header {
     package org.makumba.providers.datadefinition.mdd;
 }
 
-/**
+{/**
  * MDD builder. Transforms the analysed tree and builds DataDefinition and FieldDefinition objects
  */
-class MDDPostProcessorBaseWalker extends TreeParser;
+@SuppressWarnings("all")} class MDDPostProcessorBaseWalker extends TreeParser;
 
 options {
     importVocab=MDD;

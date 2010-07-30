@@ -2,6 +2,7 @@ header {
     package org.makumba.providers.datadefinition.mdd;
 }
 
+
 class MDDLexer extends Lexer;
 
 options {
@@ -167,7 +168,7 @@ LOWER: "lower";
 
 
 // TODO throw better exceptions when no message for validation rules
-class MDDBaseParser extends Parser;
+{@SuppressWarnings("all")} class MDDBaseParser extends Parser;
 
 options {
         buildAST=true;
