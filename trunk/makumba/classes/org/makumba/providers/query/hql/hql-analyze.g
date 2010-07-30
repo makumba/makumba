@@ -3,7 +3,7 @@ header
 	
 // $Id$
 package org.makumba.providers.query.hql;
-import org.hibernate.hql.antlr.HqlTokenTypes;
+//import org.hibernate.hql.antlr.HqlTokenTypes;
 }
 {
 /**
