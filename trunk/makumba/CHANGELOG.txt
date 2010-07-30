@@ -8,6 +8,10 @@
 TO BE RELEASED IMMEDIATELY (No need for more testing)
 -----------------------------------------------
 
+INTERNAL CHANGES
+manu: removing the old ANT targets and files to build list and form separately
+
+
 NOT TO BE RELEASED YET (need more testing)
 manu: auto-complete for mak:input (char and ptr)
 
