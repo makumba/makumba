@@ -305,9 +305,6 @@
 	<target name="clean" description="delete all generated files and backups">
 		<delete includeEmptyDirs="true" failonerror="false">
 			<fileset dir="build" />
-			<fileset dir="doc/api" includes="**/*.html,**/package-list" excludes="API_users_guide.html" defaultExcludes="no" />
-			<fileset dir="doc/api/org" />
-			<fileset dir="doc/hacking/javadoc" />
 			<fileset dir="META-INF" />
 			<fileset dir="lib" includes="makumba.jar,makumba-*-template.zip" />
 			<fileset dir="work" />
@@ -940,6 +937,176 @@ The JSP tests will deploy on another dir, which can be configured via the proper
 		</antcall>
 	</target>
 
+
+	<!-- Targets for modular building (list, forms, commons, ...) -->
+
+	<target name="compileList" depends="ANTLRParserGeneration" description="compile all java files for list">
+		<javac srcdir="classes" destdir="build" source="1.5" target="1.5" debug="on" includes="org/makumba/list/**/*.java">
+			<classpath refid="project.class.path" />
+		</javac>
+	</target>
+
+	<target name="compileForms" depends="ANTLRParserGeneration" description="compile all java files for forms">
+		<javac srcdir="classes" destdir="build" source="1.5" target="1.5" debug="on" includes="org/makumba/forms/**/*.java">
+			<classpath refid="project.class.path" />
+		</javac>
+	</target>
+
+	<target name="compileAnalyser" depends="ANTLRParserGeneration" description="compile all java files for analyser">
+		<javac srcdir="classes" destdir="build" source="1.5" target="1.5" debug="on" includes="org/makumba/analyser/**/*.java">
+			<classpath refid="project.class.path" />
+		</javac>
+	</target>
+
+	<target name="compileMDDProvider" depends="ANTLRParserGeneration" description="compile all java files for MDDProvider">
+		<javac srcdir="classes" destdir="build" source="1.5" target="1.5" debug="on" includes="org/makumba/providers/datadefinition/makumba/**/*.java">
+			<classpath refid="project.class.path" />
+		</javac>
+	</target>
+
+	<target name="compileCommons" depends="ANTLRParserGeneration" description="compile all java files for commons">
+		<javac srcdir="classes" destdir="build" source="1.5" target="1.5" debug="on" includes="org/makumba/*.java, org/makumba/commons/**/*.java, org/makumba/providers/*.java, org.makumba.controller/**/*.java">
+			<classpath refid="project.class.path" />
+		</javac>
+	</target>
+
+	<target name="compileRest" depends="ANTLRParserGeneration" description="compile all java files for list">
+		<javac srcdir="classes" destdir="build" source="1.5" target="1.5" debug="on" excludes="org/makumba/list/**/*.java, org/makumba/forms/**/*.java, org/makumba/analyser/**/*.java, org/makumba/providers/datadefinition/makumba/**/*.java">
+			<classpath refid="project.class.path" />
+		</javac>
+	</target>
+
+
+	<target name="makeListSource" depends="clean">
+		<mkdir dir="source/list/classes" />
+		<copy todir="source/list/classes">
+			<fileset dir="classes">
+				<include name="**/makumba/list/**" />
+			</fileset>
+		</copy>
+		<mkdir dir="source/list/META-INF" />
+		<copy file="classes/META-INF/taglib-list-oql.tld" todir="source/list/META-INF" />
+		<copy file="classes/META-INF/taglib-list-hql.tld" todir="source/list/META-INF" />
+		<copy file="build-list.xml" tofile="source/list/build.xml" />
+
+		<zip zipfile="source/makumba-list-src.zip">
+			<fileset dir="source" includes="list/**" />
+		</zip>
+
+		<delete includeEmptyDirs="true" failonerror="false">
+			<fileset dir="source/list" />
+		</delete>
+	</target>
+
+	<target name="makeFormSource" depends="clean">
+		<mkdir dir="source/forms/classes" />
+		<copy todir="source/forms/classes">
+			<fileset dir="classes">
+				<include name="**/makumba/forms/**" />
+			</fileset>
+		</copy>
+		<mkdir dir="source/forms/META-INF" />
+		<copy file="classes/META-INF/taglib-forms.tld" todir="source/forms/META-INF" />
+		<copy file="build-forms.xml" tofile="source/forms/build.xml" />
+
+		<zip zipfile="source/makumba-forms-src.zip">
+			<fileset dir="source" includes="forms/**" />
+		</zip>
+
+		<delete includeEmptyDirs="true" failonerror="false">
+			<fileset dir="source/forms" />
+		</delete>
+	</target>
+
+	<target name="makeCommonsCompiled" depends="jarAnalyser, jarMDDProvider, jarCommons, jarDB">
+		<mkdir dir="source/commons" />
+		<copy file="lib/makumba-commons.jar" todir="source/commons" />
+		<copy file="lib/makumba-db.jar" todir="source/commons" />
+		<copy file="lib/makumba-analyser.jar" todir="source/commons" />
+		<copy file="lib/makumba-datadefinitionprovider.jar" todir="source/commons" />
+		<mkdir dir="source/commons/lib" />
+		<copy todir="source/commons/lib">
+			<fileset dir="lib">
+				<include name="**/*.jar" />
+				<exclude name="makumba*.jar" />
+			</fileset>
+		</copy>
+
+		<zip zipfile="source/makumba-lib.zip">
+			<fileset dir="source/" includes="commons/**" />
+		</zip>
+
+		<delete includeEmptyDirs="true" failonerror="false">
+			<fileset dir="source/commons" />
+		</delete>
+	</target>
+
+	<target name="jarList" description="make a jar for the list in ./lib" depends="compileList">
+		<mkdir dir="${jar.dir}/lib" />
+		<antcall target="makeManifest" />
+		<jar jarfile="${jar.dir}/lib/makumba-list.jar" manifest="manifest.mf">
+			<fileset dir="classes" includes="org/makumba/list/**/*.class" defaultExcludes="no" />
+			<fileset dir="." includes="COPYING.txt" defaultExcludes="no" />
+			<metainf dir="classes/META-INF" includes="taglib-list-oql.tld,taglib-list-hql.tld" defaultExcludes="no" />
+		</jar>
+	</target>
+
+	<target name="jarForms" description="make a jar for the forms in ./lib" depends="compileForms">
+		<mkdir dir="${jar.dir}/lib" />
+		<antcall target="makeManifest" />
+		<jar jarfile="${jar.dir}/lib/makumba-forms.jar" manifest="manifest.mf">
+			<fileset dir="classes" includes="org/makumba/forms/**/*.class" defaultExcludes="no" />
+			<fileset dir="." includes="COPYING.txt" defaultExcludes="no" />
+			<metainf dir="classes/META-INF" includes="taglib-forms.tld" defaultExcludes="no" />
+		</jar>
+	</target>
+
+	<target name="jarAnalyser" description="make a jar for the analyser in ./lib" depends="compileAnalyser">
+		<mkdir dir="${jar.dir}/lib" />
+		<antcall target="makeManifest" />
+		<jar jarfile="${jar.dir}/lib/makumba-analyser.jar" manifest="manifest.mf">
+			<fileset dir="classes" includes="org/makumba/analyser/**/*.class" defaultExcludes="no" />
+			<fileset dir="." includes="COPYING.txt" defaultExcludes="no" />
+		</jar>
+	</target>
+
+	<target name="jarMDDProvider" description="make a jar for the MDD provider in ./lib" depends="compileMDDProvider">
+		<mkdir dir="${jar.dir}/lib" />
+		<antcall target="makeManifest" />
+		<jar jarfile="${jar.dir}/lib/makumba-datadefinitionprovider.jar" manifest="manifest.mf">
+			<fileset dir="classes" includes="org/makumba/providers/datadefinition/makumba/**/*.class" defaultExcludes="no" />
+			<fileset dir="." includes="COPYING.txt" defaultExcludes="no" />
+		</jar>
+	</target>
+
+	<target name="jarDB" description="make a jar for the rest in ./lib" depends="compile">
+		<mkdir dir="${jar.dir}/lib" />
+		<antcall target="makeManifest" />
+		<jar jarfile="${jar.dir}/lib/makumba-db.jar" manifest="manifest.mf">
+			<fileset dir="classes" includes="org/makumba/*.class, org/makumba/commons/**/*.class, org/makumba/db/*/*.class, org/makumba/providers/*.class" defaultExcludes="no" />
+			<fileset dir="." includes="COPYING.txt" defaultExcludes="no" />
+		</jar>
+	</target>
+
+
+	<target name="jarCommons" description="make a jar for the rest in ./lib" depends="compile">
+		<mkdir dir="${jar.dir}/lib" />
+		<antcall target="makeManifest" />
+		<jar jarfile="${jar.dir}/lib/makumba-commons.jar" manifest="manifest.mf">
+			<fileset dir="classes" includes="org/makumba/*.class, org/makumba/commons/**/*.class, org/makumba/controller/**/*.class, org/makumba/providers/*.class" defaultExcludes="no" />
+			<fileset dir="." includes="COPYING.txt" defaultExcludes="no" />
+		</jar>
+	</target>
+
+	<target name="jarRest" description="make a jar for the rest in ./lib" depends="compileRest">
+		<mkdir dir="${jar.dir}/lib" />
+		<antcall target="makeManifest" />
+		<jar jarfile="${jar.dir}/lib/makumba-rest.jar" manifest="manifest.mf">
+			<fileset dir="classes" includes="org/makumba/**/*.mdd, org/**/*.class, org/**/*.properties, org/makumba/devel/codeTemplates/*.properties" excludes="org/makumba/list/**/*.class, org/makumba/forms/**/*.class, org/makumba/analyser/**/*.class, org/makumba/providers/datadefinition/makumba/**/*.class" defaultExcludes="no" />
+			<fileset dir="." includes="COPYING.txt" defaultExcludes="no" />
+		</jar>
+	</target>
+
 	<!-- Miscallaneous targets -->
 
 	<target name="installAntLibraries" description="copy required lib to ANT home so the FTP and SCP tasks works and doc can be uploaded">
@@ -1016,11 +1183,7 @@ package org.makumba]]>
 			<format property="javadoc.startup.time" pattern="yyyy-MM-dd HH:mm" />
 		</tstamp>
 
-		<echo>- copying scripts /doc/scripts</echo>
-		<copy file="${jar.dir}/classes/makumbaResources/javaScript/kruseCalendarPopup_combined.js" tofile="${jar.dir}/doc/scripts/kruseCalendarPopup_combined.js" />
-		<copy file="${jar.dir}/classes/makumbaResources/javaScript/makumbaDateFunctions.js" tofile="${jar.dir}/doc/scripts/makumbaDateFunctions.js" />
-		<echo>- generating doc/api</echo>
-		<!-- <loadfile property="leftMenuContent" srcfile="${documentation.path}/JSPWiki/api/leftMenu.html" /> -->
+        <!-- <loadfile property="leftMenuContent" srcfile="${documentation.path}/JSPWiki/api/leftMenu.html" /> -->
 
 		<javadoc destdir="${documentation.path}/JSPWiki/api" sourcepath="classes" packagenames="org.makumba" notree="true" noindex="true" nohelp="true" windowtitle="Makumba" classpathref="project.class.path" Version="true" Author="true" additionalparam="-breakiterator" doctitle="Makumba API Documentation" stylesheetfile="${documentation.path}/JSPWiki/templates/makumba/jspwiki-api.css">
 			<!--
@@ -1099,5 +1262,6 @@ package org.makumba]]>
 			<fileset dir="${documentation.path}/JSPWiki/api-developer/" />
 		</jar>
  	</target>
+
 
 </project>
