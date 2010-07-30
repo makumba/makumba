@@ -5,8 +5,8 @@ package org.makumba.providers.query.mql;
 /** Makumba adaptation of the Hibernate hql-sql.g 
  * The few changes are marked with ********* Mql addition	
  * */
-import java.util.logging.Logger;
-import java.util.logging.Level;
+//import java.util.logging.Logger;
+//import java.util.logging.Level;
 }
 
 {/**
@@ -56,7 +56,7 @@ tokens
 
 // -- Declarations --
 {
-	private static Logger log = Logger.getLogger("org.makumba.db.query.compilation");
+	private static java.util.logging.Logger log = java.util.logging.Logger.getLogger("org.makumba.db.query.compilation");
 
 	private int level = 0;
 	private boolean inSelect = false;
@@ -129,19 +129,19 @@ tokens
 			this.statementType = statementType;
 		}
 		currentStatementType = statementType;
-		if ( log.isLoggable(Level.FINE) ) {
+		if ( log.isLoggable(java.util.logging.Level.FINE) ) {
 			log.fine( statementName + " << begin [level=" + level + ", statement=" + this.statementTypeName + "]" );
 		}
 	}
 
 	private void beforeStatementCompletion(String statementName) {
-		if ( log.isLoggable(Level.FINE) ) {
+		if ( log.isLoggable(java.util.logging.Level.FINE) ) {
 			log.fine( statementName + " : finishing up [level=" + level + ", statement=" + statementTypeName + "]" );
 		}
 	}
 
 	private void afterStatementCompletion(String statementName) {
-		if ( log.isLoggable(Level.FINE) ) {
+		if ( log.isLoggable(java.util.logging.Level.FINE) ) {
 			log.fine( statementName + " >> end [level=" + level + ", statement=" + statementTypeName + "]" );
 		}
 		level--;
