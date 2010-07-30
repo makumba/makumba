@@ -1,16 +1,17 @@
 header
 {
+	
 // $Id$
 package org.makumba.providers.query.hql;
 import org.hibernate.hql.antlr.HqlTokenTypes;
 }
-
+{
 /**
  * Hibernate Query Language Type Analyzer.<br>
  * Inspired from hql-sql.g by Joshua Davis
  * @author Cristian Bogdan
  */
-class HqlAnalyzeBaseWalker extends TreeParser;
+@SuppressWarnings("all")} class HqlAnalyzeBaseWalker extends TreeParser;
 
 options
 {
