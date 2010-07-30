@@ -27,17 +27,16 @@ import javax.servlet.jsp.JspException;
 
 import org.makumba.LogicException;
 import org.makumba.MakumbaError;
-import org.makumba.MakumbaSystem;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.valuecomputer.ValueComputer;
+import org.makumba.providers.DataDefinitionProvider;
 
 /**
- * mak:value tag<br/>
- * FIXME use formatters in order to compute the editor fields<br/>
- * TODO implement support for in-place edition of dates and others
+ * mak:value tag<br/> FIXME use formatters in order to compute the editor fields<br/> TODO implement support for
+ * in-place edition of dates and others
  * 
  * @author Cristian Bogdan
  * @author Manuel Gay
@@ -134,7 +133,7 @@ public class ValueTag extends GenericListTag {
         }
 
         if (printVar != null) {
-            setType(pageCache, printVar, MakumbaSystem.makeFieldOfType(printVar, "char"));
+            setType(pageCache, printVar, DataDefinitionProvider.getInstance().makeFieldOfType(printVar, "char"));
         }
 
     }
