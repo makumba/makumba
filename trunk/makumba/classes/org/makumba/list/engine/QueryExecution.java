@@ -98,7 +98,8 @@ public class QueryExecution {
 
     /**
      * Gets the QueryExecution for the given key, builds one if needed. Every list tag (QueryTag) calls this method. A
-     * ListQueryTag will be built only in the first parentIteration and will be returned at next parentIterations.
+     * ListQueryTag will be built only in the first parentIteration and will be returned at next parentIterations. If
+     * defaultLimit is indicated uses the default values for offset/limit from the list tag.
      * 
      * @param key
      *            The tag key of the tag calling the QueryExecution
@@ -110,23 +111,9 @@ public class QueryExecution {
      *            Limit at which the iteration should stop
      * @throws LogicException
      */
-    public static QueryExecution getFor(MultipleKey key, PageContext pageContext, String offset, String limit)
-            throws LogicException {
-        HashMap<MultipleKey, QueryExecution> executions = (HashMap<MultipleKey, QueryExecution>) pageContext.getAttribute(EXECUTIONS);
-
-        QueryExecution lqe = executions.get(key);
-        if (lqe == null) {
-            executions.put(key, lqe = new QueryExecution(key, pageContext, offset, limit));
-        }
-        return lqe;
-    }
-
-    /**
-     * Like {@link #getFor(MultipleKey, PageContext, String, String)}, but uses the default values for offset/limit from
-     * the list tag.
-     */
     public static QueryExecution getFor(MultipleKey key, PageContext pageContext, String offset, String limit,
             String defaultLimit) throws LogicException {
+        @SuppressWarnings("unchecked")
         HashMap<MultipleKey, QueryExecution> executions = (HashMap<MultipleKey, QueryExecution>) pageContext.getAttribute(EXECUTIONS);
 
         QueryExecution lqe = executions.get(key);
@@ -151,28 +138,11 @@ public class QueryExecution {
      *            Limit at which the iteration should stop
      * @throws LogicException
      */
-    private QueryExecution(MultipleKey key, PageContext pageContext, String offset, String limit) throws LogicException {
-        currentDataSet = (Stack<Dictionary<String, Object>>) pageContext.getAttribute(CURRENT_DATA_SET);
-        ComposedQuery cq = QueryTag.getQuery(AnalysableElement.getPageCache(pageContext,
-            MakumbaJspAnalyzer.getInstance()), key);
-        QueryProvider qep = QueryProvider.makeQueryRunner(GenericListTag.getDataSourceName(pageContext),
-            MakumbaJspAnalyzer.getQueryLanguage(AnalysableElement.getPageCache(pageContext,
-                MakumbaJspAnalyzer.getInstance())), PageAttributes.getAttributes(pageContext));
-
-        try {
-            // Attributes.MA args = new Attributes.MA(PageAttributes.getAttributes(pageContext));
-            // query parameters are actually in the transaction context (the page context)
-            listData = cq.execute(qep, null, new Evaluator(pageContext), computeLimit(pageContext, offset, 0),
-                computeLimit(pageContext, limit, -1));
-        } finally {
-            qep.close();
-        }
-    }
-
-    /** Like {@link #QueryExecution(MultipleKey, PageContext, String, String)}, but uses default limit/offset parameters */
     private QueryExecution(MultipleKey key, PageContext pageContext, String offset, String limit, String defaultLimit)
             throws LogicException {
-        currentDataSet = (Stack<Dictionary<String, Object>>) pageContext.getAttribute(CURRENT_DATA_SET);
+        @SuppressWarnings("unchecked")
+        Stack<Dictionary<String, Object>> attribute = (Stack<Dictionary<String, Object>>) pageContext.getAttribute(CURRENT_DATA_SET);
+        currentDataSet = attribute;
         ComposedQuery cq = QueryTag.getQuery(AnalysableElement.getPageCache(pageContext,
             MakumbaJspAnalyzer.getInstance()), key);
         QueryProvider qep = QueryProvider.makeQueryRunner(GenericListTag.getDataSourceName(pageContext),
@@ -180,10 +150,19 @@ public class QueryExecution {
                 MakumbaJspAnalyzer.getInstance())), PageAttributes.getAttributes(pageContext));
         try {
             // Attributes.MA args = new Attributes.MA(PageAttributes.getAttributes(pageContext));
-            int defaultLimitInt = QueryExecution.computeLimit(pageContext, defaultLimit, -1, -1);
+
+            int lim = -1;
+            int off = 0;
+            if (defaultLimit != null) {
+                int defaultLimitInt = QueryExecution.computeLimit(pageContext, defaultLimit, -1, -1);
+                lim = computeLimit(pageContext, limit, defaultLimitInt, -1);
+                off = computeLimit(pageContext, offset, 0, 0);
+            } else {
+                off = computeLimit(pageContext, offset, 0);
+                lim = computeLimit(pageContext, limit, -1);
+            }
             // query parameters are actually in the transaction context (the page context)
-            listData = cq.execute(qep, null, new Evaluator(pageContext), computeLimit(pageContext, offset, 0, 0),
-                computeLimit(pageContext, limit, defaultLimitInt, -1));
+            listData = cq.execute(qep, null, new Evaluator(pageContext), off, lim);
         } finally {
             qep.close();
         }
