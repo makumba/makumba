@@ -152,7 +152,7 @@ public class ValueComputer {
      * @throws LogicException
      */
     public Object getValue(javax.servlet.jsp.PageContext pc) throws LogicException {
-        return QueryExecution.getFor(getQueryKey(), pc, null, null).currentListData().data[projectionIndex];
+        return QueryExecution.getFor(getQueryKey(), pc, null, null, null).currentListData().data[projectionIndex];
     }
 
     /**
