@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 import javax.el.ValueExpression;
 import javax.faces.component.UIComponent;
+import javax.faces.component.UIComponentBase;
 import javax.faces.component.visit.VisitCallback;
 import javax.faces.component.visit.VisitContext;
 import javax.faces.component.visit.VisitResult;
@@ -18,6 +19,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseId;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
+import javax.faces.view.StateManagementStrategy;
 import javax.faces.view.facelets.FaceletException;
 
 import org.makumba.ProgrammerError;
@@ -36,11 +38,35 @@ import com.sun.faces.facelets.component.UIRepeat;
 
 public class UIRepeatListComponent extends UIRepeat {
 
+    /*
+     * Since UIInstructions does not update UIComponent.CURRENT_COMPONENT, we wrap it in a normal component
+     */
+    public static final class UIInstructionWrapper extends UIComponentBase {
+        private final UIComponent kid;
+
+        private UIInstructionWrapper(UIComponent kid) {
+            this.kid = kid;
+            kid.setParent(null);
+            getChildren().add(kid);
+        }
+
+        @Override
+        public String getFamily() {
+            return kid.getFamily();
+        }
+
+        /*
+         * this most probably returns true 
+         */
+        @Override
+        public boolean isTransient() {
+            return kid.isTransient();
+        }
+    }
+
     static final String CURRENT_DATA = "org.makumba.list.currentData";
 
     static final private Dictionary<String, Object> NOTHING = new ArrayMap();
-
-    static final String CURRENT_LIST = "org.makumba.list.currentList";
 
     String[] queryProps = new String[6];
 
@@ -56,8 +82,6 @@ public class UIRepeatListComponent extends UIRepeat {
 
     // current iteration of this list
     transient ArrayMap currentData;
-
-    private UIRepeatListComponent parent;
 
     private String prefix;
 
@@ -136,14 +160,14 @@ public class UIRepeatListComponent extends UIRepeat {
     }
 
     protected void onlyOuterListArgument(String s) {
-        UIRepeatListComponent c = this.findMakListParent(false);
+        UIRepeatListComponent c = UIRepeatListComponent.findMakListParent(this, false);
         if (c != null) {
             throw new FaceletException(s + "can be indicated only for root mak:lists");
         }
     }
 
-    private UIRepeatListComponent findMakListParent(boolean objectToo) {
-        UIComponent c = getParent();
+    private static UIRepeatListComponent findMakListParent(UIComponent current, boolean objectToo) {
+        UIComponent c = current.getParent();
         while (c != null && !(c instanceof UIRepeatListComponent)) {
             // TODO: honor also objectToo
             c = c.getParent();
@@ -152,14 +176,15 @@ public class UIRepeatListComponent extends UIRepeat {
         return (UIRepeatListComponent) c;
     }
 
-    private boolean beforeIteration() {
-
-        if (findMakListParent(true) == null) {
-            startMakListGroup();
+    private boolean beforeIteration(PhaseId phaseId) {
+        if (findMakListParent(this, true) == null) {
+            startMakListGroup(phaseId);
         }
         // TODO: check whether we really want to keep the data in the grouper after iteration
         // this is only useful before a postback which will not request this list to re-render
-        final List<ArrayMap> iterationGroupData = listData.getData(getCurrentDataStack(), false);
+
+        final List<ArrayMap> iterationGroupData = listData != null ? listData.getData(getCurrentDataStack(), false)
+                : null;
 
         if (iterationGroupData == null) {
             return false;
@@ -191,21 +216,17 @@ public class UIRepeatListComponent extends UIRepeat {
         setBegin(0);
         setEnd(iterationGroupData.size());
 
-        parent = getCurrentlyRunning();
-        FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(CURRENT_LIST, this);
-
         return true;
     }
 
     private void afterIteration() {
         // this list is done, no more current value in stack
         getCurrentDataStack().pop();
-        FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(CURRENT_LIST, parent);
     }
 
     @Override
     public void process(FacesContext context, PhaseId p) {
-        if (!beforeIteration()) {
+        if (!beforeIteration(p)) {
             return;
         }
         try {
@@ -216,12 +237,28 @@ public class UIRepeatListComponent extends UIRepeat {
     }
 
     @Override
-    public boolean visitTree(VisitContext context, VisitCallback callback) {
-        if (!beforeIteration()) {
+    public boolean visitTree(VisitContext c, final VisitCallback callback) {
+
+        // if listData is null, we are probably being restored, so we allow
+        if (!(callback instanceof StateManagementStrategy) && !beforeIteration(null)) {
             return false;
         }
         try {
-            return super.visitTree(context, callback);
+            /* new VisitCallback() {
+
+            @Override
+            public VisitResult visit(VisitContext context, UIComponent target) {
+                context.getFacesContext().getExternalContext().getRequestMap().put("mak.current", target);
+                try {
+                    return callback.visit(context, target);
+                } finally {
+                    context.getFacesContext().getExternalContext().getRequestMap().remove("mak.current");
+                }
+            }
+
+            }*/
+
+            return super.visitTree(c, callback);
         } finally {
             afterIteration();
         }
@@ -234,9 +271,8 @@ public class UIRepeatListComponent extends UIRepeat {
     }
 
     public static UIRepeatListComponent getCurrentlyRunning() {
-        return (UIRepeatListComponent) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get(
-            CURRENT_LIST);
-
+        return findMakListParent((UIComponent) FacesContext.getCurrentInstance().getAttributes().get(
+            UIComponent.CURRENT_COMPONENT), true);
     }
 
     static int composedQueries = NamedResources.makeStaticCache("JSF ComposedQueries", new NamedResourceFactory() {
@@ -254,6 +290,23 @@ public class UIRepeatListComponent extends UIRepeat {
     });
 
     public void analyze() {
+        visitStaticTree(this, new VisitCallback() {
+            @Override
+            public VisitResult visit(VisitContext context, UIComponent target) {
+                if (target instanceof UIInstructionWrapper) {
+                    return VisitResult.REJECT;
+                }
+
+                for (int i = 0; i < target.getChildren().size(); i++) {
+                    final UIComponent kid = target.getChildren().get(i);
+                    if (kid instanceof UIInstructions) {
+                        target.getChildren().set(i, new UIInstructionWrapper(kid));
+                        // kid.setParent(x);
+                    }
+                }
+                return VisitResult.ACCEPT;
+            }
+        });
         // this method is called only for root mak:lists, thus it would be good for triggering analysis and executing
         // queries
         // however for some reason it is called twice if APPLY_REQUEST_VALUES 2 PROCESS_VALIDATIONS 3 and
@@ -271,21 +324,27 @@ public class UIRepeatListComponent extends UIRepeat {
         }
     }
 
-    public void startMakListGroup() {
+    public void startMakListGroup(PhaseId phaseId) {
+
         readComposedQuery();
 
         final QueryProvider qep = useSeparateTransactions() ? null : getQueryExecutionProvider();
 
         try {
-            visitStaticTree(this, new VisitCallback() {
-                @Override
-                public VisitResult visit(VisitContext context, UIComponent target) {
-                    if (target instanceof UIRepeatListComponent) {
-                        ((UIRepeatListComponent) target).executeQuery(qep);
+
+            // we only execute queries during RENDER_RESPONSE
+            // we might even skip that if we have data (listData!=null)
+            if (phaseId == PhaseId.RENDER_RESPONSE) {
+                visitStaticTree(this, new VisitCallback() {
+                    @Override
+                    public VisitResult visit(VisitContext context, UIComponent target) {
+                        if (target instanceof UIRepeatListComponent) {
+                            ((UIRepeatListComponent) target).executeQuery(qep);
+                        }
+                        return VisitResult.ACCEPT;
                     }
-                    return VisitResult.ACCEPT;
-                }
-            });
+                });
+            }
         } finally {
             if (qep != null) {
                 qep.close();
@@ -309,7 +368,7 @@ public class UIRepeatListComponent extends UIRepeat {
     }
 
     void computeComposedQuery() {
-        UIRepeatListComponent parent = this.findMakListParent(true);
+        UIRepeatListComponent parent = findMakListParent(this, true);
         if (parent == null) {
             // no parent, we are root
             this.composedQuery = new ComposedQuery(this.queryProps, this.getQueryLanguage());
@@ -347,12 +406,6 @@ public class UIRepeatListComponent extends UIRepeat {
     };
 
     private void executeQuery(QueryProvider qep) {
-
-        if (listData != null) {
-            // TODO: add configuration and detection for the case where we need to re-run the query
-            // e.g. when only one mak:list of a group is re-run
-            return;
-        }
         // by now the query was cached so we fetch it
         readComposedQuery();
         if (useSeparateTransactions()) {
@@ -553,6 +606,7 @@ public class UIRepeatListComponent extends UIRepeat {
         // noinspection unchecked
         this.listData = (Grouper) state[1];
         this.composedQuery = (ComposedQuery) state[2];
+        beforeIteration(null);
     }
 
     @Override
@@ -574,4 +628,5 @@ public class UIRepeatListComponent extends UIRepeat {
         // TODO: save other needed stuff
         return state;
     }
+
 }
