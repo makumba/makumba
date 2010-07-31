@@ -51,6 +51,7 @@ public class ValueComponent extends UIComponentBase {
 
     @Override
     public void encodeBegin(FacesContext context) throws IOException {
+        super.encodeBegin(context);
         // System.out.println("ValueComponent.encodeBegin()");
         ResponseWriter writer = context.getResponseWriter();
         UIRepeatListComponent currentlyRunning = UIRepeatListComponent.getCurrentlyRunning();
