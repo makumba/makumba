@@ -9,7 +9,7 @@
     <function>
         <function-name>expr</function-name>
         <function-class>org.makumba.el.MakumbaFunctions</function-class>
-        <function-signature>java.lang.String expr(java.lang.String)</function-signature>
+        <function-signature>java.lang.Object expr(java.lang.String)</function-signature>
     </function>
     
     <tag>
