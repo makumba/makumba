@@ -9,18 +9,20 @@ import java.util.Map;
 import javax.el.ELContext;
 import javax.el.ELException;
 import javax.el.ELResolver;
+import javax.faces.component.UIComponent;
+import javax.faces.component.html.HtmlOutputText;
+import javax.faces.context.FacesContext;
 
 import org.makumba.Pointer;
 import org.makumba.jsf.UIRepeatListComponent;
+import org.makumba.jsf.UIRepeatListComponent.UIInstructionWrapper;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 
 /**
- * FIXME race condition (?) in {@link UIRepeatListComponent} on first evalutation of one expression<br>
  * FIXME for ptr projections such as #{p}, return something alike to Java's [Object@REFERENCE String instead of the
  * placeholder or the ptr<br>
- * TODO implement p.id<br>
  * TODO test the resolution of p.ptr.field when nothing before is selected<br>
  * TODO refactor and introduce a decoupling from the list to fetch the data, so a unit test can be written with a mock
  * list/data provider<br>
@@ -37,8 +39,6 @@ public class MakumbaELResolver extends ELResolver {
     @Override
     public Class<?> getType(ELContext context, Object base, Object property) {
 
-        // TODO when implementing setValue
-
         // as per reference
         if (context == null) {
             throw new NullPointerException();
@@ -51,14 +51,12 @@ public class MakumbaELResolver extends ELResolver {
             return Pointer.class;
         }
         if (base != null && base instanceof ExpressionPathPlaceholder && property != null) {
-            Object o = getValue(context, base, property).getClass();
+            Object o = getValue(context, base, property);
             if (o == null) {
                 return null;
             }
             context.setPropertyResolved(true);
-
-            // returning o.getClass() will lead to "error setting value ... for null converter"
-            return Object.class;
+            return o.getClass();
         }
 
         return null;
@@ -66,6 +64,7 @@ public class MakumbaELResolver extends ELResolver {
 
     @Override
     public Object getValue(ELContext context, Object base, Object property) {
+        // System.out.println(base + "." + property);
         // as per reference
         if (context == null) {
             throw new NullPointerException();
@@ -114,6 +113,24 @@ public class MakumbaELResolver extends ELResolver {
                     // return the placeholder
                     return mine;
                 } else {
+                    if (value instanceof Pointer && "id".equals(property)) {
+                        UIComponent c = (UIComponent) FacesContext.getCurrentInstance().getAttributes().get(
+                            UIComponent.CURRENT_COMPONENT);
+                        if (
+                        // if we are in UIInstructions, we're in free text so the
+                        // encoded form is better
+                        c instanceof UIInstructionWrapper
+                                ||
+                                // also if we are in a h:outputText?
+                                c instanceof HtmlOutputText
+                                && ((HtmlOutputText) c).getValueExpression("value").getExpressionString().indexOf(
+                                    mine.getExpressionPath()) != -1)
+                        //
+                        {
+                            value = ((Pointer) value).toExternalForm();
+                        }
+
+                    }
                     context.setPropertyResolved(true);
                     return value;
                 }
@@ -145,6 +162,8 @@ public class MakumbaELResolver extends ELResolver {
 
     @Override
     public void setValue(ELContext context, Object base, Object property, Object val) {
+        // TODO check if the property is fixed
+        // and the path to it goes thru fixed not null pointers?
 
         // as per reference
         if (context == null) {
