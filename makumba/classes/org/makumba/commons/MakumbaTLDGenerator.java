@@ -56,13 +56,33 @@ public class MakumbaTLDGenerator {
     private static final String HIBERNATE_TLD_URI = "http://www.makumba.org/view-hql";
 
     public static void main(String[] args) {
+        new MakumbaTLDGenerator().generateTLD(new File(args[0]) + File.separator + TAGLIB_SKELETON, args[1]
+                + File.separator + TAGLIB_MAK, args[1] + File.separator + TAGLIB_HIBERNATE,
+            new File(args[2]).getAbsolutePath());
+    }
+
+    public MakumbaTLDGenerator() {
+
+    }
+
+    /**
+     * Generates a TLD based on its makumba skeleton
+     * 
+     * @param sourcePath
+     *            path to the documented source XML file to parse
+     * @param jspTldPath
+     *            path to the output TLD file
+     * @param documentationPath
+     *            path to the makumba documentation pages (JSPwiki)
+     */
+    public void generateTLD(final String sourcePath, final String jspTldPath, final String jspTldPathHibernate,
+            final String documentationPath) {
+
         HashMap<String, Element> processedTags = new HashMap<String, Element>();
 
         // read the documented XML files
         SAXReader saxReader = new SAXReader();
         Document document = null;
-        final String sourcePath = new File(args[0]) + File.separator + TAGLIB_SKELETON;
-        final String documentationPath = new File(args[2]).getAbsolutePath();
         try {
             document = saxReader.read(sourcePath);
         } catch (DocumentException e) {
@@ -78,13 +98,13 @@ public class MakumbaTLDGenerator {
             }
             if (StringUtils.equalsAny(tag.getName(), "tag", "function")) {
                 boolean isTag = tag.getName().equals("tag");
-                String tagName = tag.element("name").getText();
+                String tagName = tag.element(getTagName()).getText();
 
                 for (Element tagContent : getElementList(tag)) {
 
                     if (tagContent.getName().equals("attribute")) {
                         if (tagContent.attributeValue("name") != null
-                                || tagContent.attributeValue("specifiedIn") != null) { // have a referring attribute
+                                && tagContent.attributeValue("specifiedIn") != null) { // have a referring attribute
                             replaceReferencedAttribute(processedTags, errorMsg, tagName, tagContent);
                         } else { // normal attribute
                             for (Element attributeContent : getElementList(tagContent)) {
@@ -93,12 +113,13 @@ public class MakumbaTLDGenerator {
                                     inheritedFrom = attributeContent.getText();
                                 }
 
-                                // remove all the <comments> tags inside <attribute> elements
+                                // remove all the tags for makumba documentation generation inside <attribute> elements
                                 if (StringUtils.equalsAny(attributeContent.getName(), "comments", "deprecated",
                                     "descriptionPage", "commentsPage", "inheritedFrom")) {
                                     attributeContent.getParent().remove(attributeContent);
                                 }
 
+                                // generate description and comment pages for an attribute
                                 if (attributeContent.getName().equals("description")) {
 
                                     // insert the description
@@ -163,10 +184,9 @@ public class MakumbaTLDGenerator {
         }
 
         // generate the clean TLD
-        String tldPath = args[1] + File.separator + TAGLIB_MAK;
-        System.out.println("Writing general Makumba TLD at path " + tldPath);
+        System.out.println("Writing general Makumba TLD at path " + jspTldPath);
         try {
-            XMLWriter output = new XMLWriter(new FileWriter(new File(tldPath)), new OutputFormat("", false));
+            XMLWriter output = new XMLWriter(new FileWriter(new File(jspTldPath)), new OutputFormat("", false));
             output.write(document);
             output.close();
         } catch (IOException e1) {
@@ -178,10 +198,9 @@ public class MakumbaTLDGenerator {
         Document hibernateTLD = document;
         hibernateTLD.getRootElement().element("uri").setText(HIBERNATE_TLD_URI);
 
-        String hibernateTldPath = args[1] + File.separator + TAGLIB_HIBERNATE;
-        System.out.println("Writing hibernate Makumba TLD at path " + hibernateTldPath);
+        System.out.println("Writing hibernate Makumba TLD at path " + jspTldPathHibernate);
         try {
-            XMLWriter output = new XMLWriter(new FileWriter(new File(hibernateTldPath)), new OutputFormat("", false));
+            XMLWriter output = new XMLWriter(new FileWriter(new File(jspTldPathHibernate)), new OutputFormat("", false));
             output.write(document);
             output.close();
         } catch (IOException e1) {
@@ -196,9 +215,8 @@ public class MakumbaTLDGenerator {
 
     }
 
-    @SuppressWarnings("unchecked")
-    private static List<Element> getElementList(Element list) {
-        return list.elements();
+    protected String getTagName() {
+        return "name";
     }
 
     /**
@@ -215,7 +233,7 @@ public class MakumbaTLDGenerator {
      */
     public static void replaceReferencedAttribute(HashMap<String, Element> processedTags, final String errorMsg,
             String tagName, Element attributeTagContent) {
-        Element newTag = getReferencedAttributes(processedTags, errorMsg, tagName, attributeTagContent, false);
+        Element newTag = getReferencedAttributes(processedTags, errorMsg, tagName, attributeTagContent, true);
         attributeTagContent.setAttributes(newTag.attributes());
         final List<Element> elements = getElementList(newTag);
         for (Element element : elements) {
@@ -235,9 +253,7 @@ public class MakumbaTLDGenerator {
      * @param attributeTagContent
      *            the content of the attribute
      * @param addOrigin
-     *            TODO
-     * @param tag
-     *            the parent tag
+     *            whether information on the origin of the copied element documentation should be added the parent tag
      * @return a copy of the attribute Element, enriched with the "inheritedFrom" attribute to track origin
      */
     public static Element getReferencedAttributes(HashMap<String, Element> processedTags, final String errorMsg,
@@ -282,6 +298,11 @@ public class MakumbaTLDGenerator {
         BufferedInputStream f = new BufferedInputStream(new FileInputStream(filePath));
         f.read(buffer);
         return new String(buffer);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static List<Element> getElementList(Element list) {
+        return list.elements();
     }
 
 }
