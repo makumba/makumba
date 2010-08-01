@@ -10,12 +10,14 @@ import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -63,6 +65,7 @@ public class TaglibDocGenerator {
         if (!outputDir.isDirectory() || !outputDir.exists()) {
             throw new RuntimeException("Output path " + outputPath + " does not exist or is not a directory");
         }
+        System.out.println("Generating taglib documentation in " + outputPath + " based on file " + xml);
 
         SAXReader saxReader = new SAXReader();
         Document document = null;
@@ -76,6 +79,10 @@ public class TaglibDocGenerator {
 
     }
 
+    private MultiValueMap tags = new MultiValueMap();
+
+    private MultiValueMap functions = new MultiValueMap();
+
     /**
      * Generates all the taglib documentation based on the <tag> and <function> elements found in the tld-documented XML
      * 
@@ -85,33 +92,31 @@ public class TaglibDocGenerator {
     private void generateTaglibDocumentation(Document document) {
 
         Element root = document.getRootElement();
-        List<String> tagNames = new ArrayList<String>();
-        List<String> functionNames = new ArrayList<String>();
 
         // get all the tag and function elements
-        for (Element e : getElementList(root)) {
-            boolean isTag = e.getName().equals("tag") && !e.elementText("name").equals("rickroll");
+        for (Element e : getAllElements(root)) {
+            boolean isTag = e.getName().equals("tag") && !e.elementText(getTagNameSyntax()).equals("rickroll");
             boolean isFunction = e.getName().equals("function");
 
             final String errorMsg = "Error processing element ";
 
             // keep names in separate places
             if (isTag) {
-                tagNames.add(e.elementText("name"));
+                tags.put(e.elementText(getTagNameSyntax()), null);
             }
             if (isFunction) {
-                functionNames.add(e.elementText("name"));
+                functions.put(e.elementText(getFunctionNameSyntax()), null);
             }
 
             // pre-processing for referred attributes: modify the document tree to include referenced attributes
             if (isTag) {
-                for (Element tagContent : getElementList(e)) {
+                for (Element tagContent : getAttributeList(e)) {
                     if (tagContent.getName().equals("attribute")) {
                         if (tagContent.attributeValue("name") != null
-                                || tagContent.attributeValue("specifiedIn") != null) {
+                                && tagContent.attributeValue("specifiedIn") != null) {
                             // have a referring attribute
                             MakumbaTLDGenerator.replaceReferencedAttribute(processedElements, errorMsg, e.element(
-                                "name").getText(), tagContent);
+                                getElementNameSyntax(isTag)).getText(), tagContent);
                         }
                     }
                 }
@@ -120,7 +125,7 @@ public class TaglibDocGenerator {
             // generate tag doc
             try {
                 if (isTag || isFunction) {
-                    generateTagFile(e, isTag);
+                    generateElementFile(e, isTag);
                 }
             } catch (FileNotFoundException io) {
                 System.err.println("Cannot find file: " + io.getMessage());
@@ -130,16 +135,87 @@ public class TaglibDocGenerator {
                 // we keep a reference to the processed attributes because we need this for the attribute referrer
                 // resolution
                 if (e.getName().equals("tag")) {
-                    processedElements.put(e.elementText("name"), e);
+                    processedElements.put(e.elementText(getTagNameSyntax()), e);
                 }
             }
         }
+
+        @SuppressWarnings("unchecked")
+        List<String> tagNames = new ArrayList<String>(tags.keySet());
+
+        @SuppressWarnings("unchecked")
+        List<String> functionNames = new ArrayList<String>(functions.keySet());
 
         Collections.sort(tagNames);
         Collections.sort(functionNames);
 
         generateIndexFile(tagNames, functionNames);
 
+        generateMoveStatements();
+
+    }
+
+    private void generateMoveStatements() {
+        final String svnRootPath = "https://makumba.svn.sourceforge.net/svnroot/makumba/trunk/makumba-documentation/wikidoc/";
+
+        File f = new File(this.outputDir.getAbsolutePath() + File.separator + "renameAll.sh");
+        try {
+            f.createNewFile();
+            PrintStream s = new PrintStream(new FileOutputStream(f));
+
+            for (Object name : tags.keySet()) {
+                String key = (String) name;
+                name = StringUtils.capitalize((String) name);
+                s.println("svn move " + svnRootPath + name + "Tag" + "Description" + ".txt" + " " + svnRootPath + "JSP"
+                        + name + "Tag" + "Description" + ".txt" + " " + "-m \"Renaming generated documentation files\"");
+                s.println("svn move " + svnRootPath + name + "Tag" + "Description" + ".properties" + " " + svnRootPath
+                        + "JSP" + name + "Tag" + "Description" + ".properties" + " "
+                        + "-m \"Renaming generated documentation files\"");
+                s.println("svn move " + svnRootPath + name + "Tag" + "Example" + ".txt" + " " + svnRootPath + "JSP"
+                        + name + "Tag" + "Example" + ".txt" + " " + "-m \"Renaming generated documentation files\"");
+                s.println("svn move " + svnRootPath + name + "Tag" + "Example" + ".properties" + " " + svnRootPath
+                        + "JSP" + name + "Tag" + "Example" + ".properties" + " "
+                        + "-m \"Renaming generated documentation files\"");
+                Collection<?> c = tags.getCollection(key);
+                for (Object attribute : c) {
+                    if (attribute == null) {
+                        continue;
+                    }
+                    attribute = StringUtils.capitalize((String) attribute);
+                    s.println("svn move " + svnRootPath + name + "Tag" + "Attribute" + attribute + "Attribute"
+                            + "Comments" + ".txt" + " " + svnRootPath + "JSP" + name + "Tag" + "Attribute" + attribute
+                            + "Attribute" + "Comments" + ".txt" + " " + "-m \"Renaming generated documentation files\"");
+                    s.println("svn move " + svnRootPath + name + "Tag" + "Attribute" + attribute + "Attribute"
+                            + "Comments" + ".properties" + " " + svnRootPath + "JSP" + name + "Tag" + "Attribute"
+                            + attribute + "Attribute" + "Comments" + ".properties" + " "
+                            + "-m \"Renaming generated documentation files\"");
+                    s.println("svn move " + svnRootPath + name + "Tag" + "Attribute" + attribute + "Attribute"
+                            + "Description" + ".txt" + " " + svnRootPath + "JSP" + name + "Tag" + "Attribute"
+                            + attribute + "Attribute" + "Description" + ".txt" + " "
+                            + "-m \"Renaming generated documentation files\"");
+                    s.println("svn move " + svnRootPath + name + "Tag" + "Attribute" + attribute + "Attribute"
+                            + "Description" + ".properties" + " " + svnRootPath + "JSP" + name + "Tag" + "Attribute"
+                            + attribute + "Attribute" + "Description" + ".properties" + " "
+                            + "-m \"Renaming generated documentation files\"");
+                }
+            }
+
+            s.flush();
+            s.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Element> getAttributeList(Element element) {
+        return element.elements("attribute");
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Element> getAllElements(Element root) {
+        return root.elements();
     }
 
     private void generateIndexFile(List<String> tagNames, List<String> functionNames) {
@@ -156,7 +232,7 @@ public class TaglibDocGenerator {
             s.println();
 
             for (String el : tagNames) {
-                String tagName = processedElements.get(el).elementText("name");
+                String tagName = processedElements.get(el).elementText(getTagNameSyntax());
                 s.println("* [mak:" + tagName + "|" + getWikiTagName(tagName, true) + "]");
             }
 
@@ -182,9 +258,9 @@ public class TaglibDocGenerator {
      * @throws IOException
      *             if the generated file can't be created
      */
-    private void generateTagFile(Element element, boolean isTag) throws IOException {
+    private void generateElementFile(Element element, boolean isTag) throws IOException {
 
-        String elementName = element.elementText("name");
+        String elementName = element.elementText(getElementNameSyntax(isTag));
         String generatedFileName = getWikiTagName(elementName, isTag);
 
         String path = this.outputDir.getAbsoluteFile() + File.separator + generatedFileName + ".txt";
@@ -238,15 +314,15 @@ public class TaglibDocGenerator {
         s.newLine();
 
         // then the attributes
-        generateAttributes(element, s, elementName + (isTag ? "Tag" : "Function"));
+        generateAttributes(element, s, elementName, isTag);
         s.newLine();
 
         // then the "see also" section
-        generateSeeAlso(element, s);
+        generateSeeAlso(element, s, isTag);
         s.newLine();
 
         // then the examples
-        generateExamples(element, s);
+        generateExamples(element, s, isTag);
 
         // finally append the category
         s.newLine();
@@ -262,12 +338,12 @@ public class TaglibDocGenerator {
                 + (isTag ? "Tag" : "Function");
     }
 
-    private void generateExamples(Element element, BufferedWriter s) throws IOException {
+    private void generateExamples(Element element, BufferedWriter s, boolean isTag) throws IOException {
         s.append("!!Examples");
         s.newLine();
         s.newLine();
 
-        Node examples = checkNodeExists(element, "example");
+        Node examples = checkNodeExists(element, "example", isTag);
         StringTokenizer tk = new StringTokenizer(examples.getText(), ",");
 
         if (tk.countTokens() == 0) {
@@ -284,8 +360,8 @@ public class TaglibDocGenerator {
         }
     }
 
-    private void generateSeeAlso(Element element, BufferedWriter s) throws IOException {
-        Node seeAlso = checkNodeExists(element, "see");
+    private void generateSeeAlso(Element element, BufferedWriter s, boolean isTag) throws IOException {
+        Node seeAlso = checkNodeExists(element, "see", isTag);
         StringTokenizer tk = new StringTokenizer(seeAlso.getText(), ",");
         if (tk.countTokens() > 0) {
             s.append("!!See also");
@@ -297,14 +373,15 @@ public class TaglibDocGenerator {
             String reference = tk.nextToken().trim();
 
             Object referredElement = element.getDocument().getRootElement().selectObject(
-                "//taglib//tag['@name=" + reference + "']");
+                "//taglib//" + (isTag ? "tag" : "function") + "['@" + getElementNameSyntax(isTag) + "=" + reference
+                        + "']");
             if (referredElement == null) {
-                throw new RuntimeException("Error: see also reference " + reference + " in tag definition "
-                        + element.elementText("name") + " does not exist.");
+                throw new RuntimeException("Error: see also reference " + reference + " in element definition "
+                        + element.elementText(getElementNameSyntax(isTag)) + " does not exist.");
             }
 
             String referenceWikiName = reference.substring(0, 1).toUpperCase()
-                    + reference.substring(1, reference.length()) + "Tag";
+                    + reference.substring(1, reference.length()) + (isTag ? "Tag" : "Function");
 
             s.append("[mak:" + reference + "|" + referenceWikiName + "]");
             if (tk.hasMoreTokens()) {
@@ -316,11 +393,12 @@ public class TaglibDocGenerator {
         }
     }
 
-    private void generateAttributes(Element element, BufferedWriter s, String typedElementName) throws IOException {
+    private void generateAttributes(Element element, BufferedWriter s, String elementName, boolean isTag)
+            throws IOException {
         s.append("!!Attributes");
         s.newLine();
 
-        List<Element> attributes = getElementList(element);
+        List<Element> attributes = getAttributeList(element);
         if (attributes.size() == 0) {
             s.append("This tag has no attributes");
             s.newLine();
@@ -337,24 +415,13 @@ public class TaglibDocGenerator {
             // we keep the first attribute of the kind and only write out all the rows if another kind of attribute is
             // met
             GenericAttributeTuple genericAttributeTuple = new GenericAttributeTuple();
-
             for (Element a : attributes) {
-
-                if (a.attribute("name") != null && a.attribute("specifiedIn") != null) {
-
-                    Element includedAttribute = MakumbaTLDGenerator.getReferencedAttributes(this.processedElements,
-                        "Error processing attribute " + a.attributeValue("name") + " of tag "
-                                + element.elementText("name") + ": ", element.elementText("name"), a, true);
-                    if (includedAttribute == null) {
-                        System.err.println("Warning: could not retrieve the included attribue "
-                                + a.attributeValue("name") + ", skipping the attribute");
-                        continue;
-                    }
-                    generateAttributeRow(includedAttribute, s, genericAttributeTuple, typedElementName);
-
+                if (isTag) {
+                    tags.put(elementName, a.elementText("name"));
                 } else {
-                    generateAttributeRow(a, s, genericAttributeTuple, typedElementName);
+                    functions.put(elementName, a.elementText("name"));
                 }
+                generateAttributeRow(a, s, genericAttributeTuple, elementName + (isTag ? "Tag" : "Function"));
             }
 
             // in the end we flush the tuple
@@ -367,11 +434,6 @@ public class TaglibDocGenerator {
             s.append("}]");
             s.newLine();
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    private List<Element> getElementList(Element element) {
-        return element.elements("attribute");
     }
 
     private void generateAttributeRow(Element attribute, BufferedWriter s, GenericAttributeTuple genericAttributeTuple,
@@ -410,7 +472,8 @@ public class TaglibDocGenerator {
         String descriptionText;
         if (!descriptionFile.exists()) {
             descriptionText = "Document me please!";
-            System.err.println("Description page " + attributePageName + " not found, needs to be documented!");
+            System.err.println("Description page " + attributePageName
+                    + "Description not found, needs to be documented!");
         } else {
             descriptionText = MakumbaTLDGenerator.readFileAsString(descriptionFile.getAbsolutePath());
         }
@@ -419,7 +482,7 @@ public class TaglibDocGenerator {
         String commentsText;
         if (!commentsFile.exists()) {
             commentsText = "Document me please!";
-            System.err.println("Comments page " + attributePageName + " not found, needs to be documented!");
+            System.err.println("Comments page " + attributePageName + "Comments not found, needs to be documented!");
         } else {
             commentsText = MakumbaTLDGenerator.readFileAsString(commentsFile.getAbsolutePath());
         }
@@ -495,82 +558,11 @@ public class TaglibDocGenerator {
 
     }
 
-    /**
-     * Figures out if there is a page specified for the element documentation and returns the insert syntax it if yes.
-     * If not, checks if there is a normal version of the element and inserts its content. If none of both are provided,
-     * throws an exception.
-     */
-    private String getOrInsertElement(Element element, String elementName, boolean export, String exportName) {
-        if (export) {
-
-            String result = "";
-
-            // export the element text into a separate file
-            Element e = element.element(elementName);
-            if (e == null) {
-                return null;
-            }
-
-            PrintWriter pw = null;
-            File f = new File(outputDir, StringUtils.capitalize(exportName) + ".txt");
-            try {
-
-                if (!f.exists()) {
-                    f.createNewFile();
-                }
-
-                File props = new File(outputDir, StringUtils.capitalize(exportName) + ".properties");
-                props.createNewFile();
-                PrintWriter propWriter = new PrintWriter(new FileWriter(props, false));
-                propWriter.append("#JSPWiki page properties for page " + StringUtils.capitalize(exportName) + "\n");
-                propWriter.append("#" + new Date().toString() + "\n");
-                propWriter.append("author=TaglibReferenceGenerator" + "\n");
-
-                propWriter.flush();
-                propWriter.close();
-
-                pw = new PrintWriter(new FileWriter(f, false));
-
-                if (e != null && e.hasContent()) {
-                    pw.println(e.getTextTrim());
-                    result = e.getTextTrim();
-                } else if (e != null && !e.hasContent()) {
-                    pw.println("%%(color:red) DOCUMENT ME PLEASE! %%");
-                    result = "%%(color:red) DOCUMENT ME PLEASE! %%";
-                }
-
-            } catch (IOException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-            } finally {
-                pw.flush();
-                pw.close();
-            }
-
-            return result;
-
-        } else {
-            Element e = element.element(elementName);
-            Element elementPage = element.element(elementName + "Page");
-
-            if (elementPage != null && elementPage.hasContent()) {
-                return getPageInsert(elementPage.getText());
-            } else if (e != null && e.hasContent()) {
-                return e.getTextTrim();
-            } else if (e != null && !e.hasContent()) {
-                return "%%(color:red) DOCUMENT ME PLEASE! %%";
-            } else if (e == null && elementPage == null) {
-                throw new RuntimeException("No " + elementName + " for element " + element.elementText("name"));
-            }
-        }
-        return null;
-    }
-
-    private Node checkNodeExists(Element element, String nodeName) {
+    private Node checkNodeExists(Element element, String nodeName, boolean isTag) {
         Node n = element.element(nodeName);
         if (n == null) {
             throw new RuntimeException("No <" + nodeName + "> element found in taglib-skeleton.tld for element "
-                    + element.elementText("name"));
+                    + element.elementText(getElementNameSyntax(isTag)));
         }
         return n;
     }
@@ -578,6 +570,18 @@ public class TaglibDocGenerator {
     private String getPageInsert(String pageName) {
         return "[{InsertPage style='display: inline;' page=" + pageName + "}]";
 
+    }
+
+    protected String getTagNameSyntax() {
+        return "name";
+    }
+
+    protected String getFunctionNameSyntax() {
+        return "name";
+    }
+
+    protected String getElementNameSyntax(boolean isTag) {
+        return isTag ? getTagNameSyntax() : getFunctionNameSyntax();
     }
 
     class GenericAttributeTuple {
