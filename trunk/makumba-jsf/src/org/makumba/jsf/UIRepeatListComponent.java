@@ -6,6 +6,7 @@ import java.beans.PropertyDescriptor;
 import java.util.Dictionary;
 import java.util.List;
 import java.util.Stack;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,10 +38,16 @@ import com.sun.faces.facelets.compiler.UIInstructions;
 import com.sun.faces.facelets.component.UIRepeat;
 
 public class UIRepeatListComponent extends UIRepeat {
+    static final Logger log = java.util.logging.Logger.getLogger("org.makumba.jsf");
 
-    /*
-     * Since UIInstructions does not update UIComponent.CURRENT_COMPONENT, we wrap it in a normal component
+    /**
+     * Since UIInstructions does not update UIComponent.CURRENT_COMPONENT, we wrap it in a normal component.
      */
+    // TODO: MakumbaELResolver needs to find the component in which a pointer is rendered (a converter will not take
+    // precedence automatically). However it seems that UIComponent.CURRENT_COMPONENT is not always up to date (at least
+    // not in the case of mak:list, which is why mak:list sets its own request attribute. This wrapping technique can be
+    // used for any leaf component, and then the current component can be determined by redefining encodeAll(),
+    // processXXX(), etc
     public static final class UIInstructionWrapper extends UIComponentBase {
         private final UIComponent kid;
 
@@ -68,6 +75,8 @@ public class UIRepeatListComponent extends UIRepeat {
 
     static final private Dictionary<String, Object> NOTHING = new ArrayMap();
 
+    static final String CURRENT_LIST = "org.makumba.list.currentList";
+
     String[] queryProps = new String[6];
 
     String separator = "";
@@ -84,6 +93,8 @@ public class UIRepeatListComponent extends UIRepeat {
     transient ArrayMap currentData;
 
     private String prefix;
+
+    private UIRepeatListComponent parent;
 
     public void setPrefix(String prefix) {
         this.prefix = prefix;
@@ -187,8 +198,19 @@ public class UIRepeatListComponent extends UIRepeat {
                 : null;
 
         if (iterationGroupData == null) {
+            log.fine((phaseId != null ? phaseId : "") + " ZERO " + composedQuery);
             return false;
         }
+        log.fine(phaseId + " " + iterationGroupData.size() + " " + composedQuery);
+        /*
+        for (ArrayMap a : iterationGroupData) {
+            System.out.print("\t");
+            for (Object o : a.data) {
+                System.out.print("\t" + o);
+            }
+            log.fine();
+        }
+        */
 
         // push a placeholder, it will be popped at first iteration
         getCurrentDataStack().push(NOTHING);
@@ -215,6 +237,8 @@ public class UIRepeatListComponent extends UIRepeat {
         setValue(dm);
         setBegin(0);
         setEnd(iterationGroupData.size());
+        parent = getCurrentlyRunning();
+        FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(CURRENT_LIST, this);
 
         return true;
     }
@@ -222,6 +246,7 @@ public class UIRepeatListComponent extends UIRepeat {
     private void afterIteration() {
         // this list is done, no more current value in stack
         getCurrentDataStack().pop();
+        FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(CURRENT_LIST, parent);
     }
 
     @Override
@@ -230,14 +255,14 @@ public class UIRepeatListComponent extends UIRepeat {
          * here we can detect Ajax and ValueChanged events, but they are always sent to the root mak:list
         no matter which mak:list is the target of the f:ajax render= 
          */
-        System.out.println(event + " " + composedQuery);
+        log.fine(event + " " + composedQuery);
         super.queueEvent(event);
     }
 
     @Override
     public void process(FacesContext context, PhaseId p) {
 
-        System.out.println(p + " " + composedQuery);
+        // log.fine(p + " " + composedQuery);
         if (!beforeIteration(p)) {
             return;
         }
@@ -250,6 +275,7 @@ public class UIRepeatListComponent extends UIRepeat {
 
     @Override
     public boolean visitTree(final VisitContext context, final VisitCallback callback) {
+        log.fine("visit by " + callback.getClass().getName() + " ");
 
         if (callback.getClass().getName().indexOf("PartialViewContext") != -1) {
 
@@ -260,17 +286,18 @@ public class UIRepeatListComponent extends UIRepeat {
              * Clearly the last rendering after an ajax call is done 
              * only on the mak:list that was indicated in f:ajax render=
              */
-            System.out.println("PartialViewContext " + composedQuery);
+            log.fine("PartialViewContext " + composedQuery);
         }
+
         if (listData == null) {
             // there is no data, hopefully we are in the process of restoring it
             // so we call the visiting only on this component
-            context.invokeVisitCallback(this, callback);
             // since we had no data we probably had no structure either, so now we can wrap strage things
             if (findMakListParent(this, true) == null) {
                 wrapUIInstrutions();
             }
         }
+        context.invokeVisitCallback(this, callback);
 
         // if there's no data, we should not iterate
         if (!beforeIteration(null)) {
@@ -278,14 +305,28 @@ public class UIRepeatListComponent extends UIRepeat {
         }
 
         try {
-            return super.visitTree(context, new VisitCallback() {
-                @Override
-                public VisitResult visit(VisitContext c, UIComponent target) {
-                    // System.out.println(target.getClass());
-                    return callback.visit(context, target);
+            return super.visitTree(context, callback);
+            /*
+            
+            , new VisitCallback() {
+            VisitContext theContext = context;
+
+            @Override
+            public String toString() {
+                return theContext.getClass().getName();
+            }
+
+            @Override
+            public VisitResult visit(VisitContext c, UIComponent target) {
+                if (target == UIRepeatListComponent.this) {
+                    return VisitResult.ACCEPT;
                 }
+                // log.fine(target.getClass());
+                return callback.visit(context, target);
+            }
 
             });
+            */
         } finally {
             afterIteration();
         }
@@ -298,8 +339,9 @@ public class UIRepeatListComponent extends UIRepeat {
     }
 
     public static UIRepeatListComponent getCurrentlyRunning() {
-        return findMakListParent((UIComponent) FacesContext.getCurrentInstance().getAttributes().get(
-            UIComponent.CURRENT_COMPONENT), true);
+        return (UIRepeatListComponent) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get(
+            CURRENT_LIST);
+
     }
 
     static int composedQueries = NamedResources.makeStaticCache("JSF ComposedQueries", new NamedResourceFactory() {
@@ -336,7 +378,7 @@ public class UIRepeatListComponent extends UIRepeat {
                 for (int i = 0; i < target.getChildren().size(); i++) {
                     final UIComponent kid = target.getChildren().get(i);
                     if (kid instanceof UIInstructions) {
-                        // System.out.println("\t" + kid.getClass());
+                        // log.fine("\t" + kid.getClass());
                         target.getChildren().set(i, new UIInstructionWrapper(kid));
                     }
                 }
@@ -409,20 +451,22 @@ public class UIRepeatListComponent extends UIRepeat {
     }
 
     void computeComposedQuery() {
-        UIRepeatListComponent parent = findMakListParent(this, true);
+        UIRepeatListComponent parent = UIRepeatListComponent.findMakListParent(this, true);
         if (parent == null) {
             // no parent, we are root
-            this.composedQuery = new ComposedQuery(this.queryProps, this.getQueryLanguage());
+            this.composedQuery = new ComposedQuery(this.queryProps, this.getQueryLanguage(), true);
         } else {
-            this.composedQuery = new ComposedSubquery(this.queryProps, parent.composedQuery, this.getQueryLanguage());
+            this.composedQuery = new ComposedSubquery(this.queryProps, parent.composedQuery, this.getQueryLanguage(),
+                    true);
         }
         this.composedQuery.init();
         this.findExpressionsInChildren();
         if (parent == null) {
             this.analyzeMakListGroup();
         }
+        // we make sure that all declared labels are selected separately
         this.composedQuery.analyze();
-        // System.out.println(this.composedQuery);
+        // log.fine(this.composedQuery);
     }
 
     void analyzeMakListGroup() {
@@ -454,7 +498,7 @@ public class UIRepeatListComponent extends UIRepeat {
         }
 
         try {
-            System.out.println("Executing " + composedQuery);
+            log.fine("Executing " + composedQuery);
             listData = composedQuery.execute(qep, null, evaluator, offset, limit);
         } finally {
             if (useSeparateTransactions()) {
@@ -512,7 +556,7 @@ public class UIRepeatListComponent extends UIRepeat {
                     return VisitResult.REJECT;
                 }
 
-                // System.out.println(target);
+                // log.fine(target);
 
                 if (target instanceof UIInstructions) {
                     findFloatingExpressions((UIInstructions) target);
@@ -544,8 +588,17 @@ public class UIRepeatListComponent extends UIRepeat {
                 if (ve != null) {
                     addExpression(trimExpression(ve.getExpressionString()), true);
                 }
-            }
+                /*                
+                 // TODO: this successfully adds the converter but fails after form submission (classcast exception during state save or restore
+                  
+                                if (p.getName().equals("value") && component instanceof EditableValueHolder) {
+                                    ((ValueHolder) component).setConverter(FacesContext.getCurrentInstance().getApplication().createConverter(
+                                        "makPtr"));
+                                }
 
+                */
+
+            }
         } catch (IntrospectionException e) {
             // TODO better error handling
             e.printStackTrace();

@@ -66,16 +66,24 @@ public class ComposedQuery implements Serializable {
 
     public QueryAnalysisProvider qep = null;
 
+    private boolean selectAllLabels;
+
+    public ComposedQuery(String[] sections, String queryLanguage) {
+        this(sections, queryLanguage, false);
+    }
+
     /**
      * Default constructor
      * 
      * @param sections
+     * @param selectAllLabels
      * @param usesHQL
      */
-    public ComposedQuery(String[] sections, String queryLanguage) {
+    public ComposedQuery(String[] sections, String queryLanguage, boolean selectAllLabels) {
         this.sections = sections;
         this.derivedSections = sections;
         this.qep = QueryProvider.getQueryAnalzyer(queryLanguage);
+        this.selectAllLabels = selectAllLabels;
     }
 
     /** The subqueries of this query */
@@ -217,7 +225,7 @@ public class ComposedQuery implements Serializable {
      * Adds all keys from the FROM section to the keyset, and their labels to the keyLabels. They are all added as
      * projections (this has to change)
      */
-    protected void prependFromToKeyset() {
+    public void prependFromToKeyset() {
         projectionExpr.clear();
         Iterator<String> e = new ArrayList<String>(projections).iterator();
         projections.clear();
@@ -470,8 +478,12 @@ public class ComposedQuery implements Serializable {
     }
 
     public synchronized void analyze() {
-        if (projections.isEmpty()) {
+        // if we have subqueries, we already did prepend.
+        // if we don't but we were requested to select all labels, we prepend
+        if (projections.isEmpty() || selectAllLabels && subqueries == 0) {
             prependFromToKeyset();
+            // make sure that this doesn't repeat
+            selectAllLabels = false;
         }
         if (typeAnalyzerOQL == null) {
             typeAnalyzerOQL = computeQuery(derivedSections, true);

@@ -5,20 +5,19 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.el.ELContext;
 import javax.el.ELException;
 import javax.el.ELResolver;
+import javax.el.ValueExpression;
 import javax.faces.component.UIComponent;
-import javax.faces.component.html.HtmlOutputText;
+import javax.faces.component.ValueHolder;
 import javax.faces.context.FacesContext;
 
 import org.makumba.Pointer;
 import org.makumba.jsf.UIRepeatListComponent;
 import org.makumba.jsf.UIRepeatListComponent.UIInstructionWrapper;
-import org.makumba.providers.QueryAnalysis;
-import org.makumba.providers.QueryAnalysisProvider;
-import org.makumba.providers.QueryProvider;
 
 /**
  * FIXME for ptr projections such as #{p}, return something alike to Java's [Object@REFERENCE String instead of the
@@ -31,6 +30,7 @@ import org.makumba.providers.QueryProvider;
  * @author cristi
  */
 public class MakumbaELResolver extends ELResolver {
+    static final Logger log = java.util.logging.Logger.getLogger("org.makumba.jsf.el");
 
     public MakumbaELResolver() {
 
@@ -38,7 +38,7 @@ public class MakumbaELResolver extends ELResolver {
 
     @Override
     public Class<?> getType(ELContext context, Object base, Object property) {
-        System.out.println("getType " + base + "." + property);
+        log.fine("getType " + base + "." + property + " ");
 
         // as per reference
         if (context == null) {
@@ -49,23 +49,86 @@ public class MakumbaELResolver extends ELResolver {
             context.setPropertyResolved(true);
             // it was object, i think pointer is correct, not sure.
             // maybe a pointer converter will be needed then
+            log.fine("getType " + base + "." + property + " Pointer");
+
             return Pointer.class;
         }
         if (base != null && base instanceof ExpressionPathPlaceholder && property != null) {
-            Object o = getValue(context, base, property);
-            if (o == null) {
+            ExpressionPathPlaceholder expr = basicGetValue(context, base, property);
+            if (expr == null) {
+                log.fine("getType " + base + "." + property + " null");
                 return null;
             }
             context.setPropertyResolved(true);
-            return o.getClass();
+            UIRepeatListComponent list = UIRepeatListComponent.getCurrentlyRunning();
+            if (!list.getProjections().contains(expr.getExpressionPath())) {
+                log.fine("getType " + base + "." + property + " Object");
+
+                // this should not matter as we are not going to edit
+                return Object.class;
+            }
+            // this will also catch pointers (SQLPointer)
+            Object value = list.getExpressionValue(expr.getExpressionPath());
+            log.fine("getType " + base + "." + property + " " + value.getClass().getName());
+
+            return value.getClass();
         }
+        log.fine("getType " + base + "." + property + " null");
 
         return null;
     }
 
     @Override
     public Object getValue(ELContext context, Object base, Object property) {
-        // System.out.println("getValue " + base + "." + property);
+        ExpressionPathPlaceholder mine = basicGetValue(context, base, property);
+        if (mine == null) {
+            return null;
+        }
+        UIRepeatListComponent list = UIRepeatListComponent.getCurrentlyRunning();
+        if (base != null && base instanceof ExpressionPathPlaceholder
+                && list.getProjections().contains(mine.getExpressionPath())) {
+            {
+                Object value = list.getExpressionValue(mine.getExpressionPath());
+
+                if (value instanceof Pointer && !"id".equals(property)) {
+                    // TODO: instead of checking the value, we can inquire the query whether the field is a pointer
+                    // TODO: we could actually set the value in the placeholder, for whatever it could be useful
+
+                    // return the placeholder
+                    return mine;
+                }
+
+                if (value instanceof Pointer && "id".equals(property)) {
+                    /* we have a pointer #{p.x.y.id} 
+                     * if we know we are in UIInstruction or in outputText, we convert toExternalForm */
+
+                    UIComponent c = (UIComponent) FacesContext.getCurrentInstance().getAttributes().get(
+                        UIComponent.CURRENT_COMPONENT);
+
+                    // if we are in UIInstructions, we're in free text so the
+                    // encoded form is better
+                    // also in h:outputText?
+
+                    if (c instanceof UIInstructionWrapper) {
+                        return ((Pointer) value).toExternalForm();
+                    }
+                    if (c instanceof ValueHolder && ((ValueHolder) c).getConverter() == null) {
+                        ValueExpression ev = c.getValueExpression("value");
+                        if (ev != null && ev.getExpressionString().indexOf(mine.getExpressionPath()) != -1) {
+                            return ((Pointer) value).toExternalForm();
+                        }
+                    }
+                }
+                return value;
+            }
+
+        }
+        return mine;
+
+    }
+
+    public ExpressionPathPlaceholder basicGetValue(ELContext context, Object base, Object property) {
+        log.finest("getValue " + base + "." + property);
         // as per reference
         if (context == null) {
             throw new NullPointerException();
@@ -84,15 +147,15 @@ public class MakumbaELResolver extends ELResolver {
                 context.setPropertyResolved(true);
                 return new ExpressionPathPlaceholder(value, property.toString());
             } else {
-                // it's not a projection but it may be a label, we check for that
-                QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer(list.getQueryLanguage());
-                QueryAnalysis qa = qap.getQueryAnalysis(list.getComposedQuery().getTypeAnalyzerQuery());
-                if (qa.getLabelTypes().get(property.toString()) != null) {
-                    context.setPropertyResolved(true);
-                    return new ExpressionPathPlaceholder(qa, property.toString());
-                } else {
-                    return null;
-                }
+                // this may be a label that we don't know, like a managed bean
+
+                // even if we would know the label, in between iterations uirepeat does a static traversal (with no
+                // iterations) to save all the inputs inside it. no clue why but since not our lists are iterating, we
+                // cannot provide these values
+
+                // log.fine(property.toString() + " " + list.getComposedQuery().getClass().getName() + " "
+                // + FacesContext.getCurrentInstance().getAttributes().get(UIComponent.CURRENT_COMPONENT));
+                return null;
             }
         }
 
@@ -103,41 +166,8 @@ public class MakumbaELResolver extends ELResolver {
             ExpressionPathPlaceholder mine = new ExpressionPathPlaceholder(placeholder, property.toString());
 
             if (list.getProjections().contains(mine.getExpressionPath())) {
-
-                Object value = list.getExpressionValue(mine.getExpressionPath());
-
-                if (value instanceof Pointer && !"id".equals(property)) {
-                    // TODO: instead of checking the value, we can inquire the query whether the field is a pointer
-                    context.setPropertyResolved(true);
-                    // TODO: we could actually set the value in the placeholder, for whatever it could be useful
-
-                    // return the placeholder
-                    return mine;
-                } else {
-                    if (value instanceof Pointer && "id".equals(property)) {
-                        /* we have a pointer #{p.x.y.id} 
-                         * if we know we are in UIInstruction or in outputText, we convert toExternalForm */
-
-                        UIComponent c = (UIComponent) FacesContext.getCurrentInstance().getAttributes().get(
-                            UIComponent.CURRENT_COMPONENT);
-                        if (
-                        // if we are in UIInstructions, we're in free text so the
-                        // encoded form is better
-                        c instanceof UIInstructionWrapper
-                                ||
-                                // also if we are in a h:outputText?
-                                c instanceof HtmlOutputText
-                                && ((HtmlOutputText) c).getValueExpression("value").getExpressionString().indexOf(
-                                    mine.getExpressionPath()) != -1)
-                        //
-                        {
-                            value = ((Pointer) value).toExternalForm();
-                        }
-
-                    }
-                    context.setPropertyResolved(true);
-                    return value;
-                }
+                context.setPropertyResolved(true);
+                return mine;
 
             } else {
 
@@ -168,17 +198,18 @@ public class MakumbaELResolver extends ELResolver {
     public void setValue(ELContext context, Object base, Object property, Object val) {
         // TODO check if the property is fixed
         // and the path to it goes thru fixed not null pointers?
-        System.out.println("trying to set " + base + "." + property + "=" + val);
+
         // as per reference
         if (context == null) {
             throw new NullPointerException();
         }
 
         if (base instanceof ExpressionPathPlaceholder) {
-            System.out.println(base + "." + property + "=" + val);
+            log.fine(base + "." + property + " <------- " + val);
             context.setPropertyResolved(true);
+        } else {
+            log.fine("not setting " + base + "." + property + " to " + val);
         }
-
         return;
 
         // if base is null, and we have a label with the property name, i think we should return "not writable"
@@ -197,7 +228,7 @@ public class MakumbaELResolver extends ELResolver {
     @Override
     public boolean isReadOnly(ELContext context, Object base, Object property) {
 
-        System.out.println("isReadOnly " + base + "." + property);
+        log.fine("isReadOnly " + base + "." + property);
         // as per reference
         if (context == null) {
             throw new NullPointerException();
@@ -246,9 +277,7 @@ public class MakumbaELResolver extends ELResolver {
         // everything starts from a label
         private String label;
 
-        // we either keep its pointer value, or a query through which the label can be resolved
-        private QueryAnalysis qa;
-
+        // the pointer value
         private Pointer basePointer;
 
         // after that, comes the field.field path to the desired property
@@ -259,14 +288,8 @@ public class MakumbaELResolver extends ELResolver {
             this.basePointer = p;
         }
 
-        public ExpressionPathPlaceholder(QueryAnalysis qa, String label) {
-            this.label = label;
-            this.qa = qa;
-        }
-
         public ExpressionPathPlaceholder(ExpressionPathPlaceholder expr, String field) {
             this.basePointer = expr.basePointer;
-            this.qa = expr.qa;
             this.label = expr.label;
             this.fieldDotField = expr.fieldDotField + "." + field;
         }
@@ -277,7 +300,7 @@ public class MakumbaELResolver extends ELResolver {
 
         @Override
         public String toString() {
-            return (basePointer != null ? basePointer : qa) + " " + getExpressionPath();
+            return basePointer + " " + getExpressionPath();
         }
 
     }
