@@ -9,12 +9,14 @@ In order to get started, read further on the following topics:
 * [Displaying data|DisplayingDataHowto]
 * [Creating and editing data|CreatingEditingHowto]
 * [Multiple lists and forms|MultipleListsAndFormsHowto]
+* [Makumba API||MakumbaAPIHowTo]
 * [Advanced features|AdvancedFeaturesHowto]
 * [Search forms|SearchFormsHowto]
 * [MDD functions|MDDFunctionsHowto]
 * [Authentication and authorisation|AuthenticationAuthorizationHowto]
 * [Layout and navigation|LayoutHowto]
 * [Developer tools|DeveloperToolsHowTo]
+* [Eclipse Plugin|Plugin]
 
 
 %%(display:none;)[Category Usage]%%

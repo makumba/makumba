@@ -16,6 +16,10 @@ This is the meta-makumba site, where we talk about the documentation itself: gui
 
 !!TODO
 * [Documentation TODO|MetaDocumentationTodo]
+* [POJO refactoring plan]
+
+!!Various
+* [SVN repository maintenance things]
 
 !!Blog
 * [{WeblogEntryPlugin page='Blog' entrytext='Create new blog post'}] ''(not used for now due to misteriously disappearing posts, edit the ["Blog"|Blog] page directly instead)''

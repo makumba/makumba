@@ -12,5 +12,6 @@ If you choose not to build your project with maven by using the makumba maven ar
 |[Apache Commons IO|http://commons.apache.org/io/]|1.1|commons-io-1.1.jar
 |[Apache Commons Lang|http://commons.apache.org/lang/]|2.3|commons-lang-2.3.jar
 |[MIME Util|http://sourceforge.net/projects/mime-util/]|2.1.3|mime-util.jar
+|[GSon|http://code.google.com/p/google-gson]|1.4|gson-1.4.jar
 
 %%invisible [Category Configuration] %%

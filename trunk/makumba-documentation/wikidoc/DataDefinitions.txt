@@ -2,7 +2,7 @@
 
 !!!Types, objects, databases
 
-Data definitions describe __data types (or classes)__. They are placed in files contained in directory hierarchies, and the directory name is part of the type name (similar to Java packages). For example the __file company/Employee.mdd__ describes the __type general.Person__. Type names can contain letters, digits, underscores and dashes and cannot contain slashes and dots. Usually, the directories are used to separate organisations and projects.
+Data definitions describe __data types (or classes)__. They are placed in files contained in directory hierarchies, and the directory name is part of the type name (similar to Java packages). For example the __file company/Employee.mdd__ describes the __type company.Employee__. Type names can contain letters, digits, underscores and dashes and cannot contain slashes and dots. Usually, the directories are used to separate organisations and projects.
 
 Current Java implementation finds the data definition files as follows:
 
@@ -232,7 +232,7 @@ The main difference between sets of external types and internal sets is that whe
 
 [{Box
 
-This type is known internally as setComplex
+Internal sets are known internally as setComplex
 }]
 
 The set can contain enumerated int values :
