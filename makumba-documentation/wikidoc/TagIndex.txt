@@ -28,8 +28,14 @@
 * [mak:value|ValueTag]
 * [mak:version|VersionTag]
 * [mak:count()|CountFunction]
+* [mak:hasValueChanged()|HasValueChangedFunction]
 * [mak:lastCount()|LastCountFunction]
+* [mak:lastCountById()|LastCountByIdFunction]
 * [mak:maxCount()|MaxCountFunction]
 * [mak:maxResults()|MaxResultsFunction]
+* [mak:nextCount()|NextCountFunction]
+* [mak:nextCountById()|NextCountByIdFunction]
+* [mak:value()|ValueFunction]
+* [mak:willValueChange()|WillValueChangeFunction]
 
 %%(display:none;) [Category Documentation]%%

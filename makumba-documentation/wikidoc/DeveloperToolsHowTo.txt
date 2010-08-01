@@ -55,4 +55,7 @@ Makumba refers primarily to objects using their so called internal form (DBSV:UI
 !! Reference Checker
 The reference checker looks at foreign and unique keys and displays broken references.
 
+!! Error Log Viewer
+If the error logging to the database is activated (see the [configuration|Configuration#MakumbaConfiguration-MakumbaToolsConfigurationMakumbaToolConfig]), you can use this tool in order to display the error log and get an idea of what errors the users of your application see.
+
 %%(display:none;)[Category Usage]%%

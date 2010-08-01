@@ -5,7 +5,7 @@ Makumba supports mainly two query languages: the native Makumba Query Language (
 
 !!!MQL
 
-MQL was developed as a sum of the most useful aspects of OQL and HQL. As such is it based on HQL in many regards (see the [reference documentation|http://www.hibernate.org/hib_docs/reference/en/html/queryhql.html]), except following:
+MQL was developed as a sum of the most useful aspects of OQL and HQL. As such is it based on HQL in many regards (see the [reference documentation|http://docs.jboss.org/hibernate/core/3.3/reference/en/html/queryhql.html]), except following:
 
 * it accepts boolean projections: SELECT a=1 AS col1 ... etc
 * selecting an object will lead in selecting the external form of its [Makumba pointer|api:Pointer]
@@ -62,7 +62,7 @@ Support for new functions is normally easy to add, so if you miss specific funct
 
 !!!HQL
 
-Makumba supports HQL as a query language. Please check its [reference documentation|http://www.hibernate.orghib_docs/reference/en/html/queryhql.html].
+Makumba supports HQL as a query language. Please check its [reference documentation|http://docs.jboss.org/hibernate/core/3.3/reference/en/html/queryhql.html].
 
 In order to use HQL in Makumba JSPs pages, the following TLD declaration should be used: 
 %%prettify

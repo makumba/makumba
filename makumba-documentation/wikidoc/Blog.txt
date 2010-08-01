@@ -1,5 +1,69 @@
 !!!Blog 
 
+!! Makumba [0.9.0.2|https://sourceforge.net/projects/makumba/files/Makumba/makumba-0_9_0_2.jar/download] is out!
+21 Jul 2010
+
+* Bug fixes
+** throwing a ConfigurationException in MakumbaJSPFactory when the controller filter is not mapped or does not apply (instead of a NPE)
+** copying fix from RecordParser in findDataDefinitionOrDirectory method of MDDProvider, should fix some bugs in developer tools relying on this behavior
+** fix with concurrency problem in analysis state keeping mechanism
+* Internal changes
+** refactoring Configuration: developer tools and servlets are registered in enums, making maintenance easier;
+** changing the way Configuration is built by introducing a DTO (first step to programmatic configuration)
+
+!! Makumba [0.9.0.1|https://sourceforge.net/projects/makumba/files/Makumba/makumba-0_9_0_1.jar/download] is out!
+10 Jul 2010
+
+* Bug fixes
+** removing runtime dependency to javassist
+** fix for the error log viewer in linux systems
+
+* New features
+** activating error log viewer by default in the makumba tools
+
+!! Makumba [0.9|https://sourceforge.net/projects/makumba/files/Makumba/makumba-0_9.jar/download] is out!
+8 Jul 2010
+
+__This release is not a drop-in replacement. Read ''special changes'' below__
+
+* Bug fixes
+** allowing multi-types also for different pointer types
+** several fixes in the data object viewer servlet: charEnum and setIntEnum don't cause errors
+** fixing type computation for case-when, especially when there was no else part anymore, displaying ptrOne and setComplex, allowing to view ptrOne and setComplex details
+** some date fields (maybe those resulting from function calls) returned a byte-array, treating that in TableManager
+** date now accepted as field name in antlr MDD parser, also fields starting with low... accepted (by incresing lexer lookahead to avoid collision with 'lower' keyword)
+** fix in DataDefinitionImpl affecting the order of consecutive self-referring sets in getFieldNames()
+** improving checkValue so that it throws an exception when a Long value is bigger than the maximal value an Integer can take. fixes [#1071|http://trac.makumba.org/ticket/1071]
+** check for number of arguments to single-field validation rules, fixes [#1239|http://trac.makumba.org/ticket/1239]
+** better error message for impossible composite update/insert, fixes [#656|http://trac.makumba.org/ticket/656]
+** fix for non-applied single-field validation rules in a subfield applying to a field having the same name as a field of the parent
+** fixing [#1242|http://trac.makumba.org/ticket/1242]
+** fixing [#1240|http://trac.makumba.org/ticket/1240]
+** applying database transaction rollback in case of form validation errors for all form operations, as otherwise this may lead to an inconsistent db state
+
+* New features
+** annotating the list-tags in the JSP viewer with the queries they generated
+** developer tool to convert intEnum to setIntEnum, copying the existing data
+** adding DBSV format as input option in pointer value converter
+** adding Data Definition and Query Function Inliner providers to Makumba configuration overview 
+** improved mak:info tag
+** improvement to JSP viewer: displaying a pop-up with generated queries for the list/object tags; showing analysis errors 
+** error log viewer initial revision
+** EntityClassGenerator, generating JPA-annotated POJO classes based on MDDs
+** javassist-based reader for method annotations
+
+* Internal changes
+** fixing release mechanism broken due to build path change
+** fixing testing mechanism, test cases can record their comparison files one by one (not globally anymore)
+** extended tests for MDD functions
+
+* Special changes
+** new first-pass query inliner
+** moved org.makumba.providers.datadefinition.makumba.* to attic. ===> this means that %%code dataDefinitionProvider=recordinfo %% in the provider section of Makumba.conf is no longer working.
+** changes in %%code org.makumba.DataDefinition%%: %%code getReferenceFields()%% and %%code getUniqueFields()%% are moved to %%code ReferenceChecker%%, %%code checkUpdate()%% and %%code checkFieldNames()%% to %%code CRUDOperationProvider%%
+** changes in %%code org.makumba.FieldDefinition%%: %%code checkUpdate()%% moved to %%code CRUDOperationProvider%%
+** dropping support of "requiredAttributes" as deprecated alternative to checkAttributes. Fixes [#611|http://trac.makumba.org/ticket/611].
+
 !! Makumba [0.8.2.7.4|https://sourceforge.net/projects/makumba/files/Makumba/makumba-0_8_2_7_4.jar/download] is out!
 2 Apr 2010
 * Bug fixes

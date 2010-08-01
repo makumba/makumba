@@ -1,1 +1,13 @@
-Here will come the information about the makumba plugins.
+!Eclipse Plugin
+
+Currently makumba plugin for Eclipse IDE is under development.
+
+Some of the features that the plugin will support:
+* MDD editor with syntax coloring, validation, content assist, hyperlinked references
+* JSP makumba tag validation and content assist
+* refacroting
+* references search
+
+More information available soon!
+
+%%(display:none;)[Category Usage]%%

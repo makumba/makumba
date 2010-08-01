@@ -42,40 +42,30 @@ in order to set up the project so that it can be imported into eclipse.
 
 Alternatively, you can directly create the project in Eclipse using e.g. the [m2eclipse plugin|http://m2eclipse.sonatype.org]. In this case you can directly look for the archetype group "org.makumba" in the archetype catalog assembled by the Nexus Indexer.
 
-Create new maven project
+Create a new maven project
 
 [{Img src='QuickStart/new_project.png' link='QuickStart/new_project.png'}]
 
-Enter workspace settings
+Enter the workspace settings
 
 [{Img src='QuickStart/next.png' link='QuickStart/next.png'}]
 
-Next page will be shown
+The next page will be shown
 
 [{Img src='QuickStart/configure.png' link='QuickStart/configure.png'}]
 
-From catalogs, choose Nexus Indexer and type 'org.makumba' in filter field
+From catalogs, choose Nexus Indexer and type 'org.makumba' in the filter field
 
 [{Img src='QuickStart/mak_archetype.png' link='QuickStart/mak_archetype.png'}]
 
-Enter project specific info
+Enter the project specific information
 
 [{Img src='QuickStart/finish.png' link='QuickStart/finish.png'}]
 
 The project has then following structure
-{{{
-src
-  main/
-    resources/
-      Makumba.conf
-      dataDefinitions/
-        general/
-          Person.mdd
-    webapp/
-     index.jsp
-     META-INF/
-     WEB-INF/
-       web.xml}}}
+
+[{Img src='QuickStart/project_files.png' link='QuickStart/project_files.png'}]
+
 This is the standard Maven project structure. The resulting web-application structure (according to the Servlet Standard 2.4) is as follows:
 
 {{{
@@ -88,6 +78,17 @@ WEB-INF/
     dataDefinitions/
       general/
         Person.mdd}}}
+
+Now click the green play button and choose Run > Maven Build.
+[{Img src='QuickStart/runmavenbuild.png' link='QuickStart/runmavenbuild.png'}]
+
+Give the run configuration a name (here 'myproduct') and type tomcat:run in the Goals field. Then click run.
+[{Img src='QuickStart/runmavenbuildtomcat.png' link='QuickStart/runmavenbuildtomcat.png'}]
+
+You should now be able to access the default site in your browser at %%code http://localhost:8080/myproduct %%
+
+[{Img src='QuickStart/site.png' link='QuickStart/site.png'}]
+
 
 !!!Describing the data
 Makumba uses so-called [Makumba Data Definitions|DataModelHowto].

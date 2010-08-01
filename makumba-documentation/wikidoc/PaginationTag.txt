@@ -1,0 +1,68 @@
+
+%%(display:none) makumba hackers: this page is generated, don't edit it! Instead edit the text in the included pages. %%
+
+!!!Taglib documentation for tag mak:pagination
+
+!!Description
+
+[{InsertPage style='display: inline;' page=PaginationTagDescription}][.|edit:PaginationTagDescription]
+
+!!Attributes
+[{Table
+
+||Name||Required||Runtime expression||Description||Comments 
+
+|action 
+|false 
+|yes 
+|[{InsertPage style='display: inline;' page=PaginationTagAttributeActionAttributeDescription}][.|edit:PaginationTagAttributeActionAttributeDescription] 
+|[{InsertPage style='display: inline;' page=PaginationTagAttributeActionAttributeComments}][.|edit:PaginationTagAttributeActionAttributeComments] 
+
+|showPageTitle 
+|false 
+|yes 
+|[{InsertPage style='display: inline;' page=PaginationTagAttributeShowPageTitleAttributeDescription}][.|edit:PaginationTagAttributeShowPageTitleAttributeDescription] 
+|[{InsertPage style='display: inline;' page=PaginationTagAttributeShowPageTitleAttributeComments}][.|edit:PaginationTagAttributeShowPageTitleAttributeComments] 
+
+|paginationLinkTitle 
+|false 
+|yes 
+|[{InsertPage style='display: inline;' page=PaginationTagAttributePaginationLinkTitleAttributeDescription}][.|edit:PaginationTagAttributePaginationLinkTitleAttributeDescription] 
+|[{InsertPage style='display: inline;' page=PaginationTagAttributePaginationLinkTitleAttributeComments}][.|edit:PaginationTagAttributePaginationLinkTitleAttributeComments] 
+
+|paginationLinkTitleText 
+|false 
+|yes 
+|[{InsertPage style='display: inline;' page=PaginationTagAttributePaginationLinkTitleTextAttributeDescription}][.|edit:PaginationTagAttributePaginationLinkTitleTextAttributeDescription] 
+|[{InsertPage style='display: inline;' page=PaginationTagAttributePaginationLinkTitleTextAttributeComments}][.|edit:PaginationTagAttributePaginationLinkTitleTextAttributeComments] 
+
+|itemName 
+|false 
+|yes 
+|[{InsertPage style='display: inline;' page=PaginationTagAttributeItemNameAttributeDescription}][.|edit:PaginationTagAttributeItemNameAttributeDescription] 
+|[{InsertPage style='display: inline;' page=PaginationTagAttributeItemNameAttributeComments}][.|edit:PaginationTagAttributeItemNameAttributeComments] 
+
+|forList 
+|false 
+|yes 
+|[{InsertPage style='display: inline;' page=PaginationTagAttributeForListAttributeDescription}][.|edit:PaginationTagAttributeForListAttributeDescription] 
+|[{InsertPage style='display: inline;' page=PaginationTagAttributeForListAttributeComments}][.|edit:PaginationTagAttributeForListAttributeComments] 
+
+|styleClass 
+|false 
+|true 
+|[{InsertPage style='display: inline;' page=PaginationTagAttributeStyleClassAttributeDescription}][.|edit:PaginationTagAttributeStyleClassAttributeDescription] 
+|[{InsertPage style='display: inline;' page=PaginationTagAttributeStyleClassAttributeComments}][.|edit:PaginationTagAttributeStyleClassAttributeComments] 
+
+
+}]
+
+!!See also
+
+[mak:list|ListTag]
+!!Examples
+
+[{InsertPage style='display: inline;' page=PaginationTagExample}][.|edit:PaginationTagExample]
+
+
+%%(display:none;) [Category Documentation]%%

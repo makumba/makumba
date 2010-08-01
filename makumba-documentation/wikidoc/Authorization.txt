@@ -22,7 +22,7 @@ The method has following signature:
 public void checkAttributes(Attributes a, Transaction t) throws LogicException
 }}}%%
 
-It makes it possible to check whether a specific [Makumba attribute|MakumbaAttributes] is set, look up data in the database, and if necessary, throw a [UnauthorizedException|api:UnauthorizedException]
+It makes it possible to check whether a specific [Makumba attribute|MakumbaAPIHowto#section-MakumbaAPIHowto-Org.makumba.Attributes] is set, look up data in the database, and if necessary, throw a [UnauthorizedException|api:UnauthorizedException]
 
 [{Box
 

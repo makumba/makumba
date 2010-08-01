@@ -1,8 +1,21 @@
 !!!Download
 
-Makumba is [open source software|http://www.opensource.org/]. Both source code and binaries can be downloaded under the terms of [GNU Lesser General Public License (LGPL)|http://www.gnu.org/copyleft/lesser.html].
+makumba is [open source software|http://www.opensource.org/]. Both source code and binaries can be downloaded under the terms of [GNU Lesser General Public License (LGPL)|http://www.gnu.org/copyleft/lesser.html].
 
-You can __[download Makumba at Sourceforge|http://sourceforge.net/project/showfiles.php?group_id=25704]__
+You can __[download makumba at Sourceforge|http://sourceforge.net/project/showfiles.php?group_id=25704]__
 
+Alternatively, makumba is also available through maven at the central repository:
+
+%%prettify
+{{{
+<dependency>
+  <groupId>org.makumba</groupId>
+  <artifactId>makumba</artifactId>
+  <version>0.9</version>
+</dependency>
+}}}
+%%
+
+Check out the [Quick Start] to find out more about the makumba maven installation, there is also an archetype for generating new projects.
 
 %%(display:none;)[Category Download]%%
