@@ -9,23 +9,31 @@
 
     <ui:define name="content">
 
-  <h:form id="bv">
-    <mak:list from="test.Person p" id="list">
-      
-      <li><mak:value expr="p.indiv.name" /> #{p.indiv.surname}</li>
-      <ul><mak:list from="p.speaks l">
+    <mak:list from="test.Person p" >
+  <h:form >
+
+              
+      <li><mak:value expr="p.indiv.name" /> #{p.indiv.surname} 
+      </li>
+        <f:ajax render="list"> 
+      <ul><mak:list from="p.speaks l" id="list">
           <li><mak:value expr="l.name"/> #{mak:expr('l.isoCode')}</li>
       </mak:list></ul>
-   
-        <f:ajax render="list">
+  
           <tr>
             <th style="text-align: right;"><h:outputLabel for="surname" value="Letters (ajax validation):" /></th>
-            <td><h:inputText id="surname" value="#{p.indiv.surname}" /><h:message for="surname" errorClass="invalid" /></td>
+            <td><h:inputText id="ptr" value="#{p.indiv.id}" >
+            <f:converter converterId="makPtr" />
+            </h:inputText></td>
+            <td><h:inputText id="surname" value="#{p.indiv.surname}" >
+            </h:inputText>
+            <h:message for="surname" errorClass="invalid" /></td>
           </tr>
         </f:ajax>
+  </h:form>
+
     </mak:list>
  
-   </h:form>
 
   </ui:define>
 </ui:composition>

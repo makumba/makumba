@@ -38,6 +38,7 @@ public class MakumbaELResolver extends ELResolver {
 
     @Override
     public Class<?> getType(ELContext context, Object base, Object property) {
+        System.out.println("getType " + base + "." + property);
 
         // as per reference
         if (context == null) {
@@ -64,7 +65,7 @@ public class MakumbaELResolver extends ELResolver {
 
     @Override
     public Object getValue(ELContext context, Object base, Object property) {
-        // System.out.println(base + "." + property);
+        // System.out.println("getValue " + base + "." + property);
         // as per reference
         if (context == null) {
             throw new NullPointerException();
@@ -114,6 +115,9 @@ public class MakumbaELResolver extends ELResolver {
                     return mine;
                 } else {
                     if (value instanceof Pointer && "id".equals(property)) {
+                        /* we have a pointer #{p.x.y.id} 
+                         * if we know we are in UIInstruction or in outputText, we convert toExternalForm */
+
                         UIComponent c = (UIComponent) FacesContext.getCurrentInstance().getAttributes().get(
                             UIComponent.CURRENT_COMPONENT);
                         if (
@@ -164,7 +168,7 @@ public class MakumbaELResolver extends ELResolver {
     public void setValue(ELContext context, Object base, Object property, Object val) {
         // TODO check if the property is fixed
         // and the path to it goes thru fixed not null pointers?
-
+        System.out.println("trying to set " + base + "." + property + "=" + val);
         // as per reference
         if (context == null) {
             throw new NullPointerException();
@@ -193,6 +197,7 @@ public class MakumbaELResolver extends ELResolver {
     @Override
     public boolean isReadOnly(ELContext context, Object base, Object property) {
 
+        System.out.println("isReadOnly " + base + "." + property);
         // as per reference
         if (context == null) {
             throw new NullPointerException();

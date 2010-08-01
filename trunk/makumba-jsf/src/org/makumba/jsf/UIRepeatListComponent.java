@@ -16,10 +16,10 @@ import javax.faces.component.visit.VisitCallback;
 import javax.faces.component.visit.VisitContext;
 import javax.faces.component.visit.VisitResult;
 import javax.faces.context.FacesContext;
+import javax.faces.event.FacesEvent;
 import javax.faces.event.PhaseId;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
-import javax.faces.view.StateManagementStrategy;
 import javax.faces.view.facelets.FaceletException;
 
 import org.makumba.ProgrammerError;
@@ -166,7 +166,7 @@ public class UIRepeatListComponent extends UIRepeat {
         }
     }
 
-    private static UIRepeatListComponent findMakListParent(UIComponent current, boolean objectToo) {
+    static UIRepeatListComponent findMakListParent(UIComponent current, boolean objectToo) {
         UIComponent c = current.getParent();
         while (c != null && !(c instanceof UIRepeatListComponent)) {
             // TODO: honor also objectToo
@@ -225,7 +225,19 @@ public class UIRepeatListComponent extends UIRepeat {
     }
 
     @Override
+    public void queueEvent(FacesEvent event) {
+        /* 
+         * here we can detect Ajax and ValueChanged events, but they are always sent to the root mak:list
+        no matter which mak:list is the target of the f:ajax render= 
+         */
+        System.out.println(event + " " + composedQuery);
+        super.queueEvent(event);
+    }
+
+    @Override
     public void process(FacesContext context, PhaseId p) {
+
+        System.out.println(p + " " + composedQuery);
         if (!beforeIteration(p)) {
             return;
         }
@@ -237,28 +249,43 @@ public class UIRepeatListComponent extends UIRepeat {
     }
 
     @Override
-    public boolean visitTree(VisitContext c, final VisitCallback callback) {
+    public boolean visitTree(final VisitContext context, final VisitCallback callback) {
 
-        // if listData is null, we are probably being restored, so we allow
-        if (!(callback instanceof StateManagementStrategy) && !beforeIteration(null)) {
+        if (callback.getClass().getName().indexOf("PartialViewContext") != -1) {
+
+            /* 
+             * we may be able to figure out that this is a partial rendering and execute queries only 
+             * on new renderings and on partial renderings
+             * 
+             * Clearly the last rendering after an ajax call is done 
+             * only on the mak:list that was indicated in f:ajax render=
+             */
+            System.out.println("PartialViewContext " + composedQuery);
+        }
+        if (listData == null) {
+            // there is no data, hopefully we are in the process of restoring it
+            // so we call the visiting only on this component
+            context.invokeVisitCallback(this, callback);
+            // since we had no data we probably had no structure either, so now we can wrap strage things
+            if (findMakListParent(this, true) == null) {
+                wrapUIInstrutions();
+            }
+        }
+
+        // if there's no data, we should not iterate
+        if (!beforeIteration(null)) {
             return false;
         }
+
         try {
-            /* new VisitCallback() {
-
-            @Override
-            public VisitResult visit(VisitContext context, UIComponent target) {
-                context.getFacesContext().getExternalContext().getRequestMap().put("mak.current", target);
-                try {
+            return super.visitTree(context, new VisitCallback() {
+                @Override
+                public VisitResult visit(VisitContext c, UIComponent target) {
+                    // System.out.println(target.getClass());
                     return callback.visit(context, target);
-                } finally {
-                    context.getFacesContext().getExternalContext().getRequestMap().remove("mak.current");
                 }
-            }
 
-            }*/
-
-            return super.visitTree(c, callback);
+            });
         } finally {
             afterIteration();
         }
@@ -290,6 +317,15 @@ public class UIRepeatListComponent extends UIRepeat {
     });
 
     public void analyze() {
+        // this method is called only for root mak:lists, thus it would be good for triggering analysis and executing
+        // queries
+        // however for some reason it is called twice if APPLY_REQUEST_VALUES 2 PROCESS_VALIDATIONS 3 and
+        // UPDATE_MODEL_VALUES 4 are executed.
+        // thus analysis is now done in encodeAll() (i.e. at the latest possible moment)
+        // TODO: consider removing
+    }
+
+    private void wrapUIInstrutions() {
         visitStaticTree(this, new VisitCallback() {
             @Override
             public VisitResult visit(VisitContext context, UIComponent target) {
@@ -300,19 +336,13 @@ public class UIRepeatListComponent extends UIRepeat {
                 for (int i = 0; i < target.getChildren().size(); i++) {
                     final UIComponent kid = target.getChildren().get(i);
                     if (kid instanceof UIInstructions) {
+                        // System.out.println("\t" + kid.getClass());
                         target.getChildren().set(i, new UIInstructionWrapper(kid));
-                        // kid.setParent(x);
                     }
                 }
                 return VisitResult.ACCEPT;
             }
         });
-        // this method is called only for root mak:lists, thus it would be good for triggering analysis and executing
-        // queries
-        // however for some reason it is called twice if APPLY_REQUEST_VALUES 2 PROCESS_VALIDATIONS 3 and
-        // UPDATE_MODEL_VALUES 4 are executed.
-        // thus analysis is now done in encodeAll() (i.e. at the latest possible moment)
-        // TODO: consider removing
     }
 
     static void visitStaticTree(UIComponent target, VisitCallback c) {
@@ -324,7 +354,7 @@ public class UIRepeatListComponent extends UIRepeat {
         }
     }
 
-    public void startMakListGroup(PhaseId phaseId) {
+    public void startMakListGroup(final PhaseId phaseId) {
 
         readComposedQuery();
 
@@ -335,26 +365,37 @@ public class UIRepeatListComponent extends UIRepeat {
             // we only execute queries during RENDER_RESPONSE
             // we might even skip that if we have data (listData!=null)
             if (phaseId == PhaseId.RENDER_RESPONSE) {
-                visitStaticTree(this, new VisitCallback() {
-                    @Override
-                    public VisitResult visit(VisitContext context, UIComponent target) {
-                        if (target instanceof UIRepeatListComponent) {
-                            ((UIRepeatListComponent) target).executeQuery(qep);
-                        }
-                        return VisitResult.ACCEPT;
-                    }
-                });
+                if (listData == null) {
+                    // if we had no data, we probably had no structure, so we explore it now
+                    wrapUIInstrutions();
+                }
+                executeGroupQueries(qep);
             }
+
         } finally {
             if (qep != null) {
                 qep.close();
             }
         }
+        // we are in root, we initialize the data stack
         FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(CURRENT_DATA,
             new Stack<Dictionary<String, Object>>());
 
+        // and we push the key needed for the root mak:list to find its data (see beforeIteration)
         getCurrentDataStack().push(NOTHING);
 
+    }
+
+    private void executeGroupQueries(final QueryProvider qep) {
+        visitStaticTree(this, new VisitCallback() {
+            @Override
+            public VisitResult visit(VisitContext context, UIComponent target) {
+                if (target instanceof UIRepeatListComponent) {
+                    ((UIRepeatListComponent) target).executeQuery(qep);
+                }
+                return VisitResult.ACCEPT;
+            }
+        });
     }
 
     private void readComposedQuery() {
@@ -413,6 +454,7 @@ public class UIRepeatListComponent extends UIRepeat {
         }
 
         try {
+            System.out.println("Executing " + composedQuery);
             listData = composedQuery.execute(qep, null, evaluator, offset, limit);
         } finally {
             if (useSeparateTransactions()) {
@@ -606,7 +648,6 @@ public class UIRepeatListComponent extends UIRepeat {
         // noinspection unchecked
         this.listData = (Grouper) state[1];
         this.composedQuery = (ComposedQuery) state[2];
-        beforeIteration(null);
     }
 
     @Override
