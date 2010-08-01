@@ -9,31 +9,50 @@
 
     <ui:define name="content">
 
-    <mak:list from="test.Person p" >
   <h:form >
+    <mak:list from="test.Person p" id="bigList">
 
-              
+                     
       <li><mak:value expr="p.indiv.name" /> #{p.indiv.surname} 
       </li>
-        <f:ajax render="list"> 
       <ul><mak:list from="p.speaks l" id="list">
-          <li><mak:value expr="l.name"/> #{mak:expr('l.isoCode')}</li>
+          <li><mak:value expr="l.name"/> #{mak:expr('l.isoCode')}
+          <f:ajax render="list">
+          <h:inputText id="lang" value="#{l.name}" >
+            </h:inputText>
+            <h:message for="lang" errorClass="invalid" />
+          </f:ajax>
+          </li>
       </mak:list></ul>
   
           <tr>
-            <th style="text-align: right;"><h:outputLabel for="surname" value="Letters (ajax validation):" /></th>
-            <td><h:inputText id="ptr" value="#{p.indiv.id}" >
-            <f:converter converterId="makPtr" />
-            </h:inputText></td>
+<!--
+            <th style="text-align: right;"><h:outputLabel for="ptr" value="Letters (ajax validation):" /></th>
+            <td>
+             <h:inputText id="ptr" value="#{p.indiv.id}" > 
+              <f:converter converterId="makPtr" /> 
+              </h:inputText>
+            <h:message for="ptr" errorClass="invalid" />
+             </td>
+ -->
+ 			<f:ajax render="bigList" >
+            <td><h:inputText id="indi" value="#{p.indiv.id}" >
+			<f:converter converterId="makPtr" />
+            </h:inputText>
+            <h:message for="indi" errorClass="invalid" /></td>
+
             <td><h:inputText id="surname" value="#{p.indiv.surname}" >
             </h:inputText>
             <h:message for="surname" errorClass="invalid" /></td>
+            </f:ajax>	
+            
+            
           </tr>
-        </f:ajax>
-  </h:form>
+
 
     </mak:list>
- 
+  </h:form> 
+
 
   </ui:define>
 </ui:composition>

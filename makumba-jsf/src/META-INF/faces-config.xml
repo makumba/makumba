@@ -21,10 +21,10 @@
 		</system-event-listener>
 	</application>
 	
-	<converter>
-  <converter-id>makPtr</converter-id>
-<converter-class>org.makumba.jsf.PointerConverter</converter-class>
-<converter-for-class>org.makumba.Pointer</converter-for-class>
-</converter>
+		<converter>
+	  <converter-id>makPtr</converter-id>
+	<converter-class>org.makumba.jsf.PointerConverter</converter-class>
+	<converter-for-class>org.makumba.commons.SQLPointer</converter-for-class>
+	</converter>
 
 </faces-config>
