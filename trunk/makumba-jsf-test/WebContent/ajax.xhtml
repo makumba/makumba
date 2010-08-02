@@ -18,12 +18,14 @@
       <ul><mak:list from="p.speaks l" id="list">
           <li><mak:value expr="l.name"/> #{mak:expr('l.isoCode')}
           <h:inputText id="lang" value="#{l.name}" >
+          <f:ajax render="list"/>
             </h:inputText>
             <h:message for="lang" errorClass="invalid" />
           </li>
       </mak:list></ul>
   
           <tr>
+            <f:ajax render="bigList">
 
             <td><h:inputText id="indi" value="#{p.indiv.id}" >
 			<f:converter converterId="makPtr" />
@@ -35,6 +37,7 @@
             <h:message for="surname" errorClass="invalid" /></td>
 
             <h:commandButton value="submit" />
+            </f:ajax>	
                          
           </tr>
 

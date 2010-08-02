@@ -3,6 +3,7 @@ package org.makumba.jsf;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.List;
 import java.util.Stack;
@@ -11,12 +12,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.el.ValueExpression;
+import javax.faces.FacesException;
+import javax.faces.component.ContextCallback;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIComponentBase;
+import javax.faces.component.ValueHolder;
 import javax.faces.component.visit.VisitCallback;
 import javax.faces.component.visit.VisitContext;
 import javax.faces.component.visit.VisitResult;
 import javax.faces.context.FacesContext;
+import javax.faces.event.AbortProcessingException;
 import javax.faces.event.FacesEvent;
 import javax.faces.event.PhaseId;
 import javax.faces.model.DataModel;
@@ -71,11 +76,7 @@ public class UIRepeatListComponent extends UIRepeat {
         }
     }
 
-    static final String CURRENT_DATA = "org.makumba.list.currentData";
-
     static final private Dictionary<String, Object> NOTHING = new ArrayMap();
-
-    static final String CURRENT_LIST = "org.makumba.list.currentList";
 
     String[] queryProps = new String[6];
 
@@ -90,11 +91,15 @@ public class UIRepeatListComponent extends UIRepeat {
     transient Grouper listData;
 
     // current iteration of this list
-    transient ArrayMap currentData;
+    transient ThreadLocal<ArrayMap> currentData = new ThreadLocal<ArrayMap>();
 
     private String prefix;
 
     private UIRepeatListComponent parent;
+
+    private static ThreadLocal<UIRepeatListComponent> currentList = new ThreadLocal<UIRepeatListComponent>();
+
+    private static ThreadLocal<Stack<Dictionary<String, Object>>> currentDataStack = new ThreadLocal<Stack<Dictionary<String, Object>>>();
 
     public void setPrefix(String prefix) {
         this.prefix = prefix;
@@ -187,21 +192,25 @@ public class UIRepeatListComponent extends UIRepeat {
         return (UIRepeatListComponent) c;
     }
 
-    private boolean beforeIteration(PhaseId phaseId) {
+    List<Integer> visitedIndexes = new ArrayList<Integer>();
+
+    int currentIndex = -1;
+
+    List<ArrayMap> iterationGroupData;
+
+    private boolean beforeIteration(final Object o) {
         if (findMakListParent(this, true) == null) {
-            startMakListGroup(phaseId);
+            startMakListGroup(o);
         }
         // TODO: check whether we really want to keep the data in the grouper after iteration
         // this is only useful before a postback which will not request this list to re-render
 
-        final List<ArrayMap> iterationGroupData = listData != null ? listData.getData(getCurrentDataStack(), false)
-                : null;
+        iterationGroupData = listData != null ? listData.getData(currentDataStack.get(), false) : null;
+        System.out.println(debugIdent() + " --- startTag ----  " + o);
 
         if (iterationGroupData == null) {
-            log.fine((phaseId != null ? phaseId : "") + " ZERO " + composedQuery);
             return false;
         }
-        log.fine(phaseId + " " + iterationGroupData.size() + " " + composedQuery);
         /*
         for (ArrayMap a : iterationGroupData) {
             System.out.print("\t");
@@ -213,17 +222,31 @@ public class UIRepeatListComponent extends UIRepeat {
         */
 
         // push a placeholder, it will be popped at first iteration
-        getCurrentDataStack().push(NOTHING);
+        currentDataStack.get().push(NOTHING);
+        visitedIndexes.clear();
 
         DataModel<ArrayMap> dm = new ListDataModel<ArrayMap>(iterationGroupData) {
+
             @Override
             public void setRowIndex(int rowIndex) {
+                visitedIndexes.add(rowIndex);
+                currentIndex = rowIndex;
+                // System.out.println(debugIdent() + " " + rowIndex);
+                if (rowIndex == 0 && currentDataStack.get() == null) {
+                    System.out.println(debugIdent() + " empty dataset");
+                    findMakListRoot().startIterationGroup(o);
+                }
                 if (rowIndex >= 0 && rowIndex < iterationGroupData.size()) {
+
                     // pop old value:
-                    getCurrentDataStack().pop();
-                    currentData = iterationGroupData.get(rowIndex);
+                    currentDataStack.get().pop();
+                    currentData.set(iterationGroupData.get(rowIndex));
                     // push new value:
-                    getCurrentDataStack().push(currentData);
+                    currentDataStack.get().push(currentData.get());
+                    // System.out.println(debugIdent() + " " + rowIndex + " " + iterationGroupData.size());
+
+                } else {
+                    // System.out.println(debugIdent() + " " + rowIndex);
                 }
 
                 super.setRowIndex(rowIndex);
@@ -238,15 +261,29 @@ public class UIRepeatListComponent extends UIRepeat {
         setBegin(0);
         setEnd(iterationGroupData.size());
         parent = getCurrentlyRunning();
-        FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(CURRENT_LIST, this);
 
+        currentList.set(this);
         return true;
     }
 
-    private void afterIteration() {
+    protected UIRepeatListComponent findMakListRoot() {
+        UIRepeatListComponent p = findMakListParent();
+        if (p == null) {
+            return this;
+        }
+        return p.findMakListParent();
+    }
+
+    private void afterIteration(Object o) {
+        System.out.println(debugIdent() + " --- endTag--- " + visitedIndexes + " " + o);
+        iterationGroupData = null;
+        currentIndex = -1;
         // this list is done, no more current value in stack
-        getCurrentDataStack().pop();
-        FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(CURRENT_LIST, parent);
+        currentDataStack.get().pop();
+        currentList.set(parent);
+        if (findMakListParent(this, true) == null) {
+            endIterationGroup(o);
+        }
     }
 
     @Override
@@ -255,7 +292,8 @@ public class UIRepeatListComponent extends UIRepeat {
          * here we can detect Ajax and ValueChanged events, but they are always sent to the root mak:list
         no matter which mak:list is the target of the f:ajax render= 
          */
-        log.fine(event + " " + composedQuery);
+        System.out.println(debugIdent() + " " + event.getComponent().getClientId());
+
         super.queueEvent(event);
     }
 
@@ -269,25 +307,32 @@ public class UIRepeatListComponent extends UIRepeat {
         try {
             super.process(context, p);
         } finally {
-            afterIteration();
+            afterIteration(p);
         }
     }
 
     @Override
-    public boolean visitTree(final VisitContext context, final VisitCallback callback) {
-        log.fine("visit by " + callback.getClass().getName() + " ");
-
-        if (callback.getClass().getName().indexOf("PartialViewContext") != -1) {
-
-            /* 
-             * we may be able to figure out that this is a partial rendering and execute queries only 
-             * on new renderings and on partial renderings
-             * 
-             * Clearly the last rendering after an ajax call is done 
-             * only on the mak:list that was indicated in f:ajax render=
-             */
-            log.fine("PartialViewContext " + composedQuery);
+    public void broadcast(FacesEvent event) throws AbortProcessingException {
+        // log.fine(p + " " + composedQuery);
+        if (!beforeIteration(event)) {
+            return;
         }
+        try {
+            super.broadcast(event);
+        } finally {
+            afterIteration(event);
+        }
+    }
+
+    @Override
+    public boolean invokeOnComponent(FacesContext faces, String clientId, ContextCallback callback)
+            throws FacesException {
+        System.out.println(debugIdent() + " INVOKE " + clientId + " " + callback);
+        return super.invokeOnComponent(faces, clientId, callback);
+    }
+
+    @Override
+    public boolean visitTree(final VisitContext context, final VisitCallback callback) {
 
         if (listData == null) {
             // there is no data, hopefully we are in the process of restoring it
@@ -300,7 +345,7 @@ public class UIRepeatListComponent extends UIRepeat {
         context.invokeVisitCallback(this, callback);
 
         // if there's no data, we should not iterate
-        if (!beforeIteration(null)) {
+        if (!beforeIteration(callback)) {
             return false;
         }
 
@@ -328,19 +373,12 @@ public class UIRepeatListComponent extends UIRepeat {
             });
             */
         } finally {
-            afterIteration();
+            afterIteration(callback);
         }
     }
 
-    @SuppressWarnings("unchecked")
-    static Stack<Dictionary<String, Object>> getCurrentDataStack() {
-        return (Stack<Dictionary<String, Object>>) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get(
-            CURRENT_DATA);
-    }
-
     public static UIRepeatListComponent getCurrentlyRunning() {
-        return (UIRepeatListComponent) FacesContext.getCurrentInstance().getExternalContext().getRequestMap().get(
-            CURRENT_LIST);
+        return currentList.get();
 
     }
 
@@ -396,17 +434,19 @@ public class UIRepeatListComponent extends UIRepeat {
         }
     }
 
-    public void startMakListGroup(final PhaseId phaseId) {
+    public void startMakListGroup(final Object o) {
 
         readComposedQuery();
 
         final QueryProvider qep = useSeparateTransactions() ? null : getQueryExecutionProvider();
 
+        startIterationGroup(o);
+
         try {
 
             // we only execute queries during RENDER_RESPONSE
             // we might even skip that if we have data (listData!=null)
-            if (phaseId == PhaseId.RENDER_RESPONSE) {
+            if (o == PhaseId.RENDER_RESPONSE) {
                 if (listData == null) {
                     // if we had no data, we probably had no structure, so we explore it now
                     wrapUIInstrutions();
@@ -414,17 +454,72 @@ public class UIRepeatListComponent extends UIRepeat {
                 executeGroupQueries(qep);
             }
 
+            if (o == PhaseId.UPDATE_MODEL_VALUES) {
+                visitStaticTree(this, new VisitCallback() {
+                    @Override
+                    public VisitResult visit(VisitContext context, UIComponent target) {
+                        if (target instanceof ValueHolder) {
+                            ((ValueHolder) target).setValue(null);
+                        }
+                        return VisitResult.ACCEPT;
+                    }
+                });
+            }
+
         } finally {
             if (qep != null) {
                 qep.close();
             }
         }
+
+    }
+
+    private void startIterationGroup(Object o) {
+        System.out.println(debugIdent() + " ------------- start -------- " + o);
         // we are in root, we initialize the data stack
-        FacesContext.getCurrentInstance().getExternalContext().getRequestMap().put(CURRENT_DATA,
-            new Stack<Dictionary<String, Object>>());
+        currentDataStack.set(new Stack<Dictionary<String, Object>>());
 
         // and we push the key needed for the root mak:list to find its data (see beforeIteration)
-        getCurrentDataStack().push(NOTHING);
+        currentDataStack.get().push(NOTHING);
+    }
+
+    public String debugIdent() {
+        return "f:" + idObject(FacesContext.getCurrentInstance()) + " " + "l:" + idList(this);
+    }
+
+    private String idList(UIRepeatListComponent comp) {
+        if (comp == null) {
+            return "";
+        }
+        String s = idList(comp.findMakListParent());
+        if (s.length() > 0) {
+            s += ":";
+        }
+        String iterData = "";
+        if (comp != null) {
+            iterData = "(" + comp.currentIndex;
+            if (comp.iterationGroupData != null) {
+                iterData += ":" + comp.iterationGroupData.size();
+            } else {
+                iterData += ":0";
+            }
+            iterData += ")";
+        }
+
+        return s + idObject(comp) + iterData;
+    }
+
+    private String idObject(Object pr) {
+        return pr != null ? Integer.toHexString(pr.hashCode()) : "";
+    }
+
+    private void endIterationGroup(Object o) {
+
+        currentDataStack.get().pop();
+
+        // we are in root, we initialize the data stack
+        currentDataStack.set(null);
+        System.out.println(debugIdent() + " ----------- end ----------- " + o);
 
     }
 
@@ -498,7 +593,7 @@ public class UIRepeatListComponent extends UIRepeat {
         }
 
         try {
-            log.fine("Executing " + composedQuery);
+            System.out.println(debugIdent() + " --run-- " + composedQuery);
             listData = composedQuery.execute(qep, null, evaluator, offset, limit);
         } finally {
             if (useSeparateTransactions()) {
@@ -545,7 +640,7 @@ public class UIRepeatListComponent extends UIRepeat {
     }
 
     public Object getExpressionValue(int exprIndex) {
-        return currentData.data[exprIndex];
+        return currentData.get().data[exprIndex];
     }
 
     void findExpressionsInChildren() {
@@ -721,6 +816,10 @@ public class UIRepeatListComponent extends UIRepeat {
         state[2] = composedQuery;
         // TODO: save other needed stuff
         return state;
+    }
+
+    private UIRepeatListComponent findMakListParent() {
+        return findMakListParent(UIRepeatListComponent.this, true);
     }
 
 }

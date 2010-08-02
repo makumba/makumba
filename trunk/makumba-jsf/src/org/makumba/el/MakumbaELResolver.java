@@ -38,7 +38,6 @@ public class MakumbaELResolver extends ELResolver {
 
     @Override
     public Class<?> getType(ELContext context, Object base, Object property) {
-        log.fine("getType " + base + "." + property + " ");
 
         // as per reference
         if (context == null) {
@@ -49,39 +48,46 @@ public class MakumbaELResolver extends ELResolver {
             context.setPropertyResolved(true);
             // it was object, i think pointer is correct, not sure.
             // maybe a pointer converter will be needed then
-            log.fine("getType " + base + "." + property + " Pointer");
+            System.out.println(debugIdent() + " " + base + "." + property + " type Pointer");
 
             return Pointer.class;
         }
         if (base != null && base instanceof ExpressionPathPlaceholder && property != null) {
             ExpressionPathPlaceholder expr = basicGetValue(context, base, property);
             if (expr == null) {
-                log.fine("getType " + base + "." + property + " null");
+                System.out.println(debugIdent() + " " + base + "." + property + " type unresolved");
                 return null;
             }
             context.setPropertyResolved(true);
             UIRepeatListComponent list = UIRepeatListComponent.getCurrentlyRunning();
             if (!list.getProjections().contains(expr.getExpressionPath())) {
-                log.fine("getType " + base + "." + property + " Object");
+                System.out.println(debugIdent() + " " + base + "." + property + " type Object");
 
                 // this should not matter as we are not going to edit
                 return Object.class;
             }
             // this will also catch pointers (SQLPointer)
             Object value = list.getExpressionValue(expr.getExpressionPath());
-            log.fine("getType " + base + "." + property + " " + value.getClass().getName());
+            System.out.println(debugIdent() + " " + base + "." + property + " type " + value.getClass().getName()
+                    + " type unresolved");
 
             return value.getClass();
         }
-        log.fine("getType " + base + "." + property + " null");
+        System.out.println(debugIdent() + " " + base + "." + property + " type unresolved");
 
         return null;
+    }
+
+    private String debugIdent() {
+        return UIRepeatListComponent.getCurrentlyRunning().debugIdent();
     }
 
     @Override
     public Object getValue(ELContext context, Object base, Object property) {
         ExpressionPathPlaceholder mine = basicGetValue(context, base, property);
         if (mine == null) {
+            System.out.println(debugIdent() + " " + base + "." + property + " ----> " + null);
+
             return null;
         }
         UIRepeatListComponent list = UIRepeatListComponent.getCurrentlyRunning();
@@ -95,6 +101,8 @@ public class MakumbaELResolver extends ELResolver {
                     // TODO: we could actually set the value in the placeholder, for whatever it could be useful
 
                     // return the placeholder
+                    System.out.println(debugIdent() + " " + base + "." + property + " ----> " + mine);
+
                     return mine;
                 }
 
@@ -119,16 +127,19 @@ public class MakumbaELResolver extends ELResolver {
                         }
                     }
                 }
+                System.out.println(debugIdent() + " " + base + "." + property + " ----> " + value);
                 return value;
             }
 
         }
+        System.out.println(debugIdent() + " " + base + "." + property + " ----> " + mine);
+
+        // log.fine(mine.toString());
         return mine;
 
     }
 
     public ExpressionPathPlaceholder basicGetValue(ELContext context, Object base, Object property) {
-        log.finest("getValue " + base + "." + property);
         // as per reference
         if (context == null) {
             throw new NullPointerException();
@@ -205,10 +216,10 @@ public class MakumbaELResolver extends ELResolver {
         }
 
         if (base instanceof ExpressionPathPlaceholder) {
-            log.fine(base + "." + property + " <------- " + val);
+            System.out.println(debugIdent() + " " + base + "." + property + " <------- " + val);
             context.setPropertyResolved(true);
         } else {
-            log.fine("not setting " + base + "." + property + " to " + val);
+            System.out.println(debugIdent() + " not setting " + base + "." + property + " to " + val);
         }
         return;
 
@@ -228,7 +239,7 @@ public class MakumbaELResolver extends ELResolver {
     @Override
     public boolean isReadOnly(ELContext context, Object base, Object property) {
 
-        log.fine("isReadOnly " + base + "." + property);
+        System.out.println(debugIdent() + " isReadOnly " + base + "." + property);
         // as per reference
         if (context == null) {
             throw new NullPointerException();

@@ -25,7 +25,7 @@ public class PointerConverter implements Converter, Serializable {
 
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
-        log.fine("Resolving  " + value);
+        // log.fine("Resolving  " + value);
         // FIXME: this looks pretty laborious. Probably the query should prepare
         try {
 
@@ -49,7 +49,8 @@ public class PointerConverter implements Converter, Serializable {
             // JSF seems to require a SQLPointer... Maybe because the old value is of that class
             Pointer ptr = new org.makumba.commons.SQLPointer(pointed.getName(),
                     new Pointer(pointed.getName(), value).getId());
-            log.fine(ptr.toString());
+            System.out.println(UIRepeatListComponent.getCurrentlyRunning().debugIdent() + " " + value + " is "
+                    + ptr.toString());
             return ptr;
         } catch (Throwable t) {
             t.printStackTrace();
