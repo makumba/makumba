@@ -7,8 +7,8 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
-	<classpathentry kind="lib" path="lib/jsf-api.jar" sourcepath="lib-src/mojarra-2.0.2-FCS-source.zip"/>
-	<classpathentry kind="lib" path="lib/jsf-impl.jar" sourcepath="lib-src/mojarra-2.0.2-FCS-source.zip"/>
+	<classpathentry kind="lib" path="lib/jsf-api.jar" sourcepath="lib-src/mojarra-2.0.3-FCS-source.zip"/>
+	<classpathentry kind="lib" path="lib/jsf-impl.jar" sourcepath="lib-src/mojarra-2.0.3-FCS-source.zip"/>
 	<classpathentry kind="lib" path="lib/jstl-api-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/jstl-impl-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/el-api-2.2.1-b03.jar" sourcepath="lib-src/el-api-2.2.1-b03-sources.jar">
