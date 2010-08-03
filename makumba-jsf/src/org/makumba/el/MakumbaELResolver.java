@@ -17,7 +17,8 @@ import javax.faces.context.FacesContext;
 
 import org.makumba.Pointer;
 import org.makumba.jsf.UIRepeatListComponent;
-import org.makumba.jsf.UIRepeatListComponent.UIInstructionWrapper;
+
+import com.sun.faces.facelets.compiler.UIInstructions;
 
 /**
  * FIXME for ptr projections such as #{p}, return something alike to Java's [Object@REFERENCE String instead of the
@@ -68,8 +69,7 @@ public class MakumbaELResolver extends ELResolver {
             }
             // this will also catch pointers (SQLPointer)
             Object value = list.getExpressionValue(expr.getExpressionPath());
-            System.out.println(debugIdent() + " " + base + "." + property + " type " + value.getClass().getName()
-                    + " type unresolved");
+            System.out.println(debugIdent() + " " + base + "." + property + " type " + value.getClass().getName());
 
             return value.getClass();
         }
@@ -117,7 +117,7 @@ public class MakumbaELResolver extends ELResolver {
                     // encoded form is better
                     // also in h:outputText?
 
-                    if (c instanceof UIInstructionWrapper) {
+                    if (c instanceof UIInstructions) {
                         return ((Pointer) value).toExternalForm();
                     }
                     if (c instanceof ValueHolder && ((ValueHolder) c).getConverter() == null) {

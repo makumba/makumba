@@ -3,7 +3,9 @@ package org.makumba.jsf;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.List;
 import java.util.Stack;
@@ -15,7 +17,6 @@ import javax.el.ValueExpression;
 import javax.faces.FacesException;
 import javax.faces.component.ContextCallback;
 import javax.faces.component.UIComponent;
-import javax.faces.component.UIComponentBase;
 import javax.faces.component.ValueHolder;
 import javax.faces.component.visit.VisitCallback;
 import javax.faces.component.visit.VisitContext;
@@ -24,8 +25,8 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.FacesEvent;
 import javax.faces.event.PhaseId;
-import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
+import javax.faces.view.StateManagementStrategy;
 import javax.faces.view.facelets.FaceletException;
 
 import org.makumba.ProgrammerError;
@@ -45,35 +46,28 @@ import com.sun.faces.facelets.component.UIRepeat;
 public class UIRepeatListComponent extends UIRepeat {
     static final Logger log = java.util.logging.Logger.getLogger("org.makumba.jsf");
 
-    /**
-     * Since UIInstructions does not update UIComponent.CURRENT_COMPONENT, we wrap it in a normal component.
-     */
-    // TODO: MakumbaELResolver needs to find the component in which a pointer is rendered (a converter will not take
-    // precedence automatically). However it seems that UIComponent.CURRENT_COMPONENT is not always up to date (at least
-    // not in the case of mak:list, which is why mak:list sets its own request attribute. This wrapping technique can be
-    // used for any leaf component, and then the current component can be determined by redefining encodeAll(),
-    // processXXX(), etc
-    public static final class UIInstructionWrapper extends UIComponentBase {
-        private final UIComponent kid;
+    private static final class MakListDataModel extends ListDataModel<ArrayMap> implements Serializable {
+        transient UIRepeatListComponent makList;
 
-        private UIInstructionWrapper(UIComponent kid) {
-            this.kid = kid;
-            kid.setParent(null);
-            getChildren().add(kid);
+        private MakListDataModel() {
+            super(null);
         }
 
         @Override
-        public String getFamily() {
-            return kid.getFamily();
-        }
+        public void setRowIndex(int rowIndex) {
+            try {
+                makList.setRowIndex(rowIndex);
+            } catch (NullPointerException e) {
+                // this only happens at construction
+            }
+            super.setRowIndex(rowIndex);
 
-        /*
-         * this most probably returns true 
-         */
-        @Override
-        public boolean isTransient() {
-            return kid.isTransient();
         }
+    }
+
+    public UIRepeatListComponent() {
+        setValue(new MakListDataModel());
+        getMakDataModel().makList = this;
     }
 
     static final private Dictionary<String, Object> NOTHING = new ArrayMap();
@@ -175,6 +169,25 @@ public class UIRepeatListComponent extends UIRepeat {
         defaultLimit = n;
     }
 
+    void setRowIndex(int rowIndex) {
+        visitedIndexes.add(rowIndex);
+        currentIndex = rowIndex;
+        // System.out.println(debugIdent() + " " + rowIndex);
+        if (rowIndex >= 0 && rowIndex < iterationGroupData.size()) {
+
+            // pop old value:
+            currentDataStack.get().pop();
+            currentData.set(iterationGroupData.get(rowIndex));
+            // push new value:
+            currentDataStack.get().push(currentData.get());
+            // System.out.println(debugIdent() + " " + rowIndex + " " + iterationGroupData.size());
+
+        } else {
+            // System.out.println(debugIdent() + " " + rowIndex);
+        }
+
+    }
+
     protected void onlyOuterListArgument(String s) {
         UIRepeatListComponent c = UIRepeatListComponent.findMakListParent(this, false);
         if (c != null) {
@@ -225,39 +238,8 @@ public class UIRepeatListComponent extends UIRepeat {
         currentDataStack.get().push(NOTHING);
         visitedIndexes.clear();
 
-        DataModel<ArrayMap> dm = new ListDataModel<ArrayMap>(iterationGroupData) {
+        getMakDataModel().setWrappedData(iterationGroupData);
 
-            @Override
-            public void setRowIndex(int rowIndex) {
-                visitedIndexes.add(rowIndex);
-                currentIndex = rowIndex;
-                // System.out.println(debugIdent() + " " + rowIndex);
-                if (rowIndex == 0 && currentDataStack.get() == null) {
-                    System.out.println(debugIdent() + " empty dataset");
-                    findMakListRoot().startIterationGroup(o);
-                }
-                if (rowIndex >= 0 && rowIndex < iterationGroupData.size()) {
-
-                    // pop old value:
-                    currentDataStack.get().pop();
-                    currentData.set(iterationGroupData.get(rowIndex));
-                    // push new value:
-                    currentDataStack.get().push(currentData.get());
-                    // System.out.println(debugIdent() + " " + rowIndex + " " + iterationGroupData.size());
-
-                } else {
-                    // System.out.println(debugIdent() + " " + rowIndex);
-                }
-
-                super.setRowIndex(rowIndex);
-                if (rowIndex >= iterationGroupData.size()) {
-                    // nothing but we could use this to replace afterIteration()
-                }
-
-            }
-        };
-
-        setValue(dm);
         setBegin(0);
         setEnd(iterationGroupData.size());
         parent = getCurrentlyRunning();
@@ -266,12 +248,16 @@ public class UIRepeatListComponent extends UIRepeat {
         return true;
     }
 
+    private MakListDataModel getMakDataModel() {
+        return (MakListDataModel) getValue();
+    }
+
     protected UIRepeatListComponent findMakListRoot() {
         UIRepeatListComponent p = findMakListParent();
         if (p == null) {
             return this;
         }
-        return p.findMakListParent();
+        return p.findMakListRoot();
     }
 
     private void afterIteration(Object o) {
@@ -335,19 +321,26 @@ public class UIRepeatListComponent extends UIRepeat {
     public boolean visitTree(final VisitContext context, final VisitCallback callback) {
 
         if (listData == null) {
+
             // there is no data, hopefully we are in the process of restoring it
             // so we call the visiting only on this component
             // since we had no data we probably had no structure either, so now we can wrap strage things
             if (findMakListParent(this, true) == null) {
-                wrapUIInstrutions();
+                // wrapUIInstrutions();
             }
         }
+
+        // we make sure we are visited despite UIRepeat
         context.invokeVisitCallback(this, callback);
 
         // if there's no data, we should not iterate
         if (!beforeIteration(callback)) {
-            return false;
+            return true;
         }
+        System.out.println(debugIdent()
+                + " will visit "
+                + (context.getSubtreeIdsToVisit(this) == VisitContext.ALL_IDS ? "all"
+                        : context.getSubtreeIdsToVisit(this)));
 
         try {
             return super.visitTree(context, callback);
@@ -375,6 +368,14 @@ public class UIRepeatListComponent extends UIRepeat {
         } finally {
             afterIteration(callback);
         }
+    }
+
+    private boolean isSaveOrRestore(final VisitCallback callback) {
+        Class<?> c = callback.getClass();
+        if (c.isAnonymousClass()) {
+            c = c.getEnclosingClass();
+        }
+        return Arrays.asList(c.getInterfaces()).contains(StateManagementStrategy.class);
     }
 
     public static UIRepeatListComponent getCurrentlyRunning() {
@@ -405,26 +406,6 @@ public class UIRepeatListComponent extends UIRepeat {
         // TODO: consider removing
     }
 
-    private void wrapUIInstrutions() {
-        visitStaticTree(this, new VisitCallback() {
-            @Override
-            public VisitResult visit(VisitContext context, UIComponent target) {
-                if (target instanceof UIInstructionWrapper) {
-                    return VisitResult.REJECT;
-                }
-
-                for (int i = 0; i < target.getChildren().size(); i++) {
-                    final UIComponent kid = target.getChildren().get(i);
-                    if (kid instanceof UIInstructions) {
-                        // log.fine("\t" + kid.getClass());
-                        target.getChildren().set(i, new UIInstructionWrapper(kid));
-                    }
-                }
-                return VisitResult.ACCEPT;
-            }
-        });
-    }
-
     static void visitStaticTree(UIComponent target, VisitCallback c) {
         if (c.visit(null, target) == VisitResult.REJECT) {
             return;
@@ -449,7 +430,7 @@ public class UIRepeatListComponent extends UIRepeat {
             if (o == PhaseId.RENDER_RESPONSE) {
                 if (listData == null) {
                     // if we had no data, we probably had no structure, so we explore it now
-                    wrapUIInstrutions();
+                    // wrapUIInstrutions();
                 }
                 executeGroupQueries(qep);
             }
@@ -520,6 +501,20 @@ public class UIRepeatListComponent extends UIRepeat {
         // we are in root, we initialize the data stack
         currentDataStack.set(null);
         System.out.println(debugIdent() + " ----------- end ----------- " + o);
+        if (FacesContext.getCurrentInstance().getCurrentPhaseId() == PhaseId.RENDER_RESPONSE) {
+            System.out.println(debugIdent() + " set saving");
+            visitStaticTree(this, new VisitCallback() {
+
+                @Override
+                public VisitResult visit(VisitContext context, UIComponent target) {
+                    if (target instanceof UIRepeatListComponent) {
+                        ((UIRepeatListComponent) target).saving = true;
+                    }
+                    return null;
+                }
+
+            });
+        }
 
     }
 
@@ -783,6 +778,34 @@ public class UIRepeatListComponent extends UIRepeat {
         return expr.substring(2, expr.length() - 1);
     }
 
+    // Hack: when the rendering finished, we enter saving state and never return digits (:0) in the key
+    boolean saving = false;
+
+    @Override
+    public String getClientId(FacesContext faces) {
+        String id = super.getClientId(faces);
+        return cleanId(id);
+    }
+
+    @Override
+    public String getContainerClientId(FacesContext faces) {
+        String id = super.getContainerClientId(faces);
+        return cleanId(id);
+    }
+
+    private String cleanId(String id) {
+        if (!saving) {
+            return id;
+        }
+        while (true) {
+            int n = id.indexOf(":0");
+            if (n == -1) {
+                return id;
+            }
+            id = id.substring(0, n) + id.substring(n + 2);
+        }
+    }
+
     @Override
     public void restoreState(FacesContext faces, Object object) {
         if (faces == null) {
@@ -796,6 +819,7 @@ public class UIRepeatListComponent extends UIRepeat {
         // noinspection unchecked
         this.listData = (Grouper) state[1];
         this.composedQuery = (ComposedQuery) state[2];
+        getMakDataModel().makList = this;
     }
 
     @Override
@@ -803,14 +827,12 @@ public class UIRepeatListComponent extends UIRepeat {
         if (faces == null) {
             throw new NullPointerException();
         }
+        System.out.println(debugIdent() + " save with key " + this.getClientId(FacesContext.getCurrentInstance())
+                + " superKey " + super.getClientId(FacesContext.getCurrentInstance()));
 
         Object[] state = new Object[8];
-        Object o = getValue();
 
-        // we avoid serialization of the value which is a ListDataModel, non-serializable and not needed anyway
-        setValue(null);
         state[0] = super.saveState(faces);
-        setValue(o);
 
         state[1] = listData;
         state[2] = composedQuery;
