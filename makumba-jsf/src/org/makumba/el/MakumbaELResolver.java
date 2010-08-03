@@ -94,7 +94,11 @@ public class MakumbaELResolver extends ELResolver {
         if (base != null && base instanceof ExpressionPathPlaceholder
                 && list.getProjections().contains(mine.getExpressionPath())) {
             {
-                Object value = list.getExpressionValue(mine.getExpressionPath());
+                Object value = list.valuesSet.get(base + "." + property);
+
+                if (value == null) {
+                    value = list.getExpressionValue(mine.getExpressionPath());
+                }
 
                 if (value instanceof Pointer && !"id".equals(property)) {
                     // TODO: instead of checking the value, we can inquire the query whether the field is a pointer
@@ -217,6 +221,10 @@ public class MakumbaELResolver extends ELResolver {
 
         if (base instanceof ExpressionPathPlaceholder) {
             System.out.println(debugIdent() + " " + base + "." + property + " <------- " + val);
+
+            UIRepeatListComponent list = UIRepeatListComponent.getCurrentlyRunning();
+            list.valuesSet.put(base + "." + property, val);
+
             context.setPropertyResolved(true);
         } else {
             System.out.println(debugIdent() + " not setting " + base + "." + property + " to " + val);

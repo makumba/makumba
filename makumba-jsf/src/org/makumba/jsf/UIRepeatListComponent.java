@@ -7,7 +7,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -85,7 +87,7 @@ public class UIRepeatListComponent extends UIRepeat {
     transient Grouper listData;
 
     // current iteration of this list
-    transient ThreadLocal<ArrayMap> currentData = new ThreadLocal<ArrayMap>();
+    transient ArrayMap currentData;
 
     private String prefix;
 
@@ -177,9 +179,9 @@ public class UIRepeatListComponent extends UIRepeat {
 
             // pop old value:
             currentDataStack.get().pop();
-            currentData.set(iterationGroupData.get(rowIndex));
+            currentData = iterationGroupData.get(rowIndex);
             // push new value:
-            currentDataStack.get().push(currentData.get());
+            currentDataStack.get().push(currentData);
             // System.out.println(debugIdent() + " " + rowIndex + " " + iterationGroupData.size());
 
         } else {
@@ -205,11 +207,13 @@ public class UIRepeatListComponent extends UIRepeat {
         return (UIRepeatListComponent) c;
     }
 
-    List<Integer> visitedIndexes = new ArrayList<Integer>();
+    transient List<Integer> visitedIndexes = new ArrayList<Integer>();
 
-    int currentIndex = -1;
+    transient int currentIndex = -1;
 
-    List<ArrayMap> iterationGroupData;
+    transient List<ArrayMap> iterationGroupData;
+
+    public transient Map<String, Object> valuesSet = new HashMap<String, Object>();
 
     private boolean beforeIteration(final Object o) {
         if (findMakListParent(this, true) == null) {
@@ -318,7 +322,7 @@ public class UIRepeatListComponent extends UIRepeat {
     }
 
     @Override
-    public boolean visitTree(final VisitContext context, final VisitCallback callback) {
+    public boolean visitTree(VisitContext context, final VisitCallback callback) {
 
         if (listData == null) {
 
@@ -330,6 +334,15 @@ public class UIRepeatListComponent extends UIRepeat {
             }
         }
 
+        /* 
+         // attempting full rendering in ajax
+        if (context.getFacesContext().getCurrentPhaseId() == PhaseId.RENDER_RESPONSE) {
+            // we're being visited during the render-response phase, this is most probably ajax
+            // so we do a full rendering
+            process(context.getFacesContext(), PhaseId.RENDER_RESPONSE);
+            return false;
+        }
+        */
         // we make sure we are visited despite UIRepeat
         context.invokeVisitCallback(this, callback);
 
@@ -635,7 +648,7 @@ public class UIRepeatListComponent extends UIRepeat {
     }
 
     public Object getExpressionValue(int exprIndex) {
-        return currentData.get().data[exprIndex];
+        return currentData.data[exprIndex];
     }
 
     void findExpressionsInChildren() {
@@ -819,6 +832,9 @@ public class UIRepeatListComponent extends UIRepeat {
         // noinspection unchecked
         this.listData = (Grouper) state[1];
         this.composedQuery = (ComposedQuery) state[2];
+        @SuppressWarnings("unchecked")
+        HashMap<String, Object> hashMap = (HashMap<String, Object>) state[3];
+        this.valuesSet = hashMap;
         getMakDataModel().makList = this;
     }
 
@@ -836,6 +852,9 @@ public class UIRepeatListComponent extends UIRepeat {
 
         state[1] = listData;
         state[2] = composedQuery;
+
+        // FIXME: this is temporary
+        state[3] = valuesSet;
         // TODO: save other needed stuff
         return state;
     }
