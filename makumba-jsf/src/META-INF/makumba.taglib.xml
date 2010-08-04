@@ -1,163 +1,149 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <facelet-taglib xmlns="http://java.sun.com/xml/ns/javaee"
-                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facelettaglibrary_2_0.xsd"
-                version="2.0">
-    <description>makumba JSF taglib</description>
-    <namespace>http://www.makumba.org/jsf</namespace>
-    
-    <function>
-        <function-name>expr</function-name>
-        <function-class>org.makumba.el.MakumbaFunctions</function-class>
-        <function-signature>java.lang.Object expr(java.lang.String)</function-signature>
-    </function>
-    
-    <tag>
-        <description>mak:list</description>
-        <tag-name>list</tag-name>
-        <component>
-        	<component-type>makumbaList</component-type>
-        	<handler-class>org.makumba.jsf.ListTagHandler</handler-class>
-        </component>
-        
-        
-            <attribute>
-      <name>from</name>
-      <required>true</required>
-      <type>java.lang.String</type>
- 
-     <description></description>
-      
-    </attribute>
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facelettaglibrary_2_0.xsd"
+	version="2.0">
+	<description>makumba JSF taglib</description>
+	<namespace>http://www.makumba.org/jsf</namespace>
 
-    <attribute>
-      <name>variableFrom</name>
-      <required>false</required>
-      <description></description>
-      <type>java.lang.String</type>
-      
-    </attribute>
+	<function>
+		<function-name>expr</function-name>
+		<function-class>org.makumba.el.MakumbaFunctions</function-class>
+		<function-signature>java.lang.Object expr(java.lang.String)</function-signature>
+	</function>
 
-    <attribute>
-      <name>where</name>
-      <required>false</required>
-      <description></description>
-      <type>java.lang.String</type>
-      
-    </attribute>
+	<tag>
+		<description>mak:list</description>
+		<tag-name>list</tag-name>
+		<component>
+			<component-type>makumbaList</component-type>
+			<handler-class>org.makumba.jsf.ListTagHandler</handler-class>
+		</component>
 
-    <attribute>
-      <name>orderBy</name>
-      <required>false</required>
-      <description></description>
-      <type>java.lang.String</type>
-      
-    </attribute>
 
-    <attribute>
-      <name>groupBy</name>
-      <required>false</required>
-      <description></description>
-      <type>java.lang.String</type>
-      
-    </attribute>
+		<attribute>
+			<name>from</name>
+			<required>true</required>
+			<type>java.lang.String</type>
 
-    <attribute>
-      <name>db</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description></description>
-      <type>java.lang.String</type>
-      
-    </attribute>
+			<description></description>
 
-    <attribute>
-      <name>offset</name>
-      <required>false</required>
-      <description></description>
-      <type>int</type>
-      
-    </attribute>
+		</attribute>
 
-    <attribute>
-      <name>limit</name>
-      <required>false</required>
-      <description></description>
-      <type>int</type>
-      
-    </attribute>
+		<attribute>
+			<name>variableFrom</name>
+			<required>false</required>
+			<description></description>
+			<type>java.lang.String</type>
 
-    <attribute>
-      <name>defaultLimit</name>
-      <required>false</required>
-      <description></description>
-      <type>int</type>
-      
-    </attribute>
-<!-- 
-    <attribute>
-      <name>authorize</name>
-      <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
-      <description></description>
-      
-    </attribute>
+		</attribute>
 
-    <attribute>
-      <name>editable</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description></description>
-      
-    </attribute>
+		<attribute>
+			<name>where</name>
+			<required>false</required>
+			<description></description>
+			<type>java.lang.String</type>
 
-    <attribute>
-      <name>logicClass</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description></description>
-      
-    </attribute>
+		</attribute>
 
-    <attribute>
-      <name>editPage</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description></description>
-      
-    </attribute>
- -->
- 
-     
-    <attribute>
-      <name>separator</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <description></description>
-      <type>java.lang.String</type>
- 
-      
-    </attribute>
-           
-    </tag>
-    
-    
-    <tag>
-        <description>mak:value</description>
-        <tag-name>value</tag-name>
-        <component>
-        	<component-type>makumbaValue</component-type>
-        	<handler-class>org.makumba.jsf.ValueTagHandler</handler-class>
-        </component>
-        
-        <attribute>
-            <description>MQL expression</description>
-            <name>expr</name>
-            <required>true</required>
-            <type>java.lang.Object</type>
-        </attribute>
-    </tag>
-    
-    
-        
+		<attribute>
+			<name>orderBy</name>
+			<required>false</required>
+			<description></description>
+			<type>java.lang.String</type>
+
+		</attribute>
+
+		<attribute>
+			<name>groupBy</name>
+			<required>false</required>
+			<description></description>
+			<type>java.lang.String</type>
+
+		</attribute>
+
+		<attribute>
+			<name>db</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+			<type>java.lang.String</type>
+
+		</attribute>
+
+		<attribute>
+			<name>offset</name>
+			<required>false</required>
+			<description></description>
+			<type>int</type>
+
+		</attribute>
+
+		<attribute>
+			<name>limit</name>
+			<required>false</required>
+			<description></description>
+			<type>int</type>
+
+		</attribute>
+
+		<attribute>
+			<name>defaultLimit</name>
+			<required>false</required>
+			<description></description>
+			<type>int</type>
+
+		</attribute>
+
+		<attribute>
+			<name>separator</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description></description>
+			<type>java.lang.String</type>
+		</attribute>
+	</tag>
+	
+	
+	<tag>
+		<description>mak:object</description>
+		<tag-name>object</tag-name>
+		<component>
+			<component-type>makumbaObject</component-type>
+			<handler-class>org.makumba.jsf.ObjectTagHandler</handler-class>
+		</component>
+
+		<attribute>
+			<name>from</name>
+			<required>true</required>
+			<type>java.lang.String</type>
+			<description></description>
+		</attribute>
+
+		<attribute>
+			<name>where</name>
+			<required>true</required>
+			<type>java.lang.String</type>
+			<description></description>
+		</attribute>
+	</tag>
+
+	<tag>
+		<description>mak:value</description>
+		<tag-name>value</tag-name>
+		<component>
+			<component-type>makumbaValue</component-type>
+			<handler-class>org.makumba.jsf.ValueTagHandler</handler-class>
+		</component>
+
+		<attribute>
+			<description>MQL expression</description>
+			<name>expr</name>
+			<required>true</required>
+			<type>java.lang.Object</type>
+		</attribute>
+	</tag>
+
+
+
 </facelet-taglib>

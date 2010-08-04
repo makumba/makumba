@@ -34,6 +34,7 @@ public class ApplicationListener implements SystemEventListener {
             app.addELResolver(new MakumbaELResolver());
 
             app.addComponent("makumbaList", "org.makumba.jsf.UIRepeatListComponent");
+            app.addComponent("makumbaObject", "org.makumba.jsf.ObjectComponent");
             app.addComponent("makumbaValue", "org.makumba.jsf.ValueComponent");
 
             LifecycleFactory f = (LifecycleFactory) FactoryFinder.getFactory(FactoryFinder.LIFECYCLE_FACTORY);
