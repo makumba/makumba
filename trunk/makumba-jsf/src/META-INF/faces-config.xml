@@ -1,18 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-	<!--
-		This file is not required if you don't need any extra configuration.
-	-->
+<!-- This file is not required if you don't need any extra configuration. -->
 <faces-config version="2.0" xmlns="http://java.sun.com/xml/ns/javaee"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="
       http://java.sun.com/xml/ns/javaee
       http://java.sun.com/xml/ns/javaee/web-facesconfig_2_0.xsd">
 
-	<!--
-		example of listener installation <lifecycle>
-		<phase-listener>org.makumba.jsf.ListPhaseListener</phase-listener>
-		</lifecycle
-	-->
+	<!-- example of listener installation <lifecycle> <phase-listener>org.makumba.jsf.ListPhaseListener</phase-listener> 
+		</lifecycle -->
 
 	<application>
 		<system-event-listener>
@@ -20,11 +15,11 @@
 			<system-event-listener-class>org.makumba.jsf.ApplicationListener</system-event-listener-class>
 		</system-event-listener>
 	</application>
-	
-		<converter>
-	  <converter-id>makPtr</converter-id>
-	<converter-class>org.makumba.jsf.PointerConverter</converter-class>
-	<converter-for-class>org.makumba.commons.SQLPointer</converter-for-class>
+
+	<converter>
+		<converter-id>makPtr</converter-id>
+		<converter-class>org.makumba.jsf.PointerConverter</converter-class>
+		<converter-for-class>org.makumba.commons.SQLPointer</converter-for-class>
 	</converter>
 
 </faces-config>
