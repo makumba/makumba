@@ -79,7 +79,10 @@ public class MakumbaELResolver extends ELResolver {
     }
 
     private String debugIdent() {
-        return UIRepeatListComponent.getCurrentlyRunning().debugIdent();
+        if (UIRepeatListComponent.getCurrentlyRunning() != null) {
+            return UIRepeatListComponent.getCurrentlyRunning().debugIdent();
+        }
+        return "";
     }
 
     @Override
