@@ -13,19 +13,19 @@
     <mak:list from="test.Person p" id="bigList">
 
                      
-      <li><mak:value expr="p.indiv.name" /> #{p.indiv.surname} 
+      <li><mak:value expr="p.indiv.name" /> &npbsp; <h:outputText value="#{p.indiv.surname}" id="surnameOut"/> 
       </li>
       <ul><mak:list from="p.speaks l" id="list">
-          <li><mak:value expr="l.name"/> #{mak:expr('l.isoCode')}
+          <li><h:outputText value="#{l.name}" id="val"/>  #{mak:expr('l.isoCode')}
           <h:inputText id="lang" value="#{l.name}" >
-          <f:ajax render="list"/>
-            </h:inputText>
+          <f:ajax render="val "/>
+            </h:inputText> <mak:value expr="l.name" id="val1"/>
             <h:message for="lang" errorClass="invalid" />
           </li>
       </mak:list></ul>
   
           <tr>
-            <f:ajax render="bigList">
+            <f:ajax render="surnameOut">
 
             <td><h:inputText id="indi" value="#{p.indiv.id}" >
 			<f:converter converterId="makPtr" />
