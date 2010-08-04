@@ -224,7 +224,12 @@ public class UIRepeatListComponent extends UIRepeat {
         // TODO: check whether we really want to keep the data in the grouper after iteration
         // this is only useful before a postback which will not request this list to re-render
 
-        iterationGroupData = listData != null ? listData.getData(currentDataStack.get(), false) : null;
+        if (currentDataStack.get() != null) {
+            iterationGroupData = listData != null ? listData.getData(currentDataStack.get(), false) : null;
+        } else {
+            iterationGroupData = null;
+        }
+
         System.out.println(debugIdent() + " --- startTag ----  " + o);
 
         if (iterationGroupData == null) {
@@ -351,13 +356,22 @@ public class UIRepeatListComponent extends UIRepeat {
             // e.printStackTrace();
             // }
             // return true;
+
+            System.out.println("IN RENDER");
+            /*
+                        try {
+                            super.encodeChildren(getFacesContext());
+                        } catch (IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                        */
         }
         // we make sure we are visited despite UIRepeat
-        context.invokeVisitCallback(this, callback);
-
-        // if there's no data, we should not iterate
+        VisitResult vr = context.invokeVisitCallback(this, callback);
+       
         if (!beforeIteration(callback)) {
-            return true;
+            return false;
         }
         System.out.println(debugIdent()
                 + " will visit "
