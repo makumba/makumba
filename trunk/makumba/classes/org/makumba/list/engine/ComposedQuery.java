@@ -396,6 +396,11 @@ public class ComposedQuery implements Serializable {
             sep = ",";
             sb.append(string).append(" AS ").append(columnName(new Integer(i++)));
         }
+
+        if (projections.size() == 0) {
+            sb.append("1");
+        }
+
         Object o;
 
         if ((o = derivedSections[FROM]) != null) {
