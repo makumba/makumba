@@ -12,18 +12,11 @@
 			<ul>
 				<ui:repeat value="#{listBean.list}" var="first" id="bigList">
 					<li><h:outputText id="out" value="#{first}" /></li>
-					<li>
-						<ul>
-							<ui:repeat value="#{first}" var="second">
-							<li>#{second}</li>
-							</ui:repeat>
-							<li><h:inputText id="surname" value="#{first}">
-								<f:ajax render="out" event="change" />
-							</h:inputText></li>
-						</ul>
-					</li>
 				</ui:repeat>
 			</ul>
+		<h:commandButton value="go">
+			<f:ajax render="bigList f:bigList:out"/>
+			</h:commandButton>
 		</h:form>
 
 	</ui:define>
