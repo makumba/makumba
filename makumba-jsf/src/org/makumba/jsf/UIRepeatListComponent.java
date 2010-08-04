@@ -3,10 +3,10 @@ package org.makumba.jsf;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +40,7 @@ import org.makumba.commons.RegExpUtils;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.ComposedSubquery;
 import org.makumba.list.engine.Grouper;
+import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProvider;
 
@@ -335,20 +336,21 @@ public class UIRepeatListComponent extends UIRepeat {
             }
         }
 
+        Collection<String> c = context.getFacesContext().getPartialViewContext().getRenderIds();
+        System.out.println(debugIdent() + " renderedIds " + c);
+
         // attempting full rendering in ajax
         if (context.getFacesContext().getCurrentPhaseId() == PhaseId.RENDER_RESPONSE) {
-            System.out.println(debugIdent() + " calling rendering");
-
             // we're being visited during the render-response phase, this is most probably ajax
             // so we do a full rendering
-            try {
-
-                encodeAll(context.getFacesContext());
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            return true;
+            // c.add("f:bigList:0:surnameOut");
+            // try {
+            // System.out.println(debugIdent() + " calling rendering");
+            // encodeAll(context.getFacesContext());
+            // } catch (IOException e) {
+            // e.printStackTrace();
+            // }
+            // return true;
         }
         // we make sure we are visited despite UIRepeat
         context.invokeVisitCallback(this, callback);
@@ -634,8 +636,23 @@ public class UIRepeatListComponent extends UIRepeat {
     }
 
     private void addExpression(String expr, boolean canBeInvalid) {
-        // TODO: analyze the expression in the composedquery. mak:value and mak:expr() expressions may not be invalid,
-        // while other EL expressions may be invalid, in which case they are not added
+        if (canBeInvalid) {
+            // we assume here only expressions a.b.c.d
+            String label = expr;
+            int n = expr.indexOf(".");
+            if (n != -1) {
+                label = expr.substring(0, n);
+            }
+            QueryAnalysis qa = QueryProvider.getQueryAnalzyer(getQueryLanguage()).getQueryAnalysis(
+                composedQuery.getComputedQuery());
+            if (qa.getLabelType(label) == null) {
+                // label unknown, we go out
+                return;
+            }
+
+            // TODO: check whether the fields are ok!
+
+        }
         composedQuery.checkProjectionInteger(expr);
     }
 
