@@ -3,6 +3,7 @@ package org.makumba.jsf;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -334,15 +335,21 @@ public class UIRepeatListComponent extends UIRepeat {
             }
         }
 
-        /* 
-         // attempting full rendering in ajax
+        // attempting full rendering in ajax
         if (context.getFacesContext().getCurrentPhaseId() == PhaseId.RENDER_RESPONSE) {
+            System.out.println(debugIdent() + " calling rendering");
+
             // we're being visited during the render-response phase, this is most probably ajax
             // so we do a full rendering
-            process(context.getFacesContext(), PhaseId.RENDER_RESPONSE);
-            return false;
+            try {
+
+                encodeAll(context.getFacesContext());
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            return true;
         }
-        */
         // we make sure we are visited despite UIRepeat
         context.invokeVisitCallback(this, callback);
 
@@ -598,6 +605,12 @@ public class UIRepeatListComponent extends UIRepeat {
         readComposedQuery();
         if (useSeparateTransactions()) {
             qep = getQueryExecutionProvider();
+        }
+
+        // TODO: this is temporary, like all valuesSet stuff
+        if (!valuesSet.isEmpty()) {
+            System.out.println(debugIdent() + " -- not running query because we have saved values -- " + composedQuery);
+            return;
         }
 
         try {
