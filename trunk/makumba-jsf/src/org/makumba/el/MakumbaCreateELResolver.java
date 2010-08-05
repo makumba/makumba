@@ -203,6 +203,16 @@ public class MakumbaCreateELResolver extends ELResolver {
             throw new NullPointerException();
         }
 
+        if (base == null && property != null) {
+            Object val = basicGetValue(context, base, property);
+            if (val != null && val instanceof CreateExpressionPathPlaceholder) {
+                ObjectComponent object = findParentObject();
+                if (object != null) {
+                    object.valuesSet.put((String) property, value);
+                }
+            }
+        }
+
         if (base != null && base instanceof CreateExpressionPathPlaceholder) {
             // TODO check if the property is fixed
             // and the path to it goes thru fixed not null pointers?
@@ -210,6 +220,7 @@ public class MakumbaCreateELResolver extends ELResolver {
             ObjectComponent object = findParentObject();
             if (object != null) {
                 object.valuesSet.put(p.getExpressionPath() + "." + property, value);
+                context.setPropertyResolved(true);
             }
 
             System.out.println(p.getType().getName() + " " + p.getExpressionPath() + " <<<<<<<<< " + value);
