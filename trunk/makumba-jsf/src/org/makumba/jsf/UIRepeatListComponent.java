@@ -250,6 +250,8 @@ public class UIRepeatListComponent extends UIRepeat {
         visitedIndexes.clear();
 
         getMakDataModel().setWrappedData(iterationGroupData);
+        // this is assumed by UIRepeat...
+        getMakDataModel().setRowIndex(-1);
 
         setBegin(0);
         setEnd(iterationGroupData.size());
@@ -329,48 +331,45 @@ public class UIRepeatListComponent extends UIRepeat {
     }
 
     @Override
-    public boolean visitTree(VisitContext context, final VisitCallback callback) {
-
-        if (listData == null) {
-
-            // there is no data, hopefully we are in the process of restoring it
-            // so we call the visiting only on this component
-            // since we had no data we probably had no structure either, so now we can wrap strage things
-            if (findMakListParent(this, true) == null) {
-                // wrapUIInstrutions();
-            }
-        }
-
+    public boolean visitTree(final VisitContext context, final VisitCallback callback) {
         Collection<String> c = context.getFacesContext().getPartialViewContext().getRenderIds();
         System.out.println(debugIdent() + " renderedIds " + c);
 
         // attempting full rendering in ajax
-        if (context.getFacesContext().getCurrentPhaseId() == PhaseId.RENDER_RESPONSE) {
-            // we're being visited during the render-response phase, this is most probably ajax
-            // so we do a full rendering
-            // c.add("f:bigList:0:surnameOut");
-            // try {
-            // System.out.println(debugIdent() + " calling rendering");
-            // encodeAll(context.getFacesContext());
-            // } catch (IOException e) {
-            // e.printStackTrace();
-            // }
-            // return true;
+        // if (context.getFacesContext().getCurrentPhaseId() == PhaseId.RENDER_RESPONSE) {
+        // we're being visited during the render-response phase, this is most probably ajax
+        // so we do a full rendering
+        // c.add("f:bigList:0:surnameOut");
+        // try {
+        // System.out.println(debugIdent() + " calling rendering");
+        // encodeAll(context.getFacesContext());
+        // } catch (IOException e) {
+        // e.printStackTrace();
+        // }
+        // return true;
 
-            System.out.println("IN RENDER");
-            /*
-                        try {
-                            super.encodeChildren(getFacesContext());
-                        } catch (IOException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                        */
-        }
-        // we make sure we are visited despite UIRepeat
-        VisitResult vr = context.invokeVisitCallback(this, callback);
-       
-        if (!beforeIteration(callback)) {
+        // System.out.println("IN RENDER");
+        // }
+
+        VisitCallback clbk = callback;
+
+        // in restore_view we cannot run beforeIteration as we have no data
+        // so we run it after the visit
+        if (context.getFacesContext().getCurrentPhaseId() == PhaseId.RESTORE_VIEW) {
+            clbk = new VisitCallback() {
+
+                @Override
+                public VisitResult visit(VisitContext context, UIComponent target) {
+                    VisitResult res = callback.visit(context, target);
+
+                    if (target == UIRepeatListComponent.this && !beforeIteration(callback)) {
+                        return VisitResult.REJECT;
+                    }
+                    return res;
+                }
+
+            };
+        } else if (!beforeIteration(callback)) {
             return false;
         }
         System.out.println(debugIdent()
@@ -379,28 +378,8 @@ public class UIRepeatListComponent extends UIRepeat {
                         : context.getSubtreeIdsToVisit(this)));
 
         try {
-            return super.visitTree(context, callback);
-            /*
-            
-            , new VisitCallback() {
-            VisitContext theContext = context;
+            return super.visitTree(context, clbk);
 
-            @Override
-            public String toString() {
-                return theContext.getClass().getName();
-            }
-
-            @Override
-            public VisitResult visit(VisitContext c, UIComponent target) {
-                if (target == UIRepeatListComponent.this) {
-                    return VisitResult.ACCEPT;
-                }
-                // log.fine(target.getClass());
-                return callback.visit(context, target);
-            }
-
-            });
-            */
         } finally {
             afterIteration(callback);
         }
@@ -537,21 +516,6 @@ public class UIRepeatListComponent extends UIRepeat {
         // we are in root, we initialize the data stack
         currentDataStack.set(null);
         System.out.println(debugIdent() + " ----------- end ----------- " + o);
-        if (FacesContext.getCurrentInstance().getCurrentPhaseId() == PhaseId.RENDER_RESPONSE) {
-            System.out.println(debugIdent() + " set saving");
-            visitStaticTree(this, new VisitCallback() {
-
-                @Override
-                public VisitResult visit(VisitContext context, UIComponent target) {
-                    if (target instanceof UIRepeatListComponent) {
-                        ((UIRepeatListComponent) target).saving = true;
-                    }
-                    return null;
-                }
-
-            });
-        }
-
     }
 
     private void executeGroupQueries(final QueryProvider qep) {
@@ -835,34 +799,6 @@ public class UIRepeatListComponent extends UIRepeat {
         return expr.substring(2, expr.length() - 1);
     }
 
-    // Hack: when the rendering finished, we enter saving state and never return digits (:0) in the key
-    boolean saving = false;
-
-    @Override
-    public String getClientId(FacesContext faces) {
-        String id = super.getClientId(faces);
-        return cleanId(id);
-    }
-
-    @Override
-    public String getContainerClientId(FacesContext faces) {
-        String id = super.getContainerClientId(faces);
-        return cleanId(id);
-    }
-
-    private String cleanId(String id) {
-        if (!saving) {
-            return id;
-        }
-        while (true) {
-            int n = id.indexOf(":0");
-            if (n == -1) {
-                return id;
-            }
-            id = id.substring(0, n) + id.substring(n + 2);
-        }
-    }
-
     @Override
     public void restoreState(FacesContext faces, Object object) {
         if (faces == null) {
@@ -887,8 +823,7 @@ public class UIRepeatListComponent extends UIRepeat {
         if (faces == null) {
             throw new NullPointerException();
         }
-        System.out.println(debugIdent() + " save with key " + this.getClientId(FacesContext.getCurrentInstance())
-                + " superKey " + super.getClientId(FacesContext.getCurrentInstance()));
+        System.out.println(debugIdent() + " save with key " + this.getClientId(FacesContext.getCurrentInstance()));
 
         Object[] state = new Object[8];
 
