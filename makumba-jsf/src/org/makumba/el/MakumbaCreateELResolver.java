@@ -64,16 +64,23 @@ public class MakumbaCreateELResolver extends ELResolver {
                         + " as new expression " + p.toString());
                 p.setType(fd.getPointedType());
                 p.setPointer(true);
+                context.setPropertyResolved(true);
+                return p;
             } else {
-                log.fine("Returning value of expression " + parent.getExpressionPath() + "." + field + " as null");
-                return null;
+                // maybe it was already set
+                ObjectComponent object = findParentObject();
+                if (object != null) {
+                    Object value = object.valuesSet.get(p.getExpressionPath() + "." + property);
+                    log.fine("Returning value of expression " + parent.getExpressionPath() + "." + field + " as "
+                            + value);
+                    context.setPropertyResolved(true);
+                    return value;
+                }
             }
-
-            return p;
-        } else {
-            context.setPropertyResolved(false);
-            return null;
         }
+
+        context.setPropertyResolved(false);
+        return null;
     }
 
     /**
@@ -145,10 +152,7 @@ public class MakumbaCreateELResolver extends ELResolver {
     }
 
     private Object computeBase(ELContext context, Object property) {
-        UIComponent c = FacesContext.getCurrentInstance().getApplication().evaluateExpressionGet(
-            FacesContext.getCurrentInstance(), "#{component}", UIComponent.class);
-
-        ObjectComponent object = ObjectComponent.findParentObject(c);
+        ObjectComponent object = findParentObject();
         if (object != null && object.isCreateObject()) {
 
             // see if this object knows something about the label we're trying to create
@@ -158,6 +162,14 @@ public class MakumbaCreateELResolver extends ELResolver {
             }
         }
         return null;
+    }
+
+    private ObjectComponent findParentObject() {
+        UIComponent c = FacesContext.getCurrentInstance().getApplication().evaluateExpressionGet(
+            FacesContext.getCurrentInstance(), "#{component}", UIComponent.class);
+
+        ObjectComponent object = ObjectComponent.findParentObject(c);
+        return object;
     }
 
     @Override
@@ -195,6 +207,10 @@ public class MakumbaCreateELResolver extends ELResolver {
             // TODO check if the property is fixed
             // and the path to it goes thru fixed not null pointers?
             CreateExpressionPathPlaceholder p = (CreateExpressionPathPlaceholder) base;
+            ObjectComponent object = findParentObject();
+            if (object != null) {
+                object.valuesSet.put(p.getExpressionPath() + "." + property, value);
+            }
 
             System.out.println(p.getType().getName() + " " + p.getExpressionPath() + " <<<<<<<<< " + value);
 
