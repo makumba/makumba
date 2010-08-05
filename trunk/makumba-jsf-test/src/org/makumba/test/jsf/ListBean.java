@@ -1,6 +1,7 @@
 package org.makumba.test.jsf;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.faces.bean.ManagedBean;
@@ -8,13 +9,15 @@ import javax.faces.bean.ManagedBean;
 @ManagedBean
 public class ListBean {
     static int n = 0;
+    static List<HashMap<String, Object>> v = new ArrayList<HashMap<String, Object>>();
 
-    public List<Object> getList() {
+    static {
+        addMap(v);
+        addMap(v);
+    }
 
-        List<Object> v = new ArrayList<Object>();
-        v.add(n++);
-        v.add(n++);
-        v.add(n++);
+    public List<HashMap<String, Object>> getList() {
+
         return v;
 
         /*
@@ -33,5 +36,11 @@ public class ListBean {
          * return v;
          */
 
+    }
+
+    static private void addMap(List<HashMap<String, Object>> v) {
+        HashMap<String, Object> h = new HashMap<String, Object>();
+        h.put("a", "" + n++);
+        v.add(h);
     }
 }
