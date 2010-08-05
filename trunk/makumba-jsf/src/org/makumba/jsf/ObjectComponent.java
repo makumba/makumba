@@ -180,6 +180,29 @@ public class ObjectComponent extends UIComponentBase {
         return cq;
     }
 
+    @Override
+    public Object saveState(FacesContext context) {
+        Object[] state = new Object[2];
+        state[0] = super.saveState(context);
+        state[1] = valuesSet;
+        return state;
+    }
+
+    @Override
+    public void restoreState(FacesContext context, Object state) {
+        if (context == null) {
+            throw new NullPointerException();
+        }
+        if (state == null) {
+            return;
+        }
+        Object[] s = (Object[]) state;
+        super.restoreState(context, s[0]);
+        @SuppressWarnings("unchecked")
+        HashMap<String, Object> hashMap = (HashMap<String, Object>) s[1];
+        this.valuesSet = hashMap;
+    }
+
     /**
      * Returns the labels known by this mak:object and that could be candidates for creation
      */
