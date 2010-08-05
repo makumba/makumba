@@ -205,8 +205,11 @@ public class UIRepeatListComponent extends UIRepeat {
             // TODO: honor also objectToo
             c = c.getParent();
         }
-
-        return (UIRepeatListComponent) c;
+        if (c instanceof UIRepeatListComponent) {
+            return (UIRepeatListComponent) c;
+        } else {
+            return null;
+        }
     }
 
     transient List<Integer> visitedIndexes = new ArrayList<Integer>();

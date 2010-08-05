@@ -12,6 +12,7 @@ import javax.faces.event.SystemEventListener;
 import javax.faces.lifecycle.Lifecycle;
 import javax.faces.lifecycle.LifecycleFactory;
 
+import org.makumba.el.MakumbaCreateELResolver;
 import org.makumba.el.MakumbaELResolver;
 
 /**
@@ -31,6 +32,7 @@ public class ApplicationListener implements SystemEventListener {
     public void processEvent(SystemEvent event) throws AbortProcessingException {
         if (event.getClass().equals(PostConstructApplicationEvent.class)) {
             Application app = (Application) event.getSource();
+            app.addELResolver(new MakumbaCreateELResolver());
             app.addELResolver(new MakumbaELResolver());
 
             app.addComponent("makumbaList", "org.makumba.jsf.UIRepeatListComponent");
