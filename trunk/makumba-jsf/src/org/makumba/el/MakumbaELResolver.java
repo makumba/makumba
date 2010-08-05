@@ -45,43 +45,35 @@ public class MakumbaELResolver extends ELResolver {
             throw new NullPointerException();
         }
 
-        UIComponent current = (UIComponent) FacesContext.getCurrentInstance().getAttributes().get(
-            UIComponent.CURRENT_COMPONENT);
-
-        if (base != null && base instanceof ExpressionPathPlaceholder && property == null) {
+        if (base != null && base instanceof ReadExpressionPathPlaceholder && property == null) {
             context.setPropertyResolved(true);
             // it was object, i think pointer is correct, not sure.
             // maybe a pointer converter will be needed then
-            System.out.println(debugIdent() + " " + base + "." + property + " type Pointer" + " "
-                    + current.getClientId());
+            System.out.println(debugIdent() + " " + base + "." + property + " type Pointer");
 
             return Pointer.class;
         }
-        if (base != null && base instanceof ExpressionPathPlaceholder && property != null) {
-            ExpressionPathPlaceholder expr = basicGetValue(context, base, property);
+        if (base != null && base instanceof ReadExpressionPathPlaceholder && property != null) {
+            ReadExpressionPathPlaceholder expr = basicGetValue(context, base, property);
             if (expr == null) {
-                System.out.println(debugIdent() + " " + base + "." + property + " type unresolved" + " "
-                        + current.getClientId());
+                System.out.println(debugIdent() + " " + base + "." + property + " type unresolved");
                 return null;
             }
             context.setPropertyResolved(true);
             UIRepeatListComponent list = UIRepeatListComponent.getCurrentlyRunning();
             if (!list.getProjections().contains(expr.getExpressionPath())) {
-                System.out.println(debugIdent() + " " + base + "." + property + " type Object" + " "
-                        + current.getClientId());
+                System.out.println(debugIdent() + " " + base + "." + property + " type Object");
 
                 // this should not matter as we are not going to edit
                 return Object.class;
             }
             // this will also catch pointers (SQLPointer)
             Object value = list.getExpressionValue(expr.getExpressionPath());
-            System.out.println(debugIdent() + " " + base + "." + property + " type " + value.getClass().getName() + " "
-                    + current.getClientId());
+            System.out.println(debugIdent() + " " + base + "." + property + " type " + value.getClass().getName());
 
             return value.getClass();
         }
-        System.out.println(debugIdent() + " " + base + "." + property + " type unresolved" + " "
-                + current.getClientId());
+        System.out.println(debugIdent() + " " + base + "." + property + " type unresolved");
 
         return null;
     }
@@ -95,18 +87,14 @@ public class MakumbaELResolver extends ELResolver {
 
     @Override
     public Object getValue(ELContext context, Object base, Object property) {
-        UIComponent current = (UIComponent) FacesContext.getCurrentInstance().getAttributes().get(
-            UIComponent.CURRENT_COMPONENT);
-        ExpressionPathPlaceholder mine = basicGetValue(context, base, property);
+        ReadExpressionPathPlaceholder mine = basicGetValue(context, base, property);
         if (mine == null) {
-            System.out.println(debugIdent() + " " + base + "." + property + " ----> " + null + " in "
-                    + current.getClientId());
+            System.out.println(debugIdent() + " " + base + "." + property + " ----> " + null);
 
             return null;
         }
         UIRepeatListComponent list = UIRepeatListComponent.getCurrentlyRunning();
-
-        if (base != null && base instanceof ExpressionPathPlaceholder
+        if (base != null && base instanceof ReadExpressionPathPlaceholder
                 && list.getProjections().contains(mine.getExpressionPath())) {
             {
                 Object value = list.valuesSet.get(base + "." + property);
@@ -120,8 +108,7 @@ public class MakumbaELResolver extends ELResolver {
                     // TODO: we could actually set the value in the placeholder, for whatever it could be useful
 
                     // return the placeholder
-                    System.out.println(debugIdent() + " " + base + "." + property + " ----> " + mine + " in "
-                            + current.getClientId());
+                    System.out.println(debugIdent() + " " + base + "." + property + " ----> " + mine);
 
                     return mine;
                 }
@@ -130,34 +117,36 @@ public class MakumbaELResolver extends ELResolver {
                     /* we have a pointer #{p.x.y.id} 
                      * if we know we are in UIInstruction or in outputText, we convert toExternalForm */
 
+                    UIComponent c = (UIComponent) FacesContext.getCurrentInstance().getAttributes().get(
+                        UIComponent.CURRENT_COMPONENT);
+
                     // if we are in UIInstructions, we're in free text so the
                     // encoded form is better
                     // also in h:outputText?
-                    if (current instanceof UIInstructions) {
+
+                    if (c instanceof UIInstructions) {
                         return ((Pointer) value).toExternalForm();
                     }
-                    if (current instanceof ValueHolder && ((ValueHolder) current).getConverter() == null) {
-                        ValueExpression ev = current.getValueExpression("value");
+                    if (c instanceof ValueHolder && ((ValueHolder) c).getConverter() == null) {
+                        ValueExpression ev = c.getValueExpression("value");
                         if (ev != null && ev.getExpressionString().indexOf(mine.getExpressionPath()) != -1) {
                             return ((Pointer) value).toExternalForm();
                         }
                     }
                 }
-                System.out.println(debugIdent() + " " + base + "." + property + " ----> " + value + " in "
-                        + current.getClientId());
+                System.out.println(debugIdent() + " " + base + "." + property + " ----> " + value);
                 return value;
             }
 
         }
-        System.out.println(debugIdent() + " " + base + "." + property + " ----> " + mine + " in "
-                + current.getClientId());
+        System.out.println(debugIdent() + " " + base + "." + property + " ----> " + mine);
 
         // log.fine(mine.toString());
         return mine;
 
     }
 
-    public ExpressionPathPlaceholder basicGetValue(ELContext context, Object base, Object property) {
+    public ReadExpressionPathPlaceholder basicGetValue(ELContext context, Object base, Object property) {
         // as per reference
         if (context == null) {
             throw new NullPointerException();
@@ -174,7 +163,7 @@ public class MakumbaELResolver extends ELResolver {
                 // this can only be a label projection, so it's gonna be a pointer
                 Pointer value = (Pointer) list.getExpressionValue(property.toString());
                 context.setPropertyResolved(true);
-                return new ExpressionPathPlaceholder(value, property.toString());
+                return new ReadExpressionPathPlaceholder(value, property.toString());
             } else {
                 // this may be a label that we don't know, like a managed bean
 
@@ -188,11 +177,11 @@ public class MakumbaELResolver extends ELResolver {
             }
         }
 
-        if (base != null && base instanceof ExpressionPathPlaceholder) {
-            ExpressionPathPlaceholder placeholder = (ExpressionPathPlaceholder) base;
+        if (base != null && base instanceof ReadExpressionPathPlaceholder) {
+            ReadExpressionPathPlaceholder placeholder = (ReadExpressionPathPlaceholder) base;
 
             // check with parent list if placeholderlabel.property exists.
-            ExpressionPathPlaceholder mine = new ExpressionPathPlaceholder(placeholder, property.toString());
+            ReadExpressionPathPlaceholder mine = new ReadExpressionPathPlaceholder(placeholder, property.toString());
 
             if (list.getProjections().contains(mine.getExpressionPath())) {
                 context.setPropertyResolved(true);
@@ -233,20 +222,15 @@ public class MakumbaELResolver extends ELResolver {
             throw new NullPointerException();
         }
 
-        UIComponent current = (UIComponent) FacesContext.getCurrentInstance().getAttributes().get(
-            UIComponent.CURRENT_COMPONENT);
-
-        if (base instanceof ExpressionPathPlaceholder) {
-            System.out.println(debugIdent() + " " + base + "." + property + " <------- " + val + " "
-                    + current.getClientId());
+        if (base instanceof ReadExpressionPathPlaceholder) {
+            System.out.println(debugIdent() + " " + base + "." + property + " <------- " + val);
 
             UIRepeatListComponent list = UIRepeatListComponent.getCurrentlyRunning();
             list.valuesSet.put(base + "." + property, val);
 
             context.setPropertyResolved(true);
         } else {
-            System.out.println(debugIdent() + " not setting " + base + "." + property + " to " + val + " "
-                    + current.getClientId());
+            System.out.println(debugIdent() + " not setting " + base + "." + property + " to " + val);
         }
         return;
 
@@ -309,37 +293,5 @@ public class MakumbaELResolver extends ELResolver {
             return Object.class;
         }
         return null;
-    }
-
-    class ExpressionPathPlaceholder {
-        // everything starts from a label
-        private String label;
-
-        // the pointer value
-        private Pointer basePointer;
-
-        // after that, comes the field.field path to the desired property
-        private String fieldDotField = "";
-
-        public ExpressionPathPlaceholder(Pointer p, String label) {
-            this.label = label;
-            this.basePointer = p;
-        }
-
-        public ExpressionPathPlaceholder(ExpressionPathPlaceholder expr, String field) {
-            this.basePointer = expr.basePointer;
-            this.label = expr.label;
-            this.fieldDotField = expr.fieldDotField + "." + field;
-        }
-
-        public String getExpressionPath() {
-            return label + fieldDotField;
-        }
-
-        @Override
-        public String toString() {
-            return basePointer + " " + getExpressionPath();
-        }
-
     }
 }
