@@ -1,6 +1,7 @@
 package org.makumba.jsf;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.faces.component.UIComponent;
@@ -24,6 +25,8 @@ public class ObjectComponent extends UIComponentBase {
 
     // is this a "create" mak:object
     private boolean create;
+
+    public transient Map<String, Object> valuesSet = new HashMap<String, Object>();
 
     private String[] queryProps = new String[6];
 
