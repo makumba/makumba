@@ -8,15 +8,38 @@
 
 	<ui:define name="content">
 
-		<h:form id="f">
+ 		<h:form id="f">
 			<ul>
 				<ui:repeat value="#{listBean.list}" var="first" id="bigList">
-					<li><h:outputText id="out" value="#{first}" /></li>
+				
+					<li><h:outputText id="x" value="#{first.a}" /></li>
+					<li><h:inputText  id="x1" value="#{first.a}" >
+								<f:ajax  render="@form" event="change"/>
+								</h:inputText>
+						</li>
+					<li><h:inputText id="x2"  value="#{first.a}" >
+								<f:ajax render="@form" event="change"/>
+								</h:inputText>
+						</li>
+	<ul>
+				<ui:repeat value="#{listBean.list}" var="first" id="smallList">
+				
+					<li><h:outputText id="x" value="#{first.a}" /></li>
+					<li><h:inputText  id="x1" value="#{first.a}" >
+								<f:ajax  render="@form" event="change"/>
+								</h:inputText>
+						</li>
+					<li><h:inputText id="x2"  value="#{first.a}" >
+								<f:ajax render="@form" event="change"/>
+								</h:inputText>
+						</li>
+	
 				</ui:repeat>
+				</ul>
+				</ui:repeat>
+
 			</ul>
-		<h:commandButton value="go">
-			<f:ajax render="bigList f:bigList:out"/>
-			</h:commandButton>
+
 		</h:form>
 
 	</ui:define>
