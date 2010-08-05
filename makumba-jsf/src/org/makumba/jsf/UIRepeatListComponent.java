@@ -655,6 +655,10 @@ public class UIRepeatListComponent extends UIRepeat {
     }
 
     public Object getExpressionValue(String expr) {
+        if (getMakDataModel().getRowIndex() == -1) {
+            // we're not iterating, our value is not correct
+            return null;
+        }
         return getExpressionValue(getExpressionIndex(expr));
     }
 
