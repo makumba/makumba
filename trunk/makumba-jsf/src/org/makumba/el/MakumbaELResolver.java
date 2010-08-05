@@ -40,6 +40,9 @@ public class MakumbaELResolver extends ELResolver {
     @Override
     public Class<?> getType(ELContext context, Object base, Object property) {
 
+        UIComponent current = (UIComponent) FacesContext.getCurrentInstance().getAttributes().get(
+            UIComponent.CURRENT_COMPONENT);
+
         // as per reference
         if (context == null) {
             throw new NullPointerException();
@@ -49,31 +52,36 @@ public class MakumbaELResolver extends ELResolver {
             context.setPropertyResolved(true);
             // it was object, i think pointer is correct, not sure.
             // maybe a pointer converter will be needed then
-            System.out.println(debugIdent() + " " + base + "." + property + " type Pointer");
+            System.out.println(debugIdent() + " " + base + "." + property + " type Pointer" + " "
+                    + current.getClientId());
 
             return Pointer.class;
         }
         if (base != null && base instanceof ReadExpressionPathPlaceholder && property != null) {
             ReadExpressionPathPlaceholder expr = basicGetValue(context, base, property);
             if (expr == null) {
-                System.out.println(debugIdent() + " " + base + "." + property + " type unresolved");
+                System.out.println(debugIdent() + " " + base + "." + property + " type unresolved" + " "
+                        + current.getClientId());
                 return null;
             }
             context.setPropertyResolved(true);
             UIRepeatListComponent list = UIRepeatListComponent.getCurrentlyRunning();
             if (!list.getProjections().contains(expr.getExpressionPath())) {
-                System.out.println(debugIdent() + " " + base + "." + property + " type Object");
+                System.out.println(debugIdent() + " " + base + "." + property + " type Object" + " "
+                        + current.getClientId());
 
                 // this should not matter as we are not going to edit
                 return Object.class;
             }
             // this will also catch pointers (SQLPointer)
             Object value = list.getExpressionValue(expr.getExpressionPath());
-            System.out.println(debugIdent() + " " + base + "." + property + " type " + value.getClass().getName());
+            System.out.println(debugIdent() + " " + base + "." + property + " type " + value.getClass().getName() + " "
+                    + current.getClientId());
 
             return value.getClass();
         }
-        System.out.println(debugIdent() + " " + base + "." + property + " type unresolved");
+        System.out.println(debugIdent() + " " + base + "." + property + " type unresolved" + " "
+                + current.getClientId());
 
         return null;
     }
@@ -87,9 +95,13 @@ public class MakumbaELResolver extends ELResolver {
 
     @Override
     public Object getValue(ELContext context, Object base, Object property) {
+        UIComponent current = (UIComponent) FacesContext.getCurrentInstance().getAttributes().get(
+            UIComponent.CURRENT_COMPONENT);
+
         ReadExpressionPathPlaceholder mine = basicGetValue(context, base, property);
         if (mine == null) {
-            System.out.println(debugIdent() + " " + base + "." + property + " ----> " + null);
+            System.out.println(debugIdent() + " " + base + "." + property + " ----> " + null + " in "
+                    + current.getClientId());
 
             return null;
         }
@@ -108,7 +120,8 @@ public class MakumbaELResolver extends ELResolver {
                     // TODO: we could actually set the value in the placeholder, for whatever it could be useful
 
                     // return the placeholder
-                    System.out.println(debugIdent() + " " + base + "." + property + " ----> " + mine);
+                    System.out.println(debugIdent() + " " + base + "." + property + " ----> " + mine + " in "
+                            + current.getClientId());
 
                     return mine;
                 }
@@ -117,29 +130,28 @@ public class MakumbaELResolver extends ELResolver {
                     /* we have a pointer #{p.x.y.id} 
                      * if we know we are in UIInstruction or in outputText, we convert toExternalForm */
 
-                    UIComponent c = (UIComponent) FacesContext.getCurrentInstance().getAttributes().get(
-                        UIComponent.CURRENT_COMPONENT);
-
                     // if we are in UIInstructions, we're in free text so the
                     // encoded form is better
                     // also in h:outputText?
 
-                    if (c instanceof UIInstructions) {
+                    if (current instanceof UIInstructions) {
                         return ((Pointer) value).toExternalForm();
                     }
-                    if (c instanceof ValueHolder && ((ValueHolder) c).getConverter() == null) {
-                        ValueExpression ev = c.getValueExpression("value");
+                    if (current instanceof ValueHolder && ((ValueHolder) current).getConverter() == null) {
+                        ValueExpression ev = current.getValueExpression("value");
                         if (ev != null && ev.getExpressionString().indexOf(mine.getExpressionPath()) != -1) {
                             return ((Pointer) value).toExternalForm();
                         }
                     }
                 }
-                System.out.println(debugIdent() + " " + base + "." + property + " ----> " + value);
+                System.out.println(debugIdent() + " " + base + "." + property + " ----> " + value + " in "
+                        + current.getClientId());
                 return value;
             }
 
         }
-        System.out.println(debugIdent() + " " + base + "." + property + " ----> " + mine);
+        System.out.println(debugIdent() + " " + base + "." + property + " ----> " + mine + " in "
+                + current.getClientId());
 
         // log.fine(mine.toString());
         return mine;
@@ -222,15 +234,20 @@ public class MakumbaELResolver extends ELResolver {
             throw new NullPointerException();
         }
 
+        UIComponent current = (UIComponent) FacesContext.getCurrentInstance().getAttributes().get(
+            UIComponent.CURRENT_COMPONENT);
+
         if (base instanceof ReadExpressionPathPlaceholder) {
-            System.out.println(debugIdent() + " " + base + "." + property + " <------- " + val);
+            System.out.println(debugIdent() + " " + base + "." + property + " <------- " + val + " "
+                    + current.getClientId());
 
             UIRepeatListComponent list = UIRepeatListComponent.getCurrentlyRunning();
             list.valuesSet.put(base + "." + property, val);
 
             context.setPropertyResolved(true);
         } else {
-            System.out.println(debugIdent() + " not setting " + base + "." + property + " to " + val);
+            System.out.println(debugIdent() + " not setting " + base + "." + property + " to " + val + " "
+                    + current.getClientId());
         }
         return;
 
