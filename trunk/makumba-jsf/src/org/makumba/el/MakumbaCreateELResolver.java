@@ -70,9 +70,10 @@ public class MakumbaCreateELResolver extends ELResolver {
             }
 
             return p;
+        } else {
+            context.setPropertyResolved(false);
+            return null;
         }
-
-        return null;
     }
 
     /**
@@ -92,6 +93,8 @@ public class MakumbaCreateELResolver extends ELResolver {
             if (base != null) {
                 context.setPropertyResolved(true);
                 log.fine("Resolved base of creation expression " + base.toString());
+            } else {
+                context.setPropertyResolved(false);
             }
             guard.set(false);
             return base;
@@ -131,8 +134,11 @@ public class MakumbaCreateELResolver extends ELResolver {
                 return parent;
 
             } else {
+                context.setPropertyResolved(false);
                 throw new RuntimeException("Unexpected: property is null");
             }
+        } else {
+            context.setPropertyResolved(false);
         }
 
         return null;
