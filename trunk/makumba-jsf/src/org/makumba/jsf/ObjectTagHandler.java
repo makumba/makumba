@@ -34,8 +34,14 @@ public class ObjectTagHandler extends ComponentHandler {
 
             @Override
             public String getComponentType() {
-                // TODO depending on whether we have a NEW or not return different components
-                return "makumbaObject";
+
+                if (isCreateObject(config.getTag())) {
+                    return "makumbaObject";
+                } else {
+                    // TODO one-iteration mak:list
+                    throw new RuntimeException("Not implemented.");
+                }
+
             }
         });
     }
@@ -44,9 +50,22 @@ public class ObjectTagHandler extends ComponentHandler {
     public void onComponentCreated(FaceletContext ctx, UIComponent c, UIComponent parent) {
         super.onComponentCreated(ctx, c, parent);
 
-        // TODO if we are not a NEW, we will be a List, but we need to tell that to the component
-        // for this look into the WHERE tagAttribute
+        if (isCreateObject(getTag())) {
+            // TODO if we are not a NEW, we will be a List, but we need to tell that to the component
+            // for this look into the WHERE tagAttribute
 
+            if (c instanceof ObjectComponent) {
+                ((ObjectComponent) c).setCreate(isCreateObject(getTag()));
+            }
+        }
+
+    }
+
+    private static boolean isCreateObject(Tag t) {
+        String where = t.getAttributes().get("where").getValue();
+        // FIXME this could also be a o.type = 'NEW'
+        // FIXME this won't handle #{ValueExpressions}
+        return where.indexOf("NEW") > -1;
     }
 
 }
