@@ -20,9 +20,12 @@
 
 				</mak:object>
 			</mak:list>
-			
+
 			<h:commandButton value="submit" />
 
 		</h:form>
+		
+		<mak:list from="test.Individual i">#{i.name},</mak:list>
+		
 	</ui:define>
 </ui:composition>
