@@ -45,9 +45,9 @@ import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProvider;
 
 import com.sun.faces.facelets.compiler.UIInstructions;
-import com.sun.faces.facelets.component.UIRepeat;
+import com.sun.faces.facelets.component.UIRepeat1;
 
-public class UIRepeatListComponent extends UIRepeat {
+public class UIRepeatListComponent extends UIRepeat1 {
     static final Logger log = java.util.logging.Logger.getLogger("org.makumba.jsf");
 
     private static final class MakListDataModel extends ListDataModel<ArrayMap> implements Serializable {
