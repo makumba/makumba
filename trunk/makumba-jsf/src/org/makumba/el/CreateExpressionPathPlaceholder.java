@@ -37,7 +37,7 @@ public class CreateExpressionPathPlaceholder extends ExpressionPathPlaceholder {
     @Override
     public String toString() {
         return "[CreateExpressionPathPlaceholder label:" + label + " type:" + type + " isPointer:" + pointer + " path:"
-                + getExpressionPath() + "]";
+                + getProjectionPath() + "]";
     }
 
 }

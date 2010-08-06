@@ -22,7 +22,7 @@ public class ReadExpressionPathPlaceholder extends ExpressionPathPlaceholder {
 
     @Override
     public String toString() {
-        return basePointer + " " + getExpressionPath();
+        return basePointer + " " + getProjectionPath();
     }
 
 }

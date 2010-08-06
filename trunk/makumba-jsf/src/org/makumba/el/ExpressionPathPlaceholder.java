@@ -19,15 +19,18 @@ public abstract class ExpressionPathPlaceholder {
     /**
      * Returns label.field.field
      */
-    public String getExpressionPath() {
+    public String getProjectionPath() {
         return label + fieldDotField;
     }
 
     /**
-     * Returns field.field (without label)
+     * Returns field.field.property or property if field.field is empty
      */
-    public String getPathForUpdate() {
-        return this.fieldDotField;
+    public String getPath(String property) {
+        if (this.fieldDotField.length() == 0) {
+            return property;
+        }
+        return this.fieldDotField + "." + property;
     }
 
     public String getLabel() {
@@ -36,7 +39,7 @@ public abstract class ExpressionPathPlaceholder {
 
     @Override
     public String toString() {
-        return getExpressionPath();
+        return getProjectionPath();
     }
 
 }
