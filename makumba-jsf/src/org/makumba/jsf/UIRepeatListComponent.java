@@ -345,10 +345,7 @@ public class UIRepeatListComponent extends UIRepeat1 {
             visitTree(VisitContext.createVisitContext(context), addPointerConverters);
         }
         */
-        if (p == PhaseId.PROCESS_VALIDATIONS) {
-            // after they fix mojarra bug 1414, we may be able to do this
-            visitTree(VisitContext.createVisitContext(context), validateInputs);
-        }
+
         // log.fine(p + " " + composedQuery);
         if (!beforeIteration(p)) {
             return;
@@ -357,6 +354,11 @@ public class UIRepeatListComponent extends UIRepeat1 {
             super.process(context, p);
         } finally {
             afterIteration(p);
+
+            if (p == PhaseId.PROCESS_VALIDATIONS) {
+                // at this point the java validation was done, so we can do the makumba-specific one
+                visitTree(VisitContext.createVisitContext(context), validateInputs);
+            }
         }
     }
 
