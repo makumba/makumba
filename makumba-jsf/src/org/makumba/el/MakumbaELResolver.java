@@ -1,10 +1,7 @@
 package org.makumba.el;
 
 import java.beans.FeatureDescriptor;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.el.ELContext;
@@ -305,38 +302,14 @@ public class MakumbaELResolver extends ELResolver {
     }
 
     @Override
-    // TODO
     public Iterator<FeatureDescriptor> getFeatureDescriptors(ELContext context, Object base) {
-
-        if (base != null && base instanceof Map) {
-            Map<?, ?> map = (Map<?, ?>) base;
-            Iterator<?> iter = map.keySet().iterator();
-            List<FeatureDescriptor> list = new ArrayList<FeatureDescriptor>();
-            while (iter.hasNext()) {
-                Object key = iter.next();
-                FeatureDescriptor descriptor = new FeatureDescriptor();
-                String name = key == null ? null : key.toString();
-                descriptor.setName(name);
-                descriptor.setDisplayName(name);
-                descriptor.setShortDescription("");
-                descriptor.setExpert(false);
-                descriptor.setHidden(false);
-                descriptor.setPreferred(true);
-                descriptor.setValue("type", key == null ? null : key.getClass());
-                descriptor.setValue("resolvableAtDesignTime", Boolean.TRUE);
-                list.add(descriptor);
-            }
-            return list.iterator();
-        }
+        // TODO
         return null;
     }
 
     @Override
-    // TODO
     public Class<?> getCommonPropertyType(ELContext context, Object base) {
-        if (base != null && base instanceof Map) {
-            return Object.class;
-        }
+        // TODO
         return null;
     }
 
