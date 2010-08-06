@@ -12,6 +12,9 @@ import javax.faces.event.PhaseListener;
  * @author cristi
  */
 public class ListPhaseListener implements PhaseListener {
+
+    private static final long serialVersionUID = 1L;
+
     @Override
     public PhaseId getPhaseId() {
         return PhaseId.ANY_PHASE;
