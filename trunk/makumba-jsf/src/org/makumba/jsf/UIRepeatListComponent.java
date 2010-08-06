@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
 import javax.el.ValueExpression;
 import javax.faces.FacesException;
 import javax.faces.component.ContextCallback;
+import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
 import javax.faces.component.ValueHolder;
 import javax.faces.component.visit.VisitCallback;
@@ -315,6 +316,27 @@ public class UIRepeatListComponent extends UIRepeat1 {
 
     };
 
+    /**
+     * this is not used right now due to mojarra bug 1414
+     */
+    VisitCallback validateInputs = new VisitCallback() {
+
+        @Override
+        public VisitResult visit(VisitContext context, UIComponent target) {
+            // TODO: this is just a stub, we need to detect whether target has a pointer expression
+            if (target instanceof EditableValueHolder) {
+                System.out.println(debugIdent() + " to validate: " + target.getClientId(context.getFacesContext())
+                        + " " + target.getValueExpression("value") + " "
+                        + ((EditableValueHolder) target).getLocalValue());
+
+                // TODO: detect if the ValueExpression is one of the mak:list projections
+                // TODO: validate the submitted value according to its type
+            }
+            return VisitResult.ACCEPT;
+        }
+
+    };
+
     @Override
     public void process(FacesContext context, PhaseId p) {
         /*
@@ -323,6 +345,10 @@ public class UIRepeatListComponent extends UIRepeat1 {
             visitTree(VisitContext.createVisitContext(context), addPointerConverters);
         }
         */
+        if (p == PhaseId.PROCESS_VALIDATIONS) {
+            // after they fix mojarra bug 1414, we may be able to do this
+            visitTree(VisitContext.createVisitContext(context), validateInputs);
+        }
         // log.fine(p + " " + composedQuery);
         if (!beforeIteration(p)) {
             return;
@@ -388,7 +414,14 @@ public class UIRepeatListComponent extends UIRepeat1 {
 
         } finally {
             afterIteration(callback);
+
+            // at this point the java validation was done, so we can do the makumba-specific one
+            if (callback != validateInputs
+                    && (context.getFacesContext().getCurrentPhaseId() == PhaseId.PROCESS_VALIDATIONS || context.getFacesContext().getCurrentPhaseId() == PhaseId.PROCESS_VALIDATIONS)) {
+                visitTree(context, validateInputs);
+            }
         }
+
     }
 
     private boolean isSaveOrRestore(final VisitCallback callback) {
