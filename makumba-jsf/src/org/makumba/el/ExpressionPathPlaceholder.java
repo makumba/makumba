@@ -16,8 +16,18 @@ public abstract class ExpressionPathPlaceholder {
         this.fieldDotField = expr.fieldDotField + "." + field;
     }
 
+    /**
+     * Returns label.field.field
+     */
     public String getExpressionPath() {
         return label + fieldDotField;
+    }
+
+    /**
+     * Returns field.field (without label)
+     */
+    public String getPathForUpdate() {
+        return this.fieldDotField;
     }
 
     public String getLabel() {
