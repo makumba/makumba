@@ -33,11 +33,13 @@ import javax.faces.model.ListDataModel;
 import javax.faces.view.StateManagementStrategy;
 import javax.faces.view.facelets.FaceletException;
 
+import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.commons.ArrayMap;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.commons.RegExpUtils;
+import org.makumba.el.UpdateValue;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.ComposedSubquery;
 import org.makumba.list.engine.Grouper;
@@ -219,7 +221,27 @@ public class UIRepeatListComponent extends UIRepeat1 {
 
     transient List<ArrayMap> iterationGroupData;
 
-    public transient Map<String, Object> valuesSet = new HashMap<String, Object>();
+    public transient Map<Pointer, Map<String, UpdateValue>> valuesSet = new HashMap<Pointer, Map<String, UpdateValue>>();
+
+    public Map<Pointer, Map<String, UpdateValue>> getUpdateValues() {
+        return this.valuesSet;
+    }
+
+    public void addUpdateValue(Pointer p, UpdateValue v) {
+        Map<String, UpdateValue> s = this.valuesSet.get(p);
+        if (s == null) {
+            this.valuesSet.put(p, s = new HashMap<String, UpdateValue>());
+        }
+        s.put(v.getPath(), v);
+    }
+
+    public UpdateValue getUpdateValue(Pointer p, String path) {
+        Map<String, UpdateValue> s = this.valuesSet.get(p);
+        if (s != null) {
+            return s.get(path);
+        }
+        return null;
+    }
 
     private boolean beforeIteration(final Object o) {
         if (findMakListParent(this, true) == null) {
@@ -854,7 +876,7 @@ public class UIRepeatListComponent extends UIRepeat1 {
         this.listData = (Grouper) state[1];
         this.composedQuery = (ComposedQuery) state[2];
         @SuppressWarnings("unchecked")
-        HashMap<String, Object> hashMap = (HashMap<String, Object>) state[3];
+        HashMap<Pointer, Map<String, UpdateValue>> hashMap = (HashMap<Pointer, Map<String, UpdateValue>>) state[3];
         this.valuesSet = hashMap;
         getMakDataModel().makList = this;
     }

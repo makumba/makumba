@@ -1,7 +1,6 @@
 package org.makumba.jsf;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.faces.component.UIComponent;
@@ -21,26 +20,13 @@ import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProvider;
 
-public class ObjectComponent extends UIComponentBase {
-
-    // is this a "create" mak:object
-    private boolean create;
-
-    public transient Map<String, Object> valuesSet = new HashMap<String, Object>();
+public class CreateObjectComponent extends UIComponentBase {
 
     private String[] queryProps = new String[6];
 
     private ComposedQuery cQ;
 
     private QueryAnalysis qA;
-
-    public boolean isCreate() {
-        return create;
-    }
-
-    public void setCreate(boolean create) {
-        this.create = create;
-    }
 
     public String getFrom() {
         return queryProps[ComposedQuery.FROM];
@@ -126,8 +112,6 @@ public class ObjectComponent extends UIComponentBase {
     private QueryAnalysis computeQueryAnalysis() {
         final QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer(getQueryLanguage());
 
-        System.out.println("ObjectComponent.encodeBegin() from: " + getFrom() + " where: " + getWhere());
-
         // figure out the type of the label
         QueryAnalysis qA = null;
 
@@ -180,40 +164,11 @@ public class ObjectComponent extends UIComponentBase {
         return cq;
     }
 
-    @Override
-    public Object saveState(FacesContext context) {
-        Object[] state = new Object[2];
-        state[0] = super.saveState(context);
-        state[1] = valuesSet;
-        return state;
-    }
-
-    @Override
-    public void restoreState(FacesContext context, Object state) {
-        if (context == null) {
-            throw new NullPointerException();
-        }
-        if (state == null) {
-            return;
-        }
-        Object[] s = (Object[]) state;
-        super.restoreState(context, s[0]);
-        @SuppressWarnings("unchecked")
-        HashMap<String, Object> hashMap = (HashMap<String, Object>) s[1];
-        this.valuesSet = hashMap;
-    }
-
     /**
      * Returns the labels known by this mak:object and that could be candidates for creation
      */
     public Map<String, DataDefinition> getLabelTypes() {
         return this.qA.getLabelTypes();
-    }
-
-    public boolean isCreateObject() {
-        // FIXME we probably need to tweak QueryAnalysis so that it accepts WHERE bla = NEW
-        // based on that we'll be able to respond
-        return true;
     }
 
     // TODO refactor together with the list
@@ -228,13 +183,13 @@ public class ObjectComponent extends UIComponentBase {
         return "oql";
     }
 
-    public static ObjectComponent findParentObject(UIComponent current) {
+    public static CreateObjectComponent findParentObject(UIComponent current) {
         UIComponent c = current.getParent();
-        while (c != null && !(c instanceof ObjectComponent)) {
+        while (c != null && !(c instanceof CreateObjectComponent)) {
             c = c.getParent();
         }
-        if (c instanceof ObjectComponent) {
-            return (ObjectComponent) c;
+        if (c instanceof CreateObjectComponent) {
+            return (CreateObjectComponent) c;
         } else {
             return null;
         }

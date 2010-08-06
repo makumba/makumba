@@ -12,7 +12,7 @@ import javax.faces.context.FacesContext;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.NoSuchFieldException;
-import org.makumba.jsf.ObjectComponent;
+import org.makumba.jsf.CreateObjectComponent;
 
 /**
  * {@link ELResolver} managing the creation of new makumba objects. It does so by:
@@ -60,22 +60,16 @@ public class MakumbaCreateELResolver extends ELResolver {
 
             // is this a pointer?
             if (fd.isPointer()) {
-                log.fine("Returning value of expression " + parent.getExpressionPath() + "." + field
+                log.finest("Returning value of expression " + parent.getExpressionPath() + "." + field
                         + " as new expression " + p.toString());
                 p.setType(fd.getPointedType());
                 p.setPointer(true);
                 context.setPropertyResolved(true);
                 return p;
             } else {
-                // maybe it was already set
-                ObjectComponent object = findParentObject();
-                if (object != null) {
-                    Object value = object.valuesSet.get(p.getExpressionPath() + "." + property);
-                    log.fine("Returning value of expression " + parent.getExpressionPath() + "." + field + " as "
-                            + value);
-                    context.setPropertyResolved(true);
-                    return value;
-                }
+                // TODO return the initial value when there will be a mechanism for that
+                context.setPropertyResolved(true);
+                return null;
             }
         }
 
@@ -99,11 +93,13 @@ public class MakumbaCreateELResolver extends ELResolver {
             base = computeBase(context, property);
             if (base != null) {
                 context.setPropertyResolved(true);
-                log.fine("Resolved base of creation expression " + base.toString());
+                log.finest("Resolved base of creation expression " + base.toString());
             } else {
+                log.finest("Did not resolve base for property " + property.toString());
                 context.setPropertyResolved(false);
             }
             guard.set(false);
+
             return base;
         }
 
@@ -152,8 +148,8 @@ public class MakumbaCreateELResolver extends ELResolver {
     }
 
     private Object computeBase(ELContext context, Object property) {
-        ObjectComponent object = findParentObject();
-        if (object != null && object.isCreateObject()) {
+        CreateObjectComponent object = findParentObject();
+        if (object != null) {
 
             // see if this object knows something about the label we're trying to create
             if (object.getLabelTypes().containsKey(property)) {
@@ -164,11 +160,11 @@ public class MakumbaCreateELResolver extends ELResolver {
         return null;
     }
 
-    private ObjectComponent findParentObject() {
+    private CreateObjectComponent findParentObject() {
         UIComponent c = FacesContext.getCurrentInstance().getApplication().evaluateExpressionGet(
             FacesContext.getCurrentInstance(), "#{component}", UIComponent.class);
 
-        ObjectComponent object = ObjectComponent.findParentObject(c);
+        CreateObjectComponent object = CreateObjectComponent.findParentObject(c);
         return object;
     }
 
@@ -206,9 +202,9 @@ public class MakumbaCreateELResolver extends ELResolver {
         if (base == null && property != null) {
             Object val = basicGetValue(context, base, property);
             if (val != null && val instanceof CreateExpressionPathPlaceholder) {
-                ObjectComponent object = findParentObject();
+                CreateObjectComponent object = findParentObject();
                 if (object != null) {
-                    object.valuesSet.put((String) property, value);
+                    log.info("Creating new " + property + "=" + val);
                 }
             }
         }
@@ -217,13 +213,12 @@ public class MakumbaCreateELResolver extends ELResolver {
             // TODO check if the property is fixed
             // and the path to it goes thru fixed not null pointers?
             CreateExpressionPathPlaceholder p = (CreateExpressionPathPlaceholder) base;
-            ObjectComponent object = findParentObject();
-            if (object != null) {
-                object.valuesSet.put(p.getExpressionPath() + "." + property, value);
-                context.setPropertyResolved(true);
-            }
+            // CreateObjectComponent object = findParentObject();
 
-            System.out.println(p.getType().getName() + " " + p.getExpressionPath() + " <<<<<<<<< " + value);
+            context.setPropertyResolved(true);
+
+            System.out.println("========= New value for new object of type " + p.getType().getName() + " for "
+                    + p.getExpressionPath() + "." + property + "<<<<<<<<<<<<< " + value);
 
         }
 

@@ -260,7 +260,17 @@ public class MakumbaELResolver extends ELResolver {
             }
             System.out.println(debugIdent() + " " + base + "." + property + " <------- " + val + " "
                     + current.getClientId());
-            list.valuesSet.put(base + "." + property, val);
+
+            ReadExpressionPathPlaceholder p = (ReadExpressionPathPlaceholder) base;
+
+            String pathForUpdate = p.getPathForUpdate();
+            if (pathForUpdate.length() == 0) {
+                pathForUpdate = (String) property;
+            } else {
+                pathForUpdate += "." + property;
+            }
+
+            list.addUpdateValue(p.getPointer(), new UpdateValue(p.getPointer(), pathForUpdate, val));
 
             context.setPropertyResolved(true);
         } else {

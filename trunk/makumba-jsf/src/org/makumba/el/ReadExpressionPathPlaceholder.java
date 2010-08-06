@@ -6,6 +6,10 @@ public class ReadExpressionPathPlaceholder extends ExpressionPathPlaceholder {
 
     private Pointer basePointer;
 
+    public Pointer getPointer() {
+        return this.basePointer;
+    }
+
     public ReadExpressionPathPlaceholder(ReadExpressionPathPlaceholder expr, String field) {
         super(expr, field);
         this.basePointer = expr.basePointer;
