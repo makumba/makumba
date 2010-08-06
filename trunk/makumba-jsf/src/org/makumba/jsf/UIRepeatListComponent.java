@@ -294,14 +294,35 @@ public class UIRepeatListComponent extends UIRepeat1 {
          * here we can detect Ajax and ValueChanged events, but they are always sent to the root mak:list
         no matter which mak:list is the target of the f:ajax render= 
          */
-        System.out.println(debugIdent() + " " + event.getComponent().getClientId());
+        System.out.println(debugIdent() + " " + event.getComponent().getClientId() + " " + event);
 
         super.queueEvent(event);
     }
 
+    /**
+     * this is not used right now due to mojarra bug 1414
+     */
+    static VisitCallback addPointerConverters = new VisitCallback() {
+
+        @Override
+        public VisitResult visit(VisitContext context, UIComponent target) {
+            // TODO: this is just a stub, we need to detect whether target has a pointer expression
+            if (target.getClientId().endsWith("indivId")) {
+                ((ValueHolder) target).setConverter(new PointerConverter());
+            }
+            return VisitResult.ACCEPT;
+        }
+
+    };
+
     @Override
     public void process(FacesContext context, PhaseId p) {
-
+        /*
+        if (p == PhaseId.RENDER_RESPONSE) {
+            // after they fix mojarra bug 1414, we may be able to do this
+            visitTree(VisitContext.createVisitContext(context), addPointerConverters);
+        }
+        */
         // log.fine(p + " " + composedQuery);
         if (!beforeIteration(p)) {
             return;
@@ -338,41 +359,23 @@ public class UIRepeatListComponent extends UIRepeat1 {
         Collection<String> c = context.getFacesContext().getPartialViewContext().getRenderIds();
         System.out.println(debugIdent() + " renderedIds " + c);
 
-        // attempting full rendering in ajax
-        // if (context.getFacesContext().getCurrentPhaseId() == PhaseId.RENDER_RESPONSE) {
-        // we're being visited during the render-response phase, this is most probably ajax
-        // so we do a full rendering
-        // c.add("f:bigList:0:surnameOut");
-        // try {
-        // System.out.println(debugIdent() + " calling rendering");
-        // encodeAll(context.getFacesContext());
-        // } catch (IOException e) {
-        // e.printStackTrace();
-        // }
-        // return true;
+        /*
+            // after they fix mojarra bug 1414, we may be able to do this
+            // though it may not be needed here, as it should be saved during initial render phase
 
-        // System.out.println("IN RENDER");
-        // }
+        if (callback != addPointerConverters
+                && (context.getFacesContext().getCurrentPhaseId() == PhaseId.PROCESS_VALIDATIONS || context.getFacesContext().getCurrentPhaseId() == PhaseId.PROCESS_VALIDATIONS)) {
+            visitTree(context, addPointerConverters);
+        }*/
 
         VisitCallback clbk = callback;
 
         // in restore_view we cannot run beforeIteration as we have no data
         // so we run it after the visit
         if (context.getFacesContext().getCurrentPhaseId() == PhaseId.RESTORE_VIEW) {
-            clbk = new VisitCallback() {
-
-                @Override
-                public VisitResult visit(VisitContext context, UIComponent target) {
-                    VisitResult res = callback.visit(context, target);
-
-                    if (target == UIRepeatListComponent.this && !beforeIteration(callback)) {
-                        return VisitResult.REJECT;
-                    }
-                    return res;
-                }
-
-            };
-        } else if (!beforeIteration(callback)) {
+            context.invokeVisitCallback(this, callback);
+        }
+        if (!beforeIteration(callback)) {
             return false;
         }
         System.out.println(debugIdent()
@@ -445,11 +448,7 @@ public class UIRepeatListComponent extends UIRepeat1 {
 
             // we only execute queries during RENDER_RESPONSE
             // we might even skip that if we have data (listData!=null)
-            if (o == PhaseId.RENDER_RESPONSE) {
-                if (listData == null) {
-                    // if we had no data, we probably had no structure, so we explore it now
-                    // wrapUIInstrutions();
-                }
+            if (FacesContext.getCurrentInstance().getCurrentPhaseId() == PhaseId.RENDER_RESPONSE) {
                 executeGroupQueries(qep);
             }
 

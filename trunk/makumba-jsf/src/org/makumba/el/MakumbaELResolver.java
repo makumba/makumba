@@ -11,12 +11,18 @@ import javax.el.ELContext;
 import javax.el.ELException;
 import javax.el.ELResolver;
 import javax.el.ValueExpression;
+import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.component.ValueHolder;
 import javax.faces.context.FacesContext;
+import javax.faces.validator.ValidatorException;
 
+import org.makumba.DataDefinition;
 import org.makumba.Pointer;
 import org.makumba.jsf.UIRepeatListComponent;
+import org.makumba.providers.QueryAnalysis;
+import org.makumba.providers.QueryAnalysisProvider;
+import org.makumba.providers.QueryProvider;
 
 import com.sun.faces.facelets.compiler.UIInstructions;
 
@@ -55,7 +61,7 @@ public class MakumbaELResolver extends ELResolver {
             System.out.println(debugIdent() + " " + base + "." + property + " type Pointer" + " "
                     + current.getClientId());
 
-            return Pointer.class;
+            return String.class;
         }
         if (base != null && base instanceof ReadExpressionPathPlaceholder && property != null) {
             ReadExpressionPathPlaceholder expr = basicGetValue(context, base, property);
@@ -73,12 +79,19 @@ public class MakumbaELResolver extends ELResolver {
                 // this should not matter as we are not going to edit
                 return Object.class;
             }
+            // TODO: rewrite this to use query analysis instead
             // this will also catch pointers (SQLPointer)
             Object value = list.getExpressionValue(expr.getExpressionPath());
-            System.out.println(debugIdent() + " " + base + "." + property + " type " + value.getClass().getName() + " "
+            Class<?> type = value.getClass();
+
+            if (value instanceof Pointer) {
+                // we will convert to Pointer in setValue()
+                type = String.class;
+            }
+            System.out.println(debugIdent() + " " + base + "." + property + " type " + type.getName() + " "
                     + current.getClientId());
 
-            return value.getClass();
+            return type;
         }
         System.out.println(debugIdent() + " " + base + "." + property + " type unresolved" + " "
                 + current.getClientId());
@@ -238,10 +251,15 @@ public class MakumbaELResolver extends ELResolver {
             UIComponent.CURRENT_COMPONENT);
 
         if (base instanceof ReadExpressionPathPlaceholder) {
-            System.out.println(debugIdent() + " " + base + "." + property + " <------- " + val + " "
-                    + current.getClientId());
 
             UIRepeatListComponent list = UIRepeatListComponent.getCurrentlyRunning();
+            if ("id".equals(property) && !(val instanceof Pointer)) {
+                val = MakumbaELResolver.resolvePointer((String) val,
+                    ((ReadExpressionPathPlaceholder) base).getExpressionPath() + "." + property, list);
+
+            }
+            System.out.println(debugIdent() + " " + base + "." + property + " <------- " + val + " "
+                    + current.getClientId());
             list.valuesSet.put(base + "." + property, val);
 
             context.setPropertyResolved(true);
@@ -310,5 +328,30 @@ public class MakumbaELResolver extends ELResolver {
             return Object.class;
         }
         return null;
+    }
+
+    public static Pointer resolvePointer(String value, String expr, UIRepeatListComponent list) {
+        // FIXME: this looks pretty laborious. Probably the query should prepare
+
+        QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer(list.getQueryLanguage());
+        QueryAnalysis qa = qap.getQueryAnalysis(list.getComposedQuery().getTypeAnalyzerQuery());
+
+        DataDefinition dd = qa.getProjectionType();
+        DataDefinition pointed = null;
+        for (int i = 0; i < list.getProjections().size(); i++) {
+            if (list.getProjections().get(i).equals(expr)) {
+                pointed = dd.getFieldDefinition(i).getPointedType();
+                break;
+            }
+        }
+
+        try {
+            // JSF seems to require a SQLPointer... Maybe because the old value is of that class
+            Pointer ptr = new org.makumba.commons.SQLPointer(pointed.getName(),
+                    new Pointer(pointed.getName(), value).getId());
+            return ptr;
+        } catch (Throwable t) {
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, t.getMessage(), ""));
+        }
     }
 }
