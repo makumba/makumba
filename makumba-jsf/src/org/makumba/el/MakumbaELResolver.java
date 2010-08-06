@@ -69,7 +69,7 @@ public class MakumbaELResolver extends ELResolver {
             }
             context.setPropertyResolved(true);
             UIRepeatListComponent list = UIRepeatListComponent.getCurrentlyRunning();
-            if (!list.getProjections().contains(expr.getExpressionPath())) {
+            if (!list.getProjections().contains(expr.getProjectionPath())) {
                 System.out.println(debugIdent() + " " + base + "." + property + " type Object" + " "
                         + current.getClientId());
 
@@ -78,7 +78,7 @@ public class MakumbaELResolver extends ELResolver {
             }
             // TODO: rewrite this to use query analysis instead
             // this will also catch pointers (SQLPointer)
-            Object value = list.getExpressionValue(expr.getExpressionPath());
+            Object value = list.getExpressionValue(expr.getProjectionPath());
             Class<?> type = value.getClass();
 
             if (value instanceof Pointer) {
@@ -117,12 +117,12 @@ public class MakumbaELResolver extends ELResolver {
         }
         UIRepeatListComponent list = UIRepeatListComponent.getCurrentlyRunning();
         if (base != null && base instanceof ReadExpressionPathPlaceholder
-                && list.getProjections().contains(mine.getExpressionPath())) {
+                && list.getProjections().contains(mine.getProjectionPath())) {
             {
                 Object value = list.valuesSet.get(base + "." + property);
 
                 if (value == null) {
-                    value = list.getExpressionValue(mine.getExpressionPath());
+                    value = list.getExpressionValue(mine.getProjectionPath());
                 }
 
                 if (value instanceof Pointer && !"id".equals(property)) {
@@ -149,7 +149,7 @@ public class MakumbaELResolver extends ELResolver {
                     }
                     if (current instanceof ValueHolder && ((ValueHolder) current).getConverter() == null) {
                         ValueExpression ev = current.getValueExpression("value");
-                        if (ev != null && ev.getExpressionString().indexOf(mine.getExpressionPath()) != -1) {
+                        if (ev != null && ev.getExpressionString().indexOf(mine.getProjectionPath()) != -1) {
                             return ((Pointer) value).toExternalForm();
                         }
                     }
@@ -205,7 +205,7 @@ public class MakumbaELResolver extends ELResolver {
             // check with parent list if placeholderlabel.property exists.
             ReadExpressionPathPlaceholder mine = new ReadExpressionPathPlaceholder(placeholder, property.toString());
 
-            if (list.getProjections().contains(mine.getExpressionPath())) {
+            if (list.getProjections().contains(mine.getProjectionPath())) {
                 context.setPropertyResolved(true);
                 return mine;
 
@@ -213,7 +213,7 @@ public class MakumbaELResolver extends ELResolver {
 
                 boolean found = false;
                 for (String s : list.getProjections()) {
-                    if (s.startsWith(mine.getExpressionPath())) {
+                    if (s.startsWith(mine.getProjectionPath())) {
                         found = true;
                         break;
                     }
@@ -252,7 +252,7 @@ public class MakumbaELResolver extends ELResolver {
             UIRepeatListComponent list = UIRepeatListComponent.getCurrentlyRunning();
             if ("id".equals(property) && !(val instanceof Pointer)) {
                 val = MakumbaELResolver.resolvePointer((String) val,
-                    ((ReadExpressionPathPlaceholder) base).getExpressionPath() + "." + property, list);
+                    ((ReadExpressionPathPlaceholder) base).getProjectionPath() + "." + property, list);
 
             }
             System.out.println(debugIdent() + " " + base + "." + property + " <------- " + val + " "
@@ -260,14 +260,7 @@ public class MakumbaELResolver extends ELResolver {
 
             ReadExpressionPathPlaceholder p = (ReadExpressionPathPlaceholder) base;
 
-            String pathForUpdate = p.getPathForUpdate();
-            if (pathForUpdate.length() == 0) {
-                pathForUpdate = (String) property;
-            } else {
-                pathForUpdate += "." + property;
-            }
-
-            list.addUpdateValue(p.getPointer(), new UpdateValue(p.getPointer(), pathForUpdate, val));
+            list.addUpdateValue(p.getPointer(), new UpdateValue(p.getPointer(), p.getPath((String) property), val));
 
             context.setPropertyResolved(true);
         } else {

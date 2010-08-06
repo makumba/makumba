@@ -1,6 +1,7 @@
 package org.makumba.jsf;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.faces.component.UIComponent;
@@ -13,6 +14,7 @@ import javax.faces.event.FacesEvent;
 import org.makumba.DataDefinition;
 import org.makumba.OQLParseError;
 import org.makumba.commons.RuntimeWrappedException;
+import org.makumba.el.CreateValue;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.ComposedSubquery;
 import org.makumba.providers.QueryAnalysis;
@@ -27,6 +29,28 @@ public class CreateObjectComponent extends UIComponentBase {
     private ComposedQuery cQ;
 
     private QueryAnalysis qA;
+
+    public transient Map<DataDefinition, Map<String, CreateValue>> valuesSet = new HashMap<DataDefinition, Map<String, CreateValue>>();
+
+    public Map<DataDefinition, Map<String, CreateValue>> getCreateValues() {
+        return this.valuesSet;
+    }
+
+    public void addCreateValue(DataDefinition type, CreateValue v) {
+        Map<String, CreateValue> s = this.valuesSet.get(type);
+        if (s == null) {
+            this.valuesSet.put(type, s = new HashMap<String, CreateValue>());
+        }
+        s.put(v.getPath(), v);
+    }
+
+    public CreateValue getCreateValue(DataDefinition p, String path) {
+        Map<String, CreateValue> s = this.valuesSet.get(p);
+        if (s != null) {
+            return s.get(path);
+        }
+        return null;
+    }
 
     public String getFrom() {
         return queryProps[ComposedQuery.FROM];

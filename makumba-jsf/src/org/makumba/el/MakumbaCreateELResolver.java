@@ -60,7 +60,7 @@ public class MakumbaCreateELResolver extends ELResolver {
 
             // is this a pointer?
             if (fd.isPointer()) {
-                log.finest("Returning value of expression " + parent.getExpressionPath() + "." + field
+                log.finest("Returning value of expression " + parent.getProjectionPath() + "." + field
                         + " as new expression " + p.toString());
                 p.setType(fd.getPointedType());
                 p.setPointer(true);
@@ -213,12 +213,15 @@ public class MakumbaCreateELResolver extends ELResolver {
             // TODO check if the property is fixed
             // and the path to it goes thru fixed not null pointers?
             CreateExpressionPathPlaceholder p = (CreateExpressionPathPlaceholder) base;
-            // CreateObjectComponent object = findParentObject();
+            CreateObjectComponent object = findParentObject();
+            if (object != null) {
+                object.addCreateValue(p.getType(), new CreateValue(p.getType(), p.getPath((String) property), value));
+            }
 
             context.setPropertyResolved(true);
 
             System.out.println("========= New value for new object of type " + p.getType().getName() + " for "
-                    + p.getExpressionPath() + "." + property + "<<<<<<<<<<<<< " + value);
+                    + p.getProjectionPath() + "." + property + "<<<<<<<<<<<<< " + value);
 
         }
 
