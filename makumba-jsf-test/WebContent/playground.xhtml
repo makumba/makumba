@@ -13,13 +13,13 @@
     <mak:list from="test.Person p" id="bigList">
 
                      
-      <li><mak:value expr="p.indiv.name" /> #{p.indiv.surname} 
+      <li><mak:value expr="p.indiv.name" id="surnameOut"/> #{p.indiv.surname} 
       </li>
       <ul><mak:list from="p.speaks l" id="list">
-          <li><mak:value expr="l.name"/> #{mak:expr('l.isoCode')}
-          <h:inputText id="lang" value="#{l.name}" >
+          <li><h:outputText value="#{l.name}" id="langOut"/> #{mak:expr('l.isoCode')}
+          <h:inputText id="langIn" value="#{l.name}" >
             </h:inputText>
-            <h:message for="lang" errorClass="invalid" />
+            <h:message for="langIn" errorClass="invalid" />
           </li>
       </mak:list></ul>
   

@@ -13,7 +13,7 @@
 			<ul>
 				<mak:list from="test.Person p" id="bigList">
 					<li><h:outputText value="#{p.indiv.surname}" id="surnameOut" /></li>
-					<h:inputText value="#{p.indiv.id}">
+					<h:inputText value="#{p.indiv.id}" id="indivId">
 						<f:ajax render="@form" event="change"/>
 					</h:inputText>
 					<h:outputText id="indi" value="#{p.indiv.id}" />
@@ -23,9 +23,15 @@
 						<li><h:inputText id="surname" value="#{p.indiv.surname}">
 							<f:ajax render="@form" event="change" />
 						</h:inputText> <h:message for="surname" errorClass="invalid" /></li>
+						
+						<li><h:inputText id="surname2" value="#{p.indiv.surname}">
+							<f:ajax render="@form" event="change" />
+						</h:inputText> <h:message for="surname2" errorClass="invalid" /></li>
+						
+						
 						<mak:list from="p.speaks s" id="smallList">
-							<li><h:outputText value="#{s.name}" id="langOut" /> <h:inputText
-								id="language" value="#{s.name}">
+							<li><h:outputText value="#{s.name}" id="langOut" />
+							 <h:inputText id="langIn" value="#{s.name}">
 								<f:ajax render="@form" event="change" />
 							</h:inputText></li>
 						</mak:list>
