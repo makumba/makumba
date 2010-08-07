@@ -17,9 +17,6 @@ import javax.faces.validator.ValidatorException;
 import org.makumba.DataDefinition;
 import org.makumba.Pointer;
 import org.makumba.jsf.UIRepeatListComponent;
-import org.makumba.providers.QueryAnalysis;
-import org.makumba.providers.QueryAnalysisProvider;
-import org.makumba.providers.QueryProvider;
 
 import com.sun.faces.facelets.compiler.UIInstructions;
 
@@ -69,7 +66,7 @@ public class MakumbaELResolver extends ELResolver {
             }
             context.setPropertyResolved(true);
             UIRepeatListComponent list = UIRepeatListComponent.getCurrentlyRunning();
-            if (!list.getProjections().contains(expr.getProjectionPath())) {
+            if (!list.hasExpression(expr.getProjectionPath())) {
                 System.out.println(debugIdent() + " " + base + "." + property + " type Object" + " "
                         + current.getClientId());
 
@@ -116,12 +113,12 @@ public class MakumbaELResolver extends ELResolver {
             return null;
         }
         UIRepeatListComponent list = UIRepeatListComponent.getCurrentlyRunning();
+        String expr = mine.getProjectionPath();
         if (base != null && base instanceof ReadExpressionPathPlaceholder
-                && list.getProjections().contains(mine.getProjectionPath())) {
+                && list.hasExpression(expr)) {
             {
-                Object value = list.getExpressionValue(mine.getProjectionPath());
-
-                if (value instanceof Pointer && !"id".equals(property)) {
+                if (list.getExpressionType(expr).getType().startsWith("ptr")
+                        && !"id".equals(property)) {
                     // TODO: instead of checking the value, we can inquire the query whether the field is a pointer
                     // TODO: we could actually set the value in the placeholder, for whatever it could be useful
 
@@ -132,23 +129,16 @@ public class MakumbaELResolver extends ELResolver {
                     return mine;
                 }
 
-                if (value instanceof Pointer && "id".equals(property)) {
-                    /* we have a pointer #{p.x.y.id} 
-                     * if we know we are in UIInstruction or in outputText, we convert toExternalForm */
-
-                    // if we are in UIInstructions, we're in free text so the
-                    // encoded form is better
-                    // also in h:outputText?
-                    if (current instanceof UIInstructions) {
-                        return ((Pointer) value).toExternalForm();
-                    }
-                    if (current instanceof ValueHolder && ((ValueHolder) current).getConverter() == null) {
-                        ValueExpression ev = current.getValueExpression("value");
-                        if (ev != null && ev.getExpressionString().indexOf(mine.getProjectionPath()) != -1) {
-                            return ((Pointer) value).toExternalForm();
-                        }
+                if (current instanceof UIInstructions) {
+                    return list.convertToString(expr);
+                }
+                if (current instanceof ValueHolder && ((ValueHolder) current).getConverter() == null) {
+                    ValueExpression ev = current.getValueExpression("value");
+                    if (ev != null && ev.getExpressionString().indexOf(expr) != -1) {
+                        return list.convertToString(expr);
                     }
                 }
+                Object value = list.getExpressionValue(expr);
                 System.out.println(debugIdent() + " " + base + "." + property + " ----> " + value + " in "
                         + current.getClientId());
                 return value;
@@ -176,7 +166,7 @@ public class MakumbaELResolver extends ELResolver {
 
         if (base == null && property != null) {
             // lookup property in parent list, if it's a label we set a placeholder here
-            if (list.getProjections().contains(property.toString())) {
+            if (list.hasExpression(property.toString())) {
                 // this can only be a label projection, so it's gonna be a pointer
                 Pointer value = (Pointer) list.getExpressionValue(property.toString());
                 context.setPropertyResolved(true);
@@ -200,7 +190,7 @@ public class MakumbaELResolver extends ELResolver {
             // check with parent list if placeholderlabel.property exists.
             ReadExpressionPathPlaceholder mine = new ReadExpressionPathPlaceholder(placeholder, property.toString());
 
-            if (list.getProjections().contains(mine.getProjectionPath())) {
+            if (list.hasExpression(mine.getProjectionPath())) {
                 context.setPropertyResolved(true);
                 return mine;
 
@@ -210,19 +200,15 @@ public class MakumbaELResolver extends ELResolver {
                 for (String s : list.getProjections()) {
                     if (s.startsWith(mine.getProjectionPath())) {
                         found = true;
-                        break;
+                        context.setPropertyResolved(true);
+                        // return the placeholder
+                        return mine;
                     }
                 }
-                if (found) {
-                    // set a placeholder
-                    context.setPropertyResolved(true);
-                    // return the placeholder
-                    return mine;
-                } else {
-                    throw new ELException("Field '" + property + "' of '" + base + "' is not known."
-                            + (list.useCaches() ? " Turn caches off or try reloading the page." : ""));
-                    // TODO we could even check here whether the property would makes sense in the query
-                }
+
+                throw new ELException("Field '" + property + "' of '" + base + "' is not known."
+                        + (list.useCaches() ? " Turn caches off or try reloading the page." : ""));
+                // TODO we could even check here whether the property would makes sense in the query
 
             }
         }
@@ -302,19 +288,8 @@ public class MakumbaELResolver extends ELResolver {
     }
 
     public static Pointer resolvePointer(String value, String expr, UIRepeatListComponent list) {
-        // FIXME: this looks pretty laborious. Probably the query should prepare
 
-        QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer(list.getQueryLanguage());
-        QueryAnalysis qa = qap.getQueryAnalysis(list.getComposedQuery().getTypeAnalyzerQuery());
-
-        DataDefinition dd = qa.getProjectionType();
-        DataDefinition pointed = null;
-        for (int i = 0; i < list.getProjections().size(); i++) {
-            if (list.getProjections().get(i).equals(expr)) {
-                pointed = dd.getFieldDefinition(i).getPointedType();
-                break;
-            }
-        }
+        DataDefinition pointed = list.getExpressionType(expr).getPointedType();
 
         try {
             // JSF seems to require a SQLPointer... Maybe because the old value is of that class
