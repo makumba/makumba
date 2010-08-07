@@ -27,10 +27,16 @@ public abstract class ExpressionPathPlaceholder {
      * Returns field.field.property or property if field.field is empty
      */
     public String getPath(String property) {
+        // FIXME: if property is id and fieldDotField is empty, we have an exception because we're editing a primary key
+        // this should be detected earlier in the page analysis
         if (this.fieldDotField.length() == 0) {
             return property;
         }
-        return this.fieldDotField + "." + property;
+        String dotProp = "." + property;
+        if ("id".equals(property)) {
+            dotProp = "";
+        }
+        return this.fieldDotField.substring(1) + dotProp;
     }
 
     public String getLabel() {

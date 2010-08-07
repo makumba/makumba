@@ -62,6 +62,7 @@ public class ValueSavingPhaseListener implements PhaseListener {
                                 t.update(p, data);
                             }
 
+                            ((UIRepeatListComponent) target).getUpdateValues().clear();
                         } catch (Throwable e) {
                             t.rollback();
                             throw new RuntimeException(e);
