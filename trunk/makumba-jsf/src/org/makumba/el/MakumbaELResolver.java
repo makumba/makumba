@@ -119,11 +119,7 @@ public class MakumbaELResolver extends ELResolver {
         if (base != null && base instanceof ReadExpressionPathPlaceholder
                 && list.getProjections().contains(mine.getProjectionPath())) {
             {
-                Object value = list.valuesSet.get(base + "." + property);
-
-                if (value == null) {
-                    value = list.getExpressionValue(mine.getProjectionPath());
-                }
+                Object value = list.getExpressionValue(mine.getProjectionPath());
 
                 if (value instanceof Pointer && !"id".equals(property)) {
                     // TODO: instead of checking the value, we can inquire the query whether the field is a pointer
@@ -143,7 +139,6 @@ public class MakumbaELResolver extends ELResolver {
                     // if we are in UIInstructions, we're in free text so the
                     // encoded form is better
                     // also in h:outputText?
-
                     if (current instanceof UIInstructions) {
                         return ((Pointer) value).toExternalForm();
                     }
@@ -261,7 +256,7 @@ public class MakumbaELResolver extends ELResolver {
             ReadExpressionPathPlaceholder p = (ReadExpressionPathPlaceholder) base;
 
             list.addUpdateValue(p.getPointer(), new UpdateValue(p.getPointer(), p.getPath((String) property), val));
-
+            list.setExpressionValue(((ExpressionPathPlaceholder) base).getProjectionPath() + "." + property, val);
             context.setPropertyResolved(true);
         } else {
             System.out.println(debugIdent() + " not setting " + base + "." + property + " to " + val + " "

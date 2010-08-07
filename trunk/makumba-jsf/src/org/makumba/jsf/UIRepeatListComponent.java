@@ -18,6 +18,8 @@ import java.util.regex.Pattern;
 
 import javax.el.ValueExpression;
 import javax.faces.FacesException;
+import javax.faces.application.FacesMessage;
+import javax.faces.application.FacesMessage.Severity;
 import javax.faces.component.ContextCallback;
 import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
@@ -647,11 +649,12 @@ public class UIRepeatListComponent extends UIRepeat1 {
         }
 
         // TODO: this is temporary, like all valuesSet stuff
-        if (!valuesSet.isEmpty()) {
-            System.out.println(debugIdent() + " -- not running query because we have saved values -- " + composedQuery);
+        Severity sev = FacesContext.getCurrentInstance().getMaximumSeverity();
+        if (sev != null && FacesMessage.SEVERITY_ERROR.compareTo(sev) >= 0) {
+            System.out.println(debugIdent() + " -- not running query because of validation errors -- " + composedQuery);
             return;
         }
-
+        valuesSet.clear();
         try {
             System.out.println(debugIdent() + " --run-- " + composedQuery);
             listData = composedQuery.execute(qep, null, evaluator, offset, limit);
@@ -720,6 +723,10 @@ public class UIRepeatListComponent extends UIRepeat1 {
 
     public Object getExpressionValue(int exprIndex) {
         return currentData.data[exprIndex];
+    }
+
+    public void setExpressionValue(String expr, Object val) {
+        currentData.data[getExpressionIndex(expr)] = val;
     }
 
     void findExpressionsInChildren() {
@@ -875,9 +882,6 @@ public class UIRepeatListComponent extends UIRepeat1 {
         // noinspection unchecked
         this.listData = (Grouper) state[1];
         this.composedQuery = (ComposedQuery) state[2];
-        @SuppressWarnings("unchecked")
-        HashMap<Pointer, Map<String, UpdateValue>> hashMap = (HashMap<Pointer, Map<String, UpdateValue>>) state[3];
-        this.valuesSet = hashMap;
         getMakDataModel().makList = this;
     }
 
@@ -895,8 +899,6 @@ public class UIRepeatListComponent extends UIRepeat1 {
         state[1] = listData;
         state[2] = composedQuery;
 
-        // FIXME: this is temporary
-        state[3] = valuesSet;
         // TODO: save other needed stuff
         return state;
     }
