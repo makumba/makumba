@@ -288,7 +288,7 @@ public class ComposedQuery implements Serializable {
      * @return The index of the added projection
      */
     public Integer checkProjectionInteger(String expr) {
-        Integer index = projectionExpr.get(expr);
+        Integer index = getProjectionIndex(expr);
         if (index == null) {
             addProjection(expr);
             // FIXME: if DISTINCT is true, need to recompute the keyset and notify the subqueries to recompute their
@@ -296,6 +296,10 @@ public class ComposedQuery implements Serializable {
             return null;
         }
         return index;
+    }
+
+    public Integer getProjectionIndex(String expr) {
+        return projectionExpr.get(expr);
     }
 
     /**
