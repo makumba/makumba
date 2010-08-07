@@ -35,6 +35,9 @@ import javax.faces.model.ListDataModel;
 import javax.faces.view.StateManagementStrategy;
 import javax.faces.view.facelets.FaceletException;
 
+import org.makumba.DataDefinition;
+import org.makumba.FieldDefinition;
+import org.makumba.MakumbaError;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.commons.ArrayMap;
@@ -96,13 +99,17 @@ public class UIRepeatListComponent extends UIRepeat1 {
     // current iteration of this list
     transient ArrayMap currentData;
 
-    private String prefix;
+    transient private String prefix;
 
-    private UIRepeatListComponent parent;
+    transient private UIRepeatListComponent parent;
 
     private static ThreadLocal<UIRepeatListComponent> currentList = new ThreadLocal<UIRepeatListComponent>();
 
     private static ThreadLocal<Stack<Dictionary<String, Object>>> currentDataStack = new ThreadLocal<Stack<Dictionary<String, Object>>>();
+
+    transient private HashMap<UIComponent, String> expressions;
+
+    transient private DataDefinition projections;
 
     public void setPrefix(String prefix) {
         this.prefix = prefix;
@@ -340,9 +347,6 @@ public class UIRepeatListComponent extends UIRepeat1 {
 
     };
 
-    /**
-     * this is not used right now due to mojarra bug 1414
-     */
     VisitCallback validateInputs = new VisitCallback() {
 
         @Override
@@ -511,18 +515,6 @@ public class UIRepeatListComponent extends UIRepeat1 {
                 executeGroupQueries(qep);
             }
 
-            if (o == PhaseId.UPDATE_MODEL_VALUES) {
-                visitStaticTree(this, new VisitCallback() {
-                    @Override
-                    public VisitResult visit(VisitContext context, UIComponent target) {
-                        if (target instanceof ValueHolder) {
-                            ((ValueHolder) target).setValue(null);
-                        }
-                        return VisitResult.ACCEPT;
-                    }
-                });
-            }
-
         } finally {
             if (qep != null) {
                 qep.close();
@@ -618,6 +610,8 @@ public class UIRepeatListComponent extends UIRepeat1 {
         // we make sure that all declared labels are selected separately
         this.composedQuery.analyze();
         // log.fine(this.composedQuery);
+
+        this.projections = getQueryAnalysis().getProjectionType();
     }
 
     void analyzeMakListGroup() {
@@ -675,7 +669,7 @@ public class UIRepeatListComponent extends UIRepeat1 {
         return "oql";
     }
 
-    private void addExpression(String expr, boolean canBeInvalid) {
+    private void addExpression(UIComponent component, String expr, boolean canBeInvalid) {
         if (canBeInvalid) {
             // we assume here only expressions a.b.c.d
             String label = expr;
@@ -683,8 +677,7 @@ public class UIRepeatListComponent extends UIRepeat1 {
             if (n != -1) {
                 label = expr.substring(0, n);
             }
-            QueryAnalysis qa = QueryProvider.getQueryAnalzyer(getQueryLanguage()).getQueryAnalysis(
-                composedQuery.getComputedQuery());
+            QueryAnalysis qa = getQueryAnalysis();
             if (qa.getLabelType(label) == null) {
                 // label unknown, we go out
                 return;
@@ -693,24 +686,49 @@ public class UIRepeatListComponent extends UIRepeat1 {
             // TODO: check whether the fields are ok!
 
         }
+
+        expressions.put(component, expr);
         composedQuery.checkProjectionInteger(expr);
     }
 
+    private QueryAnalysis getQueryAnalysis() {
+        return QueryProvider.getQueryAnalzyer(getQueryLanguage()).getQueryAnalysis(composedQuery.getComputedQuery());
+    }
+
+    public boolean hasExpression(String expr) {
+        return composedQuery.getProjectionIndex(expr) != null;
+    }
+
     Integer getExpressionIndex(String expr) {
-        Integer exprIndex = composedQuery.checkProjectionInteger(expr);
+        Integer exprIndex = composedQuery.getProjectionIndex(expr);
         if (exprIndex == null) {
             if (useCaches()) {
                 // FIXME: a better mak:list description
                 throw new ProgrammerError("<mak:list> does not know the expression " + expr
                         + ", turn caches off, or try reloading the page, it might work.");
             } else {
-                // second call should return not null
-                // however, we should never get here since a page analysis is done every request
+                // we should never get here since a page analysis is done every request
                 // so the expression must be known
-                exprIndex = composedQuery.checkProjectionInteger(expr);
+                throw new MakumbaError("invalid state, unknown expression " + expr);
             }
         }
         return exprIndex;
+    }
+
+    public String convertToString(String expr) {
+        int n = getExpressionIndex(expr);
+        return convertToString(expr, projections.getFieldDefinition(n), getExpressionValue(n));
+    }
+
+    private String convertToString(String expr, FieldDefinition fd, Object val) {
+        if (fd.getType().startsWith("ptr")) {
+            return ((Pointer) val).toExternalForm();
+        }
+        return "" + val;
+    }
+
+    public FieldDefinition getExpressionType(String expr) {
+        return projections.getFieldDefinition(getExpressionIndex(expr));
     }
 
     public Object getExpressionValue(String expr) {
@@ -730,6 +748,7 @@ public class UIRepeatListComponent extends UIRepeat1 {
     }
 
     void findExpressionsInChildren() {
+        expressions = new HashMap<UIComponent, String>();
         visitStaticTree(this, new VisitCallback() {
             @Override
             public VisitResult visit(VisitContext context, UIComponent target) {
@@ -767,7 +786,7 @@ public class UIRepeatListComponent extends UIRepeat1 {
                 // we try to see if this is a ValueExpression by probing it
                 ValueExpression ve = component.getValueExpression(p.getName());
                 if (ve != null) {
-                    addExpression(trimExpression(ve.getExpressionString()), true);
+                    addExpression(component, trimExpression(ve.getExpressionString()), true);
                 }
                 /*                
                  // TODO: this successfully adds the converter but fails after form submission (classcast exception during state save or restore
@@ -828,7 +847,7 @@ public class UIRepeatListComponent extends UIRepeat1 {
                     // if not, check that txt is precisely a 'string' or "string"
                     // to support dynamic function expressions, an evaluator should be applied here
                     elFuncTxt = elFuncTxt.substring(1, elFuncTxt.length() - 1);
-                    addExpression(elFuncTxt, false);
+                    addExpression(component, elFuncTxt, false);
                 } else {
                     // TODO logger warning or namespace resolution
                 }
@@ -839,7 +858,7 @@ public class UIRepeatListComponent extends UIRepeat1 {
             // we now have a cleared expression, we check for paths like "p.name"
             Matcher dotPathMatcher = dotPathPattern.matcher(elExprTxt);
             while (dotPathMatcher.find()) {
-                addExpression(dotPathMatcher.group(), true);
+                addExpression(component, dotPathMatcher.group(), true);
             }
         }
     }
@@ -860,7 +879,7 @@ public class UIRepeatListComponent extends UIRepeat1 {
         } else {
             // TODO: setvalue expression
             // TODO: nullable value? i guess that's not in use any longer
-            addExpression(component.getExpr(), false);
+            addExpression(component, component.getExpr(), false);
         }
 
     }
@@ -879,9 +898,9 @@ public class UIRepeatListComponent extends UIRepeat1 {
         }
         Object[] state = (Object[]) object;
         super.restoreState(faces, state[0]);
-        // noinspection unchecked
         this.listData = (Grouper) state[1];
         this.composedQuery = (ComposedQuery) state[2];
+        this.projections = getQueryAnalysis().getProjectionType();
         getMakDataModel().makList = this;
     }
 
@@ -898,7 +917,6 @@ public class UIRepeatListComponent extends UIRepeat1 {
 
         state[1] = listData;
         state[2] = composedQuery;
-
         // TODO: save other needed stuff
         return state;
     }
