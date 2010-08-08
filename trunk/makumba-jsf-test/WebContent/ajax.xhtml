@@ -16,7 +16,9 @@
 					<h:inputText value="#{p.indiv.id}" id="indivId">
 						<f:ajax render="@form" event="change"/>
 					</h:inputText><h:message for="indivId" errorClass="invalid" />
-					#{p.indiv.id}
+					<mak:object from="p.indiv i" >
+					#{i.id}
+					</mak:object>
 
 					<li>
 					<ul>
