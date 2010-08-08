@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.makumba.LogicException;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.attributes.RequestAttributes;
-import org.makumba.experminetal.AnalysisListener;
 
 /**
  * Detect when to apply Logic and authentication/authorization.
