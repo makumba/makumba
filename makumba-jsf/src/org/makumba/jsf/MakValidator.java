@@ -23,7 +23,9 @@ public class MakValidator implements Validator {
     public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
 
         UIRepeatListComponent list = UIRepeatListComponent.findMakListParent(component, true);
-
+        if (list == null) {
+            return;
+        }
         try {
             list.convertAndValidateExpression(component, value);
         } catch (Exception e) {
