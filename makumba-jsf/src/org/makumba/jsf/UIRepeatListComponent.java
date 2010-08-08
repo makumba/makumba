@@ -228,6 +228,8 @@ public class UIRepeatListComponent extends UIRepeat1 {
 
     public transient Map<Pointer, Map<String, UpdateValue>> valuesSet = new HashMap<Pointer, Map<String, UpdateValue>>();
 
+    public boolean isObject;
+
     public Map<Pointer, Map<String, UpdateValue>> getUpdateValues() {
         return this.valuesSet;
     }
@@ -265,6 +267,9 @@ public class UIRepeatListComponent extends UIRepeat1 {
 
         if (iterationGroupData == null) {
             return false;
+        }
+        if (isObject && iterationGroupData.size() > 1) {
+            throw new ProgrammerError("mak:object cannot have more than one row");
         }
         /*
         for (ArrayMap a : iterationGroupData) {

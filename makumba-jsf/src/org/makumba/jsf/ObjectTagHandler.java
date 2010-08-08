@@ -6,6 +6,7 @@ import javax.faces.view.facelets.ComponentHandler;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.Tag;
+import javax.faces.view.facelets.TagAttribute;
 
 public class ObjectTagHandler extends ComponentHandler {
 
@@ -50,17 +51,16 @@ public class ObjectTagHandler extends ComponentHandler {
         super.onComponentCreated(ctx, c, parent);
 
         if (!isCreateObject(getTag())) {
-            // TODO if we are not a NEW, we will be a List, but we need to tell that to the component
-            // for this look into the WHERE tagAttribute
+            ((UIRepeatListComponent) c).isObject = true;
         }
 
     }
 
     private static boolean isCreateObject(Tag t) {
-        String where = t.getAttributes().get("where").getValue();
+        TagAttribute where = t.getAttributes().get("where");
         // FIXME this could also be a o.type = 'NEW'
         // FIXME this won't handle #{ValueExpressions}
-        return where.indexOf("NEW") > -1;
+        return where != null && where.getValue().indexOf("NEW") > -1;
     }
 
 }
