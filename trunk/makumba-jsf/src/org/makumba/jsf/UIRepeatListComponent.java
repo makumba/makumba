@@ -386,7 +386,14 @@ public class UIRepeatListComponent extends UIRepeat1 {
 
         } finally {
             afterIteration(callback);
-
+            /*
+             EXAMPLE validation error at the very end of update model
+                        if (context.getFacesContext().getCurrentPhaseId() == PhaseId.UPDATE_MODEL_VALUES) {
+                            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, "wrong shit", "wrong stuff");
+                            context.getFacesContext().addMessage("f:bigList:0:smallList:0:langIn", message);
+                            // context.getFacesContext().validationFailed();
+                        }
+            */
         }
 
     }
@@ -580,8 +587,7 @@ public class UIRepeatListComponent extends UIRepeat1 {
         }
 
         // TODO: this is temporary, like all valuesSet stuff
-        Severity sev = FacesContext.getCurrentInstance().getMaximumSeverity();
-        if (sev != null && FacesMessage.SEVERITY_ERROR.compareTo(sev) >= 0) {
+        if (validationFailed()) {
             System.out.println(debugIdent() + " -- not running query because of validation errors -- " + composedQuery);
             return;
         }
@@ -594,6 +600,16 @@ public class UIRepeatListComponent extends UIRepeat1 {
                 qep.close();
             }
         }
+    }
+
+    /**
+     * there are many ways in which we can detect if validation was ok, so we isolate this method and improve it later
+     * 
+     * @return
+     */
+    static boolean validationFailed() {
+        Severity sev = FacesContext.getCurrentInstance().getMaximumSeverity();
+        return sev != null && FacesMessage.SEVERITY_ERROR.compareTo(sev) >= 0;
     }
 
     private QueryProvider getQueryExecutionProvider() {
