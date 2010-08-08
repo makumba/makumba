@@ -7,11 +7,6 @@
 	xsi:schemaLocation="
       http://java.sun.com/xml/ns/javaee
       http://java.sun.com/xml/ns/javaee/web-facesconfig_2_0.xsd">
-	<!--
-		example of listener installation <lifecycle>
-		<phase-listener>org.makumba.jsf.ListPhaseListener</phase-listener>
-		</lifecycle
-	-->
 	<application>
 		<default-validators>
 			<validator-id>org.makumba.jsf.MakValidator</validator-id>
