@@ -15,8 +15,8 @@
 					<li><h:outputText value="#{p.indiv.surname}" id="surnameOut" /></li>
 					<h:inputText value="#{p.indiv.id}" id="indivId">
 						<f:ajax render="@form" event="change"/>
-					</h:inputText>
-					<h:outputText id="indi" value="#{p.indiv.id}" />
+					</h:inputText><h:message for="indivId" errorClass="invalid" />
+					#{p.indiv.id}
 
 					<li>
 					<ul>
@@ -33,7 +33,7 @@
 							<li><h:outputText value="#{s.name}" id="langOut" />
 							 <h:inputText id="langIn" value="#{s.name}">
 								<f:ajax render="@form" event="change" />
-							</h:inputText></li>
+							</h:inputText><h:message for="langIn" errorClass="invalid" /></li>
 						</mak:list>
 					</ul>
 					</li>
