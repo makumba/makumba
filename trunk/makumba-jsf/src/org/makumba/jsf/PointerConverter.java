@@ -9,35 +9,27 @@ package org.makumba.jsf;
 import java.io.Serializable;
 import java.util.logging.Logger;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
+import javax.faces.convert.ConverterException;
 
 import org.makumba.Pointer;
-import org.makumba.commons.RuntimeWrappedException;
-import org.makumba.el.MakumbaELResolver;
 
 public class PointerConverter implements Converter, Serializable {
     static final Logger log = java.util.logging.Logger.getLogger("org.makumba.jsf.ptrConvert");
 
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
-        // log.fine("Resolving  " + value);
+
+        UIRepeatListComponent list = UIRepeatListComponent.findMakListParent(component, true);
         try {
-
-            // FIXME: note that there can be more pointers in the expression, though that is unlikely
-            String expr = component.getValueExpression("value").getExpressionString();
-            // take away #{ }
-            expr = expr.substring(2, expr.length() - 1).trim();
-
-            UIRepeatListComponent list = UIRepeatListComponent.findMakListParent(component, true);
-            Pointer ptr = MakumbaELResolver.resolvePointer(value, expr, list);
-            System.out.println(UIRepeatListComponent.getCurrentlyRunning().debugIdent() + " " + value + " is "
-                    + ptr.toString());
-            return ptr;
-        } catch (Throwable t) {
-            t.printStackTrace();
-            throw new RuntimeWrappedException(t);
+            return list.convertAndValidateExpression(component, value);
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(component.getClientId(),
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage()));
+            throw new ConverterException(e.getMessage());
         }
     }
 
@@ -45,4 +37,5 @@ public class PointerConverter implements Converter, Serializable {
     public String getAsString(FacesContext context, UIComponent component, Object value) {
         return ((Pointer) value).toExternalForm();
     }
+
 }
