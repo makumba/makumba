@@ -14,6 +14,8 @@ public class UpdateValue implements Serializable {
 
     private Object value;
 
+    private String clientId;
+
     public Pointer getPointer() {
         return pointer;
     }
@@ -38,11 +40,19 @@ public class UpdateValue implements Serializable {
         this.value = value;
     }
 
-    public UpdateValue(Pointer pointer, String path, Object value) {
+    /**
+     * @return the clientId of the UIComponent (EditableValueHolder) that provoked this change
+     */
+    public String getClientId() {
+        return clientId;
+    }
+
+    public UpdateValue(Pointer pointer, String path, Object value, String clientId) {
         super();
         this.pointer = pointer;
         this.path = path;
         this.value = value;
+        this.clientId = clientId;
     }
 
 }

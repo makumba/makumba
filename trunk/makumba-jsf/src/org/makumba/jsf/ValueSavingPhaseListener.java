@@ -4,6 +4,8 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javax.el.ELException;
+import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.component.visit.VisitCallback;
 import javax.faces.component.visit.VisitContext;
@@ -14,6 +16,7 @@ import javax.faces.event.PhaseId;
 import javax.faces.event.PhaseListener;
 
 import org.makumba.DataDefinition;
+import org.makumba.InvalidValueException;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.el.CreateValue;
@@ -98,9 +101,25 @@ public class ValueSavingPhaseListener implements PhaseListener {
                                 t.insert(type.getName(), data);
                             }
 
+                        } catch (InvalidValueException e) {
+                            t.rollback();
+                            // TODO: store the type (MDD) in the InvalidValueException
+                            // TODO: store the offending value in the IVE
+                            // TODO: from the type, and the field name, find the label.ptr.field that edits such a field
+                            // after that, find the clientId of the UIInput(s) that produced the value
+                            // for each such input, register a message
+
+                            // TODO: if the above is hard, at least include the clientId of the form, as below.
+                            FacesContext.getCurrentInstance().addMessage(null,
+                                new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage()));
+                            throw new ELException(e);
                         } catch (Throwable e) {
                             t.rollback();
-                            throw new RuntimeException(e);
+                            // TODO: we cannot detect which field provoked this, but we could insert the clientId of the
+                            // form
+                            FacesContext.getCurrentInstance().addMessage(null,
+                                new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage()));
+                            throw new ELException(e);
                         } finally {
                             if (t != null) {
                                 t.close();
@@ -119,6 +138,8 @@ public class ValueSavingPhaseListener implements PhaseListener {
 
     @Override
     public void beforePhase(PhaseEvent event) {
+        // TODO: i think we can perform multi-field validation here (or after PROCESS_VALIDATION)
+        // if that fails, we can simply add messages to the FacesContext, and throw an exception
 
     }
 
