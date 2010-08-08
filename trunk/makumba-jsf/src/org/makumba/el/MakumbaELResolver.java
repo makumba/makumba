@@ -7,18 +7,13 @@ import java.util.logging.Logger;
 import javax.el.ELContext;
 import javax.el.ELException;
 import javax.el.ELResolver;
-import javax.el.ValueExpression;
-import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
-import javax.faces.component.ValueHolder;
+import javax.faces.component.UINamingContainer;
 import javax.faces.context.FacesContext;
-import javax.faces.validator.ValidatorException;
 
-import org.makumba.DataDefinition;
+import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
 import org.makumba.jsf.UIRepeatListComponent;
-
-import com.sun.faces.facelets.compiler.UIInstructions;
 
 /**
  * FIXME for ptr projections such as #{p}, return something alike to Java's [Object@REFERENCE String instead of the
@@ -73,15 +68,8 @@ public class MakumbaELResolver extends ELResolver {
                 // this should not matter as we are not going to edit
                 return Object.class;
             }
-            // TODO: rewrite this to use query analysis instead
-            // this will also catch pointers (SQLPointer)
-            Object value = list.getExpressionValue(expr.getProjectionPath());
-            Class<?> type = value.getClass();
-
-            if (value instanceof Pointer) {
-                // we will convert to Pointer in setValue()
-                type = String.class;
-            }
+            FieldDefinition fd = list.getExpressionType(expr.getProjectionPath());
+            Class<?> type = fd.getJavaType();
             System.out.println(debugIdent() + " " + base + "." + property + " type " + type.getName() + " "
                     + current.getClientId());
 
@@ -114,11 +102,9 @@ public class MakumbaELResolver extends ELResolver {
         }
         UIRepeatListComponent list = UIRepeatListComponent.getCurrentlyRunning();
         String expr = mine.getProjectionPath();
-        if (base != null && base instanceof ReadExpressionPathPlaceholder
-                && list.hasExpression(expr)) {
+        if (base != null && base instanceof ReadExpressionPathPlaceholder && list.hasExpression(expr)) {
             {
-                if (list.getExpressionType(expr).getType().startsWith("ptr")
-                        && !"id".equals(property)) {
+                if (list.getExpressionType(expr).getType().startsWith("ptr") && !"id".equals(property)) {
                     // TODO: instead of checking the value, we can inquire the query whether the field is a pointer
                     // TODO: we could actually set the value in the placeholder, for whatever it could be useful
 
@@ -129,15 +115,12 @@ public class MakumbaELResolver extends ELResolver {
                     return mine;
                 }
 
-                if (current instanceof UIInstructions) {
+                if (current instanceof UINamingContainer) {
+                    // we are in a container like a ui:repeat or mak:list, which probably means we ae in a floating
+                    // expression
                     return list.convertToString(expr);
                 }
-                if (current instanceof ValueHolder && ((ValueHolder) current).getConverter() == null) {
-                    ValueExpression ev = current.getValueExpression("value");
-                    if (ev != null && ev.getExpressionString().indexOf(expr) != -1) {
-                        return list.convertToString(expr);
-                    }
-                }
+                // the PointerConverter should take over for other cases
                 Object value = list.getExpressionValue(expr);
                 System.out.println(debugIdent() + " " + base + "." + property + " ----> " + value + " in "
                         + current.getClientId());
@@ -231,17 +214,12 @@ public class MakumbaELResolver extends ELResolver {
         if (base instanceof ReadExpressionPathPlaceholder) {
 
             UIRepeatListComponent list = UIRepeatListComponent.getCurrentlyRunning();
-            if ("id".equals(property) && !(val instanceof Pointer)) {
-                val = MakumbaELResolver.resolvePointer((String) val,
-                    ((ReadExpressionPathPlaceholder) base).getProjectionPath() + "." + property, list);
-
-            }
             System.out.println(debugIdent() + " " + base + "." + property + " <------- " + val + " "
                     + current.getClientId());
 
             ReadExpressionPathPlaceholder p = (ReadExpressionPathPlaceholder) base;
 
-            list.addUpdateValue(p.getPointer(), new UpdateValue(p.getPointer(), p.getPath((String) property), val));
+            list.addUpdateValue(p.getPointer(), new UpdateValue(p.getPointer(), p.getPath((String) property), val, current.getClientId()));
             list.setExpressionValue(((ExpressionPathPlaceholder) base).getProjectionPath() + "." + property, val);
             context.setPropertyResolved(true);
         } else {
@@ -285,19 +263,5 @@ public class MakumbaELResolver extends ELResolver {
     public Class<?> getCommonPropertyType(ELContext context, Object base) {
         // TODO
         return null;
-    }
-
-    public static Pointer resolvePointer(String value, String expr, UIRepeatListComponent list) {
-
-        DataDefinition pointed = list.getExpressionType(expr).getPointedType();
-
-        try {
-            // JSF seems to require a SQLPointer... Maybe because the old value is of that class
-            Pointer ptr = new org.makumba.commons.SQLPointer(pointed.getName(),
-                    new Pointer(pointed.getName(), value).getId());
-            return ptr;
-        } catch (Throwable t) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, t.getMessage(), ""));
-        }
     }
 }
