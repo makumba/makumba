@@ -619,7 +619,8 @@ public class UIRepeatListComponent extends UIRepeat1 {
 
     private QueryProvider getQueryExecutionProvider() {
         return QueryProvider.makeQueryRunner(TransactionProvider.getInstance().getDefaultDataSourceName(),
-            getQueryLanguage());
+            getQueryLanguage(), FacesAttributes.getAttributes(FacesContext.getCurrentInstance()));
+
     }
 
     public String getQueryLanguage() {

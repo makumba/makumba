@@ -44,7 +44,7 @@ public class ApplicationListener implements SystemEventListener {
             for (Iterator<String> i = f.getLifecycleIds(); i.hasNext();) {
                 Lifecycle l = f.getLifecycle(i.next());
 
-                PhaseListener listListener = new ListPhaseListener();
+                PhaseListener listListener = new LogicPhaseListener();
                 l.removePhaseListener(listListener);
                 l.addPhaseListener(listListener);
 
