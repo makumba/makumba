@@ -1,6 +1,5 @@
 package org.makumba.jsf;
 
-import javax.el.ELException;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
@@ -90,11 +89,11 @@ public class FacesAttributes implements Attributes {
             return o;
         }
 
-        /*   o = checkELForAttribute(s);
-           if (o != RequestAttributes.notFound) {
-               return o;
-           }
-        */
+        o = checkELForAttribute(s);
+        if (o != RequestAttributes.notFound) {
+            return o;
+        }
+
         o = reqAttrs.checkLogicForAttribute(s);
         if (o != RequestAttributes.notFound) {
             return o;
@@ -129,7 +128,7 @@ public class FacesAttributes implements Attributes {
                 return RequestAttributes.notFound;
             }
             return ret;
-        } catch (ELException e) {
+        } catch (Exception e) {
             return RequestAttributes.notFound;
         }
     }
