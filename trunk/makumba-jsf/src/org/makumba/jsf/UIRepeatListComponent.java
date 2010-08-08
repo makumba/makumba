@@ -430,15 +430,6 @@ public class UIRepeatListComponent extends UIRepeat1 {
         }
     });
 
-    public void analyze() {
-        // this method is called only for root mak:lists, thus it would be good for triggering analysis and executing
-        // queries
-        // however for some reason it is called twice if APPLY_REQUEST_VALUES 2 PROCESS_VALIDATIONS 3 and
-        // UPDATE_MODEL_VALUES 4 are executed.
-        // thus analysis is now done in encodeAll() (i.e. at the latest possible moment)
-        // TODO: consider removing
-    }
-
     static void visitStaticTree(UIComponent target, VisitCallback c) {
         if (c.visit(null, target) == VisitResult.REJECT) {
             return;
