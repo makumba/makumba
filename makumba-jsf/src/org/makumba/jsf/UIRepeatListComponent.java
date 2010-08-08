@@ -21,9 +21,7 @@ import javax.faces.FacesException;
 import javax.faces.application.FacesMessage;
 import javax.faces.application.FacesMessage.Severity;
 import javax.faces.component.ContextCallback;
-import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
-import javax.faces.component.ValueHolder;
 import javax.faces.component.visit.VisitCallback;
 import javax.faces.component.visit.VisitContext;
 import javax.faces.component.visit.VisitResult;
@@ -106,8 +104,6 @@ public class UIRepeatListComponent extends UIRepeat1 {
     private static ThreadLocal<UIRepeatListComponent> currentList = new ThreadLocal<UIRepeatListComponent>();
 
     private static ThreadLocal<Stack<Dictionary<String, Object>>> currentDataStack = new ThreadLocal<Stack<Dictionary<String, Object>>>();
-
-    transient private HashMap<UIComponent, String> expressions;
 
     transient private DataDefinition projections;
 
@@ -331,48 +327,8 @@ public class UIRepeatListComponent extends UIRepeat1 {
         super.queueEvent(event);
     }
 
-    /**
-     * this is not used right now due to mojarra bug 1414
-     */
-    static VisitCallback addPointerConverters = new VisitCallback() {
-
-        @Override
-        public VisitResult visit(VisitContext context, UIComponent target) {
-            // TODO: this is just a stub, we need to detect whether target has a pointer expression
-            if (target.getClientId().endsWith("indivId")) {
-                ((ValueHolder) target).setConverter(new PointerConverter());
-            }
-            return VisitResult.ACCEPT;
-        }
-
-    };
-
-    VisitCallback validateInputs = new VisitCallback() {
-
-        @Override
-        public VisitResult visit(VisitContext context, UIComponent target) {
-            // TODO: this is just a stub, we need to detect whether target has a pointer expression
-            if (target instanceof EditableValueHolder) {
-                System.out.println(debugIdent() + " to validate: " + target.getClientId(context.getFacesContext())
-                        + " " + target.getValueExpression("value") + " "
-                        + ((EditableValueHolder) target).getLocalValue());
-
-                // TODO: detect if the ValueExpression is one of the mak:list projections
-                // TODO: validate the submitted value according to its type
-            }
-            return VisitResult.ACCEPT;
-        }
-
-    };
-
     @Override
     public void process(FacesContext context, PhaseId p) {
-        /*
-        if (p == PhaseId.RENDER_RESPONSE) {
-            // after they fix mojarra bug 1414, we may be able to do this
-            visitTree(VisitContext.createVisitContext(context), addPointerConverters);
-        }
-        */
 
         // log.fine(p + " " + composedQuery);
         if (!beforeIteration(p)) {
@@ -382,11 +338,6 @@ public class UIRepeatListComponent extends UIRepeat1 {
             super.process(context, p);
         } finally {
             afterIteration(p);
-
-            if (p == PhaseId.PROCESS_VALIDATIONS) {
-                // at this point the java validation was done, so we can do the makumba-specific one
-                visitTree(VisitContext.createVisitContext(context), validateInputs);
-            }
         }
     }
 
@@ -415,15 +366,6 @@ public class UIRepeatListComponent extends UIRepeat1 {
         Collection<String> c = context.getFacesContext().getPartialViewContext().getRenderIds();
         System.out.println(debugIdent() + " renderedIds " + c);
 
-        /*
-            // after they fix mojarra bug 1414, we may be able to do this
-            // though it may not be needed here, as it should be saved during initial render phase
-
-        if (callback != addPointerConverters
-                && (context.getFacesContext().getCurrentPhaseId() == PhaseId.PROCESS_VALIDATIONS || context.getFacesContext().getCurrentPhaseId() == PhaseId.PROCESS_VALIDATIONS)) {
-            visitTree(context, addPointerConverters);
-        }*/
-
         VisitCallback clbk = callback;
 
         // in restore_view we cannot run beforeIteration as we have no data
@@ -445,11 +387,6 @@ public class UIRepeatListComponent extends UIRepeat1 {
         } finally {
             afterIteration(callback);
 
-            // at this point the java validation was done, so we can do the makumba-specific one
-            if (callback != validateInputs
-                    && (context.getFacesContext().getCurrentPhaseId() == PhaseId.PROCESS_VALIDATIONS || context.getFacesContext().getCurrentPhaseId() == PhaseId.PROCESS_VALIDATIONS)) {
-                visitTree(context, validateInputs);
-            }
         }
 
     }
@@ -686,8 +623,6 @@ public class UIRepeatListComponent extends UIRepeat1 {
             // TODO: check whether the fields are ok!
 
         }
-
-        expressions.put(component, expr);
         composedQuery.checkProjectionInteger(expr);
     }
 
@@ -717,14 +652,25 @@ public class UIRepeatListComponent extends UIRepeat1 {
 
     public String convertToString(String expr) {
         int n = getExpressionIndex(expr);
-        return convertToString(expr, projections.getFieldDefinition(n), getExpressionValue(n));
+        return convertToString(projections.getFieldDefinition(n), getExpressionValue(n));
     }
 
-    private String convertToString(String expr, FieldDefinition fd, Object val) {
+    private String convertToString(FieldDefinition fd, Object val) {
         if (fd.getType().startsWith("ptr")) {
             return ((Pointer) val).toExternalForm();
         }
         return "" + val;
+    }
+
+    public Object convertAndValidateExpression(UIComponent component, Object value) {
+        String expr = component.getValueExpression("value").getExpressionString();
+        // take away #{ }
+        expr = expr.substring(2, expr.length() - 1).trim();
+
+        if (!this.hasExpression(expr)) {
+            return value;
+        }
+        return this.getExpressionType(expr).checkValue(value);
     }
 
     public FieldDefinition getExpressionType(String expr) {
@@ -748,7 +694,6 @@ public class UIRepeatListComponent extends UIRepeat1 {
     }
 
     void findExpressionsInChildren() {
-        expressions = new HashMap<UIComponent, String>();
         visitStaticTree(this, new VisitCallback() {
             @Override
             public VisitResult visit(VisitContext context, UIComponent target) {
