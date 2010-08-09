@@ -3,14 +3,13 @@ package org.makumba.jsf;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Dictionary;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Stack;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -42,7 +41,6 @@ import org.makumba.commons.ArrayMap;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.commons.RegExpUtils;
-import org.makumba.el.UpdateValue;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.ComposedSubquery;
 import org.makumba.list.engine.Grouper;
@@ -53,7 +51,7 @@ import org.makumba.providers.TransactionProvider;
 import com.sun.faces.facelets.compiler.UIInstructions;
 import com.sun.faces.facelets.component.UIRepeat1;
 
-public class UIRepeatListComponent extends UIRepeat1 {
+public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataComponent {
     static final Logger log = java.util.logging.Logger.getLogger("org.makumba.jsf");
 
     private static final class MakListDataModel extends ListDataModel<ArrayMap> implements Serializable {
@@ -226,29 +224,9 @@ public class UIRepeatListComponent extends UIRepeat1 {
 
     transient List<ArrayMap> iterationGroupData;
 
-    public transient Map<Pointer, Map<String, UpdateValue>> valuesSet = new HashMap<Pointer, Map<String, UpdateValue>>();
-
     public boolean isObject;
 
-    public Map<Pointer, Map<String, UpdateValue>> getUpdateValues() {
-        return this.valuesSet;
-    }
-
-    public void addUpdateValue(Pointer p, UpdateValue v) {
-        Map<String, UpdateValue> s = this.valuesSet.get(p);
-        if (s == null) {
-            this.valuesSet.put(p, s = new HashMap<String, UpdateValue>());
-        }
-        s.put(v.getPath(), v);
-    }
-
-    public UpdateValue getUpdateValue(Pointer p, String path) {
-        Map<String, UpdateValue> s = this.valuesSet.get(p);
-        if (s != null) {
-            return s.get(path);
-        }
-        return null;
-    }
+    private ComponentDataHandler componentDataHandler;
 
     private boolean beforeIteration(final Object o) {
         if (findMakListParent(this, true) == null) {
@@ -357,6 +335,21 @@ public class UIRepeatListComponent extends UIRepeat1 {
         } finally {
             afterIteration(event);
         }
+    }
+
+    @Override
+    public void encodeBegin(FacesContext context) throws IOException {
+        // for topology analysis
+        componentDataHandler.pushDataComponent(this);
+        super.encodeBegin(context);
+
+    }
+
+    @Override
+    public void encodeEnd(FacesContext context) throws IOException {
+        super.encodeEnd(context);
+        // for topology analysis
+        componentDataHandler.popDataComponent();
     }
 
     @Override
@@ -582,12 +575,10 @@ public class UIRepeatListComponent extends UIRepeat1 {
             qep = getQueryExecutionProvider();
         }
 
-        // TODO: this is temporary, like all valuesSet stuff
         if (validationFailed()) {
             System.out.println(debugIdent() + " -- not running query because of validation errors -- " + composedQuery);
             return;
         }
-        valuesSet.clear();
         try {
             System.out.println(debugIdent() + " --run-- " + composedQuery);
             listData = composedQuery.execute(qep, null, evaluator, offset, limit);
@@ -683,6 +674,8 @@ public class UIRepeatListComponent extends UIRepeat1 {
         if (!this.hasExpression(expr)) {
             return value;
         }
+
+        // FIXME validate
         return this.getExpressionType(expr).checkValue(value);
     }
 
@@ -881,6 +874,16 @@ public class UIRepeatListComponent extends UIRepeat1 {
 
     private UIRepeatListComponent findMakListParent() {
         return findMakListParent(UIRepeatListComponent.this, true);
+    }
+
+    @Override
+    public void setDataHandler(ComponentDataHandler handler) {
+        this.componentDataHandler = handler;
+    }
+
+    @Override
+    public String getKey() {
+        return this.getId();
     }
 
 }

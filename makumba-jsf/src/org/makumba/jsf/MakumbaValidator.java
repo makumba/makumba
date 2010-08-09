@@ -17,7 +17,7 @@ import javax.faces.validator.ValidatorException;
  * 
  * @author cristi
  */
-public class MakValidator implements Validator {
+public class MakumbaValidator implements Validator {
 
     @Override
     public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {

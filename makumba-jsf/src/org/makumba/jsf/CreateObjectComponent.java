@@ -1,7 +1,6 @@
 package org.makumba.jsf;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.faces.component.UIComponent;
@@ -14,7 +13,6 @@ import javax.faces.event.FacesEvent;
 import org.makumba.DataDefinition;
 import org.makumba.OQLParseError;
 import org.makumba.commons.RuntimeWrappedException;
-import org.makumba.el.CreateValue;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.ComposedSubquery;
 import org.makumba.providers.QueryAnalysis;
@@ -22,34 +20,28 @@ import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProvider;
 
-public class CreateObjectComponent extends UIComponentBase {
+public class CreateObjectComponent extends UIComponentBase implements MakumbaDataComponent {
 
     private String[] queryProps = new String[6];
+
+    private CreateObjectComponent parent;
 
     private ComposedQuery cQ;
 
     private QueryAnalysis qA;
 
-    public transient Map<DataDefinition, Map<String, CreateValue>> valuesSet = new HashMap<DataDefinition, Map<String, CreateValue>>();
+    private ComponentDataHandler componentDataHandler;
 
-    public Map<DataDefinition, Map<String, CreateValue>> getCreateValues() {
-        return this.valuesSet;
+    private static ThreadLocal<CreateObjectComponent> currentCreateObject = new ThreadLocal<CreateObjectComponent>();
+
+    @Override
+    public void setDataHandler(ComponentDataHandler handler) {
+        this.componentDataHandler = handler;
     }
 
-    public void addCreateValue(DataDefinition type, CreateValue v) {
-        Map<String, CreateValue> s = this.valuesSet.get(type);
-        if (s == null) {
-            this.valuesSet.put(type, s = new HashMap<String, CreateValue>());
-        }
-        s.put(v.getPath(), v);
-    }
-
-    public CreateValue getCreateValue(DataDefinition p, String path) {
-        Map<String, CreateValue> s = this.valuesSet.get(p);
-        if (s != null) {
-            return s.get(path);
-        }
-        return null;
+    @Override
+    public String getKey() {
+        return this.getId();
     }
 
     public String getFrom() {
@@ -80,52 +72,114 @@ public class CreateObjectComponent extends UIComponentBase {
 
     @Override
     public void broadcast(FacesEvent event) throws AbortProcessingException {
-        readQueryAnalysis();
-        super.broadcast(event);
+        beforeObject();
+        try {
+            super.broadcast(event);
+        } finally {
+            afterObject();
+        }
     }
 
     @Override
     public void encodeChildren(FacesContext context) throws IOException {
-        readQueryAnalysis();
-        super.encodeChildren(context);
+        beforeObject();
+        try {
+            super.encodeChildren(context);
+        } finally {
+            afterObject();
+        }
     }
 
     @Override
     public void processEvent(ComponentSystemEvent event) throws AbortProcessingException {
-        readQueryAnalysis();
-        super.processEvent(event);
+        beforeObject();
+        try {
+            super.processEvent(event);
+        } finally {
+            afterObject();
+        }
     }
 
     @Override
     public void encodeBegin(FacesContext context) throws IOException {
-        readQueryAnalysis();
+        beforeObject();
+        // for topology analysis
+        componentDataHandler.pushDataComponent(this);
         super.encodeBegin(context);
     }
 
     @Override
+    public void encodeEnd(FacesContext context) throws IOException {
+        try {
+            super.encodeEnd(context);
+        } finally {
+            afterObject();
+            // for topology analysis
+            componentDataHandler.popDataComponent();
+        }
+    }
+
+    @Override
     public void processUpdates(FacesContext context) {
-        readQueryAnalysis();
-        super.processUpdates(context);
+        beforeObject();
+        try {
+            super.processUpdates(context);
+        } finally {
+            afterObject();
+        }
     }
 
     @Override
     public void processValidators(FacesContext context) {
-        readQueryAnalysis();
-        super.processValidators(context);
+        beforeObject();
+        try {
+            super.processValidators(context);
+        } finally {
+            afterObject();
+        }
     }
 
-    private QueryAnalysis readQueryAnalysis() {
+    private QueryAnalysis initQueryAnalysis() {
         if (this.qA == null) {
             this.qA = computeQueryAnalysis();
         }
         return this.qA;
     }
 
-    private ComposedQuery readComposedQuery(UIRepeatListComponent parent) {
+    private ComposedQuery initComposedQuery(UIRepeatListComponent parent) {
         if (this.cQ == null) {
             this.cQ = computeComposedQuery(parent);
         }
         return this.cQ;
+    }
+
+    /**
+     * Sets the currently running {@link CreateObjectComponent} to this, saves its parent if any, and runs the query
+     * analysis for this component
+     */
+    private void beforeObject() {
+        parent = getCurrentlyRunning();
+        currentCreateObject.set(this);
+        initQueryAnalysis();
+    }
+
+    /**
+     * Sets the currently running {@link CreateObjectComponent} to the parent of this object
+     */
+    private void afterObject() {
+        currentCreateObject.set(parent);
+        componentDataHandler.popDataComponent();
+    }
+
+    /**
+     * Gets the currently running {@link CreateObjectComponent}, null if none is running. Indeed we can't always rely on
+     * the value returned by #{component} (i.e. on the JSF EL component stack) so we set our own.
+     * 
+     * @return the currently running {@link CreateObjectComponent}
+     */
+    public static CreateObjectComponent getCurrentlyRunning() {
+        return currentCreateObject.get();
+
     }
 
     /**
@@ -161,7 +215,7 @@ public class CreateObjectComponent extends UIComponentBase {
                     throw new RuntimeException(t);
                 } else {
                     // try to build a composed subquery together with our parent list
-                    readComposedQuery(parent);
+                    initComposedQuery(parent);
 
                     System.out.println(cQ.getTypeAnalyzerQuery());
 
@@ -217,7 +271,6 @@ public class CreateObjectComponent extends UIComponentBase {
         } else {
             return null;
         }
-
     }
 
 }

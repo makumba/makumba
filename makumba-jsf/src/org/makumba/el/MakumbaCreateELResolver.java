@@ -6,12 +6,11 @@ import java.util.logging.Logger;
 
 import javax.el.ELContext;
 import javax.el.ELResolver;
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.NoSuchFieldException;
+import org.makumba.jsf.ComponentDataHandler;
 import org.makumba.jsf.CreateObjectComponent;
 
 /**
@@ -28,6 +27,9 @@ import org.makumba.jsf.CreateObjectComponent;
  * @author manu
  */
 public class MakumbaCreateELResolver extends ELResolver {
+
+    private ComponentDataHandler handler;
+
     static final Logger log = java.util.logging.Logger.getLogger("org.makumba.el");
 
     private static ThreadLocal<Boolean> guard = new ThreadLocal<Boolean>() {
@@ -37,6 +39,10 @@ public class MakumbaCreateELResolver extends ELResolver {
             return false;
         }
     };
+
+    public MakumbaCreateELResolver(ComponentDataHandler handler) {
+        this.handler = handler;
+    }
 
     @Override
     public Object getValue(ELContext context, Object base, Object property) {
@@ -60,10 +66,10 @@ public class MakumbaCreateELResolver extends ELResolver {
 
             // is this a pointer?
             if (fd.isPointer()) {
-                log.finest("Returning value of expression " + parent.getProjectionPath() + "." + field
-                        + " as new expression " + p.toString());
                 p.setType(fd.getPointedType());
                 p.setPointer(true);
+                log.finest("Returning value of expression " + parent.getProjectionPath() + "." + field
+                        + " as new expression " + p.toString());
                 context.setPropertyResolved(true);
                 return p;
             } else {
@@ -156,15 +162,23 @@ public class MakumbaCreateELResolver extends ELResolver {
                 // we're in
                 return new CreateExpressionPathPlaceholder(object.getLabelTypes().get(property), (String) property);
             }
+            log.finest("Could not resolve base for property '" + property
+                    + "' because the parent object does not know about such a label");
         }
+        log.finest("Could not resolve base for property '" + property
+                + "' because no parent create object has been found");
+
         return null;
     }
 
     private CreateObjectComponent findParentObject() {
-        UIComponent c = FacesContext.getCurrentInstance().getApplication().evaluateExpressionGet(
-            FacesContext.getCurrentInstance(), "#{component}", UIComponent.class);
+        // this doesn't always work
+        // UIComponent c = FacesContext.getCurrentInstance().getApplication().evaluateExpressionGet(
+        // FacesContext.getCurrentInstance(), "#{component}", UIComponent.class);
+        // CreateObjectComponent object = CreateObjectComponent.findParentObject(c);
 
-        CreateObjectComponent object = CreateObjectComponent.findParentObject(c);
+        CreateObjectComponent object = CreateObjectComponent.getCurrentlyRunning();
+
         return object;
     }
 
@@ -215,13 +229,14 @@ public class MakumbaCreateELResolver extends ELResolver {
             CreateExpressionPathPlaceholder p = (CreateExpressionPathPlaceholder) base;
             CreateObjectComponent object = findParentObject();
             if (object != null) {
-                object.addCreateValue(p.getType(), new CreateValue(p.getType(), p.getPath((String) property), value));
+                handler.addInputValue(object,
+                    new InputValue(p.getType(), p.getPath((String) property), value, object.getId()));
             }
 
             context.setPropertyResolved(true);
 
             System.out.println("========= New value for new object of type " + p.getType().getName() + " for "
-                    + p.getProjectionPath() + "." + property + "<<<<<<<<<<<<< " + value);
+                    + p.getProjectionPath() + "." + property + " <<<<<<<<<<<<< " + value);
 
         }
 

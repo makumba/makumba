@@ -13,6 +13,7 @@ import javax.faces.context.FacesContext;
 
 import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
+import org.makumba.jsf.ComponentDataHandler;
 import org.makumba.jsf.UIRepeatListComponent;
 
 /**
@@ -26,10 +27,13 @@ import org.makumba.jsf.UIRepeatListComponent;
  * @author cristi
  */
 public class MakumbaELResolver extends ELResolver {
+
+    private ComponentDataHandler handler;
+
     static final Logger log = java.util.logging.Logger.getLogger("org.makumba.jsf.el");
 
-    public MakumbaELResolver() {
-
+    public MakumbaELResolver(ComponentDataHandler handler) {
+        this.handler = handler;
     }
 
     @Override
@@ -219,7 +223,8 @@ public class MakumbaELResolver extends ELResolver {
 
             ReadExpressionPathPlaceholder p = (ReadExpressionPathPlaceholder) base;
 
-            list.addUpdateValue(p.getPointer(), new UpdateValue(p.getPointer(), p.getPath((String) property), val, current.getClientId()));
+            handler.addInputValue(list, new InputValue(p.getPointer(), current.getId(), p.getPath((String) property),
+                    val));
             list.setExpressionValue(((ExpressionPathPlaceholder) base).getProjectionPath() + "." + property, val);
             context.setPropertyResolved(true);
         } else {
