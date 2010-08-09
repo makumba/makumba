@@ -1,15 +1,14 @@
 package org.makumba.jsf;
 
+import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Stack;
 
 import javax.el.ELException;
 import javax.faces.application.FacesMessage;
-import javax.faces.component.UIComponent;
-import javax.faces.component.visit.VisitCallback;
-import javax.faces.component.visit.VisitContext;
-import javax.faces.component.visit.VisitResult;
 import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseEvent;
 import javax.faces.event.PhaseId;
@@ -19,8 +18,8 @@ import org.makumba.DataDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
-import org.makumba.el.CreateValue;
-import org.makumba.el.UpdateValue;
+import org.makumba.commons.GraphTS;
+import org.makumba.el.InputValue;
 import org.makumba.providers.TransactionProvider;
 
 /**
@@ -29,111 +28,162 @@ import org.makumba.providers.TransactionProvider;
  * 
  * @author manu
  */
-public class ValueSavingPhaseListener implements PhaseListener {
+public class ValueSavingPhaseListener implements PhaseListener, ComponentDataHandler {
 
     private static final long serialVersionUID = 1L;
+
+    private ThreadLocal<Stack<MakumbaDataComponent>> dataComponentStack = new ThreadLocal<Stack<MakumbaDataComponent>>() {
+        @Override
+        protected java.util.Stack<MakumbaDataComponent> initialValue() {
+            return new Stack<MakumbaDataComponent>();
+        };
+    };
+
+    private ThreadLocal<GraphTS<String>> componentToplogyGraph = new ThreadLocal<GraphTS<String>>() {
+        @Override
+        protected GraphTS<String> initialValue() {
+            return new GraphTS<String>();
+        }
+    };
+
+    private ThreadLocal<HashMap<String, ArrayList<InputValue>>> valuesSet = new ThreadLocal<HashMap<String, ArrayList<InputValue>>>() {
+        @Override
+        protected HashMap<String, ArrayList<InputValue>> initialValue() {
+            return new HashMap<String, ArrayList<InputValue>>();
+        };
+    };
+
+    /* (non-Javadoc)
+     * @see org.makumba.jsf.DataHandler#pushDataComponent(org.makumba.jsf.MakumbaDataComponent)
+     */
+    @Override
+    public void pushDataComponent(MakumbaDataComponent c) {
+        Stack<MakumbaDataComponent> s = dataComponentStack.get();
+
+        MakumbaDataComponent parent = null;
+        if (!s.isEmpty()) {
+            parent = s.peek();
+        }
+        s.push(c);
+
+        // update the topology graph
+        componentToplogyGraph.get().addVertex(c.getKey());
+        if (parent != null) {
+            componentToplogyGraph.get().addEdge(c.getKey(), parent.getKey());
+        }
+
+    }
+
+    /* (non-Javadoc)
+     * @see org.makumba.jsf.DataHandler#popDataComponent()
+     */
+    @Override
+    public void popDataComponent() {
+        Stack<MakumbaDataComponent> s = dataComponentStack.get();
+        if (!s.isEmpty()) {
+            s.pop();
+        }
+    }
 
     @Override
     public void afterPhase(PhaseEvent event) {
 
-        FacesContext facesContext = event.getFacesContext();
-        facesContext.getViewRoot().visitTree(VisitContext.createVisitContext(facesContext), new VisitCallback() {
+        GraphTS<String> topologyGraph = this.componentToplogyGraph.get();
+        topologyGraph.topo();
+        System.out.println(topologyGraph.getSortedKeys());
 
-            @Override
-            public VisitResult visit(VisitContext context, UIComponent target) {
+        Transaction t = null;
 
-                if (target instanceof UIRepeatListComponent) {
-                    Map<Pointer, Map<String, UpdateValue>> values = ((UIRepeatListComponent) target).getUpdateValues();
+        try {
 
-                    if (values != null) {
+            // TODO handle list DB attribute
+            t = TransactionProvider.getInstance().getConnectionToDefault();
 
-                        Transaction t = null;
+            for (String componentKey : topologyGraph.getSortedKeys()) {
+                // we execute the actions inside of the context of one component, as this one has an impact on the order
+                // in which inserts and updates need to be executed
+                ArrayList<InputValue> values = this.valuesSet.get().get(componentKey);
+                if (values != null && values.size() > 0) {
 
-                        try {
+                    Map<DataDefinition, Dictionary<String, Object>> creates = new HashMap<DataDefinition, Dictionary<String, Object>>();
+                    Map<Pointer, Dictionary<String, Object>> updates = new HashMap<Pointer, Dictionary<String, Object>>();
 
-                            // TODO handle list DB attribute
-                            t = TransactionProvider.getInstance().getConnectionToDefault();
-
-                            for (Pointer p : values.keySet()) {
-                                Map<String, UpdateValue> u = values.get(p);
-
-                                Dictionary<String, Object> data = new Hashtable<String, Object>();
-                                for (UpdateValue v : u.values()) {
-                                    data.put(v.getPath(), v.getValue());
-                                }
-
-                                t.update(p, data);
-                            }
-
-                            ((UIRepeatListComponent) target).getUpdateValues().clear();
-                        } catch (Throwable e) {
-                            t.rollback();
-                            throw new RuntimeException(e);
-                        } finally {
-                            if (t != null) {
-                                t.close();
-                            }
-                        }
-
-                    }
-                }
-
-                if (target instanceof CreateObjectComponent) {
-                    Map<DataDefinition, Map<String, CreateValue>> values = ((CreateObjectComponent) target).getCreateValues();
-
-                    if (values != null) {
-
-                        Transaction t = null;
-
-                        try {
-
-                            // TODO handle list DB attribute
-                            t = TransactionProvider.getInstance().getConnectionToDefault();
-
-                            for (DataDefinition type : values.keySet()) {
-                                Map<String, CreateValue> u = values.get(type);
-
-                                Dictionary<String, Object> data = new Hashtable<String, Object>();
-                                for (CreateValue v : u.values()) {
-                                    data.put(v.getPath(), v.getValue());
-                                }
-
-                                t.insert(type.getName(), data);
-                            }
-
-                        } catch (InvalidValueException e) {
-                            t.rollback();
-                            // TODO: store the type (MDD) in the InvalidValueException
-                            // TODO: store the offending value in the IVE
-                            // TODO: from the type, and the field name, find the label.ptr.field that edits such a field
-                            // after that, find the clientId of the UIInput(s) that produced the value
-                            // for each such input, register a message
-
-                            // TODO: if the above is hard, at least include the clientId of the form, as below.
-                            FacesContext.getCurrentInstance().addMessage(null,
-                                new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage()));
-                            throw new ELException(e);
-                        } catch (Throwable e) {
-                            t.rollback();
-                            // TODO: we cannot detect which field provoked this, but we could insert the clientId of the
-                            // form
-                            FacesContext.getCurrentInstance().addMessage(null,
-                                new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage()));
-                            throw new ELException(e);
-                        } finally {
-                            if (t != null) {
-                                t.close();
-                            }
-                        }
-
+                    for (InputValue v : values) {
+                        // FIXME in full postback all update values are transmitted here
+                        // we should only update if the value did change
+                        treatValue(v, creates, updates);
                     }
 
-                }
+                    // execute the actions grouped by component
+                    // TODO invoke makumba BL here instead of doing the operation directly
 
-                return VisitResult.ACCEPT;
+                    for (DataDefinition key : creates.keySet()) {
+                        t.insert(key.getName(), creates.get(key));
+                    }
+                    for (Pointer key : updates.keySet()) {
+                        t.update(key, updates.get(key));
+                    }
+
+                    t.commit();
+                }
             }
-        });
 
+        } catch (InvalidValueException e) {
+            t.rollback();
+            // TODO: store the type (MDD) in the InvalidValueException
+            // TODO: store the offending value in the IVE
+            // TODO: from the type, and the field name, find the label.ptr.field that edits such a field
+            // after that, find the clientId of the UIInput(s) that produced the value
+            // for each such input, register a message
+
+            // TODO: if the above is hard, at least include the clientId of the form, as below.
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage()));
+            throw new ELException(e);
+        } catch (Throwable e) {
+            t.rollback();
+            // TODO: we cannot detect which field provoked this, but we could insert the clientId of the
+            // form
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage()));
+            throw new ELException(e);
+        } finally {
+            if (t != null) {
+                t.close();
+            }
+            dataComponentStack.get().clear();
+            componentToplogyGraph.get().init();
+            valuesSet.get().clear();
+        }
+
+    }
+
+    private void treatValue(InputValue v, Map<DataDefinition, Dictionary<String, Object>> creates,
+            Map<Pointer, Dictionary<String, Object>> updates) {
+        switch (v.getCommand()) {
+            case CREATE:
+
+                // group by type
+                Dictionary<String, Object> createData = creates.get(v.getType());
+                if (createData == null) {
+                    createData = new Hashtable<String, Object>();
+                    creates.put(v.getType(), createData);
+                }
+                createData.put(v.getPath(), v.getValue());
+
+                break;
+            case UPDATE:
+
+                // group by pointer
+                Dictionary<String, Object> updateData = updates.get(v.getPointer());
+                if (updateData == null) {
+                    updateData = new Hashtable<String, Object>();
+                    updateData.put(v.getPath(), v.getValue());
+                    updates.put(v.getPointer(), updateData);
+                }
+
+                break;
+        }
     }
 
     @Override
@@ -146,6 +196,17 @@ public class ValueSavingPhaseListener implements PhaseListener {
     @Override
     public PhaseId getPhaseId() {
         return PhaseId.UPDATE_MODEL_VALUES;
+    }
+
+    @Override
+    public void addInputValue(MakumbaDataComponent c, InputValue v) {
+        Map<String, ArrayList<InputValue>> values = this.valuesSet.get();
+        ArrayList<InputValue> list = values.get(c.getKey());
+        if (list == null) {
+            list = new ArrayList<InputValue>();
+            values.put(c.getKey(), list);
+        }
+        list.add(v);
     }
 
 }

@@ -1,45 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-	<!--
-		This file is not required if you don't need any extra configuration.
-	-->
+<!-- This file is not required if you don't need any extra configuration. -->
 <faces-config version="2.0" xmlns="http://java.sun.com/xml/ns/javaee"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="
       http://java.sun.com/xml/ns/javaee
       http://java.sun.com/xml/ns/javaee/web-facesconfig_2_0.xsd">
+    <!-- all configuration is wired in the ApplicationListener -->
 	<application>
-		<default-validators>
-			<validator-id>org.makumba.jsf.MakValidator</validator-id>
-		</default-validators>
-		<el-resolver>org.makumba.el.MakumbaCreateELResolver</el-resolver>
-		<el-resolver>org.makumba.el.MakumbaELResolver</el-resolver>
-		<component>
-			<component-type>makumbaList</component-type>
-			<component-class>org.makumba.jsf.UIRepeatListComponent</component-class>
-		</component>
-		<component>
-			<component-type>makumbaObject</component-type>
-			<component-class>org.makumba.jsf.UIRepeatListComponent</component-class>
-		</component>
-		<component>
-			<component-type>makumbaCreateObject</component-type>
-			<component-class>org.makumba.jsf.CreateObjectComponent</component-class>
-		</component>
-		<component>
-			<component-type>makumbaValue</component-type>
-			<component-class>org.makumba.jsf.ValueComponent</component-class>
-		</component>
+		<system-event-listener>
+			<system-event-class>javax.faces.event.PostConstructApplicationEvent</system-event-class>
+			<system-event-listener-class>org.makumba.jsf.ApplicationListener</system-event-listener-class>
+		</system-event-listener>
 	</application>
-	<validator>
-		<validator-id>org.makumba.jsf.MakValidator</validator-id>
-		<validator-class>org.makumba.jsf.MakValidator</validator-class>
-	</validator>
-	<converter>
-		<converter-class>org.makumba.jsf.PointerConverter</converter-class>
-		<converter-for-class>org.makumba.Pointer</converter-for-class>
-	</converter>
-	<lifecycle>
-		<phase-listener> org.makumba.jsf.LogicPhaseListener </phase-listener>
-		<phase-listener> org.makumba.jsf.ValueSavingPhaseListener</phase-listener>
-	</lifecycle>
 </faces-config>

@@ -36,6 +36,7 @@ public abstract class ExpressionPathPlaceholder {
         if ("id".equals(property)) {
             dotProp = "";
         }
+
         return this.fieldDotField.substring(1) + dotProp;
     }
 
