@@ -64,7 +64,7 @@ public class ParseStatus {
 
     protected PageCache pageCache = new PageCache();
 
-    GraphTS formGraph = new GraphTS();
+    GraphTS<MultipleKey> formGraph = new GraphTS<MultipleKey>();
 
     /**
      * Caches useful information for a tag in its TagData object and caches it in the pageCache.

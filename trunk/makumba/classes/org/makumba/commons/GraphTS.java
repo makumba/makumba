@@ -23,6 +23,10 @@
 
 package org.makumba.commons;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Vector;
+
 /**
  * Graph which can do a topological sort of its elements. In our case, the elements are MultipleKeys of form tags.
  * 
@@ -30,18 +34,26 @@ package org.makumba.commons;
  * @author Manuel Gay
  * @version $Id$
  */
-public class GraphTS {
+public class GraphTS<E> {
     private final int MAX_VERTS = 40;
 
-    private Vertex vertexList[]; // list of vertices
+    private Vertex<E> vertexList[]; // list of vertices
 
     private int matrix[][]; // adjacency matrix
 
     private int numVerts; // current number of vertices
 
-    private MultipleKey sortedArray[];
+    private Vector<E> sortedArray;
+
+    private Map<E, Integer> nodeNumbers;
 
     public GraphTS() {
+        init();
+    }
+
+    @SuppressWarnings("unchecked")
+    public void init() {
+        nodeNumbers = new HashMap<E, Integer>();
         vertexList = new Vertex[MAX_VERTS];
         matrix = new int[MAX_VERTS][MAX_VERTS];
         numVerts = 0;
@@ -50,15 +62,18 @@ public class GraphTS {
                 matrix[i][k] = 0;
             }
         }
-        sortedArray = new MultipleKey[MAX_VERTS]; // sorted vert labels
+        // due to java not accepting generic array creation, we use a vector, but we need to fill it with dummy data
+        // first
+        sortedArray = new Vector<E>(MAX_VERTS);
+        for (int i = 0; i < MAX_VERTS; i++) {
+            sortedArray.add(null);
+        }
     }
 
-    public void addVertex(char lab) {
-        vertexList[numVerts++] = new Vertex(lab);
-    }
-
-    public int addVertex(MultipleKey tagKey) {
-        vertexList[numVerts++] = new Vertex(tagKey);
+    public int addVertex(E key) {
+        int n = numVerts++;
+        vertexList[n] = new Vertex<E>(key);
+        nodeNumbers.put(key, n);
         return numVerts - 1;
     }
 
@@ -66,11 +81,26 @@ public class GraphTS {
         matrix[start][end] = 1;
     }
 
-    public void displayVertex(int v) {
-        System.out.print(vertexList[v].label);
+    public void addEdge(E start, E end) {
+        Integer s = nodeNumbers.get(start);
+        if (s == null) {
+            throw new RuntimeException("Node " + start + " was not added to graph");
+        }
+        Integer e = nodeNumbers.get(end);
+        if (e == null) {
+            throw new RuntimeException("Node " + end + " was not added to graph");
+        }
+        addEdge(s, e);
     }
 
-    public MultipleKey[] getSortedKeys() {
+    public void displayVertex(int v) {
+        System.out.print(vertexList[v].key);
+    }
+
+    public Vector<E> getSortedKeys() {
+        // due to our using of a vector, trim to the real size here to avoid giving out null elements
+        this.sortedArray.setSize(nodeNumbers.size());
+        this.sortedArray.trimToSize();
         return this.sortedArray;
     }
 
@@ -83,7 +113,7 @@ public class GraphTS {
                 return;
             }
             // insert vertex label in sorted array (start at end)
-            sortedArray[numVerts - 1] = vertexList[currentVertex].tagKey;
+            sortedArray.set(numVerts - 1, vertexList[currentVertex].key);
 
             deleteVertex(currentVertex); // delete vertex
         }
@@ -146,7 +176,7 @@ public class GraphTS {
     }
 
     public static void main(String[] args) {
-        GraphTS g = new GraphTS();
+        GraphTS<Character> g = new GraphTS<Character>();
         g.addVertex('A'); // 0
         g.addVertex('B'); // 1
         g.addVertex('C'); // 2
@@ -169,17 +199,11 @@ public class GraphTS {
     }
 }
 
-class Vertex {
-    protected char label;
+class Vertex<E> {
+    protected E key;
 
-    protected MultipleKey tagKey;
-
-    public Vertex(char lab) {
-        label = lab;
-    }
-
-    public Vertex(MultipleKey tagKey) {
-        this.tagKey = tagKey;
+    public Vertex(E key) {
+        this.key = key;
     }
 
 }
