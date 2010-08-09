@@ -1,4 +1,4 @@
-package org.makumba.el;
+package org.makumba.jsf.component.el;
 
 import org.makumba.jsf.component.UIRepeatListComponent;
 

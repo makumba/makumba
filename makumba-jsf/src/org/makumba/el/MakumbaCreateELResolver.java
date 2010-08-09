@@ -1,4 +1,4 @@
-package org.makumba.el;
+package org.makumba.jsf.component.el;
 
 import java.beans.FeatureDescriptor;
 import java.util.Iterator;
@@ -12,6 +12,7 @@ import org.makumba.FieldDefinition;
 import org.makumba.NoSuchFieldException;
 import org.makumba.jsf.ComponentDataHandler;
 import org.makumba.jsf.component.CreateObjectComponent;
+import org.makumba.jsf.update.InputValue;
 
 /**
  * {@link ELResolver} managing the creation of new makumba objects. It does so by:
@@ -30,7 +31,7 @@ public class MakumbaCreateELResolver extends ELResolver {
 
     private ComponentDataHandler handler;
 
-    static final Logger log = java.util.logging.Logger.getLogger("org.makumba.el");
+    static final Logger log = java.util.logging.Logger.getLogger("org.makumba.jsf.component.el");
 
     private static ThreadLocal<Boolean> guard = new ThreadLocal<Boolean>() {
 

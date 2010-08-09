@@ -1,4 +1,4 @@
-package org.makumba.el;
+package org.makumba.jsf.component.el;
 
 public abstract class ExpressionPathPlaceholder {
     // everything starts from a label
