@@ -16,8 +16,12 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.ConverterException;
 
 import org.makumba.Pointer;
+import org.makumba.jsf.component.UIRepeatListComponent;
 
 public class PointerConverter implements Converter, Serializable {
+
+    private static final long serialVersionUID = 3102266240167328526L;
+
     static final Logger log = java.util.logging.Logger.getLogger("org.makumba.jsf.ptrConvert");
 
     @Override

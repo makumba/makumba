@@ -1,4 +1,4 @@
-package org.makumba.jsf;
+package org.makumba.jsf.component;
 
 import javax.faces.component.UIComponent;
 import javax.faces.view.facelets.ComponentConfig;
@@ -51,7 +51,7 @@ public class ObjectTagHandler extends ComponentHandler {
         super.onComponentCreated(ctx, c, parent);
 
         if (!isCreateObject(getTag())) {
-            ((UIRepeatListComponent) c).isObject = true;
+            ((UIRepeatListComponent) c).setObject(true);
         }
 
     }

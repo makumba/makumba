@@ -9,6 +9,8 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.el.ValueBinding;
 
+import org.makumba.jsf.component.MakumbaDataComponent;
+
 @SuppressWarnings("deprecation")
 /**
  * Decorator for the JSF Application that sets a ComponentDataHandler on all MakumbaDataComponent-s
