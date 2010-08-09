@@ -1,4 +1,4 @@
-package org.makumba.jsf;
+package org.makumba.jsf.component;
 
 import javax.faces.view.facelets.ComponentConfig;
 import javax.faces.view.facelets.ComponentHandler;

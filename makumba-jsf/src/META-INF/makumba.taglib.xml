@@ -8,7 +8,7 @@
 
 	<function>
 		<function-name>expr</function-name>
-		<function-class>org.makumba.el.MakumbaFunctions</function-class>
+		<function-class>org.makumba.jsf.component.el.MakumbaFunctions</function-class>
 		<function-signature>java.lang.Object expr(java.lang.String)</function-signature>
 	</function>
 
@@ -17,7 +17,7 @@
 		<tag-name>list</tag-name>
 		<component>
 			<component-type>makumbaList</component-type>
-			<handler-class>org.makumba.jsf.ListTagHandler</handler-class>
+			<handler-class>org.makumba.jsf.component.ListTagHandler</handler-class>
 		</component>
 
 
@@ -110,7 +110,7 @@
 		<tag-name>object</tag-name>
 		<component>
 			<component-type>makumbaObject</component-type>
-			<handler-class>org.makumba.jsf.ObjectTagHandler</handler-class>
+			<handler-class>org.makumba.jsf.component.ObjectTagHandler</handler-class>
 		</component>
 
 		<attribute>
@@ -133,7 +133,7 @@
 		<tag-name>value</tag-name>
 		<component>
 			<component-type>makumbaValue</component-type>
-			<handler-class>org.makumba.jsf.ValueTagHandler</handler-class>
+			<handler-class>org.makumba.jsf.component.ValueTagHandler</handler-class>
 		</component>
 
 		<attribute>

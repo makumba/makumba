@@ -12,6 +12,8 @@ import javax.faces.context.FacesContext;
 import javax.faces.validator.Validator;
 import javax.faces.validator.ValidatorException;
 
+import org.makumba.jsf.component.UIRepeatListComponent;
+
 /**
  * Default validator for all makumba values
  * 

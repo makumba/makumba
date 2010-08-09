@@ -1,4 +1,4 @@
-package org.makumba.jsf;
+package org.makumba.jsf.component;
 
 import java.io.IOException;
 import java.util.Map;
@@ -13,13 +13,18 @@ import javax.faces.event.FacesEvent;
 import org.makumba.DataDefinition;
 import org.makumba.OQLParseError;
 import org.makumba.commons.RuntimeWrappedException;
+import org.makumba.jsf.ComponentDataHandler;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.ComposedSubquery;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
-import org.makumba.providers.TransactionProvider;
 
+/**
+ * Component that allows creation of new objects
+ * 
+ * @author manu
+ */
 public class CreateObjectComponent extends UIComponentBase implements MakumbaDataComponent {
 
     private String[] queryProps = new String[6];
@@ -247,12 +252,6 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
      */
     public Map<String, DataDefinition> getLabelTypes() {
         return this.qA.getLabelTypes();
-    }
-
-    // TODO refactor together with the list
-    private QueryProvider getQueryExecutionProvider() {
-        return QueryProvider.makeQueryRunner(TransactionProvider.getInstance().getDefaultDataSourceName(),
-            getQueryLanguage());
     }
 
     // TODO refactor together with the list

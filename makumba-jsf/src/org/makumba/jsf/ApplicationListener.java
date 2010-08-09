@@ -12,8 +12,9 @@ import javax.faces.event.SystemEventListener;
 import javax.faces.lifecycle.Lifecycle;
 import javax.faces.lifecycle.LifecycleFactory;
 
-import org.makumba.el.MakumbaCreateELResolver;
-import org.makumba.el.MakumbaELResolver;
+import org.makumba.jsf.component.el.MakumbaCreateELResolver;
+import org.makumba.jsf.component.el.MakumbaELResolver;
+import org.makumba.jsf.update.ValueSavingPhaseListener;
 
 /**
  * Application listener that registers a number of makumba-specific object programmatically so that we can define
@@ -65,10 +66,10 @@ public class ApplicationListener implements SystemEventListener {
             app.addELResolver(new MakumbaCreateELResolver(valueSavingListener));
 
             // components
-            app.addComponent("makumbaList", "org.makumba.jsf.UIRepeatListComponent");
-            app.addComponent("makumbaObject", "org.makumba.jsf.UIRepeatListComponent");
-            app.addComponent("makumbaCreateObject", "org.makumba.jsf.CreateObjectComponent");
-            app.addComponent("makumbaValue", "org.makumba.jsf.ValueComponent");
+            app.addComponent("makumbaList", "org.makumba.jsf.component.UIRepeatListComponent");
+            app.addComponent("makumbaObject", "org.makumba.jsf.component.UIRepeatListComponent");
+            app.addComponent("makumbaCreateObject", "org.makumba.jsf.component.CreateObjectComponent");
+            app.addComponent("makumbaValue", "org.makumba.jsf.component.ValueComponent");
         }
 
     }

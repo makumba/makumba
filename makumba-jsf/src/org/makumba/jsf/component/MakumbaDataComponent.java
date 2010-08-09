@@ -1,4 +1,6 @@
-package org.makumba.jsf;
+package org.makumba.jsf.component;
+
+import org.makumba.jsf.ComponentDataHandler;
 
 /**
  * A makumba component that performs data handling operations

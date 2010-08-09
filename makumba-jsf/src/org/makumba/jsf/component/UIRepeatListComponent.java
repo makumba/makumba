@@ -1,4 +1,4 @@
-package org.makumba.jsf;
+package org.makumba.jsf.component;
 
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -41,6 +41,8 @@ import org.makumba.commons.ArrayMap;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.commons.RegExpUtils;
+import org.makumba.jsf.ComponentDataHandler;
+import org.makumba.jsf.FacesAttributes;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.ComposedSubquery;
 import org.makumba.list.engine.Grouper;
@@ -55,6 +57,9 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
     static final Logger log = java.util.logging.Logger.getLogger("org.makumba.jsf");
 
     private static final class MakListDataModel extends ListDataModel<ArrayMap> implements Serializable {
+
+        private static final long serialVersionUID = 6764780265781314875L;
+
         transient UIRepeatListComponent makList;
 
         private MakListDataModel() {
@@ -105,8 +110,22 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
 
     transient private DataDefinition projections;
 
+    transient List<Integer> visitedIndexes = new ArrayList<Integer>();
+
+    transient int currentIndex = -1;
+
+    transient List<ArrayMap> iterationGroupData;
+
+    private boolean isObject;
+
+    private ComponentDataHandler componentDataHandler;
+
     public void setPrefix(String prefix) {
         this.prefix = prefix;
+    }
+
+    public void setObject(Boolean isObject) {
+        this.isObject = isObject;
     }
 
     // FLAGS, should be taken from configuration
@@ -205,7 +224,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         }
     }
 
-    static UIRepeatListComponent findMakListParent(UIComponent current, boolean objectToo) {
+    public static UIRepeatListComponent findMakListParent(UIComponent current, boolean objectToo) {
         UIComponent c = current.getParent();
         while (c != null && !(c instanceof UIRepeatListComponent)) {
             // TODO: honor also objectToo
@@ -217,16 +236,6 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
             return null;
         }
     }
-
-    transient List<Integer> visitedIndexes = new ArrayList<Integer>();
-
-    transient int currentIndex = -1;
-
-    transient List<ArrayMap> iterationGroupData;
-
-    public boolean isObject;
-
-    private ComponentDataHandler componentDataHandler;
 
     private boolean beforeIteration(final Object o) {
         if (findMakListParent(this, true) == null) {
@@ -410,6 +419,9 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
     }
 
     static int composedQueries = NamedResources.makeStaticCache("JSF ComposedQueries", new NamedResourceFactory() {
+
+        private static final long serialVersionUID = 6071679345211493029L;
+
         @Override
         public Object getHashObject(Object o) {
             return ((UIRepeatListComponent) o).getCacheKey();
