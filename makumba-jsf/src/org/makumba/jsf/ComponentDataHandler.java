@@ -1,7 +1,7 @@
 package org.makumba.jsf;
 
+import org.makumba.el.InputValue;
 import org.makumba.jsf.component.MakumbaDataComponent;
-import org.makumba.jsf.update.InputValue;
 
 /**
  * This interface defines the contract for registering values and components that contain these values within a
