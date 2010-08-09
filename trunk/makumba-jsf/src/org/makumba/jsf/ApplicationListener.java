@@ -12,8 +12,9 @@ import javax.faces.event.SystemEventListener;
 import javax.faces.lifecycle.Lifecycle;
 import javax.faces.lifecycle.LifecycleFactory;
 
-import org.makumba.el.MakumbaCreateELResolver;
-import org.makumba.el.MakumbaELResolver;
+import org.makumba.jsf.component.el.MakumbaCreateELResolver;
+import org.makumba.jsf.component.el.MakumbaELResolver;
+import org.makumba.jsf.update.ValueSavingPhaseListener;
 
 /**
  * Application listener that registers a number of makumba-specific object programmatically so that we can define

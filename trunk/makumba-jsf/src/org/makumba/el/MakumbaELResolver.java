@@ -1,4 +1,4 @@
-package org.makumba.el;
+package org.makumba.jsf.component.el;
 
 import java.beans.FeatureDescriptor;
 import java.util.Iterator;
@@ -15,6 +15,7 @@ import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
 import org.makumba.jsf.ComponentDataHandler;
 import org.makumba.jsf.component.UIRepeatListComponent;
+import org.makumba.jsf.update.InputValue;
 
 /**
  * FIXME for ptr projections such as #{p}, return something alike to Java's [Object@REFERENCE String instead of the
