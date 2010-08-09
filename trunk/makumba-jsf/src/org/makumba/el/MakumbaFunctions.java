@@ -1,6 +1,6 @@
 package org.makumba.el;
 
-import org.makumba.jsf.UIRepeatListComponent;
+import org.makumba.jsf.component.UIRepeatListComponent;
 
 /**
  * makumba EL functions

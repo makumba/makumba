@@ -14,7 +14,7 @@ import javax.faces.context.FacesContext;
 import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
 import org.makumba.jsf.ComponentDataHandler;
-import org.makumba.jsf.UIRepeatListComponent;
+import org.makumba.jsf.component.UIRepeatListComponent;
 
 /**
  * FIXME for ptr projections such as #{p}, return something alike to Java's [Object@REFERENCE String instead of the

@@ -11,7 +11,7 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.NoSuchFieldException;
 import org.makumba.jsf.ComponentDataHandler;
-import org.makumba.jsf.CreateObjectComponent;
+import org.makumba.jsf.component.CreateObjectComponent;
 
 /**
  * {@link ELResolver} managing the creation of new makumba objects. It does so by:
@@ -229,8 +229,8 @@ public class MakumbaCreateELResolver extends ELResolver {
             CreateExpressionPathPlaceholder p = (CreateExpressionPathPlaceholder) base;
             CreateObjectComponent object = findParentObject();
             if (object != null) {
-                handler.addInputValue(object,
-                    new InputValue(p.getType(), p.getPath((String) property), value, object.getId()));
+                handler.addInputValue(object, new InputValue(p.getType(), p.getPath((String) property), value,
+                        object.getId()));
             }
 
             context.setPropertyResolved(true);
