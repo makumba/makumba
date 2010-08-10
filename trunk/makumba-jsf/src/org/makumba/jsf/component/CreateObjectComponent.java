@@ -14,6 +14,8 @@ import org.makumba.DataDefinition;
 import org.makumba.OQLParseError;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.jsf.ComponentDataHandler;
+import org.makumba.jsf.update.InputValue;
+import org.makumba.jsf.update.ObjectInputValue;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.ComposedSubquery;
 import org.makumba.providers.QueryAnalysis;
@@ -30,6 +32,8 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
     private String[] queryProps = new String[6];
 
     private CreateObjectComponent parent;
+
+    private ObjectInputValue currentValues;
 
     private ComposedQuery cQ;
 
@@ -108,8 +112,6 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
     @Override
     public void encodeBegin(FacesContext context) throws IOException {
         beforeObject();
-        // for topology analysis
-        componentDataHandler.pushDataComponent(this);
         super.encodeBegin(context);
     }
 
@@ -119,8 +121,6 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
             super.encodeEnd(context);
         } finally {
             afterObject();
-            // for topology analysis
-            componentDataHandler.popDataComponent();
         }
     }
 
@@ -129,8 +129,13 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
         beforeObject();
         try {
             super.processUpdates(context);
+
+            // TODO pass the currentValues to the consumer
         } finally {
             afterObject();
+
+            // clean the values
+            currentValues = new ObjectInputValue();
         }
     }
 
@@ -173,7 +178,6 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
      */
     private void afterObject() {
         currentCreateObject.set(parent);
-        componentDataHandler.popDataComponent();
     }
 
     /**
@@ -270,6 +274,21 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
         } else {
             return null;
         }
+    }
+
+    @Override
+    public void addValue(String label, String path, Object value, String clientId) {
+        InputValue v = new InputValue(getLabelTypes().get(label), path, value, clientId);
+
+        if (currentValues == null) {
+            currentValues = new ObjectInputValue();
+        }
+        currentValues.addInputValue(v);
+    }
+
+    @Override
+    public boolean hasLabel(String label) {
+        return getLabelTypes().containsKey(label);
     }
 
 }

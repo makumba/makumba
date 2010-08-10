@@ -895,7 +895,19 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
 
     @Override
     public String getKey() {
-        return this.getId();
+        return this.getId() + this.currentIndex;
+    }
+
+    @Override
+    public void addValue(String label, String path, Object value, String clientId) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public boolean hasLabel(String label) {
+        // TODO Auto-generated method stub
+        return false;
     }
 
 }

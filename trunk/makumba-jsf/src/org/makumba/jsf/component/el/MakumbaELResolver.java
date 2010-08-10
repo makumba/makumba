@@ -14,8 +14,8 @@ import javax.faces.context.FacesContext;
 import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
 import org.makumba.jsf.ComponentDataHandler;
+import org.makumba.jsf.component.MakumbaDataComponent;
 import org.makumba.jsf.component.UIRepeatListComponent;
-import org.makumba.jsf.update.InputValue;
 
 /**
  * FIXME for ptr projections such as #{p}, return something alike to Java's [Object@REFERENCE String instead of the
@@ -223,10 +223,12 @@ public class MakumbaELResolver extends ELResolver {
                     + current.getClientId());
 
             ReadExpressionPathPlaceholder p = (ReadExpressionPathPlaceholder) base;
-
-            handler.addInputValue(list, new InputValue(p.getPointer(), current.getId(), p.getPath((String) property),
-                    val));
-            list.setExpressionValue(((ExpressionPathPlaceholder) base).getProjectionPath() + "." + property, val);
+            // FIXME return the clientId of the input, not the list
+            MakumbaDataComponent c = MakumbaDataComponent.Util.findLabelDefinitionComponent(list, p.getLabel());
+            c.addValue(p.getLabel(), p.getPath((String) property), val, current.getClientId());
+            // handler.addInputValue(list,
+            // new InputValue(p.getPointer(), list.getKey(), p.getPath((String) property), val));
+            // list.setExpressionValue(((ExpressionPathPlaceholder) base).getProjectionPath() + "." + property, val);
             context.setPropertyResolved(true);
         } else {
             System.out.println(debugIdent() + " not setting " + base + "." + property + " to " + val + " "
