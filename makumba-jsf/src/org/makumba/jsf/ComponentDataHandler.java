@@ -1,14 +1,15 @@
 package org.makumba.jsf;
 
-import org.makumba.jsf.update.InputValue;
 import org.makumba.jsf.component.MakumbaDataComponent;
+import org.makumba.jsf.update.InputValue;
+import org.makumba.jsf.update.ObjectInputValue;
 
 /**
  * This interface defines the contract for registering values and components that contain these values within a
  * component tree. Each {@link MakumbaDataComponent} should register itself via the
  * {@link ComponentDataHandler#popDataComponent()} and {@link ComponentDataHandler#popDataComponent()} methods.<br>
- * New values can be registered via the {@link ComponentDataHandler#addInputValue(MakumbaDataComponent, org.makumba.jsf.update.InputValue)}
- * method.
+ * New values can be registered via the
+ * {@link ComponentDataHandler#addInputValue(MakumbaDataComponent, org.makumba.jsf.update.InputValue)} method.
  * 
  * @see MakumbaDataComponent
  * @see org.makumba.jsf.update.InputValue
@@ -38,5 +39,7 @@ public interface ComponentDataHandler {
      *            the {@link org.makumba.jsf.update.InputValue} for creation
      */
     public void addInputValue(MakumbaDataComponent c, InputValue v);
+
+    public void addObjectInputValue(MakumbaDataComponent c, ObjectInputValue v);
 
 }

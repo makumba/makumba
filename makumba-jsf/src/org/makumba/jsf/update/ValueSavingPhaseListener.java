@@ -20,13 +20,11 @@ import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.commons.GraphTS;
 import org.makumba.jsf.ComponentDataHandler;
-import org.makumba.jsf.update.InputValue;
 import org.makumba.jsf.component.MakumbaDataComponent;
 import org.makumba.providers.TransactionProvider;
 
 /**
  * Phase listener that persists all updated and created values to the database.<br>
- * TODO topological sort<br>
  * 
  * @author manu
  */
@@ -34,10 +32,10 @@ public class ValueSavingPhaseListener implements PhaseListener, ComponentDataHan
 
     private static final long serialVersionUID = 1L;
 
-    private ThreadLocal<Stack<MakumbaDataComponent>> dataComponentStack = new ThreadLocal<Stack<MakumbaDataComponent>>() {
+    private ThreadLocal<Stack<String>> dataComponentStack = new ThreadLocal<Stack<String>>() {
         @Override
-        protected java.util.Stack<MakumbaDataComponent> initialValue() {
-            return new Stack<MakumbaDataComponent>();
+        protected java.util.Stack<String> initialValue() {
+            return new Stack<String>();
         };
     };
 
@@ -60,18 +58,19 @@ public class ValueSavingPhaseListener implements PhaseListener, ComponentDataHan
      */
     @Override
     public void pushDataComponent(MakumbaDataComponent c) {
-        Stack<MakumbaDataComponent> s = dataComponentStack.get();
+        Stack<String> s = dataComponentStack.get();
 
-        MakumbaDataComponent parent = null;
+        String parentKey = null;
         if (!s.isEmpty()) {
-            parent = s.peek();
+            parentKey = s.peek();
         }
-        s.push(c);
+        // we push the key and not the component to the stack as the getKey() may change (e.g. in the iterating list)
+        s.push(c.getKey());
 
         // update the topology graph
         componentToplogyGraph.get().addVertex(c.getKey());
-        if (parent != null) {
-            componentToplogyGraph.get().addEdge(c.getKey(), parent.getKey());
+        if (parentKey != null) {
+            componentToplogyGraph.get().addEdge(c.getKey(), parentKey);
         }
 
     }
@@ -81,7 +80,7 @@ public class ValueSavingPhaseListener implements PhaseListener, ComponentDataHan
      */
     @Override
     public void popDataComponent() {
-        Stack<MakumbaDataComponent> s = dataComponentStack.get();
+        Stack<String> s = dataComponentStack.get();
         if (!s.isEmpty()) {
             s.pop();
         }
@@ -209,6 +208,12 @@ public class ValueSavingPhaseListener implements PhaseListener, ComponentDataHan
             values.put(c.getKey(), list);
         }
         list.add(v);
+    }
+
+    @Override
+    public void addObjectInputValue(MakumbaDataComponent c, ObjectInputValue v) {
+        // TODO Auto-generated method stub
+
     }
 
 }

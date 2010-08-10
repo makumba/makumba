@@ -7,7 +7,9 @@ import org.makumba.Pointer;
 
 /**
  * This class represents a value set in an input field through an UEL expression and relating to a specific makumba type
- * or record.
+ * or record.<br>
+ * <br>
+ * FIXME remove command and other fields, see {@link ObjectInputValue}
  * 
  * @author manu
  */
@@ -35,6 +37,7 @@ public class InputValue implements Serializable {
     public InputValue(String path, Object value, String clientId) {
         this.path = path;
         this.value = value;
+        this.clientId = clientId;
     }
 
     public InputValue(DataDefinition type, String path, Object value, String clientId) {

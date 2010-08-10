@@ -12,7 +12,7 @@ import org.makumba.FieldDefinition;
 import org.makumba.NoSuchFieldException;
 import org.makumba.jsf.ComponentDataHandler;
 import org.makumba.jsf.component.CreateObjectComponent;
-import org.makumba.jsf.update.InputValue;
+import org.makumba.jsf.component.MakumbaDataComponent;
 
 /**
  * {@link ELResolver} managing the creation of new makumba objects. It does so by:
@@ -230,8 +230,11 @@ public class MakumbaCreateELResolver extends ELResolver {
             CreateExpressionPathPlaceholder p = (CreateExpressionPathPlaceholder) base;
             CreateObjectComponent object = findParentObject();
             if (object != null) {
-                handler.addInputValue(object, new InputValue(p.getType(), p.getPath((String) property), value,
-                        object.getId()));
+                // FIXME replace object.getClientId() by the actual input
+                MakumbaDataComponent c = MakumbaDataComponent.Util.findLabelDefinitionComponent(object, p.getLabel());
+                c.addValue(p.getLabel(), p.getPath((String) property), value, object.getClientId());
+                // handler.addInputValue(object, new InputValue(p.getType(), p.getPath((String) property), value,
+                // object.getKey()));
             }
 
             context.setPropertyResolved(true);
