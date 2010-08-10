@@ -64,7 +64,7 @@
 		<pathelement location="lib/core/commons-collections-3.2.jar" />
 		<pathelement location="lib/core/commons-lang-2.3.jar" />
 		<pathelement location="lib/core/mime-util.jar" />
-		<pathelement location="lib/core/c3p0-0.9.1.jar" />
+		<pathelement location="lib/core/c3p0-0.9.1.2.jar" />
 		<pathelement location="lib/core/commons-configuration-1.6.jar" />
 		<pathelement location="lib/core/commons-cli-1.2.jar" />
 		<pathelement location="lib/core/antlr-2.7.6.jar" />
@@ -101,7 +101,7 @@
 		</fileset>
 
 		<pathelement location="lib/core/antlr-2.7.6.jar" />
-		<pathelement location="lib/core/c3p0-0.9.1.jar" />
+		<pathelement location="lib/core/c3p0-0.9.1.2.jar" />
 		<pathelement location="lib/core/commons-cli-1.2.jar" />
 		<pathelement location="lib/core/commons-configuration-1.6.jar" />
 		<pathelement location="lib/core/commons-collections-3.2.jar" />
