@@ -13,7 +13,6 @@ import javax.faces.context.FacesContext;
 
 import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
-import org.makumba.jsf.ComponentDataHandler;
 import org.makumba.jsf.component.MakumbaDataComponent;
 import org.makumba.jsf.component.UIRepeatListComponent;
 
@@ -29,13 +28,7 @@ import org.makumba.jsf.component.UIRepeatListComponent;
  */
 public class MakumbaELResolver extends ELResolver {
 
-    private ComponentDataHandler handler;
-
     static final Logger log = java.util.logging.Logger.getLogger("org.makumba.jsf.el");
-
-    public MakumbaELResolver(ComponentDataHandler handler) {
-        this.handler = handler;
-    }
 
     @Override
     public Class<?> getType(ELContext context, Object base, Object property) {

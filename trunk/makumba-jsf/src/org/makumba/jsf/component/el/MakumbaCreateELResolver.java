@@ -10,7 +10,6 @@ import javax.el.ELResolver;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.NoSuchFieldException;
-import org.makumba.jsf.ComponentDataHandler;
 import org.makumba.jsf.component.CreateObjectComponent;
 import org.makumba.jsf.component.MakumbaDataComponent;
 
@@ -29,8 +28,6 @@ import org.makumba.jsf.component.MakumbaDataComponent;
  */
 public class MakumbaCreateELResolver extends ELResolver {
 
-    private ComponentDataHandler handler;
-
     static final Logger log = java.util.logging.Logger.getLogger("org.makumba.jsf.component.el");
 
     private static ThreadLocal<Boolean> guard = new ThreadLocal<Boolean>() {
@@ -40,10 +37,6 @@ public class MakumbaCreateELResolver extends ELResolver {
             return false;
         }
     };
-
-    public MakumbaCreateELResolver(ComponentDataHandler handler) {
-        this.handler = handler;
-    }
 
     @Override
     public Object getValue(ELContext context, Object base, Object property) {

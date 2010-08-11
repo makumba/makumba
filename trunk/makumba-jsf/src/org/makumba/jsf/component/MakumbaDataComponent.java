@@ -2,8 +2,9 @@ package org.makumba.jsf.component;
 
 import javax.faces.component.UIComponent;
 
-import org.makumba.jsf.ComponentDataHandler;
-import org.makumba.jsf.update.InputValue;
+import org.makumba.jsf.update.DataHandler;
+import org.makumba.jsf.update.ObjectInputValue;
+import org.makumba.list.engine.ComposedQuery;
 
 /**
  * A makumba component that performs data handling operations
@@ -15,7 +16,7 @@ public interface MakumbaDataComponent {
     /**
      * Sets the data handler that will take care of data saving
      */
-    public void setDataHandler(ComponentDataHandler handler);
+    public void setDataHandler(DataHandler handler);
 
     /**
      * Unique key of this component
@@ -24,7 +25,7 @@ public interface MakumbaDataComponent {
 
     /**
      * Adds a new value in the component tree. The component receiving this value is then responsible for adding it to
-     * the {@link InputValue} of the component declaring the base label of path.
+     * the {@link ObjectInputValue} of the component declaring the base label of path.
      * 
      * @param label
      *            the base label of this value
@@ -46,17 +47,19 @@ public interface MakumbaDataComponent {
      */
     public boolean hasLabel(String label);
 
+    public ComposedQuery getComposedQuery();
+
     class Util {
         public static MakumbaDataComponent findLabelDefinitionComponent(UIComponent current, String label) {
-            UIComponent parent = current.getParent();
+            UIComponent parent = current;
             while (parent != null) {
-                parent = parent.getParent();
                 if (parent instanceof MakumbaDataComponent) {
                     MakumbaDataComponent c = (MakumbaDataComponent) parent;
                     if (c.hasLabel(label)) {
                         return c;
                     }
                 }
+                parent = parent.getParent();
             }
             return null;
         }

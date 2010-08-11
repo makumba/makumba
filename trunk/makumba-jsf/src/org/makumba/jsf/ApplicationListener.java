@@ -14,6 +14,8 @@ import javax.faces.lifecycle.LifecycleFactory;
 
 import org.makumba.jsf.component.el.MakumbaCreateELResolver;
 import org.makumba.jsf.component.el.MakumbaELResolver;
+import org.makumba.jsf.update.DataHandler;
+import org.makumba.jsf.update.MakumbaDataHandler;
 import org.makumba.jsf.update.ValueSavingPhaseListener;
 
 /**
@@ -34,14 +36,16 @@ public class ApplicationListener implements SystemEventListener {
     public void processEvent(SystemEvent event) throws AbortProcessingException {
         if (event.getClass().equals(PostConstructApplicationEvent.class)) {
 
-            ValueSavingPhaseListener valueSavingListener = new ValueSavingPhaseListener();
+            DataHandler dH = new MakumbaDataHandler();
+
+            ValueSavingPhaseListener valueSavingListener = new ValueSavingPhaseListener(dH);
             LogicPhaseListener logicPhaseListener = new LogicPhaseListener();
 
             // replace the application with ours, which makes it possible to customize the way objects are created
             // JSF does not easily let you add custom ways of building the JSF object graph otherwise
             Application app = (Application) event.getSource();
             ApplicationFactory factory = (ApplicationFactory) FactoryFinder.getFactory(FactoryFinder.APPLICATION_FACTORY);
-            factory.setApplication(new MakumbaApplication(app, valueSavingListener));
+            factory.setApplication(new MakumbaApplication(app, dH));
 
             // register phase listeners
             LifecycleFactory f = (LifecycleFactory) FactoryFinder.getFactory(FactoryFinder.LIFECYCLE_FACTORY);
@@ -62,8 +66,8 @@ public class ApplicationListener implements SystemEventListener {
             app.addValidator("org.makumba.jsf.MakumbaValidator", "org.makumba.jsf.MakumbaValidator");
 
             // EL resolution - the order is important here, don't change it
-            app.addELResolver(new MakumbaELResolver(valueSavingListener));
-            app.addELResolver(new MakumbaCreateELResolver(valueSavingListener));
+            app.addELResolver(new MakumbaELResolver());
+            app.addELResolver(new MakumbaCreateELResolver());
 
             // components
             app.addComponent("makumbaList", "org.makumba.jsf.component.UIRepeatListComponent");
