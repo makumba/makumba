@@ -136,13 +136,8 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
         beforeObject();
         try {
             super.processUpdates(context);
-
-            // TODO pass the currentValues to the consumer
         } finally {
             afterObject();
-
-            // clean the values
-            currentValues.set(null);
         }
     }
 
@@ -154,6 +149,14 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
         } finally {
             afterObject();
         }
+    }
+
+    @Override
+    public void restoreState(FacesContext context, Object state) {
+        super.restoreState(context, state);
+
+        // clean the values
+        currentValues.set(null);
     }
 
     private QueryAnalysis initQueryAnalysis() {
@@ -198,7 +201,6 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
      */
     public static CreateObjectComponent getCurrentlyRunning() {
         return currentCreateObject.get();
-
     }
 
     /**
@@ -293,7 +295,11 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
     @Override
     public void addValue(String label, String path, Object value, String clientId) {
         InputValue v = new InputValue(value, clientId);
-        currentValues.get().addField(path, v);
+
+        // filter out null values that the EL resolver sometimes sets
+        if (value != null) {
+            currentValues.get().addField(path, v);
+        }
     }
 
     private ObjectInputValue initObjectInputValue() {
@@ -357,11 +363,6 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
             }
         }
         return oiv;
-    }
-
-    @Override
-    public boolean hasLabel(String label) {
-        return getLabelTypes().containsKey(label);
     }
 
     @Override
