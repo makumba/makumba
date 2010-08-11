@@ -226,8 +226,6 @@ public class MakumbaCreateELResolver extends ELResolver {
                 // FIXME replace object.getClientId() by the actual input
                 MakumbaDataComponent c = MakumbaDataComponent.Util.findLabelDefinitionComponent(object, p.getLabel());
                 c.addValue(p.getLabel(), p.getPath((String) property), value, object.getClientId());
-                // handler.addInputValue(object, new InputValue(p.getType(), p.getPath((String) property), value,
-                // object.getKey()));
             }
 
             context.setPropertyResolved(true);
