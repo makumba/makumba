@@ -139,7 +139,7 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
             afterObject();
 
             // clean the values
-            // currentValues.set(new ObjectInputValue());
+            currentValues.set(null);
         }
     }
 
