@@ -37,7 +37,7 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
 
     private CreateObjectComponent parent;
 
-    private ObjectInputValue currentValues;
+    private ThreadLocal<ObjectInputValue> currentValues = new ThreadLocal<ObjectInputValue>();
 
     private ComposedQuery cQ;
 
@@ -139,7 +139,7 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
             afterObject();
 
             // clean the values
-            currentValues = new ObjectInputValue();
+            // currentValues.set(new ObjectInputValue());
         }
     }
 
@@ -168,13 +168,16 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
     }
 
     /**
-     * Sets the currently running {@link CreateObjectComponent} to this, saves its parent if any, and runs the query
-     * analysis for this component
+     * Sets the currently running {@link CreateObjectComponent} to this, saves its parent if any, runs the query
+     * analysis for this component, and initialises the ObjectInputValue
      */
     private void beforeObject() {
         parent = getCurrentlyRunning();
         currentCreateObject.set(this);
         initQueryAnalysis();
+        if (currentValues.get() == null) {
+            currentValues.set(initObjectInputValue());
+        }
     }
 
     /**
@@ -290,18 +293,14 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
 
     @Override
     public void addValue(String label, String path, Object value, String clientId) {
+        System.out.println("__________ " + label + " " + path + " value");
         InputValue v = new InputValue(value, clientId);
 
-        if (currentValues == null) {
-            initObjectInputValue(label);
-
-        }
-        currentValues.addField(path, v);
+        currentValues.get().addField(path, v);
     }
 
-    private void initObjectInputValue(String label) {
-        currentValues = new ObjectInputValue();
-        currentValues.setLabel(label);
+    private ObjectInputValue initObjectInputValue() {
+        ObjectInputValue oiv = new ObjectInputValue();
 
         // analyze the FROM section of this object to figure out it's command type
         String from = queryProps[ComposedQuery.FROM];
@@ -311,7 +310,7 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
         String p = s[0];
         String l = s[1];
 
-        currentValues.setLabel(l);
+        oiv.setLabel(l);
 
         // case "general.Person p" --> NEW action, simple OIV with values
         DataDefinition t = null;
@@ -322,9 +321,10 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
         }
 
         if (t != null) {
-            currentValues.setCommand(ValueType.CREATE);
-            currentValues.setType(t);
-            dataHandlder.addSimpleObjectInputValue(currentValues);
+            oiv.setCommand(ValueType.CREATE);
+            oiv.setType(t);
+            dataHandlder.addSimpleObjectInputValue(oiv);
+            System.out.println("New CREATE " + t.getName() + " for label " + l);
 
         } else {
             // if we're not CREATE we should be ADD
@@ -344,23 +344,26 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
             DataDefinition baseLabelType = qA.getLabelType(baseLabel);
             FieldDefinition fd = baseLabelType.getFieldOrPointedFieldDefinition(fieldPath);
 
-            currentValues.setCommand(ValueType.ADD);
-            currentValues.setType(baseLabelType);
+            System.out.println("Trying add for " + p + ": " + baseLabelType.getName());
+
+            oiv.setCommand(ValueType.ADD);
+            oiv.setType(baseLabelType);
 
             switch (fd.getIntegerType()) {
                 case FieldDefinition._ptrOne:
                 case FieldDefinition._ptr:
-                    dataHandlder.addPointerObjectInputValue(currentValues, baseLabel, fieldPath);
+                    dataHandlder.addPointerObjectInputValue(oiv, baseLabel, fieldPath);
                     break;
                 case FieldDefinition._set:
                 case FieldDefinition._setComplex:
-                    dataHandlder.addSetObjectInputValue(currentValues, baseLabel, fieldPath);
+                    dataHandlder.addSetObjectInputValue(oiv, baseLabel, fieldPath);
                     break;
                 default:
                     throw new RuntimeException("Invalid FROM section for mak:object '" + from + "': '" + p
                             + "' should be a path to a relational type");
             }
         }
+        return oiv;
     }
 
     @Override
