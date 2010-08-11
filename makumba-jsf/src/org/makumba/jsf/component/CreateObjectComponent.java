@@ -55,11 +55,6 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
         this.dataHandlder = handler;
     }
 
-    @Override
-    public String getKey() {
-        return this.getId();
-    }
-
     public String getFrom() {
         return queryProps[ComposedQuery.FROM];
     }
