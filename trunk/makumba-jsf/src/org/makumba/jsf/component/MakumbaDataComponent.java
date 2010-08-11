@@ -38,30 +38,22 @@ public interface MakumbaDataComponent {
      */
     public void addValue(String label, String path, Object value, String clientId);
 
-    /**
-     * Whether this component knows a given label
-     * 
-     * @param label
-     *            a query label
-     * @return <code>true</code> if the component knows the label, <code>false</code> otherwise
-     */
-    public boolean hasLabel(String label);
-
     public ComposedQuery getComposedQuery();
 
     class Util {
         public static MakumbaDataComponent findLabelDefinitionComponent(UIComponent current, String label) {
             UIComponent parent = current;
+            MakumbaDataComponent candidate = null;
             while (parent != null) {
                 if (parent instanceof MakumbaDataComponent) {
                     MakumbaDataComponent c = (MakumbaDataComponent) parent;
-                    if (c.hasLabel(label)) {
-                        return c;
+                    if (c.getComposedQuery().getFromLabelTypes().containsKey(label)) {
+                        candidate = c;
                     }
                 }
                 parent = parent.getParent();
             }
-            return null;
+            return candidate;
         }
     }
 
