@@ -44,8 +44,13 @@ public class MakumbaDataHandler implements DataHandler {
         // add a placeholder InputValue to the ObjectInputValue of "label"
         // this placeholder will be used when inserting the ObjectInputValue "label", when the pointer to the record of
         // this ObjectInputValue will be known
-
         values.get().get(i).addField(field, new InputValue(v));
+
+        // keep a reference to the object that we'll add to
+        v.setAddReference(values.get().get(i));
+
+        // also set the field path
+        v.setAddFieldPath(field);
 
         // add this ObjectInputValue before the most recently inserted ObjectInputValue having as label the passed label
         values.get().add(i, v);
@@ -70,6 +75,9 @@ public class MakumbaDataHandler implements DataHandler {
         // record "label" will have been created
         v.setAddReference(values.get().get(i));
 
+        // also set the field path
+        v.setAddFieldPath(field);
+
         // we insert this ObjectInputValue at the bottom of the list
         addSimpleObjectInputValue(v);
 
@@ -88,7 +96,7 @@ public class MakumbaDataHandler implements DataHandler {
     private int findMostRecentlyAddedObjectInputValueIndex(String label) {
         int m = -1;
         for (int i = 0; i < values.get().size(); i++) {
-            if (values.get().get(i).equals(label)) {
+            if (values.get().get(i).getLabel().equals(label)) {
                 m = i;
             }
         }
@@ -134,7 +142,8 @@ public class MakumbaDataHandler implements DataHandler {
                                     break;
                                 case FieldDefinition._ptr:
                                     // insert the new record
-                                    Pointer newRecord = t.insert(v.getType().getName(), toDictionary(v.getFields()));
+                                    Pointer newRecord = t.insert(fd.getPointedType().getName(),
+                                        toDictionary(v.getFields()));
 
                                     // update our Pointer field so records having us as child will be able to find us
                                     v.setPointer(newRecord);
@@ -146,8 +155,6 @@ public class MakumbaDataHandler implements DataHandler {
                             }
                             break;
                     }
-
-                    t.commit();
 
                 } catch (InvalidValueException e) {
 
