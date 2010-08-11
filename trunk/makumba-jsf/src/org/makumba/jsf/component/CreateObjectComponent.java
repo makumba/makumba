@@ -2,6 +2,7 @@ package org.makumba.jsf.component;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIComponentBase;
@@ -32,6 +33,8 @@ import org.makumba.providers.QueryProvider;
  * @author manu
  */
 public class CreateObjectComponent extends UIComponentBase implements MakumbaDataComponent {
+
+    static final Logger log = java.util.logging.Logger.getLogger("org.makumba.jsf.component");
 
     private String[] queryProps = new String[6];
 
@@ -214,7 +217,6 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
             ComposedQuery q = computeComposedQuery();
             qA = qap.getQueryAnalysis(q.getComputedQuery());
             cQ = q;
-            System.out.println(qA.getLabelTypes());
         } catch (Throwable t) {
 
             // this really sucks, we should have a more uniform exception flow for the clients of QueryAnalysisProvider
@@ -233,11 +235,8 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
                 // try to build a composed subquery together with our parent list
                 initComposedQuery(parent);
 
-                System.out.println(cQ.getTypeAnalyzerQuery());
-
                 // analyze it
                 qA = qap.getQueryAnalysis(cQ.getTypeAnalyzerQuery());
-                System.out.println(qA.getLabelTypes());
             }
 
         }
@@ -293,9 +292,7 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
 
     @Override
     public void addValue(String label, String path, Object value, String clientId) {
-        System.out.println("__________ " + label + " " + path + " value");
         InputValue v = new InputValue(value, clientId);
-
         currentValues.get().addField(path, v);
     }
 
@@ -324,8 +321,6 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
             oiv.setCommand(ValueType.CREATE);
             oiv.setType(t);
             dataHandlder.addSimpleObjectInputValue(oiv);
-            System.out.println("New CREATE " + t.getName() + " for label " + l);
-
         } else {
             // if we're not CREATE we should be ADD
 
@@ -343,8 +338,6 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
 
             DataDefinition baseLabelType = qA.getLabelType(baseLabel);
             FieldDefinition fd = baseLabelType.getFieldOrPointedFieldDefinition(fieldPath);
-
-            System.out.println("Trying add for " + p + ": " + baseLabelType.getName());
 
             oiv.setCommand(ValueType.ADD);
             oiv.setType(baseLabelType);

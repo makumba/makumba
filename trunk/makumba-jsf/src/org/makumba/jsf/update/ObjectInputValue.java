@@ -88,4 +88,10 @@ public class ObjectInputValue {
         return fields;
     }
 
+    @Override
+    public String toString() {
+        return "ObjectInputValue [label=" + label + ", command=" + command + ", pointer=" + pointer + ", type=" + type
+                + ", addReference=" + addReference + ", addFieldPath=" + addFieldPath + "]";
+    }
+
 }
