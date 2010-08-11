@@ -1,7 +1,7 @@
 package org.makumba.jsf.update;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.makumba.DataDefinition;
 import org.makumba.Pointer;
@@ -10,18 +10,51 @@ public class ObjectInputValue {
 
     public enum ValueType {
         CREATE,
-        UPDATE
+        UPDATE,
+        ADD
     }
+
+    private String label;
 
     private ValueType command;
 
     private Pointer pointer;
 
-    private String clientId;
-
     private DataDefinition type;
 
-    private List<InputValue> inputValues = new ArrayList<InputValue>();
+    private Map<String, InputValue> fields = new HashMap<String, InputValue>();
+
+    private ObjectInputValue addReference;
+
+    private String addFieldPath;
+
+    public String getAddFieldPath() {
+        return addFieldPath;
+    }
+
+    public void setAddFieldPath(String fieldPath) {
+        this.addFieldPath = fieldPath;
+    }
+
+    public ObjectInputValue getAddReference() {
+        return addReference;
+    }
+
+    public void setAddReference(ObjectInputValue placeholder) {
+        this.addReference = placeholder;
+    }
+
+    public void setFields(Map<String, InputValue> fields) {
+        this.fields = fields;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
 
     public ValueType getCommand() {
         return command;
@@ -39,14 +72,6 @@ public class ObjectInputValue {
         this.pointer = pointer;
     }
 
-    public String getClientId() {
-        return clientId;
-    }
-
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
-    }
-
     public DataDefinition getType() {
         return type;
     }
@@ -55,12 +80,12 @@ public class ObjectInputValue {
         this.type = type;
     }
 
-    public void addInputValue(InputValue val) {
-        this.inputValues.add(val);
+    public void addField(String path, InputValue value) {
+        this.fields.put(path, value);
     }
 
-    public List<InputValue> getInputValues() {
-        return this.inputValues;
+    public Map<String, InputValue> getFields() {
+        return fields;
     }
 
 }

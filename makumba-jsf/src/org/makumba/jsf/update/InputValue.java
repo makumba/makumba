@@ -1,67 +1,22 @@
 package org.makumba.jsf.update;
 
-import java.io.Serializable;
+public class InputValue {
 
-import org.makumba.DataDefinition;
-import org.makumba.Pointer;
+    private Object value;
 
-/**
- * This class represents a value set in an input field through an UEL expression and relating to a specific makumba type
- * or record.<br>
- * <br>
- * FIXME remove command and other fields, see {@link ObjectInputValue}
- * 
- * @author manu
- */
-public class InputValue implements Serializable {
+    private String clientId;
 
-    private static final long serialVersionUID = 1L;
+    private boolean isPlaceholder;
 
-    public enum ValueType {
-        CREATE,
-        UPDATE
-    }
-
-    protected ValueType command;
-
-    protected String path;
-
-    protected Object value;
-
-    protected Pointer pointer;
-
-    protected String clientId;
-
-    protected DataDefinition type;
-
-    public InputValue(String path, Object value, String clientId) {
-        this.path = path;
+    public InputValue(Object value, String clientId) {
+        super();
         this.value = value;
         this.clientId = clientId;
     }
 
-    public InputValue(DataDefinition type, String path, Object value, String clientId) {
-        this(path, value, clientId);
-        this.type = type;
-        this.command = ValueType.CREATE;
-    }
-
-    public InputValue(Pointer pointer, String clientId, String path, Object value) {
-        this(path, value, clientId);
-        this.pointer = pointer;
-        this.command = ValueType.UPDATE;
-    }
-
-    public ValueType getCommand() {
-        return command;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
+    public InputValue(ObjectInputValue v) {
+        this.value = v;
+        isPlaceholder = true;
     }
 
     public Object getValue() {
@@ -72,27 +27,20 @@ public class InputValue implements Serializable {
         this.value = value;
     }
 
-    public Pointer getPointer() {
-        return pointer;
-    }
-
-    public void setPointer(Pointer pointer) {
-        this.pointer = pointer;
-    }
-
-    /**
-     * @return the id of the UIComponent (EditableValueHolder) that provoked this change
-     */
-    public String getId() {
+    public String getClientId() {
         return clientId;
     }
 
-    public DataDefinition getType() {
-        return type;
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
     }
 
-    public void setType(DataDefinition type) {
-        this.type = type;
+    public boolean isPlaceholder() {
+        return isPlaceholder;
+    }
+
+    public void setPlaceholder(boolean isPlaceholder) {
+        this.isPlaceholder = isPlaceholder;
     }
 
 }

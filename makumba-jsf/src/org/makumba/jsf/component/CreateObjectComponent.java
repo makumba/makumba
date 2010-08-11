@@ -11,13 +11,17 @@ import javax.faces.event.ComponentSystemEvent;
 import javax.faces.event.FacesEvent;
 
 import org.makumba.DataDefinition;
+import org.makumba.DataDefinitionNotFoundError;
+import org.makumba.FieldDefinition;
 import org.makumba.OQLParseError;
 import org.makumba.commons.RuntimeWrappedException;
-import org.makumba.jsf.ComponentDataHandler;
+import org.makumba.jsf.update.DataHandler;
 import org.makumba.jsf.update.InputValue;
 import org.makumba.jsf.update.ObjectInputValue;
+import org.makumba.jsf.update.ObjectInputValue.ValueType;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.ComposedSubquery;
+import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
@@ -39,13 +43,13 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
 
     private QueryAnalysis qA;
 
-    private ComponentDataHandler componentDataHandler;
+    private DataHandler dataHandlder;
 
     private static ThreadLocal<CreateObjectComponent> currentCreateObject = new ThreadLocal<CreateObjectComponent>();
 
     @Override
-    public void setDataHandler(ComponentDataHandler handler) {
-        this.componentDataHandler = handler;
+    public void setDataHandler(DataHandler handler) {
+        this.dataHandlder = handler;
     }
 
     @Override
@@ -156,7 +160,7 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
         return this.qA;
     }
 
-    private ComposedQuery initComposedQuery(UIRepeatListComponent parent) {
+    private ComposedQuery initComposedQuery(MakumbaDataComponent parent) {
         if (this.cQ == null) {
             this.cQ = computeComposedQuery(parent);
         }
@@ -204,35 +208,35 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
 
         // try directly
         try {
-            qA = qap.getQueryAnalysis("SELECT 1 FROM " + getFrom() + " WHERE " + getWhere());
+            ComposedQuery q = computeComposedQuery();
+            qA = qap.getQueryAnalysis(q.getComputedQuery());
+            cQ = q;
             System.out.println(qA.getLabelTypes());
         } catch (Throwable t) {
 
             // this really sucks, we should have a more uniform exception flow for the clients of QueryAnalysisProvider
-            if (t instanceof RuntimeWrappedException || t instanceof OQLParseError) {
+            if (t instanceof RuntimeWrappedException || t instanceof RuntimeException || t instanceof OQLParseError) {
                 if (t.getCause() instanceof OQLParseError) {
                     t = t.getCause();
                 } else {
                     throw new RuntimeException(t);
                 }
 
-                // try to recover by checking if we can find a parent list with which to combine
-                UIRepeatListComponent parent = UIRepeatListComponent.findMakListParent(this, true);
+                // try to recover by checking if we can find a parent list or create object with which to combine
+                MakumbaDataComponent parent = UIRepeatListComponent.findMakListParent(this, true);
                 if (parent == null) {
-                    // no parent, we are root
-                    // so we can't recover
-                    throw new RuntimeException(t);
-                } else {
-                    // try to build a composed subquery together with our parent list
-                    initComposedQuery(parent);
-
-                    System.out.println(cQ.getTypeAnalyzerQuery());
-
-                    // analyze it
-                    qA = qap.getQueryAnalysis(cQ.getTypeAnalyzerQuery());
-                    System.out.println(qA.getLabelTypes());
+                    parent = findParentObject(this);
                 }
+                // try to build a composed subquery together with our parent list
+                initComposedQuery(parent);
+
+                System.out.println(cQ.getTypeAnalyzerQuery());
+
+                // analyze it
+                qA = qap.getQueryAnalysis(cQ.getTypeAnalyzerQuery());
+                System.out.println(qA.getLabelTypes());
             }
+
         }
 
         if (qA != null) {
@@ -244,8 +248,16 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
         }
     }
 
-    private ComposedQuery computeComposedQuery(UIRepeatListComponent parent) {
-        ComposedQuery cq = new ComposedSubquery(this.queryProps, parent.composedQuery, this.getQueryLanguage(), true);
+    private ComposedQuery computeComposedQuery() {
+        ComposedQuery cq = new ComposedQuery(this.queryProps, this.getQueryLanguage());
+        cq.init();
+        cq.analyze();
+        return cq;
+    }
+
+    private ComposedQuery computeComposedQuery(MakumbaDataComponent parent) {
+        ComposedQuery cq = new ComposedSubquery(this.queryProps, parent.getComposedQuery(), this.getQueryLanguage(),
+                true);
         cq.init();
         cq.analyze();
         return cq;
@@ -278,17 +290,87 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
 
     @Override
     public void addValue(String label, String path, Object value, String clientId) {
-        InputValue v = new InputValue(getLabelTypes().get(label), path, value, clientId);
+        InputValue v = new InputValue(value, clientId);
 
         if (currentValues == null) {
-            currentValues = new ObjectInputValue();
+            initObjectInputValue(label);
+
         }
-        currentValues.addInputValue(v);
+        currentValues.addField(path, v);
+    }
+
+    private void initObjectInputValue(String label) {
+        currentValues = new ObjectInputValue();
+        currentValues.setLabel(label);
+
+        // analyze the FROM section of this object to figure out it's command type
+        String from = queryProps[ComposedQuery.FROM];
+
+        // FIXME more robust
+        String[] s = from.split(" ");
+        String p = s[0];
+        String l = s[1];
+
+        currentValues.setLabel(l);
+
+        // case "general.Person p" --> NEW action, simple OIV with values
+        DataDefinition t = null;
+        try {
+            t = DataDefinitionProvider.getInstance().getDataDefinition(p);
+        } catch (DataDefinitionNotFoundError dne) {
+            // ignore
+        }
+
+        if (t != null) {
+            currentValues.setCommand(ValueType.CREATE);
+            currentValues.setType(t);
+            dataHandlder.addSimpleObjectInputValue(currentValues);
+
+        } else {
+            // if we're not CREATE we should be ADD
+
+            // find base label
+            String baseLabel = "";
+            String fieldPath = "";
+            int n = p.indexOf(".");
+            if (n > 0) {
+                baseLabel = p.substring(0, n);
+                fieldPath = p.substring(n + 1, p.length());
+            } else {
+                throw new RuntimeException("Invalid FROM section for mak:object: '" + from + "': " + p
+                        + "should be either a valid type or a path to a relational type");
+            }
+
+            DataDefinition baseLabelType = qA.getLabelType(baseLabel);
+            FieldDefinition fd = baseLabelType.getFieldOrPointedFieldDefinition(fieldPath);
+
+            currentValues.setCommand(ValueType.ADD);
+            currentValues.setType(baseLabelType);
+
+            switch (fd.getIntegerType()) {
+                case FieldDefinition._ptrOne:
+                case FieldDefinition._ptr:
+                    dataHandlder.addPointerObjectInputValue(currentValues, baseLabel, fieldPath);
+                    break;
+                case FieldDefinition._set:
+                case FieldDefinition._setComplex:
+                    dataHandlder.addSetObjectInputValue(currentValues, baseLabel, fieldPath);
+                    break;
+                default:
+                    throw new RuntimeException("Invalid FROM section for mak:object '" + from + "': '" + p
+                            + "' should be a path to a relational type");
+            }
+        }
     }
 
     @Override
     public boolean hasLabel(String label) {
         return getLabelTypes().containsKey(label);
+    }
+
+    @Override
+    public ComposedQuery getComposedQuery() {
+        return this.cQ;
     }
 
 }

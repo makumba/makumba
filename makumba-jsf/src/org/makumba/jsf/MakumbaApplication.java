@@ -10,6 +10,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.el.ValueBinding;
 
 import org.makumba.jsf.component.MakumbaDataComponent;
+import org.makumba.jsf.update.DataHandler;
 
 @SuppressWarnings("deprecation")
 /**
@@ -21,16 +22,16 @@ public class MakumbaApplication extends ApplicationWrapper {
 
     private Application wrapped;
 
-    private ComponentDataHandler componentDataHandler;
+    private DataHandler dataHandler;
 
-    public MakumbaApplication(Application wrapped, ComponentDataHandler handler) {
+    public MakumbaApplication(Application wrapped, DataHandler handler) {
         this.wrapped = wrapped;
-        this.componentDataHandler = handler;
+        this.dataHandler = handler;
     }
 
     private UIComponent injectDataHanlder(UIComponent c) {
         if (c instanceof MakumbaDataComponent) {
-            ((MakumbaDataComponent) c).setDataHandler(componentDataHandler);
+            ((MakumbaDataComponent) c).setDataHandler(dataHandler);
         }
         return c;
     }

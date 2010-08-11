@@ -3,7 +3,6 @@ package org.makumba.jsf.component;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,8 +40,8 @@ import org.makumba.commons.ArrayMap;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.commons.RegExpUtils;
-import org.makumba.jsf.ComponentDataHandler;
 import org.makumba.jsf.FacesAttributes;
+import org.makumba.jsf.update.DataHandler;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.ComposedSubquery;
 import org.makumba.list.engine.Grouper;
@@ -118,7 +117,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
 
     private boolean isObject;
 
-    private ComponentDataHandler componentDataHandler;
+    private DataHandler dataHandler;
 
     public void setPrefix(String prefix) {
         this.prefix = prefix;
@@ -344,21 +343,6 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         } finally {
             afterIteration(event);
         }
-    }
-
-    @Override
-    public void encodeBegin(FacesContext context) throws IOException {
-        // for topology analysis
-        componentDataHandler.pushDataComponent(this);
-        super.encodeBegin(context);
-
-    }
-
-    @Override
-    public void encodeEnd(FacesContext context) throws IOException {
-        super.encodeEnd(context);
-        // for topology analysis
-        componentDataHandler.popDataComponent();
     }
 
     @Override
@@ -889,11 +873,6 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
     }
 
     @Override
-    public void setDataHandler(ComponentDataHandler handler) {
-        this.componentDataHandler = handler;
-    }
-
-    @Override
     public String getKey() {
         return this.getId() + this.currentIndex;
     }
@@ -908,6 +887,12 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
     public boolean hasLabel(String label) {
         // TODO Auto-generated method stub
         return false;
+    }
+
+    @Override
+    public void setDataHandler(DataHandler handler) {
+        this.dataHandler = handler;
+
     }
 
 }
