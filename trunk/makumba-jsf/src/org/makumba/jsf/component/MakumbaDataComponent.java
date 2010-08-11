@@ -19,11 +19,6 @@ public interface MakumbaDataComponent {
     public void setDataHandler(DataHandler handler);
 
     /**
-     * Unique key of this component
-     */
-    public String getKey();
-
-    /**
      * Adds a new value in the component tree. The component receiving this value is then responsible for adding it to
      * the {@link ObjectInputValue} of the component declaring the base label of path.
      * 
