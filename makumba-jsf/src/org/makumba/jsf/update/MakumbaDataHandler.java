@@ -21,6 +21,13 @@ public class MakumbaDataHandler implements DataHandler {
     static final Logger log = java.util.logging.Logger.getLogger("org.makumba.jsf.update");
 
     private ThreadLocal<ArrayList<ObjectInputValue>> values = new ThreadLocal<ArrayList<ObjectInputValue>>() {
+
+        @Override
+        public java.util.ArrayList<ObjectInputValue> get() {
+            System.out.println("**************** getting, " + super.get().toString());
+            return super.get();
+        }
+
         @Override
         protected ArrayList<ObjectInputValue> initialValue() {
             return new ArrayList<ObjectInputValue>();
