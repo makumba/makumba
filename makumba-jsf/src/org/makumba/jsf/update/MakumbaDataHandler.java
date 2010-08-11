@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.el.ELException;
 import javax.faces.application.FacesMessage;
@@ -17,6 +18,8 @@ import org.makumba.providers.TransactionProvider;
 
 public class MakumbaDataHandler implements DataHandler {
 
+    static final Logger log = java.util.logging.Logger.getLogger("org.makumba.jsf.update");
+
     private ThreadLocal<ArrayList<ObjectInputValue>> values = new ThreadLocal<ArrayList<ObjectInputValue>>() {
         @Override
         protected ArrayList<ObjectInputValue> initialValue() {
@@ -28,14 +31,15 @@ public class MakumbaDataHandler implements DataHandler {
      * @see org.makumba.jsf.update.DataHandler#addSimpleObjectInputValue(org.makumba.jsf.update.OIV)
      */
     public void addSimpleObjectInputValue(ObjectInputValue v) {
+        log.fine("Adding new simple OIV:" + v.toString());
         values.get().add(values.get().size(), v);
-
     }
 
     /* (non-Javadoc)
      * @see org.makumba.jsf.update.DataHandler#addPointerObjectInputValue(org.makumba.jsf.update.OIV, java.lang.String, java.lang.String)
      */
     public void addPointerObjectInputValue(ObjectInputValue v, String label, String field) {
+        log.fine("Adding new PTR OIV:" + v.toString() + " label: " + label + " field:" + field);
         int i = findMostRecentlyAddedObjectInputValueIndex(label);
         if (i < 0) {
             throw new RuntimeException("Invalid label encountred while adding ObjectInputValue: " + label);
@@ -64,6 +68,7 @@ public class MakumbaDataHandler implements DataHandler {
      * @see org.makumba.jsf.update.DataHandler#addSetObjectInputValue(org.makumba.jsf.update.OIV, java.lang.String, java.lang.String)
      */
     public void addSetObjectInputValue(ObjectInputValue v, String label, String field) {
+        log.fine("Adding new SET OIV:" + v.toString() + " label: " + label + " field:" + field);
 
         int i = findMostRecentlyAddedObjectInputValueIndex(label);
         if (i < 0) {
@@ -79,33 +84,15 @@ public class MakumbaDataHandler implements DataHandler {
         v.setAddFieldPath(field);
 
         // we insert this ObjectInputValue at the bottom of the list
-        addSimpleObjectInputValue(v);
+        values.get().add(values.get().size(), v);
 
         // when this ObjectInputValue will be treated, the base record will already have been inserted so set values can
         // be added
 
     }
 
-    /**
-     * Finds the most recently added ObjectInputValue in the list
-     * 
-     * @param label
-     *            the label of the OIV to find
-     * @return the index of the OIV with the largest index
-     */
-    private int findMostRecentlyAddedObjectInputValueIndex(String label) {
-        int m = -1;
-        for (int i = 0; i < values.get().size(); i++) {
-            if (values.get().get(i).getLabel().equals(label)) {
-                m = i;
-            }
-        }
-        return m;
-    }
-
     @Override
     public void process() {
-
         Transaction t = null;
 
         try {
@@ -178,21 +165,41 @@ public class MakumbaDataHandler implements DataHandler {
                         new FacesMessage(FacesMessage.SEVERITY_ERROR, tr.getMessage(), tr.getMessage()));
                     throw new ELException(tr);
                 }
-
             }
-
         } finally {
             if (t != null) {
                 t.close();
             }
-
             // clear everything
             values.get().clear();
-
         }
-
     }
 
+    /**
+     * Finds the most recently added ObjectInputValue in the list
+     * 
+     * @param label
+     *            the label of the OIV to find
+     * @return the index of the OIV with the largest index
+     */
+    private int findMostRecentlyAddedObjectInputValueIndex(String label) {
+        int m = -1;
+        for (int i = 0; i < values.get().size(); i++) {
+            if (values.get().get(i).getLabel().equals(label)) {
+                m = i;
+            }
+        }
+        return m;
+    }
+
+    /**
+     * Converts a value map into a dictionary, and replacing placeholders in the same time
+     * 
+     * @param fields
+     *            a map of field data
+     * @return a converted {@link Dictionary} to use with the makumba API, where placeholders are substituted with real
+     *         values
+     */
     private Dictionary<String, Object> toDictionary(Map<String, InputValue> fields) {
         Hashtable<String, Object> dic = new Hashtable<String, Object>();
         for (String key : fields.keySet()) {
