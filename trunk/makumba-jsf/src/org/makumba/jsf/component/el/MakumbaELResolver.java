@@ -176,11 +176,8 @@ public class MakumbaELResolver extends ELResolver {
                 return mine;
 
             } else {
-
-                boolean found = false;
                 for (String s : list.getProjections()) {
                     if (s.startsWith(mine.getProjectionPath())) {
-                        found = true;
                         context.setPropertyResolved(true);
                         // return the placeholder
                         return mine;
@@ -219,9 +216,6 @@ public class MakumbaELResolver extends ELResolver {
             // FIXME return the clientId of the input, not the list
             MakumbaDataComponent c = MakumbaDataComponent.Util.findLabelDefinitionComponent(list, p.getLabel());
             c.addValue(p.getLabel(), p.getPath((String) property), val, current.getClientId());
-            // handler.addInputValue(list,
-            // new InputValue(p.getPointer(), list.getKey(), p.getPath((String) property), val));
-            // list.setExpressionValue(((ExpressionPathPlaceholder) base).getProjectionPath() + "." + property, val);
             context.setPropertyResolved(true);
         } else {
             System.out.println(debugIdent() + " not setting " + base + "." + property + " to " + val + " "
