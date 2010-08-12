@@ -6,6 +6,8 @@ import java.util.logging.Logger;
 
 import javax.el.ELContext;
 import javax.el.ELResolver;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
@@ -225,7 +227,8 @@ public class MakumbaCreateELResolver extends ELResolver {
             if (object != null) {
                 // FIXME replace object.getClientId() by the actual input
                 MakumbaDataComponent c = MakumbaDataComponent.Util.findLabelDefinitionComponent(object, p.getLabel());
-                c.addValue(p.getLabel(), p.getPath((String) property), value, object.getClientId());
+                c.addValue(p.getLabel(), p.getPath((String) property), value, UIComponent.getCurrentComponent(
+                    FacesContext.getCurrentInstance()).getClientId());
             }
 
             context.setPropertyResolved(true);

@@ -33,8 +33,7 @@ public class MakumbaELResolver extends ELResolver {
     @Override
     public Class<?> getType(ELContext context, Object base, Object property) {
 
-        UIComponent current = (UIComponent) FacesContext.getCurrentInstance().getAttributes().get(
-            UIComponent.CURRENT_COMPONENT);
+        UIComponent current = UIComponent.getCurrentComponent(FacesContext.getCurrentInstance());
 
         // as per reference
         if (context == null) {
@@ -88,8 +87,7 @@ public class MakumbaELResolver extends ELResolver {
 
     @Override
     public Object getValue(ELContext context, Object base, Object property) {
-        UIComponent current = (UIComponent) FacesContext.getCurrentInstance().getAttributes().get(
-            UIComponent.CURRENT_COMPONENT);
+        UIComponent current = UIComponent.getCurrentComponent(FacesContext.getCurrentInstance());
 
         ReadExpressionPathPlaceholder mine = basicGetValue(context, base, property);
         if (mine == null) {
@@ -203,8 +201,7 @@ public class MakumbaELResolver extends ELResolver {
             throw new NullPointerException();
         }
 
-        UIComponent current = (UIComponent) FacesContext.getCurrentInstance().getAttributes().get(
-            UIComponent.CURRENT_COMPONENT);
+        UIComponent current = UIComponent.getCurrentComponent(FacesContext.getCurrentInstance());
 
         if (base instanceof ReadExpressionPathPlaceholder) {
 
