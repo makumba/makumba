@@ -61,6 +61,7 @@ public class ValueComponent extends UIComponentBase {
         }
         Object value = currentlyRunning.getExpressionValue(exprIndex);
         // writer.startElement("div", this);
+        // FIXME value can be null
         writer.writeText(value.toString(), null);
         // writer.endElement("div");
     }
