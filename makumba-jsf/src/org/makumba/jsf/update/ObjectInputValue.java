@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 
+import org.makumba.CompositeValidationException;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.InvalidValueException;
@@ -58,14 +59,40 @@ public abstract class ObjectInputValue {
         try {
             process(t);
         } catch (InvalidValueException e) {
-            FacesContext.getCurrentInstance().addMessage(clientIds.get(e.getFieldName()),
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage()));
+            treatInvalidValue(e);
+        } catch (CompositeValidationException f) {
+            for (InvalidValueException e : f.getExceptions()) {
+                treatInvalidValue(e);
+            }
         } catch (Throwable tr) {
             // TODO: we cannot detect which field provoked this, but we could insert the clientId of the
             // form
             FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_ERROR, tr.getMessage(), tr.getMessage()));
         }
+    }
+
+    private void treatInvalidValue(InvalidValueException e) {
+        FacesContext.getCurrentInstance().addMessage(findClientId(e.getFieldName()),
+            new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage()));
+    }
+
+    private String findClientId(String name) {
+
+        String s = clientIds.get(name);
+        if (s != null) {
+            return s;
+        }
+        // FIXME: this is a bug in the makumba db layer. when the field is indicated as indiv.surname, the invalid value
+        // error refers just to surname.
+        // this fix is only approximative because there may be fields that end with the same string
+        for (String p : clientIds.keySet()) {
+            if (p.endsWith(name)) {
+                return clientIds.get(p);
+            }
+        }
+        return null;
+
     }
 
     /** Factory method */
