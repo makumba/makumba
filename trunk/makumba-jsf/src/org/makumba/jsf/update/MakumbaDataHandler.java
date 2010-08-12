@@ -30,11 +30,12 @@ public class MakumbaDataHandler implements DataHandler {
 
         } finally {
             if (Util.validationFailed() && t != null) {
-                System.out.println("aborting due to errors");
+                System.out.println("aborting due to errors, use <h:messages /> if you can't see them");
                 for (FacesMessage m : FacesContext.getCurrentInstance().getMessageList()) {
                     System.out.println(m.getSummary());
                 }
                 t.rollback();
+                FacesContext.getCurrentInstance().renderResponse();
             }
             if (t != null) {
                 t.close();
