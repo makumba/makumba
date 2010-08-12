@@ -8,11 +8,11 @@
 	template="/WEB-INF/templates/default.xhtml">
 
 	<ui:define name="content">
-
+        <h:messages /> 
 		<h:form>
 			<mak:object from="test.Person p" where="p.indiv.name = 'NEW'">
 			
-				Name: <h:inputText value="#{p.indiv.name}" />
+				Name: <h:inputText id="name" value="#{p.indiv.name}" /> <h:message for="name"  errorClass="invalid" />
 
 			</mak:object>
 
