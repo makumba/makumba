@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -16,9 +18,8 @@ import java.util.regex.Pattern;
 
 import javax.el.ValueExpression;
 import javax.faces.FacesException;
-import javax.faces.application.FacesMessage;
-import javax.faces.application.FacesMessage.Severity;
 import javax.faces.component.ContextCallback;
+import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
 import javax.faces.component.visit.VisitCallback;
 import javax.faces.component.visit.VisitContext;
@@ -41,7 +42,10 @@ import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.commons.RegExpUtils;
 import org.makumba.jsf.FacesAttributes;
+import org.makumba.jsf.component.MakumbaDataComponent.Util;
 import org.makumba.jsf.update.DataHandler;
+import org.makumba.jsf.update.ObjectInputValue;
+import org.makumba.jsf.update.UpdateInputValue;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.ComposedSubquery;
 import org.makumba.list.engine.Grouper;
@@ -67,13 +71,12 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
 
         @Override
         public void setRowIndex(int rowIndex) {
+            super.setRowIndex(rowIndex);
             try {
                 makList.setRowIndex(rowIndex);
             } catch (NullPointerException e) {
                 // this only happens at construction
             }
-            super.setRowIndex(rowIndex);
-
         }
     }
 
@@ -118,6 +121,10 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
     private boolean isObject;
 
     private DataHandler dataHandler;
+
+    private List<String> editedLabels;
+
+    private Map<String, ObjectInputValue> editedValues;
 
     public void setPrefix(String prefix) {
         this.prefix = prefix;
@@ -209,11 +216,21 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
             // push new value:
             currentDataStack.get().push(currentData);
             // System.out.println(debugIdent() + " " + rowIndex + " " + iterationGroupData.size());
+            setCurrentLabelInputValues();
 
         } else {
             // System.out.println(debugIdent() + " " + rowIndex);
         }
 
+    }
+
+    private void setCurrentLabelInputValues() {
+        if (FacesContext.getCurrentInstance().getCurrentPhaseId() == PhaseId.UPDATE_MODEL_VALUES) {
+            editedValues = new HashMap<String, ObjectInputValue>();
+            for (String s : editedLabels) {
+                editedValues.put(s, new UpdateInputValue(dataHandler, s, (Pointer) this.getExpressionValue(s)));
+            }
+        }
     }
 
     protected void onlyOuterListArgument(String s) {
@@ -532,6 +549,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
                     true);
         }
         this.composedQuery.init();
+        this.editedLabels = new ArrayList<String>();
         this.findExpressionsInChildren();
         if (parent == null) {
             this.analyzeMakListGroup();
@@ -571,7 +589,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
             qep = getQueryExecutionProvider();
         }
 
-        if (validationFailed()) {
+        if (Util.validationFailed()) {
             System.out.println(debugIdent() + " -- not running query because of validation errors -- " + composedQuery);
             return;
         }
@@ -583,16 +601,6 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
                 qep.close();
             }
         }
-    }
-
-    /**
-     * there are many ways in which we can detect if validation was ok, so we isolate this method and improve it later
-     * 
-     * @return
-     */
-    static boolean validationFailed() {
-        Severity sev = FacesContext.getCurrentInstance().getMaximumSeverity();
-        return sev != null && FacesMessage.SEVERITY_ERROR.compareTo(sev) >= 0;
     }
 
     private QueryProvider getQueryExecutionProvider() {
@@ -607,13 +615,15 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
     }
 
     private void addExpression(UIComponent component, String expr, boolean canBeInvalid) {
+        // we compute a base label even if this expression may not be a.b.c.d
+        String label = expr;
+        int n = expr.indexOf(".");
+        if (n != -1) {
+            label = expr.substring(0, n);
+        }
+
         if (canBeInvalid) {
             // we assume here only expressions a.b.c.d
-            String label = expr;
-            int n = expr.indexOf(".");
-            if (n != -1) {
-                label = expr.substring(0, n);
-            }
             QueryAnalysis qa = getQueryAnalysis();
             if (qa.getLabelType(label) == null) {
                 // label unknown, we go out
@@ -624,6 +634,19 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
 
         }
         composedQuery.checkProjectionInteger(expr);
+
+        if (component instanceof EditableValueHolder) {
+            // we assume here only expressions a.b.c.d
+            MakumbaDataComponent c = MakumbaDataComponent.Util.findLabelDefinitionComponent(component, label);
+            if (c instanceof UIRepeatListComponent) {
+                ((UIRepeatListComponent) c).addEditedLabel(label);
+            }
+        }
+    }
+
+    private void addEditedLabel(String label) {
+        composedQuery.getProjectionIndex(label);
+        editedLabels.add(label);
     }
 
     private QueryAnalysis getQueryAnalysis() {
@@ -848,6 +871,9 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         this.listData = (Grouper) state[1];
         this.composedQuery = (ComposedQuery) state[2];
         this.projections = getQueryAnalysis().getProjectionType();
+        @SuppressWarnings("unchecked")
+        List<String> x = (List<String>) state[3];
+        this.editedLabels = x;
         getMakDataModel().makList = this;
     }
 
@@ -864,6 +890,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
 
         state[1] = listData;
         state[2] = composedQuery;
+        state[3] = editedLabels;
         // TODO: save other needed stuff
         return state;
     }
@@ -874,8 +901,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
 
     @Override
     public void addValue(String label, String path, Object value, String clientId) {
-        // TODO Auto-generated method stub
-
+        editedValues.get(label).addField(path, value, clientId);
     }
 
     @Override

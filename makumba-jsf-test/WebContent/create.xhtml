@@ -13,12 +13,12 @@
 			<mak:object from="test.Person p" where="p.indiv.name = 'NEW'">
 			
 				Name: <h:inputText value="#{p.indiv.name}" />
-				</mak:object>
+
 			</mak:object>
 
 			<h:commandButton value="submit" />
 
 		</h:form>
-		
+		<mak:list from="test.Person p">#{p.indiv.name},</mak:list>
 	</ui:define>
 </ui:composition>

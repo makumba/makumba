@@ -10,19 +10,15 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ComponentSystemEvent;
 import javax.faces.event.FacesEvent;
+import javax.faces.event.PhaseId;
 
 import org.makumba.DataDefinition;
-import org.makumba.DataDefinitionNotFoundError;
-import org.makumba.FieldDefinition;
 import org.makumba.OQLParseError;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.jsf.update.DataHandler;
-import org.makumba.jsf.update.InputValue;
 import org.makumba.jsf.update.ObjectInputValue;
-import org.makumba.jsf.update.ObjectInputValue.ValueType;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.ComposedSubquery;
-import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
@@ -40,19 +36,19 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
 
     private CreateObjectComponent parent;
 
-    private ThreadLocal<ObjectInputValue> currentValues = new ThreadLocal<ObjectInputValue>();
+    private ObjectInputValue currentValue;
 
     private ComposedQuery cQ;
 
     private QueryAnalysis qA;
 
-    private DataHandler dataHandlder;
+    private DataHandler dataHandler;
 
     private static ThreadLocal<CreateObjectComponent> currentCreateObject = new ThreadLocal<CreateObjectComponent>();
 
     @Override
     public void setDataHandler(DataHandler handler) {
-        this.dataHandlder = handler;
+        this.dataHandler = handler;
     }
 
     public String getFrom() {
@@ -149,9 +145,6 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
     @Override
     public void restoreState(FacesContext context, Object state) {
         super.restoreState(context, state);
-
-        // clean the values
-        currentValues.set(null);
     }
 
     private QueryAnalysis initQueryAnalysis() {
@@ -176,8 +169,8 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
         parent = getCurrentlyRunning();
         currentCreateObject.set(this);
         initQueryAnalysis();
-        if (currentValues.get() == null) {
-            currentValues.set(initObjectInputValue());
+        if (FacesContext.getCurrentInstance().getCurrentPhaseId() == PhaseId.UPDATE_MODEL_VALUES) {
+            initObjectInputValue();
         }
     }
 
@@ -186,6 +179,9 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
      */
     private void afterObject() {
         currentCreateObject.set(parent);
+        if (FacesContext.getCurrentInstance().getCurrentPhaseId() == PhaseId.UPDATE_MODEL_VALUES) {
+            currentValue = null;
+        }
     }
 
     /**
@@ -289,75 +285,29 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
 
     @Override
     public void addValue(String label, String path, Object value, String clientId) {
-        InputValue v = new InputValue(value, clientId);
-
         // filter out null values that the EL resolver sometimes sets
         if (value != null) {
-            currentValues.get().addField(path, v);
+            currentValue.addField(path, value, clientId);
         }
+        // FIXME: if the value is null, we might need to set it to Pointer.Nullxxx
     }
 
-    private ObjectInputValue initObjectInputValue() {
-        ObjectInputValue oiv = new ObjectInputValue();
-
+    private void initObjectInputValue() {
+        if (currentValue != null) {
+            return;
+        }
         // analyze the FROM section of this object to figure out it's command type
         String from = queryProps[ComposedQuery.FROM];
 
-        // FIXME more robust
+        // FIXME this only covers a few cases
+        // a more robust way is: get our label from the WHERE section
+        // then find the FROM section that declares our label by searching for the pattern a.b.c d, where d must be our
+        // label (if it's not, we ignore)
         String[] s = from.split(" ");
-        String p = s[0];
-        String l = s[1];
+        String definition = s[0];
+        String label = s[1];
 
-        oiv.setLabel(l);
-
-        // case "general.Person p" --> NEW action, simple OIV with values
-        DataDefinition t = null;
-        try {
-            t = DataDefinitionProvider.getInstance().getDataDefinition(p);
-        } catch (DataDefinitionNotFoundError dne) {
-            // ignore
-        }
-
-        if (t != null) {
-            oiv.setCommand(ValueType.CREATE);
-            oiv.setType(t);
-            dataHandlder.addSimpleObjectInputValue(oiv);
-        } else {
-            // if we're not CREATE we should be ADD
-
-            // find base label
-            String baseLabel = "";
-            String fieldPath = "";
-            int n = p.indexOf(".");
-            if (n > 0) {
-                baseLabel = p.substring(0, n);
-                fieldPath = p.substring(n + 1, p.length());
-            } else {
-                throw new RuntimeException("Invalid FROM section for mak:object: '" + from + "': " + p
-                        + "should be either a valid type or a path to a relational type");
-            }
-
-            DataDefinition baseLabelType = qA.getLabelType(baseLabel);
-            FieldDefinition fd = baseLabelType.getFieldOrPointedFieldDefinition(fieldPath);
-
-            oiv.setCommand(ValueType.ADD);
-            oiv.setType(baseLabelType);
-
-            switch (fd.getIntegerType()) {
-                case FieldDefinition._ptrOne:
-                case FieldDefinition._ptr:
-                    dataHandlder.addPointerObjectInputValue(oiv, baseLabel, fieldPath);
-                    break;
-                case FieldDefinition._set:
-                case FieldDefinition._setComplex:
-                    dataHandlder.addSetObjectInputValue(oiv, baseLabel, fieldPath);
-                    break;
-                default:
-                    throw new RuntimeException("Invalid FROM section for mak:object '" + from + "': '" + p
-                            + "' should be a path to a relational type");
-            }
-        }
-        return oiv;
+        currentValue = ObjectInputValue.makeCreationInputValue(dataHandler, label, definition);
     }
 
     @Override

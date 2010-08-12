@@ -28,15 +28,14 @@
             <td><h:inputText id="indi" value="#{p.indiv.id}" >
             </h:inputText>
             <h:message for="indi" errorClass="invalid" /></td>
-             -->
+             -->  
             <td><h:inputText id="surname" value="#{p.indiv.surname}" >
             </h:inputText>
             <h:message for="surname" errorClass="invalid" /></td>
 
-            <h:commandButton value="submit" />
+            <h:commandButton value="submit" action="ajax.jsf?faces-redirect=true"/>
                          
           </tr>
-
 
     </mak:list>
   </h:form>

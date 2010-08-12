@@ -1,6 +1,9 @@
 package org.makumba.jsf.component;
 
+import javax.faces.application.FacesMessage;
+import javax.faces.application.FacesMessage.Severity;
 import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
 
 import org.makumba.jsf.update.DataHandler;
 import org.makumba.jsf.update.ObjectInputValue;
@@ -49,6 +52,17 @@ public interface MakumbaDataComponent {
                 parent = parent.getParent();
             }
             return candidate;
+        }
+
+        /**
+         * there are many ways in which we can detect if validation was ok, so we isolate this method and improve it
+         * later
+         * 
+         * @return
+         */
+        static public boolean validationFailed() {
+            Severity sev = FacesContext.getCurrentInstance().getMaximumSeverity();
+            return sev != null && FacesMessage.SEVERITY_ERROR.compareTo(sev) >= 0;
         }
     }
 
