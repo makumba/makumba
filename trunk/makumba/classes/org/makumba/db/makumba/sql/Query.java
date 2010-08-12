@@ -213,11 +213,11 @@ public class Query implements org.makumba.db.makumba.Query {
             fieldList.append(insertHandler.getFieldDBName(string));
         }
 
-        String tablename = "temp_" + (int) (Math.random() * 10000.0);
+        SQLDBConnection sqldbc = (SQLDBConnection) dbc;
+        String tablename = "temp_" + sqldbc.n;
 
         String com = "INSERT INTO " + tablename + " ( " + fieldList + ") " + qG.getSQLQuery(db.getNameResolverHook());
         try {
-            SQLDBConnection sqldbc = (SQLDBConnection) dbc;
             resultHandler.create(sqldbc, tablename, true);
             PreparedStatement ps = sqldbc.getPreparedStatement(com);
             String s = assigner.assignParameters(ps, qG.toArgumentArray(args));
@@ -237,13 +237,19 @@ public class Query implements org.makumba.db.makumba.Query {
             if (m != n) {
                 throw new MakumbaError("inserted in temp " + n + " inserted in final " + m);
             }
-            Statement st = sqldbc.createStatement();
-            st.execute("DROP TABLE " + tablename);
-            st.close();
+
             ps.close();
             return n;
         } catch (SQLException e) {
             throw new org.makumba.DBError(e);
+        } finally {
+            try {
+                Statement st = sqldbc.createStatement();
+                st.execute("DROP TABLE " + tablename);
+                st.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
