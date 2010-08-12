@@ -42,7 +42,6 @@ import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.commons.RegExpUtils;
 import org.makumba.jsf.FacesAttributes;
-import org.makumba.jsf.component.MakumbaDataComponent.Util;
 import org.makumba.jsf.update.DataHandler;
 import org.makumba.jsf.update.ObjectInputValue;
 import org.makumba.jsf.update.UpdateInputValue;
