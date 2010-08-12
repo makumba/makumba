@@ -431,15 +431,6 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         }
     });
 
-    static void visitStaticTree(UIComponent target, VisitCallback c) {
-        if (c.visit(null, target) == VisitResult.REJECT) {
-            return;
-        }
-        for (UIComponent kid : target.getChildren()) {
-            visitStaticTree(kid, c);
-        }
-    }
-
     public void startMakListGroup(final Object o) {
 
         readComposedQuery();
@@ -513,7 +504,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
     }
 
     private void executeGroupQueries(final QueryProvider qep) {
-        visitStaticTree(this, new VisitCallback() {
+        Util.visitStaticTree(this, new VisitCallback() {
             @Override
             public VisitResult visit(VisitContext context, UIComponent target) {
                 if (target instanceof UIRepeatListComponent) {
@@ -557,7 +548,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
     }
 
     void analyzeMakListGroup() {
-        visitStaticTree(this, new VisitCallback() {
+        Util.visitStaticTree(this, new VisitCallback() {
             @Override
             public VisitResult visit(VisitContext context, UIComponent target) {
                 if (target != UIRepeatListComponent.this && target instanceof UIRepeatListComponent) {
@@ -714,7 +705,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
     }
 
     void findExpressionsInChildren() {
-        visitStaticTree(this, new VisitCallback() {
+        Util.visitStaticTree(this, new VisitCallback() {
             @Override
             public VisitResult visit(VisitContext context, UIComponent target) {
                 if (target instanceof UIRepeatListComponent && target != UIRepeatListComponent.this) {

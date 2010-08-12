@@ -6,14 +6,13 @@ import java.util.logging.Logger;
 
 import javax.el.ELContext;
 import javax.el.ELResolver;
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.NoSuchFieldException;
 import org.makumba.jsf.component.CreateObjectComponent;
 import org.makumba.jsf.component.MakumbaDataComponent;
+import org.makumba.jsf.component.MakumbaDataComponent.Util;
 
 /**
  * {@link ELResolver} managing the creation of new makumba objects. It does so by:
@@ -227,8 +226,8 @@ public class MakumbaCreateELResolver extends ELResolver {
             if (object != null) {
                 // FIXME replace object.getClientId() by the actual input
                 MakumbaDataComponent c = MakumbaDataComponent.Util.findLabelDefinitionComponent(object, p.getLabel());
-                c.addValue(p.getLabel(), p.getPath((String) property), value, UIComponent.getCurrentComponent(
-                    FacesContext.getCurrentInstance()).getClientId());
+                c.addValue(p.getLabel(), p.getPath((String) property), value, Util.findInput(object,
+                    p.getProjectionPath() + "." + property).getClientId());
             }
 
             context.setPropertyResolved(true);
