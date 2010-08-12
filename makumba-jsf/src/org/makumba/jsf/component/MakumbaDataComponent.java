@@ -2,7 +2,11 @@ package org.makumba.jsf.component;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.application.FacesMessage.Severity;
+import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
+import javax.faces.component.visit.VisitCallback;
+import javax.faces.component.visit.VisitContext;
+import javax.faces.component.visit.VisitResult;
 import javax.faces.context.FacesContext;
 
 import org.makumba.jsf.update.ObjectInputValue;
@@ -33,6 +37,8 @@ public interface MakumbaDataComponent {
     public ComposedQuery getComposedQuery();
 
     class Util {
+        private static final String ORG_MAKUMBA_JSF_INPUT = "org.makumba.jsf.input";
+
         public static MakumbaDataComponent findLabelDefinitionComponent(UIComponent current, String label) {
             UIComponent parent = current;
             MakumbaDataComponent candidate = null;
@@ -57,6 +63,50 @@ public interface MakumbaDataComponent {
         static public boolean validationFailed() {
             Severity sev = FacesContext.getCurrentInstance().getMaximumSeverity();
             return sev != null && FacesMessage.SEVERITY_ERROR.compareTo(sev) >= 0;
+        }
+
+        static boolean visitStaticTree(UIComponent target, VisitCallback c) {
+            VisitResult visit = c.visit(null, target);
+            if (visit == VisitResult.REJECT) {
+                return false;
+            }
+            if (visit == VisitResult.COMPLETE) {
+                return true;
+            }
+
+            for (UIComponent kid : target.getChildren()) {
+                if (visitStaticTree(kid, c)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static UIComponent findInput(final UIComponent base, final String expr) {
+            final String expr1 = "#{" + expr + "}";
+            // FIXME: this is a workaround for UIComponent.getCurrentComponent() which fails in full postback during
+            // update
+            visitStaticTree(base, new VisitCallback() {
+                @Override
+                public VisitResult visit(VisitContext context, UIComponent target) {
+                    if (target instanceof MakumbaDataComponent && target != base) {
+                        return VisitResult.REJECT;
+                    }
+                    if (target instanceof EditableValueHolder
+                            && target.getValueExpression("value").getExpressionString().equals(expr1)) {
+                        base.getAttributes().put(ORG_MAKUMBA_JSF_INPUT, target);
+                        return VisitResult.COMPLETE;
+                    }
+                    return VisitResult.ACCEPT;
+                }
+            });
+            UIComponent ret = (UIComponent) base.getAttributes().get(ORG_MAKUMBA_JSF_INPUT);
+            base.getAttributes().remove(ORG_MAKUMBA_JSF_INPUT);
+            if (ret == null) {
+                // we fall back to whatever there is
+                ret = UIComponent.getCurrentComponent(FacesContext.getCurrentInstance());
+            }
+            return ret;
         }
     }
 

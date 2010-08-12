@@ -15,6 +15,7 @@ import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
 import org.makumba.jsf.component.MakumbaDataComponent;
 import org.makumba.jsf.component.UIRepeatListComponent;
+import org.makumba.jsf.component.MakumbaDataComponent.Util;
 
 /**
  * FIXME for ptr projections such as #{p}, return something alike to Java's [Object@REFERENCE String instead of the
@@ -212,12 +213,14 @@ public class MakumbaELResolver extends ELResolver {
             ReadExpressionPathPlaceholder p = (ReadExpressionPathPlaceholder) base;
             // FIXME return the clientId of the input, not the list
             MakumbaDataComponent c = MakumbaDataComponent.Util.findLabelDefinitionComponent(list, p.getLabel());
-            c.addValue(p.getLabel(), p.getPath((String) property), val, current.getClientId());
+            String path = p.getProjectionPath() + "." + property;
+            c.addValue(p.getLabel(), p.getPath((String) property), val,
+                Util.findInput(list, path).getClientId());
 
             // changing the data model of the enclosing list
             // note that the data model of the list that actually defined this projection is not necessarily changed
             // but since the enclosing list is always asked for the value, that's ok
-            list.setExpressionValue(p.getProjectionPath() + "." + property, val);
+            list.setExpressionValue(path, val);
             context.setPropertyResolved(true);
         } else {
             System.out.println(debugIdent() + " not setting " + base + "." + property + " to " + val + " "
