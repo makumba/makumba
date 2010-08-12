@@ -17,6 +17,7 @@
 			<validator-id>org.makumba.jsf.MakumbaValidator</validator-id>
 
 		</default-validators>
+		<!--  warning: order of the EL Resolvers is important -->
 		<el-resolver>org.makumba.jsf.component.el.MakumbaELResolver</el-resolver>
 		<el-resolver>org.makumba.jsf.component.el.MakumbaCreateELResolver</el-resolver>
 		<component>
