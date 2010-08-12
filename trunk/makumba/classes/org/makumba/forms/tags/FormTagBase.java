@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
@@ -575,8 +576,9 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     /**
      * Lets the responder write the pre- and postamble for the form, and writes the bodyContent inside. Resets all the
-     * variables.<br/> FIXME: this method has a lot of code specific to subclasses, i.e. delete or search forms. It
-     * might be better to override this method in the subclasses
+     * variables.<br/>
+     * FIXME: this method has a lot of code specific to subclasses, i.e. delete or search forms. It might be better to
+     * override this method in the subclasses
      * 
      * @param pageCache
      *            the page cache of the current page
@@ -641,7 +643,8 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
             // retrieves the form dependency graph from the cache
             // this needs to be the last thing done, so we can retrieve the responder code safely
-            MultipleKey[] sortedForms = (MultipleKey[]) pageCache.retrieve(
+            @SuppressWarnings("unchecked")
+            Vector<MultipleKey> sortedForms = (Vector<MultipleKey>) pageCache.retrieve(
                 MakumbaJspAnalyzer.FORM_TAGS_DEPENDENCY_CACHE, MakumbaJspAnalyzer.FORM_TAGS_DEPENDENCY_CACHE);
 
             // form order - add the responders & form names
