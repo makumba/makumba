@@ -5,7 +5,6 @@ import javax.faces.application.FacesMessage.Severity;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 
-import org.makumba.jsf.update.DataHandler;
 import org.makumba.jsf.update.ObjectInputValue;
 import org.makumba.list.engine.ComposedQuery;
 
@@ -15,11 +14,6 @@ import org.makumba.list.engine.ComposedQuery;
  * @author manu
  */
 public interface MakumbaDataComponent {
-
-    /**
-     * Sets the data handler that will take care of data saving
-     */
-    public void setDataHandler(DataHandler handler);
 
     /**
      * Adds a new value in the component tree. The component receiving this value is then responsible for adding it to

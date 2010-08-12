@@ -15,7 +15,6 @@ import javax.faces.event.PhaseId;
 import org.makumba.DataDefinition;
 import org.makumba.OQLParseError;
 import org.makumba.commons.RuntimeWrappedException;
-import org.makumba.jsf.update.DataHandler;
 import org.makumba.jsf.update.ObjectInputValue;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.ComposedSubquery;
@@ -42,14 +41,7 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
 
     private QueryAnalysis qA;
 
-    private DataHandler dataHandler;
-
     private static ThreadLocal<CreateObjectComponent> currentCreateObject = new ThreadLocal<CreateObjectComponent>();
-
-    @Override
-    public void setDataHandler(DataHandler handler) {
-        this.dataHandler = handler;
-    }
 
     public String getFrom() {
         return queryProps[ComposedQuery.FROM];
@@ -307,7 +299,7 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
         String definition = s[0];
         String label = s[1];
 
-        currentValue = ObjectInputValue.makeCreationInputValue(dataHandler, label, definition);
+        currentValue = ObjectInputValue.makeCreationInputValue(label, definition);
     }
 
     @Override

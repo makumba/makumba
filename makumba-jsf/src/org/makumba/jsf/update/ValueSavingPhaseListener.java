@@ -13,26 +13,20 @@ public class ValueSavingPhaseListener implements PhaseListener {
 
     private static final long serialVersionUID = 2154307482562822044L;
 
-    private DataHandler d;
-
-    public ValueSavingPhaseListener(DataHandler d) {
-        this.d = d;
-    }
-
     @Override
-    public void afterPhase(PhaseEvent event) {
-        d.process();
+    public PhaseId getPhaseId() {
+        return PhaseId.UPDATE_MODEL_VALUES;
     }
 
     @Override
     public void beforePhase(PhaseEvent event) {
-        // TODO Auto-generated method stub
-
+        ObjectInputValue.dataHandler.set(new MakumbaDataHandler());
     }
 
     @Override
-    public PhaseId getPhaseId() {
-        return PhaseId.UPDATE_MODEL_VALUES;
+    public void afterPhase(PhaseEvent event) {
+        ObjectInputValue.dataHandler.get().process();
+        ObjectInputValue.dataHandler.remove();
     }
 
 }

@@ -42,9 +42,7 @@ import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.commons.RegExpUtils;
 import org.makumba.jsf.FacesAttributes;
-import org.makumba.jsf.update.DataHandler;
 import org.makumba.jsf.update.ObjectInputValue;
-import org.makumba.jsf.update.UpdateInputValue;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.ComposedSubquery;
 import org.makumba.list.engine.Grouper;
@@ -118,8 +116,6 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
     transient List<ArrayMap> iterationGroupData;
 
     private boolean isObject;
-
-    private DataHandler dataHandler;
 
     private List<String> editedLabels;
 
@@ -227,7 +223,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         if (FacesContext.getCurrentInstance().getCurrentPhaseId() == PhaseId.UPDATE_MODEL_VALUES) {
             editedValues = new HashMap<String, ObjectInputValue>();
             for (String s : editedLabels) {
-                editedValues.put(s, new UpdateInputValue(dataHandler, s, (Pointer) this.getExpressionValue(s)));
+                editedValues.put(s, ObjectInputValue.makeUpdateInputValue(s, (Pointer) this.getExpressionValue(s)));
             }
         }
     }
@@ -901,12 +897,6 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
     @Override
     public void addValue(String label, String path, Object value, String clientId) {
         editedValues.get(label).addField(path, value, clientId);
-    }
-
-    @Override
-    public void setDataHandler(DataHandler handler) {
-        this.dataHandler = handler;
-
     }
 
 }

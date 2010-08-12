@@ -18,6 +18,8 @@ import org.makumba.providers.DataDefinitionProvider;
 
 public abstract class ObjectInputValue {
 
+    static ThreadLocal<DataHandler> dataHandler = new ThreadLocal<DataHandler>();
+
     protected ObjectInputValue(DataHandler dh, String label) {
         this(dh, label, null);
     }
@@ -95,8 +97,12 @@ public abstract class ObjectInputValue {
 
     }
 
+    public static ObjectInputValue makeUpdateInputValue(String label, Pointer ptr) {
+        return new UpdateInputValue(dataHandler.get(), label, ptr);
+    }
+
     /** Factory method */
-    public static ObjectInputValue makeCreationInputValue(DataHandler dataHandler, String label, String definition) {
+    public static ObjectInputValue makeCreationInputValue(String label, String definition) {
         DataDefinition t = null;
         try {
             t = DataDefinitionProvider.getInstance().getDataDefinition(definition);
@@ -105,7 +111,7 @@ public abstract class ObjectInputValue {
         }
 
         if (t != null) {
-            return new CreateInputValue(dataHandler, label, t);
+            return new CreateInputValue(dataHandler.get(), label, t);
         } else {
             // find base label
             String baseLabel = null;
@@ -119,7 +125,7 @@ public abstract class ObjectInputValue {
                 throw new RuntimeException("should not be here");
             }
 
-            return ReferenceInputValue.makeReferenceObjectInputValue(dataHandler, label, baseLabel, fieldPath);
+            return ReferenceInputValue.makeReferenceObjectInputValue(dataHandler.get(), label, baseLabel, fieldPath);
         }
 
     }
