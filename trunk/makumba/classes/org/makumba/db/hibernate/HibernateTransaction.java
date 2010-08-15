@@ -5,10 +5,12 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.hibernate.CacheMode;
@@ -36,6 +38,8 @@ import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.query.Pass1ASTPrinter;
 import org.makumba.providers.query.hql.HqlAnalyzer;
+
+import antlr.collections.AST;
 
 /**
  * Hibernate-specific implementation of a {@link Transaction}
@@ -274,29 +278,40 @@ public class HibernateTransaction extends TransactionImplementation {
 
     public Vector<Dictionary<String, Object>> execute(String query, Object args, int offset, int limit) {
         MakumbaSystem.getLogger("hibernate.query").fine("Executing hibernate query " + query);
-        QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer("hql");
+        String originalQuery = query;
 
+        QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer("oql");
+
+        // analyze the query with MQL!
         QueryAnalysis analyzer = qap.getQueryAnalysis(query);
-        query = Pass1ASTPrinter.printAST(analyzer.getPass1Tree()).toString();
+        // new ASTPrinter(HqlTokenTypes.class).showAst(analyzer.getPass1Tree(), new PrintWriter(System.out));
+
+        // add .id and .enum_ wherever needed
+        AST transformed = qap.addIdsToPointerProjections(analyzer.getPass1Tree());
+
+        // transform $1 into param0, $2 into param1 etc
+        // this was invoked already by the MQL parser but not with a null parameter
+        // also transformOQL was invoked
+        QueryAnalysisProvider.transformOQLParameters(transformed, null);
+
+        // replace RANGE with JOIN when the type is not an MDD name
+        // TODO: the MQL analyzer generates left join by default, for now this method does the sme
+        transformed = qap.range2Join(transformed);
+
+        // now we are ready to print the query so hibernate can execute it
+        query = Pass1ASTPrinter.printAST(transformed).toString();
+        //System.out.println(query);
 
         DataDefinition dataDef = analyzer.getProjectionType();
         DataDefinition paramsDef = analyzer.getParameterTypes();
 
-        // check the query for correctness (we do not allow "select p from Person p", only "p.id")
-        for (int i = 0; i < dataDef.getFieldNames().size(); i++) {
-            FieldDefinition fd = dataDef.getFieldDefinition(i);
-            if (fd.getType().equals("ptr")) { // we have a pointer
-                if (!fd.getDescription().equalsIgnoreCase("ID")) {
-                    throw new ProgrammerError("Invalid HQL query - you must not select the whole object '"
-                            + fd.getDescription() + "' in the query '" + query + "'!\nYou have to select '"
-                            + fd.getDescription() + ".id' instead.");
-                }
-            }
-        }
-
+        // FIXME: this transformation should be made into a ASTTransform transformation
+        // or anyway it should be moved out from HqlAnalyzer, which can then become history
         // workaround for Hibernate bug HHH-2390
         // see http://opensource.atlassian.com/projects/hibernate/browse/HHH-2390
-        query = ((HqlAnalyzer) analyzer).getHackedQuery(query);
+        query = ((HqlAnalyzer) QueryProvider.getQueryAnalzyer("hql").getQueryAnalysis(originalQuery)).getHackedQuery(query);
+
+        // TODO: cache the query as it was quite heavily processed
 
         org.hibernate.Query q = s.createQuery(query);
 
@@ -308,8 +323,25 @@ public class HibernateTransaction extends TransactionImplementation {
         }
 
         // a better way to detect named parameters
-        if (namedParam.matcher(query).find()) {
-            args = paramsToMap(args);
+        Matcher matcher = namedParam.matcher(query);
+        if (matcher.find()) {
+            if (matcher.group().startsWith(":param")) {
+                Map<String, Object> m = new HashMap<String, Object>();
+                if (args instanceof List) {
+                    for (int i = 0; i < ((List<?>) args).size(); i++) {
+                        m.put("param" + i, ((List<?>) args).get(i));
+                    }
+                } else if (args.getClass().isArray()) {
+                    for (int i = 0; i < ((Object[]) args).length; i++) {
+                        m.put("param" + i, ((Object[]) args)[i]);
+                    }
+                } else {
+                    m.put("param0", args);
+                }
+                args = m;
+            } else {
+                args = paramsToMap(args);
+            }
         }
 
         if (args != null && args instanceof Map) {
@@ -361,8 +393,8 @@ public class HibernateTransaction extends TransactionImplementation {
             // process each field's result
             for (int j = 0; j < resultFields.length; j++) { // 
                 if (resultFields[j] != null) { // we add to the dictionary only fields with values in the DB
-                    FieldDefinition fd;
-                    if ((fd = dataDef.getFieldDefinition(j)).getType().equals("ptr")) {
+                    FieldDefinition fd = dataDef.getFieldDefinition(j);
+                    if (fd.getType().startsWith("ptr")) {
                         // we have a pointer
                         String ddName = fd.getPointedType().getName();
                         // FIXME: once we do not get dummy pointers from hibernate queries, take this out

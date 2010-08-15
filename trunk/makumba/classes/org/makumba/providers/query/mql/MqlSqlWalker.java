@@ -397,17 +397,20 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         ParamInfo ret = new ParamInfo();
 
         ret.paramName = param.getOriginalText();
+        if ("?".equals(ret.paramName)) {
+            // we do not treat this case but accept it for hibernate compatibility
+            return ret;
+        } else {
 
-        // FIXME if paramName is '?' throw exception, we don't support this syntax here
+            // we separate the parameter position from the name, as both are registered in the same string
+            int paramPositionIndex = ret.paramName.indexOf("###");
+            if (paramPositionIndex < 0) {
+                throw new MakumbaError("Untreated parameter " + ret.paramName + " in query analysis");
+            }
 
-        // we separate the parameter position from the name, as both are registered in the same string
-        int paramPositionIndex = ret.paramName.indexOf("###");
-        if (paramPositionIndex < -1) {
-            throw new MakumbaError("Untreated parameter " + ret.paramName + " in query analysis");
+            ret.paramPosition = Integer.parseInt(ret.paramName.substring(paramPositionIndex + 3));
+            ret.paramName = ret.paramName.substring(0, paramPositionIndex);
         }
-
-        ret.paramPosition = Integer.parseInt(ret.paramName.substring(paramPositionIndex + 3));
-        ret.paramName = ret.paramName.substring(0, paramPositionIndex);
         return ret;
     }
 

@@ -33,6 +33,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.makumba.DataDefinition;
+import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidFieldTypeException;
 import org.makumba.OQLParseError;
@@ -42,6 +43,7 @@ import org.makumba.providers.query.Pass1FunctionInliner;
 import org.makumba.providers.query.mql.ASTUtil;
 import org.makumba.providers.query.mql.HqlParser;
 import org.makumba.providers.query.mql.HqlTokenTypes;
+import org.makumba.providers.query.mql.MqlQueryAnalysis;
 import org.makumba.providers.query.mql.Node;
 
 import antlr.RecognitionException;
@@ -238,6 +240,90 @@ public abstract class QueryAnalysisProvider implements Serializable {
         return Pass1FunctionInliner.inlineAST(parseQuery(query), getName());
     }
 
+    // TODO: this generates left join by default, which is useful for mak:list
+    /**
+     * HQL does not accept things like p.language without a JOIN before
+     * 
+     * @param query
+     *            the original pass1 query tree
+     * @return the transformed tree
+     */
+    public AST range2Join(AST query) {
+        return new ASTTransformVisitor(false) {
+            @Override
+            public AST visit(AST a) {
+                if (a.getType() != HqlTokenTypes.RANGE) {
+                    return a;
+                }
+                try {
+                    DataDefinitionProvider.getInstance().getDataDefinition(ASTUtil.constructPath(a.getFirstChild()));
+                    return a;
+                } catch (DataDefinitionNotFoundError de) {
+                }
+                AST ret = ASTUtil.makeNode(HqlTokenTypes.JOIN, "left join");
+                ret.setFirstChild(a.getFirstChild());
+                ret.setNextSibling(a.getNextSibling());
+                return ret;
+
+            }
+        }.traverse(query);
+    }
+
+    /**
+     * add .id to pointer projections, for legacy queries to work
+     * 
+     * @param query
+     *            the original pass1 query tree
+     * @return the transformed tree
+     */
+    public AST addIdsToPointerProjections(AST query) {
+        return new ASTTransformVisitor(false) {
+            @Override
+            public AST visit(AST a) {
+                if (getPath().size() == 0) {
+                    return a;
+                }
+                AST parent = getPath().get(getPath().size() - 1);
+                if (a.getType() == HqlTokenTypes.AS) {
+                    return a;
+                }
+                if (parent.getType() != HqlTokenTypes.SELECT && parent.getType() != HqlTokenTypes.AS
+                        && parent.getType() != HqlTokenTypes.ORDER) {
+                    return a;
+                }
+                if (parent.getType() == HqlTokenTypes.AS && parent.getFirstChild() != a) {
+                    return a;
+                }
+                if (a.getFirstChild() != null
+                        && a.getFirstChild().getNextSibling() != null
+                        && a.getType() == HqlTokenTypes.DOT
+                        && ("id".equals(a.getFirstChild().getNextSibling().getText()) || "enum_".equals(a.getFirstChild().getNextSibling().getText()))) {
+                    return a;
+                }
+                String type = findType(a, getName()).getType();
+                String toAdd = null;
+                if (type.startsWith("ptr")) {
+                    toAdd = "id";
+                }
+                if (type.endsWith("Enum")) {
+                    toAdd = "enum_";
+                }
+                if (toAdd == null) {
+                    return a;
+                }
+                AST ret = ASTUtil.makeNode(HqlTokenTypes.DOT, ".");
+                AST idAST = ASTUtil.makeNode(HqlTokenTypes.IDENT, toAdd);
+                AST a1 = QueryAnalysisProvider.makeASTCopy(a);
+                ret.setFirstChild(a1);
+                ret.setNextSibling(a.getNextSibling());
+                // copy the ident so its next sibling doesn't get to the this tree
+                a1.setNextSibling(idAST);
+                return ret;
+            }
+
+        }.traverse(query);
+    }
+
     /** make a copy of an AST, node with the same first child, but with no next sibling */
     public static AST makeASTCopy(AST current1) {
         Node current2 = ASTUtil.makeNode(current1.getType(), current1.getText());
@@ -310,6 +396,55 @@ public abstract class QueryAnalysisProvider implements Serializable {
             current.setNextSibling(traverse(current.getNextSibling()));
 
             return current;
+        }
+
+        /**
+         * Find the type of an expression AST, given the path to the query root. Makes a query treee and invokes the
+         * second pass on it.
+         */
+        protected FieldDefinition findType(AST expr, String qap) {
+
+            // we build a query tree
+            AST query = ASTUtil.makeNode(HqlTokenTypes.QUERY, "query");
+            AST selectFrom = ASTUtil.makeNode(HqlTokenTypes.SELECT_FROM, "SELECT_FROM");
+            AST select = ASTUtil.makeNode(HqlTokenTypes.SELECT, "SELECT");
+            AST from = ASTUtil.makeNode(HqlTokenTypes.FROM, "FROM");
+
+            query.setFirstChild(selectFrom);
+            selectFrom.setFirstChild(from);
+
+            // we copy the FROM part of all the queries in our path
+            AST lastAdded = null;
+            for (AST a : getPath()) {
+                // we find queriess
+                if (a.getType() != HqlTokenTypes.QUERY) {
+                    continue;
+                }
+                // we duplicate the FROM section of each query
+                AST originalFrom = a.getFirstChild().getFirstChild().getFirstChild();
+                AST toAdd = QueryAnalysisProvider.makeASTCopy(originalFrom);
+                if (lastAdded == null) {
+                    from.setFirstChild(toAdd);
+                } else {
+                    lastAdded.setNextSibling(toAdd);
+                }
+                lastAdded = toAdd;
+                while (originalFrom.getNextSibling() != null) {
+                    originalFrom = originalFrom.getNextSibling();
+                    toAdd = QueryAnalysisProvider.makeASTCopy(originalFrom);
+                    lastAdded.setNextSibling(toAdd);
+                    lastAdded = toAdd;
+                }
+            }
+            // TODO: also add the extraFrom (enrichment) to the new query FROM
+            from.setNextSibling(select);
+
+            // we select just the expression we want to determine the type of
+            select.setFirstChild(QueryAnalysisProvider.makeASTCopy(expr));
+
+            return QueryProvider.getQueryAnalzyer(qap).getQueryAnalysis(query, null).getProjectionType().getFieldDefinition(
+                0);
+
         }
     }
 
@@ -649,5 +784,141 @@ public abstract class QueryAnalysisProvider implements Serializable {
         AST a = s.traverse(processedAST);
         s.fromWhere.addToTreeFromWhere(a);
         return a;
+    }
+
+    /** Transform OQL $x into :parameters, and record the parameter order */
+    public static void transformOQLParameters(AST a, List<String> parameterOrder) {
+        if (a == null) {
+            return;
+        }
+        // MQL allows $some.param
+        if (a.getType() == HqlTokenTypes.DOT && a.getFirstChild().getText().startsWith("$")) {
+            a.setType(HqlTokenTypes.IDENT);
+            a.setText(a.getFirstChild().getText() + "." + a.getFirstChild().getNextSibling().getText());
+            a.setFirstChild(null);
+        }
+        if (a.getType() == HqlTokenTypes.IDENT && a.getText().startsWith("$") && a.getText().indexOf("###") < 0) {
+            // replacement of $n with (: makumbaParam n)
+            a.setType(HqlTokenTypes.COLON);
+            AST para = new Node();
+            para.setType(HqlTokenTypes.IDENT);
+            try {
+                para.setText(MqlQueryAnalysis.MAKUMBA_PARAM + (Integer.parseInt(a.getText().substring(1)) - 1));
+            } catch (NumberFormatException e) {
+                // we probably are in some query analysis, so we ignore
+                para.setText(a.getText().substring(1));
+            }
+            if (parameterOrder != null) {
+                parameterOrder.add(para.getText());
+
+                // we append in the tree to the parameter name the parameter position,
+                // to be able to retrieve the position, and thus identify the parameter at type analysis
+                para.setText(para.getText() + "###" + (parameterOrder.size() - 1));
+            }
+            a.setFirstChild(para);
+            a.setText(":");
+        } else if (a.getType() == HqlTokenTypes.COLON && a.getFirstChild() != null
+                && a.getFirstChild().getType() == HqlTokenTypes.IDENT) {
+            if (parameterOrder != null) {
+                // we also accept : params though we might not know what to do with them later
+                parameterOrder.add(a.getFirstChild().getText());
+                // we append in the tree to the parameter name the parameter position,
+                // to be able to retrieve the position, and thus identify the parameter at type analysis
+                // unless this is a "valid" : param (result of function inlining)
+                if (a.getFirstChild().getText().indexOf("###") < 0
+                        && !a.getFirstChild().getText().startsWith(MqlQueryAnalysis.MAKUMBA_PARAM)) {
+                    a.getFirstChild().setText(a.getFirstChild().getText() + "###" + (parameterOrder.size() - 1));
+                }
+            }
+        }
+        if (a.getType() == HqlTokenTypes.SELECT_FROM) {
+            // first the SELECT part
+            transformOQLParameters(a.getFirstChild().getNextSibling(), parameterOrder);
+            // then the FROM part
+            transformOQLParameters(a.getFirstChild(), parameterOrder);
+            // then the rest
+            transformOQLParameters(a.getNextSibling(), parameterOrder);
+
+        } else {
+            transformOQLParameters(a.getFirstChild(), parameterOrder);
+            // we make sure we don't do "SELECT" again
+            if (a.getType() != HqlTokenTypes.FROM) {
+                transformOQLParameters(a.getNextSibling(), parameterOrder);
+            }
+        }
+    }
+
+    /**
+     * Transform the tree so that various OQL notations are still accepted replacement of = or <> NIL with IS (NOT) NULL
+     * OQL puts a 0.0+ in front of any AVG() expression This method also does various subquery transformations which are
+     * not OQL-specific, to support: size(), elements(), firstElement()...
+     */
+    public static void transformOQL(AST a) {
+        if (a == null) {
+            return;
+        }
+        if (a.getType() == HqlTokenTypes.EQ || a.getType() == HqlTokenTypes.NE) {
+            // replacement of = or <> NIL with IS (NOT) NULL
+            if (isNil(a.getFirstChild())) {
+                setNullTest(a);
+                a.setFirstChild(a.getFirstChild().getNextSibling());
+            } else if (isNil(a.getFirstChild().getNextSibling())) {
+                setNullTest(a);
+                a.getFirstChild().setNextSibling(null);
+            }
+
+        } else if (a.getType() == HqlTokenTypes.AGGREGATE && a.getText().toLowerCase().equals("avg")) {
+            // OQL puts a 0.0+ in front of any AVG() expression probably to force the result to be floating point
+            AST plus = new Node();
+            plus.setType(HqlTokenTypes.PLUS);
+            plus.setText("+");
+            AST zero = new Node();
+            zero.setType(HqlTokenTypes.NUM_DOUBLE);
+            zero.setText("0.0");
+            plus.setFirstChild(zero);
+            zero.setNextSibling(a.getFirstChild());
+            a.setFirstChild(plus);
+        } else if (a.getType() == HqlTokenTypes.ELEMENTS) {
+            makeSubquery(a, a.getFirstChild());
+        } else if (a.getType() == HqlTokenTypes.METHOD_CALL && a.getFirstChild().getText().toLowerCase().equals("size")) {
+            makeSelect(a, HqlTokenTypes.COUNT, "count");
+        } else if (a.getType() == HqlTokenTypes.METHOD_CALL
+                && a.getFirstChild().getText().toLowerCase().endsWith("element")) {
+            makeSelect(a, HqlTokenTypes.AGGREGATE, a.getFirstChild().getText().substring(0, 3));
+        }
+
+        transformOQL(a.getFirstChild());
+        transformOQL(a.getNextSibling());
+    }
+
+    static boolean isNil(AST a) {
+        return a.getType() == HqlTokenTypes.IDENT && a.getText().toUpperCase().equals("NIL");
+    }
+
+    static void setNullTest(AST a) {
+        if (a.getType() == HqlTokenTypes.EQ) {
+            a.setType(HqlTokenTypes.IS_NULL);
+            a.setText("is null");
+        } else {
+            a.setType(HqlTokenTypes.IS_NOT_NULL);
+            a.setText("is not null");
+        }
+    }
+
+    static void makeSelect(AST a, int type, String text) {
+        makeSubquery(a, a.getFirstChild().getNextSibling().getFirstChild());
+        AST from = a.getFirstChild().getFirstChild();
+        from.setNextSibling(ASTUtil.makeNode(HqlTokenTypes.SELECT, "select"));
+        from.getNextSibling().setFirstChild(ASTUtil.makeNode(type, text));
+        from.getNextSibling().getFirstChild().setFirstChild(ASTUtil.makeNode(HqlTokenTypes.IDENT, "makElementsLabel"));
+    }
+
+    static void makeSubquery(AST a, AST type) {
+        a.setType(HqlTokenTypes.QUERY);
+        a.setFirstChild(ASTUtil.makeNode(HqlTokenTypes.SELECT_FROM, "select"));
+        a.getFirstChild().setFirstChild(ASTUtil.makeNode(HqlTokenTypes.FROM, "from"));
+        a.getFirstChild().getFirstChild().setFirstChild(ASTUtil.makeNode(HqlTokenTypes.RANGE, "range"));
+        a.getFirstChild().getFirstChild().getFirstChild().setFirstChild(type);
+        type.setNextSibling(ASTUtil.makeNode(HqlTokenTypes.ALIAS, "makElementsLabel"));
     }
 }

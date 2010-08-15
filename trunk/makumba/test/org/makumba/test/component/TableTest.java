@@ -74,6 +74,7 @@ public class TableTest extends TestCase {
 
     @Override
     public void setUp() {
+        TransactionProvider tp = TransactionProvider.getInstance();
         db = tp.getConnectionTo(tp.getDefaultDataSourceName());
     }
 
@@ -81,8 +82,6 @@ public class TableTest extends TestCase {
     public void tearDown() {
         db.close();
     }
-
-    private final TransactionProvider tp = TransactionProvider.getInstance();
 
     static Pointer ptr, ptr1;
 
@@ -114,7 +113,7 @@ public class TableTest extends TestCase {
 
     String readToy2 = "SELECT t.name AS name, t.color AS color, t.serial AS serial, t.relatedToy AS relatedToy FROM test.validMdds.AllTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers t WHERE t = $1";
 
-    String readIntSet = "SELECT i as member FROM test.Person p, p.intSet i WHERE p=$1 ORDER BY i";
+    String readIntSet = "SELECT i as member FROM test.Person p join p.intSet i WHERE p=$1 ORDER BY i";
 
     String readCharSet = "SELECT c as member FROM test.Person p, p.charSet c WHERE p=$1 ORDER BY c";
 
@@ -209,7 +208,7 @@ public class TableTest extends TestCase {
         assertEquals("Weight(real)", new Double(85.7d), pc.get("weight"));
         assertEquals("Birthdate", birth, pc.get("birthdate"));
         assertEquals("Something else", "else", pc.get("something"));
-        assertEquals("Comment text", pc.get("comment"), comment.getString());
+        checkInternationalizedField(comment);
         assertEquals("Picture", pc.get("picture"), new Text(getExampleData()));
         assertNotNull(ptrOne);
 
@@ -227,8 +226,12 @@ public class TableTest extends TestCase {
         assertTrue(now.getTime() - create.getTime() < 3 * epsilon);
     }
 
+    protected void checkInternationalizedField(Text comment) {
+        assertEquals("Comment text", pc.get("comment"), comment.getString());
+    }
+
     public void testForeignKeys() {
-        assertTrue(org.makumba.db.makumba.sql.Database.supportsForeignKeys());
+        checkFKSupport();
 
         // try to delete brother = that ID
         // try to delete the other brother
@@ -296,8 +299,12 @@ public class TableTest extends TestCase {
 
     }
 
-    public void testForeignKeysWithLongMDDName() {
+    protected void checkFKSupport() {
         assertTrue(org.makumba.db.makumba.sql.Database.supportsForeignKeys());
+    }
+
+    public void testForeignKeysWithLongMDDName() {
+        checkFKSupport();
 
         // try to delete toy = that ID
         // try to delete the other toy
@@ -444,9 +451,11 @@ public class TableTest extends TestCase {
 
     static String langQuery = "SELECT l FROM test.Language l WHERE l.name=$1";
 
-    static String speaksQuery = "SELECT l as k, l.name as name FROM test.Person p, p.speaks l WHERE p=$1";
+    // using join to avoid the HQL default left join
+    // TODO: check why doesn't the default MQL left join blow here
+    static String speaksQuery = "SELECT l as k, l.name as name FROM test.Person p join p.speaks l WHERE p=$1";
 
-    static String checkSpeaksQuery = "SELECT l, l.Language FROM test.Person.speaks l WHERE l.Person=$1";
+    static String checkSpeaksQuery = "SELECT l, l.Language FROM test.Person__speaks l WHERE l.Person=$1";
 
     void workWithSet(String[] t) {
         Vector<Object> v = new Vector<Object>();
@@ -513,7 +522,7 @@ public class TableTest extends TestCase {
         Vector<Dictionary<String, Object>> result = db.executeQuery(speaksQuery, ptr);
         assertEquals(0, result.size());
 
-        assertEquals(0, db.executeQuery("SELECT l FROM  test.Person.speaks l WHERE l.Person=$1", ptr).size());
+        assertEquals(0, db.executeQuery("SELECT l FROM  test.Person__speaks l WHERE l.Person=$1", ptr).size());
 
         workWithSet(toInsert3);
 
@@ -649,11 +658,15 @@ public class TableTest extends TestCase {
         assertEquals(0, db.executeQuery(speaksQuery, ptr).size());
         assertEquals(0, db.executeQuery(readIntSet, ptr).size());
         assertEquals(0, db.executeQuery(readCharSet, ptr).size());
-        assertEquals(0, db.executeQuery("SELECT l FROM  test.Person.speaks l WHERE l.Person=$1", ptr).size());
-        assertEquals(0, db.executeQuery("SELECT l FROM  test.Person.intSet l WHERE l.Person=$1", ptr).size());
-        assertEquals(0, db.executeQuery("SELECT l FROM  test.Person.charSet l WHERE l.Person=$1", ptr).size());
+        assertEquals(0, db.executeQuery("SELECT l FROM  test.Person__speaks l WHERE l.Person=$1", ptr).size());
+        assertEquals(0, db.executeQuery("SELECT l FROM  test.Person__intSet l WHERE l.Person=$1", ptr).size());
+        assertEquals(0, db.executeQuery("SELECT l FROM  test.Person__charSet l WHERE l.Person=$1", ptr).size());
 
         // delete all entries, bug 673:
+        deleteAllEntries();
+    }
+
+    protected void deleteAllEntries() {
         db.delete("test.validMdds.CharWithLength name", "name.name='bla'", null);
         db.delete("test.validMdds.CharWithLength t", "5=5", null);
         db.delete("test.validMdds.CharWithLength	t", "t.name LIKE \'www\'", null);
