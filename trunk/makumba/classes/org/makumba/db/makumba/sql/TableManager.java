@@ -1149,8 +1149,8 @@ public class TableManager extends Table {
     // moved from FieldManager
     /**
      * Sets a null argument of this type in a prepared SQL statement.<br>
-     * FIXME this will not always work, some DBs do not support setting null arguments and need an explicit null check
-     * ("is null") in the query instead
+     * Do NOT use this method in queries, only in assignements (INSERT, UPDATE) as some DB types will not support
+     * queries with null arguments and instead require an explicit null check via "is null".
      **/
     public void setNullArgument(String fieldName, PreparedStatement ps, int n) throws SQLException {
         ps.setNull(n, getSQLType(fieldName));
