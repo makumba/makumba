@@ -47,13 +47,13 @@ import java.util.logging.Level;
 import org.makumba.CompositeValidationException;
 import org.makumba.DBError;
 import org.makumba.DataDefinition;
+import org.makumba.DataDefinition.MultipleUniqueKeyDefinition;
 import org.makumba.FieldDefinition;
+import org.makumba.FieldDefinition.FieldErrorMessageType;
 import org.makumba.MakumbaError;
 import org.makumba.NotUniqueException;
 import org.makumba.Pointer;
 import org.makumba.Text;
-import org.makumba.DataDefinition.MultipleUniqueKeyDefinition;
-import org.makumba.FieldDefinition.FieldErrorMessageType;
 import org.makumba.commons.NameResolver;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.SQLPointer;
@@ -1734,7 +1734,7 @@ public class TableManager extends Table {
                     // log all errors
                     java.util.logging.Logger.getLogger("org.makumba.db.init.tablechecking").warning(
                     // rm.getDatabase().getConfiguration()+": "+ //DB
-                        // name
+                    // name
                         "Problem adding UNIQUE INDEX on " + brief + ": " + e.getMessage() + " [ErrorCode: "
                                 + e.getErrorCode() + ", SQLstate:" + e.getSQLState() + "]");
                     createNormalEvenIfUnique = true;
@@ -1752,7 +1752,7 @@ public class TableManager extends Table {
                 } catch (SQLException e) {
                     java.util.logging.Logger.getLogger("org.makumba.db.init.tablechecking").warning(
                     // rm.getDatabase().getConfiguration()+": "+ //DB
-                        // name
+                    // name
                         "Problem adding INDEX on " + brief + ": " + e.getMessage() + " [ErrorCode: " + e.getErrorCode()
                                 + ", SQLstate:" + e.getSQLState() + "]");
                 }
@@ -1796,7 +1796,7 @@ public class TableManager extends Table {
                 // log all errors
                 java.util.logging.Logger.getLogger("org.makumba.db.init.tablechecking").warning(
                 // rm.getDatabase().getConfiguration()+": "+ //DB
-                    // name
+                // name
                     "Problem adding FOREIGN KEY on " + brief + ": " + e.getMessage() + " [ErrorCode: "
                             + e.getErrorCode() + ", SQLstate:" + e.getSQLState() + "]");
                 throw new DBError("Error adding foreign key for " + brief + ": " + e.getMessage());
@@ -1842,7 +1842,7 @@ public class TableManager extends Table {
     }
 
     /** Makes a short index based on the table and field name, if needed **/
-    private String shortIndexName(String tableName, String fieldName) {
+    protected String shortIndexName(String tableName, String fieldName) {
         // FIXME this may not be true for other DBMS than mysql
         String standardIndex = tableName + "__" + fieldName;
         if (standardIndex.length() + "__ibfk_XX".length() > 64) {
