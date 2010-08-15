@@ -668,7 +668,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
                 if (StringUtils.isNotBlank(query.getGroupBySection())) {
                     total = dataSize;
                 } else {
-                    total = (Integer) exec.currentListData().get("col1");
+                    total = ((Number) exec.currentListData().get("col1")).intValue();
                 }
                 servletRequest.setAttribute(standardMaxResultsVar, total);
             } catch (LogicException e) {
