@@ -89,7 +89,7 @@ public interface MakumbaDataComponent {
             visitStaticTree(base, new VisitCallback() {
                 @Override
                 public VisitResult visit(VisitContext context, UIComponent target) {
-                    if (target instanceof MakumbaDataComponent && target != base) {
+                    if (base.getClass().isInstance(target) && target != base) {
                         return VisitResult.REJECT;
                     }
                     if (target instanceof EditableValueHolder
