@@ -76,9 +76,6 @@ public abstract class QueryAnalysisProvider implements Serializable {
 
     // public abstract AST inlineFunctions(AST query);
 
-    /** Returns whether the GROUP BY or ORDER BY sections can include labels */
-    public abstract boolean selectGroupOrOrderAsLabels();
-
     /**
      * Returns a possible alternative field to the one indicated.
      */

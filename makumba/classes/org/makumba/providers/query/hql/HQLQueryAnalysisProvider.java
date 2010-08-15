@@ -36,11 +36,6 @@ public class HQLQueryAnalysisProvider extends QueryAnalysisProvider {
         }, true);
 
     @Override
-    public boolean selectGroupOrOrderAsLabels() {
-        return false;
-    }
-
-    @Override
     public FieldDefinition getAlternativeField(DataDefinition dd, String fn) {
         if (fn.equals("id")) {
             return dd.getFieldDefinition(dd.getIndexPointerFieldName());

@@ -329,50 +329,6 @@ public class ComposedQuery implements Serializable {
     }
 
     /**
-     * Checks the orderBy or groupBy expressions to see if they are already selected, if not adds a projection. Only
-     * group by and order by labels.
-     * 
-     * @param str
-     *            an orderBy or groupBy expression
-     * @return The checked expression, transformed according to the projections
-     */
-    String checkExpr(String str) {
-        if (str == null) {
-            return null;
-        }
-        if (str.trim().length() == 0) {
-            return null;
-        }
-        if (!qep.selectGroupOrOrderAsLabels()) {
-            return str;
-            // if(projections.size()==1)
-            // new Throwable().printStackTrace();
-        }
-
-        StringBuffer ret = new StringBuffer();
-        String sep = "";
-        for (StringTokenizer st = new StringTokenizer(str, ","); st.hasMoreTokens();) {
-            ret.append(sep);
-            sep = ",";
-            String s = st.nextToken().trim();
-            String rest = "";
-            int i = s.indexOf(" ");
-            if (i != -1) {
-                rest = s.substring(i);
-                s = s.substring(0, i);
-            }
-            // if the projection doesnt exist, this returns null, but it adds a new projection
-            String p = checkProjection(s);
-            if (p == null) {
-                // and the second time this doesn#t return null, but the projection name
-                p = checkProjection(s);
-            }
-            ret.append(p).append(rest);
-        }
-        return ret.toString();
-    }
-
-    /**
      * Computes the query from its sections
      * 
      * @param derivedSections
@@ -385,8 +341,8 @@ public class ComposedQuery implements Serializable {
         String groups = null;
         String orders = null;
         if (!typeAnalysisOnly) {
-            groups = checkExpr(derivedSections[GROUPBY]);
-            orders = checkExpr(derivedSections[ORDERBY]);
+            groups = derivedSections[GROUPBY];
+            orders = derivedSections[ORDERBY];
         }
 
         StringBuffer sb = new StringBuffer();
@@ -420,15 +376,15 @@ public class ComposedQuery implements Serializable {
             }
         }
         if (!typeAnalysisOnly) {
-            if ((o = derivedSections[WHERE]) != null && derivedSections[WHERE].trim().length() > 0) {
+            if (derivedSections[WHERE] != null && derivedSections[WHERE].trim().length() > 0) {
                 sb.append(" WHERE ");
-                sb.append(o);
+                sb.append(derivedSections[WHERE]);
             }
-            if (groups != null) {
+            if (groups != null && groups.trim().length() > 0) {
                 sb.append(" GROUP BY ");
                 sb.append(groups);
             }
-            if (orders != null) {
+            if (orders != null && orders.trim().length() > 0) {
                 sb.append(" ORDER BY ");
                 sb.append(orders);
             }

@@ -37,7 +37,6 @@ import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.query.Pass1ASTPrinter;
-import org.makumba.providers.query.hql.HqlAnalyzer;
 
 import antlr.collections.AST;
 
@@ -282,6 +281,8 @@ public class HibernateTransaction extends TransactionImplementation {
 
         QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer("oql");
 
+        // TODO: cache the query as it was quite heavily processed:
+
         // analyze the query with MQL!
         QueryAnalysis analyzer = qap.getQueryAnalysis(query);
         // new ASTPrinter(HqlTokenTypes.class).showAst(analyzer.getPass1Tree(), new PrintWriter(System.out));
@@ -300,18 +301,10 @@ public class HibernateTransaction extends TransactionImplementation {
 
         // now we are ready to print the query so hibernate can execute it
         query = Pass1ASTPrinter.printAST(transformed).toString();
-        //System.out.println(query);
+        // System.out.println(query);
 
         DataDefinition dataDef = analyzer.getProjectionType();
         DataDefinition paramsDef = analyzer.getParameterTypes();
-
-        // FIXME: this transformation should be made into a ASTTransform transformation
-        // or anyway it should be moved out from HqlAnalyzer, which can then become history
-        // workaround for Hibernate bug HHH-2390
-        // see http://opensource.atlassian.com/projects/hibernate/browse/HHH-2390
-        query = ((HqlAnalyzer) QueryProvider.getQueryAnalzyer("hql").getQueryAnalysis(originalQuery)).getHackedQuery(query);
-
-        // TODO: cache the query as it was quite heavily processed
 
         org.hibernate.Query q = s.createQuery(query);
 
