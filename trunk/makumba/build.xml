@@ -465,22 +465,6 @@
 			<sysproperty key="release" value="true" />
 			<arg value="jar" />
 		</java>
-
-		<!-- make the template application archive: -->
-		<antcall target="makeTemplate" />
-		<copy file="${jar.dir}/lib/makumba.jar" tofile="${jar.dir}/lib/${tag}.jar" />
-	</target>
-
-	<target name="makeTemplate">
-		<!-- first copy the new makumba.jar (just to be sure): -->
-		<copy file="${jar.dir}/lib/makumba.jar" tofile="work/makumba.distrib/makumba-template/WebContent/WEB-INF/lib/makumba.jar" overwrite="true" />
-
-		<zip zipfile="lib/${tag}-template.zip">
-			<fileset dir="work/makumba.distrib/">
-				<include name="makumba-template/**" />
-				<exclude name="**/SVN/**" />
-			</fileset>
-		</zip>
 	</target>
 
 	<target name="uploadJar" depends="compile, generateTLDs" if="tag" description="makes the jar and a src tarball of the given version, puts it in ./lib and publishes it on the web and makes it the default version">
@@ -492,7 +476,7 @@
 		<antcall target="uploadMadeJar" />
 	</target>
 
-	<target name="uploadMadeJar" description="uplads a jar, a src tarball and the template application of the given version (made by a makeJar or a failed uploadJar), puts it in ./lib and publishes it on the web">
+	<target name="uploadMadeJar" description="uplads a jar and a src tarball of the given version (made by a makeJar or a failed uploadJar), puts it in ./lib and publishes it on the web">
 
 		<echo>make sure you have the necessary libraries to run the FTP and SCP tasks! you can install them by running "ant
         installAntLibraries" with the right permissions to access your ANT_HOME dir (you might need to use "sudo" on unix environments)</echo>
@@ -512,7 +496,6 @@
 			<fileset dir="lib/">
 				<include name="${tag}.jar" />
 				<include name="${tag}-src.zip" />
-				<include name="${tag}-template.zip" />
 			</fileset>
 			<fileset dir="work/">
 				<include name="makumba.jar" />
@@ -526,7 +509,6 @@
 			<fileset dir="lib/">
 				<include name="${tag}.jar" />
 				<include name="${tag}-src.zip" />
-				<include name="${tag}-template.zip" />
 			</fileset>
 		</scp>
 	</target>
