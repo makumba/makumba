@@ -288,7 +288,7 @@ public abstract class QueryAnalysisProvider implements Serializable {
                     return a;
                 }
                 if (parent.getType() != HqlTokenTypes.SELECT && parent.getType() != HqlTokenTypes.AS
-                        && parent.getType() != HqlTokenTypes.ORDER) {
+                        && parent.getType() != HqlTokenTypes.ORDER && parent.getType() != HqlTokenTypes.GROUP) {
                     return a;
                 }
                 if (parent.getType() == HqlTokenTypes.AS && parent.getFirstChild() != a) {
