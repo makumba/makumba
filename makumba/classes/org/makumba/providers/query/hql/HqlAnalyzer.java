@@ -329,4 +329,7 @@ public class HqlAnalyzer implements QueryAnalysis {
         return null;
     }
 
+    public DataDefinition getParameterTypesByName() {
+        return this.paramTypes;
+    }
 }

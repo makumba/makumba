@@ -80,6 +80,14 @@ public interface QueryAnalysis {
     DataDefinition getParameterTypes();
 
     /**
+     * Gets the types of the query parameters, as resulted from the query analysis.
+     * 
+     * @return A DataDefinition containing the parameter types by their original name. Parameters with multiple types
+     *         are not supported.
+     */
+    DataDefinition getParameterTypesByName();
+
+    /**
      * Get the warnings resulted from query analysis
      * 
      * @return a collection of warnings, as strings
