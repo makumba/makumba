@@ -82,6 +82,7 @@ public class MakumbaTestData {
         p.put("birthdate", birthdateBart);
         p.put("gender", new Integer(1));
         brother = t.insert("test.Person", p);
+        t.commit();
 
         p.clear();
         p.put("indiv.name", namePersonIndivName_John);
@@ -92,6 +93,8 @@ public class MakumbaTestData {
         p.put("uniqDate", birthdateJohn);
         p.put("gender", new Integer(1));
         p.put("uniqChar", uniqChar);
+
+        p.put("age", 22);
 
         p.put("weight", new Double(85.7d));
 
