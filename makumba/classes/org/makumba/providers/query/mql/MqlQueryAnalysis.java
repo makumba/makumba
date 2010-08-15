@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import org.hibernate.hql.antlr.HqlTokenTypes;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
@@ -120,8 +119,8 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         AST parsed = new HqlASTFactory().dupTree(pass1);
 
         // we need to do the transformation first so the second-pass parser will accept the query
-        MqlQueryAnalysisProvider.transformOQLParameters(parsed, parameterOrder);
-        MqlQueryAnalysisProvider.transformOQL(parsed);
+        QueryAnalysisProvider.transformOQLParameters(parsed, parameterOrder);
+        QueryAnalysisProvider.transformOQL(parsed);
 
         MqlSqlWalker mqlAnalyzer = new MqlSqlWalker(query, insertIn, optimizeJoins, autoLeftJoin, knownLabels);
         analyser = mqlAnalyzer;
@@ -237,20 +236,6 @@ public class MqlQueryAnalysis implements QueryAnalysis {
 
     public static String showAst(AST ast) {
         return ast.toStringTree();
-    }
-
-    static boolean isNil(AST a) {
-        return a.getType() == HqlTokenTypes.IDENT && a.getText().toUpperCase().equals("NIL");
-    }
-
-    static void setNullTest(AST a) {
-        if (a.getType() == HqlTokenTypes.EQ) {
-            a.setType(HqlTokenTypes.IS_NULL);
-            a.setText("is null");
-        } else {
-            a.setType(HqlTokenTypes.IS_NOT_NULL);
-            a.setText("is not null");
-        }
     }
 
     private int labelCounter = 0;

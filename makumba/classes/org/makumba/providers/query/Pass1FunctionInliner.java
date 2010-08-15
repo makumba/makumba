@@ -163,7 +163,7 @@ public class Pass1FunctionInliner {
                 // FIXME: this probably would not be needed in case of a depth-first, post-order traversal
                 // TODO: find type will be needed also to compute parameter types. the recursion is needed there too
                 callee = inlineAST(callee);
-                FieldDefinition fd = findType(callee);
+                FieldDefinition fd = findType(callee, queryAnalysisProvider);
                 if (fd.getType().startsWith("ptr")) {
                     calleeType = fd.getPointedType();
                 } else {
@@ -307,55 +307,6 @@ public class Pass1FunctionInliner {
             }
 
             return ASTUtil.makeNode(HqlTokenTypes.IDENT, rt);
-        }
-
-        /**
-         * Find the type of an expression AST, given the path to the query root. Makes a query treee and invokes the
-         * second pass on it.
-         */
-        private FieldDefinition findType(AST expr) {
-
-            // we build a query tree
-            AST query = ASTUtil.makeNode(HqlTokenTypes.QUERY, "query");
-            AST selectFrom = ASTUtil.makeNode(HqlTokenTypes.SELECT_FROM, "SELECT_FROM");
-            AST select = ASTUtil.makeNode(HqlTokenTypes.SELECT, "SELECT");
-            AST from = ASTUtil.makeNode(HqlTokenTypes.FROM, "FROM");
-
-            query.setFirstChild(selectFrom);
-            selectFrom.setFirstChild(from);
-
-            // we copy the FROM part of all the queries in our path
-            AST lastAdded = null;
-            for (AST a : getPath()) {
-                // we find queriess
-                if (a.getType() != HqlTokenTypes.QUERY) {
-                    continue;
-                }
-                // we duplicate the FROM section of each query
-                AST originalFrom = a.getFirstChild().getFirstChild().getFirstChild();
-                AST toAdd = QueryAnalysisProvider.makeASTCopy(originalFrom);
-                if (lastAdded == null) {
-                    from.setFirstChild(toAdd);
-                } else {
-                    lastAdded.setNextSibling(toAdd);
-                }
-                lastAdded = toAdd;
-                while (originalFrom.getNextSibling() != null) {
-                    originalFrom = originalFrom.getNextSibling();
-                    toAdd = QueryAnalysisProvider.makeASTCopy(originalFrom);
-                    lastAdded.setNextSibling(toAdd);
-                    lastAdded = toAdd;
-                }
-            }
-            // TODO: also add the extraFrom (enrichment) to the new query FROM
-            from.setNextSibling(select);
-
-            // we select just the expression we want to determine the type of
-            select.setFirstChild(QueryAnalysisProvider.makeASTCopy(expr));
-
-            return QueryProvider.getQueryAnalzyer(queryAnalysisProvider).getQueryAnalysis(query, null).getProjectionType().getFieldDefinition(
-                0);
-
         }
     }
 

@@ -103,9 +103,9 @@ public class TableHibernateTest extends TestCase {
 
     String readPerson2 = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.weight as weight, p.brother.id as brother, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData.id as extraData, p.comment as comment, p.picture AS picture FROM test.Person p WHERE p.id= ?";
 
-    String readIntSet = "SELECT i.enum_ as member FROM test.Person p JOIN p.intSet i WHERE p.id=? ORDER BY i.enum_";
+    String readIntSet = "SELECT i as member FROM test.Person p JOIN p.intSet i WHERE p.id=? ORDER BY i";
 
-    String readCharSet = "SELECT c.enum_ as member FROM test.Person p JOIN p.charSet c WHERE p.id=? ORDER BY c.enum_";
+    String readCharSet = "SELECT c as member FROM test.Person p JOIN p.charSet c WHERE p.id=? ORDER BY c";
 
     static InputStream getExampleData() {
         try {
@@ -507,8 +507,8 @@ public class TableHibernateTest extends TestCase {
         assertEquals(0, db.executeQuery(readIntSet, ptr).size());
         assertEquals(0, db.executeQuery(readCharSet, ptr).size());
         assertEquals(0, db.executeQuery("SELECT l.id FROM  test.Person p JOIN p.speaks l WHERE p.id=?", ptr).size());
-        assertEquals(0, db.executeQuery("SELECT l.enum_ FROM  test.Person p JOIN p.intSet l WHERE p.id=?", ptr).size());
-        assertEquals(0, db.executeQuery("SELECT l.enum_ FROM  test.Person p JOIN p.charSet l WHERE p.id=?", ptr).size());
+        assertEquals(0, db.executeQuery("SELECT l FROM  test.Person p JOIN p.intSet l WHERE p.id=?", ptr).size());
+        assertEquals(0, db.executeQuery("SELECT l FROM  test.Person p JOIN p.charSet l WHERE p.id=?", ptr).size());
 
         /*
          * delete all entries, bug 673: db .delete("test.validMdds.CharWithLength name", "name.name='bla'", null);

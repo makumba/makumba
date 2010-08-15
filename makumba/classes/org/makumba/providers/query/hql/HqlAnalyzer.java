@@ -3,10 +3,10 @@ package org.makumba.providers.query.hql;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.Map.Entry;
 
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
@@ -90,6 +90,10 @@ public class HqlAnalyzer implements QueryAnalysis {
             if (query == null) {
                 query = Pass1ASTPrinter.printAST(t1).toString();
             }
+
+            QueryAnalysisProvider.transformOQLParameters(t1, null);
+            QueryAnalysisProvider.transformOQL(t1);
+
             walker = new HqlAnalyzeWalker();
             walker.knownLabels = knownLabels;
             walker.typeComputer = new MddObjectType();
@@ -152,9 +156,7 @@ public class HqlAnalyzer implements QueryAnalysis {
         paramTypes = ddp.getVirtualDataDefinition("Parameters for " + query);
         try {
             int parameterCounter = 0;
-            for (Iterator<Map.Entry<String, ExprTypeAST>> i = walker.getParameterTypes().entrySet().iterator(); i.hasNext();) {
-                Map.Entry<String, ExprTypeAST> e = i.next();
-
+            for (Entry<String, ExprTypeAST> e : walker.getParameterTypes().entrySet()) {
                 paramTypes.addField(makeField(e.getKey(), e.getValue(), parameterCounter));
                 parameterCounter++;
             }
