@@ -224,7 +224,7 @@ public class Pass1ASTPrinter {
                 // dot is treated like a normal binary operator, except it won't print spaces for aesthetic reasons
             case HqlTokenTypes.DOT:
                 // we compare with the parent operator, if any
-                prio = checkPriority(parent, ast);
+                prio = prio || checkPriority(parent, ast);
                 // if we are lower precedence, we print parantheses
                 if (prio) {
                     sb.append('(');
@@ -306,9 +306,15 @@ public class Pass1ASTPrinter {
         if (ast.getType() != HqlTokenTypes.DOT) {
             space(sb);
         }
-        // the indexOf(}) is used for {not}in and {not}like.
-        // it normally returns -1, and then +1 it gives 0, i.e. the whole string
-        sb.append(ast.getText().substring(ast.getText().lastIndexOf('}') + 1));
+        if (ast.getType() == HqlTokenTypes.NOT_IN) {
+            sb.append("in");
+        } else if (ast.getType() == HqlTokenTypes.NOT_LIKE) {
+            sb.append("like");
+        } else {
+            // the indexOf(}) is used for {not}in and {not}like.
+            // it normally returns -1, and then +1 it gives 0, i.e. the whole string
+            sb.append(ast.getText().substring(ast.getText().lastIndexOf('}') + 1));
+        }
         if (ast.getType() != HqlTokenTypes.DOT) {
             sb.append(' ');
         }
