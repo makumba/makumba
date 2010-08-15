@@ -252,12 +252,17 @@ public abstract class QueryAnalysisProvider implements Serializable {
                 if (a.getType() != HqlTokenTypes.RANGE) {
                     return a;
                 }
+                AST parent = getPath().get(getPath().size() - 1);
+                // we don't transform for the first range
+                if (parent.getFirstChild() == a) {
+                    return a;
+                }
                 try {
                     DataDefinitionProvider.getInstance().getDataDefinition(ASTUtil.constructPath(a.getFirstChild()));
                     return a;
                 } catch (DataDefinitionNotFoundError de) {
                 }
-                AST ret = ASTUtil.makeNode(HqlTokenTypes.JOIN, "left join");
+                AST ret = ASTUtil.makeNode(HqlTokenTypes.JOIN, "join");
                 ret.setFirstChild(a.getFirstChild());
                 ret.setNextSibling(a.getNextSibling());
                 return ret;
@@ -277,6 +282,9 @@ public abstract class QueryAnalysisProvider implements Serializable {
         return new ASTTransformVisitor(false) {
             @Override
             public AST visit(AST a) {
+                if (a.getText().startsWith("$") || a.getText().startsWith("?") || a.getText().startsWith(":")) {
+                    return a;
+                }
                 if (getPath().size() == 0) {
                     return a;
                 }
@@ -285,24 +293,45 @@ public abstract class QueryAnalysisProvider implements Serializable {
                     return a;
                 }
                 if (parent.getType() != HqlTokenTypes.SELECT && parent.getType() != HqlTokenTypes.AS
-                        && parent.getType() != HqlTokenTypes.ORDER && parent.getType() != HqlTokenTypes.GROUP) {
+                        && parent.getType() != HqlTokenTypes.ORDER && parent.getType() != HqlTokenTypes.GROUP
+                        && parent.getType() != HqlTokenTypes.IN && parent.getType() != HqlTokenTypes.NOT_IN) {
                     return a;
                 }
                 if (parent.getType() == HqlTokenTypes.AS && parent.getFirstChild() != a) {
                     return a;
                 }
+                if ((parent.getType() == HqlTokenTypes.IN || parent.getType() == HqlTokenTypes.NOT_IN)
+                        && parent.getFirstChild() != a) {
+                    return a;
+                }
+                // maybe there is an id already
                 if (a.getFirstChild() != null
                         && a.getFirstChild().getNextSibling() != null
                         && a.getType() == HqlTokenTypes.DOT
                         && ("id".equals(a.getFirstChild().getNextSibling().getText()) || "enum_".equals(a.getFirstChild().getNextSibling().getText()))) {
                     return a;
                 }
-                String type = findType(a, getName()).getType();
+                FieldDefinition type = findType(a, getName());
+                if (type.getType().equals("boolean") && parent.getType() != HqlTokenTypes.CASE) {
+                    AST ret = ASTUtil.makeNode(HqlTokenTypes.CASE, "case");
+                    AST when = ASTUtil.makeNode(HqlTokenTypes.WHEN, "when");
+                    AST elze = ASTUtil.makeNode(HqlTokenTypes.ELSE, "else");
+                    elze.setFirstChild(ASTUtil.makeNode(HqlTokenTypes.NUM_INT, "0"));
+                    when.setFirstChild(QueryAnalysisProvider.makeASTCopy(a));
+                    when.getFirstChild().setNextSibling(ASTUtil.makeNode(HqlTokenTypes.NUM_INT, "1"));
+                    ret.setFirstChild(when);
+                    when.setNextSibling(elze);
+                    ret.setNextSibling(a.getNextSibling());
+                    return ret;
+
+                }
+
                 String toAdd = null;
-                if (type.startsWith("ptr")) {
+                if (type.getType().startsWith("ptr")) {
                     toAdd = "id";
                 }
-                if (type.endsWith("Enum")) {
+                if (type.getType().endsWith("Enum") && type.getOriginalFieldDefinition() != null
+                        && type.getOriginalFieldDefinition().getName().equals("enum")) {
                     toAdd = "enum_";
                 }
                 if (toAdd == null) {
@@ -796,6 +825,10 @@ public abstract class QueryAnalysisProvider implements Serializable {
         }
         if (a.getType() == HqlTokenTypes.IDENT && a.getText().startsWith("$") && a.getText().indexOf("###") < 0) {
             // replacement of $n with (: makumbaParam n)
+            /*if (parameterOrder == null) {
+                toOrdinalParam(a);
+            } else {
+            */
             a.setType(HqlTokenTypes.COLON);
             AST para = new Node();
             para.setType(HqlTokenTypes.IDENT);
@@ -805,9 +838,9 @@ public abstract class QueryAnalysisProvider implements Serializable {
                 // we probably are in some query analysis, so we ignore
                 para.setText(a.getText().substring(1));
             }
+
             if (parameterOrder != null) {
                 parameterOrder.add(para.getText());
-
                 // we append in the tree to the parameter name the parameter position,
                 // to be able to retrieve the position, and thus identify the parameter at type analysis
                 para.setText(para.getText() + "###" + (parameterOrder.size() - 1));
@@ -826,7 +859,10 @@ public abstract class QueryAnalysisProvider implements Serializable {
                         && !a.getFirstChild().getText().startsWith(MqlQueryAnalysis.MAKUMBA_PARAM)) {
                     a.getFirstChild().setText(a.getFirstChild().getText() + "###" + (parameterOrder.size() - 1));
                 }
+            } else {
+                // toOrdinalParam(a);
             }
+
         }
         if (a.getType() == HqlTokenTypes.SELECT_FROM) {
             // first the SELECT part
@@ -843,6 +879,12 @@ public abstract class QueryAnalysisProvider implements Serializable {
                 transformOQLParameters(a.getNextSibling(), parameterOrder);
             }
         }
+    }
+
+    private static void toOrdinalParam(AST a) {
+        a.setType(HqlTokenTypes.PARAM);
+        a.setText("?");
+        a.setFirstChild(null);
     }
 
     /**

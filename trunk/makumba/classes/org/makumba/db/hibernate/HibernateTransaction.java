@@ -299,12 +299,13 @@ public class HibernateTransaction extends TransactionImplementation {
         // TODO: the MQL analyzer generates left join by default, for now this method does the sme
         transformed = qap.range2Join(transformed);
 
+        QueryAnalysisProvider.transformOQL(transformed);
+
         // now we are ready to print the query so hibernate can execute it
         query = Pass1ASTPrinter.printAST(transformed).toString();
         // System.out.println(query);
 
         DataDefinition dataDef = analyzer.getProjectionType();
-        DataDefinition paramsDef = analyzer.getParameterTypes();
 
         org.hibernate.Query q = s.createQuery(query);
 
@@ -338,9 +339,9 @@ public class HibernateTransaction extends TransactionImplementation {
         }
 
         if (args != null && args instanceof Map) {
-            setNamedParameters((Map<?, ?>) args, paramsDef, q);
+            setNamedParameters((Map<?, ?>) args, analyzer.getParameterTypesByName(), q);
         } else if (args != null) {
-            setOrderedParameters(args, paramsDef, q);
+            setOrderedParameters(args, analyzer.getParameterTypes(), q);
         }
 
         Vector<Dictionary<String, Object>> results = null;
@@ -387,6 +388,9 @@ public class HibernateTransaction extends TransactionImplementation {
             for (int j = 0; j < resultFields.length; j++) { // 
                 if (resultFields[j] != null) { // we add to the dictionary only fields with values in the DB
                     FieldDefinition fd = dataDef.getFieldDefinition(j);
+                    if (fd.getType().equals("boolean")) {
+                        resultFields[j] = (Integer) resultFields[j] == 1;
+                    }
                     if (fd.getType().startsWith("ptr")) {
                         // we have a pointer
                         String ddName = fd.getPointedType().getName();
@@ -453,7 +457,12 @@ public class HibernateTransaction extends TransactionImplementation {
             FieldDefinition paramDef = paramsDef.getFieldDefinition(paramName);
 
             // FIXME: check if the type of the actual parameter is in accordance with paramDef
-            if (paramValue instanceof Vector) {
+            if (paramValue instanceof List) {
+                @SuppressWarnings("unchecked")
+                List<Object> lst = (List<Object>) paramValue;
+                for (int i = 0; i < lst.size(); i++) {
+                    lst.set(i, checkPtr(paramDef, lst.get(i)));
+                }
                 q.setParameterList(paramName, (Collection<?>) paramValue);
             } else if (paramValue instanceof Date) {
                 q.setParameter(paramName, paramValue, Hibernate.TIMESTAMP);
@@ -479,6 +488,17 @@ public class HibernateTransaction extends TransactionImplementation {
                     Integer val = paramValue instanceof String ? Integer.parseInt((String) paramValue)
                             : (Integer) paramValue;
                     q.setParameter(paramName, val);
+                } else if (paramDef.getIntegerType() == FieldDefinition._intEnum) {
+                    if (paramValue instanceof String) {
+                        for (int k = 0; k < paramDef.getEnumeratorSize(); k++) {
+                            if (paramDef.getNameAt(k).equals(paramValue)) {
+                                paramValue = paramDef.getIntAt(k);
+                                break;
+                            }
+                        }
+                    }
+
+                    q.setParameter(paramName, paramValue);
                 } else if (paramDef.getIntegerType() == FieldDefinition._real) {
                     Double val = paramValue instanceof String ? Double.parseDouble((String) paramValue)
                             : (Double) paramValue;
@@ -488,6 +508,13 @@ public class HibernateTransaction extends TransactionImplementation {
                 }
             }
         }
+    }
+
+    private Object checkPtr(FieldDefinition paramDef, Object paramValue) {
+        if (paramDef.getIntegerType() == FieldDefinition._ptr && paramValue instanceof String) {
+            return new Pointer(paramDef.getPointedType().getName(), (String) paramValue).getId();
+        }
+        return paramValue;
     }
 
     @Override
@@ -544,10 +571,10 @@ public class HibernateTransaction extends TransactionImplementation {
     protected Object[] treatParam(Object args) {
         if (args == null) {
             return new Object[] {};
-        } else if (args instanceof Vector) {
-            Vector<?> v = (Vector<?>) args;
+        } else if (args instanceof List) {
+            List<?> v = (List<?>) args;
             Object[] param = new Object[v.size()];
-            v.copyInto(param);
+            v.toArray(param);
             return param;
         } else if (args instanceof Object[]) {
             return (Object[]) args;
