@@ -75,7 +75,7 @@ public class TableTest extends TestCase {
     @Override
     public void setUp() {
         TransactionProvider tp = TransactionProvider.getInstance();
-        db = tp.getConnectionTo(tp.getDefaultDataSourceName());
+        db = tp.getConnectionTo("testDatabase");
     }
 
     @Override
