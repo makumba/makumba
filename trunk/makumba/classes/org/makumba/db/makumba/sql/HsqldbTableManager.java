@@ -47,4 +47,14 @@ public class HsqldbTableManager extends org.makumba.db.makumba.sql.TableManager 
         return getFieldDBName(fieldName) + " " + getFieldDBType(fieldName, d);
     }
 
+    @Override
+    public String foreignKeyCreateSyntax(String fieldName, String fkTableName, String fkFieldName) {
+
+        return "ALTER TABLE " + getDBName() + " ADD CONSTRAINT "
+                + shortIndexName(((TableManager) getDatabase().getTable(fkTableName)).getDBName(), fieldName)
+                + " FOREIGN KEY " + " (" + getFieldDBName(fieldName).toUpperCase() + ") REFERENCES "
+                + ((TableManager) getDatabase().getTable(fkTableName)).getDBName().toUpperCase() + " ("
+                + ((TableManager) getDatabase().getTable(fkTableName)).getFieldDBName(fkFieldName).toUpperCase() + ")";
+    }
+
 }
