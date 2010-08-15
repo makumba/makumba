@@ -359,9 +359,6 @@ public class MqlNode extends CommonAST {
 
     /** this method does the actual operand rewriting, called by {@link #checkAndRewriteOperand(MqlNode, MqlNode)} */
     private boolean checkAndRewrite(MqlNode left, MqlNode right) throws SemanticException {
-        if (right.getText().startsWith("methodCallPlaceholder_")) {
-            return true;
-        }
 
         String s = right.getText();
         String arg1 = s.substring(1, s.length() - 1);
