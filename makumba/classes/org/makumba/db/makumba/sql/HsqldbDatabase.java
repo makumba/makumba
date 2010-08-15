@@ -55,7 +55,7 @@ public class HsqldbDatabase extends org.makumba.db.makumba.sql.Database {
 
     @Override
     public boolean isDuplicateException(SQLException e) {
-        return e.getMessage().toLowerCase().indexOf("violation of unique index") != -1;
+        return e.getSQLState().equals("23000");
     }
 
     @Override
