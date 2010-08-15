@@ -1147,7 +1147,11 @@ public class TableManager extends Table {
     }
 
     // moved from FieldManager
-    /** set a null argument of this type in a prepared SQL statement */
+    /**
+     * Sets a null argument of this type in a prepared SQL statement.<br>
+     * FIXME this will not always work, some DBs do not support setting null arguments and need an explicit null check
+     * ("is null") in the query instead
+     **/
     public void setNullArgument(String fieldName, PreparedStatement ps, int n) throws SQLException {
         ps.setNull(n, getSQLType(fieldName));
     }
@@ -1842,9 +1846,9 @@ public class TableManager extends Table {
     }
 
     /** Makes a short index based on the table and field name, if needed **/
-    protected String shortIndexName(String tableName, String fieldName) {
+    protected String shortIndexName(String tableName, String constraintName) {
         // FIXME this may not be true for other DBMS than mysql
-        String standardIndex = tableName + "__" + fieldName;
+        String standardIndex = tableName + "__" + constraintName;
         if (standardIndex.length() + "__ibfk_XX".length() > 64) {
             // general_archive_Email__fromPerson --> g_a_E__fromPerson
             String shortIndex = "";
@@ -1855,7 +1859,7 @@ public class TableManager extends Table {
                     shortIndex += "_";
                 }
             }
-            shortIndex += "__" + fieldName;
+            shortIndex += "__" + constraintName;
             return shortIndex;
         } else {
             return standardIndex;
@@ -1953,7 +1957,7 @@ public class TableManager extends Table {
 
         String query = "SELECT 1 FROM " + getDBName() + " WHERE ";
         for (int j = 0; j < fields.length; j++) {
-            query += getFieldDBName(fields[j]) + "=?";
+            query += getFieldDBName(fields[j]) + (values[j] != null ? "=?" : " is null");
             if (j + 1 < fields.length) {
                 query += " AND ";
             }
@@ -1964,8 +1968,6 @@ public class TableManager extends Table {
             for (int i = 0; i < values.length; i++) {
                 if (values[i] != null) {
                     setUpdateArgument(fields[i], ps, (i + 1), values[i]);
-                } else {
-                    setNullArgument(fields[i], ps, (i + 1));
                 }
             }
             return ps.executeQuery().next();
@@ -2017,7 +2019,8 @@ public class TableManager extends Table {
                     alreadyAdded.add(subField);
                 }
                 // in any case, we match the tables on the fields.
-                where += otherProjection + "." + otherTable.getFieldDBName(fieldName) + "=?";
+                where += otherProjection + "." + otherTable.getFieldDBName(fieldName)
+                        + (values[i] != null ? "=?" : " is null");
                 if (i + 1 < fields.length) {
                     where += " AND ";
                 }
@@ -2044,14 +2047,10 @@ public class TableManager extends Table {
                     TableManager otherTable = (TableManager) getDatabase().getTable(pointedType);
                     if (values[i] != null) {
                         otherTable.setUpdateArgument(fieldName, ps, n, values[i]);
-                    } else {
-                        otherTable.setNullArgument(fieldName, ps, n);
                     }
                 } else { // otherwise we use this table manager
                     if (values[i] != null) {
                         setUpdateArgument(fields[i], ps, n, values[i]);
-                    } else {
-                        setNullArgument(fields[i], ps, n);
                     }
                 }
             }
