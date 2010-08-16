@@ -47,13 +47,13 @@ import java.util.logging.Level;
 import org.makumba.CompositeValidationException;
 import org.makumba.DBError;
 import org.makumba.DataDefinition;
-import org.makumba.DataDefinition.MultipleUniqueKeyDefinition;
 import org.makumba.FieldDefinition;
-import org.makumba.FieldDefinition.FieldErrorMessageType;
 import org.makumba.MakumbaError;
 import org.makumba.NotUniqueException;
 import org.makumba.Pointer;
 import org.makumba.Text;
+import org.makumba.DataDefinition.MultipleUniqueKeyDefinition;
+import org.makumba.FieldDefinition.FieldErrorMessageType;
 import org.makumba.commons.NameResolver;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.SQLPointer;
@@ -1954,9 +1954,13 @@ public class TableManager extends Table {
     public boolean checkDuplicate(String[] fields, Object values[], DBConnection dbc) {
 
         SQLDBConnection sqlDbc = (SQLDBConnection) dbc;
+        Vector<Integer> nullIndexes = new Vector<Integer>();
 
         String query = "SELECT 1 FROM " + getDBName() + " WHERE ";
         for (int j = 0; j < fields.length; j++) {
+            if (values[j] == null) {
+                nullIndexes.add(j);
+            }
             query += getFieldDBName(fields[j]) + (values[j] != null ? "=?" : " is null");
             if (j + 1 < fields.length) {
                 query += " AND ";
@@ -1967,7 +1971,14 @@ public class TableManager extends Table {
         try {
             for (int i = 0; i < values.length; i++) {
                 if (values[i] != null) {
-                    setUpdateArgument(fields[i], ps, (i + 1), values[i]);
+                    // shift the argument index according to how many arguments have been replaced with "is null"
+                    int k = 0;
+                    for (Integer a : nullIndexes) {
+                        if (a < i) {
+                            k++;
+                        }
+                    }
+                    setUpdateArgument(fields[i], ps, i + 1 - k, values[i]);
                 }
             }
             return ps.executeQuery().next();
@@ -1997,12 +2008,16 @@ public class TableManager extends Table {
         String[] fields = definition.getFields();
         String from = getDBName();
         String where = "";
+        Vector<Integer> nullIndexes = new Vector<Integer>();
 
         // for unique keys that go over subfields, we need to construct a query with joins
         String projection = dd.getName().replace('.', '_'); // label of this table
         from += " " + projection; // we need to use the labels, as we might have fields with the same name
         Vector<String> alreadyAdded = new Vector<String>(); // we store what tables we already added to the projection
         for (int i = 0; i < fields.length; i++) {
+            if (values[i] == null) {
+                nullIndexes.add(i);
+            }
             if (fields[i].indexOf(".") != -1) { // FIXME: we go only one level of "." here, there might be more
                 // do the projection
                 String subField = fields[i].substring(0, fields[i].indexOf("."));
@@ -2018,6 +2033,7 @@ public class TableManager extends Table {
                             + otherTable.getFieldDBName(pointedType.getIndexPointerFieldName()) + " AND ";
                     alreadyAdded.add(subField);
                 }
+
                 // in any case, we match the tables on the fields.
                 where += otherProjection + "." + otherTable.getFieldDBName(fieldName)
                         + (values[i] != null ? "=?" : " is null");
@@ -2046,8 +2062,16 @@ public class TableManager extends Table {
                     // then we use the table manager of that table to set the value
                     TableManager otherTable = (TableManager) getDatabase().getTable(pointedType);
                     if (values[i] != null) {
-                        otherTable.setUpdateArgument(fieldName, ps, n, values[i]);
+                        // shift the argument index according to how many arguments have been replaced with "is null"
+                        int k = 0;
+                        for (Integer a : nullIndexes) {
+                            if (a < i) {
+                                k++;
+                            }
+                        }
+                        otherTable.setUpdateArgument(fieldName, ps, n - k, values[i]);
                     }
+
                 } else { // otherwise we use this table manager
                     if (values[i] != null) {
                         setUpdateArgument(fields[i], ps, n, values[i]);
