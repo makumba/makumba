@@ -15,6 +15,7 @@ import javax.faces.event.PhaseId;
 import org.makumba.DataDefinition;
 import org.makumba.OQLParseError;
 import org.makumba.commons.RuntimeWrappedException;
+import org.makumba.jsf.MakumbaDataContext;
 import org.makumba.jsf.update.ObjectInputValue;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.ComposedSubquery;
@@ -40,8 +41,6 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
     private ComposedQuery cQ;
 
     private QueryAnalysis qA;
-
-    private static ThreadLocal<CreateObjectComponent> currentCreateObject = new ThreadLocal<CreateObjectComponent>();
 
     public String getFrom() {
         return queryProps[ComposedQuery.FROM];
@@ -158,8 +157,8 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
      * analysis for this component, and initialises the ObjectInputValue
      */
     private void beforeObject() {
-        parent = getCurrentlyRunning();
-        currentCreateObject.set(this);
+        parent = MakumbaDataContext.getDataContext().getCurrentCreateObject();
+        MakumbaDataContext.getDataContext().setCurrentCreateObject(this);
         initQueryAnalysis();
         if (FacesContext.getCurrentInstance().getCurrentPhaseId() == PhaseId.UPDATE_MODEL_VALUES) {
             initObjectInputValue();
@@ -167,23 +166,14 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
     }
 
     /**
-     * Sets the currently running {@link CreateObjectComponent} to the parent of this object
+     * Sets the currently running {@link CreateObjectComponent} to the parent of this object, cleans the
+     * ObjectInputValue
      */
     private void afterObject() {
-        currentCreateObject.set(parent);
+        MakumbaDataContext.getDataContext().setCurrentCreateObject(parent);
         if (FacesContext.getCurrentInstance().getCurrentPhaseId() == PhaseId.UPDATE_MODEL_VALUES) {
             currentValue = null;
         }
-    }
-
-    /**
-     * Gets the currently running {@link CreateObjectComponent}, null if none is running. Indeed we can't always rely on
-     * the value returned by #{component} (i.e. on the JSF EL component stack) so we set our own.
-     * 
-     * @return the currently running {@link CreateObjectComponent}
-     */
-    public static CreateObjectComponent getCurrentlyRunning() {
-        return currentCreateObject.get();
     }
 
     /**

@@ -1,6 +1,6 @@
 package org.makumba.jsf.component.el;
 
-import org.makumba.jsf.component.UIRepeatListComponent;
+import org.makumba.jsf.MakumbaDataContext;
 
 /**
  * makumba EL functions
@@ -11,6 +11,6 @@ import org.makumba.jsf.component.UIRepeatListComponent;
 public class MakumbaFunctions {
 
     public static Object expr(String expr) {
-        return UIRepeatListComponent.getCurrentlyRunning().getExpressionValue(expr);
+        return MakumbaDataContext.getDataContext().getCurrentList().getExpressionValue(expr);
     }
 }

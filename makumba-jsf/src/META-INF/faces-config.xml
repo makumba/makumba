@@ -13,9 +13,13 @@
 		</lifecycle
 	-->
 	<application>
+		<!-- see https://javaserverfaces.dev.java.net/issues/show_bug.cgi?id=1779 -->
+		<system-event-listener>
+			<system-event-class>javax.faces.event.PostConstructApplicationEvent</system-event-class>
+			<system-event-listener-class>org.makumba.jsf.update.ValueSavingPhaseListener</system-event-listener-class>
+		</system-event-listener>
 		<default-validators>
 			<validator-id>org.makumba.jsf.MakumbaValidator</validator-id>
-
 		</default-validators>
 		<!--  warning: order of the EL Resolvers is important -->
 		<el-resolver>org.makumba.jsf.component.el.MakumbaELResolver</el-resolver>
@@ -36,6 +40,10 @@
 			<component-type>makumbaValue</component-type>
 			<component-class>org.makumba.jsf.component.ValueComponent</component-class>
 		</component>
+		<component>
+			<component-type>makumbaDelete</component-type>
+			<component-class>org.makumba.jsf.component.DeleteComponent</component-class>
+		</component>
 	</application>
 	<validator>
 		<validator-id>org.makumba.jsf.MakumbaValidator</validator-id>
@@ -46,7 +54,7 @@
 		<converter-for-class>org.makumba.Pointer</converter-for-class>
 	</converter>
 	<lifecycle>
-		<phase-listener> org.makumba.jsf.LogicPhaseListener </phase-listener>
-		<phase-listener> org.makumba.jsf.update.ValueSavingPhaseListener</phase-listener>
+		<phase-listener>org.makumba.jsf.LogicPhaseListener</phase-listener>
+		<phase-listener>org.makumba.jsf.update.ValueSavingPhaseListener</phase-listener>
 	</lifecycle>
 </faces-config>

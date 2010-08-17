@@ -10,6 +10,7 @@ import javax.el.ELResolver;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.NoSuchFieldException;
+import org.makumba.jsf.MakumbaDataContext;
 import org.makumba.jsf.component.CreateObjectComponent;
 import org.makumba.jsf.component.MakumbaDataComponent;
 import org.makumba.jsf.component.MakumbaDataComponent.Util;
@@ -167,14 +168,7 @@ public class MakumbaCreateELResolver extends ELResolver {
     }
 
     private CreateObjectComponent findParentObject() {
-        // this doesn't always work
-        // UIComponent c = FacesContext.getCurrentInstance().getApplication().evaluateExpressionGet(
-        // FacesContext.getCurrentInstance(), "#{component}", UIComponent.class);
-        // CreateObjectComponent object = CreateObjectComponent.findParentObject(c);
-
-        CreateObjectComponent object = CreateObjectComponent.getCurrentlyRunning();
-
-        return object;
+        return MakumbaDataContext.getDataContext().getCurrentCreateObject();
     }
 
     @Override
@@ -226,13 +220,13 @@ public class MakumbaCreateELResolver extends ELResolver {
             if (object != null) {
                 // FIXME replace object.getClientId() by the actual input
                 MakumbaDataComponent c = MakumbaDataComponent.Util.findLabelDefinitionComponent(object, p.getLabel());
-                c.addValue(p.getLabel(), p.getPath((String) property), value, Util.findInput(object,
-                    p.getProjectionPath() + "." + property).getClientId());
+                c.addValue(p.getLabel(), p.getPath((String) property), value,
+                    Util.findInput(object, p.getProjectionPath() + "." + property).getClientId());
             }
 
             context.setPropertyResolved(true);
 
-            System.out.println("========= New value for new object of type " + p.getType().getName() + " for "
+            log.fine("========= New value for new object of type " + p.getType().getName() + " for "
                     + p.getProjectionPath() + "." + property + " <<<<<<<<<<<<< " + value);
 
         }
