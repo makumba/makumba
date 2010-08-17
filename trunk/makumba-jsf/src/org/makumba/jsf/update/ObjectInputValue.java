@@ -14,11 +14,80 @@ import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.InvalidValueException;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
+import org.makumba.jsf.MakumbaDataContext;
 import org.makumba.providers.DataDefinitionProvider;
 
 public abstract class ObjectInputValue {
 
-    static ThreadLocal<DataHandler> dataHandler = new ThreadLocal<DataHandler>();
+    private String label;
+
+    private Dictionary<String, Object> fields = new Hashtable<String, Object>();
+
+    private Map<String, String> clientIds = new HashMap<String, String>();
+
+    /**
+     * Makes an input value for creation of a new object
+     * 
+     * @param label
+     *            the label of the object
+     * @param definition
+     *            the definition of the object
+     * @return an {@link ObjectInputValue} that can be used to register values
+     */
+    public static ObjectInputValue makeCreationInputValue(String label, String definition) {
+        DataDefinition t = null;
+        try {
+            t = DataDefinitionProvider.getInstance().getDataDefinition(definition);
+        } catch (DataDefinitionNotFoundError dne) {
+            // ignore
+        }
+
+        if (t != null) {
+            return new CreateInputValue(MakumbaDataContext.getDataContext().getDataHandler(), label, t);
+        } else {
+            // find base label
+            String baseLabel = null;
+            String fieldPath = null;
+            int n = definition.indexOf(".");
+            if (n > 0) {
+                baseLabel = definition.substring(0, n);
+                fieldPath = definition.substring(n + 1, definition.length());
+            } else {
+                // this will not happen because otherwise the query analysis would have flopped
+                throw new RuntimeException("should not be here");
+            }
+
+            return ReferenceInputValue.makeReferenceObjectInputValue(
+                MakumbaDataContext.getDataContext().getDataHandler(), label, baseLabel, fieldPath);
+        }
+
+    }
+
+    /**
+     * Makes an input value for update of an existing object
+     * 
+     * @param label
+     *            the label of the object
+     * @param ptr
+     *            the {@link Pointer} to the existing object instance
+     * @return an {@link ObjectInputValue} that can be used to register values
+     */
+    public static ObjectInputValue makeUpdateInputValue(String label, Pointer ptr) {
+        return new UpdateInputValue(MakumbaDataContext.getDataContext().getDataHandler(), label, ptr);
+    }
+
+    /**
+     * Makes an input value for deletion of an existing object
+     * 
+     * @param label
+     *            the label of the object to delete
+     * @param ptr
+     *            the {@link Pointer} to the object instance
+     * @return an ObjectInputValue instance
+     */
+    public static ObjectInputValue makeDeleteInputValue(String label, Pointer ptr) {
+        return new DeleteInputValue(MakumbaDataContext.getDataContext().getDataHandler(), label, ptr);
+    }
 
     protected ObjectInputValue(DataHandler dh, String label) {
         this(dh, label, null);
@@ -29,54 +98,13 @@ public abstract class ObjectInputValue {
         addToDataHandler(dh, referenceIndex);
     }
 
-    protected void addToDataHandler(DataHandler dh, Integer referenceIndex) {
-        dh.getValues().add(this);
-    }
-
-    private String label;
-
-    private Dictionary<String, Object> fields = new Hashtable<String, Object>();
-
-    private Map<String, String> clientIds = new HashMap<String, String>();
-
-    public String getLabel() {
-        return label;
-    }
-
     public void addField(String path, Object value, String clientId) {
         this.fields.put(path, value);
         this.clientIds.put(path, clientId);
     }
 
-    public Dictionary<String, Object> getFields() {
-        return fields;
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getName() + " [label=" + label + "]";
-    }
-
-    public void processAndTreatExceptions(Transaction t) {
-        try {
-            process(t);
-        } catch (InvalidValueException e) {
-            treatInvalidValue(e);
-        } catch (CompositeValidationException f) {
-            for (InvalidValueException e : f.getExceptions()) {
-                treatInvalidValue(e);
-            }
-        } catch (Throwable tr) {
-            // TODO: we cannot detect which field provoked this, but we could insert the clientId of the
-            // form
-            FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, tr.getMessage(), tr.getMessage()));
-        }
-    }
-
-    private void treatInvalidValue(InvalidValueException e) {
-        FacesContext.getCurrentInstance().addMessage(findClientId(e.getFieldName()),
-            new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage()));
+    protected void addToDataHandler(DataHandler dh, Integer referenceIndex) {
+        dh.getValues().add(this);
     }
 
     private String findClientId(String name) {
@@ -97,38 +125,17 @@ public abstract class ObjectInputValue {
 
     }
 
-    public static ObjectInputValue makeUpdateInputValue(String label, Pointer ptr) {
-        return new UpdateInputValue(dataHandler.get(), label, ptr);
+    public Dictionary<String, Object> getFields() {
+        return fields;
     }
 
-    /** Factory method */
-    public static ObjectInputValue makeCreationInputValue(String label, String definition) {
-        DataDefinition t = null;
-        try {
-            t = DataDefinitionProvider.getInstance().getDataDefinition(definition);
-        } catch (DataDefinitionNotFoundError dne) {
-            // ignore
-        }
-
-        if (t != null) {
-            return new CreateInputValue(dataHandler.get(), label, t);
-        } else {
-            // find base label
-            String baseLabel = null;
-            String fieldPath = null;
-            int n = definition.indexOf(".");
-            if (n > 0) {
-                baseLabel = definition.substring(0, n);
-                fieldPath = definition.substring(n + 1, definition.length());
-            } else {
-                // this will not happen because otherwise the query analysis would have flopped
-                throw new RuntimeException("should not be here");
-            }
-
-            return ReferenceInputValue.makeReferenceObjectInputValue(dataHandler.get(), label, baseLabel, fieldPath);
-        }
-
+    public String getLabel() {
+        return label;
     }
+
+    public abstract Pointer getPointer();
+
+    public abstract DataDefinition getType();
 
     /**
      * the command pattern
@@ -137,7 +144,30 @@ public abstract class ObjectInputValue {
      */
     protected abstract void process(Transaction t);
 
-    public abstract Pointer getPointer();
+    public void processAndTreatExceptions(Transaction t) {
+        try {
+            process(t);
+        } catch (InvalidValueException e) {
+            treatInvalidValue(e);
+        } catch (CompositeValidationException f) {
+            for (InvalidValueException e : f.getExceptions()) {
+                treatInvalidValue(e);
+            }
+        } catch (Throwable tr) {
+            // TODO: we cannot detect which field provoked this, but we could insert the clientId of the
+            // form
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, tr.getMessage(), tr.getMessage()));
+        }
+    }
 
-    public abstract DataDefinition getType();
+    @Override
+    public String toString() {
+        return getClass().getName() + " [label=" + label + "]";
+    }
+
+    private void treatInvalidValue(InvalidValueException e) {
+        FacesContext.getCurrentInstance().addMessage(findClientId(e.getFieldName()),
+            new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage()));
+    }
 }

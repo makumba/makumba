@@ -13,9 +13,10 @@ import javax.faces.context.FacesContext;
 
 import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
+import org.makumba.jsf.MakumbaDataContext;
 import org.makumba.jsf.component.MakumbaDataComponent;
-import org.makumba.jsf.component.UIRepeatListComponent;
 import org.makumba.jsf.component.MakumbaDataComponent.Util;
+import org.makumba.jsf.component.UIRepeatListComponent;
 
 /**
  * FIXME for ptr projections such as #{p}, return something alike to Java's [Object@REFERENCE String instead of the
@@ -45,43 +46,39 @@ public class MakumbaELResolver extends ELResolver {
             context.setPropertyResolved(true);
             // it was object, i think pointer is correct, not sure.
             // maybe a pointer converter will be needed then
-            System.out.println(debugIdent() + " " + base + "." + property + " type Pointer" + " "
-                    + current.getClientId());
+            log.fine(debugIdent() + " " + base + "." + property + " type Pointer" + " " + current.getClientId());
 
             return String.class;
         }
         if (base != null && base instanceof ReadExpressionPathPlaceholder && property != null) {
             ReadExpressionPathPlaceholder expr = basicGetValue(context, base, property);
             if (expr == null) {
-                System.out.println(debugIdent() + " " + base + "." + property + " type unresolved" + " "
-                        + current.getClientId());
+                log.fine(debugIdent() + " " + base + "." + property + " type unresolved" + " " + current.getClientId());
                 return null;
             }
             context.setPropertyResolved(true);
-            UIRepeatListComponent list = UIRepeatListComponent.getCurrentlyRunning();
+            UIRepeatListComponent list = MakumbaDataContext.getDataContext().getCurrentList();
             if (!list.hasExpression(expr.getProjectionPath())) {
-                System.out.println(debugIdent() + " " + base + "." + property + " type Object" + " "
-                        + current.getClientId());
+                log.fine(debugIdent() + " " + base + "." + property + " type Object" + " " + current.getClientId());
 
                 // this should not matter as we are not going to edit
                 return Object.class;
             }
             FieldDefinition fd = list.getExpressionType(expr.getProjectionPath());
             Class<?> type = fd.getJavaType();
-            System.out.println(debugIdent() + " " + base + "." + property + " type " + type.getName() + " "
+            log.fine(debugIdent() + " " + base + "." + property + " type " + type.getName() + " "
                     + current.getClientId());
 
             return type;
         }
-        System.out.println(debugIdent() + " " + base + "." + property + " type unresolved" + " "
-                + current.getClientId());
+        log.fine(debugIdent() + " " + base + "." + property + " type unresolved" + " " + current.getClientId());
 
         return null;
     }
 
     private String debugIdent() {
-        if (UIRepeatListComponent.getCurrentlyRunning() != null) {
-            return UIRepeatListComponent.getCurrentlyRunning().debugIdent();
+        if (MakumbaDataContext.getDataContext().getCurrentList() != null) {
+            return MakumbaDataContext.getDataContext().getCurrentList().debugIdent();
         }
         return "";
     }
@@ -92,12 +89,11 @@ public class MakumbaELResolver extends ELResolver {
 
         ReadExpressionPathPlaceholder mine = basicGetValue(context, base, property);
         if (mine == null) {
-            System.out.println(debugIdent() + " " + base + "." + property + " ----> " + null + " in "
-                    + current.getClientId());
+            log.fine(debugIdent() + " " + base + "." + property + " ----> " + null + " in " + current.getClientId());
 
             return null;
         }
-        UIRepeatListComponent list = UIRepeatListComponent.getCurrentlyRunning();
+        UIRepeatListComponent list = MakumbaDataContext.getDataContext().getCurrentList();
         String expr = mine.getProjectionPath();
         if (base != null && base instanceof ReadExpressionPathPlaceholder && list.hasExpression(expr)) {
             {
@@ -106,7 +102,7 @@ public class MakumbaELResolver extends ELResolver {
                     // TODO: we could actually set the value in the placeholder, for whatever it could be useful
 
                     // return the placeholder
-                    System.out.println(debugIdent() + " " + base + "." + property + " ----> " + mine + " in "
+                    log.fine(debugIdent() + " " + base + "." + property + " ----> " + mine + " in "
                             + current.getClientId());
 
                     return mine;
@@ -119,14 +115,13 @@ public class MakumbaELResolver extends ELResolver {
                 }
                 // the PointerConverter should take over for other cases
                 Object value = list.getExpressionValue(expr);
-                System.out.println(debugIdent() + " " + base + "." + property + " ----> " + value + " in "
+                log.fine(debugIdent() + " " + base + "." + property + " ----> " + value + " in "
                         + current.getClientId());
                 return value;
             }
 
         }
-        System.out.println(debugIdent() + " " + base + "." + property + " ----> " + mine + " in "
-                + current.getClientId());
+        log.fine(debugIdent() + " " + base + "." + property + " ----> " + mine + " in " + current.getClientId());
 
         // log.fine(mine.toString());
         return mine;
@@ -139,7 +134,7 @@ public class MakumbaELResolver extends ELResolver {
             throw new NullPointerException();
         }
 
-        UIRepeatListComponent list = UIRepeatListComponent.getCurrentlyRunning();
+        UIRepeatListComponent list = MakumbaDataContext.getDataContext().getCurrentList();
         if (list == null) {
             return null;
         }
@@ -206,16 +201,14 @@ public class MakumbaELResolver extends ELResolver {
 
         if (base instanceof ReadExpressionPathPlaceholder) {
 
-            UIRepeatListComponent list = UIRepeatListComponent.getCurrentlyRunning();
-            System.out.println(debugIdent() + " " + base + "." + property + " <------- " + val + " "
-                    + current.getClientId());
+            UIRepeatListComponent list = MakumbaDataContext.getDataContext().getCurrentList();
+            log.fine(debugIdent() + " " + base + "." + property + " <------- " + val + " " + current.getClientId());
 
             ReadExpressionPathPlaceholder p = (ReadExpressionPathPlaceholder) base;
             // FIXME return the clientId of the input, not the list
             MakumbaDataComponent c = MakumbaDataComponent.Util.findLabelDefinitionComponent(list, p.getLabel());
             String path = p.getProjectionPath() + "." + property;
-            c.addValue(p.getLabel(), p.getPath((String) property), val,
-                Util.findInput(list, path).getClientId());
+            c.addValue(p.getLabel(), p.getPath((String) property), val, Util.findInput(list, path).getClientId());
 
             // changing the data model of the enclosing list
             // note that the data model of the list that actually defined this projection is not necessarily changed
@@ -223,7 +216,7 @@ public class MakumbaELResolver extends ELResolver {
             list.setExpressionValue(path, val);
             context.setPropertyResolved(true);
         } else {
-            System.out.println(debugIdent() + " not setting " + base + "." + property + " to " + val + " "
+            log.fine(debugIdent() + " not setting " + base + "." + property + " to " + val + " "
                     + current.getClientId());
         }
         return;
@@ -244,7 +237,7 @@ public class MakumbaELResolver extends ELResolver {
     @Override
     public boolean isReadOnly(ELContext context, Object base, Object property) {
 
-        System.out.println(debugIdent() + " isReadOnly " + base + "." + property);
+        log.fine(debugIdent() + " isReadOnly " + base + "." + property);
         // as per reference
         if (context == null) {
             throw new NullPointerException();
@@ -264,4 +257,5 @@ public class MakumbaELResolver extends ELResolver {
         // TODO
         return null;
     }
+
 }

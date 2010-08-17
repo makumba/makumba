@@ -144,6 +144,21 @@
 		</attribute>
 	</tag>
 
+	<tag>
+		<description>mak:delete</description>
+		<tag-name>delete</tag-name>
+		<component>
+			<component-type>makumbaDelete</component-type>
+			<handler-class>org.makumba.jsf.component.DeleteTagHandler</handler-class>
+		</component>
+
+		<attribute>
+			<description>object to delete</description>
+			<name>label</name>
+			<required>true</required>
+			<type>java.lang.Object</type>
+		</attribute>
+	</tag>
 
 
 </facelet-taglib>

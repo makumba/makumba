@@ -6,6 +6,8 @@ import javax.faces.component.UIComponentBase;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
+import org.makumba.jsf.MakumbaDataContext;
+
 /**
  * mak:value component
  * 
@@ -54,7 +56,8 @@ public class ValueComponent extends UIComponentBase {
         super.encodeBegin(context);
         // System.out.println("ValueComponent.encodeBegin()");
         ResponseWriter writer = context.getResponseWriter();
-        UIRepeatListComponent currentlyRunning = UIRepeatListComponent.getCurrentlyRunning();
+        UIRepeatListComponent currentlyRunning = ((MakumbaDataContext) context.getELContext().getContext(
+            MakumbaDataContext.class)).getCurrentList();
         if (exprIndex == null) {
             // this will be preserved in all parent list iterations
             exprIndex = currentlyRunning.getExpressionIndex(getExpr());

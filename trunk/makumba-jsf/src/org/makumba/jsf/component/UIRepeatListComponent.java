@@ -42,6 +42,7 @@ import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.commons.RegExpUtils;
 import org.makumba.jsf.FacesAttributes;
+import org.makumba.jsf.MakumbaDataContext;
 import org.makumba.jsf.update.ObjectInputValue;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.ComposedSubquery;
@@ -54,7 +55,7 @@ import com.sun.faces.facelets.compiler.UIInstructions;
 import com.sun.faces.facelets.component.UIRepeat1;
 
 public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataComponent {
-    static final Logger log = java.util.logging.Logger.getLogger("org.makumba.jsf");
+    static final Logger log = java.util.logging.Logger.getLogger("org.makumba.jsf.component");
 
     private static final class MakListDataModel extends ListDataModel<ArrayMap> implements Serializable {
 
@@ -102,8 +103,6 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
     transient private String prefix;
 
     transient private UIRepeatListComponent parent;
-
-    private static ThreadLocal<UIRepeatListComponent> currentList = new ThreadLocal<UIRepeatListComponent>();
 
     private static ThreadLocal<Stack<Dictionary<String, Object>>> currentDataStack = new ThreadLocal<Stack<Dictionary<String, Object>>>();
 
@@ -261,7 +260,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
             iterationGroupData = null;
         }
 
-        System.out.println(debugIdent() + " --- startTag ----  " + o);
+        log.fine(debugIdent() + " --- startTag ----  " + o);
 
         if (iterationGroupData == null) {
             return false;
@@ -289,9 +288,9 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
 
         setBegin(0);
         setEnd(iterationGroupData.size());
-        parent = getCurrentlyRunning();
+        parent = MakumbaDataContext.getDataContext().getCurrentList();
 
-        currentList.set(this);
+        MakumbaDataContext.getDataContext().setCurrentList(this);
         return true;
     }
 
@@ -308,12 +307,12 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
     }
 
     private void afterIteration(Object o) {
-        System.out.println(debugIdent() + " --- endTag--- " + visitedIndexes + " " + o);
+        log.fine(debugIdent() + " --- endTag--- " + visitedIndexes + " " + o);
         iterationGroupData = null;
         currentIndex = -1;
         // this list is done, no more current value in stack
         currentDataStack.get().pop();
-        currentList.set(parent);
+        MakumbaDataContext.getDataContext().setCurrentList(parent);
         if (findMakListParent(this, true) == null) {
             endIterationGroup(o);
         }
@@ -325,7 +324,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
          * here we can detect Ajax and ValueChanged events, but they are always sent to the root mak:list
         no matter which mak:list is the target of the f:ajax render= 
          */
-        System.out.println(debugIdent() + " " + event.getComponent().getClientId() + " " + event);
+        log.fine(debugIdent() + " " + event.getComponent().getClientId() + " " + event);
 
         super.queueEvent(event);
     }
@@ -360,14 +359,14 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
     @Override
     public boolean invokeOnComponent(FacesContext faces, String clientId, ContextCallback callback)
             throws FacesException {
-        System.out.println(debugIdent() + " INVOKE " + clientId + " " + callback);
+        log.fine(debugIdent() + " INVOKE " + clientId + " " + callback);
         return super.invokeOnComponent(faces, clientId, callback);
     }
 
     @Override
     public boolean visitTree(final VisitContext context, final VisitCallback callback) {
         Collection<String> c = context.getFacesContext().getPartialViewContext().getRenderIds();
-        System.out.println(debugIdent() + " renderedIds " + c);
+        log.fine(debugIdent() + " renderedIds " + c);
 
         VisitCallback clbk = callback;
 
@@ -379,7 +378,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         if (!beforeIteration(callback)) {
             return false;
         }
-        System.out.println(debugIdent()
+        log.fine(debugIdent()
                 + " will visit "
                 + (context.getSubtreeIdsToVisit(this) == VisitContext.ALL_IDS ? "all"
                         : context.getSubtreeIdsToVisit(this)));
@@ -407,11 +406,6 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
             c = c.getEnclosingClass();
         }
         return Arrays.asList(c.getInterfaces()).contains(StateManagementStrategy.class);
-    }
-
-    public static UIRepeatListComponent getCurrentlyRunning() {
-        return currentList.get();
-
     }
 
     static int composedQueries = NamedResources.makeStaticCache("JSF ComposedQueries", new NamedResourceFactory() {
@@ -456,7 +450,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
     }
 
     private void startIterationGroup(Object o) {
-        System.out.println(debugIdent() + " ------------- start -------- " + o);
+        log.fine(debugIdent() + " ------------- start -------- " + o);
         // we are in root, we initialize the data stack
         currentDataStack.set(new Stack<Dictionary<String, Object>>());
 
@@ -500,7 +494,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
 
         // we are in root, we initialize the data stack
         currentDataStack.set(null);
-        System.out.println(debugIdent() + " ----------- end ----------- " + o);
+        log.fine(debugIdent() + " ----------- end ----------- " + o);
     }
 
     private void executeGroupQueries(final QueryProvider qep) {
@@ -576,11 +570,11 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         }
 
         if (Util.validationFailed()) {
-            System.out.println(debugIdent() + " -- not running query because of validation errors -- " + composedQuery);
+            log.fine(debugIdent() + " -- not running query because of validation errors -- " + composedQuery);
             return;
         }
         try {
-            System.out.println(debugIdent() + " --run-- " + composedQuery);
+            log.fine(debugIdent() + " --run-- " + composedQuery);
             listData = composedQuery.execute(qep, null, evaluator, offset, limit);
         } finally {
             if (useSeparateTransactions()) {
@@ -840,7 +834,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
 
     }
 
-    static private String trimExpression(String expr) {
+    protected String trimExpression(String expr) {
         return expr.substring(2, expr.length() - 1);
     }
 
@@ -868,7 +862,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         if (faces == null) {
             throw new NullPointerException();
         }
-        System.out.println(debugIdent() + " save with key " + this.getClientId(FacesContext.getCurrentInstance()));
+        log.fine(debugIdent() + " save with key " + this.getClientId(FacesContext.getCurrentInstance()));
 
         Object[] state = new Object[8];
 
