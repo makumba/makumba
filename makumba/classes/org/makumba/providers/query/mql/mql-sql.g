@@ -502,29 +502,21 @@ withClause
 	;
 
 whereClause
-// ***** MQL addition (pass2 inliner): allow functions in where
-
-	: #(w:WHERE { handleClauseStart( WHERE ); } b:logicalExprOrFunctionCall) {
+	: #(w:WHERE { handleClauseStart( WHERE ); } b:logicalExpr) {
 		// Use the *output* AST for the boolean expression!
 		#whereClause = #(w , #b);
 	}
 	;
 
 logicalExpr
-// ***** MQL addition (pass2 inliner): allow functions as logical expression
-	: #(AND logicalExprOrFunctionCall logicalExprOrFunctionCall)
-	| #(OR logicalExprOrFunctionCall logicalExprOrFunctionCall)
-	| #(NOT logicalExprOrFunctionCall)
+	: #(AND logicalExpr logicalExpr)
+	| #(OR logicalExpr logicalExpr)
+	| #(NOT logicalExpr)
 	| comparisonExpr
 	| TRUE
 	| FALSE
 	;
 
-// ***** MQL addition (pass2 inliner) new rule, see above
-logicalExprOrFunctionCall
-    : logicalExpr
-    | f:functionCall { setBooleanType(#f); }
-    ;
 
 // TODO: Add any other comparison operators here.
 comparisonExpr
@@ -589,10 +581,9 @@ arithmeticExpr
 	;
 
 caseExpr
-// ***** MQL addition (pass2 inliner): allowing function calls in case when ... statements
 // ***** MQL addition: allowing subqueries in THEN and ELSE
-	: #(CASE { inCase = true; } (#(WHEN logicalExprOrFunctionCall exprOrSubquery))+ (#(ELSE exprOrSubquery))?) { inCase = false; }
-	| #(CASE2 { inCase = true; } expr (#(WHEN expr expr))+ (#(ELSE expr))?) { inCase = false; }
+	: #(CASE { inCase = true; } (#(WHEN logicalExpr exprOrSubquery))+ (#(ELSE exprOrSubquery))?) { inCase = false; }
+	| #(CASE2 { inCase = true; } exprOrSubquery (#(WHEN exprOrSubquery exprOrSubquery))+ (#(ELSE exprOrSubquery))?) { inCase = false; }
 	;
 
 //TODO: I don't think we need this anymore .. how is it different to 
@@ -661,8 +652,6 @@ addrExpr! [ boolean root ]
 
 addrExprLhs
 	: addrExpr [ false ]
-	   // ****** MQL addition (pass2 inliner): accept function calls for actors, to be able to have actor(Type).field
-    | f:functionCall
     ;
 
 propertyName
@@ -695,12 +684,7 @@ propertyRef!
 	;
 
 propertyRefLhs
-	: propertyRef
-	   // ***** MQL addition (pass2 inliner): actor(Type).field is recognized as propertyRef, so we add functionCalls here
-	   // we can't add it in the propertyRef rule because that leads to a non-determinism with the functionCall of the selectExpr
-	   // this might become a problem if we want to allow actor().function()
-    | f:functionCall
-	
+	: propertyRef	
 	;
 
 aliasRef!

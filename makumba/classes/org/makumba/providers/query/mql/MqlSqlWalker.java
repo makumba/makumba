@@ -474,11 +474,30 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
                 if (mqlNode.isParam()) {
                     constantValues.put(name, new MqlQueryAnalysis.ParamConstant(getParamInfo(mqlNode).paramName));
                 } else {
-                    // TODO: for now we only accept parameters as constant values
-                    // that solves actor evaluation without having to do a db call
-                    // we could also check whether mqlNode is a NUM_INTEGER, NUM_DOUBLE, QUOTED_STRING, etc
-                    // for anything else than these, we give up on constants, and set constantValues to null
-                    constantValues = null;
+                    String txt = mqlNode.getText();
+                    switch (mqlNode.getType()) {
+                        case HqlSqlTokenTypes.NUM_INT:
+                            constantValues.put(name, Integer.parseInt(txt));
+                            break;
+                        case HqlSqlTokenTypes.NUM_DOUBLE:
+                            constantValues.put(name, Double.parseDouble(txt));
+                            break;
+                        case HqlSqlTokenTypes.NUM_FLOAT:
+                            constantValues.put(name, Float.parseFloat(txt));
+                            break;
+                        case HqlSqlTokenTypes.NUM_LONG:
+                            constantValues.put(name, Long.parseLong(txt));
+                            break;
+                        case HqlSqlTokenTypes.QUOTED_STRING:
+                            constantValues.put(name, txt.substring(1, txt.length() - 2));
+                            break;
+
+                        // TODO: date constants!
+
+                        default:
+                            constantValues = null;
+
+                    }
                 }
             }
             proj.addField(DataDefinitionProvider.getInstance().makeFieldWithName(name, makType));

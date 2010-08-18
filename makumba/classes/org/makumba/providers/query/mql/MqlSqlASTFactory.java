@@ -38,6 +38,8 @@ public class MqlSqlASTFactory extends ASTFactory {
             case HqlSqlTokenTypes.AND:
             case HqlSqlTokenTypes.OR:
                 return MqlLogicalNode.class;
+            case HqlSqlTokenTypes.FROM_FRAGMENT:
+                return MqlFromFragmentNode.class;
             default:
                 return MqlNode.class;
         }

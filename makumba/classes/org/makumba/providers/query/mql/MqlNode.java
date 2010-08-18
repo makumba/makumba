@@ -94,13 +94,14 @@ public class MqlNode extends CommonAST {
     public void setNextSibling(AST a) {
         super.setNextSibling(a);
         if (father != null) {
-            /*         
-            		FIXME: this feels natural to do but it fails...
-            		i think all the non-first-children are fatherless!  
-            		if(a!=null)
-                           ((MqlNode) a).setFather(father);*/
-            father.addCheckedIds((MqlNode) a);
-            father.oneMoreChild((MqlNode) a);
+            if (a != null) {
+                ((MqlNode) a).setFather(father);
+            }
+            if (father.getFirstChild() == this) {
+                // we only do this game for the second child. not sure why it fails for the 3rd
+                father.addCheckedIds((MqlNode) a);
+                father.oneMoreChild((MqlNode) a);
+            }
         }
     }
 
@@ -194,15 +195,18 @@ public class MqlNode extends CommonAST {
                     child.setMakType(DataDefinitionProvider.getInstance().makeFieldDefinition("x", "int"));
                 }
                 return child.getMakType();
+
             case HqlSqlTokenTypes.WHEN:
                 // TODO: maybe WHEN, THEN or ELSE are parameters
                 // set the WHEN parameter type to boolean, and THEN has the type of ELSE
                 // if both THEN and ELSE are parameters, we're in trouble
-                if (getFirstChild().getNextSibling() != null) {
+
+                // the makType of the child may be null, e.g. the null expression
+                if (child != getFirstChild() && child.getMakType() != null) {
                     if (father != null) {
-                        father.makType = child.makType; // propagate the type of the child (the THEN) to the CASE node
-                        return child.makType;
+                        father.makType = child.getMakType();
                     }
+                    return child.getMakType();
                 }
                 break;
 
@@ -400,6 +404,10 @@ public class MqlNode extends CommonAST {
 
     protected FieldDefinition makeBooleanFieldDefinition() {
         return DataDefinitionProvider.getInstance().makeFieldDefinition("x", "boolean");
+    }
+
+    public void writeToHql(TextList text) {
+        writeTo(text);
     }
 
 }
