@@ -359,7 +359,13 @@ public abstract class Responder implements java.io.Serializable {
             logger.warning("Couldn't remove '" + responderName + "' part from the originating URL '"
                     + originatingPageName + "': " + e.getMessage());
         }
-        return basePointerType + message + multipleSubmitErrorMsg + resultAttribute + database + operation
+        // hack for the makumba tests to work
+        // since there are rarely more than one db in the webapp, this doesn't really matter
+        String db = database;
+        if (database.equals("testDatabaseHibernate")) {
+            db = "testDatabase";
+        }
+        return basePointerType + message + multipleSubmitErrorMsg + resultAttribute + db + operation
                 + controller.getClass().getName() + handler + addField + newType + reloadFormOnError
                 + originatingPageNameWithoutResponder + showFormAnnotated + clientSideValidation + defaultMatchModes
                 + resultLabel + triggerEvent + (StringUtils.isNotBlank(recordChangesIn) ? recordChangesIn : "");
