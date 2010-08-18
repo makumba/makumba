@@ -108,8 +108,10 @@ public class MQLFunctionDefinition {
      * This default implementation just renders the function by concatenating the function name and all arguments; for
      * functions that need to modify the name, the argument order, number of arguments, etc., this method provides an
      * entry point to rewrite it (possibly in a specific SQL dialect).
+     * 
+     * @param hql
      */
-    public TextList render(List<TextList> args) {
+    public TextList render(List<TextList> args, boolean hql) {
         TextList textList = new TextList();
         textList.append(getSQLCommand() + "(");
         for (int i = 0; i < args.size(); i++) {
@@ -145,7 +147,11 @@ class DateArithmeticFunction extends SQLDialectFunction {
     }
 
     @Override
-    public TextList render(List<TextList> args) {
+    public TextList render(List<TextList> args, boolean hql) {
+        if (hql) {
+            return super.render(args, hql);
+        }
+
         // FIXME: this is mysql specific; other dialects should be supported
         TextList textList = new TextList();
         textList.append(getSQLCommand() + "(");
@@ -186,8 +192,8 @@ class NowFunction extends MQLFunctionDefinition {
     }
 
     @Override
-    public TextList render(List<TextList> args) {
+    public TextList render(List<TextList> args, boolean hql) {
         // FIXME: MySQL specific
-        return super.render(args);
+        return super.render(args, hql);
     }
 }

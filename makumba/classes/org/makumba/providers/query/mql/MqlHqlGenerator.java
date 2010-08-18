@@ -11,4 +11,10 @@ public class MqlHqlGenerator extends MqlSqlGenerator {
     protected void out(AST n) {
         ((MqlNode) n).writeToHql(getText());
     }
+
+    @Override
+    protected boolean isHql() {
+        return true;
+    }
+
 }
