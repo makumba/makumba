@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
-import org.makumba.FieldDefinition;
 import org.makumba.HtmlUtils;
 import org.makumba.Pointer;
 import org.makumba.commons.StringUtils;
@@ -72,16 +71,10 @@ public class ptrEditor extends choiceEditor {
 
         String choiceType = rf.dd.getFieldDefinition(fieldIndex).getPointedType().getName();
 
-        m.put("oql", "SELECT choice as choice, " + titleExpr + " as title FROM " + choiceType + " choice "
-                + "ORDER BY title");
-        FieldDefinition titleFieldDef = rf.dd.getFieldDefinition(fieldIndex).getPointedType().getFieldOrPointedFieldDefinition(
-            titleField);
-        if (titleFieldDef != null && titleFieldDef.getType().equals("ptr")) { // null if we have functions for title
-            // fields
-            titleExpr += ".id";
-        }
-        m.put("hql", "SELECT choice.id as choice, " + titleExpr + " as title FROM " + choiceType + " choice "
-                + "ORDER BY " + titleExpr);
+        String query = "SELECT choice as choice, " + titleExpr + " as title FROM " + choiceType + " choice "
+                + "ORDER BY " + titleExpr;
+        m.put("oql", query);
+        m.put("hql", query);
 
     }
 
