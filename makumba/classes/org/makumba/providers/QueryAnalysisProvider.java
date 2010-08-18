@@ -398,7 +398,7 @@ public abstract class QueryAnalysisProvider implements Serializable {
                 AST current1 = visit(current);
                 if (current1 != current) {
                     // we copy the root node of the structure we get
-                    AST current2 = QueryAnalysisProvider.makeASTCopy(current1);
+                    AST current2 = makeASTcopy(current1);
                     // and link it to the rest of our tree
                     current2.setNextSibling(current.getNextSibling());
                     current = current2;
@@ -422,6 +422,10 @@ public abstract class QueryAnalysisProvider implements Serializable {
             current.setNextSibling(traverse(current.getNextSibling()));
 
             return current;
+        }
+
+        protected AST makeASTcopy(AST current1) {
+            return QueryAnalysisProvider.makeASTCopy(current1);
         }
 
         /**
@@ -448,7 +452,7 @@ public abstract class QueryAnalysisProvider implements Serializable {
                 }
                 // we duplicate the FROM section of each query
                 AST originalFrom = a.getFirstChild().getFirstChild().getFirstChild();
-                AST toAdd = QueryAnalysisProvider.makeASTCopy(originalFrom);
+                AST toAdd = makeASTcopy(originalFrom);
                 if (lastAdded == null) {
                     from.setFirstChild(toAdd);
                 } else {
@@ -457,7 +461,7 @@ public abstract class QueryAnalysisProvider implements Serializable {
                 lastAdded = toAdd;
                 while (originalFrom.getNextSibling() != null) {
                     originalFrom = originalFrom.getNextSibling();
-                    toAdd = QueryAnalysisProvider.makeASTCopy(originalFrom);
+                    toAdd = makeASTcopy(originalFrom);
                     lastAdded.setNextSibling(toAdd);
                     lastAdded = toAdd;
                 }
@@ -466,7 +470,7 @@ public abstract class QueryAnalysisProvider implements Serializable {
             from.setNextSibling(select);
 
             // we select just the expression we want to determine the type of
-            select.setFirstChild(QueryAnalysisProvider.makeASTCopy(expr));
+            select.setFirstChild(makeASTcopy(expr));
 
             return QueryProvider.getQueryAnalzyer(qap).getQueryAnalysis(query, null).getProjectionType().getFieldDefinition(
                 0);
@@ -863,6 +867,18 @@ public abstract class QueryAnalysisProvider implements Serializable {
                 // toOrdinalParam(a);
             }
 
+        } else if (a.getType() == HqlTokenTypes.PARAM) {
+            // we simulate $n
+
+            a.setType(HqlTokenTypes.COLON);
+            AST para = new Node();
+            para.setType(HqlTokenTypes.IDENT);
+
+            String s = "param" + parameterOrder.size();
+            para.setText(s + "###" + parameterOrder.size());
+            parameterOrder.add(s);
+            a.setFirstChild(para);
+            a.setText(":");
         }
         if (a.getType() == HqlTokenTypes.SELECT_FROM) {
             // first the SELECT part

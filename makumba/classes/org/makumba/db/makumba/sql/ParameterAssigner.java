@@ -32,7 +32,8 @@ import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.Pointer;
 import org.makumba.providers.QueryAnalysis;
-import org.makumba.providers.SQLParameterTransformer;
+import org.makumba.providers.ParameterTransformer;
+import org.makumba.providers.query.mql.MqlParameterTransformer;
 
 /**
  * this class takes parameters passed to an OQL query and transmits them to the corresponding PreparedStatement. The
@@ -46,9 +47,9 @@ public class ParameterAssigner {
 
     QueryAnalysis qA;
 
-    SQLParameterTransformer qG;
+    ParameterTransformer qG;
 
-    ParameterAssigner(org.makumba.db.makumba.Database db, QueryAnalysis qA, SQLParameterTransformer qG) {
+    ParameterAssigner(org.makumba.db.makumba.Database db, QueryAnalysis qA, ParameterTransformer qG) {
         this.qA = qA;
         this.qG = qG;
         this.db = db;
@@ -57,19 +58,19 @@ public class ParameterAssigner {
     static final Object[] empty = new Object[0];
 
     public String assignParameters(PreparedStatement ps, Object[] args) throws SQLException {
-        if (qG.getArgumentCount() == 0) {
+        if (qG.getParameterCount() == 0) {
             return null;
         }
 
-        if (qG.getArgumentCount() > 0) {
-            paramHandler = (TableManager) db.makePseudoTable(qG.getSQLQueryArgumentTypes());
+        if (qG.getParameterCount() > 0) {
+            paramHandler = (TableManager) db.makePseudoTable(qG.getTransformedParameterTypes());
         }
 
         try {
             Hashtable<String, Integer> correct = new Hashtable<String, Integer>();
             Hashtable<String, InvalidValueException> errors = new Hashtable<String, InvalidValueException>();
-            for (int i = 0; i < qG.getArgumentCount(); i++) {
-                FieldDefinition fd = qG.getSQLQueryArgumentTypes().getFieldDefinition(i);
+            for (int i = 0; i < qG.getParameterCount(); i++) {
+                FieldDefinition fd = qG.getTransformedParameterTypes().getFieldDefinition(i);
                 if (fd == null) {
                     throw new IllegalStateException("No type assigned for param" + i + " of query " + qA.getQuery());
                 }
@@ -80,15 +81,7 @@ public class ParameterAssigner {
                     value = fd.getNull();
                 }
 
-                // special treatment for multi-type parameters (that have different types at different positions)
-                // if we have an argument of wrong type we set a null argument instead
-                boolean isMultiTypeParam = fd.getDescription().equals("true");
-                boolean isChar = fd.isStringType() && !(value instanceof String);
-                boolean isPointer = fd.isPointer() && !(value instanceof Pointer);
-                boolean isDifferentPointer = fd.isPointer() && value instanceof Pointer
-                        && !fd.getPointedType().getName().equals(((Pointer) value).getType());
-                boolean isNumber = (fd.isIntegerType() || fd.isRealType()) && !(value instanceof Number);
-                if (isMultiTypeParam && (isChar || isPointer || isNumber || isDifferentPointer)) {
+                if (MqlParameterTransformer.isValueInvalidForPosition(fd, value)) {
                     paramHandler.setNullArgument(fd.getName(), ps, i + 1);
                 } else {
                     try {
