@@ -3,7 +3,6 @@ package org.makumba.test.component;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.makumba.Text;
 import org.makumba.db.hibernate.HibernateTransactionProvider;
 
 public class HibernateTableTest2 extends TableTest {
@@ -26,31 +25,7 @@ public class HibernateTableTest2 extends TableTest {
     }
 
     @Override
-    public void testQueryValidMdds() {
-    }
-
-    @Override
-    protected void checkInternationalizedField(Text comment) {
-    }
-
-    @Override
     protected void checkFKSupport() {
-    }
-
-    @Override
-    public void testForeignKeysWithLongMDDName() {
-    }
-
-    @Override
-    protected void deleteAllEntries() {
-    }
-
-    @Override
-    public void testRealAggregation() {
-    }
-
-    @Override
-    public void testIntAggregation() {
     }
 
 }

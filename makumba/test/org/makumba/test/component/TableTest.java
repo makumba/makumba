@@ -208,7 +208,6 @@ public class TableTest extends TestCase {
         assertEquals("Weight(real)", new Double(85.7d), pc.get("weight"));
         assertEquals("Birthdate", birth, pc.get("birthdate"));
         assertEquals("Something else", "else", pc.get("something"));
-        checkInternationalizedField(comment);
         assertEquals("Picture", pc.get("picture"), new Text(getExampleData()));
         assertNotNull(ptrOne);
 
@@ -224,6 +223,8 @@ public class TableTest extends TestCase {
 
         assertEquals(create, pc.get("TS_modify"));
         assertTrue(now.getTime() - create.getTime() < 3 * epsilon);
+
+        checkInternationalizedField(comment);
     }
 
     protected void checkInternationalizedField(Text comment) {
