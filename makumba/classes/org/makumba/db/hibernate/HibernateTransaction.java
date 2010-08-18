@@ -316,11 +316,7 @@ public class HibernateTransaction extends TransactionImplementation {
             q.setMaxResults(limit);
         }
 
-        if (args != null && args instanceof Map) {
-            setNamedParameters((Map<?, ?>) args, analyzer.getParameterTypesByName(), q);
-        } else if (args != null) {
-            setOrderedParameters(args, paramTransformer.getTransformedParameterTypes(), q);
-        }
+        setOrderedParameters(args, paramTransformer.getTransformedParameterTypes(), q);
 
         Vector<Dictionary<String, Object>> results = null;
         try {
