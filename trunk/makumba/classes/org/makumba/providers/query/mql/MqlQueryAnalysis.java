@@ -3,6 +3,7 @@ package org.makumba.providers.query.mql;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -12,11 +13,13 @@ import java.util.Vector;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
+import org.makumba.commons.ArrayMap;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
+import org.makumba.providers.QueryAnalysisProvider.ASTTransformVisitor;
 
 import antlr.ASTFactory;
 import antlr.collections.AST;
@@ -171,6 +174,61 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         }
     }
 
+    /**
+     * Two operations: (1) eliminate the subquery correlation filter conditions (2) surround non-case boolean
+     * projections with case when true false
+     */
+    public void prepareForHQL() {
+        AST a = new ASTTransformVisitor(false) {
+            @Override
+            public AST visit(AST a) {
+
+                if (getPath().size() == 0) {
+                    return a;
+                }
+                AST parent = getPath().get(getPath().size() - 1);
+                if (a.getType() == HqlSqlTokenTypes.FILTERS) {
+                    AST ret = a.getNextSibling();
+                    if (ret == null) {
+                        ret = analyser.getASTFactory().create(HqlSqlTokenTypes.NUM_INT, "1");
+                    }
+                    return ret;
+                }
+                FieldDefinition type = ((MqlNode) a).getMakType();
+
+                // we look for boolean projections whose father is the SELECT clause and which are not already CASE
+                // statements
+                if (type == null || !type.getType().equals("boolean") || !parent.getText().equals("{select clause}")
+                        || a.getType() == HqlSqlTokenTypes.CASE) {
+                    return a;
+                }
+
+                AST ret = analyser.getASTFactory().create(HqlSqlTokenTypes.CASE, "case");
+                AST when = analyser.getASTFactory().create(HqlSqlTokenTypes.WHEN, "when");
+
+                when.setFirstChild(analyser.getASTFactory().create(a));
+                when.getFirstChild().setFirstChild(a.getFirstChild());
+                when.getFirstChild().setNextSibling(analyser.getASTFactory().create(HqlSqlTokenTypes.TRUE, "true"));
+
+                AST elze = analyser.getASTFactory().create(HqlSqlTokenTypes.ELSE, "else");
+                elze.setFirstChild(analyser.getASTFactory().create(HqlSqlTokenTypes.FALSE, "false"));
+                when.setNextSibling(elze);
+
+                ret.setFirstChild(when);
+                ret.setNextSibling(a.getNextSibling());
+                return ret;
+            }
+
+            @Override
+            protected AST makeASTcopy(AST a) {
+                AST b = analyser.getASTFactory().create(a);
+                b.setFirstChild(a.getFirstChild());
+                return b;
+            }
+
+        }.traverse(analyser.getAST());
+    }
+
     public String getQuery() {
         return query;
     }
@@ -291,5 +349,29 @@ public class MqlQueryAnalysis implements QueryAnalysis {
 
     public DataDefinition getParameterTypesByName() {
         return this.paramInfoByName;
+    }
+
+    public Vector<Dictionary<String, Object>> getConstantResult(Map<String, Object> args, int offset, int limit) {
+        Vector<Dictionary<String, Object>> ret = new Vector<Dictionary<String, Object>>(1);
+        if (offset > 0 || limit == 0) {
+            return ret;
+        }
+        Dictionary<String, Integer> keyIndex = new java.util.Hashtable<String, Integer>();
+        Object[] val = new Object[getConstantValues().size()];
+        int i = 0;
+        for (String s : getConstantValues().keySet()) {
+
+            Object column = getConstantValues().get(s);
+            if (column instanceof ParamConstant) {
+                val[i] = args.get(((ParamConstant) column).getParamName());
+            } else {
+                val[i] = column;
+            }
+            keyIndex.put(s, new Integer(i++));
+        }
+
+        ret.add(new ArrayMap(keyIndex, val));
+        return ret;
+
     }
 }

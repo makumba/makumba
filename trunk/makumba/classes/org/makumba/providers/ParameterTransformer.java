@@ -6,8 +6,7 @@ import org.makumba.DataDefinition;
 import org.makumba.commons.NameResolver;
 
 /**
- * Generates the SQL query to be executed against the DBMS, together with the transformed query parameters.
- * Implementations of this interface also take care of makumba-specific concerns regarding query parameters:
+ * Transoforms a query to ordinal parameters.
  * <ul>
  * <li>expansion of list/vector parameters</li>
  * <li>transformation of named parameters into (ordered) numbered parameters</li>
@@ -16,7 +15,7 @@ import org.makumba.commons.NameResolver;
  * @author Manuel Gay
  * @version $Id: SQLQueryGenerator.java,v 1.1 Mar 3, 2010 6:50:10 PM manu Exp $
  */
-public interface SQLParameterTransformer {
+public interface ParameterTransformer {
 
     /**
      * Initialises the SQLQueryGenerator. Called at resource configuration time
@@ -24,32 +23,32 @@ public interface SQLParameterTransformer {
     public void init(Map<String, Object> arguments);
 
     /**
-     * Provides the SQL query to be executed on the DBMS, with expanded and transformed parameters
+     * Provides the transformed query, with expanded and transformed parameters
      * 
      * @param nr
      *            the {@link NameResolver} used to resolve database-level table and field names
      * @return the expanded SQL query String
      */
-    public String getSQLQuery(NameResolver nr);
+    public String getTransformedQuery(NameResolver nr);
 
     /**
-     * Provides the arguments necessary in order to execute the query on the DBMS, in the order following the one of the
-     * query returned by {@link #getSQLQuery(NameResolver, Object)}
+     * Provides the parameters in the order following the one of the query returned by
+     * {@link #getTransformedQuery(NameResolver, Object)}
      * 
      * @return an object array containing the ordered parameter values
      */
-    public Object[] toArgumentArray(Map<String, Object> arguments);
+    public Object[] toParameterArray(Map<String, Object> arguments);
 
     /**
      * Gets the types of the arguments
      * 
      * @return a DataDefinition with the types of all the arguments
      */
-    public DataDefinition getSQLQueryArgumentTypes();
+    public DataDefinition getTransformedParameterTypes();
 
     /**
      * The number of arguments of the query
      */
-    public int getArgumentCount();
+    public int getParameterCount();
 
 }

@@ -28,7 +28,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Dictionary;
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.Vector;
 
@@ -41,8 +40,8 @@ import org.makumba.db.makumba.DBConnection;
 import org.makumba.db.makumba.MQLQueryProvider;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysisProvider;
+import org.makumba.providers.query.mql.MqlParameterTransformer;
 import org.makumba.providers.query.mql.MqlQueryAnalysis;
-import org.makumba.providers.query.mql.MqlSQLParameterTransformer;
 
 /** SQL implementation of a OQL query */
 public class Query implements org.makumba.db.makumba.Query {
@@ -73,7 +72,7 @@ public class Query implements org.makumba.db.makumba.Query {
      * @return the SQL query string to be sent to the database, given a set of arguments
      */
     public String getCommand(Map<String, Object> arguments) {
-        return MqlSQLParameterTransformer.getSQLQueryGenerator(qA, arguments).getSQLQuery(db.getNameResolverHook());
+        return MqlParameterTransformer.getSQLQueryGenerator(qA, arguments).getTransformedQuery(db.getNameResolverHook());
     }
 
     public Query(Database db, String MQLQuery, String insertIn) {
@@ -106,36 +105,36 @@ public class Query implements org.makumba.db.makumba.Query {
     public Vector<Dictionary<String, Object>> execute(Map<String, Object> args, DBConnection dbc, int offset, int limit) {
         if ((insertIn == null || insertIn.length() == 0) && qA.getConstantValues() != null) {
             // no need to send the query to the sql engine
-            return getConstantResult(args, offset, limit);
+            return qA.getConstantResult(args, offset, limit);
         }
 
-        MqlSQLParameterTransformer qG = MqlSQLParameterTransformer.getSQLQueryGenerator(qA, args);
+        MqlParameterTransformer qG = MqlParameterTransformer.getSQLQueryGenerator(qA, args);
 
         assigner = new ParameterAssigner(db, qA, qG);
 
-        String com = qG.getSQLQuery(db.getNameResolverHook());
+        String com = qG.getTransformedQuery(db.getNameResolverHook());
         if (supportsLimitInQuery) {
             com += " " + limitSyntax; // TODO: it might happen that it should be in other places than at the end.
         }
         PreparedStatement ps = ((SQLDBConnection) dbc).getPreparedStatement(com);
 
         try {
-            String s = assigner.assignParameters(ps, qG.toArgumentArray(args));
+            String s = assigner.assignParameters(ps, qG.toParameterArray(args));
 
             if (supportsLimitInQuery) {
                 int limit1 = limit == -1 ? Integer.MAX_VALUE : limit;
 
                 // FIXME this should be checked earlier, see http://bugs.makumba.org/show_bug.cgi?id=1191
-                if (ps.getParameterMetaData().getParameterCount() < assigner.qG.getArgumentCount() + 2) {
+                if (ps.getParameterMetaData().getParameterCount() < assigner.qG.getParameterCount() + 2) {
                     throw new InvalidValueException("Wrong number of arguments passed to query ");
                 }
 
                 if (offsetFirst) {
-                    ps.setInt(assigner.qG.getArgumentCount() + 1, offset);
-                    ps.setInt(assigner.qG.getArgumentCount() + 2, limit1);
+                    ps.setInt(assigner.qG.getParameterCount() + 1, offset);
+                    ps.setInt(assigner.qG.getParameterCount() + 2, limit1);
                 } else {
-                    ps.setInt(assigner.qG.getArgumentCount() + 1, limit1);
-                    ps.setInt(assigner.qG.getArgumentCount() + 2, offset);
+                    ps.setInt(assigner.qG.getParameterCount() + 1, limit1);
+                    ps.setInt(assigner.qG.getParameterCount() + 2, offset);
                 }
             }
 
@@ -201,7 +200,7 @@ public class Query implements org.makumba.db.makumba.Query {
 
     public int insert(Map<String, Object> args, DBConnection dbc) {
 
-        MqlSQLParameterTransformer qG = MqlSQLParameterTransformer.getSQLQueryGenerator(qA, args);
+        MqlParameterTransformer qG = MqlParameterTransformer.getSQLQueryGenerator(qA, args);
 
         assigner = new ParameterAssigner(db, qA, qG);
 
@@ -216,11 +215,12 @@ public class Query implements org.makumba.db.makumba.Query {
         SQLDBConnection sqldbc = (SQLDBConnection) dbc;
         String tablename = "temp_" + sqldbc.n;
 
-        String com = "INSERT INTO " + tablename + " ( " + fieldList + ") " + qG.getSQLQuery(db.getNameResolverHook());
+        String com = "INSERT INTO " + tablename + " ( " + fieldList + ") "
+                + qG.getTransformedQuery(db.getNameResolverHook());
         try {
             resultHandler.create(sqldbc, tablename, true);
             PreparedStatement ps = sqldbc.getPreparedStatement(com);
-            String s = assigner.assignParameters(ps, qG.toArgumentArray(args));
+            String s = assigner.assignParameters(ps, qG.toParameterArray(args));
             if (s != null) {
                 throw new InvalidValueException("Errors while trying to assign arguments to query:\n" + com + "\n" + s);
             }
@@ -251,26 +251,6 @@ public class Query implements org.makumba.db.makumba.Query {
                 e.printStackTrace();
             }
         }
-    }
-
-    private Vector<Dictionary<String, Object>> getConstantResult(Map<String, Object> args, int offset, int limit) {
-        Vector<Dictionary<String, Object>> ret = new Vector<Dictionary<String, Object>>(1);
-        if (offset > 0 || limit == 0) {
-            return ret;
-        }
-        Hashtable<String, Object> row = new Hashtable<String, Object>();
-
-        for (String s : qA.getConstantValues().keySet()) {
-            Object column = qA.getConstantValues().get(s);
-            if (column instanceof MqlQueryAnalysis.ParamConstant) {
-                row.put(s, args.get(((MqlQueryAnalysis.ParamConstant) column).getParamName()));
-            } else {
-                row.put(s, column);
-            }
-        }
-        ret.add(row);
-        return ret;
-
     }
 
 }

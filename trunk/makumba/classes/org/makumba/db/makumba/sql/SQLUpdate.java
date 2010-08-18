@@ -33,12 +33,12 @@ import org.makumba.MakumbaError;
 import org.makumba.NotUniqueException;
 import org.makumba.OQLParseError;
 import org.makumba.db.makumba.Update;
+import org.makumba.providers.ParameterTransformer;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
-import org.makumba.providers.SQLParameterTransformer;
+import org.makumba.providers.query.mql.MqlParameterTransformer;
 import org.makumba.providers.query.mql.MqlQueryAnalysis;
-import org.makumba.providers.query.mql.MqlSQLParameterTransformer;
 
 public class SQLUpdate implements Update {
 
@@ -56,7 +56,7 @@ public class SQLUpdate implements Update {
 
     Database db;
 
-    SQLParameterTransformer qG;
+    ParameterTransformer qG;
 
     QueryAnalysisProvider qP = QueryProvider.getQueryAnalzyer("oql");
 
@@ -106,7 +106,7 @@ public class SQLUpdate implements Update {
         }
 
         QueryAnalysis qA = qP.getQueryAnalysis(OQLQuery);
-        qG = MqlSQLParameterTransformer.getSQLQueryGenerator((MqlQueryAnalysis) qA, args);
+        qG = MqlParameterTransformer.getSQLQueryGenerator((MqlQueryAnalysis) qA, args);
 
         try {
             // FIXME: we should make sure here that the tree contains one single type!
@@ -118,7 +118,7 @@ public class SQLUpdate implements Update {
         String fakeCommand;
         String fakeCommandUpper;
         try {
-            fakeCommand = qG.getSQLQuery(db.getNameResolverHook());
+            fakeCommand = qG.getTransformedQuery(db.getNameResolverHook());
         } catch (RuntimeException e) {
             throw new MakumbaError(e, debugString + "\n" + OQLQuery);
         }
@@ -201,7 +201,7 @@ public class SQLUpdate implements Update {
 
         PreparedStatement ps = ((SQLDBConnection) dbc).getPreparedStatement(updateCommand);
         try {
-            String s = assigner.assignParameters(ps, qG.toArgumentArray(args));
+            String s = assigner.assignParameters(ps, qG.toParameterArray(args));
             if (s != null) {
                 throw new InvalidValueException("Errors while trying to assign arguments to update:\n" + debugString
                         + "\n" + s);

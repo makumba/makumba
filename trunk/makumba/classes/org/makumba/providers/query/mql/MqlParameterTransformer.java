@@ -10,25 +10,26 @@ import java.util.Vector;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
+import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.commons.NameResolver;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.commons.NameResolver.TextList;
 import org.makumba.providers.DataDefinitionProvider;
+import org.makumba.providers.ParameterTransformer;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
-import org.makumba.providers.SQLParameterTransformer;
 
 import antlr.collections.AST;
 
 /**
- * MQL implementation of the {@link SQLParameterTransformer}, which generates SQL based on a {@link QueryAnalysis}
+ * MQL implementation of the {@link ParameterTransformer}, which generates SQL based on a {@link QueryAnalysis}
  * 
  * @author Manuel Gay
  * @version $Id: MqlSQLQueryGenerator.java,v 1.1 Mar 30, 2010 4:17:00 PM manu Exp $
  */
-public class MqlSQLParameterTransformer implements SQLParameterTransformer {
+public class MqlParameterTransformer implements ParameterTransformer {
 
     private MqlQueryAnalysis qA;
 
@@ -38,7 +39,7 @@ public class MqlSQLParameterTransformer implements SQLParameterTransformer {
 
     private DataDefinition expandedParamInfo = null;
 
-    public MqlSQLParameterTransformer(MqlQueryAnalysis qA) {
+    public MqlParameterTransformer(MqlQueryAnalysis qA) {
         this.qA = qA;
         this.analyserTreeSQL = qA.getAnalyserTree();
     }
@@ -50,7 +51,7 @@ public class MqlSQLParameterTransformer implements SQLParameterTransformer {
         }
     }
 
-    public int getArgumentCount() {
+    public int getParameterCount() {
         if (expandedParamInfo == null) {
             throw new MakumbaError("Can't call this method without having set the arguments with setArguments!");
         } else {
@@ -58,13 +59,11 @@ public class MqlSQLParameterTransformer implements SQLParameterTransformer {
         }
     }
 
-    public DataDefinition getSQLQueryArgumentTypes() {
+    public DataDefinition getTransformedParameterTypes() {
         return expandedParamInfo;
     }
 
-    public String getSQLQuery(NameResolver nr) {
-
-        MqlSqlGenerator mg = new MqlSqlGenerator();
+    public String getSQLQuery(MqlSqlGenerator mg, NameResolver nr) {
         try {
             mg.statement(analyserTreeSQL);
         } catch (Throwable e) {
@@ -72,7 +71,7 @@ public class MqlSQLParameterTransformer implements SQLParameterTransformer {
         }
         QueryAnalysisProvider.doThrow(qA.getQuery(), mg.error, analyserTreeSQL);
 
-        text = mg.text;
+        text = mg.getText();
 
         // TODO: we can cache these SQL results by the key of the NameResolver
         // still we should first check if this is needed, maybe the generated SQL (or processing of it)
@@ -84,7 +83,11 @@ public class MqlSQLParameterTransformer implements SQLParameterTransformer {
         return sql;
     }
 
-    public Object[] toArgumentArray(Map<String, Object> arguments) {
+    public String getTransformedQuery(NameResolver nr) {
+        return getSQLQuery(new MqlSqlGenerator(), nr);
+    }
+
+    public Object[] toParameterArray(Map<String, Object> arguments) {
 
         if (arguments == null) {
             throw new MakumbaError("Error: arguments shouldn't be null");
@@ -111,8 +114,8 @@ public class MqlSQLParameterTransformer implements SQLParameterTransformer {
     /**
      * Expands multiple parameters, i.e. parameters that are vectors or lists. This is necessary for execution of the
      * SQL query. This method expands the analyser tree and multiplies the parameters according the size of the multiple
-     * parameters, and sets the expandedParamInfo so that clients of the {@link SQLParameterTransformer} can use it to
-     * do type checking on the SQL query parameters.
+     * parameters, and sets the expandedParamInfo so that clients of the {@link ParameterTransformer} can use it to do
+     * type checking on the SQL query parameters.
      */
     private void expandMultipleParameters(Map<String, Object> arguments) throws ProgrammerError {
 
@@ -208,6 +211,17 @@ public class MqlSQLParameterTransformer implements SQLParameterTransformer {
         return result;
     }
 
+    public static boolean isValueInvalidForPosition(FieldDefinition fd, Object value) {
+        boolean isMultiTypeParam = fd.getDescription().equals("true");
+        boolean isChar = fd.isStringType() && !(value instanceof String);
+        boolean isPointer = fd.isPointer() && !(value instanceof Pointer);
+        boolean isDifferentPointer = fd.isPointer() && value instanceof Pointer
+                && !fd.getPointedType().getName().equals(((Pointer) value).getType());
+        boolean isNumber = (fd.isIntegerType() || fd.isRealType()) && !(value instanceof Number);
+        boolean giveUp = isMultiTypeParam && (isChar || isPointer || isNumber || isDifferentPointer);
+        return giveUp;
+    }
+
     private static int generators = NamedResources.makeStaticCache("SQL Query Generators", new NamedResourceFactory() {
 
         private static final long serialVersionUID = -9039330018176247478L;
@@ -252,7 +266,7 @@ public class MqlSQLParameterTransformer implements SQLParameterTransformer {
             @SuppressWarnings("unchecked")
             Map<String, Object> args = (Map<String, Object>) multi[1];
 
-            return new MqlSQLParameterTransformer(qA);
+            return new MqlParameterTransformer(qA);
         }
 
         @Override
@@ -261,12 +275,12 @@ public class MqlSQLParameterTransformer implements SQLParameterTransformer {
             @SuppressWarnings("unchecked")
             Map<String, Object> args = (Map<String, Object>) multi[1];
 
-            ((MqlSQLParameterTransformer) resource).init(args);
+            ((MqlParameterTransformer) resource).init(args);
 
         }
     });
 
-    public static MqlSQLParameterTransformer getSQLQueryGenerator(MqlQueryAnalysis qA, Map<String, Object> args) {
+    public static MqlParameterTransformer getSQLQueryGenerator(MqlQueryAnalysis qA, Map<String, Object> args) {
 
         // FIXME this doesn't work
         // the key is the combination of mql query + parameter cardinality
@@ -274,7 +288,7 @@ public class MqlSQLParameterTransformer implements SQLParameterTransformer {
         // same cardinality but different values)
         // call configure resource, set arguments
 
-        return (MqlSQLParameterTransformer) NamedResources.getStaticCache(generators).getResource(
+        return (MqlParameterTransformer) NamedResources.getStaticCache(generators).getResource(
             new Object[] { qA, args });
 
     }
@@ -295,20 +309,20 @@ public class MqlSQLParameterTransformer implements SQLParameterTransformer {
         arguments.put("surname", "john");
         arguments.put("2", "stuff");
 
-        MqlSQLParameterTransformer qG = new MqlSQLParameterTransformer(qA);
+        MqlParameterTransformer qG = new MqlParameterTransformer(qA);
         qG.init(arguments);
 
-        String sql = qG.getSQLQuery(new NameResolver());
+        String sql = qG.getTransformedQuery(new NameResolver());
         System.out.println("QUERY: " + sql);
 
-        Object[] arg = qG.toArgumentArray(arguments);
+        Object[] arg = qG.toParameterArray(arguments);
         System.out.println("ARGS: " + Arrays.toString(arg));
 
-        System.out.println("SIZE: " + qG.getArgumentCount());
+        System.out.println("SIZE: " + qG.getParameterCount());
 
-        System.out.println("TYPES: + " + qG.getSQLQueryArgumentTypes());
-        for (String n : qG.getSQLQueryArgumentTypes().getFieldNames()) {
-            System.out.println(qG.getSQLQueryArgumentTypes().getFieldDefinition(n));
+        System.out.println("TYPES: + " + qG.getTransformedParameterTypes());
+        for (String n : qG.getTransformedParameterTypes().getFieldNames()) {
+            System.out.println(qG.getTransformedParameterTypes().getFieldDefinition(n));
         }
     }
 
