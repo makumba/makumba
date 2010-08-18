@@ -176,8 +176,12 @@ public class MqlSqlGenerator extends MqlSqlGeneratorBase {
             FunctionArgumentWriter w = (FunctionArgumentWriter) getText();
             setText(textListStack.pop());
             MQLFunctionDefinition template = functionStack.pop();
-            getText().append(template.render(w.getArgs())); // render the function
+            getText().append(template.render(w.getArgs(), isHql())); // render the function
         }
+    }
+
+    protected boolean isHql() {
+        return false;
     }
 
     @Override
