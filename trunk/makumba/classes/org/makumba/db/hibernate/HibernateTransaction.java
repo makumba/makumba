@@ -5,12 +5,10 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.hibernate.CacheMode;
@@ -28,6 +26,7 @@ import org.makumba.ProgrammerError;
 import org.makumba.Transaction;
 import org.makumba.commons.ArrayMap;
 import org.makumba.commons.NameResolver;
+import org.makumba.commons.NullNameResolver;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.StacktraceUtil;
 import org.makumba.db.TransactionImplementation;
@@ -36,9 +35,9 @@ import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProvider;
-import org.makumba.providers.query.Pass1ASTPrinter;
-
-import antlr.collections.AST;
+import org.makumba.providers.query.mql.MqlHqlGenerator;
+import org.makumba.providers.query.mql.MqlParameterTransformer;
+import org.makumba.providers.query.mql.MqlQueryAnalysis;
 
 /**
  * Hibernate-specific implementation of a {@link Transaction}
@@ -85,7 +84,9 @@ public class HibernateTransaction extends TransactionImplementation {
     @Override
     public void close() {
         setContext(null);
-        t.commit();
+        if (t.isActive()) {
+            t.commit();
+        }
         if (!useCurrentSession) {
             s.close();
         }
@@ -94,7 +95,9 @@ public class HibernateTransaction extends TransactionImplementation {
 
     @Override
     public void commit() {
-        t.commit();
+        if (t.isActive()) {
+            t.commit();
+        }
         t = s.beginTransaction();
     }
 
@@ -230,7 +233,9 @@ public class HibernateTransaction extends TransactionImplementation {
 
     @Override
     public void rollback() {
-        t.rollback();
+        if (t.isActive()) {
+            t.rollback();
+        }
     }
 
     @Override
@@ -281,29 +286,24 @@ public class HibernateTransaction extends TransactionImplementation {
 
         QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer("oql");
 
-        // TODO: cache the query as it was quite heavily processed:
+        Map<String, Object> argsMap = paramsToMap(args);
 
         // analyze the query with MQL!
-        QueryAnalysis analyzer = qap.getQueryAnalysis(query);
-        // new ASTPrinter(HqlTokenTypes.class).showAst(analyzer.getPass1Tree(), new PrintWriter(System.out));
+        MqlQueryAnalysis analyzer = (MqlQueryAnalysis) qap.getQueryAnalysis(query);
 
-        // add .id and .enum_ wherever needed
-        AST transformed = qap.addIdsToPointerProjections(analyzer.getPass1Tree());
+        analyzer.prepareForHQL();
 
-        // transform $1 into param0, $2 into param1 etc
-        // this was invoked already by the MQL parser but not with a null parameter
-        // also transformOQL was invoked
-        QueryAnalysisProvider.transformOQLParameters(transformed, null);
+        MqlParameterTransformer paramTransformer = MqlParameterTransformer.getSQLQueryGenerator(analyzer, argsMap);
+        query = paramTransformer.getSQLQuery(new MqlHqlGenerator(), new NullNameResolver());
 
-        // replace RANGE with JOIN when the type is not an MDD name
-        // TODO: the MQL analyzer generates left join by default, for now this method does the sme
-        transformed = qap.range2Join(transformed);
+        if (analyzer.getConstantValues() != null) {
+            // no need to send the query to the sql engine
+            return analyzer.getConstantResult(argsMap, offset, limit);
+        }
 
-        QueryAnalysisProvider.transformOQL(transformed);
+        args = paramTransformer.toParameterArray(argsMap);
 
-        // now we are ready to print the query so hibernate can execute it
-        query = Pass1ASTPrinter.printAST(transformed).toString();
-        // System.out.println(query);
+        System.out.println(query);
 
         DataDefinition dataDef = analyzer.getProjectionType();
 
@@ -316,32 +316,10 @@ public class HibernateTransaction extends TransactionImplementation {
             q.setMaxResults(limit);
         }
 
-        // a better way to detect named parameters
-        Matcher matcher = namedParam.matcher(query);
-        if (matcher.find()) {
-            if (matcher.group().startsWith(":param")) {
-                Map<String, Object> m = new HashMap<String, Object>();
-                if (args instanceof List) {
-                    for (int i = 0; i < ((List<?>) args).size(); i++) {
-                        m.put("param" + i, ((List<?>) args).get(i));
-                    }
-                } else if (args.getClass().isArray()) {
-                    for (int i = 0; i < ((Object[]) args).length; i++) {
-                        m.put("param" + i, ((Object[]) args)[i]);
-                    }
-                } else {
-                    m.put("param0", args);
-                }
-                args = m;
-            } else {
-                args = paramsToMap(args);
-            }
-        }
-
         if (args != null && args instanceof Map) {
             setNamedParameters((Map<?, ?>) args, analyzer.getParameterTypesByName(), q);
         } else if (args != null) {
-            setOrderedParameters(args, analyzer.getParameterTypes(), q);
+            setOrderedParameters(args, paramTransformer.getTransformedParameterTypes(), q);
         }
 
         Vector<Dictionary<String, Object>> results = null;
@@ -388,9 +366,6 @@ public class HibernateTransaction extends TransactionImplementation {
             for (int j = 0; j < resultFields.length; j++) { // 
                 if (resultFields[j] != null) { // we add to the dictionary only fields with values in the DB
                     FieldDefinition fd = dataDef.getFieldDefinition(j);
-                    if (fd.getType().equals("boolean")) {
-                        resultFields[j] = (Integer) resultFields[j] == 1;
-                    }
                     if (fd.getType().startsWith("ptr")) {
                         // we have a pointer
                         String ddName = fd.getPointedType().getName();
@@ -427,23 +402,42 @@ public class HibernateTransaction extends TransactionImplementation {
             Object paramValue = argsArray[i];
 
             FieldDefinition paramDef = paramsDef.getFieldDefinition(i);
-
-            if (paramValue instanceof Date) {
+            if (MqlParameterTransformer.isValueInvalidForPosition(paramDef, paramValue)) {
+                q.setParameter(i, null);
+            } else if (paramValue instanceof Date && paramDef.getType().startsWith("date")) {
                 q.setDate(i, (Date) paramValue);
-            } else if (paramValue instanceof Integer) {
+            } else if (paramValue instanceof Integer && paramDef.getType().startsWith("int")) {
                 q.setInteger(i, (Integer) paramValue);
-            } else if (paramValue instanceof Pointer) {
+            } else if (paramValue instanceof Pointer && paramDef.getType().startsWith("ptr")) {
                 q.setParameter(i, new Integer(((Pointer) argsArray[i]).getId()));
+            } else if (paramValue instanceof String && paramDef.getType().startsWith("char")) {
+                q.setParameter(i, paramValue);
             } else { // we have any param type (most likely String)
-                if (paramDef != null) {
-                    if (paramDef.getIntegerType() == FieldDefinition._ptr && paramValue instanceof String) {
-                        Pointer p = new Pointer(paramDef.getPointedType().getName(), (String) paramValue);
-                        q.setInteger(i, new Integer((int) p.longValue()));
-                    } else {
-                        q.setParameter(i, paramValue);
+                boolean assigned = false;
+
+                if (paramDef.getType().startsWith("ptr") && paramValue instanceof String) {
+                    Pointer p = new Pointer(paramDef.getPointedType().getName(), (String) paramValue);
+                    q.setInteger(i, new Integer((int) p.longValue()));
+                    assigned = true;
+                }
+
+                else if (paramDef.getIntegerType() == FieldDefinition._intEnum && paramValue instanceof String) {
+
+                    for (int k = 0; k < paramDef.getEnumeratorSize(); k++) {
+                        if (paramDef.getNameAt(k).equals(paramValue)) {
+                            paramValue = paramDef.getIntAt(k);
+                            assigned = true;
+                            break;
+                        }
                     }
-                } else {
-                    q.setParameter(i, paramValue);
+                    if (assigned) {
+                        q.setInteger(i, (Integer) paramValue);
+                    }
+
+                }
+
+                if (!assigned) {
+                    throw new IllegalStateException("could not assign paramter " + paramDef + " = " + paramValue);
                 }
             }
         }

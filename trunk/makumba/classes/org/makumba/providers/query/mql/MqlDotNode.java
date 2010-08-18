@@ -3,9 +3,11 @@ package org.makumba.providers.query.mql;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.DataDefinitionParseError;
+import org.makumba.commons.NameResolver.TextList;
 import org.makumba.providers.DataDefinitionProvider;
 
 import antlr.SemanticException;
+import antlr.collections.AST;
 
 /**
  * This is the root of an a.b.c expression. If it occurs in SELECT or WHERE, it adds JOINs
@@ -70,6 +72,28 @@ public class MqlDotNode extends MqlNode {
             ((MqlDotNode) getFirstChild()).processInFrom();
         }
         setText(getFirstChild().getText() + "." + getFirstChild().getNextSibling().getText());
+    }
+
+    @Override
+    public void writeToHql(TextList tl) {
+        if ("enum".equals(field) && getMakType().getType().endsWith("Enum")) {
+            field = "enum_";
+        }
+        tl.append(label).append(".").append(field);
+        if (getMakType().getType().startsWith("ptr") && !field.equals("id")) {
+            tl.append(".id");
+        }
+
+    }
+
+    @Override
+    public void initialize(AST t) {
+        super.initialize(t);
+        if (t instanceof MqlDotNode) {
+            MqlDotNode n = (MqlDotNode) t;
+            this.label = n.label;
+            this.field = n.field;
+        }
     }
 
 }

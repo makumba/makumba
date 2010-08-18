@@ -22,7 +22,7 @@ import antlr.collections.AST;
  */
 public class MqlSqlGenerator extends MqlSqlGeneratorBase {
 
-    NameResolver.TextList text = new NameResolver.TextList();
+    private NameResolver.TextList text = new NameResolver.TextList();
 
     private Stack<NameResolver.TextList> textListStack = new Stack<NameResolver.TextList>();
 
@@ -35,17 +35,17 @@ public class MqlSqlGenerator extends MqlSqlGeneratorBase {
             java.util.logging.Logger.getLogger("org.makumba.db.query.compilation").log(Level.SEVERE,
                 "Got 'null' to append to TextList.", new Throwable());
         }
-        text.append(s);
+        getText().append(s);
     }
 
     @Override
     protected void out(AST n) {
-        ((MqlNode) n).writeTo(text);
+        ((MqlNode) n).writeTo(getText());
     }
 
     @Override
     public String toString() {
-        return text.toString();
+        return getText().toString();
     }
 
     RecognitionException error;
@@ -162,9 +162,9 @@ public class MqlSqlGenerator extends MqlSqlGeneratorBase {
             super.beginFunctionTemplate(m, i);
         } else {
             // this function has a class that will render it -> redirect output and catch the arguments
-            textListStack.push(text);
+            textListStack.push(getText());
             functionStack.push(function);
-            text = new FunctionArgumentWriter();
+            setText(new FunctionArgumentWriter());
         }
     }
 
@@ -173,19 +173,27 @@ public class MqlSqlGenerator extends MqlSqlGeneratorBase {
         if (textListStack.isEmpty()) { // this should actually never happen, as all our functions are defined...
             super.endFunctionTemplate(m);
         } else {
-            FunctionArgumentWriter w = (FunctionArgumentWriter) text;
-            text = textListStack.pop();
+            FunctionArgumentWriter w = (FunctionArgumentWriter) getText();
+            setText(textListStack.pop());
             MQLFunctionDefinition template = functionStack.pop();
-            text.append(template.render(w.getArgs())); // render the function
+            getText().append(template.render(w.getArgs())); // render the function
         }
     }
 
     @Override
     protected void commaBetweenParameters(String comma) {
-        if (text instanceof FunctionArgumentWriter) {
-            ((FunctionArgumentWriter) text).commaBetweenParameters(comma);
+        if (getText() instanceof FunctionArgumentWriter) {
+            ((FunctionArgumentWriter) getText()).commaBetweenParameters(comma);
         } else {
             super.commaBetweenParameters(comma);
         }
+    }
+
+    public void setText(NameResolver.TextList text) {
+        this.text = text;
+    }
+
+    public NameResolver.TextList getText() {
+        return text;
     }
 }

@@ -48,7 +48,9 @@ public class QueryContext {
         addFrom(path, alias, joinType);
 
         if (inTree == null) {
-            return inTree = (MqlNode) ASTUtil.create(walker.fact, HqlSqlTokenTypes.FROM_FRAGMENT, "fromFragment");
+            inTree = (MqlNode) ASTUtil.create(walker.fact, HqlSqlTokenTypes.FROM_FRAGMENT, "fromFragment");
+            ((MqlFromFragmentNode) inTree).queryContext = this;
+            return inTree;
         } else {
             return null;
         }
@@ -56,14 +58,14 @@ public class QueryContext {
 
     public void close() {
         if (inTree != null) {
-            inTree.setTextList(getFrom());
+            inTree.setTextList(getFrom(false));
         }
     }
 
-    private TextList getFrom() {
+    TextList getFrom(boolean hql) {
         TextList tl = new TextList();
-        writeFrom(tl);
-        writeJoins(tl);
+        writeFrom(tl, hql);
+        writeJoins(tl, hql);
         return tl;
     }
 
@@ -80,6 +82,8 @@ public class QueryContext {
 
     /** the joins needed out of the label.field from this query */
     Vector<Join> joins = new Vector<Join>();
+
+    Vector<Join> hqlJoins = new Vector<Join>();
 
     /** finder for joins in the form label.field, used in order not to repeat the same join */
     Hashtable<String, String> joinNames = new Hashtable<String, String>();
@@ -212,6 +216,7 @@ public class QueryContext {
         if (joinType == -1 && leftJoinedImplicit.contains(label)) {
             joinType = HqlSqlTokenTypes.LEFT_OUTER;
         }
+        Join hqlJoin = new Join(label, field, label2, null, joinType);
 
         if (joinType == -1) {
             joinType = HqlSqlTokenTypes.INNER;
@@ -222,15 +227,20 @@ public class QueryContext {
                 String ret = addJoin(label, field, label2, joinTable.getIndexPointerFieldName(), joinTable, joinType,
                     location);
                 leftJoinedImplicit.add(ret);
+                hqlJoin.joinType = joinType;
+                addHqlJoin(hqlJoin);
                 return ret;
             }
         }
         if (fi.getType().equals("ptr") || fi.getType().equals("ptrRel")) {
+            addHqlJoin(hqlJoin);
             return addJoin(label, field, label2, foreign.getIndexPointerFieldName(), foreign, joinType, location);
         } else if (fi.getType().equals("ptrOne")) {
+            addHqlJoin(hqlJoin);
             return addJoin(label, field, label2, sub.getIndexPointerFieldName(), sub, joinType, location);
         } else if (fi.getType().equals("setComplex") || fi.getType().equals("setintEnum")
                 || fi.getType().equals("setcharEnum")) {
+            addHqlJoin(hqlJoin);
             return addJoin(label, index, label2, index, sub, joinType, location);
         } else if (fi.getType().equals("set")) {
             label2 = label + "x";
@@ -252,12 +262,19 @@ public class QueryContext {
                 label3 += "x";
             }
 
+            // one single join
+            hqlJoin.label2 = label3;
+            addHqlJoin(hqlJoin);
             return addJoin(label2, sub.getSetMemberFieldName(), label3, foreign.getIndexPointerFieldName(), foreign,
                 joinType, location);
         } else {
             throw new SemanticException("\"" + field + "\" is not a set or pointer in makumba type \"" + type.getName()
                     + "\"", "", location.getLine(), location.getColumn());
         }
+    }
+
+    private void addHqlJoin(Join hqlJoin) {
+        hqlJoins.add(hqlJoin);
     }
 
     public void addFrom(String frm, AST labelAST, int joinType) throws SemanticException {
@@ -342,7 +359,7 @@ public class QueryContext {
     }
 
     /** writes the iterator definitions (FROM part) */
-    protected void writeFrom(TextList ret) {
+    protected void writeFrom(TextList ret, boolean hql) {
         boolean comma = false;
         wroteRange = false;
         for (Enumeration<String> e = fromLabels.keys(); e.hasMoreElements();) {
@@ -359,16 +376,16 @@ public class QueryContext {
             wroteRange = true;
 
             if (joinClosely) {
-                writeJoinsOf(label, ret);
+                writeJoinsOf(label, ret, hql);
             }
         }
     }
 
-    private void writeJoinsOf(String label, TextList ret) {
-        for (Join j : joins) {
+    private void writeJoinsOf(String label, TextList ret, boolean hql) {
+        for (Join j : hql ? hqlJoins : joins) {
             if (j.label1.equals(label)) {
-                writeJoin(j, ret);
-                writeJoinsOf(j.label2, ret);
+                writeJoin(j, ret, hql);
+                writeJoinsOf(j.label2, ret, hql);
             }
         }
     }
@@ -390,18 +407,18 @@ public class QueryContext {
     }
 
     /** write the translator-generated joins */
-    protected void writeJoins(TextList ret) {
+    protected void writeJoins(TextList ret, boolean hql) {
         // boolean and = false;
-        for (Join join : joins) {
-            writeJoin(join, ret);
+        for (Join join : hql ? hqlJoins : joins) {
+            writeJoin(join, ret, hql);
         }
     }
 
-    private void writeJoin(Join j, TextList ret) {
+    private void writeJoin(Join j, TextList ret, boolean hql) {
         if (j.written) {
             return;
         }
-        if (walker.optimizeJoins && !isFieldUsed(j)) {
+        if (walker.optimizeJoins && !isFieldUsed(j) && !hql) {
             rewriteProjections(j);
             return;
         }
@@ -424,21 +441,27 @@ public class QueryContext {
             ret.append(" JOIN ");
         }
         wroteRange = true;
-        ret.append(getTableName(j.label2))
-        // .append(" AS ")
-        .append(" ").append(j.label2);
-
-        TextList cond = ret;
-        if (!isCorrelated(j)) {
-            // if this join is not correlating with a label from a superquery
-            ret.append(" ON ");
+        if (!hql) {
+            ret.append(getTableName(j.label2));
         } else {
-            // if we are correlated, we add a condition to the filters
-            cond = new TextList();
-            filters.add(cond);
+            ret.append(j.label1).append(".").append(findLabelType(j.label1), j.field1);
         }
+        // .append(" AS ")
+        ret.append(" ").append(j.label2);
 
-        joinCondition(cond, j);
+        if (!hql) {
+            TextList cond = ret;
+            if (!isCorrelated(j)) {
+                // if this join is not correlating with a label from a superquery
+                ret.append(" ON ");
+            } else {
+                // if we are correlated, we add a condition to the filters
+                cond = new TextList();
+                filters.add(cond);
+            }
+
+            joinCondition(cond, j);
+        }
         j.written = true;
     }
 
