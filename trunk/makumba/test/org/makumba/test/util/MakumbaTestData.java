@@ -141,10 +141,7 @@ public class MakumbaTestData {
 
     public void deletePersonsAndIndividuals(Transaction t) {
         for (String element : namesPersonIndivName) {
-            String query = "SELECT " + (t.getTransactionProvider().getQueryLanguage().equals("oql") ? "p" : "p.id")
-                    + " AS p, p.indiv" + (t.getTransactionProvider().getQueryLanguage().equals("oql") ? "" : ".id")
-                    + " as i FROM test.Person p WHERE p.indiv.name="
-                    + (t.getTransactionProvider().getQueryLanguage().equals("oql") ? "$1" : "?");
+            String query = "SELECT p AS p, p.indiv as i FROM test.Person p WHERE p.indiv.name=" + "$1";
             Vector<Dictionary<String, Object>> v = t.executeQuery(query, element);
             if (v.size() > 0) {
 
