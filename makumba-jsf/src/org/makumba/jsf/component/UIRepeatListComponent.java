@@ -94,6 +94,8 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
 
     transient ComposedQuery composedQuery;
 
+    transient Map<String, ComposedQuery> setComposedSubqueries = new HashMap<String, ComposedQuery>();
+
     // all data, from all iterations of the parent list
     transient Grouper listData;
 
@@ -538,6 +540,11 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         this.composedQuery.analyze();
         // log.fine(this.composedQuery);
 
+        // analyze subqueries for sets
+        for (ComposedQuery csq : setComposedSubqueries.values()) {
+            csq.analyze();
+        }
+
         this.projections = getQueryAnalysis().getProjectionType();
     }
 
@@ -597,9 +604,11 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
     private void addExpression(UIComponent component, String expr, boolean canBeInvalid) {
         // we compute a base label even if this expression may not be a.b.c.d
         String label = expr;
+        String fieldPath = null;
         int n = expr.indexOf(".");
         if (n != -1) {
             label = expr.substring(0, n);
+            fieldPath = expr.substring(label.length() + 1);
         }
 
         if (canBeInvalid) {
@@ -613,7 +622,23 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
             // TODO: check whether the fields are ok!
 
         }
-        composedQuery.checkProjectionInteger(expr);
+
+        // detect sets, make a virtual subquery for them so we can resolve them
+        QueryAnalysis qa = getQueryAnalysis();
+        if (fieldPath != null && !expr.endsWith(".id")
+                && qa.getLabelType(label).getFieldOrPointedFieldDefinition(fieldPath).isSetType()) {
+
+            String setLabel = expr.replace('.', '_');
+            String queryProps[] = new String[5];
+            // TODO in the JSP ValueComputer there was a JOIN added for HQL, not sure it's needed any longer
+            queryProps[ComposedQuery.FROM] = expr + " " + setLabel;
+            ComposedQuery setCq = new ComposedSubquery(queryProps, composedQuery, getQueryLanguage(), true);
+            setCq.init();
+            setCq.checkProjectionInteger(setLabel);
+            setComposedSubqueries.put(setLabel, setCq);
+        } else {
+            composedQuery.checkProjectionInteger(expr);
+        }
 
         if (component instanceof EditableValueHolder) {
             // we assume here only expressions a.b.c.d
@@ -850,9 +875,12 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         super.restoreState(faces, state[0]);
         this.listData = (Grouper) state[1];
         this.composedQuery = (ComposedQuery) state[2];
+        @SuppressWarnings("unchecked")
+        Map<String, ComposedQuery> csq = (Map<String, ComposedQuery>) state[3];
+        this.setComposedSubqueries = csq;
         this.projections = getQueryAnalysis().getProjectionType();
         @SuppressWarnings("unchecked")
-        List<String> x = (List<String>) state[3];
+        List<String> x = (List<String>) state[4];
         this.editedLabels = x;
         getMakDataModel().makList = this;
     }
@@ -870,7 +898,9 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
 
         state[1] = listData;
         state[2] = composedQuery;
-        state[3] = editedLabels;
+        state[3] = this.setComposedSubqueries;
+        state[4] = editedLabels;
+
         // TODO: save other needed stuff
         return state;
     }
@@ -882,6 +912,19 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
     @Override
     public void addValue(String label, String path, Object value, String clientId) {
         editedValues.get(label).addField(path, value, clientId);
+    }
+
+    public boolean hasSetProjection(String path) {
+        return setComposedSubqueries.get(path.replace(".", "_")) != null;
+    }
+
+    public DataDefinition getSetProjectionType(String path) {
+        String l = path.replace(".", "_");
+        ComposedQuery csq = setComposedSubqueries.get(l);
+        if (csq != null) {
+            return csq.getFromLabelTypes().get(l);
+        }
+        return null;
     }
 
 }

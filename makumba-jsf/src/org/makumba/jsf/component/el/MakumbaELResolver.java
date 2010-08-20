@@ -96,29 +96,26 @@ public class MakumbaELResolver extends ELResolver {
         UIRepeatListComponent list = MakumbaDataContext.getDataContext().getCurrentList();
         String expr = mine.getProjectionPath();
         if (base != null && base instanceof ReadExpressionPathPlaceholder && list.hasExpression(expr)) {
-            {
-                if (list.getExpressionType(expr).getType().startsWith("ptr") && !"id".equals(property)) {
-                    // TODO: instead of checking the value, we can inquire the query whether the field is a pointer
-                    // TODO: we could actually set the value in the placeholder, for whatever it could be useful
 
-                    // return the placeholder
-                    log.fine(debugIdent() + " " + base + "." + property + " ----> " + mine + " in "
-                            + current.getClientId());
+            if (list.getExpressionType(expr).getType().startsWith("ptr") && !"id".equals(property)) {
+                // TODO: instead of checking the value, we can inquire the query whether the field is a pointer
+                // TODO: we could actually set the value in the placeholder, for whatever it could be useful
 
-                    return mine;
-                }
+                // return the placeholder
+                log.fine(debugIdent() + " " + base + "." + property + " ----> " + mine + " in " + current.getClientId());
 
-                if (current instanceof UINamingContainer) {
-                    // we are in a container like a ui:repeat or mak:list, which probably means we ae in a floating
-                    // expression
-                    return list.convertToString(expr);
-                }
-                // the PointerConverter should take over for other cases
-                Object value = list.getExpressionValue(expr);
-                log.fine(debugIdent() + " " + base + "." + property + " ----> " + value + " in "
-                        + current.getClientId());
-                return value;
+                return mine;
             }
+
+            if (current instanceof UINamingContainer) {
+                // we are in a container like a ui:repeat or mak:list, which probably means we are in a floating
+                // expression
+                return list.convertToString(expr);
+            }
+            // the PointerConverter should take over for other cases
+            Object value = list.getExpressionValue(expr);
+            log.fine(debugIdent() + " " + base + "." + property + " ----> " + value + " in " + current.getClientId());
+            return value;
 
         }
         log.fine(debugIdent() + " " + base + "." + property + " ----> " + mine + " in " + current.getClientId());
@@ -142,10 +139,19 @@ public class MakumbaELResolver extends ELResolver {
         if (base == null && property != null) {
             // lookup property in parent list, if it's a label we set a placeholder here
             if (list.hasExpression(property.toString())) {
-                // this can only be a label projection, so it's gonna be a pointer
-                Pointer value = (Pointer) list.getExpressionValue(property.toString());
-                context.setPropertyResolved(true);
-                return new ReadExpressionPathPlaceholder(value, property.toString());
+
+                FieldDefinition type = list.getExpressionType(property.toString());
+                if (type.isSetType()) {
+                    System.out.println("MakumbaELResolver.basicGetValue() we have a set " + property);
+                    // we don't resolve sets, there's another ELResolver for that
+                    return null;
+
+                } else if (type.getType().startsWith("ptr")) {
+                    Pointer value = (Pointer) list.getExpressionValue(property.toString());
+                    context.setPropertyResolved(true);
+                    return new ReadExpressionPathPlaceholder(value, property.toString());
+                }
+
             } else {
                 // this may be a label that we don't know, like a managed bean
 
@@ -168,8 +174,8 @@ public class MakumbaELResolver extends ELResolver {
             if (list.hasExpression(mine.getProjectionPath())) {
                 context.setPropertyResolved(true);
                 return mine;
-
             } else {
+                // try to find it in the projections
                 for (String s : list.getProjections()) {
                     if (s.startsWith(mine.getProjectionPath())) {
                         context.setPropertyResolved(true);
@@ -178,11 +184,18 @@ public class MakumbaELResolver extends ELResolver {
                     }
                 }
 
-                throw new ELException("Field '" + property + "' of '" + base + "' is not known."
-                        + (list.useCaches() ? " Turn caches off or try reloading the page." : ""));
-                // TODO we could even check here whether the property would makes sense in the query
-
+                // is it a set?
+                if (list.hasSetProjection(mine.getLabel() + "." + property.toString())) {
+                    // we let the MakumbaSetELResolver take care of it
+                    context.setPropertyResolved(false);
+                    return null;
+                }
             }
+
+            throw new ELException("Makumba error: Field '" + property + "' of '" + base + "' is not known."
+                    + (list.useCaches() ? " Turn caches off or try reloading the page." : ""));
+            // TODO we could even check here whether the property would makes sense in the query
+
         }
         return null;
     }
