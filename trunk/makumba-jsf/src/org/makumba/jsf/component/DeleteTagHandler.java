@@ -18,7 +18,11 @@ public class DeleteTagHandler extends ComponentHandler {
     public void onComponentCreated(FaceletContext ctx, UIComponent c, UIComponent parent) {
         if (parent instanceof UICommand) {
             ((UICommand) parent).addActionListener((DeleteComponent) c);
-            ((UICommand) parent).setImmediate(true);
+            if (((UICommand) parent).isImmediate()) {
+                // TODO maybe we can support this later
+                throw new ProgrammerError(
+                        "UICommand components having a nested mak:delete cannot be submitted in immediate mode");
+            }
         } else {
             throw new ProgrammerError(
                     "mak:delete can only be nested in UICommand subclasses such as h:commandButton and h:commandLink");
