@@ -26,22 +26,29 @@ public class ValueSavingListener implements PhaseListener, ELContextListener, Sy
 
     @Override
     public PhaseId getPhaseId() {
-        return PhaseId.UPDATE_MODEL_VALUES;
+        return PhaseId.ANY_PHASE;
     }
 
     @Override
     public void beforePhase(PhaseEvent event) {
-        getDataContext(event).setDataHandler(new MakumbaDataHandler());
-    }
 
-    private MakumbaDataContext getDataContext(PhaseEvent event) {
-        return (MakumbaDataContext) event.getFacesContext().getELContext().getContext(MakumbaDataContext.class);
+        // create the data handler before phase 4
+        if (event.getPhaseId() == PhaseId.UPDATE_MODEL_VALUES) {
+            getDataContext(event).setDataHandler(new MakumbaDataHandler());
+        }
     }
 
     @Override
     public void afterPhase(PhaseEvent event) {
-        getDataContext(event).getDataHandler().process();
-        getDataContext(event).removeDataHandler();
+        if (event.getPhaseId() == PhaseId.UPDATE_MODEL_VALUES || event.getPhaseId() == PhaseId.INVOKE_APPLICATION) {
+            getDataContext(event).getDataHandler().process();
+        }
+
+        // remove data handler at the end
+        if (event.getPhaseId() == PhaseId.INVOKE_APPLICATION) {
+            getDataContext(event).removeDataHandler();
+        }
+
     }
 
     @Override
@@ -60,6 +67,10 @@ public class ValueSavingListener implements PhaseListener, ELContextListener, Sy
         if (event instanceof PostConstructApplicationEvent) {
             ((PostConstructApplicationEvent) event).getApplication().addELContextListener(this);
         }
+    }
+
+    private MakumbaDataContext getDataContext(PhaseEvent event) {
+        return (MakumbaDataContext) event.getFacesContext().getELContext().getContext(MakumbaDataContext.class);
     }
 
 }

@@ -10,6 +10,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
+import javax.faces.event.PhaseId;
 
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
@@ -44,6 +45,7 @@ public class DeleteComponent extends UIComponentBase implements ActionListener {
 
         // FIXME this will not work, because processUpdates is never called, because when the commandButton is pressed
         // with 'immediate' it will never run processUpdates (but it fires the event in apply request values)
+        // we keep it for the moment, we can use it somewhere else
         if (deferredDeleteActions.get() != null) {
             ObjectInputValue.makeDeleteInputValue(deferredDeleteActions.get().getLabel(),
                 deferredDeleteActions.get().getPtr());
@@ -67,8 +69,13 @@ public class DeleteComponent extends UIComponentBase implements ActionListener {
                         ValueExpression ve = this.getValueExpression(p.getName());
                         if (ve != null) {
                             String label = ve.getExpressionString().substring(2, ve.getExpressionString().length() - 1);
-                            this.deferredDeleteActions.set(new DeleteAction(label, (Pointer) this.getAttributes().get(
-                                "label")));
+                            DeleteAction delete = new DeleteAction(label, (Pointer) this.getAttributes().get("label"));
+                            // happens with immediate = true
+                            if (this.getFacesContext().getCurrentPhaseId() == PhaseId.APPLY_REQUEST_VALUES) {
+                                this.deferredDeleteActions.set(delete);
+                            } else {
+                                ObjectInputValue.makeDeleteInputValue(delete.getLabel(), delete.getPtr());
+                            }
                         }
                     }
                 }
