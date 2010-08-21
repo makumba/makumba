@@ -16,7 +16,7 @@ import org.makumba.providers.datadefinition.mdd.FieldDefinitionImpl;
  * gives us a pretty good idea of the minimum set of field properties necessary for database persistence.
  * 
  * @author Manuel Gay
- * @version $Id: FieldData.java,v 1.1 May 30, 2010 6:50:13 PM manu Exp $
+ * @version $Id$
  */
 public class FieldDataDTO {
 

@@ -15,7 +15,7 @@ import org.makumba.commons.NamedResources;
  * @author Manuel Gay
  * @author Cristian Bogdan
  * @author Rudolf Mayer
- * @version $Id: QueryExecutionProvider.java,v 1.1 17.09.2007 15:16:57 Manuel Exp $
+ * @version $Id$
  */
 public abstract class QueryProvider {
 

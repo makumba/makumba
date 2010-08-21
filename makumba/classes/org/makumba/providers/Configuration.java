@@ -17,7 +17,7 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 //
 //  -------------
-//  $Id: SourceViewControllerHandler.java 3224 2008-10-05 22:32:17Z rosso_nero $
+//  $Id$
 //  $Name$
 /////////////////////////////////////
 
@@ -44,7 +44,7 @@ import org.makumba.commons.ClassResource;
  * 
  * @author Manuel Gay
  * @author Rudolf Mayer
- * @version $Id: Configuration.java,v 1.1 28.09.2007 11:15:00 Manuel Exp $
+ * @version $Id$
  */
 public class Configuration implements Serializable {
 

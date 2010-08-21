@@ -18,7 +18,7 @@ import org.makumba.ConfigurationError;
  * An extended version of the {@link HierarchicalINIConfiguration} suitable for makumba configuration
  * 
  * @author Manuel Gay
- * @version $Id: MakumbaINIConfiguration.java,v 1.1 Nov 25, 2009 9:46:33 PM manu Exp $
+ * @version $Id$
  */
 public class MakumbaINIConfiguration extends HierarchicalINIConfiguration {
 

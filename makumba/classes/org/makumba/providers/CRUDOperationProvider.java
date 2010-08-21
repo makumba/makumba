@@ -20,7 +20,7 @@ import org.makumba.db.TransactionImplementation;
  * This interface describes the operations that a simple CRUD provider has to implement.
  * 
  * @author Manuel Gay
- * @version $Id: CRUDOperationProvider.java,v 1.1 01.11.2007 15:30:29 Manuel Exp $
+ * @version $Id$
  */
 public abstract class CRUDOperationProvider {
 
