@@ -12,7 +12,7 @@ import org.makumba.providers.Configuration.DataSourceType;
  * This class is a facade for creating different kinds of TransactionProviders.
  * 
  * @author Manuel Gay
- * @version $Id: TransactionProvider.java,v 1.1 28.09.2007 15:49:55 Manuel Exp $
+ * @version $Id$
  */
 public abstract class TransactionProvider implements SingletonHolder {
 

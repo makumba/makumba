@@ -8,7 +8,7 @@ import java.util.Map;
  * exist. The fields have package visibility for now to avoid loads of getter / setter code.
  * 
  * @author Manuel Gay
- * @version $Id: ConfigurationData.java,v 1.1 Jul 16, 2010 7:54:30 PM manu Exp $
+ * @version $Id$
  */
 public class ConfigurationDTO {
 

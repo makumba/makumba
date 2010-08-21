@@ -17,7 +17,7 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 //
 //  -------------
-//  $Id: OQLAnalyzer.java,v 2.1 2007/07/18 16:04:57 manuel_gay Exp $
+//  $Id$
 //  $Name:  $
 /////////////////////////////////////
 
@@ -36,7 +36,7 @@ import antlr.collections.AST;
  * @author Cristian Bogdan
  * @author Manuel Gay
  * @since 0.5.5.10
- * @version $Id: OQLAnalyzer.java,v 2.1 2007/07/18 16:04:57 manuel_gay Exp $
+ * @version $Id$
  */
 public interface QueryAnalysis {
     /**

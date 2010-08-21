@@ -16,7 +16,7 @@ import org.makumba.providers.bytecode.JavassistClassReader;
  * specialised way<br>
  * 
  * @author Manuel Gay
- * @version $Id: MetadataAspectReader.java,v 1.1 Jun 21, 2010 3:14:06 PM manu Exp $
+ * @version $Id$
  */
 public class AnnotationMetadataReader {
 
