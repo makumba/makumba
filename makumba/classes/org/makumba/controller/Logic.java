@@ -720,12 +720,10 @@ public class Logic {
         Method op = null;
         op = getMethod(opName, opArgs, opArgsOld, controller);
         if (op == null) {
-            return null;
-            // throw new ProgrammerError("Class " + controller.getClass().getName() + " (" +
-            // getControllerFile(controller)
-            // + ")\n" + "does not define the method\n" + HANDLER_METHOD_HEAD + opName
-            // + "(Dictionary d, Attributes a, Database db)" + HANDLER_METHOD_END + "\n"
-            // + "The method is declared as a makumba form handler, so it has to be defined");
+            throw new ProgrammerError("Class " + controller.getClass().getName() + " (" + getControllerFile(controller)
+                    + ")\n" + "does not define the method\n" + "public void " + opName
+                    + "(Dictionary d, Attributes a, Database db)" + " throws LogicException {}" + "\n"
+                    + "The method is declared as a makumba form handler, so it has to be defined");
         }
 
         try {
