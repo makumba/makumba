@@ -1008,7 +1008,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         return path.replace('.', '_');
     }
 
-    public List<Pointer> getSetData(String path) {
+    public List<String> getSetData(String path) {
         return setComposedSubqueries.get(path).getSetData();
     }
 
@@ -1020,7 +1020,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
 
         private Grouper grouper;
 
-        private transient SetList<Pointer> setData;
+        private transient SetList<String> setData;
 
         private String setLabel;
 
@@ -1046,19 +1046,19 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
 
         public void nextParentIteration() {
             List<ArrayMap> data = grouper.getData(currentDataStack.get(), false);
-            setData = new SetList<Pointer>();
+            setData = new SetList<String>();
             // the set might be empty for the current stack
             if (data == null) {
                 return;
             }
             for (ArrayMap a : data) {
-                this.setData.add((Pointer) a.data[this.composedQuery.getProjectionIndex(this.setLabel)]);
+                this.setData.add(((Pointer) a.data[this.composedQuery.getProjectionIndex(this.setLabel)]).toExternalForm());
                 this.setData.getTiteList().add(
                     (String) a.data[this.composedQuery.getProjectionIndex(this.titleProjection)]);
             }
         }
 
-        public List<Pointer> getSetData() {
+        public List<String> getSetData() {
             return setData;
         }
     }
