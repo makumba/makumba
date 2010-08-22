@@ -572,11 +572,6 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         this.composedQuery.analyze();
         // log.fine(this.composedQuery);
 
-        // analyze subqueries for sets
-        for (SetIterationContext csq : setComposedSubqueries.values()) {
-            csq.composedQuery.analyze();
-        }
-
         this.projections = getQueryAnalysis().getProjectionType();
     }
 
