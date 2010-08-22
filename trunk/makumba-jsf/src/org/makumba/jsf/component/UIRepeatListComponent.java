@@ -21,6 +21,9 @@ import javax.faces.FacesException;
 import javax.faces.component.ContextCallback;
 import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
+import javax.faces.component.UISelectItem;
+import javax.faces.component.UISelectMany;
+import javax.faces.component.UISelectOne;
 import javax.faces.component.visit.VisitCallback;
 import javax.faces.component.visit.VisitContext;
 import javax.faces.component.visit.VisitResult;
@@ -215,10 +218,32 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
             // System.out.println(debugIdent() + " " + rowIndex + " " + iterationGroupData.size());
 
             for (SetIterationContext sc : setComposedSubqueries.values()) {
-                sc.setData(sc.getGrouper().getData(currentDataStack.get(), false));
+                sc.nextParentIteration();
             }
 
             setCurrentLabelInputValues();
+
+            // TODO: this is unfinished code
+            // 0) it should only run during non-postback RENDER_RESPONSE
+            // 1) it should look in all ancestors for a h:select, not just in parent, until the first
+            // UIRepeatListComponent ancestor
+            // 2) it should copy all properties of the selectItem, not just itemLabel
+            // 3) it should remove all the original selectItems from the tree.
+            if (this.getParent() instanceof UISelectOne || this.getParent() instanceof UISelectMany) {
+
+                Util.visitStaticTree(this, new VisitCallback() {
+
+                    @Override
+                    public VisitResult visit(VisitContext context, UIComponent target) {
+                        if (target instanceof UISelectItem) {
+                            UISelectItem item = new UISelectItem();
+                            item.setItemLabel(((UISelectItem) target).getItemLabel());
+                            getParent().getChildren().add(item);
+                        }
+                        return VisitResult.ACCEPT;
+                    }
+                });
+            }
 
         } else {
             // System.out.println(debugIdent() + " " + rowIndex);
@@ -317,10 +342,6 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
     private void afterIteration(Object o) {
         log.fine(debugIdent() + " --- endTag--- " + visitedIndexes + " " + o);
         iterationGroupData = null;
-
-        for (SetIterationContext sc : setComposedSubqueries.values()) {
-            sc.setData(null);
-        }
 
         currentIndex = -1;
         // this list is done, no more current value in stack
@@ -553,7 +574,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
 
         // analyze subqueries for sets
         for (SetIterationContext csq : setComposedSubqueries.values()) {
-            csq.getComposedQuery().analyze();
+            csq.composedQuery.analyze();
         }
 
         this.projections = getQueryAnalysis().getProjectionType();
@@ -595,8 +616,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
             log.fine(debugIdent() + " --run-- " + composedQuery);
             listData = composedQuery.execute(qep, null, evaluator, offset, limit);
             for (SetIterationContext sc : setComposedSubqueries.values()) {
-                System.out.println("++++++++++++++++ " + sc.getComposedQuery());
-                sc.setGrouper(sc.getComposedQuery().execute(qep, null, evaluator, offset, limit));
+                sc.execute(qep, offset, limit);
             }
         } finally {
             if (useSeparateTransactions()) {
@@ -643,18 +663,8 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         FieldDefinition setFd = qa.getLabelType(label).getFieldOrPointedFieldDefinition(fieldPath);
         if (fieldPath != null && !expr.endsWith(".id") && setFd.isSetType()) {
 
-            // create a new composed query, search for the set member pointer and title
-            String setLabel = expr.replace('.', '_');
-            String queryProps[] = new String[5];
-            // TODO in the JSP ValueComputer there was a JOIN added for HQL, not sure it's needed any longer
-            queryProps[ComposedQuery.FROM] = expr + " " + setLabel;
-            ComposedQuery setCq = new ComposedSubquery(queryProps, composedQuery, getQueryLanguage(), true);
-            setCq.init();
-            setCq.checkProjectionInteger(setLabel);
-            setCq.checkProjectionInteger(setLabel + "." + setFd.getPointedType().getTitleFieldName());
-            SetIterationContext sc = new SetIterationContext();
-            sc.setComposedQuery(setCq);
-            setComposedSubqueries.put(setLabel, sc);
+            SetIterationContext sc = new SetIterationContext(composedQuery, getQueryLanguage(), expr, setFd);
+            setComposedSubqueries.put(expr, sc);
         } else {
             composedQuery.checkProjectionInteger(expr);
         }
@@ -934,64 +944,65 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
     }
 
     public boolean hasSetProjection(String path) {
-        return setComposedSubqueries.get(path.replace(".", "_")) != null;
+        return setComposedSubqueries.get(path) != null;
     }
 
-    public DataDefinition getSetProjectionType(String path) {
-        String l = path.replace(".", "_");
-        ComposedQuery csq = setComposedSubqueries.get(l).getComposedQuery();
-        if (csq != null) {
-            return csq.getFromLabelTypes().get(l);
-        }
-        return null;
+    private static String getSetLabel(String path) {
+        return path.replace('.', '_');
     }
 
     public List<Pointer> getSetData(String path) {
-        return setComposedSubqueries.get(path.replace(".", "_")).getSetData();
+        return setComposedSubqueries.get(path).getSetData();
     }
 
-    class SetIterationContext implements Serializable {
+    static class SetIterationContext implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
-        private transient ComposedQuery composedQuery;
+        private ComposedQuery composedQuery;
 
-        private transient Grouper grouper;
+        private Grouper grouper;
 
-        private transient List<ArrayMap> data;
+        private transient SetList<Pointer> setData;
 
-        public ComposedQuery getComposedQuery() {
-            return composedQuery;
+        private String setLabel;
+
+        private String titleProjection;
+
+        public SetIterationContext(ComposedQuery superQuery, String queryLanguage, String expr, FieldDefinition setFd) {
+            // create a new composed query, search for the set member pointer and title
+            this.setLabel = getSetLabel(expr);
+            String queryProps[] = new String[5];
+            // TODO in the JSP ValueComputer there was a JOIN added for HQL, not sure it's needed any longer
+            queryProps[ComposedQuery.FROM] = expr + " " + setLabel;
+            this.composedQuery = new ComposedSubquery(queryProps, superQuery, queryLanguage, true);
+            this.composedQuery.init();
+            this.composedQuery.checkProjectionInteger(setLabel);
+            this.titleProjection = setLabel + "." + setFd.getPointedType().getTitleFieldName();
+            this.composedQuery.checkProjectionInteger(titleProjection);
+            this.composedQuery.analyze();
         }
 
-        public void setComposedQuery(ComposedQuery setComposedQuery) {
-            this.composedQuery = setComposedQuery;
+        void execute(QueryProvider qep, int offset, int limit) {
+            this.grouper = composedQuery.execute(qep, null, evaluator, offset, limit);
         }
 
-        public Grouper getGrouper() {
-            return grouper;
-        }
-
-        public void setGrouper(Grouper setData) {
-            this.grouper = setData;
-        }
-
-        public List<ArrayMap> getData() {
-            return data;
-        }
-
-        public void setData(List<ArrayMap> data) {
-            System.out.println("******************** " + data);
-            this.data = data;
+        public void nextParentIteration() {
+            List<ArrayMap> data = grouper.getData(currentDataStack.get(), false);
+            setData = new SetList<Pointer>();
+            // the set might be empty for the current stack
+            if (data == null) {
+                return;
+            }
+            for (ArrayMap a : data) {
+                this.setData.add((Pointer) a.data[this.composedQuery.getProjectionIndex(this.setLabel)]);
+                this.setData.getTiteList().add(
+                    (String) a.data[this.composedQuery.getProjectionIndex(this.titleProjection)]);
+            }
         }
 
         public List<Pointer> getSetData() {
-            SetList<Pointer> res = new SetList<Pointer>();
-            for (ArrayMap a : data) {
-                res.add((Pointer) a.get("col1"));
-                res.getTiteList().add((String) a.get("col2"));
-            }
-            return res;
+            return setData;
         }
     }
 
