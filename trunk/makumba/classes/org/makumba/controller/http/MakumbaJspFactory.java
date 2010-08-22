@@ -20,6 +20,7 @@
 package org.makumba.controller.http;
 
 import java.util.Stack;
+import java.util.logging.Logger;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
@@ -53,8 +54,16 @@ public class MakumbaJspFactory extends JspFactory {
             JspFactory fact = JspFactory.getDefaultFactory();
             if (fact != null) {
                 if (!fact.getClass().getName().endsWith("MakumbaJspFactory")) {
-                    JspFactory.setDefaultFactory(new MakumbaJspFactory(fact));
+                    MakumbaJspFactory deflt = new MakumbaJspFactory(fact);
+                    Logger.getLogger("org.makumba.controller").info(
+                        "Setting MakumbaJspFactory as default JSP Factory.\nPrevious factory: " + fact.getClass()
+                                + ", " + fact.hashCode() + ", new Factory: " + deflt.getClass() + ", "
+                                + deflt.hashCode());
+                    JspFactory.setDefaultFactory(deflt);
                 } else {
+                    Logger.getLogger("org.makumba.controller").info(
+                        "Not setting MakumbaJspFactory: existing default factory is of type " + fact.getClass() + " ("
+                                + fact.hashCode() + ").");
                     throw new IllegalStateException("Cannot use JspFactory from old classloader!");
                 }
 
