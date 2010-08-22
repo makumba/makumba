@@ -27,9 +27,7 @@ public class MakumbaSetELResolver extends ELResolver {
             String path = r.getProjectionPath() + "." + property.toString();
             if (list.hasSetProjection(path)) {
                 context.setPropertyResolved(true);
-                return "set " + list.getSetProjectionType(path);
-
-                // TODO get the values from the list, return a list of pointers here
+                return list.getSetData(path);
             }
         }
 
