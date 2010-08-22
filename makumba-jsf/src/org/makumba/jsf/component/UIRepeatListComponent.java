@@ -24,6 +24,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.UISelectItem;
 import javax.faces.component.UISelectMany;
 import javax.faces.component.UISelectOne;
+import javax.faces.component.UIViewRoot;
 import javax.faces.component.visit.VisitCallback;
 import javax.faces.component.visit.VisitContext;
 import javax.faces.component.visit.VisitResult;
@@ -223,26 +224,29 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
 
             setCurrentLabelInputValues();
 
-            // TODO: this is unfinished code
-            // 0) it should only run during non-postback RENDER_RESPONSE
-            // 1) it should look in all ancestors for a h:select, not just in parent, until the first
-            // UIRepeatListComponent ancestor
-            // 2) it should copy all properties of the selectItem, not just itemLabel
-            // 3) it should remove all the original selectItems from the tree.
-            if (this.getParent() instanceof UISelectOne || this.getParent() instanceof UISelectMany) {
+            // make <f:selectItem> iterate
+            // we run only at non-postback render time
+            if (!getFacesContext().isPostback() && getFacesContext().getCurrentPhaseId() == PhaseId.RENDER_RESPONSE) {
 
-                Util.visitStaticTree(this, new VisitCallback() {
+                if (parentSelectComponent != null) {
+                    for (UISelectItem original : selectItems) {
+                        UISelectItem item = new UISelectItem();
+                        item.setId(original.getId() + "_" + rowIndex);
+                        item.setInView(original.isInView());
+                        item.setItemDescription(original.getItemDescription());
+                        item.setItemDisabled(original.isItemDisabled());
+                        item.setItemEscaped(original.isItemEscaped());
+                        item.setItemLabel(original.getItemLabel());
+                        item.setItemValue(original.getItemValue());
+                        item.setNoSelectionOption(original.isNoSelectionOption());
+                        item.setRendered(original.isRendered());
+                        item.setRendererType(original.getRendererType());
+                        item.setTransient(original.isTransient());
+                        item.setValue(original.getValue());
 
-                    @Override
-                    public VisitResult visit(VisitContext context, UIComponent target) {
-                        if (target instanceof UISelectItem) {
-                            UISelectItem item = new UISelectItem();
-                            item.setItemLabel(((UISelectItem) target).getItemLabel());
-                            getParent().getChildren().add(item);
-                        }
-                        return VisitResult.ACCEPT;
+                        parentSelectComponent.getChildren().add(item);
                     }
-                });
+                }
             }
 
         } else {
@@ -363,6 +367,10 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         super.queueEvent(event);
     }
 
+    private List<UISelectItem> selectItems = new ArrayList<UISelectItem>();
+
+    private UIComponent parentSelectComponent = null;
+
     @Override
     public void process(FacesContext context, PhaseId p) {
 
@@ -371,10 +379,64 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
             return;
         }
         try {
+
+            findSelectItems();
+
             super.process(context, p);
+
+            for (UISelectItem i : selectItems) {
+                i.getParent().getChildren().remove(i);
+            }
+
+            selectItems.clear();
+            parentSelectComponent = null;
+
         } finally {
             afterIteration(p);
         }
+    }
+
+    private void findSelectItems() {
+        // we run only at non-postback render time
+        if (!getFacesContext().isPostback() && getFacesContext().getCurrentPhaseId() == PhaseId.RENDER_RESPONSE) {
+
+            // search parent UISelectOne or UISelectMany until next list or view tree
+            UIComponent c = this;
+            while (!(c.getParent() == null || c.getParent() instanceof UIViewRoot || c.getParent().getParent() instanceof UIRepeatListComponent)) {
+                c = c.getParent();
+            }
+
+            if (c.getParent() != null
+                    && (c.getParent() instanceof UISelectOne || c.getParent() instanceof UISelectMany)) {
+                c = c.getParent();
+                parentSelectComponent = c;
+                selectItems = collectSelectItems();
+            }
+        }
+    }
+
+    private List<UISelectItem> collectSelectItems() {
+        final List<UISelectItem> res = new ArrayList<UISelectItem>();
+
+        // take all UISelectItem-s off the tree, store them in a list, so we put them back into the tree
+        // later on, when we iterate
+        Util.visitStaticTree(this, new VisitCallback() {
+
+            @Override
+            public VisitResult visit(VisitContext context, UIComponent target) {
+                if (target instanceof UISelectItem) {
+                    UISelectItem original = (UISelectItem) target;
+                    res.add(original);
+                    original.setId(original.getId() + "_REMOVE");
+
+                    // target.getParent().getChildren().remove(target);
+                    return VisitResult.REJECT;
+                }
+                return VisitResult.ACCEPT;
+            }
+        });
+
+        return res;
     }
 
     @Override
@@ -978,7 +1040,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
             this.composedQuery.analyze();
         }
 
-        void execute(QueryProvider qep, int offset, int limit) {
+        public void execute(QueryProvider qep, int offset, int limit) {
             this.grouper = composedQuery.execute(qep, null, evaluator, offset, limit);
         }
 

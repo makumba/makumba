@@ -10,16 +10,19 @@
 	<ui:define name="content">
 
 		<h:form id="f">
-			<ul>
-				<mak:list from="test.Person p" id="bigList">
-				Name: #{p.indiv.name}<br/>
-				Language set: #{p.speaks}<br/>
-				</mak:list>
-			</ul>
-		</h:form>
+			<h:messages />
+			<mak:list from="test.Person p" id="bigList">
+				Name: #{p.indiv.name}<br />
+				Language set: #{p.speaks}<br />
+				<br />
+				<h:selectManyListbox value="#{p.speaks}">
+					<mak:list from="test.Language l">
+						<f:selectItem itemLabel="#{l.name}" itemValue="#{l.id}" id="selectGuy" />
+					</mak:list>
+				</h:selectManyListbox>
+				<hr />
 
-		<a href="http://localhost:8080/makumba-jsf-test/ajaxNestedList.jsf">here</a>
-
-
+			</mak:list>
+			</h:form>
 	</ui:define>
 </ui:composition>
