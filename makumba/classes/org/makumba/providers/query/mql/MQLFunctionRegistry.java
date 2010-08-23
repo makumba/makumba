@@ -98,6 +98,10 @@ public class MQLFunctionRegistry {
         mqlFunctions.add(dateToIntFunction("microsecond"));
         mqlFunctions.add(dateToIntFunction("quarter"));
         mqlFunctions.add(dateToIntFunction("to_days"));
+        mqlFunctions.add(dateToIntFunction("unix_timestamp"));
+
+        // simple int-to-date functions
+        mqlFunctions.add(new MQLFunctionDefinition("from_unixtime", "date", "int"));
 
         // simple string-to-date functions
         mqlFunctions.add(new MQLFunctionDefinition("str_to_date", "date", "char[255]", "char[255]"));
