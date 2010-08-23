@@ -32,6 +32,7 @@ import javax.servlet.jsp.JspFactory;
 import javax.servlet.jsp.PageContext;
 
 import org.makumba.ConfigurationError;
+import org.makumba.commons.ClassUtils;
 
 /**
  * A JSP factory that wraps the default factory from the servlet container.<br>
@@ -53,17 +54,25 @@ public class MakumbaJspFactory extends JspFactory {
 
             JspFactory fact = JspFactory.getDefaultFactory();
             if (fact != null) {
+                Logger logger = Logger.getLogger("org.makumba.controller");
                 if (!fact.getClass().getName().endsWith("MakumbaJspFactory")) {
                     MakumbaJspFactory deflt = new MakumbaJspFactory(fact);
-                    Logger.getLogger("org.makumba.controller").info(
-                        "Setting MakumbaJspFactory as default JSP Factory.\nPrevious factory: " + fact.getClass()
-                                + ", " + fact.hashCode() + ", new Factory: " + deflt.getClass() + ", "
-                                + deflt.hashCode());
+                    logger.info("Setting MakumbaJspFactory as default JSP Factory.\nPrevious factory: "
+                            + fact.getClass() + ", " + fact.hashCode() + ", new Factory: " + deflt.getClass() + ", "
+                            + deflt.hashCode());
                     JspFactory.setDefaultFactory(deflt);
                 } else {
-                    Logger.getLogger("org.makumba.controller").info(
-                        "Not setting MakumbaJspFactory: existing default factory is of type " + fact.getClass() + " ("
-                                + fact.hashCode() + ").");
+                    logger.info("Not setting MakumbaJspFactory: current default factory is of type " + fact.getClass()
+                            + " (" + fact.hashCode() + ").");
+
+                    // Print debug class location information
+                    logger.info("Trying to determine source of the current default JspFactory");
+                    Class<? extends JspFactory> cls = fact.getClass();
+                    ClassUtils.printClassSourceInformation(logger, "JspFactory", cls);
+
+                    logger.info("Trying to determine source of the class loader of the current default JspFactory");
+                    ClassUtils.printClassSourceInformation(logger, "ClassLoader", cls.getClassLoader().getClass());
+
                     throw new IllegalStateException("Cannot use JspFactory from old classloader!");
                 }
 
