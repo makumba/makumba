@@ -20,7 +20,6 @@
 package org.makumba.controller.http;
 
 import java.util.Stack;
-import java.util.logging.Logger;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
@@ -32,7 +31,6 @@ import javax.servlet.jsp.JspFactory;
 import javax.servlet.jsp.PageContext;
 
 import org.makumba.ConfigurationError;
-import org.makumba.commons.ClassUtils;
 
 /**
  * A JSP factory that wraps the default factory from the servlet container.<br>
@@ -43,40 +41,30 @@ import org.makumba.commons.ClassUtils;
  */
 public class MakumbaJspFactory extends JspFactory {
 
+    // a MakumbaJspFactory that was already set as default by another (foreign) context
+    static JspFactory foreign;
+
     // TODO: not sure if the ThreadLocal should be here, or whether there's a more fitting place
     private static ThreadLocal<Stack<PageContext>> pageContextStack = new ThreadLocal<Stack<PageContext>>();
 
-    // state pattern, we stay in the initial state until we find the container factory
-    // this will happen at first access but we make sure that concurrent initial accesses don't collide
-    // further accesses will use the noop state which does nothing
+    // state pattern, we stay in the initial state until we find the container factory and it is not from a foreign
+    // context
+    // after we set our own factory, we use the noop state which does nothing
+    // FIXME: if two tomcat contexts will try to set the default factory at the same time, both may believe that they
+    // successfully set it
+    // in that case the static synchronized does not help because there are 2 different classes
     static public Runnable checker = new Runnable() {
         public synchronized void run() {
 
             JspFactory fact = JspFactory.getDefaultFactory();
             if (fact != null) {
-                Logger logger = Logger.getLogger("org.makumba.controller");
                 if (!fact.getClass().getName().endsWith("MakumbaJspFactory")) {
                     MakumbaJspFactory deflt = new MakumbaJspFactory(fact);
-                    logger.info("Setting MakumbaJspFactory as default JSP Factory.\nPrevious factory: "
-                            + fact.getClass() + ", " + fact.hashCode() + ", new Factory: " + deflt.getClass() + ", "
-                            + deflt.hashCode());
                     JspFactory.setDefaultFactory(deflt);
+                    checker = noop;
                 } else {
-                    logger.info("Not setting MakumbaJspFactory: current default factory is of type " + fact.getClass()
-                            + " (" + fact.hashCode() + ").");
-
-                    // Print debug class location information
-                    logger.info("Trying to determine source of the current default JspFactory");
-                    Class<? extends JspFactory> cls = fact.getClass();
-                    ClassUtils.printClassSourceInformation(logger, "JspFactory", cls);
-
-                    logger.info("Trying to determine source of the class loader of the current default JspFactory");
-                    ClassUtils.printClassSourceInformation(logger, "ClassLoader", cls.getClassLoader().getClass());
-
-                    throw new IllegalStateException("Cannot use JspFactory from old classloader!");
+                    foreign = fact;
                 }
-
-                checker = noop;
             }
         }
     };
@@ -122,8 +110,10 @@ public class MakumbaJspFactory extends JspFactory {
     @Override
     public PageContext getPageContext(Servlet servlet, ServletRequest request, ServletResponse response,
             String errorPageURL, boolean needsSession, int buffer, boolean autoflush) {
-        // System.out.println(servlet);
-
+        if (servlet == null && request == null) {
+            // this is a call from our own code, so we return the pageContext in the thread.
+            return getPageContext();
+        }
         // we hang the pageContext in a threadLocal stack
         PageContext pageContext = fact.getPageContext(servlet, request, response, errorPageURL, needsSession, buffer,
             autoflush);
@@ -132,7 +122,7 @@ public class MakumbaJspFactory extends JspFactory {
         }
         pageContextStack.get().push(pageContext);
 
-        // and also trigger page analysis
+        // and we can also trigger page analysis
         // this also tells us when a page starts or is included
 
         return pageContext;
@@ -156,7 +146,11 @@ public class MakumbaJspFactory extends JspFactory {
     }
 
     public static PageContext getPageContext() {
-
+        if (foreign != null) {
+            // instead of using reflection to call getPageContext(), we use an API that is known but set weird
+            // parameters, so they can be recognized by our factory
+            return foreign.getPageContext(null, null, null, null, false, -1, false);
+        }
         if (pageContextStack.get() == null) {
             throw new ConfigurationError(
                     "Could not retrieve pageContext from MakumbaJspFactory. Make sure that the makumba controller filter is correctly configured in your web.xml file and that it is also applied.");
