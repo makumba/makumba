@@ -83,7 +83,8 @@ public class WebappJSPQueryCrawler {
                     if (cache != null) {
                         for (Object key : cache.keySet()) {
                             ComposedQuery query = (ComposedQuery) cache.get(key);
-                            String s = query.getTypeAnalyzerQuery();
+                            String s = query.getComputedQuery();
+                            pw.println(s);
                             // FIXME this won't work until we implement a method to print back to MQL analyzed query
                             // trees
                             // ArgumentReplacer ar = new ArgumentReplacer(s, false);
