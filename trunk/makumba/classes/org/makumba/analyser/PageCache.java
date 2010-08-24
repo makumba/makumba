@@ -185,10 +185,10 @@ public class PageCache {
     public String toString() {
         String result = "== Simple caches\n";
         for (String key : caches.keySet()) {
-            result += "  == Key " + key + "\n";
+            result += "  == Cache '" + key + "'\n";
             HashMap<Object, Object> cache = caches.get(key);
             for (Object key2 : cache.keySet()) {
-                result += "    - " + key2 + " => " + cache.get(key2) + "\n";
+                result += "    - '" + key2 + "'\n      => " + cache.get(key2) + "\n";
             }
         }
 
