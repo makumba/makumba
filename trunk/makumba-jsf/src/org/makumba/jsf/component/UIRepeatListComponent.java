@@ -33,6 +33,7 @@ import javax.faces.event.AbortProcessingException;
 import javax.faces.event.FacesEvent;
 import javax.faces.event.PhaseId;
 import javax.faces.model.ListDataModel;
+import javax.faces.model.SelectItem;
 import javax.faces.view.StateManagementStrategy;
 import javax.faces.view.facelets.FaceletException;
 
@@ -47,7 +48,7 @@ import org.makumba.commons.NamedResources;
 import org.makumba.commons.RegExpUtils;
 import org.makumba.jsf.FacesAttributes;
 import org.makumba.jsf.MakumbaDataContext;
-import org.makumba.jsf.component.el.SetList;
+import org.makumba.jsf.PointerConverter;
 import org.makumba.jsf.update.ObjectInputValue;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.ComposedSubquery;
@@ -225,28 +226,11 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
             setCurrentLabelInputValues();
 
             // make <f:selectItem> iterate
-            // we run only at non-postback render time
-            if (!getFacesContext().isPostback() && getFacesContext().getCurrentPhaseId() == PhaseId.RENDER_RESPONSE) {
-
-                if (parentSelectComponent != null) {
-                    for (UISelectItem original : selectItems) {
-                        UISelectItem item = new UISelectItem();
-                        item.setId(original.getId() + "_" + rowIndex);
-                        item.setInView(original.isInView());
-                        item.setItemDescription(original.getItemDescription());
-                        item.setItemDisabled(original.isItemDisabled());
-                        item.setItemEscaped(original.isItemEscaped());
-                        item.setItemLabel(original.getItemLabel());
-                        item.setItemValue(original.getItemValue());
-                        item.setNoSelectionOption(original.isNoSelectionOption());
-                        item.setRendered(original.isRendered());
-                        item.setRendererType(original.getRendererType());
-                        item.setTransient(original.isTransient());
-                        item.setValue(original.getValue());
-
-                        parentSelectComponent.getChildren().add(item);
-                    }
-                }
+            // FIXME this will not iterate during APPLY_REQUEST_VALUES, but we need it to iterate there
+            // we should therefore move the following code to a place where it will iterate, or make sure it will also
+            // run at phase 2
+            if (shouldReplaceUISelectItems()) {
+                generateIteratingUISelectItems(rowIndex);
             }
 
         } else {
@@ -369,6 +353,8 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
 
     private List<UISelectItem> selectItems = new ArrayList<UISelectItem>();
 
+    private Map<String, SelectItem> selectItemsSaved = new HashMap<String, SelectItem>();
+
     private UIComponent parentSelectComponent = null;
 
     @Override
@@ -380,25 +366,58 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         }
         try {
 
-            findSelectItems();
+            if (shouldReplaceUISelectItems()) {
+                findSelectItems();
+                // we set a converter here so that the UISelect component can read the values from the list we give it
+                // TODO decide whether or not to keep this mechanism, or whether to return directly an array of external
+                // pointer values in #getSetData
+                if (parentSelectComponent != null) {
+                    ((EditableValueHolder) parentSelectComponent).setConverter(new PointerConverter());
+                }
+            }
 
             super.process(context, p);
 
-            for (UISelectItem i : selectItems) {
-                i.getParent().getChildren().remove(i);
+            if (shouldReplaceUISelectItems()) {
+                // remove the original selectItems from the tree, but keep their references
+                // on subsequent postback, the selectItems generated during #setRowIndex() will vanish as we have to
+                // mark them transient
+                for (UISelectItem ui : selectItems) {
+                    // generate SelectItem-s out of the original UISelectItem
+                    SelectItem it = new SelectItem(ui.getItemValue(), ui.getItemLabel(), ui.getItemDescription(),
+                            ui.isItemDisabled(), ui.isItemEscaped(), ui.isNoSelectionOption());
+
+                    // and put them in a map where they will be persisted
+                    selectItemsSaved.put(ui.getId(), it);
+
+                    // finally, remove the original component
+                    ui.getParent().getChildren().remove(ui);
+                }
             }
 
-            selectItems.clear();
-            parentSelectComponent = null;
+            // we clean up after processing RENDER_RESPONSE
+            if (getFacesContext().getCurrentPhaseId() == PhaseId.RENDER_RESPONSE) {
+                if (parentSelectComponent != null) {
+                    ((EditableValueHolder) parentSelectComponent).setConverter(null);
+                }
+
+                selectItems.clear();
+                parentSelectComponent = null;
+
+            }
 
         } finally {
             afterIteration(p);
         }
     }
 
+    /**
+     * Searches the tree for a parent UISelectOne or UISelectMany component. If one is found, sets the
+     * parentSelectComponent member and collects the child UISelectItem components by calling
+     * {@link #collectSelectItems()}
+     */
     private void findSelectItems() {
-        // we run only at non-postback render time
-        if (!getFacesContext().isPostback() && getFacesContext().getCurrentPhaseId() == PhaseId.RENDER_RESPONSE) {
+        if (shouldReplaceUISelectItems()) {
 
             // search parent UISelectOne or UISelectMany until next list or view tree
             UIComponent c = this;
@@ -415,6 +434,12 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         }
     }
 
+    /**
+     * Does a static tree traversal and collects all {@link UISelectItem}-s it finds, until the next
+     * {@link UIRepeatListComponent} is found
+     * 
+     * @return a List of {@link UISelectItem}-s that are children of this component (or of possible children).
+     */
     private List<UISelectItem> collectSelectItems() {
         final List<UISelectItem> res = new ArrayList<UISelectItem>();
 
@@ -422,14 +447,22 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         // later on, when we iterate
         Util.visitStaticTree(this, new VisitCallback() {
 
+            private UIComponent initialTarget;
+
             @Override
             public VisitResult visit(VisitContext context, UIComponent target) {
+                if (initialTarget == null) {
+                    initialTarget = target;
+                }
                 if (target instanceof UISelectItem) {
                     UISelectItem original = (UISelectItem) target;
                     res.add(original);
-                    original.setId(original.getId() + "_REMOVE");
+                    // original.setId(original.getId() + "_REMOVE");
 
                     // target.getParent().getChildren().remove(target);
+                    return VisitResult.REJECT;
+                }
+                if (target instanceof UIRepeatListComponent && !target.equals(initialTarget)) {
                     return VisitResult.REJECT;
                 }
                 return VisitResult.ACCEPT;
@@ -437,6 +470,93 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         });
 
         return res;
+    }
+
+    /**
+     * Makes <f:selectItem /> iterate by generating the right amount of children via iteration over them, based on the
+     * original {@link UISelectItem}-s (collected or serialized). This iteration needs to happen at the end of
+     * APPLY_REQUEST_VALUES or in any case before PROCESS_VALIDATIONS, so that the parent {@link UISelectOne} or
+     * {@link UISelectMany} component have them at their disposal during that phase. UISelect* components use a special
+     * iterator that looks for direct children to find out about possible options.
+     * 
+     * @param rowIndex
+     *            the index of the current iteration
+     */
+    private void generateIteratingUISelectItems(int rowIndex) {
+        if (parentSelectComponent != null) {
+
+            if (!selectItemsSaved.isEmpty()) {
+                // we already had a postback, the original UISelectItem-s are no longer part of the tree
+                // thus we take them from a reference list that we keep
+                for (String id : selectItemsSaved.keySet()) {
+                    UISelectItem item = generateUISelectItem(rowIndex, id, selectItemsSaved.get(id));
+                    parentSelectComponent.getChildren().add(item);
+
+                    System.out.println("********************************* generated item from saved one: "
+                            + item.getItemLabel() + " val:" + item.getItemValue());
+
+                }
+            } else {
+                // this is the first rendering
+                // we generate the items from the collection we keep
+                for (UISelectItem original : selectItems) {
+
+                    SelectItem it = new SelectItem(original.getItemValue(), original.getItemLabel(),
+                            original.getItemDescription(), original.isItemDisabled(), original.isItemEscaped(),
+                            original.isNoSelectionOption());
+
+                    UISelectItem item = generateUISelectItem(rowIndex, original.getId(), it);
+                    parentSelectComponent.getChildren().add(item);
+                }
+            }
+
+        }
+    }
+
+    /**
+     * Builds a {@link UISelectItem} based on a {@link SelectItem} and the necessary information to give it a unique
+     * identifier.
+     * 
+     * @param rowIndex
+     *            the current iteration index
+     * @param id
+     *            the id of the component in the page
+     * @param it
+     *            the {@link SelectItem}
+     * @return a {@link UISelectItem} that can be added as child to a {@link UISelectMany} or {@link UISelectOne}
+     */
+    private UISelectItem generateUISelectItem(int rowIndex, String id, SelectItem it) {
+        // we can only copy the UISelectItem at this point because its state apparently changes from
+        // when RENDER_RESPONSE starts
+        // duplicating it at an earlier point does not yield a correct result, i.e. many items are
+        // missing
+        UISelectItem item = new UISelectItem();
+
+        item.setId(id + rowIndex);
+        item.setInView(true);
+        item.setItemDescription(it.getDescription());
+        item.setItemDisabled(it.isDisabled());
+        item.setItemEscaped(it.isEscape());
+        item.setItemLabel(it.getLabel());
+        item.setItemValue(it.getValue());
+        item.setNoSelectionOption(it.isNoSelectionOption());
+
+        // we have to set these elements to be transient
+        item.setTransient(true);
+
+        return item;
+    }
+
+    /**
+     * Whether the mechanism for replacing original {@link UISelectItem}-s in the tree should be executed
+     * 
+     * @return true if this is not a postback and the phase is RENDER_RESPONSE, or if this phase is apply request
+     *         values.
+     */
+    private boolean shouldReplaceUISelectItems() {
+        // return false;
+        return !getFacesContext().isPostback() && getFacesContext().getCurrentPhaseId() == PhaseId.RENDER_RESPONSE
+                || getFacesContext().getCurrentPhaseId() == PhaseId.APPLY_REQUEST_VALUES;
     }
 
     @Override
@@ -720,8 +840,15 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         FieldDefinition setFd = qa.getLabelType(label).getFieldOrPointedFieldDefinition(fieldPath);
         if (fieldPath != null && !expr.endsWith(".id") && setFd.isSetType()) {
 
+            // FIXME the set expression needs to be added to the list component to which the expression correlates
+            // i.e. to the list component that declares the base label of the expression.
+            // currently, if a set expression referring to a parent list component is used in a child list component
+            // it will utterly fail.
+            // the trouble with fixing this is that the discovery needs to be done _before_ the parent list computes its
+            // composed query
             SetIterationContext sc = new SetIterationContext(composedQuery, getQueryLanguage(), expr, setFd);
             setComposedSubqueries.put(expr, sc);
+
         } else {
             composedQuery.checkProjectionInteger(expr);
         }
@@ -776,17 +903,37 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         return "" + val;
     }
 
-    public Object convertAndValidateExpression(UIComponent component, Object value) {
+    public Object convertExpression(UIComponent component, Object value) {
         String expr = component.getValueExpression("value").getExpressionString();
         // take away #{ }
         expr = expr.substring(2, expr.length() - 1).trim();
 
-        if (!this.hasExpression(expr)) {
+        if (this.hasSetProjection(expr)) {
+            String ext = (String) value;
+            return new Pointer(getSetProjectionType(expr).getName(), ext);
+        } else if (this.hasExpression(expr)) {
+            // FIXME do conversion if necessary
             return value;
         }
 
-        // FIXME validate
-        return this.getExpressionType(expr).checkValue(value);
+        return value;
+    }
+
+    public Object validateExpression(UIComponent component, Object value) {
+        String expr = component.getValueExpression("value").getExpressionString();
+        // take away #{ }
+        expr = expr.substring(2, expr.length() - 1).trim();
+
+        if (this.hasExpression(expr)) {
+            // FIXME validate
+            return this.getExpressionType(expr).checkValue(value);
+        } else if (this.hasSetProjection(expr)) {
+            // FIXME validate too
+            return value;
+        }
+
+        return value;
+
     }
 
     public FieldDefinition getExpressionType(String expr) {
@@ -968,6 +1115,10 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         @SuppressWarnings("unchecked")
         List<String> x = (List<String>) state[4];
         this.editedLabels = x;
+        @SuppressWarnings("unchecked")
+        Map<String, SelectItem> d = (Map<String, SelectItem>) state[5];
+        this.selectItemsSaved = d;
+
         getMakDataModel().makList = this;
     }
 
@@ -986,6 +1137,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         state[2] = composedQuery;
         state[3] = this.setComposedSubqueries;
         state[4] = editedLabels;
+        state[5] = selectItemsSaved;
 
         // TODO: save other needed stuff
         return state;
@@ -1004,12 +1156,16 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         return setComposedSubqueries.get(path) != null;
     }
 
-    private static String getSetLabel(String path) {
-        return path.replace('.', '_');
+    public DataDefinition getSetProjectionType(String path) {
+        return setComposedSubqueries.get(path).getSetElementType();
     }
 
-    public List<String> getSetData(String path) {
+    public Pointer[] getSetData(String path) {
         return setComposedSubqueries.get(path).getSetData();
+    }
+
+    private static String getSetLabel(String path) {
+        return path.replace('.', '_');
     }
 
     static class SetIterationContext implements Serializable {
@@ -1020,7 +1176,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
 
         private Grouper grouper;
 
-        private transient SetList<String> setData;
+        private transient Pointer[] setData;
 
         private String setLabel;
 
@@ -1046,21 +1202,26 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
 
         public void nextParentIteration() {
             List<ArrayMap> data = grouper.getData(currentDataStack.get(), false);
-            setData = new SetList<String>();
+            // setData = new SetList<String>();
+            setData = new Pointer[data.size()];
             // the set might be empty for the current stack
-            if (data == null) {
+            if (data == null || data.size() == 0) {
                 return;
             }
-            for (ArrayMap a : data) {
-                this.setData.add(((Pointer) a.data[this.composedQuery.getProjectionIndex(this.setLabel)]).toExternalForm());
-                this.setData.getTiteList().add(
-                    (String) a.data[this.composedQuery.getProjectionIndex(this.titleProjection)]);
+            for (int i = 0; i < data.size(); i++) {
+                // this.setData.add(((Pointer) a.data[this.composedQuery.getProjectionIndex(this.setLabel)]));
+                setData[i] = (Pointer) data.get(i).data[this.composedQuery.getProjectionIndex(this.setLabel)];
+                // this.setData.getTiteList().add(
+                // (String) a.data[this.composedQuery.getProjectionIndex(this.titleProjection)]);
             }
         }
 
-        public List<String> getSetData() {
+        public DataDefinition getSetElementType() {
+            return composedQuery.getFromLabelTypes().get(setLabel);
+        }
+
+        public Pointer[] getSetData() {
             return setData;
         }
     }
-
 }

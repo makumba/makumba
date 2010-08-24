@@ -8,6 +8,9 @@ public abstract class ExpressionPathPlaceholder {
     protected String fieldDotField = "";
 
     public ExpressionPathPlaceholder(String label) {
+        if (label == null) {
+            throw new NullPointerException();
+        }
         this.label = label;
     }
 

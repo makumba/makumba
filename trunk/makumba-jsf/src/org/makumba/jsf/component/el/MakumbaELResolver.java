@@ -89,33 +89,42 @@ public class MakumbaELResolver extends ELResolver {
 
         ReadExpressionPathPlaceholder mine = basicGetValue(context, base, property);
         if (mine == null) {
-            log.fine(debugIdent() + " " + base + "." + property + " ----> " + null + " in " + current.getClientId());
-
+            if (current != null) {
+                log.fine(debugIdent() + " " + base + "." + property + " ----> " + null + " in " + current.getClientId());
+            }
             return null;
         }
         UIRepeatListComponent list = MakumbaDataContext.getDataContext().getCurrentList();
         String expr = mine.getProjectionPath();
-        if (base != null && base instanceof ReadExpressionPathPlaceholder && list.hasExpression(expr)) {
+        if (base != null && base instanceof ReadExpressionPathPlaceholder) {
 
-            if (list.getExpressionType(expr).getType().startsWith("ptr") && !"id".equals(property)) {
-                // TODO: instead of checking the value, we can inquire the query whether the field is a pointer
-                // TODO: we could actually set the value in the placeholder, for whatever it could be useful
+            if (list.hasExpression(expr)) {
 
-                // return the placeholder
-                log.fine(debugIdent() + " " + base + "." + property + " ----> " + mine + " in " + current.getClientId());
+                if (list.getExpressionType(expr).getType().startsWith("ptr") && !"id".equals(property)) {
+                    // TODO: instead of checking the value, we can inquire the query whether the field is a pointer
+                    // TODO: we could actually set the value in the placeholder, for whatever it could be useful
 
-                return mine;
+                    // return the placeholder
+                    log.fine(debugIdent() + " " + base + "." + property + " ----> " + mine + " in "
+                            + current.getClientId());
+
+                    return mine;
+                }
+
+                if (current instanceof UINamingContainer) {
+                    // we are in a container like a ui:repeat or mak:list, which probably means we are in a floating
+                    // expression
+                    return list.convertToString(expr);
+                }
+                // the PointerConverter should take over for other cases
+                Object value = list.getExpressionValue(expr);
+                log.fine(debugIdent() + " " + base + "." + property + " ----> " + value + " in "
+                        + current.getClientId());
+                return value;
+
+            } else if (list.hasSetProjection(expr)) {
+                return list.getSetData(expr);
             }
-
-            if (current instanceof UINamingContainer) {
-                // we are in a container like a ui:repeat or mak:list, which probably means we are in a floating
-                // expression
-                return list.convertToString(expr);
-            }
-            // the PointerConverter should take over for other cases
-            Object value = list.getExpressionValue(expr);
-            log.fine(debugIdent() + " " + base + "." + property + " ----> " + value + " in " + current.getClientId());
-            return value;
 
         }
         log.fine(debugIdent() + " " + base + "." + property + " ----> " + mine + " in " + current.getClientId());
@@ -141,12 +150,9 @@ public class MakumbaELResolver extends ELResolver {
             if (list.hasExpression(property.toString())) {
 
                 FieldDefinition type = list.getExpressionType(property.toString());
-                if (type.isSetType()) {
-                    System.out.println("MakumbaELResolver.basicGetValue() we have a set " + property);
-                    // we don't resolve sets, there's another ELResolver for that
-                    return null;
-
-                } else if (type.getType().startsWith("ptr")) {
+                // FIXME it may be that value is null at this stage
+                // this is fine in most cases, but can become a problem eventually
+                if (type.getType().startsWith("ptr")) {
                     Pointer value = (Pointer) list.getExpressionValue(property.toString());
                     context.setPropertyResolved(true);
                     return new ReadExpressionPathPlaceholder(value, property.toString());
@@ -175,7 +181,14 @@ public class MakumbaELResolver extends ELResolver {
                 context.setPropertyResolved(true);
                 return mine;
             } else {
+                // is it a set?
+                if (list.hasSetProjection(mine.getProjectionPath())) {
+                    context.setPropertyResolved(true);
+                    return mine;
+                }
+
                 // try to find it in the projections
+                // FIXME is this not the same as above?
                 for (String s : list.getProjections()) {
                     if (s.startsWith(mine.getProjectionPath())) {
                         context.setPropertyResolved(true);
@@ -184,12 +197,6 @@ public class MakumbaELResolver extends ELResolver {
                     }
                 }
 
-                // is it a set?
-                if (list.hasSetProjection(mine.getLabel() + "." + property.toString())) {
-                    // we let the MakumbaSetELResolver take care of it
-                    context.setPropertyResolved(false);
-                    return null;
-                }
             }
 
             throw new ELException("Makumba error: Field '" + property + "' of '" + base + "' is not known."
@@ -218,9 +225,18 @@ public class MakumbaELResolver extends ELResolver {
             log.fine(debugIdent() + " " + base + "." + property + " <------- " + val + " " + current.getClientId());
 
             ReadExpressionPathPlaceholder p = (ReadExpressionPathPlaceholder) base;
+            String path = p.getProjectionPath() + "." + property;
+
+            // is it a set?
+            if (list.hasSetProjection(path)) {
+                context.setPropertyResolved(true);
+                // FIXME implement this
+                System.out.println("Setting value of base:" + base + " property:" + property + " value:" + val);
+                return;
+            }
+
             // FIXME return the clientId of the input, not the list
             MakumbaDataComponent c = MakumbaDataComponent.Util.findLabelDefinitionComponent(list, p.getLabel());
-            String path = p.getProjectionPath() + "." + property;
             c.addValue(p.getLabel(), p.getPath((String) property), val, Util.findInput(list, path).getClientId());
 
             // changing the data model of the enclosing list
