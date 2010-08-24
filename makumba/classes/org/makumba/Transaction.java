@@ -37,14 +37,14 @@ import org.makumba.providers.TransactionProvider;
  * configurations will result in opening more connections. Connections must be given back to the system using the
  * {@link #close()} method. That will be done automatically by the object's finalizer. In makumba business logic,
  * connections passed to the BL methods are automatically closed by the system after the BL operations (including
- * eventual automatic DB acceses) were completed. To open a "sibling" of a connection <i>conn</i> of this type, use
+ * eventual automatic DB accesses) were completed. To open a "sibling" of a connection <i>conn</i> of this type, use
  * MakumbaSystem.getConnectionTo(<i>conn</i>.getName()). In most cases, you will have to close the sibling yourself.
  * <p>
  * At the level of this API, data is represented as java.util.Dictionary, both for reading and writing. Most methods
  * throw {@link DBError} if a fatal database error occurs. If the connection to the database is lost, an attempt is made
  * to reconnect before throwing a {@link DBError}.
  * <P>
- * All methods throw subclasses of either Error or RuntimeException, so nothing needs to be caught explicitely.
+ * All methods throw subclasses of either Error or RuntimeException, so nothing needs to be caught explicitly.
  * 
  * @see org.makumba.MakumbaSystem#getDefaultDataSourceName()
  * @see org.makumba.MakumbaSystem#getDefaultDatabaseName(java.lang.String)
@@ -181,7 +181,7 @@ public interface Transaction extends Database {
      * {@link org.makumba.MakumbaSystem#setLoggingRoot(java.lang.String)}) in the <b>
      * <code>"db.update.execution", "db.update.performance"</code></b> loggers, with
      * {@link java.util.logging.Level#INFO} logging level. "db.update.execution" also logs
-     * {@link java.util.logging.Level#SEVERE} fatal errors.<br
+     * {@link java.util.logging.Level#SEVERE} fatal errors.<br>
      * <p>
      * Special makumba fields are treated as follows:
      * <ul>
@@ -321,10 +321,11 @@ public interface Transaction extends Database {
      * Java methods, and basically does the following steps:
      * <ol>
      * <li>Read all the existing values of the field <code>setName</code> of the object <code>basePointer</code> into a
-     * collection, using {@link #readExternalSetValues(Pointer, String)}</li> <li>Remove the set elements specified in
-     * the parameter <code>deleteElements</code></li> <li>Add the set elements specified in the parameter <code>
-     * newElements</code></li> <li>Use {@link #update(Pointer, Dictionary)} to write the new set values to the database
-     * </li>
+     * collection, using {@link #readExternalSetValues(Pointer, String)}</li>
+     * <li>Remove the set elements specified in the parameter <code>deleteElements</code></li>
+     * <li>Add the set elements specified in the parameter <code>
+     * newElements</code></li>
+     * <li>Use {@link #update(Pointer, Dictionary)} to write the new set values to the database</li>
      * </ol>
      * 
      * @param basePointer
@@ -346,8 +347,8 @@ public interface Transaction extends Database {
      * shortcut to other Makumba API and Java methods, and basically does the following steps:
      * <ol>
      * <li>Run {@link #executeQuery(String, Object)} to read all the values of the field <code>setName</code> of the
-     * object <code>basePointer</code>.</li> <li>Convert the resulting <code>Vector<Dictionary<String, Object>></code>
-     * into a <code>Vector<Pointer></code></li>
+     * object <code>basePointer</code>.</li>
+     * <li>Convert the resulting <code>Vector<Dictionary<String, Object>></code> into a <code>Vector<Pointer></code></li>
      * </ol>
      * 
      * @param basePointer
