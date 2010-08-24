@@ -17,6 +17,10 @@ public class ReadExpressionPathPlaceholder extends ExpressionPathPlaceholder {
 
     public ReadExpressionPathPlaceholder(Pointer p, String label) {
         super(label);
+        if (p == null) {
+        	// TODO issue a warning in the logs
+            // throw new NullPointerException();
+        }
         this.basePointer = p;
     }
 

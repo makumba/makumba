@@ -29,7 +29,7 @@ public class MakumbaValidator implements Validator {
             return;
         }
         try {
-            list.convertAndValidateExpression(component, value);
+            list.validateExpression(component, value);
         } catch (Exception e) {
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage());
             FacesContext.getCurrentInstance().addMessage(component.getClientId(), message);

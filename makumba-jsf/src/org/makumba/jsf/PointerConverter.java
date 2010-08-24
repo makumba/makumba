@@ -29,7 +29,7 @@ public class PointerConverter implements Converter, Serializable {
 
         UIRepeatListComponent list = UIRepeatListComponent.findMakListParent(component, true);
         try {
-            return list.convertAndValidateExpression(component, value);
+            return list.convertExpression(component, value);
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(component.getClientId(),
                 new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getMessage()));
