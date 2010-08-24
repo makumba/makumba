@@ -29,12 +29,12 @@ import java.util.Dictionary;
  * @deprecated Should use org.makumba.Transaction instead This class models operations with a database. To obtain such
  *             an object, use methods from {@link MakumbaSystem}.
  *             <p>
- *             Stricly speaking this class represents a database connection (later on, transaction). Obtaining more such
- *             objects for the same database configurations will result in opening more connections. Connections must be
- *             given back to the system using the {@link #close()} method. That will be done automatically by the
- *             object's finalizer. In makumba business logic, connections passed to the BL methods are automatically
- *             closed by the system after the BL operations (including eventual automatic DB acceses) were completed. To
- *             open a "sibling" of a connection <i>conn</i> of this type, use
+ *             Strictly speaking this class represents a database connection (later on, transaction). Obtaining more
+ *             such objects for the same database configurations will result in opening more connections. Connections
+ *             must be given back to the system using the {@link #close()} method. That will be done automatically by
+ *             the object's finalizer. In makumba business logic, connections passed to the BL methods are automatically
+ *             closed by the system after the BL operations (including eventual automatic DB accesses) were completed.
+ *             To open a "sibling" of a connection <i>conn</i> of this type, use
  *             MakumbaSystem.getConnectionTo(<i>conn</i>.getName()). In most cases, you will have to close the sibling
  *             yourself.
  *             <p>
@@ -43,7 +43,7 @@ import java.util.Dictionary;
  *             lost, an attempt is made to reconnect before throwing a {@link DBError}.
  *             <P>
  *             All methods throw subclasses of either Error or RuntimeException, so nothing needs to be caught
- *             explicitely.
+ *             explicitly.
  * @see org.makumba.providers.TransactionProvider#getDefaultDataSourceName()
  * @see org.makumba.providers.TransactionProvider#getConnectionTo(java.lang.String)
  * @since makumba-0.5
@@ -166,7 +166,7 @@ public interface Database {
      * {@link org.makumba.MakumbaSystem#setLoggingRoot(java.lang.String)}) in the <b>
      * <code>"db.update.execution", "db.update.performance"</code></b> loggers, with
      * {@link java.util.logging.Level#INFO} logging level. "db.update.execution" also logs
-     * {@link java.util.logging.Level#SEVERE} fatal errors.<br
+     * {@link java.util.logging.Level#SEVERE} fatal errors.<br>
      * <p>
      * Special makumba fields are treated as follows:
      * <ul>
