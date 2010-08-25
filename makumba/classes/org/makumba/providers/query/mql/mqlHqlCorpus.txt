@@ -1,0 +1,113 @@
+SELECT al.id AS col1,al.paradecontext AS col2,al.logDate AS col3,al.user AS col4,al.context AS col5,al.action AS col6,al.objectType AS col7,al.file AS col8 FROM ActionLog al ORDER BY al.logDate desc
+#WHERE #{alWhere} ORDER BY al.logDate desc
+SELECT al.id AS col1,l.level AS col2,l.message AS col3 FROM ActionLog al,Log l WHERE (l.actionLog.id = al.id) ORDER BY l.logDate asc, l.id asc
+#WHERE (#{alWhere}) AND (l.actionLog.id = al.id) ORDER BY l.logDate asc, l.id asc
+SELECT r.id AS col1,r.rowname AS col2 FROM Row r WHERE r = :row
+SELECT r.id AS col1,r.user.id AS col2 FROM Row r WHERE r = :row
+SELECT r.id AS col1,u.id AS col2,u.name AS col3,u.surname AS col4,u.nickname AS col5 FROM Row r,User u WHERE r = :row ORDER BY u.name, u.surname
+SELECT r.id AS col1,r.externalUser.id AS col2 FROM Row r WHERE r = :row
+SELECT r.id AS col1,u.id AS col2,u.name AS col3,u.surname AS col4,u.nickname AS col5 FROM Row r,User u WHERE r = :row ORDER BY u.name, u.surname
+SELECT r.id AS col1,r.rowname AS col2 FROM Row r WHERE r.user != null AND r.rowname != '(root)' AND NOT (r.rowname like '%-module') ORDER BY r.rowname
+SELECT r.id AS col1,r.user.name AS col2 FROM Row r WHERE r.user != null AND r.rowname != '(root)' AND NOT (r.rowname like '%-module')
+SELECT r.id AS col1,r.externalUser.name AS col2 FROM Row r WHERE r.user != null AND r.rowname != '(root)' AND NOT (r.rowname like '%-module')
+SELECT r.rowname AS col1,r.id AS col2 FROM Row r WHERE r.user = null AND r.rowname != '(root)' AND NOT (r.rowname like '%-module') ORDER BY r.rowname
+SELECT initialPercolationRule.objectType AS col1,initialPercolationRule.id AS col2 FROM InitialPercolationRule initialPercolationRule WHERE initialPercolationRule.id=:initialPercolationRule
+SELECT initialPercolationRule.id AS col1,initialPercolationRule.action AS col2,initialPercolationRule.objectType AS col3,initialPercolationRule.description AS col4,initialPercolationRule.userType AS col5,initialPercolationRule.initialLevel AS col6,initialPercolationRule.percolationMode AS col7,initialPercolationRule.interactionType AS col8,initialPercolationRule.focusProgressionCurve AS col9,initialPercolationRule.nimbusProgressionCurve AS col10,initialPercolationRule.active AS col11 FROM InitialPercolationRule initialPercolationRule WHERE initialPercolationRule.id=:initialPercolationRule
+SELECT initialPercolationRule.id AS col1,initialPercolationRule_relationQueries.id AS col2 FROM InitialPercolationRule initialPercolationRule JOIN initialPercolationRule.relationQueries initialPercolationRule_relationQueries WHERE initialPercolationRule.id=:initialPercolationRule
+SELECT initialPercolationRule.id AS col1,rq.id AS col2,rq.description AS col3 FROM InitialPercolationRule initialPercolationRule,RelationQuery rq WHERE initialPercolationRule.id=:initialPercolationRule ORDER BY rq.description
+SELECT initialPercolationRule.objectType AS col1,initialPercolationRule.action AS col2,initialPercolationRule.initialLevel AS col3,initialPercolationRule.userType AS col4,initialPercolationRule.active AS col5,initialPercolationRule.id AS col6 FROM InitialPercolationRule initialPercolationRule 
+#ORDER BY #{sortBy}
+SELECT initialPercolationRule.id AS col1,initialPercolationRule.action AS col2,initialPercolationRule.objectType AS col3,initialPercolationRule.description AS col4,initialPercolationRule.userType AS col5,initialPercolationRule.initialLevel AS col6,initialPercolationRule.percolationMode AS col7,initialPercolationRule.interactionType AS col8,initialPercolationRule.active AS col9,initialPercolationRule.focusProgressionCurve AS col10,initialPercolationRule.nimbusProgressionCurve AS col11 FROM InitialPercolationRule initialPercolationRule WHERE initialPercolationRule.id=:initialPercolationRule
+SELECT initialPercolationRule.id AS col1,rq.id AS col2,rq.description AS col3 FROM InitialPercolationRule initialPercolationRule,IN(initialPercolationRule.relationQueries) rq WHERE initialPercolationRule.id=:initialPercolationRule
+SELECT mae.id AS col1,mae.eventDate AS col2,mae.actor AS col3,mae.action AS col4,mae.objectURL AS col5,mae.userGroup AS col6 FROM MatchedAetherEvent mae ORDER BY mae.eventDate desc
+SELECT mae.id AS col1,mae.initialPercolationRule.percolationMode AS col2 FROM MatchedAetherEvent mae
+SELECT mae.id AS col1,ps.id AS col2,ps.objectURL AS col3,ps.previousURL AS col4,ps.focus AS col5,ps.nimbus AS col6 FROM MatchedAetherEvent mae,PercolationStep ps WHERE ps.matchedAetherEvent.id = mae.id and ps.previous = null
+SELECT mae.id AS col1,ps.id AS col2,ps.percolationRule.id AS col3,ps.percolationRule.description AS col4 FROM MatchedAetherEvent mae,PercolationStep ps WHERE ps.matchedAetherEvent.id = mae.id and ps.previous = null
+SELECT mae.id AS col1,ps.id AS col2,subPs.id AS col3,subPs.percolationLevel AS col4,subPs.objectURL AS col5,subPs.previousURL AS col6,subPs.focus AS col7,subPs.nimbus AS col8 FROM MatchedAetherEvent mae,PercolationStep ps,PercolationStep subPs WHERE (ps.matchedAetherEvent.id = mae.id and ps.previous = null) AND (subPs.root.id = ps.id and subPs.root.id != subPs.id) ORDER BY subPs.percolationPath, subPs.created
+SELECT mae.id AS col1,ps.id AS col2,subPs.id AS col3,subPs.percolationRule.id AS col4,subPs.percolationRule.description AS col5 FROM MatchedAetherEvent mae,PercolationStep ps,PercolationStep subPs WHERE (ps.matchedAetherEvent.id = mae.id and ps.previous = null) AND (subPs.root.id = ps.id and subPs.root.id != subPs.id)
+SELECT mae.id AS col1 FROM MatchedAetherEvent mae ORDER BY mae.eventDate desc
+SELECT mae.id AS col1,ps.id AS col2,mae.eventDate AS col3,mae.actor AS col4,mae.action AS col5,mae.objectURL AS col6,mae.userGroup AS col7,ps.objectURL AS col8,ps.previousURL AS col9,ps.focus AS col10,ps.nimbus AS col11 FROM MatchedAetherEvent mae,PercolationStep ps WHERE ps.matchedAetherEvent.id = mae.id and ps.previous = null
+SELECT mae.id AS col1,ps.id AS col2,mae.initialPercolationRule.percolationMode AS col3 FROM MatchedAetherEvent mae,PercolationStep ps WHERE ps.matchedAetherEvent.id = mae.id and ps.previous = null
+SELECT mae.id AS col1,ps.id AS col2,ps.percolationRule.description AS col3 FROM MatchedAetherEvent mae,PercolationStep ps WHERE ps.matchedAetherEvent.id = mae.id and ps.previous = null
+SELECT mae.id AS col1,ps.id AS col2,subPs.id AS col3,subPs.percolationLevel AS col4,mae.eventDate AS col5,mae.actor AS col6,mae.action AS col7,mae.objectURL AS col8,mae.userGroup AS col9,subPs.objectURL AS col10,subPs.previousURL AS col11,subPs.focus AS col12,subPs.nimbus AS col13 FROM MatchedAetherEvent mae,PercolationStep ps,PercolationStep subPs WHERE (ps.matchedAetherEvent.id = mae.id and ps.previous = null) AND (subPs.root.id = ps.id and subPs.root.id != subPs.id) ORDER BY subPs.percolationPath, subPs.created
+SELECT mae.id AS col1,ps.id AS col2,subPs.id AS col3,mae.initialPercolationRule.percolationMode AS col4 FROM MatchedAetherEvent mae,PercolationStep ps,PercolationStep subPs WHERE (ps.matchedAetherEvent.id = mae.id and ps.previous = null) AND (subPs.root.id = ps.id and subPs.root.id != subPs.id)
+SELECT mae.id AS col1,ps.id AS col2,subPs.id AS col3,subPs.percolationRule.description AS col4 FROM MatchedAetherEvent mae,PercolationStep ps,PercolationStep subPs WHERE (ps.matchedAetherEvent.id = mae.id and ps.previous = null) AND (subPs.root.id = ps.id and subPs.root.id != subPs.id)
+SELECT percolationRule.subject AS col1,percolationRule.id AS col2 FROM PercolationRule percolationRule WHERE percolationRule.id=:percolationRule
+SELECT percolationRule.id AS col1,percolationRule.subject AS col2,percolationRule.predicate AS col3,percolationRule.object AS col4,percolationRule.consumption AS col5,percolationRule.propagationDepthLimit AS col6,percolationRule.description AS col7,percolationRule.active AS col8 FROM PercolationRule percolationRule WHERE percolationRule.id=:percolationRule
+SELECT percolationRule.id AS col1,percolationRule_relationQueries.id AS col2 FROM PercolationRule percolationRule JOIN percolationRule.relationQueries percolationRule_relationQueries WHERE percolationRule.id=:percolationRule
+SELECT percolationRule.id AS col1,rq.id AS col2,rq.description AS col3 FROM PercolationRule percolationRule,RelationQuery rq WHERE percolationRule.id=:percolationRule ORDER BY rq.description
+SELECT percolationRule.subject AS col1,percolationRule.predicate AS col2,percolationRule.object AS col3,percolationRule.consumption AS col4,percolationRule.active AS col5,percolationRule.id AS col6 FROM PercolationRule percolationRule 
+#ORDER BY #{sortBy}
+SELECT percolationRule.id AS col1,percolationRule.subject AS col2,percolationRule.predicate AS col3,percolationRule.object AS col4,percolationRule.consumption AS col5,percolationRule.propagationDepthLimit AS col6,percolationRule.description AS col7,percolationRule.active AS col8 FROM PercolationRule percolationRule WHERE percolationRule.id=:percolationRule
+SELECT percolationRule.id AS col1,rq.id AS col2,rq.description AS col3 FROM PercolationRule percolationRule,IN(percolationRule.relationQueries) rq WHERE percolationRule.id=:percolationRule
+SELECT r.fromURL AS col1,r.type AS col2,r.toURL AS col3 FROM org.makumba.devel.relations.Relation rSELECT rq.description AS col1,rq.query AS col2,rq.arguments AS col3,rq.id AS col4 FROM RelationQuery rq
+SELECT rq.id AS col1,rq.description AS col2,rq.query AS col3,rq.arguments AS col4 FROM RelationQuery rq WHERE rq.id=:relationQuery
+SELECT mae.id AS col1,mae.eventDate AS col2,mae.action AS col3,mae.objectURL AS col4 FROM MatchedAetherEvent mae WHERE mae.actor = :user_login and mae.objectURL = :objectURL GROUP BY mae.id ORDER BY mae.eventDate desc
+SELECT mae.id AS col1,sum(ps.focus) AS col2 FROM MatchedAetherEvent mae,PercolationStep ps WHERE (mae.actor = :user_login and mae.objectURL = :objectURL) AND (ps.matchedAetherEvent.id = mae.id and ps.focus > 0) GROUP BY ps.id, mae.id
+SELECT max(a.focus) AS col1 FROM ALE a WHERE a.user = :user_login and a.focus > 20 and a.isFile()
+SELECT a.id AS col1,a.objectURL AS col2,a.focus AS col3 FROM ALE a WHERE a.user = :user_login and a.focus > 20 and a.isFile() ORDER BY a.focus desc, a.objectURL desc
+SELECT a.id AS col1,f.cvsStatus AS col2 FROM ALE a,File f WHERE (a.user = :user_login and a.focus > 20 and a.isFile()) AND (f.fileURL() = a.objectURL)
+SELECT max(a.focus) AS col1 FROM ALE a WHERE a.user = :user_login and a.focus > 20 and a.isDir()
+SELECT a.objectURL AS col1,a.focus AS col2 FROM ALE a WHERE a.user = :user_login and a.focus > 20 and a.isDir() ORDER BY a.focus desc, a.objectURL desc
+SELECT max(a.focus) AS col1 FROM ALE a WHERE a.user = :user_login and a.focus > 20 and a.isRow()
+SELECT a.objectURL AS col1,a.focus AS col2 FROM ALE a WHERE a.user = :user_login and a.focus > 20 and a.isRow() ORDER BY a.focus desc, a.objectURL desc
+SELECT max(a.focus) AS col1 FROM ALE a WHERE a.user = :user_login and a.focus > 20 and a.isFile()
+SELECT a.id AS col1,a.objectURL AS col2,a.focus AS col3 FROM ALE a WHERE a.user = :user_login and a.focus > 20 and a.isFile() ORDER BY a.focus desc, a.objectURL desc
+SELECT a.id AS col1,f.cvsStatus AS col2 FROM ALE a,File f WHERE (a.user = :user_login and a.focus > 20 and a.isFile()) AND (f.fileURL() = a.objectURL)
+SELECT max(a.focus) AS col1 FROM ALE a WHERE a.user = :user_login and a.focus > 20 and a.isDir()
+SELECT a.objectURL AS col1,a.focus AS col2 FROM ALE a WHERE a.user = :user_login and a.focus > 20 and a.isDir() ORDER BY a.focus desc, a.objectURL desc
+SELECT max(a.focus) AS col1 FROM ALE a WHERE a.user = :user_login and a.focus > 20 and a.isRow()
+SELECT a.objectURL AS col1,a.focus AS col2 FROM ALE a WHERE a.user = :user_login and a.focus > 20 and a.isRow() ORDER BY a.focus desc, a.objectURL desc
+SELECT m.id AS col1,m.actor AS col2,m.action AS col3,m.objectURL AS col4 FROM MatchedAetherEvent m WHERE m.id = :mae
+SELECT m.id AS col1,a.objectURL AS col2 FROM MatchedAetherEvent m,ALE a WHERE (m.id = :mae) AND (a.user = :user_login)
+SELECT m.id AS col1,ps.id AS col2,ps.objectURL AS col3,ps.previousURL AS col4,ps.focus AS col5,ps.nimbus AS col6 FROM MatchedAetherEvent m,PercolationStep ps WHERE (m.id = :mae) AND (ps.focus = 0 and ps.matchedAetherEvent.id = m.id and ps.previous = null)
+SELECT m.id AS col1,ps.id AS col2,ps.percolationRule.description AS col3 FROM MatchedAetherEvent m,PercolationStep ps WHERE (m.id = :mae) AND (ps.focus = 0 and ps.matchedAetherEvent.id = m.id and ps.previous = null)
+SELECT m.id AS col1,ps.id AS col2,subPs.id AS col3,subPs.percolationLevel AS col4,subPs.objectURL AS col5,subPs.previousURL AS col6,subPs.focus AS col7,subPs.nimbus AS col8 FROM MatchedAetherEvent m,PercolationStep ps,PercolationStep subPs WHERE ((m.id = :mae) AND (ps.focus = 0 and ps.matchedAetherEvent.id = m.id and ps.previous = null)) AND (subPs.root.id = ps.id and subPs.root.id != subPs.id) ORDER BY subPs.percolationPath, subPs.created
+SELECT m.id AS col1,ps.id AS col2,subPs.id AS col3,subPs.percolationRule.description AS col4 FROM MatchedAetherEvent m,PercolationStep ps,PercolationStep subPs WHERE ((m.id = :mae) AND (ps.focus = 0 and ps.matchedAetherEvent.id = m.id and ps.previous = null)) AND (subPs.root.id = ps.id and subPs.root.id != subPs.id)
+SELECT m.id AS col1,m.actor AS col2,m.action AS col3,m.objectURL AS col4 FROM MatchedAetherEvent m WHERE m.id = :mae
+SELECT m.id AS col1,a.objectURL AS col2 FROM MatchedAetherEvent m,ALE a WHERE (m.id = :mae) AND (a.user = :user_login)
+SELECT m.id AS col1,ps.id AS col2,ps.objectURL AS col3,ps.previousURL AS  col4,ps.focus AS col5,ps.nimbus AS col6 FROM MatchedAetherEvent m,PercolationStep ps WHERE (m.id = :mae) AND (ps.focus = 0 and ps.matchedAetherEvent.id = m.id and ps.previous = null)
+SELECT m.id AS col1,ps.id AS col2,ps.percolationRule.description AS col3 FROM MatchedAetherEvent m,PercolationStep ps WHERE (m.id = :mae) AND (ps.focus = 0 and ps.matchedAetherEvent.id = m.id and ps.previous = null)
+SELECT m.id AS col1,ps.id AS col2,subPs.id AS col3,subPs.percolationLevel AS col4,subPs.objectURL AS col5,subPs.previousURL AS col6,subPs.focus AS col7,subPs.nimbus AS col8 FROM MatchedAetherEvent m,PercolationStep ps,PercolationStep subPs WHERE ((m.id = :mae) AND (ps.focus = 0 and ps.matchedAetherEvent.id = m.id and ps.previous = null)) AND (subPs.root.id = ps.id and subPs.root.id != subPs.id) ORDER BY subPs.percolationPath, subPs.created
+SELECT m.id AS col1,ps.id AS col2,subPs.id AS col3,subPs.percolationRule.description AS col4 FROM MatchedAetherEvent m,PercolationStep ps,PercolationStep subPs WHERE ((m.id = :mae) AND (ps.focus = 0 and ps.matchedAetherEvent.id = m.id and ps.previous = null)) AND (subPs.root.id = ps.id and subPs.root.id != subPs.id)
+SELECT max(ale.nimbus) AS col1 FROM ALE ale
+SELECT ale.id AS col1,ale.objectURL AS col2,ale.nimbus AS col3 FROM ALE ale WHERE ale.user = :user_login and ale.nimbus > 20 ORDER BY ale.nimbus desc
+SELECT ale.id AS col1,mae.id AS col2,ps.id AS col3,mae.eventDate AS col4,mae.action AS col5,mae.objectURL AS col6 FROM ALE ale,MatchedAetherEvent mae, PercolationStep ps  WHERE (ale.user = :user_login and ale.nimbus > 20) AND (ps.matchedAetherEvent = mae AND ps.objectURL = ale.objectURL) GROUP BY ale.id, mae.id ORDER BY sum(ps.nimbus) asc
+SELECT ale.id AS col1,mae.id AS col2,ps.id AS col3,u.nickname AS col4,u.name AS col5,u.surname AS col6 FROM ALE ale,MatchedAetherEvent mae, PercolationStep ps ,User u WHERE ((ale.user = :user_login and ale.nimbus > 20) AND (ps.matchedAetherEvent = mae AND ps.objectURL = ale.objectURL)) AND (u.login = mae.actor)
+SELECT sum(ps.nimbus) AS col1 FROM MatchedAetherEvent mae, PercolationStep ps WHERE ps.matchedAetherEvent = mae and mae.actor != :user_login and ps.virtualPercolation = false and ps.objectURL in (select ale.objectURL from ALE ale where ale.user = :user_login and ale.nimbus > 20) GROUP BY mae.id
+SELECT mae.id AS col1,ps.id AS col2,mae.eventDate AS col3,sum(ps.nimbus) AS col4,mae.action AS col5,mae.objectURL AS col6 FROM MatchedAetherEvent mae, PercolationStep ps  WHERE ps.matchedAetherEvent = mae and mae.actor != :user_login and ps.virtualPercolation = false and ps.objectURL in (select ale.objectURL from ALE ale where ale.user = :user_login and ale.nimbus > 20) GROUP BY mae.id ORDER BY mae.eventDate desc
+SELECT mae.id AS col1,ps.id AS col2,u.nickname AS col3,u.name AS col4,u.surname AS col5 FROM MatchedAetherEvent mae, PercolationStep ps ,User u WHERE (ps.matchedAetherEvent = mae and mae.actor != :user_login and ps.virtualPercolation = false and ps.objectURL in (select ale.objectURL from ALE ale where ale.user = :user_login and ale.nimbus > 20)) AND (u.login = mae.actor)
+SELECT sum(ps.nimbus) AS col1 FROM MatchedAetherEvent mae, PercolationStep ps WHERE ps.matchedAetherEvent = mae and mae.actor != :user_login and ps.virtualPercolation = false and ps.objectURL in (select ale.objectURL from ALE ale where ale.user = :user_login and ale.nimbus > 20) GROUP BY mae.id
+SELECT mae.id AS col1,ps.id AS col2,mae.eventDate AS col3,sum(ps.nimbus) AS col4,mae.action AS col5,mae.objectURL AS col6 FROM MatchedAetherEvent mae, PercolationStep ps  WHERE ps.matchedAetherEvent = mae and mae.actor != :user_login and ps.virtualPercolation = false and ps.objectURL in (select ale.objectURL from ALE ale where ale.user = :user_login and ale.nimbus > 20) GROUP BY mae.id ORDER BY mae.eventDate desc
+SELECT mae.id AS col1,ps.id AS col2,u.nickname AS col3,u.name AS col4,u.surname AS col5 FROM MatchedAetherEvent mae, PercolationStep ps ,User u WHERE (ps.matchedAetherEvent = mae and mae.actor != :user_login and ps.virtualPercolation = false and ps.objectURL in (select ale.objectURL from ALE ale where ale.user = :user_login and ale.nimbus > 20)) AND (u.login = mae.actor)
+SELECT row.id AS col1,row.rowname AS col2,row.status AS col3 FROM Row row WHERE row.rowname = :context
+SELECT row.id AS col1,r.rowname AS col2 FROM Row row,Row r WHERE (row.rowname = :context) AND (r.moduleRow = false) ORDER BY r.rowname
+SELECT row.id AS col1,row.rowname AS col2,t.target AS col3 FROM Row row,AntTarget t WHERE (row.rowname = :context)
+# AND (#{vWhere})
+SELECT r.id AS col1,r.module AS col2,r.rowpath AS col3,r.rowname AS col4,r.status AS col5,r.webappPath AS col6 FROM Row r WHERE r.rowname = :context
+SELECT r.id AS col1,r.application.id AS col2 FROM Row r WHERE r.rowname = :context
+SELECT r.id AS col1,f.id AS col2,f.isDir AS col3,f.name AS col4,f.path AS col5,f.date AS col6,f.onDisk AS col7,f.size AS col8,f.cvsStatus AS col9,f.cvsRevision AS col10,f.cvsCheckedOutRevision AS col11 FROM Row r,File f WHERE (r.rowname = :context) AND (f.parentPath = :absolutePath and (length(f.path) >= length(f.row.rowpath))) 
+#ORDER BY #{sortBy}
+SELECT r.id AS col1,f.id AS col2,f.fileURL() AS col3 FROM Row r,File f WHERE (r.rowname = :context) AND (f.parentPath = :absolutePath and (length(f.path) >= length(f.row.rowpath)))
+SELECT r.rowname AS col1 FROM Row r WHERE r.moduleRow = false ORDER BY r.rowname
+SELECT l.logDate AS col1,l.user AS col2,l.paradecontext AS col3,l.context AS col4,l.action AS col5,l.objectType AS col6,l.file AS col7,l.url AS col8,l.queryString AS col9 FROM ActionLog l ORDER BY l.logDate desc
+SELECT u.jpegPhoto AS col1,u.nickname AS col2 FROM User u WHERE u.id = :user
+SELECT u.login AS col1,u.nickname AS col2 FROM ActionLog a, User u WHERE a.user = u.login and (unix_timestamp(a.logDate) > ( unix_timestamp(now()) - 20 * 60))) GROUP BY u.login
+SELECT row.id AS col1,case when row.rowNotWatched() then 1 else 0 end AS col2,case when row.rowWatched() then 1 else 0 end AS col3,row.rowname AS col4,case when row.rowname = '(root)' then 1 else 0 end AS col5,case when row.rowname != '(root)' then 1 else 0 end AS col6,case when row.status = 2 then 1 else 0 end AS col7,case when row.status != 2 then 1 else 0 end AS col8,row.rowpath AS col9,row.description AS col10,row.cvsuser AS col11,row.module AS col12,row.branch AS col13,row.buildfile AS col14,row.webappPath AS col15,case when row.status = 0 then 1 else 0 end AS col16,case when row.status != 0 then 1 else 0 end AS col17,case when row.status = 1 then 1 else 0 end AS col18,row.version AS col19,row.db AS col20 FROM Row row ORDER BY row.rowname asc
+SELECT row.id AS col1,row.rowname AS col2,t.target AS col3 FROM Row row,AntTarget t  ORDER BY t.target
+# WHERE #{vWhere} ORDER BY t.target
+SELECT u.id AS col1,u.name AS col2,u.surname AS col3,u.nickname AS col4,u.email AS col5,u.cvsuser AS col6 FROM User u WHERE u.login=:user_login
+SELECT u.id AS col1,u.mentor.id AS col2 FROM User u WHERE u.login=:user_login
+SELECT u.id AS col1,m.id AS col2,m.name AS col3,m.surname AS col4,m.nickname AS col5 FROM User u,User m WHERE u.login=:user_login ORDER BY m.name, m.surname
+SELECT u.id AS col1,r.id AS col2,r.rowname AS col3,r.automaticCvsUpdate AS col4 FROM User u,Row r WHERE (u.login=:user_login) AND (r.user = u)
+SELECT u.id AS col1,u.name AS col2,u.surname AS col3,u.nickname AS col4,u.email AS col5,u.cvsuser AS col6 FROM User u WHERE u.login = :user
+SELECT u.id AS col1,u.mentor.name AS col2,u.mentor.surname AS col3 FROM User u WHERE u.login = :user
+SELECT u.id AS col1,r.rowname AS col2 FROM User u,Row r WHERE (u.login = :user) AND (r.user.id = u.id)
+SELECT f.path AS path FROM File f WHERE f.path like :webappRootLike AND (f.path like '%.mdd' OR f.path like '%.jsp' OR f.path like '%.java') AND f.isDir = false AND f.row.id = :rowId AND f.crawled < f.date
+SELECT f.path AS path FROM File f WHERE f.path like :webappRootLike AND (f.path like '%.mdd' OR f.path like '%.jsp' OR f.path like '%.java') AND f.isDir = false AND f.row.id = :rowId  AND f.crawled < f.date
+SELECT rel.id AS rel FROM org.makumba.devel.relations.Relation rel WHERE rel.type = 'traineeOf'
+SELECT u.login as trainee, u.mentor.login as mentor FROM User u WHERE u.mentor != null
+SELECT rel.id AS rel FROM org.makumba.devel.relations.Relation rel WHERE rel.type = 'owns'
+SELECT r.rowname AS row, r.user.login AS user FROM Row r WHERE r.user != null
+SELECT rel.id AS rel FROM org.makumba.devel.relations.Relation rel WHERE rel.fromURL = $1 AND rel.type = 'owns'
+SELECT r.rowname AS row, r.user.login AS user FROM Row r WHERE r.user.login = $1
