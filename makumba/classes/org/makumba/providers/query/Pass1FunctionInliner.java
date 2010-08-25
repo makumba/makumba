@@ -147,30 +147,29 @@ public class Pass1FunctionInliner {
             String methodName = callee.getNextSibling().getText();
 
             boolean isStatic = false;
-
-            // determine whether the callee is a DataDefinition name, in which case we have a static function
             DataDefinition calleeType = null;
-            if (callee.getType() == HqlTokenTypes.DOT) {
-                calleeType = getMdd(ASTUtil.getPath(callee));
-            }
-            if (callee.getType() == HqlTokenTypes.IDENT) {
-                calleeType = getMdd(callee.getText());
-            }
 
-            // if we're not an MDD name, we try to find a label type using the FROMs of the query
-            if (calleeType == null) {
-                // we force a recursion now because we might have a function or actor in the callee
-                // FIXME: this probably would not be needed in case of a depth-first, post-order traversal
-                // TODO: find type will be needed also to compute parameter types. the recursion is needed there too
-                callee = inlineAST(callee);
-                FieldDefinition fd = findType(callee, queryAnalysisProvider);
-                if (fd.getType().startsWith("ptr")) {
-                    calleeType = fd.getPointedType();
-                } else {
-                    throw new ProgrammerError("Not a pointer type in call of " + methodName + ": " + view(callee));
-                }
+            // we force a recursion now because we might have a function or actor in the callee
+            // FIXME: this probably would not be needed in case of a depth-first, post-order traversal
+            // TODO: find type will be needed also to compute parameter types. the recursion is needed there too
+            callee = inlineAST(callee);
+            FieldDefinition fd = findType(callee, queryAnalysisProvider);
+            if (fd.getType().startsWith("ptr")) {
+                calleeType = fd.getPointedType();
             } else {
                 isStatic = true;
+                // determine whether the callee is a DataDefinition name, in which case we have a static function
+
+                if (callee.getType() == HqlTokenTypes.DOT) {
+                    calleeType = getMdd(ASTUtil.getPath(callee));
+                }
+                if (callee.getType() == HqlTokenTypes.IDENT) {
+                    calleeType = getMdd(callee.getText());
+                }
+                if (calleeType == null) {
+                    throw new ProgrammerError("Not a field of pointer type or MDD name in call of " + methodName + ": "
+                            + view(callee));
+                }
             }
 
             // now we can retrieve the function
@@ -341,7 +340,8 @@ public class Pass1FunctionInliner {
                     return a;
                 }
                 // the ident may be a MDD name or a paramter name
-                if (getMdd(a.getText()) != null || func.getParameters().getFieldDefinition(a.getText()) != null) {
+                if (parent.getType() == HqlTokenTypes.RANGE && getMdd(a.getText()) != null
+                        || func.getParameters().getFieldDefinition(a.getText()) != null) {
                     return a;
                 }
                 // the ident may be actor from actor(type)
