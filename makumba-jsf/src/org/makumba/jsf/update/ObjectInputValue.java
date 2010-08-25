@@ -23,6 +23,8 @@ public abstract class ObjectInputValue {
 
     private Dictionary<String, Object> fields = new Hashtable<String, Object>();
 
+    private Map<String, Pointer[]> setFields = new Hashtable<String, Pointer[]>();
+
     private Map<String, String> clientIds = new HashMap<String, String>();
 
     /**
@@ -103,6 +105,11 @@ public abstract class ObjectInputValue {
         this.clientIds.put(path, clientId);
     }
 
+    public void addSetField(String path, Pointer[] value, String clientId) {
+        this.setFields.put(path, value);
+        this.clientIds.put(path, clientId);
+    }
+
     protected void addToDataHandler(DataHandler dh, Integer referenceIndex) {
         dh.getValues().add(this);
     }
@@ -127,6 +134,10 @@ public abstract class ObjectInputValue {
 
     public Dictionary<String, Object> getFields() {
         return fields;
+    }
+
+    public Map<String, Pointer[]> getSetFields() {
+        return setFields;
     }
 
     public String getLabel() {
