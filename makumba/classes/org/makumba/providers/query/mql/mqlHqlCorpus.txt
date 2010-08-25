@@ -40,7 +40,8 @@ SELECT percolationRule.subject AS col1,percolationRule.predicate AS col2,percola
 #ORDER BY #{sortBy}
 SELECT percolationRule.id AS col1,percolationRule.subject AS col2,percolationRule.predicate AS col3,percolationRule.object AS col4,percolationRule.consumption AS col5,percolationRule.propagationDepthLimit AS col6,percolationRule.description AS col7,percolationRule.active AS col8 FROM PercolationRule percolationRule WHERE percolationRule.id=:percolationRule
 SELECT percolationRule.id AS col1,rq.id AS col2,rq.description AS col3 FROM PercolationRule percolationRule,IN(percolationRule.relationQueries) rq WHERE percolationRule.id=:percolationRule
-SELECT r.fromURL AS col1,r.type AS col2,r.toURL AS col3 FROM org.makumba.devel.relations.Relation rSELECT rq.description AS col1,rq.query AS col2,rq.arguments AS col3,rq.id AS col4 FROM RelationQuery rq
+SELECT r.fromURL AS col1,r.type AS col2,r.toURL AS col3 FROM org.makumba.devel.relations.Relation r
+SELECT rq.description AS col1,rq.query AS col2,rq.arguments AS col3,rq.id AS col4 FROM RelationQuery rq
 SELECT rq.id AS col1,rq.description AS col2,rq.query AS col3,rq.arguments AS col4 FROM RelationQuery rq WHERE rq.id=:relationQuery
 SELECT mae.id AS col1,mae.eventDate AS col2,mae.action AS col3,mae.objectURL AS col4 FROM MatchedAetherEvent mae WHERE mae.actor = :user_login and mae.objectURL = :objectURL GROUP BY mae.id ORDER BY mae.eventDate desc
 SELECT mae.id AS col1,sum(ps.focus) AS col2 FROM MatchedAetherEvent mae,PercolationStep ps WHERE (mae.actor = :user_login and mae.objectURL = :objectURL) AND (ps.matchedAetherEvent.id = mae.id and ps.focus > 0) GROUP BY ps.id, mae.id
@@ -93,6 +94,8 @@ SELECT r.rowname AS col1 FROM Row r WHERE r.moduleRow = false ORDER BY r.rowname
 SELECT l.logDate AS col1,l.user AS col2,l.paradecontext AS col3,l.context AS col4,l.action AS col5,l.objectType AS col6,l.file AS col7,l.url AS col8,l.queryString AS col9 FROM ActionLog l ORDER BY l.logDate desc
 SELECT u.jpegPhoto AS col1,u.nickname AS col2 FROM User u WHERE u.id = :user
 SELECT u.login AS col1,u.nickname AS col2 FROM ActionLog a, User u WHERE a.user = u.login and (unix_timestamp(a.logDate) > ( unix_timestamp(now()) - 20 * 60))) GROUP BY u.login
+SELECT u.login AS col1,u.nickname AS col2 FROM ActionLog a, User u WHERE a.user = u.login and (unix_timestamp(a.logDate) > ( unix_timestamp(now()) - 20 * 60)))))) GROUP BY u.login
+SELECT u.login AS col1,u.nickname AS col2 FROM ActionLog a, User u WHERE a.user = u.login and (unix_timestamp(a.logDate) > ( unix_timestamp(now()) - 20 * 60)) GROUP BY u.login
 SELECT row.id AS col1,case when row.rowNotWatched() then 1 else 0 end AS col2,case when row.rowWatched() then 1 else 0 end AS col3,row.rowname AS col4,case when row.rowname = '(root)' then 1 else 0 end AS col5,case when row.rowname != '(root)' then 1 else 0 end AS col6,case when row.status = 2 then 1 else 0 end AS col7,case when row.status != 2 then 1 else 0 end AS col8,row.rowpath AS col9,row.description AS col10,row.cvsuser AS col11,row.module AS col12,row.branch AS col13,row.buildfile AS col14,row.webappPath AS col15,case when row.status = 0 then 1 else 0 end AS col16,case when row.status != 0 then 1 else 0 end AS col17,case when row.status = 1 then 1 else 0 end AS col18,row.version AS col19,row.db AS col20 FROM Row row ORDER BY row.rowname asc
 SELECT row.id AS col1,row.rowname AS col2,t.target AS col3 FROM Row row,AntTarget t  ORDER BY t.target
 # WHERE #{vWhere} ORDER BY t.target
