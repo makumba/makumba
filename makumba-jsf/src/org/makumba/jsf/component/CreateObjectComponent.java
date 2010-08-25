@@ -14,6 +14,7 @@ import javax.faces.event.PhaseId;
 
 import org.makumba.DataDefinition;
 import org.makumba.OQLParseError;
+import org.makumba.Pointer;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.jsf.MakumbaDataContext;
 import org.makumba.jsf.update.ObjectInputValue;
@@ -272,6 +273,13 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
             currentValue.addField(path, value, clientId);
         }
         // FIXME: if the value is null, we might need to set it to Pointer.Nullxxx
+    }
+
+    @Override
+    public void addSetValue(String label, String path, Pointer[] value, String clientId) {
+        if (value != null) {
+            currentValue.addSetField(path, value, clientId);
+        }
     }
 
     private void initObjectInputValue() {

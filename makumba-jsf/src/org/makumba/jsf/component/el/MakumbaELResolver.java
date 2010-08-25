@@ -188,7 +188,7 @@ public class MakumbaELResolver extends ELResolver {
                 }
 
                 // try to find it in the projections
-                // FIXME is this not the same as above?
+                // FIXME this is duplicated, remove it when we have unit tests
                 for (String s : list.getProjections()) {
                     if (s.startsWith(mine.getProjectionPath())) {
                         context.setPropertyResolved(true);
@@ -226,24 +226,27 @@ public class MakumbaELResolver extends ELResolver {
 
             ReadExpressionPathPlaceholder p = (ReadExpressionPathPlaceholder) base;
             String path = p.getProjectionPath() + "." + property;
+            MakumbaDataComponent c = MakumbaDataComponent.Util.findLabelDefinitionComponent(list, p.getLabel());
+            context.setPropertyResolved(true);
 
             // is it a set?
             if (list.hasSetProjection(path)) {
-                context.setPropertyResolved(true);
-                // FIXME implement this
-                System.out.println("Setting value of base:" + base + " property:" + property + " value:" + val);
-                return;
+                Object[] value = (Object[]) val;
+                Pointer[] r = new Pointer[value.length];
+                System.arraycopy(value, 0, r, 0, value.length);
+
+                // FIXME this won't work yet because of the bug in the list where we need to add the set expression to
+                // the declaring component of the label, but before its composed query is computed
+                c.addSetValue(p.getLabel(), p.getPath((String) property), r, Util.findInput(list, path).getClientId());
+            } else {
+                c.addValue(p.getLabel(), p.getPath((String) property), val, Util.findInput(list, path).getClientId());
+
+                // changing the data model of the enclosing list
+                // note that the data model of the list that actually defined this projection is not necessarily changed
+                // but since the enclosing list is always asked for the value, that's ok
+                list.setExpressionValue(path, val);
             }
 
-            // FIXME return the clientId of the input, not the list
-            MakumbaDataComponent c = MakumbaDataComponent.Util.findLabelDefinitionComponent(list, p.getLabel());
-            c.addValue(p.getLabel(), p.getPath((String) property), val, Util.findInput(list, path).getClientId());
-
-            // changing the data model of the enclosing list
-            // note that the data model of the list that actually defined this projection is not necessarily changed
-            // but since the enclosing list is always asked for the value, that's ok
-            list.setExpressionValue(path, val);
-            context.setPropertyResolved(true);
         } else {
             log.fine(debugIdent() + " not setting " + base + "." + property + " to " + val + " "
                     + current.getClientId());
