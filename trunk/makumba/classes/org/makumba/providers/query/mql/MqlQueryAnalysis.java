@@ -199,7 +199,7 @@ public class MqlQueryAnalysis implements QueryAnalysis {
                 // we look for boolean projections whose father is the SELECT clause and which are not already CASE
                 // statements
                 if (type == null || !type.getType().equals("boolean") || !parent.getText().equals("{select clause}")
-                        || a.getType() == HqlSqlTokenTypes.CASE) {
+                        || a.getType() == HqlSqlTokenTypes.CASE || a.getType() == HqlSqlTokenTypes.DOT) {
                     return a;
                 }
 
