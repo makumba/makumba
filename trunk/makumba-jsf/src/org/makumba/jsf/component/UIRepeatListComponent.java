@@ -33,7 +33,6 @@ import javax.faces.event.AbortProcessingException;
 import javax.faces.event.FacesEvent;
 import javax.faces.event.PhaseId;
 import javax.faces.model.ListDataModel;
-import javax.faces.model.SelectItem;
 import javax.faces.view.StateManagementStrategy;
 import javax.faces.view.facelets.FaceletException;
 
@@ -61,28 +60,8 @@ import com.sun.faces.facelets.compiler.UIInstructions;
 import com.sun.faces.facelets.component.UIRepeat1;
 
 public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataComponent {
+
     static final Logger log = java.util.logging.Logger.getLogger("org.makumba.jsf.component");
-
-    private static final class MakListDataModel extends ListDataModel<ArrayMap> implements Serializable {
-
-        private static final long serialVersionUID = 6764780265781314875L;
-
-        transient UIRepeatListComponent makList;
-
-        private MakListDataModel() {
-            super(null);
-        }
-
-        @Override
-        public void setRowIndex(int rowIndex) {
-            super.setRowIndex(rowIndex);
-            try {
-                makList.setRowIndex(rowIndex);
-            } catch (NullPointerException e) {
-                // this only happens at construction
-            }
-        }
-    }
 
     public UIRepeatListComponent() {
         setValue(new MakListDataModel());
@@ -127,6 +106,14 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
     private List<String> editedLabels;
 
     private Map<String, ObjectInputValue> editedValues;
+
+    private List<UISelectItem> selectItems = new ArrayList<UISelectItem>();
+
+    private Map<String, SelectItemData> selectItemsSaved = new HashMap<String, SelectItemData>();
+
+    private transient boolean selectItemReplacementDone = false;
+
+    private UIComponent parentSelectComponent = null;
 
     public void setPrefix(String prefix) {
         this.prefix = prefix;
@@ -207,6 +194,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
     }
 
     void setRowIndex(int rowIndex) {
+        // System.out.println("UIRepeatListComponent.setRowIndex()" + rowIndex);
         visitedIndexes.add(rowIndex);
         currentIndex = rowIndex;
         // System.out.println(debugIdent() + " " + rowIndex);
@@ -226,10 +214,8 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
             setCurrentLabelInputValues();
 
             // make <f:selectItem> iterate
-            // FIXME this will not iterate during APPLY_REQUEST_VALUES, but we need it to iterate there
-            // we should therefore move the following code to a place where it will iterate, or make sure it will also
-            // run at phase 2
-            if (shouldReplaceUISelectItems()) {
+            if (isFirstRender() || getFacesContext().getCurrentPhaseId() == PhaseId.APPLY_REQUEST_VALUES
+                    && !selectItemReplacementDone) {
                 generateIteratingUISelectItems(rowIndex);
             }
 
@@ -351,11 +337,26 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         super.queueEvent(event);
     }
 
-    private List<UISelectItem> selectItems = new ArrayList<UISelectItem>();
+    @Override
+    public void processDecodes(FacesContext faces) {
 
-    private Map<String, SelectItem> selectItemsSaved = new HashMap<String, SelectItem>();
+        // if we are nested inside of a UISelect, we make the <f:selectItem> elements iterate
+        this.parentSelectComponent = findParentUISelect();
+        if (parentSelectComponent != null) {
+            addConverterToUISelectParent();
 
-    private UIComponent parentSelectComponent = null;
+            visitTree(VisitContext.createVisitContext(getFacesContext()), new VisitCallback() {
+
+                @Override
+                public VisitResult visit(VisitContext context, UIComponent target) {
+                    return VisitResult.ACCEPT;
+                }
+            });
+            selectItemReplacementDone = true;
+        }
+
+        super.processDecodes(faces);
+    }
 
     @Override
     public void process(FacesContext context, PhaseId p) {
@@ -366,44 +367,41 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         }
         try {
 
-            if (shouldReplaceUISelectItems()) {
-                findSelectItems();
-                // we set a converter here so that the UISelect component can read the values from the list we give it
-                // TODO decide whether or not to keep this mechanism, or whether to return directly an array of external
-                // pointer values in #getSetData
+            // if we are nested inside of a UISelect, we make the <f:selectItem> elements iterate
+            if (isFirstRender()) {
+                parentSelectComponent = findParentUISelect();
                 if (parentSelectComponent != null) {
-                    ((EditableValueHolder) parentSelectComponent).setConverter(new PointerConverter());
+                    selectItems = collectSelectItems();
+                    addConverterToUISelectParent();
                 }
             }
 
             super.process(context, p);
 
-            if (shouldReplaceUISelectItems()) {
-                // remove the original selectItems from the tree, but keep their references
-                // on subsequent postback, the selectItems generated during #setRowIndex() will vanish as we have to
-                // mark them transient
+            if (isFirstRender()) {
                 for (UISelectItem ui : selectItems) {
-                    // generate SelectItem-s out of the original UISelectItem
-                    SelectItem it = new SelectItem(ui.getItemValue(), ui.getItemLabel(), ui.getItemDescription(),
-                            ui.isItemDisabled(), ui.isItemEscaped(), ui.isNoSelectionOption());
 
-                    // and put them in a map where they will be persisted
-                    selectItemsSaved.put(ui.getId(), it);
+                    // save for postback
+                    SelectItemData d = new SelectItemData(ui.getValueExpression("itemDescription"),
+                            ui.getItemDescription(), ui.getValueExpression("itemDisabled"), ui.isItemDisabled(),
+                            ui.getValueExpression("itemEscaped"), ui.isItemEscaped(),
+                            ui.getValueExpression("itemLabel"), ui.getItemLabel(), ui.getValueExpression("itemValue"),
+                            ui.getItemValue(), ui.getValueExpression("noSelectOption"), ui.isNoSelectionOption());
+                    selectItemsSaved.put(ui.getId(), d);
 
-                    // finally, remove the original component
+                    // remove the original component
                     ui.getParent().getChildren().remove(ui);
                 }
+                selectItemReplacementDone = true;
             }
 
             // we clean up after processing RENDER_RESPONSE
             if (getFacesContext().getCurrentPhaseId() == PhaseId.RENDER_RESPONSE) {
                 if (parentSelectComponent != null) {
-                    ((EditableValueHolder) parentSelectComponent).setConverter(null);
+                    removeConverterFromUISelectParent();
                 }
-
                 selectItems.clear();
                 parentSelectComponent = null;
-
             }
 
         } finally {
@@ -411,27 +409,32 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         }
     }
 
+    private void addConverterToUISelectParent() {
+        // we set a converter here so that the UISelect component can read the values from the list we give
+        // it
+        // TODO decide whether or not to keep this mechanism, or whether to return directly an array of
+        // external pointer values in #getSetData
+        ((EditableValueHolder) parentSelectComponent).setConverter(new PointerConverter());
+    }
+
+    private void removeConverterFromUISelectParent() {
+        ((EditableValueHolder) parentSelectComponent).setConverter(null);
+    }
+
     /**
-     * Searches the tree for a parent UISelectOne or UISelectMany component. If one is found, sets the
-     * parentSelectComponent member and collects the child UISelectItem components by calling
-     * {@link #collectSelectItems()}
+     * Searches the tree for a parent UISelectOne or UISelectMany component.
+     * 
+     * @return a UIComponent if a parent is found, null otherwise
      */
-    private void findSelectItems() {
-        if (shouldReplaceUISelectItems()) {
-
-            // search parent UISelectOne or UISelectMany until next list or view tree
-            UIComponent c = this;
-            while (!(c.getParent() == null || c.getParent() instanceof UIViewRoot || c.getParent().getParent() instanceof UIRepeatListComponent)) {
-                c = c.getParent();
-            }
-
-            if (c.getParent() != null
-                    && (c.getParent() instanceof UISelectOne || c.getParent() instanceof UISelectMany)) {
-                c = c.getParent();
-                parentSelectComponent = c;
-                selectItems = collectSelectItems();
-            }
+    private UIComponent findParentUISelect() {
+        UIComponent c = this;
+        while (!(c.getParent() == null || c.getParent() instanceof UIViewRoot || c.getParent().getParent() instanceof UIRepeatListComponent)) {
+            c = c.getParent();
         }
+        if (c.getParent() != null && (c.getParent() instanceof UISelectOne || c.getParent() instanceof UISelectMany)) {
+            return c.getParent();
+        }
+        return null;
     }
 
     /**
@@ -472,6 +475,11 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         return res;
     }
 
+    // UIRepeat iterates more than it should so we keep a list of already iterated indexes for our processing
+    // this list also takes into account whether the context is ready for meaningful iteration (i.e. if EL expressions
+    // can be properly evaluated)
+    private List<Integer> iteratedIndexes = new ArrayList<Integer>();
+
     /**
      * Makes <f:selectItem /> iterate by generating the right amount of children via iteration over them, based on the
      * original {@link UISelectItem}-s (collected or serialized). This iteration needs to happen at the end of
@@ -485,78 +493,56 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
     private void generateIteratingUISelectItems(int rowIndex) {
         if (parentSelectComponent != null) {
 
-            if (!selectItemsSaved.isEmpty()) {
+            if (!selectItemsSaved.isEmpty() && getFacesContext().isPostback()
+                    && getFacesContext().getCurrentPhaseId() == PhaseId.APPLY_REQUEST_VALUES) {
+
                 // we already had a postback, the original UISelectItem-s are no longer part of the tree
                 // thus we take them from a reference list that we keep
                 for (String id : selectItemsSaved.keySet()) {
-                    UISelectItem item = generateUISelectItem(rowIndex, id, selectItemsSaved.get(id));
-                    parentSelectComponent.getChildren().add(item);
+                    UISelectItem item = selectItemsSaved.get(id).restore(id, rowIndex);
+                    // we have to set these elements to be transient or faces will not be able to save its state
+                    // correctly due to a problem with the clientIds of the select components
+                    item.setTransient(true);
 
-                    System.out.println("********************************* generated item from saved one: "
-                            + item.getItemLabel() + " val:" + item.getItemValue());
+                    boolean isValidItem = item.getItemValue() != null;
+
+                    if (!iteratedIndexes.contains(new Integer(rowIndex)) && isValidItem) {
+
+                        parentSelectComponent.getChildren().add(item);
+                        // System.out.println("********************************* generated item from saved one: "
+                        // + item.getItemLabel() + " val:" + item.getItemValue());
+
+                        iteratedIndexes.add(new Integer(rowIndex));
+                    }
 
                 }
+
             } else {
                 // this is the first rendering
                 // we generate the items from the collection we keep
                 for (UISelectItem original : selectItems) {
+                    UISelectItem it = new UISelectItem();
+                    it.setId(original.getId() + rowIndex);
+                    it.setItemDescription(original.getItemDescription());
+                    it.setItemDisabled(original.isItemDisabled());
+                    it.setItemEscaped(original.isItemEscaped());
+                    it.setItemLabel(original.getItemLabel());
+                    it.setItemValue(original.getItemValue());
+                    it.setNoSelectionOption(original.isNoSelectionOption());
 
-                    SelectItem it = new SelectItem(original.getItemValue(), original.getItemLabel(),
-                            original.getItemDescription(), original.isItemDisabled(), original.isItemEscaped(),
-                            original.isNoSelectionOption());
+                    // we have to set these elements to be transient or faces will not be able to save its state
+                    // correctly
+                    // due to a problem with the clientIds of the select components
+                    it.setTransient(true);
 
-                    UISelectItem item = generateUISelectItem(rowIndex, original.getId(), it);
-                    parentSelectComponent.getChildren().add(item);
+                    parentSelectComponent.getChildren().add(it);
                 }
             }
-
         }
     }
 
-    /**
-     * Builds a {@link UISelectItem} based on a {@link SelectItem} and the necessary information to give it a unique
-     * identifier.
-     * 
-     * @param rowIndex
-     *            the current iteration index
-     * @param id
-     *            the id of the component in the page
-     * @param it
-     *            the {@link SelectItem}
-     * @return a {@link UISelectItem} that can be added as child to a {@link UISelectMany} or {@link UISelectOne}
-     */
-    private UISelectItem generateUISelectItem(int rowIndex, String id, SelectItem it) {
-        // we can only copy the UISelectItem at this point because its state apparently changes from
-        // when RENDER_RESPONSE starts
-        // duplicating it at an earlier point does not yield a correct result, i.e. many items are
-        // missing
-        UISelectItem item = new UISelectItem();
-
-        item.setId(id + rowIndex);
-        item.setInView(true);
-        item.setItemDescription(it.getDescription());
-        item.setItemDisabled(it.isDisabled());
-        item.setItemEscaped(it.isEscape());
-        item.setItemLabel(it.getLabel());
-        item.setItemValue(it.getValue());
-        item.setNoSelectionOption(it.isNoSelectionOption());
-
-        // we have to set these elements to be transient
-        item.setTransient(true);
-
-        return item;
-    }
-
-    /**
-     * Whether the mechanism for replacing original {@link UISelectItem}-s in the tree should be executed
-     * 
-     * @return true if this is not a postback and the phase is RENDER_RESPONSE, or if this phase is apply request
-     *         values.
-     */
-    private boolean shouldReplaceUISelectItems() {
-        // return false;
-        return !getFacesContext().isPostback() && getFacesContext().getCurrentPhaseId() == PhaseId.RENDER_RESPONSE
-                || getFacesContext().getCurrentPhaseId() == PhaseId.APPLY_REQUEST_VALUES;
+    private boolean isFirstRender() {
+        return !getFacesContext().isPostback() && getFacesContext().getCurrentPhaseId() == PhaseId.RENDER_RESPONSE;
     }
 
     @Override
@@ -735,7 +721,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         }
     }
 
-    void computeComposedQuery() {
+    private void computeComposedQuery() {
         UIRepeatListComponent parent = UIRepeatListComponent.findMakListParent(this, true);
         if (parent == null) {
             // no parent, we are root
@@ -757,7 +743,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         this.projections = getQueryAnalysis().getProjectionType();
     }
 
-    void analyzeMakListGroup() {
+    private void analyzeMakListGroup() {
         Util.visitStaticTree(this, new VisitCallback() {
             @Override
             public VisitResult visit(VisitContext context, UIComponent target) {
@@ -875,7 +861,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         return composedQuery.getProjectionIndex(expr) != null;
     }
 
-    Integer getExpressionIndex(String expr) {
+    public Integer getExpressionIndex(String expr) {
         Integer exprIndex = composedQuery.getProjectionIndex(expr);
         if (exprIndex == null) {
             if (useCaches()) {
@@ -956,7 +942,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         currentData.data[getExpressionIndex(expr)] = val;
     }
 
-    void findExpressionsInChildren() {
+    private void findExpressionsInChildren() {
         Util.visitStaticTree(this, new VisitCallback() {
             @Override
             public VisitResult visit(VisitContext context, UIComponent target) {
@@ -1116,7 +1102,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         List<String> x = (List<String>) state[4];
         this.editedLabels = x;
         @SuppressWarnings("unchecked")
-        Map<String, SelectItem> d = (Map<String, SelectItem>) state[5];
+        Map<String, SelectItemData> d = (Map<String, SelectItemData>) state[5];
         this.selectItemsSaved = d;
 
         getMakDataModel().makList = this;
@@ -1152,6 +1138,11 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         editedValues.get(label).addField(path, value, clientId);
     }
 
+    @Override
+    public void addSetValue(String label, String path, Pointer[] value, String clientId) {
+        editedValues.get(label).addSetField(path, value, clientId);
+    }
+
     public boolean hasSetProjection(String path) {
         return setComposedSubqueries.get(path) != null;
     }
@@ -1168,7 +1159,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         return path.replace('.', '_');
     }
 
-    static class SetIterationContext implements Serializable {
+    private static class SetIterationContext implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -1222,6 +1213,123 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
 
         public Pointer[] getSetData() {
             return setData;
+        }
+    }
+
+    private static class SelectItemData implements Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        private ValueExpression description;
+
+        private String descriptionValue;
+
+        private ValueExpression disabled;
+
+        private boolean disabledValue;
+
+        private ValueExpression escaped;
+
+        private boolean escapedValue;
+
+        private ValueExpression label;
+
+        private String labelValue;
+
+        private ValueExpression value;
+
+        private Object valueValue;
+
+        private ValueExpression noSelectOption;
+
+        private boolean noSelectOptionValue;
+
+        public SelectItemData(ValueExpression description, String descriptionValue, ValueExpression disabled,
+                boolean disabledValue, ValueExpression escaped, boolean escapedValue, ValueExpression label,
+                String labelValue, ValueExpression value, Object valueValue, ValueExpression noSelectOption,
+                boolean noSelectOptionValue) {
+            super();
+            this.description = description;
+            this.descriptionValue = descriptionValue;
+            this.disabled = disabled;
+            this.disabledValue = disabledValue;
+            this.escaped = escaped;
+            this.escapedValue = escapedValue;
+            this.label = label;
+            this.labelValue = labelValue;
+            this.value = value;
+            this.valueValue = valueValue;
+            this.noSelectOption = noSelectOption;
+            this.noSelectOptionValue = noSelectOptionValue;
+        }
+
+        public UISelectItem restore(String id, int index) {
+            UISelectItem it = new UISelectItem();
+            it.setId(id + index);
+
+            if (description != null) {
+                it.setItemDescription((String) getValue(description));
+            } else {
+                it.setItemDescription(descriptionValue);
+            }
+
+            if (disabled != null) {
+                it.setItemDisabled((Boolean) getValue(disabled));
+            } else {
+                it.setItemDisabled(disabledValue);
+            }
+
+            if (escaped != null) {
+                it.setItemEscaped((Boolean) getValue(escaped));
+            } else {
+                it.setItemEscaped(escapedValue);
+            }
+
+            if (label != null) {
+                it.setItemLabel((String) getValue(label));
+            } else {
+                it.setItemLabel(labelValue);
+            }
+
+            if (value != null) {
+                it.setItemValue(getValue(value));
+            } else {
+                it.setItemValue(valueValue);
+            }
+
+            if (noSelectOption != null) {
+                it.setNoSelectionOption((Boolean) getValue(noSelectOption));
+            } else {
+                it.setNoSelectionOption(noSelectOptionValue);
+            }
+
+            return it;
+        }
+
+        private Object getValue(ValueExpression ve) {
+            return ve.getValue(FacesContext.getCurrentInstance().getELContext());
+        }
+
+    }
+
+    private static final class MakListDataModel extends ListDataModel<ArrayMap> implements Serializable {
+
+        private static final long serialVersionUID = 6764780265781314875L;
+
+        transient UIRepeatListComponent makList;
+
+        private MakListDataModel() {
+            super(null);
+        }
+
+        @Override
+        public void setRowIndex(int rowIndex) {
+            super.setRowIndex(rowIndex);
+            try {
+                makList.setRowIndex(rowIndex);
+            } catch (NullPointerException e) {
+                // this only happens at construction
+            }
         }
     }
 }

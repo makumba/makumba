@@ -9,6 +9,7 @@ import javax.faces.component.visit.VisitContext;
 import javax.faces.component.visit.VisitResult;
 import javax.faces.context.FacesContext;
 
+import org.makumba.Pointer;
 import org.makumba.jsf.update.ObjectInputValue;
 import org.makumba.list.engine.ComposedQuery;
 
@@ -33,6 +34,21 @@ public interface MakumbaDataComponent {
      *            the clientId of the input for the value
      */
     public void addValue(String label, String path, Object value, String clientId);
+
+    /**
+     * Adds a set value in the component tree. The component receiving this value is then responsible for adding it to
+     * the {@link ObjectInputValue} of the component declaring the base label of path.
+     * 
+     * @param label
+     *            the base label of this value
+     * @param path
+     *            the path of the field to be set
+     * @param value
+     *            a set of {@link Pointer}-s representing the members of the set
+     * @param clientId
+     *            the clientId of the input for the value
+     */
+    public void addSetValue(String label, String path, Pointer[] value, String clientId);
 
     public ComposedQuery getComposedQuery();
 
