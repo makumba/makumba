@@ -289,12 +289,6 @@ public class QueryContext {
         } catch (org.makumba.DataDefinitionParseError p) {
             throw new SemanticException(p.getMessage(), "", labelAST.getLine(), labelAST.getColumn());
         }
-        if (type != null) {
-            setLabelType(label, type, labelAST);
-            fromLabels.put(label, type);
-            return;
-        }
-
         // if it's a label.something, we add joins...
         int i = iterator.indexOf('.');
 
@@ -302,6 +296,13 @@ public class QueryContext {
             String lbl = iterator.substring(0, i);
             while (true) {
                 lbl = findLabel(frm, lbl, labelAST);
+                if (lbl == null && type != null) {
+                    break;
+                }
+                if (lbl == null && type == null) {
+                    throw new SemanticException("could not find type \"" + frm + "\" or label \"" + lbl + "\"", "",
+                            labelAST.getLine(), labelAST.getColumn());
+                }
                 iterator = iterator.substring(i + 1);
                 String field = iterator;
                 i = iterator.indexOf('.');
@@ -311,11 +312,16 @@ public class QueryContext {
                                 labelAST.getColumn());
                     }
                     join(lbl, field, label, joinType, labelAST);
-                    break;
+                    return;
                 }
                 field = iterator.substring(0, i);
                 lbl = join(lbl, field, null, joinType, labelAST);
             }
+        }
+
+        if (type != null) {
+            setLabelType(label, type, labelAST);
+            fromLabels.put(label, type);
         } else {
             if (findLabelType(frm) == null) {
                 throw new antlr.SemanticException("could not find type \"" + frm + "\"", "", labelAST.getLine(),
@@ -332,9 +338,6 @@ public class QueryContext {
             if (lbl1 == null) {
                 if (parent != null) {
                     lbl1 = parent.findLabel(frm, lbl, location);
-                } else {
-                    throw new SemanticException("could not find type \"" + frm + "\" or label \"" + lbl + "\"", "",
-                            location.getLine(), location.getColumn());
                 }
             }
             lbl = lbl1;
