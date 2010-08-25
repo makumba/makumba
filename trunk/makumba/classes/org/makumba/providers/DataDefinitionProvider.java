@@ -329,7 +329,12 @@ public class DataDefinitionProvider {
             throw new DataDefinitionParseError("subfield not found: " + name + " in " + dd.getName());
         }
 
-        dd = subfieldCheck.getSubtable();
+        try {
+            dd = subfieldCheck.getSubtable();
+
+        } catch (Exception e) {
+            throw new DataDefinitionNotFoundError(name);
+        }
         return dd;
     }
 
