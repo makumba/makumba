@@ -1,5 +1,7 @@
 package org.makumba.jsf.component;
 
+import java.util.List;
+
 import javax.faces.application.FacesMessage;
 import javax.faces.application.FacesMessage.Severity;
 import javax.faces.component.EditableValueHolder;
@@ -44,11 +46,11 @@ public interface MakumbaDataComponent {
      * @param path
      *            the path of the field to be set
      * @param value
-     *            a set of {@link Pointer}-s representing the members of the set
+     *            a list of {@link Pointer}-s representing the members of the set
      * @param clientId
      *            the clientId of the input for the value
      */
-    public void addSetValue(String label, String path, Pointer[] value, String clientId);
+    public void addSetValue(String label, String path, List<Pointer> value, String clientId);
 
     public ComposedQuery getComposedQuery();
 

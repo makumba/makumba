@@ -49,6 +49,7 @@ import org.makumba.commons.RegExpUtils;
 import org.makumba.jsf.FacesAttributes;
 import org.makumba.jsf.MakumbaDataContext;
 import org.makumba.jsf.PointerConverter;
+import org.makumba.jsf.component.el.SetList;
 import org.makumba.jsf.update.ObjectInputValue;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.ComposedSubquery;
@@ -406,9 +407,8 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
     }
 
     /**
-     * Adds a {@link PointerConverter} to the parent {@link UISelectOne} or {@link UISelectMany}.<br/>
-     * TODO decide whether or not to keep this mechanism, or whether to return directly an array of external pointer
-     * values in {@link UIRepeatListComponent#getSetData(String)}
+     * Adds a {@link PointerConverter} to the parent {@link UISelectOne} or {@link UISelectMany}, so they know how to
+     * convert the Pointer they get from a set value.<br/>
      */
     private void addConverterToUISelectParent() {
         ((EditableValueHolder) parentSelectComponent).setConverter(new PointerConverter());
@@ -515,8 +515,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
                     it.setNoSelectionOption(original.isNoSelectionOption());
 
                     // we have to set these elements to be transient or faces will not be able to save its state
-                    // correctly
-                    // due to a problem with the clientIds of the select components
+                    // correctly due to a problem with the clientIds of the select components
                     it.setTransient(true);
 
                     parentSelectComponent.getChildren().add(it);
@@ -809,16 +808,8 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         QueryAnalysis qa = getQueryAnalysis();
         FieldDefinition setFd = qa.getLabelType(label).getFieldOrPointedFieldDefinition(fieldPath);
         if (fieldPath != null && !expr.endsWith(".id") && setFd.isSetType()) {
-
-            // FIXME the set expression needs to be added to the list component to which the expression correlates
-            // i.e. to the list component that declares the base label of the expression.
-            // currently, if a set expression referring to a parent list component is used in a child list component
-            // it will utterly fail.
-            // the trouble with fixing this is that the discovery needs to be done _before_ the parent list computes its
-            // composed query
             SetIterationContext sc = new SetIterationContext(composedQuery, getQueryLanguage(), expr, setFd);
             setComposedSubqueries.put(expr, sc);
-
         } else {
             composedQuery.checkProjectionInteger(expr);
         }
@@ -935,9 +926,6 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
                 if (target instanceof UIRepeatListComponent && target != UIRepeatListComponent.this) {
                     return VisitResult.REJECT;
                 }
-
-                // log.fine(target);
-
                 if (target instanceof UIInstructions) {
                     findFloatingExpressions((UIInstructions) target);
                 } else if (target instanceof ValueComponent) {
@@ -1127,7 +1115,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
     }
 
     @Override
-    public void addSetValue(String label, String path, Pointer[] value, String clientId) {
+    public void addSetValue(String label, String path, List<Pointer> value, String clientId) {
         editedValues.get(label).addSetField(path, value, clientId);
     }
 
@@ -1139,7 +1127,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         return setComposedSubqueries.get(path).getSetElementType();
     }
 
-    public Pointer[] getSetData(String path) {
+    public SetList<Pointer> getSetData(String path) {
         return setComposedSubqueries.get(path).getSetData();
     }
 
@@ -1155,7 +1143,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
 
         private Grouper grouper;
 
-        private transient Pointer[] setData;
+        private transient SetList<Pointer> setData;
 
         private String setLabel;
 
@@ -1185,15 +1173,14 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
             if (data == null || data.size() == 0) {
                 return;
             }
-            // setData = new SetList<String>();
             assert data != null;
-            setData = new Pointer[data.size()];
+            setData = new SetList<Pointer>();
 
-            for (int i = 0; i < data.size(); i++) {
-                // this.setData.add(((Pointer) a.data[this.composedQuery.getProjectionIndex(this.setLabel)]));
-                setData[i] = (Pointer) data.get(i).data[this.composedQuery.getProjectionIndex(this.setLabel)];
-                // this.setData.getTiteList().add(
-                // (String) a.data[this.composedQuery.getProjectionIndex(this.titleProjection)]);
+            for (ArrayMap a : data) {
+                // save the data to a special list that on toString will print the titles
+                this.setData.add((Pointer) a.data[this.composedQuery.getProjectionIndex(this.setLabel)]);
+                this.setData.getTiteList().add(
+                    (String) a.data[this.composedQuery.getProjectionIndex(this.titleProjection)]);
             }
         }
 
@@ -1201,7 +1188,7 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
             return composedQuery.getFromLabelTypes().get(setLabel);
         }
 
-        public Pointer[] getSetData() {
+        public SetList<Pointer> getSetData() {
             return setData;
         }
     }

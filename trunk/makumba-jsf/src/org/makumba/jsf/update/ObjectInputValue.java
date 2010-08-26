@@ -3,6 +3,7 @@ package org.makumba.jsf.update;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 import javax.faces.application.FacesMessage;
@@ -23,7 +24,7 @@ public abstract class ObjectInputValue {
 
     private Dictionary<String, Object> fields = new Hashtable<String, Object>();
 
-    private Map<String, Pointer[]> setFields = new Hashtable<String, Pointer[]>();
+    private Map<String, List<Pointer>> setFields = new Hashtable<String, List<Pointer>>();
 
     private Map<String, String> clientIds = new HashMap<String, String>();
 
@@ -105,7 +106,7 @@ public abstract class ObjectInputValue {
         this.clientIds.put(path, clientId);
     }
 
-    public void addSetField(String path, Pointer[] value, String clientId) {
+    public void addSetField(String path, List<Pointer> value, String clientId) {
         this.setFields.put(path, value);
         this.clientIds.put(path, clientId);
     }
@@ -136,7 +137,7 @@ public abstract class ObjectInputValue {
         return fields;
     }
 
-    public Map<String, Pointer[]> getSetFields() {
+    public Map<String, List<Pointer>> getSetFields() {
         return setFields;
     }
 

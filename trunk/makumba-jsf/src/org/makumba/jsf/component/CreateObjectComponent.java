@@ -1,6 +1,7 @@
 package org.makumba.jsf.component;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -276,7 +277,7 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
     }
 
     @Override
-    public void addSetValue(String label, String path, Pointer[] value, String clientId) {
+    public void addSetValue(String label, String path, List<Pointer> value, String clientId) {
         if (value != null) {
             currentValue.addSetField(path, value, clientId);
         }
