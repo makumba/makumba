@@ -57,7 +57,9 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
     }
 
     public void setWhere(String where) {
-        queryProps[ComposedQuery.WHERE] = where;
+        // FIXME we should pass this so it is analyzed by the query analysis
+        // but for that we need to prepare it to accept label.field = NEW (or whatever token we will support)
+        queryProps[ComposedQuery.WHERE] = ""; // where;
     }
 
     @Override
