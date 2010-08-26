@@ -1,6 +1,7 @@
 package org.makumba.jsf.component.el;
 
 import java.beans.FeatureDescriptor;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
@@ -231,12 +232,15 @@ public class MakumbaELResolver extends ELResolver {
 
             // is it a set?
             if (list.hasSetProjection(path)) {
+                // we get back an array of Pointers so we need to convert that
                 Object[] value = (Object[]) val;
                 Pointer[] r = new Pointer[value.length];
                 System.arraycopy(value, 0, r, 0, value.length);
-                c.addSetValue(p.getLabel(), p.getPath((String) property), r, Util.findInput(list, path).getClientId());
+                c.addSetValue(p.getLabel(), p.getPath((String) property), Arrays.asList(r),
+                    Util.findInput(list, path).getClientId());
 
-                // TODO we might need to set the value again in the list as done for expressions
+                // TODO set the data back in the list model, as done for expressions. this is probably necessary for
+                // postback
 
             } else {
                 c.addValue(p.getLabel(), p.getPath((String) property), val, Util.findInput(list, path).getClientId());
