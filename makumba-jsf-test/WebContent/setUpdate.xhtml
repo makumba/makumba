@@ -15,14 +15,17 @@
 				Name: #{p.indiv.name}<br />
 				Language set: #{p.speaks}<br />
 				<br />
-				<h:selectManyListbox value="#{p.speaks}">
-					<mak:list from="test.Language l">
+				<h:selectManyListbox value="#{p.speaks}" id="selectMany">
+					<mak:list from="test.Language l" id="smallList">
 						<f:selectItem itemLabel="#{l.name}" itemValue="#{l.id}" id="selectGuy" />
 					</mak:list>
 				</h:selectManyListbox>
 				<hr />
 
 			</mak:list>
+			
+			<h:commandButton value="submit" />
+			
 			</h:form>
 	</ui:define>
 </ui:composition>

@@ -10,7 +10,7 @@
 	<ui:define name="content">
         <h:messages /> 
 		<h:form>
-			<mak:object from="test.Person p" where="p.indiv.name = 'NEW'">
+			<mak:object from="test.Person p" where="p.indiv = new()">
 			
 				Name: <h:inputText id="name" value="#{p.indiv.name}" /> <h:message for="name"  errorClass="invalid" />
 

@@ -10,9 +10,9 @@
 	<ui:define name="content">
 
 		<h:form>
-			<mak:object from="test.Person p" where="p.indiv.name = 'NEW'">
+			<mak:object from="test.Person p" where="p.indiv = new()">
 			
-				<mak:object from="p.indiv i" where="i.name = 'NEW'">
+				<mak:object from="p.indiv i" where="i = new()">
 			
 				Name: <h:inputText value="#{i.name}" />
 				</mak:object>

@@ -10,6 +10,8 @@ import javax.faces.view.facelets.TagAttribute;
 
 public class ObjectTagHandler extends ComponentHandler {
 
+    private static String NEW_MARKER = "new()";
+
     public ObjectTagHandler(final ComponentConfig config) {
         super(new ComponentConfig() {
 
@@ -60,7 +62,7 @@ public class ObjectTagHandler extends ComponentHandler {
         TagAttribute where = t.getAttributes().get("where");
         // FIXME this could also be a o.type = 'NEW'
         // FIXME this won't handle #{ValueExpressions}
-        return where != null && where.getValue().indexOf("NEW") > -1;
+        return where != null && where.getValue().indexOf(NEW_MARKER) > -1;
     }
 
 }
