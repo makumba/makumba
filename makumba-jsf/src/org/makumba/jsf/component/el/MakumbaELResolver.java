@@ -234,10 +234,10 @@ public class MakumbaELResolver extends ELResolver {
                 Object[] value = (Object[]) val;
                 Pointer[] r = new Pointer[value.length];
                 System.arraycopy(value, 0, r, 0, value.length);
-
-                // FIXME this won't work yet because of the bug in the list where we need to add the set expression to
-                // the declaring component of the label, but before its composed query is computed
                 c.addSetValue(p.getLabel(), p.getPath((String) property), r, Util.findInput(list, path).getClientId());
+
+                // TODO we might need to set the value again in the list as done for expressions
+
             } else {
                 c.addValue(p.getLabel(), p.getPath((String) property), val, Util.findInput(list, path).getClientId());
 
