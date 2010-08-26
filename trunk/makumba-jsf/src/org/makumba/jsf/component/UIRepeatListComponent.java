@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -194,12 +195,10 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
     }
 
     void setRowIndex(int rowIndex) {
-        // System.out.println("UIRepeatListComponent.setRowIndex()" + rowIndex);
         visitedIndexes.add(rowIndex);
         currentIndex = rowIndex;
         // System.out.println(debugIdent() + " " + rowIndex);
         if (rowIndex >= 0 && rowIndex < iterationGroupData.size()) {
-
             // pop old value:
             currentDataStack.get().pop();
             currentData = iterationGroupData.get(rowIndex);
@@ -397,9 +396,6 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
 
             // we clean up after processing RENDER_RESPONSE
             if (getFacesContext().getCurrentPhaseId() == PhaseId.RENDER_RESPONSE) {
-                if (parentSelectComponent != null) {
-                    removeConverterFromUISelectParent();
-                }
                 selectItems.clear();
                 parentSelectComponent = null;
             }
@@ -409,16 +405,13 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         }
     }
 
+    /**
+     * Adds a {@link PointerConverter} to the parent {@link UISelectOne} or {@link UISelectMany}.<br/>
+     * TODO decide whether or not to keep this mechanism, or whether to return directly an array of external pointer
+     * values in {@link UIRepeatListComponent#getSetData(String)}
+     */
     private void addConverterToUISelectParent() {
-        // we set a converter here so that the UISelect component can read the values from the list we give
-        // it
-        // TODO decide whether or not to keep this mechanism, or whether to return directly an array of
-        // external pointer values in #getSetData
         ((EditableValueHolder) parentSelectComponent).setConverter(new PointerConverter());
-    }
-
-    private void removeConverterFromUISelectParent() {
-        ((EditableValueHolder) parentSelectComponent).setConverter(null);
     }
 
     /**
@@ -492,10 +485,8 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
      */
     private void generateIteratingUISelectItems(int rowIndex) {
         if (parentSelectComponent != null) {
-
             if (!selectItemsSaved.isEmpty() && getFacesContext().isPostback()
                     && getFacesContext().getCurrentPhaseId() == PhaseId.APPLY_REQUEST_VALUES) {
-
                 // we already had a postback, the original UISelectItem-s are no longer part of the tree
                 // thus we take them from a reference list that we keep
                 for (String id : selectItemsSaved.keySet()) {
@@ -505,18 +496,11 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
                     item.setTransient(true);
 
                     boolean isValidItem = item.getItemValue() != null;
-
                     if (!iteratedIndexes.contains(new Integer(rowIndex)) && isValidItem) {
-
                         parentSelectComponent.getChildren().add(item);
-                        // System.out.println("********************************* generated item from saved one: "
-                        // + item.getItemLabel() + " val:" + item.getItemValue());
-
                         iteratedIndexes.add(new Integer(rowIndex));
                     }
-
                 }
-
             } else {
                 // this is the first rendering
                 // we generate the items from the collection we keep
@@ -850,7 +834,9 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
 
     private void addEditedLabel(String label) {
         composedQuery.getProjectionIndex(label);
-        editedLabels.add(label);
+        if (!editedLabels.contains(label)) {
+            editedLabels.add(label);
+        }
     }
 
     private QueryAnalysis getQueryAnalysis() {
@@ -1043,7 +1029,9 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
                     elFuncTxt = elFuncTxt.substring(1, elFuncTxt.length() - 1);
                     addExpression(component, elFuncTxt, false);
                 } else {
-                    // TODO logger warning or namespace resolution
+                    // FIXME in this case, we have a EL function with a different prefix than the one of makumba
+                    // it might still make sense to fetch the expression, but it can be incorrect
+                    log.fine("Skipping expression '" + elFuncTxt + "' as it does not have the prefix '" + prefix + "'");
                 }
             }
             // remove the EL function calls from the global expression to avoid wrong matches of the rest
@@ -1193,12 +1181,14 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
 
         public void nextParentIteration() {
             List<ArrayMap> data = grouper.getData(currentDataStack.get(), false);
-            // setData = new SetList<String>();
-            setData = new Pointer[data.size()];
             // the set might be empty for the current stack
             if (data == null || data.size() == 0) {
                 return;
             }
+            // setData = new SetList<String>();
+            assert data != null;
+            setData = new Pointer[data.size()];
+
             for (int i = 0; i < data.size(); i++) {
                 // this.setData.add(((Pointer) a.data[this.composedQuery.getProjectionIndex(this.setLabel)]));
                 setData[i] = (Pointer) data.get(i).data[this.composedQuery.getProjectionIndex(this.setLabel)];
@@ -1328,7 +1318,10 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
             try {
                 makList.setRowIndex(rowIndex);
             } catch (NullPointerException e) {
-                // this only happens at construction
+                // this should only happen at construction
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("NullPointerException during row index setting");
+                }
             }
         }
     }
