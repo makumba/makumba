@@ -1,0 +1,523 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<plugin>
+
+    <extension
+            point="org.eclipse.ui.editors">
+        <editor
+            class="org.makumba.devel.eclipse.mdd.ui.MDDExecutableExtensionFactory:org.eclipse.xtext.ui.editor.XtextEditor"
+            contributorClass="org.eclipse.ui.editors.text.TextEditorActionContributor"
+            default="true"
+            extensions="mdd,idd"
+            id="org.makumba.devel.eclipse.mdd.MDD"
+            name="MDD Editor">
+        </editor>
+    </extension>
+    <extension
+        point="org.eclipse.ui.handlers">
+        <handler
+            class="org.makumba.devel.eclipse.mdd.ui.MDDExecutableExtensionFactory:org.eclipse.xtext.ui.editor.hyperlinking.OpenDeclarationHandler"
+            commandId="org.eclipse.xtext.ui.editor.hyperlinking.OpenDeclaration">
+            <activeWhen>
+                <reference
+                    definitionId="org.makumba.devel.eclipse.mdd.MDD.Editor.opened">
+                </reference>
+            </activeWhen>
+        </handler>
+        <handler
+            class="org.makumba.devel.eclipse.mdd.ui.MDDExecutableExtensionFactory:org.eclipse.xtext.ui.editor.handler.ValidateActionHandler"
+            commandId="org.makumba.devel.eclipse.mdd.MDD.validate">
+         <activeWhen>
+            <reference
+                    definitionId="org.makumba.devel.eclipse.mdd.MDD.Editor.opened">
+            </reference>
+         </activeWhen>
+      </handler>
+    </extension>
+    <extension point="org.eclipse.core.expressions.definitions">
+        <definition id="org.makumba.devel.eclipse.mdd.MDD.Editor.opened">
+            <and>
+                <reference definitionId="isActiveEditorAnInstanceOfXtextEditor"/>
+                <with variable="activeEditor">
+                    <test property="org.eclipse.xtext.ui.editor.XtextEditor.languageName" 
+                        value="org.makumba.devel.eclipse.mdd.MDD" 
+                        forcePluginActivation="true"/>
+                </with>        
+            </and>
+        </definition>
+    </extension>
+    <extension
+            point="org.eclipse.ui.preferencePages">
+        <page
+            class="org.makumba.devel.eclipse.mdd.ui.MDDExecutableExtensionFactory:org.eclipse.xtext.ui.editor.preferences.LanguageRootPreferencePage"
+            id="org.makumba.devel.eclipse.mdd.MDD"
+            name="Makumba">
+            <keywordReference id="org.makumba.devel.eclipse.mdd.ui.keyword_MDD"/>
+        </page>
+        <page
+            category="org.makumba.devel.eclipse.mdd.MDD"
+            class="org.makumba.devel.eclipse.mdd.ui.MDDExecutableExtensionFactory:org.eclipse.xtext.ui.editor.syntaxcoloring.SyntaxColoringPreferencePage"
+            id="org.makumba.devel.eclipse.mdd.MDD.coloring"
+            name="Syntax Coloring">
+            <keywordReference id="org.makumba.devel.eclipse.mdd.ui.keyword_MDD"/>
+        </page>
+        <page
+            category="org.makumba.devel.eclipse.mdd.MDD"
+            class="org.makumba.devel.eclipse.mdd.ui.MDDExecutableExtensionFactory:org.eclipse.xtext.ui.editor.templates.XtextTemplatePreferencePage"
+            id="org.makumba.devel.eclipse.mdd.MDD.templates"
+            name="Templates">
+            <keywordReference id="org.makumba.devel.eclipse.mdd.ui.keyword_MDD"/>
+        </page>
+    </extension>
+    <extension
+        point="org.eclipse.ui.keywords">
+        <keyword
+            id="org.makumba.devel.eclipse.mdd.ui.keyword_MDD"
+            label="MDD"/>
+    </extension>
+    <extension
+         point="org.eclipse.ui.commands">
+      <command
+            description="Trigger expensive validation"
+            id="org.makumba.devel.eclipse.mdd.MDD.validate"
+            name="Validate">
+      </command>
+    </extension>
+    <extension point="org.eclipse.ui.menus">
+        <menuContribution
+            locationURI="popup:#TextEditorContext?after=group.edit">
+             <command
+                 commandId="org.makumba.devel.eclipse.mdd.MDD.validate"
+                 style="push"
+                 tooltip="Trigger expensive validation">
+            <visibleWhen checkEnabled="false">
+                <reference
+                    definitionId="org.makumba.devel.eclipse.mdd.MDD.Editor.opened">
+                </reference>
+            </visibleWhen>
+         </command>  
+         </menuContribution>
+    </extension>
+    <extension point="org.eclipse.ui.menus">
+		<menuContribution locationURI="popup:#TextEditorContext?endof=group.find">
+			<command commandId="org.eclipse.xtext.ui.editor.FindReferences">
+				<visibleWhen checkEnabled="false">
+                	<reference definitionId="org.makumba.devel.eclipse.mdd.MDD.Editor.opened">
+                	</reference>
+            	</visibleWhen>
+			</command>
+		</menuContribution>
+	</extension>
+	<extension point="org.eclipse.ui.handlers">
+	    <handler
+            class="org.makumba.devel.eclipse.mdd.ui.MDDExecutableExtensionFactory:org.eclipse.xtext.ui.editor.findrefs.FindReferencesHandler"
+            commandId="org.eclipse.xtext.ui.editor.FindReferences">
+            <activeWhen>
+                <reference
+                    definitionId="org.makumba.devel.eclipse.mdd.MDD.Editor.opened">
+                </reference>
+            </activeWhen>
+        </handler>
+    </extension>   
+
+<!-- adding resource factories -->
+
+	<extension
+		point="org.eclipse.emf.ecore.extension_parser">
+		<parser
+			class="org.makumba.devel.eclipse.mdd.ui.MDDExecutableExtensionFactory:org.eclipse.xtext.resource.IResourceFactory"
+			type="mdd">
+		</parser>
+  <parser
+        class="org.makumba.devel.eclipse.mdd.ui.MDDExecutableExtensionFactory:org.eclipse.xtext.resource.IResourceFactory"
+        type="idd">
+  </parser>
+	</extension>
+	<extension point="org.eclipse.xtext.extension_resourceServiceProvider">
+        <resourceServiceProvider
+            class="org.makumba.devel.eclipse.mdd.ui.MDDExecutableExtensionFactory:org.eclipse.xtext.ui.resource.IResourceUIServiceProvider"
+            uriExtension="mdd">
+        </resourceServiceProvider>
+        <resourceServiceProvider
+              class="org.makumba.devel.eclipse.mdd.ui.MDDExecutableExtensionFactory:org.eclipse.xtext.ui.resource.IResourceUIServiceProvider"
+              uriExtension="idd">
+        </resourceServiceProvider>
+    </extension>
+
+
+
+
+	<!-- Quick Outline -->
+	<extension
+		point="org.eclipse.ui.handlers">
+		<handler 
+			class="org.makumba.devel.eclipse.mdd.ui.MDDExecutableExtensionFactory:org.eclipse.xtext.ui.editor.outline.quickoutline.ShowQuickOutlineActionHandler"
+			commandId="org.eclipse.xtext.ui.editor.outline.QuickOutline">
+			<activeWhen>
+				<reference
+					definitionId="org.makumba.devel.eclipse.mdd.MDD.Editor.opened">
+				</reference>
+			</activeWhen>
+		</handler>
+	</extension>
+	<extension
+		point="org.eclipse.ui.commands">
+		<command
+			description="Open the quick outline."
+			id="org.eclipse.xtext.ui.editor.outline.QuickOutline"
+			name="Quick Outline">
+		</command>
+	</extension>
+	<extension point="org.eclipse.ui.menus">
+		<menuContribution
+			locationURI="popup:#TextEditorContext?after=group.open">
+			<command commandId="org.eclipse.xtext.ui.editor.outline.QuickOutline"
+				style="push"
+				tooltip="Open Quick Outline">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="org.makumba.devel.eclipse.mdd.MDD.Editor.opened"/>
+				</visibleWhen>
+			</command>
+		</menuContribution>
+	</extension>
+   <!-- quickfix marker resolution generator -->
+   <extension
+         point="org.eclipse.ui.ide.markerResolution">
+      <markerResolutionGenerator
+            class="org.makumba.devel.eclipse.mdd.ui.MDDExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator">
+      </markerResolutionGenerator>
+   </extension>
+   <extension
+         point="org.eclipse.ui.navigator.navigatorContent">
+      <navigatorContent
+            activeByDefault="false"
+            contentProvider="org.makumba.devel.eclipse.mdd.ui.navigator.MDDContentProvider"
+            icon="icons/mddsource16.gif"
+            id="org.makumba.devel.eclipse.mddContent"
+            labelProvider="org.makumba.devel.eclipse.mdd.ui.MDDExecutableExtensionFactory:org.makumba.devel.eclipse.mdd.ui.labeling.MDDLabelProviderions"
+            name="Makumba Data Definitions"
+            priority="highest">
+         <override
+               policy="InvokeOnlyIfSuppressedExtAlsoVisibleAndActive"
+               suppressedExtensionId="org.eclipse.jdt.java.ui.javaContent">
+         </override>
+         <triggerPoints>
+            <or>
+               <adapt
+                     type="org.eclipse.core.resources.IProject">
+                  <test
+                        forcePluginActivation="true"
+                        property="org.eclipse.wst.common.project.facet.core.projectFacet"
+                        value="mak.mdd">
+                  </test>
+               </adapt>
+               <instanceof
+                     value="org.eclipse.jdt.core.IPackageFragment">
+               </instanceof>
+               <instanceof
+                     value="org.eclipse.core.resources.IResource">
+               </instanceof>
+            </or>
+         </triggerPoints>
+         <possibleChildren>
+            <instanceof
+                  value="org.makumba.devel.eclipse.mdd.ui.navigator.DataDefinitionsRoot">
+            </instanceof>
+            <instanceof
+                  value="org.eclipse.jdt.core.IPackageFragment">
+            </instanceof>
+            <instanceof
+                  value="org.eclipse.core.resources.IResource">
+            </instanceof>
+         </possibleChildren>
+      </navigatorContent>
+      <commonWizard
+            menuGroupId="org.eclipse.wst.web.ui"
+            type="new"
+            wizardId="org.makumba.devel.eclipse.mdd.ui.newMdd">
+         <enablement>
+            <or>
+               <adapt
+                     type="org.eclipse.core.resources.IResource">
+                  <test
+                        property="org.eclipse.wst.common.project.facet.core.projectFacet"
+                        value="mak.mdd">
+                  </test>
+               </adapt>
+            </or>
+         </enablement>
+      </commonWizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.navigator.viewer">
+      <viewerContentBinding
+            viewerId="org.eclipse.ui.navigator.ProjectExplorer">
+         <includes>
+            <contentExtension
+                  pattern="org.makumba.devel.eclipse.mddContent">
+            </contentExtension>
+         </includes>
+      </viewerContentBinding>
+   </extension>
+   <extension
+         point="org.eclipse.wst.common.project.facet.core.facets">
+      <project-facet
+            id="mak.mdd">
+         <label>
+            Makumba
+         </label>
+         <description>
+            Extends Dynamic Web Project to provide extra functionality for developing web applications with Makumba framework.
+
+The version number correponds to Makumba lib version.
+         </description>
+         <default-version
+               version="0.8">
+         </default-version>
+      </project-facet>
+      <project-facet-version
+            facet="mak.mdd"
+            version="0.8">
+         <constraint>
+            <requires
+                  facet="jst.web"
+                  version="[2.4">
+            </requires>
+         </constraint>
+      </project-facet-version>
+      <action
+            facet="mak.mdd"
+            id="mak.mdd.install"
+            type="install">
+         <delegate
+               class="org.makumba.devel.eclipse.mdd.ui.project.MakumbaFacetInstallDelegate">
+         </delegate>
+         <config-factory
+               class="org.makumba.devel.eclipse.mdd.ui.project.FacetInstallActionConfigFactory">
+         </config-factory>
+      </action>
+      <action
+            facet="mak.mdd"
+            id="mak.mdd.unistall"
+            type="uninstall">
+         <delegate
+               class="org.makumba.devel.eclipse.mdd.ui.project.MakumbaFacetUninstallDelegate">
+         </delegate>
+      </action>
+   </extension>
+   <extension
+         point="org.eclipse.wst.common.project.facet.ui.images">
+      <image
+            facet="mak.mdd"
+            path="icons/facet16.gif">
+      </image>
+   </extension>
+   <extension
+         point="org.eclipse.wst.common.project.facet.ui.wizardPages">
+      <wizard-pages
+            action="mak.mdd.install">
+         <page
+               class="org.makumba.devel.eclipse.mdd.ui.project.MakumbaFacetInstallWizardPage">
+         </page>
+      </wizard-pages>
+   </extension>
+   <extension
+         point="org.eclipse.wst.common.project.facet.core.presets">
+      <static-preset
+            id="mak.mdd.facetPreset_v0.8_v2.4">
+         <label>
+            Makumba v0.8 Project with Servlet v2.4
+         </label>
+         <facet
+               id="jst.java"
+               version="1.4">
+         </facet>
+         <facet
+               id="jst.web"
+               version="2.4">
+         </facet>
+         <facet
+               id="mak.mdd"
+               version="0.8">
+         </facet>
+         <description>
+            Configures Dynamic Web Project with Makumba framework v0.8 and Servlet v2.4
+         </description>
+      </static-preset>
+      <static-preset
+            id="mak.mdd.facetPreset_v0.8_v2.5">
+         <label>
+            Makumba v0.8 Project with Servlet v2.5
+         </label>
+         <facet
+               id="jst.java"
+               version="1.5">
+         </facet>
+         <facet
+               id="jst.web"
+               version="2.5">
+         </facet>
+         <facet
+               id="mak.mdd"
+               version="0.8">
+         </facet>
+         <description>
+            Configures Dynamic Web Project with Makumba framework v0.8 and Servlet v2.5
+         </description>
+      </static-preset>
+      <static-preset
+            id="mak.mdd.facetPreset_v0.8_v3.0">
+         <label>
+            Makumba v0.8 Project with Servlet v3.0
+         </label>
+         <facet
+               id="jst.java"
+               version="1.6">
+         </facet>
+         <facet
+               id="jst.web"
+               version="3.0">
+         </facet>
+         <facet
+               id="mak.mdd"
+               version="0.8">
+         </facet>
+         <description>
+            Configures Dynamic Web Project with Makumba framework v0.8 and Servlet v3.0
+         </description>
+      </static-preset>
+   </extension>
+   <extension
+         point="org.eclipse.wst.sse.ui.completionProposal">
+      <proposalComputer
+            activate="true"
+            categoryId="org.eclipse.jst.jsp.ui.proposalCategory.jsp"
+            class="org.makumba.devel.eclipse.mdd.ui.MDDExecutableExtensionFactory:org.makumba.devel.eclipse.jsp.ui.contentassist.MakumbaJSPCompletionProposalComputer"
+            id="org.makumba.devel.eclipse.jsp.ui.proposalComputer">
+         <contentType
+               id="org.eclipse.jst.jsp.core.jspsource">
+         </contentType>
+      </proposalComputer>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors.templates">
+      <include
+            file="templates/jsp_templates.xml">
+      </include>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            description="Rename the selected field"
+            id="org.makumba.devel.eclipse.mdd.ui.RenameRefactor"
+            name="Rename...">
+      </command>
+      <command
+            description="Generate JSP for the Data Definition"
+            id="org.makumba.devel.eclipse.mdd.ui.CodeGenerator"
+            name="Generate JSP...">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="org.makumba.devel.eclipse.mdd.ui.MDDExecutableExtensionFactory:org.makumba.devel.eclipse.mdd.ui.refactoring.RenameRefactoringHandler"
+            commandId="org.makumba.devel.eclipse.mdd.ui.RenameRefactor">
+         <activeWhen>
+            <reference
+                  definitionId="org.makumba.devel.eclipse.mdd.MDD.Editor.opened">
+            </reference>
+         </activeWhen>
+      </handler>
+      <handler
+            class="org.makumba.devel.eclipse.mdd.ui.MDDExecutableExtensionFactory:org.makumba.devel.eclipse.mdd.ui.codegenerator.CodeGeneratorHandler"
+            commandId="org.makumba.devel.eclipse.mdd.ui.CodeGenerator">
+         <activeWhen>
+            <reference
+                  definitionId="org.makumba.devel.eclipse.mdd.MDD.Editor.opened">
+            </reference>
+         </activeWhen>
+      </handler>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:#TextEditorContext?after=group.edit">
+         <command
+               commandId="org.makumba.devel.eclipse.mdd.ui.RenameRefactor"
+               style="push"
+               tooltip="Rename the selected field">
+            <visibleWhen
+                  checkEnabled="false">
+               <reference
+                     definitionId="org.makumba.devel.eclipse.mdd.MDD.Editor.opened">
+               </reference>
+            </visibleWhen>
+         </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="popup:#TextEditorContext?after=group.edit">
+         <command
+               commandId="org.makumba.devel.eclipse.mdd.ui.CodeGenerator"
+               style="push"
+               tooltip="Generate JSP for the Data Definition">
+            <visibleWhen
+                  checkEnabled="false">
+               <reference
+                     definitionId="org.makumba.devel.eclipse.mdd.MDD.Editor.opened">
+               </reference>
+            </visibleWhen>
+         </command>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="org.makumba.devel.eclipse.mdd.ui.RenameRefactor"
+            contextId="org.eclipse.xtext.ui.XtextEditorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Shift+Alt+R">
+      </key>
+   </extension>
+   <extension
+         point="org.eclipse.wst.sse.ui.sourcevalidation">
+      <validator
+            class="org.makumba.devel.eclipse.jsp.ui.validation.MakumbaJSPValidator"
+            scope="total">
+         <contentTypeIdentifier
+               id="org.eclipse.jst.jsp.core.jspsource">
+         </contentTypeIdentifier>
+      </validator>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <wizard
+            category="org.eclipse.wst.web.ui"
+            class="org.makumba.devel.eclipse.mdd.ui.wizard.NewMDDWizard"
+            descriptionImage="icons/newmddwizard.gif"
+            icon="icons/newmdd16.gif"
+            id="org.makumba.devel.eclipse.mdd.ui.newMdd"
+            name="MDD File">
+         <description>
+            New Makumba Data Definition file
+         </description>
+         <selection
+               class="org.eclipse.core.resources.IResource">
+         </selection>
+      </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.core.contenttype.contentTypes">
+      <content-type
+            id="org.makumba.devel.eclipse.mdd.ui.mddContentType"
+            name="mdd"
+            priority="normal">
+      </content-type>
+      <file-association
+            content-type="org.makumba.devel.eclipse.mdd.ui.mddContentType"
+            file-extensions="mdd,idd">
+      </file-association>
+   </extension>
+
+</plugin>

@@ -1,0 +1,275 @@
+lexer grammar InternalMDD;
+@header {
+package org.makumba.devel.eclipse.mdd.ui.contentassist.antlr.internal;
+
+// Hack: Use our own Lexer superclass by means of import. 
+// Currently there is no other way to specify the superclass for the lexer.
+import org.eclipse.xtext.ui.editor.contentassist.antlr.internal.Lexer;
+}
+
+T13 : 'int' ;
+T14 : 'real' ;
+T15 : 'boolean' ;
+T16 : 'text' ;
+T17 : 'binary' ;
+T18 : 'file' ;
+T19 : 'date' ;
+T20 : '=' ;
+T21 : '<' ;
+T22 : '>' ;
+T23 : '<=' ;
+T24 : '>=' ;
+T25 : '!=' ;
+T26 : '^=' ;
+T27 : '<>' ;
+T28 : 'like' ;
+T29 : '$now' ;
+T30 : '$today' ;
+T31 : '+' ;
+T32 : '-' ;
+T33 : 'range' ;
+T34 : 'length' ;
+T35 : '?' ;
+T36 : 'unique' ;
+T37 : 'notNull' ;
+T38 : 'NaN' ;
+T39 : 'notEmpty' ;
+T40 : 'notInt' ;
+T41 : 'notReal' ;
+T42 : 'notBoolean' ;
+T43 : '*' ;
+T44 : '/' ;
+T45 : 'e' ;
+T46 : 'f' ;
+T47 : 'd' ;
+T48 : 'upper' ;
+T49 : 'lower' ;
+T50 : 'title' ;
+T51 : 'type' ;
+T52 : 'include' ;
+T53 : 'l' ;
+T54 : 'SELECT' ;
+T55 : 'Select' ;
+T56 : 'select' ;
+T57 : 'DISTINCT' ;
+T58 : 'Distinct' ;
+T59 : 'distinct' ;
+T60 : 'NEW' ;
+T61 : 'New' ;
+T62 : 'new' ;
+T63 : 'OBJECT' ;
+T64 : 'Object' ;
+T65 : 'object' ;
+T66 : 'FROM' ;
+T67 : 'From' ;
+T68 : 'from' ;
+T69 : 'LEFT' ;
+T70 : 'Left' ;
+T71 : 'left' ;
+T72 : 'RIGHT' ;
+T73 : 'Right' ;
+T74 : 'right' ;
+T75 : 'OUTER' ;
+T76 : 'Outer' ;
+T77 : 'outer' ;
+T78 : 'FULL' ;
+T79 : 'Full' ;
+T80 : 'full' ;
+T81 : 'INNER' ;
+T82 : 'Inner' ;
+T83 : 'inner' ;
+T84 : 'JOIN' ;
+T85 : 'Join' ;
+T86 : 'join' ;
+T87 : 'FETCH' ;
+T88 : 'Fetch' ;
+T89 : 'fetch' ;
+T90 : 'WITH' ;
+T91 : 'With' ;
+T92 : 'with' ;
+T93 : 'IN' ;
+T94 : 'In' ;
+T95 : 'in' ;
+T96 : 'CLASS' ;
+T97 : 'Class' ;
+T98 : 'class' ;
+T99 : 'ELEMENTS' ;
+T100 : 'Elements' ;
+T101 : 'elements' ;
+T102 : 'AS' ;
+T103 : 'As' ;
+T104 : 'as' ;
+T105 : 'PROPERTIES' ;
+T106 : 'Properties' ;
+T107 : 'properties' ;
+T108 : 'GROUP' ;
+T109 : 'Group' ;
+T110 : 'group' ;
+T111 : 'ORDER' ;
+T112 : 'Order' ;
+T113 : 'order' ;
+T114 : 'BY' ;
+T115 : 'By' ;
+T116 : 'by' ;
+T117 : 'ASC' ;
+T118 : 'Asc' ;
+T119 : 'asc' ;
+T120 : 'ASCENDING' ;
+T121 : 'Ascending' ;
+T122 : 'ascending' ;
+T123 : 'DESC' ;
+T124 : 'Desc' ;
+T125 : 'desc' ;
+T126 : 'DESCENDING' ;
+T127 : 'Descending' ;
+T128 : 'descending' ;
+T129 : 'HAVING' ;
+T130 : 'Having' ;
+T131 : 'having' ;
+T132 : 'WHERE' ;
+T133 : 'Where' ;
+T134 : 'where' ;
+T135 : 'OR' ;
+T136 : 'Or' ;
+T137 : 'or' ;
+T138 : 'AND' ;
+T139 : 'And' ;
+T140 : 'and' ;
+T141 : 'NOT' ;
+T142 : 'Not' ;
+T143 : 'not' ;
+T144 : 'IS' ;
+T145 : 'Is' ;
+T146 : 'is' ;
+T147 : 'BETWEEN' ;
+T148 : 'Between' ;
+T149 : 'between' ;
+T150 : 'LIKE' ;
+T151 : 'Like' ;
+T152 : 'MEMBER' ;
+T153 : 'Member' ;
+T154 : 'member' ;
+T155 : 'OF' ;
+T156 : 'Of' ;
+T157 : 'of' ;
+T158 : 'ESCAPE' ;
+T159 : 'Escape' ;
+T160 : 'escape' ;
+T161 : 'CASE' ;
+T162 : 'Case' ;
+T163 : 'case' ;
+T164 : 'END' ;
+T165 : 'End' ;
+T166 : 'end' ;
+T167 : 'WHEN' ;
+T168 : 'When' ;
+T169 : 'when' ;
+T170 : 'THEN' ;
+T171 : 'Then' ;
+T172 : 'then' ;
+T173 : 'ELSE' ;
+T174 : 'Else' ;
+T175 : 'else' ;
+T176 : 'SOME' ;
+T177 : 'Some' ;
+T178 : 'some' ;
+T179 : 'EXISTS' ;
+T180 : 'Exists' ;
+T181 : 'exists' ;
+T182 : 'ALL' ;
+T183 : 'All' ;
+T184 : 'all' ;
+T185 : 'ANY' ;
+T186 : 'Any' ;
+T187 : 'any' ;
+T188 : 'SUM' ;
+T189 : 'Sum' ;
+T190 : 'sum' ;
+T191 : 'AVG' ;
+T192 : 'Avg' ;
+T193 : 'avg' ;
+T194 : 'MAX' ;
+T195 : 'Max' ;
+T196 : 'max' ;
+T197 : 'MIN' ;
+T198 : 'Min' ;
+T199 : 'min' ;
+T200 : 'COUNT' ;
+T201 : 'Count' ;
+T202 : 'count' ;
+T203 : 'INDICES' ;
+T204 : 'Indices' ;
+T205 : 'indices' ;
+T206 : 'TRAILING' ;
+T207 : 'Trailing' ;
+T208 : 'trailing' ;
+T209 : 'LEADING' ;
+T210 : 'Leading' ;
+T211 : 'leading' ;
+T212 : 'BOTH' ;
+T213 : 'Both' ;
+T214 : 'both' ;
+T215 : 'NULL' ;
+T216 : 'Null' ;
+T217 : 'null' ;
+T218 : 'TRUE' ;
+T219 : 'True' ;
+T220 : 'true' ;
+T221 : 'FALSE' ;
+T222 : 'False' ;
+T223 : 'false' ;
+T224 : 'EMPTY' ;
+T225 : 'Empty' ;
+T226 : 'empty' ;
+T227 : 'char' ;
+T228 : 'set' ;
+T229 : '{' ;
+T230 : '}' ;
+T231 : ',' ;
+T232 : '[' ;
+T233 : ']' ;
+T234 : 'ptr' ;
+T235 : '->' ;
+T236 : '.' ;
+T237 : '!' ;
+T238 : '(' ;
+T239 : ')' ;
+T240 : '..' ;
+T241 : ':' ;
+T242 : '%' ;
+T243 : 'union' ;
+T244 : '||' ;
+T245 : '$' ;
+T246 : 'fixed' ;
+T247 : 'deprecated' ;
+T248 : 'compare' ;
+T249 : 'matches' ;
+
+// $ANTLR src "../org.makumba.devel.eclipse.mdd.ui/src-gen/org/makumba/devel/eclipse/mdd/ui/contentassist/antlr/internal/InternalMDD.g" 25473
+RULE_LINEBREAK : ('\n'|'\r' '\n'|'\r');
+
+// $ANTLR src "../org.makumba.devel.eclipse.mdd.ui/src-gen/org/makumba/devel/eclipse/mdd/ui/contentassist/antlr/internal/InternalMDD.g" 25475
+RULE_ID : '^'? ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')*;
+
+// $ANTLR src "../org.makumba.devel.eclipse.mdd.ui/src-gen/org/makumba/devel/eclipse/mdd/ui/contentassist/antlr/internal/InternalMDD.g" 25477
+RULE_SIGNED_INT : ('-'|'+') RULE_INT;
+
+// $ANTLR src "../org.makumba.devel.eclipse.mdd.ui/src-gen/org/makumba/devel/eclipse/mdd/ui/contentassist/antlr/internal/InternalMDD.g" 25479
+RULE_HEX : '0x' ('0'..'9'|'a'..'f')+;
+
+// $ANTLR src "../org.makumba.devel.eclipse.mdd.ui/src-gen/org/makumba/devel/eclipse/mdd/ui/contentassist/antlr/internal/InternalMDD.g" 25481
+RULE_INT : ('0'..'9')+;
+
+// $ANTLR src "../org.makumba.devel.eclipse.mdd.ui/src-gen/org/makumba/devel/eclipse/mdd/ui/contentassist/antlr/internal/InternalMDD.g" 25483
+RULE_FIELDCOMMENT : ';' ~(('\n'|'\r'))*;
+
+// $ANTLR src "../org.makumba.devel.eclipse.mdd.ui/src-gen/org/makumba/devel/eclipse/mdd/ui/contentassist/antlr/internal/InternalMDD.g" 25485
+RULE_SL_COMMENT : '#' ~(('\n'|'\r'))* ('\r'? '\n')?;
+
+// $ANTLR src "../org.makumba.devel.eclipse.mdd.ui/src-gen/org/makumba/devel/eclipse/mdd/ui/contentassist/antlr/internal/InternalMDD.g" 25487
+RULE_WS : (' '|'\t'|'\r' '\n'|'\n'|'\r');
+
+// $ANTLR src "../org.makumba.devel.eclipse.mdd.ui/src-gen/org/makumba/devel/eclipse/mdd/ui/contentassist/antlr/internal/InternalMDD.g" 25489
+RULE_STRING : ('"' ('\\' '"'|~('"'))* '"'|'\'' ('\\' ('b'|'t'|'n'|'f'|'r'|'"'|'\''|'\\')|~(('\\'|'\'')))* '\'');
+
+
