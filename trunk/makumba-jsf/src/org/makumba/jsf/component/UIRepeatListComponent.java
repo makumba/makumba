@@ -806,9 +806,10 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
 
         // detect sets, make a virtual subquery for them so we can resolve them
         QueryAnalysis qa = getQueryAnalysis();
-        FieldDefinition setFd = qa.getLabelType(label).getFieldOrPointedFieldDefinition(fieldPath);
-        if (fieldPath != null && !expr.endsWith(".id") && setFd.isSetType()) {
-            SetIterationContext sc = new SetIterationContext(composedQuery, getQueryLanguage(), expr, setFd);
+        if (fieldPath != null && !expr.endsWith(".id")
+                && qa.getLabelType(label).getFieldOrPointedFieldDefinition(fieldPath).isSetType()) {
+            SetIterationContext sc = new SetIterationContext(composedQuery, getQueryLanguage(), expr, qa.getLabelType(
+                label).getFieldOrPointedFieldDefinition(fieldPath));
             setComposedSubqueries.put(expr, sc);
         } else {
             composedQuery.checkProjectionInteger(expr);
@@ -1311,5 +1312,10 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
                 }
             }
         }
+    }
+
+    @Override
+    public boolean hasActionChanged() {
+        return this.isObject && Util.isCreateObject(this.queryProps[ComposedQuery.WHERE]);
     }
 }

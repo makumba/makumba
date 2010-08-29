@@ -36,6 +36,8 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
 
     private String[] queryProps = new String[6];
 
+    private String where = new String();
+
     private CreateObjectComponent parent;
 
     private ObjectInputValue currentValue;
@@ -60,6 +62,7 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
         // FIXME we should pass this so it is analyzed by the query analysis
         // but for that we need to prepare it to accept label.field = NEW (or whatever token we will support)
         queryProps[ComposedQuery.WHERE] = ""; // where;
+        this.where = where;
     }
 
     @Override
@@ -306,6 +309,11 @@ public class CreateObjectComponent extends UIComponentBase implements MakumbaDat
     @Override
     public ComposedQuery getComposedQuery() {
         return this.cQ;
+    }
+
+    @Override
+    public boolean hasActionChanged() {
+        return !Util.isCreateObject(this.where);
     }
 
 }
