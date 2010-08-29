@@ -18,6 +18,8 @@ import org.makumba.jsf.update.ObjectInputValue;
 
 public class DeleteComponent extends UIComponentBase implements ActionListener {
 
+    private static final String OBJECT = "object";
+
     private ThreadLocal<DeleteAction> deferredDeleteActions = new ThreadLocal<DeleteComponent.DeleteAction>();
 
     @Override
@@ -25,18 +27,18 @@ public class DeleteComponent extends UIComponentBase implements ActionListener {
         return "makumba";
     }
 
-    private Object label;
+    private Object object;
 
-    public Object getLabel() {
-        return this.label;
+    public Object getObject() {
+        return this.object;
     }
 
-    public void setLabel(Object label) {
+    public void setObject(Object object) {
         // check object expression validity
-        if (label instanceof String) {
-            throw new ProgrammerError("Invalid EL expression '" + label + "', expecting #{expression}");
+        if (object instanceof String) {
+            throw new ProgrammerError("Invalid EL expression '" + object + "', expecting #{expression}");
         }
-        this.label = label;
+        this.object = object;
     }
 
     @Override
@@ -65,16 +67,21 @@ public class DeleteComponent extends UIComponentBase implements ActionListener {
             try {
                 PropertyDescriptor[] pd = Introspector.getBeanInfo(this.getClass()).getPropertyDescriptors();
                 for (PropertyDescriptor p : pd) {
-                    if (p.getName().equals("label")) {
+                    if (p.getName().equals(OBJECT)) {
                         ValueExpression ve = this.getValueExpression(p.getName());
                         if (ve != null) {
                             String label = ve.getExpressionString().substring(2, ve.getExpressionString().length() - 1);
-                            DeleteAction delete = new DeleteAction(label, (Pointer) this.getAttributes().get("label"));
-                            // happens with immediate = true
-                            if (this.getFacesContext().getCurrentPhaseId() == PhaseId.APPLY_REQUEST_VALUES) {
-                                this.deferredDeleteActions.set(delete);
+                            if (this.getAttributes().get(OBJECT) instanceof Pointer) {
+                                DeleteAction delete = new DeleteAction(label,
+                                        (Pointer) this.getAttributes().get(OBJECT));
+                                // happens with immediate = true
+                                if (this.getFacesContext().getCurrentPhaseId() == PhaseId.APPLY_REQUEST_VALUES) {
+                                    this.deferredDeleteActions.set(delete);
+                                } else {
+                                    ObjectInputValue.makeDeleteInputValue(delete.getLabel(), delete.getPtr());
+                                }
                             } else {
-                                ObjectInputValue.makeDeleteInputValue(delete.getLabel(), delete.getPtr());
+                                throw new ProgrammerError("You need to select the object to delete via .id");
                             }
                         }
                     }

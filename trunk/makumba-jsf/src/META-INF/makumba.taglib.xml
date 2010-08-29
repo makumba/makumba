@@ -154,7 +154,7 @@
 
 		<attribute>
 			<description>object to delete</description>
-			<name>label</name>
+			<name>object</name>
 			<required>true</required>
 			<type>java.lang.Object</type>
 		</attribute>
