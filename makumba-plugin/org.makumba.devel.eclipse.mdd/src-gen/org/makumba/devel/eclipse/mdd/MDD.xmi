@@ -1,0 +1,2698 @@
+<?xml version="1.0" encoding="ASCII"?>
+<xtext:Grammar xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:xtext="http://www.eclipse.org/2008/Xtext" name="org.makumba.devel.eclipse.mdd.MDD" definesHiddenTokens="true" hiddenTokens="//@rules.162 //@rules.161">
+  <metamodelDeclarations xsi:type="xtext:GeneratedMetamodel" name="MDD">
+    <ePackage href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#/"/>
+  </metamodelDeclarations>
+  <metamodelDeclarations xsi:type="xtext:ReferencedMetamodel" alias="ecore">
+    <ePackage href="http://www.eclipse.org/emf/2002/Ecore#/"/>
+  </metamodelDeclarations>
+  <rules xsi:type="xtext:ParserRule" name="DataDefinition">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//DataDefinition"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:RuleCall" cardinality="*" rule="//@rules.155"/>
+      <elements xsi:type="xtext:Assignment" cardinality="?" feature="d" operator="+=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.1"/>
+      </elements>
+      <elements xsi:type="xtext:Group" cardinality="*">
+        <elements xsi:type="xtext:RuleCall" cardinality="+" rule="//@rules.155"/>
+        <elements xsi:type="xtext:Assignment" feature="d" operator="+=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.1"/>
+        </elements>
+      </elements>
+      <elements xsi:type="xtext:RuleCall" cardinality="*" rule="//@rules.155"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="Declaration">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//Declaration"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Alternatives">
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.2"/>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.13"/>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.15"/>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.14"/>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.16"/>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.35"/>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.34"/>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.11"/>
+      </elements>
+      <elements xsi:type="xtext:Assignment" cardinality="?" feature="fieldComment" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.160"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="FieldDeclaration">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FieldDeclaration"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Assignment" feature="name" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.153"/>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value="="/>
+      <elements xsi:type="xtext:Group" cardinality="?">
+        <elements xsi:type="xtext:Assignment" feature="modifiers" operator="=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.3"/>
+        </elements>
+        <elements xsi:type="xtext:Assignment" feature="typedef" operator="=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.4"/>
+        </elements>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="Modifiers">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//Modifiers"/>
+    </type>
+    <alternatives xsi:type="xtext:UnorderedGroup">
+      <elements xsi:type="xtext:Assignment" cardinality="?" feature="unique" operator="?=">
+        <terminal xsi:type="xtext:Keyword" value="unique"/>
+      </elements>
+      <elements xsi:type="xtext:Assignment" cardinality="?" feature="fixed" operator="?=">
+        <terminal xsi:type="xtext:Keyword" value="fixed"/>
+      </elements>
+      <elements xsi:type="xtext:Group" cardinality="?">
+        <elements xsi:type="xtext:Assignment" feature="notNull" operator="?=">
+          <terminal xsi:type="xtext:Keyword" value="not"/>
+        </elements>
+        <elements xsi:type="xtext:Keyword" value="null"/>
+      </elements>
+      <elements xsi:type="xtext:Group" cardinality="?">
+        <elements xsi:type="xtext:Assignment" feature="notEmpty" operator="?=">
+          <terminal xsi:type="xtext:Keyword" value="not"/>
+        </elements>
+        <elements xsi:type="xtext:Keyword" value="empty"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="FieldType">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FieldType"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.8"/>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.6"/>
+      <elements xsi:type="xtext:Group">
+        <elements xsi:type="xtext:Keyword" value="set"/>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.6"/>
+      </elements>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.5"/>
+      <elements xsi:type="xtext:Group">
+        <elements xsi:type="xtext:Keyword" value="set"/>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.5"/>
+      </elements>
+      <elements xsi:type="xtext:Group">
+        <elements xsi:type="xtext:Action">
+          <type metamodel="//@metamodelDeclarations.0">
+            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FieldType"/>
+          </type>
+        </elements>
+        <elements xsi:type="xtext:Assignment" feature="type" operator="=">
+          <terminal xsi:type="xtext:Alternatives">
+            <elements xsi:type="xtext:Keyword" value="int"/>
+            <elements xsi:type="xtext:Keyword" value="real"/>
+            <elements xsi:type="xtext:Keyword" value="boolean"/>
+            <elements xsi:type="xtext:Keyword" value="text"/>
+            <elements xsi:type="xtext:Keyword" value="binary"/>
+            <elements xsi:type="xtext:Keyword" value="file"/>
+            <elements xsi:type="xtext:Keyword" value="date"/>
+          </terminal>
+        </elements>
+      </elements>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.9"/>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.10"/>
+      <elements xsi:type="xtext:Assignment" feature="typeDec" operator="=">
+        <terminal xsi:type="xtext:CrossReference">
+          <type metamodel="//@metamodelDeclarations.0">
+            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//TypeDeclaration"/>
+          </type>
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.156"/>
+        </terminal>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="IntEnum">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//IntEnum"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Assignment" feature="name" operator="=">
+        <terminal xsi:type="xtext:Keyword" value="int"/>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value="{"/>
+      <elements xsi:type="xtext:Assignment" feature="values" operator="+=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.7"/>
+      </elements>
+      <elements xsi:type="xtext:Group" cardinality="*">
+        <elements xsi:type="xtext:Keyword" value=","/>
+        <elements xsi:type="xtext:Assignment" feature="values" operator="+=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.7"/>
+        </elements>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value="}"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="CharEnum">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//CharEnum"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Assignment" feature="name" operator="=">
+        <terminal xsi:type="xtext:Keyword" value="char"/>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value="{"/>
+      <elements xsi:type="xtext:Assignment" feature="values" operator="+=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.163"/>
+      </elements>
+      <elements xsi:type="xtext:Group" cardinality="*">
+        <elements xsi:type="xtext:Keyword" value=","/>
+        <elements xsi:type="xtext:Assignment" feature="values" operator="+=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.163"/>
+        </elements>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value="}"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="EnumValue">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//EnumValue"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Assignment" feature="name" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.163"/>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value="="/>
+      <elements xsi:type="xtext:Assignment" feature="value" operator="=">
+        <terminal xsi:type="xtext:Alternatives">
+          <elements xsi:type="xtext:RuleCall" rule="//@rules.159"/>
+          <elements xsi:type="xtext:RuleCall" rule="//@rules.157"/>
+        </terminal>
+      </elements>
+      <elements xsi:type="xtext:Assignment" cardinality="?" feature="decpricated" operator="?=">
+        <terminal xsi:type="xtext:Keyword" value="deprecated"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="CharType">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//CharType"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Action">
+        <type metamodel="//@metamodelDeclarations.0">
+          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//CharType"/>
+        </type>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value="char"/>
+      <elements xsi:type="xtext:Group" cardinality="?">
+        <elements xsi:type="xtext:Keyword" value="["/>
+        <elements xsi:type="xtext:Assignment" cardinality="?" feature="length" operator="=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.159"/>
+        </elements>
+        <elements xsi:type="xtext:Keyword" value="]"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="PointerType">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//PointerType"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Action">
+        <type metamodel="//@metamodelDeclarations.0">
+          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//PointerType"/>
+        </type>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value="ptr"/>
+      <elements xsi:type="xtext:Assignment" cardinality="?" feature="ref" operator="=">
+        <terminal xsi:type="xtext:CrossReference">
+          <type metamodel="//@metamodelDeclarations.0">
+            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//DataDefinition"/>
+          </type>
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.12"/>
+        </terminal>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="SetType">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//SetType"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Action">
+        <type metamodel="//@metamodelDeclarations.0">
+          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//SetType"/>
+        </type>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value="set"/>
+      <elements xsi:type="xtext:Assignment" cardinality="?" feature="ref" operator="=">
+        <terminal xsi:type="xtext:CrossReference">
+          <type metamodel="//@metamodelDeclarations.0">
+            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//DataDefinition"/>
+          </type>
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.12"/>
+        </terminal>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="SubFieldDeclaration">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//SubFieldDeclaration"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Assignment" feature="subFieldOf" operator="=">
+        <terminal xsi:type="xtext:CrossReference">
+          <type metamodel="//@metamodelDeclarations.0">
+            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FieldDeclaration"/>
+          </type>
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.156"/>
+        </terminal>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value="->"/>
+      <elements xsi:type="xtext:Assignment" feature="d" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.1"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="Type">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.153"/>
+      <elements xsi:type="xtext:Group" cardinality="*">
+        <elements xsi:type="xtext:Keyword" value="."/>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.153"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="TitleDeclaration">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//TitleDeclaration"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Keyword" value="!"/>
+      <elements xsi:type="xtext:Keyword" value="title"/>
+      <elements xsi:type="xtext:Keyword" value="="/>
+      <elements xsi:type="xtext:Alternatives">
+        <elements xsi:type="xtext:Assignment" feature="field" operator="=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.39"/>
+        </elements>
+        <elements xsi:type="xtext:Assignment" feature="function" operator="=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.38"/>
+        </elements>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="IncludeDeclaration">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//IncludeDeclaration"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Keyword" value="!"/>
+      <elements xsi:type="xtext:Keyword" value="include"/>
+      <elements xsi:type="xtext:Keyword" value="="/>
+      <elements xsi:type="xtext:Assignment" feature="importedNamespace" operator="=">
+        <terminal xsi:type="xtext:CrossReference">
+          <type metamodel="//@metamodelDeclarations.0">
+            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//DataDefinition"/>
+          </type>
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.12"/>
+        </terminal>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="TypeDeclaration">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//TypeDeclaration"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Keyword" value="!"/>
+      <elements xsi:type="xtext:Keyword" value="type"/>
+      <elements xsi:type="xtext:Keyword" value="."/>
+      <elements xsi:type="xtext:Assignment" feature="name" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.156"/>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value="="/>
+      <elements xsi:type="xtext:Assignment" feature="fieldType" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.4"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="ValidationRuleDeclaration">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//ValidationRuleDeclaration"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Alternatives">
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.27"/>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.32"/>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.17"/>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.28"/>
+      </elements>
+      <elements xsi:type="xtext:Assignment" feature="errorMessage" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.33"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="ComparisonValidationRuleDeclaration">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//ComparisonValidationRuleDeclaration"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Assignment" feature="name" operator="=">
+        <terminal xsi:type="xtext:Keyword" value="compare"/>
+      </elements>
+      <elements xsi:type="xtext:Assignment" feature="args" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.41"/>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value="{"/>
+      <elements xsi:type="xtext:Assignment" feature="comparisonExp" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.18"/>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value="}"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="ComparisonExpression">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//ComparisonExpression"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Assignment" feature="lhs" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.19"/>
+      </elements>
+      <elements xsi:type="xtext:Assignment" feature="o" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.22"/>
+      </elements>
+      <elements xsi:type="xtext:Assignment" feature="rhs" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.19"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="ComparisonPart">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//ComparisonPart"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Assignment" feature="field" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.39"/>
+      </elements>
+      <elements xsi:type="xtext:Assignment" feature="n" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.159"/>
+      </elements>
+      <elements xsi:type="xtext:Assignment" feature="df" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.24"/>
+      </elements>
+      <elements xsi:type="xtext:Assignment" feature="u" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.20"/>
+      </elements>
+      <elements xsi:type="xtext:Assignment" feature="l" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.21"/>
+      </elements>
+      <elements xsi:type="xtext:Assignment" feature="d" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.23"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="UpperFunction">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//UpperFunction"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Keyword" value="upper"/>
+      <elements xsi:type="xtext:Keyword" value="("/>
+      <elements xsi:type="xtext:Assignment" feature="field" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.39"/>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value=")"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="LowerFunction">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//LowerFunction"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Keyword" value="lower"/>
+      <elements xsi:type="xtext:Keyword" value="("/>
+      <elements xsi:type="xtext:Assignment" feature="field" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.39"/>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value=")"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="Operator">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="="/>
+      <elements xsi:type="xtext:Keyword" value="&lt;"/>
+      <elements xsi:type="xtext:Keyword" value=">"/>
+      <elements xsi:type="xtext:Keyword" value="&lt;="/>
+      <elements xsi:type="xtext:Keyword" value=">="/>
+      <elements xsi:type="xtext:Keyword" value="!="/>
+      <elements xsi:type="xtext:Keyword" value="^="/>
+      <elements xsi:type="xtext:Keyword" value="&lt;>"/>
+      <elements xsi:type="xtext:Keyword" value="like"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="DateConstant">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="$now"/>
+      <elements xsi:type="xtext:Keyword" value="$today"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="DateFunction">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Keyword" value="date"/>
+      <elements xsi:type="xtext:Keyword" value="("/>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.25"/>
+      <elements xsi:type="xtext:Group" cardinality="*">
+        <elements xsi:type="xtext:Keyword" value=","/>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.25"/>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value=")"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="DateFunctionArgument">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.26"/>
+      <elements xsi:type="xtext:Group" cardinality="?">
+        <elements xsi:type="xtext:Alternatives">
+          <elements xsi:type="xtext:Keyword" value="+"/>
+          <elements xsi:type="xtext:Keyword" value="-"/>
+        </elements>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.26"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="DateFunctionArgumentMember">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.159"/>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.23"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="RangeValidationRuleDeclaration">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//RangeValidationRuleDeclaration"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Assignment" feature="name" operator="=">
+        <terminal xsi:type="xtext:Alternatives">
+          <elements xsi:type="xtext:Keyword" value="range"/>
+          <elements xsi:type="xtext:Keyword" value="length"/>
+        </terminal>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value="("/>
+      <elements xsi:type="xtext:Assignment" feature="arg" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.40"/>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value=")"/>
+      <elements xsi:type="xtext:Keyword" value="{"/>
+      <elements xsi:type="xtext:Assignment" feature="range" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.30"/>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value="}"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="RegexValidationRuleDeclaration">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//RegexValidationRuleDeclaration"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Assignment" feature="name" operator="=">
+        <terminal xsi:type="xtext:Keyword" value="matches"/>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value="("/>
+      <elements xsi:type="xtext:Assignment" feature="arg" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.40"/>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value=")"/>
+      <elements xsi:type="xtext:Keyword" value="{"/>
+      <elements xsi:type="xtext:Assignment" feature="exp" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.29"/>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value="}"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="REGEX">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:RuleCall" rule="//@rules.163"/>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="Range">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//Range"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Assignment" feature="f" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.31"/>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value=".."/>
+      <elements xsi:type="xtext:Assignment" feature="t" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.31"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="RangeBound">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.159"/>
+      <elements xsi:type="xtext:Keyword" value="?"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="UniquenessValidationRuleDeclaration">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//UniquenessValidationRuleDeclaration"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Assignment" feature="name" operator="=">
+        <terminal xsi:type="xtext:Keyword" value="unique"/>
+      </elements>
+      <elements xsi:type="xtext:Assignment" feature="args" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.41"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="ErrorMessage">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//ErrorMessage"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Keyword" value=":"/>
+      <elements xsi:type="xtext:Assignment" feature="message" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.163"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="NativeValidationRuleDeclaration">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//NativeValidationRuleDeclaration"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Assignment" feature="field" operator="=">
+        <terminal xsi:type="xtext:CrossReference">
+          <type metamodel="//@metamodelDeclarations.0">
+            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FieldDeclaration"/>
+          </type>
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.156"/>
+        </terminal>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value="."/>
+      <elements xsi:type="xtext:Assignment" feature="type" operator="=">
+        <terminal xsi:type="xtext:Alternatives">
+          <elements xsi:type="xtext:Keyword" value="unique"/>
+          <elements xsi:type="xtext:Keyword" value="notNull"/>
+          <elements xsi:type="xtext:Keyword" value="NaN"/>
+          <elements xsi:type="xtext:Keyword" value="notEmpty"/>
+          <elements xsi:type="xtext:Keyword" value="notInt"/>
+          <elements xsi:type="xtext:Keyword" value="notReal"/>
+          <elements xsi:type="xtext:Keyword" value="notBoolean"/>
+        </terminal>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value="="/>
+      <elements xsi:type="xtext:Assignment" feature="message" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.163"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="FunctionDeclaration">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FunctionDeclaration"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Group" cardinality="?">
+        <elements xsi:type="xtext:Assignment" feature="b" operator="=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.156"/>
+        </elements>
+        <elements xsi:type="xtext:Keyword" value="%"/>
+      </elements>
+      <elements xsi:type="xtext:Assignment" feature="name" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.156"/>
+      </elements>
+      <elements xsi:type="xtext:Assignment" feature="arg" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.36"/>
+      </elements>
+      <elements xsi:type="xtext:Assignment" feature="body" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.42"/>
+      </elements>
+      <elements xsi:type="xtext:Assignment" cardinality="?" feature="m" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.33"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="FunctionArgumentDeclaration">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FunctionArgumentDeclaration"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Action">
+        <type metamodel="//@metamodelDeclarations.0">
+          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FunctionArgumentDeclaration"/>
+        </type>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value="("/>
+      <elements xsi:type="xtext:Assignment" cardinality="?" feature="f" operator="+=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.37"/>
+      </elements>
+      <elements xsi:type="xtext:Group" cardinality="*">
+        <elements xsi:type="xtext:Keyword" value=","/>
+        <elements xsi:type="xtext:Assignment" feature="f" operator="+=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.37"/>
+        </elements>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value=")"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="FunctionArgumentBody">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FunctionArgumentBody"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Alternatives">
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.8"/>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.5"/>
+        <elements xsi:type="xtext:Group">
+          <elements xsi:type="xtext:Keyword" value="set"/>
+          <elements xsi:type="xtext:RuleCall" rule="//@rules.5"/>
+        </elements>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.6"/>
+        <elements xsi:type="xtext:Group">
+          <elements xsi:type="xtext:Keyword" value="set"/>
+          <elements xsi:type="xtext:RuleCall" rule="//@rules.6"/>
+        </elements>
+        <elements xsi:type="xtext:Keyword" value="int"/>
+        <elements xsi:type="xtext:Keyword" value="real"/>
+        <elements xsi:type="xtext:Keyword" value="boolean"/>
+        <elements xsi:type="xtext:Keyword" value="text"/>
+        <elements xsi:type="xtext:Keyword" value="binary"/>
+        <elements xsi:type="xtext:Keyword" value="file"/>
+        <elements xsi:type="xtext:Keyword" value="date"/>
+        <elements xsi:type="xtext:Group">
+          <elements xsi:type="xtext:Keyword" value="ptr"/>
+          <elements xsi:type="xtext:RuleCall" rule="//@rules.12"/>
+        </elements>
+        <elements xsi:type="xtext:Group">
+          <elements xsi:type="xtext:Keyword" value="set"/>
+          <elements xsi:type="xtext:RuleCall" rule="//@rules.12"/>
+        </elements>
+      </elements>
+      <elements xsi:type="xtext:Assignment" feature="name" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.153"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="FunctionCall">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FunctionCall"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Assignment" feature="function" operator="=">
+        <terminal xsi:type="xtext:CrossReference">
+          <type metamodel="//@metamodelDeclarations.0">
+            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FunctionDeclaration"/>
+          </type>
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.156"/>
+        </terminal>
+      </elements>
+      <elements xsi:type="xtext:Assignment" feature="f" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.41"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="FieldPath">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FieldPath"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Assignment" feature="field" operator="=">
+        <terminal xsi:type="xtext:CrossReference">
+          <type metamodel="//@metamodelDeclarations.0">
+            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FieldDeclaration"/>
+          </type>
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.153"/>
+        </terminal>
+      </elements>
+      <elements xsi:type="xtext:Group" cardinality="?">
+        <elements xsi:type="xtext:Keyword" value="."/>
+        <elements xsi:type="xtext:Assignment" feature="subField" operator="=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.39"/>
+        </elements>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="FieldReference">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FieldReference"/>
+    </type>
+    <alternatives xsi:type="xtext:Assignment" feature="field" operator="=">
+      <terminal xsi:type="xtext:CrossReference">
+        <type metamodel="//@metamodelDeclarations.0">
+          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FieldDeclaration"/>
+        </type>
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.153"/>
+      </terminal>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="FunctionArguments">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FunctionArguments"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Action">
+        <type metamodel="//@metamodelDeclarations.0">
+          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FunctionArguments"/>
+        </type>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value="("/>
+      <elements xsi:type="xtext:Group" cardinality="?">
+        <elements xsi:type="xtext:Assignment" feature="args" operator="+=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.39"/>
+        </elements>
+        <elements xsi:type="xtext:Group" cardinality="*">
+          <elements xsi:type="xtext:Keyword" value=","/>
+          <elements xsi:type="xtext:Assignment" feature="args" operator="+=">
+            <terminal xsi:type="xtext:RuleCall" rule="//@rules.39"/>
+          </elements>
+        </elements>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value=")"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="FunctionBody">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FunctionBody"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Keyword" value="{"/>
+      <elements xsi:type="xtext:Alternatives">
+        <elements xsi:type="xtext:Assignment" feature="s" operator="=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.43"/>
+        </elements>
+        <elements xsi:type="xtext:Assignment" feature="e" operator="=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.65"/>
+        </elements>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value="}"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="Statement">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//Statement"/>
+    </type>
+    <alternatives xsi:type="xtext:RuleCall" rule="//@rules.45"/>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="UnionRule">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//UnionRule"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Assignment" feature="q" operator="+=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.45"/>
+      </elements>
+      <elements xsi:type="xtext:Group" cardinality="*">
+        <elements xsi:type="xtext:Keyword" value="union"/>
+        <elements xsi:type="xtext:Assignment" feature="q" operator="+=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.45"/>
+        </elements>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="QueryRule">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//QueryRule"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.46"/>
+      <elements xsi:type="xtext:Assignment" cardinality="?" feature="where" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.62"/>
+      </elements>
+      <elements xsi:type="xtext:Assignment" cardinality="?" feature="groupBy" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.57"/>
+      </elements>
+      <elements xsi:type="xtext:Assignment" cardinality="?" feature="orderBy" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.58"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="SelectFrom">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//SelectFrom"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Action">
+        <type metamodel="//@metamodelDeclarations.0">
+          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//SelectFrom"/>
+        </type>
+      </elements>
+      <elements xsi:type="xtext:Assignment" cardinality="?" feature="s" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.47"/>
+      </elements>
+      <elements xsi:type="xtext:Assignment" cardinality="?" feature="from" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.50"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="SelectClause">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//SelectClause"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Action">
+        <type metamodel="//@metamodelDeclarations.0">
+          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//SelectClause"/>
+        </type>
+      </elements>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.95"/>
+      <elements xsi:type="xtext:RuleCall" cardinality="?" rule="//@rules.96"/>
+      <elements xsi:type="xtext:Alternatives">
+        <elements xsi:type="xtext:Assignment" feature="s" operator="=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.63"/>
+        </elements>
+        <elements xsi:type="xtext:Assignment" feature="n" operator="=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.48"/>
+        </elements>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.49"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="NewExpression">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//NewExpression"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.97"/>
+      <elements xsi:type="xtext:Assignment" feature="p" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.92"/>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value="("/>
+      <elements xsi:type="xtext:Assignment" feature="s" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.63"/>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value=")"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="SelectObject">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.98"/>
+      <elements xsi:type="xtext:Keyword" value="("/>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.93"/>
+      <elements xsi:type="xtext:Keyword" value=")"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="FromClause">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FromClause"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.99"/>
+      <elements xsi:type="xtext:Assignment" feature="fromRange" operator="+=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.53"/>
+      </elements>
+      <elements xsi:type="xtext:Alternatives" cardinality="*">
+        <elements xsi:type="xtext:Assignment" feature="fromJoin" operator="+=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.51"/>
+        </elements>
+        <elements xsi:type="xtext:Group">
+          <elements xsi:type="xtext:Keyword" value=","/>
+          <elements xsi:type="xtext:Assignment" feature="fromRange" operator="+=">
+            <terminal xsi:type="xtext:RuleCall" rule="//@rules.53"/>
+          </elements>
+        </elements>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="FromJoin">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FromJoin"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Alternatives" cardinality="?">
+        <elements xsi:type="xtext:Group">
+          <elements xsi:type="xtext:Alternatives">
+            <elements xsi:type="xtext:RuleCall" rule="//@rules.100"/>
+            <elements xsi:type="xtext:RuleCall" rule="//@rules.101"/>
+          </elements>
+          <elements xsi:type="xtext:RuleCall" cardinality="?" rule="//@rules.102"/>
+        </elements>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.103"/>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.104"/>
+      </elements>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.105"/>
+      <elements xsi:type="xtext:RuleCall" cardinality="?" rule="//@rules.106"/>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.54"/>
+      <elements xsi:type="xtext:Assignment" cardinality="?" feature="w" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.52"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="WithClause">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//WithClause"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.107"/>
+      <elements xsi:type="xtext:Assignment" feature="e" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.65"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="FromRange">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FromRange"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.54"/>
+      <elements xsi:type="xtext:Group">
+        <elements xsi:type="xtext:Assignment" feature="alias" operator="=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.93"/>
+        </elements>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.110"/>
+        <elements xsi:type="xtext:Assignment" feature="p" operator="=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.92"/>
+        </elements>
+      </elements>
+      <elements xsi:type="xtext:Group">
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.108"/>
+        <elements xsi:type="xtext:Keyword" value="("/>
+        <elements xsi:type="xtext:Assignment" feature="p" operator="=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.92"/>
+        </elements>
+        <elements xsi:type="xtext:Keyword" value=")"/>
+        <elements xsi:type="xtext:Assignment" feature="alias" operator="=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.93"/>
+        </elements>
+      </elements>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.55"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="FromClassOrOuterQueryPath">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FromClassOrOuterQueryPath"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Action">
+        <type metamodel="//@metamodelDeclarations.0">
+          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FromClassOrOuterQueryPath"/>
+        </type>
+      </elements>
+      <elements xsi:type="xtext:Assignment" feature="path" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.92"/>
+      </elements>
+      <elements xsi:type="xtext:Group" cardinality="?">
+        <elements xsi:type="xtext:RuleCall" cardinality="?" rule="//@rules.113"/>
+        <elements xsi:type="xtext:Assignment" feature="name" operator="=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.93"/>
+        </elements>
+      </elements>
+      <elements xsi:type="xtext:Assignment" cardinality="?" feature="propertyFetch" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.56"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="InCollectionElementsDeclaration">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//InCollectionElementsDeclaration"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Assignment" feature="alias" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.93"/>
+      </elements>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.112"/>
+      <elements xsi:type="xtext:Keyword" value="("/>
+      <elements xsi:type="xtext:Assignment" feature="p" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.92"/>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value=")"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="PropertyFetch">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.106"/>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.138"/>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.114"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="GroupByClause">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//GroupByClause"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.115"/>
+      <elements xsi:type="xtext:Assignment" feature="e" operator="+=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.65"/>
+      </elements>
+      <elements xsi:type="xtext:Group" cardinality="*">
+        <elements xsi:type="xtext:Keyword" value=","/>
+        <elements xsi:type="xtext:Assignment" feature="e" operator="+=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.65"/>
+        </elements>
+      </elements>
+      <elements xsi:type="xtext:Assignment" cardinality="?" feature="h" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.61"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="OrderByClause">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//OrderByClause"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.116"/>
+      <elements xsi:type="xtext:Assignment" feature="o" operator="+=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.59"/>
+      </elements>
+      <elements xsi:type="xtext:Group" cardinality="*">
+        <elements xsi:type="xtext:Keyword" value=","/>
+        <elements xsi:type="xtext:Assignment" feature="o" operator="+=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.59"/>
+        </elements>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="OrderElement">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//OrderElement"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.65"/>
+      <elements xsi:type="xtext:RuleCall" cardinality="?" rule="//@rules.60"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="AscendingOrDescending">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.118"/>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.119"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="HavingClause">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//HavingClause"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.120"/>
+      <elements xsi:type="xtext:Assignment" feature="e" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.65"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="WhereClause">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//WhereClause"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.121"/>
+      <elements xsi:type="xtext:Assignment" feature="e" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.65"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="SelectedPropertiesList">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//SelectedPropertiesList"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Assignment" feature="a" operator="+=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.64"/>
+      </elements>
+      <elements xsi:type="xtext:Group" cardinality="*">
+        <elements xsi:type="xtext:Keyword" value=","/>
+        <elements xsi:type="xtext:Assignment" feature="a" operator="+=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.64"/>
+        </elements>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="AliasedExpression">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//AliasedExpression"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.65"/>
+      <elements xsi:type="xtext:Group" cardinality="?">
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.113"/>
+        <elements xsi:type="xtext:Assignment" feature="id" operator="=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.93"/>
+        </elements>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="Expression">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//Expression"/>
+    </type>
+    <alternatives xsi:type="xtext:RuleCall" rule="//@rules.66"/>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="LogicalOrExpression">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//LogicalOrExpression"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Assignment" feature="l" operator="+=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.67"/>
+      </elements>
+      <elements xsi:type="xtext:Group" cardinality="*">
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.122"/>
+        <elements xsi:type="xtext:Assignment" feature="l" operator="+=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.67"/>
+        </elements>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="LogicalAndExpression">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//LogicalAndExpression"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Assignment" feature="n" operator="+=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.68"/>
+      </elements>
+      <elements xsi:type="xtext:Group" cardinality="*">
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.123"/>
+        <elements xsi:type="xtext:Assignment" feature="n" operator="+=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.68"/>
+        </elements>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="NegatedExpression">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//NegatedExpression"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Group">
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.124"/>
+        <elements xsi:type="xtext:Assignment" feature="n" operator="=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.68"/>
+        </elements>
+      </elements>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.69"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="EqualityExpression">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//EqualityExpression"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Assignment" feature="r" operator="+=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.70"/>
+      </elements>
+      <elements xsi:type="xtext:Group" cardinality="*">
+        <elements xsi:type="xtext:Alternatives">
+          <elements xsi:type="xtext:Keyword" value="="/>
+          <elements xsi:type="xtext:Group">
+            <elements xsi:type="xtext:RuleCall" rule="//@rules.125"/>
+            <elements xsi:type="xtext:RuleCall" cardinality="?" rule="//@rules.124"/>
+          </elements>
+          <elements xsi:type="xtext:Keyword" value="!="/>
+          <elements xsi:type="xtext:Keyword" value="&lt;>"/>
+        </elements>
+        <elements xsi:type="xtext:Assignment" feature="r" operator="+=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.70"/>
+        </elements>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="RelationalExpression">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//RelationalExpression"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.73"/>
+      <elements xsi:type="xtext:Alternatives">
+        <elements xsi:type="xtext:Group" cardinality="*">
+          <elements xsi:type="xtext:Alternatives">
+            <elements xsi:type="xtext:Keyword" value="&lt;"/>
+            <elements xsi:type="xtext:Keyword" value=">"/>
+            <elements xsi:type="xtext:Keyword" value="&lt;="/>
+            <elements xsi:type="xtext:Keyword" value=">="/>
+          </elements>
+          <elements xsi:type="xtext:Assignment" feature="a" operator="+=">
+            <terminal xsi:type="xtext:RuleCall" rule="//@rules.74"/>
+          </elements>
+        </elements>
+        <elements xsi:type="xtext:Group">
+          <elements xsi:type="xtext:RuleCall" cardinality="?" rule="//@rules.124"/>
+          <elements xsi:type="xtext:Alternatives">
+            <elements xsi:type="xtext:Group">
+              <elements xsi:type="xtext:RuleCall" rule="//@rules.108"/>
+              <elements xsi:type="xtext:Assignment" feature="i" operator="=">
+                <terminal xsi:type="xtext:RuleCall" rule="//@rules.89"/>
+              </elements>
+            </elements>
+            <elements xsi:type="xtext:Group">
+              <elements xsi:type="xtext:RuleCall" rule="//@rules.126"/>
+              <elements xsi:type="xtext:Assignment" feature="b" operator="=">
+                <terminal xsi:type="xtext:RuleCall" rule="//@rules.72"/>
+              </elements>
+            </elements>
+            <elements xsi:type="xtext:Group">
+              <elements xsi:type="xtext:RuleCall" rule="//@rules.127"/>
+              <elements xsi:type="xtext:Assignment" feature="c" operator="=">
+                <terminal xsi:type="xtext:RuleCall" rule="//@rules.73"/>
+              </elements>
+              <elements xsi:type="xtext:Assignment" feature="l" operator="=">
+                <terminal xsi:type="xtext:RuleCall" rule="//@rules.71"/>
+              </elements>
+            </elements>
+            <elements xsi:type="xtext:Group">
+              <elements xsi:type="xtext:RuleCall" rule="//@rules.128"/>
+              <elements xsi:type="xtext:RuleCall" cardinality="?" rule="//@rules.129"/>
+              <elements xsi:type="xtext:Assignment" feature="p" operator="=">
+                <terminal xsi:type="xtext:RuleCall" rule="//@rules.92"/>
+              </elements>
+            </elements>
+          </elements>
+        </elements>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="LikeEscape">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//LikeEscape"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Action">
+        <type metamodel="//@metamodelDeclarations.0">
+          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//LikeEscape"/>
+        </type>
+      </elements>
+      <elements xsi:type="xtext:Group" cardinality="?">
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.130"/>
+        <elements xsi:type="xtext:Assignment" feature="c" operator="=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.73"/>
+        </elements>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="BetweenList">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//BetweenList"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Assignment" feature="c" operator="+=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.73"/>
+      </elements>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.123"/>
+      <elements xsi:type="xtext:Assignment" feature="c" operator="+=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.73"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="Concatenation">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//Concatenation"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.74"/>
+      <elements xsi:type="xtext:Group" cardinality="?">
+        <elements xsi:type="xtext:Keyword" value="||"/>
+        <elements xsi:type="xtext:Assignment" feature="a" operator="+=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.74"/>
+        </elements>
+        <elements xsi:type="xtext:Group" cardinality="*">
+          <elements xsi:type="xtext:Keyword" value="||"/>
+          <elements xsi:type="xtext:Assignment" feature="a" operator="+=">
+            <terminal xsi:type="xtext:RuleCall" rule="//@rules.74"/>
+          </elements>
+        </elements>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="AdditiveExpression">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//AdditiveExpression"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Assignment" feature="m" operator="+=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.75"/>
+      </elements>
+      <elements xsi:type="xtext:Group" cardinality="*">
+        <elements xsi:type="xtext:Alternatives">
+          <elements xsi:type="xtext:Keyword" value="+"/>
+          <elements xsi:type="xtext:Keyword" value="-"/>
+        </elements>
+        <elements xsi:type="xtext:Assignment" feature="m" operator="+=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.75"/>
+        </elements>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="MultiplyExpression">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//MultiplyExpression"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Assignment" feature="u" operator="+=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.76"/>
+      </elements>
+      <elements xsi:type="xtext:Group" cardinality="*">
+        <elements xsi:type="xtext:Alternatives">
+          <elements xsi:type="xtext:Keyword" value="*"/>
+          <elements xsi:type="xtext:Keyword" value="/"/>
+        </elements>
+        <elements xsi:type="xtext:Assignment" feature="u" operator="+=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.76"/>
+        </elements>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="UnaryExpression">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//UnaryExpression"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Group">
+        <elements xsi:type="xtext:Keyword" value="-"/>
+        <elements xsi:type="xtext:Assignment" feature="u" operator="=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.76"/>
+        </elements>
+      </elements>
+      <elements xsi:type="xtext:Group">
+        <elements xsi:type="xtext:Keyword" value="+"/>
+        <elements xsi:type="xtext:Assignment" feature="u" operator="=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.76"/>
+        </elements>
+      </elements>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.77"/>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.81"/>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.82"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="CaseExpression">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//CaseExpression"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Group">
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.131"/>
+        <elements xsi:type="xtext:Assignment" cardinality="+" feature="w" operator="+=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.78"/>
+        </elements>
+        <elements xsi:type="xtext:Assignment" cardinality="?" feature="e" operator="=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.80"/>
+        </elements>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.132"/>
+      </elements>
+      <elements xsi:type="xtext:Group">
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.131"/>
+        <elements xsi:type="xtext:Assignment" feature="u" operator="=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.76"/>
+        </elements>
+        <elements xsi:type="xtext:Assignment" cardinality="+" feature="a" operator="+=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.79"/>
+        </elements>
+        <elements xsi:type="xtext:Assignment" cardinality="?" feature="e" operator="=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.80"/>
+        </elements>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.132"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="WhenClause">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//WhenClause"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.133"/>
+      <elements xsi:type="xtext:Assignment" feature="whenExpr" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.65"/>
+      </elements>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.134"/>
+      <elements xsi:type="xtext:Assignment" feature="thenExpr" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.76"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="AltWhenClause">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//AltWhenClause"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.133"/>
+      <elements xsi:type="xtext:Assignment" feature="w" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.76"/>
+      </elements>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.134"/>
+      <elements xsi:type="xtext:Assignment" feature="t" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.76"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="ElseClause">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//ElseClause"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.135"/>
+      <elements xsi:type="xtext:Assignment" feature="u" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.76"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="QuantifiedExpression">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//QuantifiedExpression"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Action">
+        <type metamodel="//@metamodelDeclarations.0">
+          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//QuantifiedExpression"/>
+        </type>
+      </elements>
+      <elements xsi:type="xtext:Alternatives">
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.136"/>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.137"/>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.138"/>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.139"/>
+      </elements>
+      <elements xsi:type="xtext:Alternatives">
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.93"/>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.88"/>
+        <elements xsi:type="xtext:Group">
+          <elements xsi:type="xtext:Keyword" value="("/>
+          <elements xsi:type="xtext:Assignment" feature="s" operator="=">
+            <terminal xsi:type="xtext:RuleCall" rule="//@rules.44"/>
+          </elements>
+          <elements xsi:type="xtext:Keyword" value=")"/>
+        </elements>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="Atom">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//Atom"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Action">
+        <type metamodel="//@metamodelDeclarations.0">
+          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//Atom"/>
+        </type>
+      </elements>
+      <elements xsi:type="xtext:Group">
+        <elements xsi:type="xtext:Assignment" feature="prime" operator="=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.83"/>
+        </elements>
+        <elements xsi:type="xtext:Alternatives" cardinality="*">
+          <elements xsi:type="xtext:Group">
+            <elements xsi:type="xtext:Keyword" value="."/>
+            <elements xsi:type="xtext:RuleCall" rule="//@rules.93"/>
+            <elements xsi:type="xtext:Group" cardinality="?">
+              <elements xsi:type="xtext:Keyword" value="("/>
+              <elements xsi:type="xtext:Assignment" feature="e" operator="+=">
+                <terminal xsi:type="xtext:RuleCall" rule="//@rules.90"/>
+              </elements>
+              <elements xsi:type="xtext:Keyword" value=")"/>
+            </elements>
+          </elements>
+          <elements xsi:type="xtext:Group">
+            <elements xsi:type="xtext:Keyword" value="["/>
+            <elements xsi:type="xtext:Assignment" feature="exp" operator="+=">
+              <terminal xsi:type="xtext:RuleCall" rule="//@rules.65"/>
+            </elements>
+            <elements xsi:type="xtext:Keyword" value="]"/>
+          </elements>
+        </elements>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="PrimaryExpression">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//PrimaryExpression"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Group">
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.86"/>
+        <elements xsi:type="xtext:Group" cardinality="?">
+          <elements xsi:type="xtext:Keyword" value="."/>
+          <elements xsi:type="xtext:RuleCall" rule="//@rules.109"/>
+        </elements>
+      </elements>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.91"/>
+      <elements xsi:type="xtext:Group">
+        <elements xsi:type="xtext:Keyword" value=":"/>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.93"/>
+      </elements>
+      <elements xsi:type="xtext:Group">
+        <elements xsi:type="xtext:Keyword" value="("/>
+        <elements xsi:type="xtext:Alternatives">
+          <elements xsi:type="xtext:RuleCall" rule="//@rules.84"/>
+          <elements xsi:type="xtext:RuleCall" rule="//@rules.44"/>
+        </elements>
+        <elements xsi:type="xtext:Keyword" value=")"/>
+      </elements>
+      <elements xsi:type="xtext:Group">
+        <elements xsi:type="xtext:Keyword" value="?"/>
+        <elements xsi:type="xtext:RuleCall" cardinality="?" rule="//@rules.159"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="ExpressionOrVector">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//ExpressionOrVector"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.65"/>
+      <elements xsi:type="xtext:Assignment" cardinality="?" feature="v" operator="=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.85"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="VectorExpr">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//VectorExpr"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Keyword" value=","/>
+      <elements xsi:type="xtext:Assignment" feature="e" operator="+=">
+        <terminal xsi:type="xtext:RuleCall" rule="//@rules.65"/>
+      </elements>
+      <elements xsi:type="xtext:Group" cardinality="*">
+        <elements xsi:type="xtext:Keyword" value=","/>
+        <elements xsi:type="xtext:Assignment" feature="e" operator="+=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.65"/>
+        </elements>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="IdentPrimary">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//IdentPrimary"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Group">
+        <elements xsi:type="xtext:Action">
+          <type metamodel="//@metamodelDeclarations.0">
+            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//IdentPrimary"/>
+          </type>
+        </elements>
+        <elements xsi:type="xtext:Group">
+          <elements xsi:type="xtext:RuleCall" rule="//@rules.93"/>
+          <elements xsi:type="xtext:Alternatives" cardinality="*">
+            <elements xsi:type="xtext:Group">
+              <elements xsi:type="xtext:Keyword" value="."/>
+              <elements xsi:type="xtext:RuleCall" rule="//@rules.93"/>
+            </elements>
+            <elements xsi:type="xtext:Group">
+              <elements xsi:type="xtext:Keyword" value="."/>
+              <elements xsi:type="xtext:RuleCall" rule="//@rules.111"/>
+            </elements>
+            <elements xsi:type="xtext:Group">
+              <elements xsi:type="xtext:Keyword" value="."/>
+              <elements xsi:type="xtext:RuleCall" rule="//@rules.98"/>
+            </elements>
+          </elements>
+          <elements xsi:type="xtext:Group" cardinality="?">
+            <elements xsi:type="xtext:Keyword" value="("/>
+            <elements xsi:type="xtext:Assignment" feature="e" operator="=">
+              <terminal xsi:type="xtext:RuleCall" rule="//@rules.90"/>
+            </elements>
+            <elements xsi:type="xtext:Keyword" value=")"/>
+          </elements>
+        </elements>
+      </elements>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.87"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="Aggregate">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//Aggregate"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Group">
+        <elements xsi:type="xtext:Action">
+          <type metamodel="//@metamodelDeclarations.0">
+            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//Aggregate"/>
+          </type>
+        </elements>
+        <elements xsi:type="xtext:Alternatives">
+          <elements xsi:type="xtext:RuleCall" rule="//@rules.140"/>
+          <elements xsi:type="xtext:RuleCall" rule="//@rules.141"/>
+          <elements xsi:type="xtext:RuleCall" rule="//@rules.142"/>
+          <elements xsi:type="xtext:RuleCall" rule="//@rules.143"/>
+        </elements>
+        <elements xsi:type="xtext:Keyword" value="("/>
+        <elements xsi:type="xtext:Assignment" feature="a" operator="=">
+          <terminal xsi:type="xtext:RuleCall" rule="//@rules.74"/>
+        </elements>
+        <elements xsi:type="xtext:Keyword" value=")"/>
+      </elements>
+      <elements xsi:type="xtext:Group">
+        <elements xsi:type="xtext:Action">
+          <type metamodel="//@metamodelDeclarations.0">
+            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//Aggregate"/>
+          </type>
+        </elements>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.144"/>
+        <elements xsi:type="xtext:Keyword" value="("/>
+        <elements xsi:type="xtext:Alternatives">
+          <elements xsi:type="xtext:Keyword" value="*"/>
+          <elements xsi:type="xtext:Group">
+            <elements xsi:type="xtext:Alternatives" cardinality="?">
+              <elements xsi:type="xtext:RuleCall" rule="//@rules.96"/>
+              <elements xsi:type="xtext:RuleCall" rule="//@rules.138"/>
+            </elements>
+            <elements xsi:type="xtext:Alternatives">
+              <elements xsi:type="xtext:RuleCall" rule="//@rules.92"/>
+              <elements xsi:type="xtext:RuleCall" rule="//@rules.88"/>
+            </elements>
+          </elements>
+        </elements>
+        <elements xsi:type="xtext:Keyword" value=")"/>
+      </elements>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.88"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="CollectionExpr">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Alternatives">
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.111"/>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.145"/>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value="("/>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.92"/>
+      <elements xsi:type="xtext:Keyword" value=")"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="CompoundExpr">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//CompoundExpr"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.88"/>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.92"/>
+      <elements xsi:type="xtext:Group">
+        <elements xsi:type="xtext:Keyword" value="("/>
+        <elements xsi:type="xtext:Alternatives">
+          <elements xsi:type="xtext:Group">
+            <elements xsi:type="xtext:Assignment" feature="e" operator="+=">
+              <terminal xsi:type="xtext:RuleCall" rule="//@rules.65"/>
+            </elements>
+            <elements xsi:type="xtext:Group" cardinality="*">
+              <elements xsi:type="xtext:Keyword" value=","/>
+              <elements xsi:type="xtext:Assignment" feature="e" operator="+=">
+                <terminal xsi:type="xtext:RuleCall" rule="//@rules.65"/>
+              </elements>
+            </elements>
+          </elements>
+          <elements xsi:type="xtext:Assignment" feature="s" operator="=">
+            <terminal xsi:type="xtext:RuleCall" rule="//@rules.44"/>
+          </elements>
+        </elements>
+        <elements xsi:type="xtext:Keyword" value=")"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="ExprList">
+    <type metamodel="//@metamodelDeclarations.0">
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//ExprList"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Alternatives" cardinality="?">
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.146"/>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.147"/>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.148"/>
+      </elements>
+      <elements xsi:type="xtext:Alternatives" cardinality="?">
+        <elements xsi:type="xtext:Group">
+          <elements xsi:type="xtext:Assignment" feature="e" operator="+=">
+            <terminal xsi:type="xtext:RuleCall" rule="//@rules.65"/>
+          </elements>
+          <elements xsi:type="xtext:Alternatives" cardinality="?">
+            <elements xsi:type="xtext:Group" cardinality="+">
+              <elements xsi:type="xtext:Keyword" value=","/>
+              <elements xsi:type="xtext:Assignment" feature="e" operator="+=">
+                <terminal xsi:type="xtext:RuleCall" rule="//@rules.65"/>
+              </elements>
+            </elements>
+            <elements xsi:type="xtext:Group">
+              <elements xsi:type="xtext:RuleCall" rule="//@rules.99"/>
+              <elements xsi:type="xtext:Assignment" feature="e" operator="+=">
+                <terminal xsi:type="xtext:RuleCall" rule="//@rules.65"/>
+              </elements>
+            </elements>
+            <elements xsi:type="xtext:Group">
+              <elements xsi:type="xtext:RuleCall" rule="//@rules.113"/>
+              <elements xsi:type="xtext:Assignment" feature="id" operator="=">
+                <terminal xsi:type="xtext:RuleCall" rule="//@rules.93"/>
+              </elements>
+            </elements>
+          </elements>
+        </elements>
+        <elements xsi:type="xtext:Group">
+          <elements xsi:type="xtext:RuleCall" rule="//@rules.99"/>
+          <elements xsi:type="xtext:Assignment" feature="e" operator="+=">
+            <terminal xsi:type="xtext:RuleCall" rule="//@rules.65"/>
+          </elements>
+        </elements>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="Constant">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.94"/>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.163"/>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.149"/>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.150"/>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.151"/>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.152"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="Path">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.93"/>
+      <elements xsi:type="xtext:Group" cardinality="*">
+        <elements xsi:type="xtext:Keyword" value="."/>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.93"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="Identifier">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Group">
+        <elements xsi:type="xtext:Keyword" cardinality="?" value="$"/>
+        <elements xsi:type="xtext:RuleCall" rule="//@rules.156"/>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value="e"/>
+      <elements xsi:type="xtext:Keyword" value="f"/>
+      <elements xsi:type="xtext:Keyword" value="d"/>
+      <elements xsi:type="xtext:Keyword" value="upper"/>
+      <elements xsi:type="xtext:Keyword" value="lower"/>
+      <elements xsi:type="xtext:Keyword" value="$now"/>
+      <elements xsi:type="xtext:Keyword" value="$today"/>
+      <elements xsi:type="xtext:Keyword" value="date"/>
+      <elements xsi:type="xtext:Keyword" value="title"/>
+      <elements xsi:type="xtext:Keyword" value="type"/>
+      <elements xsi:type="xtext:Keyword" value="include"/>
+      <elements xsi:type="xtext:Keyword" value="length"/>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.132"/>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.133"/>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.99"/>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.128"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="Number">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EFloat"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Group">
+        <elements xsi:type="xtext:Keyword" value="."/>
+        <elements xsi:type="xtext:Group" cardinality="?">
+          <elements xsi:type="xtext:RuleCall" rule="//@rules.159"/>
+          <elements xsi:type="xtext:Group" cardinality="?">
+            <elements xsi:type="xtext:Keyword" value="e"/>
+            <elements xsi:type="xtext:Alternatives" cardinality="?">
+              <elements xsi:type="xtext:Keyword" value="+"/>
+              <elements xsi:type="xtext:Keyword" value="-"/>
+            </elements>
+            <elements xsi:type="xtext:RuleCall" rule="//@rules.159"/>
+          </elements>
+          <elements xsi:type="xtext:Alternatives" cardinality="?">
+            <elements xsi:type="xtext:Keyword" value="f"/>
+            <elements xsi:type="xtext:Keyword" value="d"/>
+          </elements>
+        </elements>
+      </elements>
+      <elements xsi:type="xtext:Group">
+        <elements xsi:type="xtext:Alternatives">
+          <elements xsi:type="xtext:RuleCall" rule="//@rules.158"/>
+          <elements xsi:type="xtext:RuleCall" rule="//@rules.159"/>
+          <elements xsi:type="xtext:RuleCall" rule="//@rules.157"/>
+        </elements>
+        <elements xsi:type="xtext:Alternatives" cardinality="?">
+          <elements xsi:type="xtext:Keyword" value="l"/>
+          <elements xsi:type="xtext:Alternatives">
+            <elements xsi:type="xtext:Group">
+              <elements xsi:type="xtext:Keyword" value="."/>
+              <elements xsi:type="xtext:RuleCall" cardinality="?" rule="//@rules.159"/>
+              <elements xsi:type="xtext:Group" cardinality="?">
+                <elements xsi:type="xtext:Keyword" value="e"/>
+                <elements xsi:type="xtext:Alternatives" cardinality="?">
+                  <elements xsi:type="xtext:Keyword" value="+"/>
+                  <elements xsi:type="xtext:Keyword" value="-"/>
+                </elements>
+                <elements xsi:type="xtext:RuleCall" rule="//@rules.159"/>
+              </elements>
+              <elements xsi:type="xtext:Alternatives" cardinality="?">
+                <elements xsi:type="xtext:Keyword" value="f"/>
+                <elements xsi:type="xtext:Keyword" value="d"/>
+              </elements>
+            </elements>
+            <elements xsi:type="xtext:Group">
+              <elements xsi:type="xtext:Keyword" value="e"/>
+              <elements xsi:type="xtext:Alternatives" cardinality="?">
+                <elements xsi:type="xtext:Keyword" value="+"/>
+                <elements xsi:type="xtext:Keyword" value="-"/>
+              </elements>
+              <elements xsi:type="xtext:RuleCall" rule="//@rules.159"/>
+              <elements xsi:type="xtext:Alternatives" cardinality="?">
+                <elements xsi:type="xtext:Keyword" value="f"/>
+                <elements xsi:type="xtext:Keyword" value="d"/>
+              </elements>
+            </elements>
+            <elements xsi:type="xtext:Keyword" value="f"/>
+            <elements xsi:type="xtext:Keyword" value="d"/>
+          </elements>
+        </elements>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="SELECT">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="SELECT"/>
+      <elements xsi:type="xtext:Keyword" value="Select"/>
+      <elements xsi:type="xtext:Keyword" value="select"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="DISTINCT">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="DISTINCT"/>
+      <elements xsi:type="xtext:Keyword" value="Distinct"/>
+      <elements xsi:type="xtext:Keyword" value="distinct"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="NEW">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="NEW"/>
+      <elements xsi:type="xtext:Keyword" value="New"/>
+      <elements xsi:type="xtext:Keyword" value="new"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="OBJECT">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="OBJECT"/>
+      <elements xsi:type="xtext:Keyword" value="Object"/>
+      <elements xsi:type="xtext:Keyword" value="object"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="FROM">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="FROM"/>
+      <elements xsi:type="xtext:Keyword" value="From"/>
+      <elements xsi:type="xtext:Keyword" value="from"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="LEFT">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="LEFT"/>
+      <elements xsi:type="xtext:Keyword" value="Left"/>
+      <elements xsi:type="xtext:Keyword" value="left"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="RIGHT">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="RIGHT"/>
+      <elements xsi:type="xtext:Keyword" value="Right"/>
+      <elements xsi:type="xtext:Keyword" value="right"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="OUTER">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="OUTER"/>
+      <elements xsi:type="xtext:Keyword" value="Outer"/>
+      <elements xsi:type="xtext:Keyword" value="outer"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="FULL">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="FULL"/>
+      <elements xsi:type="xtext:Keyword" value="Full"/>
+      <elements xsi:type="xtext:Keyword" value="full"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="INNER">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="INNER"/>
+      <elements xsi:type="xtext:Keyword" value="Inner"/>
+      <elements xsi:type="xtext:Keyword" value="inner"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="JOIN">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="JOIN"/>
+      <elements xsi:type="xtext:Keyword" value="Join"/>
+      <elements xsi:type="xtext:Keyword" value="join"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="FETCH">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="FETCH"/>
+      <elements xsi:type="xtext:Keyword" value="Fetch"/>
+      <elements xsi:type="xtext:Keyword" value="fetch"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="WITH">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="WITH"/>
+      <elements xsi:type="xtext:Keyword" value="With"/>
+      <elements xsi:type="xtext:Keyword" value="with"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="IN">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="IN"/>
+      <elements xsi:type="xtext:Keyword" value="In"/>
+      <elements xsi:type="xtext:Keyword" value="in"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="CLASS">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="CLASS"/>
+      <elements xsi:type="xtext:Keyword" value="Class"/>
+      <elements xsi:type="xtext:Keyword" value="class"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="IN_CLASS">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.108"/>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.109"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="ELEMENTS">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="ELEMENTS"/>
+      <elements xsi:type="xtext:Keyword" value="Elements"/>
+      <elements xsi:type="xtext:Keyword" value="elements"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="IN_ELEMENTS">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.108"/>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.111"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="AS">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="AS"/>
+      <elements xsi:type="xtext:Keyword" value="As"/>
+      <elements xsi:type="xtext:Keyword" value="as"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="PROPERTIES">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="PROPERTIES"/>
+      <elements xsi:type="xtext:Keyword" value="Properties"/>
+      <elements xsi:type="xtext:Keyword" value="properties"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="GROUP_BY">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Alternatives">
+        <elements xsi:type="xtext:Keyword" value="GROUP"/>
+        <elements xsi:type="xtext:Keyword" value="Group"/>
+        <elements xsi:type="xtext:Keyword" value="group"/>
+      </elements>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.117"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="ORDER_BY">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Alternatives">
+        <elements xsi:type="xtext:Keyword" value="ORDER"/>
+        <elements xsi:type="xtext:Keyword" value="Order"/>
+        <elements xsi:type="xtext:Keyword" value="order"/>
+      </elements>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.117"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="BY">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="BY"/>
+      <elements xsi:type="xtext:Keyword" value="By"/>
+      <elements xsi:type="xtext:Keyword" value="by"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="ASC">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="ASC"/>
+      <elements xsi:type="xtext:Keyword" value="Asc"/>
+      <elements xsi:type="xtext:Keyword" value="asc"/>
+      <elements xsi:type="xtext:Keyword" value="ASCENDING"/>
+      <elements xsi:type="xtext:Keyword" value="Ascending"/>
+      <elements xsi:type="xtext:Keyword" value="ascending"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="DESC">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="DESC"/>
+      <elements xsi:type="xtext:Keyword" value="Desc"/>
+      <elements xsi:type="xtext:Keyword" value="desc"/>
+      <elements xsi:type="xtext:Keyword" value="DESCENDING"/>
+      <elements xsi:type="xtext:Keyword" value="Descending"/>
+      <elements xsi:type="xtext:Keyword" value="descending"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="HAVING">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="HAVING"/>
+      <elements xsi:type="xtext:Keyword" value="Having"/>
+      <elements xsi:type="xtext:Keyword" value="having"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="WHERE">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="WHERE"/>
+      <elements xsi:type="xtext:Keyword" value="Where"/>
+      <elements xsi:type="xtext:Keyword" value="where"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="OR">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="OR"/>
+      <elements xsi:type="xtext:Keyword" value="Or"/>
+      <elements xsi:type="xtext:Keyword" value="or"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="AND">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="AND"/>
+      <elements xsi:type="xtext:Keyword" value="And"/>
+      <elements xsi:type="xtext:Keyword" value="and"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="NOT">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="NOT"/>
+      <elements xsi:type="xtext:Keyword" value="Not"/>
+      <elements xsi:type="xtext:Keyword" value="not"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="IS">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="IS"/>
+      <elements xsi:type="xtext:Keyword" value="Is"/>
+      <elements xsi:type="xtext:Keyword" value="is"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="BETWEEN">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="BETWEEN"/>
+      <elements xsi:type="xtext:Keyword" value="Between"/>
+      <elements xsi:type="xtext:Keyword" value="between"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="LIKE">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="LIKE"/>
+      <elements xsi:type="xtext:Keyword" value="Like"/>
+      <elements xsi:type="xtext:Keyword" value="like"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="MEMBER">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="MEMBER"/>
+      <elements xsi:type="xtext:Keyword" value="Member"/>
+      <elements xsi:type="xtext:Keyword" value="member"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="OF">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="OF"/>
+      <elements xsi:type="xtext:Keyword" value="Of"/>
+      <elements xsi:type="xtext:Keyword" value="of"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="ESCAPE">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="ESCAPE"/>
+      <elements xsi:type="xtext:Keyword" value="Escape"/>
+      <elements xsi:type="xtext:Keyword" value="escape"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="CASE">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="CASE"/>
+      <elements xsi:type="xtext:Keyword" value="Case"/>
+      <elements xsi:type="xtext:Keyword" value="case"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="END">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="END"/>
+      <elements xsi:type="xtext:Keyword" value="End"/>
+      <elements xsi:type="xtext:Keyword" value="end"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="WHEN">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="WHEN"/>
+      <elements xsi:type="xtext:Keyword" value="When"/>
+      <elements xsi:type="xtext:Keyword" value="when"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="THEN">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="THEN"/>
+      <elements xsi:type="xtext:Keyword" value="Then"/>
+      <elements xsi:type="xtext:Keyword" value="then"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="ELSE">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="ELSE"/>
+      <elements xsi:type="xtext:Keyword" value="Else"/>
+      <elements xsi:type="xtext:Keyword" value="else"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="SOME">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="SOME"/>
+      <elements xsi:type="xtext:Keyword" value="Some"/>
+      <elements xsi:type="xtext:Keyword" value="some"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="EXISTS">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="EXISTS"/>
+      <elements xsi:type="xtext:Keyword" value="Exists"/>
+      <elements xsi:type="xtext:Keyword" value="exists"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="ALL">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="ALL"/>
+      <elements xsi:type="xtext:Keyword" value="All"/>
+      <elements xsi:type="xtext:Keyword" value="all"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="ANY">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="ANY"/>
+      <elements xsi:type="xtext:Keyword" value="Any"/>
+      <elements xsi:type="xtext:Keyword" value="any"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="SUM">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="SUM"/>
+      <elements xsi:type="xtext:Keyword" value="Sum"/>
+      <elements xsi:type="xtext:Keyword" value="sum"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="AVG">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="AVG"/>
+      <elements xsi:type="xtext:Keyword" value="Avg"/>
+      <elements xsi:type="xtext:Keyword" value="avg"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="MAX">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="MAX"/>
+      <elements xsi:type="xtext:Keyword" value="Max"/>
+      <elements xsi:type="xtext:Keyword" value="max"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="MIN">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="MIN"/>
+      <elements xsi:type="xtext:Keyword" value="Min"/>
+      <elements xsi:type="xtext:Keyword" value="min"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="COUNT">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="COUNT"/>
+      <elements xsi:type="xtext:Keyword" value="Count"/>
+      <elements xsi:type="xtext:Keyword" value="count"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="INDICES">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="INDICES"/>
+      <elements xsi:type="xtext:Keyword" value="Indices"/>
+      <elements xsi:type="xtext:Keyword" value="indices"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="TRAILING">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="TRAILING"/>
+      <elements xsi:type="xtext:Keyword" value="Trailing"/>
+      <elements xsi:type="xtext:Keyword" value="trailing"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="LEADING">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="LEADING"/>
+      <elements xsi:type="xtext:Keyword" value="Leading"/>
+      <elements xsi:type="xtext:Keyword" value="leading"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="BOTH">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="BOTH"/>
+      <elements xsi:type="xtext:Keyword" value="Both"/>
+      <elements xsi:type="xtext:Keyword" value="both"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="NULL">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="NULL"/>
+      <elements xsi:type="xtext:Keyword" value="Null"/>
+      <elements xsi:type="xtext:Keyword" value="null"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="TRUE">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="TRUE"/>
+      <elements xsi:type="xtext:Keyword" value="True"/>
+      <elements xsi:type="xtext:Keyword" value="true"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="FALSE">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="FALSE"/>
+      <elements xsi:type="xtext:Keyword" value="False"/>
+      <elements xsi:type="xtext:Keyword" value="false"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="EMPTY">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="EMPTY"/>
+      <elements xsi:type="xtext:Keyword" value="Empty"/>
+      <elements xsi:type="xtext:Keyword" value="empty"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="IdOrKeyword">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.156"/>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.154"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:ParserRule" name="Keyword">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="all"/>
+      <elements xsi:type="xtext:Keyword" value="length"/>
+      <elements xsi:type="xtext:Keyword" value="char"/>
+      <elements xsi:type="xtext:Keyword" value="type"/>
+      <elements xsi:type="xtext:Keyword" value="file"/>
+      <elements xsi:type="xtext:Keyword" value="text"/>
+      <elements xsi:type="xtext:Keyword" value="title"/>
+      <elements xsi:type="xtext:Keyword" value="max"/>
+      <elements xsi:type="xtext:Keyword" value="when"/>
+      <elements xsi:type="xtext:Keyword" value="member"/>
+      <elements xsi:type="xtext:Keyword" value="end"/>
+      <elements xsi:type="xtext:Keyword" value="object"/>
+      <elements xsi:type="xtext:Keyword" value="date"/>
+      <elements xsi:type="xtext:Keyword" value="then"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:TerminalRule" name="LINEBREAK">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value="&#xA;"/>
+      <elements xsi:type="xtext:Group">
+        <elements xsi:type="xtext:Keyword" value="&#xD;"/>
+        <elements xsi:type="xtext:Keyword" value="&#xA;"/>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value="&#xD;"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:TerminalRule" name="ID">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Keyword" cardinality="?" value="^"/>
+      <elements xsi:type="xtext:Alternatives">
+        <elements xsi:type="xtext:CharacterRange">
+          <left value="a"/>
+          <right value="z"/>
+        </elements>
+        <elements xsi:type="xtext:CharacterRange">
+          <left value="A"/>
+          <right value="Z"/>
+        </elements>
+        <elements xsi:type="xtext:Keyword" value="_"/>
+      </elements>
+      <elements xsi:type="xtext:Alternatives" cardinality="*">
+        <elements xsi:type="xtext:CharacterRange">
+          <left value="a"/>
+          <right value="z"/>
+        </elements>
+        <elements xsi:type="xtext:CharacterRange">
+          <left value="A"/>
+          <right value="Z"/>
+        </elements>
+        <elements xsi:type="xtext:Keyword" value="_"/>
+        <elements xsi:type="xtext:CharacterRange">
+          <left value="0"/>
+          <right value="9"/>
+        </elements>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:TerminalRule" name="SIGNED_INT">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Alternatives">
+        <elements xsi:type="xtext:Keyword" value="-"/>
+        <elements xsi:type="xtext:Keyword" value="+"/>
+      </elements>
+      <elements xsi:type="xtext:RuleCall" rule="//@rules.159"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:TerminalRule" name="HEX">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Keyword" value="0x"/>
+      <elements xsi:type="xtext:Alternatives" cardinality="+">
+        <elements xsi:type="xtext:CharacterRange">
+          <left value="0"/>
+          <right value="9"/>
+        </elements>
+        <elements xsi:type="xtext:CharacterRange">
+          <left value="a"/>
+          <right value="f"/>
+        </elements>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:TerminalRule" name="INT">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    </type>
+    <alternatives xsi:type="xtext:CharacterRange" cardinality="+">
+      <left value="0"/>
+      <right value="9"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:TerminalRule" name="FIELDCOMMENT">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Keyword" value=";"/>
+      <elements xsi:type="xtext:NegatedToken" cardinality="*">
+        <terminal xsi:type="xtext:Alternatives">
+          <elements xsi:type="xtext:Keyword" value="&#xA;"/>
+          <elements xsi:type="xtext:Keyword" value="&#xD;"/>
+        </terminal>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:TerminalRule" name="SL_COMMENT">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Group">
+      <elements xsi:type="xtext:Keyword" value="#"/>
+      <elements xsi:type="xtext:NegatedToken" cardinality="*">
+        <terminal xsi:type="xtext:Alternatives">
+          <elements xsi:type="xtext:Keyword" value="&#xA;"/>
+          <elements xsi:type="xtext:Keyword" value="&#xD;"/>
+        </terminal>
+      </elements>
+      <elements xsi:type="xtext:Group" cardinality="?">
+        <elements xsi:type="xtext:Keyword" cardinality="?" value="&#xD;"/>
+        <elements xsi:type="xtext:Keyword" value="&#xA;"/>
+      </elements>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:TerminalRule" name="WS">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Keyword" value=" "/>
+      <elements xsi:type="xtext:Keyword" value="&#x9;"/>
+      <elements xsi:type="xtext:Group">
+        <elements xsi:type="xtext:Keyword" value="&#xD;"/>
+        <elements xsi:type="xtext:Keyword" value="&#xA;"/>
+      </elements>
+      <elements xsi:type="xtext:Keyword" value="&#xA;"/>
+      <elements xsi:type="xtext:Keyword" value="&#xD;"/>
+    </alternatives>
+  </rules>
+  <rules xsi:type="xtext:TerminalRule" name="STRING">
+    <type metamodel="//@metamodelDeclarations.1">
+      <classifier xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </type>
+    <alternatives xsi:type="xtext:Alternatives">
+      <elements xsi:type="xtext:Group">
+        <elements xsi:type="xtext:Keyword" value="&quot;"/>
+        <elements xsi:type="xtext:Alternatives" cardinality="*">
+          <elements xsi:type="xtext:Group">
+            <elements xsi:type="xtext:Keyword" value="\"/>
+            <elements xsi:type="xtext:Keyword" value="&quot;"/>
+          </elements>
+          <elements xsi:type="xtext:NegatedToken">
+            <terminal xsi:type="xtext:Keyword" value="&quot;"/>
+          </elements>
+        </elements>
+        <elements xsi:type="xtext:Keyword" value="&quot;"/>
+      </elements>
+      <elements xsi:type="xtext:Group">
+        <elements xsi:type="xtext:Keyword" value="'"/>
+        <elements xsi:type="xtext:Alternatives" cardinality="*">
+          <elements xsi:type="xtext:Group">
+            <elements xsi:type="xtext:Keyword" value="\"/>
+            <elements xsi:type="xtext:Alternatives">
+              <elements xsi:type="xtext:Keyword" value="b"/>
+              <elements xsi:type="xtext:Keyword" value="t"/>
+              <elements xsi:type="xtext:Keyword" value="n"/>
+              <elements xsi:type="xtext:Keyword" value="f"/>
+              <elements xsi:type="xtext:Keyword" value="r"/>
+              <elements xsi:type="xtext:Keyword" value="&quot;"/>
+              <elements xsi:type="xtext:Keyword" value="'"/>
+              <elements xsi:type="xtext:Keyword" value="\"/>
+            </elements>
+          </elements>
+          <elements xsi:type="xtext:NegatedToken">
+            <terminal xsi:type="xtext:Alternatives">
+              <elements xsi:type="xtext:Keyword" value="\"/>
+              <elements xsi:type="xtext:Keyword" value="'"/>
+            </terminal>
+          </elements>
+        </elements>
+        <elements xsi:type="xtext:Keyword" value="'"/>
+      </elements>
+    </alternatives>
+  </rules>
+</xtext:Grammar>
