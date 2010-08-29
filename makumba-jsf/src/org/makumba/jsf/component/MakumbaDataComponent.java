@@ -1,6 +1,8 @@
 package org.makumba.jsf.component;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.application.FacesMessage.Severity;
@@ -12,6 +14,7 @@ import javax.faces.component.visit.VisitResult;
 import javax.faces.context.FacesContext;
 
 import org.makumba.Pointer;
+import org.makumba.ProgrammerError;
 import org.makumba.jsf.update.ObjectInputValue;
 import org.makumba.list.engine.ComposedQuery;
 
@@ -51,6 +54,13 @@ public interface MakumbaDataComponent {
      *            the clientId of the input for the value
      */
     public void addSetValue(String label, String path, List<Pointer> value, String clientId);
+
+    /**
+     * Whether the action of the mak:object component (create / update) changed since the tree was first built.
+     * 
+     * @return <code>true</code> if the action changed, <code>false</code> otherwise.
+     */
+    public boolean hasActionChanged();
 
     public ComposedQuery getComposedQuery();
 
@@ -126,6 +136,48 @@ public interface MakumbaDataComponent {
             }
             return ret;
         }
+
+        static boolean isCreateObject(String w) throws ProgrammerError {
+            if (w.indexOf(Util.NEW_MARKER) > -1) {
+                return true;
+            } else {
+                if (w.contains("$")) {
+                    FacesContext ctx = FacesContext.getCurrentInstance();
+
+                    // find param name
+                    Matcher m = Util.p.matcher(w);
+                    boolean hasNew = false;
+                    if (m.find()) {
+                        // try to find if one of them is a new()
+                        String s = m.group().substring(1);
+                        String paramValue = ctx.getApplication().evaluateExpressionGet(ctx, "#{param['" + s + "']}",
+                            String.class);
+                        String sessionValue = ctx.getApplication().evaluateExpressionGet(ctx,
+                            "#{sessionScope['" + s + "']}", String.class);
+                        String elValue = ctx.getApplication().evaluateExpressionGet(ctx, "#{" + s + "}", String.class);
+                        if (paramValue.contains(Util.NEW_MARKER)
+                                || sessionValue.contains(Util.NEW_MARKER)
+                                || elValue.contains(Util.NEW_MARKER)) {
+                            hasNew = true;
+                        }
+
+                        // check if we have more of them, in that case the where is not valid
+                        // i.e. we do not allow complex expression in a where with a new()
+                        if (m.find()) {
+                            throw new ProgrammerError(
+                                    "The where expression '"
+                                            + w
+                                            + "' for <mak:object> is not allowed: more than one $parameter was found having as value 'new()'");
+                        }
+                    }
+                    return hasNew;
+                }
+            }
+            return false;
+        }
+
+        static String NEW_MARKER = "new()";
+        static final Pattern p = Pattern.compile("\\$\\w+");
     }
 
 }

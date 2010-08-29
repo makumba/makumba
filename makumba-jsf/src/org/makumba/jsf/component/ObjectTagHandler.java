@@ -1,16 +1,27 @@
 package org.makumba.jsf.component;
 
-import javax.faces.component.UIComponent;
+
 import javax.faces.view.facelets.ComponentConfig;
 import javax.faces.view.facelets.ComponentHandler;
-import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.Tag;
 import javax.faces.view.facelets.TagAttribute;
+import javax.faces.view.facelets.TagHandlerDelegate;
 
+import org.makumba.jsf.component.MakumbaDataComponent.Util;
+
+/**
+ * This ComponentHandler dynamically creates the right component type depending on whether this is a create object or a
+ * update object. This can change depending on a request parameter, therefore a {@link TagHandlerDelegate} with the
+ * fitting configuration needs to be created / used.
+ * 
+ * @author manu
+ */
 public class ObjectTagHandler extends ComponentHandler {
 
-    private static String NEW_MARKER = "new()";
+    private TagHandlerDelegate createDelegate;
+
+    private TagHandlerDelegate editDelegate;
 
     public ObjectTagHandler(final ComponentConfig config) {
         super(new ComponentConfig() {
@@ -49,20 +60,29 @@ public class ObjectTagHandler extends ComponentHandler {
     }
 
     @Override
-    public void onComponentCreated(FaceletContext ctx, UIComponent c, UIComponent parent) {
-        super.onComponentCreated(ctx, c, parent);
-
-        if (!isCreateObject(getTag())) {
-            ((UIRepeatListComponent) c).setObject(true);
+    protected TagHandlerDelegate getTagHandlerDelegate() {
+        if (isCreateObject(tag)) {
+            if (createDelegate == null) {
+                createDelegate = delegateFactory.createComponentHandlerDelegate(this);
+            }
+            return createDelegate;
         }
-
+        if (!isCreateObject(tag)) {
+            if (editDelegate == null) {
+                editDelegate = delegateFactory.createComponentHandlerDelegate(this);
+            }
+            return editDelegate;
+        }
+        return null;
     }
 
     private static boolean isCreateObject(Tag t) {
         TagAttribute where = t.getAttributes().get("where");
-        // FIXME this could also be a o.type = 'NEW'
-        // FIXME this won't handle #{ValueExpressions}
-        return where != null && where.getValue().indexOf(NEW_MARKER) > -1;
-    }
 
+        if (where != null) {
+            String w = where.getValue();
+            return Util.isCreateObject(w);
+        }
+        return false;
+    }
 }
