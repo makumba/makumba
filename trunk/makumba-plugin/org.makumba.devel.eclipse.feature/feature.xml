@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.makumba.devel.plugin.eclipse.feature"
+      label="Makumba Plug-in"
+      version="1.0.0.qualifier"
+      provider-name="makumba.org">
+
+   <description url="http://www.makumba.org/page/plugin">
+      Makumba plugin featuring Makumba Data Definition editor, makumba
+JSP taglib validation and content assist and much more to help
+you develop applications based on the Makumba framework.
+   </description>
+
+   <copyright url="http://www.makumba.org">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.makumba.org">
+      [Enter License Description here.]
+   </license>
+
+   <url>
+      <update label="Makumpa Plugin Update Site" url="http://www.makumba.org/plugin/updates"/>
+   </url>
+
+   <requires>
+      <import plugin="org.eclipse.xtext"/>
+      <import plugin="org.eclipse.xtext.builder" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.emf.workspace" version="1.4.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jdt.core" version="3.6.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.xtext.ui"/>
+      <import plugin="org.eclipse.xtext.ui.shared"/>
+      <import plugin="org.eclipse.wst.sse.ui" version="1.2.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.wst.xml.ui" version="1.1.100" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.wst.sse.core" version="1.1.500" match="equivalent"/>
+      <import plugin="org.eclipse.wst.xml.core" version="1.1.500" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jst.jsp.core" version="1.2.300" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jst.jsp.ui" version="1.1.500" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jst.j2ee" version="1.1.400" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.navigator"/>
+      <import plugin="org.eclipse.wst.common.project.facet.ui"/>
+      <import plugin="org.eclipse.jst.j2ee.web" version="1.1.400" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jst.j2ee.core" version="1.2.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ltk.core.refactoring" version="3.5.100" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ltk.ui.refactoring" version="3.5.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.wst.validation" version="1.2.200" match="greaterOrEqual"/>
+      <import plugin="org.apache.log4j"/>
+   </requires>
+
+   <plugin
+         id="org.makumba.devel.plugin.eclipse.mdd"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.makumba.devel.plugin.eclipse.mdd.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>

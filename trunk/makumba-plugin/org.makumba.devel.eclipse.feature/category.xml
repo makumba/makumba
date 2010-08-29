@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/org.makumba.devel.plugin.eclipse.feature_1.0.0.qualifier.jar" id="org.makumba.devel.plugin.eclipse.feature" version="1.0.0.qualifier">
+      <category name="org.makumba.devel.plugin.eclipse.category"/>
+   </feature>
+   <category-def name="org.makumba.devel.plugin.eclipse.category" label="makumba.org"/>
+</site>
