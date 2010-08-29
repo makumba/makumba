@@ -1,0 +1,167 @@
+// Regex parsing
+
+/* --------------------------------------------
+   Basic Regular Expression
+   --------------------------------------------
+*/
+/*
+basic_reg_exp  :          RE_expression
+               | '^'
+               |                        '$'
+               | '^'               '$'
+               | '^' RE_expression
+               |          RE_expression '$'
+               | '^' RE_expression '$'
+               ;
+RE_expression  :  RE_expression? simple_RE
+               ;
+simple_RE      : nondupl_RE (r=RE_dupl_symbol)?
+               ;
+nondupl_RE     : one_char_or_coll_elem_RE
+               | '\\(' RE_expression '\\)'
+               | BACKREF
+               ;
+one_char_or_coll_elem_RE : ORD_CHAR
+               | QUOTED_CHAR
+               | '.'
+               | bracket_expression
+               ;
+RE_dupl_symbol : '*'
+               | '\\(' INT               '\\)'
+               | '\\(' INT ','           '\\)'
+               | '\\(' INT ',' INT '\\)'
+               ;
+*/
+
+/* --------------------------------------------
+   Bracket Expression
+   -------------------------------------------
+*/
+/*
+bracket_expression : '[' matching_list ']'
+               | '[' nonmatching_list ']'
+               ;
+matching_list  : bracket_list
+               ;
+nonmatching_list : '^' bracket_list
+               ;
+bracket_list   : follow_list
+               | follow_list '-'
+               ;
+follow_list    :             expression_term
+               | follow_list e=expression_term
+               ;
+expression_term : single_expression
+               | range_expression
+               ;
+single_expression : end_range
+               | character_class
+               | equivalence_class
+               ;
+range_expression : start_range end_range
+               | start_range '-'
+               ;
+start_range    : end_range '-'
+               ;
+end_range      : COLL_ELEM_SINGLE
+               | collating_symbol
+               ;
+collating_symbol : '[.' COLL_ELEM_SINGLE '.]'
+               | '[.' COLL_ELEM_MULTI '.]'
+               | '[.' META_CHAR '.]'
+               ;
+equivalence_class : '[=' COLL_ELEM_SINGLE '=]'
+               | '[=' COLL_ELEM_MULTI '=]'
+               ;
+character_class : '[:' class_name ':]'
+               ;
+               */
+
+extended_reg_exp   
+	:  (ERE_expression ERE_dupl_symbol?)+  ('|' (ERE_expression ERE_dupl_symbol?)+)*                  
+ 	;
+ 	
+ 	ERE_expression     : one_char_or_coll_elem_ERE                        
+ 	                   | '^'                                            
+ 	                   | '$'                                           
+ 	                   | '(' extended_reg_exp ')'           	                 
+ 	                   ;
+ 	one_char_or_coll_elem_ERE  : ORD_CHAR                                 
+ 	                   | QUOTED_CHAR                                      
+ 	                   | '.'                                              
+ 	                   | bracket_expression                               
+ 	                   ;
+ 	ERE_dupl_symbol    : '*'                                             
+ 	                   | '+'                                             
+ 	                   | '?'                                         
+ 	                   | '{' INT                 '}' 
+ 	                   | '{' INT ','           '}' 
+ 	                   | '{' INT ',' INT '}' 
+ 	                   ;
+ 	
+ 	
+ 	
+ 	
+ 	/* --------------------------------------------
+ 	   Bracket Expression
+ 	   -------------------------------------------
+ 	*/
+ 	bracket_expression : '[' matching_list ']'
+ 	               | '[' nonmatching_list ']'
+ 	               ;
+ 	matching_list  : bracket_list
+ 	               ;
+ 	nonmatching_list : '^' bracket_list
+ 	               ;
+ 	bracket_list   : expression_term* '-'?
+ 	               ;
+ 	expression_term : single_expression
+ 	               | range_expression
+ 	               ;
+ 	single_expression : end_range
+ 	               | character_class
+ 	               | equivalence_class
+ 	               ;
+ 	range_expression : start_range end_range
+ 	               | start_range '-'
+ 	               ;
+ 	start_range    : end_range '-'
+ 	               ;
+ 	end_range      : COLL_ELEM_SINGLE
+ 	               | collating_symbol
+ 	               ;
+ 	collating_symbol : '[.' COLL_ELEM_SINGLE+ '.]'
+ 	               | '[.' META_CHAR '.]'
+ 	               ;
+ 	equivalence_class : '[=' COLL_ELEM_SINGLE+ '=]'
+ 	               ;
+ 	character_class : '[:' class_name ':]'
+ 	               ;
+class_name
+	: 'a';
+
+COLL_ELEM_SINGLE
+	: '.' | '[' |'$' | '(' | ')' | '|' | '*' | '+' | '?' | '{' | '\\' | '=' | OTHER
+	;
+
+META_CHAR
+	: '^' | '-' | ']';
+
+SPEC_CHAR
+	: '^' | '.' | '[' | '$' | '(' | ')' | '|' | '*' | '+' | '?' | '{' | '\\' | '}';
+
+ORD_CHAR
+	: '=' | ']' | ':' | '-' | DIGIT /* '}' | Removed as a hack and added to SPEC_CHAR */ | ',' | OTHER
+	;
+
+DIGIT
+	: '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
+	
+QUOTED_CHAR
+	: '\\' SPEC_CHAR;
+
+// End regex parsing
+
+terminal OTHER
+	: !('['| ']'| '('| ')'| '{'| '}'| '0'..'9'| '.'| '|'| '$'| ',' | '*'| '+'| '?'| '\\'| '^'| '-'| '='| ':')
+	;

@@ -1,0 +1,733 @@
+grammar org.makumba.devel.eclipse.mdd.MDD hidden(WS, SL_COMMENT) //with org.eclipse.xtext.common.Terminals
+
+generate MDD "http://www.makumba.org/devel/plugin/eclipse/mdd/MDD"
+
+import "http://www.eclipse.org/emf/2002/Ecore" as ecore
+
+
+DataDefinition :
+	LINEBREAK* d+=Declaration? (LINEBREAK+ d+=Declaration)* LINEBREAK*;
+
+Declaration:
+  (FieldDeclaration |
+  TitleDeclaration |
+  TypeDeclaration |
+  IncludeDeclaration | 
+  ValidationRuleDeclaration |
+  FunctionDeclaration |
+  NativeValidationRuleDeclaration |
+  SubFieldDeclaration)  fieldComment = FIELDCOMMENT? 
+   ;
+
+/*extendedDeclaration:
+	Declaration |
+	 FIELDCOMMENT? LINEBREAK*;*/
+
+		
+/////// Field Declaration 
+
+FieldDeclaration:
+	name=IdOrKeyword '=' (modifiers=Modifiers typedef=(FieldType))?;
+	
+Modifiers:
+	 unique?='unique'? & fixed?='fixed'? & (notNull?='not' 'null')? & (notEmpty?='not' 'empty')?;
+
+FieldType
+	:CharType|CharEnum|'set' CharEnum
+	|IntEnum|'set' IntEnum
+	|{FieldType}type=('int'|'real'|'boolean'|'text'|'binary'|'file'|'date')
+	|PointerType
+	|SetType
+	|typeDec=[TypeDeclaration];
+
+IntEnum
+	:name='int' '{'  values+=EnumValue (',' values+=EnumValue)* '}'
+	;
+
+CharEnum
+	:name='char' '{'  values+=STRING (',' values+=STRING)* '}'
+	;	
+
+   
+/* New syntax to be introduced in mak 0.9
+EnumType:
+  'enum' ('{'  values+=EnumValue (',' values+=EnumValue)* '}'); 
+
+SetEnumType:
+  'setEnum' ('{'  values+=EnumValue (',' values+=EnumValue)* '}');*/
+
+EnumValue:
+   name=STRING '=' value=(INT|SIGNED_INT) decpricated?='deprecated'?;
+
+CharType:
+   {CharType}'char' ('[' length=INT? ']')?;
+
+PointerType:
+   {PointerType}'ptr' (ref=[DataDefinition|Type])?;
+   
+SetType:
+   {SetType}'set' (ref=[DataDefinition|Type])?;
+
+SubFieldDeclaration:
+	subFieldOf=[FieldDeclaration] '->' ( d=Declaration );
+
+Type: IdOrKeyword ("." IdOrKeyword)*;
+
+// !title = field or function
+TitleDeclaration:
+   '!' 'title' '=' (field=FieldPath | function=FunctionCall);
+
+// !include = general.Address
+IncludeDeclaration:
+  '!' 'include' '=' importedNamespace=[DataDefinition|Type];  
+
+// !type.genDef = ...
+TypeDeclaration
+    : '!' 'type' '.' name=ID  '=' fieldType = FieldType;
+
+///// Validation Rules
+
+ValidationRuleDeclaration
+	: 	(
+			RangeValidationRuleDeclaration
+			| UniquenessValidationRuleDeclaration
+			| ComparisonValidationRuleDeclaration
+			| RegexValidationRuleDeclaration
+		)
+		errorMessage=ErrorMessage
+	;
+
+ComparisonValidationRuleDeclaration
+	: name='compare' args=FunctionArguments '{' comparisonExp=ComparisonExpression '}'
+	;
+
+//////// COMPARISON EXPRESSION
+
+ComparisonExpression
+	:  lhs=ComparisonPart o=Operator  rhs=ComparisonPart
+	;
+	
+ComparisonPart
+	: field=FieldPath
+	| n=INT //Number
+	| df=DateFunction
+	| u=UpperFunction
+	| l=LowerFunction
+	| d=DateConstant
+	;
+
+// here we pass only the type name of the argument, with the function as type
+UpperFunction
+	: 'upper' '(' field=FieldPath ')'
+	;
+
+// here we pass only the type name of the argument, with the function as type
+LowerFunction
+	: 'lower' '(' field=FieldPath ')'	
+	;
+
+Operator
+	: '=' | '<' | '>' | '<=' | '>=' | '!=' | '^=' | '<>' | 'like'
+	;
+
+DateConstant
+	: '$now' | '$today';
+
+DateFunction
+	: 'date' '(' DateFunctionArgument (',' DateFunctionArgument)* ')'
+	;
+	
+DateFunctionArgument
+	: DateFunctionArgumentMember
+		(
+			('+' | '-') DateFunctionArgumentMember
+		)?
+	;
+	
+DateFunctionArgumentMember
+	: INT //Number
+	| DateConstant
+	;
+
+
+//////// RANGE DEFINITION
+
+
+RangeValidationRuleDeclaration
+	: name=('range' | 'length')  '(' arg=FieldReference ')' '{' range=Range '}'
+	;
+	
+RegexValidationRuleDeclaration
+	: name='matches' '(' arg=FieldReference ')' '{' exp=REGEX '}'
+	;
+	
+REGEX:
+  STRING;
+
+// range(age) {18..99}  
+Range
+    : 
+      f=RangeBound  '..' t=RangeBound 
+    ;
+
+
+// [1..?] [?..5]
+RangeBound
+    : INT | '?'
+    ;
+
+// unique(field1, field2) : "These need to be unique"
+UniquenessValidationRuleDeclaration
+	: name='unique' args=FunctionArguments
+	;
+	
+ErrorMessage
+	: ':' message=STRING
+	;
+
+NativeValidationRuleDeclaration
+    : field=[FieldDeclaration] '.'
+      type=(
+        'unique'
+      | 'notNull'
+      | 'NaN'
+      | 'notEmpty'
+      | 'notInt'
+      | 'notReal'
+      | 'notBoolean'
+      )
+      '='
+      message=STRING
+    ;
+
+
+///// Functions
+FunctionDeclaration:
+  (b = ID '%')? name=ID arg=FunctionArgumentDeclaration body=FunctionBody
+   m=ErrorMessage?;
+  
+FunctionArgumentDeclaration:
+  {FunctionArgumentDeclaration}'(' f+=FunctionArgumentBody? (',' f+=FunctionArgumentBody)* ')';
+
+// TODO: fix this so that function label can show param type instead of the name
+// ugly fix until the syntax change
+FunctionArgumentBody:
+  (CharType|IntEnum|'set' IntEnum|CharEnum|'set' CharEnum|'int'|'real'|'boolean'|'text'|'binary'|'file'|'date'|'ptr' Type|'set' Type) name=IdOrKeyword
+//	FieldType arg=(ID|Keyword)
+  ; 
+
+FunctionCall:
+  function=[FunctionDeclaration] f=FunctionArguments;
+
+
+FieldPath:
+  field=[FieldDeclaration|IdOrKeyword] ("." subField=FieldPath)?;
+
+FieldReference:
+  field=[FieldDeclaration|IdOrKeyword];
+
+FunctionArguments: 
+   {FunctionArguments}'(' (args+=FieldPath (',' args+= FieldPath)* )?  ')';
+  
+FunctionBody:
+  '{' (s=Statement | e=Expression) '}' 
+  ;
+
+
+///// HQL stuff
+
+Statement :    QueryRule  
+	;
+
+
+UnionRule
+	: q+=QueryRule ('union' q+=QueryRule)*
+	;
+
+//## query:
+//##     [SelectClause] FromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause];
+
+QueryRule
+	: SelectFrom
+		(where=WhereClause)?
+		(groupBy=GroupByClause)?
+		(orderBy=OrderByClause)?
+		;
+
+SelectFrom
+	:  {SelectFrom} (s=SelectClause)? (from=FromClause)? 
+	;
+
+//## SelectClause:
+//##     SELECT DISTINCT? SelectedPropertiesList | ( NEW className OPEN SelectedPropertiesList CLOSE );
+
+SelectClause
+	: {SelectClause} SELECT DISTINCT? ( s=SelectedPropertiesList | n=NewExpression | SelectObject )
+	;
+
+NewExpression
+	: NEW (p=Path) '(' s=SelectedPropertiesList ')'
+	;
+
+SelectObject
+   : OBJECT '(' Identifier ')'
+   ;
+
+//## FromClause:
+//##    FROM className AS? Identifier (  ( ',' className AS? Identifier ) | ( joinType Path AS? Identifier ) )*;
+
+// NOTE: This *must* begin with the "FROM" token, otherwise the sub-query rule will be ambiguous
+// with the expression rule.
+// Also note: after a comma weak keywords are allowed and should be treated as identifiers.
+
+FromClause
+	: FROM fromRange+=FromRange ( fromJoin+=FromJoin | ',' fromRange+=FromRange )*
+	;
+
+
+//## joinType:
+//##     ( ( 'left'|'right' 'outer'? ) | 'full' | 'inner' )? JOIN FETCH?;
+
+FromJoin
+	: ( ( ( LEFT | RIGHT ) (OUTER)? ) | FULL | INNER )? JOIN (FETCH)? 
+	  FromClassOrOuterQueryPath (w=WithClause)?
+	;
+
+WithClause
+	: WITH e=Expression
+	;
+
+FromRange
+	: FromClassOrOuterQueryPath
+	| alias=Identifier IN_CLASS p=Path 
+	| IN '(' p=Path ')' alias=Identifier
+	| InCollectionElementsDeclaration
+	;
+	
+FromClassOrOuterQueryPath
+	: {FromClassOrOuterQueryPath}  path=Path  ((AS)? name=Identifier)? (propertyFetch=PropertyFetch)? 
+	;
+
+InCollectionElementsDeclaration
+	: alias=Identifier IN_ELEMENTS '(' p=Path ')' 
+    ;
+
+PropertyFetch
+	: FETCH ALL PROPERTIES
+	;
+
+//## GroupByClause:
+//##     GROUP_BY Path ( ',' Path )*;
+
+GroupByClause
+	: GROUP_BY e+=Expression ( ',' e+=Expression )*
+		(h=HavingClause)?
+	;
+
+//## OrderByClause:
+//##     ORDER_BY SelectedPropertiesList;
+
+OrderByClause
+	: ORDER_BY o+=OrderElement ( ',' o+=OrderElement )*
+	;
+
+OrderElement
+	: Expression ( AscendingOrDescending )?
+	;
+
+AscendingOrDescending
+	: ASC	
+	| DESC	
+	;
+
+//## HavingClause:
+//##     HAVING logicalExpression;
+
+HavingClause
+	: HAVING e=Expression
+	;
+
+//## WhereClause:
+//##     WHERE logicalExpression;
+
+WhereClause
+	: WHERE e=Expression
+	;
+
+//## SelectedPropertiesList:
+//##     ( Path | Aggregate ) ( ',' Path | Aggregate )*;
+
+SelectedPropertiesList
+	: a+=AliasedExpression ( ',' a+=AliasedExpression )*
+	;
+	
+AliasedExpression
+	: Expression ( AS id=Identifier )?
+	;
+
+// expressions
+// Note that most of these expressions follow the pattern
+//   thisLevelExpression :
+//       nextHigherPrecedenceExpression
+//           (OPERATOR nextHigherPrecedenceExpression)*
+// which is a standard recursive definition for a parsing an expression.
+//
+// Operator precedence in HQL
+// lowest  --> ( 7)  OR
+//             ( 6)  AND, NOT
+//             ( 5)  equality: ==, <>, =, is
+//             ( 4)  relational: <, <=, >, >=,
+//                   LIKE, NOT LIKE, BETWEEN, NOT BETWEEN, IN, NOT IN
+//             ( 3)  addition and subtraction: +(binary) -(binary)
+//             ( 2)  multiplication: * / %, concatenate: ||
+// highest --> ( 1)  +(unary) -(unary)
+//                   []   () (method call)  . (dot -- identifier qualification)
+//                   aggregate function
+//                   ()  (explicit parenthesis)
+//
+// Note that the above precedence levels map to the rules below...
+// Once you have a precedence chart, writing the appropriate rules as below
+// is usually very straightfoward
+
+// Main expression rule
+Expression
+	: LogicalOrExpression
+	;
+
+// level 7 - OR
+LogicalOrExpression
+	: l+=LogicalAndExpression ( OR l+=LogicalAndExpression )*
+	;
+
+// level 6 - AND, NOT
+LogicalAndExpression
+	: n+=NegatedExpression ( AND n+=NegatedExpression )*
+	;
+
+// NOT nodes aren't generated.  Instead, the operator in the sub-tree will be
+// negated, if possible.   Expressions without a NOT parent are passed through.
+NegatedExpression
+ // Weak keywords can appear in an expression, so look ahead.
+	: NOT n=NegatedExpression 
+	| EqualityExpression 
+	;
+
+//## OP: EQ | LT | GT | LE | GE | NE | SQL_NE | LIKE;
+
+// level 5 - EQ, NE
+EqualityExpression
+	: r+=RelationalExpression (
+		( '='
+		| IS	 (NOT  )?
+		| '!='
+		| '<>'	
+		) r+=RelationalExpression)* 
+	;
+
+// level 4 - LT, GT, LE, GE, LIKE, NOT LIKE, BETWEEN, NOT BETWEEN
+// NOTE: The NOT prefix for LIKE and BETWEEN will be represented in the
+// token type.  When traversing the AST, use the token type, and not the
+// token text to interpret the semantics of these nodes.
+RelationalExpression
+	: Concatenation (
+		( ( ( '<' | '>' | '<=' | '>=' ) a+=AdditiveExpression )* )
+		// Disable node production for the optional 'not'.
+		| (NOT)? (
+			// Represent the optional NOT prefix using the token type by
+			// testing 'n' and setting the token type accordingly.
+			(IN
+				i=CompoundExpr)
+			| (BETWEEN
+				b=BetweenList )
+			| (LIKE
+				c=Concatenation l=LikeEscape)
+			| (MEMBER (OF)? p=Path  ) )
+		)
+	;
+
+LikeEscape
+	: {LikeEscape}(ESCAPE c=Concatenation)?
+	;
+
+BetweenList
+	: c+=Concatenation AND c+=Concatenation
+	;
+
+//level 4 - string concatenation
+Concatenation
+	: AdditiveExpression 
+	( '||'  
+	  a+=AdditiveExpression
+	  ( '||' a+=AdditiveExpression )* 
+	  )?
+	;
+
+// level 3 - binary plus and minus
+AdditiveExpression
+	: m+=MultiplyExpression ( ( '+' | '-' ) m+=MultiplyExpression )*
+	;
+
+// level 2 - binary multiply and divide
+MultiplyExpression
+	: u+=UnaryExpression ( ( '*' | '/' ) u+=UnaryExpression )*
+	;
+	
+// level 1 - unary minus, unary plus, not
+UnaryExpression
+	: '-'  u=UnaryExpression
+	| '+' u=UnaryExpression
+	| CaseExpression
+	| QuantifiedExpression
+	| Atom
+	;
+	
+CaseExpression
+	: CASE (w+=WhenClause)+ (e=ElseClause)? END
+	| CASE u=UnaryExpression (a+=AltWhenClause)+ (e=ElseClause)? END
+	;
+	
+WhenClause
+	: (WHEN whenExpr=Expression THEN thenExpr=UnaryExpression)
+	;
+	
+AltWhenClause
+	: (WHEN w=UnaryExpression THEN t=UnaryExpression)
+	;
+	
+ElseClause
+	: (ELSE u=UnaryExpression)
+	;
+	
+QuantifiedExpression
+	:{QuantifiedExpression} ( SOME | EXISTS | ALL | ANY ) 
+	( Identifier | CollectionExpr | ('(' ( s=UnionRule ) ')') )
+	;
+
+// level 0 - expression atom
+// ident qualifier ('.' ident ), array index ( [ expr ] ),
+// method call ( '.' ident '(' ExprList ') )
+Atom
+	 : {Atom} ( prime=PrimaryExpression
+		(	'.' Identifier ( '('  e+=ExprList ')' )? |
+			'['  exp+=Expression ']'
+		)* )
+	;
+
+// level 0 - the basic element of an expression
+PrimaryExpression
+	:  IdentPrimary ( '.' CLASS )?
+	|   Constant
+	|   ':' Identifier
+	|   '(' (ExpressionOrVector | UnionRule) ')'
+	|   '?' (INT)?
+	;
+
+// This parses normal expression and a list of expressions separated by commas.  If a comma is encountered
+// a parent VECTOR_EXPR node will be created for the list.
+ExpressionOrVector
+	: Expression ( v=VectorExpr )? 
+	;
+
+VectorExpr
+	: ',' e+=Expression (',' e+=Expression)*
+	;
+
+// identifier, followed by member refs (dot ident), or method calls.
+// NOTE: handleDotIdent() is called immediately after the first IDENT is recognized because
+// the method looks a head to find keywords after '.' and turns them into identifiers.
+IdentPrimary
+	: {IdentPrimary} ( Identifier ( ('.' Identifier) | ('.' ELEMENTS) | ('.' OBJECT)   )* 
+		( '('  e=ExprList ')' )?)
+	| 	Aggregate
+	;
+
+//## aggregate:
+//##     ( aggregateFunction OPEN Path CLOSE ) | ( COUNT OPEN '*' CLOSE ) | ( COUNT OPEN (DISTINCT | ALL) Path CLOSE );
+
+//## aggregateFunction:
+//##     COUNT | 'sum' | 'avg' | 'max' | 'min';
+
+Aggregate
+	: {Aggregate} ( SUM | AVG | MAX | MIN ) '(' a=AdditiveExpression ')' 
+	// Special case for count - It's 'parameters' can be keywords.
+	| {Aggregate}  COUNT '(' ( '*'  | ( ( DISTINCT | ALL )? ( Path | CollectionExpr ) ) ) ')'
+	|  CollectionExpr
+	;
+
+//## collection: ( OPEN query CLOSE ) | ( 'elements'|'indices' OPEN Path CLOSE );
+
+CollectionExpr
+	: (ELEMENTS | INDICES) '(' Path ')'
+	;
+                                           
+// NOTE: CompoundExpr can be a 'Path' where the last token in the path is '.elements' or '.indicies'
+CompoundExpr
+	: CollectionExpr
+	| Path
+	| ('(' ( (e+=Expression (',' e+=Expression)*) | s=UnionRule ) ')')
+	;
+
+ExprList
+	: (TRAILING | LEADING  | BOTH )?
+	  ( e+=Expression ( (',' e+=Expression)+ | FROM  e+=Expression | AS id=Identifier )? 
+	  		| FROM  e+=Expression )?
+	;
+
+Constant
+	:  Number
+	| STRING
+	| NULL
+	| TRUE
+	| FALSE
+	| EMPTY
+	;
+
+//## QuantifiedExpression: 'exists' | ( expression 'in' ) | ( Expression OP 'any' | 'some' ) collection;
+
+//## compoundPath: Path ( OPEN_BRACKET Expression CLOSE_BRACKET ( '.' Path )? )*;
+
+//## Path: Identifier ( '.' Identifier )*;
+
+Path
+	: Identifier ( '.' Identifier )*
+	;
+
+Identifier
+	: '$'? ID 
+	| 'e' | 'f' | 'd' // To allow number terminals as function arguments
+	| 'upper' | 'lower' | '$now' | '$today' | 'date' | 'title' | 'type' | 'include' | 'length' //MDD keywords that can appear in Query Functions
+	| END | WHEN | FROM | MEMBER
+	;
+	
+Number returns ecore::EFloat
+	:   '.' ( INT (('e') ('+'|'-')? INT)? ('f'|'d')? )?
+	|	(	 
+			HEX|INT|SIGNED_INT  
+		)
+		(	('l') 
+		|	
+			(   '.' INT? (('e') ('+'|'-')? INT)? ('f'|'d')?
+			|   ('e') ('+'|'-')? INT ('f'|'d')?
+			|   'f'|'d' 
+			)
+		)?
+	;
+
+SELECT: 'SELECT' | 'Select' | 'select';
+DISTINCT: 'DISTINCT' | 'Distinct' | 'distinct';
+NEW: 'NEW' | 'New' | 'new';
+OBJECT: 'OBJECT' | 'Object' | 'object';
+FROM: 'FROM' | 'From' | 'from';
+LEFT: 'LEFT' | 'Left' | 'left';
+RIGHT: 'RIGHT' | 'Right' | 'right';
+OUTER: 'OUTER' | 'Outer' | 'outer';
+FULL: 'FULL' | 'Full' | 'full';
+INNER: 'INNER' | 'Inner' | 'inner';
+JOIN: 'JOIN' | 'Join' | 'join';
+FETCH: 'FETCH' | 'Fetch' | 'fetch';
+WITH: 'WITH' | 'With' | 'with';
+IN: 'IN' | 'In' | 'in';
+CLASS: 'CLASS' | 'Class' | 'class';
+IN_CLASS: IN CLASS;
+ELEMENTS: 'ELEMENTS' | 'Elements' | 'elements';
+IN_ELEMENTS: IN ELEMENTS;
+AS: 'AS' | 'As' | 'as';
+PROPERTIES: 'PROPERTIES' | 'Properties' | 'properties';
+GROUP_BY: ('GROUP' | 'Group' | 'group') BY;
+ORDER_BY: ('ORDER' | 'Order' | 'order') BY;
+BY: 'BY' | 'By' | 'by';
+ASC: 'ASC' | 'Asc' | 'asc' | 'ASCENDING' | 'Ascending' | 'ascending';
+DESC: 'DESC' | 'Desc' | 'desc' | 'DESCENDING' | 'Descending' | 'descending';
+HAVING: 'HAVING' | 'Having' | 'having';
+WHERE: 'WHERE' | 'Where' | 'where';
+OR: 'OR' | 'Or' | 'or';
+AND: 'AND' | 'And' | 'and';
+NOT: 'NOT' | 'Not' | 'not';
+IS: 'IS' | 'Is' | 'is';
+BETWEEN: 'BETWEEN' | 'Between' | 'between';
+LIKE: 'LIKE' | 'Like' | 'like';
+MEMBER: 'MEMBER' | 'Member' | 'member';
+OF: 'OF' | 'Of' | 'of';
+ESCAPE: 'ESCAPE' | 'Escape' | 'escape';
+CASE: 'CASE' | 'Case' | 'case';
+END: 'END' | 'End' | 'end';
+WHEN: 'WHEN' | 'When' | 'when';
+THEN: 'THEN' | 'Then' | 'then';
+ELSE: 'ELSE' | 'Else' | 'else';
+SOME: 'SOME' | 'Some' | 'some';
+EXISTS: 'EXISTS' | 'Exists' | 'exists';
+ALL: 'ALL' | 'All' | 'all';
+ANY: 'ANY' | 'Any' | 'any';
+SUM: 'SUM' | 'Sum' | 'sum';
+AVG: 'AVG' | 'Avg' | 'avg';
+MAX: 'MAX' | 'Max' | 'max';
+MIN: 'MIN' | 'Min' | 'min';
+COUNT: 'COUNT' | 'Count' | 'count';
+INDICES: 'INDICES' | 'Indices' | 'indices';
+TRAILING: 'TRAILING' | 'Trailing' | 'trailing';
+LEADING: 'LEADING' | 'Leading' | 'leading';
+BOTH: 'BOTH' | 'Both' | 'both';
+NULL: 'NULL' | 'Null' | 'null';
+TRUE: 'TRUE' | 'True' | 'true';
+FALSE: 'FALSE' | 'False' | 'false';
+EMPTY: 'EMPTY' | 'Empty' | 'empty';	
+
+	
+
+// END HQL stuff
+
+IdOrKeyword
+	: ID | Keyword
+	;
+
+//keywords that can be used as names of fields or functions	
+Keyword
+	: 'all' | 'length' | 'char' | 'type' | 'file' | 'text' | 'title' //MDD keywords
+	| 'max' | 'when' | 'member' | 'end' | 'object'| 'date' | 'then' //HQL keywords
+	;	
+	
+terminal  LINEBREAK : '\n' | '\r' '\n' | '\r';
+
+terminal ID : '^'? ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')*;
+
+terminal SIGNED_INT returns ecore::EInt: ('-'|'+') INT;
+
+terminal HEX returns ecore::EInt:  ('0x') ('0'..'9'|'a'..'f')+;
+
+terminal INT returns ecore::EInt: ('0'..'9')+;
+
+terminal FIELDCOMMENT : ';' (!('\n'|'\r'))* ;
+
+terminal SL_COMMENT : '#' !('\n'|'\r')* ('\r'? '\n')?;
+
+terminal WS  :   (   ' '
+		|   '\t'
+		|   '\r' '\n' 
+		|   '\n'      
+		|   '\r'      
+		)
+	;
+
+terminal STRING:	 
+//		:'"'(	('\\' ( 'n' | 'r' | 't' | 'b' | 'f' | '"' | '\'' | '\\'
+//	        		|   ('u')+ ('0'..'9'|'a'..'f'|'A'..'F') ('0'..'9'|'a'..'f'|'A'..'F') 
+//	        			('0'..'9'|'a'..'f'|'A'..'F') ('0'..'9'|'a'..'f'|'A'..'F')
+//	        		//|   '0'..'3'('0'..'7')*
+//	        		//|   '4'..'7' ('0'..'7')? 
+//	        		)
+//	        	)
+//	        |!('"'|'\\'|'\n'|'\r'))* '"'
+				
+		'"'	( '\\' '"' | !('"') )* '"' |
+			"'" ( '\\' ('b'|'t'|'n'|'f'|'r'|'"'|"'"|'\\') | !('\\'|"'") )* "'"
+		;
+		
+//terminal STRING
+//	: '"'->'"'; 
+//	
+//terminal HQL_STRING
+//	: "'" ( '\\' ('b'|'t'|'n'|'f'|'r'|'"'|"'"|'\\') | !('\\'|"'") )* "'"
+//	;
+
+		
+		
