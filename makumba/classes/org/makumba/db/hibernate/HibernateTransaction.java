@@ -15,6 +15,7 @@ import org.hibernate.CacheMode;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.type.NullableType;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.HibernateSFManager;
@@ -282,8 +283,6 @@ public class HibernateTransaction extends TransactionImplementation {
 
     public Vector<Dictionary<String, Object>> execute(String query, Object args, int offset, int limit) {
         MakumbaSystem.getLogger("hibernate.query").fine("Executing hibernate query " + query);
-        String originalQuery = query;
-
         QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer("oql");
 
         Map<String, Object> argsMap = paramsToMap(args);
@@ -302,10 +301,6 @@ public class HibernateTransaction extends TransactionImplementation {
         }
 
         args = paramTransformer.toParameterArray(argsMap);
-
-        System.out.println(query);
-
-        DataDefinition dataDef = analyzer.getProjectionType();
 
         org.hibernate.Query q = s.createQuery(query);
 
@@ -359,7 +354,7 @@ public class HibernateTransaction extends TransactionImplementation {
             }
 
             // process each field's result
-            for (int j = 0; j < resultFields.length; j++) { // 
+            for (int j = 0; j < resultFields.length; j++) { //
                 if (resultFields[j] != null) { // we add to the dictionary only fields with values in the DB
                     FieldDefinition fd = dataDef.getFieldDefinition(j);
                     if (fd.getType().startsWith("ptr")) {
@@ -400,41 +395,8 @@ public class HibernateTransaction extends TransactionImplementation {
             FieldDefinition paramDef = paramsDef.getFieldDefinition(i);
             if (MqlParameterTransformer.isValueInvalidForPosition(paramDef, paramValue)) {
                 q.setParameter(i, null);
-            } else if (paramValue instanceof Date && paramDef.getType().startsWith("date")) {
-                q.setDate(i, (Date) paramValue);
-            } else if (paramValue instanceof Integer && paramDef.getType().startsWith("int")) {
-                q.setInteger(i, (Integer) paramValue);
-            } else if (paramValue instanceof Pointer && paramDef.getType().startsWith("ptr")) {
-                q.setParameter(i, new Integer(((Pointer) argsArray[i]).getId()));
-            } else if (paramValue instanceof String && paramDef.getType().startsWith("char")) {
-                q.setParameter(i, paramValue);
-            } else { // we have any param type (most likely String)
-                boolean assigned = false;
-
-                if (paramDef.getType().startsWith("ptr") && paramValue instanceof String) {
-                    Pointer p = new Pointer(paramDef.getPointedType().getName(), (String) paramValue);
-                    q.setInteger(i, new Integer((int) p.longValue()));
-                    assigned = true;
-                }
-
-                else if (paramDef.getIntegerType() == FieldDefinition._intEnum && paramValue instanceof String) {
-
-                    for (int k = 0; k < paramDef.getEnumeratorSize(); k++) {
-                        if (paramDef.getNameAt(k).equals(paramValue)) {
-                            paramValue = paramDef.getIntAt(k);
-                            assigned = true;
-                            break;
-                        }
-                    }
-                    if (assigned) {
-                        q.setInteger(i, (Integer) paramValue);
-                    }
-
-                }
-
-                if (!assigned) {
-                    throw new IllegalStateException("could not assign paramter " + paramDef + " = " + paramValue);
-                }
+            } else {
+                assignParameter(i, paramValue, paramDef, q);
             }
         }
     }
@@ -443,61 +405,106 @@ public class HibernateTransaction extends TransactionImplementation {
         String[] queryParams = q.getNamedParameters();
         for (String paramName : queryParams) {
             Object paramValue = args.get(paramName);
-
             FieldDefinition paramDef = paramsDef.getFieldDefinition(paramName);
+            assignParameter(paramName, paramValue, paramDef, q);
 
-            // FIXME: check if the type of the actual parameter is in accordance with paramDef
-            if (paramValue instanceof List) {
-                @SuppressWarnings("unchecked")
-                List<Object> lst = (List<Object>) paramValue;
-                for (int i = 0; i < lst.size(); i++) {
-                    lst.set(i, checkPtr(paramDef, lst.get(i)));
-                }
-                q.setParameterList(paramName, (Collection<?>) paramValue);
-            } else if (paramValue instanceof Date) {
-                q.setParameter(paramName, paramValue, Hibernate.TIMESTAMP);
-            } else if (paramValue instanceof Integer) {
-                q.setParameter(paramName, paramValue, Hibernate.INTEGER);
-            } else if (paramValue instanceof Pointer) {
-                q.setParameter(paramName, new Integer(((Pointer) paramValue).getId()), Hibernate.INTEGER);
-            } else if (paramValue instanceof NullObject) {
-                NullObject n = (NullObject) paramValue;
-                if (n.equals(Pointer.Null)) {
-                    q.setParameter(paramName, new Integer(-1), Hibernate.INTEGER);
-                } else if (n.equals(Pointer.NullInteger)) {
-                    q.setParameter(paramName, new Integer(-1), Hibernate.INTEGER);
-                } else {
-                    q.setParameter(paramName, null);
-                }
+        }
+    }
 
-            } else { // we have any param type (most likely String)
-                if (paramDef.getIntegerType() == FieldDefinition._ptr && paramValue instanceof String) {
-                    Pointer p = new Pointer(paramDef.getPointedType().getName(), (String) paramValue);
-                    q.setParameter(paramName, new Integer(p.getId()), Hibernate.INTEGER);
-                } else if (paramDef.getIntegerType() == FieldDefinition._int) {
-                    Integer val = paramValue instanceof String ? Integer.parseInt((String) paramValue)
-                            : (Integer) paramValue;
-                    q.setParameter(paramName, val);
-                } else if (paramDef.getIntegerType() == FieldDefinition._intEnum) {
-                    if (paramValue instanceof String) {
-                        for (int k = 0; k < paramDef.getEnumeratorSize(); k++) {
-                            if (paramDef.getNameAt(k).equals(paramValue)) {
-                                paramValue = paramDef.getIntAt(k);
-                                break;
-                            }
+    private void assignParameter(Object nameOrPosition, Object paramValue, FieldDefinition paramDef,
+            org.hibernate.Query q) {
+        // FIXME: check if the type of the actual parameter is in accordance with paramDef
+        // FIXME actually we should never have this case given the Multiple attribute parametrizer of MQL
+        // so probably we can trash this
+        if (paramValue instanceof List) {
+            @SuppressWarnings("unchecked")
+            List<Object> lst = (List<Object>) paramValue;
+            for (int i = 0; i < lst.size(); i++) {
+                lst.set(i, checkPtr(paramDef, lst.get(i)));
+            }
+
+            if (nameOrPosition instanceof String) {
+                q.setParameterList((String) nameOrPosition, (Collection<?>) paramValue);
+            } else if (nameOrPosition instanceof Integer) {
+                // FIXME
+                // q.setParameterList((Integer)nameOrPosition, (Collection<?>) paramValue);
+            } else {
+                throw new MakumbaError("Wrong parameter name / position");
+            }
+
+        } else if (paramValue instanceof Date) {
+            setParameter(nameOrPosition, paramValue, Hibernate.TIMESTAMP, q);
+        } else if (paramValue instanceof Integer) {
+            setParameter(nameOrPosition, paramValue, Hibernate.INTEGER, q);
+        } else if (paramValue instanceof Pointer) {
+            setParameter(nameOrPosition, new Integer(((Pointer) paramValue).getId()), Hibernate.INTEGER, q);
+        } else if (paramValue instanceof NullObject) {
+            NullObject n = (NullObject) paramValue;
+            if (n.equals(Pointer.Null)) {
+                setParameter(nameOrPosition, new Integer(-1), Hibernate.INTEGER, q);
+            } else if (n.equals(Pointer.NullInteger)) {
+                setParameter(nameOrPosition, new Integer(-1), Hibernate.INTEGER, q);
+            } else {
+                setParameter(nameOrPosition, null, null, q);
+            }
+
+        } else { // we have any param type (most likely String)
+            boolean assigned = false;
+            if (paramDef.getIntegerType() == FieldDefinition._ptr && paramValue instanceof String) {
+                Pointer p = new Pointer(paramDef.getPointedType().getName(), (String) paramValue);
+                setParameter(nameOrPosition, new Integer(p.getId()), Hibernate.INTEGER, q);
+                assigned = true;
+            } else if (paramDef.getIntegerType() == FieldDefinition._int) {
+                Integer val = paramValue instanceof String ? Integer.parseInt((String) paramValue)
+                        : (Integer) paramValue;
+                setParameter(nameOrPosition, val, null, q);
+                assigned = true;
+            } else if (paramDef.getIntegerType() == FieldDefinition._intEnum) {
+                if (paramValue instanceof String) {
+                    // FIXME if no corresponding value is found, scream
+                    for (int k = 0; k < paramDef.getEnumeratorSize(); k++) {
+                        if (paramDef.getNameAt(k).equals(paramValue)) {
+                            paramValue = paramDef.getIntAt(k);
+                            break;
                         }
                     }
-
-                    q.setParameter(paramName, paramValue);
-                } else if (paramDef.getIntegerType() == FieldDefinition._real) {
-                    Double val = paramValue instanceof String ? Double.parseDouble((String) paramValue)
-                            : (Double) paramValue;
-                    q.setParameter(paramName, val);
-                } else {
-                    q.setParameter(paramName, paramValue);
                 }
+
+                setParameter(nameOrPosition, paramValue, null, q);
+                assigned = true;
+            } else if (paramDef.getIntegerType() == FieldDefinition._real) {
+                Double val = paramValue instanceof String ? Double.parseDouble((String) paramValue)
+                        : (Double) paramValue;
+                setParameter(nameOrPosition, val, null, q);
+                assigned = true;
+            } else {
+                setParameter(nameOrPosition, paramValue, null, q);
+                assigned = true;
+            }
+
+            if (!assigned) {
+                throw new IllegalStateException("Could not assign paramter " + paramDef + " = " + paramValue);
             }
         }
+    }
+
+    private void setParameter(Object nameOrPosition, Object value, NullableType type, org.hibernate.Query q) {
+        if (nameOrPosition instanceof String) {
+            if (type != null) {
+                q.setParameter((String) nameOrPosition, value, type);
+            } else {
+                q.setParameter((String) nameOrPosition, value);
+            }
+        } else if (nameOrPosition instanceof Integer) {
+            if (type != null) {
+                q.setParameter((Integer) nameOrPosition, value, type);
+            } else {
+                q.setParameter((Integer) nameOrPosition, value);
+            }
+        } else {
+            throw new MakumbaError("Wrong parameter name / position");
+        }
+
     }
 
     private Object checkPtr(FieldDefinition paramDef, Object paramValue) {
