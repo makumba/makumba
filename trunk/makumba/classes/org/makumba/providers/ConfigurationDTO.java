@@ -17,6 +17,8 @@ public class ConfigurationDTO {
 
     String queryInliner;
 
+    String pointerUIDStrategyClass;
+
     // temporary stuff
     boolean generateEntityClasses;
 
