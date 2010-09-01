@@ -233,8 +233,7 @@
 	</target>
 
 
-	<target name="ANTLRParserGeneration" depends="checkAntlr, install, detectHqlTokens" unless="antlr.notRequired"
-			description="if the HQL/MQL/MDD grammar has changed, call antlr to re-generate the parser">
+	<target name="ANTLRParserGeneration" depends="checkAntlr, install, detectHqlTokens" unless="antlr.notRequired" description="if the HQL/MQL/MDD grammar has changed, call antlr to re-generate the parser">
 
 		<java classname="antlr.Tool" fork="true" dir="classes/org/makumba/providers/query/hql" failonerror="true" taskname="antlr">
 			<classpath refid="project.class.path" />
@@ -290,9 +289,9 @@
 		<javac srcdir="${test.dir}" destdir="build" source="1.5" target="1.5" debug="on">
 			<classpath refid="project.class.path" />
 		</javac>
-        <javac srcdir="${test-webapp-src.dir}" destdir="build" source="1.5" target="1.5" debug="on">
-        	<classpath refid="project.class.path" />
-        </javac>
+		<javac srcdir="${test-webapp-src.dir}" destdir="build" source="1.5" target="1.5" debug="on">
+			<classpath refid="project.class.path" />
+		</javac>
 
 	</target>
 
@@ -443,10 +442,10 @@
 				<include name="makumba/**" />
 			</fileset>
 		</jar>
-		
+
 		<!-- make the javadoc jar -->
 		<antcall target="jarJavadoc" />
-		
+
 		<!-- compile files necessary for making the release -->
 		<javac srcdir="work/makumba.distrib/makumba/classes" destdir="work/makumba.distrib/makumba/build" source="1.5" target="1.5" debug="on" includes="org/makumba/version.java">
 			<classpath>
@@ -554,7 +553,7 @@
 		<!-- clean up -->
 		<delete file="work/*.asc" />
 		<delete file="work/release-pom.xml" />
-		
+
 		<artifact:remoteRepository id="sonatype.release" url="http://oss.sonatype.org/service/local/staging/deploy/maven2/">
 			<releases enabled="true" />
 			<snapshots enabled="false" />
@@ -569,7 +568,7 @@
 		<copy file="${lib.dir}/${tag}.jar" tofile="work/makumba.jar" overwrite="true" />
 		<copy file="${lib.dir}/${tag}-sources.jar" tofile="work/makumba-${release.version}-sources.jar" overwrite="true" />
 		<copy file="${lib.dir}/${tag}-javadoc.jar" tofile="work/makumba-${release.version}-javadoc.jar" overwrite="true" />
-		
+
 		<!-- in-memory POM definition -->
 		<artifact:pom id="makumba-memory.project" groupId="org.makumba" artifactId="makumba" version="${release.version}" name="makumba" description="A framework for rapid and sustainable web-development" url="http://www.makumba.org">
 
@@ -582,7 +581,7 @@
 			<dependency groupid="c3p0" artifactid="c3p0" version="0.9.1.2" scope="runtime" />
 			<dependency groupid="eu.medsea.mimeutil" artifactid="mime-util" version="2.1.3" scope="runtime" />
 			<dependency groupid="com.google.code.gson" artifactid="gson" version="1.4" scope="runtime" />
-		
+
 			<license name="LGPL" url="http://www.gnu.org/copyleft/lesser.html" />
 			<scm url="http://svn.makumba.sourceforge.net/" connection="http://svn.makumba.sourceforge.net/" />
 
@@ -600,7 +599,7 @@
 		<echo>Signing makumba.jar and release-pom.xml</echo>
 		<echo>This may fail if you didn't set up your JVM correctly, make sure you read the comments in build.xml!</echo>
 
-	<!--
+		<!--
       ANT support for signature is not mature yet, but it works.
       - you need to have the public and private key files for this (makumba-secring.gpg, makumba-pubring.gpg)
       - additionally, you need to set up the BouncyCastle provider in your JVM:
@@ -741,15 +740,14 @@
 	<target name="testJar" description="make a jar in ./lib containing the test classes">
 		<mkdir dir="${jar.dir}/lib" />
 		<jar jarfile="${jar.dir}/lib/mak-test.jar">
-			<fileset dir="${test.dir}" includes="org/makumba/test/**/*.class" defaultExcludes="no" />
-			<fileset dir="${src.dir}" includes="org/makumba/test/**/*.mdd" defaultExcludes="no" />
+			<fileset dir="${build.dir}" includes="org/makumba/test/**/*.class" defaultExcludes="no" />
 		</jar>
 	</target>
 
 	<target name="testWar" depends="jar, testJar">
 		<delete file="${build.dir}/tests.war" />
 		<property name="webapp.source" value="webapps" />
-		
+
 		<war destfile="${build.dir}/tests.war" webxml="${webapp.source}/tests/WEB-INF/web.xml.dynamic" update="true">
 			<fileset dir="${webapp.source}/tests">
 				<exclude name="WEB-INF/**/*" />
@@ -995,7 +993,7 @@ package org.makumba]]>
 			<format property="javadoc.startup.time" pattern="yyyy-MM-dd HH:mm" />
 		</tstamp>
 
-        <!-- <loadfile property="leftMenuContent" srcfile="${documentation.path}/JSPWiki/api/leftMenu.html" /> -->
+		<!-- <loadfile property="leftMenuContent" srcfile="${documentation.path}/JSPWiki/api/leftMenu.html" /> -->
 
 		<javadoc destdir="${documentation.path}/JSPWiki/api" sourcepath="classes" packagenames="org.makumba" notree="true" noindex="true" nohelp="true" windowtitle="Makumba" classpathref="project.class.path" Version="true" Author="true" additionalparam="-breakiterator" doctitle="Makumba API Documentation" stylesheetfile="${documentation.path}/JSPWiki/templates/makumba/jspwiki-api.css">
 			<!--
@@ -1068,12 +1066,12 @@ package org.makumba]]>
 </javadoc>
 
 </target>
-	
-	<target name="jarJavadoc" if="tag" depends="javadoc">
-		<jar jarfile="lib/${tag}-javadoc.jar">
-			<fileset dir="${documentation.path}/JSPWiki/api-developer/" />
-		</jar>
- 	</target>
+
+<target name="jarJavadoc" if="tag" depends="javadoc">
+<jar jarfile="lib/${tag}-javadoc.jar">
+	<fileset dir="${documentation.path}/JSPWiki/api-developer/" />
+</jar>
+</target>
 
 
 </project>
