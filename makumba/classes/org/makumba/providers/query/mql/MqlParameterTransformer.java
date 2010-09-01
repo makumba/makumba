@@ -13,9 +13,10 @@ import org.makumba.MakumbaError;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.commons.NameResolver;
+import org.makumba.commons.NameResolver.TextList;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
-import org.makumba.commons.NameResolver.TextList;
+import org.makumba.db.TransactionImplementation;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.ParameterTransformer;
 import org.makumba.providers.QueryAnalysis;
@@ -159,6 +160,12 @@ public class MqlParameterTransformer implements ParameterTransformer {
 
     /**
      * Gets the value of a given argument, applies name transformation if necessary, and checks if the value is not null
+     * 
+     * @param argumentName
+     *            the name of the argument to get
+     * @param arguments
+     *            the map of arguments. Note that this is a special map, see
+     *            {@link TransactionImplementation#paramsToMap(Object args)}
      */
     private Object getArgumentValue(String argumentName, Map<String, Object> arguments) throws ProgrammerError {
 
