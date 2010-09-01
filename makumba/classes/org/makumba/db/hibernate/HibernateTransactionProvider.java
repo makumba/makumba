@@ -3,9 +3,9 @@ package org.makumba.db.hibernate;
 import org.makumba.HibernateSFManager;
 import org.makumba.Transaction;
 import org.makumba.providers.CRUDOperationProvider;
+import org.makumba.providers.Configuration.DataSourceType;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
-import org.makumba.providers.Configuration.DataSourceType;
 
 /**
  * This class is a Hibernate-specific implementation of a {@link TransactionProvider}. FIXME see what to do with the old
