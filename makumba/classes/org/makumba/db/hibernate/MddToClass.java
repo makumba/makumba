@@ -105,6 +105,8 @@ public class MddToClass {
         cc.addMethod(CtNewMethod.setter("set" + name, CtField.make("private " + type + " " + name + ";", cc)));
 
         cc.writeFile(generatedClassPath);
+        // we defrost, so we can modify the file again if we need to
+        cc.defrost();
     }
 
     public void generateClass(DataDefinition dd) throws CannotCompileException, NotFoundException, IOException {
@@ -210,6 +212,9 @@ public class MddToClass {
             cc.addConstructor(CtNewConstructor.make("public " + nm.substring(lst + 1) + "() {}", cc));
             // ClassFileWriter.print(cc.getClassFile());
             cc.writeFile(generatedClassPath);
+
+            // we defrost, so we can modify the file again if we need to
+            cc.defrost();
         }
     }
 
