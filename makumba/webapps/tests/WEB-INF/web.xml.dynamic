@@ -29,6 +29,18 @@
     <url-pattern>/mak-tools/*</url-pattern>
   </filter-mapping>
   
+  <!-- For testing -->
+  <servlet>
+    <servlet-name>testInit</servlet-name>
+    <servlet-class>org.makumba.test.util.TestInitServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>testInit</servlet-name>
+    <url-pattern>/testInit/*</url-pattern>
+  </servlet-mapping>
+  
+  
   <!-- Commented out as not needed, and not working for Jetty, might be removed later on
   <servlet>
     <servlet-name>invoker</servlet-name>
