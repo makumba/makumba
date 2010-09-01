@@ -1,16 +1,8 @@
 package org.makumba.test.util;
 
-import java.io.IOException;
-
 import junit.extensions.TestSetup;
 import junit.framework.Test;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.makumba.MakumbaError;
 import org.makumba.Transaction;
 import org.makumba.commons.NamedResources;
 import org.makumba.db.hibernate.HibernateTransactionProvider;
@@ -58,24 +50,6 @@ public class MakumbaTestSetup extends TestSetup {
         db.executeQuery(query2, null);
 
         db.close();
-
-        // init tests on the server side, i.e. clean static caches and populate database state (primary key values, so
-        // this works with auto-increment)
-        // make sure you update that servlet if new types appear!
-        HttpMethod getMethod = new GetMethod(System.getProperty("cactus.contextURL") + "/testInit");
-        HttpClient c = new HttpClient();
-        int code = 0;
-        try {
-            code = c.executeMethod(getMethod);
-        } catch (HttpException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if (code != HttpStatus.SC_OK) {
-            throw new MakumbaError("Could not initialise tests on the server-side, status code of servlet is " + code);
-        }
-
     }
 
     @Override

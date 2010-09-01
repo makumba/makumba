@@ -9,6 +9,7 @@ import junit.framework.TestSuite;
 
 import org.makumba.test.util.MakumbaJspTestCase;
 import org.makumba.test.util.MakumbaTestSetup;
+import org.makumba.test.util.MakumbaWebTestSetup;
 
 import com.meterware.httpunit.WebResponse;
 
@@ -33,7 +34,7 @@ public class ListOQLTest extends MakumbaJspTestCase {
 
     static Suite setup;
 
-    private static final class Suite extends MakumbaTestSetup {
+    private static final class Suite extends MakumbaWebTestSetup {
         private Suite(Test arg0) {
             super(arg0, "oql");
         }
