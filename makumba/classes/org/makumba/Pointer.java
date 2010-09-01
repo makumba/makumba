@@ -26,17 +26,30 @@ package org.makumba;
 import java.util.Arrays;
 import java.util.List;
 
+import org.makumba.providers.Configuration;
+
 /**
  * This class represents an abstract makumba pointer. It is up to the concrete database to represent it. Pointer values
  * are returned by the database inserts and queries, they cannot be constructed explicitely.
  */
-public class Pointer implements java.io.Serializable {
+public class Pointer implements java.io.Serializable, UIDStrategy {
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
 
     protected Pointer() {
+        // for the testing environment
+    	// this is a typical case for dependency injection
+        if (!Configuration.getPointerUIDStrategyClass().equals(Configuration.PROPERTY_NOT_SET)) {
+            try {
+                strategy = (UIDStrategy) Class.forName(Configuration.getPointerUIDStrategyClass()).newInstance();
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        } else {
+            strategy = this;
+        }
     }
 
     static final protected int MASK_ORDER = 24;
@@ -44,6 +57,8 @@ public class Pointer implements java.io.Serializable {
     protected long n;
 
     protected String type;
+
+    protected UIDStrategy strategy;
 
     /** null constant for pointers */
     public static Object Null = new NullObject("null");
@@ -111,7 +126,8 @@ public class Pointer implements java.io.Serializable {
     /** encode in external format */
     public String toExternalForm() {
         long hc = type.hashCode() & 0xffffffffl;
-        return Long.toString((crc(n) & 0xfl) << 32 | n ^ hc, Character.MAX_RADIX);
+        return Long.toString((crc(strategy.writeTo(type, n)) & 0xfl) << 32 | strategy.writeTo(type, n) ^ hc,
+            Character.MAX_RADIX);
     }
 
     /**
@@ -126,6 +142,7 @@ public class Pointer implements java.io.Serializable {
      *            Example: hhi4xw7.
      */
     public Pointer(String type, String externalForm) {
+        this();
         this.type = type;
         long hc = type.hashCode() & 0xffffffffl;
         long l = 0l;
@@ -139,6 +156,7 @@ public class Pointer implements java.io.Serializable {
         if (l >> 32 != (crc(n) & 0xfl)) {
             throw new InvalidValueException("invalid external pointer for type " + type + " : " + externalForm);
         }
+        n = strategy.readFrom(type, n);
     }
 
     /** see if this Pointer is equal with the object provided */
@@ -171,4 +189,11 @@ public class Pointer implements java.io.Serializable {
         return (int) n;
     }
 
+    public long readFrom(String type, long n) {
+        return n;
+    }
+
+    public long writeTo(String type, long n) {
+        return n;
+    }
 }

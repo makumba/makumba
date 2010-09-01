@@ -30,8 +30,8 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.StringTokenizer;
 import java.util.Map.Entry;
+import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang.StringUtils;
@@ -99,6 +99,8 @@ public class Configuration implements Serializable {
     // error logging to the database
     public static final String KEY_DB_ERROR_LOG = "logErrors";
 
+    public static final String KEY_POINTER_UID_STRATEGY_CLASS = "pointerUIDStrategyClass";
+
     // default dataSource
     private static ConfiguredDataSource defaultDataSource = null;
 
@@ -123,6 +125,7 @@ public class Configuration implements Serializable {
         d = new ConfigurationDTO();
         d.dataDefinitionProvider = applicationConfig.getProperty("providers", KEY_DATADEFINITIONPROVIDER);
         d.queryInliner = applicationConfig.getProperty("providers", KEY_QUERYFUNCTIONINLINER);
+        d.pointerUIDStrategyClass = applicationConfig.getProperty("providers", KEY_POINTER_UID_STRATEGY_CLASS);
         d.generateEntityClasses = applicationConfig.getBooleanProperty("providers", GENERATE_ENTITY_CLASSES);
         d.defaultDatabaseLayer = applicationConfig.getProperty("dataSourceConfig", KEY_DEFAULT_DATABASE_LAYER);
         d.defaultCalendarEditor = applicationConfig.getBooleanProperty("inputStyleConfig", KEY_CALENDAR_EDITOR);
@@ -231,6 +234,10 @@ public class Configuration implements Serializable {
      */
     public static boolean getGenerateEntityClasses() {
         return d.generateEntityClasses;
+    }
+
+    public static String getPointerUIDStrategyClass() {
+        return d.pointerUIDStrategyClass;
     }
 
     /**

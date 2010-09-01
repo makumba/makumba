@@ -21,7 +21,7 @@ public class HibernateTableTest2 extends TableTest {
 
     @Override
     public void setUp() {
-        db = HibernateTransactionProvider.getInstance().getConnectionTo("testDatabaseHibernate");
+        db = HibernateTransactionProvider.getInstance().getConnectionTo("testDatabaseHibernateTable");
     }
 
     @Override

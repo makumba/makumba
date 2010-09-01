@@ -304,7 +304,7 @@ public class MqlNode extends CommonAST {
         checkForOperandType(left);
         checkForOperandType(right);
 
-        if (!(left.isParam() && left.getMakType() == null) // 
+        if (!(left.isParam() && left.getMakType() == null) //
                 && !right.getMakType().isAssignableFrom(left.getMakType()) //
                 && !(right.getMakType().isNumberType() && left.getMakType().isNumberType()) //
                 && !(right.getMakType().isDateType() && left.getMakType().isDateType())) {
@@ -368,6 +368,7 @@ public class MqlNode extends CommonAST {
         String arg1 = s.substring(1, s.length() - 1);
         Object o = null;
         try {
+            System.out.println("MqlNode.checkAndRewrite() " + arg1);
             o = left.getMakType().checkValue(arg1);
         } catch (org.makumba.InvalidValueException e) {
             // walker.printer.showAst(right, walker.pw);
@@ -375,6 +376,7 @@ public class MqlNode extends CommonAST {
         }
         if (o instanceof Pointer) {
             o = new Long(((Pointer) o).longValue());
+            System.out.println("MqlNode.checkAndRewrite() " + o);
         }
         if (o instanceof Number) {
             right.setText(o.toString());
