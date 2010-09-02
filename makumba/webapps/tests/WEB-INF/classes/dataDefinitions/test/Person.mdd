@@ -155,3 +155,5 @@ languageNames() { concat(getLanguage('en'), ' ') }
 birthdayWithin12Months() { now() > dateSub(birthdate, 12, 'month') }
 birthdayBefore(char monthDay) { dayOfYear(birthdate) >= dayOfYear(str_to_date(monthDay, '%Y-%m-%d')) }
 
+youngestGroupMemberNoParentheses() { ( SELECT min(m.age) FROM groupMembers m ) } 
+youngestGroupMember() { ( SELECT min(m.age) FROM groupMembers m ) } 
