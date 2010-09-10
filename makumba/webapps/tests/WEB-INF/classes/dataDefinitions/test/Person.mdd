@@ -7,6 +7,7 @@ indiv = unique fixed not null ptr test.Individual ;lala
 
 birthdate=date		 ;Birthdate
 compare(birthdate) { birthdate <= date($now, $now, $now - 15, 0, 0, 0) } : "You have to be at least 15 years old!"
+compare(birthdate) { birthdate >= date(1, 1, 1860) } : "Your birthday can't be before 1860!"
 compare(birthdate) { birthdate >= date($now, $now, $now - 105, 0, 0, 0) } : "Maximum age is 105!"
 
 firstSex = date
