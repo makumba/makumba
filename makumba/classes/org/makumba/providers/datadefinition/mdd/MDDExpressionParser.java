@@ -73,7 +73,7 @@ public class MDDExpressionParser extends MDDExpressionBaseParser {
             case DATE:
                 int level = 0;
                 AST arg = part.getFirstChild();
-                while (arg.getNextSibling() != null && level < 10) {
+                while (arg != null && level < 10) {
                     processDate(c, arg, level);
                     level++;
                     if (level > 6) {
@@ -84,7 +84,6 @@ public class MDDExpressionParser extends MDDExpressionBaseParser {
                         factory.doThrow(typeName, "date() function cannot have more than 6 arguments", argMDD);
                     }
                     arg = arg.getNextSibling();
-
                 }
         }
 
@@ -110,6 +109,9 @@ public class MDDExpressionParser extends MDDExpressionBaseParser {
                 break;
             case NOW:
                 // nothing to do
+                break;
+            case POSITIVE_INTEGER:
+                c.set(dateEditor.components[level], Integer.parseInt(arg.getText()));
                 break;
         }
     }
