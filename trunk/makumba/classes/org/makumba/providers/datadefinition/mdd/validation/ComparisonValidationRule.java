@@ -34,17 +34,16 @@ public class ComparisonValidationRule extends ValidationRuleNode {
         return "compare() { " + comparisonExpression.toString() + " } : " + message + " (line " + getLine() + ")";
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean validate(Object value, Transaction t) throws InvalidValueException {
 
         LinkedHashMap<String, Object> values = null;
 
-        if (!(value instanceof LinkedHashMap)) {
+        if (!(value instanceof LinkedHashMap<?, ?>)) {
             throw new MakumbaError("can't validate multi-field validation rule without right argument type, dude!");
         } else {
-            @SuppressWarnings("unchecked")
-            LinkedHashMap<String, Object> value2 = (LinkedHashMap<String, Object>) value;
-            values = value2;
+            values = (LinkedHashMap<String, Object>) value;
         }
 
         Object left = null;
