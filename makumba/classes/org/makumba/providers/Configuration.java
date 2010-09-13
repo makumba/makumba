@@ -30,8 +30,8 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.StringTokenizer;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang.StringUtils;
@@ -286,6 +286,15 @@ public class Configuration implements Serializable {
 
     public static String getToolLocation(DeveloperTool t) {
         return getCompletePath(d.developerToolsLocations.get(t));
+    }
+
+    /**
+     * @deprecated use {@link #getToolLocation(DeveloperTool)} with parameter {@link DeveloperTool#LOGIC_DISCOVERY})
+     *             instead
+     */
+    @Deprecated
+    public static String getLogicDiscoveryViewerLocation() {
+        return getToolLocation(DeveloperTool.LOGIC_DISCOVERY);
     }
 
     public static String getServletLocation(MakumbaServlet s) {
