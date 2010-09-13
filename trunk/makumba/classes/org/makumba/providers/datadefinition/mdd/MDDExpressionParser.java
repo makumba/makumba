@@ -14,6 +14,7 @@ import antlr.collections.AST;
  * in some cases we want to skip parsing (e.g. for function bodies).
  * 
  * @author Manuel Gay
+ * @author Rudolf Mayer
  * @version $Id: MDDExpressionParser.java,v 1.1 08.07.2009 11:24:51 gaym Exp $
  */
 public class MDDExpressionParser extends MDDExpressionBaseParser {
@@ -102,18 +103,26 @@ public class MDDExpressionParser extends MDDExpressionBaseParser {
                 int rhs_val = getSummandValue(c, level, rhs);
 
                 if (arg.getType() == MINUS) {
-                    c.set(dateEditor.components[level], lhs_val - rhs_val);
+                    setDateComponent(c, level, lhs_val - rhs_val);
                 } else {
-                    c.set(dateEditor.components[level], lhs_val + rhs_val);
+                    setDateComponent(c, level, lhs_val + rhs_val);
                 }
                 break;
             case NOW:
                 // nothing to do
                 break;
             case POSITIVE_INTEGER:
-                c.set(dateEditor.components[level], Integer.parseInt(arg.getText()));
+                setDateComponent(c, level, Integer.parseInt(arg.getText()));
                 break;
         }
+    }
+
+    private void setDateComponent(GregorianCalendar c, int componentIndex, int value) {
+        // Java treats months starting from 0, but the MDD expression uses natural values
+        if (dateEditor.components[componentIndex] == Calendar.MONTH) {
+            value = value - 1;
+        }
+        c.set(dateEditor.components[componentIndex], value);
     }
 
     private int getSummandValue(GregorianCalendar c, int level, AST lhs) {
