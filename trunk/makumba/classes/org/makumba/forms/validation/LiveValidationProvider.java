@@ -127,8 +127,11 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
                         rule.getLowerBound(), rule.getUpperBound())));
                     break;
                 case REGEX:
+                    // JavaScript regexp patterns are enclosed in / /
+                    // thus, we need to escape any potential / in the pattern with \/
+                    // ( e.g. check for a valid URL starting with http:// )
                     validations.append(getValidationLine(inputVarName, "Validate.Format", rule, "pattern: /^"
-                            + rule.getExpression() + "$/i, "));
+                            + rule.getExpression().replace("/", "\\/") + "$/i, "));
                     break;
                 case COMPARISON:
 
