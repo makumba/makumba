@@ -24,6 +24,8 @@
 package org.makumba;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -31,7 +33,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Properties;
 
 /**
  * Computes the version from SVN BaseURL tag. If used from a HEAD check-out, this will return "devel-<currentDate>" If
@@ -76,12 +77,8 @@ public class version {
 
         } else {
             SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss"); // yyyy-MMM-dd HH:mm:ss
-            Date buildDate = getBuildDate();
-            if (buildDate != null) {
-                version = "devel-" + df.format(getBuildDate());
-            } else {
-                version = "devel-DATE-NOT-FOUND";
-            }
+            // we simply take the current timestamp as a reference point to when the current version has been built
+            version = "devel-" + df.format(new Date());
         }
 
         return version;
@@ -94,37 +91,56 @@ public class version {
         return vs.substring(vs.indexOf('-') + 1, vs.length());
     }
 
-    /** Reads a build date from properties file that was generated during compilation. */
-    static final Date getBuildDate() {
-        SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
-        Properties prop = new Properties();
-        String filename = "org/makumba/versionBuildDate.properties";
-        Date buildDate = null;
+    public static void main(String[] args) throws IOException {
 
-        try {
-            prop.load(org.makumba.commons.ClassResource.get(filename).openStream());
-            buildDate = df.parse(prop.getProperty("buildDate"), new java.text.ParsePosition(0));
-        } catch (Exception e) {
-            // TODO: throw an exception (needs to adapt some other classes / methods, as doStartTag in MakumbaInfoTag
-            java.util.logging.Logger.getLogger("org.makumba.version").severe(
-                "There was a problem reading the Makumba 'versionBuildDate.properties'. If you deleted the working directory of your web application, please make sure you reload the web application!");
+        if(args.length == 2 && args[0].equals("writeManifest")) {
+            writeManifest(args[1]);
+        } else {
+            System.out.println("name=Makumba");
+            System.out.println("version=" + getVersion());
+            // System.out.println("versionDewey=" + getVersionDewey());
+            System.out.println("date=" + new java.util.Date());
+            try {
+                System.out.println("buildhost=" + java.net.InetAddress.getLocalHost().getHostName() + " ("
+                        + java.net.InetAddress.getLocalHost().getHostAddress() + ")");
+            } catch (Exception e) {
+                System.out.println("buildhost=unknown.host");
+            }
+            System.out.println("java.vendor=" + java.lang.System.getProperty("java.vendor"));
+            System.out.println("java.version=" + java.lang.System.getProperty("java.version"));
         }
-        return buildDate;
     }
 
-    public static void main(String[] args) {
-        System.out.println("name=Makumba");
-        System.out.println("version=" + getVersion());
-        // System.out.println("versionDewey=" + getVersionDewey());
-        System.out.println("date=" + new java.util.Date());
-        try {
-            System.out.println("buildhost=" + java.net.InetAddress.getLocalHost().getHostName() + " ("
-                    + java.net.InetAddress.getLocalHost().getHostAddress() + ")");
-        } catch (Exception e) {
-            System.out.println("buildhost=unknown.host");
+    public static void writeManifest(String path) throws IOException {
+        File mf = new File(path);
+        if(!mf.exists()) {
+            mf.createNewFile();
         }
-        System.out.println("java.vendor=" + java.lang.System.getProperty("java.vendor"));
-        System.out.println("java.version=" + java.lang.System.getProperty("java.version"));
+        FileOutputStream fos = new FileOutputStream(mf);
+        PrintWriter pw = new PrintWriter(fos);
+        pw.println("Manifest-Version: 1.0");
+        pw.println("Created-By: Java " + System.getProperty("java.version") + " (" + System.getProperty("java.vendor") + ")");
+        pw.println();
+        pw.println("Name: Makumba");
+        pw.println("Version: " + getVersion());
+        String buildHost;
+        try {
+            buildHost = java.net.InetAddress.getLocalHost().getHostName() + " ("
+                    + java.net.InetAddress.getLocalHost().getHostAddress() + ")";
+        } catch (Exception e) {
+            buildHost = "unknown.host";
+        }
+
+        pw.println("Packed-By: " + System.getProperty("user.name") + " at " + buildHost);
+        pw.println("Date: " + new Date());
+        pw.println("License: GNU Lesser General Public License (LGPL)");
+        pw.println("URL: http://www.makumba.org");
+
+        pw.flush();
+        fos.flush();
+
+        pw.close();
+        fos.close();
     }
 
     /** Fetches global SVN version with svnversion * */

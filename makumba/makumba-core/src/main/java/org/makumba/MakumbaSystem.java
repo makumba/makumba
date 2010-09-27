@@ -23,11 +23,6 @@
 
 package org.makumba;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.jar.Manifest;
-
 import org.hibernate.Hibernate;
 import org.makumba.forms.html.CalendarEditorProvider;
 import org.makumba.forms.html.KruseCalendarEditor;
@@ -36,6 +31,12 @@ import org.makumba.forms.validation.LiveValidationProvider;
 import org.makumba.importer.HtmlTableImporter;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Date;
+import java.util.jar.Manifest;
 
 /**
  * The makumba runtime system. Provides starter methods to obtain {@link Transaction} and {@link DataDefinition} objects
@@ -169,14 +170,17 @@ public class MakumbaSystem {
      *             OQLQueryProvider.getOQLAnalyzer(OQL).getProjectionType(); }
      */
 
-    /** Returns a Makumba version (derived from a CVS tag) */
+    /** Returns a Makumba version (derived from a SVN tag) */
     public static String getVersion() {
         return org.makumba.version.getVersion();
     }
 
-    /** Returns build date (as recorded during building) */
+    /**
+     * Returns build date (as recorded during building)
+     * @deprecated the build date is included in the manifest file
+     */
     public static java.util.Date getBuildDate() {
-        return org.makumba.version.getBuildDate();
+        return new Date();
     }
 
     static String loggingRoot = "org.makumba";
