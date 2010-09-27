@@ -20,33 +20,20 @@
 
 package org.makumba.test.component;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Dictionary;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Vector;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
-import org.makumba.DataDefinition;
-import org.makumba.FieldValueDiff;
-import org.makumba.Pointer;
-import org.makumba.Text;
-import org.makumba.Transaction;
+import org.makumba.*;
+import org.makumba.commons.ClassResource;
 import org.makumba.commons.CollectionUtils;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
 import org.makumba.test.util.MakumbaTestData;
+
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 
 /**
  * Testing table operations, using new MDD parser
@@ -119,8 +106,7 @@ public class TableTest extends TestCase {
 
     static InputStream getExampleData() {
         try {
-            return new BufferedInputStream(new FileInputStream("lib/core/antlr-2.7.6.jar".replace('/',
-                File.separatorChar)));
+            return new BufferedInputStream(ClassResource.get("mdd-corpus.zip").openStream());
         } catch (IOException e) {
             e.printStackTrace();
             return null;
