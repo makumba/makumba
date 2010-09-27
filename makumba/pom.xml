@@ -1,0 +1,202 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.makumba</groupId>
+    <artifactId>makumba</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>makumba core aggregator</name>
+    <packaging>pom</packaging>
+    <url>http://www.makumba.org</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <documentation.path>/Users/manu/Dropbox/workspace/makumba-documentation</documentation.path>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+
+    <organization>
+        <name>makumba.org</name>
+        <url>http://www.makumba.org</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>LGPL</name>
+            <url>http://www.gnu.org/copyleft/lesser.html</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>manu</id>
+            <name>Manuel Bernhardt</name>
+            <email>manuel@makumba.org</email>
+        </developer>
+        <developer>
+            <id>rudi</id>
+            <name>Rudolf Mayer</name>
+            <email>mayer@ifs.tuwien.ac.at</email>
+        </developer>
+        <developer>
+            <id>cristi</id>
+            <name>Cristian Bogdan</name>
+            <email>cristi@csc.kth.se</email>
+        </developer>
+    </developers>
+
+    <mailingLists>
+        <mailingList>
+            <name>makumba users</name>
+            <post>makumba-user@lists.sourceforge.net</post>
+            <!-- <subscribe>TODO</subscribe> -->
+            <!-- <unsubscribe>TODO</unsubscribe> -->
+            <!-- <archive>TODO</archive> -->
+        </mailingList>
+        <mailingList>
+            <name>makumba developers</name>
+            <post>makumba-devel@lists.sourceforge.net</post>
+            <!-- <subscribe>TODO</subscribe> -->
+            <!-- <unsubscribe>TODO</unsubscribe> -->
+            <!-- <archive>TODO</archive> -->
+        </mailingList>
+    </mailingLists>
+
+    <dependencies>
+
+        <!-- Servlet et al. -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>jsp-api</artifactId>
+            <version>2.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.el</groupId>
+            <artifactId>el-api</artifactId>
+            <version>2.2</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Because Tomcat uses an old version of the EL API, have to provide our own -->
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>el-impl</artifactId>
+            <version>2.2</version>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <defaultGoal>install</defaultGoal>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.0-beta-9</version>
+                <configuration>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-eclipse-plugin</artifactId>
+                <version>2.8</version>
+            </plugin>
+        </plugins>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>2.5</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <source>1.5</source>
+                        <target>1.5</target>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>2.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>2.2-beta-2</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <distributionManagement>
+        <repository>
+            <id>sonatype</id>
+            <name>Nexus Staging Repo</name>
+            <url>http://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+        <snapshotRepository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>Sonatype Nexus Snapshots</name>
+            <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <modules>
+        <module>makumba-core</module>
+        <module>makumba-jsp-test</module>
+        <module>shared-resources</module>
+    </modules>
+
+    <profiles>
+        <!-- Sign artifacts with GPG -->
+        <!-- Requires GPG to be installed on the system and the makumba PGP keys to be imported -->
+        <profile>
+            <id>release-sign-artifacts</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.0-alpha-4</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>
