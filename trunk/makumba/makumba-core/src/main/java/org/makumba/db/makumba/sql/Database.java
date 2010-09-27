@@ -130,7 +130,7 @@ public class Database extends org.makumba.db.makumba.Database {
     static {
         sqlDrivers = new Properties();
         try {
-            sqlDrivers.load(org.makumba.commons.ClassResource.get("org/makumba/db/makumba/sql/sqlEngines.properties").openStream());
+            sqlDrivers.load(org.makumba.commons.ClassResource.get("sqlEngines.properties").openStream());
         } catch (Exception e) {
             throw new org.makumba.MakumbaError(e);
         }
