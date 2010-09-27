@@ -23,10 +23,10 @@
 
 package org.makumba;
 
+import org.makumba.providers.Configuration;
+
 import java.util.Arrays;
 import java.util.List;
-
-import org.makumba.providers.Configuration;
 
 /**
  * This class represents an abstract makumba pointer. It is up to the concrete database to represent it. Pointer values
@@ -45,7 +45,8 @@ public class Pointer implements java.io.Serializable, UIDStrategy {
             try {
                 strategy = (UIDStrategy) Class.forName(Configuration.getPointerUIDStrategyClass()).newInstance();
             } catch (Throwable t) {
-                t.printStackTrace();
+                // silently fall back to the default strategy
+                strategy = this;
             }
         } else {
             strategy = this;
