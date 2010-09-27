@@ -1,9 +1,9 @@
 package org.makumba.test.util;
 
-import java.io.IOException;
-
+import com.meterware.httpunit.GetMethodWebRequest;
+import com.meterware.httpunit.WebConversation;
+import com.meterware.httpunit.WebRequest;
 import junit.framework.Test;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
@@ -12,9 +12,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.makumba.MakumbaError;
 import org.makumba.ProgrammerError;
 
-import com.meterware.httpunit.GetMethodWebRequest;
-import com.meterware.httpunit.WebConversation;
-import com.meterware.httpunit.WebRequest;
+import java.io.IOException;
 
 public class MakumbaWebTestSetup extends MakumbaTestSetup {
 
@@ -25,7 +23,7 @@ public class MakumbaWebTestSetup extends MakumbaTestSetup {
     @Override
     public void setUp() {
         WebConversation wc = new WebConversation();
-        WebRequest req = new GetMethodWebRequest(System.getProperty("cactus.contextURL"));
+        WebRequest req = new GetMethodWebRequest(System.getProperty("cactus.contextURL") + "/testMakInfo.jsp");
         try {
             wc.getResponse(req);
         } catch (IOException e) {
