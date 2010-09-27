@@ -1,18 +1,13 @@
 package org.makumba.forms.responder;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InvalidClassException;
-import java.io.ObjectInputStream;
-import java.util.Hashtable;
-import java.util.logging.Level;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.controller.Logic;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.*;
+import java.util.Hashtable;
+import java.util.logging.Level;
 
 /**
  * This class is handling the caching mechanism of the Responder. There are two caches: one memory cache and one cache
@@ -51,6 +46,10 @@ public class ResponderCacheManager {
     static String validResponderFilename(int responderValue) {
         return new String(makumbaResponderBaseDirectory + "/") + String.valueOf(responderValue).replaceAll("-", "_");
     }
+    
+    public String getResponderBaseDirectory() {
+        return makumbaResponderBaseDirectory;
+    }
 
     /** Sets the responder working directory from the "javax.servlet.context.tempdir" variable. */
     public void setResponderWorkingDir(HttpServletRequest request) {
@@ -74,6 +73,10 @@ public class ResponderCacheManager {
             new File(makumbaResponderBaseDirectory).mkdir();
         }
         java.util.logging.Logger.getLogger("org.makumba.controller").info("base dir: " + makumbaResponderBaseDirectory);
+    }
+
+    public void setResponderWorkingDir(String path) {
+        makumbaResponderBaseDirectory = path;
     }
 
     /**
