@@ -23,22 +23,12 @@
 
 package org.makumba.test.tags;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Dictionary;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-
-import javax.servlet.ServletException;
-
+import com.meterware.httpunit.HTMLElement;
+import com.meterware.httpunit.WebConversation;
+import com.meterware.httpunit.WebForm;
+import com.meterware.httpunit.WebResponse;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.apache.cactus.Request;
 import org.apache.commons.collections.CollectionUtils;
 import org.makumba.Transaction;
@@ -50,9 +40,9 @@ import org.makumba.test.util.MakumbaTestSetup;
 import org.makumba.test.util.MakumbaWebTestSetup;
 import org.xml.sax.SAXException;
 
-import com.meterware.httpunit.HTMLElement;
-import com.meterware.httpunit.WebForm;
-import com.meterware.httpunit.WebResponse;
+import javax.servlet.ServletException;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * @author Johannes Peeters
@@ -430,18 +420,21 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         String[] responderCodesString = new String[responderElements.length];
         for (int i = 0; i < responderElements.length; i++) {
             responderCodesString[i] = responderElements[i].getAttribute("value");
-
         }
+
+        // read responder working directory using the test servlet
+        WebConversation wc = new WebConversation();
+        WebResponse r = wc.getResponse(System.getProperty("cactus.contextURL") + "/testInit?getResponderBaseDir=true");
+        String responderBaseDir = r.getText().trim();
 
         // we will have subsequently a new instance of responderFactory (the one used until now is in tomcat-mak)
         // thus, we need to prepare the responder working dir
         // we don't have an HTTPServletRequest at hand, so we have to do this manually / partly hardcoded
         String contextPath = "tests";
-        String tempDir = new File(getClass().getResource("/").toURI()).getParent() + "/tomcat/work/Catalina/localhost/"
-                + contextPath;
 
         ResponderFactory responderFactory = ResponderFactory.getInstance();
-        responderFactory.setResponderWorkingDir(tempDir, contextPath);
+        responderFactory.setResponderWorkingDir(responderBaseDir);
+
 
         // we need the codes as iterator; we could do an iterator ourselves, but let's do it as if we got them from the
         // attributes, i.e. as vector

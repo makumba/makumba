@@ -43,7 +43,7 @@
 
     <!-- Due to a bug in Cargo, we need this directive here -->
     <welcome-file-list>
-        <welcome-file>/index.jsp</welcome-file>
+        <welcome-file>/index.html</welcome-file>
     </welcome-file-list>
 
     <servlet>

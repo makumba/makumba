@@ -225,8 +225,8 @@ public class ResponderFactory {
      * Additional method to set a responder directory, used in the JUnit tests in
      * {@link org.makumba.test.tags.FormsOQLTest#beginFormResponderOrder}.
      */
-    public void setResponderWorkingDir(String tempDir, String contextPath) {
-        cacheManager.setResponderWorkingDir(tempDir, contextPath);
+    public void setResponderWorkingDir(String path) {
+        cacheManager.setResponderWorkingDir(path);
     }
 
     /**
