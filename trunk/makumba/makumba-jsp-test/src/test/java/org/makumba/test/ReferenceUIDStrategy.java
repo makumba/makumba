@@ -1,10 +1,10 @@
-package org.makumba.test.util;
-
-import java.util.Map;
+package org.makumba.test;
 
 import org.makumba.MakumbaError;
 import org.makumba.Pointer;
 import org.makumba.UIDStrategy;
+
+import java.util.Map;
 
 /**
  * Pointer conversion strategy for test cases, that ensures that all the {@link Pointer#toExternalForm()} values remain
