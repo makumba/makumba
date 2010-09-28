@@ -434,6 +434,20 @@
                             org.antlr.eclipse.core.antlrnature
                         </additionalProjectnature>
                     </additionalProjectnatures>
+                    <additionalConfig>
+                        <file>
+                            <name>.settings/org.eclipse.jdt.core.prefs</name>
+                            <location>../etc/eclipse-settings/org.eclipse.jdt.core.prefs</location>
+                        </file>
+                        <file>
+                            <name>.settings/org.eclipse.jdt.ui.prefs</name>
+                            <location>../etc/eclipse-settings/org.eclipse.jdt.ui.prefs</location>
+                        </file>
+                        <file>
+                            <name>.settings/org.maven.ide.eclipse.prefs</name>
+                            <location>../etc/eclipse-settings/org.maven.ide.eclipse.prefs</location>
+                        </file>
+                    </additionalConfig>
                 </configuration>
             </plugin>
 
