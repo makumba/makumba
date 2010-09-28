@@ -246,14 +246,14 @@
                 <artifactId>tomcat-maven-plugin</artifactId>
                 <configuration>
                     <path>/tests</path>
-                    <port>8080</port>
+                    <port>${server.port}</port>
                     <warSourceDirectory>src/test/webapp</warSourceDirectory>
                     <classesDir>target/test-classes</classesDir>
                     <!--
                       The default authentication credentials for remote deployment are username "admin" with no password To
                       override credentials, define a server in settings.xml and activate it using the <server> element
                     -->
-                    <url>http://localhost:8080/manager</url>
+                    <url>http://localhost:${server.port}/manager</url>
                 </configuration>
             </plugin>
 
@@ -344,7 +344,7 @@
                             <systemProperties>
                                 <property>
                                     <name>cactus.contextURL</name>
-                                    <value>http://localhost:8080/tests</value>
+                                    <value>http://localhost:${server.port}/tests</value>
                                 </property>
                             </systemProperties>
                         </configuration>
@@ -374,7 +374,16 @@
                     </additionalConfig>
                 </configuration>
             </plugin>
-            
+
+            <!-- skip deployment -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                 <skip>true</skip>
+              </configuration>
+            </plugin>
 
             <!-- Fetch shared resources -->
             <plugin>
