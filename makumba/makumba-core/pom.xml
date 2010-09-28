@@ -16,9 +16,6 @@
        - configure SCP upload after release
          - http://mojo.codehaus.org/wagon-maven-plugin/index.html
          - http://stackoverflow.com/questions/16487/how-can-i-deploy-artifacts-from-a-maven-build-to-the-sourceforge-file-release-sys
-       
-     - eclipse configuration
-       http://maven.apache.org/plugins/maven-eclipse-plugin/examples/load-code-styles.html
 
      later:
      - filter for random order of cactus things in Jetty (later)
@@ -38,6 +35,10 @@
     <name>makumba core</name>
     <packaging>jar</packaging>
 
+    <properties>
+        <main.basedir>${project.basedir}/..</main.basedir>
+    </properties>
+    
     <!-- TODO configure for multi-module once we split -->
     <scm>
         <connection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/trunk/makumba/makumba-core</connection>
