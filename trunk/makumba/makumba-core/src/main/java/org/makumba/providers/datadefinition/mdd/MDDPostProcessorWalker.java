@@ -135,7 +135,7 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
         } else {
             FieldNode field = mddNode.fields.get(t);
             if (field == null) {
-                factory.doThrow(this.typeName, "Field " + t + " does not exist in type " + mdd.getName(), ast);
+                factory.doThrow(this.typeName, "Field " + t + " does not exist in type " + mddNode.getName(), ast);
             } else {
                 type = field.makumbaType.getTypeName();
             }
