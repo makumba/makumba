@@ -19,7 +19,6 @@ INSTALLATION INSTRUCTIONS
 
 == IntelliJ IDEA set-up
 
-- check out the project
-- when IDEA asks you if you'd like to create a new project from the checked-out sources, reply yes
-- select 'import from external model' and select maven
+- check out the project, don't let it be imported right away
 - copy build.properties.example to build.properties and configure it
+- create a new project from the maven model based on the sources you checked out
