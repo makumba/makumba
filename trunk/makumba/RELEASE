@@ -1,0 +1,43 @@
+RELEASE HOWTO
+=============
+
+PREREQUISITES
+-------------
+
+- gpg installed on your system so that the maven gpg plugin can use it
+- the makumba public & private keys imported on your system
+- don't use maven 2.2.0 since it contains a bug and generates invalid checksums
+
+- Sonatype user and password must be configured in ~.m2/settings.xml:
+
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                      http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+  <servers>
+    <server>
+      <id>sonatype-nexus-snapshots</id>
+      <username>USER</username>
+      <password>PASSWORD</password>
+    </server>
+    <server>
+      <id>sonatype-nexus-staging</id>
+      <username>USER</username>
+      <password>PASSWORD</password>
+    </server>
+  </servers>
+</settings>
+
+COMMANDS
+--------
+
+-- deploying snapshot on sonatype server
+mvn clean deploy
+
+-- releasing a version
+
+/!\ make sure you have the right version number in the artifacts you want to deploy
+
+mvn release:prepare -Dusername=<SF user> -Dpassword=<SF password>
+mvn release:perform -Darguments="-Dgpg.passphrase=<makumba passphrase> -Dgpg.keyname=makumba-devel@lists.sourceforge.net"
