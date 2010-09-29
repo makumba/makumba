@@ -6,7 +6,7 @@
 
     <groupId>org.makumba</groupId>
     <artifactId>makumba</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.9.5-SNAPSHOT</version>
     <name>makumba core aggregator</name>
     <packaging>pom</packaging>
     <url>http://www.makumba.org</url>
@@ -16,11 +16,18 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <!-- releasing to Sonatype -->
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>5</version>
+    </parent>
+
     <organization>
         <name>makumba.org</name>
         <url>http://www.makumba.org</url>
     </organization>
-    
+
     <licenses>
         <license>
             <name>LGPL</name>
@@ -65,11 +72,9 @@
 
     <scm>
         <connection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/trunk/makumba</connection>
-        <developerConnection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/trunk/makumba
-        </developerConnection>
-        <url>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/trunk/makumba</url>
+        <developerConnection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/trunk/makumba</developerConnection>
+        <url>http://makumba.svn.sourceforge.net/viewvc/makumba/trunk/makumba</url>
     </scm>
-    
 
     <dependencies>
 
@@ -134,6 +139,15 @@
                 </executions>
             </plugin>
 
+            <!-- Skip deployment of this aggregator -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                 <skip>true</skip>
+              </configuration>
+            </plugin>
 
             <!-- Release -->
             <plugin>
@@ -155,7 +169,7 @@
                     </providerImplementations>
                 </configuration>
             </plugin>
-            
+
 
             <!-- eclipse plugin -->
             <plugin>
@@ -195,55 +209,10 @@
         </pluginManagement>
     </build>
 
-    <distributionManagement>
-        <repository>
-            <id>sonatype</id>
-            <name>Nexus Staging Repo</name>
-            <url>http://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-        <snapshotRepository>
-            <id>sonatype-nexus-snapshots</id>
-            <name>Sonatype Nexus Snapshots</name>
-            <url>http://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
-
     <modules>
         <module>makumba-core</module>
         <module>makumba-jsp-test</module>
         <module>shared-resources</module>
     </modules>
-
-    <profiles>
-        <!-- Sign artifacts with GPG -->
-        <!-- Requires GPG to be installed on the system and the makumba PGP keys to be imported -->
-        <profile>
-            <id>release-sign-artifacts</id>
-            <activation>
-                <property>
-                    <name>performRelease</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.0-alpha-4</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 
 </project>
