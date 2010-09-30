@@ -9,16 +9,17 @@ INSTALLATION INSTRUCTIONS
 - install m2eclipse-extras (http://m2eclipse.sonatype.org/sites/m2e-extras/)
   - only install the SCM provider, Team/CVS support and WTP support, the rest is not needed
  - go to the eclipse maven preferences and add your maven installation instead of the embedded one (http://www.sonatype.com/books/m2eclipse-book/reference/eclipse-sect-maven-preferences.html)
-- create empty makumba and makhib mysql test databases in mysql
+- create empty makumba and makhib mysql test databases in mysql; on linux, you can use the "setup-mysql-db.sh" script
 - checkout the project
-- copy build.properties.example to build.properties and configure it
+- if needed, configure build.properties
 - navigate to the root dir of the makumba project and run (in a console) 'mvn clean install eclipse:eclipse'
 - grab a coffee and read a book or paper
-- in eclipse, go to File->Import->Existing maven projects and select the makumba project directory. you only need to import makumba-core and makumba-jsp-test
+- in eclipse, go to File->Import->Existing maven projects and select the makumba project directory.
 - you'll get an error due to a problem with m2eclipse. run 'mvn eclipse:eclipse' again and refresh the core project
 
 == IntelliJ IDEA set-up
 
+- create empty makumba and makhib mysql test databases in mysql; on linux, you can use the "setup-mysql-db.sh" script
 - check out the project, don't let it be imported right away
-- copy build.properties.example to build.properties and configure it
+- if needed, configure build.properties
 - create a new project from the maven model based on the sources you checked out
