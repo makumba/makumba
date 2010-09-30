@@ -32,12 +32,24 @@ PREREQUISITES
 COMMANDS
 --------
 
--- deploying snapshot on sonatype server
+=== deploying a snapshot on the sonatype server
+
 mvn clean deploy
+
+=== uploading the current artifacts to sourceforge
+
+- open a connection to the FRS (or the upload will fail)
+
+  ssh -t <SF user>,makumba@shell.sourceforge.net create
+
+- run the upload
+
+  mvn wagon:upload -Dusername=<SF user> -Dpassword=<SF password>
 
 -- releasing a version
 
 /!\ make sure you have the right version number in the artifacts you want to deploy
 
 mvn release:prepare -Dusername=<SF user> -Dpassword=<SF password>
+(in a separate terminal) ssh -t <SF user>,makumba@shell.sourceforge.net create
 mvn release:perform -Darguments="-Dgpg.passphrase=<makumba passphrase> -Dgpg.keyname=makumba-devel@lists.sourceforge.net"

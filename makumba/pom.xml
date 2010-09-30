@@ -114,6 +114,13 @@
 
     <build>
         <defaultGoal>install</defaultGoal>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh</artifactId>
+                <version>1.0-beta-6</version>
+            </extension>
+        </extensions>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -145,8 +152,8 @@
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>2.4</version>
                 <configuration>
-                 <skip>true</skip>
-              </configuration>
+                    <skip>true</skip>
+                </configuration>
             </plugin>
 
             <!-- Release -->
@@ -170,12 +177,44 @@
                 </configuration>
             </plugin>
 
-
             <!-- eclipse plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-eclipse-plugin</artifactId>
                 <version>2.8</version>
+            </plugin>
+
+            <!-- license insertion -->
+            <plugin>
+                <inherited>false</inherited>
+                <groupId>com.mycila.maven-license-plugin</groupId>
+                <artifactId>maven-license-plugin</artifactId>
+                <version>1.8.0</version>
+                <configuration>
+
+                    <!-- TODO: reformat & commit the header -->
+                    <skip>true</skip>
+                    
+                    <header>${main.basedir}/etc/heaeder.txt¡</header>
+                    <failIfMissing>true</failIfMissing>
+                    <aggregate>true</aggregate>
+                    <properties>
+                        <url>${project.url}</url>
+                    </properties>
+                    <excludes>
+                        <exclude>LICENSE.txt</exclude>
+                        <exclude>**/src/test/resources/**</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>check-headers</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
         </plugins>
@@ -204,6 +243,11 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
                     <version>2.2-beta-2</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.mycila.maven-license-plugin</groupId>
+                    <artifactId>maven-license-plugin</artifactId>
+                    <version>1.8.0</version>
                 </plugin>
             </plugins>
         </pluginManagement>
