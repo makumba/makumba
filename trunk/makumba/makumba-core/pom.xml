@@ -7,20 +7,16 @@
 
      TODO:
 
-     - configure assemblies for sourceforge -> see how hibernate does it
-       - binary assembly (exluding test binaries)
-       - source assembly
+     - test/configure the SVN release mechanism
 
-     - release configuration via sonatype, see makumba archetype configuration
-       - check where SCM is configured in hibernate POMs
-       - configure SCP upload after release
-         - http://mojo.codehaus.org/wagon-maven-plugin/index.html
-         - http://stackoverflow.com/questions/16487/how-can-i-deploy-artifacts-from-a-maven-build-to-the-sourceforge-file-release-sys
+     - reformat headers & commit & enable check
+
+     useful resource:
+     http://simplewebspider.svn.sourceforge.net/viewvc/simplewebspider/trunk/pom.xml?revision=360&view=markup
 
      later:
-     - filter for random order of cactus things in Jetty (later)
+     - filter for random order of cactus things in Jetty
      - finish configuration of mvn javadoc: separate profile for user API docs
-     - licence insertion plugin? -> maybe just use an IDE for that instead...
 
       -->
 
@@ -37,7 +33,7 @@
     <properties>
         <main.basedir>${project.basedir}/..</main.basedir>
     </properties>
-    
+
     <dependencies>
 
         <!-- Shared resources -->
@@ -455,9 +451,34 @@
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>2.4</version>
                 <configuration>
-                 <skip>false</skip>
-              </configuration>
+                    <skip>false</skip>
+                </configuration>
             </plugin>
+
+            <!-- SCP upload -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>wagon-maven-plugin</artifactId>
+                <version>1.0-beta-3</version>
+                <configuration>
+                    <fromDir>${project.build.directory}/</fromDir>
+                    <includes>
+                        ${project.artifactId}-${project.version}.jar,${project.artifactId}-${project.version}-bin.zip,${project.artifactId}-${project.version}-src.zip
+                    </includes>
+                    <url>sftp://${username},makumba:${password}@frs.sourceforge.net</url>
+                    <toDir>home/frs/project/m/ma/makumba/Makumba/</toDir>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>sf-upload</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>upload</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
 
             <!-- Fetch shared resources -->
             <plugin>
@@ -480,7 +501,6 @@
                     </execution>
                 </executions>
             </plugin>
-
 
         </plugins>
     </build>
