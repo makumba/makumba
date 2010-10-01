@@ -40,6 +40,7 @@ import org.makumba.CompositeValidationException;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
+import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.ValidationRule;
 import org.makumba.FieldDefinition.FieldErrorMessageType;
@@ -182,7 +183,7 @@ public class RecordEditor extends RecordFormatter {
                 } else {
                     // check for not-null fields
                     // we don't check if the field is going to be lazily evaluated
-                    // TODO maybe find a more robust way to make sure wether the field is to be lazily evaluated
+                    // TODO maybe find a more robust way to make sure whether the field is to be lazily evaluated
                     boolean lazyEvaluation = lazyEvaluatedInputs.containsValue(inputName.substring(0,
                         inputName.indexOf(suffix)));
 
@@ -203,6 +204,18 @@ public class RecordEditor extends RecordFormatter {
                     }
 
                     throw new InvalidValueException(inputName, error);
+                }
+                // special handling for not-empty sets 
+                if (fd.isSetType() && fd.isNotEmpty() ) {
+                    Vector values = (Vector) o;
+                    // if the set input is present, but no option is selected, we get an empty vector instead of a null constant
+                    if (values == null || values == Pointer.NullSet || values.size() == 0) {
+                        String error = fd.getErrorMessage(FieldErrorMessageType.NOT_EMPTY);
+                        if (error == null) {
+                            error = FieldDefinition.ERROR_NOT_EMPTY_SET;
+                        }
+                        throw new InvalidValueException(inputName, error);
+                    }
                 }
 
                 validatedFields.put(new Integer(i), o);

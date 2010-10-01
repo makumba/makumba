@@ -80,6 +80,8 @@ public interface FieldDefinition {
 
     public static final String ERROR_NOT_EMPTY = "A non-empty value is required for this field";
 
+    public static final String ERROR_NOT_EMPTY_SET = "At least one selected value is required for this field";
+
     public static final String ERROR_NOT_UNIQUE = "This field needs to be unique. Try another value";
 
     /** The name of this field, normally the same with the name of the field */
