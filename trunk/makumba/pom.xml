@@ -193,9 +193,8 @@
                 <configuration>
 
                     <!-- TODO: reformat & commit the header -->
-                    <skip>true</skip>
                     
-                    <header>${main.basedir}/etc/heaeder.txt¡</header>
+                    <header>${main.basedir}/etc/header.txt</header>
                     <failIfMissing>true</failIfMissing>
                     <aggregate>true</aggregate>
                     <properties>
@@ -203,8 +202,20 @@
                     </properties>
                     <excludes>
                         <exclude>LICENSE.txt</exclude>
+                        <exclude>CHANGELOG.txt</exclude>
+                        <exclude>RELEASE</exclude>
+                        <exclude>INSTALL</exclude>
                         <exclude>**/src/test/resources/**</exclude>
+                        <exclude>**/install/**</exclude>
+                        <exclude>**/.idea/**</exclude>
+                        <exclude>**/.settings/**</exclude>
+                        <exclude>**/*.launch</exclude>
+                        <exclude>**/*.original</exclude>
                     </excludes>
+                    <strictCheck>false</strictCheck>
+                    <mapping>
+                        <javadoc>DOUBLESLASH_STYLE</javadoc>
+                    </mapping>
                 </configuration>
                 <executions>
                     <execution>
