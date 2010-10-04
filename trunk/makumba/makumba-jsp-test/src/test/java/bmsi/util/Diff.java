@@ -59,6 +59,7 @@ import java.util.Hashtable;
 
  */
 
+@SuppressWarnings("all")
 public class Diff {
 
   /** Prepare to find differences between two arrays.  Each element of

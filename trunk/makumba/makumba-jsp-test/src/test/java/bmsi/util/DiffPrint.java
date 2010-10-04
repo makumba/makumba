@@ -54,6 +54,7 @@ import java.util.Vector;
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
+@SuppressWarnings("all")
 public class DiffPrint {
   /** A Base class for printing edit scripts produced by Diff.
       This class divides the change list into "hunks", and calls
