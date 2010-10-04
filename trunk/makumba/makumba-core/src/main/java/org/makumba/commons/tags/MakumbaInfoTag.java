@@ -95,7 +95,7 @@ public class MakumbaInfoTag extends TagSupport {
 
             final String startupProp = "startupTime";
 
-            DateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm");
+            final DateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm");
             if (System.getProperty(startupProp) == null) {
                 System.setProperty(startupProp, df.format(MakumbaSystem.loadingTime));
             }
@@ -224,7 +224,7 @@ public class MakumbaInfoTag extends TagSupport {
             String serverUpSince = null;
             try {
                 serverUpSince = ReadableFormatter.readableAge(new Date().getTime()
-                        - new SimpleDateFormat().parse(System.getProperty(startupProp)).getTime());
+                        - df.parse(System.getProperty(startupProp)).getTime());
             } catch (ParseException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
