@@ -23,7 +23,11 @@ public class MakumbaWebTestSetup extends MakumbaTestSetup {
     @Override
     public void setUp() {
         WebConversation wc = new WebConversation();
-        WebRequest req = new GetMethodWebRequest(System.getProperty("cactus.contextURL") + "/testMakInfo.jsp");
+        String contextURL = System.getProperty("cactus.contextURL");
+        if(null == contextURL || contextURL.equals("null")) {
+            throw new RuntimeException("You have to configure the cactus contextURL via -Dcactus.contextURL");
+        }
+        WebRequest req = new GetMethodWebRequest(contextURL + "/testMakInfo.jsp");
         try {
             wc.getResponse(req);
         } catch (IOException e) {
@@ -39,7 +43,7 @@ public class MakumbaWebTestSetup extends MakumbaTestSetup {
         // init tests on the server side, i.e. clean static caches and populate database state (primary key values, so
         // this works with auto-increment)
         // make sure you update that servlet if new types appear!
-        HttpMethod getMethod = new GetMethod(System.getProperty("cactus.contextURL") + "/testInit");
+        HttpMethod getMethod = new GetMethod(contextURL + "/testInit");
         HttpClient c = new HttpClient();
         int code = 0;
         try {
