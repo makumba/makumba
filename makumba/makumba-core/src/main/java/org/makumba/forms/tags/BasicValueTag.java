@@ -23,9 +23,6 @@
 
 package org.makumba.forms.tags;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
-
 import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
 import org.makumba.ProgrammerError;
@@ -36,6 +33,9 @@ import org.makumba.commons.attributes.PageAttributes;
 import org.makumba.commons.tags.GenericMakumbaTag;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.FormDataProvider;
+
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.TagSupport;
 
 /**
  * This is a a base class for InputTag and OptionTag but may be used for other tags that need to compute a value in
@@ -159,9 +159,11 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
             type = fdp.onBasicValueEndAnalyze(getTagKey(), pageCache);
         }
         if (isAttribute()) {
-            type = (FieldDefinition) pageCache.retrieve(AnalysableTag.TYPES, expr.substring(1));
+            Object[] obj = (Object[]) pageCache.retrieve(AnalysableTag.TYPES, expr.substring(1));
+            if (obj != null) {
+                type = (FieldDefinition) obj[0];
+            }
         }
-
         String fieldName = "";
         if (this instanceof InputTag) {
             fieldName = "Field <" + ((InputTag) this).name + ">: ";
