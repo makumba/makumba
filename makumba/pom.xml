@@ -193,6 +193,7 @@
                 <configuration>
 
                     <!-- TODO: reformat & commit the header -->
+                    <skip>true</skip>
                     
                     <header>${main.basedir}/etc/header.txt</header>
                     <failIfMissing>true</failIfMissing>
