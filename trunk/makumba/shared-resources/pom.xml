@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>shared-resources</artifactId>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
 
     <name>makumba shared resources bundle</name>
 
@@ -21,20 +21,12 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.2-beta-2</version>
+                <artifactId>maven-jar-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>make shared resources</id>
                         <goals>
-                            <goal>single</goal>
+                            <goal>test-jar</goal>
                         </goals>
-                        <phase>package</phase>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>src/main/assembly/resources.xml</descriptor>
-                            </descriptors>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -45,11 +37,31 @@
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>2.4</version>
                 <configuration>
-                 <skip>true</skip>
-              </configuration>
+                    <skip>true</skip>
+                </configuration>
             </plugin>
 
         </plugins>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.conf</include>
+                    <include>**/*.mdd</include>
+                </includes>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <includes>
+                    <include>**/*.conf</include>
+                    <include>**/*.mdd</include>
+                </includes>
+            </testResource>
+        </testResources>
+
     </build>
 
 
