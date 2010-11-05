@@ -30,14 +30,13 @@
 
     <dependencies>
 
-        <!-- Shared resources -->
+        <!-- Shared test resources -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>shared-resources</artifactId>
             <version>${project.version}</version>
-            <classifier>resources</classifier>
-            <type>zip</type>
-            <scope>provided</scope>
+            <classifier>tests</classifier>
+            <scope>runtime</scope>
         </dependency>
 
         <!-- dependency on makumba-core -->
@@ -160,7 +159,7 @@
         <sourceDirectory>src/test/java</sourceDirectory>
         <testSourceDirectory>src/test/java</testSourceDirectory>
 
-        <!-- accomodate the tomcat plugin that doesn't automatically switch to generated-test-resources -->
+        <!-- accomodate the tomcat plugin that doesn't automatically switch to generated-test-resources
         <resources>
             <resource>
                 <directory>${basedir}/src/test/resources</directory>
@@ -178,7 +177,7 @@
                 <directory>${project.build.directory}/generated-test-resources</directory>
             </testResource>
         </testResources>
-
+-->
         <plugins>
 
             <!-- Produce WAR artifact for the integration tests
@@ -195,12 +194,14 @@
                         WEB-INF/lib/*
                     </warSourceIncludes>
                     <warName>${project.artifactId}-${project.version}</warName>
+<!--
                     <webResources>
                         <resource>
                             <directory>${project.build.directory}/generated-test-resources</directory>
                             <targetPath>WEB-INF/classes</targetPath>
                         </resource>
                     </webResources>
+-->
                 </configuration>
                 <executions>
                     <execution>
@@ -384,30 +385,6 @@
                  <skip>true</skip>
               </configuration>
             </plugin>
-
-            <!-- Fetch shared resources -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>unpack-shared-resources</id>
-                        <goals>
-                            <goal>unpack-dependencies</goal>
-                        </goals>
-                        <phase>generate-test-resources</phase>
-                        <configuration>
-                            <!-- unpack in the classes dir, that will be picked up by the war plugin -->
-                            <outputDirectory>${project.build.directory}/generated-test-resources</outputDirectory>
-                            <includeArtifactIds>shared-resources</includeArtifactIds>
-                            <includeGroupIds>${project.groupId}</includeGroupIds>
-                            <excludeTransitive>true</excludeTransitive>
-                            <!--use as much as needed to be specific...also scope,type,classifier etc-->
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
 
         </plugins>
     </build>

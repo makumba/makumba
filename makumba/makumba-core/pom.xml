@@ -36,14 +36,13 @@
 
     <dependencies>
 
-        <!-- Shared resources -->
+        <!-- Shared test resources -->
         <dependency>
             <groupId>${groupId}</groupId>
             <artifactId>shared-resources</artifactId>
             <version>${version}</version>
-            <classifier>resources</classifier>
-            <type>zip</type>
-            <scope>provided</scope>
+            <classifier>tests</classifier>
+            <scope>test</scope>
         </dependency>
 
         <!-- Core -->
@@ -475,29 +474,6 @@
                         <goals>
                             <goal>upload</goal>
                         </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-
-            <!-- Fetch shared resources -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>unpack-shared-resources</id>
-                        <goals>
-                            <goal>unpack-dependencies</goal>
-                        </goals>
-                        <phase>generate-test-resources</phase>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/generated-test-resources</outputDirectory>
-                            <includeArtifactIds>shared-resources</includeArtifactIds>
-                            <includeGroupIds>${groupId}</includeGroupIds>
-                            <excludeTransitive>true</excludeTransitive>
-                            <!--use as much as needed to be specific...also scope,type,classifier etc-->
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

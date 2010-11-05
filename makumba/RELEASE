@@ -46,7 +46,7 @@ mvn clean deploy
 
   mvn wagon:upload -Dusername=<SF user> -Dpassword=<SF password>
 
--- releasing a version
+=== releasing a version
 
 /!\ make sure you have the right version number in the artifacts you want to deploy
 
