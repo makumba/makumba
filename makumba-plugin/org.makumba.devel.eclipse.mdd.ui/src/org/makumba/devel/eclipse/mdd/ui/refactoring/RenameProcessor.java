@@ -2,10 +2,14 @@ package org.makumba.devel.eclipse.mdd.ui.refactoring;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -23,9 +27,15 @@ import org.eclipse.ltk.core.refactoring.TextFileChange;
 import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant;
 import org.eclipse.ltk.core.refactoring.participants.SharableParticipants;
+import org.eclipse.search.core.text.TextSearchEngine;
+import org.eclipse.search.core.text.TextSearchMatchAccess;
+import org.eclipse.search.core.text.TextSearchRequestor;
+import org.eclipse.search.core.text.TextSearchScope;
 import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEditGroup;
+import org.eclipse.wst.common.componentcore.ComponentCore;
+import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.xtext.naming.IQualifiedNameProvider;
 import org.eclipse.xtext.parsetree.CompositeNode;
 import org.eclipse.xtext.parsetree.NodeAdapter;
@@ -45,6 +55,14 @@ import org.makumba.devel.eclipse.mdd.validation.MDDJavaValidator;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 
+/**
+ * @author filip
+ * 
+ *         TODO: add MDD mql checking TODO: add JSP reference checking TODO:
+ *         refactor a bit (insead of using maps, create a special class to store
+ *         all found matches)
+ * 
+ */
 public class RenameProcessor extends org.eclipse.ltk.core.refactoring.participants.RenameProcessor {
 
 	private XtextEditor editor;
@@ -52,12 +70,15 @@ public class RenameProcessor extends org.eclipse.ltk.core.refactoring.participan
 	private List<CompositeNode> localReferences = null;
 	private Map<IResourceDescription, List<CompositeNode>> references = new HashMap<IResourceDescription, List<CompositeNode>>();
 	private Map<IFile, List<Integer>> jspRefrences = new HashMap<IFile, List<Integer>>();
+	private Map<IFile, Set<Integer>> jspTextReferences = new HashMap<IFile, Set<Integer>>();
+	private Map<IFile, Set<Integer>> javaTextReferences = new HashMap<IFile, Set<Integer>>();
 	private String currentName;
 	private CompositeNode declaration;
 	private IFile file;
 	private ResourceSet resourceSet;
 	private IQualifiedNameProvider nameProvider;
 	private String reportFail = null;
+	private IEObjectDescription eObjectDescription;
 
 	public RenameProcessor(XtextEditor editor, IResourceDescriptions resourceDescriptions, ResourceSet resourceSet,
 			IQualifiedNameProvider nameProvider) {
@@ -67,8 +88,7 @@ public class RenameProcessor extends org.eclipse.ltk.core.refactoring.participan
 		this.nameProvider = nameProvider;
 
 		final ITextSelection selection = (ITextSelection) editor.getSelectionProvider().getSelection();
-		final IEObjectDescription eObjectDescription = editor.getDocument().readOnly(
-				new EObjectResolver(selection, resourceDescriptions));
+		eObjectDescription = editor.getDocument().readOnly(new EObjectResolver(selection, resourceDescriptions));
 
 		declaration = editor.getDocument().readOnly(
 				new URIFragmentResolver(eObjectDescription.getEObjectURI().fragment()));
@@ -80,13 +100,79 @@ public class RenameProcessor extends org.eclipse.ltk.core.refactoring.participan
 			file = (IFile) editor.getEditorInput().getAdapter(IFile.class);
 
 			if (eObjectDescription != null) {
-				findReferenceDescriptions(eObjectDescription);
+				findReferenceDescriptions();
 				//findJSPReferences(eObjectDescription);
+				findJSPTextResults();
+				findJavaTextResults();
 			}
 		} else {
 			reportFail = "You can only rename fields this way!";
 		}
 
+	}
+
+	private void findJSPTextResults() {
+		IFile ddFile = ResourcesPlugin.getWorkspace().getRoot()
+				.getFile(new Path(eObjectDescription.getEObjectURI().toPlatformString(true)));
+		IProject project = ddFile.getProject();
+
+		final IVirtualFolder vf = ComponentCore.createComponent(project).getRootFolder();
+		IFolder contentFolder = (IFolder) vf.getUnderlyingFolder();
+
+		TextSearchEngine tse = TextSearchEngine.create();
+		IResource[] res = { contentFolder };
+		TextSearchScope tss = TextSearchScope.newSearchScope(res, Pattern.compile(".+\\.jsp"), true);
+		TextSearchRequestor tsr = new TextSearchRequestor() {
+			@Override
+			public boolean acceptPatternMatch(TextSearchMatchAccess matchAccess) throws CoreException {
+
+				Set<Integer> offsets;
+				if (jspTextReferences.containsKey(matchAccess.getFile())) {
+					offsets = jspTextReferences.get(matchAccess.getFile());
+					offsets.add(matchAccess.getMatchOffset());
+				} else {
+					offsets = new HashSet<Integer>();
+					offsets.add(matchAccess.getMatchOffset());
+					jspTextReferences.put(matchAccess.getFile(), offsets);
+				}
+
+				return true;
+			}
+		};
+		String fieldName = ((FieldDeclaration) declaration.getElement()).getName();
+		tse.search(tss, tsr, Pattern.compile("[^a-zA-Z0-9_]" + fieldName + "[^a-zA-Z0-9_]"), null);
+	}
+
+	private void findJavaTextResults() {
+		IFile ddFile = ResourcesPlugin.getWorkspace().getRoot()
+				.getFile(new Path(eObjectDescription.getEObjectURI().toPlatformString(true)));
+		IProject project = ddFile.getProject();
+
+		final IVirtualFolder vf = ComponentCore.createComponent(project).getRootFolder().getFolder("WEB-INF/classes");
+		IFolder contentFolder = (IFolder) vf.getUnderlyingFolder();
+
+		TextSearchEngine tse = TextSearchEngine.create();
+		IResource[] res = { contentFolder };
+		TextSearchScope tss = TextSearchScope.newSearchScope(res, Pattern.compile(".+\\.java"), true);
+		TextSearchRequestor tsr = new TextSearchRequestor() {
+			@Override
+			public boolean acceptPatternMatch(TextSearchMatchAccess matchAccess) throws CoreException {
+
+				Set<Integer> offsets;
+				if (javaTextReferences.containsKey(matchAccess.getFile())) {
+					offsets = javaTextReferences.get(matchAccess.getFile());
+					offsets.add(matchAccess.getMatchOffset());
+				} else {
+					offsets = new HashSet<Integer>();
+					offsets.add(matchAccess.getMatchOffset());
+					javaTextReferences.put(matchAccess.getFile(), offsets);
+				}
+
+				return true;
+			}
+		};
+		String fieldName = ((FieldDeclaration) declaration.getElement()).getName();
+		tse.search(tss, tsr, Pattern.compile("[^a-zA-Z0-9_]" + fieldName + "[^a-zA-Z0-9_]"), null);
 	}
 
 	private void findJSPReferences(IEObjectDescription eObjectDescription) {
@@ -181,7 +267,7 @@ public class RenameProcessor extends org.eclipse.ltk.core.refactoring.participan
 
 	@Override
 	public Change createChange(IProgressMonitor pm) throws CoreException, OperationCanceledException {
-		CompositeChange compositeChange = new CompositeChange("Rename");
+		CompositeChange compositeChange = new CompositeChange("Field rename");
 		pm.beginTask("Rename Refactoring", localReferences.size());
 
 		//Get the refactoring information
@@ -189,12 +275,14 @@ public class RenameProcessor extends org.eclipse.ltk.core.refactoring.participan
 		String replaceText = refactoring.getRenameText();
 		int replacementLength = ((FieldDeclaration) declaration.getElement()).getName().length();
 
+		CompositeChange mddChange = new CompositeChange("MDD Changes");
+
 		//Prepare changes in current mdd file
 		MultiTextEdit multiEdit = new MultiTextEdit();
 		TextFileChange fileChange = new TextFileChange("Declaraction Renaming", file);
 		fileChange.setEdit(multiEdit);
 		fileChange.setTextType("mdd");
-		compositeChange.add(fileChange);
+		mddChange.add(fileChange);
 
 		//Creating changes for declaration in current mdd file
 		ReplaceEdit replaceEdit = new ReplaceEdit(declaration.getOffset(), replacementLength, replaceText);
@@ -212,17 +300,19 @@ public class RenameProcessor extends org.eclipse.ltk.core.refactoring.participan
 			fileChange = new TextFileChange("Reference Renaming", file);
 			fileChange.setEdit(multiEdit);
 			fileChange.setTextType("mdd");
-			compositeChange.add(fileChange);
+			mddChange.add(fileChange);
 			createReplaceEdits(references.get(rd), replacementLength, replaceText, "reference update", multiEdit,
 					fileChange);
 		}
+
+		CompositeChange jspChange = new CompositeChange("JSP Changes");
 
 		for (IFile file : jspRefrences.keySet()) {
 			multiEdit = new MultiTextEdit();
 			fileChange = new TextFileChange("Reference Renaming", file);
 			fileChange.setEdit(multiEdit);
 			fileChange.setTextType("jsp");
-			compositeChange.add(fileChange);
+			jspChange.add(fileChange);
 			for (Integer offset : jspRefrences.get(file)) {
 				ReplaceEdit replaceEdit1 = new ReplaceEdit(offset, replacementLength, replaceText);
 				multiEdit.addChild(replaceEdit1);
@@ -231,6 +321,39 @@ public class RenameProcessor extends org.eclipse.ltk.core.refactoring.participan
 			}
 		}
 
+		for (IFile file : jspTextReferences.keySet()) {
+			multiEdit = new MultiTextEdit();
+			fileChange = new TextFileChange("Text reference renaming", file);
+			fileChange.setEdit(multiEdit);
+			fileChange.setTextType("jsp");
+			jspChange.add(fileChange);
+			for (Integer offset : jspTextReferences.get(file)) {
+				ReplaceEdit replaceEdit1 = new ReplaceEdit(offset + 1, replacementLength, replaceText);
+				multiEdit.addChild(replaceEdit1);
+				TextEditGroup editGroup1 = new TextEditGroup("text refrence update", replaceEdit1);
+				fileChange.addTextEditGroup(editGroup1);
+			}
+		}
+
+		CompositeChange javaChange = new CompositeChange("Java Changes");
+
+		for (IFile file : javaTextReferences.keySet()) {
+			multiEdit = new MultiTextEdit();
+			fileChange = new TextFileChange("Text reference renaming", file);
+			fileChange.setEdit(multiEdit);
+			fileChange.setTextType("java");
+			javaChange.add(fileChange);
+			for (Integer offset : javaTextReferences.get(file)) {
+				ReplaceEdit replaceEdit1 = new ReplaceEdit(offset + 1, replacementLength, replaceText);
+				multiEdit.addChild(replaceEdit1);
+				TextEditGroup editGroup1 = new TextEditGroup("text refrence update", replaceEdit1);
+				fileChange.addTextEditGroup(editGroup1);
+			}
+		}
+
+		compositeChange.add(mddChange);
+		compositeChange.add(jspChange);
+		compositeChange.add(javaChange);
 		return compositeChange;
 	}
 
@@ -250,7 +373,7 @@ public class RenameProcessor extends org.eclipse.ltk.core.refactoring.participan
 		return null;
 	}
 
-	private void findReferenceDescriptions(final IEObjectDescription eObjectDescription) {
+	private void findReferenceDescriptions() {
 		localReferences = new ArrayList<CompositeNode>();
 
 		for (IResourceDescription resourceDescription : resourceDescriptions.getAllResourceDescriptions()) {
