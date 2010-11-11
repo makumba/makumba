@@ -246,6 +246,7 @@ public class MDDLabelProvider extends DefaultEObjectLabelProvider {
 		return image(Type.VALIDATION);
 	}
 
+	//TODO: arrange icons a bit better
 	String image(Type type) {
 		switch (type) {
 		case DATA_DEFINITION:
