@@ -4749,10 +4749,10 @@ public class InternalMDDLexer extends Lexer {
     public final void mRULE_LINEBREAK() throws RecognitionException {
         try {
             int _type = RULE_LINEBREAK;
-            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11260:16: ( ( '\\n' | '\\r' '\\n' | '\\r' ) )
-            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11260:18: ( '\\n' | '\\r' '\\n' | '\\r' )
+            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12144:16: ( ( '\\n' | '\\r' '\\n' | '\\r' ) )
+            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12144:18: ( '\\n' | '\\r' '\\n' | '\\r' )
             {
-            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11260:18: ( '\\n' | '\\r' '\\n' | '\\r' )
+            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12144:18: ( '\\n' | '\\r' '\\n' | '\\r' )
             int alt1=3;
             int LA1_0 = input.LA(1);
 
@@ -4770,20 +4770,20 @@ public class InternalMDDLexer extends Lexer {
             }
             else {
                 NoViableAltException nvae =
-                    new NoViableAltException("11260:18: ( '\\n' | '\\r' '\\n' | '\\r' )", 1, 0, input);
+                    new NoViableAltException("12144:18: ( '\\n' | '\\r' '\\n' | '\\r' )", 1, 0, input);
 
                 throw nvae;
             }
             switch (alt1) {
                 case 1 :
-                    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11260:19: '\\n'
+                    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12144:19: '\\n'
                     {
                     match('\n'); 
 
                     }
                     break;
                 case 2 :
-                    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11260:24: '\\r' '\\n'
+                    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12144:24: '\\r' '\\n'
                     {
                     match('\r'); 
                     match('\n'); 
@@ -4791,7 +4791,7 @@ public class InternalMDDLexer extends Lexer {
                     }
                     break;
                 case 3 :
-                    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11260:34: '\\r'
+                    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12144:34: '\\r'
                     {
                     match('\r'); 
 
@@ -4814,10 +4814,10 @@ public class InternalMDDLexer extends Lexer {
     public final void mRULE_ID() throws RecognitionException {
         try {
             int _type = RULE_ID;
-            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11262:9: ( ( '^' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )* )
-            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11262:11: ( '^' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
+            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12146:9: ( ( '^' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )* )
+            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12146:11: ( '^' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
             {
-            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11262:11: ( '^' )?
+            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12146:11: ( '^' )?
             int alt2=2;
             int LA2_0 = input.LA(1);
 
@@ -4826,7 +4826,7 @@ public class InternalMDDLexer extends Lexer {
             }
             switch (alt2) {
                 case 1 :
-                    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11262:11: '^'
+                    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12146:11: '^'
                     {
                     match('^'); 
 
@@ -4845,7 +4845,7 @@ public class InternalMDDLexer extends Lexer {
                 recover(mse);    throw mse;
             }
 
-            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11262:40: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
+            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12146:40: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
             loop3:
             do {
                 int alt3=2;
@@ -4893,8 +4893,8 @@ public class InternalMDDLexer extends Lexer {
     public final void mRULE_SIGNED_INT() throws RecognitionException {
         try {
             int _type = RULE_SIGNED_INT;
-            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11264:17: ( ( '-' | '+' ) RULE_INT )
-            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11264:19: ( '-' | '+' ) RULE_INT
+            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12148:17: ( ( '-' | '+' ) RULE_INT )
+            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12148:19: ( '-' | '+' ) RULE_INT
             {
             if ( input.LA(1)=='+'||input.LA(1)=='-' ) {
                 input.consume();
@@ -4921,12 +4921,12 @@ public class InternalMDDLexer extends Lexer {
     public final void mRULE_HEX() throws RecognitionException {
         try {
             int _type = RULE_HEX;
-            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11266:10: ( '0x' ( '0' .. '9' | 'a' .. 'f' )+ )
-            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11266:12: '0x' ( '0' .. '9' | 'a' .. 'f' )+
+            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12150:10: ( '0x' ( '0' .. '9' | 'a' .. 'f' )+ )
+            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12150:12: '0x' ( '0' .. '9' | 'a' .. 'f' )+
             {
             match("0x"); 
 
-            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11266:17: ( '0' .. '9' | 'a' .. 'f' )+
+            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12150:17: ( '0' .. '9' | 'a' .. 'f' )+
             int cnt4=0;
             loop4:
             do {
@@ -4979,10 +4979,10 @@ public class InternalMDDLexer extends Lexer {
     public final void mRULE_INT() throws RecognitionException {
         try {
             int _type = RULE_INT;
-            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11268:10: ( ( '0' .. '9' )+ )
-            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11268:12: ( '0' .. '9' )+
+            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12152:10: ( ( '0' .. '9' )+ )
+            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12152:12: ( '0' .. '9' )+
             {
-            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11268:12: ( '0' .. '9' )+
+            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12152:12: ( '0' .. '9' )+
             int cnt5=0;
             loop5:
             do {
@@ -4996,7 +4996,7 @@ public class InternalMDDLexer extends Lexer {
 
                 switch (alt5) {
             	case 1 :
-            	    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11268:13: '0' .. '9'
+            	    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12152:13: '0' .. '9'
             	    {
             	    matchRange('0','9'); 
 
@@ -5026,11 +5026,11 @@ public class InternalMDDLexer extends Lexer {
     public final void mRULE_FIELDCOMMENT() throws RecognitionException {
         try {
             int _type = RULE_FIELDCOMMENT;
-            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11270:19: ( ';' (~ ( ( '\\n' | '\\r' ) ) )* )
-            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11270:21: ';' (~ ( ( '\\n' | '\\r' ) ) )*
+            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12154:19: ( ';' (~ ( ( '\\n' | '\\r' ) ) )* )
+            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12154:21: ';' (~ ( ( '\\n' | '\\r' ) ) )*
             {
             match(';'); 
-            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11270:25: (~ ( ( '\\n' | '\\r' ) ) )*
+            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12154:25: (~ ( ( '\\n' | '\\r' ) ) )*
             loop6:
             do {
                 int alt6=2;
@@ -5043,7 +5043,7 @@ public class InternalMDDLexer extends Lexer {
 
                 switch (alt6) {
             	case 1 :
-            	    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11270:25: ~ ( ( '\\n' | '\\r' ) )
+            	    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12154:25: ~ ( ( '\\n' | '\\r' ) )
             	    {
             	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='\t')||(input.LA(1)>='\u000B' && input.LA(1)<='\f')||(input.LA(1)>='\u000E' && input.LA(1)<='\uFFFE') ) {
             	        input.consume();
@@ -5078,11 +5078,11 @@ public class InternalMDDLexer extends Lexer {
     public final void mRULE_SL_COMMENT() throws RecognitionException {
         try {
             int _type = RULE_SL_COMMENT;
-            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11272:17: ( '#' (~ ( ( '\\n' | '\\r' ) ) )* ( ( '\\r' )? '\\n' )? )
-            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11272:19: '#' (~ ( ( '\\n' | '\\r' ) ) )* ( ( '\\r' )? '\\n' )?
+            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12156:17: ( '#' (~ ( ( '\\n' | '\\r' ) ) )* ( ( '\\r' )? '\\n' )? )
+            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12156:19: '#' (~ ( ( '\\n' | '\\r' ) ) )* ( ( '\\r' )? '\\n' )?
             {
             match('#'); 
-            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11272:23: (~ ( ( '\\n' | '\\r' ) ) )*
+            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12156:23: (~ ( ( '\\n' | '\\r' ) ) )*
             loop7:
             do {
                 int alt7=2;
@@ -5095,7 +5095,7 @@ public class InternalMDDLexer extends Lexer {
 
                 switch (alt7) {
             	case 1 :
-            	    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11272:23: ~ ( ( '\\n' | '\\r' ) )
+            	    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12156:23: ~ ( ( '\\n' | '\\r' ) )
             	    {
             	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='\t')||(input.LA(1)>='\u000B' && input.LA(1)<='\f')||(input.LA(1)>='\u000E' && input.LA(1)<='\uFFFE') ) {
             	        input.consume();
@@ -5116,7 +5116,7 @@ public class InternalMDDLexer extends Lexer {
                 }
             } while (true);
 
-            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11272:39: ( ( '\\r' )? '\\n' )?
+            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12156:39: ( ( '\\r' )? '\\n' )?
             int alt9=2;
             int LA9_0 = input.LA(1);
 
@@ -5125,9 +5125,9 @@ public class InternalMDDLexer extends Lexer {
             }
             switch (alt9) {
                 case 1 :
-                    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11272:40: ( '\\r' )? '\\n'
+                    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12156:40: ( '\\r' )? '\\n'
                     {
-                    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11272:40: ( '\\r' )?
+                    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12156:40: ( '\\r' )?
                     int alt8=2;
                     int LA8_0 = input.LA(1);
 
@@ -5136,7 +5136,7 @@ public class InternalMDDLexer extends Lexer {
                     }
                     switch (alt8) {
                         case 1 :
-                            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11272:40: '\\r'
+                            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12156:40: '\\r'
                             {
                             match('\r'); 
 
@@ -5166,10 +5166,10 @@ public class InternalMDDLexer extends Lexer {
     public final void mRULE_WS() throws RecognitionException {
         try {
             int _type = RULE_WS;
-            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11274:9: ( ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' ) )
-            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11274:11: ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' )
+            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12158:9: ( ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' ) )
+            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12158:11: ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' )
             {
-            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11274:11: ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' )
+            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12158:11: ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' )
             int alt10=5;
             switch ( input.LA(1) ) {
             case ' ':
@@ -5200,28 +5200,28 @@ public class InternalMDDLexer extends Lexer {
                 break;
             default:
                 NoViableAltException nvae =
-                    new NoViableAltException("11274:11: ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' )", 10, 0, input);
+                    new NoViableAltException("12158:11: ( ' ' | '\\t' | '\\r' '\\n' | '\\n' | '\\r' )", 10, 0, input);
 
                 throw nvae;
             }
 
             switch (alt10) {
                 case 1 :
-                    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11274:12: ' '
+                    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12158:12: ' '
                     {
                     match(' '); 
 
                     }
                     break;
                 case 2 :
-                    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11274:16: '\\t'
+                    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12158:16: '\\t'
                     {
                     match('\t'); 
 
                     }
                     break;
                 case 3 :
-                    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11274:21: '\\r' '\\n'
+                    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12158:21: '\\r' '\\n'
                     {
                     match('\r'); 
                     match('\n'); 
@@ -5229,14 +5229,14 @@ public class InternalMDDLexer extends Lexer {
                     }
                     break;
                 case 4 :
-                    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11274:31: '\\n'
+                    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12158:31: '\\n'
                     {
                     match('\n'); 
 
                     }
                     break;
                 case 5 :
-                    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11274:36: '\\r'
+                    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12158:36: '\\r'
                     {
                     match('\r'); 
 
@@ -5259,10 +5259,10 @@ public class InternalMDDLexer extends Lexer {
     public final void mRULE_STRING() throws RecognitionException {
         try {
             int _type = RULE_STRING;
-            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11276:13: ( ( '\"' ( '\\\\' '\"' | ~ ( '\"' ) )* '\"' | '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' ) )
-            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11276:15: ( '\"' ( '\\\\' '\"' | ~ ( '\"' ) )* '\"' | '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' )
+            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12160:13: ( ( '\"' ( '\\\\' '\"' | ~ ( '\"' ) )* '\"' | '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' ) )
+            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12160:15: ( '\"' ( '\\\\' '\"' | ~ ( '\"' ) )* '\"' | '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' )
             {
-            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11276:15: ( '\"' ( '\\\\' '\"' | ~ ( '\"' ) )* '\"' | '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' )
+            // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12160:15: ( '\"' ( '\\\\' '\"' | ~ ( '\"' ) )* '\"' | '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' )
             int alt13=2;
             int LA13_0 = input.LA(1);
 
@@ -5274,16 +5274,16 @@ public class InternalMDDLexer extends Lexer {
             }
             else {
                 NoViableAltException nvae =
-                    new NoViableAltException("11276:15: ( '\"' ( '\\\\' '\"' | ~ ( '\"' ) )* '\"' | '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' )", 13, 0, input);
+                    new NoViableAltException("12160:15: ( '\"' ( '\\\\' '\"' | ~ ( '\"' ) )* '\"' | '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' )", 13, 0, input);
 
                 throw nvae;
             }
             switch (alt13) {
                 case 1 :
-                    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11276:16: '\"' ( '\\\\' '\"' | ~ ( '\"' ) )* '\"'
+                    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12160:16: '\"' ( '\\\\' '\"' | ~ ( '\"' ) )* '\"'
                     {
                     match('\"'); 
-                    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11276:20: ( '\\\\' '\"' | ~ ( '\"' ) )*
+                    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12160:20: ( '\\\\' '\"' | ~ ( '\"' ) )*
                     loop11:
                     do {
                         int alt11=3;
@@ -5317,7 +5317,7 @@ public class InternalMDDLexer extends Lexer {
 
                         switch (alt11) {
                     	case 1 :
-                    	    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11276:21: '\\\\' '\"'
+                    	    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12160:21: '\\\\' '\"'
                     	    {
                     	    match('\\'); 
                     	    match('\"'); 
@@ -5325,7 +5325,7 @@ public class InternalMDDLexer extends Lexer {
                     	    }
                     	    break;
                     	case 2 :
-                    	    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11276:30: ~ ( '\"' )
+                    	    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12160:30: ~ ( '\"' )
                     	    {
                     	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='!')||(input.LA(1)>='#' && input.LA(1)<='\uFFFE') ) {
                     	        input.consume();
@@ -5351,10 +5351,10 @@ public class InternalMDDLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11276:43: '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\''
+                    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12160:43: '\\'' ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )* '\\''
                     {
                     match('\''); 
-                    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11276:48: ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )*
+                    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12160:48: ( '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' ) | ~ ( ( '\\\\' | '\\'' ) ) )*
                     loop12:
                     do {
                         int alt12=3;
@@ -5370,7 +5370,7 @@ public class InternalMDDLexer extends Lexer {
 
                         switch (alt12) {
                     	case 1 :
-                    	    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11276:49: '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' )
+                    	    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12160:49: '\\\\' ( 'b' | 't' | 'n' | 'f' | 'r' | '\"' | '\\'' | '\\\\' )
                     	    {
                     	    match('\\'); 
                     	    if ( input.LA(1)=='\"'||input.LA(1)=='\''||input.LA(1)=='\\'||input.LA(1)=='b'||input.LA(1)=='f'||input.LA(1)=='n'||input.LA(1)=='r'||input.LA(1)=='t' ) {
@@ -5387,7 +5387,7 @@ public class InternalMDDLexer extends Lexer {
                     	    }
                     	    break;
                     	case 2 :
-                    	    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:11276:90: ~ ( ( '\\\\' | '\\'' ) )
+                    	    // ../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g:12160:90: ~ ( ( '\\\\' | '\\'' ) )
                     	    {
                     	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='&')||(input.LA(1)>='(' && input.LA(1)<='[')||(input.LA(1)>=']' && input.LA(1)<='\uFFFE') ) {
                     	        input.consume();

@@ -41,7 +41,7 @@ public interface MDDPackage extends EPackage
    * <!-- end-user-doc -->
    * @generated
    */
-  String eNS_URI = "http://www.makumba.org/devel/plugin/eclipse/mdd/MDD";
+  String eNS_URI = "http://www.makumba.org/devel/eclipse/mdd/MDD";
 
   /**
    * The package namespace name.

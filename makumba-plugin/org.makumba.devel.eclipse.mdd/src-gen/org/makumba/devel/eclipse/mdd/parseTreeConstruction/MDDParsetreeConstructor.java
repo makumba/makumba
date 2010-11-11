@@ -15477,7 +15477,7 @@ protected class PrimaryExpression_Alternatives extends AlternativesToken {
 
     @Override
 	public IEObjectConsumer tryConsume() {
-		if(getEObject().eClass() != grammarAccess.getAggregateAccess().getAggregateAction_0_0().getType().getClassifier() && 
+		if(getEObject().eClass() != grammarAccess.getAggregateAccess().getAggregateAction_1_0().getType().getClassifier() && 
 		   getEObject().eClass() != grammarAccess.getIdentPrimaryAccess().getIdentPrimaryAction_0_0().getType().getClassifier() && 
 		   getEObject().eClass() != grammarAccess.getLogicalOrExpressionRule().getType().getClassifier() && 
 		   getEObject().eClass() != grammarAccess.getUnionRuleRule().getType().getClassifier())
@@ -15509,7 +15509,7 @@ protected class PrimaryExpression_Group_0 extends GroupToken {
 
     @Override
 	public IEObjectConsumer tryConsume() {
-		if(getEObject().eClass() != grammarAccess.getAggregateAccess().getAggregateAction_0_0().getType().getClassifier() && 
+		if(getEObject().eClass() != grammarAccess.getAggregateAccess().getAggregateAction_1_0().getType().getClassifier() && 
 		   getEObject().eClass() != grammarAccess.getIdentPrimaryAccess().getIdentPrimaryAction_0_0().getType().getClassifier())
 			return null;
 		return eObjectConsumer;
@@ -16105,7 +16105,7 @@ protected class IdentPrimary_Alternatives extends AlternativesToken {
 
     @Override
 	public IEObjectConsumer tryConsume() {
-		if(getEObject().eClass() != grammarAccess.getAggregateAccess().getAggregateAction_0_0().getType().getClassifier() && 
+		if(getEObject().eClass() != grammarAccess.getAggregateAccess().getAggregateAction_1_0().getType().getClassifier() && 
 		   getEObject().eClass() != grammarAccess.getIdentPrimaryAccess().getIdentPrimaryAction_0_0().getType().getClassifier())
 			return null;
 		return eObjectConsumer;
@@ -16350,7 +16350,7 @@ protected class IdentPrimary_AggregateParserRuleCall_1 extends RuleCallToken {
 
     @Override
 	public IEObjectConsumer tryConsume() {
-		if(getEObject().eClass() != grammarAccess.getAggregateAccess().getAggregateAction_0_0().getType().getClassifier())
+		if(getEObject().eClass() != grammarAccess.getAggregateAccess().getAggregateAction_1_0().getType().getClassifier())
 			return null;
 		if(checkForRecursion(Aggregate_Alternatives.class, eObjectConsumer)) return null;
 		return eObjectConsumer;
@@ -16405,7 +16405,7 @@ protected class Aggregate_Alternatives extends AlternativesToken {
 
     @Override
 	public IEObjectConsumer tryConsume() {
-		if(getEObject().eClass() != grammarAccess.getAggregateAccess().getAggregateAction_0_0().getType().getClassifier())
+		if(getEObject().eClass() != grammarAccess.getAggregateAccess().getAggregateAction_1_0().getType().getClassifier())
 			return null;
 		return eObjectConsumer;
 	}
