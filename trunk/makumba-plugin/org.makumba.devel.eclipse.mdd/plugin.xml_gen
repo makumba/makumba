@@ -5,7 +5,7 @@
 
   <extension point="org.eclipse.emf.ecore.generated_package">
     <package 
-       uri = "http://www.makumba.org/devel/plugin/eclipse/mdd/MDD" 
+       uri = "http://www.makumba.org/devel/eclipse/mdd/MDD" 
        class = "org.makumba.devel.eclipse.mdd.MDD.MDDPackage"
        genModel = "org/makumba/devel/eclipse/mdd/MDD.genmodel" /> 
 	

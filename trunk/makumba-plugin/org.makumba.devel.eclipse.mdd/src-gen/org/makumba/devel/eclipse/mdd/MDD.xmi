@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="ASCII"?>
 <xtext:Grammar xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:xtext="http://www.eclipse.org/2008/Xtext" name="org.makumba.devel.eclipse.mdd.MDD" definesHiddenTokens="true" hiddenTokens="//@rules.162 //@rules.161">
   <metamodelDeclarations xsi:type="xtext:GeneratedMetamodel" name="MDD">
-    <ePackage href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#/"/>
+    <ePackage href="http://www.makumba.org/devel/eclipse/mdd/MDD#/"/>
   </metamodelDeclarations>
   <metamodelDeclarations xsi:type="xtext:ReferencedMetamodel" alias="ecore">
     <ePackage href="http://www.eclipse.org/emf/2002/Ecore#/"/>
   </metamodelDeclarations>
   <rules xsi:type="xtext:ParserRule" name="DataDefinition">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//DataDefinition"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//DataDefinition"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:RuleCall" cardinality="*" rule="//@rules.155"/>
@@ -26,7 +26,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="Declaration">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//Declaration"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//Declaration"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Alternatives">
@@ -46,7 +46,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="FieldDeclaration">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FieldDeclaration"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//FieldDeclaration"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Assignment" feature="name" operator="=">
@@ -65,7 +65,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="Modifiers">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//Modifiers"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//Modifiers"/>
     </type>
     <alternatives xsi:type="xtext:UnorderedGroup">
       <elements xsi:type="xtext:Assignment" cardinality="?" feature="unique" operator="?=">
@@ -90,7 +90,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="FieldType">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FieldType"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//FieldType"/>
     </type>
     <alternatives xsi:type="xtext:Alternatives">
       <elements xsi:type="xtext:RuleCall" rule="//@rules.8"/>
@@ -107,7 +107,7 @@
       <elements xsi:type="xtext:Group">
         <elements xsi:type="xtext:Action">
           <type metamodel="//@metamodelDeclarations.0">
-            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FieldType"/>
+            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//FieldType"/>
           </type>
         </elements>
         <elements xsi:type="xtext:Assignment" feature="type" operator="=">
@@ -127,7 +127,7 @@
       <elements xsi:type="xtext:Assignment" feature="typeDec" operator="=">
         <terminal xsi:type="xtext:CrossReference">
           <type metamodel="//@metamodelDeclarations.0">
-            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//TypeDeclaration"/>
+            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//TypeDeclaration"/>
           </type>
           <terminal xsi:type="xtext:RuleCall" rule="//@rules.156"/>
         </terminal>
@@ -136,7 +136,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="IntEnum">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//IntEnum"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//IntEnum"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Assignment" feature="name" operator="=">
@@ -157,7 +157,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="CharEnum">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//CharEnum"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//CharEnum"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Assignment" feature="name" operator="=">
@@ -178,7 +178,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="EnumValue">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//EnumValue"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//EnumValue"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Assignment" feature="name" operator="=">
@@ -198,12 +198,12 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="CharType">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//CharType"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//CharType"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Action">
         <type metamodel="//@metamodelDeclarations.0">
-          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//CharType"/>
+          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//CharType"/>
         </type>
       </elements>
       <elements xsi:type="xtext:Keyword" value="char"/>
@@ -218,19 +218,19 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="PointerType">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//PointerType"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//PointerType"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Action">
         <type metamodel="//@metamodelDeclarations.0">
-          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//PointerType"/>
+          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//PointerType"/>
         </type>
       </elements>
       <elements xsi:type="xtext:Keyword" value="ptr"/>
       <elements xsi:type="xtext:Assignment" cardinality="?" feature="ref" operator="=">
         <terminal xsi:type="xtext:CrossReference">
           <type metamodel="//@metamodelDeclarations.0">
-            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//DataDefinition"/>
+            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//DataDefinition"/>
           </type>
           <terminal xsi:type="xtext:RuleCall" rule="//@rules.12"/>
         </terminal>
@@ -239,19 +239,19 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="SetType">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//SetType"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//SetType"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Action">
         <type metamodel="//@metamodelDeclarations.0">
-          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//SetType"/>
+          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//SetType"/>
         </type>
       </elements>
       <elements xsi:type="xtext:Keyword" value="set"/>
       <elements xsi:type="xtext:Assignment" cardinality="?" feature="ref" operator="=">
         <terminal xsi:type="xtext:CrossReference">
           <type metamodel="//@metamodelDeclarations.0">
-            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//DataDefinition"/>
+            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//DataDefinition"/>
           </type>
           <terminal xsi:type="xtext:RuleCall" rule="//@rules.12"/>
         </terminal>
@@ -260,13 +260,13 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="SubFieldDeclaration">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//SubFieldDeclaration"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//SubFieldDeclaration"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Assignment" feature="subFieldOf" operator="=">
         <terminal xsi:type="xtext:CrossReference">
           <type metamodel="//@metamodelDeclarations.0">
-            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FieldDeclaration"/>
+            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//FieldDeclaration"/>
           </type>
           <terminal xsi:type="xtext:RuleCall" rule="//@rules.156"/>
         </terminal>
@@ -291,7 +291,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="TitleDeclaration">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//TitleDeclaration"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//TitleDeclaration"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Keyword" value="!"/>
@@ -309,7 +309,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="IncludeDeclaration">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//IncludeDeclaration"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//IncludeDeclaration"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Keyword" value="!"/>
@@ -318,7 +318,7 @@
       <elements xsi:type="xtext:Assignment" feature="importedNamespace" operator="=">
         <terminal xsi:type="xtext:CrossReference">
           <type metamodel="//@metamodelDeclarations.0">
-            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//DataDefinition"/>
+            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//DataDefinition"/>
           </type>
           <terminal xsi:type="xtext:RuleCall" rule="//@rules.12"/>
         </terminal>
@@ -327,7 +327,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="TypeDeclaration">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//TypeDeclaration"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//TypeDeclaration"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Keyword" value="!"/>
@@ -344,7 +344,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="ValidationRuleDeclaration">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//ValidationRuleDeclaration"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//ValidationRuleDeclaration"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Alternatives">
@@ -360,7 +360,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="ComparisonValidationRuleDeclaration">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//ComparisonValidationRuleDeclaration"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//ComparisonValidationRuleDeclaration"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Assignment" feature="name" operator="=">
@@ -378,7 +378,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="ComparisonExpression">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//ComparisonExpression"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//ComparisonExpression"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Assignment" feature="lhs" operator="=">
@@ -394,7 +394,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="ComparisonPart">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//ComparisonPart"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//ComparisonPart"/>
     </type>
     <alternatives xsi:type="xtext:Alternatives">
       <elements xsi:type="xtext:Assignment" feature="field" operator="=">
@@ -419,7 +419,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="UpperFunction">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//UpperFunction"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//UpperFunction"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Keyword" value="upper"/>
@@ -432,7 +432,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="LowerFunction">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//LowerFunction"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//LowerFunction"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Keyword" value="lower"/>
@@ -509,7 +509,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="RangeValidationRuleDeclaration">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//RangeValidationRuleDeclaration"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//RangeValidationRuleDeclaration"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Assignment" feature="name" operator="=">
@@ -532,7 +532,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="RegexValidationRuleDeclaration">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//RegexValidationRuleDeclaration"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//RegexValidationRuleDeclaration"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Assignment" feature="name" operator="=">
@@ -558,7 +558,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="Range">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//Range"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//Range"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Assignment" feature="f" operator="=">
@@ -581,7 +581,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="UniquenessValidationRuleDeclaration">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//UniquenessValidationRuleDeclaration"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//UniquenessValidationRuleDeclaration"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Assignment" feature="name" operator="=">
@@ -594,7 +594,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="ErrorMessage">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//ErrorMessage"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//ErrorMessage"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Keyword" value=":"/>
@@ -605,13 +605,13 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="NativeValidationRuleDeclaration">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//NativeValidationRuleDeclaration"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//NativeValidationRuleDeclaration"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Assignment" feature="field" operator="=">
         <terminal xsi:type="xtext:CrossReference">
           <type metamodel="//@metamodelDeclarations.0">
-            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FieldDeclaration"/>
+            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//FieldDeclaration"/>
           </type>
           <terminal xsi:type="xtext:RuleCall" rule="//@rules.156"/>
         </terminal>
@@ -636,7 +636,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="FunctionDeclaration">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FunctionDeclaration"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//FunctionDeclaration"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Group" cardinality="?">
@@ -661,12 +661,12 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="FunctionArgumentDeclaration">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FunctionArgumentDeclaration"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//FunctionArgumentDeclaration"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Action">
         <type metamodel="//@metamodelDeclarations.0">
-          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FunctionArgumentDeclaration"/>
+          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//FunctionArgumentDeclaration"/>
         </type>
       </elements>
       <elements xsi:type="xtext:Keyword" value="("/>
@@ -684,7 +684,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="FunctionArgumentBody">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FunctionArgumentBody"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//FunctionArgumentBody"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Alternatives">
@@ -722,13 +722,13 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="FunctionCall">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FunctionCall"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//FunctionCall"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Assignment" feature="function" operator="=">
         <terminal xsi:type="xtext:CrossReference">
           <type metamodel="//@metamodelDeclarations.0">
-            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FunctionDeclaration"/>
+            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//FunctionDeclaration"/>
           </type>
           <terminal xsi:type="xtext:RuleCall" rule="//@rules.156"/>
         </terminal>
@@ -740,13 +740,13 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="FieldPath">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FieldPath"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//FieldPath"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Assignment" feature="field" operator="=">
         <terminal xsi:type="xtext:CrossReference">
           <type metamodel="//@metamodelDeclarations.0">
-            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FieldDeclaration"/>
+            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//FieldDeclaration"/>
           </type>
           <terminal xsi:type="xtext:RuleCall" rule="//@rules.153"/>
         </terminal>
@@ -761,12 +761,12 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="FieldReference">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FieldReference"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//FieldReference"/>
     </type>
     <alternatives xsi:type="xtext:Assignment" feature="field" operator="=">
       <terminal xsi:type="xtext:CrossReference">
         <type metamodel="//@metamodelDeclarations.0">
-          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FieldDeclaration"/>
+          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//FieldDeclaration"/>
         </type>
         <terminal xsi:type="xtext:RuleCall" rule="//@rules.153"/>
       </terminal>
@@ -774,12 +774,12 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="FunctionArguments">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FunctionArguments"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//FunctionArguments"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Action">
         <type metamodel="//@metamodelDeclarations.0">
-          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FunctionArguments"/>
+          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//FunctionArguments"/>
         </type>
       </elements>
       <elements xsi:type="xtext:Keyword" value="("/>
@@ -799,7 +799,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="FunctionBody">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FunctionBody"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//FunctionBody"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Keyword" value="{"/>
@@ -816,13 +816,13 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="Statement">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//Statement"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//Statement"/>
     </type>
     <alternatives xsi:type="xtext:RuleCall" rule="//@rules.45"/>
   </rules>
   <rules xsi:type="xtext:ParserRule" name="UnionRule">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//UnionRule"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//UnionRule"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Assignment" feature="q" operator="+=">
@@ -838,7 +838,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="QueryRule">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//QueryRule"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//QueryRule"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:RuleCall" rule="//@rules.46"/>
@@ -855,12 +855,12 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="SelectFrom">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//SelectFrom"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//SelectFrom"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Action">
         <type metamodel="//@metamodelDeclarations.0">
-          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//SelectFrom"/>
+          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//SelectFrom"/>
         </type>
       </elements>
       <elements xsi:type="xtext:Assignment" cardinality="?" feature="s" operator="=">
@@ -873,12 +873,12 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="SelectClause">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//SelectClause"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//SelectClause"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Action">
         <type metamodel="//@metamodelDeclarations.0">
-          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//SelectClause"/>
+          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//SelectClause"/>
         </type>
       </elements>
       <elements xsi:type="xtext:RuleCall" rule="//@rules.95"/>
@@ -896,7 +896,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="NewExpression">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//NewExpression"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//NewExpression"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:RuleCall" rule="//@rules.97"/>
@@ -923,7 +923,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="FromClause">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FromClause"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//FromClause"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:RuleCall" rule="//@rules.99"/>
@@ -945,7 +945,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="FromJoin">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FromJoin"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//FromJoin"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Alternatives" cardinality="?">
@@ -969,7 +969,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="WithClause">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//WithClause"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//WithClause"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:RuleCall" rule="//@rules.107"/>
@@ -980,7 +980,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="FromRange">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FromRange"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//FromRange"/>
     </type>
     <alternatives xsi:type="xtext:Alternatives">
       <elements xsi:type="xtext:RuleCall" rule="//@rules.54"/>
@@ -1009,12 +1009,12 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="FromClassOrOuterQueryPath">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FromClassOrOuterQueryPath"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//FromClassOrOuterQueryPath"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Action">
         <type metamodel="//@metamodelDeclarations.0">
-          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//FromClassOrOuterQueryPath"/>
+          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//FromClassOrOuterQueryPath"/>
         </type>
       </elements>
       <elements xsi:type="xtext:Assignment" feature="path" operator="=">
@@ -1033,7 +1033,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="InCollectionElementsDeclaration">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//InCollectionElementsDeclaration"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//InCollectionElementsDeclaration"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Assignment" feature="alias" operator="=">
@@ -1059,7 +1059,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="GroupByClause">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//GroupByClause"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//GroupByClause"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:RuleCall" rule="//@rules.115"/>
@@ -1079,7 +1079,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="OrderByClause">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//OrderByClause"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//OrderByClause"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:RuleCall" rule="//@rules.116"/>
@@ -1096,7 +1096,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="OrderElement">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//OrderElement"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//OrderElement"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:RuleCall" rule="//@rules.65"/>
@@ -1114,7 +1114,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="HavingClause">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//HavingClause"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//HavingClause"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:RuleCall" rule="//@rules.120"/>
@@ -1125,7 +1125,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="WhereClause">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//WhereClause"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//WhereClause"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:RuleCall" rule="//@rules.121"/>
@@ -1136,7 +1136,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="SelectedPropertiesList">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//SelectedPropertiesList"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//SelectedPropertiesList"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Assignment" feature="a" operator="+=">
@@ -1152,7 +1152,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="AliasedExpression">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//AliasedExpression"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//AliasedExpression"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:RuleCall" rule="//@rules.65"/>
@@ -1166,13 +1166,13 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="Expression">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//Expression"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//Expression"/>
     </type>
     <alternatives xsi:type="xtext:RuleCall" rule="//@rules.66"/>
   </rules>
   <rules xsi:type="xtext:ParserRule" name="LogicalOrExpression">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//LogicalOrExpression"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//LogicalOrExpression"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Assignment" feature="l" operator="+=">
@@ -1188,7 +1188,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="LogicalAndExpression">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//LogicalAndExpression"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//LogicalAndExpression"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Assignment" feature="n" operator="+=">
@@ -1204,7 +1204,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="NegatedExpression">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//NegatedExpression"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//NegatedExpression"/>
     </type>
     <alternatives xsi:type="xtext:Alternatives">
       <elements xsi:type="xtext:Group">
@@ -1218,7 +1218,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="EqualityExpression">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//EqualityExpression"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//EqualityExpression"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Assignment" feature="r" operator="+=">
@@ -1242,7 +1242,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="RelationalExpression">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//RelationalExpression"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//RelationalExpression"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:RuleCall" rule="//@rules.73"/>
@@ -1296,12 +1296,12 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="LikeEscape">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//LikeEscape"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//LikeEscape"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Action">
         <type metamodel="//@metamodelDeclarations.0">
-          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//LikeEscape"/>
+          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//LikeEscape"/>
         </type>
       </elements>
       <elements xsi:type="xtext:Group" cardinality="?">
@@ -1314,7 +1314,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="BetweenList">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//BetweenList"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//BetweenList"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Assignment" feature="c" operator="+=">
@@ -1328,7 +1328,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="Concatenation">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//Concatenation"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//Concatenation"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:RuleCall" rule="//@rules.74"/>
@@ -1348,7 +1348,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="AdditiveExpression">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//AdditiveExpression"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//AdditiveExpression"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Assignment" feature="m" operator="+=">
@@ -1367,7 +1367,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="MultiplyExpression">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//MultiplyExpression"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//MultiplyExpression"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Assignment" feature="u" operator="+=">
@@ -1386,7 +1386,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="UnaryExpression">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//UnaryExpression"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//UnaryExpression"/>
     </type>
     <alternatives xsi:type="xtext:Alternatives">
       <elements xsi:type="xtext:Group">
@@ -1408,7 +1408,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="CaseExpression">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//CaseExpression"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//CaseExpression"/>
     </type>
     <alternatives xsi:type="xtext:Alternatives">
       <elements xsi:type="xtext:Group">
@@ -1438,7 +1438,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="WhenClause">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//WhenClause"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//WhenClause"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:RuleCall" rule="//@rules.133"/>
@@ -1453,7 +1453,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="AltWhenClause">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//AltWhenClause"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//AltWhenClause"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:RuleCall" rule="//@rules.133"/>
@@ -1468,7 +1468,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="ElseClause">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//ElseClause"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//ElseClause"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:RuleCall" rule="//@rules.135"/>
@@ -1479,12 +1479,12 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="QuantifiedExpression">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//QuantifiedExpression"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//QuantifiedExpression"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Action">
         <type metamodel="//@metamodelDeclarations.0">
-          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//QuantifiedExpression"/>
+          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//QuantifiedExpression"/>
         </type>
       </elements>
       <elements xsi:type="xtext:Alternatives">
@@ -1508,12 +1508,12 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="Atom">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//Atom"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//Atom"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Action">
         <type metamodel="//@metamodelDeclarations.0">
-          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//Atom"/>
+          <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//Atom"/>
         </type>
       </elements>
       <elements xsi:type="xtext:Group">
@@ -1545,7 +1545,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="PrimaryExpression">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//PrimaryExpression"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//PrimaryExpression"/>
     </type>
     <alternatives xsi:type="xtext:Alternatives">
       <elements xsi:type="xtext:Group">
@@ -1576,7 +1576,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="ExpressionOrVector">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//ExpressionOrVector"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//ExpressionOrVector"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:RuleCall" rule="//@rules.65"/>
@@ -1587,7 +1587,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="VectorExpr">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//VectorExpr"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//VectorExpr"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Keyword" value=","/>
@@ -1604,13 +1604,13 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="IdentPrimary">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//IdentPrimary"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//IdentPrimary"/>
     </type>
     <alternatives xsi:type="xtext:Alternatives">
       <elements xsi:type="xtext:Group">
         <elements xsi:type="xtext:Action">
           <type metamodel="//@metamodelDeclarations.0">
-            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//IdentPrimary"/>
+            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//IdentPrimary"/>
           </type>
         </elements>
         <elements xsi:type="xtext:Group">
@@ -1643,13 +1643,13 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="Aggregate">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//Aggregate"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//Aggregate"/>
     </type>
     <alternatives xsi:type="xtext:Alternatives">
       <elements xsi:type="xtext:Group">
         <elements xsi:type="xtext:Action">
           <type metamodel="//@metamodelDeclarations.0">
-            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//Aggregate"/>
+            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//Aggregate"/>
           </type>
         </elements>
         <elements xsi:type="xtext:Alternatives">
@@ -1667,7 +1667,7 @@
       <elements xsi:type="xtext:Group">
         <elements xsi:type="xtext:Action">
           <type metamodel="//@metamodelDeclarations.0">
-            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//Aggregate"/>
+            <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//Aggregate"/>
           </type>
         </elements>
         <elements xsi:type="xtext:RuleCall" rule="//@rules.144"/>
@@ -1706,7 +1706,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="CompoundExpr">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//CompoundExpr"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//CompoundExpr"/>
     </type>
     <alternatives xsi:type="xtext:Alternatives">
       <elements xsi:type="xtext:RuleCall" rule="//@rules.88"/>
@@ -1735,7 +1735,7 @@
   </rules>
   <rules xsi:type="xtext:ParserRule" name="ExprList">
     <type metamodel="//@metamodelDeclarations.0">
-      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD#//ExprList"/>
+      <classifier xsi:type="ecore:EClass" href="http://www.makumba.org/devel/eclipse/mdd/MDD#//ExprList"/>
     </type>
     <alternatives xsi:type="xtext:Group">
       <elements xsi:type="xtext:Alternatives" cardinality="?">

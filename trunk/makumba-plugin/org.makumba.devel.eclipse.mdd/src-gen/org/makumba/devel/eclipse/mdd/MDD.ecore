@@ -2,7 +2,7 @@
 <ecore:EPackage xmi:version="2.0"
     xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="MDD"
-    nsURI="http://www.makumba.org/devel/plugin/eclipse/mdd/MDD" nsPrefix="MDD">
+    nsURI="http://www.makumba.org/devel/eclipse/mdd/MDD" nsPrefix="MDD">
   <eClassifiers xsi:type="ecore:EClass" name="DataDefinition">
     <eStructuralFeatures xsi:type="ecore:EReference" name="d" upperBound="-1" eType="#//Declaration"
         containment="true"/>

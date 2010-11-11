@@ -245,31 +245,31 @@ T247 : 'false' ;
 T248 : 'EMPTY' ;
 T249 : 'Empty' ;
 
-// $ANTLR src "../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g" 11260
+// $ANTLR src "../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g" 12144
 RULE_LINEBREAK : ('\n'|'\r' '\n'|'\r');
 
-// $ANTLR src "../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g" 11262
+// $ANTLR src "../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g" 12146
 RULE_ID : '^'? ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')*;
 
-// $ANTLR src "../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g" 11264
+// $ANTLR src "../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g" 12148
 RULE_SIGNED_INT : ('-'|'+') RULE_INT;
 
-// $ANTLR src "../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g" 11266
+// $ANTLR src "../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g" 12150
 RULE_HEX : '0x' ('0'..'9'|'a'..'f')+;
 
-// $ANTLR src "../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g" 11268
+// $ANTLR src "../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g" 12152
 RULE_INT : ('0'..'9')+;
 
-// $ANTLR src "../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g" 11270
+// $ANTLR src "../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g" 12154
 RULE_FIELDCOMMENT : ';' ~(('\n'|'\r'))*;
 
-// $ANTLR src "../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g" 11272
+// $ANTLR src "../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g" 12156
 RULE_SL_COMMENT : '#' ~(('\n'|'\r'))* ('\r'? '\n')?;
 
-// $ANTLR src "../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g" 11274
+// $ANTLR src "../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g" 12158
 RULE_WS : (' '|'\t'|'\r' '\n'|'\n'|'\r');
 
-// $ANTLR src "../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g" 11276
+// $ANTLR src "../org.makumba.devel.eclipse.mdd/src-gen/org/makumba/devel/eclipse/mdd/parser/antlr/internal/InternalMDD.g" 12160
 RULE_STRING : ('"' ('\\' '"'|~('"'))* '"'|'\'' ('\\' ('b'|'t'|'n'|'f'|'r'|'"'|'\''|'\\')|~(('\\'|'\'')))* '\'');
 
 

@@ -35,8 +35,8 @@ public class MDDStandaloneSetupGenerated implements ISetup {
 	}
 	
 	public void register(Injector injector) {
-	if (!EPackage.Registry.INSTANCE.containsKey("http://www.makumba.org/devel/plugin/eclipse/mdd/MDD")) {
-		EPackage.Registry.INSTANCE.put("http://www.makumba.org/devel/plugin/eclipse/mdd/MDD", org.makumba.devel.eclipse.mdd.MDD.MDDPackage.eINSTANCE);
+	if (!EPackage.Registry.INSTANCE.containsKey("http://www.makumba.org/devel/eclipse/mdd/MDD")) {
+		EPackage.Registry.INSTANCE.put("http://www.makumba.org/devel/eclipse/mdd/MDD", org.makumba.devel.eclipse.mdd.MDD.MDDPackage.eINSTANCE);
 	}
 
 		org.eclipse.xtext.resource.IResourceFactory resourceFactory = injector.getInstance(org.eclipse.xtext.resource.IResourceFactory.class);

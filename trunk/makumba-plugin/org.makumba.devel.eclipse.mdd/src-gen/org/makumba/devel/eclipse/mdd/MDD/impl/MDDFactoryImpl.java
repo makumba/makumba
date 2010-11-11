@@ -33,7 +33,7 @@ public class MDDFactoryImpl extends EFactoryImpl implements MDDFactory
   {
     try
     {
-      MDDFactory theMDDFactory = (MDDFactory)EPackage.Registry.INSTANCE.getEFactory("http://www.makumba.org/devel/plugin/eclipse/mdd/MDD"); 
+      MDDFactory theMDDFactory = (MDDFactory)EPackage.Registry.INSTANCE.getEFactory("http://www.makumba.org/devel/eclipse/mdd/MDD"); 
       if (theMDDFactory != null)
       {
         return theMDDFactory;
