@@ -16,7 +16,7 @@ INTERNAL CHANGES
 manu: removing the old ANT targets and files to build list and form separately
 manu: mechanism for keeping the external value of pointers constant during consecutive tests run with auto-increment
 manu: mavenizing the project
- 
+
 NOT TO BE RELEASED YET (need more testing)
 manu: auto-complete for mak:input (char and ptr)
 
