@@ -12,7 +12,7 @@ import java.util.Map;
  * key values (when inserted in an empty database) and the maximum of the current primary key values (growing with each
  * insert, due to database auto-increment).
  * 
- * @author manu
+ * @author Manuel Bernhardt (manuel@makumba.org)
  */
 public class ReferenceUIDStrategy implements UIDStrategy {
 

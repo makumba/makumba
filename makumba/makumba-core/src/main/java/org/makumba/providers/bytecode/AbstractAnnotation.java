@@ -5,7 +5,7 @@ import org.apache.commons.collections.map.MultiValueMap;
 /**
  * An abstract annotation object, useful to read/write annotations<br>
  * 
- * @author manu
+ * @author Manuel Bernhardt (manuel@makumba.org)
  * @version $Id: AbstractAnnotation.java,v 1.1 Jun 21, 2010 3:24:36 PM manu Exp $
  */
 public class AbstractAnnotation {

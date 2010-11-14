@@ -26,7 +26,7 @@ import org.makumba.MakumbaError;
  * TODO optimize memory consumption if possible, read {@link ClassPool} documentation<br>
  * TODO method reading --> combined method & field reading<br>
  * 
- * @author manu
+ * @author Manuel Bernhardt (manuel@makumba.org)
  * @version $Id: JavassistClassReader.java,v 1.1 Jun 18, 2010 4:10:53 PM manu Exp $
  */
 public class JavassistClassReader extends AbstractClassReader {

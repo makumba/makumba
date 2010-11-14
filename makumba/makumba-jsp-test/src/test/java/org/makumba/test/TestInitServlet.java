@@ -36,7 +36,7 @@ import java.util.Vector;
  * All in all this is quite a hack but it allows us to run both MQL and HQL tests with auto-increment consecutively with
  * the current diff-based test mechanism.
  * 
- * @author manu
+ * @author Manuel Bernhardt (manuel@makumba.org)
  * @version $Id: TestInitServlet.java,v 1.1 Sep 1, 2010 6:01:18 PM manu Exp $
  */
 public class TestInitServlet extends HttpServlet {

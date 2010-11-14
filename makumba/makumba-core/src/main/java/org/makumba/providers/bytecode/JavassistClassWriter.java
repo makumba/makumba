@@ -1,10 +1,5 @@
 package org.makumba.providers.bytecode;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Vector;
-
 import javassist.CannotCompileException;
 import javassist.ClassClassPath;
 import javassist.ClassPool;
@@ -27,18 +22,21 @@ import javassist.bytecode.annotation.EnumMemberValue;
 import javassist.bytecode.annotation.IntegerMemberValue;
 import javassist.bytecode.annotation.MemberValue;
 import javassist.bytecode.annotation.StringMemberValue;
-
-import javax.persistence.ManyToMany;
-
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.makumba.MakumbaError;
 import org.makumba.commons.NameResolver;
 
+import javax.persistence.ManyToMany;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Vector;
+
 /**
  * TODO optimize memory consumption if possible, read {@link ClassPool} documentation<br>
  * 
- * @author manu
+ * @author Manuel Bernhardt (manuel@makumba.org)
  * @version $Id: JavassistClassWriter.java,v 1.1 Jun 18, 2010 4:12:07 PM manu Exp $
  */
 public class JavassistClassWriter extends AbstractClassWriter {
