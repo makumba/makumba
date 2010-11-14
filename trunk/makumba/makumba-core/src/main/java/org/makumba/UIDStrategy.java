@@ -3,7 +3,7 @@ package org.makumba;
 /**
  * Strategy class that makes it possible to to adapt UIDs for {@link Pointer}-s.
  * 
- * @author manu
+ * @author Manuel Bernhardt (manuel@makumba.org)
  * @version $Id: UIDStrategy.java,v 1.1 Sep 1, 2010 10:56:19 AM manu Exp $
  */
 public interface UIDStrategy {

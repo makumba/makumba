@@ -19,7 +19,7 @@ import org.makumba.providers.DataDefinitionProvider;
  * Compares MDDs provided by two separate MDD providers<br>
  * Rename, simplify, and convert to test for going thru the MDD corpus
  * 
- * @author manu
+ * @author Manuel Bernhardt (manuel@makumba.org)
  * @version $Id: MDDComparator.java,v 1.1 Apr 28, 2010 9:39:39 AM manu Exp $
  */
 public class MDDComparator {
