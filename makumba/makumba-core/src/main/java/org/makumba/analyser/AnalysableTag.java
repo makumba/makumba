@@ -57,7 +57,7 @@ import org.makumba.commons.RuntimeWrappedException;
  * </ul>
  * 
  * @author Cristian Bogdan
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id$
  */
 

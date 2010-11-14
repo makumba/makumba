@@ -46,7 +46,7 @@ import java.util.*;
 
 /**
  * @author Johannes Peeters
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id$
  */
 public class FormsOQLTest extends MakumbaJspTestCase {

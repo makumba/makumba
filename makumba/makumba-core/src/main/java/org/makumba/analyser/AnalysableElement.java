@@ -24,7 +24,7 @@ import org.makumba.commons.MakumbaJspAnalyzer;
  * This class contains a number of utility methods that help retrieving the currently analyzed or running JSP element
  * (tag or EL expression). This is useful when providing accurate error messages to the user.
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @author Rudolf Mayer
  * @version $Id: AnalysableElement.java,v 1.1 Jan 27, 2010 11:49:06 AM manu Exp $
  */

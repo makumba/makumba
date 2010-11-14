@@ -42,7 +42,7 @@ import org.makumba.version;
 /**
  * This class generates the Makumba TLD files based on the documented TLD XML file.
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id$
  */
 public class MakumbaTLDGenerator {

@@ -44,7 +44,7 @@ import org.makumba.db.DataHolder;
  * @author Cristian Bogdan
  * @author Thomas Laroche
  * @author Marius Andra
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  */
 public abstract class Table // extends RecordHandler
 {

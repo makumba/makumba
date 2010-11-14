@@ -12,7 +12,7 @@ import org.makumba.providers.CRUDOperationProvider;
 /**
  * Makumba-specific implementation of the {@link CRUDOperationProvider}
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: MakumbaCRUDOperationProvider.java,v 1.1 02.11.2007 12:29:23 Manuel Exp $
  */
 public class MakumbaCRUDOperationProvider extends CRUDOperationProvider {

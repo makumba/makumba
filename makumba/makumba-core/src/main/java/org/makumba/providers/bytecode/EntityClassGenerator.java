@@ -17,7 +17,7 @@ import org.makumba.providers.FieldDataDTO;
 /**
  * Generator for entity classes using the JPA annotations.<br>
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: EntityClassGenerator.java,v 1.1 May 30, 2010 6:43:20 PM manu Exp $
  */
 public class EntityClassGenerator {

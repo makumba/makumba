@@ -16,7 +16,7 @@ import org.makumba.commons.tags.GenericMakumbaTag;
  * mak:submit tag, to submit forms. Very simple helper tag that submits the enclosing form, or if not enclosed in a
  * form, submits the form indicated by name. Can render either as a link or as a button.
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: SubmitTag.java,v 1.1 Jan 1, 2010 2:28:47 PM manu Exp $
  */
 public class SubmitTag extends GenericMakumbaTag implements BodyTag {

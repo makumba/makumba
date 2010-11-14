@@ -31,7 +31,7 @@ import java.util.Vector;
  * Graph which can do a topological sort of its elements. In our case, the elements are MultipleKeys of form tags.
  * 
  * @author http://www.java2s.com/Code/Java/Collections-Data-Structure/Topologicalsorting.htm
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id$
  */
 public class GraphTS<E> {

@@ -11,7 +11,7 @@ import org.makumba.providers.TransactionProvider;
  * This class is a Hibernate-specific implementation of a {@link TransactionProvider}. FIXME see what to do with the old
  * _copy, ... etc. methods
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: HibernateTransactionProvider.java,v 1.1 06.11.2007 11:01:32 Manuel Exp $
  */
 public class HibernateTransactionProvider extends TransactionProvider {

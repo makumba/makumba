@@ -55,7 +55,7 @@ import org.makumba.providers.Configuration;
  * 
  * @author Cristian Bogdan
  * @author Rudolf Mayer
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id$
  */
 public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.BodyTag {

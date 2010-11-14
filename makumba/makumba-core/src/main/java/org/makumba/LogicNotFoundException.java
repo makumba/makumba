@@ -25,7 +25,7 @@ package org.makumba;
 
 /**
  * @author Cristian Bogdan
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id$
  */
 public class LogicNotFoundException extends LogicException {

@@ -15,7 +15,7 @@ import org.makumba.providers.datadefinition.mdd.FieldDefinitionImpl;
  * extends. For now we keep things simple and make a class that can be populated by any kind of MDD parser. It also
  * gives us a pretty good idea of the minimum set of field properties necessary for database persistence.
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id$
  */
 public class FieldDataDTO {

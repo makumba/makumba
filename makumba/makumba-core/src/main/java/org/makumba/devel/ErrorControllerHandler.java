@@ -23,7 +23,7 @@ import org.makumba.commons.ServletObjects;
  * are then handled by the {@link ErrorFormatter}. It should be the first one of the filter handlers. If disabled, the
  * "raw" exception is thrown. TODO the login should not be triggered directly in here, but somewhere else
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @author Rudolf Mayer
  * @author Filip Kis
  * @version $Id: ErrorFilter.java,v 1.1 12.10.2007 18:17:00 Manuel Exp $

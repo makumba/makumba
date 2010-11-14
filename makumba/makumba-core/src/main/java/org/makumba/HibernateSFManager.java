@@ -56,7 +56,7 @@ import org.xml.sax.SAXException;
  * <li>Tell Makumba to use an already existing session factory using the setHibernateSessionFactory() method</li>
  * </ul>
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @author Rudolf Mayer
  * @author Cristian Bogdan
  * @version $Id$

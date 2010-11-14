@@ -12,7 +12,7 @@ import org.makumba.commons.MultipleKey;
  * http://java.sun.com/products/jsp/2.1/docs/jsp-2_1-pfd2/javax/el/ELResolver.html) Implementations of this class can be
  * retrieved by {@link ELResolver}-s in order to get status information, perform analysis-time tasks, etc.
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: AnalysableExpression.java,v 1.1 Jan 22, 2010 6:13:56 PM manu Exp $
  */
 public abstract class AnalysableExpression extends AnalysableElement {

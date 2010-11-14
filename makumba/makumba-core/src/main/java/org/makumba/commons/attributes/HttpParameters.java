@@ -37,7 +37,7 @@ import javax.servlet.http.HttpServletRequest;
  * 
  * @author Cristian Bogdan
  * @author Rudolf Mayer
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: HttpParameters.java 1402 2007-07-25 11:52:28Z manuel_gay $
  */
 public class HttpParameters {

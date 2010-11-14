@@ -12,7 +12,7 @@ import org.makumba.providers.bytecode.AbstractAnnotation;
 /**
  * Helper class to read makumba annotations data
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: MakumbaAnnotationReader.java,v 1.1 Jun 23, 2010 12:26:54 PM manu Exp $
  */
 public class MakumbaAnnotationReader {

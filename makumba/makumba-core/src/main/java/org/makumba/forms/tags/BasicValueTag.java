@@ -42,7 +42,7 @@ import javax.servlet.jsp.tagext.TagSupport;
  * similar manner (value="$attribute" or value="OQL expr").
  * 
  * @author Cristian Bogdan
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: BasicValueTag.java 1529 2007-09-13 23:33:10Z rosso_nero $
  */
 public abstract class BasicValueTag extends GenericMakumbaTag {

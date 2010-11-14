@@ -47,7 +47,7 @@ import org.makumba.providers.TransactionProvider;
  * this one because they need to compute the base pointers and dummy queries. this dependency needs to be removed.
  * 
  * @author Cristian Bogdan
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: MakumbaTag.java 1546 2007-09-14 20:34:45Z manuel_gay $
  */
 public abstract class GenericListTag extends GenericMakumbaTag {

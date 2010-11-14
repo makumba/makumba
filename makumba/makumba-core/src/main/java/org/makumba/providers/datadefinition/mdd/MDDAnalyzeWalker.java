@@ -17,7 +17,7 @@ import antlr.collections.AST;
 /**
  * MDD analysis walker, collects useful information for creation of {@link DataDefinition} and {@link FieldDefinition}
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: MDDAnalyzeWalker.java,v 1.1 May 2, 2009 10:56:49 PM manu Exp $
  */
 public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {

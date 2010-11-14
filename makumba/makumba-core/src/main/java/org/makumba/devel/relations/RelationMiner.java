@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 /**
  * A RelationMiner extracts relations from a file
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: RelationMiner.java,v 1.1 Apr 19, 2008 8:35:58 PM manu Exp $
  */
 public abstract class RelationMiner {

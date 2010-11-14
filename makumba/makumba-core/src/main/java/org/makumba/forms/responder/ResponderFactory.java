@@ -28,7 +28,7 @@ import org.makumba.commons.attributes.RequestAttributes;
 /**
  * This factory handles the creation, caching and retrieval of Responder objects.
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: ResponderFactory.java,v 1.1 12.10.2007 13:17:45 Manuel Exp $
  */
 public class ResponderFactory {

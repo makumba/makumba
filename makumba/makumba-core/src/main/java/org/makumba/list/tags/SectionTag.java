@@ -33,7 +33,7 @@ import com.google.gson.Gson;
  * TODO detection of "toggle"/"update" situation (i.e. two sections next to one another that hide/show on the same
  * event)?<br>
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: SectionTag.java,v 1.1 Dec 25, 2009 6:47:43 PM manu Exp $
  */
 public class SectionTag extends GenericMakumbaTag implements BodyTag {

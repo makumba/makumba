@@ -33,7 +33,7 @@ import org.makumba.controller.http.ControllerFilter;
  * This is an abstraction of the filter mechanism. It emulates the behaviour of a filter so that different handlers can
  * be defined which perform specific operations, without having to create real filters.
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id$
  */
 public abstract class ControllerHandler {

@@ -23,7 +23,7 @@ import org.makumba.providers.DataDefinitionProvider;
  * TODO: implement a way to flush all the relations in order to re-crawl, using e.g. a param. needs to have a new method
  * in RelationCrawler that runs a "delete from..."
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: RelationCrawlerTool.java,v 1.1 Oct 19, 2008 5:18:46 PM manu Exp $
  */
 public class RelationCrawlerTool extends HttpServlet {

@@ -18,7 +18,7 @@ import org.makumba.test.util.MakumbaTestSetup;
 /**
  * Unit tests for the query generation process (from MQL to SQL, including parameter rewriting)
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: QueryGenerationTest.java,v 1.1 Apr 20, 2010 8:10:05 AM manu Exp $
  */
 public class QueryGenerationTest extends TestCase {

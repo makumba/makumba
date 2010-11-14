@@ -6,7 +6,7 @@ import java.util.Date;
  * Node that holds data of a comparison expression of the kind RHS operator LHS, where RHS/LHS can be either a field
  * name, a date constant or construct, or a function applied to a field
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: ComparisonExpressionNode.java,v 1.1 08.07.2009 16:01:49 gaym Exp $
  */
 public class ComparisonExpressionNode extends MDDAST {

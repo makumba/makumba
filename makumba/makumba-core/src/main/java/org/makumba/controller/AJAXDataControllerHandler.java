@@ -27,7 +27,7 @@ import com.google.gson.Gson;
 /**
  * ControllerHandler that handles AJAX-related data writing<br/> FIXME does not seem to work for multiple forms
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: ResponseModifierControllerHandler.java,v 1.1 Dec 25, 2009 10:05:55 PM manu Exp $
  */
 public class AJAXDataControllerHandler extends ControllerHandler {

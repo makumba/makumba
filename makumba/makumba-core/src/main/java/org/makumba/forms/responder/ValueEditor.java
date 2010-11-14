@@ -25,7 +25,7 @@ import org.makumba.providers.TransactionProvider;
 /**
  * This servlet updates values in the database
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: MakumbaResourceServlet.java,v 1.1 Sep 22, 2007 2:02:17 AM rudi Exp $
  */
 public class ValueEditor extends HttpServlet {

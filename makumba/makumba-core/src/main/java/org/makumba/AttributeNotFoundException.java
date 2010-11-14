@@ -27,7 +27,7 @@ package org.makumba;
  * An exception thrown if an attribute is not found
  * 
  * @author Cristian Bogdan
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id$
  */
 public class AttributeNotFoundException extends LogicException {

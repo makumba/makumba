@@ -14,7 +14,7 @@ import antlr.collections.AST;
 /**
  * AST node that collects information for building a {@link DataDefinition}
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: MDDNode.java,v 1.1 May 3, 2009 8:01:07 PM manu Exp $
  */
 public class MDDNode extends CommonAST {

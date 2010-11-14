@@ -34,7 +34,7 @@ import antlr.collections.AST;
  * This interface describes the result of a query analysis.
  * 
  * @author Cristian Bogdan
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @since 0.5.5.10
  * @version $Id$
  */

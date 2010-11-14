@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * Annotation for messages to the user
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: Description.java,v 1.1 Jun 21, 2010 6:32:24 PM manu Exp $
  */
 @Retention(RetentionPolicy.RUNTIME)

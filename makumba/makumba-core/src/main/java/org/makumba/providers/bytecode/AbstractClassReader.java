@@ -7,7 +7,7 @@ import java.util.Vector;
  * TODO method -> member<br>
  * TODO read class annotations<br>
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: AbstractClassReader.java,v 1.1 Jun 18, 2010 12:01:55 PM manu Exp $
  */
 public abstract class AbstractClassReader {

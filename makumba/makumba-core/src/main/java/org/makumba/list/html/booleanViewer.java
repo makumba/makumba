@@ -32,7 +32,7 @@ import org.makumba.commons.formatters.RecordFormatter;
  * Boolean viewer, that simply displays "Yes" or "No" instead of "true" and "false"<br>
  * TODO: add possibility to provide other display values than "Yes" or "No"
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: booleanViewer.java,v 1.1 May 11, 2008 9:45:07 PM manu Exp $
  */
 public class booleanViewer extends FieldViewer {

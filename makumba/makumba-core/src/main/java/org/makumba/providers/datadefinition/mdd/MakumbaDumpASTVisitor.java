@@ -11,7 +11,7 @@ import antlr.ASTVisitor;
 import antlr.collections.AST;
 
 /**
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: MakumbaDumpASTVisitor.java,v 1.1 13 Apr 2010 16:04:13 rudi Exp $
  */
 public class MakumbaDumpASTVisitor implements ASTVisitor {

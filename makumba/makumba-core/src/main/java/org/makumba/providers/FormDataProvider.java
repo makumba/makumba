@@ -12,7 +12,7 @@ import org.makumba.commons.MultipleKey;
 /**
  * This provider aims at providing the data necessary for the Makumba forms to compute its results.
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id$
  */
 public interface FormDataProvider {

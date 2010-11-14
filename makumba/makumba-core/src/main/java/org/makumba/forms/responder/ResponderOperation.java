@@ -19,7 +19,7 @@ import org.makumba.forms.tags.FormOperationType;
  * this class helps to differentiate between the different types of forms
  * 
  * @author Cristian Bogdan
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  */
 public abstract class ResponderOperation implements java.io.Serializable {
 

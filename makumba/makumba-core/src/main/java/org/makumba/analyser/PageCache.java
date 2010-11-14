@@ -40,7 +40,7 @@ import org.makumba.commons.tags.GenericMakumbaTag;
  * methods to add/retrieve caches throughout the analysis process.
  * 
  * @author Cristian Bogdan
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @author Rudolf Mayer
  * @version $Id$
  */

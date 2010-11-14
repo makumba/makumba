@@ -10,7 +10,7 @@ import org.makumba.Pointer;
  * Enum for Makumba field types
  * 
  * @author Veronika Bodmann
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: FieldType.java,v 1.1 May 3, 2009 10:40:42 AM manu Exp $
  */
 public enum FieldType {

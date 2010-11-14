@@ -35,7 +35,7 @@ import org.makumba.commons.ServletObjects;
 /**
  * This {@link ControllerHandler} ensures that the analysis is initialised correctly at each access
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id$
  */
 public class AnalysisInitControllerHandler extends ControllerHandler {

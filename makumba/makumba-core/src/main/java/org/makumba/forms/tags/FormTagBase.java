@@ -58,7 +58,7 @@ import org.makumba.providers.FormDataProvider;
  * 
  * @author Cristian Bogdan
  * @author Rudolf Mayer
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id$
  */
 public class FormTagBase extends GenericMakumbaTag implements BodyTag {

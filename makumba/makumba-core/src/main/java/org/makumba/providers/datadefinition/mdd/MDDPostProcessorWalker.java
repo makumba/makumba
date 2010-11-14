@@ -16,7 +16,7 @@ import antlr.collections.AST;
 /**
  * Postprocessor walker that performs some finalizing steps.
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: MDDBuildWalker.java,v 1.1 May 3, 2009 10:13:05 PM manu Exp $
  */
 public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {

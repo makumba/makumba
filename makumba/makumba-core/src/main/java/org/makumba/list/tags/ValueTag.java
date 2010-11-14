@@ -39,7 +39,7 @@ import org.makumba.providers.DataDefinitionProvider;
  * in-place edition of dates and others
  * 
  * @author Cristian Bogdan
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @author Marius Andra
  */
 public class ValueTag extends GenericListTag {

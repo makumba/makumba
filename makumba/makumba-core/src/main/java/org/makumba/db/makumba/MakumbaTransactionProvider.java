@@ -17,7 +17,7 @@ import org.makumba.providers.Configuration.DataSourceType;
 /**
  * Makumba-specific implementation of the {@link TransactionProvider}.
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: MakumbaTransactionProvider.java,v 1.1 21.11.2007 17:06:25 Manuel Exp $
  */
 public class MakumbaTransactionProvider extends TransactionProvider {

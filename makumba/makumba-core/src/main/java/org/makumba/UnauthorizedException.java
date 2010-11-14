@@ -27,7 +27,7 @@ package org.makumba;
  * An unauthorized exception, due to mismatch of attribute values
  * 
  * @author Cristian Bogdan
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id$
  */
 public class UnauthorizedException extends LogicException {
