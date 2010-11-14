@@ -30,7 +30,7 @@ import antlr.collections.AST;
  * finally transformed again for sql query generation.
  * 
  * @author Cristian Bogdan
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: MqlQueryAnalysis.java,v 1.1 Apr 29, 2009 8:54:20 PM manu Exp $
  */
 public class MqlQueryAnalysis implements QueryAnalysis {

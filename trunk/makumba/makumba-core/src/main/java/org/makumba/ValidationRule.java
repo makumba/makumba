@@ -29,7 +29,7 @@ import java.util.Collection;
  * Defines the basics of a Makumba Validation rule.
  * 
  * @author Rudolf Mayer
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id$
  */
 public interface ValidationRule extends Comparable<ValidationRule> {

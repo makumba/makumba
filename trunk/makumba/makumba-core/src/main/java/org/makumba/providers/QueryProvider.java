@@ -12,7 +12,7 @@ import org.makumba.commons.NamedResources;
 /**
  * This provider makes it possible to run queries against a data source.
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @author Cristian Bogdan
  * @author Rudolf Mayer
  * @version $Id$

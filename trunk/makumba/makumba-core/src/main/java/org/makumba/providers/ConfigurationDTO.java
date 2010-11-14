@@ -7,7 +7,7 @@ import java.util.Map;
  * Temporary holder for Configuration data, should be merged with Configuration when a better provider mechanism will
  * exist. The fields have package visibility for now to avoid loads of getter / setter code.
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id$
  */
 public class ConfigurationDTO {

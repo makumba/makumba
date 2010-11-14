@@ -8,7 +8,7 @@ import org.makumba.analyser.engine.SyntaxPoint;
 /**
  * Data for an EL value or method
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: ELData.java,v 1.1 Jan 22, 2010 6:44:26 PM manu Exp $
  */
 public class ELData extends ElementData implements Serializable {

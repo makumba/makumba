@@ -6,7 +6,7 @@ import java.util.Vector;
  * AST node that holds the information about the MDD title field<br>
  * TODO add support for functions
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: TitleFieldNode.java,v 1.1 May 3, 2009 10:18:14 PM manu Exp $
  */
 public class TitleFieldNode extends MDDAST {

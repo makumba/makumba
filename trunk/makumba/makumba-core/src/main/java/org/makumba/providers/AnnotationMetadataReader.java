@@ -15,7 +15,7 @@ import org.makumba.providers.bytecode.JavassistClassReader;
  * TODO read class annotations: wrappers around this Reader that are then used in the code in order to read aspects in a
  * specialised way<br>
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id$
  */
 public class AnnotationMetadataReader {

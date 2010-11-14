@@ -7,7 +7,7 @@ import java.util.Vector;
 /**
  * This class holds the relations a file has with JSP, MDD and/or Java files.
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: FileRelations.java,v 1.1 Apr 22, 2008 10:09:54 AM manu Exp $
  */
 public class FileRelations {
@@ -48,7 +48,7 @@ public class FileRelations {
     /**
      * Origin of the relation
      * 
-     * @author Manuel Gay
+     * @author Manuel Bernhardt <manuel@makumba.org>
      * @version $Id: FileRelations.java,v 1.1 Apr 23, 2008 2:59:44 PM manu Exp $
      */
     public class RelationOrigin {

@@ -21,7 +21,7 @@ import java.util.ArrayList;
  * result, we can fetch this result and store it into a file, and then compare the next executions of the test against
  * this file.
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: MakumbaJSPTest.java,v 1.1 25.09.2007 16:08:26 Manuel Exp $
  */
 public abstract class MakumbaJspTestCase extends JspTestCase {

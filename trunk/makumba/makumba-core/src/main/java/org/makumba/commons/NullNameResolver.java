@@ -29,7 +29,7 @@ import org.makumba.DataDefinition;
  * This class provides utility methods to convert names from MDD types into their name in the data source. It also takes
  * into account properties passed in the database configuration. TODO document these properties
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @author Cristian Bogdan
  * @version $Id: NameResolver.java 5282 2010-06-02 14:43:04Z manuel_gay $
  */

@@ -27,7 +27,7 @@ package org.makumba;
  * An exception thrown during the execution of some business logic code
  * 
  * @author Cristian Bogdan
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id$
  */
 public class LogicException extends org.makumba.commons.WrappedException {

@@ -36,7 +36,7 @@ import org.makumba.forms.responder.ResponderFactory;
  * mak:response tag, displaying the response of a form submission.
  * 
  * @author Cristian Bogdan
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id$
  */
 public class ResponseTag extends javax.servlet.jsp.tagext.TagSupport {

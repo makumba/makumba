@@ -17,7 +17,7 @@ import com.meterware.httpunit.WebResponse;
  * Tests the OQL list engine.
  * 
  * @author Johannes Peeters
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: ListOQLTest.java,v 1.1 25.09.2007 15:58:58 Manuel Exp $
  */
 public class ListOQLTest extends MakumbaJspTestCase {

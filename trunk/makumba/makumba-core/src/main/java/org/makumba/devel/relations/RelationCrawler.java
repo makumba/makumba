@@ -37,7 +37,7 @@ import org.makumba.providers.TransactionProvider;
  * This crawler looks for relations between Makumba files and stores them in a database table.<br>
  * TODO keep a list of things that could not be analyzed (may it be entire files, or query strings etc<br>
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: RelationsCrawler.java,v 1.1 Apr 13, 2008 4:16:16 PM manu Exp $
  */
 public class RelationCrawler {

@@ -23,7 +23,7 @@ import org.makumba.providers.DataDefinitionProvider;
  * Implementation of the {@link DataDefinition} interface.<br>
  * This implementation gets its data from a {@link MDDNode} after parsing, and adds the necessary functionality to it.
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: DataDefinitionImpl.java,v 1.1 23.06.2009 11:52:36 gaym Exp $
  */
 public class DataDefinitionImpl implements DataDefinition, ValidationDefinition, Serializable {

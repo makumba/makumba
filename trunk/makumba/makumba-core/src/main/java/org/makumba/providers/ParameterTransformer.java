@@ -12,7 +12,7 @@ import org.makumba.commons.NameResolver;
  * <li>transformation of named parameters into (ordered) numbered parameters</li>
  * </ul>
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: SQLQueryGenerator.java,v 1.1 Mar 3, 2010 6:50:10 PM manu Exp $
  */
 public interface ParameterTransformer {

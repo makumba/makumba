@@ -15,7 +15,7 @@ import antlr.collections.AST;
 
 /**
  * @author Christian Bogdan
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $id
  */
 

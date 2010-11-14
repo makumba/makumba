@@ -32,7 +32,7 @@ import org.makumba.analyser.engine.SyntaxPoint;
  * A composite object passed to the analyzers.
  * 
  * @author Cristian Bogdan
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @author Rudolf Mayer
  * @version $Id$
  */

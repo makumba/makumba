@@ -27,7 +27,7 @@ import antlr.collections.AST;
 /**
  * MQL implementation of the {@link ParameterTransformer}, which generates SQL based on a {@link QueryAnalysis}
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: MqlSQLQueryGenerator.java,v 1.1 Mar 30, 2010 4:17:00 PM manu Exp $
  */
 public class MqlParameterTransformer implements ParameterTransformer {

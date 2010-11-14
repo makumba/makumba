@@ -6,7 +6,7 @@ import java.util.Vector;
 /**
  * A class capable of writing class bytecode. This abstraction makes client code easier to read.
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: AbstractClassWriter.java,v 1.1 May 31, 2010 10:29:13 AM manu Exp $
  */
 public abstract class AbstractClassWriter {

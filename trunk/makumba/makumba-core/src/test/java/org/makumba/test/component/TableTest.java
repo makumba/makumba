@@ -39,7 +39,7 @@ import java.util.*;
  * Testing table operations, using new MDD parser
  * 
  * @author Cristian Bogdan
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  */
 public class TableTest extends TestCase {
 

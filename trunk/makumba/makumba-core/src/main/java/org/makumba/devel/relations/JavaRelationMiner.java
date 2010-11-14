@@ -23,7 +23,7 @@ import org.makumba.providers.query.mql.MqlQueryAnalysis;
  * TODO add more origin information for Java -> MDD relations (now we only give the query string, we miss line number
  * etc.)
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: JavaRelationMiner.java,v 1.1 Apr 19, 2008 9:00:56 PM manu Exp $
  */
 public class JavaRelationMiner extends RelationMiner {

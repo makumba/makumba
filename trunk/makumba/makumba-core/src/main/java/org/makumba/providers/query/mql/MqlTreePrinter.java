@@ -9,7 +9,7 @@ import antlr.collections.AST;
  * Walks over a first-pass tree and prints the result as MQL query FIXME finish implementing it! FIXME this is not fully
  * tested
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: MqlTreePrinter.java,v 1.1 Aug 5, 2009 10:49:05 AM manu Exp $
  */
 public class MqlTreePrinter {

@@ -44,7 +44,7 @@ import org.makumba.providers.TransactionProvider;
  * This is the Makumba-specific implementation of a {@link Transaction}
  * 
  * @author Cristian Bogdan
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id$
  */
 public abstract class DBConnection extends TransactionImplementation {

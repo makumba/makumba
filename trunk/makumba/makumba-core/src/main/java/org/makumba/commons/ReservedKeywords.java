@@ -9,7 +9,7 @@ import org.apache.commons.collections.CollectionUtils;
 /**
  * Utility class containing all kind of reserved words which may cause problems if used as e.g. field names
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @author Rudolf Mayer
  * @version $Id$
  */

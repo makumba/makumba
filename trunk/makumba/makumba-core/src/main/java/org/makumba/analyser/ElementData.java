@@ -5,7 +5,7 @@ import java.io.Serializable;
 import org.makumba.analyser.engine.SourceSyntaxPoints;
 
 /**
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @author Rudolf Mayer
  * @version $Id: ElementData.java,v 1.1 7 May 2010 15:48:42 rudi Exp $
  */

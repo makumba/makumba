@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  * @MakumbaEnum({@E(key=10, value="value"), @E(key=20, value="another value")})
  * </pre>
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: MakumbaEnum.java,v 1.1 Jun 21, 2010 6:32:39 PM manu Exp $
  */
 @Retention(RetentionPolicy.RUNTIME)

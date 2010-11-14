@@ -42,7 +42,7 @@ import org.makumba.commons.ClassResource;
  * This class knows how to read Makumba configuration and is used internally by different classes that need specific
  * services. It can be seen as a service dispatcher in a way.
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @author Rudolf Mayer
  * @version $Id$
  */

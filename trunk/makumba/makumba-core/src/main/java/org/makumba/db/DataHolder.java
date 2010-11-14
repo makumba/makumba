@@ -18,7 +18,7 @@ import org.makumba.providers.TransactionProvider;
  * is passed as a dictionary, and its keys look like "a", "a.b", "a.b.c" ...
  * 
  * @author Cristian Bogdan
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: DBConnection.java 1938 2007-10-25 14:55:27Z manuel_gay $
  */
 public class DataHolder {

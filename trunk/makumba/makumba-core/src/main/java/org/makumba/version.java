@@ -43,7 +43,7 @@ import java.util.Date;
  * @author Stefan Baebler
  * @author Frederik Habilis
  * @author Rudolf Mayer
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  */
 public class version {
 

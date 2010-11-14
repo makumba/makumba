@@ -3,7 +3,7 @@ package org.makumba.providers.bytecode;
 /**
  * Abstract representation of a Class
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: Clazz.java,v 1.1 Jun 18, 2010 12:08:31 PM manu Exp $
  */
 public class Clazz {

@@ -14,7 +14,7 @@ import java.util.logging.Level;
  * on the disk. In case of server failure, responder objects are serialized on the disk so they can be retrieved again
  * after restart and form data is not lost.
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: ResponderCacheManager.java,v 1.1 03.10.2007 09:54:18 Manuel Exp $
  */
 public class ResponderCacheManager {

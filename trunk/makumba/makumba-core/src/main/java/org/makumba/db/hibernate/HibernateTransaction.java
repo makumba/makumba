@@ -43,7 +43,7 @@ import org.makumba.providers.query.mql.MqlQueryAnalysis;
 /**
  * Hibernate-specific implementation of a {@link Transaction}
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: HibernateTransaction.java,v 1.1 02.11.2007 14:08:53 Manuel Exp $
  */
 public class HibernateTransaction extends TransactionImplementation {

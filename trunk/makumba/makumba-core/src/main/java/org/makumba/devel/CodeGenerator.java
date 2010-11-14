@@ -52,7 +52,7 @@ import org.makumba.providers.DataDefinitionProvider;
  * </ul>
  * 
  * @author Rudolf Mayer
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id$
  */
 public class CodeGenerator {

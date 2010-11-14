@@ -34,7 +34,7 @@ import org.makumba.providers.FormDataProvider;
  * provide context to the method, so it knows what kind of data to compute. In addition we also pass some other
  * parameters useful for data computation.
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: ListFormDataProvider.java,v 1.1 18.09.2007 18:31:07 Manuel Exp $
  */
 public class ListFormDataProvider implements FormDataProvider {

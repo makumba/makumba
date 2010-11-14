@@ -49,7 +49,7 @@ import org.makumba.providers.TransactionProvider;
  * with the currently used query language TODO: adapt for ptr: add an if which checks the fieldType, then, do the
  * queries necessary to get the title (as in the ptrEditor) and generate the right result (read scriptaculous doc)
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id$
  */
 public class AutoCompleteServlet extends HttpServlet {

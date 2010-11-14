@@ -25,7 +25,7 @@ import antlr.collections.AST;
  * This class calls the inital MDD parser, then walks over it and performs the analysis and finally transforms it again
  * in order to produce the {@link DataDefinition} and its content.
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: MDDAnalyzer.java,v 1.1 Apr 29, 2009 8:59:46 PM manu Exp $
  */
 public class MDDFactory {

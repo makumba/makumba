@@ -19,7 +19,7 @@ import org.makumba.test.util.MakumbaWebTestSetup;
 /**
  * Test case for concurrent access on a mak:list, later also on a mak:form
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: ConcurrentTest.java,v 1.1 May 23, 2010 5:26:04 PM manu Exp $
  */
 public class ConcurrentTest extends TestCase {

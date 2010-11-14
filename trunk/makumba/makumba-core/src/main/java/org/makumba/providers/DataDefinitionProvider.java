@@ -44,7 +44,7 @@ import org.makumba.providers.datadefinition.mdd.MDDFactory;
  * FIXME caching using named resources for getTypeMetadata and getFieldGroup<br>
  * TODO improved caching for FieldMetadata (later)<br>
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id$
  */
 public class DataDefinitionProvider {

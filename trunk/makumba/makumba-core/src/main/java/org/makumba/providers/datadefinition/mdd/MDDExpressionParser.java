@@ -13,7 +13,7 @@ import antlr.collections.AST;
  * MDD expression parser. We need this parser because we cannot do all the parsing inside of the initial parser, since
  * in some cases we want to skip parsing (e.g. for function bodies).
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @author Rudolf Mayer
  * @version $Id: MDDExpressionParser.java,v 1.1 08.07.2009 11:24:51 gaym Exp $
  */

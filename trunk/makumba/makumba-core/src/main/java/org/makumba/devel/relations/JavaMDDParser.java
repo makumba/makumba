@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
  * to detect this by the usage of "+" but this can lead to issues with aggregate functions.<br>
  * TODO detect db.insert() etc.
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: JavaMDDParser.java,v 1.1 Apr 20, 2008 11:49:57 AM manu Exp $
  */
 public class JavaMDDParser {

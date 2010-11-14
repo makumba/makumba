@@ -37,7 +37,7 @@ import org.makumba.providers.TransactionProvider;
  * 
  * @author Cristian Bogdan
  * @author Stefan Baebler
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  */
 public class DBConnectionWrapper extends DBConnection {
     DBConnection wrapped;

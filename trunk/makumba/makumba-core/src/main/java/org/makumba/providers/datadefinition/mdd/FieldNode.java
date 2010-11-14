@@ -11,7 +11,7 @@ import antlr.collections.AST;
 /**
  * AST node that collects information about a MDD field
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: FieldNode.java,v 1.1 May 3, 2009 6:14:27 PM manu Exp $
  */
 public class FieldNode extends MDDAST {

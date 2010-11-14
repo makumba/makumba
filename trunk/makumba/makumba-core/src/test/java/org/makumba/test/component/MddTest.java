@@ -41,7 +41,7 @@ import org.makumba.providers.DataDefinitionProvider;
  * Testing MddTest handling & parsing
  * 
  * @author Stefan Baebler
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  */
 public class MddTest extends TestCase {
 

@@ -7,7 +7,7 @@ import org.makumba.commons.MakumbaJspAnalyzer;
 /**
  * Simple analyser for the relations of a page. We are interested only in the tags
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: JspRelationsAnalyzer.java,v 1.1 Apr 12, 2008 5:18:01 PM manu Exp $
  */
 public class JspRelationsAnalyzer extends MakumbaJspAnalyzer implements JspAnalyzer {

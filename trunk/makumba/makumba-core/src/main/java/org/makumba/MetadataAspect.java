@@ -14,7 +14,7 @@ import org.makumba.providers.AnnotationMetadataReader;
  * The idea is that each kind of annotation values can be retrieved using the same mechanism, by calling methods of the
  * {@link AnnotationMetadataReader}.
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: MetadataAspect.java,v 1.1 Jun 21, 2010 6:42:30 PM manu Exp $
  */
 public enum MetadataAspect {

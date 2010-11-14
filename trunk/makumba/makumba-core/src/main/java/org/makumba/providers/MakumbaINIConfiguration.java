@@ -17,7 +17,7 @@ import org.makumba.ConfigurationError;
 /**
  * An extended version of the {@link HierarchicalINIConfiguration} suitable for makumba configuration
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id$
  */
 public class MakumbaINIConfiguration extends HierarchicalINIConfiguration {

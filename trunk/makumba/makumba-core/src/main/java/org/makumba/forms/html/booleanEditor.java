@@ -33,7 +33,7 @@ import org.makumba.commons.formatters.RecordFormatter;
  * (checkbox). Renders as checkbox by default.<br>
  * TODO we should be able to choose what to display & select by default (Yes or No) and what is the text to display.
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: booleanEditor.java,v 1.1 May 11, 2008 9:22:57 PM manu Exp $
  */
 public class booleanEditor extends choiceEditor {

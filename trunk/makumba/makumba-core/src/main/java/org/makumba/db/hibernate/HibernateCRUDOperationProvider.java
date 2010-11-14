@@ -26,7 +26,7 @@ import org.makumba.providers.CRUDOperationProvider;
  * Hibernate-specific implementation of a {@link CRUDOperationProvider} FIXME there are probably more bugs with the
  * collections of non-generated mappings
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: HibernateCRUDOperationProvider.java,v 1.1 02.11.2007 14:05:40 Manuel Exp $
  */
 public class HibernateCRUDOperationProvider extends CRUDOperationProvider {

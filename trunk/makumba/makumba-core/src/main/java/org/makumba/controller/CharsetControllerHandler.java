@@ -12,7 +12,7 @@ import org.makumba.providers.Configuration;
  * Sets the utf8 charset encoding if enabled in the datasource configuration
  * 
  * @author Marius Andra
- * @author Manuel Gay <br/>
+ * @author Manuel Bernhardt <manuel@makumba.org> <br/>
  *         FIXME this should be done only for JSP or HTML responses
  * @version $Id: CharsetControllerHandler.java,v 1.1 Sep 23, 2009 3:55:49 PM manu Exp $
  */

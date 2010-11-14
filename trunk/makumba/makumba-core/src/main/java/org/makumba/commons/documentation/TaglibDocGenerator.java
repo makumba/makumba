@@ -29,7 +29,7 @@ import org.makumba.commons.MakumbaTLDGenerator;
 /**
  * This class generates the taglib documentation JSPWiki files based on the taglib-skeleton.tld file
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: TaglibDocGenerator.java,v 1.1 Nov 16, 2009 2:57:04 PM manu Exp $
  */
 public class TaglibDocGenerator {

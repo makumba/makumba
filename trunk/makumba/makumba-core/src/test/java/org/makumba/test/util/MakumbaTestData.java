@@ -10,7 +10,7 @@ import java.util.*;
 /**
  * Class that creates and deletes data in the database, used by the test set-up.
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: MakumbaTestData.java,v 1.1 Jun 9, 2009 10:46:01 PM manu Exp $
  */
 public class MakumbaTestData {

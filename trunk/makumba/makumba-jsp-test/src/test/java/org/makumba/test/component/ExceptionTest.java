@@ -16,7 +16,7 @@ import com.meterware.httpunit.WebResponse;
  * Tests for the way makumba handles expcetions FIXME this appears to be broken, cactus does not proceed the page but
  * instead interrupts execution
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: ExceptionTest.java,v 1.1 May 11, 2008 3:25:44 AM manu Exp $
  */
 public class ExceptionTest extends MakumbaJspTestCase {

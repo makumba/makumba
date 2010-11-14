@@ -66,7 +66,7 @@ import org.makumba.providers.TransactionProvider;
  * @author Thomas Laroche
  * @author Rudolf Mayer
  * @author Marius Andra
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @author please add if more
  */
 public abstract class Database {

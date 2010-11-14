@@ -7,7 +7,7 @@ import antlr.collections.AST;
  * Custom AST type that stores useful information for MDD parsing and analysis, such as token line and column and
  * makumba type
  * 
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: MDDAST.java,v 1.1 May 8, 2009 1:44:43 PM manu Exp $
  */
 public class MDDAST extends antlr.CommonAST {

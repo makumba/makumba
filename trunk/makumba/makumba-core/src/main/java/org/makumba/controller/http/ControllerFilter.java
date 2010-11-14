@@ -45,7 +45,7 @@ import org.makumba.controller.MakumbaResponseWrapper;
  * uses a number of {@link ControllerHandler}-s which each serve a specific purpose.
  * 
  * @author Cristian Bogdan
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id$ *
  */
 public class ControllerFilter implements Filter {

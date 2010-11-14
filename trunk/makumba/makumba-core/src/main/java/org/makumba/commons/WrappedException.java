@@ -31,7 +31,7 @@ import java.io.PrintWriter;
  * the stracktrace of the wrapped exception.
  * 
  * @author Cristian Bogdan
- * @author Manuel Gay
+ * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id$
  */
 
