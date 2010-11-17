@@ -1,10 +1,13 @@
 package org.makumba.devel.eclipse.mdd.validation;
 
+import java.util.Map;
+
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtext.parsetree.CompositeNode;
 import org.eclipse.xtext.parsetree.LeafNode;
 import org.eclipse.xtext.parsetree.NodeUtil;
 import org.eclipse.xtext.resource.IResourceDescriptions;
+import org.eclipse.xtext.scoping.impl.AbstractGlobalScopeProvider;
 import org.eclipse.xtext.validation.Check;
 import org.makumba.devel.eclipse.mdd.MDDUtils;
 import org.makumba.devel.eclipse.mdd.MQLContext;
@@ -17,11 +20,12 @@ import org.makumba.devel.eclipse.mdd.MDD.FunctionCall;
 import org.makumba.devel.eclipse.mdd.MDD.IncludeDeclaration;
 import org.makumba.devel.eclipse.mdd.MDD.MDDPackage;
 import org.makumba.devel.eclipse.mdd.MDD.SetType;
-import org.makumba.devel.eclipse.mdd.validation.AbstractMDDJavaValidator;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.inject.name.Named;
 
 public class MDDJavaValidator extends AbstractMDDJavaValidator {
 
@@ -33,6 +37,28 @@ public class MDDJavaValidator extends AbstractMDDJavaValidator {
 
 	@Inject
 	private MQLValidator mqlValidator;
+
+	@Inject
+	@Named(AbstractGlobalScopeProvider.NAMED_BUILDER_SCOPE)
+	private Provider<IResourceDescriptions> builderScopeResourceDescriptionsProvider;
+
+	/**
+	 * Gets the right resource description depending on the context
+	 * 
+	 * @param object
+	 * @return
+	 */
+	public IResourceDescriptions getResourceDescriptions(final EObject object) {
+		IResourceDescriptions descriptions = resourceDescriptions;
+		Map<Object, Object> loadOptions = object.eResource().getResourceSet().getLoadOptions();
+		if (Boolean.TRUE.equals(loadOptions.get(AbstractGlobalScopeProvider.NAMED_BUILDER_SCOPE))) {
+			descriptions = builderScopeResourceDescriptionsProvider.get();
+		}
+		if (descriptions instanceof IResourceDescriptions.IContextAware) {
+			((IResourceDescriptions.IContextAware) descriptions).setContext(object);
+		}
+		return descriptions;
+	}
 
 	/**
 	 * Checks unique field name inside a level of data definition.
@@ -139,18 +165,19 @@ public class MDDJavaValidator extends AbstractMDDJavaValidator {
 	 */
 	@Check
 	public void checkValidFrom(final FromClassOrOuterQueryPath from) {
+
 		String path = from.getPath();
 
 		//we form the mql context
-		MQLContext context = new MQLContext(utils.getLabels(from), resourceDescriptions, from);
+		MQLContext mqlContext = new MQLContext(utils.getLabels(from), getResourceDescriptions(from), from);
 
 		//we validate the path
-		String err = mqlValidator.validateFromPath(path, context);
+		String err = mqlValidator.validateFromPath(path, mqlContext);
 		if (err != null)
 			error(err, MDDPackage.FROM_CLASS_OR_OUTER_QUERY_PATH__PATH);
 
 		// we validate the label
-		err = mqlValidator.validateFromLabel(from.getName(), context);
+		err = mqlValidator.validateFromLabel(from.getName(), mqlContext);
 		if (err != null)
 			error(err, MDDPackage.FROM_CLASS_OR_OUTER_QUERY_PATH__NAME);
 
@@ -163,6 +190,8 @@ public class MDDJavaValidator extends AbstractMDDJavaValidator {
 	 */
 	@Check
 	public void checkValidAtom(final Atom atom) {
+
+		IResourceDescriptions res = getResourceDescriptions(atom);
 
 		//we get the whole atom node
 		CompositeNode node = NodeUtil.getNode(atom);
@@ -190,12 +219,12 @@ public class MDDJavaValidator extends AbstractMDDJavaValidator {
 
 		if (!content.isEmpty()) {
 			//we form the mql context
-			MQLContext context = new MQLContext(utils.getLabels(atom), resourceDescriptions, atom);
+			MQLContext mqlContext = new MQLContext(utils.getLabels(atom), getResourceDescriptions(atom), atom);
 			//add params to context
-			context.setParams(utils.getParams(atom));
+			mqlContext.setParams(utils.getParams(atom));
 
 			//do the validation
-			String err = mqlValidator.validateQueryIdentifier(content, context, isFunction);
+			String err = mqlValidator.validateQueryIdentifier(content, mqlContext, isFunction);
 			if (err != null)
 				error(err, MDDPackage.ATOM);
 		}
