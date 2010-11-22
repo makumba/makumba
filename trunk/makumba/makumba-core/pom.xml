@@ -217,19 +217,6 @@
                 <updatePolicy>never</updatePolicy>
             </snapshots>
         </pluginRepository>
-        <pluginRepository>
-            <id>codehaus-snapshot</id>
-            <name>Codehaus snapshot repository</name>
-            <url>https://nexus.codehaus.org/content/repositories/codehaus-snapshots/</url>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
-        </pluginRepository>
     </pluginRepositories>
 
 
@@ -263,7 +250,7 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>antlr-maven-plugin</artifactId>
                 <!-- Older versions won't work due to a bug regarding multi-package grammars -->
-                <version>2.2-SNAPSHOT</version>
+                <version>2.2</version>
                 <configuration>
                     <grammars>
                         hql.g,hql-analyze.g,mql-sql.g,mql-sql-gen.g,mdd.g,mdd-expression.g,mdd-analyze.g,mdd-postprocess.g
