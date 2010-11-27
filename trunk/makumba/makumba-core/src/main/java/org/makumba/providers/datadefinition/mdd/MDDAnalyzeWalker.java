@@ -78,6 +78,9 @@ public class MDDAnalyzeWalker extends MDDAnalyzeBaseWalker {
         if (field.unique) {
             factory.doThrow(this.typeName, "sets can't be unique", type);
         }
+        if (field.notNull) {
+            factory.doThrow(this.typeName, "sets can't be not null", type);
+        }
     }
 
     private void checkPointed(AST type) {
