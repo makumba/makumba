@@ -1,12 +1,11 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.makumba</groupId>
     <artifactId>makumba</artifactId>
-    <version>0.9.5-SNAPSHOT</version>
+    <version>0.9.5</version>
     <name>makumba core aggregator</name>
     <packaging>pom</packaging>
     <url>http://www.makumba.org</url>
@@ -71,9 +70,9 @@
     </mailingLists>
 
     <scm>
-        <connection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/trunk/makumba</connection>
-        <developerConnection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/trunk/makumba</developerConnection>
-        <url>http://makumba.svn.sourceforge.net/viewvc/makumba/trunk/makumba</url>
+        <connection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/makumba-0.9.5</connection>
+        <developerConnection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/makumba-0.9.5</developerConnection>
+        <url>http://makumba.svn.sourceforge.net/viewvc/makumba/tags/makumba-0.9.5</url>
     </scm>
 
     <dependencies>
