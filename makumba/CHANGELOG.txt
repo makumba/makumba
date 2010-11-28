@@ -8,14 +8,7 @@
 TO BE RELEASED IMMEDIATELY (No need for more testing)
 -----------------------------------------------
 
-FIXES
-cristi: fixing a bug with the MakumbaJSPFactory which made it impossible to run two makumba webapps on the same tomcat
-manu/rudi: fixes in comparison validation rules (regarding date constants)
-
-INTERNAL CHANGES
-manu: removing the old ANT targets and files to build list and form separately
-manu: mechanism for keeping the external value of pointers constant during consecutive tests run with auto-increment
-manu: mavenizing the project
+FIXES:
 
 NOT TO BE RELEASED YET (need more testing)
 manu: auto-complete for mak:input (char and ptr)
@@ -25,6 +18,17 @@ manu: auto-complete for mak:input (char and ptr)
 
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
+
+0.9.5 28 Nov 2010
+
+FIXES
+cristi: fixing a bug with the MakumbaJSPFactory which made it impossible to run two makumba webapps on the same tomcat
+manu/rudi: fixes in comparison validation rules (regarding date constants)
+
+INTERNAL CHANGES
+manu: removing the old ANT targets and files to build list and form separately
+manu: mechanism for keeping the external value of pointers constant during consecutive tests run with auto-increment
+manu: mavenizing the project
 
 0.9.0.2 21 Jul 2010
 
