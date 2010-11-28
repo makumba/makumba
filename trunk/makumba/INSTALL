@@ -9,8 +9,6 @@ INSTALLATION INSTRUCTIONS
 - install m2eclipse-extras (http://m2eclipse.sonatype.org/sites/m2e-extras/)
   - only install the SCM provider, Team/CVS support and WTP support, the rest is not needed
 - go to the eclipse maven preferences and add your maven installation instead of the embedded one (http://www.sonatype.com/books/m2eclipse-book/reference/eclipse-sect-maven-preferences.html)
-- create a new M2_HOME variable (Preferences->Run/Debug->String substitution) and point it to your maven home directory
-  (this step is necessary in order to easily share run configurations) 
 - create empty makumba and makhib mysql test databases in mysql; on linux, you can use the "setup-mysql-db.sh" script
 - checkout the project
 - if needed, configure build.properties
@@ -25,3 +23,9 @@ INSTALLATION INSTRUCTIONS
 - check out the project, don't let it be imported right away
 - if needed, configure build.properties
 - create a new project from the maven model based on the sources you checked out
+
+
+
+---------
+Notes on eclipse set-up:
+- we should track https://issues.sonatype.org/browse/MNGECLIPSE-1646 which is about setting global variables for the launchers. Now we use the workaround described at https://issues.sonatype.org/browse/MNGECLIPSE-1646
