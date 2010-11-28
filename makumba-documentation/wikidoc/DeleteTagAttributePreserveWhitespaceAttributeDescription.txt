@@ -1,1 +1,0 @@
-All white space inside a <mak:delete> will be trimmed, unless specifically preserved.
