@@ -105,7 +105,7 @@
     <sleep seconds="8" />
   </target>
 
-  <target name="tomcat-start" depends="create-war, deploy-war">
+  <target name="tomcat-start" depends="deploy-war" description="starts the tomcat with JSPwiki">
     <echo>Java home in build: ${java.home}</echo>
     <java classname="org.apache.catalina.startup.Bootstrap" fork="yes" classpathref="tomcat.class.path" append="true">
       <jvmarg value="-Dcatalina.home=${tomcat.home}" />
