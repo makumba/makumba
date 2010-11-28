@@ -170,7 +170,7 @@
                 </dependencies>
                 <configuration>
                     <allowTimestampedSnapshots>true</allowTimestampedSnapshots>
-                    <checkModificationExcludes>build.properties</checkModificationExcludes>
+                    <checkModificationExcludeList>build.properties</checkModificationExcludeList>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                     <tagBase>https://makumba.svn.sf.net/svnroot/makumba/tags</tagBase>
                     <providerImplementations>
