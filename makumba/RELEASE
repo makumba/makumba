@@ -29,6 +29,8 @@ PREREQUISITES
   </servers>
 </settings>
 
+- Sourceforge username & password configured in build.properties
+
 COMMANDS
 --------
 
@@ -37,6 +39,9 @@ COMMANDS
 mvn clean deploy
 
 === uploading the current artifacts to sourceforge
+
+This will upload the artifacts with the version number of the POM to sourceforge.
+For the moment, this only works for makumba-core.
 
 - open a connection to the FRS (or the upload will fail)
 
@@ -48,8 +53,18 @@ mvn clean deploy
 
 === releasing a version
 
+This will
+- create a new tag in SVN for the current version
+- update all POMs to the next development version
+- create artifacts and deploy them on Sonatype (where they might be synced with central)
+- upload the new artifacts to Sourceforge
+
+/!\ do not forget to set your username & password in build.properties or the release will fail at the end
+
 /!\ make sure you have the right version number in the artifacts you want to deploy
 
 mvn release:prepare -Dusername=<SF user> -Dpassword=<SF password>
+
 (in a separate terminal) ssh -t <SF user>,makumba@shell.sourceforge.net create
+
 mvn release:perform -Darguments="-Dgpg.passphrase=<makumba passphrase> -Dgpg.keyname=makumba-devel@lists.sourceforge.net"
