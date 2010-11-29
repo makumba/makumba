@@ -6,8 +6,6 @@
 
      TODO:
 
-     - test/configure the SVN release mechanism
-
      - reformat headers & commit & enable check
 
      useful resource:
@@ -34,15 +32,6 @@
     </properties>
 
     <dependencies>
-
-        <!-- Shared test resources -->
-        <dependency>
-            <groupId>${groupId}</groupId>
-            <artifactId>shared-resources</artifactId>
-            <version>${version}</version>
-            <classifier>tests</classifier>
-            <scope>test</scope>
-        </dependency>
 
         <!-- Core -->
         <dependency>
@@ -223,10 +212,10 @@
 
         <testResources>
             <testResource>
-                <directory>${basedir}/src/test/resources</directory>
+                <directory>${main.basedir}/shared-resources/src/test/resources</directory>
             </testResource>
             <testResource>
-                <directory>${project.build.directory}/generated-test-resources</directory>
+                <directory>${basedir}/src/test/resources</directory>
             </testResource>
         </testResources>
 
