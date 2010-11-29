@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
 
@@ -28,15 +29,6 @@
 
 
     <dependencies>
-
-        <!-- Shared test resources -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>shared-resources</artifactId>
-            <version>${project.version}</version>
-            <classifier>tests</classifier>
-            <scope>runtime</scope>
-        </dependency>
 
         <!-- dependency on makumba-core -->
         <dependency>
@@ -158,25 +150,12 @@
         <sourceDirectory>src/test/java</sourceDirectory>
         <testSourceDirectory>src/test/java</testSourceDirectory>
 
-        <!-- accomodate the tomcat plugin that doesn't automatically switch to generated-test-resources
         <resources>
             <resource>
-                <directory>${basedir}/src/test/resources</directory>
-            </resource>
-            <resource>
-                <directory>${project.build.directory}/generated-test-resources</directory>
+                <directory>${main.basedir}/shared-resources/src/test/resources</directory>
             </resource>
         </resources>
 
-        <testResources>
-            <testResource>
-                <directory>${basedir}/src/test/resources</directory>
-            </testResource>
-            <testResource>
-                <directory>${project.build.directory}/generated-test-resources</directory>
-            </testResource>
-        </testResources>
--->
         <plugins>
 
             <!-- Produce WAR artifact for the integration tests
@@ -193,14 +172,6 @@
                         WEB-INF/lib/*
                     </warSourceIncludes>
                     <warName>${project.artifactId}-${project.version}</warName>
-<!--
-                    <webResources>
-                        <resource>
-                            <directory>${project.build.directory}/generated-test-resources</directory>
-                            <targetPath>WEB-INF/classes</targetPath>
-                        </resource>
-                    </webResources>
--->
                 </configuration>
                 <executions>
                     <execution>
@@ -223,19 +194,7 @@
                     <webAppConfig>
                         <contextPath>/tests</contextPath>
                     </webAppConfig>
-                    <webAppSourceDirectory>src/test/webapp</webAppSourceDirectory>
-                    <classesDirectory>${project.build.testOutputDirectory}</classesDirectory>
-                    <scanTargets>
-                        <scanTarget>${project.build.testOutputDirectory}</scanTarget>
-                    </scanTargets>
-                    <!-- If we need additional classes one day, this is how it's done
-                    <webAppConfig>
-                        <contextPath>/tests</contextPath>
-                        <extraClasspath>target/classes;../makumba-core/target/test-classes</extraClasspath>
-                    </webAppConfig>
-                    <scanTargets>
-                        <scanTarget>../makumba-core/target/test-classes</scanTarget>
-                    </scanTargets> -->
+                    <webAppSourceDirectory>${main.basedir}/makumba-jsp-test/src/test/webapp</webAppSourceDirectory>
                 </configuration>
             </plugin>
 
@@ -247,8 +206,8 @@
                 <configuration>
                     <path>/tests</path>
                     <port>${server.port}</port>
-                    <warSourceDirectory>src/test/webapp</warSourceDirectory>
-                    <classesDir>target/test-classes</classesDir>
+                    <warSourceDirectory>${main.basedir}/makumba-jsp-test/src/test/webapp</warSourceDirectory>
+                    <classesDir>${main.basedir}/makumba-jsp-test/target/test-classes</classesDir>
                     <!--
                       The default authentication credentials for remote deployment are username "admin" with no password To
                       override credentials, define a server in settings.xml and activate it using the <server> element
@@ -381,8 +340,8 @@
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>2.4</version>
                 <configuration>
-                 <skip>true</skip>
-              </configuration>
+                    <skip>true</skip>
+                </configuration>
             </plugin>
 
         </plugins>
