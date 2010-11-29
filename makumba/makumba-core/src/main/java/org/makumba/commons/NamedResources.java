@@ -71,14 +71,18 @@ public class NamedResources implements java.io.Serializable {
      * Cleans-up all the static and soft caches
      */
     static public void cleanup() {
-        for (int i = 0; i < staticCaches.size(); i++) {
-            staticCaches.get(i).close();
+        if(staticCaches != null) {
+            for (int i = 0; i < staticCaches.size(); i++) {
+                staticCaches.get(i).close();
+            }
+            staticCaches.clear();
         }
-        staticCaches.clear();
-        for (int i = 0; i < allCaches.size(); i++) {
-            ((java.lang.ref.WeakReference<?>) allCaches.elementAt(i)).clear();
+        if(allCaches != null) {
+            for (int i = 0; i < allCaches.size(); i++) {
+                ((java.lang.ref.WeakReference<?>) allCaches.elementAt(i)).clear();
+            }
+            allCaches.clear();
         }
-        allCaches.clear();
         staticCaches = null;
         allCaches = null;
     }
