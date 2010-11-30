@@ -6,6 +6,7 @@
         <groupId>org.makumba</groupId>
         <artifactId>makumba</artifactId>
         <version>0.9.6-SNAPSHOT</version>
+        <relativePath>../makumba-parent/pom.xml</relativePath>
     </parent>
 
     <artifactId>shared-resources</artifactId>
