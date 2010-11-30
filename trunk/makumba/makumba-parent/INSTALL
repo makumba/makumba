@@ -8,11 +8,11 @@ INSTALLATION INSTRUCTIONS
 - install m2eclipse (http://m2eclipse.sonatype.org/sites/m2e/)
 - install m2eclipse-extras (http://m2eclipse.sonatype.org/sites/m2e-extras/)
   - only install the "Project configurators for some commonly used maven plugins" (and the "Maven Integration for WTP", if you want to use it in other projects)
-- go to the eclipse maven preferences (File -> Preferences -> Maven) and:
+- go to the eclipse maven preferences (Window->Preferences->Maven) and:
   - in "Installations", add your maven installation instead of the embedded one (http://www.sonatype.com/books/m2eclipse-book/reference/eclipse-sect-maven-preferences.html)
-  - in "Maven" (main view) add the following goals for project import and configuration reloading:
+  - in "Maven" (main view) add the following goals for the fields "Goals to run on project import" and "Goals to run when updating the project configuration":
     process-resources process-test-resources
-- go to File -> Preference -> Validators and select "Suspend all validators" (or remove the validators you don't want to use, e.g. JSP, HTML, ...)
+- go to Window->Preference->Validators and select "Suspend all validators" (or remove the validators you don't want to use, e.g. JSP, HTML, ...)
 - create empty makumba and makhib mysql test databases in mysql; on linux, you can use the "setup-mysql-db.sh" script
 - checkout the project, either through command-line or directly through File->New->Maven project from SCM (untested).
   In the latter case, you don't need to re-import it again (skip the following step)
@@ -20,6 +20,11 @@ INSTALLATION INSTRUCTIONS
 - if needed, configure makumba-parent/build.properties
   - this is important especially when releasing, where you need to have the makumba-documentation project checked out somewhere
     in order to generate documented TLDs
+
+In order to run the test webapp:
+- with jetty: go to makumba/etc/eclipse-launchers, right click on jetty-mak.launch and select Run As -> jetty-mak
+- with tomcat: go to makumba/etc/eclipse-launchers, right click on tomcat-mak.launch and select Run As -> tomcat-mak
+
 
 (TODO: instructions on how to import the code formatting & cleanup templates)
 
