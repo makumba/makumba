@@ -11,7 +11,7 @@
     <url>http://www.makumba.org</url>
 
     <properties>
-        <main.basedir>${project.basedir}</main.basedir>
+        <main.basedir>${project.basedir}/../</main.basedir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -178,12 +178,12 @@
                 </configuration>
             </plugin>
 
-            <!-- eclipse plugin -->
+            <!-- eclipse plugin
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-eclipse-plugin</artifactId>
                 <version>2.8</version>
-            </plugin>
+            </plugin>  -->
 
             <!-- license insertion -->
             <plugin>
@@ -243,8 +243,8 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <configuration>
-                        <source>1.5</source>
-                        <target>1.5</target>
+                        <source>1.6</source>
+                        <target>1.6</target>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -267,9 +267,9 @@
     </build>
 
     <modules>
-        <module>makumba-core</module>
-        <module>makumba-jsp-test</module>
-        <module>shared-resources</module>
+        <module>../makumba-core</module>
+        <module>../makumba-jsp-test</module>
+        <module>../shared-resources</module>
     </modules>
 
 </project>
