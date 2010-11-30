@@ -721,14 +721,14 @@ identifier
 	;
 
 // **** LEXER ******************************************************************
-
+{
 /**
  * Hibernate Query Language Lexer
  * <br>
  * This lexer provides the HQL parser with tokens.
  * @author Joshua Davis (pgmjsd@sourceforge.net)
  */
-class HqlBaseLexer extends Lexer;
+@SuppressWarnings("all")}class HqlBaseLexer extends Lexer;
 
 options {
 	exportVocab=Hql;      // call the vocabulary "Hql"
