@@ -12,6 +12,7 @@
 
     <properties>
         <main.basedir>${project.basedir}/../</main.basedir>
+        <properties.location>${project.basedir}/build.properties</properties.location>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -127,7 +128,7 @@
                 <version>1.0-alpha-2</version>
                 <configuration>
                     <files>
-                        <file>${main.basedir}/build.properties</file>
+                        <file>${properties.location}</file>
                     </files>
                 </configuration>
                 <executions>
@@ -138,7 +139,7 @@
                         </goals>
                         <configuration>
                             <files>
-                                <file>${main.basedir}/build.properties</file>
+                                <file>${properties.location}</file>
                             </files>
                         </configuration>
                     </execution>
@@ -177,13 +178,6 @@
                     </providerImplementations>
                 </configuration>
             </plugin>
-
-            <!-- eclipse plugin
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-eclipse-plugin</artifactId>
-                <version>2.8</version>
-            </plugin>  -->
 
             <!-- license insertion -->
             <plugin>
