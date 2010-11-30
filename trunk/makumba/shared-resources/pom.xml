@@ -16,6 +16,7 @@
 
     <properties>
         <main.basedir>${project.basedir}/..</main.basedir>
+        <properties.location>${main.basedir}/makumba-parent/build.properties</properties.location>
     </properties>
 
     <build>
