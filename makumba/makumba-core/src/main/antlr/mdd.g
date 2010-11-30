@@ -3,7 +3,7 @@ header {
 }
 
 
-class MDDLexer extends Lexer;
+{@SuppressWarnings("all")} class MDDLexer extends Lexer;
 
 options {
     exportVocab=MDD;
