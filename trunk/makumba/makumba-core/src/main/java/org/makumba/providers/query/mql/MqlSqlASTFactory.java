@@ -77,7 +77,7 @@ public class MqlSqlASTFactory extends ASTFactory {
      *            The class to instantiate.
      * @return The instantiated and initialized node.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     @Override
     protected AST create(Class c) {
         AST t;
