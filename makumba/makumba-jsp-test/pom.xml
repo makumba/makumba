@@ -7,6 +7,7 @@
         <groupId>org.makumba</groupId>
         <artifactId>makumba</artifactId>
         <version>0.9.6-SNAPSHOT</version>
+        <relativePath>../makumba-parent/pom.xml</relativePath>
     </parent>
 
     <artifactId>makumba-jsp-test</artifactId>
@@ -32,7 +33,7 @@
 
         <!-- dependency on makumba-core -->
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>org.makumba</groupId>
             <artifactId>makumba-core</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
@@ -40,7 +41,7 @@
 
         <!-- dependency on makumba-core test API -->
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>org.makumba</groupId>
             <artifactId>makumba-core</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
@@ -149,10 +150,10 @@
         <!-- set the test and source directory to be the same, so that all classes are bundled in the WAR -->
         <sourceDirectory>src/test/java</sourceDirectory>
         <testSourceDirectory>src/test/java</testSourceDirectory>
-
-        <resources>
+        
+	<resources>
             <resource>
-                <directory>${main.basedir}/shared-resources/src/test/resources</directory>
+                <directory>../shared-resources/src/test/resources</directory>
             </resource>
         </resources>
 

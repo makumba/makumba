@@ -21,6 +21,7 @@
         <groupId>org.makumba</groupId>
         <artifactId>makumba</artifactId>
         <version>0.9.6-SNAPSHOT</version>
+        <relativePath>../makumba-parent/pom.xml</relativePath>
     </parent>
 
     <artifactId>makumba-core</artifactId>
@@ -212,7 +213,7 @@
 
         <testResources>
             <testResource>
-                <directory>${main.basedir}/shared-resources/src/test/resources</directory>
+                <directory>../shared-resources/src/test/resources</directory>
             </testResource>
             <testResource>
                 <directory>${basedir}/src/test/resources</directory>
@@ -221,17 +222,6 @@
 
 
         <plugins>
-
-            <!-- Java compilation -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.1</version>
-                <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
-                </configuration>
-            </plugin>
 
             <!-- ANTLR compilation -->
             <plugin>
@@ -391,7 +381,7 @@
                 </executions>
             </plugin>
 
-            <!-- Eclipse IDE configuration -->
+            <!-- Eclipse IDE configuration
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-eclipse-plugin</artifactId>
@@ -417,7 +407,7 @@
                         </file>
                     </additionalConfig>
                 </configuration>
-            </plugin>
+            </plugin> -->
 
             <!-- Deployment -->
             <plugin>
