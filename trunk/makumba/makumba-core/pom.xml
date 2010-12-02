@@ -366,9 +366,13 @@
                 <version>2.2-beta-5</version>
                 <configuration>
                     <descriptorRefs>
-                        <descriptorRef>bin</descriptorRef>
                         <descriptorRef>src</descriptorRef>
                     </descriptorRefs>
+                    <descriptors>
+                        <descriptor>
+                            src/main/assembly/distribution.xml
+                        </descriptor>
+                    </descriptors>
                     <attach>false</attach>
                 </configuration>
                 <executions>
@@ -400,7 +404,7 @@
                 <configuration>
                     <fromDir>${project.build.directory}/</fromDir>
                     <includes>
-                        ${project.artifactId}-${project.version}.jar,${project.artifactId}-${project.version}-bin.zip,${project.artifactId}-${project.version}-src.zip
+                        ${project.artifactId}-${project.version}.jar,${project.artifactId}-${project.version}-distribution.zip,${project.artifactId}-${project.version}-src.zip
                     </includes>
                     <url>sftp://${username},makumba:${password}@frs.sourceforge.net</url>
                     <toDir>home/frs/project/m/ma/makumba/Makumba/</toDir>
