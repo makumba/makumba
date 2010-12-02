@@ -338,7 +338,7 @@ orderClause
 	;
 
 orderExprs
-	: expr ( ASCENDING | DESCENDING )? (orderExprs)?
+	: exprOrSubquery ( ASCENDING | DESCENDING )? (orderExprs)?
 	;
 
 groupClause
