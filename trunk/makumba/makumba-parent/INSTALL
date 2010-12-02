@@ -15,9 +15,10 @@ INSTALLATION INSTRUCTIONS
   - in "Maven" (main view) add the following goals for the fields "Goals to run on project import" and "Goals to run when updating the project configuration":
     process-resources process-test-resources
 
-2) Prepare eclipse for a correct build with makumba
+2) Prepare eclipse for a green build with makumba
    ================================================
-- go to Window->Preference->Validators and select "Suspend all validators" (or remove the validators you don't want to use, e.g. JSP, HTML, ...)
+- go to Window->Preference->Validators and select "Suspend all validators" (or remove the validators you don't want to use, e.g. JSP, HTML, ...).
+  This is necessary because the JSP, HTML and EL validators are partly broken and can get very annoying
 
 3) Prepare & checkout makumba (https://makumba.svn.sourceforge.net/svnroot/makumba)
    ==========================
