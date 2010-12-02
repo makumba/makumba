@@ -142,7 +142,7 @@
             <version>5.1.13</version>
             <scope>compile</scope>
         </dependency>
-
+        
     </dependencies>
 
     <build>
@@ -151,8 +151,8 @@
         <!-- set the test and source directory to be the same, so that all classes are bundled in the WAR -->
         <sourceDirectory>src/test/java</sourceDirectory>
         <testSourceDirectory>src/test/java</testSourceDirectory>
-        
-	<resources>
+
+        <resources>
             <resource>
                 <directory>../shared-resources/src/test/resources</directory>
             </resource>
@@ -195,8 +195,13 @@
                     <scanIntervalSeconds>10</scanIntervalSeconds>
                     <webAppConfig>
                         <contextPath>/tests</contextPath>
+                        <!-- this way, we get direct class dependency on makumba-core -->
+                        <extraClasspath>target/classes;../makumba-core/target/classes</extraClasspath>
                     </webAppConfig>
                     <webAppSourceDirectory>${main.basedir}/makumba-jsp-test/src/test/webapp</webAppSourceDirectory>
+                    <scanTargets>
+                        <scanTarget>../makumba-core/target/classes</scanTarget>
+                    </scanTargets>
                 </configuration>
             </plugin>
 

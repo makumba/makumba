@@ -5,6 +5,8 @@ INSTALLATION INSTRUCTIONS
 
 == eclipse set-up
 
+1) Prepare eclipse for maven
+   =========================
 - install m2eclipse (http://m2eclipse.sonatype.org/sites/m2e/)
 - install m2eclipse-extras (http://m2eclipse.sonatype.org/sites/m2e-extras/)
   - only install the "Project configurators for some commonly used maven plugins" (and the "Maven Integration for WTP", if you want to use it in other projects)
@@ -12,21 +14,31 @@ INSTALLATION INSTRUCTIONS
   - in "Installations", add your maven installation instead of the embedded one (http://www.sonatype.com/books/m2eclipse-book/reference/eclipse-sect-maven-preferences.html)
   - in "Maven" (main view) add the following goals for the fields "Goals to run on project import" and "Goals to run when updating the project configuration":
     process-resources process-test-resources
+
+2) Prepare eclipse for a correct build with makumba
+   ================================================
 - go to Window->Preference->Validators and select "Suspend all validators" (or remove the validators you don't want to use, e.g. JSP, HTML, ...)
+
+3) Prepare & checkout makumba (https://makumba.svn.sourceforge.net/svnroot/makumba)
+   ==========================
 - create empty makumba and makhib mysql test databases in mysql; on linux, you can use the "setup-mysql-db.sh" script
-- checkout the project, either through command-line or directly through File->New->Maven project from SCM (untested).
-  In the latter case, you don't need to re-import it again (skip the following step)
-- go to File->Import->Existing maven projects and select the makumba project directory.
 - if needed, configure makumba-parent/build.properties
   - this is important especially when releasing, where you need to have the makumba-documentation project checked out somewhere
     in order to generate documented TLDs
+- checkout the project, either through command-line or directly through File->New->Other->Maven->Checkout maven project from SCM (untested).
+  In the latter case, you don't need to re-import it again (skip the following step)
+- go to File->Import->Existing maven projects and select the makumba project directory.
+
 
 In order to run the test webapp:
-- with jetty: go to makumba/etc/eclipse-launchers, right click on jetty-mak.launch and select Run As -> jetty-mak
-- with tomcat: go to makumba/etc/eclipse-launchers, right click on tomcat-mak.launch and select Run As -> tomcat-mak
-
+- right-click on makumba-jsp-test and go to Run As -> Maven build...
+- in the Goals field, enter 'jetty:run' for Jetty or 'tomcat:run' for Tomcat. Note that only Jetty supports hot-redeploy in this set-up.
 
 (TODO: instructions on how to import the code formatting & cleanup templates)
+(TODO: instructions for WTP)
+
+track https://issues.sonatype.org/browse/MECLIPSEWTP-41
+
 
 == IntelliJ IDEA set-up
 
