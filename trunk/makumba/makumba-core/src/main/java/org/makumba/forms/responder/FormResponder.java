@@ -141,7 +141,7 @@ public class FormResponder extends Responder {
         // it, and is called in this current method
         editor = new RecordEditor(dd, fieldNames, database, operation.equals("search"), formIdentifier);
 
-        editor.config();
+        editor.config(formatParams);
         // add client side validation, but only for edit operations (not search), and for fields that are visible
         if (!operation.equals("search") && display
                 && org.makumba.commons.StringUtils.equalsAny(clientSideValidation, new String[] { "true", "live" })) {

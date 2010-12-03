@@ -137,7 +137,7 @@ public class FieldEditor extends org.makumba.commons.formatters.FieldFormatter {
         throw new ProgrammerError("If this method is needed, overload it in the inheriting class");
     }
 
-    public void onStartup(RecordFormatter rf, int fieldIndex) {
+    public void onStartup(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
     }
 
     public static String getInputName(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {

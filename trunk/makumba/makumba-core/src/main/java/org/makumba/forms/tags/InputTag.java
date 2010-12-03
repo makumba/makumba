@@ -75,6 +75,12 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     protected boolean calendarEditor = Configuration.getCalendarEditorDefault();
 
     protected String nullOption;
+    
+    protected String where;
+    
+    protected String orderBy;
+    
+    protected String labelName;
 
     /** input with body, used only for choosers as yet * */
     BodyContent bodyContent = null;
@@ -114,10 +120,22 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         this.nullOption = s;
     }
 
+    public void setWhere(String s) {
+        this.where = s;
+    }
+
+    public void setOrderBy(String s) {
+        this.orderBy = s;
+    }
+
+    public void setLabelName(String s) {
+        this.labelName = s;
+    }
+
     public void setClearDefault(String d) {
         params.put("clearDefault", d);
     }
-
+    
     // Extra html formatting parameters
     public void setAccessKey(String s) {
         extraFormattingParams.put("accessKey", s);
@@ -409,6 +427,18 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
 
         if (autoComplete != null) {
             params.put("autoComplete", autoComplete);
+        }
+        
+        if (labelName != null) {
+            params.put("labelName", labelName);
+        }
+
+        if (orderBy != null) {
+            params.put("orderBy", orderBy);
+        }
+
+        if (where != null) {
+            params.put("where", where);
         }
 
         String formatted = getForm().responder.format(name, type, val, params, extraFormatting.toString(),
