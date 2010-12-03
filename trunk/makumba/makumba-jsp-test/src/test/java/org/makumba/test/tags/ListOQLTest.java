@@ -64,6 +64,14 @@ public class ListOQLTest extends MakumbaJspTestCase {
         compareToFileWithTestName(response, false);
     }
 
+    public void testMakListFunctionOrderBy() throws ServletException, IOException {
+        includeJspWithTestName();
+    }
+
+    public void endMakListFunctionOrderBy(WebResponse response) throws Exception {
+        compareToFileWithTestName(response, false);
+    }
+
     public void testMakListCount() throws ServletException, IOException {
         includeJspWithTestName();
     }
