@@ -126,6 +126,14 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         compareToFileWithTestName(response, false);
     }
 
+    public void testMakInputOptionCustomisation() throws ServletException, IOException, SAXException {
+        includeJspWithTestName();
+    }
+
+    public void endMakInputOptionCustomisation(WebResponse response) throws Exception {
+        compareToFileWithTestName(response, false);
+    }
+
     public void testBug946() throws ServletException, IOException, SAXException {
         includeJspWithTestName();
     }
@@ -434,7 +442,6 @@ public class FormsOQLTest extends MakumbaJspTestCase {
 
         ResponderFactory responderFactory = ResponderFactory.getInstance();
         responderFactory.setResponderWorkingDir(responderBaseDir);
-
 
         // we need the codes as iterator; we could do an iterator ourselves, but let's do it as if we got them from the
         // attributes, i.e. as vector

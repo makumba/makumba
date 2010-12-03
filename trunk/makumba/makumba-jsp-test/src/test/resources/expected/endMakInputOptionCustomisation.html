@@ -1,0 +1,68 @@
+
+
+<html>
+<head><title>Test customisation of mak:input options</title>
+<link rel="StyleSheet" href="../style/style.css" type="text/css" media="all"/>
+</head>
+<body>
+
+
+
+
+<br/>
+
+<b>plain uncustomised</b>
+<form action="" id="_form1" method="POST" name="person" >  
+  name <input name="indiv.name" type="text" value="" maxlength="40" id="indiv.name_form1" ><br>  
+  surname <input name="indiv.surname" type="text" value="" maxlength="40" id="indiv.surname_form1" ><br>
+  brother <SELECT NAME="brother" SIZE="1" id="brother_form1" >
+	<OPTION value="34dqsls">bart van Vandervanden</OPTION>
+	<OPTION value="34dqslv">john von Neumann</OPTION>
+</SELECT><br/>
+
+  <input type="submit" />
+<input type="hidden" name="__makumba__responder__" value="-1609442876">
+</form>
+
+<br/> <br/>
+<b>orderBy="o.fullName() DESC"</b>
+<form action="" id="_form2" method="POST" name="person" >  
+  name <input name="indiv.name" type="text" value="" maxlength="40" id="indiv.name_form2" ><br>  
+  surname <input name="indiv.surname" type="text" value="" maxlength="40" id="indiv.surname_form2" ><br>
+  brother <SELECT NAME="brother" SIZE="1" id="brother_form2" >
+
+	<OPTION value="34dqslv">john von Neumann</OPTION>
+	<OPTION value="34dqsls">bart van Vandervanden</OPTION>
+</SELECT><br/>
+  <input type="submit" />
+<input type="hidden" name="__makumba__responder__" value="-1609442876">
+</form>
+
+<br/> <br/>
+<b>labelName='opt' where="opt.fullName() like '%b%'" </b>
+<form action="" id="_form3" method="POST" name="person" >  
+  name <input name="indiv.name" type="text" value="" maxlength="40" id="indiv.name_form3" ><br>  
+  surname <input name="indiv.surname" type="text" value="" maxlength="40" id="indiv.surname_form3" ><br>
+
+  brother <SELECT NAME="brother" SIZE="1" id="brother_form3" >
+	<OPTION value="34dqsls">bart van Vandervanden</OPTION>
+</SELECT><br/>
+  <input type="submit" />
+<input type="hidden" name="__makumba__responder__" value="-1609442876">
+</form>
+
+<br/> <br/>
+<b>where="o.fullName() like '%j%'"</b>
+<form action="" id="_form4" method="POST" name="person" >  
+  name <input name="indiv.name" type="text" value="" maxlength="40" id="indiv.name_form4" ><br>  
+  surname <input name="indiv.surname" type="text" value="" maxlength="40" id="indiv.surname_form4" ><br>
+
+  brother <SELECT NAME="brother" SIZE="1" id="brother_form4" >
+	<OPTION value="34dqslv">john von Neumann</OPTION>
+</SELECT><br/>
+  <input type="submit" />
+<input type="hidden" name="__makumba__responder__" value="-1609442876">
+</form>
+ 
+</body>
+</html>
