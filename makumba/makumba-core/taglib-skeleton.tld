@@ -1108,6 +1108,27 @@ for the test expressions: =, !=, <, <=, >, >=
     </attribute>
 
     <attribute>
+      <name>where</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Specify a filter on the data displayed in the input. Only for ptr and set, meant as easy alternative to mak:option</description>
+    </attribute>
+
+    <attribute>
+      <name>orderBy</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Specify an order on the data displayed in the input. Only for ptr and set, meant as easy alternative to mak:option</description>
+    </attribute>
+    
+    <attribute>
+      <name>labelName</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Specify a name for the label given to the input, for use in orderBy and where; if not specified, defaults to 'o'</description>
+    </attribute>    
+
+    <attribute>
       <name>format</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>

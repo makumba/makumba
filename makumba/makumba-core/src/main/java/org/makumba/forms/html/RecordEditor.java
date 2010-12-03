@@ -353,9 +353,9 @@ public class RecordEditor extends RecordFormatter {
         return data;
     }
 
-    public void config() {
+    public void config(Dictionary<String, Object> formatParams) {
         for (int i = 0; i < dd.getFieldNames().size(); i++) {
-            ((FieldEditor) formatterArray[i]).onStartup(this, i);
+            ((FieldEditor) formatterArray[i]).onStartup(this, i, formatParams);
         }
     }
 

@@ -33,12 +33,33 @@ import org.makumba.Pointer;
 import org.makumba.commons.StringUtils;
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.RecordFormatter;
+import org.makumba.forms.tags.SearchFieldTag;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.MakumbaServlet;
 import org.makumba.providers.QueryProvider;
 
 public class ptrEditor extends choiceEditor {
+
+    static String[] _params = { "default", "empty", "type", "size", "labelSeparator", "elementSeparator", "nullOption",
+            "forceInputStyle", "autoComplete", "orderBy", "where", "labelName" };
+
+    static String[][] _paramValues = { null, null, { "hidden", "radio", "checkbox", "tickbox" }, null, null, null,
+            null, SearchFieldTag.allowedSelectTypes, new String[] { "true", "false" }, null, null, null };
+
+    public static final String DEFAULT_LABEL_NAME = "o";
+
+    private String labelName = DEFAULT_LABEL_NAME;
+
+    @Override
+    public String[] getAcceptedParams() {
+        return _params;
+    }
+
+    @Override
+    public String[][] getAcceptedValue() {
+        return _paramValues;
+    }
 
     private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
         static FieldEditor singleton = new ptrEditor();
@@ -61,21 +82,41 @@ public class ptrEditor extends choiceEditor {
     }
 
     @Override
-    public void onStartup(RecordFormatter rf, int fieldIndex) {
+    public void onStartup(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
+        if (formatParams.get("labelName") != null) {
+            labelName = (String) formatParams.get("labelName");
+        } else {
+            labelName = DEFAULT_LABEL_NAME;
+        }
+
         ((RecordEditor) rf).db[fieldIndex] = ((RecordEditor) rf).database;
         Map<String, String> m = new HashMap<String, String>();
 
         ((RecordEditor) rf).query[fieldIndex] = m;
         String titleField = rf.dd.getFieldDefinition(fieldIndex).getTitleField();
-        String titleExpr = "choice." + titleField;
+        String titleExpr = labelName + "." + titleField;
 
         String choiceType = rf.dd.getFieldDefinition(fieldIndex).getPointedType().getName();
 
-        String query = "SELECT choice as choice, " + titleExpr + " as title FROM " + choiceType + " choice "
-                + "ORDER BY " + titleExpr;
+        String orderByExpr;
+        if (formatParams.get("orderBy") != null) {
+            orderByExpr = (String) formatParams.get("orderBy");
+        } else {
+            orderByExpr = titleExpr;
+        }
+        if (formatParams.get("orderByDirection") != null) {
+            orderByExpr += " " + (String) formatParams.get("orderByDirection");
+        }
+
+        String where = "";
+        if (formatParams.get("where") != null) {
+            where = " WHERE " + formatParams.get("where");
+        }
+
+        String query = "SELECT " + labelName + " as " + labelName + ", " + titleExpr + " as title FROM " + choiceType
+                + " " + labelName + where + " ORDER BY " + orderByExpr;
         m.put("oql", query);
         m.put("hql", query);
-
     }
 
     @Override
@@ -104,7 +145,7 @@ public class ptrEditor extends choiceEditor {
         for (Dictionary<String, Object> d : v) {
             Object ttl = d.get("title");
             if (ttl == null) {
-                Pointer ptr = (Pointer) d.get("choice");
+                Pointer ptr = (Pointer) d.get(labelName);
                 // FIXME ? maybe just displayed the field as untitled?
                 // ttl = "untitled [" + ptr.toExternalForm() + "]";
                 final StringBuilder msg = new StringBuilder(150);
@@ -114,7 +155,7 @@ public class ptrEditor extends choiceEditor {
                     "), and can't be displayed in the drop-down.\nEither make sure you have no null values in this field, or use a different field for the title display, using the '!title=' directive in the MDD.");
                 throw new org.makumba.ProgrammerError(msg.toString());
             }
-            c.add(d.get("choice"), ttl.toString(), false, false);
+            c.add(d.get(labelName), ttl.toString(), false, false);
         }
         return c;
     }
