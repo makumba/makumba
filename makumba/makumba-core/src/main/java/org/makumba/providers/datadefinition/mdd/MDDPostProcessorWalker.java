@@ -151,6 +151,10 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
             for (String path : v.arguments) {
                 checkPathValid(v_in, path, v.mdd);
                 keyOverSubfield = path.indexOf(".") > -1;
+                if (keyOverSubfield) { // we want to know if *any* argument is over a subfield
+                    // thus, we exit the loop here; otherwise, we just check if the *last* argument is in a subfield
+                    break;
+                }
             }
 
             DataDefinition.MultipleUniqueKeyDefinition key = new DataDefinition.MultipleUniqueKeyDefinition(
