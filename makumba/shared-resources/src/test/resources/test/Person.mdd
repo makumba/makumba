@@ -158,3 +158,5 @@ birthdayBefore(char monthDay) { dayOfYear(birthdate) >= dayOfYear(str_to_date(mo
 
 youngestGroupMemberNoParentheses() { ( SELECT min(m.age) FROM groupMembers m ) } 
 youngestGroupMember() { ( SELECT min(m.age) FROM groupMembers m ) } 
+
+numberOfBrothers() { ( SELECT count(*) FROM test.Person p2 WHERE brother=p2 ) }
