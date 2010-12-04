@@ -150,10 +150,10 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
             boolean keyOverSubfield = false;
             for (String path : v.arguments) {
                 checkPathValid(v_in, path, v.mdd);
-                keyOverSubfield = path.indexOf(".") > -1;
-                if (keyOverSubfield) { // we want to know if *any* argument is over a subfield
-                    // thus, we exit the loop here; otherwise, we just check if the *last* argument is in a subfield
-                    break;
+                if (!keyOverSubfield) {// we want to know if *any* argument is over a subfield
+                    // thus, we don't overwrite a previous true state
+                    // otherwise, we would just check if the *last* argument is in a subfield
+                    keyOverSubfield = path.indexOf(".") > -1;
                 }
             }
 
