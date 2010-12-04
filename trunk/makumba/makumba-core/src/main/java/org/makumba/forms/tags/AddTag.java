@@ -74,7 +74,7 @@ public class AddTag extends FormTagBase {
         }
         FieldDefinition fieldDefinition = base.getFieldDefinition(field);
         if (fieldDefinition == null) { // we used an unknow field
-            throw new ProgrammerError("Cannot find field '" + field + " in type " + base + "");
+            throw new ProgrammerError("Cannot find field '" + field + "' in type " + base + "");
         }
         return fieldDefinition.getSubtable();
     }
