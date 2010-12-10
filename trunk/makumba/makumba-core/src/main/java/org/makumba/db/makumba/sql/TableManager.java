@@ -2010,11 +2010,12 @@ public class TableManager extends Table {
         // for unique keys that go over subfields, we need to construct a query with joins
         String projection = dd.getName().replace('.', '_'); // label of this table
         from += " " + projection; // we need to use the labels, as we might have fields with the same name
-        Vector<String> alreadyAdded = new Vector<String>(); // we store what tables we already added to the projection
+        Vector<String> alreadyAdded = new Vector<String>(); // we store which tables we already added to the projection
         for (int i = 0; i < fields.length; i++) {
             if (values[i] == null) {
                 nullIndexes.add(i);
             }
+            String projectionExpr;
             if (fields[i].indexOf(".") != -1) { // FIXME: we go only one level of "." here, there might be more
                 // do the projection
                 String subField = fields[i].substring(0, fields[i].indexOf("."));
@@ -2030,14 +2031,17 @@ public class TableManager extends Table {
                             + otherTable.getFieldDBName(pointedType.getIndexPointerFieldName()) + " AND ";
                     alreadyAdded.add(subField);
                 }
-
-                // in any case, we match the tables on the fields.
-                where += otherProjection + "." + otherTable.getFieldDBName(fieldName)
-                        + (values[i] != null ? "=?" : " is null");
-                if (i + 1 < fields.length) {
-                    where += " AND ";
-                }
+                projectionExpr = otherProjection + "." + otherTable.getFieldDBName(fieldName);
+            } else { // simple case of having a field from the same MDD
+                projectionExpr = projection + "." + getFieldDBName(fields[i]);
             }
+
+            
+            where += projectionExpr + (values[i] != null ? "=?" : " is null");
+            if (i + 1 < fields.length) {
+                where += " AND ";
+            }
+
         }
 
         // if we have a pointer, we are in editing mode --> we make the query to not consider our record
