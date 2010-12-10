@@ -1737,8 +1737,7 @@ public class TableManager extends Table {
                 } catch (SQLException e) {
                     // log all errors
                     java.util.logging.Logger.getLogger("org.makumba.db.init.tablechecking").warning(
-                    // rm.getDatabase().getConfiguration()+": "+ //DB
-                    // name
+                    // rm.getDatabase().getConfiguration()+": "+ //DB name
                         "Problem adding UNIQUE INDEX on " + brief + ": " + e.getMessage() + " [ErrorCode: "
                                 + e.getErrorCode() + ", SQLstate:" + e.getSQLState() + "]");
                     createNormalEvenIfUnique = true;
@@ -1755,8 +1754,7 @@ public class TableManager extends Table {
                     st.close();
                 } catch (SQLException e) {
                     java.util.logging.Logger.getLogger("org.makumba.db.init.tablechecking").warning(
-                    // rm.getDatabase().getConfiguration()+": "+ //DB
-                    // name
+                    // rm.getDatabase().getConfiguration()+": "+ //DB name
                         "Problem adding INDEX on " + brief + ": " + e.getMessage() + " [ErrorCode: " + e.getErrorCode()
                                 + ", SQLstate:" + e.getSQLState() + "]");
                 }
@@ -1799,8 +1797,7 @@ public class TableManager extends Table {
             } catch (SQLException e) {
                 // log all errors
                 java.util.logging.Logger.getLogger("org.makumba.db.init.tablechecking").warning(
-                // rm.getDatabase().getConfiguration()+": "+ //DB
-                // name
+                // rm.getDatabase().getConfiguration()+": "+ //DB name
                     "Problem adding FOREIGN KEY on " + brief + ": " + e.getMessage() + " [ErrorCode: "
                             + e.getErrorCode() + ", SQLstate:" + e.getSQLState() + "]");
                 throw new DBError("Error adding foreign key for " + brief + ": " + e.getMessage());
