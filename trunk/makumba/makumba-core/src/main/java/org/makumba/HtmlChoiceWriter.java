@@ -3,6 +3,9 @@ package org.makumba;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
+
+import org.makumba.commons.RegExpUtils;
 
 /**
  * HtmlChoiceWriter creates HTML statements for printing choice inputs. It's capable of creating dropdown and list
@@ -51,6 +54,11 @@ public class HtmlChoiceWriter extends HtmlUtils {
     private String[] _optionSeparator = { " " }; // separator between different options
 
     private Object formIdentifier; // the form counter in the page; used for radio button / checbox auto values
+
+    // regexp for <optgroup>
+    private final static Pattern REGEXP_OPTGROUP_BEGIN = Pattern.compile("<optgroup[^(\\\\/>)]*>");
+
+    private final static Pattern REGEXP_OPTGROUP_END = Pattern.compile("</optgroup" + RegExpUtils.whitespace + ">");
 
     /*******************************************************************************************************************
      * PUBLIC CONSTANTS
@@ -268,6 +276,12 @@ public class HtmlChoiceWriter extends HtmlUtils {
             Object val = itv.next();
             String label = itl.next();
             if (val == null) {
+                // special treatment for <optgroup> tags - simply allow them
+                // see http://trac.makumba.org/ticket/1267
+                if (containsOnlyOptGroupMarkup(label)) {
+                    selectStatement.append(label);
+                    continue;
+                }
                 throw new ProgrammerError("Non-option text " + label
                         + " found. Non-otion text cannot break simple SELECTs. Use type=\"tickbox\" instead");
             }
@@ -286,6 +300,25 @@ public class HtmlChoiceWriter extends HtmlUtils {
         selectStatement.append("</SELECT>");
 
         return selectStatement.toString();
+    }
+
+    /**
+     * This method checks whether the given String only contains opening or closing &lt;optgroup&gt; tags; white-space
+     * in the String is ignored.<br/>
+     * FIXME: This is a very simple implementation, working on the assumption that there can be only one tag per line
+     */
+    private static boolean containsOnlyOptGroupMarkup(String s) {
+        s = s.trim();
+        // process each line
+        String[] lines = s.split("\n");
+        for (int i = 0; i < lines.length; i++) {
+            lines[i] = lines[i].trim();
+            if (lines[i].length() > 0 && !REGEXP_OPTGROUP_BEGIN.matcher(lines[i].trim()).matches()
+                    && !REGEXP_OPTGROUP_END.matcher(lines[i].trim()).matches()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -675,6 +708,24 @@ public class HtmlChoiceWriter extends HtmlUtils {
 
     public void setFormIdentifier(Object formCount) {
         this.formIdentifier = formCount;
+    }
+
+    public static void main(String[] args) {
+        // some tests for the optgroup tag detection
+        System.out.println("Tests for <optgroup> tag detection");
+        String[] markupsBegin = { "<optgroup name=\"blabla\">", "<optgroup>", "<optgroup name=\"blabla\"/>" };
+        String[] markupsEnd = { "</optgroup>", "<optgroup>", "</optgroup >" };
+        String[] mixedMarkups = { "</optgroup> \n\n <optgroup name=\"blabla\"> " };
+        testMarkupDetection(markupsBegin);
+        testMarkupDetection(markupsEnd);
+        testMarkupDetection(mixedMarkups);
+    }
+
+  
+    private static void testMarkupDetection(String[] markups) {
+        for (String s : markups) {
+            System.out.println("\n" + s + " => " + containsOnlyOptGroupMarkup(s));
+        }
     }
 
 } // end class
