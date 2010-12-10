@@ -79,15 +79,13 @@ public class ComparisonValidationRule extends ValidationRuleNode {
                 if (left == null) {
                     left = comparisonExpression.getLhs_date();
                 }
-                if (left instanceof NullObject) {
-                    left = FieldType.DATE.getEmptyValue();
-                }
 
                 if (right == null) {
                     right = comparisonExpression.getRhs_date();
                 }
-                if (right instanceof NullObject) {
-                    right = FieldType.DATE.getEmptyValue();
+                if (left instanceof NullObject || right instanceof NullObject) {
+                    // we don't validate null dates, see bug http://trac.makumba.org/ticket/1266
+                    return true;
                 }
 
                 compare = ((Date) left).compareTo(((Date) right));
