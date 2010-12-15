@@ -147,9 +147,12 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
     protected void processValidationDefinitions(ValidationRuleNode v, AST v_in) {
         if (v instanceof MultiUniquenessValidationRule) {
 
+            // key defined in the MDD or subfield? (http://trac.makumba.org/ticket/1271)
+            MDDNode definitionSource = v.field == null ? v.mdd : v.field.subfield;
+
             boolean keyOverSubfield = false;
             for (String path : v.arguments) {
-                checkPathValid(v_in, path, v.mdd);
+                checkPathValid(v_in, path, definitionSource);
                 if (!keyOverSubfield) {// we want to know if *any* argument is over a subfield
                     // thus, we don't overwrite a previous true state
                     // otherwise, we would just check if the *last* argument is in a subfield
@@ -160,7 +163,7 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
             DataDefinition.MultipleUniqueKeyDefinition key = new DataDefinition.MultipleUniqueKeyDefinition(
                     v.arguments.toArray(new String[] {}), v.message);
             key.setKeyOverSubfield(keyOverSubfield);
-            mdd.addMultiUniqueKey(key);
+            definitionSource.addMultiUniqueKey(key);
 
         } else if (v instanceof ComparisonValidationRule) {
             ComparisonExpressionNode ce = v.comparisonExpression;
