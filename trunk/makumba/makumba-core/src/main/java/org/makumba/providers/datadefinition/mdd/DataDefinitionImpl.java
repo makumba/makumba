@@ -1,14 +1,5 @@
 package org.makumba.providers.datadefinition.mdd;
 
-import java.io.Serializable;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Set;
-import java.util.Vector;
-
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionParseError;
@@ -18,6 +9,15 @@ import org.makumba.QueryFragmentFunctions;
 import org.makumba.ValidationDefinition;
 import org.makumba.ValidationRule;
 import org.makumba.providers.DataDefinitionProvider;
+
+import java.io.Serializable;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * Implementation of the {@link DataDefinition} interface.<br>
@@ -198,22 +198,36 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
                 // - we are a multi-field validation rule which is member of a subfield. in that case, "field" is
                 // actually the parent field, not a member field
 
-                if (n.field != null
-                        && (n.field.mdd.fieldNameInParent.length() > 0 || n.field.subfield != null
-                                && n.field.subfield.fieldNameInParent.length() > 0)) {
+                boolean hasParentDeclared = n.field != null && n.field.mdd.fieldNameInParent.length() > 0;
+                boolean hasSubFieldDeclared = n.field != null && n.field.subfield != null
+                        && n.field.subfield.fieldNameInParent.length() > 0;
 
-                    // we are in a subfield
-                    FieldDefinition subFd = this.getFieldDefinition(n.field.mdd.fieldNameInParent);
-                    if (subFd == null) {
-                        // we try our luck another way
-                        subFd = this.getFieldDefinition(n.field.subfield.fieldNameInParent);
-                        if (subFd == null) {
-                            throw new RuntimeException("could not retrieve field definition for validation rule "
-                                    + v.getRuleName());
+
+                if (hasParentDeclared || hasSubFieldDeclared) {
+
+                    // are we a (nested) subfield?
+                    FieldDefinition subFd = null;
+                    if(hasSubFieldDeclared) {
+                        // nested subfield
+                        if(n.field.subfield.parent.indexOf("->") > -1) {
+                            // strip the parent type
+                            String parentFieldName = n.field.subfield.parent.substring(this.getName().length() + "->".length());
+                            FieldDefinition parent = this.getFieldOrPointedFieldDefinition(parentFieldName);
+                            subFd = parent.getSubtable().getFieldDefinition(n.field.subfield.fieldNameInParent);
+                        } else {
+                            // simple subfield
+                            subFd = this.getFieldDefinition(n.field.subfield.fieldNameInParent);
                         }
+                    } else if(hasParentDeclared) {
+                        subFd = this.getFieldDefinition(n.field.mdd.fieldNameInParent);
+                    }
+
+                    if (subFd == null) {
+                        throw new RuntimeException("could not retrieve field definition for validation rule "
+                                + v.getRuleName());
                     }
                     fd = subFd.getSubtable().getFieldDefinition(field);
-
+                    
                 } else {
                     fd = this.getFieldOrPointedFieldDefinition(field);
                 }

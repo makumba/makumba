@@ -6,3 +6,7 @@ address->number = int
 address->range(number) {0..5} : "Error!"
 address->email = char
 address->matches(email) { ".+@.+\.[a-z]+|^[ ]*$" } : "Email address is not valid!"
+address->sth=ptr
+address->sth->aaa=char[20]
+address->sth->bbb=char[20]
+address->sth->unique(aaa, bbb) : "aaa and bbb must be unique!"
