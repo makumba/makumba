@@ -91,6 +91,8 @@ address=set			 ;Addresses
   address->sth->aaa=char[20]
   address->sth->bbb=char[20]
   address->sth->someSuperNestedFunction() { 1 + 2 } : "Some nested nested message"
+  # the unique definition below fails due to bug http://trac.makumba.org/ticket/1272
+  #address->sth->unique(aaa, bbb) : "aaa and bbb must be unique!"
   address->languages = set test.Language ; languages spoken in that address
   address->length(description) {3..?} : "Description must be at least 3 letters long!"
   address->someFunction() { 1 + 2 } : "Some nested message"
