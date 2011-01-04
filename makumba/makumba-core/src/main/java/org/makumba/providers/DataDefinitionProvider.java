@@ -215,7 +215,7 @@ public class DataDefinitionProvider {
     }
 
     /**
-     * gives a list of data definitions in a given location
+     * gives a list of data definitions in a given location, which must be in the current classpath
      * 
      * @param location
      *            the location where the data definitions should be
@@ -223,6 +223,20 @@ public class DataDefinitionProvider {
      */
     public Vector<String> getDataDefinitionsInLocation(String location) {
         return mddsInDirectory(location);
+    }
+
+    /**
+     * gives a list of data definitions in an absolute path
+     * 
+     * @param location
+     *            the location where the data definitions should be
+     * @return a vector with references to the data definitions in the location
+     */
+    public Vector<String> getDataDefinitionsInAbsoluteLocation(String location) {
+        java.io.File dir = new File(location);
+        Vector<String> mdds = new java.util.Vector<String>();
+        fillMdds(dir.toString().length() + 1, dir, mdds);
+        return mdds;
     }
 
     /**
@@ -276,6 +290,8 @@ public class DataDefinitionProvider {
         }
         return mdds;
     }
+    
+
 
     private void fillMdds(int baselength, java.io.File dir, java.util.Vector<String> mdds) {
         if (dir.isDirectory()) {
