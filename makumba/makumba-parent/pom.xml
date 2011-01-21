@@ -263,7 +263,7 @@
     <modules>
         <module>../makumba-core</module>
         <module>../makumba-jsp-test</module>
-        <module>../shared-resources</module>
+        <module>../makumba-shared-resources</module>
     </modules>
 
 </project>

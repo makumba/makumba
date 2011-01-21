@@ -154,7 +154,7 @@
 
         <resources>
             <resource>
-                <directory>../shared-resources/src/test/resources</directory>
+                <directory>../makumba-shared-resources/src/test/resources</directory>
             </resource>
         </resources>
 
