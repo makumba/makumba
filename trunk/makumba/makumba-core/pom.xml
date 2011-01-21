@@ -214,7 +214,7 @@
 
         <testResources>
             <testResource>
-                <directory>../shared-resources/src/test/resources</directory>
+                <directory>../makumba-shared-resources/src/test/resources</directory>
             </testResource>
             <testResource>
                 <directory>${basedir}/src/test/resources</directory>
@@ -360,20 +360,30 @@
                 </configuration>
             </plugin>
 
-            <!-- Assembly plugin, generates distribution JARs -->
+            <!-- Assembly plugin, generates distribution artifacts -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.2-beta-5</version>
                 <configuration>
-                    <descriptorRefs>
-                        <descriptorRef>src</descriptorRef>
-                    </descriptorRefs>
+                            <!--
+                    <descriptors>
+                        <descriptor>
+                            src/main/assembly/jar-with-sources.xml
+                        </descriptor>
+                        <descriptor>
+                        -->
+                            <descriptorRefs>
+                                <descriptorRef>src</descriptorRef>
+                            </descriptorRefs>
                     <descriptors>
                         <descriptor>
                             src/main/assembly/distribution.xml
                         </descriptor>
                     </descriptors>
                     <attach>false</attach>
+                    <!--
+                    <appendAssemblyId>false</appendAssemblyId>
+                    -->
                 </configuration>
                 <executions>
                     <execution>
@@ -404,7 +414,7 @@
                 <configuration>
                     <fromDir>${project.build.directory}/</fromDir>
                     <includes>
-                        ${project.artifactId}-${project.version}.jar,${project.artifactId}-${project.version}-distribution.zip,${project.artifactId}-${project.version}-src.zip
+                        ${project.artifactId}-${project.version}.jar,${project.artifactId}-${project.version}-jar-with-sources.jar,${project.artifactId}-${project.version}-distribution.zip,${project.artifactId}-${project.version}-src.zip
                     </includes>
                     <url>sftp://${username},makumba:${password}@frs.sourceforge.net</url>
                     <toDir>home/frs/project/m/ma/makumba/Makumba/</toDir>
