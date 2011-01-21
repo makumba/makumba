@@ -9,7 +9,7 @@
         <relativePath>../makumba-parent/pom.xml</relativePath>
     </parent>
 
-    <artifactId>shared-resources</artifactId>
+    <artifactId>makumba-shared-resources</artifactId>
     <packaging>jar</packaging>
 
     <name>makumba shared resources bundle</name>
