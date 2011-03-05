@@ -253,7 +253,7 @@
                         <!--If you don't want cargo to download the container, just comment
                                   the bottom lines and specify a [home] parameter -->
                         <zipUrlInstaller>
-                            <url>http://mirror.hostfuss.com/apache/tomcat/tomcat-6/v6.0.32/bin/apache-tomcat-6.0.32.zip
+                            <url>http://apache.dataphone.se/tomcat/tomcat-6/v6.0.32/bin/
                             </url>
                             <installDir>${project.basedir}/install</installDir>
                         </zipUrlInstaller>
