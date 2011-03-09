@@ -20,15 +20,15 @@ INSTALLATION INSTRUCTIONS
 - go to Window->Preference->Validators and select "Suspend all validators" (or remove the validators you don't want to use, e.g. JSP, HTML, ...).
   This is necessary because the JSP, HTML and EL validators are partly broken and can get very annoying
 
-3) Prepare & checkout makumba (https://makumba.svn.sourceforge.net/svnroot/makumba)
+3) Prepare & checkout makumba (https://makumba.svn.sourceforge.net/svnroot/makumba/trunk/makumba)
    ==========================
 - create empty makumba and makhib mysql test databases in mysql; on linux, you can use the "setup-mysql-db.sh" script
 - if needed, configure makumba-parent/build.properties
   - this is important especially when releasing, where you need to have the makumba-documentation project checked out somewhere
     in order to generate documented TLDs
-- checkout the project, either through command-line or directly through File->New->Other->Maven->Checkout maven project from SCM (untested).
-  In the latter case, you don't need to re-import it again (skip the following step)
-- go to File->Import->Existing maven projects and select the makumba project directory.
+- checkout the project from the above SVN URI, either through command-line or directly through File->New->Other->Maven->Checkout maven project from SCM.
+- if you checked out via commandline, go to File->Import->Existing maven projects and select the makumba project directory.
+
 - if you installed the Maven WTP extensions, you will get a NullPointerException during import due to https://issues.sonatype.org/browse/MECLIPSEWTP-41.
   You have two options:
   - uninstall the Maven WTP extensions (if you don't plan on using them with other maven projects) and re-iterate the import process
@@ -36,7 +36,7 @@ INSTALLATION INSTRUCTIONS
 
 4) Use makumba-core with a WTP project in eclipse Helios
    =====================================================
-- in order to use makumba directly as a dependency in a WTP project, go to the project properties->Deployment Assembly->Add->Project and add makumba-core
+- in order to use makumba directly as a dependency in a WTP project, go to the project properties->Deployment Assembly->Add->Project and add the makumba-core maven project
 
 In order to run the test webapp:
 - right-click on makumba-jsp-test and go to Run As -> Maven build...
