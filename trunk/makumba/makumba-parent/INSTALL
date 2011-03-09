@@ -34,6 +34,10 @@ INSTALLATION INSTRUCTIONS
   - uninstall the Maven WTP extensions (if you don't plan on using them with other maven projects) and re-iterate the import process
   - right-click on makumba-jsp-test and select Maven->Disable Workspace Resolution. This should lead to a clean build.
 
+4) Use makumba-core with a WTP project in eclipse Helios
+   =====================================================
+- in order to use makumba directly as a dependency in a WTP project, go to the project properties->Deployment Assembly->Add->Project and add makumba-core
+
 In order to run the test webapp:
 - right-click on makumba-jsp-test and go to Run As -> Maven build...
 - in the Goals field, enter 'jetty:run' for Jetty or 'tomcat:run' for Tomcat. Note that only Jetty supports hot-redeploy in this set-up.
