@@ -9,7 +9,7 @@ INSTALLATION INSTRUCTIONS
    =========================
 - install m2eclipse (http://m2eclipse.sonatype.org/sites/m2e/)
 - install m2eclipse-extras (http://m2eclipse.sonatype.org/sites/m2e-extras/)
-  - only install the "Project configurators for some commonly used maven plugins" (and the "Maven Integration for WTP", if you want to use it in other projects)
+  - only install the "Project configurators for some commonly used maven plugins" (without the "Maven Integration for WTP" as it is buggy for the moment)
 - go to the eclipse maven preferences (Window->Preferences->Maven) and:
   - in "Installations", add your maven installation instead of the embedded one (http://www.sonatype.com/books/m2eclipse-book/reference/eclipse-sect-maven-preferences.html)
   - in "Maven" (main view) add the following goals for the fields "Goals to run on project import" and "Goals to run when updating the project configuration":
