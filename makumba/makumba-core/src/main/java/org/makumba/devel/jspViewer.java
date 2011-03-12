@@ -390,17 +390,25 @@ public class jspViewer extends LineViewer {
                                 String queryOQL = ((ComposedQuery) queryCache.get(tagKey)).getComputedQuery();
                                 currentText.append("OQL: " + queryOQL + "<br/>");
 
+                                // at non-runtime, we can't evaluate #{...}; thus, remove it
+                                String queryTransformedForInlining = queryOQL.replaceAll("#\\{[^}]*\\}", "");
                                 String queryInlined = null;
+
                                 // check which inliner to use
                                 if (Configuration.getQueryInliner().equals("matcher")) {
                                     QueryAnalysisProvider queryAnalzyer = QueryProvider.getQueryAnalzyer("oql");
-                                    queryInlined = FunctionInliner.inline(queryOQL, queryAnalzyer);
+                                    queryInlined = FunctionInliner.inline(queryTransformedForInlining, queryAnalzyer);
                                 } else {
                                     QueryAnalysisProvider queryAnalzyer = QueryProvider.getQueryAnalzyer(TransactionProvider.getInstance().getQueryLanguage());
-                                    queryInlined = Pass1ASTPrinter.printAST(queryAnalzyer.inlineFunctions(queryOQL)).toString();
+                                    queryInlined = Pass1ASTPrinter.printAST(
+                                        queryAnalzyer.inlineFunctions(queryTransformedForInlining)).toString();
                                 }
                                 if (!queryInlined.equals(queryOQL)) {
-                                    currentText.append("OQL inlined: " + queryInlined + "<br/>");
+                                    currentText.append("OQL inlined");
+                                    if (!queryTransformedForInlining.equals(queryOQL)) {
+                                        currentText.append(" <span style=\"color:red;\">(removed #{...} expressions)</span>");
+                                    }
+                                    currentText.append(": " + queryInlined + "<br/>");
                                 }
 
                                 try {
