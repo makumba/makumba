@@ -391,7 +391,7 @@ public class jspViewer extends LineViewer {
                                 currentText.append("OQL: " + queryOQL + "<br/>");
 
                                 // at non-runtime, we can't evaluate #{...}; thus, remove it
-                                String queryTransformedForInlining = queryOQL.replaceAll("#\\{[^}]*\\}", "");
+                                String queryTransformedForInlining = removeExpressionsForInlining(queryOQL);
                                 String queryInlined = null;
 
                                 // check which inliner to use
@@ -400,10 +400,15 @@ public class jspViewer extends LineViewer {
                                     queryInlined = FunctionInliner.inline(queryTransformedForInlining, queryAnalzyer);
                                 } else {
                                     QueryAnalysisProvider queryAnalzyer = QueryProvider.getQueryAnalzyer(TransactionProvider.getInstance().getQueryLanguage());
-                                    queryInlined = Pass1ASTPrinter.printAST(
-                                        queryAnalzyer.inlineFunctions(queryTransformedForInlining)).toString();
+                                    try {
+                                        queryInlined = Pass1ASTPrinter.printAST(
+                                            queryAnalzyer.inlineFunctions(queryTransformedForInlining)).toString();
+                                    } catch (Throwable t) {
+                                        currentText.append(" <span style=\"color:red;\">Error inlinging query: "
+                                                + t.getMessage() + "</span>");
+                                    }
                                 }
-                                if (!queryInlined.equals(queryOQL)) {
+                                if (queryInlined != null && !queryInlined.equals(queryOQL)) {
                                     currentText.append("OQL inlined");
                                     if (!queryTransformedForInlining.equals(queryOQL)) {
                                         currentText.append(" <span style=\"color:red;\">(removed #{...} expressions)</span>");
@@ -473,6 +478,14 @@ public class jspViewer extends LineViewer {
         logger.finer("Sourcecode viewer took :" + time / 1000 + " seconds");
     }
 
+    /**
+     * Removes #{..} expressions from queries, as these expressions can only be evaluated at runtime, but not during
+     * e.g. source code view
+     */
+    private static String removeExpressionsForInlining(String query) {
+        return query.replaceAll("WHERE #\\{[^}]*\\} ORDER BY", "ORDER BY").replaceAll("ORDER BY #\\{[^}]*\\}$", "").replaceAll("#\\{[^}]*\\}", "");
+    }
+
     private String getStyleClass(String tagType) {
         String tagPrefix = tagType;
         if (tagPrefix.contains(":")) {
@@ -528,6 +541,24 @@ public class jspViewer extends LineViewer {
     @Override
     protected void printPageBeginAdditional(PrintWriter writer) throws IOException {
         super.printPageBeginAdditional(writer);
+    }
+    
+    public static void main(String[] args) {
+        // difficult query to check:
+        String[] queries = {
+                "SELECT rr.requestDate AS col1,rr.requestor.name AS col2,rr.requestor.surname AS col3,rr.internalEvent.generalEvent.name AS col4,rr.basEvent.name AS col5,rr.otherEvent AS col6,rr.expensesType AS col7,rr.grantedAmount AS col8,rr.status AS col9,rr.budgetCategory.name AS col10,rr.transferedToAccounting AS col11,rr AS col12 FROM best.internal.RefundRequest rr WHERE #{query} ORDER BY #{queryOrderBy}",
+                "SELECT rr.requestDate AS col1,rr.requestor.name AS col2,rr.requestor.surname AS col3,rr.internalEvent.generalEvent.name AS col4,rr.basEvent.name AS col5,rr.otherEvent AS col6,rr.expensesType AS col7,rr.grantedAmount AS col8,rr.status AS col9,rr.budgetCategory.name AS col10,rr.transferedToAccounting AS col11,rr AS col12 FROM best.internal.RefundRequest rr WHERE #{query} 2=2 ORDER BY #{queryOrderBy}",
+                "SELECT rr.requestDate AS col1,rr.requestor.name AS col2,rr.requestor.surname AS col3,rr.internalEvent.generalEvent.name AS col4,rr.basEvent.name AS col5,rr.otherEvent AS col6,rr.expensesType AS col7,rr.grantedAmount AS col8,rr.status AS col9,rr.budgetCategory.name AS col10,rr.transferedToAccounting AS col11,rr AS col12 FROM best.internal.RefundRequest rr WHERE #{query} 2=2 ORDER BY #{queryOrderBy} rr.requestor.name",
+                // FIXME: for the query below, removeExpressionsForInlining doesn't work correctly
+                "SELECT rr.requestDate AS col1,rr.requestor.name AS col2,rr.requestor.surname AS col3,rr.internalEvent.generalEvent.name AS col4,rr.basEvent.name AS col5,rr.otherEvent AS col6,rr.expensesType AS col7,rr.grantedAmount AS col8,rr.status AS col9,rr.budgetCategory.name AS col10,rr.transferedToAccounting AS col11,rr AS col12 FROM best.internal.RefundRequest rr WHERE #{query} 2=2 ORDER BY #{queryOrderBy},  rr.requestor.name",
+
+        };
+        for (String query : queries) {
+            System.out.println(query);
+            System.out.println("  =>");
+            System.out.println(removeExpressionsForInlining(query));
+            System.out.println("\n");
+        }
     }
 
 }
