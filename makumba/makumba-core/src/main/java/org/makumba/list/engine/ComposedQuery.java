@@ -33,7 +33,11 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
 import org.makumba.DataDefinition;
+import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
+import org.makumba.ProgrammerError;
+import org.makumba.QueryFragmentFunction;
+import org.makumba.UnauthorizedException;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 
@@ -69,7 +73,11 @@ public class ComposedQuery implements Serializable {
     private boolean selectAllLabels;
 
     public ComposedQuery(String[] sections, String queryLanguage) {
-        this(sections, queryLanguage, false);
+        this(sections, queryLanguage, false, null);
+    }
+
+    public ComposedQuery(String[] sections, String queryLanguage, boolean selectAllLabels) {
+        this(sections, queryLanguage, selectAllLabels, null);
     }
 
     /**
@@ -79,11 +87,15 @@ public class ComposedQuery implements Serializable {
      * @param selectAllLabels
      * @param usesHQL
      */
-    public ComposedQuery(String[] sections, String queryLanguage, boolean selectAllLabels) {
+    public ComposedQuery(String[] sections, String queryLanguage, boolean selectAllLabels, List<String> authorization) {
         this.sections = sections;
         this.derivedSections = sections;
         this.qep = QueryProvider.getQueryAnalzyer(queryLanguage);
         this.selectAllLabels = selectAllLabels;
+        this.authorization = authorization;
+        if (authorization == null) {
+            this.authorization = new ArrayList<String>();
+        }
     }
 
     /** The subqueries of this query */
@@ -115,6 +127,18 @@ public class ComposedQuery implements Serializable {
 
     /** Section texts, encoded with the standard indexes */
     String[] sections;
+
+    List<String> authorization;
+
+    List<AuthorizationInfo> authorizationInfos;
+
+    static class AuthorizationInfo {
+        String expr;
+
+        int index;
+
+        String message = "you are not authorized to view " + expr;
+    }
 
     /** Derived section texts, made from the sections of this query and the sections of its superqueries */
     String[] derivedSections;
@@ -420,7 +444,8 @@ public class ComposedQuery implements Serializable {
      *            how many times should this query be ran
      * @throws LogicException
      */
-    public Grouper execute(QueryProvider qep, Map<String, Object> args, Evaluator v, int offset, int limit) {
+    public Grouper execute(QueryProvider qep, Map<String, Object> args, Evaluator v, int offset, int limit)
+            throws UnauthorizedException {
         analyze();
         String[] vars = new String[5];
         vars[0] = getFromSection();
@@ -439,7 +464,8 @@ public class ComposedQuery implements Serializable {
             }
         }
 
-        return new Grouper(previousKeyset, qep.execute(computeQuery(vars, false), args, offset, limit).iterator());
+        return new Grouper(previousKeyset, qep.execute(computeQuery(vars, false), args, offset, limit).iterator(),
+                authorizationInfos);
     }
 
     public synchronized void analyze() {
@@ -453,6 +479,54 @@ public class ComposedQuery implements Serializable {
         if (typeAnalyzerOQL == null) {
             typeAnalyzerOQL = computeQuery(derivedSections, true);
         }
+        if (authorizationInfos == null) {
+            addAuthorizationExpressions();
+        }
+    }
+
+    // TODO: later: see if the expression is a field, not a pointer...
+    // queries that just do a count() or sum()...
+    void addAuthorizationExpressions() {
+        authorizationInfos = new ArrayList<AuthorizationInfo>();
+        if (authorization.isEmpty()) {
+            return;
+        }
+        StringBuffer query = new StringBuffer("SELECT ");
+        String sep = "";
+        for (String expr : authorization) {
+            query.append(sep).append(expr);
+            sep = ",";
+        }
+        query.append(" FROM ").append(sections[FROM]);
+
+        DataDefinition dd = qep.getQueryAnalysis(query.toString()).getProjectionType();
+        for (int i = 0; i < authorization.size(); i++) {
+            String expr = authorization.get(i);
+
+            FieldDefinition fd = dd.getFieldDefinition(i);
+
+            if (!fd.getType().startsWith("ptr")) {
+                throw new ProgrammerError("Authorization is only possible on pointer expressions for now: " + expr
+                        + " is of type " + fd.getType());
+            }
+
+            QueryFragmentFunction func = fd.getPointedType().getFunctionOrPointedFunction("canRead");
+            if (func == null) {
+                throw new ProgrammerError("Type indicated for authorization " + fd.getPointedType()
+                        + " has no canRead() defined");
+            }
+
+            AuthorizationInfo ai = new AuthorizationInfo();
+
+            String canRead = expr + ".canRead()";
+
+            ai.expr = expr;
+            authorizationInfos.add(ai);
+            checkProjectionInteger(canRead);
+            ai.index = getProjectionIndex(canRead);
+            ai.message = func.getErrorMessage();
+        }
+
     }
 
     /**

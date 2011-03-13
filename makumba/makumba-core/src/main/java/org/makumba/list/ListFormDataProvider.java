@@ -34,7 +34,7 @@ import org.makumba.providers.FormDataProvider;
  * provide context to the method, so it knows what kind of data to compute. In addition we also pass some other
  * parameters useful for data computation.
  * 
- * @author Manuel Bernhardt <manuel@makumba.org>
+ * @author Manuel Gay
  * @version $Id: ListFormDataProvider.java,v 1.1 18.09.2007 18:31:07 Manuel Exp $
  */
 public class ListFormDataProvider implements FormDataProvider {
@@ -78,8 +78,8 @@ public class ListFormDataProvider implements FormDataProvider {
                         if (fd.isPointer()) {
                             // FIXME: in nested forms, ptrExpr is most likely not specific enough to identify an input,
                             // as repeated inputs with the same name will get a suffix added, e.g. _1
-                            pageCache.cache(MakumbaJspAnalyzer.ADD_FORM_DATA_TYPE, tag.getTagKey(), new Object[] {
-                                    fd.getPointedType(), ptrExpr });
+                            pageCache.cache(MakumbaJspAnalyzer.ADD_FORM_DATA_TYPE, tag.getTagKey(),
+                                new Object[] { fd.getPointedType(), ptrExpr });
                             found = true;
                         } else {
                             throw new ProgrammerError("Can use only 'ptr' type inputs for addForms, given expr '"
@@ -113,8 +113,8 @@ public class ListFormDataProvider implements FormDataProvider {
 
         boolean isValue = tag instanceof ValueTag;
 
-        pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, tag.getTagKey(), ValueComputer.getValueComputerAtAnalysis(
-            isValue, parentListKey, ptrExpr, pageCache));
+        pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, tag.getTagKey(),
+            ValueComputer.getValueComputerAtAnalysis(isValue, parentListKey, ptrExpr, pageCache));
     }
 
     private MultipleKey getBasicValueParentListKey(AnalysableTag tag, boolean isNull, MultipleKey parentFormKey,
@@ -126,7 +126,8 @@ public class ListFormDataProvider implements FormDataProvider {
             return null;
         } else {
             /* we don't have a query around us, so we must make a dummy query for computing the value via the database */
-            QueryTag.cacheQuery(pageCache, parentFormKey, dummyQuerySections, null);
+            // TODO: authorization?
+            QueryTag.cacheQuery(pageCache, parentFormKey, dummyQuerySections, null, null);
             return parentFormKey;
         }
     }
@@ -149,8 +150,8 @@ public class ListFormDataProvider implements FormDataProvider {
 
         boolean isValue = tag instanceof ValueTag;
 
-        pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, tag.getTagKey(), ValueComputer.getValueComputerAtAnalysis(
-            isValue, parentListKey, expr, pageCache));
+        pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, tag.getTagKey(),
+            ValueComputer.getValueComputerAtAnalysis(isValue, parentListKey, expr, pageCache));
     }
 
     /*
