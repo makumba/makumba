@@ -25,6 +25,7 @@ package org.makumba.test.component;
 
 import java.util.Collection;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -45,6 +46,8 @@ import org.makumba.providers.DataDefinitionProvider;
  */
 public class MddTest extends TestCase {
 
+	private static Logger logger = Logger.getLogger("org.makumba.test.component.MddTest");
+	
     private DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
 
     public MddTest(String name) {
@@ -95,15 +98,17 @@ public class MddTest extends TestCase {
     }
 
     public void testAllValidMdds() {
-        String base = "test/validMdds/";
+        String base = "dataDefinitions/test/validMdds/";
         Vector<String> mdds = ddp.getDataDefinitionsInLocation(base);
 
+        assertTrue(mdds.size()>0);
         // we have to collect all errors if we want to run tests on all
         // MDDs in directory instead of stopping at first fail()ure.
         Vector<String> errors = new Vector<String>();
         for (String mdd : mdds) {
             if (!mdd.equals("NestedSet")) {
                 try {
+                	logger.info("Testing valid mdd: " + mdd);
                     ddp.getDataDefinition("test.validMdds." + mdd);
                 } catch (DataDefinitionParseError ex) {
                     errors.add("\n ." + (errors.size() + 1) + ") Error reported in valid MDD <" + mdd + ">:\n" + ex);
@@ -118,9 +123,10 @@ public class MddTest extends TestCase {
     }
 
     public void testIfAllBrokenMddsThrowErrors() {
-        String base = "test/brokenMdds/";
+        String base = "dataDefinitions/test/brokenMdds/";
         Vector<String> mdds = ddp.getDataDefinitionsInLocation(base);
 
+        assertTrue(mdds.size()>0);
         // we have to collect all errors if we want to run tests on all
         // MDDs in directory instead of stoping at first fail()ure.
         Vector<String> errors = new Vector<String>();
@@ -128,7 +134,8 @@ public class MddTest extends TestCase {
             DataDefinitionParseError expected = new DataDefinitionParseError();
             DataDefinitionParseError actual = expected;
             try {
-                ddp.getDataDefinition("test.brokenMdds." + mdd);
+            	logger.info("Testing broken mdd:" + mdd);
+                ddp.getDataDefinition("test.brokenMdds." + mdd);                
             } catch (DataDefinitionParseError thrown) {
                 actual = thrown;
             }
