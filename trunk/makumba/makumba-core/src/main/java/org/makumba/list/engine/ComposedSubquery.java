@@ -41,11 +41,16 @@ public class ComposedSubquery extends ComposedQuery {
      * Make a subquery of the indicated query, from the given sections.
      */
     public ComposedSubquery(String[] subsections, ComposedQuery cq, String queryLanguage) {
-        this(subsections, cq, queryLanguage, false);
+        this(subsections, cq, queryLanguage, false, null);
     }
 
     public ComposedSubquery(String[] subsections, ComposedQuery cq, String queryLanguage, boolean selectAllLabels) {
-        super(subsections, queryLanguage, selectAllLabels);
+        this(subsections, cq, queryLanguage, selectAllLabels, null);
+    }
+
+    public ComposedSubquery(String[] subsections, ComposedQuery cq, String queryLanguage, boolean selectAllLabels,
+            List<String> authorize) {
+        super(subsections, queryLanguage, selectAllLabels, authorize);
         superQuery = cq;
         superQuery.addSubquery(this);
         derivedSections = new String[5];

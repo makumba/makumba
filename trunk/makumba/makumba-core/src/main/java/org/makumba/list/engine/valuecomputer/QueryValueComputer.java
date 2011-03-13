@@ -41,7 +41,8 @@ public abstract class QueryValueComputer extends ValueComputer {
 
         queryKey = new MultipleKey(parentKey, keyDifference);
 
-        QueryTag.cacheQuery(pageCache, queryKey, queryProps, parentKey).checkProjectionInteger(expr);
+        // TODO: authorization?
+        QueryTag.cacheQuery(pageCache, queryKey, queryProps, parentKey, null).checkProjectionInteger(expr);
     }
 
     /** The key of the query in which this value is a projection. Returns queryKey */

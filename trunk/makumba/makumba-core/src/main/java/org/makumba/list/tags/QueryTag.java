@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.StringTokenizer;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspException;
@@ -80,6 +81,8 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
     protected String authorize = "filter";
 
+    private ArrayList<String> authorization;
+
     static String standardCountVar = "org_makumba_view_jsptaglib_countVar";
 
     static String standardMaxCountVar = "org_makumba_view_jsptaglib_maxCountVar";
@@ -128,6 +131,14 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
     public void setMaxCountVar(String s) {
         maxCountVar = s;
+    }
+
+    public void setAuthorization(String s) {
+        authorization = new ArrayList<String>();
+        for (StringTokenizer st = new StringTokenizer(s, ","); st.hasMoreTokens();) {
+            authorization.add(st.nextToken());
+
+        }
     }
 
     public void setOffset(String s) throws JspException {
@@ -236,7 +247,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
         }
 
         // we make ComposedQuery cache our query
-        QueryTag.cacheQuery(pageCache, tagKey, queryProps, getParentListKey(this, pageCache));
+        QueryTag.cacheQuery(pageCache, tagKey, queryProps, getParentListKey(this, pageCache), authorization);
 
         if (countVar != null) {
             setType(pageCache, countVar, DataDefinitionProvider.getInstance().makeFieldOfType(countVar, "int"));
@@ -583,14 +594,15 @@ public class QueryTag extends GenericListTag implements IterationTag {
      * @param parentKey
      *            the key of the parent tag, if any
      */
-    public static ComposedQuery cacheQuery(PageCache pc, MultipleKey key, String[] sections, MultipleKey parentKey) {
+    public static ComposedQuery cacheQuery(PageCache pc, MultipleKey key, String[] sections, MultipleKey parentKey,
+            List<String> authorize) {
         ComposedQuery ret = (ComposedQuery) pc.retrieve(MakumbaJspAnalyzer.QUERY, key);
         if (ret != null) {
             return ret;
         }
         String ql = MakumbaJspAnalyzer.getQueryLanguage(pc);
-        ret = parentKey == null ? new ComposedQuery(sections, ql) : new ComposedSubquery(sections, QueryTag.getQuery(
-            pc, parentKey), ql);
+        ret = parentKey == null ? new ComposedQuery(sections, ql, false, authorize) : new ComposedSubquery(sections,
+                QueryTag.getQuery(pc, parentKey), ql, false, authorize);
 
         ret.init();
         pc.cache(MakumbaJspAnalyzer.QUERY, key, ret);
@@ -706,9 +718,9 @@ public class QueryTag extends GenericListTag implements IterationTag {
     }
 
     /**
-     * Gives the total number of iterations of the next iterationGroup.<br/> Invoking this method in the JSP page will
-     * cause this mak:list/object to pre-execute it's query, for the number of iterations to be known before the tag
-     * will actually be executed.
+     * Gives the total number of iterations of the next iterationGroup.<br/>
+     * Invoking this method in the JSP page will cause this mak:list/object to pre-execute it's query, for the number of
+     * iterations to be known before the tag will actually be executed.
      * 
      * @return The total number of iterations that will be performed within the next iterationGroup
      */
@@ -720,9 +732,9 @@ public class QueryTag extends GenericListTag implements IterationTag {
     }
 
     /**
-     * Gives the total number of iterations of the next iterationGroup.<br/> Invoking this method in the JSP page will
-     * cause this mak:list/object to pre-execute it's query, for the number of iterations to be known before the tag
-     * will actually be executed.
+     * Gives the total number of iterations of the next iterationGroup.<br/>
+     * Invoking this method in the JSP page will cause this mak:list/object to pre-execute it's query, for the number of
+     * iterations to be known before the tag will actually be executed.
      * 
      * @param id
      *            the ID of the mak:list/object to relate to
@@ -760,7 +772,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
     private static QueryTag findNextCountQueryTag(PageContext pageContext) {
         // find the QueryTag the nextCount might related to, as follows:
-        // 
+        //
         // 1.) the stack of currently running QueryTags is retrieved from the pageContext
         // If it is not empty, the function starts from the top element on the stack, and finds the tag that comes next
         // in the page, by using the MakumbaJspAnalyzer.TAG_CACHE in PageCache

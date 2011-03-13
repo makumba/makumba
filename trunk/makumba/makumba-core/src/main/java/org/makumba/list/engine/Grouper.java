@@ -32,8 +32,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.makumba.UnauthorizedException;
 import org.makumba.commons.ArrayMap;
 import org.makumba.commons.MultipleKey;
+import org.makumba.list.engine.ComposedQuery.AuthorizationInfo;
 
 /**
  * The grouper is a tree, with maps containing other maps, or lists. Lists are tree leaves.
@@ -112,7 +114,8 @@ public class Grouper implements Serializable {
      * @param e
      *            the Iterator of dictionaries containing the data
      */
-    public Grouper(List<List<Integer>> keyNameSets, Iterator<Dictionary<String, Object>> e) {
+    public Grouper(List<List<Integer>> keyNameSets, Iterator<Dictionary<String, Object>> e,
+            List<AuthorizationInfo> authorizationInfos) throws UnauthorizedException {
         this.keyNameSets = keyNameSets;
         max = keyNameSets.size() - 1;
         long l = new Date().getTime();
@@ -120,6 +123,13 @@ public class Grouper implements Serializable {
         // for all read records
         while (e.hasNext()) {
             ArrayMap data = (ArrayMap) e.next();
+
+            for (AuthorizationInfo ai : authorizationInfos) {
+                if (!Boolean.TRUE.equals(data.data[ai.index])) {
+                    throw new UnauthorizedException(ai.message);
+                }
+            }
+
             ListOrMap h = content;
             ListOrMap h1;
             int i = 0;
