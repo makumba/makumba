@@ -79,8 +79,6 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
     private String defaultLimit = "-1";
 
-    protected String authorize = "filter";
-
     private ArrayList<String> authorization;
 
     static String standardCountVar = "org_makumba_view_jsptaglib_countVar";
@@ -133,7 +131,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
         maxCountVar = s;
     }
 
-    public void setAuthorization(String s) {
+    public void setAuthorize(String s) {
         authorization = new ArrayList<String>();
         for (StringTokenizer st = new StringTokenizer(s, ","); st.hasMoreTokens();) {
             authorization.add(st.nextToken());
@@ -157,10 +155,6 @@ public class QueryTag extends GenericListTag implements IterationTag {
         onlyOuterListArgument("defaultLimit");
         onlyInt("defaultLimit", s);
         defaultLimit = s.trim();
-    }
-
-    public void setAuthorize(String s) {
-        this.authorize = s;
     }
 
     public int getLimitInt() {
