@@ -159,6 +159,13 @@ public class QueryContext {
     }
 
     private void addLabelField(String label) {
+        // ### added
+        if (walker.knownLabels != null && walker.knownLabels.getFieldDefinition(label) != null) {
+            // FIXME: we would have to tell the enclosing query (in which this query is inlined)
+            // "hey, this label you are giving me now also has fields selected!"
+            return;
+        }
+        // ###end
         if (labels.get(label) != null) {
             labelFields.add(label);
         } else {
@@ -333,6 +340,12 @@ public class QueryContext {
     }
 
     private String findLabel(String frm, String lbl, AST location) throws SemanticException {
+        // ### added
+        if (walker.knownLabels != null && walker.knownLabels.getFieldDefinition(lbl) != null) {
+            return lbl;
+        }
+        // ### end
+
         if (labels.get(lbl) == null) {
             String lbl1 = aliases.get(lbl);
             if (lbl1 == null) {
@@ -354,6 +367,15 @@ public class QueryContext {
     }
 
     DataDefinition findLabelType(String label) {
+        // ### added
+        if (walker.knownLabels != null && walker.knownLabels.getFieldDefinition(label) != null) {
+            FieldDefinition fd = walker.knownLabels.getFieldDefinition(label);
+            if (fd.getType().startsWith("ptr")) {
+                return fd.getPointedType();
+            }
+            return null;
+        }
+        // ### end
         DataDefinition d = labels.get(label);
         if (d == null && parent != null) {
             return parent.findLabelType(label);
@@ -507,6 +529,9 @@ public class QueryContext {
 
     public TextList selectLabel(String label, MqlNode node) {
         DataDefinition dd = labels.get(label);
+        if (dd == null && walker.knownLabels != null && walker.knownLabels.getFieldDefinition(label) != null) {
+            dd = walker.knownLabels.getFieldDefinition(label).getPointedType();
+        }
         if (dd == null) {
             return parent.selectLabel(label, node);
         }
@@ -549,6 +574,12 @@ public class QueryContext {
 
     public void selectField(String label, String field, MqlDotNode mqlDotNode) throws SemanticException {
         DataDefinition labelType = labels.get(label);
+
+        // // ##### added
+        if (labelType == null && walker.knownLabels != null && walker.knownLabels.getFieldDefinition(label) != null) {
+            labelType = walker.knownLabels.getFieldDefinition(label).getPointedType();
+        }
+        // #### end
         if (labelType == null) {
             parent.selectField(label, field, mqlDotNode);
             return;
