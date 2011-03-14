@@ -1,5 +1,14 @@
 package org.makumba.providers.datadefinition.mdd;
 
+import java.io.Serializable;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
+
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionParseError;
@@ -9,15 +18,6 @@ import org.makumba.QueryFragmentFunctions;
 import org.makumba.ValidationDefinition;
 import org.makumba.ValidationRule;
 import org.makumba.providers.DataDefinitionProvider;
-
-import java.io.Serializable;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Set;
-import java.util.Vector;
 
 /**
  * Implementation of the {@link DataDefinition} interface.<br>
@@ -141,13 +141,16 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
         addStandardFields(getName());
         addFieldNodes(mddNode.fields, false);
         addValidationRules(mddNode.validationRules);
-        addFunctions(mddNode.functions);
+        addFunctions(mddNode.getFunctions(false));
 
         // evaluate the title, when all fields and functions are processed
         evaluateTitle();
 
         // finally also add the postponed fields, which basically are fields that in some way point to this DD
         addFieldNodes(postponedFields, true);
+
+        // do the same for postponed functions
+        addFunctions(mddNode.getFunctions(true));
 
         // re-order fields so they appear in the natural order of the MDD
         // this is necessary since postponed fields are added last
@@ -480,7 +483,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
         return fi;
     }
 
-    public void addFunctions(HashMap<String, QueryFragmentFunction> funcNames) {
+    public void addFunctions(Map<String, QueryFragmentFunction> funcNames) {
         for (QueryFragmentFunction f : funcNames.values()) {
             functions.addFunction(f.getName(), f);
         }

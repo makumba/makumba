@@ -2,14 +2,14 @@ package org.makumba.providers.datadefinition.mdd;
 
 import java.net.URL;
 import java.util.LinkedHashMap;
-
-import org.makumba.DataDefinition;
-import org.makumba.QueryFragmentFunction;
-import org.makumba.ValidationRule;
-import org.makumba.DataDefinition.MultipleUniqueKeyDefinition;
+import java.util.Map;
 
 import antlr.CommonAST;
 import antlr.collections.AST;
+import org.makumba.DataDefinition;
+import org.makumba.DataDefinition.MultipleUniqueKeyDefinition;
+import org.makumba.QueryFragmentFunction;
+import org.makumba.ValidationRule;
 
 /**
  * AST node that collects information for building a {@link DataDefinition}
@@ -55,7 +55,7 @@ public class MDDNode extends CommonAST {
 
     protected LinkedHashMap<Object, MultipleUniqueKeyDefinition> multiFieldUniqueList = new LinkedHashMap<Object, MultipleUniqueKeyDefinition>();
 
-    protected LinkedHashMap<String, QueryFragmentFunction> functions = new LinkedHashMap<String, QueryFragmentFunction>();
+    protected LinkedHashMap<String, FunctionNode> functions = new LinkedHashMap<String, FunctionNode>();
 
     public MDDNode(String name, URL origin) {
         this.setName(name);
@@ -103,10 +103,29 @@ public class MDDNode extends CommonAST {
     }
 
     public void addFunction(FunctionNode funct, AST parsedFunction) {
+        functions.put(funct.name, funct);
+    }
+
+    public Map<String, QueryFragmentFunction> getFunctions(boolean deferred) {
+        Map<String, QueryFragmentFunction> res = new LinkedHashMap<String, QueryFragmentFunction>();
+        for(FunctionNode funct : functions.values()) {
+            if(deferred && funct.isDeferred()) {
+                funct.compileDeferred();
+                QueryFragmentFunction function = makeQueryFunction(funct);
+                res.put(function.getName(), function);
+            } else {
+                QueryFragmentFunction function = makeQueryFunction(funct);
+                res.put(function.getName(), function);
+            }
+        }
+        return res;
+    }
+
+    private QueryFragmentFunction makeQueryFunction(FunctionNode funct) {
         QueryFragmentFunction function = new QueryFragmentFunction(null, funct.name,
                 funct.sessionVariableName, funct.queryFragment, funct.parameters, funct.errorMessage);
         funct.function = function;
-        functions.put(function.getName(), function);
+        return function;
     }
 
     @Override
