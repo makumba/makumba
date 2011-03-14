@@ -669,9 +669,9 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         if (value instanceof Integer && !intEnumValues.containsKey(value)) {
             throw new org.makumba.InvalidValueException(this, "int value set to int enumerator (" + value
                     + ") is not a member of " + Arrays.toString(intEnumValues.keySet().toArray()));
-        } else if (!(value instanceof Integer) && !(value instanceof String)) {
+        } else if (!(value instanceof Integer) && !(value instanceof Long) && !(value instanceof String)) {
             throw new org.makumba.InvalidValueException(this,
-                    "int enumerators only accept values of type Integer or String. Value supplied (" + value
+                    "int enumerators only accept values of type Integer, Long or String. Value supplied (" + value
                             + ") is of type " + value.getClass().getName());
         } else if (value instanceof String && !intEnumValues.containsValue(value)) {
             throw new org.makumba.InvalidValueException(this, "string value set to int enumerator (" + value
