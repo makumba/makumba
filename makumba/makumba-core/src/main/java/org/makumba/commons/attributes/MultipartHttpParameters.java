@@ -41,7 +41,6 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
-import org.makumba.LogicException;
 import org.makumba.Text;
 import org.makumba.commons.RuntimeWrappedException;
 
@@ -135,26 +134,37 @@ public class MultipartHttpParameters extends HttpParameters {
 
                 // If we have an image content type, determine image width and height
                 if (MimeUtil.getMajorComponent(mimeType).equals("image")) {
+                    Iterator<ImageReader> iterator = null;
+                    boolean blown = false;
                     try {
+                        iterator = ImageIO.getImageReadersByMIMEType(mimeType);
                         // using image readers is faster than reading the image itself
-                        Iterator<ImageReader> iterator = ImageIO.getImageReadersByMIMEType(mimeType);
-                        if (iterator == null) {
-                            throw new RuntimeWrappedException(new LogicException(
-                                    "Could not read image information, unknown content-type '" + mimeType
-                                            + "' provided."));
-                        }
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        blown = true;
+                    }
+
+                    if (iterator == null || blown) {
                         java.util.logging.Logger.getLogger("org.makumba.fileUpload").severe(
                             "Could not read image information, unknown content-type '" + mimeType
                                     + "' provided.\nAttribute name: '" + name + "'\n" + "Page: "
                                     + request.getRequestURI());
-                        ImageReader reader = iterator.next();
-                        ImageInputStream iis = ImageIO.createImageInputStream(item.getInputStream());
-                        reader.setInput(iis, false);
-                        parameters.put(name + "_imageWidth", reader.getWidth(0));
-                        parameters.put(name + "_imageHeight", reader.getHeight(0));
-                        reader.dispose();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    } else {
+                        try {
+                            ImageReader reader = iterator.next();
+                            ImageInputStream iis = ImageIO.createImageInputStream(item.getInputStream());
+                            reader.setInput(iis, false);
+                            parameters.put(name + "_imageWidth", reader.getWidth(0));
+                            parameters.put(name + "_imageHeight", reader.getHeight(0));
+                            reader.dispose();
+
+                        } catch (Exception e) {
+                            java.util.logging.Logger.getLogger("org.makumba.fileUpload").severe(
+                                "Could not read determine image size. Content type: '" + mimeType
+                                        + "'.\nAttribute name: '" + name + "'\n" + "Page: " + request.getRequestURI());
+                            e.printStackTrace();
+                        }
                     }
                 }
 
