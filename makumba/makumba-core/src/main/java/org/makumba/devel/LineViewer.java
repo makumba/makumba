@@ -47,6 +47,7 @@ import java.util.regex.Pattern;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.makumba.analyser.engine.JavaParseData;
 import org.makumba.devel.relations.FileRelations;
@@ -454,8 +455,8 @@ public abstract class LineViewer implements SourceViewer {
     /** Write the page footer to the given writer. */
     public void footer(PrintWriter printWriter) throws IOException {
         if (parseError != null) {
-            printWriter.println("<hr><div class=\"parseError\"><a name=\"errors\"></a><pre>" + parseError.getMessage()
-                    + "</pre></div>");
+            printWriter.println("<hr><div class=\"parseError\"><a name=\"errors\"></a><pre>"
+                    + StringEscapeUtils.escapeHtml(parseError.getMessage()) + "</pre></div>");
         }
         DevelUtils.printDeveloperSupportFooter(printWriter);
     }
