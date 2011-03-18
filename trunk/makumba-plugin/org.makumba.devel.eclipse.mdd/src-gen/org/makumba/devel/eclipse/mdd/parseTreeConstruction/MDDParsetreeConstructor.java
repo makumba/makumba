@@ -16078,11 +16078,11 @@ protected class VectorExpr_EAssignment_2_1 extends AssignmentToken  {
  * // NOTE: handleDotIdent() is called immediately after the first IDENT is recognized because
  * // the method looks a head to find keywords after '.' and turns them into identifiers.
  * IdentPrimary:
- * 	{IdentPrimary} (Identifier ("." Identifier | "." ELEMENTS | "." OBJECT)* ("(" e=ExprList ")")?) | Aggregate;
+ * 	{IdentPrimary} (Identifier ("." Identifier | "." ELEMENTS | "." OBJECT)* ("(" e=ExprList ")")?) | Aggregate | NIL;
  *
  **/
 
-// {IdentPrimary} (Identifier ("." Identifier | "." ELEMENTS | "." OBJECT)* ("(" e=ExprList ")")?) | Aggregate
+// {IdentPrimary} (Identifier ("." Identifier | "." ELEMENTS | "." OBJECT)* ("(" e=ExprList ")")?) | Aggregate | NIL
 protected class IdentPrimary_Alternatives extends AlternativesToken {
 
 	public IdentPrimary_Alternatives(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
@@ -16099,6 +16099,7 @@ protected class IdentPrimary_Alternatives extends AlternativesToken {
 		switch(index) {
 			case 0: return new IdentPrimary_Group_0(lastRuleCallOrigin, this, 0, inst);
 			case 1: return new IdentPrimary_AggregateParserRuleCall_1(lastRuleCallOrigin, this, 1, inst);
+			case 2: return new IdentPrimary_NILParserRuleCall_2(lastRuleCallOrigin, this, 2, inst);
 			default: return null;
 		}	
 	}
@@ -16362,6 +16363,27 @@ protected class IdentPrimary_AggregateParserRuleCall_1 extends RuleCallToken {
 			default: return lastRuleCallOrigin.createFollowerAfterReturn(next, actIndex , index, inst);
 		}	
 	}	
+}
+
+// NIL
+protected class IdentPrimary_NILParserRuleCall_2 extends UnassignedTextToken {
+
+	public IdentPrimary_NILParserRuleCall_2(AbstractToken lastRuleCallOrigin, AbstractToken next, int transitionIndex, IEObjectConsumer eObjectConsumer) {
+		super(lastRuleCallOrigin, next, transitionIndex, eObjectConsumer);
+	}
+	
+	@Override
+	public RuleCall getGrammarElement() {
+		return grammarAccess.getIdentPrimaryAccess().getNILParserRuleCall_2();
+	}
+
+    @Override
+	public AbstractToken createFollower(int index, IEObjectConsumer inst) {
+		switch(index) {
+			default: return lastRuleCallOrigin.createFollowerAfterReturn(this, index, index, inst);
+		}	
+	}
+
 }
 
 
@@ -17653,6 +17675,7 @@ protected class ExprList_EAssignment_1_1_1 extends AssignmentToken  {
 
 
 /************ end Rule ExprList ****************/
+
 
 
 
