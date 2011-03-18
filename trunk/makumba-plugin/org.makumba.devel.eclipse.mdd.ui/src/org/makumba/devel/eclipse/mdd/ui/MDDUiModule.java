@@ -5,9 +5,11 @@ package org.makumba.devel.eclipse.mdd.ui;
 
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.xtext.ui.editor.IXtextEditorCallback;
+import org.eclipse.xtext.ui.editor.hyperlinking.IHyperlinkHelper;
 import org.eclipse.xtext.ui.editor.syntaxcoloring.ISemanticHighlightingCalculator;
 import org.eclipse.xtext.ui.editor.syntaxcoloring.antlr.AbstractAntlrTokenToAttributeIdMapper;
 import org.makumba.devel.eclipse.mdd.ui.codegenerator.MakumbaJSPCodeGenerator;
+import org.makumba.devel.eclipse.mdd.ui.hyperlinking.MQLHyperlinkHelper;
 import org.makumba.devel.eclipse.mdd.ui.syntaxcoloring.AntlrTokenToAttributeIdMapper;
 import org.makumba.devel.eclipse.mdd.ui.syntaxcoloring.SemanticHighlightingCalculator;
 
@@ -34,6 +36,10 @@ public class MDDUiModule extends org.makumba.devel.eclipse.mdd.ui.AbstractMDDUiM
 
 	public Class<? extends MakumbaJSPCodeGenerator> bindMakumbaJSPCodeGenerator() {
 		return org.makumba.devel.eclipse.mdd.ui.codegenerator.MakumbaJSPCodeGenerator.class;
+	}
+
+	public Class<? extends IHyperlinkHelper> bindHyperlink() {
+		return MQLHyperlinkHelper.class;
 	}
 
 }
