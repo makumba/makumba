@@ -7,18 +7,25 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Vector;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.xtext.EcoreUtil2;
 import org.eclipse.xtext.resource.IEObjectDescription;
 import org.eclipse.xtext.resource.IResourceDescription;
 import org.eclipse.xtext.resource.IResourceDescriptions;
+import org.makumba.devel.eclipse.mdd.MDD.DataDefinition;
 import org.makumba.devel.eclipse.mdd.MDD.Declaration;
 import org.makumba.devel.eclipse.mdd.MDD.FieldDeclaration;
+import org.makumba.devel.eclipse.mdd.MDD.FunctionArgumentBody;
+import org.makumba.devel.eclipse.mdd.MDD.FunctionDeclaration;
 import org.makumba.devel.eclipse.mdd.MDD.MDDPackage;
+import org.makumba.devel.eclipse.mdd.validation.ValidationException;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
@@ -33,7 +40,7 @@ public class MQLContext {
 
 	private IResource resource;
 
-	private Map<String, String> params = new HashMap<String, String>();
+	private Map<String, FunctionArgumentBody> params = new HashMap<String, FunctionArgumentBody>();
 
 	public static final String[] QueryStringFunctions = { "lower", "upper", "trim", "ltrim", "rtrim", "concat",
 			"concat_ws", "substring", "replace", "reverse", "ascii", "character_length", "format", "str_to_date" };
@@ -161,12 +168,16 @@ public class MQLContext {
 		return dataDefinitions;
 	}
 
-	public void addParam(String name, String type) {
-		params.put(name, type);
+	public boolean containsParam(String param) {
+		return params.containsKey(param);
 	}
 
-	public void setParams(Map<String, String> params) {
+	public void setParams(Map<String, FunctionArgumentBody> params) {
 		this.params = params;
+	}
+
+	public FunctionArgumentBody getParam(String param) {
+		return params.get(param);
 	}
 
 	public boolean isFunctionName(String name) {
@@ -186,16 +197,6 @@ public class MQLContext {
 			}
 		}
 		return false;
-	}
-
-	public String resolveParam(String param) {
-		if (params.containsKey(param))
-			return params.get(param);
-		return null;
-	}
-
-	public boolean containsParam(String param) {
-		return params.containsKey(param);
 	}
 
 	private void setDataDefinitions() {
@@ -258,6 +259,145 @@ public class MQLContext {
 		return Collections.emptySet();
 	}
 
+	public EObject resolveQueryIdentifier(String ident, ResourceSet resourceSet, final boolean isFunction)
+			throws ValidationException {
+		if (!ident.contains(".")) {
+			if (isFunction) {
+				if (isFunctionName(ident))
+					return null;
+				if (containsLabel("this")) {
+					return resolveQueryIdentifier(resolveLabel("this") + "." + ident, resourceSet, true);
+				}
+				throw new ValidationException("Unknown function:" + ident);
+			} else {
+				if (ident.toLowerCase().equals("nil")) {
+					return null;
+				}
+				if (containsParam(ident)) {
+					return getParam(ident); //it's a function paramater
+				}
+				if (containsLabel(ident)) {
+					//TODO: somehow store the location of label definition
+					return null; //it's a label
+				}
+				if (containsLabel("this")) {
+					return resolveQueryIdentifier(resolveLabel("this") + "." + ident, resourceSet, false);
+				}
+				throw new ValidationException("Unkonwn value:" + ident);
+			}
+		} else {
+			//			String label = context.resolveLabel(ident.substring(0, ident.indexOf(".")));
+			//			if (label.equals(ident.substring(0, ident.indexOf(".")))) {
+			//				return "Unknown label:" + label;
+			//			}
+			//			ident = ident.substring(ident.indexOf("."));
+
+			String path = resolvePath(ident);
+			IEObjectDescription ddDescription = getDataDefinition(path);
+			//IEObjectDescription current = ddDescription;
+			if (ddDescription != null) {
+				String passed = path.substring(0, ddDescription.getName().length());
+				path = path.substring(ddDescription.getName().length());
+				if (!path.isEmpty()) { //we still have some path after data type
+					if (path.charAt(0) != '.') {
+						throw new ValidationException("Found '" + path + "' where '.' was expected");
+
+					}
+					path = path.substring(1);
+					EcoreUtil2.resolveAll(resourceSet);
+					DataDefinition dd = (DataDefinition) EcoreUtil2.resolve((ddDescription.getEObjectOrProxy()),
+							resourceSet);
+
+					Iterable<Declaration> declarations = dd.getD();
+					String[] segments = path.split("\\.");
+					for (int i = 0; i < segments.length; i++) {//we search all the segments
+						final String segment = segments[i];
+						if (i < segments.length - 1) { //we are not at the last segment so it has to be a point or set
+							try {
+								Iterable<FieldDeclaration> fields = Iterables.filter(declarations,
+										FieldDeclaration.class);
+								FieldDeclaration field = Iterables.find(fields, new Predicate<FieldDeclaration>() {
+									public boolean apply(FieldDeclaration input) {
+										return input.getName().equals(segment);
+									}
+								});
+								passed += "." + segment;
+								declarations = MDDUtils.getPointedDeclarations(field);
+							} catch (Exception e) { //in the middle of the path we have a non existing field
+								throw new ValidationException("No such field '" + segment + "' in '" + passed);
+							}
+						} else { //we are at the last segment we check if it is an existing function or field
+							try {
+								Declaration result = Iterables.find(declarations, new Predicate<Declaration>() {
+									public boolean apply(Declaration input) {
+										if (!isFunction && (input instanceof FieldDeclaration))
+											return ((FieldDeclaration) input).getName().equals(segment);
+										if (isFunction && (input instanceof FunctionDeclaration))
+											return ((FunctionDeclaration) input).getName().equals(segment);
+										return false;
+									}
+								});
+								passed += "." + segment;
+								return result;
+							} catch (Exception e) { //at the end of the path we have a non existing field
+								throw new ValidationException("No such " + (isFunction ? "function" : "field") + " '"
+										+ segment + "' in '" + passed);
+							}
+						}
+					}
+				}
+			} else {
+				throw new ValidationException("Unknown Data Type at the begining of: " + path);
+			}
+		}
+		return null;
+	}
+
+	public Vector<MQLQuerySegment> resolveFromPath(String path, ResourceSet resourceSet) throws ValidationException {
+
+		Vector<MQLQuerySegment> result = new Vector<MQLQuerySegment>();
+		String passed = "";
+		path = resolvePath(path);
+
+		IEObjectDescription ddDescription = getDataDefinition(path);
+		//IEObjectDescription current = ddDescription;
+		if (ddDescription != null) {
+			result.add(new MQLQuerySegment(ddDescription.getQualifiedName(), ddDescription.getEObjectOrProxy()));
+			passed = path.substring(0, ddDescription.getName().length());
+			path = path.substring(ddDescription.getName().length());
+			if (!path.isEmpty()) { //we still have some path after data type
+				if (path.charAt(0) != '.') {
+					throw new ValidationException("Found '" + path + "' where '.' was expected");
+
+				}
+				path = path.substring(1);
+				EcoreUtil2.resolveAll(resourceSet);
+				DataDefinition dd = (DataDefinition) EcoreUtil2.resolve((ddDescription.getEObjectOrProxy()),
+						resourceSet);
+
+				Iterable<FieldDeclaration> fields = MDDUtils.getPointerOrSetFields(dd.getD());
+				String[] segments = path.split("\\.");
+				FieldDeclaration field = null;
+				for (final String segment : segments) {
+					try {
+						field = Iterables.find(fields, new Predicate<FieldDeclaration>() {
+							public boolean apply(FieldDeclaration input) {
+								return input.getName().equals(segment);
+							}
+						});
+						fields = Iterables.filter(MDDUtils.getPointedDeclarations(field), FieldDeclaration.class);
+						passed += "." + segment;
+						result.add(new MQLQuerySegment(segment, field));
+					} catch (Exception e) {
+						throw new ValidationException("No such field '" + segment + "' in '" + passed);
+					}
+				}
+			}
+		} else {
+			throw new ValidationException("Unknown Data Type at the begining of: " + path);
+		}
+		return result;
+	}
 	/**
 	 * Gets the declarations available for the object that is found at the end
 	 * of the path, starting from the inputed object. The path is of syntax
