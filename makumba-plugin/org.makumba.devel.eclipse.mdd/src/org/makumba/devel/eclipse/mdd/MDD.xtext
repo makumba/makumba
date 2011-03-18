@@ -539,6 +539,7 @@ IdentPrimary
 	: {IdentPrimary} ( Identifier ( ('.' Identifier) | ('.' ELEMENTS) | ('.' OBJECT)   )* 
 		( '('  e=ExprList ')' )?)
 	| 	Aggregate
+	| NIL
 	;
 
 //## aggregate:
@@ -595,8 +596,8 @@ Path
 Identifier
 	: '$'? ID 
 	| 'e' | 'f' | 'd' // To allow number terminals as function arguments
-	| 'upper' | 'lower' | '$now' | '$today' | 'date' | 'title' | 'type' | 'include' | 'length' //MDD keywords that can appear in Query Functions
-	| END | WHEN | FROM | MEMBER
+	| 'upper' | 'lower' | '$now' | '$today' | 'date' | 'title' | 'type' | 'include' | 'length'  //MDD keywords that can appear in Query Functions
+	| END | WHEN | FROM | MEMBER 
 	;
 	
 Number returns ecore::EFloat
@@ -672,6 +673,7 @@ TRUE: 'TRUE' | 'True' | 'true';
 FALSE: 'FALSE' | 'False' | 'false';
 EMPTY: 'EMPTY' | 'Empty' | 'empty';	
 
+NIL: 'NIL' | 'Nil' | 'nil';
 	
 
 // END HQL stuff
