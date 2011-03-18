@@ -301,8 +301,8 @@ public class MDDUtils {
 
 	}
 
-	public Map<String, String> getParams(EObject object) {
-		Map<String, String> result = new HashMap<String, String>();
+	public Map<String, FunctionArgumentBody> getParams(EObject object) {
+		Map<String, FunctionArgumentBody> result = new HashMap<String, FunctionArgumentBody>();
 		EObject current = object;
 		while (current != null && !(current instanceof FunctionDeclaration)) {
 			current = current.eContainer();
@@ -310,7 +310,7 @@ public class MDDUtils {
 		if (current instanceof FunctionDeclaration) {
 			for (FunctionArgumentBody arg : ((FunctionDeclaration) current).getArg().getF()) {
 				//TODO: put the type as well
-				result.put(arg.getName(), null);
+				result.put(arg.getName(), arg);
 			}
 		}
 		return result;
