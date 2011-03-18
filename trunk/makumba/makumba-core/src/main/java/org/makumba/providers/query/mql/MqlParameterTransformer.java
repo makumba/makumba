@@ -218,7 +218,17 @@ public class MqlParameterTransformer implements ParameterTransformer {
         return result;
     }
 
+    /**
+     * Rudi: I did not code this method, and don't yet fully understand it's purpose. Also, the name seems wrong, as
+     * there is no positional information at all.<br/>
+     * This method does a checking whether the given value is acceptable for the type of the given
+     * {@link FieldDefinition}. This method seems very similar to what {@link FieldDefinition#checkValue(Object)} does,
+     * but is less strict on pointers, it doesn't check whether the pointer belongs to the correct MDD.<br/>
+     * A bit strangely, the method returns false *only* for {@link FieldDefinition} that are a "multiTypeParam".
+     */
     public static boolean isValueInvalidForPosition(FieldDefinition fd, Object value) {
+        // FIXME storing whether or not this field is a multiTypeParam in the *description* field of the
+        // FieldDefinition is an extremely dirty hack!
         boolean isMultiTypeParam = fd.getDescription().equals("true");
         boolean isChar = fd.isStringType() && !(value instanceof String);
         boolean isPointer = fd.isPointer() && !(value instanceof Pointer);

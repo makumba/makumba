@@ -89,6 +89,12 @@ public class ParameterAssigner {
                     } catch (InvalidValueException e) {
                         // we have a wrong value, we pass something instead and we remember that there is a problem.
                         // if there is no correct value for this argument, we'll throw an exception later
+                        // 
+                        // comment rudi: 'if there is correct value for this argument' can *never* happen and become
+                        // true, as spara is defined above as
+                        // String spara = "$" + i;
+                        // Thus, there is no possibility that a later correct param value will remove any previous
+                        // errors.
                         if (correct.get(spara) == null) {
                             errors.put(spara, e);
                         }
