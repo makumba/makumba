@@ -3891,15 +3891,16 @@ public class MDDGrammarAccess extends AbstractGrammarElementFinder {
 		private final RuleCall cEExprListParserRuleCall_0_1_2_1_0 = (RuleCall)cEAssignment_0_1_2_1.eContents().get(0);
 		private final Keyword cRightParenthesisKeyword_0_1_2_2 = (Keyword)cGroup_0_1_2.eContents().get(2);
 		private final RuleCall cAggregateParserRuleCall_1 = (RuleCall)cAlternatives.eContents().get(1);
+		private final RuleCall cNILParserRuleCall_2 = (RuleCall)cAlternatives.eContents().get(2);
 		
 		//// identifier, followed by member refs (dot ident), or method calls.
 		//// NOTE: handleDotIdent() is called immediately after the first IDENT is recognized because
 		//// the method looks a head to find keywords after '.' and turns them into identifiers.
 		//IdentPrimary:
-		//	{IdentPrimary} (Identifier ("." Identifier | "." ELEMENTS | "." OBJECT)* ("(" e=ExprList ")")?) | Aggregate;
+		//	{IdentPrimary} (Identifier ("." Identifier | "." ELEMENTS | "." OBJECT)* ("(" e=ExprList ")")?) | Aggregate | NIL;
 		public ParserRule getRule() { return rule; }
 
-		//{IdentPrimary} (Identifier ("." Identifier | "." ELEMENTS | "." OBJECT)* ("(" e=ExprList ")")?) | Aggregate
+		//{IdentPrimary} (Identifier ("." Identifier | "." ELEMENTS | "." OBJECT)* ("(" e=ExprList ")")?) | Aggregate | NIL
 		public Alternatives getAlternatives() { return cAlternatives; }
 
 		//{IdentPrimary} (Identifier ("." Identifier | "." ELEMENTS | "." OBJECT)* ("(" e=ExprList ")")?)
@@ -3961,6 +3962,9 @@ public class MDDGrammarAccess extends AbstractGrammarElementFinder {
 
 		//Aggregate
 		public RuleCall getAggregateParserRuleCall_1() { return cAggregateParserRuleCall_1; }
+
+		//NIL
+		public RuleCall getNILParserRuleCall_2() { return cNILParserRuleCall_2; }
 	}
 
 	public class AggregateElements extends AbstractParserRuleElementFinder {
@@ -6085,6 +6089,30 @@ public class MDDGrammarAccess extends AbstractGrammarElementFinder {
 		public Keyword getEmptyKeyword_2() { return cEmptyKeyword_2; }
 	}
 
+	public class NILElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "NIL");
+		private final Alternatives cAlternatives = (Alternatives)rule.eContents().get(1);
+		private final Keyword cNILKeyword_0 = (Keyword)cAlternatives.eContents().get(0);
+		private final Keyword cNilKeyword_1 = (Keyword)cAlternatives.eContents().get(1);
+		private final Keyword cNilKeyword_2 = (Keyword)cAlternatives.eContents().get(2);
+		
+		//NIL returns ecore::EString:
+		//	"NIL" | "Nil" | "nil";
+		public ParserRule getRule() { return rule; }
+
+		//"NIL" | "Nil" | "nil"
+		public Alternatives getAlternatives() { return cAlternatives; }
+
+		//"NIL"
+		public Keyword getNILKeyword_0() { return cNILKeyword_0; }
+
+		//"Nil"
+		public Keyword getNilKeyword_1() { return cNilKeyword_1; }
+
+		//"nil"
+		public Keyword getNilKeyword_2() { return cNilKeyword_2; }
+	}
+
 	public class IdOrKeywordElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "IdOrKeyword");
 		private final Alternatives cAlternatives = (Alternatives)rule.eContents().get(1);
@@ -6335,6 +6363,7 @@ public class MDDGrammarAccess extends AbstractGrammarElementFinder {
 	private TRUEElements pTRUE;
 	private FALSEElements pFALSE;
 	private EMPTYElements pEMPTY;
+	private NILElements pNIL;
 	private IdOrKeywordElements pIdOrKeyword;
 	private KeywordElements pKeyword;
 	private TerminalRule tLINEBREAK;
@@ -7324,7 +7353,7 @@ public class MDDGrammarAccess extends AbstractGrammarElementFinder {
 	//// NOTE: handleDotIdent() is called immediately after the first IDENT is recognized because
 	//// the method looks a head to find keywords after '.' and turns them into identifiers.
 	//IdentPrimary:
-	//	{IdentPrimary} (Identifier ("." Identifier | "." ELEMENTS | "." OBJECT)* ("(" e=ExprList ")")?) | Aggregate;
+	//	{IdentPrimary} (Identifier ("." Identifier | "." ELEMENTS | "." OBJECT)* ("(" e=ExprList ")")?) | Aggregate | NIL;
 	public IdentPrimaryElements getIdentPrimaryAccess() {
 		return (pIdentPrimary != null) ? pIdentPrimary : (pIdentPrimary = new IdentPrimaryElements());
 	}
@@ -8005,6 +8034,16 @@ public class MDDGrammarAccess extends AbstractGrammarElementFinder {
 	
 	public ParserRule getEMPTYRule() {
 		return getEMPTYAccess().getRule();
+	}
+
+	//NIL returns ecore::EString:
+	//	"NIL" | "Nil" | "nil";
+	public NILElements getNILAccess() {
+		return (pNIL != null) ? pNIL : (pNIL = new NILElements());
+	}
+	
+	public ParserRule getNILRule() {
+		return getNILAccess().getRule();
 	}
 
 	//// END HQL stuff

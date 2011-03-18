@@ -8257,6 +8257,18 @@ ruleOBJECT
         $current = $this_Aggregate_11.current; 
         currentNode = currentNode.getParent();
     }
+
+    |
+	{ 
+	  /* */ 
+	}
+    { 
+        currentNode=createCompositeNode(grammarAccess.getIdentPrimaryAccess().getNILParserRuleCall_2(), currentNode); 
+    }
+ruleNIL
+    { 
+        currentNode = currentNode.getParent();
+    }
 )
 ;
 
@@ -11971,6 +11983,49 @@ ruleEMPTY returns [AntlrDatatypeRuleToken current=new AntlrDatatypeRuleToken()]
     {
         $current.merge(kw);
         createLeafNode(grammarAccess.getEMPTYAccess().getEmptyKeyword_2(), null); 
+    }
+)
+    ;
+
+
+
+
+
+// Entry rule entryRuleNIL
+entryRuleNIL returns [String current=null] 
+	:
+	{ currentNode = createCompositeNode(grammarAccess.getNILRule(), currentNode); } 
+	 iv_ruleNIL=ruleNIL 
+	 { $current=$iv_ruleNIL.current.getText(); }  
+	 EOF 
+;
+
+// Rule NIL
+ruleNIL returns [AntlrDatatypeRuleToken current=new AntlrDatatypeRuleToken()] 
+    @init { setCurrentLookahead(); resetLookahead(); 
+    }
+    @after { resetLookahead(); 
+	    lastConsumedNode = currentNode;
+    }:
+(
+	kw='NIL' 
+    {
+        $current.merge(kw);
+        createLeafNode(grammarAccess.getNILAccess().getNILKeyword_0(), null); 
+    }
+
+    |
+	kw='Nil' 
+    {
+        $current.merge(kw);
+        createLeafNode(grammarAccess.getNILAccess().getNilKeyword_1(), null); 
+    }
+
+    |
+	kw='nil' 
+    {
+        $current.merge(kw);
+        createLeafNode(grammarAccess.getNILAccess().getNilKeyword_2(), null); 
     }
 )
     ;
