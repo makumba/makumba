@@ -221,55 +221,58 @@ T223 : 'false' ;
 T224 : 'EMPTY' ;
 T225 : 'Empty' ;
 T226 : 'empty' ;
-T227 : 'char' ;
-T228 : 'set' ;
-T229 : '{' ;
-T230 : '}' ;
-T231 : ',' ;
-T232 : '[' ;
-T233 : ']' ;
-T234 : 'ptr' ;
-T235 : '->' ;
-T236 : '.' ;
-T237 : '!' ;
-T238 : '(' ;
-T239 : ')' ;
-T240 : '..' ;
-T241 : ':' ;
-T242 : '%' ;
-T243 : 'union' ;
-T244 : '||' ;
-T245 : '$' ;
-T246 : 'fixed' ;
-T247 : 'deprecated' ;
-T248 : 'compare' ;
-T249 : 'matches' ;
+T227 : 'NIL' ;
+T228 : 'Nil' ;
+T229 : 'nil' ;
+T230 : 'char' ;
+T231 : 'set' ;
+T232 : '{' ;
+T233 : '}' ;
+T234 : ',' ;
+T235 : '[' ;
+T236 : ']' ;
+T237 : 'ptr' ;
+T238 : '->' ;
+T239 : '.' ;
+T240 : '!' ;
+T241 : '(' ;
+T242 : ')' ;
+T243 : '..' ;
+T244 : ':' ;
+T245 : '%' ;
+T246 : 'union' ;
+T247 : '||' ;
+T248 : '$' ;
+T249 : 'fixed' ;
+T250 : 'deprecated' ;
+T251 : 'compare' ;
+T252 : 'matches' ;
 
-// $ANTLR src "../org.makumba.devel.eclipse.mdd.ui/src-gen/org/makumba/devel/eclipse/mdd/ui/contentassist/antlr/internal/InternalMDD.g" 25473
+// $ANTLR src "../org.makumba.devel.eclipse.mdd.ui/src-gen/org/makumba/devel/eclipse/mdd/ui/contentassist/antlr/internal/InternalMDD.g" 25541
 RULE_LINEBREAK : ('\n'|'\r' '\n'|'\r');
 
-// $ANTLR src "../org.makumba.devel.eclipse.mdd.ui/src-gen/org/makumba/devel/eclipse/mdd/ui/contentassist/antlr/internal/InternalMDD.g" 25475
+// $ANTLR src "../org.makumba.devel.eclipse.mdd.ui/src-gen/org/makumba/devel/eclipse/mdd/ui/contentassist/antlr/internal/InternalMDD.g" 25543
 RULE_ID : '^'? ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')*;
 
-// $ANTLR src "../org.makumba.devel.eclipse.mdd.ui/src-gen/org/makumba/devel/eclipse/mdd/ui/contentassist/antlr/internal/InternalMDD.g" 25477
+// $ANTLR src "../org.makumba.devel.eclipse.mdd.ui/src-gen/org/makumba/devel/eclipse/mdd/ui/contentassist/antlr/internal/InternalMDD.g" 25545
 RULE_SIGNED_INT : ('-'|'+') RULE_INT;
 
-// $ANTLR src "../org.makumba.devel.eclipse.mdd.ui/src-gen/org/makumba/devel/eclipse/mdd/ui/contentassist/antlr/internal/InternalMDD.g" 25479
+// $ANTLR src "../org.makumba.devel.eclipse.mdd.ui/src-gen/org/makumba/devel/eclipse/mdd/ui/contentassist/antlr/internal/InternalMDD.g" 25547
 RULE_HEX : '0x' ('0'..'9'|'a'..'f')+;
 
-// $ANTLR src "../org.makumba.devel.eclipse.mdd.ui/src-gen/org/makumba/devel/eclipse/mdd/ui/contentassist/antlr/internal/InternalMDD.g" 25481
+// $ANTLR src "../org.makumba.devel.eclipse.mdd.ui/src-gen/org/makumba/devel/eclipse/mdd/ui/contentassist/antlr/internal/InternalMDD.g" 25549
 RULE_INT : ('0'..'9')+;
 
-// $ANTLR src "../org.makumba.devel.eclipse.mdd.ui/src-gen/org/makumba/devel/eclipse/mdd/ui/contentassist/antlr/internal/InternalMDD.g" 25483
+// $ANTLR src "../org.makumba.devel.eclipse.mdd.ui/src-gen/org/makumba/devel/eclipse/mdd/ui/contentassist/antlr/internal/InternalMDD.g" 25551
 RULE_FIELDCOMMENT : ';' ~(('\n'|'\r'))*;
 
-// $ANTLR src "../org.makumba.devel.eclipse.mdd.ui/src-gen/org/makumba/devel/eclipse/mdd/ui/contentassist/antlr/internal/InternalMDD.g" 25485
+// $ANTLR src "../org.makumba.devel.eclipse.mdd.ui/src-gen/org/makumba/devel/eclipse/mdd/ui/contentassist/antlr/internal/InternalMDD.g" 25553
 RULE_SL_COMMENT : '#' ~(('\n'|'\r'))* ('\r'? '\n')?;
 
-// $ANTLR src "../org.makumba.devel.eclipse.mdd.ui/src-gen/org/makumba/devel/eclipse/mdd/ui/contentassist/antlr/internal/InternalMDD.g" 25487
+// $ANTLR src "../org.makumba.devel.eclipse.mdd.ui/src-gen/org/makumba/devel/eclipse/mdd/ui/contentassist/antlr/internal/InternalMDD.g" 25555
 RULE_WS : (' '|'\t'|'\r' '\n'|'\n'|'\r');
 
-// $ANTLR src "../org.makumba.devel.eclipse.mdd.ui/src-gen/org/makumba/devel/eclipse/mdd/ui/contentassist/antlr/internal/InternalMDD.g" 25489
+// $ANTLR src "../org.makumba.devel.eclipse.mdd.ui/src-gen/org/makumba/devel/eclipse/mdd/ui/contentassist/antlr/internal/InternalMDD.g" 25557
 RULE_STRING : ('"' ('\\' '"'|~('"'))* '"'|'\'' ('\\' ('b'|'t'|'n'|'f'|'r'|'"'|'\''|'\\')|~(('\\'|'\'')))* '\'');
 
 

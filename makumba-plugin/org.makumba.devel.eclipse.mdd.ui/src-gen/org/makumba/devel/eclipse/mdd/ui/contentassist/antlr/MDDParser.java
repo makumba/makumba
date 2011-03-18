@@ -154,6 +154,7 @@ public class MDDParser extends AbstractContentAssistParser {
 					put(grammarAccess.getTRUEAccess().getAlternatives(), "rule__TRUE__Alternatives");
 					put(grammarAccess.getFALSEAccess().getAlternatives(), "rule__FALSE__Alternatives");
 					put(grammarAccess.getEMPTYAccess().getAlternatives(), "rule__EMPTY__Alternatives");
+					put(grammarAccess.getNILAccess().getAlternatives(), "rule__NIL__Alternatives");
 					put(grammarAccess.getIdOrKeywordAccess().getAlternatives(), "rule__IdOrKeyword__Alternatives");
 					put(grammarAccess.getKeywordAccess().getAlternatives(), "rule__Keyword__Alternatives");
 					put(grammarAccess.getDataDefinitionAccess().getGroup(), "rule__DataDefinition__Group__0");
