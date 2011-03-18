@@ -4342,6 +4342,34 @@ finally {
 
 
 
+// Entry rule entryRuleNIL
+entryRuleNIL 
+:
+{ before(grammarAccess.getNILRule()); }
+	 ruleNIL
+{ after(grammarAccess.getNILRule()); } 
+	 EOF 
+;
+
+// Rule NIL
+ruleNIL
+    @init {
+		int stackSize = keepStackSize();
+    }
+	:
+(
+{ before(grammarAccess.getNILAccess().getAlternatives()); }
+(rule__NIL__Alternatives)
+{ after(grammarAccess.getNILAccess().getAlternatives()); }
+)
+
+;
+finally {
+	restoreStackSize(stackSize);
+}
+
+
+
 // Entry rule entryRuleIdOrKeyword
 entryRuleIdOrKeyword 
 :
@@ -5704,6 +5732,12 @@ rule__IdentPrimary__Alternatives
 { before(grammarAccess.getIdentPrimaryAccess().getAggregateParserRuleCall_1()); }
 	ruleAggregate
 { after(grammarAccess.getIdentPrimaryAccess().getAggregateParserRuleCall_1()); }
+)
+
+    |(
+{ before(grammarAccess.getIdentPrimaryAccess().getNILParserRuleCall_2()); }
+	ruleNIL
+{ after(grammarAccess.getIdentPrimaryAccess().getNILParserRuleCall_2()); }
 )
 
 ;
@@ -8421,6 +8455,40 @@ rule__EMPTY__Alternatives
 	'empty' 
 
 { after(grammarAccess.getEMPTYAccess().getEmptyKeyword_2()); }
+)
+
+;
+finally {
+	restoreStackSize(stackSize);
+}
+
+rule__NIL__Alternatives
+    @init {
+		int stackSize = keepStackSize();
+    }
+:
+(
+{ before(grammarAccess.getNILAccess().getNILKeyword_0()); }
+
+	'NIL' 
+
+{ after(grammarAccess.getNILAccess().getNILKeyword_0()); }
+)
+
+    |(
+{ before(grammarAccess.getNILAccess().getNilKeyword_1()); }
+
+	'Nil' 
+
+{ after(grammarAccess.getNILAccess().getNilKeyword_1()); }
+)
+
+    |(
+{ before(grammarAccess.getNILAccess().getNilKeyword_2()); }
+
+	'nil' 
+
+{ after(grammarAccess.getNILAccess().getNilKeyword_2()); }
 )
 
 ;
