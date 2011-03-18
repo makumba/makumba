@@ -389,6 +389,17 @@ The version number correponds to Makumba lib version.
       </static-preset>
    </extension>
    <extension
+         point="org.eclipse.wst.common.project.facet.core.runtimes">
+      <supported>
+         <facet
+               id="mak.mdd">
+         </facet>
+         <runtime-component
+               any="true">
+         </runtime-component>
+      </supported>
+   </extension>
+   <extension
          point="org.eclipse.wst.sse.ui.completionProposal">
       <proposalComputer
             activate="true"
