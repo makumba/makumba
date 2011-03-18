@@ -1,6 +1,8 @@
 package org.makumba.devel.eclipse.mdd.validation;
 
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtext.parsetree.CompositeNode;
@@ -19,6 +21,7 @@ import org.makumba.devel.eclipse.mdd.MDD.FromClassOrOuterQueryPath;
 import org.makumba.devel.eclipse.mdd.MDD.FunctionCall;
 import org.makumba.devel.eclipse.mdd.MDD.IncludeDeclaration;
 import org.makumba.devel.eclipse.mdd.MDD.MDDPackage;
+import org.makumba.devel.eclipse.mdd.MDD.RegexValidationRuleDeclaration;
 import org.makumba.devel.eclipse.mdd.MDD.SetType;
 
 import com.google.common.base.Predicate;
@@ -191,8 +194,6 @@ public class MDDJavaValidator extends AbstractMDDJavaValidator {
 	@Check
 	public void checkValidAtom(final Atom atom) {
 
-		IResourceDescriptions res = getResourceDescriptions(atom);
-
 		//we get the whole atom node
 		CompositeNode node = NodeUtil.getNode(atom);
 		String content = "";
@@ -224,11 +225,30 @@ public class MDDJavaValidator extends AbstractMDDJavaValidator {
 			mqlContext.setParams(utils.getParams(atom));
 
 			//do the validation
-			String err = mqlValidator.validateQueryIdentifier(content, mqlContext, isFunction);
-			if (err != null)
-				error(err, MDDPackage.ATOM);
+			try {
+				mqlValidator.validateQueryIdentifier(content, mqlContext, isFunction);
+			} catch (ValidationException e) {
+				error(e.getMessage(), MDDPackage.ATOM);
+			}
+
 		}
 
+	}
+
+	@Check
+	public void checkRegexValidationRule(final RegexValidationRuleDeclaration regexRule) {
+		if (!regexRule.getExp().startsWith("\"") || !regexRule.getExp().endsWith("\"")) {
+			error("Regular expression must be e", MDDPackage.REGEX_VALIDATION_RULE_DECLARATION__EXP);
+
+		} else {
+			String expression = regexRule.getExp().substring(1).substring(0, regexRule.getExp().length() - 1);
+			try {
+				Pattern.compile(expression);
+			} catch (PatternSyntaxException e) {
+				error("Invalid regular expression: " + e.getDescription(),
+						MDDPackage.REGEX_VALIDATION_RULE_DECLARATION__EXP);
+			}
+		}
 	}
 
 	/**
