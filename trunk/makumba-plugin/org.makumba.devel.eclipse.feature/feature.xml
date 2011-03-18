@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.makumba.devel.plugin.eclipse.feature"
+      id="org.makumba.devel.eclipse.feature"
       label="Makumba Plug-in"
       version="1.0.0.qualifier"
       provider-name="makumba.org">
@@ -12,11 +12,11 @@ you develop applications based on the Makumba framework.
    </description>
 
    <copyright url="http://www.makumba.org">
-      [Enter Copyright Description here.]
+      Copyright © 2010 Makumba Foundation (www.makumba.org)
    </copyright>
 
    <license url="http://www.makumba.org">
-      [Enter License Description here.]
+      EPL
    </license>
 
    <url>
@@ -48,14 +48,14 @@ you develop applications based on the Makumba framework.
    </requires>
 
    <plugin
-         id="org.makumba.devel.plugin.eclipse.mdd"
+         id="org.makumba.devel.eclipse.mdd"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="org.makumba.devel.plugin.eclipse.mdd.ui"
+         id="org.makumba.devel.eclipse.mdd.ui"
          download-size="0"
          install-size="0"
          version="0.0.0"

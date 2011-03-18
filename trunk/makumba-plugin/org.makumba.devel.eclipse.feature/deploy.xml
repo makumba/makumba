@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project default="feature_export" name="Makumba Feature">
 	<target name="feature_export">
-		<pde.exportFeatures destination="/home/filip/workspace2/org.makumba.devel.plugin.eclipse.war/WebContent/updates" exportSource="false" exportType="zip" features="org.makumba.devel.plugin.eclipse.feature" filename="plugin.zip" useJARFormat="true"/>
+		<pde.exportFeatures destination="/home/filip/workspace2/org.makumba.devel.plugin.eclipse.war/WebContent/updates" exportSource="false" exportType="zip" features="org.makumba.devel.eclipse.feature" filename="plugin.zip" useJARFormat="true"/>
 	</target>
 </project>
