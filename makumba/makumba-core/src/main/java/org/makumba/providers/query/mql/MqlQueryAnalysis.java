@@ -164,6 +164,8 @@ public class MqlQueryAnalysis implements QueryAnalysis {
             }
 
             if (fd != null) {
+                // FIXME storing whether or not this field is a multiTypeParam in the *description* field of the
+                // FieldDefinition is an extremely dirty hack!
                 paramInfo.addField(DataDefinitionProvider.getInstance().makeFieldWithName("param" + i, fd,
                     String.valueOf(mqlAnalyzer.multiTypeParams.contains(parameterOrder.get(i)))));
             } else {
