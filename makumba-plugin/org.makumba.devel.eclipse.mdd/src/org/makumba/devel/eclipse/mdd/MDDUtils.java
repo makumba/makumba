@@ -26,6 +26,7 @@ import org.makumba.devel.eclipse.mdd.MDD.FromClause;
 import org.makumba.devel.eclipse.mdd.MDD.FunctionArgumentBody;
 import org.makumba.devel.eclipse.mdd.MDD.FunctionBody;
 import org.makumba.devel.eclipse.mdd.MDD.FunctionDeclaration;
+import org.makumba.devel.eclipse.mdd.MDD.IntEnum;
 import org.makumba.devel.eclipse.mdd.MDD.MDDPackage;
 import org.makumba.devel.eclipse.mdd.MDD.PointerType;
 import org.makumba.devel.eclipse.mdd.MDD.SelectFrom;
@@ -98,6 +99,12 @@ public class MDDUtils {
 	public static Predicate<Declaration> FieldOrFunction = new Predicate<Declaration>() {
 		public boolean apply(Declaration input) {
 			return (input instanceof FieldDeclaration) || (input instanceof FunctionDeclaration);
+		}
+	};
+
+	public static Predicate<Declaration> EnumFields = new Predicate<Declaration>() {
+		public boolean apply(Declaration input) {
+			return (input instanceof FieldDeclaration && ((FieldDeclaration) input).getTypedef() instanceof IntEnum);
 		}
 	};
 

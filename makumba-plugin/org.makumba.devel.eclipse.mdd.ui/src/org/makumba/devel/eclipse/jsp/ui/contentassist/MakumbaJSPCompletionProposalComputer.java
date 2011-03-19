@@ -54,6 +54,8 @@ public class MakumbaJSPCompletionProposalComputer extends DefaultXMLCompletionPr
 	//protected Set<String> prefixes;
 
 	private static Pattern Path = Pattern.compile("\\$?\\w+(\\.\\w+)*\\.?$");
+	private static Pattern StringConstant = Pattern.compile("'[^']*'?$");
+	private static Pattern ComapreToPath = Pattern.compile("(\\w+(\\.\\w+)*\\s*)((=)|(<>)|(>)|(<)|(>=)|(<=)|(!=))\\s*");
 	private static Pattern FromRange = Pattern.compile("(\\w+(\\.\\w+)*)\\s+(\\w+)\\s*(,)?\\s*");
 
 	@Override
@@ -77,6 +79,8 @@ public class MakumbaJSPCompletionProposalComputer extends DefaultXMLCompletionPr
 			if (attributeName == null) // if we don't know the attribute name we have nothing to do here
 				return;
 
+			//TODO:Improve the proposals to also look ahead and replace the content
+
 			String match = stripQuotes(request.getMatchString()).replaceAll("^\\s*", "");
 			int offset = context.getInvocationOffset();
 
@@ -91,24 +95,14 @@ public class MakumbaJSPCompletionProposalComputer extends DefaultXMLCompletionPr
 
 				} else if (attributeName.equals("where") || attributeName.equals("orderBy")
 						|| attributeName.equals("groupBy")) {
-					Matcher m = Path.matcher(match);
-					match = m.find() ? m.group() : "";
-
-					addProposals(mpp.getPathProposals(match, offset, 1100, MDDUtils.FieldOrFunction));
-					addProposals(mpp.getQueryFunctionProposals(match, offset, 1090));
-					addProposals(mpp.getAggregateFunctionProposals(match, offset, 1080));
+					expressionProposals(mpp, match, offset);
 				} else if (attributeName.equals("orderBy")) {
 
 				}
 			} else if ((tagName.equals("value") && attributeName.equals("expr"))
 					|| (tagName.equals("if") && attributeName.equals("test"))
 					|| (tagName.equals("input") && attributeName.equals("value"))) {
-				Matcher m = Path.matcher(match);
-				match = m.find() ? m.group() : "";
-
-				addProposals(mpp.getPathProposals(match, offset, 1100, MDDUtils.FieldOrFunction));
-				addProposals(mpp.getQueryFunctionProposals(match, offset, 1090));
-				addProposals(mpp.getAggregateFunctionProposals(match, offset, 1080));
+				expressionProposals(mpp, match, offset);
 			} else if (tagName.equals("addForm")) {
 				if (Pattern.matches("\\s*\\w*", match)) {//if we have a simple field
 					if (attributeName.equals("object")) { //object attribute, get labels
@@ -147,9 +141,34 @@ public class MakumbaJSPCompletionProposalComputer extends DefaultXMLCompletionPr
 						}
 					}
 				}
+			} else if (tagName.equals("searchForm")) {
+				if (attributeName.equals("in")) {
+					addProposals(mpp.getDataDefinitionProposals(match, offset, 1000));
+				}
 			}
 
 		}
+	}
+
+	private void expressionProposals(MQLProposalProvider mpp, String match, int offset) {
+		Matcher m = Path.matcher(match);
+
+		//we see if we are in comparison situation and then check for 
+		//enum proposals
+		Matcher cm = ComapreToPath.matcher(match);
+		Matcher vm = StringConstant.matcher(match);
+		String value = vm.find() ? vm.group() : "";
+		while (cm.find()) {
+			//we check if LHS of the comparison is the one we are looking for (the last one)
+			if ((value == "" && cm.end() == match.length()) || (value != "" && cm.end() == vm.start())) {
+				addProposals(mpp.getEnumValueProposals(cm.group(1), value, offset, 1200));
+			}
+		}
+		match = m.find() ? m.group() : "";
+
+		addProposals(mpp.getPathProposals(match, offset, 1100, MDDUtils.FieldOrFunction));
+		addProposals(mpp.getQueryFunctionProposals(match, offset, 1090));
+		addProposals(mpp.getAggregateFunctionProposals(match, offset, 1080));
 	}
 
 	private void addProposals(Collection<ICompletionProposal> proposals) {
