@@ -30,6 +30,7 @@ import org.makumba.devel.eclipse.mdd.ui.contentassist.MQLProposalProvider;
 import org.w3c.dom.Node;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 
 @SuppressWarnings("restriction")
 // TODO: rewrite class so it's not using restricted API
@@ -40,7 +41,7 @@ public class MakumbaJSPCompletionProposalComputer extends DefaultXMLCompletionPr
 	private IResourceDescriptions resourceDescriptions;
 
 	@Inject
-	private ResourceSet resourceSet;
+	private Provider<ResourceSet> resourceSet;
 
 	@Inject
 	private ILabelProvider labelProvider;
@@ -72,7 +73,7 @@ public class MakumbaJSPCompletionProposalComputer extends DefaultXMLCompletionPr
 			//compute the parent mak objects (list and object tags) and add them to the query context
 			MQLContext qContext = new MQLContext(getAllLabels(), resourceDescriptions, getFile(context.getDocument()));
 
-			MQLProposalProvider mpp = new MQLProposalProvider(qContext, resourceSet, labelProvider);
+			MQLProposalProvider mpp = new MQLProposalProvider(qContext, resourceSet.get(), labelProvider);
 
 			String tagName = node.getLocalName(); //get the tag name (without the prefix)
 			String attributeName = getAttributName(request); //compute attribute name

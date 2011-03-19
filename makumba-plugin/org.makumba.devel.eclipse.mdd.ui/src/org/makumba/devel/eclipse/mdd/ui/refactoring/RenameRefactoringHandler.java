@@ -29,6 +29,7 @@ import org.makumba.devel.eclipse.mdd.MDD.FieldDeclaration;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 
 public class RenameRefactoringHandler extends AbstractHandler {
 
@@ -65,7 +66,7 @@ public class RenameRefactoringHandler extends AbstractHandler {
 	private IResourceDescriptions resourceDescriptions;
 
 	@Inject
-	private ResourceSet resourceSet;
+	private Provider<ResourceSet> resourceSet;
 
 	@Inject
 	private IQualifiedNameProvider nameProvider;
@@ -90,7 +91,8 @@ public class RenameRefactoringHandler extends AbstractHandler {
 				currentName = r.getName();
 			}
 
-			RenameProcessor processor = new RenameProcessor(editor, resourceDescriptions, resourceSet, nameProvider);
+			RenameProcessor processor = new RenameProcessor(editor, resourceDescriptions, resourceSet.get(),
+					nameProvider);
 			RenameRefactoring refactoring = new RenameRefactoring(processor);
 
 			RenameRefactoringWizard wizard = new RenameRefactoringWizard(refactoring,
