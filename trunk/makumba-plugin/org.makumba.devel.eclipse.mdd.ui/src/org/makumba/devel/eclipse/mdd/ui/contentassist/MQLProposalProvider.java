@@ -19,10 +19,12 @@ import org.makumba.devel.eclipse.mdd.MDDUtils;
 import org.makumba.devel.eclipse.mdd.MQLContext;
 import org.makumba.devel.eclipse.mdd.MDD.DataDefinition;
 import org.makumba.devel.eclipse.mdd.MDD.Declaration;
+import org.makumba.devel.eclipse.mdd.MDD.EnumValue;
 import org.makumba.devel.eclipse.mdd.MDD.FieldDeclaration;
 import org.makumba.devel.eclipse.mdd.MDD.FunctionArgumentBody;
 import org.makumba.devel.eclipse.mdd.MDD.FunctionArgumentDeclaration;
 import org.makumba.devel.eclipse.mdd.MDD.FunctionDeclaration;
+import org.makumba.devel.eclipse.mdd.MDD.IntEnum;
 import org.makumba.devel.eclipse.mdd.MDD.PointerType;
 import org.makumba.devel.eclipse.mdd.MDD.SetType;
 import org.makumba.devel.eclipse.mdd.ui.MDDExecutableExtensionFactory;
@@ -254,8 +256,13 @@ public class MQLProposalProvider extends MDDExecutableExtensionFactory {
 
 	public ICompletionProposal createProposal(String replacementString, int replacementOffset, int cursorPosition,
 			Image image, StyledString displayString, int priority) {
+		return createProposal(replacementString, replacementOffset, 0, cursorPosition, image, displayString, priority);
+	}
+
+	public ICompletionProposal createProposal(String replacementString, int replacementOffset, int replacementLenght,
+			int cursorPosition, Image image, StyledString displayString, int priority) {
 		ConfigurableCompletionProposal proposal = new ConfigurableCompletionProposal(replacementString,
-				replacementOffset, 0, cursorPosition, image, displayString, null, null);
+				replacementOffset, replacementLenght, cursorPosition, image, displayString, null, null);
 		proposal.setPriority(priority);
 		proposal.setMatcher(new PrefixMatcher.IgnoreCase());
 		return proposal;
@@ -283,22 +290,98 @@ public class MQLProposalProvider extends MDDExecutableExtensionFactory {
 	}
 
 	/**
+	 * Creates and returns proposals for all {@link DataDefinition} who's name
+	 * starts with the pattern.
+	 * 
 	 * @param startPattern
+	 *            the beginning of the data definition name to look for
 	 * @param insertOffset
+	 *            position where the proposal will insert the replacement text
 	 * @param priority
-	 *            TODO
+	 *            the priority of the proposal in the list, higher numbers means
+	 *            higher position
 	 * @return
 	 */
 	public Set<ICompletionProposal> getDataDefinitionProposals(String startPattern, int insertOffset, int priority) {
 		Set<ICompletionProposal> proposals = new LinkedHashSet<ICompletionProposal>();
 		for (IEObjectDescription od : context.getDataDefinitions()) {
-			if (od.getName().startsWith(startPattern)) {
-				String replacement = od.getName().substring(startPattern.length());
-				ICompletionProposal proposal = createProposal(replacement, insertOffset, replacement.length(),
-						labelProvider.getImage(MDDLabelProvider.Type.DATA_DEFINITION), new StyledString(od.getName()),
-						priority);
+			if (startsWith(od.getName(), startPattern)) {
+				String replacement = od.getName();//.substring(startPattern.length());
+				ICompletionProposal proposal = createProposal(replacement, insertOffset - startPattern.length(),
+						replacement.length(), labelProvider.getImage(MDDLabelProvider.Type.DATA_DEFINITION),
+						new StyledString(od.getName()), priority);
 				proposals.add(proposal);
 			}
+		}
+		return proposals;
+	}
+
+	/**
+	 * Creates and returns the proposals of possible values for the given enum
+	 * field.<br>
+	 * 
+	 * @param enumPath
+	 *            path in the form of <code>label.field.field.enumfield</code>
+	 * @param startsWith
+	 *            only values starting with this string will be returned
+	 * @param insertOffset
+	 *            position where the proposal will insert the replacement text
+	 * @param priority
+	 *            the priority of the proposal in the list, higher numbers means
+	 *            higher position
+	 * @return
+	 */
+	public Set<ICompletionProposal> getEnumValueProposals(String enumPath, String startsWith, int insertOffset,
+			int priority) {
+		Set<ICompletionProposal> proposals = new LinkedHashSet<ICompletionProposal>();
+		if (enumPath.indexOf(".") > 0) { //otherwise it's a label and enum can't be just a label 		
+			//we have path situation label.field.field... (also label. is possible)
+			String label = enumPath.substring(0, enumPath.indexOf(".")); //get the label
+			String currentPath = context.resolveLabel(label) + enumPath.substring(enumPath.indexOf("."));
+
+			//we remove the match pattern from the path. we will use it later
+			String path = currentPath.substring(0, currentPath.lastIndexOf("."));
+			//we get the data definition that the path is starting with
+			IEObjectDescription ddDescription = context.getDataDefinition(path);
+
+			if (ddDescription != null) {
+				//remove the data definition from the path
+				path = path.substring(ddDescription.getName().length());
+				//and remove the next dot if it remained
+				if (!path.isEmpty() && path.charAt(0) == '.')
+					path = path.substring(1);
+				//we need to fill the resolve all the information in the resourceset so we can 
+				//access the data inside
+				EcoreUtil2.resolveAll(resourceSet);
+				DataDefinition dd = (DataDefinition) EcoreUtil2.resolve((ddDescription.getEObjectOrProxy()),
+						resourceSet);
+				//get the declarations at the end of our path
+				Iterable<Declaration> ddDeclarations = context.getDeclarationsOnPath(dd.getD(), path);
+				//filter the declarations
+				ddDeclarations = Iterables.filter(ddDeclarations, MDDUtils.EnumFields);
+				//get the prefix of the declaration proposal name
+				String matchPattern = currentPath.substring(currentPath.lastIndexOf(".") + 1);
+				for (Declaration declaration : ddDeclarations) {
+					if (declaration instanceof FieldDeclaration) {
+						FieldDeclaration field = (FieldDeclaration) declaration;
+						if (field.getName().equals(matchPattern) || field.getTypedef() instanceof IntEnum) {
+							IntEnum intEnum = (IntEnum) field.getTypedef();
+							for (EnumValue value : intEnum.getValues()) {
+								String replacement = "'" + value.getName() + "'";
+								if (startsWith(replacement, startsWith)) {
+									StyledString displayString = new StyledString();
+									displayString.append(text(value));
+									ICompletionProposal p = createProposal(replacement,
+											insertOffset - startsWith.length(), replacement.length(),
+											labelProvider.getImage(value), displayString, priority);
+									proposals.add(p);
+								}
+							}
+						}
+					}
+				}
+			}
+
 		}
 		return proposals;
 	}
