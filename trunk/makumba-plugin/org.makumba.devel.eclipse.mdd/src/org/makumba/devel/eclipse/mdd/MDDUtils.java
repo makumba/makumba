@@ -104,7 +104,11 @@ public class MDDUtils {
 
 	public static Predicate<Declaration> EnumFields = new Predicate<Declaration>() {
 		public boolean apply(Declaration input) {
-			return (input instanceof FieldDeclaration && ((FieldDeclaration) input).getTypedef() instanceof IntEnum);
+			if (input instanceof FieldDeclaration) {
+				FieldDeclaration field = (FieldDeclaration) input;
+				return (getFieldType(field) instanceof IntEnum);
+			}
+			return false;
 		}
 	};
 
@@ -127,6 +131,20 @@ public class MDDUtils {
 			return false;
 		}
 	};
+
+	/**
+	 * Returns the real {@link FieldType} even if it's a macro type defined with
+	 * !type expression.
+	 * 
+	 * @param field
+	 * @return
+	 */
+	public static FieldType getFieldType(FieldDeclaration field) {
+		if (field.getTypedef().getTypeDec() != null) {
+			return field.getTypedef().getTypeDec().getFieldType();
+		}
+		return field.getTypedef();
+	}
 
 	/**
 	 * Gets all the {@link Declaration}s on the same lavel as the one passed as

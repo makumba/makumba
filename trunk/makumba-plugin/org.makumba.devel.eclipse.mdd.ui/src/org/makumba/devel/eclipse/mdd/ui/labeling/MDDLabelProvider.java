@@ -68,8 +68,21 @@ public class MDDLabelProvider extends DefaultEObjectLabelProvider {
 	}
 
 	StyledString text(DataDefinition dd) {
+		return dataDefinitionLabel(nameProvider.getQualifiedName(dd));
+	}
+
+	public static StyledString dataDefinitionLabel(String qualifiedName) {
 		StyledString result = new StyledString();
-		result.append(nameProvider.getQualifiedName(dd));
+		String className = qualifiedName;
+		String packageName = null;
+		if (qualifiedName.contains(".")) {
+			className = qualifiedName.substring(qualifiedName.lastIndexOf(".") + 1);
+			packageName = qualifiedName.substring(0, qualifiedName.lastIndexOf(".") - 1);
+		}
+		result.append(className);
+		if (packageName != null) {
+			result.append(" - " + packageName, StyledString.DECORATIONS_STYLER);
+		}
 		return result;
 	}
 

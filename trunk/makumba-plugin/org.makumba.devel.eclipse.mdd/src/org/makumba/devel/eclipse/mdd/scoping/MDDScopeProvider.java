@@ -7,6 +7,8 @@ import static org.eclipse.xtext.scoping.Scopes.scopeFor;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.xtext.EcoreUtil2;
 import org.eclipse.xtext.resource.IEObjectDescription;
 import org.eclipse.xtext.scoping.IScope;
 import org.eclipse.xtext.scoping.impl.AbstractDeclarativeScopeProvider;
@@ -23,6 +25,8 @@ import org.makumba.devel.eclipse.mdd.MDD.ValidationRuleDeclaration;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
 
 /**
  * This class contains custom scoping description.
@@ -34,6 +38,9 @@ import com.google.common.collect.Iterables;
  * 
  */
 public class MDDScopeProvider extends AbstractDeclarativeScopeProvider {
+
+	@Inject
+	private Provider<ResourceSet> resourceSet;
 
 	/**
 	 * Computes the scope of field path by getting all the field declarations at
@@ -47,7 +54,10 @@ public class MDDScopeProvider extends AbstractDeclarativeScopeProvider {
 		if (context.eContainer() instanceof FieldPath) {
 			FieldPath parent = (FieldPath) context.eContainer();
 			if (parent.getField().getTypedef() instanceof PointerType) {
-				DataDefinition pointsTo = ((PointerType) parent.getField().getTypedef()).getRef();
+				EcoreUtil2.resolveAll(resourceSet.get());
+				DataDefinition pointsTo = (DataDefinition) EcoreUtil2.resolve(((PointerType) parent.getField()
+						.getTypedef()).getRef(), resourceSet.get());
+				//DataDefinition pointsTo = ((PointerType) parent.getField().getTypedef()).getRef();
 				Iterable<FieldDeclaration> fields = Iterables.filter(pointsTo.getD(), FieldDeclaration.class);
 				return scopeFor(fields);
 			}
