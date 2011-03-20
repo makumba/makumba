@@ -309,7 +309,7 @@ public class MQLProposalProvider extends MDDExecutableExtensionFactory {
 				String replacement = od.getName();//.substring(startPattern.length());
 				ICompletionProposal proposal = createProposal(replacement, insertOffset - startPattern.length(),
 						replacement.length(), labelProvider.getImage(MDDLabelProvider.Type.DATA_DEFINITION),
-						new StyledString(od.getName()), priority);
+						MDDLabelProvider.dataDefinitionLabel(od.getName()), priority);
 				proposals.add(proposal);
 			}
 		}
@@ -364,8 +364,8 @@ public class MQLProposalProvider extends MDDExecutableExtensionFactory {
 				for (Declaration declaration : ddDeclarations) {
 					if (declaration instanceof FieldDeclaration) {
 						FieldDeclaration field = (FieldDeclaration) declaration;
-						if (field.getName().equals(matchPattern) || field.getTypedef() instanceof IntEnum) {
-							IntEnum intEnum = (IntEnum) field.getTypedef();
+						if (field.getName().equals(matchPattern) && MDDUtils.getFieldType(field) instanceof IntEnum) {
+							IntEnum intEnum = (IntEnum) MDDUtils.getFieldType(field);
 							for (EnumValue value : intEnum.getValues()) {
 								String replacement = "'" + value.getName() + "'";
 								if (startsWith(replacement, startsWith)) {
