@@ -1,7 +1,6 @@
 package org.makumba.devel.eclipse.mdd.ui.contentassist;
 
 import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -54,7 +53,7 @@ public class MQLProposalProvider extends MDDExecutableExtensionFactory {
 	public Set<ICompletionProposal> getPathProposals(String currentPath, int insertOffset, int priority,
 			Predicate<Declaration> filter) {
 		//TODO: change to some ordered set
-		Set<ICompletionProposal> proposals = new LinkedHashSet<ICompletionProposal>();
+		Set<ICompletionProposal> proposals = new TreeSet<ICompletionProposal>();
 		if (currentPath.indexOf(".") < 0) { //its a simple label 
 			proposals.addAll(getLabelProposals(currentPath, insertOffset, priority));
 		} else { //we have path situation label.field.field... (also label. is possible)
@@ -95,7 +94,7 @@ public class MQLProposalProvider extends MDDExecutableExtensionFactory {
 	 */
 	public Set<ICompletionProposal> getPathWithoutLabelsProposals(String currentPath, int insertOffset, int priority,
 			Predicate<Declaration> filter) {
-		Set<ICompletionProposal> proposals = new LinkedHashSet<ICompletionProposal>();
+		Set<ICompletionProposal> proposals = new TreeSet<ICompletionProposal>();
 
 		//we remove the match pattern from the path. we will use it later
 		String path = currentPath.substring(0, currentPath.lastIndexOf("."));
@@ -145,7 +144,7 @@ public class MQLProposalProvider extends MDDExecutableExtensionFactory {
 	 */
 	public Set<ICompletionProposal> getDeclarationsProposals(String startPattern, int insertOffset, int priority,
 			Iterable<Declaration> declarations) {
-		Set<ICompletionProposal> proposals = new LinkedHashSet<ICompletionProposal>();
+		Set<ICompletionProposal> proposals = new TreeSet<ICompletionProposal>();
 		for (Declaration declaration : declarations) {
 			if (declaration instanceof FieldDeclaration) {
 				FieldDeclaration field = (FieldDeclaration) declaration;
@@ -174,7 +173,7 @@ public class MQLProposalProvider extends MDDExecutableExtensionFactory {
 	}
 
 	public Set<ICompletionProposal> getLabelProposals(String startPattern, int insertOffset, int priority) {
-		Set<ICompletionProposal> proposals = new LinkedHashSet<ICompletionProposal>();
+		Set<ICompletionProposal> proposals = new TreeSet<ICompletionProposal>();
 		for (String label : context.getLabelsStartingWith(startPattern)) {
 			if (context.isValidLabel(label)) {
 				String replacement = label.substring(startPattern.length());
@@ -191,7 +190,7 @@ public class MQLProposalProvider extends MDDExecutableExtensionFactory {
 
 	public Set<ICompletionProposal> getFieldLabelProposals(String startPattern, int insertOffset, int priority,
 			Predicate<Declaration> filter) {
-		Set<ICompletionProposal> proposals = new LinkedHashSet<ICompletionProposal>();
+		Set<ICompletionProposal> proposals = new TreeSet<ICompletionProposal>();
 		for (String label : context.getLabelsStartingWith(startPattern)) {
 			String path = context.resolveLabel(label) + "." + startPattern;
 			proposals.addAll(getPathWithoutLabelsProposals(path, insertOffset, priority, filter));
@@ -200,7 +199,7 @@ public class MQLProposalProvider extends MDDExecutableExtensionFactory {
 	}
 
 	public Set<ICompletionProposal> getTSFieldProposals(String startPattern, int insertOffset, int priority) {
-		Set<ICompletionProposal> proposals = new LinkedHashSet<ICompletionProposal>();
+		Set<ICompletionProposal> proposals = new TreeSet<ICompletionProposal>();
 		if (startPattern.indexOf(".") < 0) { //its a simple label
 			for (String name : MQLContext.TSFields) {
 				if (startsWith(name, startPattern)) {
@@ -218,7 +217,7 @@ public class MQLProposalProvider extends MDDExecutableExtensionFactory {
 	}
 
 	public Set<ICompletionProposal> getQueryFunctionProposals(String startPattern, int insertOffset, int priority) {
-		Set<ICompletionProposal> proposals = new LinkedHashSet<ICompletionProposal>();
+		Set<ICompletionProposal> proposals = new TreeSet<ICompletionProposal>();
 		if (startPattern.indexOf(".") < 0) { //its a simple label
 			SortedSet<String> functions = new TreeSet<String>();
 			functions.addAll(Arrays.asList(MQLContext.QueryDateFunctions));
@@ -239,7 +238,7 @@ public class MQLProposalProvider extends MDDExecutableExtensionFactory {
 
 	public Set<ICompletionProposal> getFunctionArgumentsProposals(String startPattern, int insertOffset, int priority,
 			FunctionArgumentDeclaration args) {
-		Set<ICompletionProposal> proposals = new LinkedHashSet<ICompletionProposal>();
+		Set<ICompletionProposal> proposals = new TreeSet<ICompletionProposal>();
 		for (FunctionArgumentBody arg : args.getF()) {
 			String name = arg.getName();
 			if (startsWith(name, startPattern)) {
@@ -271,11 +270,9 @@ public class MQLProposalProvider extends MDDExecutableExtensionFactory {
 	}
 
 	public Set<ICompletionProposal> getAggregateFunctionProposals(String startPattern, int insertOffset, int priority) {
-		Set<ICompletionProposal> proposals = new LinkedHashSet<ICompletionProposal>();
+		Set<ICompletionProposal> proposals = new TreeSet<ICompletionProposal>();
 		if (startPattern.indexOf(".") < 0) { //its a simple label
-			SortedSet<String> functions = new TreeSet<String>();
-			functions.addAll(Arrays.asList(MQLContext.AggregateFunctions));
-			for (String name : functions) {
+			for (String name : MQLContext.AggregateFunctions) {
 				if (startsWith(name, startPattern)) {
 					String replacement = name.substring(startPattern.length()) + "()";
 					StyledString displayString = new StyledString();
@@ -303,15 +300,28 @@ public class MQLProposalProvider extends MDDExecutableExtensionFactory {
 	 * @return
 	 */
 	public Set<ICompletionProposal> getDataDefinitionProposals(String startPattern, int insertOffset, int priority) {
-		Set<ICompletionProposal> proposals = new LinkedHashSet<ICompletionProposal>();
+		Set<ICompletionProposal> proposals = new TreeSet<ICompletionProposal>();
 		for (IEObjectDescription od : context.getDataDefinitions()) {
-			if (startsWith(od.getName(), startPattern)) {
-				String replacement = od.getName();//.substring(startPattern.length());
+			String className = od.getName().contains(".") ? od.getName().substring(od.getName().lastIndexOf(".") + 1)
+					: od.getName();
+			if (startsWith(od.getName(), startPattern) || startsWith(className, startPattern)) {
+				int newPriority = priority;
+				if (className.startsWith(startPattern)) {
+					newPriority += 10;
+				} else if (!startsWith(od.getName(), startPattern) && startsWith(className, startPattern)) {
+					newPriority -= 10;
+				}
+
+				String replacement = od.getName();
 				ICompletionProposal proposal = createProposal(replacement, insertOffset - startPattern.length(),
 						replacement.length(), labelProvider.getImage(MDDLabelProvider.Type.DATA_DEFINITION),
-						MDDLabelProvider.dataDefinitionLabel(od.getName()), priority);
+						MDDLabelProvider.dataDefinitionLabel(od.getName()), newPriority);
 				proposals.add(proposal);
 			}
+		}
+		for (ICompletionProposal iCompletionProposal : proposals) {
+			ConfigurableCompletionProposal p = (ConfigurableCompletionProposal) iCompletionProposal;
+			System.out.println(p.getPriority() + p.getDisplayString());
 		}
 		return proposals;
 	}
@@ -333,7 +343,7 @@ public class MQLProposalProvider extends MDDExecutableExtensionFactory {
 	 */
 	public Set<ICompletionProposal> getEnumValueProposals(String enumPath, String startsWith, int insertOffset,
 			int priority) {
-		Set<ICompletionProposal> proposals = new LinkedHashSet<ICompletionProposal>();
+		Set<ICompletionProposal> proposals = new TreeSet<ICompletionProposal>();
 		if (enumPath.indexOf(".") > 0) { //otherwise it's a label and enum can't be just a label 		
 			//we have path situation label.field.field... (also label. is possible)
 			String label = enumPath.substring(0, enumPath.indexOf(".")); //get the label

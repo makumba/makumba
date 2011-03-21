@@ -77,7 +77,7 @@ public class MDDLabelProvider extends DefaultEObjectLabelProvider {
 		String packageName = null;
 		if (qualifiedName.contains(".")) {
 			className = qualifiedName.substring(qualifiedName.lastIndexOf(".") + 1);
-			packageName = qualifiedName.substring(0, qualifiedName.lastIndexOf(".") - 1);
+			packageName = qualifiedName.substring(0, qualifiedName.lastIndexOf("."));
 		}
 		result.append(className);
 		if (packageName != null) {
