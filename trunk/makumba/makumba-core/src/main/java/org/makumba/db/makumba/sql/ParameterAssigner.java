@@ -31,9 +31,8 @@ import org.makumba.providers.ParameterTransformer;
 import org.makumba.providers.QueryAnalysis;
 
 /**
- * this class takes parameters passed to an OQL query and transmits them to the
- * corresponding PreparedStatement. The order in the two is different, because
- * OQL parameters are numbered. Also, strict type checking is performed for the
+ * this class takes parameters passed to an OQL query and transmits them to the corresponding PreparedStatement. The
+ * order in the two is different, because OQL parameters are numbered. Also, strict type checking is performed for the
  * parameters
  */
 public class ParameterAssigner {
@@ -45,8 +44,7 @@ public class ParameterAssigner {
 
     ParameterTransformer qG;
 
-    ParameterAssigner(org.makumba.db.makumba.Database db, QueryAnalysis qA,
-            ParameterTransformer qG) {
+    ParameterAssigner(org.makumba.db.makumba.Database db, QueryAnalysis qA, ParameterTransformer qG) {
         this.qA = qA;
         this.qG = qG;
         this.db = db;
@@ -54,25 +52,20 @@ public class ParameterAssigner {
 
     static final Object[] empty = new Object[0];
 
-    public String assignParameters(PreparedStatement ps, Object[] args)
-            throws SQLException {
+    public String assignParameters(PreparedStatement ps, Object[] args) throws SQLException {
         if (qG.getParameterCount() == 0) {
             return null;
         }
 
         if (qG.getParameterCount() > 0) {
-            paramHandler = (TableManager) db.makePseudoTable(qG
-                    .getTransformedParameterTypes());
+            paramHandler = (TableManager) db.makePseudoTable(qG.getTransformedParameterTypes());
         }
 
         try {
             for (int i = 0; i < qG.getParameterCount(); i++) {
-                FieldDefinition fd = qG.getTransformedParameterTypes()
-                        .getFieldDefinition(i);
+                FieldDefinition fd = qG.getTransformedParameterTypes().getFieldDefinition(i);
                 if (fd == null) {
-                    throw new IllegalStateException(
-                            "No type assigned for param" + i + " of query "
-                                    + qA.getQuery());
+                    throw new IllegalStateException("No type assigned for param" + i + " of query " + qA.getQuery());
                 }
 
                 Object value = args[i];
@@ -86,8 +79,7 @@ public class ParameterAssigner {
             }
 
         } catch (ArrayIndexOutOfBoundsException ae) {
-            throw new org.makumba.MakumbaError(
-                    "wrong number of arguments to query ");
+            throw new org.makumba.MakumbaError("wrong number of arguments to query ");
         }
         return null;
     }
