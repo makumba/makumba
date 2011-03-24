@@ -35,6 +35,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
@@ -173,6 +174,10 @@ public class MakumbaResourceServlet extends HttpServlet {
                     }
                 }
 
+                // sort entries
+                Collections.sort(directories);
+                Collections.sort(files);
+
                 // display directories
                 for (String string : directories) {
                     writer.println("<b><a href=\"" + string + "/\">" + string + "/</a></b>");
@@ -224,7 +229,7 @@ public class MakumbaResourceServlet extends HttpServlet {
 
                     if (cachedResource.toString().contains(MakumbaResourceServlet.PLACEHOLDER_UNIQUENESS_SERVLET_PATH)) {
                         String uniquenessPath = req.getContextPath()
-                                + Configuration.getServletLocation(MakumbaServlet.UNIQUENESS);
+                        + Configuration.getServletLocation(MakumbaServlet.UNIQUENESS);
                         output = output.replaceAll(MakumbaResourceServlet.PLACEHOLDER_UNIQUENESS_SERVLET_PATH,
                             uniquenessPath);
                     }
@@ -274,56 +279,56 @@ public class MakumbaResourceServlet extends HttpServlet {
 
     public static int makumbaResources = NamedResources.makeStaticCache("Makumba resources",
         new NamedResourceFactory() {
-            private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = 1L;
 
-            @Override
-            public Object getHashObject(Object o) {
-                return ClassResource.get(resourceDirectory + o);
+        @Override
+        public Object getHashObject(Object o) {
+            return ClassResource.get(resourceDirectory + o);
+        }
+
+        @Override
+        public Object makeResource(Object o, Object hashName) throws Throwable {
+            if (hashName == null) {
+                return null;
             }
+            StringBuffer sb = new StringBuffer();
+            URL url = (URL) hashName;
+            InputStream stream;
 
-            @Override
-            public Object makeResource(Object o, Object hashName) throws Throwable {
-                if (hashName == null) {
-                    return null;
-                }
-                StringBuffer sb = new StringBuffer();
-                URL url = (URL) hashName;
-                InputStream stream;
-
-                if (url.toExternalForm().startsWith("jar:")) { // for jar files, open the entry
-                    JarFile jf = ((JarURLConnection) url.openConnection()).getJarFile();
-                    String[] jarURL = url.toExternalForm().split("!");
-                    JarEntry je = jf.getJarEntry(jarURL[1].substring(1));
-                    stream = jf.getInputStream(je);
-                } else { // for files, simply open a stream
-                    stream = url.openStream();
-                }
-                if (isBinary(url)) {
-                    ArrayList<Byte> bytesList = new ArrayList<Byte>();
-                    byte[] b = new byte[16];
-                    int readBytes = -1;
-                    while ((readBytes = stream.read(b)) != -1) {
-                        for (int i = 0; i < readBytes; i++) {
-                            bytesList.add(b[i]);
-                        }
-                    }
-                    byte[] bytes = new byte[bytesList.size()];
-                    for (int i = 0; i < bytes.length; i++) {
-                        bytes[i] = bytesList.get(i);
-                    }
-                    return bytes;
-                } else {
-                    BufferedReader bis = new BufferedReader(new InputStreamReader(stream));
-                    byte b;
-                    while ((b = (byte) bis.read()) != -1) {
-                        sb.append(String.valueOf((char) b));
-                    }
-                    return sb.toString();
-                }
+            if (url.toExternalForm().startsWith("jar:")) { // for jar files, open the entry
+                JarFile jf = ((JarURLConnection) url.openConnection()).getJarFile();
+                String[] jarURL = url.toExternalForm().split("!");
+                JarEntry je = jf.getJarEntry(jarURL[1].substring(1));
+                stream = jf.getInputStream(je);
+            } else { // for files, simply open a stream
+                stream = url.openStream();
             }
-        }, true);
+            if (isBinary(url)) {
+                ArrayList<Byte> bytesList = new ArrayList<Byte>();
+                byte[] b = new byte[16];
+                int readBytes = -1;
+                while ((readBytes = stream.read(b)) != -1) {
+                    for (int i = 0; i < readBytes; i++) {
+                        bytesList.add(b[i]);
+                    }
+                }
+                byte[] bytes = new byte[bytesList.size()];
+                for (int i = 0; i < bytes.length; i++) {
+                    bytes[i] = bytesList.get(i);
+                }
+                return bytes;
+            } else {
+                BufferedReader bis = new BufferedReader(new InputStreamReader(stream));
+                byte b;
+                while ((b = (byte) bis.read()) != -1) {
+                    sb.append(String.valueOf((char) b));
+                }
+                return sb.toString();
+            }
+        }
+    }, true);
 
     public static final String[] imageContentTypes = { "jpg", "jpeg", "png", "gif", "pjpeg", "tiff", "bmp", "x-emf",
-            "x-wmf", "x-xbitmap" };
+        "x-wmf", "x-xbitmap" };
 
 }
