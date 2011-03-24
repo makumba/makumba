@@ -19,9 +19,9 @@ import org.makumba.commons.NamedResources;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
-import org.makumba.providers.QueryProvider;
 import org.makumba.providers.QueryAnalysisProvider.ASTTransformVisitor;
 import org.makumba.providers.QueryAnalysisProvider.FromWhere;
+import org.makumba.providers.QueryProvider;
 import org.makumba.providers.query.mql.ASTUtil;
 import org.makumba.providers.query.mql.HqlASTFactory;
 import org.makumba.providers.query.mql.HqlTokenTypes;
@@ -106,9 +106,9 @@ public class Pass1FunctionInliner {
             this.queryAnalysisProvider = provider;
         }
 
-        private String queryAnalysisProvider;
+        private final String queryAnalysisProvider;
 
-        private FromWhere fromWhere = new FromWhere();
+        private final FromWhere fromWhere = new FromWhere();
 
         private AST inlineAST(AST parsed) {
             // inlining is a simple question of traversal with the inliner visitor
@@ -262,9 +262,9 @@ public class Pass1FunctionInliner {
                     // for each parameter node, we put the param expression instead
                     if (node.getType() == HqlTokenTypes.IDENT && paramExpr.get(node.getText()) != null &&
                     // a field name from another table might have the same name as a param
-                            // FIXME: there might be other cases where this is not the param but some field
+                    // FIXME: there might be other cases where this is not the param but some field
                             getPath().peek().getType() != HqlTokenTypes.DOT
-                    //        
+                    //
                     ) {
                         return paramExpr.get(node.getText());
                     }
@@ -330,8 +330,7 @@ public class Pass1FunctionInliner {
                 AST parent = getPath().get(top - 1);
 
                 // if we are part of a DOT tree, we must be the first
-                if (parent.getType() == HqlTokenTypes.DOT
-                        && (getPath().get(top - 2).getType() == HqlTokenTypes.DOT || parent.getFirstChild() != a)) {
+                if (parent.getType() == HqlTokenTypes.DOT && parent.getFirstChild() != a) {
                     return a;
                 }
 
@@ -376,7 +375,7 @@ public class Pass1FunctionInliner {
         // String queryAndThis= "SELECT " + FunctionInliner.addThisToFunction(calleeType, func)
         // + " FROM " + calleeType.getName() + " this";
         // AST paa= QueryAnalysisProvider.parseQuery(queryAndThis);
-        //            
+        //
         // if(!compare(new ArrayList<AST>(), pass1, paa)){
         // System.out.println(paa.toStringList());
         // System.out.println(pass1.toStringList());
