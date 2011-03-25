@@ -42,9 +42,12 @@ public class MqlParameterTransformer implements ParameterTransformer {
 
     private DataDefinition expandedParamInfo = null;
 
-    public MqlParameterTransformer(MqlQueryAnalysis qA) {
+    private final MqlSqlGenerator mg;
+
+    public MqlParameterTransformer(MqlQueryAnalysis qA, MqlSqlGenerator mg) {
         this.qA = qA;
         this.analyserTreeSQL = qA.getAnalyserTree();
+        this.mg = mg;
     }
 
     public void init(Map<String, Object> arguments) {
@@ -52,6 +55,15 @@ public class MqlParameterTransformer implements ParameterTransformer {
         if (expandedParamInfo == null) {
             expandMultipleParameters(arguments);
         }
+
+        try {
+            mg.statement(analyserTreeSQL);
+        } catch (Throwable e) {
+            QueryAnalysisProvider.doThrow(qA.getQuery(), e, analyserTreeSQL);
+        }
+        QueryAnalysisProvider.doThrow(qA.getQuery(), mg.error, analyserTreeSQL);
+
+        text = mg.getText();
     }
 
     public int getParameterCount() {
@@ -66,29 +78,12 @@ public class MqlParameterTransformer implements ParameterTransformer {
         return expandedParamInfo;
     }
 
-    public String getSQLQuery(MqlSqlGenerator mg, NameResolver nr) {
-        try {
-            mg.statement(analyserTreeSQL);
-        } catch (Throwable e) {
-            QueryAnalysisProvider.doThrow(qA.getQuery(), e, analyserTreeSQL);
-        }
-        QueryAnalysisProvider.doThrow(qA.getQuery(), mg.error, analyserTreeSQL);
-
-        text = mg.getText();
-
-        // TODO: we can cache these SQL results by the key of the NameResolver
-        // still we should first check if this is needed, maybe the generated
-        // SQL (or processing of it)
-        // is cached already somewhere else
+    public String getTransformedQuery(NameResolver nr) {
         String sql = text.toString(nr);
         if (qA.getNoFrom()) {
             return sql.substring(0, sql.toLowerCase().indexOf("from")).trim();
         }
         return sql;
-    }
-
-    public String getTransformedQuery(NameResolver nr) {
-        return getSQLQuery(new MqlSqlGenerator(), nr);
     }
 
     public Object[] toParameterArray(Map<String, Object> arguments) {
@@ -314,6 +309,7 @@ public class MqlParameterTransformer implements ParameterTransformer {
                 }
                 sb.append(" ");
             }
+            sb.append(multi[2]);
 
             return qA.getQuery() + " " + sb.toString();
         }
@@ -325,7 +321,8 @@ public class MqlParameterTransformer implements ParameterTransformer {
             @SuppressWarnings("unchecked")
             Map<String, Object> args = (Map<String, Object>) multi[1];
 
-            return new MqlParameterTransformer(qA);
+            String lang = (String) multi[2];
+            return new MqlParameterTransformer(qA, lang.equals("hql") ? new MqlHqlGenerator() : new MqlSqlGenerator());
         }
 
         @Override
@@ -341,15 +338,16 @@ public class MqlParameterTransformer implements ParameterTransformer {
 
     public static MqlParameterTransformer getSQLQueryGenerator(MqlQueryAnalysis qA, Map<String, Object> args) {
 
-        // FIXME this doesn't work
-        // the key is the combination of mql query + parameter cardinality
-        // but this is not enough because we don't have the parameter values
-        // always being the same (i.e. 2 queries with
-        // same cardinality but different values)
-        // call configure resource, set arguments
+        return (MqlParameterTransformer) NamedResources.getStaticCache(generators).getResource(
+            new Object[] { qA, args, "mql" });
+
+    }
+
+    public static MqlParameterTransformer getSQLQueryGenerator(MqlQueryAnalysis qA, Map<String, Object> args,
+            String language) {
 
         return (MqlParameterTransformer) NamedResources.getStaticCache(generators).getResource(
-            new Object[] { qA, args });
+            new Object[] { qA, args, language });
 
     }
 
@@ -369,7 +367,7 @@ public class MqlParameterTransformer implements ParameterTransformer {
         arguments.put("surname", "john");
         arguments.put("2", "stuff");
 
-        MqlParameterTransformer qG = new MqlParameterTransformer(qA);
+        MqlParameterTransformer qG = new MqlParameterTransformer(qA, new MqlSqlGenerator());
         qG.init(arguments);
 
         String sql = qG.getTransformedQuery(new NameResolver());
