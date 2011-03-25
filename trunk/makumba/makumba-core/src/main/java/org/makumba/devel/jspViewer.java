@@ -60,8 +60,9 @@ import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.query.FunctionInliner;
 import org.makumba.providers.query.Pass1ASTPrinter;
-import org.makumba.providers.query.mql.MqlQueryAnalysis;
 import org.makumba.providers.query.mql.MqlParameterTransformer;
+import org.makumba.providers.query.mql.MqlQueryAnalysis;
+import org.makumba.providers.query.mql.MqlSqlGenerator;
 
 /**
  * This class implements a viewer for .jsp files, and provides highlighting of <mak:>, <jsp:>and JSTL tags.
@@ -94,15 +95,15 @@ public class jspViewer extends LineViewer {
 
     private Map<Object, Object> queryCache;
 
-    private Map<MultipleKey, TagData> tagDataCache = new LinkedHashMap<MultipleKey, TagData>();
+    private final Map<MultipleKey, TagData> tagDataCache = new LinkedHashMap<MultipleKey, TagData>();
 
     // FIXME: these prefixes should be adapted to the ones really set in the taglib import statement
     // see http://bugs.makumba.org/show_bug.cgi?id=1199
-    private String makTagPrefix = "mak";
+    private final String makTagPrefix = "mak";
 
-    private String jstlCoreTagPrefix = "c";
+    private final String jstlCoreTagPrefix = "c";
 
-    private String jstlFormatTagPrefix = "fmt";
+    private final String jstlFormatTagPrefix = "fmt";
 
     private int extraLength() {
         return 1;
@@ -423,9 +424,10 @@ public class jspViewer extends LineViewer {
                                         QueryAnalysisProvider queryAnalzyer = QueryProvider.getQueryAnalzyer("oql");
                                         QueryAnalysis qa = queryAnalzyer.getQueryAnalysis(queryInlined);
                                         MqlParameterTransformer trans = new MqlParameterTransformer(
-                                                (MqlQueryAnalysis) qa);
+                                                (MqlQueryAnalysis) qa, new MqlSqlGenerator());
                                         currentText.append("SQL: "
-                                                + trans.getTransformedQuery(((Database) db).getNameResolverHook()) + "<br/>");
+                                                + trans.getTransformedQuery(((Database) db).getNameResolverHook())
+                                                + "<br/>");
                                     }
                                 } catch (RuntimeWrappedException e) {
                                     if (e.getCause() instanceof OQLParseError

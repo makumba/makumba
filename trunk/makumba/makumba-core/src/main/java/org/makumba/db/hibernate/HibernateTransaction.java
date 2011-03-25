@@ -36,7 +36,6 @@ import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProvider;
-import org.makumba.providers.query.mql.MqlHqlGenerator;
 import org.makumba.providers.query.mql.MqlParameterTransformer;
 import org.makumba.providers.query.mql.MqlQueryAnalysis;
 
@@ -292,8 +291,9 @@ public class HibernateTransaction extends TransactionImplementation {
 
         analyzer.prepareForHQL();
 
-        MqlParameterTransformer paramTransformer = MqlParameterTransformer.getSQLQueryGenerator(analyzer, argsMap);
-        query = paramTransformer.getSQLQuery(new MqlHqlGenerator(), new NullNameResolver());
+        MqlParameterTransformer paramTransformer = MqlParameterTransformer.getSQLQueryGenerator(analyzer, argsMap,
+            "hql");
+        query = paramTransformer.getTransformedQuery(new NullNameResolver());
 
         if (analyzer.getConstantValues() != null) {
             // no need to send the query to the sql engine

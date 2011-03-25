@@ -43,8 +43,8 @@ public class MqlHqlTest {
                             public Object get(Object name) {
                                 return "";
                             }
-                        });
-                    String hql = paramTransformer.getSQLQuery(new MqlHqlGenerator(), new NullNameResolver());
+                        }, "hql");
+                    String hql = paramTransformer.getTransformedQuery(new NullNameResolver());
 
                     System.out.println(hql);
                 } catch (Throwable t) {
