@@ -5,9 +5,11 @@ package org.makumba.devel.eclipse.mdd.ui.contentassist;
 
 import static org.eclipse.xtext.scoping.Scopes.scopeFor;
 
+import java.io.StringReader;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -18,8 +20,10 @@ import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.xtext.Assignment;
 import org.eclipse.xtext.RuleCall;
 import org.eclipse.xtext.naming.IQualifiedNameProvider;
+import org.eclipse.xtext.parser.antlr.IAntlrParser;
 import org.eclipse.xtext.parsetree.CompositeNode;
 import org.eclipse.xtext.parsetree.LeafNode;
+import org.eclipse.xtext.parsetree.NodeUtil;
 import org.eclipse.xtext.resource.IEObjectDescription;
 import org.eclipse.xtext.resource.IResourceDescriptions;
 import org.eclipse.xtext.scoping.IScope;
@@ -30,6 +34,7 @@ import org.makumba.devel.eclipse.mdd.MQLContext;
 import org.makumba.devel.eclipse.mdd.MDD.Atom;
 import org.makumba.devel.eclipse.mdd.MDD.DataDefinition;
 import org.makumba.devel.eclipse.mdd.MDD.Declaration;
+import org.makumba.devel.eclipse.mdd.MDD.EqualityExpression;
 import org.makumba.devel.eclipse.mdd.MDD.FieldDeclaration;
 import org.makumba.devel.eclipse.mdd.MDD.FieldPath;
 import org.makumba.devel.eclipse.mdd.MDD.FromClassOrOuterQueryPath;
@@ -38,9 +43,9 @@ import org.makumba.devel.eclipse.mdd.MDD.FunctionBody;
 import org.makumba.devel.eclipse.mdd.MDD.FunctionDeclaration;
 import org.makumba.devel.eclipse.mdd.MDD.MultiplyExpression;
 import org.makumba.devel.eclipse.mdd.MDD.PointerType;
+import org.makumba.devel.eclipse.mdd.MDD.RelationalExpression;
 import org.makumba.devel.eclipse.mdd.MDD.SelectFrom;
 import org.makumba.devel.eclipse.mdd.MDD.SubFieldDeclaration;
-import org.makumba.devel.eclipse.mdd.ui.contentassist.AbstractMDDProposalProvider;
 
 import com.google.common.collect.Iterables;
 import com.google.inject.Inject;
@@ -62,6 +67,9 @@ public class MDDProposalProvider extends AbstractMDDProposalProvider {
 	@Inject
 	private IQualifiedNameProvider nameProvider;
 
+	@Inject
+	private IAntlrParser parser;
+
 	@Override
 	public void completeModifiers_NotEmpty(EObject model, Assignment assignment, ContentAssistContext context,
 			ICompletionProposalAcceptor acceptor) {
@@ -75,7 +83,7 @@ public class MDDProposalProvider extends AbstractMDDProposalProvider {
 	public void completeSubFieldDeclaration_SubFieldOf(EObject model, Assignment assignment,
 			ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
 		//		super.completeSubFieldDeclaration_SubFieldOf(model, assignment, context, acceptor);
-		Iterable<FieldDeclaration> declarations = MDDUtils.getPointerOrSetFieldsOf(context.getCurrentModel());
+		Iterable<FieldDeclaration> declarations = MDDUtils.getSubFieldFields(context.getCurrentModel());
 
 		Iterable<IEObjectDescription> candidates = scopeFor(declarations).getAllContents();
 		for (IEObjectDescription candidate : candidates) {
@@ -218,22 +226,24 @@ public class MDDProposalProvider extends AbstractMDDProposalProvider {
 	@Override
 	public void complete_Identifier(EObject model, RuleCall ruleCall, ContentAssistContext context,
 			ICompletionProposalAcceptor acceptor) {
-		// TODO Auto-generated method stub
 		if (model.eContainer() instanceof Atom || model.eContainer() instanceof MultiplyExpression) {
-			CompositeNode parent = context.getCurrentNode().getParent();
+			//CompositeNode parent = context.getCurrentNode().getParent();
+			CompositeNode parent = context.getLastCompleteNode().getParent();
 			boolean found = false;
 			String prefix = "";
 			for (int i = parent.getLeafNodes().size() - 1; i >= 0; i--) {
 				LeafNode leafNode = parent.getLeafNodes().get(i);
-				if (found) {
+				if (leafNode.getOffset() < context.getOffset()) {
 					if (leafNode.getText().matches("(\\.|\\w+)")) {
-						prefix = leafNode.getText() + prefix;
+						String content = leafNode.getText();
+						if (leafNode.getOffset() + leafNode.getLength() > context.getOffset()) {
+							content = content.substring(0, context.getOffset() - leafNode.getOffset());
+						}
+						prefix = content + prefix;
+
 					} else {
 						break;
 					}
-				}
-				if (leafNode == context.getCurrentNode()) {
-					found = true;
 				}
 			}
 			if (!prefix.isEmpty()) {
@@ -256,7 +266,7 @@ public class MDDProposalProvider extends AbstractMDDProposalProvider {
 			ICompletionProposalAcceptor acceptor) {
 		MQLProposalProvider mpp = new MQLProposalProvider(null, resourceSet.get(), getLabelProvider());
 
-		Set<ICompletionProposal> proposals = new LinkedHashSet<ICompletionProposal>();
+		Set<ICompletionProposal> proposals = new TreeSet<ICompletionProposal>();
 		String prefix = context.getPrefix();
 		int offset = context.getOffset();
 
@@ -267,12 +277,56 @@ public class MDDProposalProvider extends AbstractMDDProposalProvider {
 		}
 	}
 
+	@Override
+	public void complete_RelationalExpression(EObject model, RuleCall ruleCall, ContentAssistContext context,
+			ICompletionProposalAcceptor acceptor) {
+		EObject current = model;
+		while (current != null && !(current instanceof EqualityExpression)) {
+			current = current.eContainer();
+		}
+		if (current instanceof EqualityExpression) {
+			LinkedHashMap<String, String> labels = getLabels(model);
+
+			MQLContext mqlContext = new MQLContext(labels, resourceDescriptions, getFile(model));
+			MQLProposalProvider mpp = new MQLProposalProvider(mqlContext, resourceSet.get(), getLabelProvider());
+			Set<ICompletionProposal> proposals = new TreeSet<ICompletionProposal>();
+
+			EqualityExpression e = (EqualityExpression) current;
+			for (RelationalExpression relationalExpresion : e.getR()) {
+				String enumPath = NodeUtil.getNode(relationalExpresion).serialize().trim();
+				proposals.addAll(mpp.getEnumValueProposals(enumPath, context.getPrefix(), context.getOffset(), 1100));
+			}
+			for (ICompletionProposal proposal : proposals) {
+				acceptor.accept(proposal);
+			}
+		}
+
+	}
+
 	private LinkedHashMap<String, String> getLabels(EObject object) {
 		LinkedHashMap<String, String> result = new LinkedHashMap<String, String>();
 		EObject current = object.eContainer();
 		while (current != null && !(current instanceof FunctionBody)) {
-			if (current instanceof SelectFrom)
-				result.putAll(processFrom(((SelectFrom) current).getFrom()));
+			if (current instanceof SelectFrom) {
+				SelectFrom select = (SelectFrom) current;
+				if (select.getFrom() == null) {
+					String from = NodeUtil.getRootNode(current).serialize()
+							.substring(NodeUtil.getNode(current).getTotalOffset());
+					if (from.contains("\n")) {
+						from = from.substring(0, from.indexOf("\n"));
+					}
+					if (from.toLowerCase().contains(" from ")) {
+						from = from.substring(from.toLowerCase().indexOf(" from "));
+						StringReader sr = new StringReader(from);
+						EObject parseResult = parser.parse("FromClause", sr).getRootASTElement();
+						if (parseResult != null && parseResult instanceof FromClause) {
+							result.putAll(processFrom((FromClause) parseResult));
+						}
+					}
+				} else {
+					result.putAll(processFrom(select.getFrom()));
+				}
+			}
 			current = current.eContainer();
 		}
 		EObject parent = object.eContainer();
