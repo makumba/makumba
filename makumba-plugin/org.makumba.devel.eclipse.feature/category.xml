@@ -3,5 +3,9 @@
    <feature url="features/org.makumba.devel.eclipse.feature_1.0.0.qualifier.jar" id="org.makumba.devel.eclipse.feature" version="1.0.0.qualifier">
       <category name="org.makumba.devel.eclipse.category"/>
    </feature>
-   <category-def name="org.makumba.devel.eclipse.category" label="makumba.org"/>
+   <category-def name="org.makumba.devel.eclipse.category" label="makumba.org">
+         <description>
+         Makumba is web development framework that aims thats provides an easy to use technology for developing data intensive web applicaitons. This plugin provides support for developing applications using Makumba. Some of the features include: Makumba Data Definition editor, JSP content assistant, file wizards etc.
+      </description>
+   </category-def>
 </site>

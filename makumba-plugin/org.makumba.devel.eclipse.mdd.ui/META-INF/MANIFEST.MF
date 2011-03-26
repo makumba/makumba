@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: makumba_plugin.ui
+Bundle-Name: Makumba Plugin
 Bundle-Vendor: Makumba.org
 Bundle-Version: 1.0.0.qualifier
 Bundle-SymbolicName: org.makumba.devel.eclipse.mdd.ui;singleton:=true
