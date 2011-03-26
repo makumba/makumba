@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.makumba.devel.eclipse.feature"
-      label="Makumba Plug-in"
+      label="Makumba"
       version="1.0.0.qualifier"
-      provider-name="makumba.org">
+      provider-name="makumba.org"
+      plugin="org.makumba.devel.eclipse.mdd.ui">
 
    <description url="http://www.makumba.org/page/plugin">
-      Makumba plugin featuring Makumba Data Definition editor, makumba
-JSP taglib validation and content assist and much more to help
-you develop applications based on the Makumba framework.
+      Makumba plugin provides support for developing applications using Makumba web development framework. Some of the features include: Makumba Data Definition editor, JSP content assistant, file wizards etc.
    </description>
 
    <copyright url="http://www.makumba.org">
-      Copyright © 2010 Makumba Foundation (www.makumba.org)
+      Copyright © 2011 Makumba Foundation (www.makumba.org)
    </copyright>
 
-   <license url="http://www.makumba.org">
-      EPL
+   <license url="http://www.eclipse.org/legal/epl-v10.html">
+      All rights reserved. This program and the accompanying materials
+are made available under the terms of the Eclipse Public License
+v1.0 which accompanies this distribution, and is available at
+http://www.eclipse.org/legal/epl-v10.html
    </license>
 
    <url>
