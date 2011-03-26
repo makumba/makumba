@@ -319,10 +319,6 @@ public class MQLProposalProvider extends MDDExecutableExtensionFactory {
 				proposals.add(proposal);
 			}
 		}
-		for (ICompletionProposal iCompletionProposal : proposals) {
-			ConfigurableCompletionProposal p = (ConfigurableCompletionProposal) iCompletionProposal;
-			System.out.println(p.getPriority() + p.getDisplayString());
-		}
 		return proposals;
 	}
 
@@ -414,46 +410,5 @@ public class MQLProposalProvider extends MDDExecutableExtensionFactory {
 		}
 		return new StyledString(labelProvider.getText(in));
 	}
-
-	/**
-	 * Test implementation
-	 * 
-	 * @param currentPath
-	 * @param insertOffset
-	 * @param filter
-	 * @return
-	 */
-	/*private Set<ICompletionProposal> getPathWithoutLabelsProposalsTest(String currentPath, int insertOffset,
-			Predicate<Declaration> filter) {
-		Set<ICompletionProposal> proposals = new LinkedHashSet<ICompletionProposal>();
-
-		String path = currentPath.substring(0, currentPath.lastIndexOf("."));
-
-		IEObjectDescription ddDescription = context.getDataDefinition(path);
-
-		if (ddDescription != null) {
-			path = path.substring(ddDescription.getName().length());
-			if (!path.isEmpty() && path.charAt(0) == '.')
-				path = path.substring(1);
-
-			Iterable<IEObjectDescription> declarations = null;//context.getObjectsOnPath(ddDescription, path);
-
-			for (IEObjectDescription declaration : declarations) {
-				String name = declaration.getQualifiedName();
-				name = name.substring(name.lastIndexOf(".") + 1);
-				String prefix = currentPath.substring(currentPath.lastIndexOf(".") + 1);
-				if (declaration.getEClass().equals(MDDPackage.Literals.FIELD_DECLARATION))
-					if (startsWith(name, prefix)) {
-						String replacement = name.substring(prefix.length());
-						StyledString displayString = new StyledString();
-						displayString.append(name);
-						ICompletionProposal p = createProposal(replacement, insertOffset, replacement.length(), null,
-								displayString, 0);
-						proposals.add(p);
-					}
-			}
-		}
-		return proposals;
-	}*/
 
 }
