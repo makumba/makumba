@@ -82,6 +82,20 @@ public class MDDUtils {
 		}
 	};
 
+	public static Predicate<Declaration> NonPtrOne = new Predicate<Declaration>() {
+		public boolean apply(Declaration input) {
+			if (input instanceof FieldDeclaration) {
+				if (((FieldDeclaration) input).getTypedef() instanceof PointerType) {
+					PointerType type = (PointerType) ((FieldDeclaration) input).getTypedef();
+					return type.getRef() != null;
+				}
+				return true;
+
+			}
+			return false;
+		}
+	};
+
 	public static Predicate<Declaration> Field = new Predicate<Declaration>() {
 		public boolean apply(Declaration input) {
 			return (input instanceof FieldDeclaration);
@@ -226,9 +240,15 @@ public class MDDUtils {
 	 * @param context
 	 * @return
 	 */
-	public static Iterable<FieldDeclaration> getPointerOrSetFieldsOf(EObject context) {
+	public static Iterable<FieldDeclaration> getSubFieldFields(EObject context) {
 		Iterable<Declaration> declarations = getDeclarationsOf(context);
-		return getPointerOrSetFields(declarations);
+		return getSubFieldFields(declarations);
+	}
+
+	public static Iterable<FieldDeclaration> getSubFieldFields(Iterable<Declaration> declarations) {
+		Iterable<FieldDeclaration> fields = Iterables.filter(declarations, FieldDeclaration.class);
+		fields = Iterables.concat(Iterables.filter(fields, SetComplex), Iterables.filter(fields, PtrOne));
+		return fields;
 	}
 
 	public static Iterable<FieldDeclaration> getPointerOrSetFields(Iterable<Declaration> declarations) {
