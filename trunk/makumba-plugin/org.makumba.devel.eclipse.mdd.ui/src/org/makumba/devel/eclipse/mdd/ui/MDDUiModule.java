@@ -5,6 +5,7 @@ package org.makumba.devel.eclipse.mdd.ui;
 
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.xtext.ui.editor.IXtextEditorCallback;
+import org.eclipse.xtext.ui.editor.contentassist.XtextContentAssistProcessor;
 import org.eclipse.xtext.ui.editor.hyperlinking.IHyperlinkHelper;
 import org.eclipse.xtext.ui.editor.syntaxcoloring.ISemanticHighlightingCalculator;
 import org.eclipse.xtext.ui.editor.syntaxcoloring.antlr.AbstractAntlrTokenToAttributeIdMapper;
@@ -13,12 +14,26 @@ import org.makumba.devel.eclipse.mdd.ui.hyperlinking.MQLHyperlinkHelper;
 import org.makumba.devel.eclipse.mdd.ui.syntaxcoloring.AntlrTokenToAttributeIdMapper;
 import org.makumba.devel.eclipse.mdd.ui.syntaxcoloring.SemanticHighlightingCalculator;
 
+import com.google.inject.Binder;
+import com.google.inject.name.Names;
+
 /**
  * Use this class to register components to be used within the IDE.
  */
 public class MDDUiModule extends org.makumba.devel.eclipse.mdd.ui.AbstractMDDUiModule {
+
+	@Override
+	public void configure(Binder binder) {
+		// TODO Auto-generated method stub
+		super.configure(binder);
+		binder.bind(String.class)
+				.annotatedWith(Names.named(XtextContentAssistProcessor.COMPLETION_AUTO_ACTIVATION_CHARS))
+				.toInstance(".>!");
+	}
+
 	public MDDUiModule(AbstractUIPlugin plugin) {
 		super(plugin);
+
 	}
 
 	public Class<? extends AbstractAntlrTokenToAttributeIdMapper> bindAbstractAntlrTokenToAttributeIdMapper() {
@@ -41,5 +56,4 @@ public class MDDUiModule extends org.makumba.devel.eclipse.mdd.ui.AbstractMDDUiM
 	public Class<? extends IHyperlinkHelper> bindHyperlink() {
 		return MQLHyperlinkHelper.class;
 	}
-
 }
