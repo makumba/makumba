@@ -1,5 +1,12 @@
 package org.makumba.test.component;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URISyntaxException;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +20,6 @@ import org.makumba.InvalidValueException;
 import org.makumba.Transaction;
 import org.makumba.providers.TransactionProvider;
 import org.makumba.test.util.MakumbaTestSetup;
-
 
 /**
  * Unit tests for the query generation process (from MQL to SQL, including parameter rewriting)
@@ -71,6 +77,47 @@ public class QueryGenerationTest extends TestCase {
             assertTrue(e instanceof InvalidValueException);
         } finally {
             t.close();
+        }
+
+    }
+
+    public void testBatchQueries() throws IOException, URISyntaxException {
+        String baseDir = "queries/";
+        java.net.URL u = org.makumba.commons.ClassResource.get(baseDir);
+        if (u != null) {
+            java.io.File dir = new File(u.toURI());
+            if (dir.isDirectory()) {
+                String[] list = dir.list();
+                for (String filename : list) {
+                    if (filename.endsWith(".txt")) {
+                        InputStream stream = this.getClass().getClassLoader().getResourceAsStream(baseDir + filename);
+
+                        DataInputStream in = new DataInputStream(stream);
+                        BufferedReader br = new BufferedReader(new InputStreamReader(in));
+                        String query;
+                        Transaction t = TransactionProvider.getInstance().getConnectionTo(
+                            TransactionProvider.getInstance().getDefaultDataSourceName());
+                        int line = 0;
+                        try {
+                            while ((query = br.readLine()) != null) {
+                                line++;
+                                if (!query.startsWith("#") && !query.trim().isEmpty()) {
+                                    try {
+                                        t.executeQuery(query, null);
+                                        line++;
+                                    } catch (Exception e) {
+                                        fail("Error in '" + filename + "' on query at line " + line + ": " + query
+                                                + "\nCause: " + e.getMessage());
+                                    }
+                                }
+                            }
+                        } finally {
+                            t.close();
+                        }
+                    }
+
+                }
+            }
         }
 
     }
