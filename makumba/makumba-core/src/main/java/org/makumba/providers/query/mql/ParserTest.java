@@ -4,8 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Properties;
 import java.util.Vector;
 
 import org.makumba.DataDefinition;
@@ -30,14 +30,6 @@ public class ParserTest {
 
     private static NameResolver nr;
     static {
-        String databaseProperties = "test/localhost_mysql_makumba.properties";
-
-        Properties p = new Properties();
-        try {
-            p.load(org.makumba.commons.ClassResource.get(databaseProperties).openStream());
-        } catch (Exception e) {
-            throw new org.makumba.ProgrammerError(databaseProperties);
-        }
 
         nr = new NameResolver();
     }
@@ -103,14 +95,18 @@ public class ParserTest {
         String mql_sql = null;
 
         MqlQueryAnalysis mq = null;
-        ParameterTransformer qG = null;
         Throwable mqlThr = null;
         try {
             mq = new MqlQueryAnalysis(query, false, automaticLeftJoin);
+            ParameterTransformer qG = new MqlParameterTransformer(mq, new MqlSqlGenerator());
+            qG.init(new HashMap<String, Object>() {
+                @Override
+                public Object get(Object key) {
+                    return "";
+                }
+            });
 
-            // FIXME: no clue what happens here but as the compiler says, qG can only be null
-            // qG = qG;
-            // mql_sql = qG.getSQLQuery(nr).toLowerCase();
+            mql_sql = qG.getTransformedQuery(nr).toLowerCase();
         } catch (Throwable t) {
             mqlThr = t;
         }
