@@ -367,7 +367,7 @@ public abstract class QueryAnalysisProvider implements Serializable {
 
         public boolean repetitive;
 
-        private Stack<AST> path = new Stack<AST>();
+        private final Stack<AST> path = new Stack<AST>();
 
         public ASTTransformVisitor(boolean repetitive) {
             this.repetitive = repetitive;
@@ -487,9 +487,9 @@ public abstract class QueryAnalysisProvider implements Serializable {
      */
     public static class FromWhere {
 
-        private List<AST> extraFrom = new ArrayList<AST>();
+        private final List<AST> extraFrom = new ArrayList<AST>();
 
-        private List<AST> extraWhere = new ArrayList<AST>();
+        private final List<AST> extraWhere = new ArrayList<AST>();
 
         public void addFromWhere(AST from, AST where) {
             extraFrom.add(from);
@@ -940,10 +940,29 @@ public abstract class QueryAnalysisProvider implements Serializable {
         } else if (a.getType() == HqlTokenTypes.METHOD_CALL
                 && a.getFirstChild().getText().toLowerCase().endsWith("element")) {
             makeSelect(a, HqlTokenTypes.AGGREGATE, a.getFirstChild().getText().substring(0, 3));
+        } else if (isLogical(a)) {
+            a.setFirstChild(addEqualsOne(a.getFirstChild()));
+            if (a.getFirstChild().getNextSibling() != null)
+                a.getFirstChild().setNextSibling(addEqualsOne(a.getFirstChild().getNextSibling()));
         }
 
         transformOQL(a.getFirstChild());
         transformOQL(a.getNextSibling());
+    }
+
+    private static AST addEqualsOne(AST a) {
+        if (a.getType() != HqlTokenTypes.QUERY && a.getType() != HqlTokenTypes.COLON)
+            return a;
+        AST ret = ASTUtil.makeNode(HqlTokenTypes.EQ, "=");
+        ret.setFirstChild(a);
+        ret.setNextSibling(a.getNextSibling());
+        a.setNextSibling(null);
+        ret.getFirstChild().setNextSibling(ASTUtil.makeNode(HqlTokenTypes.TRUE, "true"));
+        return ret;
+    }
+
+    static boolean isLogical(AST a) {
+        return a.getType() == HqlTokenTypes.AND || a.getType() == HqlTokenTypes.OR || a.getType() == HqlTokenTypes.NOT;
     }
 
     static boolean isNil(AST a) {
