@@ -306,14 +306,9 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         return ast.toStringTree();
     }
 
-    private int labelCounter = 0;
-
-    public String createLabel() {
-        String l = "_x_gen_" + labelCounter++;
-        generatedLabels.add(l);
-        return l;
-    }
-
+    /**
+     * @return a duplicate of the pass2 analyser tree
+     */
     public AST getAnalyserTree() {
         return analyser.fact.dupTree(analyserTreeOriginal);
     }
@@ -322,6 +317,13 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         return analyser.fact;
     }
 
+    /**
+     * Some queries like "SELECT actor(Type)" or "SELECT 1" have no FROM section. Such queries can be optimized so they
+     * are not sent to the db engine if they only select constants. Other queries like "SELECT actor(Type).field" don't
+     * have a FROM section but will get one after inlining. They must be sent to the db engine.
+     * 
+     * @return whether the inlined query had no FROM section
+     */
     public boolean getNoFrom() {
         return noFrom;
     }
@@ -342,8 +344,13 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         }
     }
 
+    /**
+     * If the inlined query has no FROM, and all its projections are constants, its result is only made of constants.
+     * 
+     * @return a map with constants if the inlined query has no FROM, and only constant projections, null otherwise
+     */
     public Map<String, Object> getConstantValues() {
-        return analyser.constantValues;
+        return noFrom ? analyser.constantValues : null;
     }
 
     @Override
@@ -361,7 +368,16 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         return this.paramInfoByName;
     }
 
+    /**
+     * Make up a constant result of one row if the query has no from and only constant projections
+     * 
+     * @return a constant result of one row, containing the respective constants, with the indicated column names
+     */
     public Vector<Dictionary<String, Object>> getConstantResult(Map<String, Object> args, int offset, int limit) {
+        if (getConstantValues() == null) {
+            throw new IllegalStateException("The query " + query
+                    + " has a FROM or non-constant projections so it cannot return a constant result");
+        }
         Vector<Dictionary<String, Object>> ret = new Vector<Dictionary<String, Object>>(1);
         if (offset > 0 || limit == 0) {
             return ret;
