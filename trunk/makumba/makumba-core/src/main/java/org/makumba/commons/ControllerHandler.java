@@ -26,6 +26,7 @@ package org.makumba.commons;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 
 import org.makumba.controller.http.ControllerFilter;
 
@@ -75,6 +76,14 @@ public abstract class ControllerHandler {
      * Performs cleanup operations after the filter operation is executed
      */
     public void finalize(ServletRequest request, ServletResponse response) {
+    }
+
+    /**
+     * Returns the path of the current request, removing any contextPath, and replacing multiple / with single /
+     * occurrences.
+     */
+    protected static String getPath(HttpServletRequest request) {
+        return request.getRequestURI().replace(request.getContextPath(), "").replaceAll("/+", "/");
     }
 
 }

@@ -56,7 +56,7 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
 
-        String path = request.getRequestURI().replace(request.getContextPath(), "");
+        String path = getPath(request);
         if (path.startsWith(Configuration.getServletLocation(MakumbaServlet.UNIQUENESS))) {
             new UniquenessServlet().doGet(request, response);
             return false;
