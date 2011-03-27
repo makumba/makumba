@@ -4,16 +4,18 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
-import java.util.LinkedHashSet;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
+import org.apache.commons.collections.set.ListOrderedSet;
 import org.makumba.analyser.AnalysableElement;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.MakumbaJspAnalyzer;
+import org.makumba.commons.MakumbaResourceServlet;
+import org.makumba.commons.tags.GenericMakumbaTag;
 import org.makumba.forms.validation.LiveValidationProvider;
 import org.makumba.list.tags.SectionTag;
 import org.makumba.providers.Configuration;
@@ -43,6 +45,8 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
 
     private boolean headClosedPassed = false;
 
+    private String makumbaStyleSheet;
+
     private HttpServletRequest request;
 
     private String cssResources = "";
@@ -54,6 +58,9 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
     public MakumbaResponseWrapper(HttpServletResponse response, HttpServletRequest request) {
         super(response);
         this.request = request;
+        makumbaStyleSheet = "<link rel=\"StyleSheet\" type=\"text/css\" media=\"all\" href=\""
+                + request.getContextPath() + Configuration.getServletLocation(MakumbaServlet.RESOURCES) + "/"
+                + MakumbaResourceServlet.RESOURCE_PATH_CSS + "makumba.css\"/>";
     }
 
     @Override
@@ -81,8 +88,7 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
         PageCache pageCache = AnalysableElement.getPageCache(request,
             request.getSession().getServletContext().getRealPath("/"), MakumbaJspAnalyzer.getInstance());
         if (pageCache != null) {
-            // workaround to http://trac.makumba.org/ticket/1277: writing all potentially required resources
-            LinkedHashSet<String> resources = Configuration.getRequiredResources();
+            ListOrderedSet resources = pageCache.retrieveSetValues(GenericMakumbaTag.NEEDED_RESOURCES);
             if (resources != null) {
                 for (Object object : resources) {
                     String resource = (String) object;
@@ -91,9 +97,9 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
                                 + Configuration.getServletLocation(MakumbaServlet.RESOURCES) + "/javaScript/"
                                 + resource + "\"></script>\n";
                     } else if (resource.endsWith(".css")) {
-                        cssResources += "  <link rel=\"StyleSheet\" type=\"text/css\" media=\"all\" href=\""
+                        cssResources += "\n  <link rel=\"StyleSheet\" type=\"text/css\" media=\"all\" href=\""
                                 + request.getContextPath() + Configuration.getServletLocation(MakumbaServlet.RESOURCES)
-                                + "/css/" + resource + "\"/>\n";
+                                + "/css/" + resource + "\"/>";
                     }
                 }
             }
@@ -109,10 +115,6 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
      * write/print/println.
      */
     class MakumbaPrintWriter extends PrintWriter {
-
-        private static final String BEGIN_AUTOMATICALLY_ADDED_BY_MAKUMBA = "  <!-- BEGIN: automatically added by Makumba -->\n";
-
-        private static final String END_AUTOMATICALLY_ADDED_BY_MAKUMBA = "  <!-- END: automatically added by Makumba -->\n";
 
         public MakumbaPrintWriter(Writer originalWriter) {
             super(originalWriter);
@@ -239,14 +241,12 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
 
         private String injectJavaScriptsResources(String s) {
             // we add the JavaScripts just before the </head>
-            return s.replace("</head>", "\n" + BEGIN_AUTOMATICALLY_ADDED_BY_MAKUMBA + javaScriptResources
-                    + END_AUTOMATICALLY_ADDED_BY_MAKUMBA + "</head>");
+            return s.replace("</head>", javaScriptResources + "</head>");
         }
 
         private String injectStyleSheets(String s) {
             // we add the CSS stylesheet right after the <head>
-            return s.replace("<head>", "<head>\n" + BEGIN_AUTOMATICALLY_ADDED_BY_MAKUMBA + cssResources
-                    + END_AUTOMATICALLY_ADDED_BY_MAKUMBA);
+            return s.replace("<head>", "<head>\n  " + makumbaStyleSheet + cssResources);
         }
 
         @Override
