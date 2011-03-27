@@ -48,7 +48,7 @@ public class DataToolsControllerHandler extends ControllerHandler {
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
 
-        String path = request.getRequestURI().replace(request.getContextPath(), "");
+        String path = getPath(request);
         if (path.startsWith(Configuration.getToolLocation(DeveloperTool.DATA_QUERY))) {
             new DataQueryServlet().doGet(request, response);
             return false;
