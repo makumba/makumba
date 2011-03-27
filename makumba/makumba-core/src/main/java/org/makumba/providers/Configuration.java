@@ -27,6 +27,7 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -34,8 +35,10 @@ import java.util.Map.Entry;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.makumba.ConfigurationError;
+import org.makumba.MakumbaSystem;
 import org.makumba.commons.ClassResource;
 
 /**
@@ -121,6 +124,8 @@ public class Configuration implements Serializable {
 
     private static ConfigurationDTO d;
 
+    private static ArrayList<String> requiredResources;
+
     private static void populateConfigurationDTO() {
         d = new ConfigurationDTO();
         d.dataDefinitionProvider = applicationConfig.getProperty("providers", KEY_DATADEFINITIONPROVIDER);
@@ -205,6 +210,8 @@ public class Configuration implements Serializable {
             d.defaultFormAnnotation = applicationConfig.getProperty("controllerConfig", KEY_FORM_ANNOTATION);
 
             buildConfiguredDataSources();
+
+            requiredResources = buildRequiredResources();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -610,6 +617,31 @@ public class Configuration implements Serializable {
     public enum DataSourceType {
         makumba,
         hibernate;
+    }
+
+    /** Returns the list of JS and CSS resources needed by Makumba. */
+    public static ArrayList<String> getRequiredResources() {
+        return requiredResources;
+    }
+
+    /**
+     * Compiles a list of all JS and CSS resources needed by Makumba. Currently, this is all sources Makumba can
+     * potentially need.<br/>
+     * TODO: in the future, allow programmers to disable sourcing of specific resources via the {@link Configuration}
+     */
+    private static ArrayList<String> buildRequiredResources() {
+        ArrayList<String> resources = new ArrayList<String>();
+        CollectionUtils.addAll(resources,
+            MakumbaSystem.getClientsideValidationProvider().getNeededJavaScriptFileNames());
+        CollectionUtils.addAll(resources, MakumbaSystem.getCalendarProvider().getNeededJavaScriptFileNames());
+        resources.add("makumbaSetChooser.js");
+        resources.add("prototype.js");
+        resources.add("scriptaculous.js");
+        resources.add("makumba-autocomplete.js");
+        resources.add("makumba-ajax.js");
+
+        resources.add("makumba.css");
+        return resources;
     }
 
 }
