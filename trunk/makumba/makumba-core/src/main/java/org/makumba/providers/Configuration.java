@@ -27,9 +27,9 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
@@ -124,7 +124,7 @@ public class Configuration implements Serializable {
 
     private static ConfigurationDTO d;
 
-    private static ArrayList<String> requiredResources;
+    private static LinkedHashSet<String> requiredResources;
 
     private static void populateConfigurationDTO() {
         d = new ConfigurationDTO();
@@ -620,7 +620,7 @@ public class Configuration implements Serializable {
     }
 
     /** Returns the list of JS and CSS resources needed by Makumba. */
-    public static ArrayList<String> getRequiredResources() {
+    public static LinkedHashSet<String> getRequiredResources() {
         return requiredResources;
     }
 
@@ -629,8 +629,8 @@ public class Configuration implements Serializable {
      * potentially need.<br/>
      * TODO: in the future, allow programmers to disable sourcing of specific resources via the {@link Configuration}
      */
-    private static ArrayList<String> buildRequiredResources() {
-        ArrayList<String> resources = new ArrayList<String>();
+    private static LinkedHashSet<String> buildRequiredResources() {
+        LinkedHashSet<String> resources = new LinkedHashSet<String>();
         CollectionUtils.addAll(resources,
             MakumbaSystem.getClientsideValidationProvider().getNeededJavaScriptFileNames());
         CollectionUtils.addAll(resources, MakumbaSystem.getCalendarProvider().getNeededJavaScriptFileNames());
@@ -642,6 +642,10 @@ public class Configuration implements Serializable {
 
         resources.add("makumba.css");
         return resources;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(buildRequiredResources());
     }
 
 }
