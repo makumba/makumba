@@ -75,7 +75,7 @@ public class UniquenessServlet extends HttpServlet {
                 return;
             }
 
-            String OQL = "select 1 from " + tableName + " p where p." + fieldName + "=$1";
+            String OQL = "select p from " + tableName + " p where p." + fieldName + "=$1";
 
             Vector<Dictionary<String, Object>> v = new Vector<Dictionary<String, Object>>();
 
