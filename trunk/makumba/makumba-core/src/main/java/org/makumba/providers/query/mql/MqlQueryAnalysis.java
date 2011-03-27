@@ -18,8 +18,8 @@ import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
-import org.makumba.providers.QueryProvider;
 import org.makumba.providers.QueryAnalysisProvider.ASTTransformVisitor;
+import org.makumba.providers.QueryProvider;
 
 import antlr.ASTFactory;
 import antlr.collections.AST;
@@ -231,10 +231,12 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         }.traverse(analyser.getAST());
     }
 
+    @Override
     public String getQuery() {
         return query;
     }
 
+    @Override
     public DataDefinition getLabelType(String labelName) {
         String s1 = aliases.get(labelName);
         if (s1 != null) {
@@ -243,14 +245,17 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         return labels.get(labelName);
     }
 
+    @Override
     public Map<String, DataDefinition> getLabelTypes() {
         return labels;
     }
 
+    @Override
     public DataDefinition getParameterTypes() {
         return paramInfo;
     }
 
+    @Override
     public DataDefinition getProjectionType() {
         return proj;
     }
@@ -341,14 +346,17 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         return analyser.constantValues;
     }
 
+    @Override
     public AST getPass1Tree() {
         return pass1;
     }
 
+    @Override
     public Collection<String> getWarnings() {
         return analyser.warnings;
     }
 
+    @Override
     public DataDefinition getParameterTypesByName() {
         return this.paramInfoByName;
     }
