@@ -59,8 +59,8 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
         super(response);
         this.request = request;
         makumbaStyleSheet = "<link rel=\"StyleSheet\" type=\"text/css\" media=\"all\" href=\""
-            + request.getContextPath() + Configuration.getServletLocation(MakumbaServlet.RESOURCES) + "/"
-            + MakumbaResourceServlet.RESOURCE_PATH_CSS + "makumba.css\"/>";
+                + request.getContextPath() + Configuration.getServletLocation(MakumbaServlet.RESOURCES) + "/"
+                + MakumbaResourceServlet.RESOURCE_PATH_CSS + "makumba.css\"/>";
     }
 
     @Override
@@ -70,7 +70,7 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
         if (request.getRequestURI().endsWith(".jsp")
                 && !request.getRequestURI().startsWith(
                     request.getContextPath() + Configuration.getMakumbaToolsLocation())
-                    && request.getAttribute(javax.servlet.jsp.PageContext.EXCEPTION) == null) {
+                && request.getAttribute(javax.servlet.jsp.PageContext.EXCEPTION) == null) {
             if (makumbaWriter == null) {
                 originalWriter = super.getWriter();
                 makumbaWriter = new MakumbaPrintWriter(originalWriter);
@@ -94,12 +94,12 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
                     String resource = (String) object;
                     if (resource.endsWith(".js")) {
                         javaScriptResources += "  <script type=\"text/javascript\" src=\"" + request.getContextPath()
-                        + Configuration.getServletLocation(MakumbaServlet.RESOURCES) + "/javaScript/"
-                        + resource + "\"></script>\n";
+                                + Configuration.getServletLocation(MakumbaServlet.RESOURCES) + "/javaScript/"
+                                + resource + "\"></script>\n";
                     } else if (resource.endsWith(".css")) {
                         cssResources += "\n  <link rel=\"StyleSheet\" type=\"text/css\" media=\"all\" href=\""
-                            + request.getContextPath() + Configuration.getServletLocation(MakumbaServlet.RESOURCES)
-                            + "/css/" + resource + "\"/>";
+                                + request.getContextPath() + Configuration.getServletLocation(MakumbaServlet.RESOURCES)
+                                + "/css/" + resource + "\"/>";
                     }
                 }
             }
