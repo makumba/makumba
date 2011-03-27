@@ -55,6 +55,7 @@ import prefuse.controls.DragControl;
 import prefuse.controls.PanControl;
 import prefuse.controls.ZoomControl;
 import prefuse.data.Graph;
+import prefuse.data.Node;
 import prefuse.data.io.DataIOException;
 import prefuse.data.io.GraphMLReader;
 import prefuse.render.AbstractShapeRenderer;
@@ -72,20 +73,25 @@ import prefuse.visual.expression.InGroupPredicate;
  * @version $Id: MDDVisualiser.java,v 1.1 Jul 21, 2008 12:26:37 AM rudi Exp $
  */
 public class MDDRelationVisualiser {
-    static final String tree = "graph";
-
     static final String treeNodes = "graph.nodes";
 
     static final String treeEdges = "graph.edges";
 
     public static void main(String[] args) throws IOException {
-        Vector<String> mdds = DataDefinitionProvider.getInstance().getDataDefinitionsInDefaultLocations();
+        DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
+
+        Vector<String> mdds;
+        if (args.length > 0) {
+            mdds = ddp.getDataDefinitionsInAbsoluteLocation(args[0]);
+        } else {
+            mdds = ddp.getDataDefinitionsInDefaultLocations();
+        }
         File tmp = new File("/tmp/graph.ml"); // File.createTempFile("graph_", ".ml");
 
         Document d = DocumentHelper.createDocument();
         Element graphml_tag = d.addElement("graphml");
 
-        Element root = graphml_tag.addElement(tree);
+        Element root = graphml_tag.addElement("graph");
         root.addAttribute("edgedefault", "directed");
 
         Namespace ns = Namespace.get("", "http://graphml.graphdrawing.org/xmlns");
@@ -99,20 +105,7 @@ public class MDDRelationVisualiser {
 
         for (String mdd : mdds) {
             try {
-                DataDefinition dd = DataDefinitionProvider.getInstance().getDataDefinition(mdd);
-                System.out.println(dd);
-                addNode(root, dd.getName());
-                final Vector<String> fieldNames = dd.getFieldNames();
-                for (String name : fieldNames) {
-                    FieldDefinition fd = dd.getFieldDefinition(name);
-                    if (fd.isPointer()) {
-                        final String name2 = fd.getPointedType().getName();
-                        addEdge(root, dd.getName(), name2, 9);
-                    } else if (fd.getIntegerType() == FieldDefinition._set) {
-                        final String name2 = fd.getPointedType().getName();
-                        addEdge(root, dd.getName(), name2, 9);
-                    }
-                }
+                processMDD(root, ddp.getDataDefinition(mdd));
             } catch (DataDefinitionParseError e) {
                 System.out.println("Skipping broken MDD " + mdd);
             }
@@ -130,11 +123,21 @@ public class MDDRelationVisualiser {
             System.err.println("Error loading graph. Exiting...");
             System.exit(1);
         }
+        
+        int minEdges = 3;
+
+        for (int i = graph.getNodeCount() - 1; i >= 0; i--) {
+            Node node = graph.getNode(i);
+            System.out.println(node + ", " + node.getOutDegree());
+            if (node.getOutDegree() < minEdges) {
+                graph.removeNode(node);
+            }
+        }
 
         // add the graph to the visualization as the data group "graph"
         // nodes and edges are accessible as "graph.nodes" and "graph.edges"
         Visualization m_vis = new Visualization();
-        m_vis.add(tree, graph);
+        m_vis.add("graph", graph);
         m_vis.setInteractive(treeNodes, null, false);
 
         // draw the "name" label for NodeItems
@@ -165,13 +168,13 @@ public class MDDRelationVisualiser {
         color.add(edges);
 
         // create the tree layout action
-        Layout graphLayout = new SquarifiedTreeMapLayout(tree);
+        Layout graphLayout = new SquarifiedTreeMapLayout("graph");
         m_vis.putAction("circleLayout", graphLayout);
 
         // create an action list with an animated layout
         // the INFINITY parameter tells the action list to run indefinitely
         ActionList layout = new ActionList(Activity.DEFAULT_STEP_TIME * 500);
-        Layout l = new ForceDirectedLayout(tree);
+        Layout l = new ForceDirectedLayout("graph");
         layout.add(l);
         layout.add(new RepaintAction());
 
@@ -187,7 +190,7 @@ public class MDDRelationVisualiser {
         display.addControlListener(new ZoomControl()); // zoom with vertical right-drag
 
         // create a new window to hold the visualization
-        JFrame frame = new JFrame("prefuse example");
+        JFrame frame = new JFrame("MDD analysis");
         // ensure application exits when window is closed
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(display);
@@ -197,6 +200,24 @@ public class MDDRelationVisualiser {
         m_vis.run("color"); // assign the colors
         m_vis.run("layout"); // start up the animated layout
 
+    }
+
+    private static void processMDD(Element root, DataDefinition dd) {
+        System.out.println(dd);
+        addNode(root, dd.getName());
+        final Vector<String> fieldNames = dd.getFieldNames();
+        for (String name : fieldNames) {
+            FieldDefinition fd = dd.getFieldDefinition(name);
+            if (fd.isPointer()) {
+                final String name2 = fd.getPointedType().getName();
+                addEdge(root, dd.getName(), name2, 9);
+            } else if (fd.getIntegerType() == FieldDefinition._set) {
+                final String name2 = fd.getPointedType().getName();
+                addEdge(root, dd.getName(), name2, 9);
+            } else if (fd.getIntegerType() == FieldDefinition._setComplex) {
+                processMDD(root, fd.getSubtable());
+            }
+        }
     }
 
     private static void addNode(Element root, String name) {
