@@ -99,7 +99,7 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
                     } else if (resource.endsWith(".css")) {
                         cssResources += "\n  <link rel=\"StyleSheet\" type=\"text/css\" media=\"all\" href=\""
                                 + request.getContextPath() + Configuration.getServletLocation(MakumbaServlet.RESOURCES)
-                                + "/css/makumbaDevelStyles.css\"/>";
+                                + "/css/" + resource + "\"/>";
                     }
                 }
             }
