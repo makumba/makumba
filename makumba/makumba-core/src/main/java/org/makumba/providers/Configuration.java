@@ -27,6 +27,7 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedHashSet;
@@ -91,6 +92,8 @@ public class Configuration implements Serializable {
     public static final String KEY_CALENDAR_EDITOR = "calendarEditor";
 
     public static final String KEY_CALENDAR_EDITOR_LINK = "calendarEditorLink";
+
+    public static final String KEY_DISABLE_RESOURCES = "disableResources";
 
     public static final String KEY_TOOLS_LOCATION = PATH;
 
@@ -208,6 +211,8 @@ public class Configuration implements Serializable {
                 KEY_CLIENT_SIDE_VALIDATION);
             // FIXME: check if the value in the file is ok, throw an exception otherwise
             d.defaultFormAnnotation = applicationConfig.getProperty("controllerConfig", KEY_FORM_ANNOTATION);
+
+            d.disableResources = applicationConfig.getProperty("controllerConfig", KEY_DISABLE_RESOURCES);
 
             buildConfiguredDataSources();
 
@@ -641,11 +646,20 @@ public class Configuration implements Serializable {
         resources.add("makumba-ajax.js");
 
         resources.add("makumba.css");
+
+        String[] disabledRes = d.disableResources.split(",");
+        logger.info("Disabling the following resources: " + Arrays.toString(disabledRes));
+        for (String r : disabledRes) {
+            if (!resources.remove(r.trim())) {
+                logger.warning("Specified resource '" + r + "' not found!");
+            }
+        }
+
         return resources;
     }
 
     public static void main(String[] args) {
-        System.out.println(buildRequiredResources());
+        System.out.println(Configuration.getRequiredResources());
     }
 
 }

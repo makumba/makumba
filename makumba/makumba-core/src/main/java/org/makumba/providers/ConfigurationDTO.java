@@ -35,6 +35,8 @@ public class ConfigurationDTO {
 
     String calendarEditorLink;
 
+    String disableResources;
+
     // dev tools
     String repositoryURL;
 
