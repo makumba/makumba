@@ -57,7 +57,7 @@ public class DataObjectViewerServlet extends DataServlet {
     private static final long serialVersionUID = 1L;
 
     public DataObjectViewerServlet() {
-        toolLocation = Configuration.getToolLocation(DeveloperTool.OBJECT_VIEWER);
+        super(DeveloperTool.OBJECT_VIEWER);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class DataObjectViewerServlet extends DataServlet {
         if (request.getParameter("ptr") != null) {
             dataPointer = new Pointer(type, request.getParameter("ptr"));
         } else {
-            writePageContentHeader(type, writer, null, MODE_LIST);
+            writePageContentHeader(type, writer, null, DeveloperTool.DATA_LISTER);
             writer.println("No object to browse provided, use the dataLister in order to browse records");
             DevelUtils.writePageEnd(writer);
             return;
@@ -86,7 +86,7 @@ public class DataObjectViewerServlet extends DataServlet {
         } catch (Throwable e) {
         }
         if (dd == null) {
-            writePageContentHeader(type, writer, null, MODE_LIST);
+            writePageContentHeader(type, writer, null, DeveloperTool.DATA_LISTER);
             writer.println("No valid type selected");
             DevelUtils.writePageEnd(writer);
             return;
@@ -103,7 +103,7 @@ public class DataObjectViewerServlet extends DataServlet {
                 SQLDBConnection sqlConnection = (SQLDBConnection) t;
                 Database hostDatabase = sqlConnection.getHostDatabase();
 
-                writePageContentHeader(type, writer, t.getName(), MODE_LIST);
+                writePageContentHeader(type, writer, t.getName(), DeveloperTool.DATA_LISTER);
                 writer.println("<br/>");
 
                 Vector<FieldDefinition> fields = DataServlet.getAllFieldDefinitions(dd);
@@ -176,7 +176,9 @@ public class DataObjectViewerServlet extends DataServlet {
 
                                         if (dictionary.size() > 0) {
                                             writer.print(" "
-                                                    + DevelUtils.writePointerValueLink(contextPath, ptrSetEntry,
+                                                    + DevelUtils.writePointerValueLink(
+                                                        contextPath,
+                                                        ptrSetEntry,
                                                         StringUtils.isNotBlank(setTitle) ? setTitle
                                                                 : ptrSetEntry.toString(), false) + " ");
                                             isEmpty = false;

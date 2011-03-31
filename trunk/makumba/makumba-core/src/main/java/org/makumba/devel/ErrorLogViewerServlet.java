@@ -37,7 +37,6 @@ import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.db.makumba.DBConnection;
-import org.makumba.providers.Configuration;
 import org.makumba.providers.DeveloperTool;
 import org.makumba.providers.TransactionProvider;
 
@@ -87,13 +86,12 @@ public class ErrorLogViewerServlet extends DataServlet {
     private final String FIELD7_LABEL = "MakumbaController";
 
     public ErrorLogViewerServlet() {
-        toolLocation = Configuration.getToolLocation(DeveloperTool.ERRORLOG_VIEWER);
+        super(DeveloperTool.ERRORLOG_VIEWER);
     }
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.doGet(request, response);
-        browsePath = contextPath + Configuration.getToolLocation(DeveloperTool.DATA_LISTER);
 
         String orderByField = request.getParameter("orderByField");
         if (orderByField == null || orderByField.equals("")) {
@@ -124,7 +122,7 @@ public class ErrorLogViewerServlet extends DataServlet {
         DevelUtils.writeStylesAndScripts(writer, contextPath);
         DevelUtils.writeTitleAndHeaderEnd(writer, "Error Log viewer");
 
-        writePageContentHeader(null, writer, null, MODE_ERROR_LOG);
+        writePageContentHeader(null, writer, null, DeveloperTool.ERRORLOG_VIEWER);
 
         writer.println("<form method=\"get\">");
         writer.println("<table width=\"100%\" cellpadding=\"5\">");

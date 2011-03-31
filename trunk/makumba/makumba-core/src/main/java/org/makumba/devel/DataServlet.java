@@ -26,16 +26,6 @@ import org.makumba.providers.DeveloperTool;
 public abstract class DataServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    public static final int MODE_LIST = 10;
-
-    public static final int MODE_QUERY = 30;
-
-    public static final int MODE_ERROR_LOG = 50;
-
-    public static final int MODE_VIEW = 20;
-
-    public static final int MODE_CONVERTOR = 40;
-
     protected String browsePath;
 
     protected String contextPath;
@@ -48,9 +38,14 @@ public abstract class DataServlet extends HttpServlet {
 
     static final Logger logger = java.util.logging.Logger.getLogger("org.makumba.devel.codeGenerator");
 
+    protected DeveloperTool toolType;
+
     protected String toolLocation = null;
 
-    public DataServlet() {
+    public DataServlet(DeveloperTool toolType) {
+        this.toolType = toolType;
+        toolLocation = Configuration.getToolLocation(toolType);
+        browsePath = contextPath + Configuration.getToolLocation(toolType);
     }
 
     @Override
@@ -70,13 +65,12 @@ public abstract class DataServlet extends HttpServlet {
         browsePath = type.replace('.', '/').substring(0, type.lastIndexOf('.') + 1);
     }
 
-    protected void writePageContentHeader(String type, PrintWriter w, String dataBaseName, int mode) {
+    protected void writePageContentHeader(String type, PrintWriter w, String dataBaseName, DeveloperTool tool) {
         w.println("<body bgcolor=\"white\">");
         w.println("<table width=\"100%\" bgcolor=\"lightblue\">");
         w.println("  <tr>");
         w.println("    <td>");
-        String toolKey = null;
-        if (mode == MODE_VIEW || mode == MODE_LIST) {
+        if (tool == DeveloperTool.OBJECT_VIEWER || tool == DeveloperTool.DATA_LISTER) {
             if (type != null && !type.equals("")) {
                 w.println("      <a href=\"" + contextPath + Configuration.getToolLocation(DeveloperTool.MDD_VIEWER)
                         + "/" + type + "\"><span style=\"font-size: x-large\"><span style=\"color: darkblue;\">" + type
@@ -93,40 +87,36 @@ public abstract class DataServlet extends HttpServlet {
             if (dataBaseName != null) {
                 w.println("<br>in Makumba database: " + dataBaseName);
             }
-            toolKey = DeveloperTool.DATA_LISTER.getKey();
-        } else if (mode == MODE_QUERY) {
+        } else if (tool == DeveloperTool.DATA_QUERY) {
             w.println("      <span style=\"font-size: x-large\">Query translater & executer</span><br>");
             w.println("      <span style=\"font-size: small\">Insert your query in OQl here, and get the created SQL and the results of the query.</span>");
-            toolKey = DeveloperTool.DATA_QUERY.getKey();
-        } else if (mode == MODE_ERROR_LOG) {
+        } else if (tool == DeveloperTool.ERRORLOG_VIEWER) {
             w.println("      <span style=\"font-size: x-large\">Error log viewer</span><br>");
             w.println("      <span style=\"font-size: small\">List of Makumba errors</span>");
-            toolKey = DeveloperTool.ERRORLOG_VIEWER.getKey();
-        } else if (mode == MODE_CONVERTOR) {
+        } else if (tool == DeveloperTool.OBJECT_ID_CONVERTER) {
             w.println("      <span style=\"font-size: x-large\">Makumba Pointer value convertor</span>");
             if (dataBaseName != null) {
                 w.println("<br>in Makumba database: " + dataBaseName);
             }
-            toolKey = DeveloperTool.OBJECT_ID_CONVERTER.getKey();
         }
         w.println("    </td>");
         w.println("    <td align=\"right\" valign=\"top\" style=\"padding: 5px; padding-top: 10px\">");
-        if (mode == MODE_CONVERTOR) {
+        if (tool == DeveloperTool.OBJECT_ID_CONVERTER) {
             w.println("      <span class=\"active\">Pointer value converter</span>");
         }
         w.println("      &nbsp;&nbsp;&nbsp;");
-        if (mode == MODE_LIST && !type.equals("") || mode == MODE_VIEW) {
+        if (tool == DeveloperTool.DATA_LISTER && !type.equals("") || tool == DeveloperTool.OBJECT_VIEWER) {
             w.println("      <a href=\"" + browsePath + "\">browse</a>");
             w.println("      &nbsp;&nbsp;&nbsp;");
             w.println("      <span class=\"active\">data</span>");
-        } else if (mode == MODE_CONVERTOR || mode == MODE_QUERY) {
+        } else if (tool == DeveloperTool.OBJECT_ID_CONVERTER || tool == DeveloperTool.DATA_QUERY) {
             w.println("      <a href=\"" + browsePath + "\">browse</a>");
         } else {
             w.println("      <span class=\"active\">browse</span>");
         }
 
         w.println("&nbsp;&nbsp;&nbsp;");
-        DevelUtils.writeDevelUtilLinks(w, toolKey, contextPath);
+        DevelUtils.writeDevelUtilLinks(w, tool.getKey(), contextPath);
 
         w.println("    </td>");
         w.println("  </tr>");
