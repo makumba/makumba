@@ -35,7 +35,7 @@ public class DataTypeListerServlet extends DataServlet {
     protected static final long serialVersionUID = 1L;
 
     public DataTypeListerServlet() {
-        toolLocation = Configuration.getToolLocation(DeveloperTool.DATA_LISTER);
+        super(DeveloperTool.DATA_LISTER);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class DataTypeListerServlet extends DataServlet {
 
             try {
                 String dataBaseName = t.getName();
-                writePageContentHeader(type, writer, dataBaseName, MODE_LIST);
+                writePageContentHeader(type, writer, dataBaseName, DeveloperTool.DATA_LISTER);
                 Vector<String> fields = dd.getFieldNames();
                 String titleField = request.getParameter("titleField");
                 if (titleField == null || titleField.trim().equals("")) {
@@ -206,7 +206,8 @@ public class DataTypeListerServlet extends DataServlet {
             relativeDirectory = dir.getAbsolutePath().substring(dir.getAbsolutePath().indexOf("dataDefinitions"));
         }
 
-        writePageContentHeader(type, writer, TransactionProvider.getInstance().getDefaultDataSourceName(), MODE_LIST);
+        writePageContentHeader(type, writer, TransactionProvider.getInstance().getDefaultDataSourceName(),
+            DeveloperTool.DATA_LISTER);
 
         writer.print("<pre style=\"margin-top:0\">");
         if (!relativeDirectory.equals("dataDefinitions")) {

@@ -39,7 +39,6 @@ import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.db.makumba.DBConnection;
-import org.makumba.providers.Configuration;
 import org.makumba.providers.DeveloperTool;
 import org.makumba.providers.TransactionProvider;
 
@@ -58,13 +57,12 @@ public class DataQueryServlet extends DataServlet {
     public final int QUERY_LANGUAGE_HQL = 20;
 
     public DataQueryServlet() {
-        toolLocation = Configuration.getToolLocation(DeveloperTool.DATA_QUERY);
+        super(DeveloperTool.DATA_QUERY);
     }
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.doGet(request, response);
-        browsePath = contextPath + Configuration.getToolLocation(DeveloperTool.DATA_LISTER);
         String query = request.getParameter("query");
         if (query == null) {
             query = "";
@@ -88,7 +86,7 @@ public class DataQueryServlet extends DataServlet {
         DevelUtils.writeStylesAndScripts(writer, contextPath);
         DevelUtils.writeTitleAndHeaderEnd(writer, "OQL Query Translater & executer");
 
-        writePageContentHeader(null, writer, null, MODE_QUERY);
+        writePageContentHeader(null, writer, null, DeveloperTool.DATA_QUERY);
 
         writer.println("<form method=\"get\">");
         writer.println("<table width=\"100%\" cellpadding=\"5\">");
