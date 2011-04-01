@@ -107,7 +107,7 @@ public class DataPointerValueConverter extends DataServlet {
         Collections.sort(v);
         for (int i = 0; i < v.size(); i++) {
             String selected = v.get(i).equals(paramDataType) ? " selected" : "";
-            writer.println("        <option name=\"" + v.get(i) + "\"" + selected + ">" + v.get(i) + "</option>");
+            writer.println("        <option value=\"" + v.get(i) + "\"" + selected + ">" + v.get(i) + "</option>");
         }
         writer.println("      </select>");
         writer.println("    </td>");
