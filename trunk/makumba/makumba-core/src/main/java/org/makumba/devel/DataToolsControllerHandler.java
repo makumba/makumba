@@ -67,6 +67,9 @@ public class DataToolsControllerHandler extends ControllerHandler {
         } else if (path.startsWith(Configuration.getToolLocation(DeveloperTool.ERRORLOG_VIEWER))) {
             new ErrorLogViewerServlet().doGet(request, response);
             return false;
+        } else if (path.startsWith(Configuration.getToolLocation(DeveloperTool.REGEXP_TESTER))) {
+            new RegexpTester().doGet(request, response);
+            return false;
         } else {
             return true;
         }
