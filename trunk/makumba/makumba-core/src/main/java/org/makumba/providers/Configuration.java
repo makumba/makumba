@@ -647,11 +647,13 @@ public class Configuration implements Serializable {
 
         resources.add("makumba.css");
 
-        String[] disabledRes = d.disableResources.split(",");
-        logger.info("Disabling the following resources: " + Arrays.toString(disabledRes));
-        for (String r : disabledRes) {
-            if (!resources.remove(r.trim())) {
-                logger.warning("Specified resource '" + r + "' not found!");
+        if (d.disableResources != Configuration.PROPERTY_NOT_SET && StringUtils.isNotBlank(d.disableResources)) {
+            String[] disabledRes = d.disableResources.split(",");
+            logger.info("Disabling the following resources: " + Arrays.toString(disabledRes));
+            for (String r : disabledRes) {
+                if (!resources.remove(r.trim())) {
+                    logger.warning("Specified resource '" + r + "' not found!");
+                }
             }
         }
 
