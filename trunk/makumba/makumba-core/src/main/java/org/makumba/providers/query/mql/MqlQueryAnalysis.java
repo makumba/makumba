@@ -64,6 +64,8 @@ public class MqlQueryAnalysis implements QueryAnalysis {
 
     private DataDefinition paramInfoByName;
 
+    private List<String> paths;
+
     static String formatQueryAndInsert(String query, String insertIn) {
         if (insertIn != null && insertIn.length() > 0) {
             return "###" + insertIn + "###" + query;
@@ -139,6 +141,7 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         analyserTreeOriginal = mqlAnalyzer.getAST();
         labels = mqlAnalyzer.rootContext.labels;
         aliases = mqlAnalyzer.rootContext.aliases;
+        paths = new ArrayList<String>(mqlAnalyzer.rootContext.paths.values());
         paramInfo = DataDefinitionProvider.getInstance().getVirtualDataDefinition("Parameters for " + query);
         paramInfoByName = mqlAnalyzer.paramInfoByName;
         proj = DataDefinitionProvider.getInstance().getVirtualDataDefinition("Projections for " + query);
@@ -315,6 +318,12 @@ public class MqlQueryAnalysis implements QueryAnalysis {
 
     public ASTFactory getAnalyserFactory() {
         return analyser.fact;
+    }
+
+    @Override
+    public List<String> getPaths() {
+        // TODO: for now this only contains the pointers, not all the fields selected!
+        return paths;
     }
 
     /**

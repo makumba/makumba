@@ -1,9 +1,11 @@
 package org.makumba.providers.query.mql;
 
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Vector;
 
 import org.makumba.DataDefinition;
@@ -73,6 +75,9 @@ public class QueryContext {
 
     /** associate each label to its makumba type */
     LinkedHashMap<String, DataDefinition> labels = new LinkedHashMap<String, DataDefinition>();
+
+    /** associate each label with its path of type declaredLabel[.field.field] */
+    Map<String, String> paths = new HashMap<String, String>();
 
     /** labels explicitly defined in OQL FROM */
     Hashtable<String, DataDefinition> fromLabels = new Hashtable<String, DataDefinition>();
@@ -174,9 +179,9 @@ public class QueryContext {
     }
 
     /**
-     * produce a new label out of label.field, with the indicated labelf name for the result check if the indicated
-     * field exists in the type of the label determine the type of the result label if more joins are necesary inbetween
-     * (e.g. for sets), add these joins as well
+     * Produce a new label out of label.field, with the indicated labelf name for the result. Check whether the
+     * indicated field exists in the type of the label. Determine the type of the result label. If more joins are
+     * necessary in between (e.g. for sets), add these joins as well
      * 
      * @param joinType
      * @param
@@ -282,12 +287,24 @@ public class QueryContext {
 
     private void addHqlJoin(Join hqlJoin) {
         hqlJoins.add(hqlJoin);
+
+        // if the label is defined in the FROM, we don't need to store a path for it
+        if (explicitLabels.contains(hqlJoin.label2)) {
+            return;
+        }
+        String path = paths.get(hqlJoin.label1);
+        if (path == null) {
+            throw new IllegalStateException(hqlJoin.label1 + " should be known");
+        }
+        paths.put(hqlJoin.label2, path + "." + hqlJoin.field1);
     }
 
     public void addFrom(String frm, AST labelAST, int joinType) throws SemanticException {
         String label = labelAST.getText();
         String iterator = frm;
         explicitLabels.add(label);
+        paths.put(label, label);
+
         DataDefinition type = null;
         try {
             // if it's a type, we just add it as such
