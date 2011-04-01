@@ -124,8 +124,8 @@ public class DevelUtils {
                 if (Configuration.getToolLocation(t) == null) {
                     w.print("<span style=\"color: grey\">" + t.getName() + ": disabled </span><br/>");
                 } else if (t.isGeneric()) {
-                    w.print("<a href=\"" + contextPath + Configuration.getMakumbaToolsLocation()
-                            + Configuration.getToolLocation(t) + "\">" + t.getName() + "</a><br/>");
+                    w.print("<a href=\"" + contextPath + Configuration.getToolLocation(t) + "\">" + t.getName()
+                            + "</a><br/>");
                 }
             }
         }
