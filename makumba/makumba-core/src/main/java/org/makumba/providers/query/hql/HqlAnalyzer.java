@@ -3,16 +3,16 @@ package org.makumba.providers.query.hql;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.StringTokenizer;
 import java.util.Vector;
-import java.util.Map.Entry;
 
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.FieldDefinition;
 import org.makumba.OQLParseError;
-import org.makumba.commons.NameResolver;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
@@ -117,6 +117,7 @@ public class HqlAnalyzer implements QueryAnalysis {
 
     }
 
+    @Override
     public synchronized DataDefinition getProjectionType() {
         if (projTypes != null) {
             return projTypes;
@@ -141,6 +142,7 @@ public class HqlAnalyzer implements QueryAnalysis {
         return projTypes;
     }
 
+    @Override
     public DataDefinition getLabelType(String labelName) {
         String labelTypeName = walker.getLabelTypes().get(labelName);
         if (labelTypeName == null) {
@@ -149,6 +151,7 @@ public class HqlAnalyzer implements QueryAnalysis {
         return ddp.getDataDefinition(labelTypeName);
     }
 
+    @Override
     public DataDefinition getParameterTypes() {
         if (paramTypes != null) {
             return paramTypes;
@@ -292,10 +295,12 @@ public class HqlAnalyzer implements QueryAnalysis {
         return result;
     }
 
+    @Override
     public String getQuery() {
         return query;
     }
 
+    @Override
     public Map<String, DataDefinition> getLabelTypes() {
         if (computedLabelTypes != null) {
             return computedLabelTypes;
@@ -316,20 +321,24 @@ public class HqlAnalyzer implements QueryAnalysis {
 
     }
 
-    public String writeInSQLQuery(NameResolver nr) {
-        throw new RuntimeException("not implemented");
-    }
-
+    @Override
     public AST getPass1Tree() {
         return parsedHQL;
     }
 
+    @Override
     public Collection<String> getWarnings() {
         // no warnings supported for now
         return null;
     }
 
+    @Override
     public DataDefinition getParameterTypesByName() {
         return this.paramTypes;
+    }
+
+    @Override
+    public List<String> getPaths() {
+        throw new RuntimeException("not yet implemented");
     }
 }

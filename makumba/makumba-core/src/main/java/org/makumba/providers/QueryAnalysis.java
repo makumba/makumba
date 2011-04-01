@@ -24,6 +24,7 @@
 package org.makumba.providers;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.makumba.DataDefinition;
@@ -100,4 +101,9 @@ public interface QueryAnalysis {
      * @return
      */
     AST getPass1Tree();
+
+    /**
+     * @return a map with all paths label[.field[.field]...] in the query
+     */
+    List<String> getPaths();
 }
