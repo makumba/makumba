@@ -148,7 +148,7 @@ public class ComposedSubquery extends ComposedQuery {
         keysetLabels = new ArrayList<String>(superQuery.keysetLabels);
 
         for (String string : keysetLabels) {
-            addProjection(string);
+            basicProjections.addProjection(string);
         }
         previousKeyset.add(superQuery.keyset);
 

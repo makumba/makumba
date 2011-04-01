@@ -35,7 +35,7 @@ import java.util.Map;
 import org.makumba.UnauthorizedException;
 import org.makumba.commons.ArrayMap;
 import org.makumba.commons.MultipleKey;
-import org.makumba.list.engine.ComposedQuery.AuthorizationInfo;
+import org.makumba.list.engine.ComposedQueryAuthorization.AuthorizationInfo;
 
 /**
  * The grouper is a tree, with maps containing other maps, or lists. Lists are tree leaves.
@@ -126,7 +126,7 @@ public class Grouper implements Serializable {
 
             for (AuthorizationInfo ai : authorizationInfos) {
                 if (!Boolean.TRUE.equals(data.data[ai.index])) {
-                    throw new UnauthorizedException(ai.message);
+                    throw new QueryUnauthorizedException(ai, data.data[ai.ptrIndex]);
                 }
             }
 

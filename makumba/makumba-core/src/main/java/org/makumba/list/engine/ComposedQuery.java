@@ -25,7 +25,6 @@ package org.makumba.list.engine;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -33,11 +32,9 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
 import org.makumba.DataDefinition;
-import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
-import org.makumba.ProgrammerError;
-import org.makumba.QueryFragmentFunction;
 import org.makumba.UnauthorizedException;
+import org.makumba.list.engine.ComposedQueryAuthorization.AuthorizationInfo;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 
@@ -101,11 +98,7 @@ public class ComposedQuery implements Serializable {
     /** The subqueries of this query */
     int subqueries = 0;
 
-    /** The projections made in this query */
-    List<String> projections = new ArrayList<String>();
-
-    /** The expression associated to each projection */
-    Map<String, Integer> projectionExpr = new HashMap<String, Integer>();
+    Projections basicProjections = new Projections();
 
     /** Standard index for the FROM query section */
     public static final int FROM = 0;
@@ -125,20 +118,12 @@ public class ComposedQuery implements Serializable {
     /** Standard index for the STATIC_CONDITION query section */
     public static final int STATIC_WHERE = 5;
 
+    private static final List<AuthorizationInfo> EMPTY_AUTH = new ArrayList<AuthorizationInfo>();
+
     /** Section texts, encoded with the standard indexes */
     String[] sections;
 
     List<String> authorization;
-
-    List<AuthorizationInfo> authorizationInfos;
-
-    static class AuthorizationInfo {
-        String expr;
-
-        int index;
-
-        String message = "you are not authorized to view " + expr;
-    }
 
     /** Derived section texts, made from the sections of this query and the sections of its superqueries */
     String[] derivedSections;
@@ -250,9 +235,9 @@ public class ComposedQuery implements Serializable {
      * projections (this has to change)
      */
     public void prependFromToKeyset() {
-        projectionExpr.clear();
-        Iterator<String> e = new ArrayList<String>(projections).iterator();
-        projections.clear();
+        basicProjections.projectionExpr.clear();
+        Iterator<String> e = new ArrayList<String>(basicProjections.projections).iterator();
+        basicProjections.projections.clear();
 
         // add the previous keyset
         for (int i = 0; i < keyset.size(); i++) {
@@ -271,7 +256,7 @@ public class ComposedQuery implements Serializable {
 
             keysetLabels.add(label);
 
-            keyset.add(addProjection(label));
+            keyset.add(basicProjections.addProjection(label));
         }
 
         while (e.hasNext()) {
@@ -279,77 +264,8 @@ public class ComposedQuery implements Serializable {
         }
     }
 
-    /**
-     * Gets a given projection
-     * 
-     * @param n
-     *            the index of the projection
-     * @return A String containing the projection
-     */
-    public String getProjectionAt(int n) {
-        return projections.get(n);
-    }
-
-    /**
-     * Adds a projection with the given expression
-     * 
-     * @param expr
-     *            the expression to add
-     * @return The index at which the expression was added
-     */
-    Integer addProjection(String expr) {
-        Integer index = new Integer(projections.size());
-        projections.add(expr);
-        projectionExpr.put(expr, index);
-        return index;
-    }
-
-    /**
-     * Checks if a projection exists, and if not, adds it.
-     * 
-     * @param expr
-     *            the expression to add
-     * @return The index of the added projection
-     */
     public Integer checkProjectionInteger(String expr) {
-        Integer index = getProjectionIndex(expr);
-        if (index == null) {
-            addProjection(expr);
-            // FIXME: if DISTINCT is true, need to recompute the keyset and notify the subqueries to recompute their
-            // previous keyset
-            return null;
-        }
-        return index;
-    }
-
-    public Integer getProjectionIndex(String expr) {
-        return projectionExpr.get(expr);
-    }
-
-    /**
-     * Checks if a projection exists, and if not, adds it.
-     * 
-     * @param expr
-     *            the expression to add
-     * @return The column name of the projection
-     */
-    String checkProjection(String expr) {
-        Integer i = checkProjectionInteger(expr);
-        if (i == null) {
-            return null;
-        }
-        return columnName(i);
-    }
-
-    /**
-     * Gets the name of a column indicated by index
-     * 
-     * @param n
-     *            the index of the column
-     * @return A String containing the name of the column, of the kind "colN"
-     */
-    public static String columnName(Integer n) {
-        return "col" + (n.intValue() + 1);
+        return basicProjections.checkProjectionInteger(expr);
     }
 
     /**
@@ -361,7 +277,7 @@ public class ComposedQuery implements Serializable {
      *            indicates whether this is only a type analysis
      * @return The computed OQL query
      */
-    protected String computeQuery(String derivedSections[], boolean typeAnalysisOnly) {
+    protected String computeQuery(Projections proj, String derivedSections[], boolean typeAnalysisOnly) {
         String groups = null;
         String orders = null;
         if (!typeAnalysisOnly) {
@@ -375,13 +291,13 @@ public class ComposedQuery implements Serializable {
 
         int i = 0;
 
-        for (String string : projections) {
+        for (String string : proj.projections) {
             sb.append(sep);
             sep = ",";
-            sb.append(string).append(" AS ").append(columnName(new Integer(i++)));
+            sb.append(string).append(" AS ").append(Projections.columnName(new Integer(i++)));
         }
 
-        if (projections.size() == 0) {
+        if (proj.projections.size() == 0) {
             sb.append("1");
         }
 
@@ -463,70 +379,34 @@ public class ComposedQuery implements Serializable {
                 vars[WHERE] = derivedSections[STATIC_WHERE];
             }
         }
+        Projections pr = basicProjections;
+        List<AuthorizationInfo> authorize = EMPTY_AUTH;
+        if (!authorization.isEmpty()) {
+            ComposedQueryAuthorization cqa = ComposedQueryAuthorization.getAuthorization(this,
+                computeQuery(basicProjections, vars, false));
+            pr = cqa.getProjections();
+            authorize = cqa.getAuthorizationInfos();
+        }
 
-        return new Grouper(previousKeyset, qep.execute(computeQuery(vars, false), args, offset, limit).iterator(),
-                authorizationInfos);
+        return new Grouper(previousKeyset, qep.execute(computeQuery(pr, vars, false), args, offset, limit).iterator(),
+                authorize);
     }
 
     public synchronized void analyze() {
         // if we have subqueries, we already did prepend.
         // if we don't but we were requested to select all labels, we prepend
-        if (projections.isEmpty() || selectAllLabels && subqueries == 0) {
+        if (basicProjections.projections.isEmpty() || selectAllLabels && subqueries == 0) {
             prependFromToKeyset();
             // make sure that this doesn't repeat
             selectAllLabels = false;
         }
         if (typeAnalyzerOQL == null) {
-            typeAnalyzerOQL = computeQuery(derivedSections, true);
-        }
-        if (authorizationInfos == null) {
-            addAuthorizationExpressions();
+            typeAnalyzerOQL = computeQuery(basicProjections, derivedSections, true);
         }
     }
 
-    // TODO: later: see if the expression is a field, not a pointer...
-    // queries that just do a count() or sum()...
-    void addAuthorizationExpressions() {
-        authorizationInfos = new ArrayList<AuthorizationInfo>();
-        if (authorization.isEmpty()) {
-            return;
-        }
-        StringBuffer query = new StringBuffer("SELECT ");
-        String sep = "";
-        for (String expr : authorization) {
-            query.append(sep).append(expr);
-            sep = ",";
-        }
-        query.append(" FROM ").append(sections[FROM]);
-
-        DataDefinition dd = qep.getQueryAnalysis(query.toString()).getProjectionType();
-        for (int i = 0; i < authorization.size(); i++) {
-            String expr = authorization.get(i);
-
-            FieldDefinition fd = dd.getFieldDefinition(i);
-
-            if (!fd.getType().startsWith("ptr")) {
-                throw new ProgrammerError("Authorization is only possible on pointer expressions for now: " + expr
-                        + " is of type " + fd.getType());
-            }
-
-            QueryFragmentFunction func = fd.getPointedType().getFunctionOrPointedFunction("canRead");
-            if (func == null) {
-                throw new ProgrammerError("Type indicated for authorization " + fd.getPointedType()
-                        + " has no canRead() defined");
-            }
-
-            AuthorizationInfo ai = new AuthorizationInfo();
-
-            String canRead = expr + ".canRead()";
-
-            ai.expr = expr;
-            authorizationInfos.add(ai);
-            checkProjectionInteger(canRead);
-            ai.index = getProjectionIndex(canRead);
-            ai.message = func.getErrorMessage();
-        }
-
+    public Integer getProjectionIndex(String expr) {
+        return basicProjections.getProjectionIndex(expr);
     }
 
     /**
@@ -535,7 +415,7 @@ public class ComposedQuery implements Serializable {
      * only projection.
      */
     public void addProjectionDirectly(String s) {
-        projections.add(s);
+        basicProjections.projections.add(s);
     }
 
     @Override
@@ -544,7 +424,7 @@ public class ComposedQuery implements Serializable {
     }
 
     public String getComputedQuery() {
-        return computeQuery(derivedSections, false);
+        return computeQuery(basicProjections, derivedSections, false);
     }
 
     /**
@@ -563,16 +443,7 @@ public class ComposedQuery implements Serializable {
      * @return a {@link Vector} containing the projections of this ComposedQuery
      */
     public List<String> getProjections() {
-        return projections;
-    }
-
-    /**
-     * Gets the type of the fields between SELECT and FROM
-     * 
-     * @return A DataDefinition containing as fields the type and name of the query projections
-     */
-    public DataDefinition getProjectionTypes() {
-        return qep.getQueryAnalysis(typeAnalyzerOQL).getProjectionType();
+        return basicProjections.projections;
     }
 
     /**
@@ -586,6 +457,10 @@ public class ComposedQuery implements Serializable {
 
     public Object checkExprSetOrNullable(String expr) {
         return qep.checkExprSetOrNullable(getFromSection(), expr);
+    }
+
+    public String getProjectionAt(int i) {
+        return basicProjections.getProjectionAt(i);
     }
 
 }
