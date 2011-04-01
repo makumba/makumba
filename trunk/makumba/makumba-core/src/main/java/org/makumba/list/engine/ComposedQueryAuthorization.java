@@ -102,7 +102,8 @@ public class ComposedQueryAuthorization {
             proj = pr;
             return;
         }
-        // removeSupertypeCanRead();
+
+        removeSupertypeCanRead();
 
         for (AuthorizationInfo ai : authorizationInfos) {
             String canRead = ai.expr + ".canRead()";
@@ -129,23 +130,31 @@ public class ComposedQueryAuthorization {
                 if (!aj.expr.startsWith(ai.expr)) {
                     continue;
                 }
-
+                // could be that some expressions repeat...
+                if (aj.expr.equals(ai.expr)) {
+                    toRemove.add(aj);
+                    continue;
+                }
                 String fieldDotField = aj.expr.substring(ai.expr.length());
                 int n = 1;
+                if (fieldDotField.charAt(0) != '.') {
+                    continue;
+                }
                 DataDefinition def = ai.fd.getPointedType();
                 boolean remove = true;
                 while (n != -1) {
-                    int m = aj.expr.indexOf(n, '.');
+                    int index = fieldDotField.indexOf(n, '.');
+                    int m = index;
                     if (m == -1) {
-                        m = aj.expr.length();
+                        m = fieldDotField.length();
                     }
-                    String field = aj.expr.substring(n, m);
+                    String field = fieldDotField.substring(n, m);
                     FieldDefinition fd = def.getFieldDefinition(field);
                     if (!fd.isNotNull() || !fd.getType().equals("ptr") || !fd.isFixed()) {
                         remove = false;
                         break;
                     }
-                    n = m;
+                    n = index;
                     def = fd.getPointedType();
                 }
                 if (remove) {
