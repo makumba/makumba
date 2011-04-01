@@ -98,6 +98,9 @@ public abstract class DataServlet extends HttpServlet {
             if (dataBaseName != null) {
                 w.println("<br>in Makumba database: " + dataBaseName);
             }
+        } else if (tool == DeveloperTool.REGEXP_TESTER) {
+            w.println("      <span style=\"font-size: x-large\">Regular Expression tester</span><br>");
+            w.println("      <span style=\"font-size: small\">Test regular expression for data validation</span>");
         }
         w.println("    </td>");
         w.println("    <td align=\"right\" valign=\"top\" style=\"padding: 5px; padding-top: 10px\">");
@@ -111,6 +114,7 @@ public abstract class DataServlet extends HttpServlet {
             w.println("      <span class=\"active\">data</span>");
         } else if (tool == DeveloperTool.OBJECT_ID_CONVERTER || tool == DeveloperTool.DATA_QUERY) {
             w.println("      <a href=\"" + browsePath + "\">browse</a>");
+        } else if (tool == DeveloperTool.REGEXP_TESTER) {
         } else {
             w.println("      <span class=\"active\">browse</span>");
         }
