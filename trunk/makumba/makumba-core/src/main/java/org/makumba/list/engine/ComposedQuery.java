@@ -382,10 +382,11 @@ public class ComposedQuery implements Serializable {
         Projections pr = basicProjections;
         List<AuthorizationInfo> authorize = EMPTY_AUTH;
         if (!authorization.isEmpty()) {
-            ComposedQueryAuthorization cqa = ComposedQueryAuthorization.getAuthorization(this,
+            ComposedQueryAuthorization cqa = ComposedQueryAuthorization.getAuthorization(this, vars[WHERE],
                 computeQuery(basicProjections, vars, false));
             pr = cqa.getProjections();
             authorize = cqa.getAuthorizationInfos();
+            vars[WHERE] = cqa.getWhere();
         }
 
         return new Grouper(previousKeyset, qep.execute(computeQuery(pr, vars, false), args, offset, limit).iterator(),
