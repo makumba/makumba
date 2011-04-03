@@ -30,29 +30,36 @@ public class ComposedQueryAuthorization {
 
         public FieldDefinition fd;
 
+        public boolean alreadyInWhere;
+
     }
 
     Projections proj;
 
     ArrayList<AuthorizationInfo> authorizationInfos = new ArrayList<AuthorizationInfo>();
 
-    public static ComposedQueryAuthorization getAuthorization(ComposedQuery composedQuery, String q) {
+    private String where;
+
+    public static ComposedQueryAuthorization getAuthorization(ComposedQuery composedQuery, String where, String q) {
         // TODO add cache
-        return new ComposedQueryAuthorization(composedQuery.derivedSections[ComposedQuery.FROM], q,
+        return new ComposedQueryAuthorization(composedQuery.derivedSections[ComposedQuery.FROM], where, q,
                 composedQuery.basicProjections, composedQuery.authorization, composedQuery.qep);
     }
 
     // TODO: later: see if the expression is a field, not a pointer...
     // TODO: queries that just do a count() or sum()...
-    ComposedQueryAuthorization(String from, String q, Projections pr, List<String> authorization,
+    ComposedQueryAuthorization(String from, String wh, String q, Projections pr, List<String> authorization,
             QueryAnalysisProvider qep) {
         if (authorization.isEmpty()) {
             return;
         }
-        boolean auto = false;
-        if (authorization.size() == 1 && authorization.get(0).equals("auto")) {
+        this.where = wh;
+        boolean auto = authorization.size() == 1
+                && (authorization.get(0).equals("auto") || authorization.get(0).equals("binding"));
+        boolean filter = authorization.size() == 1 && authorization.get(0).equals("filter");
+
+        if (auto || filter) {
             authorization = qep.getQueryAnalysis(q).getPaths();
-            auto = true;
         }
 
         StringBuffer query = new StringBuffer("SELECT ");
@@ -78,7 +85,7 @@ public class ComposedQueryAuthorization {
 
             // TODO: the canRead() function may be missing but may be present in a supertype!!!
             if (func == null) {
-                if (!auto) {
+                if (!auto && !filter) {
                     throw new ProgrammerError("Type indicated for authorization " + fd.getPointedType()
                             + " has no canRead() defined");
                 } else {
@@ -86,32 +93,61 @@ public class ComposedQueryAuthorization {
                 }
             }
 
-            if (proj == null) {
-                proj = new Projections(pr);
-            }
             AuthorizationInfo ai = new AuthorizationInfo();
 
             ai.fd = fd;
             ai.expr = expr;
             ai.query = q;
             ai.message = func.getErrorMessage();
+            ai.alreadyInWhere = isFiltered(where, expr);
             authorizationInfos.add(ai);
+
         }
-        if (proj == null) {
+        if (!authorizationInfos.isEmpty() && !filter) {
+            proj = new Projections(pr);
+        } else {
             // we found no canRead to add
             proj = pr;
-            return;
         }
 
         removeSupertypeCanRead();
 
-        for (AuthorizationInfo ai : authorizationInfos) {
-            String canRead = ai.expr + ".canRead()";
-            proj.checkProjectionInteger(canRead);
-            proj.checkProjectionInteger(ai.expr);
-            ai.index = proj.getProjectionIndex(canRead);
-            ai.ptrIndex = proj.getProjectionIndex(ai.expr);
+        for (java.util.Iterator<AuthorizationInfo> it = authorizationInfos.iterator(); it.hasNext();) {
+            AuthorizationInfo ai = it.next();
+            if (ai.alreadyInWhere) {
+                it.remove();
+            }
         }
+        if (filter) {
+            String separator = "";
+            if (where.trim().length() > 0) {
+                separator = " AND ";
+            }
+            for (AuthorizationInfo ai : authorizationInfos) {
+                where += separator;
+                where += ai.expr + ".canRead()";
+                separator = " AND ";
+            }
+            authorizationInfos.clear();
+            System.out.println(where);
+
+        } else {
+            for (AuthorizationInfo ai : authorizationInfos) {
+                String canRead = ai.expr + ".canRead()";
+                proj.checkProjectionInteger(canRead);
+                proj.checkProjectionInteger(ai.expr);
+                ai.index = proj.getProjectionIndex(canRead);
+                ai.ptrIndex = proj.getProjectionIndex(ai.expr);
+            }
+        }
+    }
+
+    private static boolean isFiltered(String where, String expr) {
+        // FIXME: this is a string hack, needs be done via tree analysis
+        String canRead = expr + ".canRead()";
+        return where.trim().equals(canRead) || where.trim().startsWith(canRead + " AND")
+                || where.contains("AND " + canRead);
+
     }
 
     /*
@@ -174,6 +210,10 @@ public class ComposedQueryAuthorization {
 
     public List<AuthorizationInfo> getAuthorizationInfos() {
         return authorizationInfos;
+    }
+
+    public String getWhere() {
+        return where;
     }
 
 }
