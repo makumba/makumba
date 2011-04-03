@@ -88,6 +88,8 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     /** Labels known a-priori. This is needed for analysis of query fragment parameters */
     DataDefinition knownLabels;
 
+    Set<Integer> multiValueParams = new HashSet<Integer>();
+
     public MqlSqlWalker(String query, DataDefinition insertIn, boolean optimizeJoins, boolean autoLeftJoin,
             DataDefinition knownLabels) {
         this.query = query;
@@ -412,6 +414,11 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
             ret.paramName = ret.paramName.substring(0, paramPositionIndex);
         }
         return ret;
+    }
+
+    public void setMultivalueParam(MqlNode param) {
+        ParamInfo pi = getParamInfo(param);
+        multiValueParams.add(pi.paramPosition);
     }
 
     void setProjectionTypes(DataDefinition proj) {

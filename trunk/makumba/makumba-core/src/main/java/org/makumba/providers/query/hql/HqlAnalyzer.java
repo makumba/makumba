@@ -17,6 +17,7 @@ import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
+import org.makumba.providers.QueryParameters;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.query.Pass1ASTPrinter;
 
@@ -61,6 +62,8 @@ public class HqlAnalyzer implements QueryAnalysis {
     private HqlAnalyzeWalker walker;
 
     private AST parsedHQL;
+
+    private QueryParameters queryParams;
 
     public HqlAnalyzer(AST pass1, DataDefinition knownLabels) {
         init(pass1, knownLabels);
@@ -113,6 +116,42 @@ public class HqlAnalyzer implements QueryAnalysis {
             AST t = walker.getAST(); if(t!=null){ ASTFrame frame = new ASTFrame("analyzed", t);
             frame.setVisible(true); }                
             */
+            queryParams = new QueryParameters() {
+                @Override
+                public DataDefinition getParameterTypes() {
+                    if (paramTypes != null) {
+                        return paramTypes;
+                    }
+                    paramTypes = ddp.getVirtualDataDefinition("Parameters for " + query);
+                    try {
+                        int parameterCounter = 0;
+                        for (Entry<String, ExprTypeAST> e : walker.getParameterTypes().entrySet()) {
+                            paramTypes.addField(makeField(e.getKey(), e.getValue(), parameterCounter));
+                            parameterCounter++;
+                        }
+                    } catch (RuntimeWrappedException e1) {
+                        throw new OQLParseError(" during analysis of query: " + query, e1.getCause());
+                    } catch (RuntimeException e) {
+                        throw new OQLParseError("during analysis of query: " + query, e);
+                    }
+                    return paramTypes;
+                }
+
+                @Override
+                public List<String> getParameterOrder() {
+                    // TODO this is untested, but at the moment it is never called, MqlParameterTransformer calls this
+                    // but
+                    // it only operates with MqlQueryAnalysis
+                    return paramTypes.getFieldNames();
+                }
+
+                @Override
+                public boolean isMultiValue(int position) {
+                    // FIXME this is not implemented, see getParameterOrder
+                    return false;
+                }
+
+            };
         }
 
     }
@@ -152,23 +191,8 @@ public class HqlAnalyzer implements QueryAnalysis {
     }
 
     @Override
-    public DataDefinition getParameterTypes() {
-        if (paramTypes != null) {
-            return paramTypes;
-        }
-        paramTypes = ddp.getVirtualDataDefinition("Parameters for " + query);
-        try {
-            int parameterCounter = 0;
-            for (Entry<String, ExprTypeAST> e : walker.getParameterTypes().entrySet()) {
-                paramTypes.addField(makeField(e.getKey(), e.getValue(), parameterCounter));
-                parameterCounter++;
-            }
-        } catch (RuntimeWrappedException e1) {
-            throw new OQLParseError(" during analysis of query: " + query, e1.getCause());
-        } catch (RuntimeException e) {
-            throw new OQLParseError("during analysis of query: " + query, e);
-        }
-        return paramTypes;
+    public QueryParameters getQueryParameters() {
+        return queryParams;
     }
 
     private FieldDefinition makeField(String name, ExprTypeAST expr, Integer count) {
@@ -330,11 +354,6 @@ public class HqlAnalyzer implements QueryAnalysis {
     public Collection<String> getWarnings() {
         // no warnings supported for now
         return null;
-    }
-
-    @Override
-    public DataDefinition getParameterTypesByName() {
-        return this.paramTypes;
     }
 
     @Override

@@ -3,7 +3,6 @@ package org.makumba.providers.query.mql;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -50,6 +49,7 @@ public class MqlParameterTransformer implements ParameterTransformer {
         this.mg = mg;
     }
 
+    @Override
     public void init(Map<String, Object> arguments) {
 
         if (expandedParamInfo == null) {
@@ -66,6 +66,7 @@ public class MqlParameterTransformer implements ParameterTransformer {
         text = mg.getText();
     }
 
+    @Override
     public int getParameterCount() {
         if (expandedParamInfo == null) {
             throw new MakumbaError("Can't call this method without having set the arguments with setArguments!");
@@ -74,10 +75,12 @@ public class MqlParameterTransformer implements ParameterTransformer {
         }
     }
 
+    @Override
     public DataDefinition getTransformedParameterTypes() {
         return expandedParamInfo;
     }
 
+    @Override
     public String getTransformedQuery(NameResolver nr) {
         String sql = text.toString(nr);
         if (qA.getNoFrom()) {
@@ -86,6 +89,7 @@ public class MqlParameterTransformer implements ParameterTransformer {
         return sql;
     }
 
+    @Override
     public Object[] toParameterArray(Map<String, Object> arguments) {
 
         if (arguments == null) {
@@ -98,10 +102,10 @@ public class MqlParameterTransformer implements ParameterTransformer {
         ArrayList<Object> res = new ArrayList<Object>();
 
         int paramIndex = 0;
-        DataDefinition dd = qA.getParameterTypes();
-        for (String string : qA.getParameterOrder()) {
+        DataDefinition dd = qA.getQueryParameters().getParameterTypes();
+        for (String string : qA.getQueryParameters().getParameterOrder()) {
 
-            String name = getActualArgumentName(string);
+            String name = QueryAnalysisProvider.getActualParameterName(string);
             Object o = arguments.get(name);
 
             FieldDefinition fd = dd.getFieldDefinition(paramIndex);
@@ -117,8 +121,9 @@ public class MqlParameterTransformer implements ParameterTransformer {
                 ive = checkValue(fd, o, res);
             }
             if (ive != null) {
-                if (correct.get(name) == null)
+                if (correct.get(name) == null) {
                     errors.put(name, ive);
+                }
             } else {
                 errors.remove(name);
                 correct.put(name, paramIndex);
@@ -127,8 +132,7 @@ public class MqlParameterTransformer implements ParameterTransformer {
         }
         if (!errors.isEmpty()) {
             String s = "";
-            for (Iterator<String> e = errors.keySet().iterator(); e.hasNext();) {
-                String o = e.next();
+            for (String o : errors.keySet()) {
                 s += "\nargument: " + o + "; exception:\n" + errors.get(o);
             }
             throw new InvalidValueException(s);
@@ -162,12 +166,16 @@ public class MqlParameterTransformer implements ParameterTransformer {
 
         // expand multiple params (vectors, lists) into multiple parameter
         // entries
-        for (int i = 0; i < qA.getParameterOrder().size(); i++) {
-            Object val = getArgumentValue(qA.getParameterOrder().get(i), arguments);
+        for (int i = 0; i < qA.getQueryParameters().getParameterOrder().size(); i++) {
+            Object val = getArgumentValue(qA.getQueryParameters().getParameterOrder().get(i), arguments);
 
             // now expand the query tree from one list to a number of elements
-            FieldDefinition fd = qA.getParameterTypes().getFieldDefinition(i);
+            FieldDefinition fd = qA.getQueryParameters().getParameterTypes().getFieldDefinition(i);
             if (val instanceof List<?>) {
+                if (!qA.getQueryParameters().isMultiValue(i)) {
+                    throw new InvalidValueException("parameter " + qA.getQueryParameters().getParameterOrder().get(i)
+                            + " at position " + i + " " + " cannot have multiple values " + "\nquery: " + qA.getQuery());
+                }
                 List<?> v = (List<?>) val;
                 AST qp = queryParams.get(i);
                 AST next = qp.getNextSibling();
@@ -214,30 +222,11 @@ public class MqlParameterTransformer implements ParameterTransformer {
 
         }
 
-        // if we have a makumba parameter (translated by
-        // MqlAnalysisProvider#transformOQLParameters) we need to recover
-        // the original argument index to get it in the map
-        // indeed in the map of arguments we get, unnamed parameters like $1,
-        // $2, ... are registered with their name
-        argumentName = getActualArgumentName(argumentName);
-
         Object val = arguments.get(argumentName);
         if (val == null) {
             throw new ProgrammerError("The parameter '" + argumentName + "' should not be null");
         }
         return val;
-    }
-
-    static String getActualArgumentName(String argumentName) {
-        if (argumentName.startsWith(MqlQueryAnalysis.MAKUMBA_PARAM)) {
-            argumentName = argumentName.substring(MqlQueryAnalysis.MAKUMBA_PARAM.length());
-            int n = Integer.parseInt(argumentName);
-            argumentName = "" + (n + 1);
-        }
-        if (argumentName.indexOf("###") > 0) {
-            argumentName = argumentName.substring(0, argumentName.indexOf("###"));
-        }
-        return argumentName;
     }
 
     /**
@@ -296,9 +285,9 @@ public class MqlParameterTransformer implements ParameterTransformer {
             Map<String, Object> args = (Map<String, Object>) multi[1];
 
             StringBuffer sb = new StringBuffer();
-            for (String arg : qA.getParameterOrder()) {
+            for (String arg : qA.getQueryParameters().getParameterOrder()) {
 
-                arg = getActualArgumentName(arg);
+                arg = QueryAnalysisProvider.getActualParameterName(arg);
 
                 Object o = args.get(arg);
 

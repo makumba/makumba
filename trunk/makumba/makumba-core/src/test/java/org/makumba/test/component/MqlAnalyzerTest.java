@@ -74,7 +74,7 @@ public class MqlAnalyzerTest extends TestCase {
         assertEquals("ptr", oA.getProjectionType().getFieldDefinition(0).getType());
         // assertEquals("id", oA.getProjectionType().getFieldDefinition(0).getDescription());
 
-        assertEquals("dateCreate", oA.getParameterTypes().getFieldDefinition(0).getType());
+        assertEquals("dateCreate", oA.getQueryParameters().getParameterTypes().getFieldDefinition(0).getType());
         // assertEquals("param", oA.getProjectionType().getFieldDefinition(1).getDescription());
     }
 

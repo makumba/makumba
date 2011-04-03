@@ -150,6 +150,9 @@ public class MqlNode extends CommonAST {
                                 getLine(), getColumn());
                         return;
                     }
+                    if (inListMember.getNextSibling() == null) {
+                        walker.setMultivalueParam(inListMember);
+                    }
                 } else {
                     try {
                         checkAndRewriteOperand(leftHandSide, inListMember);
