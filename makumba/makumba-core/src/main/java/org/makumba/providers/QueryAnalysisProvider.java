@@ -43,7 +43,6 @@ import org.makumba.providers.query.Pass1FunctionInliner;
 import org.makumba.providers.query.mql.ASTUtil;
 import org.makumba.providers.query.mql.HqlParser;
 import org.makumba.providers.query.mql.HqlTokenTypes;
-import org.makumba.providers.query.mql.MqlQueryAnalysis;
 import org.makumba.providers.query.mql.Node;
 
 import antlr.RecognitionException;
@@ -55,6 +54,8 @@ import antlr.collections.AST;
  */
 public abstract class QueryAnalysisProvider implements Serializable {
     private static final long serialVersionUID = 1L;
+
+    private static final String MAKUMBA_PARAM = "param";
 
     public abstract String getName();
 
@@ -348,6 +349,15 @@ public abstract class QueryAnalysisProvider implements Serializable {
             }
 
         }.traverse(query);
+    }
+
+    public static String getActualParameterName(String argumentName) {
+        if (argumentName.startsWith(MAKUMBA_PARAM)) {
+            argumentName = argumentName.substring(MAKUMBA_PARAM.length());
+            int n = Integer.parseInt(argumentName);
+            argumentName = "" + (n + 1);
+        }
+        return argumentName;
     }
 
     /** make a copy of an AST, node with the same first child, but with no next sibling */
@@ -837,7 +847,7 @@ public abstract class QueryAnalysisProvider implements Serializable {
             AST para = new Node();
             para.setType(HqlTokenTypes.IDENT);
             try {
-                para.setText(MqlQueryAnalysis.MAKUMBA_PARAM + (Integer.parseInt(a.getText().substring(1)) - 1));
+                para.setText(QueryAnalysisProvider.MAKUMBA_PARAM + (Integer.parseInt(a.getText().substring(1)) - 1));
             } catch (NumberFormatException e) {
                 // we probably are in some query analysis, so we ignore
                 para.setText(a.getText().substring(1));
@@ -860,7 +870,7 @@ public abstract class QueryAnalysisProvider implements Serializable {
                 // to be able to retrieve the position, and thus identify the parameter at type analysis
                 // unless this is a "valid" : param (result of function inlining)
                 if (a.getFirstChild().getText().indexOf("###") < 0
-                        && !a.getFirstChild().getText().startsWith(MqlQueryAnalysis.MAKUMBA_PARAM)) {
+                        && !a.getFirstChild().getText().startsWith(QueryAnalysisProvider.MAKUMBA_PARAM)) {
                     a.getFirstChild().setText(a.getFirstChild().getText() + "###" + (parameterOrder.size() - 1));
                 }
             } else {
@@ -942,8 +952,9 @@ public abstract class QueryAnalysisProvider implements Serializable {
             makeSelect(a, HqlTokenTypes.AGGREGATE, a.getFirstChild().getText().substring(0, 3));
         } else if (isLogical(a)) {
             a.setFirstChild(addEqualsOne(a.getFirstChild()));
-            if (a.getFirstChild().getNextSibling() != null)
+            if (a.getFirstChild().getNextSibling() != null) {
                 a.getFirstChild().setNextSibling(addEqualsOne(a.getFirstChild().getNextSibling()));
+            }
         }
 
         transformOQL(a.getFirstChild());
@@ -951,8 +962,9 @@ public abstract class QueryAnalysisProvider implements Serializable {
     }
 
     private static AST addEqualsOne(AST a) {
-        if (a.getType() != HqlTokenTypes.QUERY && a.getType() != HqlTokenTypes.COLON)
+        if (a.getType() != HqlTokenTypes.QUERY && a.getType() != HqlTokenTypes.COLON) {
             return a;
+        }
         AST ret = ASTUtil.makeNode(HqlTokenTypes.EQ, "=");
         ret.setFirstChild(a);
         ret.setNextSibling(a.getNextSibling());

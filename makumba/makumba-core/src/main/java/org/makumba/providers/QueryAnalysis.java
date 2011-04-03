@@ -72,21 +72,7 @@ public interface QueryAnalysis {
      */
     DataDefinition getLabelType(String labelName);
 
-    /**
-     * Gets the types of the query parameters, as resulted from the query analysis.
-     * 
-     * @return A DataDefinition containing in the first field the type of the QL parameter mentioned first in the query.
-     *         Each mentioning of a parameter new will get a new field in this DataDefinition!
-     */
-    DataDefinition getParameterTypes();
-
-    /**
-     * Gets the types of the query parameters, as resulted from the query analysis.
-     * 
-     * @return A DataDefinition containing the parameter types by their original name. Parameters with multiple types
-     *         are not supported.
-     */
-    DataDefinition getParameterTypesByName();
+    public QueryParameters getQueryParameters();
 
     /**
      * Get the warnings resulted from query analysis

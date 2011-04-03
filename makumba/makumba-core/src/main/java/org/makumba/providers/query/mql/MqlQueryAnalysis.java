@@ -19,6 +19,7 @@ import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryAnalysisProvider.ASTTransformVisitor;
+import org.makumba.providers.QueryParameters;
 import org.makumba.providers.QueryProvider;
 
 import antlr.ASTFactory;
@@ -34,8 +35,6 @@ import antlr.collections.AST;
  * @version $Id: MqlQueryAnalysis.java,v 1.1 Apr 29, 2009 8:54:20 PM manu Exp $
  */
 public class MqlQueryAnalysis implements QueryAnalysis {
-
-    public static final String MAKUMBA_PARAM = "param";
 
     private String query;
 
@@ -65,6 +64,8 @@ public class MqlQueryAnalysis implements QueryAnalysis {
     private DataDefinition paramInfoByName;
 
     private List<String> paths;
+
+    private QueryParameters queryParams;
 
     static String formatQueryAndInsert(String query, String insertIn) {
         if (insertIn != null && insertIn.length() > 0) {
@@ -175,8 +176,26 @@ public class MqlQueryAnalysis implements QueryAnalysis {
                 throw new MakumbaError("Panic: could not compute type of parameter at position " + i + " with name '"
                         + parameterOrder.get(i) + "' of query " + getQuery());
             }
-
+            parameterOrder.set(i, QueryAnalysisProvider.getActualParameterName(parameterOrder.get(i)));
         }
+
+        queryParams = new QueryParameters() {
+            @Override
+            public DataDefinition getParameterTypes() {
+                return paramInfo;
+            }
+
+            @Override
+            public List<String> getParameterOrder() {
+                return parameterOrder;
+            }
+
+            @Override
+            public boolean isMultiValue(int position) {
+                return analyser.multiValueParams.contains(position);
+            }
+
+        };
     }
 
     /**
@@ -254,8 +273,8 @@ public class MqlQueryAnalysis implements QueryAnalysis {
     }
 
     @Override
-    public DataDefinition getParameterTypes() {
-        return paramInfo;
+    public QueryParameters getQueryParameters() {
+        return queryParams;
     }
 
     @Override
@@ -337,10 +356,6 @@ public class MqlQueryAnalysis implements QueryAnalysis {
         return noFrom;
     }
 
-    public List<String> getParameterOrder() {
-        return parameterOrder;
-    }
-
     public static class ParamConstant {
         String paramName;
 
@@ -370,11 +385,6 @@ public class MqlQueryAnalysis implements QueryAnalysis {
     @Override
     public Collection<String> getWarnings() {
         return analyser.warnings;
-    }
-
-    @Override
-    public DataDefinition getParameterTypesByName() {
-        return this.paramInfoByName;
     }
 
     /**
