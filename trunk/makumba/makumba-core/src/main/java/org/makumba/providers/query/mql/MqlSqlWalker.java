@@ -64,6 +64,9 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
     /** The set of parameters that have different types on different positions (multi-type parameters) */
     Set<String> multiTypeParams = new HashSet<String>();
 
+    /** Parameters that can receive vectorial values, i.e. IN SET ($param) */
+    Set<Integer> multiValueParams = new HashSet<Integer>();
+
     private AST select;
 
     protected QueryContext rootContext;
@@ -87,8 +90,6 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
 
     /** Labels known a-priori. This is needed for analysis of query fragment parameters */
     DataDefinition knownLabels;
-
-    Set<Integer> multiValueParams = new HashSet<Integer>();
 
     public MqlSqlWalker(String query, DataDefinition insertIn, boolean optimizeJoins, boolean autoLeftJoin,
             DataDefinition knownLabels) {

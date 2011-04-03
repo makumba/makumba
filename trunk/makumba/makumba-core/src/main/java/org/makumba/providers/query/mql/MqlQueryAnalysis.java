@@ -161,8 +161,9 @@ public class MqlQueryAnalysis implements QueryAnalysis {
             }
 
             // if we still don't know who this guy is, maybe it's an actor parameter that we generated on the fly
+            // FIXME: this can only happen if the parameter is a projection, in which case it was already fixed in
+            // MqlSqlWalker#setProjectionTypes()
             if (parameterOrder.get(i).startsWith("actor_")) {
-                // bingo
                 String type = parameterOrder.get(i).substring(6).replaceAll("_", ".");
                 fd = mqlAnalyzer.ddp.getDataDefinition(type).getFieldDefinition(0);
             }
@@ -176,6 +177,8 @@ public class MqlQueryAnalysis implements QueryAnalysis {
                 throw new MakumbaError("Panic: could not compute type of parameter at position " + i + " with name '"
                         + parameterOrder.get(i) + "' of query " + getQuery());
             }
+
+            // now we can translate the name back to the original name (e.g. $param0 -> $1)
             parameterOrder.set(i, QueryAnalysisProvider.getActualParameterName(parameterOrder.get(i)));
         }
 
