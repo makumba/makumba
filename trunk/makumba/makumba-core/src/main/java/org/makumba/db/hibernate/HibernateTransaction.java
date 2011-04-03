@@ -19,6 +19,7 @@ import org.hibernate.type.NullableType;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.HibernateSFManager;
+import org.makumba.InvalidValueException;
 import org.makumba.MakumbaError;
 import org.makumba.MakumbaSystem;
 import org.makumba.NullObject;
@@ -393,10 +394,13 @@ public class HibernateTransaction extends TransactionImplementation {
             Object paramValue = argsArray[i];
 
             FieldDefinition paramDef = paramsDef.getFieldDefinition(i);
-            if (MqlParameterTransformer.isValueInvalidForPosition(paramDef, paramValue)) {
-                q.setParameter(i, null);
-            } else {
+
+            try {
+                // TODO: not sure how tested this is
+                paramValue = paramDef.checkValue(paramValue);
                 assignParameter(i, paramValue, paramDef, q);
+            } catch (InvalidValueException e) {
+                q.setParameter(i, null);
             }
         }
     }
