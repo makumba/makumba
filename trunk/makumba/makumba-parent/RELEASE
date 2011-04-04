@@ -8,7 +8,7 @@ PREREQUISITES
 - the makumba public & private keys imported on your system
 - don't use maven 2.2.0 since it contains a bug and generates invalid checksums
 
-- Sonatype user and password must be configured in ~.m2/settings.xml:
+- Sonatype user and password must be configured in ~/.m2/settings.xml:
 
 <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
