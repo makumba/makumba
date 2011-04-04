@@ -33,4 +33,7 @@ public interface ClientsideValidationProvider {
      * {@link MakumbaJspAnalyzer} if the libraries are already included by the programmer, and add them if needed.
      */
     public String[] getNeededJavaScriptFileNames();
+
+    /** Applies any formatting needed on the provided regular expression. */
+    public String formatRegularExpression(String expression);
 }

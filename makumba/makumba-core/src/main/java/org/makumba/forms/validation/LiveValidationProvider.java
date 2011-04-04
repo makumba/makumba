@@ -128,11 +128,8 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
                         getRangeLimits(rule.getLowerBound(), rule.getUpperBound())));
                     break;
                 case REGEX:
-                    // JavaScript regexp patterns are enclosed in / /
-                    // thus, we need to escape any potential / in the pattern with \/
-                    // ( e.g. check for a valid URL starting with http:// )
-                    validations.append(getValidationLine(inputVarName, "Validate.Format", rule, "pattern: /^"
-                            + rule.getExpression().replace("/", "\\/") + "$/i, "));
+                    validations.append(getValidationLine(inputVarName, "Validate.Format", rule, "pattern: "
+                            + formatRegularExpression(rule.getExpression()) + ", "));
                     break;
                 case COMPARISON:
 
@@ -182,6 +179,22 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
                     break;
             }
         }
+    }
+
+    /**
+     * Formats a regular expression to be used in JavaScript.<br/>
+     * The transformations are:
+     * <ul>
+     * <li>JavaScript regexp patterns are enclosed in / /</li>
+     * <li>the regexp is augmented by a ^ prefix and $ suffix, to match line begin and end, respectively.</li>
+     * <li>i is added in the end, to match case-insensitive</li>
+     * </ul>
+     * 
+     * @return the given expression, with a prefix /^ and a suffix $/i
+     */
+    @Override
+    public String formatRegularExpression(String expression) {
+        return "/^" + expression + "$/i";
     }
 
     /** Returns the result of the initialisation, surrounded by a <code>&lt;script&gt;</code> tag. */
