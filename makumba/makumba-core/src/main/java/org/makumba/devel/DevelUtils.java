@@ -25,15 +25,20 @@ public class DevelUtils {
 
     /** Write the page footer to the given writer. */
     public static void printDeveloperSupportFooter(PrintWriter w) throws IOException {
-        w.println("<hr><font size=\"-1\"><a href=\"http://www.makumba.org\">Makumba</a> developer support; version:"
-                + org.makumba.MakumbaSystem.getVersion() + " " + Configuration.getRemoteDataSourceConfigurationPath()
-                + "</font>");
+        w.println("<hr style=\"clear: both;\"/>\n"
+                + "<a style=\"font-size: smaller\" href=\"http://www.makumba.org\">Makumba</a> developer support; version:"
+                + org.makumba.MakumbaSystem.getVersion() + " " + Configuration.getRemoteDataSourceConfigurationPath());
     }
 
-    public static void writeScripts(PrintWriter w, String contextPath) {
-        w.println("<script type=\"text/javascript\" src=\"" + contextPath
-                + Configuration.getServletLocation(MakumbaServlet.RESOURCES) + "/"
-                + MakumbaResourceServlet.RESOURCE_PATH_JAVASCRIPT + "makumbaDevelScripts.js\"></script>\n");
+    public static void writeScripts(PrintWriter w, String contextPath, String... additionalScripts) {
+        String path = contextPath + Configuration.getServletLocation(MakumbaServlet.RESOURCES) + "/"
+                + MakumbaResourceServlet.RESOURCE_PATH_JAVASCRIPT;
+        w.println("<script type=\"text/javascript\" src=\"" + path + "makumbaDevelScripts.js\"></script>\n");
+        if (additionalScripts != null) {
+            for (String s : additionalScripts) {
+                w.println("<script type=\"text/javascript\" src=\"" + path + s + "\"></script>\n");
+            }
+        }
     }
 
     public static void writeStyles(PrintWriter w, String contextPath) {
@@ -42,8 +47,8 @@ public class DevelUtils {
                 + MakumbaResourceServlet.RESOURCE_PATH_CSS + "makumbaDevelStyles.css\"/>");
     }
 
-    public static void writeStylesAndScripts(PrintWriter w, String contextPath) {
-        writeScripts(w, contextPath);
+    public static void writeStylesAndScripts(PrintWriter w, String contextPath, String... additionalScripts) {
+        writeScripts(w, contextPath, additionalScripts);
         writeStyles(w, contextPath);
     }
 
