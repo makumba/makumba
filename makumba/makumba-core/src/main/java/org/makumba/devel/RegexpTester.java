@@ -43,6 +43,7 @@ import org.apache.commons.lang.StringUtils;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionParseError;
 import org.makumba.FieldDefinition;
+import org.makumba.MakumbaSystem;
 import org.makumba.ValidationDefinition;
 import org.makumba.ValidationRule;
 import org.makumba.providers.DataDefinitionProvider;
@@ -76,7 +77,8 @@ public class RegexpTester extends DataServlet {
 
         PrintWriter writer = response.getWriter();
         DevelUtils.writePageBegin(writer);
-        DevelUtils.writeStylesAndScripts(writer, contextPath);
+        DevelUtils.writeStylesAndScripts(writer, contextPath,
+            MakumbaSystem.getClientsideValidationProvider().getNeededJavaScriptFileNames());
         DevelUtils.writeTitleAndHeaderEnd(writer, DeveloperTool.REGEXP_TESTER.getName());
 
         LinkedHashMap<FieldDefinition, String> fieldsWithRegexp = new LinkedHashMap<FieldDefinition, String>();
@@ -135,7 +137,7 @@ public class RegexpTester extends DataServlet {
 
         if (errors.size() > 0) {
             writer.println("      <div style=\"color: red; font-size: smaller;\"> Encountered the following parsing errors:");
-            writer.println("        <div style=\"color: gray; font-size: smallest;\">");
+            writer.println("        <div style=\"color: gray; font-size: x-small;\">");
             for (DataDefinitionParseError e : errors) {
                 writer.println("        " + e.getMessage() + "<br/>");
             }
@@ -153,7 +155,7 @@ public class RegexpTester extends DataServlet {
         writer.println("  </tr>");
         writer.println("  <tr>");
         writer.println("    <td colspan=\"2\" align=\"center\">");
-        writer.println("      <input type=\"submit\" value=\"Test server-side\" >");
+        writer.println("      <input type=\"submit\" value=\"Test\" >");
         writer.println("    </td>");
         writer.println("  </tr>");
         writer.println("</table>");
@@ -183,20 +185,64 @@ public class RegexpTester extends DataServlet {
             writer.println("</div>");
 
             if (p != null && StringUtils.isNotBlank(paramTestValues)) {
-                writer.println("<table>");
-                writer.println("  <tr>");
-                writer.println("    <th>Test</th>");
-                writer.println("    <th>Match?</th>");
-                writer.println("  </tr>");
                 String[] testLines = paramTestValues.split(System.getProperty("line.separator"));
-                for (String string : testLines) {
-                    string = string.replace("\r", "");
-                    Matcher matcher = p.matcher(string);
-                    writer.println("  <tr>");
-                    writer.println("    <td> " + string + " </td> <td> " + matcher.matches() + " </td>");
-                    writer.println("  </tr>");
+
+                // server-side testing
+                writer.println("<div style=\"width: 50%; float:left;\">");
+                writer.println("  <h2> Server-side Evaluation </h2>");
+                writer.println("  <table>");
+                writer.println("    <tr>");
+                writer.println("      <th>Test</th>");
+                writer.println("      <th>Match?</th>");
+                writer.println("    </tr>");
+                for (String testValue : testLines) {
+                    testValue = testValue.replace("\r", "");
+                    Matcher matcher = p.matcher(testValue);
+                    writer.println("    <tr>");
+                    writer.println("      <td> " + testValue + " </td> <td style=\"color: "
+                            + (matcher.matches() ? "green" : "red") + ";\"> " + matcher.matches() + " </td>");
+                    writer.println("    </tr>");
                 }
-                writer.println("</table>");
+                writer.println("  </table>");
+                writer.println("</div>");
+
+                // server-side testing
+                writer.println("<div style=\"width: 50%; float:right;\">");
+                writer.println("  <h2> Client-side Evaluation with "
+                        + MakumbaSystem.getClientsideValidationProvider().getClass().getSimpleName() + " </h2>");
+                writer.println("  <table>");
+                writer.println("    <tr>");
+                writer.println("      <th>Test</th>");
+                writer.println("      <th>Match?</th>");
+                writer.println("    </tr>");
+                for (int i = 0; i < testLines.length; i++) {
+                    String testValue = testLines[i].replace("\r", "");
+                    String elementId = "testValue_" + i;
+
+                    writer.println("    <tr>");
+                    writer.println("      <td> " + testValue + " </td>");
+                    writer.println("      <td>");
+                    writer.println("        <div id=\"" + elementId
+                            + "\" style=\"color: red\"> Not evaluated (check Javascript console for errors) </div>");
+                    writer.println("        <script type=\"text/javascript\">");
+                    // FIXME: the way below to evaluate the regexp is currently specific to the LiveValidationProvider
+                    // A fix would be an additional method in ClientsideValidationProvider that provides that code
+                    writer.println("          var pattern = "
+                            + MakumbaSystem.getClientsideValidationProvider().formatRegularExpression(regex) + ";");
+                    writer.println("          document.getElementById('" + elementId + "').innerHTML = pattern.test('"
+                            + testValue + "');");
+                    writer.println("          if (pattern.test('" + testValue + "')) {");
+                    writer.println("            document.getElementById('" + elementId + "').style.color='green';");
+                    writer.println("          }");
+                    writer.println("        </script>");
+                    writer.println("      </td>");
+                    writer.println("    </tr>");
+                }
+                writer.println("  </table>");
+                writer.println("</div>");
+
+                // writer.println("<div style=\"clear: both;\"> &nbsp; </div>");
+
             }
         }
 
