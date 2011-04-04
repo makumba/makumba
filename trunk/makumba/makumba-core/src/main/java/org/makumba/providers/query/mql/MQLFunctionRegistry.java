@@ -66,8 +66,8 @@ public class MQLFunctionRegistry {
             makMultipleArgument("char[255]")));
         mqlFunctions.add(toStringFunction("substring", new MQLFunctionArgument("char[255]"), new MQLFunctionArgument(
                 "int"), MQLFunctionRegistry.makeOptionalArgument("int")));
-        String[] arguments = { "char[255]", "char[255]" };
-        mqlFunctions.add(new MQLFunctionDefinition("replace", "char[255]", arguments));
+
+        mqlFunctions.add(new MQLFunctionDefinition("replace", "char[255]", "char[255]", "char[255]", "char[255]"));
 
         // simple string-to-int functions
         mqlFunctions.add(new MQLFunctionDefinition("ascii", "int", "char[255]"));
