@@ -6,8 +6,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.makumba.FieldDefinition;
-import org.makumba.ValidationRule;
 import org.makumba.FieldDefinition.FieldErrorMessageType;
+import org.makumba.ValidationRule;
 import org.makumba.commons.StringUtils;
 import org.makumba.forms.html.FieldEditor;
 import org.makumba.providers.DataDefinitionProvider;
@@ -46,6 +46,7 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
     private Set<String> definitionVarNames = new LinkedHashSet<String>();
 
     /** Initialises a field, basically does create the variables and calls for this field. */
+    @Override
     public void initField(String inputName, String formIdentifier, FieldDefinition fieldDefinition, boolean validateLive) {
         inputName = inputName + formIdentifier;
         Collection<ValidationRule> validationRules = ddp.getValidationRules(fieldDefinition);
@@ -119,12 +120,12 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
             switch (rule.getValidationType()) {
 
                 case LENGTH:
-                    validations.append(getValidationLine(inputVarName, "Validate.Length", rule, getRangeLimits(
-                        rule.getLowerBound(), rule.getUpperBound())));
+                    validations.append(getValidationLine(inputVarName, "Validate.Length", rule,
+                        getRangeLimits(rule.getLowerBound(), rule.getUpperBound())));
                     break;
                 case RANGE:
-                    validations.append(getValidationLine(inputVarName, "Validate.Numericality", rule, getRangeLimits(
-                        rule.getLowerBound(), rule.getUpperBound())));
+                    validations.append(getValidationLine(inputVarName, "Validate.Numericality", rule,
+                        getRangeLimits(rule.getLowerBound(), rule.getUpperBound())));
                     break;
                 case REGEX:
                     // JavaScript regexp patterns are enclosed in / /
@@ -184,6 +185,7 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
     }
 
     /** Returns the result of the initialisation, surrounded by a <code>&lt;script&gt;</code> tag. */
+    @Override
     public StringBuffer getClientValidation(boolean validateLive) {
         StringBuffer b = new StringBuffer();
         if (validationObjects.length() > 0) {
@@ -210,6 +212,7 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
      * returns the call for the onSubmit validation, e.g.:<br>
      * <code>function(e) { return LiveValidation.massValidate( [emailValidation, weightValidation, hobbiesValidation, ageValidation] );</code>
      */
+    @Override
     public StringBuffer getOnSubmitValidation() {
         if (definitionVarNames.size() > 0) {
             StringBuffer sb = new StringBuffer(getValidationFunction()).append(";");
@@ -219,6 +222,7 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
         }
     }
 
+    @Override
     public String[] getNeededJavaScriptFileNames() {
         // the order gets reversed for some reason... therefore we reverse it here as well
         return new String[] { "prototype.js", "makumba-livevalidation.js", "livevalidation_1.3_standalone.js" };
