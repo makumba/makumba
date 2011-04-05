@@ -5,7 +5,13 @@ PREREQUISITES
 -------------
 
 - gpg installed on your system so that the maven gpg plugin can use it
+-- in Debian: install package gnupg
+
 - the makumba public & private keys imported on your system
+-- gpg --import makumba-pubring.gpg 
+-- gpg --import makumba-secring.gpg 
+ 
+
 - don't use maven 2.2.0 since it contains a bug and generates invalid checksums
 
 - Sonatype user and password must be configured in ~/.m2/settings.xml:
@@ -28,6 +34,18 @@ PREREQUISITES
     </server>
   </servers>
 </settings>
+
+-- the user & pass for sonatype are personal, i.e. you need to make an account at the Sonatype JIRA as described here:
+https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide#SonatypeOSSMavenRepositoryUsageGuide-2.Signup
+
+-- Then according to their doc, you need to ask for membership to the "org.makumba" repository like this:
+https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide#SonatypeOSSMavenRepositoryUsageGuide-3.CreateaJIRAticket
+
+"How does a new user ask for publish rights to existing repositories? 
+Follow step 2, sign up and then leave a comment on the JIRA ticket with the username. We will assign related roles to him and update the ticket"
+
+The makumba repository public URL is https://oss.sonatype.org/content/groups/public/org/makumba/
+
 
 - Sourceforge username & password configured in build.properties
 
