@@ -1,0 +1,1 @@
+<% response.sendRedirect("playground.jsf"); %>

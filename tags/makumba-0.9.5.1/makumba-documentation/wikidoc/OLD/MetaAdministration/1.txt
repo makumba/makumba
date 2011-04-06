@@ -1,0 +1,12 @@
+[{ALLOW view Admin,Documentation}]
+
+!!!Administration guidelines / HOW-TO
+
+This document is intended for admins.
+
+
+
+
+
+
+%%(display:none;)[Category Meta|CategoryMeta]%%

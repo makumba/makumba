@@ -1,0 +1,226 @@
+[{ALLOW edit Documentation}]
+
+%%tabbedSection 
+%%tab-Basics
+
+{{{
+
+(empty line)     Make a paragraph break. 
+----             Horizontal ruler
+[link]           Create hyperlink to "link", where "link" can be either an internal 
+                 WikiName or an external link (http://)
+[text|link]      Create a hyperlink where the link text is different from the actual 
+                 hyperlink link.
+[link#heading]   Jumps to that heading on the page.  The heading here needs to be 
+                 written in CamelCase.
+[text|wiki:link] Create a hyperlink where the link text is different from the 
+                 actual hyperlink link, and the hyperlink points to a named Wiki. 
+                 This supports interWiki linking, for instance:
+                 
+                 [Bug:bug:123]                         Link to Bugzilla entry 123
+                 [DataDefinition|api:DataDefinition]   Link to the javadoc
+
+*                Make a bulleted list (must be in first column). Use more (**)
+                 for deeper indentations.
+#                Make a numbered list (must be in first column). Use more (##, ###) 
+                 for deeper indentations.
+
+!, !!, !!!       Start a line with an exclamation mark (!) to make a heading. 
+                 More exclamation marks mean bigger headings.
+
+__text__         Makes text bold.
+''text''         Makes text in italics (notice that these are single quotes ('))
+{{text}}         Makes text in monospaced font.
+;term:def        Defines 'term' with 'def'.  Use this with empty 'term' to 
+                 make short comments.
+\\               Forced line break (please use sparingly).
+
+%%stylename %%   Uses custom CSS style. Also possible to add styles inline,
+                 e.g. %%(color:red)This text is red.%%
+
+~{               Escapes a curly brace
+~|               Escapes a '|' (e.g. in a table)
+
+}}}
+/%
+%%tab-Code
+
+!Code inside of text
+
+In order to embed code inside of text, use the ''code'' style:
+
+{{{
+%%code <mak:list>%%
+}}}
+
+%%code <mak:list>%%
+
+!Source code
+
+It is possible to format source code using the prettify JSPWiki style:
+
+{{{
+%%prettify
+{{{
+public static void main(String[] args) {
+  System.out.println("Hello, world!");
+}
+~}}}%%
+}}}
+
+%%prettify
+{{{
+public static void main(String[] args) {
+  System.out.println("Hello, world!");
+}
+}}}%%
+
+/%
+%%tab-Boxes
+
+It is possible to have boxes (notes, warnings, fixmes). By default, a Box is a Note and it can contain JSPWiki formatting:
+
+!Notes
+
+{{{
+[{Box
+
+A simple note without a label.
+* Some
+* bulleted
+* content
+}]
+}}}
+
+[{Box
+
+A simple note without a label.
+* Some
+* bulleted
+* content
+}]
+
+{{{
+[{Box label='My custom label'
+
+A note with a custom label
+}]
+}}}
+
+[{Box label='My custom label'
+
+A note with a custom label
+}]
+
+!Warnings
+
+{{{
+[{Box type='warning'
+
+A warning box
+}]
+}}}
+
+[{Box type='warning'
+
+A warning box
+}]
+
+{{{
+[{Box label='Danger' type='warning'
+
+A warning box with a custom label
+}]
+}}}
+
+[{Box label='Danger' type='warning'
+
+A warning box with a custom label
+}]
+
+!Fixme's
+
+{{{
+[{Box type='fixme' author='manu'
+
+A fixme, the author param is required
+}]
+}}}
+
+[{Box type='fixme' author='manu'
+
+A fixme, the author param is required
+}]
+
+{{{
+[{Box label='TODO' type='fixme' author='manu'
+
+A fixme with a custom label
+}]
+}}}
+
+[{Box label='TODO' type='fixme' author='manu'
+
+A fixme with a custom label
+}]
+
+/%
+%%tab-Tables
+
+By default JSPWiki does not offer too many possibilities regarding tables, like no possibilities to merge cells or to give custom styles to rows. This can be circumvented using the [TablePlugin|http://www.jspwiki.org/wiki/TablePlugin]
+
+{{{
+[{Table
+
+|Nr |A |< |C |<
+|#  |a |b |c |(background:yellow;)d
+|#  |^ |b |^ |(background:yellow;)d
+
+
+}]
+}}}
+
+[{Table
+
+|Nr |A |< |C |<
+|#  |a |b |c |(background:yellow;)d
+|#  |^ |b |^ |(background:yellow;)d
+}]
+
+Check out the documentation of the [TablePlugin|http://www.jspwiki.org/wiki/TablePlugin] to find out more.
+
+
+/%
+
+%%tab-API
+
+It is possible to quickly link to the API using the API, DEV and JAVA plugins:
+
+{{{
+[{API class='org.makumba.Transaction'}]
+}}}
+
+[{API class='org.makumba.Transaction'}]
+
+
+{{{
+[{DEV class='org.makumba.analyser.AnalysableTag'}]
+}}}
+
+[{DEV class='org.makumba.analyser.AnalysableTag'}]
+
+
+{{{
+[{JAVA class='java.lang.String'}]
+}}}
+
+[{JAVA class='java.lang.String'}]
+
+
+/%
+
+/%
+
+
+
+%%(display:none;)[Category Meta|CategoryMeta]%%

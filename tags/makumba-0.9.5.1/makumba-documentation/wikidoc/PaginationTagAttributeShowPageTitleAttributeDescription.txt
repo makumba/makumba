@@ -1,0 +1,1 @@
+Whether or not to show the 'Showing Item x to y out of z (Page a out of b)' header.
