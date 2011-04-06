@@ -65,8 +65,13 @@ public class version {
             e.printStackTrace();
         }
 
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_HHmm_ss"); // yyyy-MMM-dd HH:mm:ss
+
         if (version != null && !version.endsWith("SNAPSHOT")) {
             return version;
+        } else if (version != null && version.endsWith("SNAPSHOT")) {
+            // snapshot versions (since maven) indicate the snapshot release, and add a timestamp of the built time
+            return version + " - " + df.format(new Date());
         } else {
 
             // second attempt - are we an anonymous checkout from SVN that has already been tagged?
@@ -98,7 +103,6 @@ public class version {
                 return version;
 
             } else {
-                SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss"); // yyyy-MMM-dd HH:mm:ss
                 // we simply take the current timestamp as a reference point to when the current version has been built
                 return "devel-" + df.format(new Date());
             }
@@ -114,8 +118,8 @@ public class version {
 
     public static void main(String[] args) throws IOException {
 
-        if (args.length == 2 && args[0].equals("writeManifest")) {
-            writeManifest(args[1]);
+        if (args.length == 3 && args[0].equals("writeManifest")) {
+            writeManifest(args[1], args[2]);
         } else {
             System.out.println("name=Makumba");
             System.out.println("version=" + getVersion());
@@ -132,7 +136,7 @@ public class version {
         }
     }
 
-    public static void writeManifest(String path) throws IOException {
+    public static void writeManifest(String path, String version) throws IOException {
         File mf = new File(path);
         if (!mf.exists()) {
             mf.createNewFile();
