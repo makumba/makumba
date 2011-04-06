@@ -19,6 +19,27 @@ manu: auto-complete for mak:input (char and ptr)
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
 
+0.9.5.1 6 Apr 2011
+FIXES
+rudi: fixing replace MQGL function (takes now correctly three arguments)
+rudi: fixed links in devel utils (to other tools, on main page)
+rudi: fix for required makumba resources not being included in some cases (http://trac.makumba.org/ticket/1277)
+cristi: queries that select only constants always returned one row (http://trac.makumba.org/ticket/1278)
+cristi: subquery can now be part of complex logical selection expression (http://trac.makumba.org/ticket/1273)
+cristi: fixed bug: field.ptr.field in a function failed to add "this"
+cristi: fixed multi-type parameters
+cristi: parameter cardinality checking prior to parameter expansion (http://trac.makumba.org/ticket/1191)
+manu: MDD parser now accepts unique(..) in nested sub-subset (http://trac.makumba.org/ticket/1272)
+rudi: MDD parser now accept unique(..) in subsets (http://trac.makumba.org/ticket/1271)
+rudi: Multi-field unique indices over subfields now work when mixing fields from a subfield and the containing MDD (http://trac.makumba.org/ticket/1268)
+rudi: Comparison rules do not validate null dates (http://trac.makumba.org/ticket/1266)
+rudi: Multi-field unique indices spanning over sub-fields now works with new MDD parser (http://trac.makumba.org/ticket/1265)
+
+NEW FEATURES
+rudi: new developer tool to test regular expression validation, server and client side (http://trac.makumba.org/ticket/1283)
+rudi: new configuration option to allow disabling makumba resources (disableResources=...)
+cristi: first version of implicit authorisation (canRead(), authorize=auto, authorize=filter, ...) 
+
 0.9.5 28 Nov 2010
 
 FIXES
@@ -29,6 +50,9 @@ INTERNAL CHANGES
 manu: removing the old ANT targets and files to build list and form separately
 manu: mechanism for keeping the external value of pointers constant during consecutive tests run with auto-increment
 manu: mavenizing the project
+
+NEW FEATURES
+rudi: Validation for selecting a set option (http://trac.makumba.org/ticket/1256)
 
 0.9.0.2 21 Jul 2010
 
