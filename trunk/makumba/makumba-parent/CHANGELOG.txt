@@ -23,22 +23,30 @@ manu: auto-complete for mak:input (char and ptr)
 FIXES
 rudi: fixing replace MQGL function (takes now correctly three arguments)
 rudi: fixed links in devel utils (to other tools, on main page)
+rudi: various other fixes in developer tools (e.g. error messages in source code viewer displayed correctly) 
 rudi: fix for required makumba resources not being included in some cases (http://trac.makumba.org/ticket/1277)
 cristi: queries that select only constants always returned one row (http://trac.makumba.org/ticket/1278)
-cristi: subquery can now be part of complex logical selection expression (http://trac.makumba.org/ticket/1273)
 cristi: fixed bug: field.ptr.field in a function failed to add "this"
 cristi: fixed multi-type parameters
 cristi: parameter cardinality checking prior to parameter expansion (http://trac.makumba.org/ticket/1191)
+cristi: fixing upload of TIFF images (http://makumba.svn.sourceforge.net/viewvc/makumba?view=revision&revision=5808)
 manu: MDD parser now accepts unique(..) in nested sub-subset (http://trac.makumba.org/ticket/1272)
 rudi: MDD parser now accept unique(..) in subsets (http://trac.makumba.org/ticket/1271)
 rudi: Multi-field unique indices over subfields now work when mixing fields from a subfield and the containing MDD (http://trac.makumba.org/ticket/1268)
-rudi: Comparison rules do not validate null dates (http://trac.makumba.org/ticket/1266)
 rudi: Multi-field unique indices spanning over sub-fields now works with new MDD parser (http://trac.makumba.org/ticket/1265)
+manu: fixing a bug with MDD functions that have as parameter a value from the same MDD (http://makumba.svn.sourceforge.net/viewvc/makumba?view=revision&revision=5807)
+cristi: allowing long values for intEnum values (http://makumba.svn.sourceforge.net/makumba/?rev=5805&view=rev)
 
 NEW FEATURES
+rudi: Comparison rules do not validate null dates (http://trac.makumba.org/ticket/1266)
+cristi: subquery can now be part of complex logical selection expression (http://trac.makumba.org/ticket/1273)
 rudi: new developer tool to test regular expression validation, server and client side (http://trac.makumba.org/ticket/1283)
 rudi: new configuration option to allow disabling makumba resources (disableResources=...)
-cristi: first version of implicit authorisation (canRead(), authorize=auto, authorize=filter, ...) 
+cristi: first version of implicit authorisation (canRead(), authorize=auto, authorize=filter, ...) (http://trac.makumba.org/ticket/1059)
+cristi: allowing subqueries in orderBy (simple solution to http://trac.makumba.org/ticket/1251) 
+
+INTERNAL CHANGES
+filip: fixing MDD tests, which were not reporting any error if no MDD was found (http://makumba.svn.sourceforge.net/makumba/?rev=5802&view=rev)
 
 0.9.5 28 Nov 2010
 
@@ -94,7 +102,6 @@ manu: fixing #1240
 manu: applying database transaction rollback in case of form validation errors for all form operations, as otherwise this may lead to an inconsistent db state
 
 NEW FEATURES
-rudi: annotating the list-tags in the JSP viewer with the queries they generated
 rudi: developer tool to convert intEnum to setIntEnum, copying the existing data
 gwen: adding DBSV format as input option in pointer value converter
 gwen: adding Data Definition and Query Function Inliner providers to Makumba configuration overview 
@@ -104,6 +111,7 @@ rudi: improvement to JSP viewer: displaying a pop-up with generated queries for 
 gwen: error log viewer initial revision
 manu: EntityClassGenerator, generating JPA-annotated POJO classes based on MDDs
 manu: javassist-based reader for method annotations
+rudi: providing an option to return a list of chaned values on db.update and via the JSP taglib (most of http://trac.makumba.org/ticket/909 implemented)
 
 SPECIAL CHANGES
 cristi: first-pass query inliner
