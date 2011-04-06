@@ -318,6 +318,7 @@
                             <arguments>
                                 <argument>writeManifest</argument>
                                 <argument>${project.build.outputDirectory}/META-INF/MANIFEST.MF</argument>
+                                <argument>${project.version}</argument>
                             </arguments>
                         </configuration>
                     </execution>
