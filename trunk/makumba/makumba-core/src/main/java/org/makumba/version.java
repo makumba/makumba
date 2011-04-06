@@ -37,10 +37,9 @@ import java.util.Date;
 import java.util.Properties;
 
 /**
- * Computes the version from the maven version. If none is found, inspect the SVN BaseURL tag. If used from a HEAD check-out,
- * this will return "devel-<currentDate>".
- * If used from a TAG check-out, this will return the version of the tag, e.g. "0.7.1" Note that in order to work, the file
- * needs to have the HeadURL keyword enabled
+ * Computes the version from the maven version. If none is found, inspect the SVN BaseURL tag. If used from a HEAD
+ * check-out, this will return "devel-<currentDate>". If used from a TAG check-out, this will return the version of the
+ * tag, e.g. "0.7.1" Note that in order to work, the file needs to have the HeadURL keyword enabled
  * 
  * @author Cristian Bogdan
  * @author Stefan Baebler
@@ -58,7 +57,7 @@ public class version {
         Properties p = new Properties();
         try {
             InputStream mvnProperties = version.class.getResourceAsStream("/META-INF/maven/org.makumba/makumba-core/pom.properties");
-            if(mvnProperties != null) {
+            if (mvnProperties != null) {
                 p.load(mvnProperties);
                 version = (String) p.get("version");
             }
@@ -66,7 +65,7 @@ public class version {
             e.printStackTrace();
         }
 
-        if(version != null && !version.endsWith("SNAPSHOT")) {
+        if (version != null && !version.endsWith("SNAPSHOT")) {
             return version;
         } else {
 
@@ -74,7 +73,8 @@ public class version {
             String vs = "$HeadURL$";
 
             // HeadURL will return something like
-            // https://makumba.svn.sourceforge.net/svnroot/makumba/trunk/makumba/classes/org/makumba/version.java for HEAD
+            // https://makumba.svn.sourceforge.net/svnroot/makumba/trunk/makumba/classes/org/makumba/version.java for
+            // HEAD
             // https://makumba.svn.sourceforge.net/svnroot/makumba/tags/makumba-0_5_10_2/makumba/classes/org/makumba/version.java
             // for a tagged version
 
@@ -114,7 +114,7 @@ public class version {
 
     public static void main(String[] args) throws IOException {
 
-        if(args.length == 2 && args[0].equals("writeManifest")) {
+        if (args.length == 2 && args[0].equals("writeManifest")) {
             writeManifest(args[1]);
         } else {
             System.out.println("name=Makumba");
@@ -134,13 +134,14 @@ public class version {
 
     public static void writeManifest(String path) throws IOException {
         File mf = new File(path);
-        if(!mf.exists()) {
+        if (!mf.exists()) {
             mf.createNewFile();
         }
         FileOutputStream fos = new FileOutputStream(mf);
         PrintWriter pw = new PrintWriter(fos);
         pw.println("Manifest-Version: 1.0");
-        pw.println("Created-By: Java " + System.getProperty("java.version") + " (" + System.getProperty("java.vendor") + ")");
+        pw.println("Created-By: Java " + System.getProperty("java.version") + " (" + System.getProperty("java.vendor")
+                + ")");
         pw.println();
         pw.println("Name: Makumba");
         pw.println("Version: " + getVersion());
@@ -183,6 +184,7 @@ public class version {
         final Process p = p1;
         final PrintWriter ps1 = ps;
         new Thread(new Runnable() {
+            @Override
             public void run() {
                 flushTo(new BufferedReader(new InputStreamReader(p.getErrorStream()), 81960), ps1);
             }
