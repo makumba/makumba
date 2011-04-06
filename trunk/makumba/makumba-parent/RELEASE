@@ -43,6 +43,7 @@ https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage
 
 "How does a new user ask for publish rights to existing repositories? 
 Follow step 2, sign up and then leave a comment on the JIRA ticket with the username. We will assign related roles to him and update the ticket"
+The respective ticket is at https://issues.sonatype.org/browse/OSSRH-182
 
 The makumba repository public URL is https://oss.sonatype.org/content/groups/public/org/makumba/
 
