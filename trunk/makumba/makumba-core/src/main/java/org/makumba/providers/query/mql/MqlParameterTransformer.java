@@ -142,6 +142,10 @@ public class MqlParameterTransformer implements ParameterTransformer {
 
     private InvalidValueException checkValue(FieldDefinition fd, Object o, ArrayList<Object> res) {
         try {
+            if (o == null) {
+                res.add(Pointer.Null);
+                return new InvalidValueException("should not be null");
+            }
             o = fd.checkValue(o);
             res.add(o);
             return null;
