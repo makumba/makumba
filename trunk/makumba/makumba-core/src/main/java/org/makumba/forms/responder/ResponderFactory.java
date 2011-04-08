@@ -388,12 +388,8 @@ public class ResponderFactory {
                 checkMultipleSubmission(req, responder);
                 // respond, depending on the operation (new, add, edit, delete)
                 Object result = responder.op.respondTo(req, responder, suffix, parentSuffix);
-                if (responder instanceof FormResponder) {
-                    if (result != null) {
-                        // FIXME: what to do if responder is not a form responder? pull up the result attribute field?
-                        FormResponder formResponder = (FormResponder) responder;
-                        responderResults.put(formResponder.resultAttribute, result);
-                    }
+                if (result != null) {
+                    responderResults.put(responder.resultAttribute, result);
                 }
                 // display the response message and set attributes
                 message = responder.message;
