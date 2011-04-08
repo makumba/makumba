@@ -522,12 +522,13 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
         if (getParentList(this) == null) {
             QueryExecution.endListGroup(pageContext);
-            // also remove the attribute saying that this page was pre-started
-            // this is important if a mak:list is repeated inside a loop for example
-            // then the mak:list keys are equal, but we need to start a new iteration group
-            String listKey = getListKey(pageContext);
-            pageContext.removeAttribute(listKey);
         }
+
+        // also remove the attribute saying that this page was pre-started
+        // this is important if a mak:list is repeated inside a loop for example
+        // then the mak:list keys are equal, but we need to start a new iteration group
+        String listKey = getListKey(pageContext);
+        pageContext.removeAttribute(listKey);
 
         // this code is here, as doAfterBody is not execute for mak:lists that don't have a body
         // to support nextCount(), remove the current list key from the stack of running lists
