@@ -66,6 +66,15 @@ public class MqlParameterTransformer implements ParameterTransformer {
         text = mg.getText();
     }
 
+    public void dummyInit() {
+        init(new HashMap<String, Object>() {
+            @Override
+            public Object get(Object key) {
+                return "";
+            }
+        });
+    }
+
     @Override
     public int getParameterCount() {
         if (expandedParamInfo == null) {
@@ -354,5 +363,4 @@ public class MqlParameterTransformer implements ParameterTransformer {
             System.out.println(qG.getTransformedParameterTypes().getFieldDefinition(n));
         }
     }
-
 }
