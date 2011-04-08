@@ -28,7 +28,10 @@ import java.util.Collection;
 import org.makumba.commons.SerializedGenericMultiValueMap;
 
 /**
- * This class holds several {@link InvalidValueException} of the same form together.
+ * This class holds several {@link InvalidValueException} of the same form together.<br/>
+ * When performing custom form validation in business logics, you should instantiate an instance of this class, and keep
+ * on adding all {@link InvalidValueException} encountered. Finally, trigger the exception throwing by calling
+ * {@link #throwCheck()}<br/>
  * 
  * @author Rudolf Mayer
  * @version $Id$
