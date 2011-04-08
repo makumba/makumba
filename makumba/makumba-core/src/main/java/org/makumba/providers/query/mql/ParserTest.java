@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Vector;
 
@@ -13,7 +12,6 @@ import org.makumba.FieldDefinition;
 import org.makumba.OQLParseError;
 import org.makumba.commons.ClassResource;
 import org.makumba.commons.NameResolver;
-import org.makumba.providers.ParameterTransformer;
 
 import antlr.collections.AST;
 
@@ -98,13 +96,8 @@ public class ParserTest {
         Throwable mqlThr = null;
         try {
             mq = new MqlQueryAnalysis(query, false, automaticLeftJoin);
-            ParameterTransformer qG = new MqlParameterTransformer(mq, new MqlSqlGenerator());
-            qG.init(new HashMap<String, Object>() {
-                @Override
-                public Object get(Object key) {
-                    return "";
-                }
-            });
+            MqlParameterTransformer qG = new MqlParameterTransformer(mq, new MqlSqlGenerator());
+            qG.dummyInit();
 
             mql_sql = qG.getTransformedQuery(nr).toLowerCase();
         } catch (Throwable t) {

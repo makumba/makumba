@@ -425,6 +425,7 @@ public class jspViewer extends LineViewer {
                                         QueryAnalysis qa = queryAnalzyer.getQueryAnalysis(queryInlined);
                                         MqlParameterTransformer trans = new MqlParameterTransformer(
                                                 (MqlQueryAnalysis) qa, new MqlSqlGenerator());
+                                        trans.dummyInit();
                                         currentText.append("SQL: "
                                                 + trans.getTransformedQuery(((Database) db).getNameResolverHook())
                                                 + "<br/>");
@@ -485,7 +486,8 @@ public class jspViewer extends LineViewer {
      * e.g. source code view
      */
     private static String removeExpressionsForInlining(String query) {
-        return query.replaceAll("WHERE #\\{[^}]*\\} ORDER BY", "ORDER BY").replaceAll("ORDER BY #\\{[^}]*\\}$", "").replaceAll("#\\{[^}]*\\}", "");
+        return query.replaceAll("WHERE #\\{[^}]*\\} ORDER BY", "ORDER BY").replaceAll("ORDER BY #\\{[^}]*\\}$", "").replaceAll(
+            "#\\{[^}]*\\}", "");
     }
 
     private String getStyleClass(String tagType) {
@@ -544,7 +546,7 @@ public class jspViewer extends LineViewer {
     protected void printPageBeginAdditional(PrintWriter writer) throws IOException {
         super.printPageBeginAdditional(writer);
     }
-    
+
     public static void main(String[] args) {
         // difficult query to check:
         String[] queries = {
