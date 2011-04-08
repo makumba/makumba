@@ -38,6 +38,7 @@ public class ResponderFactory {
     private static class SingletonHolder implements org.makumba.commons.SingletonHolder {
         private static ResponderFactory singleton = new ResponderFactory();
 
+        @Override
         public void release() {
             singleton = null;
         }
@@ -115,9 +116,9 @@ public class ResponderFactory {
 
         // // now we can order the responders
         // List<String> orderedResponderCodes = new LinkedList<String>();
-        //        
+        //
         // if(order != null ) {
-        //            
+        //
         // for(int i = 0; i < order.length; i++) {
         // if(order[i] != null)
         // orderedResponderCodes.add(formKeyToResponderCode.get(order[i]));
@@ -159,6 +160,7 @@ public class ResponderFactory {
      * Simple comparator to be able to sort by suffix
      */
     private Comparator<Object> bySuffix = new Comparator<Object>() {
+        @Override
         public int compare(Object o1, Object o2) {
             return suffix((String) o1).compareTo(suffix((String) o2));
         }
