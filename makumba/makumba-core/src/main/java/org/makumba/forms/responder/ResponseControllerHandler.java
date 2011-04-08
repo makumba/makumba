@@ -181,7 +181,7 @@ public class ResponseControllerHandler extends ControllerHandler {
      * @return a wrapped ServletRequest containing information about the originally submitted page
      */
     private ServletRequest getFormReloadRequest(ServletRequest req, final Responder responder) {
-        // 
+        //
         req = new HttpServletRequestWrapper((HttpServletRequest) req) {
 
             @Override
