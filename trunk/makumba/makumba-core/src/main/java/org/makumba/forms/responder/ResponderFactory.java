@@ -388,6 +388,7 @@ public class ResponderFactory {
                 checkMultipleSubmission(req, responder);
                 // respond, depending on the operation (new, add, edit, delete)
                 Object result = responder.op.respondTo(req, responder, suffix, parentSuffix);
+
                 if (result != null) {
                     responderResults.put(responder.resultAttribute, result);
                 }
@@ -395,7 +396,12 @@ public class ResponderFactory {
                 message = responder.message;
                 formattedMessage = Responder.successFulMessageFormatter(message);
                 if (result != null) {
-                    req.setAttribute(responder.resultAttribute, result);
+                    if (result instanceof Pointer) { // set external form of pointer, more useful in JSP pages
+                        // see http://trac.makumba.org/ticket/1018
+                        req.setAttribute(responder.resultAttribute, ((Pointer) result).toExternalForm());
+                    } else {
+                        req.setAttribute(responder.resultAttribute, result);
+                    }
                     req.setAttribute(resultNamePrefix + suffix, result);
                 }
                 req.setAttribute(MAKUMBA_SUCCESSFUL_RESPONSE, "yes");
