@@ -168,6 +168,7 @@
                         <version>1.10</version>
                     </dependency>
                 </dependencies>
+                <connection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/trunk/makumba/makumba</connection>
                 <configuration>
                     <allowTimestampedSnapshots>true</allowTimestampedSnapshots>
                     <checkModificationExcludeList>build.properties</checkModificationExcludeList>
