@@ -11,7 +11,6 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.MakumbaError;
-import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.commons.NameResolver;
 import org.makumba.commons.NameResolver.TextList;
@@ -152,14 +151,14 @@ public class MqlParameterTransformer implements ParameterTransformer {
     private InvalidValueException checkValue(FieldDefinition fd, Object o, ArrayList<Object> res) {
         try {
             if (o == null) {
-                res.add(Pointer.Null);
+                res.add(fd.getNull());
                 return new InvalidValueException("should not be null");
             }
             o = fd.checkValue(o);
             res.add(o);
             return null;
         } catch (InvalidValueException ivex) {
-            res.add(Pointer.Null); // or a dummy value for that type
+            res.add(fd.getNull()); // or a dummy value for that type
             return ivex;
         }
     }
@@ -275,7 +274,7 @@ public class MqlParameterTransformer implements ParameterTransformer {
             @SuppressWarnings("unchecked")
             Map<String, Object> args = (Map<String, Object>) multi[1];
 
-            StringBuffer sb = new StringBuffer();
+            StringBuffer sb = new StringBuffer(qA.getQuery());
             for (String arg : qA.getQueryParameters().getParameterOrder()) {
 
                 arg = QueryAnalysisProvider.getActualParameterName(arg);
@@ -291,7 +290,7 @@ public class MqlParameterTransformer implements ParameterTransformer {
             }
             sb.append(multi[2]);
 
-            return qA.getQuery() + " " + sb.toString();
+            return sb.toString();
         }
 
         @Override
