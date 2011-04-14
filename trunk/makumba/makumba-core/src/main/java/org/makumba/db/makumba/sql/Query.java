@@ -52,8 +52,6 @@ public class Query implements org.makumba.db.makumba.Query {
 
     MqlQueryAnalysis qA;
 
-    ParameterAssigner assigner;
-
     String limitSyntax;
 
     boolean offsetFirst;
@@ -102,6 +100,7 @@ public class Query implements org.makumba.db.makumba.Query {
         }
     }
 
+    @Override
     public Vector<Dictionary<String, Object>> execute(Map<String, Object> args, DBConnection dbc, int offset, int limit) {
         if ((insertIn == null || insertIn.length() == 0) && qA.getConstantValues() != null) {
             // no need to send the query to the sql engine
@@ -110,8 +109,6 @@ public class Query implements org.makumba.db.makumba.Query {
 
         MqlParameterTransformer qG = MqlParameterTransformer.getSQLQueryGenerator(qA, args);
 
-        assigner = new ParameterAssigner(db, qA, qG);
-
         String com = qG.getTransformedQuery(db.getNameResolverHook());
         if (supportsLimitInQuery) {
             com += " " + limitSyntax; // TODO: it might happen that it should be in other places than at the end.
@@ -119,27 +116,28 @@ public class Query implements org.makumba.db.makumba.Query {
         PreparedStatement ps = ((SQLDBConnection) dbc).getPreparedStatement(com);
 
         try {
-            String s = assigner.assignParameters(ps, qG.toParameterArray(args));
+            int nParam = qG.getParameterCount();
+            if (supportsLimitInQuery) {
+                nParam += 2;
+            }
+
+            if (ps.getParameterMetaData().getParameterCount() != nParam) {
+                throw new InvalidValueException("Wrong number of arguments passed to query :\n"
+                        + ps.getParameterMetaData().getParameterCount() + ": " + ps + " \n" + nParam + ": " + com);
+            }
+
+            ParameterAssigner.assignParameters(db, qG, ps, args);
 
             if (supportsLimitInQuery) {
                 int limit1 = limit == -1 ? Integer.MAX_VALUE : limit;
 
-                // FIXME this should be checked earlier, see http://bugs.makumba.org/show_bug.cgi?id=1191
-                if (ps.getParameterMetaData().getParameterCount() < assigner.qG.getParameterCount() + 2) {
-                    throw new InvalidValueException("Wrong number of arguments passed to query ");
-                }
-
                 if (offsetFirst) {
-                    ps.setInt(assigner.qG.getParameterCount() + 1, offset);
-                    ps.setInt(assigner.qG.getParameterCount() + 2, limit1);
+                    ps.setInt(qG.getParameterCount() + 1, offset);
+                    ps.setInt(qG.getParameterCount() + 2, limit1);
                 } else {
-                    ps.setInt(assigner.qG.getParameterCount() + 1, limit1);
-                    ps.setInt(assigner.qG.getParameterCount() + 2, offset);
+                    ps.setInt(qG.getParameterCount() + 1, limit1);
+                    ps.setInt(qG.getParameterCount() + 2, offset);
                 }
-            }
-
-            if (s != null) {
-                throw new InvalidValueException("Errors while trying to assign arguments to query:\n" + com + "\n" + s);
             }
 
             java.util.logging.Logger.getLogger("org.makumba.db.query.execution").fine(
@@ -198,11 +196,10 @@ public class Query implements org.makumba.db.makumba.Query {
         insertHandler = (TableManager) db.getTable(insert);
     }
 
+    @Override
     public int insert(Map<String, Object> args, DBConnection dbc) {
 
         MqlParameterTransformer qG = MqlParameterTransformer.getSQLQueryGenerator(qA, args);
-
-        assigner = new ParameterAssigner(db, qA, qG);
 
         String comma = "";
         StringBuffer fieldList = new StringBuffer();
@@ -220,10 +217,7 @@ public class Query implements org.makumba.db.makumba.Query {
         try {
             resultHandler.create(sqldbc, tablename, true);
             PreparedStatement ps = sqldbc.getPreparedStatement(com);
-            String s = assigner.assignParameters(ps, qG.toParameterArray(args));
-            if (s != null) {
-                throw new InvalidValueException("Errors while trying to assign arguments to query:\n" + com + "\n" + s);
-            }
+            ParameterAssigner.assignParameters(db, qG, ps, args);
 
             int n = ps.executeUpdate();
             ps.close();

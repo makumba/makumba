@@ -28,7 +28,6 @@ import java.sql.SQLException;
 import java.util.Map;
 
 import org.makumba.DBError;
-import org.makumba.InvalidValueException;
 import org.makumba.MakumbaError;
 import org.makumba.NotUniqueException;
 import org.makumba.OQLParseError;
@@ -41,8 +40,6 @@ import org.makumba.providers.query.mql.MqlParameterTransformer;
 import org.makumba.providers.query.mql.MqlQueryAnalysis;
 
 public class SQLUpdate implements Update {
-
-    ParameterAssigner assigner;
 
     String debugString;
 
@@ -107,13 +104,6 @@ public class SQLUpdate implements Update {
 
         QueryAnalysis qA = qP.getQueryAnalysis(OQLQuery);
         qG = MqlParameterTransformer.getSQLQueryGenerator((MqlQueryAnalysis) qA, args);
-
-        try {
-            // FIXME: we should make sure here that the tree contains one single type!
-            assigner = new ParameterAssigner(db, qA, qG);
-        } catch (OQLParseError e) {
-            throw new org.makumba.OQLParseError(e.getMessage() + "\r\nin " + debugString + "\n" + OQLQuery, e);
-        }
 
         String fakeCommand;
         String fakeCommandUpper;
@@ -195,17 +185,15 @@ public class SQLUpdate implements Update {
         updateCommand = command.toString();
     }
 
+    @Override
     public int execute(org.makumba.db.makumba.DBConnection dbc, Map<String, Object> args) {
 
         compileUpdateCommand(db, type, setWhere, DELIM, args);
 
         PreparedStatement ps = ((SQLDBConnection) dbc).getPreparedStatement(updateCommand);
+
         try {
-            String s = assigner.assignParameters(ps, qG.toParameterArray(args));
-            if (s != null) {
-                throw new InvalidValueException("Errors while trying to assign arguments to update:\n" + debugString
-                        + "\n" + s);
-            }
+            ParameterAssigner.assignParameters(db, qG, ps, args);
 
             // org.makumba.db.sql.Database db=(org.makumba.db.sql.Database)dbc.getHostDatabase();
 

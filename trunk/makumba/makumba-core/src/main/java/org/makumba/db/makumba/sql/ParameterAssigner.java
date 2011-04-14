@@ -25,62 +25,24 @@ package org.makumba.db.makumba.sql;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Map;
 
-import org.makumba.FieldDefinition;
 import org.makumba.providers.ParameterTransformer;
-import org.makumba.providers.QueryAnalysis;
 
 /**
- * this class takes parameters passed to an OQL query and transmits them to the corresponding PreparedStatement. The
- * order in the two is different, because OQL parameters are numbered. Also, strict type checking is performed for the
- * parameters
+ * Apply the results of a ParameterTransformer to a PreparedStatement
  */
 public class ParameterAssigner {
-    TableManager paramHandler;
 
-    org.makumba.db.makumba.Database db;
+    public static void assignParameters(org.makumba.db.makumba.Database db, ParameterTransformer qG,
+            PreparedStatement ps, Map<String, Object> argsMap) throws SQLException {
 
-    QueryAnalysis qA;
+        Object[] args = qG.toParameterArray(argsMap);
+        TableManager paramHandler = (TableManager) db.makePseudoTable(qG.getTransformedParameterTypes());
 
-    ParameterTransformer qG;
-
-    ParameterAssigner(org.makumba.db.makumba.Database db, QueryAnalysis qA, ParameterTransformer qG) {
-        this.qA = qA;
-        this.qG = qG;
-        this.db = db;
-    }
-
-    static final Object[] empty = new Object[0];
-
-    public String assignParameters(PreparedStatement ps, Object[] args) throws SQLException {
-        if (qG.getParameterCount() == 0) {
-            return null;
+        for (int i = 0; i < qG.getParameterCount(); i++) {
+            paramHandler.setUpdateArgument(qG.getTransformedParameterTypes().getFieldDefinition(i).getName(), ps,
+                i + 1, args[i]);
         }
-
-        if (qG.getParameterCount() > 0) {
-            paramHandler = (TableManager) db.makePseudoTable(qG.getTransformedParameterTypes());
-        }
-
-        try {
-            for (int i = 0; i < qG.getParameterCount(); i++) {
-                FieldDefinition fd = qG.getTransformedParameterTypes().getFieldDefinition(i);
-                if (fd == null) {
-                    throw new IllegalStateException("No type assigned for param" + i + " of query " + qA.getQuery());
-                }
-
-                Object value = args[i];
-                if (value == org.makumba.Pointer.Null) {
-                    value = fd.getNull();
-                }
-
-                value = fd.checkValue(value);
-
-                paramHandler.setUpdateArgument(fd.getName(), ps, i + 1, value);
-            }
-
-        } catch (ArrayIndexOutOfBoundsException ae) {
-            throw new org.makumba.MakumbaError("wrong number of arguments to query ");
-        }
-        return null;
     }
 }
