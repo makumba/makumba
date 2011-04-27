@@ -46,8 +46,6 @@ public class PaginationTag extends GenericMakumbaTag {
 
     private static final String LAST = "&gt;&gt;";
 
-    private static final String LIMIT = "limit";
-
     private static final String PREVIOUS = "&lt;";
 
     private static Hashtable<String, String> navigationLinkStyle = new Hashtable<String, String>(4);
@@ -56,7 +54,15 @@ public class PaginationTag extends GenericMakumbaTag {
 
     private static boolean navigationStylesInitialised = false;
 
-    private static final String OFFSET = "offset";
+    private static final String PARAM_NAME_LIMIT = "limit";
+
+    private static final String PARAM_NAME_OFFSET = "offset";
+
+    /**
+     * Names of parameters that are ignored when automatically constructing the action page, i.e. when no action=""
+     * attribute is provided in the tag
+     */
+    private static final String[] IGNORED_PARAM_NAMES = new String[] { PARAM_NAME_LIMIT, PARAM_NAME_OFFSET };
 
     private static final long serialVersionUID = 1L;
 
@@ -198,27 +204,31 @@ public class PaginationTag extends GenericMakumbaTag {
     /** Initialise the link style, either reading from properties file or using the Makumba provided styles with images */
     private void initLinkStyle() throws IOException {
         String contextPath = ((HttpServletRequest) pageContext.getRequest()).getContextPath();
-        navigationLinkStyle.put(FIRST, "<img border=\"0\" src=\"" + contextPath
-                + Configuration.getServletLocation(MakumbaServlet.RESOURCES) + "/image/resultset_first.gif\" alt=\""
-                + FIRST + "\">");
-        navigationLinkStyle.put(NEXT, "<img border=\"0\" src=\"" + contextPath
-                + Configuration.getServletLocation(MakumbaServlet.RESOURCES) + "/image/resultset_next.gif\" alt=\""
-                + NEXT + "\">");
-        navigationLinkStyle.put(LAST, "<img border=\"0\" src=\"" + contextPath
-                + Configuration.getServletLocation(MakumbaServlet.RESOURCES) + "/image/resultset_last.gif\" alt=\""
-                + LAST + "\">");
-        navigationLinkStyle.put(PREVIOUS, "<img border=\"0\" src=\"" + contextPath
-                + Configuration.getServletLocation(MakumbaServlet.RESOURCES) + "/image/resultset_previous.gif\" alt=\""
-                + PREVIOUS + "\">");
+        navigationLinkStyle.put(FIRST,
+            "<img border=\"0\" src=\"" + contextPath + Configuration.getServletLocation(MakumbaServlet.RESOURCES)
+                    + "/image/resultset_first.gif\" alt=\"" + FIRST + "\">");
+        navigationLinkStyle.put(NEXT,
+            "<img border=\"0\" src=\"" + contextPath + Configuration.getServletLocation(MakumbaServlet.RESOURCES)
+                    + "/image/resultset_next.gif\" alt=\"" + NEXT + "\">");
+        navigationLinkStyle.put(LAST,
+            "<img border=\"0\" src=\"" + contextPath + Configuration.getServletLocation(MakumbaServlet.RESOURCES)
+                    + "/image/resultset_last.gif\" alt=\"" + LAST + "\">");
+        navigationLinkStyle.put(PREVIOUS,
+            "<img border=\"0\" src=\"" + contextPath + Configuration.getServletLocation(MakumbaServlet.RESOURCES)
+                    + "/image/resultset_previous.gif\" alt=\"" + PREVIOUS + "\">");
 
-        navigationNALinkStyle.put(FIRST, "<img border=\"0\" src=\"" + contextPath
-                + Configuration.getServletLocation(MakumbaServlet.RESOURCES) + "/image/resultset_first_na.gif\">");
-        navigationNALinkStyle.put(NEXT, "<img border=\"0\" src=\"" + contextPath
-                + Configuration.getServletLocation(MakumbaServlet.RESOURCES) + "/image/resultset_next_na.gif\">");
-        navigationNALinkStyle.put(LAST, "<img border=\"0\" src=\"" + contextPath
-                + Configuration.getServletLocation(MakumbaServlet.RESOURCES) + "/image/resultset_last_na.gif\">");
-        navigationNALinkStyle.put(PREVIOUS, "<img border=\"0\" src=\"" + contextPath
-                + Configuration.getServletLocation(MakumbaServlet.RESOURCES) + "/image/resultset_previous_na.gif\">");
+        navigationNALinkStyle.put(FIRST,
+            "<img border=\"0\" src=\"" + contextPath + Configuration.getServletLocation(MakumbaServlet.RESOURCES)
+                    + "/image/resultset_first_na.gif\">");
+        navigationNALinkStyle.put(NEXT,
+            "<img border=\"0\" src=\"" + contextPath + Configuration.getServletLocation(MakumbaServlet.RESOURCES)
+                    + "/image/resultset_next_na.gif\">");
+        navigationNALinkStyle.put(LAST,
+            "<img border=\"0\" src=\"" + contextPath + Configuration.getServletLocation(MakumbaServlet.RESOURCES)
+                    + "/image/resultset_last_na.gif\">");
+        navigationNALinkStyle.put(PREVIOUS,
+            "<img border=\"0\" src=\"" + contextPath + Configuration.getServletLocation(MakumbaServlet.RESOURCES)
+                    + "/image/resultset_previous_na.gif\">");
 
         Properties linkStyleProperties = new Properties();
         URL alternateLinkPropertiesURL = ClassResource.get(PROPERTIES_FILE_NAME);
@@ -231,8 +241,8 @@ public class PaginationTag extends GenericMakumbaTag {
         String[] s = { FIRST, NEXT, LAST, PREVIOUS };
         for (String element : s) {
             navigationLinkStyle.put(element, linkStyleProperties.getProperty(element, navigationLinkStyle.get(element)));
-            navigationNALinkStyle.put(element, linkStyleProperties.getProperty(element + "_NA",
-                navigationNALinkStyle.get(element)));
+            navigationNALinkStyle.put(element,
+                linkStyleProperties.getProperty(element + "_NA", navigationNALinkStyle.get(element)));
         }
 
         navigationStylesInitialised = true;
@@ -243,8 +253,9 @@ public class PaginationTag extends GenericMakumbaTag {
             baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
         }
         String sep = baseUrl.indexOf('?') >= 0 ? "&" : "?";
-        StringBuffer link = new StringBuffer("<a href=\"").append(baseUrl).append(sep).append(OFFSET).append("=").append(
-            start).append("&").append(LIMIT).append("=").append(range).append(actionAnchor).append("\"");
+        StringBuffer link = new StringBuffer("<a href=\"").append(baseUrl).append(sep).append(PARAM_NAME_OFFSET).append(
+            "=").append(start).append("&").append(PARAM_NAME_LIMIT).append("=").append(range).append(actionAnchor).append(
+            "\"");
         if (StringUtils.equals(paginationLinkTitle, "true")) {
             link.append(" title=\"");
             if (page.equals(PREVIOUS)) {
@@ -293,7 +304,7 @@ public class PaginationTag extends GenericMakumbaTag {
         }
         StringBuilder sb = new StringBuilder();
         for (Object obj : map.keySet()) {
-            if (!org.makumba.commons.StringUtils.equalsAny(obj, new String[] { LIMIT, OFFSET })) {
+            if (!org.makumba.commons.StringUtils.equalsAny(obj, IGNORED_PARAM_NAMES)) {
                 String[] strings = (String[]) map.get(obj);
                 for (String string : strings) {
                     if (StringUtils.isNotBlank(string)) {
