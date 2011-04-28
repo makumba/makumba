@@ -141,7 +141,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         MqlNode paramNode = (MqlNode) exprList.getFirstChild();
         int index = 0;
         final MQLFunctionArgument[] args = functionDef.getArguments();
-        if (paramNode == null && !ArrayUtils.isEmpty(args)) {
+        if (paramNode == null && !ArrayUtils.isEmpty(args) && !allOptional(args)) {
             throw new ProgrammerError("The function '" + functionDef + "' requires arguments! Please refer to "
                     + LINK_FUNCTION_DEF + " for a list of known functions and arguments.");
         }
@@ -167,6 +167,16 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
             paramNode = (MqlNode) paramNode.getNextSibling();
             index++;
         }
+    }
+
+    /** Tests whether all arguments passed are optional */
+    private static boolean allOptional(final MQLFunctionArgument[] args) {
+        for (MQLFunctionArgument mqlFunctionArgument : args) {
+            if (!mqlFunctionArgument.isOptional()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
