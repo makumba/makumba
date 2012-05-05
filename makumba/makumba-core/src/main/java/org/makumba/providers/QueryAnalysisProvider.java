@@ -699,10 +699,42 @@ public abstract class QueryAnalysisProvider implements Serializable {
      */
     public static String checkForFrom(String query) {
         // first pass won't work without a FROM section, so we add a dummy catalog
-        if (query.toLowerCase().indexOf("from") == -1) {
-            return query + " FROM org.makumba.db.makumba.Catalog " + DUMMY_PROJECTION;
+
+        int par = 0;
+        int index = 0;
+        String lowQuery = query.toLowerCase();
+
+        // we try to find a FROM outside any parentheses
+        while (true) {
+            int lpar = findAndMax("(", lowQuery, index);
+            int rpar = findAndMax(")", lowQuery, index);
+            int from = findAndMax("from", lowQuery, index);
+
+            int minimum = Math.min(lpar, Math.min(rpar, from));
+            if (minimum == query.length()) {
+                return query + " FROM org.makumba.db.makumba.Catalog " + DUMMY_PROJECTION;
+            }
+            if (minimum == lpar) {
+                par++;
+            }
+            if (minimum == rpar) {
+                par--;
+            }
+            if (minimum == from && par == 0) {
+                return query;
+            }
+            index = minimum + 1;
+
         }
-        return query;
+
+    }
+
+    public static int findAndMax(String strg, String query, int index) {
+        int index1 = query.indexOf(strg, index);
+        if (index1 == -1) {
+            index1 = query.length();
+        }
+        return index1;
     }
 
     public static final String DUMMY_PROJECTION = "mak_dummy_projection";

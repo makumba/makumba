@@ -92,7 +92,7 @@ public class MqlParameterTransformer implements ParameterTransformer {
     public String getTransformedQuery(NameResolver nr) {
         String sql = text.toString(nr);
         if (qA.getNoFrom()) {
-            return sql.substring(0, sql.toLowerCase().indexOf("from")).trim();
+            return sql.substring(0, sql.toLowerCase().lastIndexOf("from")).trim();
         }
         return sql;
     }
