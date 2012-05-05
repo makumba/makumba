@@ -32,7 +32,7 @@ import org.makumba.FieldDefinition;
 public class MysqlTableManager extends org.makumba.db.makumba.sql.TableManager {
     @Override
     protected String createDbSpecific(String command) {
-        return command + " type=InnoDB";
+        return command + " ENGINE=InnoDB";
     }
 
     /** checks if an alteration is needed, and calls doAlter if so */
@@ -45,7 +45,7 @@ public class MysqlTableManager extends org.makumba.db.makumba.sql.TableManager {
         String def = rs.getString(2).trim();
         if (def.lastIndexOf(')') > def.lastIndexOf(" TYPE=InnoDB")
                 && def.lastIndexOf(')') > def.lastIndexOf(" ENGINE=InnoDB")) {
-            String s = "ALTER TABLE " + getDBName() + " TYPE=InnoDB";
+            String s = "ALTER TABLE " + getDBName() + " ENGINE=InnoDB";
             if (alter) {
                 java.util.logging.Logger.getLogger("org.makumba.db.init.tablechecking").info(
                     getSQLDatabase().getName() + ": " + s);
