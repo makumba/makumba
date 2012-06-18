@@ -75,17 +75,22 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
     /** name of the field that holds the relational pointer to the parent field **/
     protected String setOwnerFieldName;
 
+    SharedMddData sharedData;
+
     protected ListOrderedMap fields = new ListOrderedMap();
 
-    protected LinkedHashMap<String, ValidationRule> validationRules = new LinkedHashMap<String, ValidationRule>();
+    class SharedMddData implements Serializable {
 
-    protected LinkedHashMap<Object, MultipleUniqueKeyDefinition> multiFieldUniqueList = new LinkedHashMap<Object, MultipleUniqueKeyDefinition>();
+        protected LinkedHashMap<String, ValidationRule> validationRules = new LinkedHashMap<String, ValidationRule>();
 
-    protected QueryFragmentFunctions functions = new QueryFragmentFunctions(this);
+        protected LinkedHashMap<Object, MultipleUniqueKeyDefinition> multiFieldUniqueList = new LinkedHashMap<Object, MultipleUniqueKeyDefinition>();
 
-    private transient MDDNode mddNode;
+        protected QueryFragmentFunctions functions = new QueryFragmentFunctions(DataDefinitionImpl.this);
 
-    private transient LinkedHashMap<String, FieldNode> postponedFields = new LinkedHashMap<String, FieldNode>();
+        private transient MDDNode mddNode;
+
+        private transient LinkedHashMap<String, FieldNode> postponedFields = new LinkedHashMap<String, FieldNode>();
+    }
 
     /** make a virtual data definition **/
     public DataDefinitionImpl(String name) {
@@ -107,12 +112,14 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
     public DataDefinitionImpl(String fieldName, MDDNode mdd, DataDefinition parent) {
         this.fieldNameInParent = fieldName;
         this.parent = parent;
-        this.mddNode = mdd;
+        this.sharedData = new SharedMddData();
+        this.sharedData.mddNode = mdd;
     }
 
     /** constructor for data definitions during parsing **/
     public DataDefinitionImpl(MDDNode mdd) {
-        this.mddNode = mdd;
+        this.sharedData = new SharedMddData();
+        this.sharedData.mddNode = mdd;
     }
 
     /**
@@ -120,48 +127,48 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
      * MDD may refer to itself (through ptr or set).
      */
     public void build() {
-        this.name = parent != null ? parent.getName() : mddNode.getName();
-        this.ptrSubfield = mddNode.ptrSubfield;
-        this.origin = mddNode.origin;
-        this.indexName = mddNode.indexName;
-        this.isFileSubfield = mddNode.isFileSubfield;
-        switch (mddNode.titleField.titleType) {
+        this.name = parent != null ? parent.getName() : sharedData.mddNode.getName();
+        this.ptrSubfield = sharedData.mddNode.ptrSubfield;
+        this.origin = sharedData.mddNode.origin;
+        this.indexName = sharedData.mddNode.indexName;
+        this.isFileSubfield = sharedData.mddNode.isFileSubfield;
+        switch (sharedData.mddNode.titleField.titleType) {
             case MDDTokenTypes.FIELD:
                 this.titleFieldType = TitleFieldType.FIELD;
-                this.titleFieldExpr = mddNode.titleField.getText();
+                this.titleFieldExpr = sharedData.mddNode.titleField.getText();
                 break;
             case MDDTokenTypes.FUNCTION:
                 this.titleFieldType = TitleFieldType.FUNCTION;
-                this.titleFieldExpr = mddNode.titleField.functionName;
+                this.titleFieldExpr = sharedData.mddNode.titleField.functionName;
                 break;
         }
 
-        this.multiFieldUniqueList = mddNode.multiFieldUniqueList;
+        this.sharedData.multiFieldUniqueList = sharedData.mddNode.multiFieldUniqueList;
 
         addStandardFields(getName());
-        addFieldNodes(mddNode.fields, false);
-        addValidationRules(mddNode.validationRules);
-        addFunctions(mddNode.getFunctions(false));
+        addFieldNodes(sharedData.mddNode.fields, false);
+        addValidationRules(sharedData.mddNode.validationRules);
+        addFunctions(sharedData.mddNode.getFunctions(false));
 
         // evaluate the title, when all fields and functions are processed
         evaluateTitle();
 
         // finally also add the postponed fields, which basically are fields that in some way point to this DD
-        addFieldNodes(postponedFields, true);
+        addFieldNodes(sharedData.postponedFields, true);
 
         // do the same for postponed functions
-        addFunctions(mddNode.getFunctions(true));
+        addFunctions(sharedData.mddNode.getFunctions(true));
 
         // re-order fields so they appear in the natural order of the MDD
         // this is necessary since postponed fields are added last
-        Set<String> postponedKeySet = postponedFields.keySet();
+        Set<String> postponedKeySet = sharedData.postponedFields.keySet();
         while (postponedKeySet.size() != 0) {
             String key = postponedKeySet.iterator().next();
             String postponed = key.substring(0, key.indexOf("####"));
             String previous = key.substring(key.indexOf("####") + 4);
             for (int i = 0; i < fields.size(); i++) {
                 if (previous.length() == 0) {
-                    fields.put(i, postponed, postponedFields.get(key));
+                    fields.put(i, postponed, sharedData.postponedFields.get(key));
                     continue;
                 }
                 String fieldName = (String) fields.keyList().get(i);
@@ -172,6 +179,10 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
                     postponedKeySet.remove(key);
                 }
             }
+        }
+        sharedData.mddNode = null;
+        if (isTemporary()) {
+            sharedData = null;
         }
     }
 
@@ -205,23 +216,23 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
                 boolean hasSubFieldDeclared = n.field != null && n.field.subfield != null
                         && n.field.subfield.fieldNameInParent.length() > 0;
 
-
                 if (hasParentDeclared || hasSubFieldDeclared) {
 
                     // are we a (nested) subfield?
                     FieldDefinition subFd = null;
-                    if(hasSubFieldDeclared) {
+                    if (hasSubFieldDeclared) {
                         // nested subfield
-                        if(n.field.subfield.parent.indexOf("->") > -1) {
+                        if (n.field.subfield.parent.indexOf("->") > -1) {
                             // strip the parent type
-                            String parentFieldName = n.field.subfield.parent.substring(this.getName().length() + "->".length());
+                            String parentFieldName = n.field.subfield.parent.substring(this.getName().length()
+                                    + "->".length());
                             FieldDefinition parent = this.getFieldOrPointedFieldDefinition(parentFieldName);
                             subFd = parent.getSubtable().getFieldDefinition(n.field.subfield.fieldNameInParent);
                         } else {
                             // simple subfield
                             subFd = this.getFieldDefinition(n.field.subfield.fieldNameInParent);
                         }
-                    } else if(hasParentDeclared) {
+                    } else if (hasParentDeclared) {
                         subFd = this.getFieldDefinition(n.field.mdd.fieldNameInParent);
                     }
 
@@ -230,7 +241,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
                                 + v.getRuleName());
                     }
                     fd = subFd.getSubtable().getFieldDefinition(field);
-                    
+
                 } else {
                     fd = this.getFieldOrPointedFieldDefinition(field);
                 }
@@ -244,7 +255,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
             }
         }
 
-        this.validationRules = validationRules;
+        this.sharedData.validationRules = validationRules;
     }
 
     /**
@@ -276,7 +287,8 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
                         // we keep a reference to the name of the previous field, in order to be able to place it back
                         // in
                         // the right order afterwards
-                        postponedFields.put(f.name + "####" + (previousFieldName == null ? "" : previousFieldName), f);
+                        sharedData.postponedFields.put(f.name + "####"
+                                + (previousFieldName == null ? "" : previousFieldName), f);
                         previousFieldName = f.getName();
                         continue;
                     }
@@ -300,11 +312,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
                     }
 
                     FieldDefinitionImpl enumField = new FieldDefinitionImpl(ENUM_FIELD_NAME, type);
-                    enumField.charEnumValues = field.charEnumValues;
-                    enumField.charEnumValuesDeprecated = field.charEnumValuesDeprecated;
-                    enumField.intEnumValues = field.intEnumValues;
-                    enumField.intEnumValuesDeprecated = field.intEnumValuesDeprecated;
-                    enumField.mdd = field.subfield;
+                    enumField.shared = field.shared;
                     enumField.description = field.name;
                     field.subfield.addField(enumField);
                     field.subfield.setMemberFieldName = ENUM_FIELD_NAME;
@@ -485,7 +493,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
 
     public void addFunctions(Map<String, QueryFragmentFunction> funcNames) {
         for (QueryFragmentFunction f : funcNames.values()) {
-            functions.addFunction(f.getName(), f);
+            sharedData.functions.addFunction(f.getName(), f);
         }
     }
 
@@ -504,7 +512,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
      * and for use of expressions
      */
     private void evaluateTitle() {
-        if (titleFieldExpr == null && functions.getFunction("title") == null) {
+        if (titleFieldExpr == null && sharedData.functions.getFunction("title") == null) {
             String ptrIndexName = (String) Arrays.asList(fields.keySet().toArray()).get(0);
 
             // check if we have a "name" field
@@ -523,8 +531,8 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
 
                 // if this happens to be an MDD which points to itself we may have to use the following trick to get the
                 // right title
-            } else if (fields.keySet().size() == 3 && postponedFields.keySet().size() > 0) {
-                String key = (String) Arrays.asList(postponedFields.keySet().toArray()).get(0);
+            } else if (fields.keySet().size() == 3 && sharedData.postponedFields.keySet().size() > 0) {
+                String key = (String) Arrays.asList(sharedData.postponedFields.keySet().toArray()).get(0);
                 titleField = key.substring(0, key.indexOf("####"));
             } else {
                 titleField = getFirstNonPointerFieldName(0);
@@ -535,11 +543,11 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
                 }
 
             }
-        } else if (titleFieldExpr == null && functions.getFunction("title") != null) {
+        } else if (titleFieldExpr == null && sharedData.functions.getFunction("title") != null) {
             // we have a title() function defined
             titleField = "title()";
         } else if (titleFieldType == TitleFieldType.FUNCTION) {
-            QueryFragmentFunction f = functions.getFunction(titleFieldExpr);
+            QueryFragmentFunction f = sharedData.functions.getFunction(titleFieldExpr);
             // TODO here we could inline a function call from title
             titleField = f.getName() + "()"; // f.getQueryFragment();
         } else {
@@ -547,9 +555,11 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
         }
 
         // in the end, we also make the title field available as title() function if it was not defined that way
-        if (functions.getFunction("title") == null) {
-            functions.addFunction("title", new QueryFragmentFunction(this, "title", "", titleField,
-                    ddp.getVirtualDataDefinition("Parameters for function title"), ""));
+        if (sharedData.functions.getFunction("title") == null) {
+            sharedData.functions.addFunction(
+                "title",
+                new QueryFragmentFunction(this, "title", "", titleField,
+                        ddp.getVirtualDataDefinition("Parameters for function title"), ""));
         }
     }
 
@@ -581,6 +591,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
 
     /** base methods **/
 
+    @Override
     public String getName() {
         return (parent != null ? parent.getName() : name) + (ptrSubfield == null ? "" : ptrSubfield);
     }
@@ -589,15 +600,18 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
         this.name = name;
     }
 
+    @Override
     public String getTitleFieldName() {
         return this.titleField;
     }
 
+    @Override
     public boolean isTemporary() {
         return origin == null;
     }
 
     // FIXME for now we keep the old behavior but we may want to be more robust here
+    @Override
     public long lastModified() {
         return new java.io.File(this.origin.getFile()).lastModified();
     }
@@ -608,15 +622,18 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
 
     /** methods related to fields **/
 
+    @Override
     public void addField(FieldDefinition fd) {
         ((FieldDefinitionImpl) fd).mdd = this;
         fields.put(fd.getName(), fd);
     }
 
+    @Override
     public FieldDefinition getFieldDefinition(String name) {
         return (FieldDefinition) fields.get(name);
     }
 
+    @Override
     public FieldDefinition getFieldDefinition(int n) {
         if (n < 0 || n >= fields.size()) {
             return null;
@@ -624,12 +641,14 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
         return (FieldDefinition) fields.values().toArray()[n];
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Vector<String> getFieldNames() {
         return new Vector<String>(fields.keySet());
     }
 
     /** returns the field info associated with a name */
+    @Override
     public FieldDefinition getFieldOrPointedFieldDefinition(String nm) {
         if (getFieldDefinition(nm) != null) {
             return getFieldDefinition(nm);
@@ -652,6 +671,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
     }
 
     /** returns the field info associated with a name */
+    @Override
     public QueryFragmentFunction getFunctionOrPointedFunction(String nm) {
         if (getFunctions().getFunction(nm) != null) {
             return getFunctions().getFunction(nm);
@@ -671,32 +691,40 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
     }
 
     /** which is the name of the index field, if any? */
+    @Override
     public String getIndexPointerFieldName() {
         return indexName;
     }
 
     /** methods related to multiple uniqueness keys **/
+    @Override
     public void addMultiUniqueKey(MultipleUniqueKeyDefinition definition) {
-        multiFieldUniqueList.put(definition.getFields(), definition);
+        sharedData.multiFieldUniqueList.put(definition.getFields(), definition);
     }
 
+    @Override
     public boolean hasMultiUniqueKey(String[] fieldNames) {
-        return multiFieldUniqueList.get(fieldNames) != null;
+        return sharedData.multiFieldUniqueList.get(fieldNames) != null;
     }
 
+    @Override
     public MultipleUniqueKeyDefinition[] getMultiFieldUniqueKeys() {
-        return multiFieldUniqueList.values().toArray(
-            new MultipleUniqueKeyDefinition[multiFieldUniqueList.values().size()]);
+        if (sharedData == null) {
+            return new MultipleUniqueKeyDefinition[0];
+        }
+        return sharedData.multiFieldUniqueList.values().toArray(
+            new MultipleUniqueKeyDefinition[sharedData.multiFieldUniqueList.values().size()]);
     }
 
     public QueryFragmentFunctions getFunctions() {
-        return functions;
+        return sharedData.functions;
     }
 
     /**
      * If this type is the data pointed by a 1-1 pointer or subset (ptrOne and setComplex), return the type of the main
      * record, otherwise return null
      */
+    @Override
     public FieldDefinition getParentField() {
         if (parent == null) {
             return null;
@@ -704,10 +732,12 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
         return parent.getFieldDefinition(fieldNameInParent);
     }
 
+    @Override
     public String getSetMemberFieldName() {
         return setMemberFieldName;
     }
 
+    @Override
     public String getSetOwnerFieldName() {
         return setOwnerFieldName;
     }
@@ -718,24 +748,29 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
         return this;
     }
 
+    @Override
     public Collection<ValidationRule> getValidationRules(String fieldName) {
         return ((FieldDefinitionImpl) getFieldDefinition(fieldName)).getValidationRules();
     }
 
+    @Override
     public boolean hasValidationRules() {
-        return validationRules.size() > 0;
+        return sharedData.validationRules.size() > 0;
     }
 
+    @Override
     public ValidationRule getValidationRule(String ruleName) {
-        return validationRules.get(ruleName);
+        return sharedData.validationRules.get(ruleName);
     }
 
     /** which is the name of the creation timestamp field, if any? */
+    @Override
     public String getCreationDateFieldName() {
         return createName;
     }
 
     /** which is the name of the modification timestamp field, if any? */
+    @Override
     public String getLastModificationDateFieldName() {
         return modifyName;
     }
@@ -764,19 +799,19 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
 
         sb.append("\n   === Validation rules \n\n");
 
-        for (ValidationRule r : validationRules.values()) {
+        for (ValidationRule r : sharedData.validationRules.values()) {
             sb.append(r.toString() + "\n");
         }
 
         sb.append("\n   === Multi-unique keys \n\n");
 
-        for (DataDefinition.MultipleUniqueKeyDefinition k : multiFieldUniqueList.values()) {
+        for (DataDefinition.MultipleUniqueKeyDefinition k : sharedData.multiFieldUniqueList.values()) {
             sb.append(k.toString() + "\n");
         }
 
         sb.append("\n   === Functions \n\n");
 
-        for (QueryFragmentFunction f : functions.getFunctions()) {
+        for (QueryFragmentFunction f : sharedData.functions.getFunctions()) {
             sb.append(f.toString() + "\n");
         }
 

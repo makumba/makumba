@@ -35,12 +35,11 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
 
     protected String name;
 
-    protected FieldType type;
+    protected SharedFieldData shared;
 
     protected String description;
 
-    // default value for this field
-    private Object defaultValue;
+    protected FieldType type;
 
     // modifiers
     protected boolean fixed;
@@ -51,38 +50,11 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
 
     protected boolean unique;
 
-    // native validation rule messages
-    protected String notNullError;
-
-    protected String NaNError;
-
-    protected String uniqueError;
-
-    protected String notEmptyError;
-
-    protected String notIntError;
-
-    protected String notRealError;
-
-    protected String notBooleanError;
-
-    // intEnum - contains all values, including deprecated
-    protected LinkedHashMap<Integer, String> intEnumValues = new LinkedHashMap<Integer, String>();
-
-    // intEnum - contains depreciated values
-    protected LinkedHashMap<Integer, String> intEnumValuesDeprecated = new LinkedHashMap<Integer, String>();
-
-    // charEnum - contains all values, including deprecated
-    protected Vector<String> charEnumValues = new Vector<String>();
-
-    // chaEnum - contains depreciated values
-    protected Vector<String> charEnumValuesDeprecated = new Vector<String>();
+    // pointed type name
+    protected String pointedType;
 
     // char length
     protected int charLength;
-
-    // pointed type name
-    protected String pointedType;
 
     // pointed type
     protected transient DataDefinition pointed;
@@ -90,8 +62,49 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
     // subfield - ptrOne, setComplex
     protected DataDefinitionImpl subfield;
 
-    // validation rules for this field
-    private Hashtable<String, ValidationRule> validationRules = new Hashtable<String, ValidationRule>();
+    static class SharedFieldData implements Serializable {
+
+        // TODO: this is unused but shared could be set to null if isEmpty() returns true.
+        boolean isEmpty() {
+            return defaultValue == null && notNullError == null && NaNError == null && uniqueError == null
+                    && notEmptyError == null && notIntError == null && notRealError == null && notBooleanError == null
+                    && intEnumValues.isEmpty() && intEnumValuesDeprecated.isEmpty() && charEnumValues.isEmpty()
+                    && charEnumValuesDeprecated.isEmpty() && validationRules.isEmpty();
+        }
+
+        // default value for this field
+        private Object defaultValue;
+
+        // native validation rule messages
+        protected String notNullError;
+
+        protected String NaNError;
+
+        protected String uniqueError;
+
+        protected String notEmptyError;
+
+        protected String notIntError;
+
+        protected String notRealError;
+
+        protected String notBooleanError;
+
+        // intEnum - contains all values, including deprecated
+        protected LinkedHashMap<Integer, String> intEnumValues = new LinkedHashMap<Integer, String>();
+
+        // intEnum - contains depreciated values
+        protected LinkedHashMap<Integer, String> intEnumValuesDeprecated = new LinkedHashMap<Integer, String>();
+
+        // charEnum - contains all values, including deprecated
+        protected Vector<String> charEnumValues = new Vector<String>();
+
+        // chaEnum - contains depreciated values
+        protected Vector<String> charEnumValuesDeprecated = new Vector<String>();
+
+        // validation rules for this field
+        private Hashtable<String, ValidationRule> validationRules = new Hashtable<String, ValidationRule>();
+    }
 
     // name of the field definition parent, needed for serialization
     private String originalFieldDefinitionParent;
@@ -131,7 +144,11 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
      *            the type of the filed, e.g. char, int, ptr - but no relational type definition
      */
     public FieldDefinitionImpl(String name, String type) {
+
+        // NOTE: shared is left null!!!
+
         this.name = name;
+
         fixed = false;
         notNull = false;
         notEmpty = false;
@@ -178,39 +195,25 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
 
         this.name = name;
         this.mdd = f.mdd;
-
         this.type = f.type;
-        this.fixed = f.fixed;
-        this.notEmpty = f.notEmpty;
-        this.notNull = f.notNull;
-        this.unique = f.unique;
 
-        this.uniqueError = f.uniqueError;
-        this.notNullError = f.notNullError;
-        this.notEmptyError = f.notEmptyError;
-        this.NaNError = f.NaNError;
-        this.notIntError = f.notIntError;
-        this.notRealError = f.notRealError;
-        this.notBooleanError = f.notBooleanError;
-
-        this.defaultValue = fi.getDefaultValue();
-        this.description = fi.getDescription();
-        this.charLength = f.charLength;
-        this.defaultValue = f.defaultValue;
+        if (f.shared != null && !f.shared.isEmpty()) {
+            this.shared = f.shared;
+        }
         this.description = f.description;
+        this.fixed = f.fixed;
+        this.notNull = f.notNull;
+        this.notEmpty = f.notEmpty;
+        this.unique = f.unique;
         this.pointedType = f.pointedType;
         this.pointed = f.pointed;
+        this.charLength = f.charLength;
         this.subfield = f.subfield;
-        this.intEnumValues = f.intEnumValues;
-        this.intEnumValuesDeprecated = f.intEnumValuesDeprecated;
-        this.charEnumValues = f.charEnumValues;
-        this.charEnumValuesDeprecated = f.charEnumValuesDeprecated;
 
         if (type == FieldType.PTRINDEX) {
             type = FieldType.PTR;
             pointed = fi.getDataDefinition();
         }
-        validationRules = ((FieldDefinitionImpl) fi).validationRules;
 
         // store names of original field definition and data definition; see getOriginalFieldDefinition() for details
         if (fi.getDataDefinition() != null && !fi.getDataDefinition().isTemporary()) {
@@ -227,6 +230,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
 
     /** constructor used when creating the {@link DataDefinitionImpl} during parsing **/
     public FieldDefinitionImpl(DataDefinitionImpl mdd, FieldNode f) {
+        shared = new SharedFieldData();
         this.mdd = mdd;
         this.name = f.name;
         this.fixed = f.fixed;
@@ -234,24 +238,25 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         this.notNull = f.notNull;
         this.unique = f.unique;
 
-        this.uniqueError = f.uniqueError;
-        this.notNullError = f.notNullError;
-        this.notEmptyError = f.notEmptyError;
-        this.NaNError = f.NaNError;
-        this.notIntError = f.notIntError;
-        this.notRealError = f.notRealError;
-        this.notBooleanError = f.notBooleanError;
+        this.shared.uniqueError = f.uniqueError;
+        this.shared.notNullError = f.notNullError;
+        this.shared.notEmptyError = f.notEmptyError;
+        this.shared.NaNError = f.NaNError;
+        this.shared.notIntError = f.notIntError;
+        this.shared.notRealError = f.notRealError;
+        this.shared.notBooleanError = f.notBooleanError;
+        this.shared.defaultValue = f.defaultValue;
+        this.shared.intEnumValues = f.intEnumValues;
+        this.shared.intEnumValuesDeprecated = f.intEnumValuesDeprecated;
+        this.shared.charEnumValues = f.charEnumValues;
+        this.shared.charEnumValuesDeprecated = f.charEnumValuesDeprecated;
+        this.shared.validationRules = f.validationRules;
 
         this.charLength = f.charLength;
-        this.defaultValue = f.defaultValue;
         this.description = f.description;
         this.type = f.makumbaType;
-        this.intEnumValues = f.intEnumValues;
-        this.intEnumValuesDeprecated = f.intEnumValuesDeprecated;
-        this.charEnumValues = f.charEnumValues;
-        this.charEnumValuesDeprecated = f.charEnumValuesDeprecated;
+
         this.pointedType = f.pointedType;
-        this.validationRules = f.validationRules;
 
         // store names of original field definition and data definition; see getOriginalFieldDefinition() for details
         if (getDataDefinition() != null && !getDataDefinition().isTemporary()) {
@@ -324,38 +329,12 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         this.name = name;
     }
 
+    @Override
     public String getName() {
         return this.name;
     }
 
-    public void setType(String type) {
-        this.type = FieldType.valueOf(type);
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setFixed(boolean fixed) {
-        this.fixed = fixed;
-    }
-
-    public void setNotNull(boolean notNull) {
-        this.notNull = notNull;
-    }
-
-    public void setNotEmpty(boolean notEmpty) {
-        this.notEmpty = notEmpty;
-    }
-
-    public void setUnique(boolean unique) {
-        this.unique = unique;
-    }
-
-    public void setDefaultValue(Object defaultValue) {
-        this.defaultValue = defaultValue;
-    }
-
+    @Override
     public String getDescription() {
         if (description == null || description.trim().equals("")) {
             return name;
@@ -363,94 +342,116 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         return description;
     }
 
+    @Override
     public boolean hasDescription() {
         return this.description != null;
     }
 
+    @Override
     public DataDefinitionImpl getDataDefinition() {
         return this.mdd;
     }
 
     /** methods for modifiers **/
 
+    @Override
     public boolean isUnique() {
         return unique;
     }
 
+    @Override
     public boolean isFixed() {
         return fixed;
     }
 
+    @Override
     public boolean isNotEmpty() {
         return notEmpty;
     }
 
+    @Override
     public boolean isNotNull() {
         return notNull;
     }
 
     /** methods for type **/
 
+    @Override
     public boolean isBinaryType() {
         return type == FieldType.BINARY;
     }
 
+    @Override
     public boolean isBooleanType() {
         return type == FieldType.BOOLEAN;
     }
 
+    @Override
     public boolean isComplexSet() {
         return type == FieldType.SETCOMPLEX;
     }
 
+    @Override
     public boolean isDateType() {
         return type == FieldType.DATE || type == FieldType.DATECREATE || type == FieldType.DATEMODIFY;
     }
 
+    @Override
     public boolean isEnumType() {
         return type == FieldType.INTENUM || type == FieldType.CHARENUM;
     }
 
+    @Override
     public boolean isExternalSet() {
         return type == FieldType.SET;
     }
 
+    @Override
     public boolean isFileType() {
         return subfield != null && subfield.isFileSubfield;
     }
 
+    @Override
     public boolean isIndexPointerField() {
         return type == FieldType.PTRINDEX;
     }
 
+    @Override
     public boolean isIntegerType() {
         return type == FieldType.INT;
     }
 
+    @Override
     public boolean isInternalSet() {
         return type == FieldType.SETCOMPLEX || type == FieldType.SETINTENUM || type == FieldType.SETCHARENUM;
     }
 
+    @Override
     public boolean isNumberType() {
         return isIntegerType() || isRealType();
     }
 
+    @Override
     public boolean isPointer() {
         return type == FieldType.PTR;
     }
 
+    @Override
     public boolean isRealType() {
         return type == FieldType.REAL;
     }
 
+    @Override
     public boolean isSetEnumType() {
         return type == FieldType.SETCHARENUM || type == FieldType.SETINTENUM;
     }
 
+    @Override
     public boolean isSetType() {
         return isInternalSet() || isExternalSet();
     }
 
+    @Override
     public boolean isStringType() {
         return type == FieldType.CHAR || type == FieldType.TEXT;
     }
@@ -458,34 +459,37 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
     /** methods for validation rules **/
 
     public void addValidationRule(ValidationRule rule) {
-        validationRules.put(rule.getRuleName(), rule);
+        shared.validationRules.put(rule.getRuleName(), rule);
     }
 
     public Collection<ValidationRule> getValidationRules() {
         // we sort the rules, so that comparison rules come in the end
-        ArrayList<ValidationRule> arrayList = new ArrayList<ValidationRule>(validationRules.values());
+        ArrayList<ValidationRule> arrayList = shared == null ? new ArrayList<ValidationRule>()
+                : new ArrayList<ValidationRule>(shared.validationRules.values());
         Collections.sort(arrayList);
         return arrayList;
     }
 
     /** methods for checks (assignability) **/
 
+    @Override
     public void checkInsert(Dictionary<String, Object> d) {
         Object o = d.get(getName());
         if (isNotNull() && (o == null || o.equals(getNull()))) {
             // FIXME: call this in RecordEditor.readFrom, to have more possible exceptions gathered at once
-            throw new CompositeValidationException(new InvalidValueException(this, notNullError != null ? notNullError
-                    : ERROR_NOT_NULL));
+            throw new CompositeValidationException(new InvalidValueException(this,
+                    shared.notNullError != null ? shared.notNullError : ERROR_NOT_NULL));
         } else if (isNotEmpty() && StringUtils.isEmpty(o)) {
             // FIXME: call this in RecordEditor.readFrom, to have more possible exceptions gathered at once
             throw new CompositeValidationException(new InvalidValueException(this,
-                    notEmptyError != null ? notEmptyError : ERROR_NOT_EMPTY));
+                    shared.notEmptyError != null ? shared.notEmptyError : ERROR_NOT_EMPTY));
         }
         if (o != null) {
             d.put(getName(), checkValue(o));
         }
     }
 
+    @Override
     public Object checkValue(Object value) {
 
         if (!value.equals(getNull())) {
@@ -666,20 +670,20 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
     }
 
     private Object checkIntEnum(Object value) {
-        if (value instanceof Integer && !intEnumValues.containsKey(value)) {
+        if (value instanceof Integer && !shared.intEnumValues.containsKey(value)) {
             throw new org.makumba.InvalidValueException(this, "int value set to int enumerator (" + value
-                    + ") is not a member of " + Arrays.toString(intEnumValues.keySet().toArray()));
+                    + ") is not a member of " + Arrays.toString(shared.intEnumValues.keySet().toArray()));
         } else if (!(value instanceof Integer) && !(value instanceof Long) && !(value instanceof String)) {
             throw new org.makumba.InvalidValueException(this,
                     "int enumerators only accept values of type Integer, Long or String. Value supplied (" + value
                             + ") is of type " + value.getClass().getName());
-        } else if (value instanceof String && !intEnumValues.containsValue(value)) {
+        } else if (value instanceof String && !shared.intEnumValues.containsValue(value)) {
             throw new org.makumba.InvalidValueException(this, "string value set to int enumerator (" + value
-                    + ") is neither a member of " + Arrays.toString(intEnumValues.values().toArray())
-                    + " nor a member of " + Arrays.toString(intEnumValues.keySet().toArray()));
-        } else if (value instanceof String && intEnumValues.containsValue(value)) {
-            for (Integer i : intEnumValues.keySet()) {
-                if (intEnumValues.get(i).equals(value)) {
+                    + ") is neither a member of " + Arrays.toString(shared.intEnumValues.values().toArray())
+                    + " nor a member of " + Arrays.toString(shared.intEnumValues.keySet().toArray()));
+        } else if (value instanceof String && shared.intEnumValues.containsValue(value)) {
+            for (Integer i : shared.intEnumValues.keySet()) {
+                if (shared.intEnumValues.get(i).equals(value)) {
                     return i;
                 }
             }
@@ -689,9 +693,9 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
     }
 
     private Object checkCharEnum(Object value) {
-        if (value instanceof String && !charEnumValues.contains(value)) {
+        if (value instanceof String && !shared.charEnumValues.contains(value)) {
             throw new org.makumba.InvalidValueException(this, "char value set to char enumerator (" + value
-                    + ") is not a member of " + Arrays.toString(charEnumValues.toArray()));
+                    + ") is not a member of " + Arrays.toString(shared.charEnumValues.toArray()));
         }
 
         if (!(value instanceof String)) {
@@ -726,6 +730,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         return value;
     }
 
+    @Override
     public boolean isAssignableFrom(FieldDefinition fi) {
         switch (type) {
             case INT:
@@ -772,18 +777,22 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
 
     /** methods for types (java, sql, null) **/
 
+    @Override
     public String getDataType() {
         return type.getDataType();
     }
 
+    @Override
     public Class<?> getJavaType() {
         return this.type.getJavaType();
     }
 
+    @Override
     public int getIntegerType() {
         return type.getIntegerType();
     }
 
+    @Override
     public Object getNull() {
         // file is a transformed to a pointer type on MDD parsing
         // but the binary input is on the name of the field, not field.content
@@ -794,20 +803,24 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         return this.type.getNullType();
     }
 
+    @Override
     public Object getEmptyValue() {
         return type.getEmptyValue();
     }
 
+    @Override
     public String getType() {
         return this.type.getTypeName();
     }
 
+    @Override
     public boolean isDefaultField() {
         return type == FieldType.PTRINDEX || type == FieldType.DATECREATE || type == FieldType.DATEMODIFY;
     }
 
     /** methods for default values **/
 
+    @Override
     public Date getDefaultDate() {
 
         switch (type) {
@@ -820,6 +833,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         }
     }
 
+    @Override
     public int getDefaultInt() {
         switch (type) {
             case INT:
@@ -832,6 +846,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         }
     }
 
+    @Override
     public String getDefaultString() {
         switch (type) {
             case CHAR:
@@ -851,70 +866,75 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
     }
 
     /** returns the default value of this field */
+    @Override
     public Object getDefaultValue() {
-        if (defaultValue == null) {
+        if (shared == null || shared.defaultValue == null) {
             return getEmptyValue();
         }
-        return defaultValue;
+        return shared.defaultValue;
     }
 
     /** methods for enumerations **/
 
+    @Override
     public Vector<String> getDeprecatedValues() {
         switch (type) {
             case INTENUM:
                 // TODO optimize this, maybe change interface...
                 Vector<String> depr = new Vector<String>();
-                for (Integer i : intEnumValuesDeprecated.keySet()) {
+                for (Integer i : shared.intEnumValuesDeprecated.keySet()) {
                     depr.add(i.toString());
                 }
                 return depr;
             case CHARENUM:
-                return charEnumValuesDeprecated;
+                return shared.charEnumValuesDeprecated;
             default:
                 return null;
         }
     }
 
+    @Override
     public int getEnumeratorSize() {
         switch (type) {
             case CHARENUM:
-                return this.charEnumValues.size();
+                return this.shared.charEnumValues.size();
             case INTENUM:
-                return this.intEnumValues.size();
+                return this.shared.intEnumValues.size();
             case SETCHARENUM:
-                return this.charEnumValues.size();
+                return this.shared.charEnumValues.size();
             case SETINTENUM:
-                return this.intEnumValues.size();
+                return this.shared.intEnumValues.size();
             default:
                 throw new RuntimeException("Shouldn't be here");
         }
     }
 
+    @Override
     public int getIntAt(int i) {
-        if (i > intEnumValues.size()) {
-            throw new RuntimeException("intEnum size is " + intEnumValues.size() + ", index is " + i);
+        if (i > shared.intEnumValues.size()) {
+            throw new RuntimeException("intEnum size is " + shared.intEnumValues.size() + ", index is " + i);
         }
 
-        return (Integer) intEnumValues.keySet().toArray()[i];
+        return (Integer) shared.intEnumValues.keySet().toArray()[i];
     }
 
+    @Override
     public String getNameAt(int i) {
 
         switch (type) {
             case INTENUM:
             case SETINTENUM:
-                if (i > intEnumValues.size()) {
-                    throw new RuntimeException("enumerator size is " + intEnumValues.size() + ", index is " + i);
+                if (i > shared.intEnumValues.size()) {
+                    throw new RuntimeException("enumerator size is " + shared.intEnumValues.size() + ", index is " + i);
                 }
-                return (String) intEnumValues.values().toArray()[i];
+                return (String) shared.intEnumValues.values().toArray()[i];
 
             case CHARENUM:
             case SETCHARENUM:
-                if (i > charEnumValues.size()) {
-                    throw new RuntimeException("enumerator size is " + charEnumValues.size() + ", index is " + i);
+                if (i > shared.charEnumValues.size()) {
+                    throw new RuntimeException("enumerator size is " + shared.charEnumValues.size() + ", index is " + i);
                 }
-                return charEnumValues.elementAt(i);
+                return shared.charEnumValues.elementAt(i);
 
             default:
                 throw new RuntimeException("getNameAt works only for intEnum, setintEnum, charEnum and setcharEnum");
@@ -922,35 +942,38 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
 
     }
 
+    @Override
     public String getNameFor(int i) {
         if (type != FieldType.INTENUM && type != FieldType.SETINTENUM) {
             throw new RuntimeException("getNameFor works only for intEnum");
         }
-        return intEnumValues.get(i);
+        return shared.intEnumValues.get(i);
     }
 
+    @Override
     public Collection<String> getNames() {
         switch (type) {
             case INTENUM:
             case SETINTENUM:
-                return intEnumValues.values();
+                return shared.intEnumValues.values();
             case CHARENUM:
             case SETCHARENUM:
-                return charEnumValues;
+                return shared.charEnumValues;
             default:
                 throw new RuntimeException("getNames() only work for intEnum and charEnum");
         }
 
     }
 
+    @Override
     public Collection<?> getValues() {
         switch (type) {
             case INTENUM:
             case SETINTENUM:
-                return intEnumValues.keySet();
+                return shared.intEnumValues.keySet();
             case CHARENUM:
             case SETCHARENUM:
-                return charEnumValues;
+                return shared.charEnumValues;
             default:
                 throw new RuntimeException("getNames() only work for intEnum and charEnum");
         }
@@ -958,6 +981,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
 
     /** methods for relational types **/
 
+    @Override
     public DataDefinition getForeignTable() {
         switch (type) {
             case PTR:
@@ -972,6 +996,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         }
     }
 
+    @Override
     public FieldDefinition getOriginalFieldDefinition() {
         // we can't store a reference to the original field definition, otherwise it will be serialised in the form
         // responder, and in turn will serialise it's data definition, which might cause issues like locking..
@@ -990,6 +1015,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         return dataDefinition != null ? dataDefinition.getFieldDefinition(originalFieldDefinitionName) : null;
     }
 
+    @Override
     public DataDefinition getPointedType() {
         switch (type) {
             case PTRINDEX:
@@ -1009,6 +1035,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         }
     }
 
+    @Override
     public DataDefinition getSubtable() {
         switch (type) {
             case PTRONE:
@@ -1024,6 +1051,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         }
     }
 
+    @Override
     public String getTitleField() {
         switch (type) {
             case PTR:
@@ -1039,13 +1067,14 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
 
     private int longestChar = -1;
 
+    @Override
     public int getWidth() {
         switch (type) {
             case CHAR:
                 return this.charLength;
             case CHARENUM:
                 if (longestChar == -1) {
-                    for (String s : charEnumValues) {
+                    for (String s : shared.charEnumValues) {
                         if (s.length() > longestChar) {
                             longestChar = s.length();
                         }
@@ -1054,7 +1083,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
                 return longestChar;
             case SETCHARENUM:
                 if (longestChar == -1) {
-                    for (String s : charEnumValues) {
+                    for (String s : shared.charEnumValues) {
                         if (s.length() > longestChar) {
                             longestChar = s.length();
                         }
@@ -1066,6 +1095,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         }
     }
 
+    @Override
     public boolean shouldEditBySingleInput() {
         return !(getIntegerType() == _ptrOne || getIntegerType() == _setComplex);
     }
@@ -1091,12 +1121,12 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
                 break;
             case INTENUM:
             case SETINTENUM:
-                sb.append("== int enum values:" + Arrays.toString(intEnumValues.keySet().toArray()) + "\n");
-                sb.append("== int enum names:" + Arrays.toString(intEnumValues.values().toArray()) + "\n");
+                sb.append("== int enum values:" + Arrays.toString(shared.intEnumValues.keySet().toArray()) + "\n");
+                sb.append("== int enum names:" + Arrays.toString(shared.intEnumValues.values().toArray()) + "\n");
                 break;
             case CHARENUM:
             case SETCHARENUM:
-                sb.append("== char enum values:" + Arrays.toString(charEnumValues.toArray()) + "\n");
+                sb.append("== char enum values:" + Arrays.toString(shared.charEnumValues.toArray()) + "\n");
                 break;
             case PTR:
             case PTRINDEX:
@@ -1239,33 +1269,34 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
         return sb.toString();
     }
 
+    @Override
     public String getErrorMessage(FieldErrorMessageType t) {
         switch (t) {
             case NOT_A_NUMBER:
-                return this.NaNError;
+                return this.shared.NaNError;
             case NOT_NULL:
-                return this.notNullError;
+                return this.shared.notNullError;
             case NOT_UNIQUE:
-                return this.uniqueError;
+                return this.shared.uniqueError;
             case NOT_EMPTY:
-                return this.notEmptyError;
+                return this.shared.notEmptyError;
             case NOT_INT:
-                return this.notIntError;
+                return this.shared.notIntError;
             case NOT_REAL:
-                return this.notRealError;
+                return this.shared.notRealError;
             case NOT_BOOLEAN:
-                return this.notBooleanError;
+                return this.shared.notBooleanError;
             default:
                 throw new MakumbaError("no such error message");
         }
     }
 
     public LinkedHashMap<Integer, String> getIntEnumValues() {
-        return intEnumValues;
+        return shared.intEnumValues;
     }
 
     public LinkedHashMap<Integer, String> getIntEnumValuesDeprecated() {
-        return intEnumValuesDeprecated;
+        return shared.intEnumValuesDeprecated;
     }
 
 }
