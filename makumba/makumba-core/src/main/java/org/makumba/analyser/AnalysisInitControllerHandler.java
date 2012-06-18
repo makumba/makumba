@@ -70,11 +70,9 @@ public class AnalysisInitControllerHandler extends ControllerHandler {
                 if (session.getServletContext().getAttribute(key) != null) {
                     session.getServletContext().removeAttribute(key);
                 }
-                // then initialize the thread, it won't reload the state this time
-                AnalysableElement.initializeThread(session, key);
 
-                // finally discard the parsing data
-                AnalysableElement.discardJSPParsingData();
+                // then initialize the thread, it won't reload the state this time
+                AnalysableElement.initializeThread(session, key);               
             }
         }
     }

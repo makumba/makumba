@@ -164,7 +164,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
      */
     public synchronized void discardParsingData() {
         // if they were not already discarded
-        if (syntaxPoints != null) {
+        if (!syntaxPoints.isDiscarded()) {
             syntaxPoints.discardPoints();
         }
     }
@@ -184,6 +184,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
         return holder;
     }
 
+    @Override
     public synchronized SyntaxPoint[] getSyntaxPointArray(Object initStatus) {
         try {
             parse(initStatus);
@@ -216,6 +217,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
     /**
      * Gets the collection of syntax points.
      */
+    @Override
     public SourceSyntaxPoints getSyntaxPoints() {
         return syntaxPoints;
     }
@@ -322,6 +324,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
      * @param host
      *            SourceSyntaxPoints object that is going to host this included page
      */
+    @Override
     public void treatInclude(int position, String includeDirective, SyntaxPoint start, SyntaxPoint end,
             SourceSyntaxPoints host) {
 
@@ -333,18 +336,22 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
         host.include(new File(dir, fileName), position, includeDirective);
     }
 
+    @Override
     public Pattern[] getCommentPatterns() {
         return JspCommentPatterns;
     }
 
+    @Override
     public String[] getCommentPatternNames() {
         return JspCommentPatternNames;
     }
 
+    @Override
     public Pattern getIncludePattern() {
         return JspIncludePattern;
     }
 
+    @Override
     public String getIncludePatternName() {
         return "JspInclude";
     }
@@ -632,17 +639,19 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
     // ==========================================================================================
     //
     // THIS CLASS ALSO HAS AN INNER INTERFACE, AND INNER CLASS DEFINITION:
-    // 
+    //
     // ==========================================================================================
 
     public boolean isUsingHibernate() {
         return usingHibernate;
     }
 
+    @Override
     public String[] getLiteralPatternNames() {
         return null;
     }
 
+    @Override
     public Pattern[] getLiteralPatterns() {
         return null;
     }

@@ -189,6 +189,7 @@ public abstract class AnalysableElement extends TagSupport {
                 throw new RuntimeException((Throwable) result);
             }
         }
+        parseData.discardParsingData();
         return (PageCache) result;
     }
 
@@ -278,6 +279,7 @@ public abstract class AnalysableElement extends TagSupport {
     }
 
     public static final class FilePositionElementComparator implements Comparator<AnalysableElement> {
+        @Override
         public int compare(AnalysableElement o1, AnalysableElement o2) {
             int lineCompare = Double.compare(o1.getElementData().getStartLine(), o2.getElementData().getStartLine());
             if (lineCompare != 0) {

@@ -533,6 +533,10 @@ public class SourceSyntaxPoints implements Serializable {
         return result;
     }
 
+    public boolean isDiscarded() {
+        return content == null;
+    }
+
     public void discardPoints() {
         for (SourceSyntaxPoints s : fileBeginnings) {
             if (s != this) {
