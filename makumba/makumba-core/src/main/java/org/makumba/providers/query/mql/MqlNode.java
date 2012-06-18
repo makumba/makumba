@@ -330,7 +330,9 @@ public class MqlNode extends CommonAST {
     }
 
     public void writeTo(TextList t) {
-        if (textList == null) {
+        if (isParam()) {
+            t.append(walker.getParamInfo(this));
+        } else if (textList == null) {
             t.append(getText());
         } else {
             t.append(textList);

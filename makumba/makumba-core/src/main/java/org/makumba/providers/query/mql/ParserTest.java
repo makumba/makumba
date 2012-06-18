@@ -12,6 +12,7 @@ import org.makumba.FieldDefinition;
 import org.makumba.OQLParseError;
 import org.makumba.commons.ClassResource;
 import org.makumba.commons.NameResolver;
+import org.makumba.db.NativeQuery;
 
 import antlr.collections.AST;
 
@@ -96,10 +97,11 @@ public class ParserTest {
         Throwable mqlThr = null;
         try {
             mq = new MqlQueryAnalysis(query, false, automaticLeftJoin);
-            MqlParameterTransformer qG = new MqlParameterTransformer(mq, new MqlSqlGenerator());
-            qG.dummyInit();
+            NativeQuery nat = new NativeQuery(mq, "mql", null, nr);
+            // MqlParameterTransformer qG = new MqlParameterTransformer(mq, new MqlSqlGenerator());
+            // qG.dummyInit();
 
-            mql_sql = qG.getTransformedQuery(nr).toLowerCase();
+            mql_sql = nat.getCommand(null).toLowerCase();
         } catch (Throwable t) {
             mqlThr = t;
         }

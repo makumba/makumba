@@ -27,22 +27,21 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Map;
 
-import org.makumba.providers.ParameterTransformer;
+import org.makumba.db.NativeQuery.Parameters;
 
 /**
  * Apply the results of a ParameterTransformer to a PreparedStatement
  */
 public class ParameterAssigner {
 
-    public static void assignParameters(org.makumba.db.makumba.Database db, ParameterTransformer qG,
+    public static void assignParameters(org.makumba.db.makumba.Database db, Parameters nap,
             PreparedStatement ps, Map<String, Object> argsMap) throws SQLException {
 
-        Object[] args = qG.toParameterArray(argsMap);
-        TableManager paramHandler = (TableManager) db.makePseudoTable(qG.getTransformedParameterTypes());
+        TableManager paramHandler = (TableManager) db.makePseudoTable(nap.getParameterTypes());
 
-        for (int i = 0; i < qG.getParameterCount(); i++) {
-            paramHandler.setUpdateArgument(qG.getTransformedParameterTypes().getFieldDefinition(i).getName(), ps,
-                i + 1, args[i]);
+        for (int i = 0; i < nap.getParameterCount(); i++) {
+            paramHandler.setUpdateArgument(nap.getParameterTypes().getFieldDefinition(i).getName(), ps, i + 1,
+                nap.getParamValue(i));
         }
     }
 }

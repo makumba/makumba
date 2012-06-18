@@ -31,14 +31,11 @@ import org.makumba.commons.NameResolver;
 import org.makumba.commons.NullNameResolver;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.StacktraceUtil;
+import org.makumba.db.NativeQuery;
+import org.makumba.db.NativeQuery.Parameters;
 import org.makumba.db.TransactionImplementation;
 import org.makumba.providers.DataDefinitionProvider;
-import org.makumba.providers.QueryAnalysis;
-import org.makumba.providers.QueryAnalysisProvider;
-import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProvider;
-import org.makumba.providers.query.mql.MqlParameterTransformer;
-import org.makumba.providers.query.mql.MqlQueryAnalysis;
 
 /**
  * Hibernate-specific implementation of a {@link Transaction}
@@ -283,27 +280,29 @@ public class HibernateTransaction extends TransactionImplementation {
 
     public Vector<Dictionary<String, Object>> execute(String query, Object args, int offset, int limit) {
         MakumbaSystem.getLogger("hibernate.query").fine("Executing hibernate query " + query);
-        QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer("oql");
+
+        NativeQuery nat = NativeQuery.getNativeQuery(query, "hql", null, new NullNameResolver());
+
+        // QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer("oql");
 
         Map<String, Object> argsMap = paramsToMap(args);
+        Parameters nap = nat.makeActualParameters(argsMap);
 
         // analyze the query with MQL!
-        MqlQueryAnalysis analyzer = (MqlQueryAnalysis) qap.getQueryAnalysis(query);
+        // MqlQueryAnalysis analyzer = (MqlQueryAnalysis) qap.getQueryAnalysis(query);
 
-        analyzer.prepareForHQL();
+        // analyzer.prepareForHQL();
 
-        MqlParameterTransformer paramTransformer = MqlParameterTransformer.getSQLQueryGenerator(analyzer, argsMap,
-            "hql");
-        query = paramTransformer.getTransformedQuery(new NullNameResolver());
+        // MqlParameterTransformer paramTransformer = MqlParameterTransformer.getSQLQueryGenerator(analyzer, argsMap,
+        // "hql");
+        // query = paramTransformer.getTransformedQuery(new NullNameResolver(), argsMap);
 
-        if (analyzer.getConstantValues() != null) {
+        if (nat.getConstantValues() != null) {
             // no need to send the query to the sql engine
-            return analyzer.getConstantResult(argsMap, offset, limit);
+            return nat.getConstantResult(argsMap, offset, limit);
         }
 
-        args = paramTransformer.toParameterArray(argsMap);
-
-        org.hibernate.Query q = s.createQuery(query);
+        org.hibernate.Query q = s.createQuery(nat.getCommand(argsMap));
 
         q.setCacheable(false); // we do not cache queries
 
@@ -312,11 +311,11 @@ public class HibernateTransaction extends TransactionImplementation {
             q.setMaxResults(limit);
         }
 
-        setOrderedParameters(args, paramTransformer.getTransformedParameterTypes(), q);
+        setOrderedParameters(nap, q);
 
         Vector<Dictionary<String, Object>> results = null;
         try {
-            results = getConvertedQueryResult(analyzer, q.list());
+            results = getConvertedQueryResult(nat, q.list());
 
         } catch (Exception e) {
 
@@ -334,8 +333,8 @@ public class HibernateTransaction extends TransactionImplementation {
      * @param list
      * @return
      */
-    private Vector<Dictionary<String, Object>> getConvertedQueryResult(QueryAnalysis analyzer, List<?> list) {
-        DataDefinition dataDef = analyzer.getProjectionType();
+    private Vector<Dictionary<String, Object>> getConvertedQueryResult(NativeQuery nat, List<?> list) {
+        DataDefinition dataDef = nat.getProjectionType();
         Vector<Dictionary<String, Object>> results = new Vector<Dictionary<String, Object>>(list.size());
 
         String[] projections = dataDef.getFieldNames().toArray(new String[dataDef.getFieldNames().size()]);
@@ -387,13 +386,14 @@ public class HibernateTransaction extends TransactionImplementation {
         return results;
     }
 
-    private void setOrderedParameters(Object parameterValues, DataDefinition paramsDef, org.hibernate.Query q) {
-        Object[] argsArray = treatParam(parameterValues);
-        for (int i = 0; i < argsArray.length; i++) {
+    private void setOrderedParameters(Parameters nap, org.hibernate.Query q) {
+        // Object[] argsArray = treatParam(parameterValues);
 
-            Object paramValue = argsArray[i];
+        for (int i = 0; i < nap.getParameterCount(); i++) {
 
-            FieldDefinition paramDef = paramsDef.getFieldDefinition(i);
+            Object paramValue = nap.getParamValue(i);
+
+            FieldDefinition paramDef = nap.getParameterTypes().getFieldDefinition(i);
 
             try {
                 // TODO: not sure how tested this is

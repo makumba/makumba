@@ -4,10 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.HashMap;
 
 import org.makumba.commons.ClassResource;
 import org.makumba.commons.NullNameResolver;
+import org.makumba.db.NativeQuery;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 
@@ -33,18 +33,22 @@ public class MqlHqlTest {
                 System.out.println(query);
 
                 try {
-                    MqlQueryAnalysis analyzer = (MqlQueryAnalysis) qap.getQueryAnalysis(query);
 
-                    analyzer.prepareForHQL();
+                    NativeQuery nat = NativeQuery.getNativeQuery(query, "hql", null, new NullNameResolver());
+                    // MqlQueryAnalysis analyzer = (MqlQueryAnalysis) qap.getQueryAnalysis(query);
 
+                    // analyzer.prepareForHQL();
+
+                    /*
                     MqlParameterTransformer paramTransformer = MqlParameterTransformer.getSQLQueryGenerator(analyzer,
                         new HashMap<String, Object>() {
                             @Override
                             public Object get(Object name) {
                                 return "";
                             }
-                        }, "hql");
-                    String hql = paramTransformer.getTransformedQuery(new NullNameResolver());
+                        }, "hql");*/
+
+                    String hql = nat.getCommand(null);
 
                     System.out.println(hql);
                 } catch (Throwable t) {

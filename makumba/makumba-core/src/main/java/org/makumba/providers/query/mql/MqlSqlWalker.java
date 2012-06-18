@@ -13,6 +13,7 @@ import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.ProgrammerError;
 import org.makumba.commons.NameResolver.TextList;
+import org.makumba.commons.ParamInfo;
 import org.makumba.providers.DataDefinitionProvider;
 
 import antlr.ASTFactory;
@@ -400,13 +401,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         paramInfoByPosition.addField(fd);
     }
 
-    static class ParamInfo {
-        String paramName;
-
-        int paramPosition;
-    }
-
-    private ParamInfo getParamInfo(MqlNode param) {
+    ParamInfo getParamInfo(MqlNode param) {
         ParamInfo ret = new ParamInfo();
 
         ret.paramName = param.getOriginalText();

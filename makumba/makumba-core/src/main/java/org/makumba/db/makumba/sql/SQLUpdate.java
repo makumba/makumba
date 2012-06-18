@@ -31,13 +31,10 @@ import org.makumba.DBError;
 import org.makumba.MakumbaError;
 import org.makumba.NotUniqueException;
 import org.makumba.OQLParseError;
+import org.makumba.db.NativeQuery;
 import org.makumba.db.makumba.Update;
-import org.makumba.providers.ParameterTransformer;
-import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
-import org.makumba.providers.query.mql.MqlParameterTransformer;
-import org.makumba.providers.query.mql.MqlQueryAnalysis;
 
 public class SQLUpdate implements Update {
 
@@ -53,7 +50,7 @@ public class SQLUpdate implements Update {
 
     Database db;
 
-    ParameterTransformer qG;
+    NativeQuery nat;
 
     QueryAnalysisProvider qP = QueryProvider.getQueryAnalzyer("oql");
 
@@ -102,13 +99,12 @@ public class SQLUpdate implements Update {
             OQLQuery += " WHERE " + where;
         }
 
-        QueryAnalysis qA = qP.getQueryAnalysis(OQLQuery);
-        qG = MqlParameterTransformer.getSQLQueryGenerator((MqlQueryAnalysis) qA, args);
+        nat = NativeQuery.getNativeQuery(OQLQuery, "mql", null, db.getNameResolverHook());
 
         String fakeCommand;
         String fakeCommandUpper;
         try {
-            fakeCommand = qG.getTransformedQuery(db.getNameResolverHook());
+            fakeCommand = nat.getCommand(args);
         } catch (RuntimeException e) {
             throw new MakumbaError(e, debugString + "\n" + OQLQuery);
         }
@@ -193,7 +189,7 @@ public class SQLUpdate implements Update {
         PreparedStatement ps = ((SQLDBConnection) dbc).getPreparedStatement(updateCommand);
 
         try {
-            ParameterAssigner.assignParameters(db, qG, ps, args);
+            ParameterAssigner.assignParameters(db, nat.makeActualParameters(args), ps, args);
 
             // org.makumba.db.sql.Database db=(org.makumba.db.sql.Database)dbc.getHostDatabase();
 
