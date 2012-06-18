@@ -36,12 +36,11 @@ import org.makumba.DataDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.MakumbaError;
 import org.makumba.NoSuchFieldException;
+import org.makumba.db.NativeQuery;
+import org.makumba.db.NativeQuery.Parameters;
 import org.makumba.db.makumba.DBConnection;
-import org.makumba.db.makumba.MQLQueryProvider;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysisProvider;
-import org.makumba.providers.query.mql.MqlParameterTransformer;
-import org.makumba.providers.query.mql.MqlQueryAnalysis;
 
 /** SQL implementation of a OQL query */
 public class Query implements org.makumba.db.makumba.Query {
@@ -50,7 +49,7 @@ public class Query implements org.makumba.db.makumba.Query {
 
     TableManager resultHandler;
 
-    MqlQueryAnalysis qA;
+    NativeQuery nat;
 
     String limitSyntax;
 
@@ -70,53 +69,45 @@ public class Query implements org.makumba.db.makumba.Query {
      * @return the SQL query string to be sent to the database, given a set of arguments
      */
     public String getCommand(Map<String, Object> arguments) {
-        return MqlParameterTransformer.getSQLQueryGenerator(qA, arguments).getTransformedQuery(db.getNameResolverHook());
+        return nat.getCommand(arguments);
     }
 
     public Query(Database db, String MQLQuery, String insertIn) {
         QueryAnalysisProvider qap = null;
         this.db = db;
         query = MQLQuery;
-        try {
-            qap = (QueryAnalysisProvider) Class.forName(MQLQueryProvider.MQLQUERY_ANALYSIS_PROVIDER).newInstance();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
 
-        qA = (MqlQueryAnalysis) (insertIn != null && insertIn.length() > 0 ? qap.getQueryAnalysis(MQLQuery, insertIn)
-                : qap.getQueryAnalysis(MQLQuery));
+        String insert = insertIn != null && insertIn.length() > 0 ? insertIn : null;
 
-        resultHandler = (TableManager) db.makePseudoTable(qA.getProjectionType());
+        nat = NativeQuery.getNativeQuery(MQLQuery, "mql", insert, db.getNameResolverHook());
+
+        resultHandler = (TableManager) db.makePseudoTable(nat.getProjectionType());
         limitSyntax = db.getLimitSyntax();
         offsetFirst = db.isLimitOffsetFirst();
         supportsLimitInQuery = db.supportsLimitInQuery();
         this.insertIn = insertIn;
         if (insertIn != null && insertIn.length() > 0) {
-            analyzeInsertIn(qA.getProjectionType(), db);
+            analyzeInsertIn(nat.getProjectionType(), db);
         }
     }
 
     @Override
     public Vector<Dictionary<String, Object>> execute(Map<String, Object> args, DBConnection dbc, int offset, int limit) {
-        if ((insertIn == null || insertIn.length() == 0) && qA.getConstantValues() != null) {
+        if ((insertIn == null || insertIn.length() == 0) && nat.getConstantValues() != null) {
             // no need to send the query to the sql engine
-            return qA.getConstantResult(args, offset, limit);
+            return nat.getConstantResult(args, offset, limit);
         }
 
-        MqlParameterTransformer qG = MqlParameterTransformer.getSQLQueryGenerator(qA, args);
-
-        String com = qG.getTransformedQuery(db.getNameResolverHook());
+        String com = nat.getCommand(args);
         if (supportsLimitInQuery) {
             com += " " + limitSyntax; // TODO: it might happen that it should be in other places than at the end.
         }
         PreparedStatement ps = ((SQLDBConnection) dbc).getPreparedStatement(com);
 
+        Parameters nap = nat.makeActualParameters(args);
+
         try {
-            int nParam = qG.getParameterCount();
+            int nParam = nap.getParameterCount();
             if (supportsLimitInQuery) {
                 nParam += 2;
             }
@@ -126,17 +117,17 @@ public class Query implements org.makumba.db.makumba.Query {
                         + ps.getParameterMetaData().getParameterCount() + ": " + ps + " \n" + nParam + ": " + com);
             }
 
-            ParameterAssigner.assignParameters(db, qG, ps, args);
+            ParameterAssigner.assignParameters(db, nap, ps, args);
 
             if (supportsLimitInQuery) {
                 int limit1 = limit == -1 ? Integer.MAX_VALUE : limit;
 
                 if (offsetFirst) {
-                    ps.setInt(qG.getParameterCount() + 1, offset);
-                    ps.setInt(qG.getParameterCount() + 2, limit1);
+                    ps.setInt(nap.getParameterCount() + 1, offset);
+                    ps.setInt(nap.getParameterCount() + 2, limit1);
                 } else {
-                    ps.setInt(qG.getParameterCount() + 1, limit1);
-                    ps.setInt(qG.getParameterCount() + 2, offset);
+                    ps.setInt(nap.getParameterCount() + 1, limit1);
+                    ps.setInt(nap.getParameterCount() + 2, offset);
                 }
             }
 
@@ -199,8 +190,6 @@ public class Query implements org.makumba.db.makumba.Query {
     @Override
     public int insert(Map<String, Object> args, DBConnection dbc) {
 
-        MqlParameterTransformer qG = MqlParameterTransformer.getSQLQueryGenerator(qA, args);
-
         String comma = "";
         StringBuffer fieldList = new StringBuffer();
         for (String string : resultHandler.getDataDefinition().getFieldNames()) {
@@ -212,12 +201,11 @@ public class Query implements org.makumba.db.makumba.Query {
         SQLDBConnection sqldbc = (SQLDBConnection) dbc;
         String tablename = "temp_" + sqldbc.n;
 
-        String com = "INSERT INTO " + tablename + " ( " + fieldList + ") "
-                + qG.getTransformedQuery(db.getNameResolverHook());
+        String com = "INSERT INTO " + tablename + " ( " + fieldList + ") " + nat.getCommand(args);
         try {
             resultHandler.create(sqldbc, tablename, true);
             PreparedStatement ps = sqldbc.getPreparedStatement(com);
-            ParameterAssigner.assignParameters(db, qG, ps, args);
+            ParameterAssigner.assignParameters(db, nat.makeActualParameters(args), ps, args);
 
             int n = ps.executeUpdate();
             ps.close();

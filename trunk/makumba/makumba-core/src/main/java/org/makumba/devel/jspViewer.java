@@ -48,21 +48,18 @@ import org.makumba.analyser.engine.TomcatJsp;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.RuntimeWrappedException;
+import org.makumba.db.NativeQuery;
 import org.makumba.db.makumba.MakumbaTransactionProvider;
 import org.makumba.db.makumba.sql.Database;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.tags.QueryTag;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.DeveloperTool;
-import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.query.FunctionInliner;
 import org.makumba.providers.query.Pass1ASTPrinter;
-import org.makumba.providers.query.mql.MqlParameterTransformer;
-import org.makumba.providers.query.mql.MqlQueryAnalysis;
-import org.makumba.providers.query.mql.MqlSqlGenerator;
 
 /**
  * This class implements a viewer for .jsp files, and provides highlighting of <mak:>, <jsp:>and JSTL tags.
@@ -421,14 +418,9 @@ public class jspViewer extends LineViewer {
                                     // FIXME: this seems very specific to MQL...
                                     org.makumba.db.makumba.Database db = MakumbaTransactionProvider.getDatabase(TransactionProvider.getInstance().getDefaultDataSourceName());
                                     if (db instanceof Database) {
-                                        QueryAnalysisProvider queryAnalzyer = QueryProvider.getQueryAnalzyer("oql");
-                                        QueryAnalysis qa = queryAnalzyer.getQueryAnalysis(queryInlined);
-                                        MqlParameterTransformer trans = new MqlParameterTransformer(
-                                                (MqlQueryAnalysis) qa, new MqlSqlGenerator());
-                                        trans.dummyInit();
-                                        currentText.append("SQL: "
-                                                + trans.getTransformedQuery(((Database) db).getNameResolverHook())
-                                                + "<br/>");
+                                        NativeQuery nat = NativeQuery.getNativeQuery(queryInlined, "mql", null,
+                                            ((Database) db).getNameResolverHook());
+                                        currentText.append("SQL: " + nat.getCommand(null) + "<br/>");
                                     }
                                 } catch (RuntimeWrappedException e) {
                                     if (e.getCause() instanceof OQLParseError
