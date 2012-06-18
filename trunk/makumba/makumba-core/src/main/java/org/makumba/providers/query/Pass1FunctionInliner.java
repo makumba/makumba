@@ -58,7 +58,7 @@ public class Pass1FunctionInliner {
                         + "\n" + t.getMessage());
             }
         }
-    });
+    }, true);
 
     private static QueryAnalysis getInlinedFunctionAnalysis(String queryAnalysisProvider, DataDefinition calleeType,
             QueryFragmentFunction func) {
