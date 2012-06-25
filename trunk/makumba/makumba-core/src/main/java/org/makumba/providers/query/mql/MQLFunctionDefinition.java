@@ -26,7 +26,7 @@ package org.makumba.providers.query.mql;
 import java.util.List;
 
 import org.makumba.OQLParseError;
-import org.makumba.commons.NameResolver.TextList;
+import org.makumba.commons.TextList;
 
 /**
  * This class represents an MQL function, with it's name, return type and required arguments. This definition is then
@@ -158,14 +158,18 @@ class DateArithmeticFunction extends SQLDialectFunction {
         if (args.size() == 2) {
             textList.append(args.get(0)).append(", INTERVAL ").append(args.get(1)).append(" second");
         } else if (args.size() == 3) {
-            String timeUnit = args.get(2).toString().trim();
+            Object paramValue = args.get(2);
+            String timeUnit = args.get(2).resolveAll().trim();
             if (timeUnit.startsWith("'")) {
                 timeUnit = timeUnit.substring(1);
+                if (timeUnit.endsWith("'")) {
+                    timeUnit = timeUnit.substring(0, timeUnit.length() - 1);
+                } else {
+                    throw new OQLParseError("Time constant expected while translating function " + this);
+                }
+                paramValue = timeUnit;
             }
-            if (timeUnit.endsWith("'")) {
-                timeUnit = timeUnit.substring(0, timeUnit.length() - 1);
-            }
-            textList.append(args.get(0)).append(", INTERVAL ").append(args.get(1)).append(" ").append(timeUnit);
+            textList.append(args.get(0)).append(", INTERVAL ").append(args.get(1)).append(" ").append(paramValue);
         } else { // doesn't happen
             throw throwUnexpectedArguments(args.size());
         }

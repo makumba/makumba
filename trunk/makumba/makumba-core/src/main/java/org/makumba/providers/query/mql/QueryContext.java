@@ -11,7 +11,7 @@ import java.util.Vector;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.commons.NameResolver;
-import org.makumba.commons.NameResolver.TextList;
+import org.makumba.commons.TextList;
 import org.makumba.providers.DataDefinitionProvider;
 
 import antlr.SemanticException;

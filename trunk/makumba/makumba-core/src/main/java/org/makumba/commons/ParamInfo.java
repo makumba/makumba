@@ -27,8 +27,55 @@
  */
 package org.makumba.commons;
 
-public class ParamInfo {
-    public String paramName;
+import java.util.List;
+import java.util.Map;
 
-    public int paramPosition;
+public class ParamInfo {
+    public ParamInfo(String name, int position) {
+        this.paramName = name;
+        this.paramPosition = position;
+    }
+
+    String paramName;
+
+    int paramPosition;
+
+    public String getName() {
+        return paramName;
+    }
+
+    public int getPosition() {
+        return paramPosition;
+    }
+
+    public static class Writer {
+        public void write(ParamInfo p, StringBuffer ret) {
+            ret.append("?");
+        }
+    }
+
+    public static class MultipleWriter extends Writer {
+
+        private Map<String, Object> args;
+
+        public MultipleWriter(Map<String, Object> args) {
+            this.args = args;
+        }
+
+        @Override
+        public void write(ParamInfo po, StringBuffer ret) {
+            ret.append("?");
+            if (args != null) {
+                Object val = args.get(po.paramName);
+
+                if (val != null && val instanceof List<?>) {
+                    List<?> v = (List<?>) args.get(po.paramName);
+                    for (int i = 1; i < v.size(); i++) {
+                        ret.append(',').append('?');
+                    }
+                }
+            }
+        }
+    }
+
 }

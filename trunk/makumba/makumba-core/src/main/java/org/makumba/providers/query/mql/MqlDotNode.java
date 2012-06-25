@@ -3,7 +3,7 @@ package org.makumba.providers.query.mql;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.DataDefinitionParseError;
-import org.makumba.commons.NameResolver.TextList;
+import org.makumba.commons.TextList;
 import org.makumba.providers.DataDefinitionProvider;
 
 import antlr.SemanticException;

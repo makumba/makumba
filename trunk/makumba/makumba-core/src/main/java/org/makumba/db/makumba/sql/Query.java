@@ -40,28 +40,13 @@ import org.makumba.db.NativeQuery;
 import org.makumba.db.NativeQuery.Parameters;
 import org.makumba.db.makumba.DBConnection;
 import org.makumba.providers.DataDefinitionProvider;
-import org.makumba.providers.QueryAnalysisProvider;
 
 /** SQL implementation of a OQL query */
 public class Query implements org.makumba.db.makumba.Query {
 
-    String query;
-
-    TableManager resultHandler;
-
     NativeQuery nat;
 
-    String limitSyntax;
-
-    boolean offsetFirst;
-
-    boolean supportsLimitInQuery;
-
     String insertIn;
-
-    Database db;
-
-    TableManager insertHandler;
 
     /**
      * Gets the raw SQL query to be executed
@@ -73,34 +58,27 @@ public class Query implements org.makumba.db.makumba.Query {
     }
 
     public Query(Database db, String MQLQuery, String insertIn) {
-        QueryAnalysisProvider qap = null;
-        this.db = db;
-        query = MQLQuery;
 
-        String insert = insertIn != null && insertIn.length() > 0 ? insertIn : null;
+        nat = NativeQuery.getNativeQuery(MQLQuery, "mql", insertIn, db.getNameResolverHook());
 
-        nat = NativeQuery.getNativeQuery(MQLQuery, "mql", insert, db.getNameResolverHook());
-
-        resultHandler = (TableManager) db.makePseudoTable(nat.getProjectionType());
-        limitSyntax = db.getLimitSyntax();
-        offsetFirst = db.isLimitOffsetFirst();
-        supportsLimitInQuery = db.supportsLimitInQuery();
         this.insertIn = insertIn;
-        if (insertIn != null && insertIn.length() > 0) {
-            analyzeInsertIn(nat.getProjectionType(), db);
-        }
     }
 
     @Override
     public Vector<Dictionary<String, Object>> execute(Map<String, Object> args, DBConnection dbc, int offset, int limit) {
-        if ((insertIn == null || insertIn.length() == 0) && nat.getConstantValues() != null) {
+
+        Database db = (Database) dbc.getHostDatabase();
+        TableManager resultHandler = (TableManager) db.makePseudoTable(nat.getProjectionType());
+
+        if (insertIn == null && nat.getConstantValues() != null) {
             // no need to send the query to the sql engine
             return nat.getConstantResult(args, offset, limit);
         }
 
         String com = nat.getCommand(args);
-        if (supportsLimitInQuery) {
-            com += " " + limitSyntax; // TODO: it might happen that it should be in other places than at the end.
+        if (db.supportsLimitInQuery()) {
+            com += " " + db.getLimitSyntax(); // TODO: it might happen that it should be in other places than at the
+                                              // end.
         }
         PreparedStatement ps = ((SQLDBConnection) dbc).getPreparedStatement(com);
 
@@ -108,7 +86,7 @@ public class Query implements org.makumba.db.makumba.Query {
 
         try {
             int nParam = nap.getParameterCount();
-            if (supportsLimitInQuery) {
+            if (db.supportsLimitInQuery()) {
                 nParam += 2;
             }
 
@@ -119,10 +97,10 @@ public class Query implements org.makumba.db.makumba.Query {
 
             ParameterAssigner.assignParameters(db, nap, ps, args);
 
-            if (supportsLimitInQuery) {
+            if (db.supportsLimitInQuery()) {
                 int limit1 = limit == -1 ? Integer.MAX_VALUE : limit;
 
-                if (offsetFirst) {
+                if (db.isLimitOffsetFirst()) {
                     ps.setInt(nap.getParameterCount() + 1, offset);
                     ps.setInt(nap.getParameterCount() + 2, limit1);
                 } else {
@@ -177,18 +155,22 @@ public class Query implements org.makumba.db.makumba.Query {
         return ret;
     }
 
-    private void analyzeInsertIn(DataDefinition proj, org.makumba.db.makumba.Database db) {
-        DataDefinition insert = DataDefinitionProvider.getInstance().getDataDefinition(insertIn);
-        for (String string : proj.getFieldNames()) {
-            if (insert.getFieldDefinition(string) == null) {
-                throw new NoSuchFieldException(insert, string);
-            }
-        }
-        insertHandler = (TableManager) db.getTable(insert);
-    }
-
     @Override
     public int insert(Map<String, Object> args, DBConnection dbc) {
+        if (insertIn == null) {
+            throw new IllegalArgumentException("no table to insert in specified");
+        }
+        Database db = (Database) dbc.getHostDatabase();
+        TableManager resultHandler = (TableManager) db.makePseudoTable(nat.getProjectionType());
+        TableManager insertHandler;
+
+        DataDefinition insert1 = DataDefinitionProvider.getInstance().getDataDefinition(insertIn);
+        for (String string : nat.getProjectionType().getFieldNames()) {
+            if (insert1.getFieldDefinition(string) == null) {
+                throw new NoSuchFieldException(insert1, string);
+            }
+        }
+        insertHandler = (TableManager) db.getTable(insert1);
 
         String comma = "";
         StringBuffer fieldList = new StringBuffer();

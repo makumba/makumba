@@ -1,6 +1,6 @@
 package org.makumba.providers.query.mql;
 
-import org.makumba.commons.NameResolver.TextList;
+import org.makumba.commons.TextList;
 
 import antlr.collections.AST;
 

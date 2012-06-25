@@ -36,9 +36,10 @@ import org.makumba.MakumbaError;
 import org.makumba.ProgrammerError;
 import org.makumba.commons.ArrayMap;
 import org.makumba.commons.NameResolver;
-import org.makumba.commons.NameResolver.TextList;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
+import org.makumba.commons.ParamInfo;
+import org.makumba.commons.TextList;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryParameters;
@@ -64,6 +65,8 @@ public class NativeQuery {
 
     TextList text;
 
+    boolean update;
+
     boolean noFrom;
 
     String oql;
@@ -75,6 +78,7 @@ public class NativeQuery {
     public NativeQuery(MqlQueryAnalysis qAna, String lang, String insertIn, NameResolver nr) {
         this.queryParameters = qAna.getQueryParameters();
         text = qAna.getText(lang.equals("hql") ? new MqlHqlGenerator() : new MqlSqlGenerator()).resolve(nr);
+        // System.out.println(text.debug());
         noFrom = qAna.getNoFrom();
         oql = qAna.getQuery();
         projectionType = qAna.getProjectionType();
@@ -128,11 +132,15 @@ public class NativeQuery {
     }
 
     public String getCommand(Map<String, Object> args) {
-        String sql = text.toString(null, args);
+        String sql = text.resolveParameters(new ParamInfo.MultipleWriter(args));
         if (noFrom) {
             return sql.substring(0, sql.toLowerCase().lastIndexOf("from")).trim();
         }
         return sql;
+    }
+
+    public String getCommandForWriter(ParamInfo.Writer wr) {
+        return text.resolveParameters(wr);
     }
 
     public static NativeQuery getNativeQuery(String query, String queryLang, String insertIn, NameResolver nameResolver) {
@@ -156,7 +164,7 @@ public class NativeQuery {
         protected Object makeResource(Object name, Object hashName) throws Throwable {
             Object[] multi = (Object[]) name;
             MqlQueryAnalysis queryAnalysis = (MqlQueryAnalysis) QueryProvider.getQueryAnalzyer("oql").getQueryAnalysis(
-                (String) multi[0]);
+                (String) multi[0], (String) multi[2]);
             if (((String) multi[1]).equals("hql")) {
                 // FIXME: this messes up the MqlQueryAnalysis so if the same query will be needed for MQL in the same
                 // system, it will flop...

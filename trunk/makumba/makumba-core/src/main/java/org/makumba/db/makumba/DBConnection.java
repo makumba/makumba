@@ -176,23 +176,24 @@ public abstract class DBConnection extends TransactionImplementation {
      */
     @Override
     public Vector<Dictionary<String, Object>> executeQuery(String OQL, Object args, int offset, int limit) {
-        Object[] k = { OQL, "" };
-        return ((Query) getHostDatabase().queries.getResource(k)).execute(paramsToMap(args), this, offset, limit);
-
+        return getQuery(OQL, null).execute(paramsToMap(args), this, offset, limit);
     }
 
     @Override
     protected int insertFromQueryImpl(String type, String OQL, Object args) {
-        Object[] k = { OQL, type };
-        return ((Query) getHostDatabase().queries.getResource(k)).insert(paramsToMap(args), this);
+        return getQuery(OQL, type).insert(paramsToMap(args), this);
+    }
+
+    private Query getQuery(String OQL, String type) {
+        // Object[] k = { OQL, type };
+        // return ((Query) getHostDatabase().queries.getResource(k))
+        return new org.makumba.db.makumba.sql.Query((org.makumba.db.makumba.sql.Database) getHostDatabase(), OQL, type);
     }
 
     @Override
     public Vector<Dictionary<String, Object>> executeQuery(String OQL, Object args) {
         return executeQuery(OQL, args, 0, -1);
     }
-
-    static final String whereDelim = " ##### ";
 
     /**
      * Execute a parametrized update or delete. A null set means "delete"
@@ -210,14 +211,13 @@ public abstract class DBConnection extends TransactionImplementation {
             where = null;
         }
 
-        Object[] multi = { type, (set == null ? "" : set) + whereDelim + (where == null ? "" : where), whereDelim };
+        Object[] multi = { type, set, where };
 
         return ((Update) getHostDatabase().updates.getResource(multi)).execute(this, paramsToMap(args));
     }
 
     public Query getQuery(String OQL) {
-        Object[] k = { OQL, "" };
-        return (Query) getHostDatabase().queries.getResource(k);
+        return getQuery(OQL, null);
     }
 
     @Override
