@@ -20,20 +20,33 @@
 
 package org.makumba.test.component;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Dictionary;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Vector;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.makumba.*;
+
+import org.makumba.DataDefinition;
+import org.makumba.FieldValueDiff;
+import org.makumba.MakumbaError;
+import org.makumba.Pointer;
+import org.makumba.Text;
+import org.makumba.Transaction;
 import org.makumba.commons.ClassResource;
 import org.makumba.commons.CollectionUtils;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
 import org.makumba.test.util.MakumbaTestData;
-
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
 
 /**
  * Testing table operations, using new MDD parser
@@ -792,6 +805,32 @@ public class TableTest extends TestCase {
         assertEquals(mod, new Date(((Date) pc1.get("TS_modify")).getTime()));
         db.delete(ptr1);
         db.delete("test.Individual i", "1=1", null);
+    }
+
+    public void testInsertFromQuery() {
+        Hashtable<String, Object> p = new Hashtable<String, Object>();
+        p.put("name", "greek");
+        Pointer ptr = db.insert("test.Language", p);
+        assertNotNull(ptr);
+        try {
+            int n = db.insertFromQuery("test.Language",
+                "SELECT ? as family, l.name as name FROM test.Language l WHERE l.name=?", new Object[] { 10, "greek" });
+            assertEquals(n, 1);
+        } catch (MakumbaError e) {
+            // for hibernate
+            assertEquals(e.getMessage(), "Not implemented");
+            int m = db.delete("test.Language l", "1=1", null);
+            assertEquals(m, 1);
+            return;
+        }
+        Vector<Dictionary<String, Object>> v = db.executeQuery(
+            "SELECT l.name as name, l.family as family FROM test.Language l ORDER BY l.family", null);
+
+        assertEquals(v.size(), 2);
+        assertNull(v.get(0).get("family"));
+        assertEquals(10, v.get(1).get("family"));
+        int m = db.delete("test.Language l", "1=1", null);
+        assertEquals(m, 2);
     }
 
     private final MakumbaTestData testData = new MakumbaTestData();
