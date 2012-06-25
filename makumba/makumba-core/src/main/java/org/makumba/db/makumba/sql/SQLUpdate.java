@@ -47,6 +47,8 @@ public class SQLUpdate implements Update {
 
     NativeQuery nat;
 
+    boolean hasMultiple;
+
     static QueryAnalysisProvider qP = QueryProvider.getQueryAnalzyer("oql");
 
     /**
@@ -98,6 +100,7 @@ public class SQLUpdate implements Update {
                 @Override
                 public void write(ParamInfo p, StringBuffer ret) {
                     ret.append('?').append(p.getName()).append('#').append(p.getPosition());
+                    hasMultiple = true;
                 }
             });
         } catch (RuntimeException e) {
@@ -183,20 +186,26 @@ public class SQLUpdate implements Update {
      * expand multiple parameters in the cached update command, and execute the statement
      */
     public int execute(org.makumba.db.makumba.DBConnection dbc, Map<String, Object> args) {
-        StringBuffer command = new StringBuffer();
+        String comm = updateCommand;
 
-        Matcher m = param.matcher(updateCommand);
+        if (hasMultiple) {
+            StringBuffer command = new StringBuffer();
 
-        ParamInfo.Writer multiWriter = new ParamInfo.MultipleWriter(args);
+            Matcher m = param.matcher(updateCommand);
 
-        while (m.find()) {
-            ParamInfo po = new ParamInfo(m.group(1), Integer.parseInt(m.group(2)));
-            StringBuffer param = new StringBuffer();
-            multiWriter.write(po, param);
-            m.appendReplacement(command, param.toString());
+            ParamInfo.Writer multiWriter = new ParamInfo.MultipleWriter(args);
+
+            while (m.find()) {
+                ParamInfo po = new ParamInfo(m.group(1), Integer.parseInt(m.group(2)));
+                StringBuffer param = new StringBuffer();
+                multiWriter.write(po, param);
+                m.appendReplacement(command, param.toString());
+            }
+            m.appendTail(command);
+            comm = command.toString();
         }
-        m.appendTail(command);
-        PreparedStatement ps = ((SQLDBConnection) dbc).getPreparedStatement(command.toString());
+
+        PreparedStatement ps = ((SQLDBConnection) dbc).getPreparedStatement(comm);
 
         try {
             ParameterAssigner.assignParameters(dbc.getHostDatabase(), nat.makeActualParameters(args), ps, args);

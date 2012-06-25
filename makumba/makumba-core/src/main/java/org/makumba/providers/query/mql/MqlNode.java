@@ -27,6 +27,7 @@ import java.util.ArrayList;
 
 import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
+import org.makumba.commons.ParamInfo;
 import org.makumba.commons.TextList;
 import org.makumba.providers.DataDefinitionProvider;
 
@@ -330,7 +331,12 @@ public class MqlNode extends CommonAST {
 
     public void writeTo(TextList t) {
         if (isParam()) {
-            t.append(walker.getParamInfo(this));
+            ParamInfo pi = walker.getParamInfo(this);
+            if (walker.multiValueParams.contains(pi.getPosition())) {
+                t.append(pi);
+            } else {
+                t.append("?");
+            }
         } else if (textList == null) {
             t.append(getText());
         } else {
