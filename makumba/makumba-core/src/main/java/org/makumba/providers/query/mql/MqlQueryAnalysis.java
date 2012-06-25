@@ -14,7 +14,7 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.commons.MakumbaJspAnalyzer;
-import org.makumba.commons.NameResolver.TextList;
+import org.makumba.commons.TextList;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
 import org.makumba.providers.QueryAnalysisProvider;

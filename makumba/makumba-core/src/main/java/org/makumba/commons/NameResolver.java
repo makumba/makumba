@@ -23,10 +23,7 @@
 
 package org.makumba.commons;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import org.makumba.DataDefinition;
@@ -65,129 +62,6 @@ public class NameResolver {
 
     public String getKey() {
         return getClass().getName() + config;
-    }
-
-    public static class TextList {
-        ArrayList<Object> content = new ArrayList<Object>();
-
-        StringBuffer lastBuffer;
-
-        public TextList append(Object o) {
-
-            if (o instanceof String) {
-                // optimization: we want to have only one StringBuffer in between two non-Strings
-                // if last time we had a string
-                if (lastBuffer != null) {
-                    // we add to the previous buffer
-                    lastBuffer.append(o);
-                } else {
-                    // otherwise we make a new buffer
-                    lastBuffer = new StringBuffer();
-                    // and add to it
-                    lastBuffer.append(o);
-                    // and add the buffer to the content
-                    content.add(lastBuffer);
-                }
-                return this;
-            }
-            // the string buffer stops here
-            lastBuffer = null;
-            if (o instanceof DataDefinition) {
-                Resolvable r = new Resolvable();
-                r.dd = (DataDefinition) o;
-                o = r;
-            }
-            content.add(o);
-            return this;
-        }
-
-        public TextList append(DataDefinition dd, String field) {
-            Resolvable r = new Resolvable();
-            r.dd = dd;
-            r.field = field;
-            return append(r);
-        }
-
-        public void clear() {
-            content.clear();
-        }
-
-        private static NameResolver defaultNameResolver = new NameResolver();
-
-        @Override
-        public String toString() {
-            return toString(defaultNameResolver, null);
-        }
-
-        static class ResolveState {
-            TextList ret = new TextList();
-
-            StringBuffer lastBuffer = new StringBuffer();
-
-            void append(Object o, NameResolver nr) {
-                if (o instanceof StringBuffer) {
-                    lastBuffer.append(o.toString());
-                } else if (o instanceof Resolvable) {
-                    Resolvable rs = (Resolvable) o;
-                    lastBuffer.append(rs.resolve(nr));
-                } else if (o instanceof ParamInfo) {
-                    close();
-                    ret.append(o);
-                } else if (o instanceof TextList) {
-                    ((TextList) o).resolve(nr, this);
-                }
-            }
-
-            public void close() {
-                if (lastBuffer.length() > 0) {
-                    ret.append(lastBuffer);
-                    lastBuffer = new StringBuffer();
-                }
-            }
-        }
-
-        public TextList resolve(NameResolver nr) {
-            ResolveState rs = new ResolveState();
-            resolve(nr, rs);
-            rs.close();
-            return rs.ret;
-        }
-
-        void resolve(NameResolver nr, ResolveState rs) {
-
-            for (Object o : content) {
-                rs.append(o, nr);
-            }
-        }
-
-        public String toString(NameResolver nr, Map<String, Object> args) {
-            StringBuffer ret = new StringBuffer();
-            for (Object o : content) {
-                if (o instanceof StringBuffer) {
-                    ret.append(o);
-                } else if (o instanceof Resolvable) {
-                    Resolvable rs = (Resolvable) o;
-                    ret.append(rs.resolve(nr));
-                } else if (o instanceof ParamInfo) {
-                    ret.append("?");
-                    if (args != null) {
-                        ParamInfo po = (ParamInfo) o;
-
-                        Object val = args.get(po.paramName);
-
-                        if (val != null && val instanceof List<?>) {
-                            List<?> v = (List<?>) args.get(po.paramName);
-                            for (int i = 1; i < v.size(); i++) {
-                                ret.append(',').append('?');
-                            }
-                        }
-                    }
-                } else if (o instanceof TextList) {
-                    ret.append(((TextList) o).toString(nr, args));
-                }
-            }
-            return ret.toString();
-        }
     }
 
     public static class Resolvable {

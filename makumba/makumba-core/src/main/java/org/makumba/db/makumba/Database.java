@@ -40,7 +40,6 @@ import org.makumba.Pointer;
 import org.makumba.commons.NameResolver;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
-import org.makumba.commons.SoftNamedResources;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
 
@@ -79,7 +78,7 @@ public abstract class Database {
 
     protected TransactionProvider tp = TransactionProvider.getInstance();
 
-    NamedResources queries;
+    // NamedResources queries;
 
     NamedResources updates;
 
@@ -110,7 +109,7 @@ public abstract class Database {
             "closing  " + getName() + "\n\tat "
                     + org.makumba.commons.formatters.dateFormatter.debugTime.format(new java.util.Date()));
         tables.close();
-        queries.close();
+        // queries.close();
         updates.close();
         closeResourcePool();
     }
@@ -220,10 +219,8 @@ public abstract class Database {
             throw new org.makumba.MakumbaError(e);
         }
 
+        /*
         queries = new SoftNamedResources("Database " + getName() + " query objects", new NamedResourceFactory() {
-            /**
-             * 
-             */
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -239,8 +236,10 @@ public abstract class Database {
                 return "" + multi[0] + "####" + multi[1];
             }
         });
+        
+        */
 
-        updates = new SoftNamedResources("Database " + getName() + " update objects", new NamedResourceFactory() {
+        updates = new NamedResources("Database " + getName() + " update objects", new NamedResourceFactory() {
             /**
              * 
              */

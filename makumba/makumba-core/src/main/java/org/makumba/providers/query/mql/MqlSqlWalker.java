@@ -12,8 +12,8 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.ProgrammerError;
-import org.makumba.commons.NameResolver.TextList;
 import org.makumba.commons.ParamInfo;
+import org.makumba.commons.TextList;
 import org.makumba.providers.DataDefinitionProvider;
 
 import antlr.ASTFactory;
@@ -373,9 +373,9 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         ParamInfo info = getParamInfo(param);
 
         // if the parameter is not already registered as multi-type (with different types on different position)
-        if (!multiTypeParams.contains(info.paramName)) {
-            FieldDefinition fd = DataDefinitionProvider.getInstance().makeFieldWithName(info.paramName, likewise);
-            FieldDefinition fd1 = paramInfoByName.getFieldDefinition(info.paramName);
+        if (!multiTypeParams.contains(info.getName())) {
+            FieldDefinition fd = DataDefinitionProvider.getInstance().makeFieldWithName(info.getName(), likewise);
+            FieldDefinition fd1 = paramInfoByName.getFieldDefinition(info.getName());
 
             // if we already have a type for that name and the types are not compatible
             if (fd1 != null && !fd1.isAssignableFrom(fd)) {
@@ -385,7 +385,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
                 // and that's currently not possible
 
                 // we register the parameter as multi-type
-                multiTypeParams.add(info.paramName);
+                multiTypeParams.add(info.getName());
             } else if (fd1 == null) {
                 // we register the type if we don't have any for this name
                 paramInfoByName.addField(fd);
@@ -395,36 +395,34 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         // we now register the type for this position.
         // we don't check for duplicate type on this position
         // as each tree node should be visited only once...
-        FieldDefinition fd = DataDefinitionProvider.getInstance().makeFieldWithName("param" + info.paramPosition,
+        FieldDefinition fd = DataDefinitionProvider.getInstance().makeFieldWithName("param" + info.getPosition(),
             likewise);
         param.setMakType(fd);
         paramInfoByPosition.addField(fd);
     }
 
     ParamInfo getParamInfo(MqlNode param) {
-        ParamInfo ret = new ParamInfo();
 
-        ret.paramName = param.getOriginalText();
-        if ("?".equals(ret.paramName)) {
-            // we do not treat this case but accept it for hibernate compatibility
-            return ret;
-        } else {
+        String paramName = param.getOriginalText();
+        // if ("?".equals(paramName)) {
+        // we do not treat this case but accept it for hibernate compatibility
+        // return new ParamInfo(paramName);
+        // } else {
 
-            // we separate the parameter position from the name, as both are registered in the same string
-            int paramPositionIndex = ret.paramName.indexOf("###");
-            if (paramPositionIndex < 0) {
-                throw new MakumbaError("Untreated parameter " + ret.paramName + " in query analysis");
-            }
-
-            ret.paramPosition = Integer.parseInt(ret.paramName.substring(paramPositionIndex + 3));
-            ret.paramName = ret.paramName.substring(0, paramPositionIndex);
+        // we separate the parameter position from the name, as both are registered in the same string
+        int paramPositionIndex = paramName.indexOf("###");
+        if (paramPositionIndex < 0) {
+            throw new MakumbaError("Untreated parameter " + paramName + " in query analysis");
         }
-        return ret;
+
+        return new ParamInfo(paramName.substring(0, paramPositionIndex),
+                Integer.parseInt(paramName.substring(paramPositionIndex + 3)));
+        // }
     }
 
     public void setMultivalueParam(MqlNode param) {
         ParamInfo pi = getParamInfo(param);
-        multiValueParams.add(pi.paramPosition);
+        multiValueParams.add(pi.getPosition());
     }
 
     void setProjectionTypes(DataDefinition proj) {
@@ -485,7 +483,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
 
             if (constantValues != null) {
                 if (mqlNode.isParam()) {
-                    constantValues.put(name, new MqlQueryAnalysis.ParamConstant(getParamInfo(mqlNode).paramName));
+                    constantValues.put(name, new MqlQueryAnalysis.ParamConstant(getParamInfo(mqlNode).getName()));
                 } else {
                     String txt = mqlNode.getText();
                     switch (mqlNode.getType()) {

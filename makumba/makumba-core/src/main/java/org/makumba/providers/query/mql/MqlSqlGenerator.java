@@ -5,8 +5,7 @@ import java.util.List;
 import java.util.Stack;
 import java.util.logging.Level;
 
-import org.makumba.commons.NameResolver;
-import org.makumba.commons.NameResolver.TextList;
+import org.makumba.commons.TextList;
 
 import antlr.RecognitionException;
 import antlr.collections.AST;
@@ -22,9 +21,9 @@ import antlr.collections.AST;
  */
 public class MqlSqlGenerator extends MqlSqlGeneratorBase {
 
-    private NameResolver.TextList text = new NameResolver.TextList();
+    private TextList text = new TextList();
 
-    private Stack<NameResolver.TextList> textListStack = new Stack<NameResolver.TextList>();
+    private Stack<TextList> textListStack = new Stack<TextList>();
 
     private Stack<MQLFunctionDefinition> functionStack = new Stack<MQLFunctionDefinition>();
 
@@ -193,11 +192,11 @@ public class MqlSqlGenerator extends MqlSqlGeneratorBase {
         }
     }
 
-    public void setText(NameResolver.TextList text) {
+    public void setText(TextList text) {
         this.text = text;
     }
 
-    public NameResolver.TextList getText() {
+    public TextList getText() {
         return text;
     }
 }

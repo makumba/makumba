@@ -26,11 +26,14 @@ package org.makumba.db.makumba.sql;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.makumba.DBError;
 import org.makumba.MakumbaError;
 import org.makumba.NotUniqueException;
-import org.makumba.OQLParseError;
+import org.makumba.commons.ParamInfo;
+import org.makumba.commons.RegExpUtils;
 import org.makumba.db.NativeQuery;
 import org.makumba.db.makumba.Update;
 import org.makumba.providers.QueryAnalysisProvider;
@@ -42,59 +45,46 @@ public class SQLUpdate implements Update {
 
     String updateCommand;
 
-    String type;
-
-    String setWhere;
-
-    String DELIM;
-
-    Database db;
-
     NativeQuery nat;
 
-    QueryAnalysisProvider qP = QueryProvider.getQueryAnalzyer("oql");
+    static QueryAnalysisProvider qP = QueryProvider.getQueryAnalzyer("oql");
 
-    SQLUpdate(Database db, String from, String setWhere, String DELIM) {
-        this.type = from;
-        this.db = db;
-        this.setWhere = setWhere;
-        this.DELIM = DELIM;
-    }
-
-    private void compileUpdateCommand(Database db, String from, String setWhere, String DELIM, Map<String, Object> args)
-            throws OQLParseError, MakumbaError {
-        int whereMark = setWhere.indexOf(DELIM);
-        String set = setWhere.substring(0, whereMark);
-        String where = setWhere.substring(whereMark + DELIM.length());
-        debugString = (set == null ? "delete" : "update") + " on type: <" + from + ">"
+    /**
+     * compute a query SELECT a=b, c=d FROM type WHERE condition, analyze it and then transform it into UPDATE type SET
+     * a=b, c=d WHERE condition or DELETE FROM type WHERE condition. This computes and caches and update command in
+     * String format without expanded parameters.
+     * 
+     * @param db
+     *            the database whose name resovler hook to use
+     * @param type
+     *            the type where the update is made
+     * @param set
+     *            the list of SET statements, null for DELETE
+     * @param where
+     *            the WHERE condition
+     */
+    SQLUpdate(Database db, String type, String set, String where) {
+        debugString = (set == null ? "delete" : "update") + " on type: <" + type + ">"
                 + (set == null ? " " : " setting: <" + set + ">") + " where: <" + where + ">";
 
-        if (set.trim().length() == 0) {
-            set = null;
-        }
-
-        if (where.trim().length() == 0) {
-            where = null;
-        }
-
         // a primitive check, better one needs to be done after OQLAnalyzer's job
-        if (from != null && from.indexOf(',') >= 0) {
+        if (type != null && type.indexOf(',') >= 0) {
             throw new org.makumba.OQLParseError("Only 1 table can be involved in " + debugString);
         }
 
         // make sure whitespace only consists of spaces
-        from = from.replace('\t', ' ');
+        type = type.replace('\t', ' ');
 
         // we determine the dummy label used in the arguments
         String label;
         try {
-            label = from.substring(from.trim().indexOf(' ') + 1).trim();
+            label = type.substring(type.trim().indexOf(' ') + 1).trim();
         } catch (StringIndexOutOfBoundsException e) {
-            throw new org.makumba.OQLParseError("Invalid delete/update 'type' section: " + from);
+            throw new org.makumba.OQLParseError("Invalid delete/update 'type' section: " + type);
         }
 
         // to get the right SQL, we compile an imaginary MQL command made as follows:
-        String OQLQuery = "SELECT " + (set == null ? label : set) + " FROM " + from;
+        String OQLQuery = "SELECT " + (set == null ? label : set) + " FROM " + type;
         if (where != null) {
             OQLQuery += " WHERE " + where;
         }
@@ -104,7 +94,12 @@ public class SQLUpdate implements Update {
         String fakeCommand;
         String fakeCommandUpper;
         try {
-            fakeCommand = nat.getCommand(args);
+            fakeCommand = nat.getCommandForWriter(new ParamInfo.Writer() {
+                @Override
+                public void write(ParamInfo p, StringBuffer ret) {
+                    ret.append('?').append(p.getName()).append('#').append(p.getPosition());
+                }
+            });
         } catch (RuntimeException e) {
             throw new MakumbaError(e, debugString + "\n" + OQLQuery);
         }
@@ -181,20 +176,35 @@ public class SQLUpdate implements Update {
         updateCommand = command.toString();
     }
 
+    static Pattern param = Pattern.compile("\\?(" + RegExpUtils.identifier + ")\\#" + "(" + RegExpUtils.digit + "*)");
+
     @Override
+    /**
+     * expand multiple parameters in the cached update command, and execute the statement
+     */
     public int execute(org.makumba.db.makumba.DBConnection dbc, Map<String, Object> args) {
+        StringBuffer command = new StringBuffer();
 
-        compileUpdateCommand(db, type, setWhere, DELIM, args);
+        Matcher m = param.matcher(updateCommand);
 
-        PreparedStatement ps = ((SQLDBConnection) dbc).getPreparedStatement(updateCommand);
+        ParamInfo.Writer multiWriter = new ParamInfo.MultipleWriter(args);
+
+        while (m.find()) {
+            ParamInfo po = new ParamInfo(m.group(1), Integer.parseInt(m.group(2)));
+            StringBuffer param = new StringBuffer();
+            multiWriter.write(po, param);
+            m.appendReplacement(command, param.toString());
+        }
+        m.appendTail(command);
+        PreparedStatement ps = ((SQLDBConnection) dbc).getPreparedStatement(command.toString());
 
         try {
-            ParameterAssigner.assignParameters(db, nat.makeActualParameters(args), ps, args);
+            ParameterAssigner.assignParameters(dbc.getHostDatabase(), nat.makeActualParameters(args), ps, args);
 
             // org.makumba.db.sql.Database db=(org.makumba.db.sql.Database)dbc.getHostDatabase();
 
             java.util.logging.Logger.getLogger("org.makumba.db.update.execution").fine(
-                "" + db.getWrappedStatementToString(ps));
+                "" + ((Database) dbc.getHostDatabase()).getWrappedStatementToString(ps));
             java.util.Date d = new java.util.Date();
             int rez;
             try {

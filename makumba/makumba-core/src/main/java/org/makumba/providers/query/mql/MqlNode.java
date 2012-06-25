@@ -27,8 +27,7 @@ import java.util.ArrayList;
 
 import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
-import org.makumba.commons.NameResolver;
-import org.makumba.commons.NameResolver.TextList;
+import org.makumba.commons.TextList;
 import org.makumba.providers.DataDefinitionProvider;
 
 import antlr.CommonAST;
@@ -46,7 +45,7 @@ import antlr.collections.AST;
 public class MqlNode extends CommonAST {
     private static final long serialVersionUID = 1L;
 
-    private NameResolver.TextList textList;
+    private TextList textList;
 
     MqlSqlWalker walker;
 
