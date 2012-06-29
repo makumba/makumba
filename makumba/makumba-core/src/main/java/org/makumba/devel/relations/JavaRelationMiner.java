@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.makumba.DataDefinition;
+import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.analyser.engine.JavaParseData;
 import org.makumba.commons.MakumbaJspAnalyzer;
@@ -74,18 +75,17 @@ public class JavaRelationMiner extends RelationMiner {
 
             }
 
-            Vector<String> projections = qA.getProjectionType().getFieldNames();
-            for (String expr : projections) {
-                String field = qA.getFieldOfExpr(expr);
-                DataDefinition dd = qA.getTypeOfExprField(expr);
+            for (FieldDefinition fd : qA.getProjectionType().getFieldDefinitions()) {
+                String field = qA.getFieldOfExpr(fd.getName());
+                DataDefinition dd = qA.getTypeOfExprField(fd.getName());
                 String realExpr;
 
                 // this is due to a count(something) or sum(something) etc.
                 // let's see if we can get the guy inside
                 if (dd == null) {
                     int n = -1;
-                    if ((n = expr.indexOf("(")) > -1) {
-                        realExpr = expr.substring(n + 1, expr.length() - 1);
+                    if ((n = fd.getName().indexOf("(")) > -1) {
+                        realExpr = fd.getName().substring(n + 1, fd.getName().length() - 1);
                         if (realExpr.equals("*")) {
                             // count(*)
                             continue;
@@ -104,7 +104,7 @@ public class JavaRelationMiner extends RelationMiner {
                         type = type.substring(0, type.indexOf("->"));
                     }
 
-                    addJava2MDDRelation(path, type, expr, field, query);
+                    addJava2MDDRelation(path, type, fd.getName(), field, query);
                 }
             }
 

@@ -60,7 +60,7 @@ public class FunctionInliner {
         String from = qsp.getInitialFrom();
         findFunctionBody(query, m);
         findFunctionObject(m, from, qp);
-        if (functionDefinition.getParameters().getFieldNames().size() != parameterExpr.size()) {
+        if (functionDefinition.getParameters().getFieldDefinitions().size() != parameterExpr.size()) {
             throw new ProgrammerError("parameter number " + parameterExpr + " does not match function "
                     + functionDefinition);
         }

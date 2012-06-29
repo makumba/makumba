@@ -140,8 +140,7 @@ public class MddToMapping {
         atts.addAttribute("", "", "table", "", nr.resolveTypeName(dd.getName()));
         hd.startElement("", "", "class", atts);
 
-        for (int i = 0; i < dd.getFieldNames().size(); i++) {
-            FieldDefinition fd = dd.getFieldDefinition(i);
+        for (FieldDefinition fd : dd.getFieldDefinitions()) {
             atts.clear();
             switch (fd.getIntegerType()) {
                 case FieldDefinition._int:

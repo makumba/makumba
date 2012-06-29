@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Enumeration;
-import java.util.Vector;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -154,13 +154,13 @@ public class MDDComparator {
         check("getSetOwnerFieldName", t, null, dd1.getSetOwnerFieldName(), dd2.getSetOwnerFieldName());
 
         // fields
-        Vector<String> v1 = dd1.getFieldNames();
-        Vector<String> v2 = dd2.getFieldNames();
+        List<FieldDefinition> v1 = dd1.getFieldDefinitions();
+        List<FieldDefinition> v2 = dd2.getFieldDefinitions();
         check("getFieldNames", t, null, v1, v2);
 
-        for (String f : v1) {
+        for (FieldDefinition fd1 : v1) {
 
-            FieldDefinition fd1 = dd1.getFieldDefinition(f);
+            String f = fd1.getName();
             FieldDefinition fd2 = dd2.getFieldDefinition(f);
 
             // basic info

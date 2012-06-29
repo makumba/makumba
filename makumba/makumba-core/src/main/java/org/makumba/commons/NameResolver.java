@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Properties;
 
 import org.makumba.DataDefinition;
+import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 
 /**
@@ -238,12 +239,12 @@ public class NameResolver {
      * @return <code>true</code> if such a field already exists, <code>false</code> otherwise
      */
     private static boolean checkDuplicateFieldName(String name, DataDefinition dd, HashMap<String, String> resolvedCache) {
-        for (String fieldName : dd.getFieldNames()) {
-            if (dd.getFieldDefinition(fieldName).getType().startsWith("set")) {
+        for (FieldDefinition fd : dd.getFieldDefinitions()) {
+            if (fd.getType().startsWith("set")) {
                 continue;
             }
-            if (resolvedCache.get(fieldName) != null
-                    && resolvedCache.get(fieldName).toLowerCase().equals(name.toLowerCase())) {
+            if (resolvedCache.get(fd.getName()) != null
+                    && resolvedCache.get(fd.getName()).toLowerCase().equals(name.toLowerCase())) {
                 return true;
             }
         }
@@ -269,20 +270,20 @@ public class NameResolver {
         HashMap<String, String> resolvedCache;
         resolvedCache = new HashMap<String, String>();
 
-        for (String name : dd.getFieldNames()) {
+        for (FieldDefinition fd : dd.getFieldDefinitions()) {
 
-            if (dd.getFieldDefinition(name).getType().startsWith("set")) {
+            if (fd.getType().startsWith("set")) {
                 continue;
             }
 
-            String resolved = config.getProperty(getTableNameFromConfig(config, dd.getName()) + "->" + name);
+            String resolved = config.getProperty(getTableNameFromConfig(config, dd.getName()) + "->" + fd.getName());
             if (resolved == null) {
-                resolved = checkReserved(getFieldNameInSource(name));
+                resolved = checkReserved(getFieldNameInSource(fd.getName()));
                 while (checkDuplicateFieldName(resolved, dd, resolvedCache)) {
                     resolved = resolved + "_";
                 }
             }
-            resolvedCache.put(name, resolved);
+            resolvedCache.put(fd.getName(), resolved);
         }
         fieldDBNames.put(dd.getName(), resolvedCache);
         return resolvedCache;

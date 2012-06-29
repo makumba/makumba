@@ -91,12 +91,12 @@ public class RegexpTester extends DataServlet {
                 DataDefinition mdd = DataDefinitionProvider.getMDD(v.get(i));
                 ValidationDefinition validationDefinition = DataDefinitionProvider.getInstance().getValidationDefinition(
                     v.get(i));
-                for (String fieldName : mdd.getFieldNames()) {
-                    Collection<ValidationRule> validationRules = validationDefinition.getValidationRules(fieldName);
+                for (FieldDefinition fd : mdd.getFieldDefinitions()) {
+                    Collection<ValidationRule> validationRules = validationDefinition.getValidationRules(fd.getName());
                     for (ValidationRule validationRule : validationRules) {
                         if (validationRule instanceof RegExpValidationRule) {
                             String expression = ((RegExpValidationRule) validationRule).getExpression();
-                            fieldsWithRegexp.put(mdd.getFieldDefinition(fieldName), expression);
+                            fieldsWithRegexp.put(mdd.getFieldDefinition(fd.getName()), expression);
                         }
                     }
                 }

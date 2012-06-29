@@ -38,6 +38,7 @@ import org.makumba.CompositeValidationException;
 import org.makumba.DBError;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
+import org.makumba.FieldDefinition.FieldErrorMessageType;
 import org.makumba.FieldValueDiff;
 import org.makumba.InvalidFieldTypeException;
 import org.makumba.LogicException;
@@ -48,7 +49,6 @@ import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.Transaction;
 import org.makumba.UnauthenticatedException;
-import org.makumba.FieldDefinition.FieldErrorMessageType;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryProvider;
@@ -74,16 +74,22 @@ public abstract class TransactionImplementation implements Transaction {
         this.ddp = DataDefinitionProvider.getInstance();
     }
 
+    @Override
     public abstract void close();
 
+    @Override
     public abstract void commit();
 
+    @Override
     public abstract void rollback();
 
+    @Override
     public abstract String getName();
 
+    @Override
     public abstract void lock(String symbol);
 
+    @Override
     public abstract void unlock(String symbol);
 
     /**
@@ -106,6 +112,7 @@ public abstract class TransactionImplementation implements Transaction {
      * Delete the record pointed by the given pointer. If the pointer is a 1-1, the oringinal is set to null. All the
      * subrecords and subsets are automatically deleted.
      */
+    @Override
     public void delete(Pointer ptr) {
         if (ptr == null) {
             throw new ProgrammerError("The pointer to be deleted should not be null");
@@ -143,19 +150,24 @@ public abstract class TransactionImplementation implements Transaction {
      * 
      * @return the number of records affected
      */
+    @Override
     public int delete(String from, String where, Object parameters) {
         return executeUpdate(from, null, where, parameters);
     }
 
+    @Override
     public abstract Vector<Dictionary<String, Object>> executeQuery(String OQL, Object parameterValues, int offset,
             int limit);
 
+    @Override
     public abstract Vector<Dictionary<String, Object>> executeQuery(String OQL, Object parameterValues);
 
+    @Override
     public TransactionProvider getTransactionProvider() {
         return this.tp;
     }
 
+    @Override
     public Pointer insert(String type, Dictionary<String, Object> data) {
 
         // TODO: this does not support the DataTransformer possibility as for the Makumba DB.
@@ -167,6 +179,7 @@ public abstract class TransactionImplementation implements Transaction {
 
     }
 
+    @Override
     public Vector<Pointer> insert(String type, Collection<Dictionary<String, Object>> data) {
         throw new MakumbaError("not implemented");
     }
@@ -177,6 +190,7 @@ public abstract class TransactionImplementation implements Transaction {
      * 
      * @return a Pointer to the inserted record
      */
+    @Override
     public Pointer insert(Pointer base, String field, Dictionary<String, Object> data) {
         FieldDefinition fi = ddp.getDataDefinition(base.getType()).getFieldDefinition(field);
         if (fi == null) {
@@ -190,6 +204,7 @@ public abstract class TransactionImplementation implements Transaction {
         }
     }
 
+    @Override
     public int insertFromQuery(String type, String OQL, Object parameterValues) {
         int i = 0;
         try {
@@ -205,6 +220,7 @@ public abstract class TransactionImplementation implements Transaction {
     protected abstract StringBuffer writeReadQuery(Pointer p, Enumeration<String> e);
 
     /** change the record pointed by the given pointer. Only fields indicated are changed to the respective values */
+    @Override
     public int update(Pointer ptr, java.util.Dictionary<String, Object> fieldsToChange) {
         DataHolder dh = new DataHolder(this, fieldsToChange, ptr.getType());
         dh.checkUpdate(ptr);
@@ -219,6 +235,7 @@ public abstract class TransactionImplementation implements Transaction {
         return updated;
     }
 
+    @Override
     public ArrayList<FieldValueDiff> updateWithValueDiff(Pointer ptr, Dictionary<String, Object> fieldsToChange) {
         DataDefinition dd = DataDefinitionProvider.getInstance().getDataDefinition(ptr.getType());
 
@@ -275,6 +292,7 @@ public abstract class TransactionImplementation implements Transaction {
         return res;
     }
 
+    @Override
     public int updateSet(Pointer basePointer, String setName, Collection<?> addElements, Collection<?> removeElements) {
         // read the set's current values from db
         final Vector<Pointer> setElements = readExternalSetValues(basePointer, setName);
@@ -306,22 +324,26 @@ public abstract class TransactionImplementation implements Transaction {
         return update(basePointer, d);
     }
 
+    @Override
     public Vector<Pointer> readExternalSetValues(Pointer basePointer, String setName) {
         return readSetValues(basePointer, setName);
     }
 
+    @Override
     public Vector<Integer> readIntEnumValues(Pointer basePointer, String setName) {
         return readSetValues(basePointer, setName);
     }
 
+    @Override
     public Vector<String> readCharEnumValues(Pointer basePointer, String setName) {
         return readSetValues(basePointer, setName);
     }
 
     protected <T> Vector<T> readSetValues(Pointer basePointer, String setName) {
         String label = "setElement";
-        Vector<Dictionary<String, Object>> v = executeQuery("SELECT " + label + " as " + label + " FROM "
-                + basePointer.getType() + " o, o." + setName + " " + label + " WHERE o=$1", basePointer);
+        Vector<Dictionary<String, Object>> v = executeQuery(
+            "SELECT " + label + " as " + label + " FROM " + basePointer.getType() + " o, o." + setName + " " + label
+                    + " WHERE o=$1", basePointer);
 
         Vector<T> vec = new Vector<T>();
         for (Dictionary<String, Object> dictionary : v) {
@@ -361,10 +383,12 @@ public abstract class TransactionImplementation implements Transaction {
      * 
      * @return the number of records affected
      */
+    @Override
     public int update(String from, String set, String where, Object parameters) {
         return executeUpdate(from, set, where, parameters);
     }
 
+    @Override
     public Dictionary<String, Object> read(Pointer p, Object flds) {
 
         Enumeration<String> e = extractReadFields(p, flds);
@@ -393,9 +417,9 @@ public abstract class TransactionImplementation implements Transaction {
         if (flds == null) {
             DataDefinition ri = ddp.getDataDefinition(p.getType());
             Vector<String> v = new Vector<String>();
-            for (String s : ri.getFieldNames()) {
-                if (!ri.getFieldDefinition(s).getType().startsWith("set")) {
-                    v.addElement(s);
+            for (FieldDefinition fd : ri.getFieldDefinitions()) {
+                if (!fd.getType().startsWith("set")) {
+                    v.addElement(fd.getName());
                 }
             }
             e = v.elements();
@@ -436,9 +460,9 @@ public abstract class TransactionImplementation implements Transaction {
         // delete the ptrOnes
         Vector<String> ptrOnes = new Vector<String>();
 
-        for (String s : ri.getFieldNames()) {
-            if (ri.getFieldDefinition(s).getType().equals("ptrOne")) {
-                ptrOnes.addElement(s);
+        for (FieldDefinition fd : ri.getFieldDefinitions()) {
+            if (fd.getType().equals("ptrOne")) {
+                ptrOnes.addElement(fd.getName());
             }
         }
 
@@ -449,23 +473,25 @@ public abstract class TransactionImplementation implements Transaction {
             }
         }
         // delete all the subfields
-        for (String string : ri.getFieldNames()) {
-            FieldDefinition fi = ri.getFieldDefinition(string);
+        for (FieldDefinition fi : ri.getFieldDefinitions()) {
             if (fi.getType().startsWith("set")) {
                 if (fi.getType().equals("setComplex")) {
                     // recursively process all set entries, to delete their subSets and ptrOnes
-                    Vector<Dictionary<String, Object>> v = executeQuery("SELECT pointedType" + getPrimaryKeyName()
-                            + " as pointedType FROM " + ptr.getType() + " ptr " + getSetJoinSyntax() + " ptr."
-                            + fi.getName() + " pointedType WHERE ptr" + getPrimaryKeyName() + "=" + getParameterName(),
-                        ptr);
+                    Vector<Dictionary<String, Object>> v = executeQuery(
+                        "SELECT pointedType" + getPrimaryKeyName() + " as pointedType FROM " + ptr.getType() + " ptr "
+                                + getSetJoinSyntax() + " ptr." + fi.getName() + " pointedType WHERE ptr"
+                                + getPrimaryKeyName() + "=" + getParameterName(), ptr);
                     for (Dictionary<String, Object> dictionary : v) {
                         Pointer p = (Pointer) dictionary.get("pointedType");
                         delete1(p);
                     }
-                    executeUpdate(transformTypeName(fi.getSubtable().getName()) + " this", null, "this."
-                            + transformTypeName(fi.getSubtable().getFieldDefinition(
-                                fi.getSubtable().getSetOwnerFieldName()).getName()) + getPrimaryKeyName() + "= "
-                            + getParameterName(), param);
+                    executeUpdate(
+                        transformTypeName(fi.getSubtable().getName()) + " this",
+                        null,
+                        "this."
+                                + transformTypeName(fi.getSubtable().getFieldDefinition(
+                                    fi.getSubtable().getSetOwnerFieldName()).getName()) + getPrimaryKeyName() + "= "
+                                + getParameterName(), param);
                 } else {
                     tp.getCRUD().deleteSet(this, ptr, fi);
                 }
@@ -565,6 +591,7 @@ public abstract class TransactionImplementation implements Transaction {
 
     public abstract String getNullConstant();
 
+    @Override
     public abstract String getDataSource();
 
     public void setContext(Attributes a) {

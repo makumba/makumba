@@ -151,9 +151,8 @@ public class ParserTest {
 
     private static void compareMdds(String what, StringBuffer sb, DataDefinition mdd1, DataDefinition mdd2) {
         HashSet<String> fieldsDone = new HashSet<String>();
-        for (String s : mdd1.getFieldNames()) {
-            FieldDefinition fd1 = mdd1.getFieldDefinition(s);
-            FieldDefinition fd2 = mdd2.getFieldDefinition(s);
+        for (FieldDefinition fd1 : mdd1.getFieldDefinitions()) {
+            FieldDefinition fd2 = mdd2.getFieldDefinition(fd1.getName());
 
             if (fd2 == null) {
                 sb.append("extra MQL ").append(what).append(": ");
@@ -162,18 +161,17 @@ public class ParserTest {
                 continue;
             }
             if (!fd1.isAssignableFrom(fd2) && !(fd1.getType().equals("boolean") && fd2.getType().equals("int"))) {
-                sb.append(what).append(" ").append(s).append(" MQL: ");
+                sb.append(what).append(" ").append(fd1.getName()).append(" MQL: ");
                 appendFieldDefinition(sb, fd1);
                 sb.append(" OQL: ");
                 appendFieldDefinition(sb, fd2);
                 sb.append("\n");
             }
-            fieldsDone.add(s);
+            fieldsDone.add(fd1.getName());
         }
         if (mdd2 != null) {
-            for (String s : mdd2.getFieldNames()) {
-                if (!fieldsDone.contains(s)) {
-                    FieldDefinition fd2 = mdd2.getFieldDefinition(s);
+            for (FieldDefinition fd2 : mdd2.getFieldDefinitions()) {
+                if (!fieldsDone.contains(fd2.getName())) {
                     sb.append("extra OQL ").append(what).append(": ");
                     appendFieldDefinition(sb, fd2);
                     sb.append("\n");

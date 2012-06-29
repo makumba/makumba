@@ -201,8 +201,10 @@ public class CodeGenerator {
         appendLine(sb, " * TODO: add javadoc comments!");
         appendLine(sb, " *");
         appendLine(sb, " * @author " + userName);
-        appendLine(sb, " * @version $Id: " + className + ",v 1.1 "
-                + new SimpleDateFormat("yyyy/MM/dd hh:mm:ss").format(new Date()) + " " + userName + " Exp $");
+        appendLine(
+            sb,
+            " * @version $Id: " + className + ",v 1.1 "
+                    + new SimpleDateFormat("yyyy/MM/dd hh:mm:ss").format(new Date()) + " " + userName + " Exp $");
         appendLine(sb, " */");
         append(sb, "public class " + className);
         if (hasSuperLogic) {
@@ -366,9 +368,10 @@ public class CodeGenerator {
                     appendLine(sb, "<mak:value expr=\"" + labelName
                             + (queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL) ? "" : ".id") + "\" printVar=\""
                             + labelName + "Pointer\" />");
-                    appendJSPLine(sb, indent, template.beforePageHeader + "Edit "
-                            + StringUtils.upperCaseBeginning(labelName) + " <i><mak:value expr=\"" + labelName + "."
-                            + dd.getTitleFieldName() + "\" /></i>" + template.afterPageHeader);
+                    appendJSPLine(sb, indent,
+                        template.beforePageHeader + "Edit " + StringUtils.upperCaseBeginning(labelName)
+                                + " <i><mak:value expr=\"" + labelName + "." + dd.getTitleFieldName() + "\" /></i>"
+                                + template.afterPageHeader);
                     appendJSPLine(sb, indent, "<mak:editForm object=\"" + labelName + "\" action=\"" + action
                             + "\" method=\"post\">");
                     indent++;
@@ -471,14 +474,16 @@ public class CodeGenerator {
     private void generateDeleteCode(StringBuffer sb, DataDefinition dd, CodeGeneratorTemplate template,
             String labelName, int indent, String queryLanguage) {
         appendLine(sb, template.beforePageHeader + "Delete confirmation" + template.afterPageHeader);
-        appendLine(sb, "<mak:object from=\"" + dd + " " + labelName + "\" where=\"" + labelName
-                + (queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL) ? "=$" : ".id=:") + labelName + "\">");
+        appendLine(
+            sb,
+            "<mak:object from=\"" + dd + " " + labelName + "\" where=\"" + labelName
+                    + (queryLanguage.equals(MakumbaJspAnalyzer.QL_OQL) ? "=$" : ".id=:") + labelName + "\">");
         indent++;
-        appendJSPLine(sb, indent, "Delete " + labelName + " '<mak:value expr=\"" + labelName + "."
-                + dd.getTitleFieldName() + "\" />'?");
+        appendJSPLine(sb, indent,
+            "Delete " + labelName + " '<mak:value expr=\"" + labelName + "." + dd.getTitleFieldName() + "\" />'?");
         appendJSPLine(sb, indent, "<a href=\"javascript:back();\">No</a> &nbsp;");
-        appendJSPLine(sb, indent, "<mak:delete object=\"" + labelName + "\" action=\""
-                + getFileNameFromObject(dd, TYPE_LIST) + "\">");
+        appendJSPLine(sb, indent,
+            "<mak:delete object=\"" + labelName + "\" action=\"" + getFileNameFromObject(dd, TYPE_LIST) + "\">");
         appendJSPLine(sb, indent + 1, "Delete");
         appendJSPLine(sb, indent, "</mak:delete>");
         indent--;
@@ -556,8 +561,9 @@ public class CodeGenerator {
 
         appendJSPLine(sb, indent, template.beforeField);
         appendJSPLine(sb, indent, template.beforeFieldTag + "${mak:count()}" + template.afterFieldTag);
-        appendJSPLine(sb, indent, template.beforeFieldTag + "<mak:value expr=\"" + labelName + "."
-                + dd.getTitleFieldName() + "\" />" + template.afterFieldTag);
+        appendJSPLine(sb, indent,
+            template.beforeFieldTag + "<mak:value expr=\"" + labelName + "." + dd.getTitleFieldName() + "\" />"
+                    + template.afterFieldTag);
         appendJSPLine(sb, indent, template.beforeFieldTag + "<mak:value expr=\"" + labelName
                 + ".TS_create\" format=\"yyyy-MM-dd hh:mm:ss\" />" + template.afterFieldTag);
         appendJSPLine(sb, indent, template.beforeFieldTag + "<mak:value expr=\"" + labelName
@@ -756,8 +762,9 @@ public class CodeGenerator {
 
         char key = getAccessKey(fd.getDataDefinition(), fieldName);
 
-        appendJSPLine(sb, indent, template.beforeFieldName + "<label for=\"" + fd.getName() + "\">"
-                + formatLabelName(fieldName, key) + "</label>" + template.afterFieldName);
+        appendJSPLine(sb, indent,
+            template.beforeFieldName + "<label for=\"" + fd.getName() + "\">" + formatLabelName(fieldName, key)
+                    + "</label>" + template.afterFieldName);
         appendJSP(sb, indent, template.beforeFieldTag);
         append(sb, "<mak:input field=\"" + fd.getName() + "\" styleId=\"" + fd.getName() + "\" accessKey=\"" + key
                 + "\" />");
@@ -766,8 +773,8 @@ public class CodeGenerator {
     /** Gathers all fields that are not sets and ptrRel from a given DataDefinition. */
     private Vector<FieldDefinition> extractInnerFields(DataDefinition dd) {
         Vector<FieldDefinition> innerFields = new Vector<FieldDefinition>();
-        if (dd != null && dd.getFieldNames() != null) {
-            for (int i = 0; i < dd.getFieldNames().size(); i++) {
+        if (dd != null) {
+            for (int i = 0; i < dd.getFieldDefinitions().size(); i++) {
                 FieldDefinition fd = dd.getFieldDefinition(i);
                 if (!fd.isDefaultField() && fd.getIntegerType() != FieldDefinition._ptrRel
                         && fd.shouldEditBySingleInput()) {
@@ -781,7 +788,7 @@ public class CodeGenerator {
     /** Extracts all complex sets from a given DataDefinition. */
     public static Vector<FieldDefinition> extractSetComplex(DataDefinition dd) {
         Vector<FieldDefinition> sets = new Vector<FieldDefinition>();
-        for (int i = 0; i < dd.getFieldNames().size(); i++) {
+        for (int i = 0; i < dd.getFieldDefinitions().size(); i++) {
             FieldDefinition fd = dd.getFieldDefinition(i);
             if (fd.getIntegerType() == FieldDefinition._setComplex) {
                 sets.add(fd);

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
@@ -139,10 +138,9 @@ public class HqlAnalyzer implements QueryAnalysis {
 
                 @Override
                 public List<String> getParameterOrder() {
-                    // TODO this is untested, but at the moment it is never called, MqlParameterTransformer calls this
-                    // but
-                    // it only operates with MqlQueryAnalysis
-                    return paramTypes.getFieldNames();
+                    // not implemented, not needed in this provider
+                    // this provider is not used lately anyway
+                    throw new IllegalStateException("not implemented");
                 }
 
                 @Override
@@ -236,7 +234,7 @@ public class HqlAnalyzer implements QueryAnalysis {
     @Override
     public String toString() {
         String result = "Query:\n" + this.getQuery() + "\n";
-        Vector<String> w = this.getProjectionType().getFieldNames();
+        List<FieldDefinition> w = this.getProjectionType().getFieldDefinitions();
         result += "Number of projections: " + w.size() + "\n";
 
         for (int i = 0; i < w.size(); i++) {

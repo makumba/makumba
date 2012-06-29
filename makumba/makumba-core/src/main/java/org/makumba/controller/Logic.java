@@ -42,6 +42,7 @@ import org.apache.commons.lang.StringUtils;
 import org.makumba.Attributes;
 import org.makumba.CompositeValidationException;
 import org.makumba.DataDefinition;
+import org.makumba.FieldDefinition;
 import org.makumba.FieldValueDiff;
 import org.makumba.InvalidValueException;
 import org.makumba.LogicException;
@@ -434,13 +435,14 @@ public class Logic {
         nextFunction: for (QueryFragmentFunction f : ddp.getQueryFragmentFunctions(dd.getName()).getActorFunctions()) {
             MakumbaActorHashMap values = new MakumbaActorHashMap();
             DataDefinition params = f.getParameters();
-            if (match != null && match.getParameters().getFieldNames().size() > params.getFieldNames().size()) {
+            if (match != null
+                    && match.getParameters().getFieldDefinitions().size() > params.getFieldDefinitions().size()) {
                 continue; // don't look at this function if we already have a match with more parameters
             }
-            for (String para : params.getFieldNames()) {
+            for (FieldDefinition fd : params.getFieldDefinitions()) {
                 try {
                     // check if all the params defined in the function exist as parameter
-                    values.put(para, a.getAttribute(para));
+                    values.put(fd.getName(), a.getAttribute(fd.getName()));
                     // TODO: check if the value is assignable to the function parameter type
                 } catch (LogicException ae) {
                     continue nextFunction;
@@ -456,7 +458,7 @@ public class Logic {
                 throw new ProgrammerError("No fitting actor() function was found in " + type);
             } else {
                 // otherwise, if there is no fitting function, throw UnauthenticatedException to trigger login
-                // 
+                //
                 // FIXME: this is not totally correct, cause in the case of having an actor function defined
                 // and coming from the login page, but having a mismatch of the parameter names in the function with the
                 // inputs in the login form, we will still report UnauthenticatedException, even though we should throw
@@ -473,10 +475,10 @@ public class Logic {
         String separator = "";
 
         DataDefinition params = match.getParameters();
-        for (String para : params.getFieldNames()) {
+        for (FieldDefinition fd : params.getFieldDefinitions()) {
             funcCall.append(separator);
             separator = ", ";
-            funcCall.append(qap.getParameterSyntax()).append(para);
+            funcCall.append(qap.getParameterSyntax()).append(fd.getName());
         }
         funcCall.append(")");
         Transaction connection = dbcp.getConnectionTo(db);
@@ -546,8 +548,8 @@ public class Logic {
         Set<String> ret = new HashSet<String>();
         String att = actorPrefix(dd);
         ret.add(att);
-        for (String s : dd.getFieldNames()) {
-            ret.add(att + "_" + s);
+        for (FieldDefinition fd : dd.getFieldDefinitions()) {
+            ret.add(att + "_" + fd.getName());
         }
         for (QueryFragmentFunction g : ddp.getQueryFragmentFunctions(dd.getName()).getSessionFunctions()) {
             ret.add(att + "_" + g.getName());

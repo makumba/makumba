@@ -3,11 +3,12 @@ package org.makumba.providers.datadefinition.mdd;
 import java.util.HashMap;
 import java.util.Map;
 
-import antlr.collections.AST;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.QueryFragmentFunction;
 import org.makumba.providers.DataDefinitionProvider;
+
+import antlr.collections.AST;
 
 /**
  * AST node that collects information about a mdd function
@@ -49,8 +50,8 @@ public class FunctionNode extends MDDAST {
 
     public void addParameter(String paramName, FieldType type, String pointedType) {
         if (type == FieldType.PTR) {
-            if(mdd.getName().equals(pointedType)) {
-                deferredParameters.put(parameters.getFieldNames().size(), pointedType + "###" + paramName);
+            if (mdd.getName().equals(pointedType)) {
+                deferredParameters.put(parameters.getFieldDefinitions().size(), pointedType + "###" + paramName);
             } else {
                 addPointerParam(paramName, pointedType, parameters);
             }
@@ -71,9 +72,10 @@ public class FunctionNode extends MDDAST {
     }
 
     public void compileDeferred() {
-        DataDefinition newParams = DataDefinitionProvider.getInstance().getVirtualDataDefinition(mdd.getName() + "." + name);
-        for(int i = 0; i < parameters.getFieldNames().size() + deferredParameters.size(); i++) {
-            if(deferredParameters.containsKey(i)) {
+        DataDefinition newParams = DataDefinitionProvider.getInstance().getVirtualDataDefinition(
+            mdd.getName() + "." + name);
+        for (int i = 0; i < parameters.getFieldDefinitions().size() + deferredParameters.size(); i++) {
+            if (deferredParameters.containsKey(i)) {
                 String typeAndName = deferredParameters.get(i);
                 String pointedType = typeAndName.substring(0, typeAndName.indexOf("###"));
                 String paramName = typeAndName.substring(typeAndName.indexOf("###") + 3, typeAndName.length());

@@ -131,10 +131,16 @@ public class ReferenceChecker extends HttpServlet {
         TableManager parentTable = getSqlTable(ddParent);
         TableManager childTable = getSqlTable(ddChild);
 
-        String childField = "child." + childTable.getFieldDBName(fdChild.getName());
-        String childNameField = "child." + childTable.getFieldDBName(ddChild.getTitleFieldName());
-        String childPtr = "child." + childTable.getFieldDBName(fdChild.getDataDefinition().getIndexPointerFieldName());
-        String parentPtr = "parent." + parentTable.getFieldDBName(ddParent.getIndexPointerFieldName());
+        String childField = "child." + childTable.getDatabase().getFieldDBName(fdChild);
+        String childNameField = "child."
+                + childTable.getDatabase().getFieldDBName(ddChild.getFieldDefinition(ddChild.getTitleFieldName()));
+        String childPtr = "child."
+                + childTable.getDatabase().getFieldDBName(
+                    fdChild.getDataDefinition().getFieldDefinition(
+                        fdChild.getDataDefinition().getIndexPointerFieldName()));
+        String parentPtr = "parent."
+                + parentTable.getDatabase().getFieldDBName(
+                    ddParent.getFieldDefinition(ddParent.getIndexPointerFieldName()));
 
         String query = "SELECT ";
         if (countOnly) {
@@ -178,6 +184,7 @@ public class ReferenceChecker extends HttpServlet {
         w.println("</div>");
 
         Collections.sort(mdds, new Comparator<String>() {
+            @Override
             public int compare(String o1, String o2) {
                 return o2.compareTo(o1);
             }
@@ -239,7 +246,7 @@ public class ReferenceChecker extends HttpServlet {
                 for (FieldDefinition f : getUniqueFields(dd)) {
                     w.println("<li>");
                     w.println(new StringBuilder(f.getName()).append(": ").append(
-                        printUniqueKey(getSqlTable(dd).isIndexOk(f.getName()))));
+                        printUniqueKey(getSqlTable(dd).isIndexOk(f))));
                     w.println("</li>");
                 }
                 w.println("</ul>");
@@ -260,7 +267,7 @@ public class ReferenceChecker extends HttpServlet {
     }
 
     private void printForeignKey(PrintWriter w, DataDefinition dd, FieldDefinition f) {
-        if (getSqlTable(dd).hasForeignKey(f.getName())) {
+        if (getSqlTable(dd).hasForeignKey(f)) {
             w.println("<span style=\"font-weight: bold; color:green\">[Valid foreign key]</span>");
         } else {
             w.println("<span style=\"font-weight: bold; color:red\">[NO foreign key!]</span>");
@@ -281,8 +288,7 @@ public class ReferenceChecker extends HttpServlet {
 
     private ArrayList<FieldDefinition> getReferenceFields(DataDefinition dd) {
         ArrayList<FieldDefinition> l = new ArrayList<FieldDefinition>();
-        for (String fieldDefinitionName : dd.getFieldNames()) {
-            FieldDefinition fd = dd.getFieldDefinition(fieldDefinitionName);
+        for (FieldDefinition fd : dd.getFieldDefinitions()) {
             if (fd.isPointer() || fd.isExternalSet() || fd.isComplexSet()) {
                 l.add(fd);
             }
@@ -292,8 +298,7 @@ public class ReferenceChecker extends HttpServlet {
 
     private ArrayList<FieldDefinition> getUniqueFields(DataDefinition dd) {
         ArrayList<FieldDefinition> l = new ArrayList<FieldDefinition>();
-        for (String fieldDefinitionName : dd.getFieldNames()) {
-            FieldDefinition fd = dd.getFieldDefinition(fieldDefinitionName);
+        for (FieldDefinition fd : dd.getFieldDefinitions()) {
             if (fd.isUnique() && !fd.isIndexPointerField()) {
                 l.add(fd);
             }

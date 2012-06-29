@@ -39,11 +39,11 @@ import org.apache.commons.lang.StringUtils;
 import org.makumba.CompositeValidationException;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
+import org.makumba.FieldDefinition.FieldErrorMessageType;
 import org.makumba.InvalidValueException;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.ValidationRule;
-import org.makumba.FieldDefinition.FieldErrorMessageType;
 import org.makumba.commons.DbConnectionProvider;
 import org.makumba.commons.attributes.HttpParameters;
 import org.makumba.commons.attributes.RequestAttributes;
@@ -77,16 +77,16 @@ public class RecordEditor extends RecordFormatter {
             Object formIdentifier) {
         super(ri, h, isSearchForm, formIdentifier);
         this.database = database;
-        db = new String[ri.getFieldNames().size()];
+        db = new String[ri.getFieldDefinitions().size()];
 
         @SuppressWarnings("unchecked")
-        Map<String, String>[] maps = new Map[ri.getFieldNames().size()];
+        Map<String, String>[] maps = new Map[ri.getFieldDefinitions().size()];
         query = maps;
     }
 
     public ArrayList<InvalidValueException> getUnassignedExceptions(CompositeValidationException e,
             ArrayList<InvalidValueException> unassignedExceptions, String suffix) {
-        for (int i = 0; i < dd.getFieldNames().size(); i++) {
+        for (int i = 0; i < dd.getFieldDefinitions().size(); i++) {
             // FIXME: validation definitions that span multiple fields (compare, ..) or multi-field uniqueness
             // definitions are only added to one field. If that field is not in the form, the exception can't be
             // annotated next to the form field. However, the secondary field might be present in the form, then it
@@ -114,7 +114,7 @@ public class RecordEditor extends RecordFormatter {
         // will collect all exceptions from the field validity checks
         Vector<InvalidValueException> exceptions = new Vector<InvalidValueException>();
 
-        for (int i = 0; i < dd.getFieldNames().size(); i++) {
+        for (int i = 0; i < dd.getFieldDefinitions().size(); i++) {
             String inputName = FieldEditor.getInputName(this, i, suffix);
             if (inputName == null) {
                 continue;
@@ -168,7 +168,7 @@ public class RecordEditor extends RecordFormatter {
 
         // we validate all fields in two passes - first we validate data type integrity, i.e. we let makumba check if
         // the declared types in the MDD match with what we have in the form
-        for (int i = 0; i < dd.getFieldNames().size(); i++) {
+        for (int i = 0; i < dd.getFieldDefinitions().size(); i++) {
             FieldEditor fe = (FieldEditor) formatterArray[i];
             String inputName = FieldEditor.getInputName(this, i, suffix);
             if (inputName == null) {
@@ -205,10 +205,11 @@ public class RecordEditor extends RecordFormatter {
 
                     throw new InvalidValueException(inputName, error);
                 }
-                // special handling for not-empty sets 
-                if (fd.isSetType() && fd.isNotEmpty() ) {
+                // special handling for not-empty sets
+                if (fd.isSetType() && fd.isNotEmpty()) {
                     Vector values = (Vector) o;
-                    // if the set input is present, but no option is selected, we get an empty vector instead of a null constant
+                    // if the set input is present, but no option is selected, we get an empty vector instead of a null
+                    // constant
                     if (values == null || values == Pointer.NullSet || values.size() == 0) {
                         String error = fd.getErrorMessage(FieldErrorMessageType.NOT_EMPTY);
                         if (error == null) {
@@ -354,15 +355,18 @@ public class RecordEditor extends RecordFormatter {
     }
 
     public void config(Dictionary<String, Object> formatParams) {
-        for (int i = 0; i < dd.getFieldNames().size(); i++) {
+        for (int i = 0; i < dd.getFieldDefinitions().size(); i++) {
             ((FieldEditor) formatterArray[i]).onStartup(this, i, formatParams);
         }
     }
 
     @Override
     public void initFormatters() {
-        formatterArray = new FieldFormatter[dd.getFieldNames().size()];
-        for (int i = 0; i < dd.getFieldNames().size(); i++) {
+        if (dd.getFieldDefinitions() == null) {
+            System.out.println(dd);
+        }
+        formatterArray = new FieldFormatter[dd.getFieldDefinitions().size()];
+        for (int i = 0; i < dd.getFieldDefinitions().size(); i++) {
             FieldDefinition fd = dd.getFieldDefinition(i);
             if (fd.isFileType()) {
                 formatterArray[i] = binaryEditor.getInstance();

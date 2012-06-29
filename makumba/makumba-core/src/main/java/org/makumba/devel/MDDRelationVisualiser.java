@@ -123,7 +123,7 @@ public class MDDRelationVisualiser {
             System.err.println("Error loading graph. Exiting...");
             System.exit(1);
         }
-        
+
         int minEdges = 3;
 
         for (int i = graph.getNodeCount() - 1; i >= 0; i--) {
@@ -205,9 +205,8 @@ public class MDDRelationVisualiser {
     private static void processMDD(Element root, DataDefinition dd) {
         System.out.println(dd);
         addNode(root, dd.getName());
-        final Vector<String> fieldNames = dd.getFieldNames();
-        for (String name : fieldNames) {
-            FieldDefinition fd = dd.getFieldDefinition(name);
+
+        for (FieldDefinition fd : dd.getFieldDefinitions()) {
             if (fd.isPointer()) {
                 final String name2 = fd.getPointedType().getName();
                 addEdge(root, dd.getName(), name2, 9);
