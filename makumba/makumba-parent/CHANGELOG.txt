@@ -19,6 +19,19 @@ manu: auto-complete for mak:input (char and ptr)
 <!-- ============================================================================= -->
 <!-- ====================== NOT-TESTED HEAD RELEASES ============================= -->
 
+0.9.7 28 june 2012
+INTERNAL CHANGES
+cristi: working with FieldDefinitions rather than field names, optimized the often-invoked getFieldDefinition()
+cristi: optimized query parameter passing without building a DataDefinition
+
+0.9.6 june 2012
+INTERNAL CHANGES
+cristi: reduced cache sizes, as well as the sizes of objects in caches
+FIXES
+cristi: fixed a bug (engine= innodb) so makumba works with recent mysql versions 
+NEW FEATURES
+cristi (spring 2011) execute MQL queries over Hibernate, most TableTest tests pass 
+
 0.9.5.1 6 Apr 2011
 FIXES
 rudi: fixing replace MQGL function (takes now correctly three arguments)
