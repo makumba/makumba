@@ -23,8 +23,13 @@
 
 package org.makumba.db.makumba.sql;
 
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Properties;
+
+import org.makumba.FieldDefinition;
+import org.makumba.Text;
 
 /** the database adapter for PostgreSQL */
 public class PgsqlDatabase extends org.makumba.db.makumba.sql.Database {
@@ -51,4 +56,40 @@ public class PgsqlDatabase extends org.makumba.db.makumba.sql.Database {
     // protected Class getTableClass()
     // { return org.makumba.db.sql.pgsql.RecordManager.class; }
 
+    // Moved from pgsql.textManager
+    @Override
+    protected int getSQLType(FieldDefinition fd) {
+        switch (fd.getIntegerType()) {
+            case FieldDefinition._text:
+                return Types.VARCHAR;
+            default:
+                return super.getSQLType(fd);
+        }
+    }
+
+    // Moved from pgsql.textManager
+    @Override
+    public void setArgument(FieldDefinition fd, PreparedStatement ps, int n, Object o) throws SQLException {
+        switch (fd.getIntegerType()) {
+            case FieldDefinition._text:
+                Text t = Text.getText(o);
+                ps.setString(n, t.getString());
+                break;
+            default:
+                super.setArgument(fd, ps, n, o);
+        }
+    }
+
+    // Moved from pgsql.textManager
+    /** returns Postgres TEXT */
+    @Override
+    protected String getFieldDBType(FieldDefinition fd) {
+        switch (fd.getIntegerType()) {
+            case FieldDefinition._text:
+                return "TEXT";
+            default:
+                return super.getFieldDBType(fd);
+        }
+
+    }
 }

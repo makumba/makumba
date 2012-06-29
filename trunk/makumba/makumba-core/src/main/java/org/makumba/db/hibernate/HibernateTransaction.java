@@ -32,7 +32,7 @@ import org.makumba.commons.NullNameResolver;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.StacktraceUtil;
 import org.makumba.db.NativeQuery;
-import org.makumba.db.NativeQuery.Parameters;
+import org.makumba.db.NativeQuery.ParameterHandler;
 import org.makumba.db.TransactionImplementation;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
@@ -286,7 +286,6 @@ public class HibernateTransaction extends TransactionImplementation {
         // QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer("oql");
 
         Map<String, Object> argsMap = paramsToMap(args);
-        Parameters nap = nat.makeActualParameters(argsMap);
 
         // analyze the query with MQL!
         // MqlQueryAnalysis analyzer = (MqlQueryAnalysis) qap.getQueryAnalysis(query);
@@ -311,7 +310,7 @@ public class HibernateTransaction extends TransactionImplementation {
             q.setMaxResults(limit);
         }
 
-        setOrderedParameters(nap, q);
+        setOrderedParameters(nat, q, argsMap);
 
         Vector<Dictionary<String, Object>> results = null;
         try {
@@ -334,14 +333,7 @@ public class HibernateTransaction extends TransactionImplementation {
      * @return
      */
     private Vector<Dictionary<String, Object>> getConvertedQueryResult(NativeQuery nat, List<?> list) {
-        DataDefinition dataDef = nat.getProjectionType();
         Vector<Dictionary<String, Object>> results = new Vector<Dictionary<String, Object>>(list.size());
-
-        String[] projections = dataDef.getFieldNames().toArray(new String[dataDef.getFieldNames().size()]);
-        Dictionary<String, Integer> keyIndex = new java.util.Hashtable<String, Integer>(projections.length);
-        for (int i = 0; i < projections.length; i++) {
-            keyIndex.put(projections[i], new Integer(i));
-        }
 
         int i = 1;
         for (Iterator<?> iter = list.iterator(); iter.hasNext(); i++) {
@@ -356,7 +348,7 @@ public class HibernateTransaction extends TransactionImplementation {
             // process each field's result
             for (int j = 0; j < resultFields.length; j++) { //
                 if (resultFields[j] != null) { // we add to the dictionary only fields with values in the DB
-                    FieldDefinition fd = dataDef.getFieldDefinition(j);
+                    FieldDefinition fd = nat.getProjectionType().getFieldDefinition(j);
                     if (fd.getType().startsWith("ptr")) {
                         // we have a pointer
                         String ddName = fd.getPointedType().getName();
@@ -380,29 +372,27 @@ public class HibernateTransaction extends TransactionImplementation {
                     }
                 }
             }
-            Dictionary<String, Object> dic = new ArrayMap(keyIndex, resultFields);
+            Dictionary<String, Object> dic = new ArrayMap(nat.getKeyIndex(), resultFields);
             results.add(dic);
         }
         return results;
     }
 
-    private void setOrderedParameters(Parameters nap, org.hibernate.Query q) {
+    private void setOrderedParameters(NativeQuery nat, final org.hibernate.Query q, Map<String, Object> argsMap) {
         // Object[] argsArray = treatParam(parameterValues);
 
-        for (int i = 0; i < nap.getParameterCount(); i++) {
-
-            Object paramValue = nap.getParamValue(i);
-
-            FieldDefinition paramDef = nap.getParameterTypes().getFieldDefinition(i);
-
-            try {
-                // TODO: not sure how tested this is
-                paramValue = paramDef.checkValue(paramValue);
-                assignParameter(i, paramValue, paramDef, q);
-            } catch (InvalidValueException e) {
-                q.setParameter(i, null);
+        nat.assignParameters(new ParameterHandler() {
+            @Override
+            public void handle(int i, FieldDefinition paramDef, Object paramValue) {
+                try {
+                    assignParameter(i, paramValue, paramDef, q);
+                } catch (InvalidValueException e) {
+                    q.setParameter(i, null);
+                }
             }
-        }
+
+        }, argsMap);
+
     }
 
     private void setNamedParameters(Map<?, ?> args, DataDefinition paramsDef, org.hibernate.Query q) {

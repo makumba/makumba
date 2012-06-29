@@ -26,6 +26,8 @@ package org.makumba.db.makumba.sql;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import org.makumba.FieldDefinition;
+
 /**
  * The msql particularities of the database
  */
@@ -53,9 +55,28 @@ public class MsqlDatabase extends org.makumba.db.makumba.sql.Database {
         System.out.println(e);
     }
 
-    // TODO now in sqlEngines.properties -->OK?
-    // /** returns org.makumba.db.sql.msql.RecordManager */
-    // protected Class getTableClass()
-    // { return org.makumba.db.sql.msql.RecordManager.class; }
+    // moved from msql.textManager
+    /** msql needs an 'approximative size' for text fields. */
+    @Override
+    public String inCreate(FieldDefinition fd) {
+        switch (fd.getIntegerType()) {
+            case FieldDefinition._text:
+                return super.inCreate(fd) + "(255)";
+            default:
+                return super.inCreate(fd);
+        }
+    }
+
+    // Moved from msql.textManager
+    /** what is the database level type of this field? */
+    @Override
+    protected String getFieldDBType(FieldDefinition fd) {
+        switch (fd.getIntegerType()) {
+            case FieldDefinition._text:
+                return "TEXT";
+            default:
+                return super.getFieldDBType(fd);
+        }
+    }
 
 }

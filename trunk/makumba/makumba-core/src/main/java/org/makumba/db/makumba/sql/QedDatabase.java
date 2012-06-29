@@ -24,7 +24,10 @@
 package org.makumba.db.makumba.sql;
 
 import java.sql.SQLException;
+import java.util.Hashtable;
 import java.util.Properties;
+
+import org.makumba.FieldDefinition;
 
 /** the database adapter for PostgreSQL */
 public class QedDatabase extends org.makumba.db.makumba.sql.Database {
@@ -63,4 +66,39 @@ public class QedDatabase extends org.makumba.db.makumba.sql.Database {
         return qedUrl + p.getProperty("#database");
     }
 
+    // moved from qed.textManager
+    @Override
+    protected String getFieldDBType(FieldDefinition fd) {
+        switch (fd.getIntegerType()) {
+            case FieldDefinition._text:
+                return "TEXT";
+            case FieldDefinition._binary:
+                return "BLOB";
+            default:
+                return super.getFieldDBType(fd);
+        }
+    }
+
+    // moved from qed.textManager
+    @Override
+    protected boolean unmodified(FieldDefinition fd, int type, int size,
+            java.util.Vector<Hashtable<String, Object>> columns, int index) throws java.sql.SQLException {
+        switch (fd.getIntegerType()) {
+            case FieldDefinition._binary:
+            case FieldDefinition._text:
+                System.out.println(type);
+                return super.unmodified(fd, type, size, columns, index) || type == java.sql.Types.BLOB;
+            case FieldDefinition._char:
+            case FieldDefinition._charEnum:
+                return super.unmodified(fd, type, size, columns, index) || type == java.sql.Types.VARCHAR;
+            default:
+                return super.unmodified(fd, type, size, columns, index);
+        }
+    }
+
+    // moved from qed.charManager
+    /** returns char */
+    protected String get_char_DBType() {
+        return "VARCHAR";
+    }
 }

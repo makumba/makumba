@@ -208,7 +208,8 @@ public class SQLUpdate implements Update {
         PreparedStatement ps = ((SQLDBConnection) dbc).getPreparedStatement(comm);
 
         try {
-            ParameterAssigner.assignParameters(dbc.getHostDatabase(), nat.makeActualParameters(args), ps, args);
+
+            nat.assignParameters(((Database) dbc.getHostDatabase()).makeParameterHandler(ps, dbc, comm), args);
 
             // org.makumba.db.sql.Database db=(org.makumba.db.sql.Database)dbc.getHostDatabase();
 
@@ -236,8 +237,6 @@ public class SQLUpdate implements Update {
             java.util.logging.Logger.getLogger("org.makumba.db.update.performance").fine(
                 "" + diff + " ms " + debugString);
             return rez;
-        } catch (SQLException e) {
-            throw new org.makumba.DBError(e);
         } finally {
             try {
                 ps.close();

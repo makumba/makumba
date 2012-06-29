@@ -22,9 +22,9 @@
 /////////////////////////////////////
 package org.makumba.db;
 
-import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -40,7 +40,6 @@ import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.commons.ParamInfo;
 import org.makumba.commons.TextList;
-import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryParameters;
 import org.makumba.providers.QueryProvider;
@@ -75,6 +74,8 @@ public class NativeQuery {
 
     private Map<String, Object> constantValues;
 
+    Dictionary<String, Integer> keyIndex;
+
     public NativeQuery(MqlQueryAnalysis qAna, String lang, String insertIn, NameResolver nr) {
         this.queryParameters = qAna.getQueryParameters();
         text = qAna.getText(lang.equals("hql") ? new MqlHqlGenerator() : new MqlSqlGenerator()).resolve(nr);
@@ -84,14 +85,24 @@ public class NativeQuery {
         projectionType = qAna.getProjectionType();
         constantValues = qAna.getConstantValues();
 
-    }
+        keyIndex = new Hashtable<String, Integer>();
 
-    public Parameters makeActualParameters(Map<String, Object> argsMap) {
-        return new Parameters(queryParameters, argsMap, oql);
+        int i = 0;
+        for (FieldDefinition fi : getProjectionType().getFieldDefinitions()) {
+            if (!fi.getType().startsWith("set")) {
+                keyIndex.put(fi.getName(), new Integer(i));
+            }
+            i++;
+        }
+
     }
 
     public Map<String, Object> getConstantValues() {
         return constantValues;
+    }
+
+    public Dictionary<String, Integer> getKeyIndex() {
+        return keyIndex;
     }
 
     /**
@@ -175,104 +186,81 @@ public class NativeQuery {
 
     });
 
-    /**
-     * Parameters of a NativeQuery. This object is not cached, but it is constructed at every query invocation,
-     * depending on parameter cardinality. It is easy to build, just one iteration through all query parameters, which
-     * multiplies the type for multi-value params and copies params to an array. Also the value types are checked.
-     * 
-     * @author cristi
-     */
-    static public class Parameters {
+    public static interface ParameterHandler {
+        public void handle(int index, FieldDefinition type, Object value);
+    }
 
-        private DataDefinition expandedParamInfo = null;
-
-        private ArrayList<Object> linearParams = new ArrayList<Object>();
-
-        public Object getParamValue(int i) {
-            return linearParams.get(i);
-        }
-
-        public int getParameterCount() {
-            return linearParams.size();
-        }
-
-        public DataDefinition getParameterTypes() {
-            return expandedParamInfo;
-        }
-
-        private InvalidValueException checkValue(FieldDefinition fd, Object o) {
-            try {
-                if (o == null) {
-                    linearParams.add(fd.getNull());
-                    return new InvalidValueException("should not be null");
-                }
-                o = fd.checkValue(o);
-                linearParams.add(o);
-                return null;
-            } catch (InvalidValueException ivex) {
-                linearParams.add(fd.getNull()); // or a dummy value for that type
-                return ivex;
+    private InvalidValueException checkValue(ParameterHandler h, int index, FieldDefinition fd, Object o) {
+        try {
+            if (o == null) {
+                h.handle(index, fd, fd.getNull());
+                return new InvalidValueException("should not be null");
             }
+            o = fd.checkValue(o);
+            h.handle(index, fd, o);
+            return null;
+        } catch (InvalidValueException ivex) {
+            h.handle(index, fd, fd.getNull());
+            ; // or a dummy value for that type
+            return ivex;
+        }
+    }
+
+    /** Iterates through all parameters, checks their value and assigns them to a given ParameterHandler */
+    public int assignParameters(ParameterHandler handler, Map<String, Object> argsMap) throws ProgrammerError {
+        if (argsMap == null) {
+            throw new MakumbaError("Empty arguments provided");
         }
 
-        Parameters(QueryParameters queryParameters, Map<String, Object> argsMap, String oql) throws ProgrammerError {
-            if (argsMap == null) {
-                throw new MakumbaError("Empty arguments provided");
+        int expandedIndex = 0;
+        int paramIndex = 0;
+        Map<String, Exception> errors = new HashMap<String, Exception>();
+        Map<String, Integer> correct = new HashMap<String, Integer>();
+
+        for (String nm : queryParameters.getParameterOrder()) {
+            InvalidValueException ive = null;
+
+            Object val = argsMap.get(nm);
+            if (val == null) {
+                throw new ProgrammerError("The parameter '" + nm + "' should not be null");
             }
-            expandedParamInfo = DataDefinitionProvider.getInstance().getVirtualDataDefinition(
-                "Query parameters for " + oql);
+            String name = QueryAnalysisProvider.getActualParameterName(nm);
 
-            int paramIndex = 0;
-            Map<String, Exception> errors = new HashMap<String, Exception>();
-            Map<String, Integer> correct = new HashMap<String, Integer>();
-
-            for (String nm : queryParameters.getParameterOrder()) {
-                InvalidValueException ive = null;
-
-                Object val = argsMap.get(nm);
-                if (val == null) {
-                    throw new ProgrammerError("The parameter '" + nm + "' should not be null");
+            FieldDefinition fd = queryParameters.getParameterTypes().getFieldDefinition(paramIndex);
+            if (val instanceof List<?>) {
+                if (!queryParameters.isMultiValue(paramIndex)) {
+                    throw new InvalidValueException("parameter " + queryParameters.getParameterOrder().get(paramIndex)
+                            + " at position " + paramIndex + " " + " cannot have multiple values " + "\nquery: " + oql);
                 }
-                String name = QueryAnalysisProvider.getActualParameterName(nm);
+                List<?> v = (List<?>) val;
 
-                FieldDefinition fd = queryParameters.getParameterTypes().getFieldDefinition(paramIndex);
-                if (val instanceof List<?>) {
-                    if (!queryParameters.isMultiValue(paramIndex)) {
-                        throw new InvalidValueException("parameter "
-                                + queryParameters.getParameterOrder().get(paramIndex) + " at position " + paramIndex
-                                + " " + " cannot have multiple values " + "\nquery: " + oql);
-                    }
-                    List<?> v = (List<?>) val;
-
-                    // build expanded parameter types definition
-                    for (int k = 0; k < v.size(); k++) {
-                        expandedParamInfo.addField(DataDefinitionProvider.getInstance().makeFieldWithName(
-                            fd.getName() + "_" + k, fd));
-                        ive = checkValue(fd, v.get(k));
-                    }
-                } else {
-                    expandedParamInfo.addField(DataDefinitionProvider.getInstance().makeFieldWithName(fd.getName(), fd));
-                    ive = checkValue(fd, val);
+                // build expanded parameter types definition
+                for (int k = 0; k < v.size(); k++) {
+                    ive = checkValue(handler, expandedIndex, fd, v.get(k));
+                    expandedIndex++;
                 }
-                if (ive != null) {
-                    if (correct.get(name) == null) {
-                        errors.put(name, ive);
-                    }
-                } else {
-                    errors.remove(name);
-                    correct.put(name, paramIndex);
-                }
-                paramIndex++;
+            } else {
+                ive = checkValue(handler, expandedIndex, fd, val);
+                expandedIndex++;
             }
-            if (!errors.isEmpty()) {
-                String s = "";
-                for (String o : errors.keySet()) {
-                    s += "\nargument: " + o + "; exception:\n" + errors.get(o);
+            if (ive != null) {
+                if (correct.get(name) == null) {
+                    errors.put(name, ive);
                 }
-                throw new InvalidValueException(s);
+            } else {
+                errors.remove(name);
+                correct.put(name, paramIndex);
             }
+            paramIndex++;
         }
-
+        if (!errors.isEmpty()) {
+            String s = "";
+            for (String o : errors.keySet()) {
+                s += "\nargument: " + o + "; exception:\n" + errors.get(o);
+            }
+            throw new InvalidValueException(s);
+        }
+        return expandedIndex;
     }
 
 }

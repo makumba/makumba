@@ -26,6 +26,8 @@ package org.makumba.db.makumba.sql;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import org.makumba.FieldDefinition;
+
 /** the database adapter for PostgreSQL */
 public class CloudscapeDatabase extends org.makumba.db.makumba.sql.Database {
     /** simply calls super */
@@ -51,5 +53,14 @@ public class CloudscapeDatabase extends org.makumba.db.makumba.sql.Database {
     // /** returns org.makumba.db.sql.pgsql.RecordManager */
     // protected Class getTableClass()
     // { return org.makumba.db.sql.cloudscape.RecordManager.class; }
-
+    // moved from cloudscape.textManager
+    /** ask this field to write its contribution in a SQL CREATE statement */
+    @Override
+    public String inCreate(FieldDefinition fd) {
+        if (fd.getIntegerType() == FieldDefinition._text) {
+            return getFieldDBName(fd) + " " + getFieldDBType(fd) + "(1024000)";
+        } else {
+            return super.inCreate(fd);
+        }
+    }
 }
