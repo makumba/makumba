@@ -1,5 +1,16 @@
 package org.makumba.test;
 
+import java.io.IOException;
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Vector;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.httpclient.HttpStatus;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
@@ -10,16 +21,6 @@ import org.makumba.commons.NamedResources;
 import org.makumba.forms.responder.ResponderCacheManager;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Vector;
 
 /**
  * This servlet manages the state of the server when running client-side tests (JSP test suites). It mostly does two
@@ -48,13 +49,14 @@ public class TestInitServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-        if(req.getParameter("getResponderBaseDir") != null) {
+        if (req.getParameter("getResponderBaseDir") != null) {
 
             resp.getWriter().println(ResponderCacheManager.getInstance().getResponderBaseDirectory());
-             
+
         } else {
-             // clean all the bloody caches that hold state, which is toxic for consecutive runs
-            // in our case, some Pointer-s are not re-computed, which is perfectly fine in the real world where the data in
+            // clean all the bloody caches that hold state, which is toxic for consecutive runs
+            // in our case, some Pointer-s are not re-computed, which is perfectly fine in the real world where the data
+            // in
             // the db does not change. only here it does (the PK values change on auto-increment)
             NamedResources.cleanupStaticCaches();
 
@@ -77,8 +79,8 @@ public class TestInitServlet extends HttpServlet {
                 String maxQuery = null;
                 if (hql && key.contains("->")) {
                     int i = key.indexOf("->");
-                    maxQuery = "SELECT max(st.id) as maximum FROM " + key.substring(0, i) + " t, t." + key.substring(i + 2)
-                            + " st";
+                    maxQuery = "SELECT max(st.id) as maximum FROM " + key.substring(0, i) + " t, t."
+                            + key.substring(i + 2) + " st";
                 } else if (hql) {
                     maxQuery = "SELECT max(t.id) as maximum FROM " + key + " t";
                 } else {
@@ -110,7 +112,8 @@ public class TestInitServlet extends HttpServlet {
             }
             */
 
-            // hibernate-db sometimes asks for the key with pointer, sometimes with double underscore, so we give it both...
+            // hibernate-db sometimes asks for the key with pointer, sometimes with double underscore, so we give it
+            // both...
             Map<String, Long> initial = new HashMap<String, Long>();
             initial.put("test.Individual", 2l);
             initial.put("test.Language", 5l);
@@ -134,12 +137,10 @@ public class TestInitServlet extends HttpServlet {
 
         resp.setStatus(HttpStatus.SC_OK);
 
-
     }
 
     private void findRelated(DataDefinition type, Map<String, String> types) {
-        for (String field : type.getFieldNames()) {
-            FieldDefinition fieldDefinition = type.getFieldDefinition(field);
+        for (FieldDefinition fieldDefinition : type.getFieldDefinitions()) {
             if (fieldDefinition.isSetType() || fieldDefinition.isPointer()
                     || fieldDefinition.getType().equals(FieldDefinition._ptrOne)) {
                 DataDefinition pointedType = fieldDefinition.getPointedType();
