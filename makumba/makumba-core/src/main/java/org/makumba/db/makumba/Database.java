@@ -35,7 +35,6 @@ import org.makumba.ConfigurationError;
 import org.makumba.DBError;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
-import org.makumba.MakumbaError;
 import org.makumba.Pointer;
 import org.makumba.commons.NameResolver;
 import org.makumba.commons.NamedResourceFactory;
@@ -339,8 +338,7 @@ public abstract class Database {
         java.util.logging.Logger.getLogger("org.makumba.db.admin.delete").info(
             "deleted " + getTable(table).deleteFrom(c, sourceDB, ignoreDbsv) + " old objects from " + table);
 
-        for (String string : dd.getFieldNames()) {
-            FieldDefinition fi = dd.getFieldDefinition(string);
+        for (FieldDefinition fi : dd.getFieldDefinitions()) {
             if (fi.getType().startsWith("set") || fi.getType().equals("ptrOne")) {
                 deleteFrom(c, fi.getSubtable().getName(), sourceDB, ignoreDbsv);
             }
@@ -396,8 +394,7 @@ public abstract class Database {
         DataDefinition dd = ddp.getDataDefinition(table);
         getTable(table).copyFrom(c, c.getHostDatabase().getTable(table), sourceDB, ignoreDbsv);
 
-        for (String string : dd.getFieldNames()) {
-            FieldDefinition fi = dd.getFieldDefinition(string);
+        for (FieldDefinition fi : dd.getFieldDefinitions()) {
             if (fi.getType().startsWith("set") || fi.getType().equals("ptrOne")) {
                 copyFrom(c, fi.getSubtable().getName(), sourceDB, ignoreDbsv);
             }
@@ -434,8 +431,7 @@ public abstract class Database {
         getTable(table);
         DataDefinition dd = ddp.getDataDefinition(table);
 
-        for (String string : dd.getFieldNames()) {
-            FieldDefinition fi = dd.getFieldDefinition(string);
+        for (FieldDefinition fi : dd.getFieldDefinitions()) {
             if (fi.getType().startsWith("set") || fi.getType().equals("ptrOne")) {
                 openTable(fi.getSubtable().getName());
             }
@@ -446,8 +442,7 @@ public abstract class Database {
         getTable(table);
         DataDefinition dd = ddp.getDataDefinition(table);
 
-        for (String string : dd.getFieldNames()) {
-            FieldDefinition fi = dd.getFieldDefinition(string);
+        for (FieldDefinition fi : dd.getFieldDefinitions()) {
             if (fi.getType().startsWith("set") || fi.getType().equals("ptrOne")) {
                 openTable(fi.getSubtable().getName());
             }
@@ -477,17 +472,6 @@ public abstract class Database {
         } finally {
             c.close();
         }
-    }
-
-    public Table makePseudoTable(DataDefinition ri) {
-        Table ret = null;
-        try {
-            ret = (Table) tableclass.newInstance();
-        } catch (Throwable t) {
-            throw new MakumbaError(t);
-        }
-        configureTable(ret, ri);
-        return ret;
     }
 
     void configureTable(Table tbl, DataDefinition ri) {
@@ -526,14 +510,17 @@ public abstract class Database {
         return false;
     }
 
-    public String getTypeNameInSource(DataDefinition dd) {
-        String nameInSource = ((org.makumba.db.makumba.sql.TableManager) this.getTable(dd)).getDBName();
-        return nameInSource;
+    /** the database-level name of the field */
+    public String getFieldDBName(FieldDefinition fd) {
+        return getNameResolver().resolveFieldName(fd.getDataDefinition(), fd.getName());
+    }
+
+    public String getDBName(DataDefinition dd) {
+        return getNameResolver().resolveTypeName(dd.getName());
     }
 
     public String getFieldNameInSource(DataDefinition dd, String field) {
-        String nameInSource = ((org.makumba.db.makumba.sql.TableManager) this.getTable(dd)).getFieldDBName(field);
-        return nameInSource;
+        return getFieldDBName(dd.getFieldDefinition(field));
     }
 
     public Properties getConfigurationProperties() {

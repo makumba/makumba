@@ -1,23 +1,24 @@
 /*
- * Created on 18-apr-2005
+ * Created on Jun 28, 2012
  *
  * TODO To change the template for this generated file go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
 package org.makumba.db.makumba.sql;
 
+import java.util.Properties;
+
 import org.makumba.FieldDefinition;
 
-/**
- * @author Bart TODO To change the template for this generated type comment go to Window - Preferences - Java - Code
- *         Style - Code Templates
- */
-public class InformixTableManager extends org.makumba.db.makumba.sql.TableManager {
+public class InformixDatabase extends Database {
+    public InformixDatabase(Properties p) {
+        super(p);
+    }
 
     // moved from informix.dateTimeManager; .textManager and .timeStampManager
     @Override
-    protected String getFieldDBType(String fieldName) {
-        switch (getFieldDefinition(fieldName).getIntegerType()) {
+    protected String getFieldDBType(FieldDefinition fd) {
+        switch (fd.getIntegerType()) {
             case FieldDefinition._date:
                 return "DATETIME YEAR TO FRACTION";
             case FieldDefinition._text:
@@ -26,9 +27,8 @@ public class InformixTableManager extends org.makumba.db.makumba.sql.TableManage
             case FieldDefinition._dateModify:
                 return "DATETIME YEAR TO FRACTION";
             default:
-                return super.getFieldDBType(fieldName);
+                return super.getFieldDBType(fd);
         }
 
     }
-
 }

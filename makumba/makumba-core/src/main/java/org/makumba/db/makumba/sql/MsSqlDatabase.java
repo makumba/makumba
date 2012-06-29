@@ -99,4 +99,9 @@ public class MsSqlDatabase extends org.makumba.db.makumba.sql.Database {
     	}
     */
 
+    @Override
+    protected String getColumnAlterKeyword() {
+        return "ALTER COLUMN";
+    }
+
 }

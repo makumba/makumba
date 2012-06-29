@@ -62,16 +62,14 @@ public abstract class Table // extends RecordHandler
 
     protected void setDataDefinition(DataDefinition dd) {
         this.dd = dd; // needed as we don't extend FieldHandler anymore
-        for (String string : dd.getFieldNames()) {
-            String name = string;
-            FieldDefinition fd = dd.getFieldDefinition(name);
+        for (FieldDefinition fd : dd.getFieldDefinitions()) {
             if (fd.getType().equals("ptr") || fd.getType().equals("ptrRel")) {
                 // foreign
-                relatedTables.put(name, fd.getForeignTable());
+                relatedTables.put(fd.getName(), fd.getForeignTable());
             } else if (fd.getType().startsWith("ptr") && !fd.getType().equals("ptrIndex")
                     || fd.getType().startsWith("set")) {
                 // subtable
-                relatedTables.put(name, fd.getSubtable());
+                relatedTables.put(fd.getName(), fd.getSubtable());
             }
         }
     }
@@ -127,14 +125,13 @@ public abstract class Table // extends RecordHandler
             StringBuffer list = new StringBuffer();
             String comma = "";
 
-            for (String string : dd.getFieldNames()) {
-                String name = string;
-                if (dd.getFieldDefinition(name).getType().startsWith("set")) {
+            for (FieldDefinition fd : dd.getFieldDefinitions()) {
+                if (fd.getType().startsWith("set")) {
                     continue;
                 }
                 list.append(comma);
                 comma = ", ";
-                list.append("t.").append(name);
+                list.append("t.").append(fd.getName());
             }
             String indexName = getDataDefinition().getIndexPointerFieldName();
             String dbsvLimitation = "";
@@ -195,12 +192,11 @@ public abstract class Table // extends RecordHandler
         Hashtable<Object, String> nameKey = new Hashtable<Object, String>(23);
 
         int f = 0;
-        for (String string : dd.getFieldNames()) {
-            String name = string;
-            if (dd.getFieldDefinition(name).getType().startsWith("set")) {
+        for (FieldDefinition fd : dd.getFieldDefinitions()) {
+            if (fd.getType().startsWith("set")) {
                 continue;
             }
-            nameKey.put("col" + (f + 1), name);
+            nameKey.put("col" + (f + 1), fd.getName());
             f++;
         }
 

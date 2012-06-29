@@ -25,6 +25,8 @@ package org.makumba.db.makumba.sql;
 
 import java.util.Properties;
 
+import org.makumba.FieldDefinition;
+
 /** the database adapter for PostgreSQL */
 public class OracleDatabase extends org.makumba.db.makumba.sql.Database {
     /** simply calls super */
@@ -52,6 +54,19 @@ public class OracleDatabase extends org.makumba.db.makumba.sql.Database {
             host = host + ":1521"; // define default port (must be specified)
         }
         return "jdbc:oracle:thin:@//" + host + "/" + p.getProperty("#database");
+    }
+
+    // moved from oracle.charManager
+    /** returns char */
+    @Override
+    protected String get_char_FieldDBType(FieldDefinition fd) {
+        switch (fd.getIntegerType()) {
+            case FieldDefinition._char:
+            case FieldDefinition._charEnum:
+                return "VARCHAR2";
+            default:
+                return super.get_char_FieldDBType(fd);
+        }
     }
 
 }

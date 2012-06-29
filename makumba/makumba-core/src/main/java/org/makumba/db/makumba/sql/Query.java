@@ -33,11 +33,12 @@ import java.util.Vector;
 
 import org.makumba.DBError;
 import org.makumba.DataDefinition;
+import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.MakumbaError;
 import org.makumba.NoSuchFieldException;
+import org.makumba.commons.ArrayMap;
 import org.makumba.db.NativeQuery;
-import org.makumba.db.NativeQuery.Parameters;
 import org.makumba.db.makumba.DBConnection;
 import org.makumba.providers.DataDefinitionProvider;
 
@@ -65,10 +66,10 @@ public class Query implements org.makumba.db.makumba.Query {
     }
 
     @Override
-    public Vector<Dictionary<String, Object>> execute(Map<String, Object> args, DBConnection dbc, int offset, int limit) {
+    public Vector<Dictionary<String, Object>> execute(Map<String, Object> args, final DBConnection dbc, int offset,
+            int limit) {
 
-        Database db = (Database) dbc.getHostDatabase();
-        TableManager resultHandler = (TableManager) db.makePseudoTable(nat.getProjectionType());
+        final Database db = (Database) dbc.getHostDatabase();
 
         if (insertIn == null && nat.getConstantValues() != null) {
             // no need to send the query to the sql engine
@@ -80,12 +81,14 @@ public class Query implements org.makumba.db.makumba.Query {
             com += " " + db.getLimitSyntax(); // TODO: it might happen that it should be in other places than at the
                                               // end.
         }
-        PreparedStatement ps = ((SQLDBConnection) dbc).getPreparedStatement(com);
-
-        Parameters nap = nat.makeActualParameters(args);
+        final PreparedStatement ps = ((SQLDBConnection) dbc).getPreparedStatement(com);
+        final String comFinal = com;
+        // Parameters nap = nat.makeActualParameters(args);
 
         try {
-            int nParam = nap.getParameterCount();
+            int nParam = nat.assignParameters(db.makeParameterHandler(ps, dbc, com), args);
+
+            // int nParam = nap.getParameterCount();
             if (db.supportsLimitInQuery()) {
                 nParam += 2;
             }
@@ -95,17 +98,17 @@ public class Query implements org.makumba.db.makumba.Query {
                         + ps.getParameterMetaData().getParameterCount() + ": " + ps + " \n" + nParam + ": " + com);
             }
 
-            ParameterAssigner.assignParameters(db, nap, ps, args);
+            // ParameterAssigner.assignParameters(db, nap, ps, args);
 
             if (db.supportsLimitInQuery()) {
                 int limit1 = limit == -1 ? Integer.MAX_VALUE : limit;
 
                 if (db.isLimitOffsetFirst()) {
-                    ps.setInt(nap.getParameterCount() + 1, offset);
-                    ps.setInt(nap.getParameterCount() + 2, limit1);
+                    ps.setInt(nParam - 1, offset);
+                    ps.setInt(nParam, limit1);
                 } else {
-                    ps.setInt(nap.getParameterCount() + 1, limit1);
-                    ps.setInt(nap.getParameterCount() + 2, offset);
+                    ps.setInt(nParam + 1, limit1);
+                    ps.setInt(nParam + 2, offset);
                 }
             }
 
@@ -122,7 +125,7 @@ public class Query implements org.makumba.db.makumba.Query {
             long diff = new java.util.Date().getTime() - d.getTime();
             java.util.logging.Logger.getLogger("org.makumba.db.query.performance").fine(
                 "" + diff + " ms " + db.getWrappedStatementToString(ps));
-            return goThru(rs, resultHandler);
+            return goThru(db, rs);
         } catch (SQLException e) {
             throw new org.makumba.DBError(e);
         } catch (RuntimeException e) {
@@ -137,20 +140,37 @@ public class Query implements org.makumba.db.makumba.Query {
         }
     }
 
-    private Vector<Dictionary<String, Object>> goThru(ResultSet rs, TableManager rm) {
+    private Vector<Dictionary<String, Object>> goThru(Database db, ResultSet rs) {
         // TODO: if(!supportsLimitInQuery) { do slower limit & offset in java}
-        int size = rm.keyIndex.size();
+        int size = nat.getKeyIndex().size();
 
         Vector<Dictionary<String, Object>> ret = new Vector<Dictionary<String, Object>>(100, 100);
         Object[] dt;
         try {
             while (rs.next()) {
-                rm.fillResult(rs, dt = new Object[size]);
-                ret.addElement(new org.makumba.commons.ArrayMap(rm.keyIndex, dt));
+                dt = new Object[size];
+                int n = nat.getProjectionType().getFieldDefinitions().size();
+                for (int i = 0; i < n; i++) {
+                    FieldDefinition fd = nat.getProjectionType().getFieldDefinition(i);
+                    if (fd.getType().startsWith("set")) {
+                        continue;
+                    }
+                    try {
+                        dt[i] = db.getValue(fd, rs, i + 1);
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        java.util.logging.Logger.getLogger("org.makumba.db.query.execution").log(
+                            java.util.logging.Level.SEVERE,
+                            "" + i + " " + nat.getProjectionType().getName() + " " + nat.getKeyIndex() + " "
+                                    + fd.getName(), e);
+                        throw e;
+                    }
+                }
+                ret.addElement(new ArrayMap(nat.getKeyIndex(), dt));
             }
+
             rs.close();
         } catch (SQLException e) {
-            throw new org.makumba.DBError(e, rm.getDataDefinition().getName());
+            throw new org.makumba.DBError(e, nat.toString());
         }
         return ret;
     }
@@ -161,23 +181,20 @@ public class Query implements org.makumba.db.makumba.Query {
             throw new IllegalArgumentException("no table to insert in specified");
         }
         Database db = (Database) dbc.getHostDatabase();
-        TableManager resultHandler = (TableManager) db.makePseudoTable(nat.getProjectionType());
-        TableManager insertHandler;
 
         DataDefinition insert1 = DataDefinitionProvider.getInstance().getDataDefinition(insertIn);
-        for (String string : nat.getProjectionType().getFieldNames()) {
-            if (insert1.getFieldDefinition(string) == null) {
-                throw new NoSuchFieldException(insert1, string);
+        for (FieldDefinition fd : nat.getProjectionType().getFieldDefinitions()) {
+            if (insert1.getFieldDefinition(fd.getName()) == null) {
+                throw new NoSuchFieldException(insert1, fd.getName());
             }
         }
-        insertHandler = (TableManager) db.getTable(insert1);
 
         String comma = "";
         StringBuffer fieldList = new StringBuffer();
-        for (String string : resultHandler.getDataDefinition().getFieldNames()) {
+        for (FieldDefinition fd : nat.getProjectionType().getFieldDefinitions()) {
             fieldList.append(comma);
             comma = ",";
-            fieldList.append(insertHandler.getFieldDBName(string));
+            fieldList.append(db.getFieldDBName(fd));
         }
 
         SQLDBConnection sqldbc = (SQLDBConnection) dbc;
@@ -185,14 +202,18 @@ public class Query implements org.makumba.db.makumba.Query {
 
         String com = "INSERT INTO " + tablename + " ( " + fieldList + ") " + nat.getCommand(args);
         try {
-            resultHandler.create(sqldbc, tablename, true);
+            PreparedStatement create = sqldbc.getPreparedStatement(db.createStatement(tablename,
+                nat.getProjectionType()));
+            create.executeUpdate();
+            create.close();
             PreparedStatement ps = sqldbc.getPreparedStatement(com);
-            ParameterAssigner.assignParameters(db, nat.makeActualParameters(args), ps, args);
+
+            nat.assignParameters(db.makeParameterHandler(ps, dbc, com), args);
 
             int n = ps.executeUpdate();
             ps.close();
 
-            com = "INSERT INTO " + insertHandler.getDBName() + " (" + fieldList + ") SELECT " + fieldList + " FROM "
+            com = "INSERT INTO " + db.getDBName(insert1) + " (" + fieldList + ") SELECT " + fieldList + " FROM "
                     + tablename;
             ps = sqldbc.getPreparedStatement(com);
 
@@ -216,5 +237,4 @@ public class Query implements org.makumba.db.makumba.Query {
             }
         }
     }
-
 }
