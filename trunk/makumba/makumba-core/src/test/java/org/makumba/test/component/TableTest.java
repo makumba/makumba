@@ -37,6 +37,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.makumba.DataDefinition;
+import org.makumba.FieldDefinition;
 import org.makumba.FieldValueDiff;
 import org.makumba.MakumbaError;
 import org.makumba.Pointer;
@@ -135,15 +136,14 @@ public class TableTest extends TestCase {
             try {
                 db.executeQuery("SELECT t FROM test.validMdds." + v.elementAt(i) + " t", null);
 
-                Vector<String> fields = ddp.getDataDefinition("test.validMdds." + v.elementAt(i)).getFieldNames();
+                List<FieldDefinition> fields = ddp.getDataDefinition("test.validMdds." + v.elementAt(i)).getFieldDefinitions();
                 String what = "";
-                for (String string : fields) {
-                    String fname = string;
-                    String ftype = ddp.getDataDefinition("test.validMdds." + v.elementAt(i)).getFieldDefinition(fname).getDataType();
+                for (FieldDefinition fd : fields) {
+                    String ftype = ddp.getDataDefinition("test.validMdds." + v.elementAt(i)).getFieldDefinition(fd.getName()).getDataType();
                     // System.out.println(fname+": "+ftype);
                     if (ftype != null && !ftype.equals("null") && !ftype.startsWith("set")) {
                         // fields
-                        what = what + (what.length() > 0 ? ", " : "") + "t." + fname;
+                        what = what + (what.length() > 0 ? ", " : "") + "t." + fd.getName();
                     }
 
                 }

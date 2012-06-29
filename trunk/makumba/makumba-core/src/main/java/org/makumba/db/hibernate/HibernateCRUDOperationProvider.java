@@ -38,17 +38,16 @@ public class HibernateCRUDOperationProvider extends CRUDOperationProvider {
         DataDefinition dd = ddp.getDataDefinition(type);
 
         checkFieldNames(fieldsToCheck, dd);
-        for (String string : dd.getFieldNames()) {
-            String name = string;
-            if (fieldsToIgnore.get(name) == null) {
-                Object o = fieldsToCheck.get(name);
+        for (FieldDefinition fd : dd.getFieldDefinitions()) {
+            if (fieldsToIgnore.get(fd.getName()) == null) {
+                Object o = fieldsToCheck.get(fd.getName());
                 if (o != null) {
 
                     // TODO this does not check if we have the rights to copy
 
-                    dd.getFieldDefinition(name).checkInsert(fieldsToCheck);
+                    fd.checkInsert(fieldsToCheck);
 
-                    fieldsToCheck.put(name, dd.getFieldDefinition(name).checkValue(o));
+                    fieldsToCheck.put(fd.getName(), fd.checkValue(o));
                 }
             }
         }

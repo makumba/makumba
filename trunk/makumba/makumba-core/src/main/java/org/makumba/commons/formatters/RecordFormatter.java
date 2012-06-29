@@ -63,10 +63,11 @@ public class RecordFormatter implements Serializable {
         this.formIdentifier = formIdentifier;
         initFormatters();
 
-        expr = new String[dd.getFieldNames().size()];
+        expr = new String[dd.getFieldDefinitions().size()];
 
-        for (int i = 0; i < dd.getFieldNames().size(); i++) {
-            expr[i] = names.get(dd.getFieldDefinition(i).getName());
+        int i = 0;
+        for (FieldDefinition fd : dd.getFieldDefinitions()) {
+            expr[i++] = names.get(fd.getName());
         }
     }
 
@@ -80,9 +81,9 @@ public class RecordFormatter implements Serializable {
     }
 
     protected void initFormatters() {
-        formatterArray = new FieldFormatter[dd.getFieldNames().size()];
-        for (int i = 0; i < dd.getFieldNames().size(); i++) {
-            FieldDefinition fd = dd.getFieldDefinition(i);
+        formatterArray = new FieldFormatter[dd.getFieldDefinitions().size()];
+        int i = 0;
+        for (FieldDefinition fd : dd.getFieldDefinitions()) {
             switch (fd.getIntegerType()) {
                 case FieldDefinition._ptr:
                 case FieldDefinition._ptrRel:
@@ -103,6 +104,7 @@ public class RecordFormatter implements Serializable {
                 default:
                     formatterArray[i] = FieldFormatter.getInstance();
             }
+            i++;
         }
     }
 

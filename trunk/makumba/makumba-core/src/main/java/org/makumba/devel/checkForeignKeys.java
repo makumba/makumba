@@ -96,16 +96,14 @@ public class checkForeignKeys {
 
     private static void processDataDefinition(Database d, SQLDBConnection sqlConnection, DataDefinition dd,
             TableManager table) throws DBError {
-        for (String string : dd.getFieldNames()) {
-            FieldDefinition fi = dd.getFieldDefinition(string);
-            String fieldName = fi.getName();
-            String brief = dd.getName() + "#" + fieldName + " (" + fi.getDescription() + ")";
+        for (FieldDefinition fi : dd.getFieldDefinitions()) {
+            String brief = dd.getName() + "#" + fi.getName() + " (" + fi.getDescription() + ")";
             if (fi.getType().startsWith("set") || fi.getType().equals("ptrOne")) {
                 TableManager subTable = (TableManager) d.getTable(fi.getSubtable().getName());
                 processDataDefinition(d, sqlConnection, fi.getSubtable(), subTable);
             } else {
                 try {
-                    table.manageForeignKeys(fieldName, sqlConnection, brief);
+                    table.manageForeignKeys(fi, sqlConnection, brief);
                 } catch (Throwable t) {
                     System.out.println(t.getMessage());
                     t.printStackTrace();

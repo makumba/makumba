@@ -98,13 +98,8 @@ public class ObjectToRecord {
                 accountedImport.put(element, dummy);
             }
 
-            Enumeration<String> e = this.type.getFieldNames().elements();
-            for (int i = 0; i < 3; i++) {
-                // skipping default fields
-                e.nextElement();
-            }
-            for (; e.hasMoreElements();) {
-                String s = e.nextElement();
+            for (int i = 3; i < this.type.getFieldDefinitions().size(); i++) {
+                String s = this.type.getFieldDefinition(i).getName();
                 Field f = null;
                 try {
                     f = c.getField(s);

@@ -221,9 +221,9 @@ public class Pass1FunctionInliner {
 
             DataDefinition para = func.getParameters();
             AST exprList = current.getFirstChild().getNextSibling();
-            if (exprList.getNumberOfChildren() != para.getFieldNames().size()) {
+            if (exprList.getNumberOfChildren() != para.getFieldDefinitions().size()) {
                 throw new ProgrammerError("Wrong number of parameters for call to " + func
-                        + "\nRequired parameter number: " + para.getFieldNames().size() + "\nGiven parameters: "
+                        + "\nRequired parameter number: " + para.getFieldDefinitions().size() + "\nGiven parameters: "
                         + exprList.getNumberOfChildren() + "\nParameter values: " + view(exprList));
             }
 
@@ -232,8 +232,8 @@ public class Pass1FunctionInliner {
             final HashMap<String, AST> paramExpr = new HashMap<String, AST>();
             AST p = exprList.getFirstChild();
             getPath().push(exprList);
-            for (String s : para.getFieldNames()) {
-                paramExpr.put(s, inlineAST(p));
+            for (FieldDefinition paraf : para.getFieldDefinitions()) {
+                paramExpr.put(paraf.getName(), inlineAST(p));
                 p = p.getNextSibling();
             }
             getPath().pop();

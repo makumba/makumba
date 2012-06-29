@@ -55,6 +55,7 @@ public class DataDefinitionProvider {
     private static class SingletonHolder implements org.makumba.commons.SingletonHolder {
         private static DataDefinitionProvider singleton = new DataDefinitionProvider();
 
+        @Override
         public void release() {
             singleton = null;
         }
@@ -290,8 +291,6 @@ public class DataDefinitionProvider {
         }
         return mdds;
     }
-    
-
 
     private void fillMdds(int baselength, java.io.File dir, java.util.Vector<String> mdds) {
         if (dir.isDirectory()) {
@@ -546,9 +545,9 @@ public class DataDefinitionProvider {
         if (!simpleFieldGroupCache.containsKey(typeName)) {
             DataDefinition dd = getDataDefinition(typeName);
             LinkedHashMap<String, FieldMetadata> fields = new LinkedHashMap<String, FieldMetadata>();
-            for (String fieldName : dd.getFieldNames()) {
+            for (FieldDefinition fd : dd.getFieldDefinitions()) {
                 // TODO FieldMetaData construction optimization and caching
-                fields.put(fieldName, new FieldMetadataImpl(typeName, fieldName));
+                fields.put(fd.getName(), new FieldMetadataImpl(typeName, fd.getName()));
             }
             simpleFieldGroupCache.put(typeName, new FieldGroupImpl(fields));
         }
@@ -600,8 +599,8 @@ public class DataDefinitionProvider {
     public Vector<FieldDataDTO> getFieldDataDTOs(String type) {
         Vector<FieldDataDTO> fields = new Vector<FieldDataDTO>();
 
-        for (String field : getDataDefinition(type).getFieldNames()) {
-            FieldDefinitionImpl fd = (FieldDefinitionImpl) getDataDefinition(type).getFieldDefinition(field);
+        for (FieldDefinition fi : getDataDefinition(type).getFieldDefinitions()) {
+            FieldDefinitionImpl fd = (FieldDefinitionImpl) fi;
             FieldDataDTO f = new FieldDataDTO(fd);
             fields.add(f);
         }

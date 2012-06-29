@@ -202,16 +202,26 @@ public class MDDTypeConverter {
         TableManager subTable = (TableManager) parentTable.getRelatedTable(fieldName);
         String subTableName = subTable.getDBName();
         String parentTableName = parentTable.getDBName();
-        String parentIndexName = parentTable.getFieldDBName(mdd.getIndexPointerFieldName());
-        String subIndexName = subTable.getFieldDBName(fd.getSubtable().getIndexPointerFieldName());
+        String parentIndexName = parentTable.getDatabase().getFieldDBName(
+            mdd.getFieldDefinition(mdd.getIndexPointerFieldName()));
+        String subIndexName = subTable.getDatabase().getFieldDBName(
+            fd.getSubtable().getFieldDefinition(fd.getSubtable().getIndexPointerFieldName()));
 
         // step 4.1: compose the insert statement
         String sql = null;
         if (fd.getIntegerType() == FieldDefinition._intEnum) {
-            sql = "INSERT INTO " + subTableName + " (" + parentIndexName + ", " + subIndexName
-                    + ", TS_create_, TS_modify_" + ", " + subTable.getFieldDBName(DataDefinitionImpl.ENUM_FIELD_NAME)
-                    + ") SELECT " + parentIndexName + ", " + parentIndexName + ", TS_create_, TS_modify_, "
-                    + subIndexName + " FROM " + parentTableName + ";";
+            sql = "INSERT INTO "
+                    + subTableName
+                    + " ("
+                    + parentIndexName
+                    + ", "
+                    + subIndexName
+                    + ", TS_create_, TS_modify_"
+                    + ", "
+                    + subTable.getDatabase().getFieldDBName(
+                        subTable.getFieldDefinition(DataDefinitionImpl.ENUM_FIELD_NAME)) + ") SELECT "
+                    + parentIndexName + ", " + parentIndexName + ", TS_create_, TS_modify_, " + subIndexName + " FROM "
+                    + parentTableName + ";";
         } else if (fd.getIntegerType() == FieldDefinition._ptr) {
             sql = "INSERT INTO " + subTableName + " (" + parentIndexName + ", " + subIndexName
                     + ", TS_create_, TS_modify_" + ", " + fieldName + ") SELECT " + parentIndexName + ", "

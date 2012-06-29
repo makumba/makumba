@@ -131,9 +131,9 @@ public class MddToClass {
             String type = null;
             String name = null;
 
-            for (int i = 0; i < dd.getFieldNames().size(); i++) {
+            for (FieldDefinition fd : dd.getFieldDefinitions()) {
                 Object[] append = new Object[2];
-                FieldDefinition fd = dd.getFieldDefinition(i);
+
                 name = NameResolver.arrowToDoubleUnderscore(fd.getName());
                 switch (fd.getIntegerType()) {
                     case FieldDefinition._intEnum:

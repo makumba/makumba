@@ -4,9 +4,6 @@
 package org.makumba;
 
 import java.io.Serializable;
-import java.util.Iterator;
-import java.util.Vector;
-
 
 /**
  * This class represents a makumba query fragment function
@@ -82,21 +79,17 @@ public class QueryFragmentFunction implements Serializable {
     }
 
     public boolean isSessionFunction() {
-        return !isActorFunction() && getParameters().getFieldNames().size() == 0;
+        return !isActorFunction() && getParameters().getFieldDefinitions().size() == 0;
     }
 
     @Override
     public String toString() {
         String s = "";
-        Vector<String> fieldNames = getParameters().getFieldNames();
-        for (Iterator<String> iter = fieldNames.iterator(); iter.hasNext();) {
-            String name = iter.next();
-            s += getParameters().getFieldDefinition(name).getType() + " " + name;
-            if (iter.hasNext()) {
-                s += ", ";
-            }
+        String sep = "";
+        for (FieldDefinition fd : getParameters().getFieldDefinitions()) {
+            s += sep + fd.getType() + " " + fd.getName();
+            sep = ", ";
         }
-        s += "";
         return (org.apache.commons.lang.StringUtils.isNotBlank(sessionVariableName) ? sessionVariableName + "%" : "")
                 + getName() + "(" + s + ") { " + queryFragment.trim() + " } "
                 + (org.apache.commons.lang.StringUtils.isNotBlank(errorMessage) ? ":\"" + errorMessage + "\"" : "");

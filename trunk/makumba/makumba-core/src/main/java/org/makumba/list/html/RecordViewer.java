@@ -44,9 +44,9 @@ public class RecordViewer extends RecordFormatter {
         dd = q.getResultType();
         initFormatters();
 
-        expr = new String[dd.getFieldNames().size()];
+        expr = new String[dd.getFieldDefinitions().size()];
 
-        for (int i = 0; i < dd.getFieldNames().size(); i++) {
+        for (int i = 0; i < dd.getFieldDefinitions().size(); i++) {
             expr[i] = q.getProjectionAt(i);
         }
     }
@@ -70,8 +70,8 @@ public class RecordViewer extends RecordFormatter {
 
     @Override
     protected void initFormatters() {
-        formatterArray = new FieldFormatter[dd.getFieldNames().size()];
-        for (int i = 0; i < dd.getFieldNames().size(); i++) {
+        formatterArray = new FieldFormatter[dd.getFieldDefinitions().size()];
+        for (int i = 0; i < dd.getFieldDefinitions().size(); i++) {
             FieldDefinition fd = dd.getFieldDefinition(i);
             switch (fd.getIntegerType()) {
                 case FieldDefinition._char:

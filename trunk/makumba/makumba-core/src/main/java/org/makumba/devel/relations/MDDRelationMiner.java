@@ -3,7 +3,6 @@ package org.makumba.devel.relations;
 import java.io.File;
 import java.util.Dictionary;
 import java.util.Hashtable;
-import java.util.Vector;
 
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
@@ -47,10 +46,7 @@ public class MDDRelationMiner extends RelationMiner {
         try {
             DataDefinition dd = ddp.getDataDefinition(type);
 
-            Vector<String> fields = dd.getFieldNames();
-            for (String fieldName : fields) {
-                FieldDefinition fd = dd.getFieldDefinition(fieldName);
-
+            for (FieldDefinition fd : dd.getFieldDefinitions()) {
                 if (fd.getType().equals("ptr") || fd.getType().equals("set")) {
                     addMDD2MDDRelation(path, typeToPath(fd.getPointedType().getName()), fd.getName());
                 }

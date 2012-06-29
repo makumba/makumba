@@ -181,10 +181,9 @@ public abstract class CRUDOperationProvider {
 
         // we check if we can perform the update
         checkFieldNames(fieldsToCheck, dd);
-        for (String string : dd.getFieldNames()) {
-            String name = string;
-            if (fieldsToIgnore.get(name) == null) {
-                checkUpdate(dd, name, fieldsToCheck);
+        for (FieldDefinition fd : dd.getFieldDefinitions()) {
+            if (fieldsToIgnore.get(fd.getName()) == null) {
+                checkUpdate1(fd, fieldsToCheck);
             }
         }
         return dd;
@@ -192,21 +191,18 @@ public abstract class CRUDOperationProvider {
 
     public abstract int update1(Transaction t, Pointer p, DataDefinition typeDef, Dictionary<String, Object> dic);
 
-    private void checkUpdate(DataDefinition dd, String fieldName, Dictionary<String, Object> d) {
-        Object o = d.get(fieldName);
+    private void checkUpdate1(FieldDefinition fd, Dictionary<String, Object> d) {
+        Object o = d.get(fd.getName());
         if (o != null) {
-            switch (dd.getFieldDefinition(fieldName).getIntegerType()) {
+            switch (fd.getIntegerType()) {
                 case FieldDefinition._dateCreate:
-                    throw new org.makumba.InvalidValueException(dd.getFieldDefinition(fieldName),
-                            "you cannot update a creation date");
+                    throw new org.makumba.InvalidValueException(fd, "you cannot update a creation date");
                 case FieldDefinition._dateModify:
-                    throw new org.makumba.InvalidValueException(dd.getFieldDefinition(fieldName),
-                            "you cannot update a modification date");
+                    throw new org.makumba.InvalidValueException(fd, "you cannot update a modification date");
                 case FieldDefinition._ptrIndex:
-                    throw new org.makumba.InvalidValueException(dd.getFieldDefinition(fieldName),
-                            "you cannot update an index pointer");
+                    throw new org.makumba.InvalidValueException(fd, "you cannot update an index pointer");
                 default:
-                    checkUpdate(dd.getFieldDefinition(fieldName), d);
+                    checkUpdate(fd, d);
             }
         }
     }

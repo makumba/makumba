@@ -69,7 +69,6 @@ public class DataTypeListerServlet extends DataServlet {
             try {
                 String dataBaseName = t.getName();
                 writePageContentHeader(type, writer, dataBaseName, DeveloperTool.DATA_LISTER);
-                Vector<String> fields = dd.getFieldNames();
                 String titleField = request.getParameter("titleField");
                 if (titleField == null || titleField.trim().equals("")) {
                     titleField = dd.getTitleFieldName();
@@ -87,9 +86,9 @@ public class DataTypeListerServlet extends DataServlet {
 
                 writer.println("    <th>");
                 writer.println("      <select size=\"1\" name=\"titleField\">");
-                for (int i = 3; i < fields.size(); i++) {
+                for (int i = 3; i < dd.getFieldDefinitions().size(); i++) {
                     FieldDefinition fdAll = dd.getFieldDefinition(i);
-                    String e = fields.elementAt(i);
+                    String e = dd.getFieldDefinition(i).getName();
                     writer.print("          <option value=\"" + e + "\" ");
                     if (e.equals(titleField)) {
                         writer.print("selected");
@@ -101,9 +100,9 @@ public class DataTypeListerServlet extends DataServlet {
                 writer.println("    </th>");
                 writer.println("    <th>");
                 writer.println("      <select size=\"1\" name=\"otherField\">");
-                for (int i = 3; i < fields.size(); i++) {
+                for (int i = 3; i < dd.getFieldDefinitions().size(); i++) {
                     FieldDefinition fdAll = dd.getFieldDefinition(i);
-                    String e = fields.elementAt(i);
+                    String e = dd.getFieldDefinitions().get(i).getName();
                     writer.print("          <option value=\"" + e + "\" ");
                     if (e.equals(otherField)) {
                         writer.print("selected");
@@ -122,11 +121,12 @@ public class DataTypeListerServlet extends DataServlet {
                 writer.println("  </tr>");
 
                 String what = "";
-                for (int i = 3; i < fields.size(); i++) {
+                for (int i = 3; i < dd.getFieldDefinitions().size(); i++) {
                     if (i > 3) {
                         what = what + ", ";
                     }
-                    what = what + "obj." + fields.elementAt(i) + " AS " + fields.elementAt(i); // col\"+(i+1);
+                    what = what + "obj." + dd.getFieldDefinition(i).getName() + " AS "
+                            + dd.getFieldDefinition(i).getName(); // col\"+(i+1);
                 }
 
                 String query = "SELECT obj as ptr, obj." + titleField + " as title, obj." + otherField

@@ -108,15 +108,13 @@ public class ObjectImporter {
                 throw new MakumbaError(f);
             }
         }
-        for (String string : dd.getFieldNames()) {
-            String fieldName = string;
-            configureField(fieldName, markers);
+        for (FieldDefinition fd : dd.getFieldDefinitions()) {
+            configureField(fd.getName(), markers);
         }
         Vector<String> notMarked = new Vector<String>();
-        for (String string : dd.getFieldNames()) {
-            String fieldName = string;
-            if (!isMarked(fieldName) && !isIgnored(fieldName)) {
-                notMarked.addElement(fieldName);
+        for (FieldDefinition fd : dd.getFieldDefinitions()) {
+            if (!isMarked(fd.getName()) && !isIgnored(fd.getName())) {
+                notMarked.addElement(fd.getName());
             }
         }
         if (notMarked.size() > 0) {
@@ -129,9 +127,8 @@ public class ObjectImporter {
         }
 
         boolean hasErrors = false;
-        for (String string : dd.getFieldNames()) {
-            String fieldName = string;
-            if (configError != null && !isIgnored(fieldName)) {
+        for (FieldDefinition fd : dd.getFieldDefinitions()) {
+            if (configError != null && !isIgnored(fd.getName())) {
                 if (!hasErrors) {
                     hasErrors = true;
                     java.util.logging.Logger.getLogger("org.makumba.import").warning(
@@ -176,9 +173,8 @@ public class ObjectImporter {
 
         Hashtable<String, Object> ht = new Hashtable<String, Object>();
 
-        for (String string : dd.getFieldNames()) {
-            String fieldName = string;
-            this.importFieldTo(fieldName, ht, s, db, indexes);
+        for (FieldDefinition fd : dd.getFieldDefinitions()) {
+            this.importFieldTo(fd.getName(), ht, s, db, indexes);
         }
         return ht;
     }
