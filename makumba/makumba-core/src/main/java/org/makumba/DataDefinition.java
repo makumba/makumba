@@ -27,9 +27,9 @@ package org.makumba;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.List;
 
 import org.makumba.commons.StringUtils;
-
 
 /**
  * Information about a makumba data definition as obtained from an MDD file or the structure of an MQL query result.
@@ -46,7 +46,11 @@ public interface DataDefinition {
     public String getName();
 
     /** the names of the fields declared in this data definition, in the order of declaration */
+    @Deprecated
     public java.util.Vector<String> getFieldNames();
+
+    /** The FieldDefinitions in this data definition, as immutable list */
+    public List<FieldDefinition> getFieldDefinitions();
 
     /** the field with the respective name, null if such a field doesn't exist */
     public FieldDefinition getFieldDefinition(String name);
