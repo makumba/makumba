@@ -5,7 +5,7 @@
 
     <groupId>org.makumba</groupId>
     <artifactId>makumba</artifactId>
-    <version>0.9.6-SNAPSHOT</version>
+    <version>0.9.7-SNAPSHOT</version>
     <name>makumba core aggregator</name>
     <packaging>pom</packaging>
     <url>http://www.makumba.org</url>
@@ -169,7 +169,6 @@
                     </dependency>
                 </dependencies>
                 <configuration>
-                    <connection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/trunk/makumba/makumba</connection>
                     <allowTimestampedSnapshots>true</allowTimestampedSnapshots>
                     <checkModificationExcludeList>build.properties</checkModificationExcludeList>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
