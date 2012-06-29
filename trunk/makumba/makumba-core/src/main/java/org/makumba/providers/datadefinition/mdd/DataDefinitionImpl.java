@@ -1,10 +1,14 @@
 package org.makumba.providers.datadefinition.mdd;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.net.URL;
+import java.util.AbstractList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
@@ -78,6 +82,22 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
     SharedMddData sharedData;
 
     protected ListOrderedMap fields = new ListOrderedMap();
+
+    private transient List<FieldDefinition> flist = makeFieldList();
+
+    AbstractList<FieldDefinition> makeFieldList() {
+        return new AbstractList<FieldDefinition>() {
+            @Override
+            public FieldDefinition get(int index) {
+                return (FieldDefinition) fields.getValue(index);
+            }
+
+            @Override
+            public int size() {
+                return fields.size();
+            }
+        };
+    }
 
     class SharedMddData implements Serializable {
 
@@ -638,7 +658,12 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
         if (n < 0 || n >= fields.size()) {
             return null;
         }
-        return (FieldDefinition) fields.values().toArray()[n];
+        return (FieldDefinition) fields.getValue(n);
+    }
+
+    @Override
+    public List<FieldDefinition> getFieldDefinitions() {
+        return flist;
     }
 
     @Override
@@ -823,8 +848,8 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
 
         sb.append("getName() " + getName() + "\n");
         sb.append("getFieldNames()\n");
-        for (String n : getFieldNames()) {
-            sb.append(n + "\n");
+        for (FieldDefinition fd : getFieldDefinitions()) {
+            sb.append(fd.getName() + "\n");
         }
         sb.append("isTemporary() " + isTemporary() + "\n");
         sb.append("getTitleFieldName() " + getTitleFieldName() + "\n");
@@ -835,11 +860,16 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
         sb.append("getSetOwnerFieldName() " + getSetOwnerFieldName() + "\n");
         sb.append("lastModified() " + lastModified() + "\n");
         sb.append("getFieldDefinition()\n");
-        for (String n : getFieldNames()) {
-            sb.append(((FieldDefinitionImpl) getFieldDefinition(n)).getStructure() + "\n");
+        for (FieldDefinition fd : getFieldDefinitions()) {
+            sb.append(((FieldDefinitionImpl) fd).getStructure() + "\n");
         }
 
         return sb.toString();
 
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        flist = makeFieldList();
     }
 }
