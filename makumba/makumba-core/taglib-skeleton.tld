@@ -92,6 +92,13 @@
       <description>the default value for limit, if the $attribute in limit="$attribute" is not present.</description>
     </attribute>
 
+	<attribute>
+      <name>distinct</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>the list is distinct</description>
+    </attribute>
+   
     <attribute>
       <name>authorize</name>
       <required>false</required>
