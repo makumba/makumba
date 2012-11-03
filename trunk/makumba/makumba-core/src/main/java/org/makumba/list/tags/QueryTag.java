@@ -65,7 +65,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
     private static final long serialVersionUID = 1L;
 
-    String[] queryProps = new String[6];
+    String[] queryProps = new String[7];
 
     String separator = "";
 
@@ -117,6 +117,10 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
     public void setGroupBy(String s) {
         queryProps[ComposedQuery.GROUPBY] = s;
+    }
+
+    public void setDistinct(String s) {
+        queryProps[ComposedQuery.DISTINCT] = s;
     }
 
     public void setSeparator(String s) {

@@ -434,7 +434,7 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
 
         int i = 0;
         for (AST a = select.getFirstChild(); a != null; a = a.getNextSibling()) {
-            if (a.getType() == ALIAS_REF) {
+            if (a.getType() == ALIAS_REF || a.getType() == DISTINCT) {
                 continue;
             }
             String name = "col" + (i + 1);

@@ -118,6 +118,9 @@ public class ComposedQuery implements Serializable {
     /** Standard index for the STATIC_CONDITION query section */
     public static final int STATIC_WHERE = 5;
 
+    /** Standard index for DISTINCT flag */
+    public static final int DISTINCT = 6;
+
     private static final List<AuthorizationInfo> EMPTY_AUTH = new ArrayList<AuthorizationInfo>();
 
     /** Section texts, encoded with the standard indexes */
@@ -244,23 +247,29 @@ public class ComposedQuery implements Serializable {
             checkProjectionInteger(e.next());
         }
 
-        for (StringTokenizer st = new StringTokenizer(sections[FROM] == null ? "" : sections[FROM], ","); st.hasMoreTokens();) {
-            String label = st.nextToken().trim();
-            int j = label.lastIndexOf(" ");
-            if (j == -1) {
-                throw new RuntimeException("invalid FROM");
+        if (!isDistinct()) {
+            for (StringTokenizer st = new StringTokenizer(sections[FROM] == null ? "" : sections[FROM], ","); st.hasMoreTokens();) {
+                String label = st.nextToken().trim();
+                int j = label.lastIndexOf(" ");
+                if (j == -1) {
+                    throw new RuntimeException("invalid FROM");
+                }
+                label = label.substring(j + 1).trim();
+
+                label = qep.getPrimaryKeyNotation(label);
+
+                keysetLabels.add(label);
+                keyset.add(basicProjections.addProjection(label));
             }
-            label = label.substring(j + 1).trim();
-
-            label = qep.getPrimaryKeyNotation(label);
-
-            keysetLabels.add(label);
-
-            keyset.add(basicProjections.addProjection(label));
-        }
-
-        while (e.hasNext()) {
-            checkProjectionInteger(e.next());
+            while (e.hasNext()) {
+                checkProjectionInteger(e.next());
+            }
+        } else {
+            while (e.hasNext()) {
+                String expr = e.next();
+                keysetLabels.add(expr);
+                keyset.add(basicProjections.addProjection(expr));
+            }
         }
     }
 
@@ -287,6 +296,10 @@ public class ComposedQuery implements Serializable {
 
         StringBuffer sb = new StringBuffer();
         sb.append("SELECT ");
+
+        if (isDistinct()) {
+            sb.append("DISTINCT ");
+        }
         String sep = "";
 
         int i = 0;
@@ -342,6 +355,10 @@ public class ComposedQuery implements Serializable {
                     d.put(e.next(), "$" + (j++));
                 return ar.replaceValues(d);*/
         return ret;
+    }
+
+    private boolean isDistinct() {
+        return sections.length > DISTINCT && "true".equals(sections[DISTINCT]);
     }
 
     // ------------
