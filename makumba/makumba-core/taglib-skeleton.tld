@@ -160,6 +160,23 @@
     <attribute name="maxCountVar" specifiedIn="list" />
   </tag>
 
+ <tag>
+    <name>listGroup</name>
+    <tag-class>org.makumba.list.tags.ListGroupTag</tag-class>
+    <body-content>JSP</body-content>
+    <display-name>iterate through a group of mak:list results</display-name>
+    <descriptionPage>ListGroupTagDescription</descriptionPage>
+    <example>ListGroupTagExample</example>
+    <see>list</see>
+    
+        <attribute>
+      <name>separator</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>Character string as separator between two list elements. It is not included before the first or after
+        the last</description>
+    </attribute>
+  </tag>
 
   <tag>
     <name>resultList</name>

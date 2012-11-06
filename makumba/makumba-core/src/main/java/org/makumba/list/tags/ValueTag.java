@@ -24,6 +24,7 @@
 package org.makumba.list.tags;
 
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.Tag;
 
 import org.makumba.LogicException;
 import org.makumba.MakumbaError;
@@ -35,8 +36,9 @@ import org.makumba.list.engine.valuecomputer.ValueComputer;
 import org.makumba.providers.DataDefinitionProvider;
 
 /**
- * mak:value tag<br/> FIXME use formatters in order to compute the editor fields<br/> TODO implement support for
- * in-place edition of dates and others
+ * mak:value tag<br/>
+ * FIXME use formatters in order to compute the editor fields<br/>
+ * TODO implement support for in-place edition of dates and others
  * 
  * @author Cristian Bogdan
  * @author Manuel Bernhardt <manuel@makumba.org>
@@ -97,8 +99,13 @@ public class ValueTag extends GenericListTag {
     @Override
     public void doStartAnalyze(PageCache pageCache) {
 
-        pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, tagKey, ValueComputer.getValueComputerAtAnalysis(true,
-            QueryTag.getParentListKey(this, pageCache), expr, pageCache));
+        pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, tagKey,
+            ValueComputer.getValueComputerAtAnalysis(true, QueryTag.getParentListKey(this, pageCache), expr, pageCache));
+
+        Tag grp = findAncestorWithClass(this, ListGroupTag.class);
+        if (grp == null || grp.getParent() != QueryTag.getParentList(this)) {
+            ListGroupTag.addCandidateGroupValue(this, pageCache);
+        }
 
         // if we add a projection to a query, we also cache this so that we know where the projection comes from (for
         // the relation analysis)
@@ -111,8 +118,8 @@ public class ValueTag extends GenericListTag {
         }
 
         if (query != null) {
-            pageCache.cache(MakumbaJspAnalyzer.PROJECTION_ORIGIN_CACHE, new MultipleKey(QueryTag.getParentListKey(this,
-                pageCache), expr), tagKey);
+            pageCache.cache(MakumbaJspAnalyzer.PROJECTION_ORIGIN_CACHE,
+                new MultipleKey(QueryTag.getParentListKey(this, pageCache), expr), tagKey);
         }
 
     }

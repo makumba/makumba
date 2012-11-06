@@ -92,7 +92,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
     static String[] listTags = { "value", "org.makumba.list.tags.ValueTag", "list", "org.makumba.list.tags.QueryTag",
             "object", "org.makumba.list.tags.ObjectTag", "if", "org.makumba.list.tags.IfTag", "resultList",
             "org.makumba.list.tags.ResultListTag", "pagination", "org.makumba.list.pagination.PaginationTag",
-            "section", "org.makumba.list.tags.SectionTag" };
+            "section", "org.makumba.list.tags.SectionTag", "listGroup", "org.makumba.list.tags.ListGroupTag" };
 
     static String[] oldFormTags = { "form", "org.makumba.forms.tags.FormTagBase", "newForm",
             "org.makumba.forms.tags.NewTag", "addForm", "org.makumba.forms.tags.AddTag", "editForm",
@@ -173,6 +173,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
     private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
         static JspAnalyzer singleton = new MakumbaJspAnalyzer();
 
+        @Override
         public void release() {
             singleton = null;
         }
@@ -201,6 +202,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
      * @param status
      *            the status of the parsing
      */
+    @Override
     public void systemTag(TagData td, Object status) {
 
         // JSP 2.0 introduced taglib directive with no uri: <%@taglib tagdir="/WEB-INF/tags" prefix="tags" %>
@@ -254,6 +256,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
      * @param status
      *            the status of the parsing
      */
+    @Override
     public void simpleTag(TagData td, Object status) {
         String makumbaPrefix = ((ParseStatus) status).makumbaPrefix + ":";
         String formsPrefix = ((ParseStatus) status).formPrefix + ":";
@@ -297,6 +300,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
      * @param status
      *            the status of the parsing
      */
+    @Override
     public void elExpression(ELData ed, Object status) {
         // we accept only makumba EL stuff
 
@@ -357,6 +361,7 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
      * @param status
      *            the status of the parsing
      */
+    @Override
     public void startTag(TagData td, Object status) {
         simpleTag(td, status);
         ((ParseStatus) status).start(td.tagObject);
@@ -370,16 +375,19 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
      * @param status
      *            the status of the parsing
      */
+    @Override
     public void endTag(TagData td, Object status) {
         AnalysableElement.setAnalyzedElementData(td);
         ((ParseStatus) status).end(td);
         AnalysableElement.setAnalyzedElementData(null);
     }
 
+    @Override
     public Object makeStatusHolder(Object initialStatus) {
         return new ParseStatus();
     }
 
+    @Override
     public Object endPage(Object status) {
         ((ParseStatus) status).endPage();
         return ((ParseStatus) status).pageCache;
