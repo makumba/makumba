@@ -160,6 +160,9 @@ public class MultipleKey extends ArrayList<Object> implements Serializable {
      */
     @Override
     public boolean equals(Object o) {
+        if (!(o instanceof MultipleKey)) {
+            return false;
+        }
         for (int i = 0; i < size(); i++) {
             if (!((MultipleKey) o).get(i).equals(get(i))) {
                 return false;
