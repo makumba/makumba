@@ -86,7 +86,7 @@ public class SourceSyntaxPoints implements Serializable {
     TreeSet<SyntaxPoint> syntaxPoints = new TreeSet<SyntaxPoint>();
 
     /** The line beginnings, added in occuring order */
-    ArrayList<SyntaxPoint> lineBeginnings = new ArrayList<SyntaxPoint>();
+    ArrayList<SyntaxPoint> lineBeginnings;
 
     /** The file beginnings, added in occuring order. When file F includes file I, I begins, then F begins again */
     ArrayList<Integer> fileBeginningIndexes = new ArrayList<Integer>();
@@ -172,6 +172,7 @@ public class SourceSyntaxPoints implements Serializable {
      * Finds the line breaks in the string
      */
     void findLineBreaks() {
+        lineBeginnings = new ArrayList<SyntaxPoint>();
         int start = 0;
         int line = 1;
 
@@ -199,22 +200,36 @@ public class SourceSyntaxPoints implements Serializable {
     }
 
     /**
-     * Gets the text of the line n. This will not work after discardSyntaxPoints because both the text of the file and
-     * the syntax points are gone, to spare memory.
+     * Gets the text of the line n.
      * 
      * @param n
      *            the line number
      * @return A String containing the text at the indicated line
      */
     public String getLineText(int n) {
-        SyntaxPoint line = lineBeginnings.get(n - 1);
-        if (n == lineBeginnings.size()) {
-            return originalText.substring(line.getOriginalPosition());
+        boolean wasDiscarded = lineBeginnings == null;
+        if (wasDiscarded) {
+            // line breaks were discarded, we find them again
+            // we are probably in a runtime error, because page analysis has worked, hence the discarding
+            originalText = readFile(null);
+            findLineBreaks();
         }
+        SyntaxPoint line = lineBeginnings.get(n - 1);
+        try {
+            if (n == lineBeginnings.size()) {
+                return originalText.substring(line.getOriginalPosition());
+            }
 
-        SyntaxPoint nextline = lineBeginnings.get(n);
+            SyntaxPoint nextline = lineBeginnings.get(n);
 
-        return originalText.substring(line.getOriginalPosition(), nextline.getOriginalPosition() - 1);
+            return originalText.substring(line.getOriginalPosition(), nextline.getOriginalPosition() - 1);
+        } finally {
+            // since runtime errors don't occur so often, we discard again
+            if (wasDiscarded) {
+                originalText = null;
+                lineBeginnings = null;
+            }
+        }
     }
 
     /**
@@ -546,7 +561,7 @@ public class SourceSyntaxPoints implements Serializable {
         content = originalText = null;
         fileBeginningIndexes = null;
         lineBeginnings = null;
-        syntaxPoints = null;
+        syntaxPoints.clear();
     }
 
     public File getFile() {
