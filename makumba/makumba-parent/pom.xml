@@ -115,6 +115,7 @@
     <build>
         <defaultGoal>install</defaultGoal>
         <extensions>
+            <!-- Enables maven to send stuff to ssh servers -->
             <extension>
                 <groupId>org.apache.maven.wagon</groupId>
                 <artifactId>wagon-ssh</artifactId>
@@ -123,6 +124,7 @@
         </extensions>
         <plugins>
             <plugin>
+                <!-- Allows reading properties files and using the values in maven poms-->
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>properties-maven-plugin</artifactId>
                 <version>1.0-alpha-2</version>
