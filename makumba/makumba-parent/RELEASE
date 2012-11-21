@@ -79,12 +79,10 @@ This will
 - create artifacts and deploy them on Sonatype (where they might be synced with central)
 - upload the new artifacts to Sourceforge
 
-/!\ do not forget to set your username & password in build.properties or the release will fail at the end
-
 /!\ make sure you have the right version number in the artifacts you want to deploy
 
-mvn release:prepare
+mvn release:prepare -Dusername=<sourceforge username> -Dpassword=<sourceforge password>
 
 (in a separate terminal) ssh -t <SF user>,makumba@shell.sourceforge.net create
 
-mvn release:perform -Darguments="-Dgpg.passphrase=<makumba passphrase> -Dgpg.keyname=makumba-devel@lists.sourceforge.net"
+mvn release:perform -Darguments="-Dgpg.passphrase=<makumba passphrase> -Dgpg.keyname=makumba-devel@lists.sourceforge.net" -Dusername=<sourceforge username> -Dpassword=<sourceforge password>
