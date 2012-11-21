@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project default="feature_export" name="Makumba Feature">
-	<target name="feature_export">
-		<pde.exportFeatures destination="${basedir}/updatesite/" exportSource="false" exportType="directory" features="org.makumba.devel.eclipse.feature" useJARFormat="true"  />
-	</target>
-</project>
