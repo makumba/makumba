@@ -171,6 +171,7 @@
                     </dependency>
                 </dependencies>
                 <configuration>
+                    <arguments>-DskipTests</arguments>
                     <allowTimestampedSnapshots>true</allowTimestampedSnapshots>
                     <checkModificationExcludeList>build.properties</checkModificationExcludeList>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
