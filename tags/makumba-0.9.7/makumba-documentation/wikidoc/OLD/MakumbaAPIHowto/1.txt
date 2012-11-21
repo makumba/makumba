@@ -1,0 +1,31 @@
+!!!Makumba API elements
+
+[{TableOfContents}]
+
+!!Pointer
+A Makumba Pointer is an object that uniquely identifies a database record. It can have different forms:
+* the internal form, which is used by Makumba to access the object in the database
+* the Java form, as Pointer object
+* the external form, which is a 7 character long string that uniquely identifies the record and its type. This form is mostly used in JSP pages, as CGI parameters.
+
+For instance, let’s consider the following JSP page listProjects.jsp:
+
+%%prettify
+{{{
+<%@ taglib uri="http://www.makumba.org/presentation" prefix="mak"%>
+
+<mak:list from=”company.Project p” where=”p = $project”>
+    <mak:value expr=”p.name” />, pointer: <mak:value expr=”p” /><br />
+    <mak:value expr=”p” var=”projectPointer” />
+</mak:list>
+}}}%%
+
+This page can then be called with the following URI: %%Code listProjects.jsp?projects=nxdcdc2%%
+
+%%code nxdcdc2%% is the external form of the Makumba pointer to a specific record.
+
+The %%Code <mak:value expr="p" />%% will also print this string, whereas the second [mak:value|ValueTag] will not result in any printed result, but will make "projectPointer" accessible as a Java page attribute inside the [mak:list|ListTag], having Pointer as its type. It could then be used by casting it to a Pointer, however, this is rarely needed, since the "project" page parameter can be used in all Makumba tags through the %%Code $project%% attribute.
+
+!!Attributes
+
+!!Transaction

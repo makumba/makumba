@@ -1,0 +1,1 @@
+Taken into account only if reloadFormOnError is not set to false. Values are none (displayed in <mak:response/>), before (before the input), after (after the input) or both (displayed both before and after the input). Defaults to none.

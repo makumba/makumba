@@ -1,0 +1,1 @@
+Accepted values are 'search' for displaying no results, and 'filter' for displaying all results; defaults to 'search'.

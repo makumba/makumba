@@ -1,0 +1,1 @@
+MQL WHERE section. If the query is nested, the WHERE section from the parent's query, is added to this in the resulting query

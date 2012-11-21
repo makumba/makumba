@@ -1,0 +1,1 @@
+The default behaviour of the resultList when the search was not yet done.
