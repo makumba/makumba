@@ -14,7 +14,7 @@ PREREQUISITES
 
 - don't use maven 2.2.0 since it contains a bug and generates invalid checksums
 
-- Sonatype user and password must be configured in ~/.m2/settings.xml:
+- Sonatype and SourceForge user and password must be configured in ~/.m2/settings.xml:
 
 <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -22,6 +22,10 @@ PREREQUISITES
                       http://maven.apache.org/xsd/settings-1.0.0.xsd">
 
   <servers>
+    <server>
+      <id>sourceforge</id>
+      <username>USER</username>
+      <password>PASSWORD</password>
     <server>
       <id>sonatype-nexus-snapshots</id>
       <username>USER</username>
@@ -47,9 +51,6 @@ The respective ticket is at https://issues.sonatype.org/browse/OSSRH-182
 
 The makumba repository public URL is https://oss.sonatype.org/content/groups/public/org/makumba/
 
-
-- Sourceforge username & password configured in build.properties
-
 COMMANDS
 --------
 
@@ -68,7 +69,7 @@ For the moment, this only works for makumba-core.
 
 - run the upload
 
-  mvn wagon:upload -Dusername=<SF user> -Dpassword=<SF password>
+  mvn wagon:upload
 
 === releasing a version
 
@@ -82,7 +83,7 @@ This will
 
 /!\ make sure you have the right version number in the artifacts you want to deploy
 
-mvn release:prepare -Dusername=<SF user> -Dpassword=<SF password>
+mvn release:prepare
 
 (in a separate terminal) ssh -t <SF user>,makumba@shell.sourceforge.net create
 
