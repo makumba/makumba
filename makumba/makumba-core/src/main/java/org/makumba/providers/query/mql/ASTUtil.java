@@ -330,6 +330,7 @@ public final class ASTUtil {
      * A predicate that uses inclusion, rather than exclusion semantics.
      */
     public abstract static class IncludePredicate implements FilterPredicate {
+        @Override
         public final boolean exclude(AST node) {
             return !include(node);
         }
@@ -360,6 +361,9 @@ public final class ASTUtil {
     public static String constructPath(AST type) {
         String a_text = "", b_text = "";
         AST a = type.getFirstChild();
+        if (a == null) {
+            return type.getText();
+        }
 
         AST b = a.getNextSibling();
 
