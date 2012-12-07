@@ -533,7 +533,7 @@ public class Configuration implements Serializable {
             }
 
             // now we can't really tell which one to use by ourselves so we see if there is a default one
-            if (defaultDataSourceName == null) {
+            if (defaultDataSource == null && defaultDataSourceName == null) {
                 throw new ConfigurationError(
                         "Since there is more than one configured dataSource, Makumba needs to know which one to use. Please specify a defaultDataSource in section dataSourceConfig.");
             }
