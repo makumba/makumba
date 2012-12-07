@@ -38,6 +38,7 @@ import org.makumba.LogicException;
 import org.makumba.Pointer;
 import org.makumba.Text;
 import org.makumba.Transaction;
+import org.makumba.commons.FileOnDisk;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.TransactionProvider;
 
@@ -50,7 +51,7 @@ import org.makumba.providers.TransactionProvider;
 public class MakumbaDownloadServlet extends HttpServlet {
     private static final String QUERY_WHERE = " f WHERE f=$1";
 
-    private static final String QUERY_SELECT = "SELECT f.content as content, f.contentType as contentType, f.contentLength as contentLength, f.name as name FROM ";
+    private static final String QUERY_SELECT = "SELECT f.contentType as contentType, f.contentLength as contentLength, f.name as name ";
 
     private static final long serialVersionUID = 1L;
 
@@ -61,8 +62,8 @@ public class MakumbaDownloadServlet extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
         Transaction t = null;
         try {
-            t = TransactionProvider.getInstance().getConnectionTo(
-                TransactionProvider.getInstance().getDefaultDataSourceName());
+            String defaultDataSourceName = TransactionProvider.getInstance().getDefaultDataSourceName();
+            t = TransactionProvider.getInstance().getConnectionTo(defaultDataSourceName);
             String ptr = req.getParameter("value");
             String type = req.getParameter("type");
             if (StringUtils.isBlank(ptr) || StringUtils.isBlank(type)) {
@@ -70,13 +71,22 @@ public class MakumbaDownloadServlet extends HttpServlet {
                 w.println("Both 'value' and 'type' parameters need to be not-empty!");
                 return;
             }
-            Vector<Dictionary<String, Object>> v = t.executeQuery(QUERY_SELECT + type + QUERY_WHERE, new Pointer(type,
-                    ptr));
+            String uri = FileOnDisk.getFileOnDiskURI(type, defaultDataSourceName);
+
+            Pointer point = new Pointer(type, ptr);
+            Vector<Dictionary<String, Object>> v = t.executeQuery(QUERY_SELECT
+                    + (uri != null ? "" : ", f.content as content ") + " FROM " + type + QUERY_WHERE, point);
             if (v.size() == 1) {
-                Text content = (Text) v.firstElement().get("content");
                 String contentType = (String) v.firstElement().get("contentType");
                 Integer contentLength = (Integer) v.firstElement().get("contentLength");
                 String name = (String) v.firstElement().get("name");
+                Text content = null;
+                if (uri == null) {
+                    content = (Text) v.firstElement().get("content");
+                } else {
+                    content = FileOnDisk.readFile(uri, point, name, contentLength);
+                }
+
                 if (isInlineContentType(contentType)) {
                     response.setHeader("Content-Disposition", "inline;");
                 } else {
