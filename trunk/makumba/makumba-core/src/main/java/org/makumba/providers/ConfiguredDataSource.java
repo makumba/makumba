@@ -72,7 +72,7 @@ class ConfiguredDataSource {
         super();
         this.host = host;
         try {
-            this.hostAddress = InetAddress.getByName(host).toString();
+            this.hostAddress = InetAddress.getByName(host).getCanonicalHostName();
         } catch (UnknownHostException e) {
             this.hostAddress = null;
         }
