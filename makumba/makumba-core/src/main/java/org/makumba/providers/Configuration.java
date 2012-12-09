@@ -504,10 +504,14 @@ public class Configuration implements Serializable {
 
                     // we collect the sections we went through. if two sections start the same, we put them in a map to
                     // do a lookup
-                    if (section.indexOf(" ") > -1 && toLookUp.get(section.substring(0, section.indexOf(" "))) != null) {
-                        toLookUp.put(section.substring(0, section.indexOf(" ")), true);
-                    } else if (section.indexOf(" ") > -1) {
-                        toLookUp.put(section.substring(0, section.indexOf(" ")), false);
+                    String nm = section;
+                    if (section.indexOf(" ") > -1) {
+                        nm = section.substring(0, section.indexOf(" "));
+                    }
+                    if (toLookUp.get(nm) != null) {
+                        toLookUp.put(nm, true);
+                    } else {
+                        toLookUp.put(nm, false);
                     }
                 }
             }
