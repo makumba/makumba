@@ -65,7 +65,12 @@ public class ResponseControllerHandler extends ControllerHandler {
                     + responder.getReloadFormOnError());
 
             final HttpServletRequest httpServletRequest = (HttpServletRequest) req;
-            final String absoluteAction = httpServletRequest.getRequestURI();
+            String absoluteAction = httpServletRequest.getRequestURI();
+            String queryString = httpServletRequest.getQueryString();
+            if (queryString != null) {
+                absoluteAction += "?" + queryString;
+            }
+
             final boolean shallReload = shallReload(responder.getReloadFormOnError(), responder.getAction(),
                 absoluteAction, responder.getOriginatingPageName(), responder.getTriggerEvent());
             logger.fine("Form submission failed, operation: " + responder.operation + ", reloadForm: "
