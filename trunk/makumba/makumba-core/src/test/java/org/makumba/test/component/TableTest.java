@@ -24,6 +24,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -106,6 +107,8 @@ public class TableTest extends TestCase {
 
     String readPerson = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData as extraData FROM test.Person p WHERE p= $1";
 
+    String readPersonPtr = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData as extraData FROM test.Person p WHERE p IN ($1)";
+
     String readPerson1 = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.weight as weight, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData as extraData, p.comment as comment, p.picture AS picture FROM test.Person p WHERE p= $1";
 
     String readPerson2 = "SELECT p.indiv.name AS name, p.indiv.surname AS surname, p.birthdate AS birthdate, p.weight as weight, p.brother as brother, p.TS_modify as TS_modify, p.TS_create as TS_create, p.extraData.something as something, p.extraData as extraData, p.comment as comment, p.picture AS picture FROM test.Person p WHERE p= $1";
@@ -139,7 +142,8 @@ public class TableTest extends TestCase {
                 List<FieldDefinition> fields = ddp.getDataDefinition("test.validMdds." + v.elementAt(i)).getFieldDefinitions();
                 String what = "";
                 for (FieldDefinition fd : fields) {
-                    String ftype = ddp.getDataDefinition("test.validMdds." + v.elementAt(i)).getFieldDefinition(fd.getName()).getDataType();
+                    String ftype = ddp.getDataDefinition("test.validMdds." + v.elementAt(i)).getFieldDefinition(
+                        fd.getName()).getDataType();
                     // System.out.println(fname+": "+ftype);
                     if (ftype != null && !ftype.equals("null") && !ftype.startsWith("set")) {
                         // fields
@@ -197,6 +201,13 @@ public class TableTest extends TestCase {
         Vector<Dictionary<String, Object>> v = db.executeQuery(readPerson1, ptr);
 
         assertEquals(1, v.size());
+
+        Vector<Pointer> listArg = new Vector<Pointer>();
+        // sending four params ensures that offset+limit+param is surpassed so we can test if a multiple param is set
+        // for $1
+        listArg.addAll(Arrays.asList(new Pointer[] { ptr, ptr, ptr, ptr }));
+        Vector<Dictionary<String, Object>> v1 = db.executeQuery(readPersonPtr, new Object[] { listArg });
+        assertEquals(1, v1.size());
 
         pc = v.elementAt(0);
 
