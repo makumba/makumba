@@ -30,6 +30,8 @@ package org.makumba.commons;
 import java.util.List;
 import java.util.Map;
 
+import org.makumba.providers.QueryAnalysisProvider;
+
 public class ParamInfo {
     public ParamInfo(String name, int position) {
         this.paramName = name;
@@ -64,12 +66,13 @@ public class ParamInfo {
 
         @Override
         public void write(ParamInfo po, StringBuffer ret) {
+            String paramName = QueryAnalysisProvider.getActualParameterName(po.getName());
             ret.append("?");
             if (args != null) {
-                Object val = args.get(po.paramName);
+                Object val = args.get(paramName);
 
                 if (val != null && val instanceof List<?>) {
-                    List<?> v = (List<?>) args.get(po.paramName);
+                    List<?> v = (List<?>) args.get(paramName);
                     for (int i = 1; i < v.size(); i++) {
                         ret.append(',').append('?');
                     }
