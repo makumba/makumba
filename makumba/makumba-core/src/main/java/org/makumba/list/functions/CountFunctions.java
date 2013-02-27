@@ -28,7 +28,7 @@ public class CountFunctions extends AnalysableExpression {
         if (StringUtils.equalsAny(expression, "count", "maxCount")) {
             checkNumberOfArguments(0);
             // check that count() and maxCount() are inside a list
-            if (findParentWithClass(QueryTag.class) == null) {
+            if (QueryTag.findEnclosingList(this) == null) {
                 throw new ProgrammerError("Function '" + expression + "' needs to be enclosed in a LIST or OBJECT tag");
             }
         } else if (expression.equals("lastCount")) {

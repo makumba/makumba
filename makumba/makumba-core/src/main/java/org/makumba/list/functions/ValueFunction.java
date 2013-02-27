@@ -3,6 +3,7 @@ package org.makumba.list.functions;
 import javax.servlet.jsp.PageContext;
 
 import org.makumba.LogicException;
+import org.makumba.Pointer;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.StringUtils;
@@ -71,6 +72,14 @@ public class ValueFunction extends GenericListValueFunction {
             // TODO: some error handling...
             return null;
         }
+    }
+
+    public static Object printValue(String expr) {
+        Object o = value(expr);
+        if (o instanceof Pointer) {
+            return ((Pointer) o).toExternalForm();
+        }
+        return o;
     }
 
 }

@@ -35,10 +35,12 @@ import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.IterationTag;
 
 import org.apache.commons.lang.StringUtils;
+import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
 import org.makumba.MakumbaError;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.AnalysableElement;
+import org.makumba.analyser.AnalysableExpression;
 import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 import org.makumba.analyser.TagData;
@@ -65,7 +67,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
     private static final long serialVersionUID = 1L;
 
-    String[] queryProps = new String[7];
+    String[] queryProps = new String[8];
 
     String separator = "";
 
@@ -121,6 +123,10 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
     public void setDistinct(String s) {
         queryProps[ComposedQuery.DISTINCT] = s;
+    }
+
+    public void setFilters(String s) {
+        queryProps[ComposedQuery.FILTERS] = s;
     }
 
     public void setSeparator(String s) {
@@ -245,8 +251,19 @@ public class QueryTag extends GenericListTag implements IterationTag {
         }
 
         // we make ComposedQuery cache our query
-        QueryTag.cacheQuery(pageCache, tagKey, queryProps, getParentListKey(this, pageCache), authorization);
+        ComposedQuery cq = cacheQuery(pageCache, tagKey, queryProps, getParentListKey(this, pageCache), authorization);
 
+        if (cq.getFilterAttributes() != null) {
+            int n = 0;
+            for (String para : cq.getFilterAttributes().getParameterOrder()) {
+                FieldDefinition fd = cq.getFilterAttributes().getParameterTypes().getFieldDefinition(n);
+                if (cq.getFilterAttributes().isMultiValue(n)) {
+                    fd = multiply(fd);
+                }
+                setType(pageCache, para, fd);
+                n++;
+            }
+        }
         if (countVar != null) {
             setType(pageCache, countVar, DataDefinitionProvider.getInstance().makeFieldOfType(countVar, "int"));
         }
@@ -254,6 +271,35 @@ public class QueryTag extends GenericListTag implements IterationTag {
         if (maxCountVar != null) {
             setType(pageCache, maxCountVar, DataDefinitionProvider.getInstance().makeFieldOfType(maxCountVar, "int"));
         }
+    }
+
+    static FieldDefinition multiply(FieldDefinition val) {
+        if (val.isPointer()) {
+            val = DataDefinitionProvider.getInstance().makeFieldDefinition("multi", "set " + val.getForeignTable());
+        } else if (val.getType().equals("intEnum")) {
+            StringBuffer sb = new StringBuffer("set int{");
+            String sep = "";
+            for (int i = 0; i < val.getEnumeratorSize(); i++) {
+                sb.append(sep);
+                sb.append("\"").append(val.getNameAt(i)).append("\"");
+                sb.append("=");
+                sb.append(val.getIntAt(i));
+                sep = ",";
+            }
+            sb.append("}");
+            val = DataDefinitionProvider.getInstance().makeFieldDefinition("multi", sb.toString());
+        } else if (val.getType().equals("charEnum")) {
+            StringBuffer sb = new StringBuffer("set char{");
+            String sep = "";
+            for (int i = 0; i < val.getEnumeratorSize(); i++) {
+                sb.append(sep);
+                sb.append("\"").append(val.getNameAt(i)).append("\"");
+                sep = ",";
+            }
+            sb.append("}");
+            val = DataDefinitionProvider.getInstance().makeFieldDefinition("multi", sb.toString());
+        }
+        return val;
     }
 
     /**
@@ -562,7 +608,23 @@ public class QueryTag extends GenericListTag implements IterationTag {
      * @return the parent QueryTag of the Tag
      */
     public static AnalysableTag getParentList(AnalysableTag tag) {
-        return (AnalysableTag) findAncestorWithClass(tag, QueryTag.class);
+        QueryTag t = (QueryTag) findAncestorWithClass(tag, QueryTag.class);
+        return t == null || !t.isFake() ? t : getParentList(t);
+    }
+
+    public static QueryTag findEnclosingList(AnalysableExpression e) {
+        QueryTag parentList = (QueryTag) e.findParentWithClass(QueryTag.class);
+        if (parentList != null && parentList.isFake()) {
+            return (QueryTag) getParentList(parentList);
+        }
+        return parentList;
+    }
+
+    /**
+     * Tells whether the tag is only meant to declare its FROM labels and not do queries, etc.
+     */
+    public boolean isFake() {
+        return false;
     }
 
     /**

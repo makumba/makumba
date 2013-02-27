@@ -25,9 +25,9 @@ package org.makumba.providers;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -515,37 +515,40 @@ public abstract class QueryAnalysisProvider implements Serializable {
             extraWhere.add(where);
         }
 
-        Set<String> actors = new HashSet<String>();
+        Map<String, AST> actors = new HashMap<String, AST>();
 
-        public void addActor(AST actorType, String paramSyntax) {
-            if (actors.contains(actorType)) {
+        public void addActor(AST actorType) {
+            String name = ASTUtil.constructPath(actorType);
+            if (actors.containsKey(name)) {
                 return;
             }
-            String act = getGeneratedActorName(actorType);
-            // make an extra FROM
-            AST range = ASTUtil.makeNode(HqlTokenTypes.RANGE, "RANGE");
-            range.setFirstChild(makeASTCopy(actorType));
-            range.getFirstChild().setNextSibling(ASTUtil.makeNode(HqlTokenTypes.ALIAS, act));
-
-            // make an extra where
-            AST equal = ASTUtil.makeNode(HqlTokenTypes.EQ, "=");
-            equal.setFirstChild(ASTUtil.makeNode(HqlTokenTypes.IDENT, act));
-            // FIXME: in HQL the parameter syntax is a tree (: paamName) not an IDENT
-            equal.getFirstChild().setNextSibling(ASTUtil.makeNode(HqlTokenTypes.IDENT, paramSyntax + act));
-
-            addFromWhere(range, equal);
+            actors.put(name, actorType);
         }
 
         /**
          * Add to a query the ranges and the where conditions that were found. The AST is assumed to be the root of a
          * query
          */
-        public void addToTreeFromWhere(AST query) {
-            // FIXME: it may be that a from and a where condition are already in here!
-            // in that case, nothing needs to be done!
-            // this is the case if actor( ...).field is used multiple times in the same query
+        public void addToTreeFromWhere(AST query, String paramSyntax) {
 
             AST firstFrom = query.getFirstChild().getFirstChild().getFirstChild();
+            for (String acto : actors.keySet()) {
+                AST actorType = actors.get(acto);
+                String act = getGeneratedActorName(actorType);
+                // make an extra FROM
+                AST range = ASTUtil.makeNode(HqlTokenTypes.RANGE, "RANGE");
+                range.setFirstChild(makeASTCopy(actorType));
+                range.getFirstChild().setNextSibling(ASTUtil.makeNode(HqlTokenTypes.ALIAS, act));
+
+                // make an extra where
+                AST equal = ASTUtil.makeNode(HqlTokenTypes.EQ, "=");
+                equal.setFirstChild(ASTUtil.makeNode(HqlTokenTypes.IDENT, act));
+                // FIXME: in HQL the parameter syntax is a tree (: paamName) not an IDENT
+                equal.getFirstChild().setNextSibling(ASTUtil.makeNode(HqlTokenTypes.IDENT, paramSyntax + act));
+
+                addFromWhere(range, equal);
+
+            }
             for (AST range : extraFrom) {
                 ASTUtil.appendSibling(firstFrom, range);
             }
@@ -573,6 +576,15 @@ public abstract class QueryAnalysisProvider implements Serializable {
             }
             // the where conditions are in the WHERE now, we clear them so they won't be added again
             extraWhere.clear();
+        }
+
+        public void addAll(FromWhere fromWhere) {
+            extraFrom.addAll(fromWhere.extraFrom);
+            extraWhere.addAll(fromWhere.extraFrom);
+            // already existing key-values will be overriden but it doesn't matter since they are identical
+            for (String acto : fromWhere.actors.keySet()) {
+                actors.put(acto, fromWhere.actors.get(acto));
+            }
         }
 
     }
@@ -854,7 +866,7 @@ public abstract class QueryAnalysisProvider implements Serializable {
     private static AST flatten(AST processedAST) {
         SubqueryReductionVisitor s = new SubqueryReductionVisitor();
         AST a = s.traverse(processedAST);
-        s.fromWhere.addToTreeFromWhere(a);
+        s.fromWhere.addToTreeFromWhere(a, QueryProvider.getQueryAnalzyer("oql").getParameterSyntax());
         return a;
     }
 

@@ -116,14 +116,14 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
 
     private static final String COUNT_FUNCTIONS = "org.makumba.list.functions.CountFunctions";
 
-    static String[] elExpressions = { "value", "org.makumba.list.functions.ValueFunction", "count", COUNT_FUNCTIONS,
-            "maxCount", COUNT_FUNCTIONS, "maxResults", COUNT_FUNCTIONS, "nextCount", COUNT_FUNCTIONS, "lastCount",
-            COUNT_FUNCTIONS, "lastCountById", COUNT_FUNCTIONS, "hasValueChanged",
-            "org.makumba.list.functions.ValueChangeFunctions", "willValueChange",
+    static String[] elExpressions = { "value", "org.makumba.list.functions.ValueFunction", "printValue",
+            "org.makumba.list.functions.ValueFunction", "count", COUNT_FUNCTIONS, "maxCount", COUNT_FUNCTIONS,
+            "maxResults", COUNT_FUNCTIONS, "nextCount", COUNT_FUNCTIONS, "lastCount", COUNT_FUNCTIONS, "lastCountById",
+            COUNT_FUNCTIONS, "hasValueChanged", "org.makumba.list.functions.ValueChangeFunctions", "willValueChange",
             "org.makumba.list.functions.ValueChangeFunctions" };
 
-    static String[] elExpressionNames = { "value", "nextCount", "count", "maxCount", "lastCountById", "lastCount",
-            "hasValueChanged", "willValueChange" };
+    static String[] elExpressionNames = { "value", "printValue", "nextCount", "count", "maxCount", "lastCountById",
+            "lastCount", "hasValueChanged", "willValueChange" };
 
     static final Map<String, Class<?>> tagClasses = new HashMap<String, Class<?>>();
 

@@ -53,11 +53,13 @@ public class ComposedSubquery extends ComposedQuery {
         super(subsections, queryLanguage, selectAllLabels, authorize);
         superQuery = cq;
         superQuery.addSubquery(this);
-        derivedSections = new String[5];
+        derivedSections = new String[8];
         deriveFrom(FROM);
         deriveFrom(VARFROM);
 
         concat(derivedSections, superQuery.derivedSections, sections, WHERE, " AND ", true);
+        concat(derivedSections, superQuery.derivedSections, sections, FILTERS, ";", false);
+
         // concat(derivedSections, superQuery.derivedSections, sections, GROUPBY, ",", false);
         String gpb = sections[GROUPBY];
         if (gpb != null) {
@@ -109,6 +111,9 @@ public class ComposedSubquery extends ComposedQuery {
      *            do we want parenthesis
      */
     static void concat(String[] result, String[] h1, String[] h2, int what, String sep, boolean paran) {
+        if (h1.length <= what || h2.length <= what) {
+            return;
+        }
         String lp = "";
         String rp = "";
         if (paran) {

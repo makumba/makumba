@@ -1,5 +1,6 @@
 package org.makumba.analyser;
 
+import javax.el.ELResolver;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.Tag;
 
@@ -97,7 +98,7 @@ public abstract class AnalysableExpression extends AnalysableElement {
      * @clazz the type of the parent tag we are looking for
      * @return a parent {@link Tag}
      */
-    protected Tag findParentWithClass(Class<?> clazz) {
+    public Tag findParentWithClass(Class<?> clazz) {
 
         boolean isInterface = false;
         Tag from = getParent();

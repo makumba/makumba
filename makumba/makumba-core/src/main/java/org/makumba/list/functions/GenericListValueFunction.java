@@ -68,7 +68,7 @@ public abstract class GenericListValueFunction extends AnalysableExpression {
 
     /** Finds the enclosing mak:list/object */
     protected QueryTag getEnclosingList() {
-        final QueryTag parentList = (QueryTag) findParentWithClass(QueryTag.class);
+        final QueryTag parentList = QueryTag.findEnclosingList(this);
         if (parentList == null) {
             throw new ProgrammerError("Function '" + expression + "' needs to be enclosed in a LIST or OBJECT tag");
         }
@@ -91,8 +91,8 @@ public abstract class GenericListValueFunction extends AnalysableExpression {
     /** retrieve the value computer for the expression from the pageCache */
     protected static ValueComputer getValueComputer(String expr, PageContext pageContext, MultipleKey parentListKey) {
         PageCache pageCache = AnalysableElement.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance());
-        ValueComputer vc = (ValueComputer) pageCache.retrieve(MakumbaJspAnalyzer.VALUE_COMPUTERS, computeKey(expr,
-            parentListKey));
+        ValueComputer vc = (ValueComputer) pageCache.retrieve(MakumbaJspAnalyzer.VALUE_COMPUTERS,
+            computeKey(expr, parentListKey));
         return vc;
     }
 
