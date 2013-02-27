@@ -26,6 +26,7 @@ package org.makumba.controller;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -481,6 +482,9 @@ public class Logic {
             funcCall.append(qap.getParameterSyntax()).append(fd.getName());
         }
         funcCall.append(")");
+
+        List<String> paramNames=qap.getQueryAnalysis(funcCall.toString()).getQueryParameters().getParameterOrder();
+        
         Transaction connection = dbcp.getConnectionTo(db);
         Vector<Dictionary<String, Object>> v;
         try {
@@ -773,6 +777,7 @@ public class Logic {
             if (StringUtils.isNotBlank(recordChangesIn)) {
                 diff = db.updateWithValueDiff(p, data);
             } else {
+                ignoreExtraFields(p.getType(), data);
                 db.update(p, data);
             }
             if (afterEdit != null) {
@@ -869,6 +874,7 @@ public class Logic {
             if (on != null) {
                 on.invoke(controller, addArg);
             }
+            ignoreExtraFields(p.getType() + "->" + field, data);
             addArg[0] = db.insert(p, field, data);
             if (after != null) {
                 after.invoke(controller, addArg);
@@ -918,6 +924,9 @@ public class Logic {
             if (on != null) {
                 on.invoke(controller, onArgs);
             }
+
+            ignoreExtraFields(typename, data);
+
             afterArgs[0] = db.insert(typename, data);
             if (after != null) {
                 after.invoke(controller, afterArgs);
@@ -928,6 +937,25 @@ public class Logic {
         } catch (InvocationTargetException f) {
             db.rollback();
             return handleException(f.getTargetException());
+        }
+    }
+
+    static void ignoreExtraFields(String typename, Dictionary<String, Object> data) {
+        DataDefinition dd = DataDefinitionProvider.getInstance().getDataDefinition(typename);
+        List<String> toRemove = new ArrayList<String>();
+        for (Enumeration<String> e = data.keys(); e.hasMoreElements();) {
+            String field = e.nextElement();
+            String fld = field;
+            int dot = fld.indexOf('.');
+            if (dot != -1) {
+                fld = fld.substring(0, dot);
+            }
+            if (dd.getFieldDefinition(fld) == null) {
+                toRemove.add(field);
+            }
+        }
+        for (String fld : toRemove) {
+            data.remove(fld);
         }
     }
 
