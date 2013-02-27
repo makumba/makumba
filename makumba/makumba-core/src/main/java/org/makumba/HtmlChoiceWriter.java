@@ -283,7 +283,7 @@ public class HtmlChoiceWriter extends HtmlUtils {
                     continue;
                 }
                 throw new ProgrammerError("Non-option text " + label
-                        + " found. Non-otion text cannot break simple SELECTs. Use type=\"tickbox\" instead");
+                        + " found. Non-option text cannot break simple SELECTs. Use type=\"tickbox\" instead");
             }
             String value = val.toString();
             boolean yn_selected = value.equals(selectedValue);
