@@ -310,9 +310,10 @@ public class MqlNode extends CommonAST {
         if (!(left.isParam() && left.getMakType() == null) //
                 && !right.getMakType().isAssignableFrom(left.getMakType()) //
                 && !(right.getMakType().isNumberType() && left.getMakType().isNumberType()) //
-                && !(right.getMakType().isDateType() && left.getMakType().isDateType())) {
-            throw new SemanticException("incompatible operands " + left.getText() + "("
-                    + toStringType(left.getMakType()) + ") and " + right.getText() + " ("
+                && !(right.getMakType().isDateType() && left.getMakType().isDateType()) //
+                && !(left.getMakType().isNumberType() && right.getMakType().getIntegerType() == FieldDefinition._intEnum)) {
+            throw new SemanticException("incompatible operands " + ASTUtil.getDebugString(left) + "("
+                    + toStringType(left.getMakType()) + ") and " + ASTUtil.getDebugString(right) + " ("
                     + toStringType(right.getMakType()) + ")", "", getLine(), getColumn());
         }
     }
