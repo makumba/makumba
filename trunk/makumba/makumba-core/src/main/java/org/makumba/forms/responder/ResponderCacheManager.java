@@ -1,13 +1,18 @@
 package org.makumba.forms.responder;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InvalidClassException;
+import java.io.ObjectInputStream;
+import java.util.Hashtable;
+import java.util.logging.Level;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
 import org.makumba.controller.Logic;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.*;
-import java.util.Hashtable;
-import java.util.logging.Level;
 
 /**
  * This class is handling the caching mechanism of the Responder. There are two caches: one memory cache and one cache
@@ -22,6 +27,7 @@ public class ResponderCacheManager {
     private static class SingletonHolder implements org.makumba.commons.SingletonHolder {
         private static ResponderCacheManager singleton = new ResponderCacheManager();
 
+        @Override
         public void release() {
             singleton = null;
         }
@@ -46,7 +52,7 @@ public class ResponderCacheManager {
     static String validResponderFilename(int responderValue) {
         return new String(makumbaResponderBaseDirectory + "/") + String.valueOf(responderValue).replaceAll("-", "_");
     }
-    
+
     public String getResponderBaseDirectory() {
         return makumbaResponderBaseDirectory;
     }
@@ -55,7 +61,8 @@ public class ResponderCacheManager {
     public void setResponderWorkingDir(HttpServletRequest request) {
         // set the correct working directory for the responders
         if (makumbaResponderBaseDirectory == null) {
-            Object tempDir = request.getSession().getServletContext().getAttribute("javax.servlet.context.tempdir");
+            // Object tempDir = request.getSession().getServletContext().getAttribute("javax.servlet.context.tempdir");
+            Object tempDir = System.getProperty("catalina.base");
             String contextPath = request.getContextPath();
             setResponderWorkingDir(tempDir, contextPath);
         }
