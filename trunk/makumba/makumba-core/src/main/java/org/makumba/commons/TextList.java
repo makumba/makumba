@@ -118,4 +118,9 @@ public class TextList {
     public String resolveAll() {
         return resolveParameters(new ParamInfo.Writer());
     }
+
+    @Override
+    public String toString() {
+        return content.toString();
+    }
 }

@@ -77,6 +77,11 @@ public class NameResolver {
                 return nr.resolveTypeName(dd.getName());
             }
         }
+
+        @Override
+        public String toString() {
+            return field;
+        }
     }
 
     /**
@@ -277,6 +282,7 @@ public class NameResolver {
             }
 
             String resolved = config.getProperty(getTableNameFromConfig(config, dd.getName()) + "->" + fd.getName());
+
             if (resolved == null) {
                 resolved = checkReserved(getFieldNameInSource(fd.getName()));
                 while (checkDuplicateFieldName(resolved, dd, resolvedCache)) {
