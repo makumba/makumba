@@ -44,4 +44,13 @@ public class AttributesControllerHandler extends ControllerHandler {
         return true;
     }
 
+    /**
+     * Performs an operation after the doFilterChain() method is called
+     */
+    @Override
+    public void afterFilter(ServletRequest request, ServletResponse response, FilterConfig conf) {
+        if (request.getAttribute("org.makumba.fileUploadRequest") != null) {
+            ((HttpServletRequest) request).getSession().removeAttribute("org.makumba.fileUpload.status");
+        }
+    }
 }

@@ -36,6 +36,7 @@ import javax.imageio.stream.ImageInputStream;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.ProgressListener;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
@@ -85,7 +86,7 @@ public class MultipartHttpParameters extends HttpParameters {
     // see http://ostermiller.org/convert_java_outputstream_inputstream.html method 2
     static DiskFileItemFactory factory = new DiskFileItemFactory();
 
-    public MultipartHttpParameters(HttpServletRequest req) {
+    public MultipartHttpParameters(final HttpServletRequest req) {
         super(req);
 
         java.util.logging.Logger.getLogger("org.makumba.fileUpload").fine(
@@ -93,11 +94,28 @@ public class MultipartHttpParameters extends HttpParameters {
 
         // Create a new file upload handler
         ServletFileUpload upload = new ServletFileUpload(factory);
+        upload.setProgressListener(new ProgressListener() {
+
+            @Override
+            public void update(long pBytesRead, long pContentLength, int pItems) {
+                req.getSession().setAttribute("org.makumba.fileUpload.bytesRead", pBytesRead);
+                req.getSession().setAttribute("org.makumba.fileUpload.contentLength", pContentLength);
+                req.getSession().setAttribute("org.makumba.fileUpload.items", pItems);
+                if (pContentLength != -1) {
+                    req.getSession().setAttribute("org.makumba.fileUpload.status",
+                        "uploading " + pBytesRead * 100 / pContentLength + "%");
+                }
+            }
+
+        });
 
         // Parse the request
         List<?> items = null;
         try {
+            req.setAttribute("org.makumba.fileUploadRequest", "true");
+            req.getSession().setAttribute("org.makumba.fileUpload.status", "uploading");
             items = upload.parseRequest(request);
+            req.getSession().setAttribute("org.makumba.fileUpload.status", "storing");
         } catch (FileUploadException e1) {
             throw new RuntimeWrappedException(e1);
         }
@@ -263,4 +281,5 @@ public class MultipartHttpParameters extends HttpParameters {
     private static void addToVector(Object a1, Object a2) {
         ((Vector<Object>) a1).addElement(a2);
     }
+
 }
