@@ -11,6 +11,7 @@ TO BE RELEASED IMMEDIATELY (No need for more testing)
 NOT TO BE RELEASED YET (need more testing)
 
 cristi (from Oct 2012 to Feb 2013)
+
 BEHAVIOR CHANGE 
 extra fields <mak:input dataType="..." > passed with newForms or editForms are ignored rather than producing a programmer error
 allowing int + intEnum, real+intEnum  (formerly MQL error)
