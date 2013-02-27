@@ -205,6 +205,7 @@ public class RequestAttributes implements Attributes {
     /**
      * @see org.makumba.Attributes#setAttribute(java.lang.String, java.lang.Object)
      */
+    @Override
     public Object setAttribute(String s, Object o) {
         String snull = s + "_null";
         HttpSession ss = request.getSession(true);
@@ -222,6 +223,7 @@ public class RequestAttributes implements Attributes {
     /**
      * @see org.makumba.Attributes#removeAttribute(java.lang.String)
      */
+    @Override
     public void removeAttribute(String s) throws LogicException {
         request.getSession(true).removeAttribute(s);
     }
@@ -229,9 +231,11 @@ public class RequestAttributes implements Attributes {
     /**
      * @see org.makumba.Attributes#hasAttribute(java.lang.String)
      */
+    @Override
     public boolean hasAttribute(String s) {
         try {
-            return checkSessionForAttribute(s) != RequestAttributes.notFound
+            return checkServletContextForAttribute(s) != RequestAttributes.notFound
+                    || checkSessionForAttribute(s) != RequestAttributes.notFound
                     || checkServletLoginForAttribute(s) != RequestAttributes.notFound
                     || checkLogicForAttribute(s) != RequestAttributes.notFound
                     || checkParameterForAttribute(s) != RequestAttributes.notFound;
@@ -302,9 +306,15 @@ public class RequestAttributes implements Attributes {
     /**
      * @see org.makumba.Attributes#getAttribute(java.lang.String)
      */
+    @Override
     public Object getAttribute(String s) throws LogicException {
         Object o = checkSessionForAttribute(s);
         if (o != notFound) {
+            return o;
+        }
+
+        o = checkServletContextForAttribute(s);
+        if (o != RequestAttributes.notFound) {
             return o;
         }
 
@@ -348,9 +358,17 @@ public class RequestAttributes implements Attributes {
     }
 
     public Object checkServletLoginForAttribute(String s) {
-        if (request.getRemoteUser() != null && request.isUserInRole(s)) {
+        if (request.getRemoteUser() != null && request.isUserInRole(s) || s.equals("makumbaAuthenticatedUser")) {
             request.getSession(true).setAttribute(s, request.getRemoteUser());
             return request.getRemoteUser();
+        }
+        return notFound;
+    }
+
+    public Object checkServletContextForAttribute(String s) {
+        Object o = request.getSession().getServletContext().getInitParameter(s);
+        if (o != null) {
+            return o;
         }
         return notFound;
     }
