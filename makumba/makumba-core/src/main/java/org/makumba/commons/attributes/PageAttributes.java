@@ -59,6 +59,7 @@ public class PageAttributes implements Attributes {
     /**
      * @see org.makumba.Attributes#setAttribute(java.lang.String, java.lang.Object)
      */
+    @Override
     public Object setAttribute(String s, Object o) throws LogicException {
         return RequestAttributes.getAttributes((HttpServletRequest) pageContext.getRequest()).setAttribute(s, o);
     }
@@ -66,6 +67,7 @@ public class PageAttributes implements Attributes {
     /**
      * @see org.makumba.Attributes#removeAttribute(java.lang.String)
      */
+    @Override
     public void removeAttribute(String s) throws LogicException {
         RequestAttributes.getAttributes((HttpServletRequest) pageContext.getRequest()).removeAttribute(s);
     }
@@ -73,6 +75,7 @@ public class PageAttributes implements Attributes {
     /**
      * @see org.makumba.Attributes#hasAttribute(java.lang.String)
      */
+    @Override
     public boolean hasAttribute(String s) {
         try {
             return RequestAttributes.getAttributes((HttpServletRequest) pageContext.getRequest()).hasAttribute(s)
@@ -115,10 +118,16 @@ public class PageAttributes implements Attributes {
     /**
      * @see org.makumba.Attributes#getAttribute(java.lang.String)
      */
+    @Override
     public Object getAttribute(String s) throws LogicException {
         RequestAttributes reqAttrs = RequestAttributes.getAttributes((HttpServletRequest) pageContext.getRequest());
 
         Object o = reqAttrs.checkSessionForAttribute(s);
+        if (o != RequestAttributes.notFound) {
+            return o;
+        }
+
+        o = reqAttrs.checkServletContextForAttribute(s);
         if (o != RequestAttributes.notFound) {
             return o;
         }
