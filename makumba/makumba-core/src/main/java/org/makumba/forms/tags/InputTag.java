@@ -75,11 +75,11 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     protected boolean calendarEditor = Configuration.getCalendarEditorDefault();
 
     protected String nullOption;
-    
+
     protected String where;
-    
+
     protected String orderBy;
-    
+
     protected String labelName;
 
     /** input with body, used only for choosers as yet * */
@@ -135,7 +135,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     public void setClearDefault(String d) {
         params.put("clearDefault", d);
     }
-    
+
     // Extra html formatting parameters
     public void setAccessKey(String s) {
         extraFormattingParams.put("accessKey", s);
@@ -229,8 +229,8 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     public void doEndAnalyze(PageCache pageCache) {
         if (getForm().lazyEvaluatedInputs.containsKey(expr)) {
             // set the input type as the form type
-            TagData t = (TagData) pageCache.retrieve(MakumbaJspAnalyzer.TAG_DATA_CACHE, getForm().getNestedFormNames(
-                pageCache).get(expr));
+            TagData t = (TagData) pageCache.retrieve(MakumbaJspAnalyzer.TAG_DATA_CACHE,
+                getForm().getNestedFormNames(pageCache).get(expr));
             DataDefinition type = ((FormTagBase) t.tagObject).type;
             pageCache.cache(MakumbaJspAnalyzer.INPUT_TYPES, tagKey,
                 type.getFieldDefinition(type.getIndexPointerFieldName()));
@@ -281,12 +281,14 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         }
     }
 
+    @Override
     public void setBodyContent(BodyContent bc) {
         bodyContent = bc;
         // for now, only chosers can have body
         choiceSet = new org.makumba.forms.html.ChoiceSet();
     }
 
+    @Override
     public void doInitBody() {
     }
 
@@ -335,19 +337,25 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
             }
         }
 
-        if (isAttribute()) {
-            val = PageAttributes.getAttributes(pageContext).getAttribute(expr.substring(1));
-        }
+        String defaultExpr = (String) params.get("default");
 
-        if (val != null) {
-            val = type.checkValue(val);
+        boolean defaultSet = false;
+        String attName = null;
+        if (isAttribute()) {
+            attName = expr.substring(1);
+            if (!PageAttributes.getAttributes(pageContext).hasAttribute(attName) && defaultExpr != null) {
+                val = defaultExpr;
+                defaultSet = true;
+            } else {
+                val = PageAttributes.getAttributes(pageContext).getAttribute(attName);
+            }
         }
 
         // if the value is null ==> check for a default value
         // FIXME: this is a basic implementation, it can only discover attributes, does not value computation yet
         // FIXME: also some of the code below is just repeating the one from above, could be optimised
-        String defaultExpr = (String) params.get("default");
-        if (val == null && defaultExpr != null && defaultExpr.toString().trim().length() > 0) {
+
+        if ((val == null || val == defaultExpr) && defaultExpr != null && defaultExpr.toString().trim().length() > 0) {
             if (isAttribute(defaultExpr)) {
                 val = PageAttributes.getAttributes(pageContext).getAttribute(defaultExpr.substring(1));
             }
@@ -356,9 +364,18 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
                 // for now, we just let this be handled by the various editors, which know how to deal with text and
                 // numbers
             }
-            if (val != null) {
+            defaultSet = true;
+        }
+
+        if (val != null) {
+            if (val.equals("") && !type.getType().equals("char")) {
+                val = type.getEmptyValue();
+            } else {
                 val = type.checkValue(val);
             }
+        }
+        if (defaultSet && attName != null) {
+            PageAttributes.setAttribute(pageContext, attName, val);
         }
 
         return computedValue(val, type);
@@ -401,11 +418,14 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         }
 
         if (nullOption != null) {
+            FieldDefinition fd = type;
             // nullOption is only applicable for charEnum and intEnum types
-            FieldDefinition fd = getTypeFromContext(AnalysableElement.getPageCache(pageContext,
-                MakumbaJspAnalyzer.getInstance()));
-            if (!fd.isEnumType()
+            if (fd == null) {
+                fd = getTypeFromContext(AnalysableElement.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance()));
+            }
+            if (fd.getType().contains("Enum")
                     && !fd.isPointer()
+                    && !fd.isSetType()
                     && !(this instanceof SearchFieldTag && org.apache.commons.lang.StringUtils.equals(
                         ((SearchFieldTag) this).forceInputStyle, "single"))) {
                 throw new ProgrammerError(
@@ -428,7 +448,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         if (autoComplete != null) {
             params.put("autoComplete", autoComplete);
         }
-        
+
         if (labelName != null) {
             params.put("labelName", labelName);
         }

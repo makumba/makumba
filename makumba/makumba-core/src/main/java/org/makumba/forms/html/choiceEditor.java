@@ -261,4 +261,23 @@ public abstract class choiceEditor extends FieldEditor {
         }
     }
 
+    /**
+     * Clean a set of empty values. If nullOption is on and there is an empty value, clear the set.
+     * 
+     * @param v
+     *            the set value
+     */
+    void cleanEmpty(Vector<Object> v) {
+        boolean clear = false;
+        for (java.util.Iterator<Object> i = v.iterator(); i.hasNext();) {
+            if ("".equals(i.next())) {
+                i.remove();
+                clear = true;
+            }
+        }
+        if (clear && nullOption != null) {
+            v.clear();
+        }
+    }
+
 }

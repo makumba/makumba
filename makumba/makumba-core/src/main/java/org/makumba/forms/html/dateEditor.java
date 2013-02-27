@@ -51,6 +51,7 @@ public class dateEditor extends FieldEditor {
     private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
         static FieldEditor singleton = new dateEditor();
 
+        @Override
         public void release() {
             singleton = null;
         }
@@ -120,7 +121,7 @@ public class dateEditor extends FieldEditor {
         }
         Date d = (Date) o;
 
-        if (formatParams.get("default") != null) {
+        if (formatParams.get("default") != null && d == null) {
             // FIXME this should actually evaluate the date in a manner similar to MQL...
             if (((String) formatParams.get("default")).equals("now()")) {
                 d = new Date();
@@ -331,8 +332,8 @@ public class dateEditor extends FieldEditor {
     public static Object readFrom(String name, HttpParameters pr) {
         if (pr.getParameter(name + "_IntervalValue") != null) {
             // read from an interval input
-            return readFromInterval(pr, name, name + "_null", DataDefinitionProvider.getInstance().makeFieldOfType(
-                "dummyDate", "date").getDefaultValue());
+            return readFromInterval(pr, name, name + "_null",
+                DataDefinitionProvider.getInstance().makeFieldOfType("dummyDate", "date").getDefaultValue());
         } else {
             // read from classic multi-input
             Calendar c = new GregorianCalendar(org.makumba.MakumbaSystem.getTimeZone());
