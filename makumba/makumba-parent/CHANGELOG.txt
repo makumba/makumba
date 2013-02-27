@@ -8,9 +8,46 @@
 TO BE RELEASED IMMEDIATELY (No need for more testing)
 -----------------------------------------------
 
-FIXES:
-
 NOT TO BE RELEASED YET (need more testing)
+
+cristi (from Oct 2012 to Feb 2013)
+BEHAVIOR CHANGE 
+extra fields <mak:input dataType="..." > passed with newForms or editForms are ignored rather than producing a programmer error
+allowing int + intEnum, real+intEnum  (formerly MQL error)
+saving form responders outside the work directory, in ${catalina.base}/makumba-respomders, so they are not lost on webapp redeploy
+
+NEW FEATURES
+implemented distinct=true for mak:list
+listGroup (experimental, does not allow nesting)
+experimental: @include modules <mak:object context="true" from="labels defined outside this file">
+mak:printValue('mak expr') will print pointers in 7-char format
+
+--- Forms ---
+saving files on disk by configuring file#Type->field=ftp://user:pass@server/dir/ in [dataSource:name] section
+file upload progress support
+
+mak:option support for setIntEnum
+nullOption for set, setIntEnum (creates empty Vector on submit)
+nullOption chosen for sets will de-activate all other choices
+<mak:option>someTitle</mak:option> is recognized as nullOption
+value="" recognized as empty value/nullOption for all types except char
+
+
+--- Hand-made search forms ---
+mak:list filters=" ; separated criteria " a criterion is included in the query only if all the attributes it uses are set
+accept <mak:input name="x" value="$x" default="VAL" /> also sets the x parameter to VAL!
+
+--- Webapp configuration
+accepting makumbaAuthenticatedUser as attribute name (useful if roles are not available, e.g. in CAS login)
+recognizing webapp parameters in $parameter (<init-param> defined in web.xml)
+ 
+FIXES:
+query parse error on functions did not show the query ("in query: null")
+made static functions work: best.Student.someFunction(params)
+removed bug with from and where enriching on function inlining so now chaining of functions is possible actor(Type).someFunction(param)
+fixed bug: repeating actor(Type) in a query produced a double-defined label
+fixed bug: IN($1) generated IN (?) no matter of $1 cardinality (though IN($name) worked correctly
+
 manu: auto-complete for mak:input (char and ptr)
 
 ------------------------------------------
