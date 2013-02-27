@@ -32,6 +32,7 @@ public class charEnumEditor extends choiceEditor {
     private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
         static FieldEditor singleton = new charEnumEditor();
 
+        @Override
         public void release() {
             singleton = null;
         }
@@ -56,6 +57,10 @@ public class charEnumEditor extends choiceEditor {
 
     @Override
     public int getOptionsLength(RecordFormatter rf, int fieldIndex, Object opts) {
+        if (opts != null) {
+            return ((ChoiceSet) opts).size();
+        }
+
         int enumeratorSize = rf.dd.getFieldDefinition(fieldIndex).getEnumeratorSize();
         if (nullOption != null) {
             return enumeratorSize + 1;
@@ -66,13 +71,18 @@ public class charEnumEditor extends choiceEditor {
 
     @Override
     public Object getOptionValue(RecordFormatter rf, int fieldIndex, Object options, int i) {
-        if (nullOption != null) {
+        if (nullOption != null && options == null) {
             if (i == 0) {
-                return null;
+                return "";
             } else {
                 i -= 1;
             }
         }
+
+        return getOptionValue1(rf, fieldIndex, options, i);
+    }
+
+    public Object getOptionValue1(RecordFormatter rf, int fieldIndex, Object options, int i) {
         return rf.dd.getFieldDefinition(fieldIndex).getNameAt(i);
     }
 
@@ -88,12 +98,15 @@ public class charEnumEditor extends choiceEditor {
 
     @Override
     public String formatOptionTitle(RecordFormatter rf, int fieldIndex, Object options, int i) {
-        if (nullOption != null) {
+        if (nullOption != null && options == null) {
             if (i == 0) {
                 return nullOption;
             } else {
                 i -= 1;
             }
+        }
+        if (options != null) {
+            return ((ChoiceSet) options).get(i).getTitle();
         }
         return rf.dd.getFieldDefinition(fieldIndex).getNameAt(i);
     }

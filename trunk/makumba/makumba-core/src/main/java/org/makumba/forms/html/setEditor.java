@@ -50,6 +50,7 @@ public class setEditor extends ptrEditor {
     private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
         static FieldEditor singleton = new setEditor();
 
+        @Override
         public void release() {
             singleton = null;
         }
@@ -88,11 +89,7 @@ public class setEditor extends ptrEditor {
         if (o instanceof Vector) {
             @SuppressWarnings("unchecked")
             Vector<Object> v = (Vector<Object>) o;
-            for (java.util.Iterator<Object> i = v.iterator(); i.hasNext();) {
-                if ("".equals(i.next())) {
-                    i.remove();
-                }
-            }
+            cleanEmpty(v);
         }
         return o;
     }

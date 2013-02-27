@@ -67,16 +67,22 @@ public class ParamInfo {
         @Override
         public void write(ParamInfo po, StringBuffer ret) {
             String paramName = QueryAnalysisProvider.getActualParameterName(po.getName());
-            ret.append("?");
             if (args != null) {
                 Object val = args.get(paramName);
 
                 if (val != null && val instanceof List<?>) {
                     List<?> v = (List<?>) args.get(paramName);
-                    for (int i = 1; i < v.size(); i++) {
-                        ret.append(',').append('?');
+                    if (v.isEmpty()) {
+                        ret.append("\'\'");
+                    } else {
+                        ret.append("?");
+                        for (int i = 1; i < v.size(); i++) {
+                            ret.append(',').append('?');
+                        }
                     }
+                    return;
                 }
+                ret.append("?");
             }
         }
     }

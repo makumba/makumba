@@ -3,6 +3,7 @@ package org.makumba.providers.datadefinition.mdd;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Vector;
 
 import org.makumba.Pointer;
 
@@ -52,19 +53,20 @@ public enum FieldType {
     DATEMODIFY("dateModify", 11, java.util.Date.class, Pointer.NullDate, FieldType.emptyDate(), "timestamp"),
 
     // set
-    SET("set", 12, java.util.Vector.class, Pointer.NullSet, null, "set"),
+    SET("set", 12, java.util.Vector.class, Pointer.NullSet, new Vector<Object>(), "set"),
 
     // sub-set
-    SETCOMPLEX("setComplex", 13, null, Pointer.Null, null, "null"), NIL("nil", 14, null, null, null, null),
+    SETCOMPLEX("setComplex", 13, null, Pointer.Null, new Vector<Object>(), "null"),
+    NIL("nil", 14, null, null, null, null),
 
     // real number
     REAL("real", 15, java.lang.Double.class, Pointer.NullReal, new Double(0d), "real"),
 
     // set of char enum
-    SETCHARENUM("setcharEnum", 16, java.util.Vector.class, Pointer.NullSet, null, "setchar"),
+    SETCHARENUM("setcharEnum", 16, java.util.Vector.class, Pointer.NullSet, new Vector<Object>(), "setchar"),
 
     // set of int enum
-    SETINTENUM("setintEnum", 17, java.util.Vector.class, Pointer.NullSet, null, "setint"),
+    SETINTENUM("setintEnum", 17, java.util.Vector.class, new Vector<Object>(), new Vector<Object>(), "setint"),
 
     // binary date
     BINARY("binary", 18, org.makumba.Text.class, Pointer.NullText, "", "binary"),

@@ -36,6 +36,7 @@ public class intEnumEditor extends charEnumEditor {
     private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
         static FieldEditor singleton = new intEnumEditor();
 
+        @Override
         public void release() {
             singleton = null;
         }
@@ -53,20 +54,16 @@ public class intEnumEditor extends charEnumEditor {
     }
 
     @Override
-    public Object getOptionValue(RecordFormatter rf, int fieldIndex, Object options, int i) {
-        if (nullOption != null) {
-            if (i == 0) {
-                return "";
-            } else {
-                i -= 1;
-            }
-        }
+    public Object getOptionValue1(RecordFormatter rf, int fieldIndex, Object options, int i) {
         return new Integer(rf.dd.getFieldDefinition(fieldIndex).getIntAt(i));
     }
 
     @Override
     public Object readFrom(RecordFormatter rf, int fieldIndex, HttpParameters par, String suffix) {
         Object o = par.getParameter(getInputName(rf, fieldIndex, suffix));
+        if ("".equals(o)) {
+            return o;
+        }
         // DB level should complain in this case:
         // if(o==null && isNotNull())
         // { throw new InvalidValueException(this, "null value not allowed for a

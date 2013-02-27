@@ -65,12 +65,18 @@ public class OptionTag extends BasicValueTag implements BodyTag {
     FieldDefinition getTypeFromContext(PageCache pageCache) {
         FieldDefinition t = (FieldDefinition) pageCache.retrieve(MakumbaJspAnalyzer.INPUT_TYPES, getInput().tagKey);
 
-        // for now, only sets and pointers are accepted
-        if (!(t.getType().startsWith("set") || t.getType().startsWith("ptr"))) {
+        if (!(t.getType().startsWith("set") || t.getType().startsWith("ptr") || t.getType().contains("Enum"))) {
             throw new ProgrammerError("Only set and pointer <mak:input > can have options inside");
         }
 
-        return DataDefinitionProvider.getInstance().makeFieldDefinition("dummy", "ptr " + t.getForeignTable().getName());
+        if (t.getType().startsWith("ptr") || !t.getType().contains("Enum")) {
+            return DataDefinitionProvider.getInstance().makeFieldDefinition("dummy",
+                "ptr " + t.getForeignTable().getName());
+        }
+        if (!t.getType().startsWith("set")) {
+            return t;
+        }
+        return t.getSubtable().getFieldDefinition("enum");
     }
 
     @Override
@@ -82,11 +88,13 @@ public class OptionTag extends BasicValueTag implements BodyTag {
         super.doStartAnalyze(pageCache);
     }
 
+    @Override
     public void doInitBody() {
     }
 
     BodyContent bodyContent;
 
+    @Override
     public void setBodyContent(BodyContent bc) {
         bodyContent = bc;
     }
@@ -109,10 +117,12 @@ public class OptionTag extends BasicValueTag implements BodyTag {
     @Override
     int computedValue(Object val, FieldDefinition type) throws JspException, org.makumba.LogicException {
         getInput().checkBodyContentForNonWhitespace();
+        String content = bodyContent == null ? "" : bodyContent.getString();
         if (isNull()) {
-            val = org.makumba.Pointer.Null;
+            val = "";
+            getInput().setNullOption(content);
         }
-        getInput().choiceSet.add(val, bodyContent == null ? "" : bodyContent.getString(), false, false);
+        getInput().choiceSet.add(val, content, false, false);
         valueExprOriginal = dataType = expr = null;
         return EVAL_PAGE;
     }
