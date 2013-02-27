@@ -34,6 +34,14 @@ public class Pass1FunctionInliner {
 
     public static Logger logger = Logger.getLogger("org.makumba.db.query.inline");
 
+    static class RawInlinedQuery {
+        QueryAnalysis analyzed;
+
+        AST nonEnriched;
+
+        FromWhere fromWhereToEnrich;
+    }
+
     static int functionCache = NamedResources.makeStaticCache("function pass2 analyses", new NamedResourceFactory() {
         private static final long serialVersionUID = 1L;
 
@@ -51,8 +59,13 @@ public class Pass1FunctionInliner {
                 // TODO: this should move to the MDD analyzer after solving chicken-egg
                 // however, note that a new Query analysis method is needed (with known labels)
                 // note also that this leads to calls of this inliner, which works.
-                return QueryProvider.getQueryAnalzyer(provider).getQueryAnalysis(inlineAST(pass1, provider),
-                    func.getParameters());
+
+                RawInlinedQuery raw = inlineRaw(pass1, provider);
+                AST enriched = new HqlASTFactory().dupTree(raw.nonEnriched);
+                raw.fromWhereToEnrich.addToTreeFromWhere(enriched,
+                    QueryProvider.getQueryAnalzyer(provider).getParameterSyntax());
+                raw.analyzed = QueryProvider.getQueryAnalzyer(provider).getQueryAnalysis(enriched, func.getParameters());
+                return raw;
             } catch (Throwable t) {
                 return new ProgrammerError(t, "Error parsing function " + func.getName() + " from MDD " + calleeType
                         + "\n" + t.getMessage());
@@ -60,7 +73,7 @@ public class Pass1FunctionInliner {
         }
     }, true);
 
-    private static QueryAnalysis getInlinedFunctionAnalysis(String queryAnalysisProvider, DataDefinition calleeType,
+    private static RawInlinedQuery getInlinedFunctionAnalysis(String queryAnalysisProvider, DataDefinition calleeType,
             QueryFragmentFunction func) {
 
         Object ret = NamedResources.getStaticCache(functionCache).getResource(
@@ -68,7 +81,7 @@ public class Pass1FunctionInliner {
         if (ret instanceof ProgrammerError) {
             throw (ProgrammerError) ret;
         }
-        return (QueryAnalysis) ret;
+        return (RawInlinedQuery) ret;
     }
 
     /*
@@ -81,6 +94,16 @@ public class Pass1FunctionInliner {
     // do{ stack.add(a); visit(a); } while((a=a.getFirstChild())!=null);
     // do{ if(stack.isEmpty()) break root; a= stack.remove( stack.size() - 1).getNextSibling(); } while(a==null);
     // }
+
+    public static RawInlinedQuery inlineRaw(AST parsed, String provider) {
+        RawInlinedQuery ret = new RawInlinedQuery();
+        InlineVisitor v = new InlineVisitor(provider);
+        ret.fromWhereToEnrich = v.fromWhere;
+        ret.nonEnriched = v.traverse(parsed);
+
+        return ret;
+    }
+
     /**
      * The core inliner method: inline functions in an AST tree
      * 
@@ -88,8 +111,10 @@ public class Pass1FunctionInliner {
      */
     public static AST inlineAST(AST parsed, String provider) {
         // new MakumbaDumpASTVisitor(false).visit(parsed);
-        InlineVisitor v = new InlineVisitor(provider);
-        AST ret = v.inlineAST(parsed);
+        RawInlinedQuery raw = inlineRaw(parsed, provider);
+        AST ret = raw.nonEnriched;
+
+        raw.fromWhereToEnrich.addToTreeFromWhere(ret, QueryProvider.getQueryAnalzyer(provider).getParameterSyntax());
 
         if (logger.getLevel() != null && logger.getLevel().intValue() >= java.util.logging.Level.FINE.intValue()) {
             logger.fine(parsed.toStringList() + " \n-> " + ret.toStringList());
@@ -109,19 +134,6 @@ public class Pass1FunctionInliner {
         private final String queryAnalysisProvider;
 
         private final FromWhere fromWhere = new FromWhere();
-
-        private AST inlineAST(AST parsed) {
-            // inlining is a simple question of traversal with the inliner visitor
-            AST ret = traverse(parsed);
-            // ... and of adding the from and where sections discovered during inlining
-            // FIXME: for now they are added to the root query. adding them to other subqueries may be required
-
-            // if we are in the middle of a parsing, (like when we force recursion to inline the callee)
-            // we take the root from the bottom of the stack
-            // otherwise we are a the end of a parsing since the stack is empty, so we got the real root
-            fromWhere.addToTreeFromWhere(getPath().size() > 0 ? getPath().get(0) : ret);
-            return ret;
-        }
 
         @Override
         public AST visit(AST current) {
@@ -152,23 +164,26 @@ public class Pass1FunctionInliner {
             // we force a recursion now because we might have a function or actor in the callee
             // FIXME: this probably would not be needed in case of a depth-first, post-order traversal
             // TODO: find type will be needed also to compute parameter types. the recursion is needed there too
-            callee = inlineAST(callee);
-            FieldDefinition fd = findType(callee, queryAnalysisProvider);
-            if (fd.getType().startsWith("ptr")) {
-                calleeType = fd.getPointedType();
-            } else {
-                isStatic = true;
-                // determine whether the callee is a DataDefinition name, in which case we have a static function
+            callee = traverse(callee);
 
-                if (callee.getType() == HqlTokenTypes.DOT) {
-                    calleeType = getMdd(ASTUtil.getPath(callee));
-                }
-                if (callee.getType() == HqlTokenTypes.IDENT) {
+            if (callee.getType() == HqlTokenTypes.DOT) {
+                calleeType = getMdd(ASTUtil.getPath(callee));
+                isStatic = true;
+            } else if (callee.getType() == HqlTokenTypes.IDENT) {
+                if (callee.getText().startsWith("actor_")) {
+                    calleeType = getMdd(callee.getText().substring(6).replace('_', '.'));
+                } else {
                     calleeType = getMdd(callee.getText());
+                    isStatic = true;
                 }
-                if (calleeType == null) {
-                    throw new ProgrammerError("Not a field of pointer type or MDD name in call of " + methodName + ": "
-                            + view(callee));
+            }
+            if (calleeType == null) {
+                isStatic = false;
+                FieldDefinition fd = findType(callee, queryAnalysisProvider);
+                if (fd.getType().startsWith("ptr")) {
+                    calleeType = fd.getPointedType();
+                } else {
+                    throw new ProgrammerError("callee type is not a pointer:" + calleeType);
                 }
             }
 
@@ -181,7 +196,7 @@ public class Pass1FunctionInliner {
             }
 
             // and its parsed form from the cache
-            QueryAnalysis parsed = getInlinedFunctionAnalysis(queryAnalysisProvider, calleeType, func);
+            RawInlinedQuery raw = getInlinedFunctionAnalysis(queryAnalysisProvider, calleeType, func);
 
             /* FIXME: at this point, from the QueryAnalysis (pass2) we know the function return type!
              In order to see whether the function fits in the expression it is put in, 
@@ -196,14 +211,13 @@ public class Pass1FunctionInliner {
             */
 
             // we duplicate the tree as we are going to change it
-            AST funcAST = new HqlASTFactory().dupTree(parsed.getPass1Tree());
+            AST funcAST = new HqlASTFactory().dupTree(raw.nonEnriched);
             // QueryAnalysisProvider.parseQuery(queryFragment)
 
             AST from = funcAST.getFirstChild().getFirstChild().getFirstChild();
             // at this point, from should be "Type this"
             // but if that has siblings, we need to add them to the FROM of the outer query
             // since they come from from-where enrichment, probably from actors
-            // TODO: maybe consider whether we should cache the function AST and the from-where enrichments separately
             from = from.getNextSibling();
             while (from != null) {
                 fromWhere.addFrom(from);
@@ -215,6 +229,8 @@ public class Pass1FunctionInliner {
             if (where != null && where.getType() == HqlTokenTypes.WHERE) {
                 fromWhere.addWhere(where.getFirstChild());
             }
+
+            fromWhere.addAll(raw.fromWhereToEnrich);
 
             // the function expr: query-> SELECT_FROM -> FROM-> SELELECT -> 1st projection
             funcAST = funcAST.getFirstChild().getFirstChild().getNextSibling().getFirstChild();
@@ -233,7 +249,7 @@ public class Pass1FunctionInliner {
             AST p = exprList.getFirstChild();
             getPath().push(exprList);
             for (FieldDefinition paraf : para.getFieldDefinitions()) {
-                paramExpr.put(paraf.getName(), inlineAST(p));
+                paramExpr.put(paraf.getName(), traverse(p));
                 p = p.getNextSibling();
             }
             getPath().pop();
@@ -297,8 +313,7 @@ public class Pass1FunctionInliner {
             // the more complicated case: we have a actor(Type).something
             int type = getPath().peek().getType();
             if (type == HqlTokenTypes.DOT) {
-                fromWhere.addActor(actorType,
-                    QueryProvider.getQueryAnalzyer(queryAnalysisProvider).getParameterSyntax());
+                fromWhere.addActor(actorType);
             } else {
                 // the simple case: we simply add the parameter
                 // FIXME: in HQL the parameter syntax is a tree (: paamName) not an IDENT

@@ -135,6 +135,18 @@
       
       <deprecated>true</deprecated>
     </attribute>
+    
+    <attribute>
+      <name>filters</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>Semicolon-separated list of filter conditions. A filter condition uses at least one $parameter. 
+      If all parameter used in a filter condition have a value set, the filter will be added to the WHERE of the query.
+      </description>
+      
+      <deprecated>false</deprecated>
+    </attribute>
+    
 
   </tag>
 
@@ -158,6 +170,20 @@
     <attribute name="authorize" specifiedIn="list" />
     <attribute name="countVar" specifiedIn="list" />
     <attribute name="maxCountVar" specifiedIn="list" />
+    
+    <attribute>
+      <name>context</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <description>If set to true, the mak:object tag will only give context, i.e. run no queries. Giving context means 
+      declaring the labels in the FROM section, to enclose an included page, so that it makes sense on its own.
+      If the mak:object has no parent list/object it means that the page is not included anywhere so it is probably being tested on its own. 
+      In that case, each declared FROM label can be passed as the $label parameter. 
+      </description>
+      
+      <deprecated>false</deprecated>
+    </attribute>
+    
   </tag>
 
  <tag>
@@ -1776,6 +1802,15 @@ The output will be < [x] label >< elementSeparator >< [x] label >]]></descriptio
     <see>value</see>
   </function>
 
+  <function>
+    <name>printValue</name>
+    <descriptionPage>PrintExprFunctionDescription</descriptionPage>
+    <function-class>org.makumba.list.functions.ValueFunction</function-class>
+    <function-signature>Object printValue(java.lang.String)</function-signature>
+    <example>PrintExprFunctionExample</example>
+    <see>value</see>
+  </function>
+  
   <function>
     <name>hasValueChanged</name>
     <descriptionPage>HasValueChangedFunctionDescription</descriptionPage>

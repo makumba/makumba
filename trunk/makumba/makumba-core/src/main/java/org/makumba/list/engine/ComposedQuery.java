@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.makumba.DataDefinition;
@@ -36,6 +37,7 @@ import org.makumba.LogicException;
 import org.makumba.UnauthorizedException;
 import org.makumba.list.engine.ComposedQueryAuthorization.AuthorizationInfo;
 import org.makumba.providers.QueryAnalysisProvider;
+import org.makumba.providers.QueryParameters;
 import org.makumba.providers.QueryProvider;
 
 /**
@@ -121,6 +123,9 @@ public class ComposedQuery implements Serializable {
     /** Standard index for DISTINCT flag */
     public static final int DISTINCT = 6;
 
+    /** Standard index for FILTERS flag */
+    public static final int FILTERS = 7;
+
     private static final List<AuthorizationInfo> EMPTY_AUTH = new ArrayList<AuthorizationInfo>();
 
     /** Section texts, encoded with the standard indexes */
@@ -146,6 +151,8 @@ public class ComposedQuery implements Serializable {
 
     /** The labels of the keyset */
     List<String> keysetLabels;
+
+    QueryParameters filterAttributes;
 
     /** A Vector containing an empty vector. Used for empty keysets */
     static List<List<Integer>> empty;
@@ -191,6 +198,31 @@ public class ComposedQuery implements Serializable {
         if (getFromSection() != null) {
             fromAnalyzerOQL += "FROM " + getFromSection();
         }
+        if (derivedSections.length > FILTERS && StringUtils.isNotBlank(derivedSections[FILTERS])) {
+            StringTokenizer st = new StringTokenizer(derivedSections[FILTERS], ";");
+            String filterAnalyzerOQL = "SELECT ";
+            boolean filters = false;
+            while (st.hasMoreTokens()) {
+                filters = true;
+                String cond = st.nextToken();
+                filterAnalyzerOQL += cond;
+                filterAnalyzerOQL += ", ";
+            }
+
+            if (!filters) {
+                return;
+            }
+            filterAnalyzerOQL += " 1 ";
+            if (getFromSection() != null) {
+                filterAnalyzerOQL += "FROM " + getFromSection();
+            }
+            this.filterAttributes = qep.getQueryAnalysis(filterAnalyzerOQL).getQueryParameters();
+        }
+
+    }
+
+    public QueryParameters getFilterAttributes() {
+        return filterAttributes;
     }
 
     /**
@@ -252,7 +284,7 @@ public class ComposedQuery implements Serializable {
                 String label = st.nextToken().trim();
                 int j = label.lastIndexOf(" ");
                 if (j == -1) {
-                    throw new RuntimeException("invalid FROM");
+                    throw new RuntimeException("invalid FROM, looking for a label");
                 }
                 label = label.substring(j + 1).trim();
 
@@ -390,12 +422,35 @@ public class ComposedQuery implements Serializable {
             // add the static condition to the WHERE part
             // first, check if the dynamic where condition is not blank; for this, we need to evaluate it
 
-            if (StringUtils.isNotBlank(vars[WHERE])) {
-                vars[WHERE] += " AND " + derivedSections[STATIC_WHERE];
-            } else {
-                vars[WHERE] = derivedSections[STATIC_WHERE];
+            addToWhere(vars, derivedSections[STATIC_WHERE]);
+        }
+
+        if (derivedSections.length > FILTERS && StringUtils.isNotBlank(derivedSections[FILTERS])) {
+            StringTokenizer st = new StringTokenizer(derivedSections[FILTERS], ";");
+            while (st.hasMoreTokens()) {
+                String cond = st.nextToken();
+                boolean allSet = true;
+                int n, start = 0;
+                while ((n = cond.indexOf('$', start)) != -1) {
+                    start = n + 1;
+                    while (start < cond.length() && Character.isJavaIdentifierPart(cond.charAt(start++))) {
+                        ;
+                    }
+                    try {
+                        Object val = qep.getContextAttributes().getAttribute(cond.substring(n + 1, start - 1));
+                        if (val == null || new Vector<Object>().equals(val) || "".equals(val)) {
+                            allSet = false;
+                        }
+                    } catch (LogicException e) {
+                        allSet = false;
+                    }
+                }
+                if (allSet) {
+                    addToWhere(vars, cond);
+                }
             }
         }
+
         Projections pr = basicProjections;
         List<AuthorizationInfo> authorize = EMPTY_AUTH;
         if (!authorization.isEmpty()) {
@@ -408,6 +463,14 @@ public class ComposedQuery implements Serializable {
 
         return new Grouper(previousKeyset, qep.execute(computeQuery(pr, vars, false), args, offset, limit).iterator(),
                 authorize);
+    }
+
+    void addToWhere(String[] vars, String condition) {
+        if (StringUtils.isNotBlank(vars[WHERE])) {
+            vars[WHERE] += " AND " + condition;
+        } else {
+            vars[WHERE] = condition;
+        }
     }
 
     public synchronized void analyze() {

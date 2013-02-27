@@ -30,6 +30,8 @@ public abstract class QueryProvider {
 
     private QueryAnalysisProvider qap;
 
+    private Attributes context;
+
     protected abstract String getQueryAnalysisProviderClass();
 
     public static int queryAnalyzers = NamedResources.makeStaticCache("Query analyzers", new NamedResourceFactory() {
@@ -91,6 +93,11 @@ public abstract class QueryProvider {
 
     protected void init(String dataSource, Attributes a) {
         this.dataSource = dataSource;
+        this.context = a;
+    }
+
+    public Attributes getContextAttributes() {
+        return context;
     }
 
     protected abstract Vector<Dictionary<String, Object>> executeRaw(String query, Map<String, Object> args,

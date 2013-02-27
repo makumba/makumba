@@ -25,6 +25,9 @@ package org.makumba.list.tags;
 
 import javax.servlet.jsp.JspException;
 
+import org.makumba.LogicException;
+import org.makumba.analyser.PageCache;
+
 /**
  * mak:object tag
  * 
@@ -46,4 +49,60 @@ public class ObjectTag extends QueryTag {
         super.setNumberOfIterations(max);
     }
 
+    // fake means that the mak:object has no query
+    private boolean fake;
+
+    public void setContext(String s) {
+        fake = "true".equals(s);
+    }
+
+    @Override
+    public boolean allowsIdenticalKey() {
+        return isFake();
+    }
+
+    @Override
+    public boolean isFake() {
+        return fake && findAncestorWithClass(this, QueryTag.class) != null;
+    }
+
+    @Override
+    public void doStartAnalyze(PageCache pageCache) {
+        if (isFake()) {
+            return;
+        }
+        super.doStartAnalyze(pageCache);
+    }
+
+    @Override
+    public void doEndAnalyze(PageCache pageCache) {
+        if (isFake()) {
+            return;
+        }
+        super.doEndAnalyze(pageCache);
+    }
+
+    @Override
+    public int doAnalyzedStartTag(PageCache pageCache) throws LogicException, JspException {
+        if (isFake()) {
+            return EVAL_BODY_INCLUDE;
+        }
+        return super.doAnalyzedStartTag(pageCache);
+    }
+
+    @Override
+    public int doAfterBody() throws JspException {
+        if (isFake()) {
+            return SKIP_BODY;
+        }
+        return super.doAfterBody();
+    }
+
+    @Override
+    public int doAnalyzedEndTag(PageCache pageCache) throws JspException {
+        if (isFake()) {
+            return EVAL_PAGE;
+        }
+        return super.doAnalyzedEndTag(pageCache);
+    }
 }
