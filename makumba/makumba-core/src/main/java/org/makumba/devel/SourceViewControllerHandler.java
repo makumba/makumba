@@ -118,7 +118,7 @@ public class SourceViewControllerHandler extends ControllerHandler {
                 sw instanceof javaViewer ? DeveloperTool.JAVA_VIEWER.getKey() : DeveloperTool.MDD_VIEWER.getKey());
 
             if (!(relativeDirectory.equals("classes") || relativeDirectory.equals("classes/dataDefinitions"))) {
-                w.println("<b><a href=\"../\">../</a></b> (up one level)");
+                w.println("<b><a href=\"../\"><i class=\"icon-arrow-left\"></i>../</a></b> (up one level)");
             }
 
             if (sw instanceof javaViewer) {
@@ -129,7 +129,7 @@ public class SourceViewControllerHandler extends ControllerHandler {
                 String[] list = dir.list(new SuffixFileFilter(".java"));
                 Arrays.sort(list);
                 for (String s : list) {
-                    w.println("<b><a href=\"" + s + "\">" + s + "</a></b>");
+                    w.println("<b><a href=\"" + s + "\"><i class=\"icon-file\"></i>" + s + "</a></b>");
                 }
             } else if (sw instanceof mddViewer) {
                 // process and display directories
@@ -144,33 +144,29 @@ public class SourceViewControllerHandler extends ControllerHandler {
                     s = s.substring(1, s.lastIndexOf(".")).replace('/', '.');
                     String addr = req.getContextPath() + Configuration.getToolLocation(DeveloperTool.MDD_VIEWER) + "/"
                             + s;
-                    w.println("<a href=\"" + addr + "\">" + element + "</a>");
+                    w.println("<b><a href=\"" + addr + "\"><i class=\"icon-file\"></i>" + element + "</a></b>");
                 }
             } else {
                 java.util.logging.Logger.getLogger("org.makumba.devel").warning(
                     "Don't know how to handle viewer: " + sw + "(" + sw.getClass() + ")");
             }
             w.println("</pre>");
-            DevelUtils.printDeveloperSupportFooter(w);
-            w.println("</body></html>");
+            DevelUtils.writePageEnd(w);
         }
         return false;
     }
 
     public static void printDirlistingHeader(PrintWriter w, String dir, String relativeDirectory, String contextPath,
             String key) throws IOException {
-        w.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
-        w.println("<html><head><title>" + relativeDirectory + "</title>");
-        w.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" >");
+        DevelUtils.writePageBegin(w);
         DevelUtils.writeStylesAndScripts(w, contextPath);
-        w.println("</head><body bgcolor=white><table width=\"100%\" bgcolor=\"lightblue\"><tr><td rowspan=\"2\">");
-        w.print("<font size=\"+2\"><a href=\".\"><font color=\"darkblue\">" + relativeDirectory + "</font></a></font>");
-        w.print("<font size=\"-1\"><br>" + dir + "</font>");
-        w.print("</td><td align=\"right\">");
+        DevelUtils.writeTitleAndHeaderEnd(w, relativeDirectory);
+        DevelUtils.printNavigationBegin(w,"Directory Listing");
         DevelUtils.writeDevelUtilLinks(w, key, contextPath);
-        w.print("</td>");
-
-        w.print("</tr></table>\n<pre style=\"margin-top:0\">");
+        DevelUtils.printNavigationEnd(w);
+        w.println("  <h2><a href=\".\">" + relativeDirectory + "</a></h2>");
+        w.println(dir);
+        w.print("<pre>");
     }
 
     public static void processDirectory(PrintWriter w, File dir, String extension) {
@@ -178,7 +174,8 @@ public class SourceViewControllerHandler extends ControllerHandler {
         Arrays.sort(list);
         for (File element : list) {
             if (extension == null || containsFilesWithExtension(element, extension)) {
-                w.println("<b><a href=\"" + element.getName() + "/\">" + element.getName() + "/</a></b>");
+                w.println("<b><a href=\"" + element.getName() + "/\"><i class=\"icon-folder-close\"></i>" +
+                        element.getName() + "/</a></b>");
             }
         }
     }

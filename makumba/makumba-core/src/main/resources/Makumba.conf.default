@@ -40,6 +40,7 @@ objectIdConverter=/dataValueConverter
 relationCrawler=/relationCrawler
 errorLogViewer=/errorLogViewer
 makumbaCacheCleaner=/makumbaCacheCleaner
+mddGraphViewer=/mddGraphViewer
 
 [makumbaToolConfig]
 repositoryURL=http://makumba.svn.sourceforge.net/viewvc/makumba/trunk/makumba/webapps/tests/

@@ -39,6 +39,7 @@ import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.db.makumba.DBConnection;
+import org.makumba.providers.Configuration;
 import org.makumba.providers.DeveloperTool;
 import org.makumba.providers.TransactionProvider;
 
@@ -82,31 +83,34 @@ public class DataQueryServlet extends DataServlet {
         }
 
         PrintWriter writer = response.getWriter();
-        DevelUtils.writePageBegin(writer);
-        DevelUtils.writeStylesAndScripts(writer, contextPath);
-        DevelUtils.writeTitleAndHeaderEnd(writer, "OQL Query Translater & executer");
 
         writePageContentHeader(null, writer, null, DeveloperTool.DATA_QUERY);
 
-        writer.println("<form method=\"get\">");
-        writer.println("<table width=\"100%\" cellpadding=\"5\">");
-        writer.println("  <tr>");
-        writer.println("    <th>Query</th>");
-        writer.println("    <td colspan=\"3\" width=\"100%\"><textarea name=\"query\" style=\"width: 100%\" rows=\"2\">"
-                + query + "</textarea></td>");
-        writer.println("  </tr>");
-        writer.println("  <tr>");
-        writer.println("    <th>Query&nbsp;Language</th>");
-        writer.println("    <td>OQL <input name=\"queryLanguage\" type=\"radio\" value=\"oql\" checked> HQL <input name=\"queryLanguage\" type=\"radio\" value=\"hql\"></td>");
-        writer.println("  </tr>");
-        writer.println("  <tr>");
-        writer.println("    <th>Limit</th>");
-        writer.println("    <td><input name=\"limit\" type=\"text\" value=\"" + limit + "\"></td>");
-        writer.println("  </tr>");
-        writer.println("  <tr>");
-        writer.println("    <td colspan=\"2\"><input type=\"submit\" accesskey=\"e\" value=\"Translate & (E)xecute\"></td>");
-        writer.println("  <tr>");
-        writer.println("</table>");
+        writer.println("<form method=\"get\" class=\"form-horizontal\">");
+        writer.println("  <div class=\"control-group\">");
+        writer.println("    <label class=\"control-label\" for=\"query\">Query</label>");
+        writer.println("    <div class=\"controls\">");
+        writer.println("      <textarea id=\"query\" name=\"query\" style=\"width: 100%\" rows=\"2\">" + query + "</textarea>");
+        writer.println("    </div>");
+        writer.println("  </div>");
+        writer.println("  <div class=\"control-group\">");
+        writer.println("    <label class=\"control-label\">Query Language</label>");
+        writer.println("    <div class=\"controls\">");
+        writer.println("      <label class=\"radio inline\"><input name=\"queryLanguage\" type=\"radio\" value=\"oql\" checked>OQL</label>");
+        writer.println("      <label class=\"radio inline\"><input name=\"queryLanguage\" type=\"radio\" value=\"hql\">HQL</label>");
+        writer.println("    </div>");
+        writer.println("  </div>");
+        writer.println("  <div class=\"control-group\">");
+        writer.println("    <label class=\"control-label\" for=\"limit\">Limit</label>");
+        writer.println("    <div class=\"controls\">");
+        writer.println("      <input id=\"limit\" name=\"limit\" type=\"text\" value=\"" + limit + "\"></td>");
+        writer.println("    </div>");
+        writer.println("  </div>");
+        writer.println("  <div class=\"control-group\">");
+        writer.println("    <div class=\"controls\">");
+        writer.println("      <input type=\"submit\" class=\"btn\" accesskey=\"e\" value=\"Translate & (E)xecute\">");
+        writer.println("    </div>");
+        writer.println("  </div>");
         writer.println("</form>");
 
         if (query != null && !query.equals("")) {
@@ -121,7 +125,8 @@ public class DataQueryServlet extends DataServlet {
                     if (oqlQuery instanceof org.makumba.db.makumba.sql.Query) {
                         writer.println("<hr>");
                         org.makumba.db.makumba.sql.Query sqlQuery = (org.makumba.db.makumba.sql.Query) ((DBConnection) t).getQuery(query);
-                        writer.println("SQL query: " + sqlQuery.getCommand(new HashMap<String, Object>()) + ";<br>");
+                        writer.println("<p><strong>SQL Query:</strong></p>");
+                        DevelUtils.printSQLQuery(writer,sqlQuery.getCommand(new HashMap<String, Object>()) + ";");
                         writer.println("<hr>");
                     }
                 } else {
@@ -148,46 +153,49 @@ public class DataQueryServlet extends DataServlet {
                 for (int i = 0; i < results.size(); i++) {
                     Dictionary<String, Object> d = results.get(i);
                     if (i == 0) {
-                        writer.println("<table cellpadding=\"5\">");
-                        writer.println("<tr>");
-                        writer.println("<th>#</th>");
+                        writer.println("<table class=\"table table-striped table-condensed table-nonfluid\">");
+                        writer.println("  <thead>");
+                        writer.println("    <tr>");
+                        writer.println("      <th>#</th>");
                         for (String projection : projections) {
-                            writer.println("<th>" + projection + "</th>");
+                            writer.println("      <th class=\"text-center\">" + projection + "</th>");
                         }
-                        writer.println("</tr>");
+                        writer.println("    </tr>");
+                        writer.println("  </thead>");
+                        writer.println("  <tbody>");
                     }
-                    writer.println("<tr class=\"" + (i % 2 == 0 ? "even" : "odd") + "\">");
-                    writer.println("<td>" + (i + 1) + "</td>");
+                    writer.println("    <tr>");
+                    writer.println("      <td>" + (i + 1) + "</td>");
                     for (String projection : projections) {
                         Object value = d.get(projection);
                         if (value instanceof Pointer) {
-                            writer.println("<td>" + DevelUtils.writePointerValueLink(contextPath, (Pointer) value)
+                            writer.println("      <td>" + DevelUtils.writePointerValueLink(contextPath, (Pointer) value)
                                     + "</td>");
                         } else {
-                            writer.println("<td>" + value + "</td>");
+                            writer.println("      <td>" + value + "</td>");
                         }
                     }
                     writer.println("</tr>");
                     if (i + 1 == results.size()) {
+                        writer.println("  </tbody>");
                         writer.println("</table>");
                     }
                 }
                 if (results.size() > 0) {
-                    writer.println("<span style=\"color: red; font-size: smaller; \"><i>Note that only projections that have at least one value not null will be shown</i></span>");
+                    writer.println("<div class=\"alert alert-error\">Note that only projections that have at least one value not null will be shown</div>");
                 } else {
-                    writer.println("<span style=\"color: red \"><i>No results found!</i></span>");
+                    writer.println("<div class=\"alert alert-error\">No results found!</div>");
                 }
 
             } catch (RuntimeWrappedException e) {
-                writer.println("<span style=\"color: red\"><i>" + e.getMessage() + "</i></span>");
-                writer.println("");
+                writer.println("<div class=\"alert alert-error\">" + e.getMessage() + "</div>");
                 writer.println("<div id=\"showStackTrace\" style=\"display: inline;\"><a href=\"javascript:toggleStackTrace();\" title=\"Show full stack trace\">--></a></div>");
                 writer.println("<div id=\"hideStackTrace\" style=\"display: none\"><a href=\"javascript:toggleStackTrace();\" title=\"Hide stack trace\"><--</a></div>");
-                writer.println("<div id=\"stackTrace\" style=\"white-space: pre; display: none; color: red; font-style: italic; font-size: smaller; margin-left: 40px; \">");
+                writer.println("<pre id=\"stackTrace\" style=\"display:none\">");
                 e.printStackTrace(writer);
-                writer.println("</div>");
+                writer.println("</pre>");
             } catch (org.makumba.OQLParseError e) {
-                writer.println("<span style=\"color: red\">Incorrect OQL query: <i>" + e.getMessage() + "</i></span>");
+                writer.println("<div class=\"alert alert-error\"><strong>Incorrect OQL query:</strong> " + e.getMessage() + "</div>");
             } finally {
                 t.close();
             }

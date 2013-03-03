@@ -42,10 +42,15 @@ public abstract class DataServlet extends HttpServlet {
 
     protected String toolLocation = null;
 
+    protected String toolName;
+
+    protected String[] additionalScripts;
+
     public DataServlet(DeveloperTool toolType) {
         this.toolType = toolType;
         toolLocation = Configuration.getToolLocation(toolType);
         browsePath = contextPath + Configuration.getToolLocation(toolType);
+        toolName = toolType.getName();
     }
 
     @Override
@@ -63,68 +68,66 @@ public abstract class DataServlet extends HttpServlet {
             type = type.substring(1);
         }
         browsePath = type.replace('.', '/').substring(0, type.lastIndexOf('.') + 1);
+
+        PrintWriter writer = response.getWriter();
+
+        DevelUtils.writePageBegin(writer);
+        DevelUtils.writeStylesAndScripts(writer, contextPath, additionalScripts);
+        DevelUtils.writeTitleAndHeaderEnd(writer, toolName);
     }
 
-    protected void writePageContentHeader(String type, PrintWriter w, String dataBaseName, DeveloperTool tool) {
-        w.println("<body bgcolor=\"white\">");
-        w.println("<table width=\"100%\" bgcolor=\"lightblue\">");
-        w.println("  <tr>");
-        w.println("    <td>");
-        if (tool == DeveloperTool.OBJECT_VIEWER || tool == DeveloperTool.DATA_LISTER) {
-            if (type != null && !type.equals("")) {
-                w.println("      <a href=\"" + contextPath + Configuration.getToolLocation(DeveloperTool.MDD_VIEWER)
-                        + "/" + type + "\"><span style=\"font-size: x-large\"><span style=\"color: darkblue;\">" + type
-                        + "</span></a> data</span>");
-            } else {
-                w.println("      <span style=\"font-size: large; color: darkblue;\">Browse to select type for data listing</span>");
-            }
-            if (dataPointer != null) {
-                w.println(" <i>for Pointer " + dataPointer.toExternalForm()
-                        + " (<span title=\"DBSV:UID\" style=\"border-bottom:thin dotted;\">" + dataPointer
-                        + "</span> | <span title=\"Database value\" style=\"border-bottom:thin dotted;\">"
-                        + dataPointer.longValue() + "</span>)</i>");
-            }
-            if (dataBaseName != null) {
-                w.println("<br>in Makumba database: " + dataBaseName);
-            }
-        } else if (tool == DeveloperTool.DATA_QUERY) {
-            w.println("      <span style=\"font-size: x-large\">Query translater & executer</span><br>");
-            w.println("      <span style=\"font-size: small\">Insert your query in OQl here, and get the created SQL and the results of the query.</span>");
-        } else if (tool == DeveloperTool.ERRORLOG_VIEWER) {
-            w.println("      <span style=\"font-size: x-large\">Error log viewer</span><br>");
-            w.println("      <span style=\"font-size: small\">List of Makumba errors</span>");
-        } else if (tool == DeveloperTool.OBJECT_ID_CONVERTER) {
-            w.println("      <span style=\"font-size: x-large\">Makumba Pointer value convertor</span>");
-            if (dataBaseName != null) {
-                w.println("<br>in Makumba database: " + dataBaseName);
-            }
-        } else if (tool == DeveloperTool.REGEXP_TESTER) {
-            w.println("      <span style=\"font-size: x-large\">Regular Expression tester</span><br>");
-            w.println("      <span style=\"font-size: small\">Test regular expression for data validation</span>");
-        }
-        w.println("    </td>");
-        w.println("    <td align=\"right\" valign=\"top\" style=\"padding: 5px; padding-top: 10px\">");
+    protected void writePageContentHeader(String type, PrintWriter w, String dataBaseName, DeveloperTool tool) throws IOException {
+        DevelUtils.printNavigationBegin(w, toolName);
+
         if (tool == DeveloperTool.OBJECT_ID_CONVERTER) {
-            w.println("      <span class=\"active\">Pointer value converter</span>");
+            DevelUtils.printNavigationButton(w,"Pointer value converter","#","",1);
         }
-        w.println("      &nbsp;&nbsp;&nbsp;");
+
         if (tool == DeveloperTool.DATA_LISTER && !type.equals("") || tool == DeveloperTool.OBJECT_VIEWER) {
-            w.println("      <a href=\"" + browsePath + "\">browse</a>");
-            w.println("      &nbsp;&nbsp;&nbsp;");
-            w.println("      <span class=\"active\">data</span>");
+            DevelUtils.printNavigationButton(w,"browse",browsePath,"",0);
+            DevelUtils.printNavigationButton(w,"data","#","",1);
         } else if (tool == DeveloperTool.OBJECT_ID_CONVERTER || tool == DeveloperTool.DATA_QUERY) {
-            w.println("      <a href=\"" + browsePath + "\">browse</a>");
+
+            DevelUtils.printNavigationButton(w,"browse",browsePath,"",0);
         } else if (tool == DeveloperTool.REGEXP_TESTER) {
         } else {
-            w.println("      <span class=\"active\">browse</span>");
+            DevelUtils.printNavigationButton(w,"browse","#","",1);
         }
 
-        w.println("&nbsp;&nbsp;&nbsp;");
         DevelUtils.writeDevelUtilLinks(w, tool.getKey(), contextPath);
+        DevelUtils.printNavigationEnd(w);
 
-        w.println("    </td>");
-        w.println("  </tr>");
-        w.println("</table>");
+        if (tool == DeveloperTool.OBJECT_VIEWER || tool == DeveloperTool.DATA_LISTER) {
+            if (type != null && !type.equals("")) {
+                w.println("<h2><a href=\"" + contextPath + Configuration.getToolLocation(DeveloperTool.MDD_VIEWER)
+                        + "/" + type + "\">" + type
+                        + "</a></h2>");
+            } else {
+                w.println("  <p class=\"lead\">Browse to select type for data listing</p>");
+            }
+            if (dataPointer != null) {
+                w.println(" <p class=\"lead\">Showing data for Pointer <em>" + dataPointer.toExternalForm()
+                        + " <small>(<abbr title=\"DBSV:UID\">" + dataPointer
+                        + "</abbr> | <abbr title=\"Database value\">"
+                        + dataPointer.longValue() + "</abbr>)</small></em></p>");
+            }
+        } else if (tool == DeveloperTool.DATA_QUERY) {
+            w.println("      <p class=\"lead\">Insert your query in OQL here, and get the created SQL and the results of the query.</p>");
+        } else if (tool == DeveloperTool.ERRORLOG_VIEWER) {
+            w.println("      <p class=\"lead\">List of Makumba errors</p>");
+        } else if (tool == DeveloperTool.OBJECT_ID_CONVERTER) {
+            w.println("      <p class=\"lead\">Convert Makumba pointer value from various formats</p>");
+        } else if (tool == DeveloperTool.REGEXP_TESTER) {
+            w.println("      <p class=\"lead\">Test regular expression for data validation</p>");
+        }
+
+        if (tool == DeveloperTool.OBJECT_VIEWER || tool == DeveloperTool.DATA_LISTER
+                || tool == DeveloperTool.OBJECT_ID_CONVERTER) {
+            if (dataBaseName != null) {
+                w.println("<p>Data from Makumba database: " + dataBaseName + "</p>");
+            }
+        }
+
     }
 
     /**

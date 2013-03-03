@@ -63,6 +63,7 @@ public class RegexpTester extends DataServlet {
 
     public RegexpTester() {
         super(DeveloperTool.REGEXP_TESTER);
+        additionalScripts = MakumbaSystem.getClientsideValidationProvider().getNeededJavaScriptFileNames();
     }
 
     @Override
@@ -76,10 +77,6 @@ public class RegexpTester extends DataServlet {
         String paramTestValues = request.getParameter("testValues");
 
         PrintWriter writer = response.getWriter();
-        DevelUtils.writePageBegin(writer);
-        DevelUtils.writeStylesAndScripts(writer, contextPath,
-            MakumbaSystem.getClientsideValidationProvider().getNeededJavaScriptFileNames());
-        DevelUtils.writeTitleAndHeaderEnd(writer, DeveloperTool.REGEXP_TESTER.getName());
 
         LinkedHashMap<FieldDefinition, String> fieldsWithRegexp = new LinkedHashMap<FieldDefinition, String>();
         ArrayList<DataDefinitionParseError> errors = new ArrayList<DataDefinitionParseError>();

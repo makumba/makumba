@@ -43,9 +43,6 @@ public class DataTypeListerServlet extends DataServlet {
         super.doGet(request, response);
 
         PrintWriter writer = response.getWriter();
-        DevelUtils.writePageBegin(writer);
-        DevelUtils.writeStylesAndScripts(writer, contextPath);
-        DevelUtils.writeTitleAndHeaderEnd(writer, "Data Lister");
 
         DataDefinition dd = null;
 
@@ -78,14 +75,13 @@ public class DataTypeListerServlet extends DataServlet {
                     otherField = dd.getTitleFieldName();
                 }
 
-                writer.println("<table border=\"0\" cellpadding=\"5\">");
-                writer.println("  <tr class=\"even\" valign=\"bottom\">");
-                writer.println("    <th align=\"center\"><b>#</b></th>");
-                writer.println("    <form method=\"get\">");
-                writer.println("    <input type=\"hidden\" name=\"type\" value=\"" + type + "\">");
 
-                writer.println("    <th>");
-                writer.println("      <select size=\"1\" name=\"titleField\">");
+                writer.println("<form method=\"get\" class=\"form-horizontal\">");
+                writer.println("  <input type=\"hidden\" name=\"type\" value=\"" + type + "\">");
+                writer.println("  <div class=\"control-group\">");
+                writer.println("    <label class=\"control-label\" for=\"titleField\">Title field</label>");
+                writer.println("    <div class=\"controls\">");
+                writer.println("      <select id=\"titleField\" name=\"titleField\">");
                 for (int i = 3; i < dd.getFieldDefinitions().size(); i++) {
                     FieldDefinition fdAll = dd.getFieldDefinition(i);
                     String e = dd.getFieldDefinition(i).getName();
@@ -95,11 +91,14 @@ public class DataTypeListerServlet extends DataServlet {
                     }
                     writer.println(">" + fdAll.getName() + " (" + fdAll.getType() + ")</option>");
                 }
-                writer.println("        </select>");
+                writer.println("      </select>");
 
-                writer.println("    </th>");
-                writer.println("    <th>");
-                writer.println("      <select size=\"1\" name=\"otherField\">");
+                writer.println("    </div>");
+                writer.println("  </div>");
+                writer.println("  <div class=\"control-group\">");
+                writer.println("    <label class=\"control-label\" for=\"otherField\">Other field</label>");
+                writer.println("    <div class=\"controls\">");
+                writer.println("      <select id=\"otherField\" name=\"otherField\">");
                 for (int i = 3; i < dd.getFieldDefinitions().size(); i++) {
                     FieldDefinition fdAll = dd.getFieldDefinition(i);
                     String e = dd.getFieldDefinitions().get(i).getName();
@@ -111,14 +110,20 @@ public class DataTypeListerServlet extends DataServlet {
                 }
                 writer.println("      </select>");
 
-                writer.println("    </th>");
-                writer.println("    <th>Limit</th>");
-                writer.println("    <td>");
-                writer.println("      <input name=\"limit\" type=\"text\" size=\"5\" value=\"" + limit + "\">");
-                writer.println("      <input TYPE=\"submit\" value=\"View\">");
-                writer.println("    </td>");
-                writer.println("    </form>");
-                writer.println("  </tr>");
+                writer.println("    </div>");
+                writer.println("  </div>");
+                writer.println("  <div class=\"control-group\">");
+                writer.println("    <label class=\"control-label\" for=\"limit\">Limit</label>");
+                writer.println("    <div class=\"controls\">");
+                writer.println("      <input id=\"limit\" name=\"limit\" type=\"text\" size=\"5\" value=\"" + limit + "\">");
+                writer.println("    </div>");
+                writer.println("  </div>");
+                writer.println("  <div class=\"control-group\">");
+                writer.println("    <div class=\"controls\">");
+                writer.println("      <input TYPE=\"submit\" class=\"btn\" value=\"View\">");
+                writer.println("    </div>");
+                writer.println("  </div>");
+                writer.println("</form>");
 
                 String what = "";
                 for (int i = 3; i < dd.getFieldDefinitions().size(); i++) {
@@ -133,8 +138,18 @@ public class DataTypeListerServlet extends DataServlet {
                         + " as other FROM " + type + " obj";
                 Vector<Dictionary<String, Object>> results = t.executeQuery(query, null, 0, limit);
 
+                writer.println("<table class=\"table table-striped table-condensed table-nonfluid\">");
+                writer.println("  <thead>");
+                writer.println("    <tr>");
+                writer.println("      <th>#</th>");
+                writer.println("      <th>" + titleField + "</th>");
+                writer.println("      <th>" + otherField + "</th>");
+                writer.println("      </th>");
+                writer.println("    </tr>");
+                writer.println("  </thead>");
+                writer.println("  <tbody>");
                 for (int i = 0; i < results.size(); i++) {
-                    writer.println("<tr class=\"" + (i % 2 == 0 ? "even" : "odd") + "\">");
+                    writer.println("<tr>");
                     writer.println("<td>" + (i + 1) + "</td>");
                     writer.println("<td>");
                     writer.println("<a href=\"" + contextPath
@@ -166,14 +181,15 @@ public class DataTypeListerServlet extends DataServlet {
 
                     writer.println("</tr>");
                 }
-
+                writer.println("  </tbody>");
                 writer.println("</table>");
 
                 org.makumba.db.makumba.Query oqlQuery = ((DBConnection) t).getQuery(query);
                 if (oqlQuery instanceof org.makumba.db.makumba.sql.Query) {
                     writer.println("<hr>");
                     org.makumba.db.makumba.sql.Query sqlQuery = (org.makumba.db.makumba.sql.Query) ((DBConnection) t).getQuery(query);
-                    writer.println("SQL query: " + sqlQuery.getCommand(new HashMap<String, Object>()) + ";<br>");
+                    writer.println("<p>SQL query:</p>");
+                    DevelUtils.printSQLQuery(writer,sqlQuery.getCommand(new HashMap<String, Object>()) + ";");
                 }
 
             } finally {
@@ -209,9 +225,9 @@ public class DataTypeListerServlet extends DataServlet {
         writePageContentHeader(type, writer, TransactionProvider.getInstance().getDefaultDataSourceName(),
             DeveloperTool.DATA_LISTER);
 
-        writer.print("<pre style=\"margin-top:0\">");
+        writer.print("<pre>");
         if (!relativeDirectory.equals("dataDefinitions")) {
-            writer.println("<b><a href=\"../\">../</a></b> (up one level)");
+            writer.println("<b><a href=\"../\"><i class=\"icon-arrow-left\"></i>../</a></b> (up one level)");
         }
         // process and display directories
         SourceViewControllerHandler.processDirectory(writer, dir, "dd");
@@ -224,8 +240,9 @@ public class DataTypeListerServlet extends DataServlet {
                 String ddname = pathInfo + s;
                 ddname = ddname.substring(1, ddname.lastIndexOf(".")).replace('/', '.');
                 String addr = contextPath + Configuration.getToolLocation(DeveloperTool.DATA_LISTER) + "/" + ddname;
-                writer.println("<a href=\"" + addr + "\">" + s + "</a>");
+                writer.println("<b><a href=\"" + addr + "\"><i class=\"icon-file\"></i>" + s + "</a></b>");
             }
         }
+        writer.print("</pre>");
     }
 }

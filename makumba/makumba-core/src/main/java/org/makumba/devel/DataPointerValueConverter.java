@@ -79,30 +79,25 @@ public class DataPointerValueConverter extends DataServlet {
         }
 
         PrintWriter writer = response.getWriter();
-        DevelUtils.writePageBegin(writer);
-        DevelUtils.writeStylesAndScripts(writer, contextPath);
-        DevelUtils.writeTitleAndHeaderEnd(writer, "Value Converter");
 
         writePageContentHeader(type, writer, TransactionProvider.getInstance().getDefaultDataSourceName(),
             DeveloperTool.OBJECT_ID_CONVERTER);
-
-        writer.println("<form>");
-        writer.println("<table>");
-        writer.println("  <tr>");
-        writer.println("    <th>From</th>");
-        writer.println("    <td>");
-        writer.println("      Database value <input type=\"radio\" name=\"fromType\" value=\"db\""
-                + (mode == FROM_DB ? " checked" : "") + ">&nbsp;");
-        writer.println("      External form <input type=\"radio\" name=\"fromType\" value=\"external\""
-                + (mode == FROM_EXTERNAL ? " checked" : "") + ">&nbsp;");
-        writer.println("      DBSV form <input type=\"radio\" name=\"fromType\" value=\"dbsv\""
-                + (mode == FROM_DBSV ? " checked" : "") + ">&nbsp;");
-        writer.println("    </td>");
-        writer.println("  </tr>");
-        writer.println("  <tr>");
-        writer.println("    <th>Data type</th>");
-        writer.println("    <td>");
-        writer.println("      <select name=\"dataType\">");
+        writer.println("<form class=\"form-horizontal\">");
+        writer.println("  <div class=\"control-group\">");
+        writer.println("    <label class=\"control-label\" for=\"from\">From</label>");
+        writer.println("    <div class=\"controls\">");
+        writer.println("      <label class=\"radio inline\"><input type=\"radio\" name=\"fromType\" value=\"db\""
+                + (mode == FROM_DB ? " checked" : "") + ">Database</label>");
+        writer.println("      <label class=\"radio inline\"><input type=\"radio\" name=\"fromType\" value=\"external\""
+                + (mode == FROM_EXTERNAL ? " checked" : "") + ">External</label>");
+        writer.println("      <label class=\"radio inline\"><input type=\"radio\" name=\"fromType\" value=\"dbsv\""
+                + (mode == FROM_DBSV ? " checked" : "") + ">DBSV</label>");
+        writer.println("    </div>");
+        writer.println("  </div>");
+        writer.println("  <div class=\"control-group\">");
+        writer.println("    <label class=\"control-label\" for=\"type\">Data type</label>");
+        writer.println("    <div class=\"controls\">");
+        writer.println("      <select id=\"type\"  name=\"dataType\">");
         Vector<String> v = DataDefinitionProvider.getInstance().getDataDefinitionsInDefaultLocations("test.brokenMdds");
         Collections.sort(v);
         for (int i = 0; i < v.size(); i++) {
@@ -110,17 +105,20 @@ public class DataPointerValueConverter extends DataServlet {
             writer.println("        <option value=\"" + v.get(i) + "\"" + selected + ">" + v.get(i) + "</option>");
         }
         writer.println("      </select>");
-        writer.println("    </td>");
-        writer.println("  </tr>");
-        writer.println("  <tr>");
-        writer.println("    <th>Value</th>");
-        writer.println("    <td><input type=\"text\" name=\"value\" style=\"width: 100%\" value=\"" + paramValue
-                + "\"></td>");
-        writer.println("  </tr>");
-        writer.println("  <tr>");
-        writer.println("    <td colspan=\"2\" align=\"center\"><input type=\"submit\" value=\"convert\" ></td>");
-        writer.println("  </tr>");
-        writer.println("</table>");
+        writer.println("    </div>");
+        writer.println("  </div>");
+        writer.println("  <div class=\"control-group\">");
+        writer.println("    <label class=\"control-label\" for=\"value\">Value</label>");
+        writer.println("    <div class=\"controls\">");
+        writer.println("      <input id=\"value\" type=\"text\" name=\"value\" value=\"" + paramValue
+                + "\">");
+        writer.println("    </div>");
+        writer.println("  </div>");
+        writer.println("  <div class=\"control-group\">");
+        writer.println("    <div class=\"controls\">");
+        writer.println("      <input class=\"btn\" type=\"submit\" value=\"Convert\" ></td>");
+        writer.println("    </div>");
+        writer.println("  </div>");
         writer.println("</form>");
 
         if (paramValue != null && !paramValue.equals("")) {
@@ -129,14 +127,16 @@ public class DataPointerValueConverter extends DataServlet {
                 try {
                     pointer = new Pointer(paramDataType, paramValue);
                 } catch (InvalidValueException e) {
-                    writer.println("<span style=\"color: red;\">" + e.getMessage() + "</span>");
+                    DevelUtils.printErrorMessage(writer,"",e.getMessage());
                 }
             } else if (paramFromType.equals("db")) {
                 try {
                     pointer = new SQLPointer(paramDataType, Long.parseLong(paramValue));
                 } catch (NumberFormatException e) {
-                    writer.println("<span style=\"color: red;\">The Database Pointer value given is not a number!</span>");
+                    DevelUtils.printErrorMessage(writer,"","The Database Pointer value given is not a number!");
+                    writer.println("<pre id=\"stackTrace\">");
                     e.printStackTrace();
+                    writer.println("</pre>");
                 }
             } else if (paramFromType.equals("dbsv")) {
                 try {
@@ -144,29 +144,34 @@ public class DataPointerValueConverter extends DataServlet {
                     Integer uid = Integer.parseInt(paramValue.split(":")[1]);
                     pointer = new SQLPointer(paramDataType, dbsv, uid);
                 } catch (NumberFormatException e) {
-                    writer.println("<span style=\"color: red;\">The Pointer value given is not in DBSV format ('DBSV:UID')!</span>");
+                    DevelUtils.printErrorMessage(writer,"","The Pointer value given is not in DBSV format ('DBSV:UID')!");
+                    writer.println("<pre id=\"stackTrace\">");
                     e.printStackTrace();
+                    writer.println("</pre>");
                 }
             } else {
-                writer.println("<span style=\"color: red;\">Invalid form type param!</span>");
+                DevelUtils.printErrorMessage(writer,"","Invalid form type param!");
             }
             if (pointer != null) {
                 writer.println("<hr/>");
-                writer.println("<table>");
-                writer.println("  <tr>");
-                writer.println("    <th>External Value</th>");
-                writer.println("    <th>Database Value</th>");
-                writer.println("    <th>DBSV:UID</th>");
-                writer.println("  </tr>");
-                writer.println("  <tr>");
-                writer.println("    <td>" + pointer.toExternalForm() + "</td>");
-                writer.println("    <td>" + pointer.longValue() + "</td>");
-                writer.println("    <td>" + pointer.getDbsv() + ":" + pointer.getUid() + "</td>");
-                writer.println("  </tr>");
+                writer.println("<table class=\"table table-striped table-condensed table-nonfluid\">");
+                writer.println("  <thead>");
+                writer.println("    <tr>");
+                writer.println("      <th>External Value</th>");
+                writer.println("      <th>Database Value</th>");
+                writer.println("      <th>DBSV:UID</th>");
+                writer.println("    </tr>");
+                writer.println("  </thead>");
+                writer.println("  <tbody>");
+                writer.println("    <tr>");
+                writer.println("      <td>" + pointer.toExternalForm() + "</td>");
+                writer.println("      <td>" + pointer.longValue() + "</td>");
+                writer.println("      <td>" + pointer.getDbsv() + ":" + pointer.getUid() + "</td>");
+                writer.println("    </tr>");
+                writer.println("  </tbody>");
                 writer.println("</table>");
             }
         }
-
         DevelUtils.writePageEnd(writer);
 
     }

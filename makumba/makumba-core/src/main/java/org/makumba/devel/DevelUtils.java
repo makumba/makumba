@@ -1,8 +1,8 @@
 package org.makumba.devel;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -33,7 +33,10 @@ public class DevelUtils {
     public static void writeScripts(PrintWriter w, String contextPath, String... additionalScripts) {
         String path = contextPath + Configuration.getServletLocation(MakumbaServlet.RESOURCES) + "/"
                 + MakumbaResourceServlet.RESOURCE_PATH_JAVASCRIPT;
-        w.println("<script type=\"text/javascript\" src=\"" + path + "makumbaDevelScripts.js\"></script>\n");
+        w.println("<script type=\"text/javascript\" src=\"" + path + "jquery.min.js\"></script>");
+        w.println("<script type=\"text/javascript\" src=\"" + path + "makumbaDevelScripts.js\"></script>");
+        w.println("<script type=\"text/javascript\" src=\"" + path + "bootstrap.min.js\"></script>");
+        w.println("<script type=\"text/javascript\" src=\"" + path + "highlight.pack.js\"></script>");
         if (additionalScripts != null) {
             for (String s : additionalScripts) {
                 w.println("<script type=\"text/javascript\" src=\"" + path + s + "\"></script>\n");
@@ -41,11 +44,21 @@ public class DevelUtils {
         }
     }
 
-    public static void writeStyles(PrintWriter w, String contextPath) {
-        w.println("<link rel=\"StyleSheet\" type=\"text/css\" media=\"all\" href=\"" + contextPath
-                + Configuration.getServletLocation(MakumbaServlet.RESOURCES) + "/"
-                + MakumbaResourceServlet.RESOURCE_PATH_CSS + "makumbaDevelStyles.css\"/>");
+    public static void writeStyles(PrintWriter w, String contextPath, String... additionalStyles) {
+        String path = contextPath + Configuration.getServletLocation(MakumbaServlet.RESOURCES) + "/"
+                + MakumbaResourceServlet.RESOURCE_PATH_CSS;
+        w.println("<link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"" + path
+                + "bootstrap.min.css\"/>");
+        w.println("<link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"" + path
+                + "makumbaDevelStyles.css\"/>");
+        if (additionalStyles != null) {
+            for (String s : additionalStyles) {
+                w.println("<link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"" + path
+                        + s + "\"/>");
+            }
+        }
     }
+
 
     public static void writeStylesAndScripts(PrintWriter w, String contextPath, String... additionalScripts) {
         writeScripts(w, contextPath, additionalScripts);
@@ -59,7 +72,7 @@ public class DevelUtils {
     }
 
     public static void writePageBegin(PrintWriter w) {
-        w.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
+        w.println("<!DOCTYPE html>");
         w.println("<html>");
         w.println("<head>");
         w.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" >");
@@ -67,6 +80,7 @@ public class DevelUtils {
 
     public static void writePageEnd(PrintWriter w) throws IOException {
         printDeveloperSupportFooter(w);
+        w.println("</div>");
         w.println("</body>");
         w.println("</html>");
     }
@@ -93,50 +107,76 @@ public class DevelUtils {
         return result;
     }
 
-    public static void printPageHeader(PrintWriter w, String title) throws IOException {
-        printPageHeader(w, title, null, null, null, null);
+    public static void printNavigationBegin(PrintWriter w, String title) throws IOException {
+        w.println("<body>");
+        w.println("<div class=\"navbar\">");
+        w.println("  <div class=\"navbar-inner\">");
+        w.println("    <a class=\"brand\" href=\"#\">" + title + "</a>");
+        w.println("    <ul class=\"nav\">");
+        w.println("      <li class=\"divider-vertical\"></li>");
     }
 
-    public static void printPageHeader(PrintWriter w, String title, String virtualPath, String realPath,
-            String otherHeaderInfo, String repositoryLink) throws IOException {
-        w.println("<body bgcolor=white>");
-        w.println("<table width=\"100%\" bgcolor=\"lightblue\">");
-        w.println("<tr>");
-        w.println("<td rowspan=\"2\">");
+    public static void printNavigationEnd(PrintWriter w){
+        w.println("    </ul>");
+        w.println("  </div>");
+        w.println("</div>");
+        w.println("<div class=\"wrapper\">");
+    }
 
-        if (!StringUtils.isBlank(title) && !title.equals(virtualPath)) {
-            w.print("<font size=\"+2\"><font color=\"darkblue\">" + title + "</font></font>");
-        } else if (virtualPath != null) {
-            w.print("<font size=\"+2\"><a href=\"" + virtualPath + "\"><font color=\"darkblue\">" + virtualPath
-                    + "</font></a></font>");
+    public static void printPopoverLink(PrintWriter w, String name, String title, String popoverId){
+       w.println("<li><a href=\"#\" rel=\"popover\" data-title=\"" + title + "\" data-popover-id=\""
+               + popoverId + "\" title=\"" + title + "\">" + name + "</a></li>");
+    }
+
+    public static void printNavigationButton(PrintWriter w, String name, String link, String title, int type) {
+        switch (type) {
+            case 2:
+                w.println("<li class=\"disabled\"><a href=\"#\" title=\""+title+"\">"+name+"</a></li>");
+                break;
+            case 1:
+                w.println("<li class=\"active\"><a href=\"#\" title=\""+title+"\">"+name+"</a></li>");
+                break;
+            case 0:
+                w.println("<li><a href=\""+link+"\" title=\""+title+"\">"+name+"</a></li>");
+                break;
         }
-        if (StringUtils.isNotBlank(repositoryLink)) {
-            w.println(repositoryLink);
+    }
+
+    public static void printErrorMessage(PrintWriter w, String note, String message) {
+        if(StringUtils.isBlank(note)){
+            w.println("<div class=\"alert alert-error\"><strong>" + note + "</strong>" + message + "</div>");
+        } else {
+            w.println("<div class=\"alert alert-error\">" + message + "</div>");
         }
-        if (realPath != null) {
-            w.println("<font size=\"-1\"><br>" + new File(realPath).getCanonicalPath() + "</font>");
-        }
-        if (otherHeaderInfo != null) {
-            w.println(otherHeaderInfo);
-        }
+    }
+
+    public static void printSQLQuery(PrintWriter w, String sql) {
+        w.println("<pre>");
+        w.print("<code>");
+        w.println(sql);
+        w.println("</code></pre>");
     }
 
     public static void writeDevelUtilLinks(PrintWriter w, String toolKey, String contextPath) {
-        w.println("<a href=\"javascript:toggleElementDisplay(developerTools);\">Other tools</a>");
-        w.println("<div id=\"developerTools\" class=\"popup\" style=\"display: none; right: 8px;\">");
+        w.println("</ul>");
+        w.println("<ul class=\"nav pull-right\">");
+        w.println("<li class=\"divider-vertical\"></li>");
+        w.println("<li class=\"dropdown\"><a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">Other tools<b class=\"caret\"></b></a>");
+        w.println("<ul class=\"dropdown-menu\">");
         for (DeveloperTool t : DeveloperTool.values()) {
             if (!t.getKey().equals(toolKey) && t.isGeneric()) {
                 if (Configuration.getToolLocation(t) == null
                         || Configuration.getToolLocation(t) == Configuration.PROPERTY_NOT_SET) {
-                    w.print("<span style=\"color: grey\" title=\"Tool disabled via Makumba.conf\">" + t.getName()
-                            + "</span><br/>");
+                    w.print("<li class=\"disabled\"><a tabindex=\"-1\" href=\"#\" title=\"Tool disabled via Makumba.conf\">" + t.getName()
+                            + "</a></li>");
                 } else if (t.isGeneric()) {
-                    w.print("<a href=\"" + contextPath + Configuration.getToolLocation(t) + "\">" + t.getName()
-                            + "</a><br/>");
+                    w.print("<li><a tabindex=\"-1\" href=\"" + contextPath + Configuration.getToolLocation(t) + "\">" + t.getName()
+                            + "</a></li>");
                 }
             }
         }
-        w.println("</div>");
+        w.println("  </ul>");
+        w.println("</li>");
     }
 
     public static String getVirtualPath(HttpServletRequest req, String toolLocation) {
@@ -170,8 +210,8 @@ public class DevelUtils {
         res.setContentType("text/html");
         writePageBegin(w);
         writeTitleAndHeaderEnd(w, title);
-        printPageHeader(w, title);
-        w.println("</table>");
+        printNavigationBegin(w, title);
+        w.println("</div>");
         w.println(message);
         writePageEnd(w);
         w.close();

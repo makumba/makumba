@@ -61,6 +61,7 @@ public class mddViewer extends LineViewer {
     public mddViewer(HttpServletRequest req) throws Exception {
         super(true, req);
         setSearchLevels(false, false, false, true);
+        viewerName = "MDD Viewer";
         contextPath = req.getContextPath();
         virtualPath = DevelUtils.getVirtualPath(req, Configuration.getToolLocation(DeveloperTool.MDD_VIEWER));
         java.net.URL u = DataDefinitionProvider.findDataDefinitionOrDirectory(virtualPath, "mdd");
@@ -116,50 +117,41 @@ public class mddViewer extends LineViewer {
     }
 
     @Override
-    public void intro(PrintWriter w) {
-        if (parseError != null) {
-            w.print("<td align=\"center\" style=\"color: red;\">errors!<br><a href=\"#errors\">details</a></td>");
-        }
+    public void navigation(PrintWriter w) {
         String browsePath = virtualPath.replace('.', '/').substring(0, virtualPath.lastIndexOf('.') + 1);
 
-        w.println("<td align=\"right\" valign=\"top\" style=\"padding: 5px; padding-top: 10px\">");
         printFileRelations(w);
-        w.println("&nbsp;&nbsp;&nbsp;");
 
         if (dd != null) {
-            w.println("<a href=\"javascript:toggleElementDisplay(blMethods);\">BL methods</a>");
-            w.println("<div id=\"blMethods\" class=\"popup\" style=\"display: none;\">");
+            w.println("<li>");
+            DevelUtils.printPopoverLink(w,"BL methods","BL Method signatures for " + dd.getName(),"blMethods");
+            w.println("</li>");
+            w.println("<div id=\"blMethods\" style=\"display: none;\">");
             writeBLHandlers(w, dd);
             w.println("</div>");
         } else if (dir.getName().endsWith(".idd")) { // we don't have a BL for for idd's
-            w.print("<span style=\"color:gray;\" title=\"There's no BL for .idd files!\">BL methods</span>&nbsp;&nbsp;&nbsp;");
+            DevelUtils.printNavigationButton(w,"BL methods","#","There's no BL for .idd files!",2);
         } else {
-            w.print("<span style=\"color:gray;\" title=\"Fix the errors in the MDD first!\">BL methods</span>&nbsp;&nbsp;&nbsp;");
+            DevelUtils.printNavigationButton(w,"BL methods","#","Fix the errors in the MDD first!",2);
         }
-        w.println("&nbsp;&nbsp;&nbsp;");
-
-        w.print("<span style=\"color:lightblue; background-color: darkblue; padding: 5px;\">mdd</span>&nbsp;&nbsp;&nbsp;");
+        DevelUtils.printNavigationButton(w,"mdd","#","",1);
 
         // link to code generator
         if (dd != null) {
-            w.print("<a style=\"color: darkblue;\" href=\"" + contextPath + Configuration.getToolLocation(DeveloperTool.CODE_GENERATOR)
-                    + "/" + virtualPath + "\">code generator</a>&nbsp;&nbsp;&nbsp;");
+            DevelUtils.printNavigationButton(w,"code generator", contextPath + Configuration.getToolLocation(DeveloperTool.CODE_GENERATOR)
+                    + "/" + virtualPath,"",0);
         } else if (dir.getName().endsWith(".idd")) { // we don't have a BL for for idd's
-            w.print("<span style=\"color:gray;\" title=\"There's no code to be generated for .idd files!\">code generator</span>&nbsp;&nbsp;&nbsp;");
+            DevelUtils.printNavigationButton(w,"code generator","#","There's no code to be generated for .idd files!",2);
         } else {
-            w.print("<span style=\"color:gray;\" title=\"Fix the errors in the MDD first!\">code generator</span>&nbsp;&nbsp;&nbsp;");
+            DevelUtils.printNavigationButton(w,"code generator","#","Fix the errors in the MDD first!",2);
         }
-        w.print("<a style=\"color: darkblue;\" href=\"" + browsePath + "\">browse</a>&nbsp;&nbsp;&nbsp;");
+        DevelUtils.printNavigationButton(w,"browse",browsePath,"",0);
 
-        w.println("&nbsp;&nbsp;&nbsp;");
         DevelUtils.writeDevelUtilLinks(w, DeveloperTool.MDD_VIEWER.getKey(), contextPath);
-
-        w.println("</td>");
     }
 
     private void writeBLHandlers(PrintWriter w, DataDefinition dataDef) {
-        w.println("<b>BL Method signatures for " + dataDef.getName() + "</b>:<br/>");
-        w.println("<span style=\"font-size: smaller; \">");
+        w.print("<pre><code>");
         StringBuffer sb = new StringBuffer();
         String ddMethodName = Logic.upperCase(dataDef.getName());
         if (dataDef.getParentField() != null) {
@@ -167,13 +159,10 @@ public class mddViewer extends LineViewer {
         } else {
             CodeGenerator.addOnNewHandler(sb, 0, ddMethodName);
         }
-        sb.append("<br/>");
         CodeGenerator.addOnEditHandler(sb, 0, ddMethodName);
-        sb.append("<br/>");
         CodeGenerator.addOnDeleteHandler(sb, 0, ddMethodName);
-        sb.append("<br/>");
-        w.println(sb);
-        w.println("</span>");
+        w.print(sb);
+        w.println("</code></pre>");
 
         for (FieldDefinition fd : CodeGenerator.extractSetComplex(dataDef)) {
             w.println("<br/>");
@@ -327,6 +316,13 @@ public class mddViewer extends LineViewer {
         }
         if (dd != null && ddp.getQueryFragmentFunctions(dd.getName()).getFunctions().size() > 0) {
             w.println("<a href=\"javascript:toggleFunctionDisplay();\">Hide functions</a>");
+        }
+    }
+
+    @Override
+    protected void printPageBeginAdditional(PrintWriter writer) {
+        if (parseError != null) {
+            writer.print("<div class=\"alert alert-error\"><strong>Errors!</strong><a href=\"#errors\">See details</a></div>");
         }
     }
 

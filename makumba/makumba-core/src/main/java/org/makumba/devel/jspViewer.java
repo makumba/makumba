@@ -109,6 +109,8 @@ public class jspViewer extends LineViewer {
     public jspViewer(HttpServletRequest req, boolean printLineNumbers) throws Exception {
         super(printLineNumbers, req);
         setSearchLevels(true, false, false, true);
+        additionalCodeStyleClasses = "xml";
+        viewerName = "JSP Source Viewer";
         hideLineNumbers = request.getParameter(PARAM_HIDE_LINES) == null
                 || request.getParameter(PARAM_HIDE_LINES).equals("true");
     }
@@ -116,6 +118,8 @@ public class jspViewer extends LineViewer {
     public jspViewer(HttpServletRequest req) throws Exception {
         super(true, req);
         setSearchLevels(true, false, false, true);
+        additionalCodeStyleClasses = "xml";
+        viewerName = "JSP Source Viewer";
         hideComments = Boolean.valueOf(String.valueOf(req.getParameter("hideComments"))).booleanValue();
         hideHTML = Boolean.valueOf(String.valueOf(req.getParameter("hideHTML"))).booleanValue();
         hideJSTLCore = Boolean.valueOf(String.valueOf(req.getParameter("hideJSTLCore"))).booleanValue();
@@ -217,48 +221,36 @@ public class jspViewer extends LineViewer {
     }
 
     @Override
-    public void intro(PrintWriter w) throws IOException {
-        if (parseError != null) {
-            w.print("<td rowspan=\"2\" align=\"center\" style=\"color: red;\">errors!<br><a href=\"#errors\">details</a></td>");
-        }
-        w.println("<td align=\"right\" style=\"color: darkblue; padding: 5px; padding-top: 10px\">");
+    public void navigation(PrintWriter w) throws IOException {
+        //w.println("<td align=\"right\" style=\"color: darkblue; padding: 5px; padding-top: 10px\">");
         printFileRelations(w);
-        w.println("&nbsp;&nbsp;&nbsp;");
+        //w.println("&nbsp;&nbsp;&nbsp;");
         String executePath = contextPath + virtualPath;
         if (StringUtils.isNotEmpty(request.getQueryString())) {
             executePath += "?" + request.getQueryString();
         }
-        w.println("<a href=\"" + executePath + "\">execute</a>&nbsp;&nbsp;&nbsp;");
-        w.println("<span style=\"color:lightblue; background-color: darkblue; padding: 5px;\">source</span>&nbsp;&nbsp;&nbsp;");
-        w.println("<a href=\"" + logicPath + "\">business logic" + (hasLogic ? "" : " (none)") + "</a>");
+        DevelUtils.printNavigationButton(w,"execute",executePath,"Execute the page",0);
+        //w.println("<a href=\"" + executePath + "\">execute</a>&nbsp;&nbsp;&nbsp;");
+        DevelUtils.printNavigationButton(w,"source",null,"Source view",1);
+        //w.println("<span style=\"color:lightblue; background-color: darkblue; padding: 5px;\">source</span>&nbsp;&nbsp;&nbsp;");
+        DevelUtils.printNavigationButton(w,"business logic" + (hasLogic ? "" : " (none)"),logicPath,
+                "Show the available business logic",0);
+        //w.println("<a href=\"" + logicPath + "\">business logic" + (hasLogic ? "" : " (none)") + "</a>");
 
         String lg = org.makumba.devel.ErrorControllerHandler.getLoginPage(this.request, virtualPath);
         if (lg != null) {
-            w.println("&nbsp;&nbsp;&nbsp;<a href=\"" + contextPath + lg + "x\">login page</a>&nbsp;&nbsp;&nbsp;");
+            DevelUtils.printNavigationButton(w,"login page",contextPath,"",0);
+            //w.println("&nbsp;&nbsp;&nbsp;<a href=\"" + contextPath + lg + "x\">login page</a>&nbsp;&nbsp;&nbsp;");
         }
 
-        w.println("&nbsp;&nbsp;&nbsp;");
+        //w.println("&nbsp;&nbsp;&nbsp;");
         DevelUtils.writeDevelUtilLinks(w, "", contextPath);
 
-        w.println("</td>");
+        //w.println("</td>");
         w.println("</tr>");
         w.println("<tr>");
         w.println("<td align=\"right\" style=\" font-size: smaller;\">");
-        w.println("<form method=\"get\" action>");
-        w.println("Hide: <input type=\"checkbox\" name=\"hideComments\" value=\"true\""
-                + (hideComments ? " checked=\"checked\"" : "") + ">Comments  ");
-        w.println("<input type=\"checkbox\" name=\"hideHTML\" value=\"true\""
-                + (hideHTML ? " checked=\"checked\"" : "") + ">HTML  ");
-        w.println("<input type=\"checkbox\" name=\"hideJava\" value=\"true\""
-                + (hideJava ? " checked=\"checked\"" : "") + ">Java  ");
-        w.println("<input type=\"checkbox\" name=\"hideJSTLCore\" value=\"true\""
-                + (hideJSTLCore ? " checked=\"checked\"" : "") + ">JSTL Core  ");
-        w.println("<input type=\"checkbox\" name=\"hideJSTLFormat\" value=\"true\""
-                + (hideJSTLFormat ? " checked=\"checked\"" : "") + ">JSTL Format  ");
-        w.println("<input type=\"checkbox\" name=\"hideMakumba\" value=\"true\""
-                + (hideMakumba ? " checked=\"checked\"" : "") + ">Makumba  ");
-        w.println("<input type=\"submit\" value=\"apply\"> ");
-        w.println("</form>");
+
         w.println("</td>");
     }
 
@@ -402,14 +394,14 @@ public class jspViewer extends LineViewer {
                                         queryInlined = Pass1ASTPrinter.printAST(
                                             queryAnalzyer.inlineFunctions(queryTransformedForInlining)).toString();
                                     } catch (Throwable t) {
-                                        currentText.append(" <span style=\"color:red;\">Error inlinging query: "
-                                                + t.getMessage() + "</span>");
+                                        currentText.append(" <div class=\"alert alert-error\">Error inlinging query: "
+                                                + t.getMessage() + "</div>");
                                     }
                                 }
                                 if (queryInlined != null && !queryInlined.equals(queryOQL)) {
                                     currentText.append("OQL inlined");
                                     if (!queryTransformedForInlining.equals(queryOQL)) {
-                                        currentText.append(" <span style=\"color:red;\">(removed #{...} expressions)</span>");
+                                        currentText.append(" <div class=\"alert alert-error\">(removed #{...} expressions)</div>");
                                     }
                                     currentText.append(": " + queryInlined + "<br/>");
                                 }
@@ -436,8 +428,8 @@ public class jspViewer extends LineViewer {
                                 }
 
                                 currentText.append("</div>");
-                                currentText.append("<a href=\"javascript:toggleElementDisplay(" + divId
-                                        + ");\" title=\"Click to show the query details\">");
+                                currentText.append("<a href=\"#\" data-toggle=\"popover\" rel=\"popover\" data-popover-id=\"" + divId
+                                        + "\" data-title=\"Generated queries\" title=\"Click to show the query details\">");
                             } else {
                                 currentText.append("<span class=\"" + tagClass + "\">");
                             }
@@ -535,8 +527,30 @@ public class jspViewer extends LineViewer {
     }
 
     @Override
-    protected void printPageBeginAdditional(PrintWriter writer) throws IOException {
-        super.printPageBeginAdditional(writer);
+    protected void printAdditionalViewerOptions(PrintWriter writer) throws IOException {
+        super.printAdditionalViewerOptions(writer);
+        writer.println("<form method=\"get\" action=\"\" class=\"pull-right\">");
+        writer.println("Hide: <input type=\"checkbox\" name=\"hideComments\" value=\"true\""
+                + (hideComments ? " checked=\"checked\"" : "") + ">Comments  ");
+        writer.println("<input type=\"checkbox\" name=\"hideHTML\" value=\"true\""
+                + (hideHTML ? " checked=\"checked\"" : "") + ">HTML  ");
+        writer.println("<input type=\"checkbox\" name=\"hideJava\" value=\"true\""
+                + (hideJava ? " checked=\"checked\"" : "") + ">Java  ");
+        writer.println("<input type=\"checkbox\" name=\"hideJSTLCore\" value=\"true\""
+                + (hideJSTLCore ? " checked=\"checked\"" : "") + ">JSTL Core  ");
+        writer.println("<input type=\"checkbox\" name=\"hideJSTLFormat\" value=\"true\""
+                + (hideJSTLFormat ? " checked=\"checked\"" : "") + ">JSTL Format  ");
+        writer.println("<input type=\"checkbox\" name=\"hideMakumba\" value=\"true\""
+                + (hideMakumba ? " checked=\"checked\"" : "") + ">Makumba  ");
+        writer.println("<input type=\"submit\" value=\"apply\"> ");
+        writer.println("</form>");
+    }
+
+    @Override
+    protected void printPageBeginAdditional(PrintWriter writer) {
+        if (parseError != null) {
+            writer.print("<div class=\"alert alert-error\"><strong>Errors!</strong><a href=\"#errors\">See details</a></div>");
+        }
     }
 
     public static void main(String[] args) {

@@ -72,7 +72,7 @@ public class ReferenceChecker extends HttpServlet {
             resp.setContentType("text/html");
             PrintWriter w = resp.getWriter();
             DevelUtils.writePageBegin(w);
-            DevelUtils.writeStylesAndScripts(w, contextPath);
+            DevelUtils.writeStylesAndScripts(w, contextPath,"highlight.pack.js");
 
             String param = req.getParameter("mdd");
             if (param != null) { // check a specific MDD
@@ -170,9 +170,7 @@ public class ReferenceChecker extends HttpServlet {
     private void printAllBrokenRefs(SQLDBConnection sqlConnection, String contextPath, PrintWriter w)
             throws IOException {
         String title = "Foreign and unique keys in " + dbName;
-        DevelUtils.writeTitleAndHeaderEnd(w, title);
-        DevelUtils.printPageHeader(w, title);
-        writeHeader(w, contextPath);
+        writeHeader(w, title, contextPath);
         Vector<String> mdds = DataDefinitionProvider.getInstance().getDataDefinitionsInDefaultLocations(
             "test.brokenMdds.", "org.makumba.");
         Collections.sort(mdds);
@@ -263,7 +261,9 @@ public class ReferenceChecker extends HttpServlet {
     private void printHiddenQuery(PrintWriter w, String idName, String query) {
         w.println("<a id=\"" + idName + "Ref\" href=\"javascript:toggleSQLDisplay(" + idName + ", " + idName
                 + "Ref)\" title=\"Show SQL statement\">[+]</a>");
-        w.println("<div id=\"" + idName + "\" style=\"display:none;\">" + query + "</div> ");
+        w.println("<div id=\"" + idName + "\" style=\"display:none;\">");
+        DevelUtils.printSQLQuery(w,query);
+        w.println("</div>");
     }
 
     private void printForeignKey(PrintWriter w, DataDefinition dd, FieldDefinition f) {
@@ -313,9 +313,9 @@ public class ReferenceChecker extends HttpServlet {
         String query = getQueryString(fd.getPointedType(), dd, fd, false);
 
         String title = "Broken references in " + dd.getName() + "#" + fd.getName();
-        DevelUtils.writeTitleAndHeaderEnd(w, title);
-        DevelUtils.printPageHeader(w, title);
-        writeHeader(w, contextPath);
+
+
+        writeHeader(w, title, contextPath);
         w.println("<h3>Type: " + dd.getName() + "</h3>");
         w.println("<h3>Field: " + fd.getName() + "</h3>");
 
@@ -353,17 +353,14 @@ public class ReferenceChecker extends HttpServlet {
         return getRefText(countMissing, null, base, f);
     }
 
-    private void writeHeader(PrintWriter w, String contextPath) {
-        w.println("<div>Checking " + TransactionProvider.getInstance().getDefaultDataSourceName()
+    private void writeHeader(PrintWriter w, String title, String contextPath) throws IOException {
+        DevelUtils.writeTitleAndHeaderEnd(w, title);
+        DevelUtils.printNavigationBegin(w, DeveloperTool.REFERENCE_CHECKER.getName());
+        DevelUtils.writeDevelUtilLinks(w,DeveloperTool.REFERENCE_CHECKER.getKey(),contextPath);
+        DevelUtils.printNavigationEnd(w);
+        w.println("<h2>" + title + "</h2>");
+        w.println("<p class=\"lead\">Checking " + TransactionProvider.getInstance().getDefaultDataSourceName()
                 + " <span style=\"font-size: small\">using Makumba version " + MakumbaSystem.getVersion()
-                + "</span></div>");
-        w.println("</td>");
-
-        w.println("<td align=\"right\">");
-        DevelUtils.writeDevelUtilLinks(w, DeveloperTool.REFERENCE_CHECKER.getKey(), contextPath);
-        w.println("</td>");
-
-        w.println("</tr>");
-        w.println("</table>");
+                + "</span></p>");
     }
 }

@@ -36,6 +36,7 @@ import org.makumba.providers.DeveloperTool;
 public class logicViewer extends LineViewer {
     public logicViewer(HttpServletRequest req) throws Exception {
         super(false, req);
+        viewerName = "Logic Viewer";
         virtualPath = DevelUtils.getVirtualPath(req, Configuration.getToolLocation(DeveloperTool.LOGIC_DISCOVERY));
         contextPath = req.getContextPath();
         Logic.getLogic(virtualPath);
@@ -44,8 +45,9 @@ public class logicViewer extends LineViewer {
     }
 
     @Override
-    public void intro(PrintWriter w) {
-        w.print("<td><a href=\"" + contextPath + virtualPath + "x\">page</a></td>");
+    public void navigation(PrintWriter w) {
+        DevelUtils.printNavigationButton(w,"page", contextPath + virtualPath + "x","",0);
+        DevelUtils.writeDevelUtilLinks(w, DeveloperTool.LOGIC_DISCOVERY.getKey(), contextPath);
     }
 
 }

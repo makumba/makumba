@@ -45,7 +45,8 @@ public enum DeveloperTool {
             true),
     CACHE_CLEANER("makumbaCacheCleaner", "Makumba Cache Cleaner",
             "Cleans all internal Makumba caches, like queries, data-definitions.<br/>"
-                    + "Useful during development, to avoid having to restart the servlet container", false);
+                    + "Useful during development, to avoid having to restart the servlet container", false),
+    MDD_GRAPH_VIEWER("mddGraphViewer","MDD Graph Viewer","View the ER graph of the MDDs",true);
 
     private String key;
 
