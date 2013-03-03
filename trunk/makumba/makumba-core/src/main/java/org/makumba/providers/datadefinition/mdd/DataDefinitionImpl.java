@@ -741,6 +741,7 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
             new MultipleUniqueKeyDefinition[sharedData.multiFieldUniqueList.values().size()]);
     }
 
+    @Override
     public QueryFragmentFunctions getFunctions() {
         return sharedData.functions;
     }

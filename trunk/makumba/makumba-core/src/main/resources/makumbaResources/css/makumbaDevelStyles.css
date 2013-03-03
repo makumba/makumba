@@ -1,7 +1,9 @@
-th {
-  color: navy;
-  background-color: lightblue;
-  font-weight: normal;
+thead th {
+  background-color: #CFF0C3;
+}
+
+.table th.text-center {
+  text-align: center;
 }
 
 td.columnHead {
@@ -11,6 +13,17 @@ td.columnHead {
 
 tr.odd {
   background-color: #CCFFFF;
+}
+
+.table-nonfluid {
+    width: auto;
+}
+
+label {
+    font-weight: bold;
+}
+label.radio {
+    font-weight: normal;
 }
 
 span.active {
@@ -36,22 +49,57 @@ div.queryPopup {
   margin-top: -70px;
 }
 
+.navbar .brand {
+    background-image: url(../image/makumba_logo_small.png);
+    background-repeat:no-repeat;
+    background-position: center left;
+    padding-left: 50px;
+    margin-left: 0px;
+}
+
+.wrapper {
+    padding:0px 20px;
+}
+
+.popover {
+    max-width: 800px;
+}
+
+.popover pre {
+    background: none;
+    border: none;
+    margin: 0;
+    padding: 0;
+    font-size: 0.8em;
+    word-break: normal;
+    word-wrap: normal;
+}
+
 /* Generic styles for the code viewers */
-pre.code {
+pre code {
   margin-top: 0;
 }
 
-a.lineNo {
-  color: navy;
-  background-color: lightblue;
+pre code a {
+    color: inherit;
+    border-bottom: thin dotted;
+}
+
+pre code a:hover {
+    text-decoration: none;
+    border-bottom: thin solid;
+}
+
+a.lineNo, a.lineNo .number {
+  color: #d3d3d3;
+  border: none;
+  list-style-type: decimal;
   text-decoration: none;
-  cursor: default;
 }
 
 a.classLink {
   border-bottom: thin dotted;
   text-decoration: none;
-  color: #000066
 }
 
 .parseError {
@@ -68,7 +116,7 @@ a.classLink {
 }
 
 .mddValidationLine {
-  background: Aquamarine;
+  color: Aquamarine;
 }
 
 .mddLineComment {
@@ -87,7 +135,7 @@ a.classLink {
 }
 
 .mddFunction {
-  background: MediumAquaMarine;
+
 }
 
 .mddFunctionName {
@@ -108,9 +156,7 @@ a.classLink {
 
 /* Styles for the JSP viewer */
 .jspScriptlet {
-  background: gold;
   color: green;
-  border: red thin;
   font-weight: bold;
 }
 
@@ -119,7 +165,6 @@ a.classLink {
 }
 
 .jspSystemTag {
-  background: lightcyan;
   color: green;
   border: red thin;
   font-weight: bold;
@@ -133,30 +178,25 @@ a.classLink {
   background-color: #CCFFCC;
 }
 
+pre .makTag .title,
 .makTag {
-  background: #eecccc;
   color: green;
   border: red thin;
   font-weight: bold;
 }
 
 .jspTag {
-  background: lightcyan;
-  color: green;
-  border: red thin;
+  color: #00ffff;
   font-weight: bold;
 }
 
 .fmtTag {
-  background: chartreuse;
-  color: green;
-  border: red thin;
+  color: #7fff00;
   font-weight: bold;
 }
 
 .cTag {
-  background: lightblue;
-  color: green;
+  color: blue;
   border: red thin;
   font-weight: bold;
 }
@@ -199,4 +239,142 @@ a.classLink {
   color: #FF0000;
   font-style: italic;
   font-family: monospace;
+}
+
+/*
+
+Original style from softwaremaniacs.org (c) Ivan Sagalaev <Maniac@SoftwareManiacs.Org>
+
+*/
+
+pre code {
+    display: block; padding: 0.5em;
+}
+
+pre code,
+pre .subst,
+pre .tag .title,
+pre .lisp .title,
+pre .clojure .built_in,
+pre .nginx .title {
+    font-weight: bold;
+}
+
+
+
+pre .string,
+pre .title,
+pre .constant,
+pre .parent,
+pre .tag .value,
+pre .rules .value,
+pre .rules .value .number,
+pre .preprocessor,
+pre .ruby .symbol,
+pre .ruby .symbol .string,
+pre .aggregate,
+pre .template_tag,
+pre .django .variable,
+pre .smalltalk .class,
+pre .addition,
+pre .flow,
+pre .stream,
+pre .bash .variable,
+pre .apache .tag,
+pre .apache .cbracket,
+pre .tex .command,
+pre .tex .special,
+pre .erlang_repl .function_or_atom,
+pre .markdown .header {
+    color: #800;
+}
+
+pre .comment,
+pre .annotation,
+pre .template_comment,
+pre .diff .header,
+pre .chunk,
+pre .markdown .blockquote {
+    color: #888;
+}
+
+pre .number,
+pre .date,
+pre .regexp,
+pre .literal,
+pre .smalltalk .symbol,
+pre .smalltalk .char,
+pre .go .constant,
+pre .change,
+pre .markdown .bullet,
+pre .markdown .link_url {
+    color: #080;
+}
+
+pre .label,
+pre .javadoc,
+pre .ruby .string,
+pre .decorator,
+pre .filter .argument,
+pre .localvars,
+pre .array,
+pre .attr_selector,
+pre .important,
+pre .pseudo,
+pre .pi,
+pre .doctype,
+pre .deletion,
+pre .envvar,
+pre .shebang,
+pre .apache .sqbracket,
+pre .nginx .built_in,
+pre .tex .formula,
+pre .erlang_repl .reserved,
+pre .prompt,
+pre .markdown .link_label,
+pre .vhdl .attribute,
+pre .clojure .attribute,
+pre .coffeescript .property {
+    color: #88F
+}
+
+pre .keyword,
+pre .id,
+pre .phpdoc,
+pre .title,
+pre .built_in,
+pre .aggregate,
+pre .css .tag,
+pre .javadoctag,
+pre .phpdoc,
+pre .yardoctag,
+pre .smalltalk .class,
+pre .winutils,
+pre .bash .variable,
+pre .apache .tag,
+pre .go .typename,
+pre .tex .command,
+pre .markdown .strong,
+pre .request,
+pre .status {
+    font-weight: bold;
+    color:blue;
+}
+
+pre .markdown .emphasis {
+    font-style: italic;
+}
+
+pre .nginx .built_in {
+    font-weight: normal;
+}
+
+pre .coffeescript .javascript,
+pre .javascript .xml,
+pre .tex .formula,
+pre .xml .javascript,
+pre .xml .vbscript,
+pre .xml .css,
+pre .xml .cdata {
+    opacity: 0.5;
 }

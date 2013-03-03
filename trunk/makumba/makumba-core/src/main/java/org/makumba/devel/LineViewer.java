@@ -93,6 +93,8 @@ public abstract class LineViewer implements SourceViewer {
 
     protected String title;
 
+    protected String viewerName;
+
     protected boolean searchJSPPages = true;
 
     protected boolean searchCompiledJSPClasses = true;
@@ -222,7 +224,7 @@ public abstract class LineViewer implements SourceViewer {
     }
 
     protected void writeLineNumber(PrintWriter writer, int n, boolean initialVisibility) {
-        writer.print("<a style=\"font-weight: normal; " + (initialVisibility ? "" : "display: none;") + " \" name=\""
+        writer.print("<a style=\"" + (initialVisibility ? "" : "display: none;") + " \" name=\""
                 + n + "\" href=\"#" + n + "\" class=\"lineNo\">" + n + ":\t</a>");
     }
 
@@ -231,7 +233,7 @@ public abstract class LineViewer implements SourceViewer {
      * @throws IOException
      */
     public void printPageEnd(PrintWriter writer) throws IOException {
-        writer.println("\n</pre>");
+        writer.println("</code></pre>");
         footer(writer);
         if (printHeaderFooter) {
             writer.println("\n</body></html>");
@@ -250,10 +252,33 @@ public abstract class LineViewer implements SourceViewer {
         if (printHeaderFooter) {
             DevelUtils.writePageBegin(writer);
             DevelUtils.writeStylesAndScripts(writer, contextPath);
-            DevelUtils.writeTitleAndHeaderEnd(writer, title);
-            DevelUtils.printPageHeader(writer, title, virtualPath, realPath, additionalHeaderInfo,
-                printVersionControlLink());
+            DevelUtils.writeTitleAndHeaderEnd(writer, title + " | Makumba " + viewerName);
+            DevelUtils.printNavigationBegin(writer, viewerName);
+            navigation(writer);
+            DevelUtils.printNavigationEnd(writer);
+
+            if (!StringUtils.isBlank(title) && !title.equals(virtualPath)) {
+                writer.print("<h2><a class=\"brand\" href=\"#\">" + title + "</a></h2>");
+            } else if (virtualPath != null) {
+                writer.print("<h2><a class=\"brand\" href=\"" + virtualPath + "\">" + virtualPath
+                        + "</a></h2>");
+            }
+
+            if (additionalHeaderInfo != null) {
+                writer.println(additionalHeaderInfo);
+            }
+
+            if (realPath != null) {
+                writer.println("<small>" + new File(realPath).getCanonicalPath() + "</small>");
+            }
+
+            if (StringUtils.isNotBlank(printVersionControlLink())) {
+                writer.println(printVersionControlLink());
+            }
+
             printPageBeginAdditional(writer);
+
+            writer.print("  <div class=\"viewer-options\">");
 
             if (printLineNumbers) {
                 String urlParams = "";
@@ -276,27 +301,27 @@ public abstract class LineViewer implements SourceViewer {
                 if (!urlParams.equals("")) {
                     urlParams = "?" + urlParams;
                 }
-                writer.println("<div style=\"font-size: smaller; vertical-align: bottom;\">");
                 String linkText = (hideLineNumbers ? "Show" : "Hide") + " line numbers";
-                writer.print("<script type=\"text/javascript\">document.write('<a href=\"javascript:toggleLineNumbers();\">"
-                        + linkText + "</a>');</script>");
-                writer.print(" <noscript><a href=\"" + request.getRequestURI() + urlParams + "\">" + linkText
-                        + "</noscript>");
+                writer.println("<a href=\"" + request.getRequestURI() + urlParams + "\" onclick=\"toggleLineNumbers(); return false;\">" + linkText
+                        + "</a>");
                 writeAdditionalLinks(writer);
-                writer.println("</div>");
             }
-            writer.println("</td>");
 
-            intro(writer);
-            writer.println("</tr>");
-            writer.println("</table>");
+            printAdditionalViewerOptions(writer);
+
+            writer.println(" </div>");
+
+
+
         }
-        writer.print("<pre class=\"code " + additionalCodeStyleClasses + "\">");
+        writer.print("<pre class=\"" + additionalCodeStyleClasses + "\"><code>");
     }
 
     protected void printFileRelations(PrintWriter writer) {
-        writer.println("<a href=\"javascript:toggleElementDisplay(fileRelations);\">Relations</a>");
-        writer.println("<div id=\"fileRelations\" class=\"popup\" style=\"display: none;\">");
+        writer.println("<li>");
+        DevelUtils.printPopoverLink(writer,"Relations","","fileRelations");
+        writer.println("</li>");
+        writer.println("<div id=\"fileRelations\" style=\"display: none;\">");
         String webAppRoot = request.getSession().getServletContext().getRealPath("/");
         int maxDisplay = 10;
         if (webAppRoot.endsWith("/")) {
@@ -320,7 +345,7 @@ public abstract class LineViewer implements SourceViewer {
                         writer.println("No relations have been computed for this webapp.");
                         if (Configuration.getServletLocation(MakumbaServlet.RELATION_CRAWLER).equals(
                             Configuration.PROPERTY_NOT_SET)) {
-                            writer.print("<br/><span style=\"color: grey; font-size: smaller\">Manually triggering crawling is disabled</span>");
+                            DevelUtils.printErrorMessage(writer,"","Manually triggering crawling is disabled");
                         } else {
                             writer.println("<br><a href=\"" + request.getContextPath()
                                     + Configuration.getServletLocation(MakumbaServlet.RELATION_CRAWLER)
@@ -423,10 +448,13 @@ public abstract class LineViewer implements SourceViewer {
     /**
      * Write the page header to the given writer.
      */
-    protected void intro(PrintWriter printWriter) throws IOException {
+    protected void navigation(PrintWriter printWriter) throws IOException {
     }
 
-    protected void printPageBeginAdditional(PrintWriter printWriter) throws IOException {
+    protected void printAdditionalViewerOptions(PrintWriter printWriter) throws IOException {
+    }
+
+    protected void printPageBeginAdditional(PrintWriter writer) throws IOException{
     }
 
     /** Prints a link to the page CVS/SVN for the file currently viewed. */
@@ -459,6 +487,7 @@ public abstract class LineViewer implements SourceViewer {
                     + StringEscapeUtils.escapeHtml(parseError.getMessage()) + "</pre></div>");
         }
         DevelUtils.printDeveloperSupportFooter(printWriter);
+        printWriter.println("</div>");
     }
 
     public void printLine(PrintWriter printWriter, String s, String toPrint) throws IOException {

@@ -118,32 +118,35 @@ public class ErrorLogViewerServlet extends DataServlet {
         }
 
         PrintWriter writer = response.getWriter();
-        DevelUtils.writePageBegin(writer);
-        DevelUtils.writeStylesAndScripts(writer, contextPath);
-        DevelUtils.writeTitleAndHeaderEnd(writer, "Error Log viewer");
 
         writePageContentHeader(null, writer, null, DeveloperTool.ERRORLOG_VIEWER);
 
-        writer.println("<form method=\"get\">");
-        writer.println("<table width=\"100%\" cellpadding=\"5\">");
-        writer.println("  <tr>");
-        writer.println("    <th>Query</th>");
-        writer.println("    <td colspan=\"4\" width=\"100%\">" + query + "</td>");
-        writer.println("  </tr>");
-        writer.println("  <tr>");
-        writer.println("    <th>Order by</th>");
-        writer.println("    <td colspan=\"3\"><input name=\"orderByField\" type=\"text\" size=\"25\" value=\""
+        writer.println("<form method=\"get\" class=\"form-horizontal\">");
+        writer.println("  <div class=\"control-group\">");
+        writer.println("    <label class=\"control-label\" for=\"query\">Query</label>");
+        writer.println("    <div class=\"controls\">");
+        DevelUtils.printSQLQuery(writer,query);
+        writer.println("    </div>");
+        writer.println("  </div>");
+        writer.println("  <div class=\"control-group\">");
+        writer.println("    <label class=\"control-label\" for=\"orderByField\">Query by</label>");
+        writer.println("    <div class=\"controls\">");
+        writer.println("      <input id=\"orderByField\" name=\"orderByField\" type=\"text\" size=\"25\" value=\""
                 + orderByField + "\"><input name=\"orderByOrder\" type=\"text\" size=\"5\" value=\"" + orderByOrder
-                + "\"></td>");
-        writer.println("  </tr>");
-        writer.println("  <tr>");
-        writer.println("    <th>Limit</th>");
-        writer.println("    <td><input name=\"limit\" type=\"text\" value=\"" + limit + "\"></td>");
-        writer.println("  </tr>");
-        writer.println("  <tr>");
-        writer.println("    <td colspan=\"2\"><input type=\"submit\" accesskey=\"e\" value=\"Apply orderBy, limit & filters\"></td>");
-        writer.println("  <tr>");
-        writer.println("</table>");
+                + "\">");
+        writer.println("    </div>");
+        writer.println("  </div>");
+        writer.println("  <div class=\"control-group\">");
+        writer.println("    <label class=\"control-label\" for=\"limit\">Limit</label>");
+        writer.println("    <div class=\"controls\">");
+        writer.println("      <input id=\"limit\" name=\"limit\" type=\"text\" value=\"" + limit + "\"></td>");
+        writer.println("    </div>");
+        writer.println("  </div>");
+        writer.println("  <div class=\"control-group\">");
+        writer.println("    <div class=\"controls\">");
+        writer.println("      <input class=\"btn\" type=\"submit\" accesskey=\"e\" value=\"Apply orderBy, limit & filters\">");
+        writer.println("    </div>");
+        writer.println("  </div>");
         writer.println("</form>");
 
         if (query != null && !query.equals("")) {
@@ -169,46 +172,49 @@ public class ErrorLogViewerServlet extends DataServlet {
                 for (int i = 0; i < results.size(); i++) {
                     Dictionary<String, Object> d = results.get(i);
                     if (i == 0) {
-                        writer.println("<table cellpadding=\"5\">");
-                        writer.println("<tr>");
-                        writer.println("<th>#</th>");
+                        writer.println("<table class=\"table table-striped table-condensed table-nonfluid\">");
+                        writer.println("  <thead>");
+                        writer.println("    <tr>");
+                        writer.println("      <th>#</th>");
                         for (String projection : projections) {
-                            writer.println("<th>" + projection + "</th>");
+                            writer.println("      <th>" + projection + "</th>");
                         }
-                        writer.println("</tr>");
+                        writer.println("    </tr>");
+                        writer.println("  </thead>");
+                        writer.println("  <tbody>");
                     }
-                    writer.println("<tr class=\"" + (i % 2 == 0 ? "even" : "odd") + "\">");
-                    writer.println("<td>" + (i + 1) + "</td>");
+                    writer.println("    <tr>");
+                    writer.println("      <td>" + (i + 1) + "</td>");
                     for (String projection : projections) {
                         Object value = d.get(projection);
                         if (value instanceof Pointer) {
-                            writer.println("<td>" + DevelUtils.writePointerValueLink(contextPath, (Pointer) value)
+                            writer.println("      <td>" + DevelUtils.writePointerValueLink(contextPath, (Pointer) value)
                                     + "</td>");
                         } else {
-                            writer.println("<td>" + value + "</td>");
+                            writer.println("      <td>" + value + "</td>");
                         }
                     }
-                    writer.println("</tr>");
+                    writer.println("    </tr>");
                     if (i + 1 == results.size()) {
+                        writer.println("  </tbody>");
                         writer.println("</table>");
                     }
                 }
                 if (results.size() > 0) {
-                    writer.println("<span style=\"color: red; font-size: smaller; \"><i>Note that only projections that have at least one value not null will be shown</i></span>");
+                    DevelUtils.printErrorMessage(writer,"Note:","only projections that have at least one value not null will be shown");
                 } else {
-                    writer.println("<span style=\"color: red \"><i>No results found!</i></span>");
+                    DevelUtils.printErrorMessage(writer,"","No results found!");
                 }
 
             } catch (RuntimeWrappedException e) {
-                writer.println("<span style=\"color: red\"><i>" + e.getMessage() + "</i></span>");
-                writer.println("");
+                DevelUtils.printErrorMessage(writer,"",e.getMessage());
                 writer.println("<div id=\"showStackTrace\" style=\"display: inline;\"><a href=\"javascript:toggleStackTrace();\" title=\"Show full stack trace\">--></a></div>");
                 writer.println("<div id=\"hideStackTrace\" style=\"display: none\"><a href=\"javascript:toggleStackTrace();\" title=\"Hide stack trace\"><--</a></div>");
-                writer.println("<div id=\"stackTrace\" style=\"white-space: pre; display: none; color: red; font-style: italic; font-size: smaller; margin-left: 40px; \">");
+                writer.println("<pre id=\"stackTrace\" style=\"display:none\">");
                 e.printStackTrace(writer);
-                writer.println("</div>");
+                writer.println("</pre>");
             } catch (org.makumba.OQLParseError e) {
-                writer.println("<span style=\"color: red\">Incorrect OQL query: <i>" + e.getMessage() + "</i></span>");
+                DevelUtils.printErrorMessage(writer,"Incorrect OQL query:",e.getMessage());
             } finally {
                 t.close();
             }

@@ -74,3 +74,28 @@ function toggleFunctionDisplay() {
         }
     }
 }
+
+/** this is executed at the page load **/
+$(document).ready(function () {
+
+    // Creates a popover on the <a> elements that have
+    // rel='popover' and data-popover-id='id to element that holds the popover html'
+    $('[rel=popover]').each(function(index,value) {
+        var popoverId = $(value).data("popover-id");
+        $(value).popover({
+            html: true,
+            placement: 'bottom',
+            content: function() {
+                return $("#" + popoverId).html();
+            }
+        }).click(function(e) {
+            e.preventDefault();
+        });
+    });
+
+    // Runs the highlighter
+    if(typeof hljs !== 'undefined') {
+        hljs.initHighlighting();
+    }
+
+});

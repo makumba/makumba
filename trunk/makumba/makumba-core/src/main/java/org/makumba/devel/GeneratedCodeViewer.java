@@ -287,28 +287,23 @@ public class GeneratedCodeViewer extends jspViewer {
 
     /** writes the page header, with links to the mdd and to browse. */
     @Override
-    public void intro(PrintWriter w) {
+    public void navigation(PrintWriter w) {
         initTemplates();
         String browsePath = contextPath + Configuration.getToolLocation(DeveloperTool.MDD_VIEWER)
                 + virtualPath.replace('.', '/').substring(0, virtualPath.lastIndexOf('.') + 1);
         String mddViewerPath = contextPath + Configuration.getToolLocation(DeveloperTool.MDD_VIEWER) + "/"
                 + virtualPath;
         // link to validation definition, if existing
+        DevelUtils.printNavigationButton(w,"mdd",mddViewerPath,"",0);
+        DevelUtils.printNavigationButton(w,"code generator","#","",1);
+        DevelUtils.printNavigationButton(w,"browse",browsePath,"",0);
 
-        w.println("<td align=\"right\" valign=\"top\" style=\"padding: 5px; padding-top: 10px\" nowrap=\"nowrap\">");
-        w.println("<a style=\"color: darkblue;\" href=\"" + mddViewerPath + "\">mdd</a>&nbsp;&nbsp;&nbsp;");
-        w.println("<span style=\"color:lightblue; background-color: darkblue; padding: 5px;\">code generator</span>&nbsp;&nbsp;&nbsp;");
-        w.println("<a style=\"color: darkblue;\"href=\"" + browsePath + "\">browse</a>&nbsp;&nbsp;&nbsp;");
-
-        w.println("&nbsp;&nbsp;&nbsp;");
         DevelUtils.writeDevelUtilLinks(w, DeveloperTool.MDD_VIEWER.getKey(), contextPath);
-
-        w.println("</td>");
     }
 
     /** prints the code generator form. */
     @Override
-    public void printPageBeginAdditional(PrintWriter w) throws IOException {
+    public void printAdditionalViewerOptions(PrintWriter w) throws IOException {
         if (dd != null) {
             w.println("<form style=\"margin-top:1px; margin-bottom:0px; font-size:smaller;\">");
             w.println("<b>Code type:</b>");

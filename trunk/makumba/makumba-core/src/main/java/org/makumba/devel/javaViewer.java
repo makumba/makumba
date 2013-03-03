@@ -72,6 +72,7 @@ public class javaViewer extends LineViewer {
         super(true, req);
         jspClasspath = TomcatJsp.getContextCompiledJSPDir(request.getSession().getServletContext());
 
+        viewerName = "Java Viewer";
         contextPath = req.getContextPath();
         virtualPath = DevelUtils.getVirtualPath(req, Configuration.getToolLocation(DeveloperTool.JAVA_VIEWER));
         if (virtualPath == null) {
@@ -366,11 +367,10 @@ public class javaViewer extends LineViewer {
     }
 
     @Override
-    public void intro(PrintWriter w) {
-        w.println("<td align=\"right\" >");
+    public void navigation(PrintWriter w) {
+
         printFileRelations(w);
-        w.println("&nbsp;&nbsp;&nbsp;");
-        w.println("<span style=\"color:lightblue; background-color: darkblue; padding: 5px;\">Java</span>");
+        DevelUtils.printNavigationButton(w,"Java","#","",1);
         String p = virtualPath;
         if (p.endsWith(".java")) {
             p = p.substring(0, p.indexOf(".java"));
@@ -380,11 +380,8 @@ public class javaViewer extends LineViewer {
         if (path.startsWith("/")) {
             path = path.substring(1);
         }
-        w.println("&nbsp;&nbsp;&nbsp;");
-        w.println("<a href=\"/" + path + "\"><font color=\"darkblue\">browse</font></a>");
-        w.println("&nbsp;&nbsp;&nbsp;");
+        DevelUtils.printNavigationButton(w,"browse",path,"",0);
         DevelUtils.writeDevelUtilLinks(w, DeveloperTool.JAVA_VIEWER.getKey(), contextPath);
-        w.println("</td>");
     }
 
 }

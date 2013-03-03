@@ -85,6 +85,8 @@ public interface DataDefinition {
     /** The name of the modification timestamp field, if any? */
     public String getLastModificationDateFieldName();
 
+    public QueryFragmentFunctions getFunctions();
+
     /**
      * If this type is the data pointed to by a 1-1 pointer or subset, return the field definition in the main record,
      * otherwise return null

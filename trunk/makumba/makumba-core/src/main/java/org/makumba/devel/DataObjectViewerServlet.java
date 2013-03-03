@@ -66,9 +66,6 @@ public class DataObjectViewerServlet extends DataServlet {
         browsePath = contextPath + Configuration.getToolLocation(DeveloperTool.DATA_LISTER) + "/" + browsePath;
 
         PrintWriter writer = response.getWriter();
-        DevelUtils.writePageBegin(writer);
-        DevelUtils.writeStylesAndScripts(writer, contextPath);
-        DevelUtils.writeTitleAndHeaderEnd(writer, "Data Viewer");
 
         DataDefinition dd = null;
 
@@ -76,7 +73,7 @@ public class DataObjectViewerServlet extends DataServlet {
             dataPointer = new Pointer(type, request.getParameter("ptr"));
         } else {
             writePageContentHeader(type, writer, null, DeveloperTool.DATA_LISTER);
-            writer.println("No object to browse provided, use the dataLister in order to browse records");
+            writer.println("<div class=\"alert alert-error\">No object to browse provided, use the dataLister in order to browse records</div>");
             DevelUtils.writePageEnd(writer);
             return;
         }
@@ -87,7 +84,7 @@ public class DataObjectViewerServlet extends DataServlet {
         }
         if (dd == null) {
             writePageContentHeader(type, writer, null, DeveloperTool.DATA_LISTER);
-            writer.println("No valid type selected");
+            writer.println("<div class=\"alert alert-error\">No valid type selected</div>");
             DevelUtils.writePageEnd(writer);
             return;
         } else {
@@ -104,7 +101,6 @@ public class DataObjectViewerServlet extends DataServlet {
                 Database hostDatabase = sqlConnection.getHostDatabase();
 
                 writePageContentHeader(type, writer, t.getName(), DeveloperTool.DATA_LISTER);
-                writer.println("<br/>");
 
                 Vector<FieldDefinition> fields = DataServlet.getAllFieldDefinitions(dd);
 
@@ -122,24 +118,26 @@ public class DataObjectViewerServlet extends DataServlet {
                 OQL = "SELECT " + OQL + " FROM " + type + " o WHERE o=$1";
                 Vector<Dictionary<String, Object>> v = t.executeQuery(OQL, dataPointer);
                 if (v.size() != 1) {
-                    writer.println("<span style=\"color: red;\">Problem executing query:</span><br>");
-                    writer.println(OQL + "<br><br>");
-                    writer.println("<span style=\"color: red;\">==&gt; found " + v.size() + " results!</span>");
+                    DevelUtils.printErrorMessage(writer,"Problem executing query:"," found " + v.size() + " results!");
+                    DevelUtils.printSQLQuery(writer,OQL);
                 } else {
                     Dictionary<String, Object> values = v.firstElement();
 
-                    writer.println("<table>");
-                    writer.println("  <tr>");
-                    writer.println("    <th>Field</th>");
-                    writer.println("    <th>Value</th>");
-                    writer.println("  </tr>");
+                    writer.println("<table class=\"table table-striped table-condensed table-nonfluid\">");
+                    writer.println("  <thead>");
+                    writer.println("    <tr>");
+                    writer.println("      <th>Field</th>");
+                    writer.println("      <th>Value</th>");
+                    writer.println("    </tr>");
+                    writer.println("  </thead>");
+                    writer.println("  <tbody>");
                     for (int i = 0; i < fields.size(); i++) {
                         FieldDefinition fd = fields.get(i);
                         if (fd.isIndexPointerField()) {
                             continue;
                         }
-                        writer.println("  <tr>");
-                        writer.print("    <td class=\"columnHead\">" + fd.getName());
+                        writer.println("    <tr>");
+                        writer.print("    <th>" + fd.getName());
                         if (fd.isDefaultField()) {
                             writer.print("<br/><span style=\"color:grey;font-style:italic;font-size:smaller\">(default field)</span>");
                         } else if (fd.getIntegerType() == FieldDefinition._ptrOne) {
@@ -150,9 +148,9 @@ public class DataObjectViewerServlet extends DataServlet {
                             writer.print("<br/><span style=\"color:grey;font-style:italic;font-size:smaller\">("
                                     + (fd.isSetType() ? "set " : "ptr ") + fd.getPointedType().getName() + ")</span>");
                         }
-                        writer.println("</td>");
+                        writer.println("</th>");
 
-                        writer.print("    <td>");
+                        writer.println("    <td>");
 
                         // special handling for external set types - query their values
                         if (fd.isSetType() || fd.getIntegerType() == FieldDefinition._ptrOne) {
@@ -214,8 +212,9 @@ public class DataObjectViewerServlet extends DataServlet {
                         }
                         writer.println("</td>");
 
-                        writer.println("  </tr>");
+                        writer.println("    </tr>");
                     }
+                    writer.println("  <tbody>");
                     writer.println("</table>");
                 }
             } finally {

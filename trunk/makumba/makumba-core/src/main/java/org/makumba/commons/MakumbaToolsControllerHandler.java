@@ -85,9 +85,10 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
                 PrintWriter w = res.getWriter();
                 res.setContentType("text/html");
                 DevelUtils.writePageBegin(w);
+                DevelUtils.writeStylesAndScripts(w,((HttpServletRequest) req).getContextPath());
                 DevelUtils.writeTitleAndHeaderEnd(w, "Makumba Cache Cleaner");
-                DevelUtils.printPageHeader(w, "Makumba Cache Cleaner");
-                w.println("</table>");
+                DevelUtils.printNavigationBegin(w, "Makumba Cache Cleaner");
+                DevelUtils.printNavigationEnd(w);
                 w.println("<h3>Select the cache to clean</h3>");
                 for (String string : cacheNames) {
                     w.println("<a href=\"?cacheName=" + string + "\">" + string + "</a><br/>");
@@ -120,10 +121,11 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
             DevelUtils.writePageBegin(w);
             DevelUtils.writeStyles(w, request.getContextPath());
             DevelUtils.writeTitleAndHeaderEnd(w, "Makumba Configuration");
-            DevelUtils.printPageHeader(w, "Makumba Configuration");
-            w.println("</table>");
-            w.println("<h3>Welcome to the Makumba Configuration page!</h3>");
-            w.println("<p>This page gives you a short overview on the configuration of this Makumba installation and basic information on the tools available.</p>");
+            DevelUtils.printNavigationBegin(w, "Makumba Configuration");
+            DevelUtils.printNavigationEnd(w);
+
+            w.println("  <h3>Welcome to the Makumba Configuration page!</h3>");
+            w.println("  <p>This page gives you a short overview on the configuration of this Makumba installation and basic information on the tools available.</p>");
 
             writeSectionHeader(w, "Location", "Makumba Tools");
             for (DeveloperTool t : DeveloperTool.values()) {
@@ -139,6 +141,7 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
                     request.getContextPath());
             }
 
+            w.println("  </tbody>");
             w.println("</table>");
 
             writeSectionHeader(w, "Value", "Controller settings");
@@ -147,6 +150,7 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
             writeDescr(w, "Clientside validation",
                 "Whether client-side validation is enabled, and if it is live or on form submission",
                 Configuration.KEY_CLIENT_SIDE_VALIDATION, Configuration.getClientSideValidationDefault());
+            w.println("  </tbody>");
             w.println("</table>");
 
             writeSectionHeader(w, "Value", "Input style settings");
@@ -156,6 +160,7 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
             writeDescr(w, "Calendar editor link", "The default link created for the calendar editor",
                 Configuration.KEY_CALENDAR_EDITOR_LINK,
                 StringEscapeUtils.escapeHtml(Configuration.getDefaultCalendarEditorLink(request.getContextPath())));
+            w.println("  </tbody>");
             w.println("</table>");
 
             writeSectionHeader(w, "Value", "Other settings");
@@ -169,8 +174,10 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
                 Configuration.KEY_REPOSITORY_URL, Configuration.getRepositoryURL());
             writeDescr(w, "Repository Link Text", "The text displayed on the repository URL link",
                 Configuration.KEY_REPOSITORY_LINK_TEXT, Configuration.getRepositoryLinkText());
+            w.println("  </tbody>");
             w.println("</table>");
 
+            w.println("</div>");
             DevelUtils.writePageEnd(w);
             w.close();
             return false;
@@ -181,13 +188,16 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
 
     private void writeSectionHeader(PrintWriter w, String columnName, String sectionName) {
         w.println("<h4>" + sectionName + "</h4>");
-        w.println("<table border=\"1\" _width=\"100%\">");
-        w.println("  <tr>");
-        w.println("    <th>Name</th>");
-        w.println("    <th>Description</th>");
-        w.println("    <th>Config file key</th>");
-        w.println("    <th>" + columnName + "</th>");
-        w.println("  </tr>");
+        w.println("<table class=\"table table-bordered table-condensed\">");
+        w.println("  <thead>");
+        w.println("    <tr>");
+        w.println("      <th>Name</th>");
+        w.println("      <th>Description</th>");
+        w.println("      <th>Config file key</th>");
+        w.println("      <th>" + columnName + "</th>");
+        w.println("    </tr>");
+        w.println("  </thead>");
+        w.println("  </tbody>");
     }
 
     private void writeDescr(PrintWriter w, final String name, final String desc, final String key, Object value) {
