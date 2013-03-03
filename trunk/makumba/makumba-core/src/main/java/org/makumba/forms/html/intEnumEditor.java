@@ -54,7 +54,7 @@ public class intEnumEditor extends charEnumEditor {
     }
 
     @Override
-    public Object getOptionValue1(RecordFormatter rf, int fieldIndex, Object options, int i) {
+    public Object getOptionValue(RecordFormatter rf, int fieldIndex, Object options, int i) {
         return new Integer(rf.dd.getFieldDefinition(fieldIndex).getIntAt(i));
     }
 
