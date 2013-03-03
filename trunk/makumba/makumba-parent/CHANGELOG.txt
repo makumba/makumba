@@ -10,6 +10,9 @@ TO BE RELEASED IMMEDIATELY (No need for more testing)
 
 NOT TO BE RELEASED YET (need more testing)
 
+cristi  130303
+support for <mak:option> for all choice types (intEnum, charEnum, setIntEnum, setCharEnum). This allows you to hide choices, or to rename choices.
+
 cristi (from Oct 2012 to Feb 2013)
 
 BEHAVIOR CHANGE 
