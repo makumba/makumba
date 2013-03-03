@@ -23,10 +23,8 @@
 
 package org.makumba.forms.html;
 
-import java.util.Dictionary;
 import java.util.Vector;
 
-import org.makumba.NullObject;
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.RecordFormatter;
 
@@ -53,23 +51,7 @@ public class setintEnumEditor extends setcharEnumEditor {
     }
 
     @Override
-    public Object getOptions(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
-        ChoiceSet c = (ChoiceSet) formatParams.get(ChoiceSet.PARAMNAME);
-        if (c != null) {
-            return c;
-        }
-        return super.getOptions(rf, fieldIndex, formatParams);
-    }
-
-    @Override
-    public Object getOptionValue1(RecordFormatter rf, int fieldIndex, Object options, int i) {
-        if (options != null) {
-            Object ret = ((ChoiceSet) options).get(i).getValue();
-            if (ret == null || ret instanceof NullObject) {
-                return "";
-            }
-            return ret;
-        }
+    public Object getOptionValue(RecordFormatter rf, int fieldIndex, Object options, int i) {
         return new Integer(rf.dd.getFieldDefinition(fieldIndex).getIntAt(i));
     }
 

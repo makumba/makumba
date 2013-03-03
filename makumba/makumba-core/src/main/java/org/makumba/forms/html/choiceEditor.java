@@ -31,6 +31,7 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.makumba.HtmlChoiceWriter;
+import org.makumba.NullObject;
 import org.makumba.Pointer;
 import org.makumba.commons.formatters.RecordFormatter;
 import org.makumba.forms.tags.SearchFieldTag;
@@ -54,9 +55,6 @@ public abstract class choiceEditor extends FieldEditor {
     public String[][] getAcceptedValue() {
         return _paramValues;
     }
-
-    /** Get the available options. */
-    public abstract Object getOptions(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams);
 
     /** Gets the number of available options. */
     public abstract int getOptionsLength(RecordFormatter rf, int fieldIndex, Object opts);
@@ -83,6 +81,14 @@ public abstract class choiceEditor extends FieldEditor {
     /** Null values are ignored */
     public boolean shouldRemoveNullValue(RecordFormatter rf, int fieldIndex) {
         return true;
+    }
+
+    public Object getOptions(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
+        ChoiceSet c = (ChoiceSet) formatParams.get(ChoiceSet.PARAMNAME);
+        if (c != null) {
+            return c;
+        }
+        return null;
     }
 
     // height? orderBy? where?
@@ -159,7 +165,11 @@ public abstract class choiceEditor extends FieldEditor {
             String[] valueFormattedList = new String[value.size()];
 
             for (int i = 0; i < getOptionsLength(rf, fieldIndex, opt); i++) {
-                Object val = getOptionValue(rf, fieldIndex, opt, i);
+                Object val = getValueFromOptions(rf, fieldIndex, opt, i);
+
+                if (val == null) {
+                    val = getOptionValue(rf, fieldIndex, opt, i);
+                }
 
                 values.add(val == null ? null : formatOptionValue(rf, fieldIndex, opt, i, val));
                 labels.add(formatOptionTitle(rf, fieldIndex, opt, i));
@@ -234,6 +244,25 @@ public abstract class choiceEditor extends FieldEditor {
             }
             return sb.toString();
         }
+    }
+
+    private Object getValueFromOptions(RecordFormatter rf, int fieldIndex, Object options, int i) {
+        if (nullOption != null && options == null) {
+            if (i == 0) {
+                return "";
+            } else {
+                i -= 1;
+            }
+        }
+
+        if (options != null) {
+            Object ret = ((ChoiceSet) options).get(i).getValue();
+            if (ret == null || ret instanceof NullObject) {
+                return "";
+            }
+            return ret;
+        }
+        return null;
     }
 
     /**
