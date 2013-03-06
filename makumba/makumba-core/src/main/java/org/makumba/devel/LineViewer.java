@@ -233,7 +233,14 @@ public abstract class LineViewer implements SourceViewer {
      * @throws IOException
      */
     public void printPageEnd(PrintWriter writer) throws IOException {
+        printPageEnd(writer,null);
+    }
+
+    public void printPageEnd(PrintWriter writer, StringBuffer extra) throws IOException {
         writer.println("</code></pre>");
+        if(extra != null) {
+            writer.println(extra);
+        }
         footer(writer);
         if (printHeaderFooter) {
             writer.println("\n</body></html>");

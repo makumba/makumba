@@ -35,6 +35,7 @@ import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.makumba.MakumbaError;
 import org.makumba.OQLParseError;
@@ -275,6 +276,7 @@ public class jspViewer extends LineViewer {
         int inTag = 0;
 
         StringBuffer currentText = new StringBuffer();
+        StringBuffer popupText = new StringBuffer();
 
         for (int j = 0; sourceSyntaxPoints != null && j < sourceSyntaxPoints.length; j++) {
             SyntaxPoint currentSyntaxPoint = sourceSyntaxPoints[j];
@@ -374,11 +376,11 @@ public class jspViewer extends LineViewer {
                                 currentText.append("<span class=\"" + tagClass + "\">");
                                 String divId = "query" + currentSyntaxPoint.getLine() + "x"
                                         + currentSyntaxPoint.getColumn();
-                                currentText.append("<div id=\"" + divId
+                                popupText.append("<div id=\"" + divId
                                         + "\" class=\"popup queryPopup\" style=\"display: none;\">");
 
                                 String queryOQL = ((ComposedQuery) queryCache.get(tagKey)).getComputedQuery();
-                                currentText.append("OQL: " + queryOQL + "<br/>");
+                                popupText.append("OQL: <pre><code class=\"sql\">" + StringEscapeUtils.escapeHtml(queryOQL) + "</code></pre>");
 
                                 // at non-runtime, we can't evaluate #{...}; thus, remove it
                                 String queryTransformedForInlining = removeExpressionsForInlining(queryOQL);
@@ -394,16 +396,16 @@ public class jspViewer extends LineViewer {
                                         queryInlined = Pass1ASTPrinter.printAST(
                                             queryAnalzyer.inlineFunctions(queryTransformedForInlining)).toString();
                                     } catch (Throwable t) {
-                                        currentText.append(" <div class=\"alert alert-error\">Error inlinging query: "
+                                        popupText.append(" <div class=\"alert alert-error\">Error inlinging query: "
                                                 + t.getMessage() + "</div>");
                                     }
                                 }
                                 if (queryInlined != null && !queryInlined.equals(queryOQL)) {
-                                    currentText.append("OQL inlined");
+                                    popupText.append("OQL inlined");
                                     if (!queryTransformedForInlining.equals(queryOQL)) {
-                                        currentText.append(" <div class=\"alert alert-error\">(removed #{...} expressions)</div>");
+                                        popupText.append(" <div class=\"alert alert-error\">(removed #{...} expressions)</div>");
                                     }
-                                    currentText.append(": " + queryInlined + "<br/>");
+                                    popupText.append(": <pre><code class=\"sql\">" + StringEscapeUtils.escapeHtml(queryInlined) + "</code></pre>");
                                 }
 
                                 try {
@@ -412,24 +414,24 @@ public class jspViewer extends LineViewer {
                                     if (db instanceof Database) {
                                         NativeQuery nat = NativeQuery.getNativeQuery(queryInlined, "mql", null,
                                             ((Database) db).getNameResolverHook());
-                                        currentText.append("SQL: " + nat.getCommand(null) + "<br/>");
+                                        popupText.append("SQL: <pre><code class=\"sql\">" + StringEscapeUtils.escapeHtml(nat.getCommand(null)) + "</code></pre><br/>");
                                     }
                                 } catch (RuntimeWrappedException e) {
                                     if (e.getCause() instanceof OQLParseError
                                             && e.getMessage().contains("unexpected char: '#'")) {
-                                        currentText.append("<i>Cannot generate SQL: cannot evaluate #{...} expressions.</i>");
+                                        popupText.append("<i>Cannot generate SQL: cannot evaluate #{...} expressions.</i>");
                                     } else {
                                         e.printStackTrace();
-                                        currentText.append("<i>Problem generating SQL: " + e.getMessage() + "</i>");
+                                        popupText.append("<i>Problem generating SQL: " + e.getMessage() + "</i>");
                                     }
                                 } catch (Exception e) {
                                     e.printStackTrace();
-                                    currentText.append("<i>Problem generating SQL: " + e.getMessage() + "</i>");
+                                    popupText.append("<i>Problem generating SQL: " + e.getMessage() + "</i>");
                                 }
 
-                                currentText.append("</div>");
+                                popupText.append("</div>");
                                 currentText.append("<a href=\"#\" data-toggle=\"popover\" rel=\"popover\" data-popover-id=\"" + divId
-                                        + "\" data-title=\"Generated queries\" title=\"Click to show the query details\">");
+                                        + "\" title=\"Generated queries\">");
                             } else {
                                 currentText.append("<span class=\"" + tagClass + "\">");
                             }
@@ -460,7 +462,7 @@ public class jspViewer extends LineViewer {
             }
         }
 
-        printPageEnd(writer);
+        printPageEnd(writer,popupText);
         double time = new Date().getTime() - begin.getTime();
         logger.finer("Sourcecode viewer took :" + time / 1000 + " seconds");
     }
