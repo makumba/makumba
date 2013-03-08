@@ -8,8 +8,8 @@
 	template="/WEB-INF/templates/default.xhtml">
 
 	<ui:define name="content">
-
 		<h:form id="f">
+		<h:messages />
 			<ul>
 				<mak:list from="test.Person p" id="bigList">
 					<li><h:outputText value="#{p.indiv.surname}" id="surnameOut" /></li>
