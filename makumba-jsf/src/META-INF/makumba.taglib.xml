@@ -12,6 +12,12 @@
 		<function-signature>java.lang.Object expr(java.lang.String)</function-signature>
 	</function>
 
+	<function>
+		<function-name>from</function-name>
+		<function-class>org.makumba.jsf.component.el.MakumbaFunctions</function-class>
+		<function-signature>java.lang.Object from(java.lang.String)</function-signature>
+	</function>
+
 	<tag>
 		<description>mak:list</description>
 		<tag-name>list</tag-name>

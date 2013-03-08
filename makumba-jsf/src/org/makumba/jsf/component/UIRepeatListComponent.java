@@ -42,6 +42,7 @@ import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
 import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
+import org.makumba.UnauthorizedException;
 import org.makumba.commons.ArrayMap;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
@@ -764,6 +765,9 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
             for (SetIterationContext sc : setComposedSubqueries.values()) {
                 sc.execute(qep, offset, limit);
             }
+        } catch (UnauthorizedException e) {
+            // TODO: this should block 'page' execution
+            e.printStackTrace();
         } finally {
             if (useSeparateTransactions()) {
                 qep.close();
@@ -1165,7 +1169,12 @@ public class UIRepeatListComponent extends UIRepeat1 implements MakumbaDataCompo
         }
 
         public void execute(QueryProvider qep, int offset, int limit) {
-            this.grouper = composedQuery.execute(qep, null, evaluator, offset, limit);
+            try {
+                this.grouper = composedQuery.execute(qep, null, evaluator, offset, limit);
+            } catch (UnauthorizedException e) {
+                // TODO: this should block 'page' execution
+                e.printStackTrace();
+            }
         }
 
         public void nextParentIteration() {

@@ -16,8 +16,8 @@ import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
 import org.makumba.jsf.MakumbaDataContext;
 import org.makumba.jsf.component.MakumbaDataComponent;
-import org.makumba.jsf.component.MakumbaDataComponent.Util;
 import org.makumba.jsf.component.UIRepeatListComponent;
+import org.makumba.jsf.component.MakumbaDataComponent.Util;
 
 /**
  * FIXME for ptr projections such as #{p}, return something alike to Java's [Object@REFERENCE String instead of the
@@ -91,7 +91,8 @@ public class MakumbaELResolver extends ELResolver {
         ReadExpressionPathPlaceholder mine = basicGetValue(context, base, property);
         if (mine == null) {
             if (current != null) {
-                log.fine(debugIdent() + " " + base + "." + property + " ----> " + null + " in " + current.getClientId());
+                // log.fine(debugIdent() + " " + base + "." + property + " ----> " + null + " in " +
+                // current.getClientId());
             }
             return null;
         }
