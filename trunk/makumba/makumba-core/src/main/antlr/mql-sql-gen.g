@@ -413,7 +413,7 @@ methodCall
 	;
 
 arguments
-	: expr ( { commaBetweenParameters(", "); } expr )*
+	: (expr | booleanExpr[false]) ( { commaBetweenParameters(", "); } (expr | booleanExpr[false]) )*
 	;
 
 parameter

@@ -197,8 +197,24 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
         }
 
         if (type != null) {
-            child.setType(HqlSqlTokenTypes.METHOD_NAME);
-            return DataDefinitionProvider.getInstance().makeFieldDefinition("x", type);
+            if (MQLFunctionRegistry.T.equals(type)) {
+                MqlNode param = (MqlNode) child.getNextSibling().getFirstChild();
+                for (MQLFunctionArgument s : functionDef.getArguments()) {
+                    if (MQLFunctionRegistry.T.equals(s.getType())) {
+                        child.setType(HqlSqlTokenTypes.METHOD_NAME);
+                        // TODO: check number of parameters
+                        // TODO: check non-parametric types, e.g. the boolean of if()
+                        // TODO: check other T arguments to be assignable from (?) param.getMakType()
+                        // TODO support for more than one generic in a function
+                        return param.getMakType();
+                    }
+                    param = (MqlNode) param.getNextSibling();
+                }
+            } else {
+                // TODO: check parameter types and parameter numbers...
+                child.setType(HqlSqlTokenTypes.METHOD_NAME);
+                return DataDefinitionProvider.getInstance().makeFieldDefinition("x", type);
+            }
         }
         return null;
     }

@@ -48,6 +48,8 @@ public class MQLFunctionRegistry {
         return null;
     }
 
+    static final String T = "genericType";
+
     static void initMQLFunctions() {
         //
         // String FUNCTIONS
@@ -150,6 +152,10 @@ public class MQLFunctionRegistry {
         // to-real functions with no arguments
         mqlFunctions.add(new MQLFunctionDefinition("rand", "real", new String[] {}));
         mqlFunctions.add(new MQLFunctionDefinition("rand", "real", "int"));
+        mqlFunctions.add(new MQLFunctionDefinition("round", "real", T));
+        mqlFunctions.add(new MQLFunctionDefinition("ifnull", T, T, T));
+        mqlFunctions.add(new MQLFunctionDefinition("if", T, "boolean", T, T));
+
     }
 
     private static MQLFunctionDefinition dateToIntFunction(String name) {
