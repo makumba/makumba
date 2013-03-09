@@ -554,6 +554,17 @@ exprOrSubquery
 	| #(ALL collectionFunctionOrSubselect)
 	| #(SOME collectionFunctionOrSubselect)
 	;
+
+// ***** MQL addition
+// had to copy a bit from logicalExpression to avoid nondeterminism for TRUE and FALSE...
+exprOrSubqueryOrLogical
+	: exprOrSubquery
+	| #(AND logicalExpr logicalExpr)
+	| #(OR logicalExpr logicalExpr)
+	| #(NOT logicalExpr)
+	| comparisonExpr
+	;
+	 
 	
 collectionFunctionOrSubselect
 	: collectionFunction
@@ -570,13 +581,15 @@ expr
 	| count										// Count, not in the SELECT clause.
 	;
 
+
 arithmeticExpr
-	: #(PLUS expr expr)         { prepareArithmeticOperator( #arithmeticExpr ); }
-	| #(MINUS expr expr)        { prepareArithmeticOperator( #arithmeticExpr ); }
-	| #(DIV expr expr)          { prepareArithmeticOperator( #arithmeticExpr ); }
-	| #(STAR expr expr)         { prepareArithmeticOperator( #arithmeticExpr ); }
+// ***** MQL addition: allowing subqueries in arithmethic expressions
+	: #(PLUS exprOrSubquery exprOrSubquery)         { prepareArithmeticOperator( #arithmeticExpr ); }
+	| #(MINUS exprOrSubquery exprOrSubquery)        { prepareArithmeticOperator( #arithmeticExpr ); }
+	| #(DIV exprOrSubquery exprOrSubquery)          { prepareArithmeticOperator( #arithmeticExpr ); }
+	| #(STAR exprOrSubquery exprOrSubquery)         { prepareArithmeticOperator( #arithmeticExpr ); }
 //	| #(CONCAT expr (expr)+ )   { prepareArithmeticOperator( #arithmeticExpr ); }
-	| #(UNARY_MINUS expr)       { prepareArithmeticOperator( #arithmeticExpr ); }
+	| #(UNARY_MINUS exprOrSubquery)       { prepareArithmeticOperator( #arithmeticExpr ); }
 	| caseExpr
 	;
 
@@ -597,7 +610,8 @@ collectionFunction
 
 functionCall
 // **** MQL addition (temporarily at least) allow subqueries as function arguments
-	: #(METHOD_CALL {inFunctionCall=true;} p:pathAsIdent ( #(EXPR_LIST (exprOrSubquery)* ) )? )
+// **** MQL addition allow logical expressions as function arguments
+	: #(METHOD_CALL {inFunctionCall=true;} p:pathAsIdent ( #(EXPR_LIST (exprOrSubqueryOrLogical)* ) )? )
 		{ processFunction(#functionCall); } {inFunctionCall=false;}
 	| #(AGGREGATE aggregateExpr )
 	;

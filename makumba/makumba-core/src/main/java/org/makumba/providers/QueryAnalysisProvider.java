@@ -39,6 +39,7 @@ import org.makumba.InvalidFieldTypeException;
 import org.makumba.OQLParseError;
 import org.makumba.commons.RegExpUtils;
 import org.makumba.providers.query.FunctionInliner;
+import org.makumba.providers.query.Pass1ASTPrinter;
 import org.makumba.providers.query.Pass1FunctionInliner;
 import org.makumba.providers.query.mql.ASTUtil;
 import org.makumba.providers.query.mql.HqlParser;
@@ -653,6 +654,9 @@ public abstract class QueryAnalysisProvider implements Serializable {
                 sb.append('^');
                 errorLocation = sb.toString();
             }
+        }
+        if (query == null) {
+            query = Pass1ASTPrinter.printAST(debugTree).toString();
         }
         throw new OQLParseError("\r\n\r\nin " + errorLocationNumber + " query:\r\n\r\n" + query + errorLocation
                 + errorLocation + errorLocation, t);
