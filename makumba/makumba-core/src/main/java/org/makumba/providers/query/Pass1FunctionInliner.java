@@ -276,13 +276,15 @@ public class Pass1FunctionInliner {
                 @Override
                 public AST visit(AST node) {
                     // for each parameter node, we put the param expression instead
-                    if (node.getType() == HqlTokenTypes.IDENT && paramExpr.get(node.getText()) != null &&
-                    // a field name from another table might have the same name as a param
-                    // FIXME: there might be other cases where this is not the param but some field
-                            getPath().peek().getType() != HqlTokenTypes.DOT
-                    //
-                    ) {
-                        return paramExpr.get(node.getText());
+                    if (node.getType() == HqlTokenTypes.IDENT && paramExpr.get(node.getText()) != null) {
+                        // a field name from another table might have the same name as a param
+                        // FIXME: there might be other cases where this is not the param but some field
+                        if (getPath().peek().getType() != HqlTokenTypes.DOT || node.getNextSibling() != null)
+
+                        //
+                        {
+                            return paramExpr.get(node.getText());
+                        }
                     }
                     return node;
                 }
