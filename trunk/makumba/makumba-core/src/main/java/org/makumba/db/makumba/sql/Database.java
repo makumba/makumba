@@ -556,7 +556,7 @@ public class Database extends org.makumba.db.makumba.Database {
                 new Object[] {});
             if (toStr instanceof String) {
                 sql = (String) toStr;
-                sql = sql.substring(sql.indexOf('-') + 1).trim() + ";";
+                sql = sql.substring(sql.indexOf(':') + 1).trim() + ";";
                 return sql;
             }
         } catch (Throwable e) {
