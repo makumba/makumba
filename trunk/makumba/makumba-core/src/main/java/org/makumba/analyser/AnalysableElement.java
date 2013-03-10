@@ -40,7 +40,7 @@ public abstract class AnalysableElement extends TagSupport {
 
     private static ThreadLocal<Stack<ElementData>> elementStack = new ThreadLocal<Stack<ElementData>>();
 
-    private static transient ThreadLocal<JspParseData> jspParser = new ThreadLocal<JspParseData>();
+    private static ThreadLocal<JspParseData> jspParser = new ThreadLocal<JspParseData>();
 
     /**
      * Initializes the element data thread stack, and loads previous analysis state if there was any
