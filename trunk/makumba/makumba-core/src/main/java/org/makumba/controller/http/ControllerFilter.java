@@ -66,6 +66,7 @@ public class ControllerFilter implements Filter {
 
     private ArrayList<ControllerHandler> handlers = new ArrayList<ControllerHandler>();
 
+    @Override
     public void init(FilterConfig c) {
         conf = c;
         String handlerParam = c.getInitParameter("handlerClasses");
@@ -83,6 +84,7 @@ public class ControllerFilter implements Filter {
         }
     }
 
+    @Override
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws ServletException,
             java.io.IOException {
         MakumbaJspFactory.checker.run();
@@ -123,7 +125,7 @@ public class ControllerFilter implements Filter {
         }
 
         finally {
-            for (i = handlers.size() - 1; i >= 0; i--) {
+            for (i = imax; i >= 0; i--) {
                 try {
                     handlers.get(i).finalize(req, resp);
                 } catch (Throwable t) {
@@ -134,6 +136,7 @@ public class ControllerFilter implements Filter {
 
     }
 
+    @Override
     public void destroy() {
         MakumbaJspFactory.reset();
     }
