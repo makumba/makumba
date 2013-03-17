@@ -39,10 +39,6 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
 
     private PrintWriter makumbaWriter;
 
-    private boolean headOpenPassed = false;
-
-    private boolean headClosedPassed = false;
-
     private HttpServletRequest request;
 
     private String cssResources = "";
@@ -56,23 +52,159 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
         this.request = request;
     }
 
+    public void outputOff() throws IOException {
+        if (writerState == noWriter) {
+            return;
+        }
+
+        // hopefully all header detection happens now, because there won't be any other
+        getWriter().flush();
+        writerState = noWriter;
+    }
+
+    public void outputOn() throws IOException {
+        if (writerState != noWriter) {
+            return;
+        }
+        getWriter().flush();
+        writerState = usualWriter;
+    }
+
+    abstract class ResponseWriterState {
+        public abstract void write(char[] buf, int off, int len);
+
+        public abstract void write(String s, int off, int len);
+
+        public void warnOnClose() {
+
+        }
+    }
+
+    final ResponseWriterState usualWriter = new ResponseWriterState() {
+        @Override
+        public void write(char[] buf, int off, int len) {
+            originalWriter.write(buf, off, len);
+        }
+
+        @Override
+        public void write(String s, int off, int len) {
+            originalWriter.write(s, off, len);
+        }
+    };
+
+    final ResponseWriterState noWriter = new ResponseWriterState() {
+        @Override
+        public void write(char[] buf, int off, int len) {
+            // System.out.print(new String(buf, off, len));
+        }
+
+        @Override
+        public void write(String s, int off, int len) {
+            // System.out.print(new String(s.toCharArray(), off, len));
+        }
+    };
+
+    final ResponseWriterState beforeHeader = new ResponseWriterState() {
+        @Override
+        public void write(char[] buf, int off, int len) {
+            // convert to string since in this state this is needed to look for <head> and </head>
+            write(new String(buf, off, len), 0, len);
+        }
+
+        @Override
+        public void write(String s, int off, int len) {
+            int off1 = checkOpen(s, off, len);
+            len = len + off - off1;
+            int off2 = checkClosed(s, off1, len);
+            originalWriter.write(s, off2, len + off1 - off2);
+        }
+
+        @Override
+        public void warnOnClose() {
+            logger.info("Did not find open head -> did not add scripts!!");
+        }
+    };
+
+    final ResponseWriterState afterHead = new ResponseWriterState() {
+
+        @Override
+        public void write(char[] buf, int off, int len) {
+            // convert to string since in this state this is needed to look for </head>
+            write(new String(buf, off, len), 0, len);
+        }
+
+        @Override
+        public void write(String s, int off, int len) {
+            int off2 = checkClosed(s, off, len);
+            originalWriter.write(s, off2, len + off - off2);
+        }
+
+        @Override
+        public void warnOnClose() {
+            logger.info("Found opening head tag, but no closing -> did not add javascripts!!");
+        }
+
+    };
+
+    ResponseWriterState writerState;
+
+    private static final String BEGIN_AUTOMATICALLY_ADDED_BY_MAKUMBA = "  <!-- BEGIN: automatically added by Makumba -->\n";
+
+    private static final String END_AUTOMATICALLY_ADDED_BY_MAKUMBA = "  <!-- END: automatically added by Makumba -->\n";
+
+    int checkOpen(String s, int off, int len) {
+        int indexOfHeadOpen = s.indexOf("<head>");
+        if (indexOfHeadOpen != -1 && indexOfHeadOpen > off) {
+            originalWriter.write(s, off, indexOfHeadOpen - off);
+
+            originalWriter.write("<head>\n" + BEGIN_AUTOMATICALLY_ADDED_BY_MAKUMBA + cssResources
+                    + END_AUTOMATICALLY_ADDED_BY_MAKUMBA);
+            logger.finer(request.getRequestURI() + ", found opening head tag, added style sheet.");
+            writerState = afterHead;
+            return indexOfHeadOpen + 6;
+        }
+        return off;
+    }
+
+    int checkClosed(String s, int off, int len) {
+        int indexOfHeadClosed = s.indexOf("</head>");
+        if (indexOfHeadClosed != -1 && indexOfHeadClosed > off) {
+            originalWriter.write(s, off, indexOfHeadClosed - off);
+            originalWriter.write("\n" + BEGIN_AUTOMATICALLY_ADDED_BY_MAKUMBA + javaScriptResources
+                    + END_AUTOMATICALLY_ADDED_BY_MAKUMBA + "</head>");
+            logger.finer(request.getRequestURI() + ", found closing head tag, added scripts.");
+            writerState = usualWriter;
+            return indexOfHeadClosed + 7;
+        }
+        return off;
+    }
+
     @Override
     public PrintWriter getWriter() throws IOException {
-        // we do the header modifications only for .jsp files
-        // and only if we are not doing something related to makumba tools
-        if (request.getRequestURI().endsWith(".jsp")
-                && !request.getRequestURI().startsWith(
-                    request.getContextPath() + Configuration.getMakumbaToolsLocation())
-                && request.getAttribute(javax.servlet.jsp.PageContext.EXCEPTION) == null) {
-            if (makumbaWriter == null) {
-                originalWriter = super.getWriter();
-                makumbaWriter = new MakumbaPrintWriter(originalWriter);
+
+        if (makumbaWriter == null) {
+            originalWriter = super.getWriter();
+            makumbaWriter = new MakumbaPrintWriter(originalWriter);
+
+            // we do the header modifications only for .jsp files
+            // and only if we are not doing something related to makumba tools
+            if (request.getRequestURI().endsWith(".jsp")
+                    && !request.getRequestURI().startsWith(
+                        request.getContextPath() + Configuration.getMakumbaToolsLocation())
+                    && request.getAttribute(javax.servlet.jsp.PageContext.EXCEPTION) == null && writerState == null) {
+                writerState = beforeHeader;
                 initResourceReplacements();
+            } else {
+                writerState = usualWriter;
             }
-            return makumbaWriter;
-        } else {
-            return super.getWriter();
         }
+        return makumbaWriter;
+
+    }
+
+    // this may be called already before getWriter()
+    public void stopHeaderRewrite() {
+        writerState = usualWriter;
     }
 
     /** Process the requested resources, and split them into CSS and JavaScript resources */
@@ -109,10 +241,6 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
      * write/print/println.
      */
     class MakumbaPrintWriter extends PrintWriter {
-
-        private static final String BEGIN_AUTOMATICALLY_ADDED_BY_MAKUMBA = "  <!-- BEGIN: automatically added by Makumba -->\n";
-
-        private static final String END_AUTOMATICALLY_ADDED_BY_MAKUMBA = "  <!-- END: automatically added by Makumba -->\n";
 
         public MakumbaPrintWriter(Writer originalWriter) {
             super(originalWriter);
@@ -175,36 +303,12 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
 
         @Override
         public void write(char[] buf, int off, int len) {
-            // this method duplicates the code of {@link #write(String, int, int)} instead of using that methods, to
-            // avoid converting from char[] to String
-            if (!headClosedPassed) {
-                String s = null;
-                if (!headOpenPassed) {
-                    s = new String(buf, off, len);
-                    int indexOfHeadOpen = s.indexOf("<head>");
-                    if (indexOfHeadOpen != -1 && indexOfHeadOpen > off) {
-                        headOpenPassed = true;
-                        s = injectStyleSheets(s);
-                        buf = s.toCharArray();
-                        len = s.length();
-                        logger.finer(request.getRequestURI() + ", found opening head tag, added style sheet.");
-                    }
-                }
-                if (headOpenPassed) {
-                    if (s == null) {
-                        s = new String(buf, off, len);
-                    }
-                    int indexOfHeadClosed = s.indexOf("</head>");
-                    if (indexOfHeadClosed != -1 && indexOfHeadClosed > off) {
-                        headClosedPassed = true;
-                        s = injectJavaScriptsResources(s);
-                        buf = s.toCharArray();
-                        len = s.length();
-                        logger.finer(request.getRequestURI() + ", found closing head tag, added scripts.");
-                    }
-                }
-            }
-            super.write(buf, off, len);
+            writerState.write(buf, off, len);
+        }
+
+        @Override
+        public void write(String s, int off, int len) {
+            writerState.write(s, off, len);
         }
 
         @Override
@@ -213,49 +317,10 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
         }
 
         @Override
-        public void write(String s, int off, int len) {
-            if (!headClosedPassed) {
-                if (!headOpenPassed) {
-                    int indexOfHeadOpen = s.indexOf("<head>");
-                    if (indexOfHeadOpen != -1 && indexOfHeadOpen > off) {
-                        headOpenPassed = true;
-                        s = injectStyleSheets(s);
-                        len = s.length();
-                        logger.finer(request.getRequestURI() + ", found opening head tag, added style sheet.");
-                    }
-                }
-                if (headOpenPassed) {
-                    int indexOfHeadClosed = s.indexOf("</head>");
-                    if (indexOfHeadClosed != -1 && indexOfHeadClosed > off) {
-                        headClosedPassed = true;
-                        s = injectJavaScriptsResources(s);
-                        len = s.length();
-                        logger.finer(request.getRequestURI() + ", found closing head tag, added scripts.");
-                    }
-                }
-            }
-            super.write(s, off, len);
-        }
-
-        private String injectJavaScriptsResources(String s) {
-            // we add the JavaScripts just before the </head>
-            return s.replace("</head>", "\n" + BEGIN_AUTOMATICALLY_ADDED_BY_MAKUMBA + javaScriptResources
-                    + END_AUTOMATICALLY_ADDED_BY_MAKUMBA + "</head>");
-        }
-
-        private String injectStyleSheets(String s) {
-            // we add the CSS stylesheet right after the <head>
-            return s.replace("<head>", "<head>\n" + BEGIN_AUTOMATICALLY_ADDED_BY_MAKUMBA + cssResources
-                    + END_AUTOMATICALLY_ADDED_BY_MAKUMBA);
-        }
-
-        @Override
         public void close() {
             super.close();
-            // print a warning if we found the opening of the head, but not the closing
-            if (headOpenPassed && !headClosedPassed) {
-                logger.info("Found opening head tag, but no closing -> did not add scripts!!");
-            }
+            // print a warning if we are still in a writer that searches for some tag...
+            writerState.warnOnClose();
         }
 
     }
