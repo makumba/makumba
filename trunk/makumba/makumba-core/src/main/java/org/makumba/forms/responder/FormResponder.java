@@ -246,7 +246,7 @@ public class FormResponder extends Responder {
             if (triggerEvent == null) {
                 sb.append(" action=").append("\"").append(actionBase).append(actionAnchor).append("\"");
             }
-            sb.append(" id=").append("\"").append(formId).append("\"");
+            sb.append(" id=").append("\"").append(getFormId()).append("\"");
             sb.append(" method=").append("\"").append(method).append("\"");
             if (multipart) {
                 sb.append(" enctype=\"multipart/form-data\" ");
@@ -276,7 +276,7 @@ public class FormResponder extends Responder {
                 // also allowing anchors and query parameters in the actions of common forms (bug 1143)
                 sb.append(" action=").append("\"").append(actionBase).append(actionAnchor).append("\"");
             }
-            sb.append(" id=").append("\"").append(formId).append("\"");
+            sb.append(" id=").append("\"").append(getFormId()).append("\"");
             sb.append(" method=");
             sb.append("\"" + method + "\"");
             if (multipart) {

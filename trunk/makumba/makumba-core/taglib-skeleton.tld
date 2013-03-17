@@ -483,14 +483,14 @@ for the test expressions: =, !=, <, <=, >, >=
     <attribute>
       <name>showOn</name>
       <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
       <description><![CDATA[The name of the event that causes this section to be displayed]]></description>
     </attribute>
     
     <attribute>
       <name>hideOn</name>
       <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
       <description><![CDATA[The name of the event that causes this section to be hidden]]></description>
     </attribute>
     
@@ -498,7 +498,7 @@ for the test expressions: =, !=, <, <=, >, >=
     <attribute>
       <name>reloadOn</name>
       <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
       <description><![CDATA[The name of the event that causes this section to be reloaded via partial post-back]]></description>
     </attribute>
     
@@ -966,6 +966,8 @@ for the test expressions: =, !=, <, <=, >, >=
     <attribute name="reloadFormOnError" specifiedIn="form" />
     <attribute name="clientSideValidation" specifiedIn="form" />
     <attribute name="multipleSubmitErrorMsg" specifiedIn="form" />
+    <attribute name="triggerEvent" specifiedIn="form" />
+    
 
     <!--form specific:-->
     <attribute name="target" specifiedIn="form" />
@@ -1030,6 +1032,8 @@ for the test expressions: =, !=, <, <=, >, >=
     <!--link specific:-->
     <attribute name="target" specifiedIn="form" />
     <attribute name="name" specifiedIn="form" />
+    <attribute name="triggerEvent" specifiedIn="form" />
+    
 
     <!-- generic: -->
     <attribute name="styleId" specifiedIn="form" />
@@ -1062,6 +1066,8 @@ for the test expressions: =, !=, <, <=, >, >=
     <attribute name="object" specifiedIn="delete" />
     <attribute name="action" specifiedIn="form" />
     <attribute name="message" specifiedIn="form" />
+    <attribute name="triggerEvent" specifiedIn="form" />
+    
 
     <attribute>
       <name>widget</name>

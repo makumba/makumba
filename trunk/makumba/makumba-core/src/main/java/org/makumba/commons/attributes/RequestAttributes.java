@@ -115,6 +115,7 @@ public class RequestAttributes implements Attributes {
             String[] attributes = ResponderFactory.RESPONSE_ATTRIBUTE_NAMES;
             attributes = (String[]) ArrayUtils.add(attributes, ResponseControllerHandler.MAKUMBA_FORM_VALIDATION_ERRORS);
             attributes = (String[]) ArrayUtils.add(attributes, ResponseControllerHandler.MAKUMBA_FORM_RELOAD);
+            attributes = (String[]) ArrayUtils.add(attributes, ResponseControllerHandler.MAKUMBA_FORM_ID);
 
             for (String attr : attributes) {
                 httpServletRequest.setAttribute(attr, session.getAttribute(attr + suffix));

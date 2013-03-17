@@ -25,7 +25,8 @@ import org.makumba.list.tags.SectionTag;
 import com.google.gson.Gson;
 
 /**
- * ControllerHandler that handles AJAX-related data writing<br/> FIXME does not seem to work for multiple forms
+ * ControllerHandler that handles AJAX-related data writing<br/>
+ * FIXME does not seem to work for multiple forms
  * 
  * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: ResponseModifierControllerHandler.java,v 1.1 Dec 25, 2009 10:05:55 PM manu Exp $
@@ -44,20 +45,35 @@ public class AJAXDataControllerHandler extends ControllerHandler {
     }
 
     @Override
-    public void afterFilter(ServletRequest request, ServletResponse response, FilterConfig conf) {
+    public void afterBeforeFilter(ServletRequest request, ServletResponse response, FilterConfig conf) throws Exception {
+        if (request.getParameter(SectionTag.MAKUMBA_EVENT) != null
+                || request.getAttribute(SectionTag.MAKUMBA_EVENT) != null) {
+            ((MakumbaResponseWrapper) response).outputOff();
+        }
+    }
+
+    @Override
+    public void afterFilter(ServletRequest request, ServletResponse response, FilterConfig conf) throws IOException {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse resp = (HttpServletResponse) response;
 
         handleEvent(req, resp);
-        handleFormPostback(req, resp);
+        // handleFormPostback(req, resp);
     }
 
-    private void handleEvent(HttpServletRequest req, HttpServletResponse response) {
+    private void handleEvent(HttpServletRequest req, HttpServletResponse response) throws IOException {
         String event = req.getParameter(SectionTag.MAKUMBA_EVENT);
+        if (event == null) {
+            event = (String) req.getAttribute(SectionTag.MAKUMBA_EVENT);
+        }
 
         if (event != null) {
 
-            response.reset();
+            try {
+                response.reset();
+            } catch (IllegalStateException e) {
+            }
+            ((MakumbaResponseWrapper) response).outputOn();
             response.setContentType("application/json");
 
             // fetch data from request context
@@ -74,7 +90,9 @@ public class AJAXDataControllerHandler extends ControllerHandler {
             }
 
             try {
-                response.getWriter().append(gson.toJson(data));
+                String x = gson.toJson(data);
+                // System.out.println(x);
+                response.getWriter().append(x);
                 response.getWriter().flush();
             } catch (IOException e) {
                 e.printStackTrace();
