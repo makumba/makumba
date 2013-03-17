@@ -10,6 +10,45 @@ TO BE RELEASED IMMEDIATELY (No need for more testing)
 
 NOT TO BE RELEASED YET (need more testing)
 
+cristi's TODO:
+- "finish" modules
+- mak:form  object="type(unique fields)",  field initialValue
+- report as a bug if $x is used in a mak:list/object but it is not present as a page parameter x, and it is not defined outside the list
+- include _defining_page_ in the page(?? tag) key?
+- unbalanced parenthses in query lead to confusing "FROM expected" error
+- label names used both in function and in the host query conflict with each other
+- design for $parameters used in functions...
+
+SECTION
+???- no section name, generate an ID
+- remove iterationExpr since it is not useful for triggerEvent
+- error handling should be different on AJAX calls, JSON response with the error should lead to complete page replacement at the client
+
+Filip's TODO (mak editor):
+- actor function
+- ContextTag extends ObjectTag (not added for that reason)
+- constants true, false
+- mysql functions like round(), if()
+- test(ptr peer.Student prr){ prr.grp=grp and prr.courseRound=courseRound } => no such field prr
+- func(real x){ case when x>0.5 then case when x<5.5 then (x+0.5) else 5 end else 0 end}
+
+cristi 130318
+stable mak:section, with dynamic (rtexpr) event names
+flexible section javascript generation
+mak.submit, mak.event updated
+much better ajax form submission (only one postback)
+fixed bugs (by using form id in responder): identical forms or fields with identical names in different forms lead to repeated annotations
+
+cristi 130310
+better cache cleanup at the end of a request [5994]
+
+cristi 130309
+support for subqueries in arithmetic expressions like (select ...) + (select ...)
+support for booleans as SQL function parameters
+support for if(), ifnull(), round()
+support for generic parameter/return types like T if(boolean, T, T), or T ifnull(T, T)
+
+
 cristi  130303
 support for <mak:option> for all choice types (intEnum, charEnum, setIntEnum, setCharEnum). This allows you to hide choices, or to rename choices.
 
