@@ -554,7 +554,9 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
                     }
                     return normalCheck(value);
                 case SET:
-
+                    if (value.equals(Pointer.Null)) {
+                        return value;
+                    }
                     try {
                         // may be just a pointer
                         Object o = checkPointer(value);
