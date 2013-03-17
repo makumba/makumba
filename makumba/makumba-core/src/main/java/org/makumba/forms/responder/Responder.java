@@ -125,7 +125,7 @@ public abstract class Responder implements java.io.Serializable {
     protected String resultLabel;
 
     /** HTML ID of the form **/
-    protected String formId;
+    private String formId;
 
     /** the business logic handler, for all types of forms */
     protected String handler;
@@ -365,7 +365,8 @@ public abstract class Responder implements java.io.Serializable {
         if (database.equals("testDatabaseHibernate")) {
             db = "testDatabase";
         }
-        return basePointerType + message + multipleSubmitErrorMsg + resultAttribute + db + operation
+
+        return formId + basePointerType + message + multipleSubmitErrorMsg + resultAttribute + db + operation
                 + controller.getClass().getName() + handler + addField + newType + reloadFormOnError
                 + originatingPageNameWithoutResponder + showFormAnnotated + clientSideValidation + defaultMatchModes
                 + resultLabel + triggerEvent + (StringUtils.isNotBlank(recordChangesIn) ? recordChangesIn : "");
@@ -489,5 +490,9 @@ public abstract class Responder implements java.io.Serializable {
             e.printStackTrace();
             file.delete();
         }
+    }
+
+    public String getFormId() {
+        return formId;
     }
 }

@@ -2,22 +2,20 @@ package org.makumba.list.tags;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
+import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTag;
 
 import org.apache.commons.collections.map.MultiValueMap;
-import org.apache.commons.lang.StringUtils;
 import org.makumba.LogicException;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
-import org.makumba.analyser.TagData;
 import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.tags.GenericMakumbaTag;
@@ -44,6 +42,8 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
 
     public static final String MAKUMBA_EVENT = "__mak_event__";
 
+    private static final String SECTION_INIT = "__section_init__";
+
     private String name;
 
     private String showOn;
@@ -53,10 +53,6 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
     private String reloadOn;
 
     private String iterationExpr;
-
-    private String[] events;
-
-    private String[] eventAction = new String[] { "show", "hide", "reload" };
 
     private BodyContent bodyContent;
 
@@ -102,9 +98,11 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
         this.iterationExpr = iterationExpression;
     }
 
+    @Override
     public void doInitBody() throws JspException {
     }
 
+    @Override
     public void setBodyContent(BodyContent b) {
         this.bodyContent = b;
     }
@@ -132,48 +130,11 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
     @Override
     protected void doAnalyzedCleanup() {
         super.doAnalyzedCleanup();
-        isFirstSection = isLastSection = false;
         name = reloadOn = showOn = hideOn = iterationExpr = null;
-        events = null;
         bodyContent = null;
     }
 
     private boolean isInvoked = false;
-
-    private boolean isFirstSection = false;
-
-    private boolean isLastSection = false;
-
-    /**
-     * Initializes various runtime variables necessary for the tag to work
-     */
-    private void initialize(PageCache pageCache) {
-
-        // iterate over all the tags to see where we are in the page
-        // TODO think of implementing a convenience method in the page analysis of the sort "firstOfMyKind",
-        // "lastOfMyKind"
-        Map<Object, Object> tags = pageCache.retrieveCache(MakumbaJspAnalyzer.TAG_DATA_CACHE);
-        Iterator<Object> tagDataIterator = tags.keySet().iterator();
-        boolean firstTag = true;
-        MultipleKey lastSection = null;
-        while (tagDataIterator.hasNext()) {
-            MultipleKey key = (MultipleKey) tagDataIterator.next();
-            Object o = ((TagData) tags.get(key)).getTagObject();
-            if (!(o instanceof SectionTag)) {
-                continue;
-            }
-
-            if (key.equals(getTagKey(pageCache)) && firstTag) {
-                isFirstSection = true;
-            }
-            lastSection = key;
-
-            firstTag = false;
-        }
-        if (lastSection.equals(getTagKey(pageCache))) {
-            isLastSection = true;
-        }
-    }
 
     /**
      * Whether this section matches a specific event (only for 'reloadOn' and 'showOn' events)
@@ -211,8 +172,6 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
     @Override
     public void doStartAnalyze(PageCache pageCache) {
 
-        events = new String[] { showOn, hideOn, reloadOn };
-
         // check if this section handles at least one event
         if (showOn == null && hideOn == null && reloadOn == null) {
             throw new ProgrammerError(
@@ -240,62 +199,43 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
             // add the iterationLabel to the projections if it's not there
             Object check = pageCache.retrieve(MakumbaJspAnalyzer.VALUE_COMPUTERS, tagKey);
             if (check == null) {
-                ValueComputer vc = ValueComputer.getValueComputerAtAnalysis(false, QueryTag.getParentListKey(this,
-                    pageCache), iterationExpr, pageCache);
+                ValueComputer vc = ValueComputer.getValueComputerAtAnalysis(false,
+                    QueryTag.getParentListKey(this, pageCache), iterationExpr, pageCache);
                 pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, tagKey, vc);
             }
-        } else if (parentList == null) {
-            cacheSectionResolution(pageCache, "", false);
         }
+    }
+
+    static public String getEvent(PageContext pc) {
+        String s = pc.getRequest().getParameter(MAKUMBA_EVENT);
+        if (s == null) {
+            s = (String) pc.getRequest().getAttribute(MAKUMBA_EVENT);
+        }
+        return s;
     }
 
     @Override
     public int doAnalyzedStartTag(PageCache pageCache) throws LogicException, JspException {
-        initialize(pageCache);
-
-        // if we are inside of a list and an expression value is found that can be used to uniquely identify the section
-        // we cache the section resolution maps. otherwise, they're cached at analysis time
-        QueryTag parentList = getParentListTag();
-        String exprValue = getIterationExpressionValue(pageCache, parentList);
-
-        // check if we are invoked, i.e. if an event has been "fired" that requires us to do stuff
-        if (matches(getPageContext().getRequest().getParameter(MAKUMBA_EVENT), exprValue)) {
-            isInvoked = true;
-        } else {
-            isInvoked = false;
-        }
-
-        events = new String[] { showOn, hideOn, reloadOn };
-
-        if (isInvoked && showOn != null) {
-
-            // FIXME here we skip the evaluation of the body but if the body contains forms, the form ID won't be
-            // increased
-            // which will lead to problems when the form will be finally shown
-
-            return SKIP_BODY;
-        }
-
-        if (exprValue.length() > 0) {
-            cacheSectionResolution(pageCache, exprValue, parentList != null && iterationExpr != null);
-        }
-
-        JspWriter out = getPageContext().getOut();
         try {
+            JspWriter out = getPageContext().getOut();
+
+            // if we are inside of a list and an expression value is found that can be used to uniquely identify the
+            // section
+            // we cache the section resolution maps. otherwise, they're cached at analysis time
+            QueryTag parentList = getParentListTag();
+            String exprValue = getIterationExpressionValue(pageCache, parentList);
+
+            writeJavascript(out, exprValue);
+
+            // check if we are invoked, i.e. if an event has been "fired" that requires us to do stuff
+            isInvoked = matches(getEvent(pageContext), exprValue);
+
+            if (isInvoked && showOn != null) {
+
+                return EVAL_BODY_BUFFERED;
+            }
 
             if (!isInvoked) {
-
-                // we print the section data only in the end, after all the iterations have been done
-                if (isLastSection) {
-
-                    if (parentList != null
-                            && parentList.getCurrentIterationNumber() == parentList.getNumberOfIterations()) {
-                        // print the javascript that contains the data about sections to event mappings
-                        out.print(getSectionDataScript(pageCache));
-                    } else if (parentList == null) {
-                        out.print(getSectionDataScript(pageCache));
-                    }
-                }
 
                 out.print("<div id=\"" + getSectionID(exprValue) + "\""
                         + (showOn != null ? " style=\"display:none;\"" : "") + ">");
@@ -306,6 +246,45 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
         }
 
         return EVAL_BODY_BUFFERED;
+    }
+
+    void writeJavascript(JspWriter out, String exprValue) throws IOException, ProgrammerError {
+        String[] events = new String[] { showOn, hideOn, reloadOn };
+        String[] eventAction = new String[] { "show", "hide", "reload" };
+
+        out.println("<script type=\"text/javascript\">");
+        if (getEvent(pageContext) == null && pageContext.getRequest().getAttribute(SECTION_INIT) == null) {
+            pageContext.getRequest().setAttribute(SECTION_INIT, "x");
+            out.println("var mak = new Mak();");
+            out.println("var _mak_event_to_id_= $H();");
+            out.println("var _mak_idevent_to_type_= $H();");
+
+            HttpServletRequest req = (HttpServletRequest) pageContext.getRequest();
+            String pagePath = req.getContextPath() + req.getServletPath();
+            out.println("var _mak_page_url_ = '" + pagePath + "';\n");
+            out.println("var _mak_page_params_ = " + getQueryParameters(req) + ";\n");
+        }
+
+        MultiValueMap ev2Id = new MultiValueMap();
+        MultiValueMap idEvent2Type = new MultiValueMap();
+        for (int i = 0; i < events.length; i++) {
+            if (events[i] != null) {
+                if (events[i].indexOf("___") > -1) {
+                    throw new ProgrammerError("Invalid event name '" + events[i]
+                            + "', '___' is not allowed in event names");
+                }
+                if (events[i].indexOf(EXPR_SEPARATOR) > -1) {
+                    throw new ProgrammerError("Invalid event name '" + events[i]
+                            + "', '---' is not allowed in event names");
+                }
+                idEvent2Type.put(getSectionID(exprValue) + "___" + events[i], eventAction[i]);
+                ev2Id.put(events[i], getSectionID(exprValue));
+            }
+        }
+
+        out.println("mak.merge(_mak_event_to_id_, $H(" + gson.toJson(ev2Id) + "));");
+        out.println("mak.merge(_mak_idevent_to_type_, $H(" + gson.toJson(idEvent2Type) + "));");
+        out.println("</script>");
     }
 
     @Override
@@ -342,7 +321,6 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
             } else {
                 bodyContent.writeOut(bodyContent.getEnclosingWriter());
                 out.print("</div>");
-
             }
 
         } catch (IOException e) {
@@ -350,46 +328,6 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
         }
 
         return super.doAnalyzedEndTag(pageCache);
-    }
-
-    /**
-     * Caches the section resolution:
-     * <ul>
-     * <li>event -> section ID</li>
-     * <li>(event, section ID) -> action type (hide, show, reload)</li>
-     * </ul>
-     */
-    private void cacheSectionResolution(PageCache pageCache, String exprValue, boolean iterationIdentifiable)
-            throws ProgrammerError {
-
-        for (int i = 0; i < events.length; i++) {
-            if (events[i] != null) {
-
-                if (events[i].indexOf("___") > -1) {
-                    throw new ProgrammerError("Invalid event name '" + events[i]
-                            + "', '___' is not allowed in event names");
-                }
-                if (events[i].indexOf(EXPR_SEPARATOR) > -1) {
-                    throw new ProgrammerError("Invalid event name '" + events[i]
-                            + "', '---' is not allowed in event names");
-                }
-
-                // cache our invocation in the map event -> section id
-                pageCache.cacheMultiple(MakumbaJspAnalyzer.SECTION_EVENT_TO_ID, events[i], getSectionID(exprValue));
-
-                // we can have several types of event per section depending on the event
-                // we need a mapping (section id, event) -> type
-                pageCache.cache(MakumbaJspAnalyzer.SECTION_IDEVENT_TO_TYPE,
-                    getSectionID(exprValue) + "___" + events[i], eventAction[i]);
-
-                if (iterationIdentifiable && !StringUtils.isEmpty(exprValue)) {
-                    pageCache.cacheMultiple(MakumbaJspAnalyzer.SECTION_EVENT_TO_ID, events[i] + exprValue,
-                        getSectionID(exprValue));
-                    pageCache.cache(MakumbaJspAnalyzer.SECTION_IDEVENT_TO_TYPE, getSectionID(exprValue) + "___"
-                            + events[i] + exprValue, eventAction[i]);
-                }
-            }
-        }
     }
 
     /**
@@ -422,41 +360,6 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
     }
 
     /**
-     * Generates the javascript containing the data (arrays) with section information
-     */
-    private String getSectionDataScript(PageCache pageCache) {
-        HttpServletRequest req = (HttpServletRequest) pageContext.getRequest();
-        String pagePath = req.getContextPath() + req.getServletPath();
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("<script type=\"text/javascript\">\n");
-
-        // FIXME we cannot cache the section data because if the data changes, then we would have to discard the cache
-        // which is not done yet because there is no mechanism for that
-        String eventToId = getEventToId(pageCache);
-        /*
-         * String eventToId = (String) pageCache.retrieve(MakumbaJspAnalyzer.SECTION_DATA, "event_to_id#" + pagePath);
-         * if (eventToId == null) { eventToId = getEventToId(pageCache);
-         * pageCache.cache(MakumbaJspAnalyzer.SECTION_DATA, "event_to_id#" + pagePath, eventToId); }
-         */
-        String idEventToType = getIdEventToType(pageCache);
-        /*
-         * String idEventToType = (String) pageCache.retrieve(MakumbaJspAnalyzer.SECTION_DATA, "idevent_to_type#" +
-         * pagePath); if (idEventToType == null) { idEventToType = getIdEventToType(pageCache);
-         * pageCache.cache(MakumbaJspAnalyzer.SECTION_DATA, "idevent_to_type#" + pagePath, idEventToType); }
-         */
-        sb.append("var mak = new Mak();\n");
-        sb.append("var _mak_event_to_id_ = " + eventToId + ";\n");
-        sb.append("var _mak_idevent_to_type_ = " + idEventToType + ";\n");
-        sb.append("var _mak_page_url_ = '" + pagePath + "';\n");
-        sb.append("var _mak_page_params_ = " + getQueryParameters(req) + ";\n");
-        sb.append("</script>\n");
-
-        return sb.toString();
-
-    }
-
-    /**
      * Serializes the page parameters. If there's a _mak_responder_ parameter indicating the submission of a form, we
      * don't return the parameters.<br>
      * TODO make this smarter, i.e. detect which parameters come from a form
@@ -466,17 +369,6 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
             return gson.toJson("");
         }
         return gson.toJson(req.getParameterMap());
-    }
-
-    // {div1: 'reload', div2: 'show', div3: 'reload', div4: 'hide' }
-    private String getIdEventToType(PageCache pageCache) {
-        Map<Object, Object> idevent_to_type = pageCache.retrieveCache(MakumbaJspAnalyzer.SECTION_IDEVENT_TO_TYPE);
-        return gson.toJson(idevent_to_type);
-    }
-
-    private String getEventToId(PageCache pageCache) {
-        MultiValueMap eventToId = pageCache.retrieveMultiCache(MakumbaJspAnalyzer.SECTION_EVENT_TO_ID);
-        return gson.toJson(eventToId);
     }
 
     private QueryTag getParentListTag() {

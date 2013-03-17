@@ -21,6 +21,7 @@ import org.makumba.InvalidValueException;
 import org.makumba.commons.ControllerHandler;
 import org.makumba.commons.ServletObjects;
 import org.makumba.commons.StringUtils;
+import org.makumba.list.tags.SectionTag;
 
 /**
  * @version $Id: ResponseControllerHandler.java,v 1.1 Nov 30, 2009 3:02:45 AM rudi Exp $
@@ -44,13 +45,15 @@ public class ResponseControllerHandler extends ControllerHandler {
     @Override
     public boolean beforeFilter(ServletRequest req, ServletResponse resp, FilterConfig conf,
             ServletObjects httpServletObjects) throws Exception {
-
         Exception e = factory.getResponse((HttpServletRequest) req, (HttpServletResponse) resp);
         FormResponder responder = (FormResponder) factory.getFirstResponder(req);
+        if (responder != null) {
+            req.setAttribute(MAKUMBA_FORM_ID, responder.getFormId());
+        }
         final boolean ajaxFormSubmission = responder != null && responder.triggerEvent != null;
         if (ajaxFormSubmission) {
             req.setAttribute(MAKUMBA_FORM_PARTIAL_POSTBACK_EVENT, responder.triggerEvent);
-            req.setAttribute(MAKUMBA_FORM_ID, responder.formId);
+            req.setAttribute(SectionTag.MAKUMBA_EVENT, responder.triggerEvent);
         }
 
         if (e instanceof CompositeValidationException) {
@@ -126,6 +129,7 @@ public class ResponseControllerHandler extends ControllerHandler {
                 String[] attributes = ResponderFactory.RESPONSE_ATTRIBUTE_NAMES;
                 attributes = (String[]) ArrayUtils.add(attributes, MAKUMBA_FORM_VALIDATION_ERRORS);
                 attributes = (String[]) ArrayUtils.add(attributes, MAKUMBA_FORM_RELOAD);
+                attributes = (String[]) ArrayUtils.add(attributes, MAKUMBA_FORM_ID);
 
                 for (String attr : attributes) {
                     session.setAttribute(attr + suffix, req.getAttribute(attr));

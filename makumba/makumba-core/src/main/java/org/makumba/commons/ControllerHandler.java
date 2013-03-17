@@ -60,7 +60,7 @@ public abstract class ControllerHandler {
     /**
      * Performs an operation after the doFilterChain() method is called
      */
-    public void afterFilter(ServletRequest request, ServletResponse response, FilterConfig conf) {
+    public void afterFilter(ServletRequest request, ServletResponse response, FilterConfig conf) throws Exception {
     }
 
     /**

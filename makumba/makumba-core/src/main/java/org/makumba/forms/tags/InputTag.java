@@ -60,6 +60,10 @@ import org.makumba.providers.Configuration;
  */
 public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.BodyTag {
 
+    private static final String[] bothOrAfter = new String[] { "after", "both" };
+
+    private static final String[] beforeOrBoth = new String[] { "before", "both" };
+
     private static final long serialVersionUID = 1L;
 
     protected String name = null;
@@ -314,7 +318,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
 
         // if we are reloading the form page on validation errors, fill form inputs as in the request
         if (StringUtils.equals(pageContext.getRequest().getAttribute(ResponseControllerHandler.MAKUMBA_FORM_RELOAD),
-            "true")) {
+            "true") && isThisTheFormSubmitted()) {
             String tagName = name + getForm().responder.getSuffix();
             HttpParameters parameters = RequestAttributes.getParameters((HttpServletRequest) pageContext.getRequest());
             if (type.isDateType()) {
@@ -462,7 +466,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         }
 
         String formatted = getForm().responder.format(name, type, val, params, extraFormatting.toString(),
-            getForm().getFormIdentifier());
+            getForm().responder.getFormId());
         String fieldName = name + getForm().responder.getSuffix();
 
         if (nameVar != null) {
@@ -475,27 +479,24 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
                 CompositeValidationException errors = (CompositeValidationException) pageContext.getRequest().getAttribute(
                     ResponseControllerHandler.MAKUMBA_FORM_VALIDATION_ERRORS);
                 Collection<InvalidValueException> exceptions = null;
-                if (errors != null) { // get the exceptions for this field
+                if (errors != null && isThisTheFormSubmitted()) {
+                    // get the exceptions for this field
                     exceptions = errors.getExceptions(fieldName);
                 }
+
                 // if requested, do annotation before the field
-                if (StringUtils.equalsAny(getForm().annotation, new String[] { "before", "both" })
-                        && exceptions != null) {
+                if (StringUtils.equalsAny(getForm().annotation, beforeOrBoth) && exceptions != null) {
                     for (InvalidValueException invalidValueException : exceptions) {
                         printAnnotation(fieldName, invalidValueException);
-                        if (getForm().annotationSeparator != null) {// print the separator, if existing
-                            pageContext.getOut().print(getForm().annotationSeparator);
-                        }
+                        printAnnotationSeparator();
                     }
                 }
                 // print the actual form value
                 pageContext.getOut().print(formatted);
                 // if requested, do annotation after the field
-                if (StringUtils.equalsAny(getForm().annotation, new String[] { "after", "both" }) && exceptions != null) {
+                if (StringUtils.equalsAny(getForm().annotation, bothOrAfter) && exceptions != null) {
                     for (InvalidValueException invalidValueException : exceptions) {
-                        if (getForm().annotationSeparator != null) {// print the separator, if existing
-                            pageContext.getOut().print(getForm().annotationSeparator);
-                        }
+                        printAnnotationSeparator();
                         printAnnotation(fieldName, invalidValueException);
                     }
                 }
@@ -506,6 +507,17 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
 
         name = valueExprOriginal = dataType = display = expr = nameVar = null;
         return EVAL_PAGE;
+    }
+
+    boolean isThisTheFormSubmitted() {
+        return getForm().responder.getFormId().equals(
+            pageContext.getRequest().getAttribute(ResponseControllerHandler.MAKUMBA_FORM_ID));
+    }
+
+    void printAnnotationSeparator() throws IOException {
+        if (getForm().annotationSeparator != null) {// print the separator, if existing
+            pageContext.getOut().print(getForm().annotationSeparator);
+        }
     }
 
     private void printAnnotation(String fieldName, InvalidValueException e) throws IOException {
