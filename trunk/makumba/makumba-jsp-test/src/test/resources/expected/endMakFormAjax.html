@@ -9,10 +9,14 @@
 
 <script type="text/javascript">
 var mak = new Mak();
-var _mak_event_to_id_ = {"personCreated":["persons"]};
-var _mak_idevent_to_type_ = {"persons___personCreated":"reload"};
+var _mak_event_to_id_= $H();
+var _mak_idevent_to_type_= $H();
 var _mak_page_url_ = '/tests/JspRedirector';
+
 var _mak_page_params_ = {"Cactus_TestMethod":["testMakFormAjax"],"Cactus_AutomaticSession":["true"],"Cactus_Service":["CALL_TEST"],"Cactus_TestClass":["org.makumba.test.tags.FormsOQLTest"]};
+
+mak.merge(_mak_event_to_id_, $H({"personCreated":["persons"]}));
+mak.merge(_mak_idevent_to_type_, $H({"persons___personCreated":["reload"]}));
 </script>
 <div id="persons">
   
@@ -37,8 +41,8 @@ var _mak_page_params_ = {"Cactus_TestMethod":["testMakFormAjax"],"Cactus_Automat
   <input name="indiv.surname" type="text" value="" maxlength="40" id="indiv.surname_form1" ><br/>
   <br/>
   <input class="makSubmitButton" type="submit" value="Submit" />
-<input type="hidden" name="__makumba__responder__" value="-1298829643">
-</form><script type="text/javascript">Event.observe('_form1', 'submit', function(event) {mak.submit('_form1', 'true', event, 'none', null);});</script>
+<input type="hidden" name="__makumba__responder__" value="1713108103">
+</form><script type="text/javascript">Event.observe('_form1', 'submit', function(event) {mak.submit('_form1', 'true', event, 'none', null, 'personCreated');});</script>
 
 </body>
 </html>
