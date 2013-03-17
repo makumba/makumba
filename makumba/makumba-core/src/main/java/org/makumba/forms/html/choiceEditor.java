@@ -168,7 +168,7 @@ public abstract class choiceEditor extends FieldEditor {
                 Object val = getValueFromOptions(rf, fieldIndex, opt, i);
 
                 if (val == null) {
-                    val = getOptionValue(rf, fieldIndex, opt, i);
+                    val = getOptionValue(rf, fieldIndex, opt, nullOption != null ? i - 1 : i);
                 }
 
                 values.add(val == null ? null : formatOptionValue(rf, fieldIndex, opt, i, val));
