@@ -1,3 +1,18 @@
+Array.prototype.inArray = function(x) { 
+    for(var i=0; i < this.length; i++) { 
+        if(x==undefined || x.trim()==this[i].trim()) return true; 
+    }
+    return false; 
+}; 
+
+// adds an element to the array if it does not already exist using a comparer 
+// function
+Array.prototype.pushIfNotExist = function(element) { 
+    if (!this.inArray(element)) {
+        this.push(element);
+    }
+}; 
+
 Mak = function() {
   addMethod(this, "event", function(name) {
     makEvent(name, null);
@@ -6,13 +21,25 @@ Mak = function() {
     makEvent(name, exprValue);
   });
   addMethod(this, "submit", function(formName) {
-	  makCheckOnSubmitAndSubmit(formName, 'false', null, null, null);
+	  makCheckOnSubmitAndSubmit(formName, 'false', null, null, null, null);
   });
-  addMethod(this, "submit", function(formName, ajax, annotation, annotationSeparator) {
-	  makCheckOnSubmitAndSubmit(formName, ajax, null, annotation, annotationSeparator);
+  addMethod(this, "submit", function(formName, sectionEvent) {
+	  makCheckOnSubmitAndSubmit(formName, 'true', null, null, null, sectionEvent);
   });
-  addMethod(this, "submit", function(formName, ajax, event, annotation, annotationSeparator) {
-	  makCheckOnSubmitAndSubmit(formName, ajax, event, annotation, annotationSeparator);
+  addMethod(this, "submit", function(formName, ajax, annotation, annotationSeparator, sectionEvent) {
+	  makCheckOnSubmitAndSubmit(formName, ajax, null, annotation, annotationSeparator, sectionEvent);
+  });
+  addMethod(this, "submit", function(formName, ajax, event, annotation, annotationSeparator, sectionEvent) {
+	  makCheckOnSubmitAndSubmit(formName, ajax, event, annotation, annotationSeparator, sectionEvent);
+  });
+  addMethod(this, "merge", function(h, h2){
+	  h2.each(function(pair){
+		  var arr= h.get(pair.key);
+		  if(arr==undefined)
+			  h.set(pair.key, pair.value);
+		  else
+			  arr.pushIfNotExist.apply(arr, pair.value);
+	  });
   });
 }
 
@@ -23,12 +50,6 @@ Mak = function() {
  *   then updates the affected sections with the data
  */
 makEvent = function(name, exprValue) {
-
-	var eventToId = $H(_mak_event_to_id_);
-	var idEventToType = $H(_mak_idevent_to_type_);
-	var pageParameters = $H(_mak_page_params_);
-	var toReload = new Array();
-	var toShow = new Array();
 	
 	var eventName;
 	
@@ -39,31 +60,12 @@ makEvent = function(name, exprValue) {
 	}
 	
 	var eventParam = $H({__mak_event__: eventName});
+	var pageParameters = $H(_mak_page_params_);
 	
 	//eventParam.each(function(pair) {alert(pair.key + ' ' + pair.value)});
 	//pageParameters.each(function(pair) {alert(pair.key + ' ' + pair.value)});
 	
 	pageParameters = pageParameters.merge(eventParam);
-
-	// fetch the sections we have to process
-	var sections = eventToId.get(eventName);
-	if(sections == undefined) {
-		sections = new Array();
-	}
-	
-	// for each section, hide it, show it, or schedule it for refresh
-	sections.each(function(id) {
-		//alert(id);
-		var action = idEventToType.get(id + '___'+ eventName);
-		//alert("key: " + id + '___'+ name + " action:" + action);
-		if(action == 'show') {
-			toShow.push(id);
-		} else if(action == 'hide') {
-			$(id).hide();
-		} else if(action == 'reload') {
-			toReload.push(id);
-		}
-	});
 	
 	/*
 	// for each section we have to reload, display the waiting widget
@@ -72,30 +74,22 @@ makEvent = function(name, exprValue) {
 	});
 	*/
 	
+	
 	// AJAX callback on the page to fetch the new data
 	new Ajax.Request(_mak_page_url_, {
 		  method:'get',
 		  requestHeaders: {Accept: 'application/json'},
 		  parameters: pageParameters,
 		  onSuccess: function(transport) {
-		    var newContent = $H(transport.responseText.evalJSON());
-		 	// now go over the data and update the sections
-		    newContent.each(function(pair) {
-		    	if(sections.indexOf(pair.key) != -1) {
-			 		$(pair.key).update(pair.value);
-			 		if(toShow.indexOf(pair.key) != -1) {
-			 			$(pair.key).show();
-			 		}
-		    	}
-		 	});
-		   }
+			  doSections($H(transport.responseText.evalJSON()), eventName);
+		  }
 	});	
 }
 
 /**
  * submits a form, after checking its onSubmit method, either via partial postback or direct postback
  */
-makCheckOnSubmitAndSubmit = function(formId, ajax, event, annotation, annotationSeparator) {
+makCheckOnSubmitAndSubmit = function(formId, ajax, event, annotation, annotationSeparator, eventName) {
 	var partialPostback = ajax != null && ajax == 'true';
 	if(event != null && partialPostback) {
 	    Event.stop(event);
@@ -105,10 +99,48 @@ makCheckOnSubmitAndSubmit = function(formId, ajax, event, annotation, annotation
     	onSubmitOk = $(formId).onsubmit();
     }
     if(onSubmitOk && partialPostback) {
-    	makSubmitAjax(formId, annotation, annotationSeparator);
+    	makSubmitAjax(formId, annotation, annotationSeparator, eventName);
     } else if(onSubmitOk && !partialPostback) {
     	$(formId).submit();
     }
+}
+
+
+doSections= function(newContent, eventName) {
+	  
+	var eventToId = _mak_event_to_id_;
+	var idEventToType = _mak_idevent_to_type_;
+	var toReload = new Array();
+	var toShow = new Array();
+
+
+	var sections = eventToId.get(eventName);
+	if(sections == undefined) {
+		sections = new Array();
+	}
+
+	// for each section, hide it, show it, or schedule it for refresh
+	sections.each(function(id) {
+		var action = idEventToType.get(id + '___'+ eventName);
+		// alert("key: " + id + '___'+ name + " action:" + action);
+		if(action == 'show') {
+			toShow.push(id);
+		} else if(action == 'hide') {
+			$(id).hide();
+		} else if(action == 'reload') {
+			toReload.push(id);
+		}
+	});
+  	
+		// now go over the data and update the sections
+	newContent.each(function(pair) {
+		if(sections.indexOf(pair.key) != -1) {
+	 		$(pair.key).update(pair.value);
+	 		if(toShow.indexOf(pair.key) != -1) {
+	 			$(pair.key).show();
+	 		}
+		}
+		});
 }
 
 /**
@@ -117,10 +149,15 @@ makCheckOnSubmitAndSubmit = function(formId, ajax, event, annotation, annotation
  * - "fires" the returned event if everything went ok
  * - displays the form errors if there were errors (annotations and message)
  */
-makSubmitAjax = function(formName, annotation, annotationSeparator) {
+makSubmitAjax = function(formName, annotation, annotationSeparator, eventName) {
 	$(formName).request({
 		  requestHeaders: {Accept: 'application/json'},
-		  onComplete: function(transport) {
+		  onComplete: function(transport){
+			  doSections($H(transport.responseText.evalJSON()), eventName);
+		  }	 	
+	});		  
+}
+		  /*{
 			  var response = transport.responseText.evalJSON();
 
 			  // clear previous messages
@@ -169,10 +206,10 @@ makSubmitAjax = function(formName, annotation, annotationSeparator) {
 					  }
 					  
 				  });
-			  }
-		  }
-	});	
-}
+			  }			  
+		  }*/
+	
+
 
 /**
  * inserts the form submission message as first element inside of the form
