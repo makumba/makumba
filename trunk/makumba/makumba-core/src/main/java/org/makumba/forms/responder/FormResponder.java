@@ -35,6 +35,7 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.MakumbaSystem;
+import org.makumba.ProgrammerError;
 import org.makumba.Transaction;
 import org.makumba.commons.DbConnectionProvider;
 import org.makumba.commons.attributes.RequestAttributes;
@@ -121,7 +122,8 @@ public class FormResponder extends Responder {
         boolean display = formatParams.get("org.makumba.noDisplay") == null;
         Integer i = indexes.get(fname);
         if (i != null) {
-            return display ? editor.format(i, fval, paramCopy) : "";
+            throw new ProgrammerError("duplicate field: " + fname);
+            // return display ? editor.format(i, fval, paramCopy) : "";
         }
 
         indexes.put(fname, new Integer(max));
