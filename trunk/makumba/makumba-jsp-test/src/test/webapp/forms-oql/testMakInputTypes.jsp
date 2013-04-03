@@ -9,12 +9,25 @@
 
 <mak:newForm type="test.Person" action="" clientSideValidation="true">
   age spinner: <mak:input name="age" type="spinner" /> <br/> <br/>
+</mak:newForm>
+
+<mak:newForm type="test.Person" action="" clientSideValidation="true">
   age drop down: <mak:input name="age" type="select" /> <br/> <br/>
-  age drop down with steps: <mak:input name="age" type="select" stepSize="3" /> <br/> <br/>
+</mak:newForm>
+
+<mak:newForm type="test.Person" action="" clientSideValidation="true">
+  age drop down with steps: <mak:input dataType="int" name="age" type="select" stepSize="3" /> <br/> <br/>
+</mak:newForm>
+
+<mak:newForm type="test.Person" action="" clientSideValidation="true">
   age radio buttons: <mak:input name="age" type="radio" /> <br/> <br/>
-  age radio buttons with steps: <mak:input name="age" type="radio" stepSize="3" /> <br/> <br/>
+</mak:newForm>
+
+<mak:newForm type="test.Person" action="" clientSideValidation="true">
+  age radio buttons with steps: <mak:input  name="age" type="radio" stepSize="3" /> <br/> <br/>
   speaks set editor: <mak:input name="speaks" type="seteditor" /> <br/> <br/>
 </mak:newForm>
+
 
 </body>
 </html>
