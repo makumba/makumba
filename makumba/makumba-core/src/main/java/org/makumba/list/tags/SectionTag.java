@@ -5,10 +5,10 @@ import java.io.StringWriter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
-import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTag;
 
@@ -206,10 +206,10 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
         }
     }
 
-    static public String getEvent(PageContext pc) {
-        String s = pc.getRequest().getParameter(MAKUMBA_EVENT);
+    static public String getEvent(ServletRequest req) {
+        String s = req.getParameter(MAKUMBA_EVENT);
         if (s == null) {
-            s = (String) pc.getRequest().getAttribute(MAKUMBA_EVENT);
+            s = (String) req.getAttribute(MAKUMBA_EVENT);
         }
         return s;
     }
@@ -228,7 +228,7 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
             writeJavascript(out, exprValue);
 
             // check if we are invoked, i.e. if an event has been "fired" that requires us to do stuff
-            isInvoked = matches(getEvent(pageContext), exprValue);
+            isInvoked = matches(getEvent(pageContext.getRequest()), exprValue);
 
             if (isInvoked && showOn != null) {
 
@@ -253,7 +253,7 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
         String[] eventAction = new String[] { "show", "hide", "reload" };
 
         out.println("<script type=\"text/javascript\">");
-        if (getEvent(pageContext) == null && pageContext.getRequest().getAttribute(SECTION_INIT) == null) {
+        if (getEvent(pageContext.getRequest()) == null && pageContext.getRequest().getAttribute(SECTION_INIT) == null) {
             pageContext.getRequest().setAttribute(SECTION_INIT, "x");
             out.println("var mak = new Mak();");
             out.println("var _mak_event_to_id_= $H();");

@@ -1,6 +1,7 @@
 package org.makumba.devel;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -17,6 +18,8 @@ import org.makumba.UnauthenticatedException;
 import org.makumba.commons.ControllerHandler;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.ServletObjects;
+import org.makumba.controller.MakumbaResponseWrapper;
+import org.makumba.list.tags.SectionTag;
 
 /**
  * This handler lets the request go to the filter chain and then catches all kind of exceptions after it. The exceptions
@@ -64,6 +67,16 @@ public class ErrorControllerHandler extends ControllerHandler {
      *            the http response corresponding to the access
      */
     public void treatException(Throwable t, HttpServletRequest req, HttpServletResponse resp, FilterConfig conf) {
+        if (SectionTag.getEvent(req) != null) {
+            t.printStackTrace();
+            resp.setStatus(500);
+            try {
+                ((MakumbaResponseWrapper) resp).outputOn();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         resp.setContentType("text/html");
         // sometimes tomcat wraps the RuntimeWrappedException in a JasperException (which extends ServletException)
         if (t instanceof ServletException && ((ServletException) t).getRootCause() instanceof RuntimeWrappedException) {
@@ -86,8 +99,8 @@ public class ErrorControllerHandler extends ControllerHandler {
                     ErrorFormatter ef = new ErrorFormatter(req, req.getSession().getServletContext(), wr, false);
                     req.setAttribute("mak_error_title", ef.getTitle());
                     req.setAttribute("mak_error_description", sw.toString());
-                    req.setAttribute("mak_error_realpath", new File(req.getSession().getServletContext().getRealPath(
-                        "/")).getCanonicalPath());
+                    req.setAttribute("mak_error_realpath",
+                        new File(req.getSession().getServletContext().getRealPath("/")).getCanonicalPath());
                     // FIXME:see if error code thrown gives problems to tests
                     // resp.setStatus(500);
                     req.getRequestDispatcher(errorPage).forward(req, resp);
