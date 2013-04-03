@@ -46,8 +46,7 @@ public class AJAXDataControllerHandler extends ControllerHandler {
 
     @Override
     public void afterBeforeFilter(ServletRequest request, ServletResponse response, FilterConfig conf) throws Exception {
-        if (request.getParameter(SectionTag.MAKUMBA_EVENT) != null
-                || request.getAttribute(SectionTag.MAKUMBA_EVENT) != null) {
+        if (SectionTag.getEvent(request) != null) {
             ((MakumbaResponseWrapper) response).outputOff();
         }
     }
@@ -62,10 +61,7 @@ public class AJAXDataControllerHandler extends ControllerHandler {
     }
 
     private void handleEvent(HttpServletRequest req, HttpServletResponse response) throws IOException {
-        String event = req.getParameter(SectionTag.MAKUMBA_EVENT);
-        if (event == null) {
-            event = (String) req.getAttribute(SectionTag.MAKUMBA_EVENT);
-        }
+        String event = SectionTag.getEvent(req);
 
         if (event != null) {
 
