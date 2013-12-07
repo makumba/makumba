@@ -74,7 +74,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
     private String root;
 
     /** The patterns used to parse the page. */
-    static private Pattern JspSystemTagPattern, JspTagPattern, JspCommentPattern, JspScriptletPattern,
+    static private Pattern JspSystemTagPattern, JspTagPattern, HTMLTagPattern, JspCommentPattern, JspScriptletPattern,
             JspIncludePattern, JspTagAttributePattern, JspExpressionLanguagePattern, JSPELFunctionPattern,
             JsfExpressionLanguagePattern, Word, TagName, MapExpression, DotExpression;
 
@@ -127,12 +127,15 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
      */
     static {
         String attribute = attribute("\\w+");
+        String attColon = attribute("\\w+(:\\w+)?");
 
         try {
-            JspTagAttributePattern = Pattern.compile(attribute);
+            JspTagAttributePattern = Pattern.compile(attColon);
             JspSystemTagPattern = Pattern.compile("<%@\\s*\\w+(" + attribute + ")*\\s*%>");
             JspIncludePattern = Pattern.compile("<%@\\s*include" + attribute("file") + "\\s*%>");
-            JspTagPattern = Pattern.compile("<((\\s*\\w+:\\w+(" + attribute + ")*\\s*)/?|(/\\w+:\\w+\\s*))>");
+            JspTagPattern = Pattern.compile("<((\\s*\\w+:\\w+(" + attColon + ")*\\s*)/?|(/\\w+:\\w+\\s*))>");
+            HTMLTagPattern = Pattern.compile("<((\\s*\\w+(" + attribute + ")*\\s*)/?|(/\\w+\\s*))>");
+
             // JspCommentPattern= Pattern.compile("<%--([^-]|(-[^-])|(--[^%])|(--%[^>]))*--%>", Pattern.DOTALL);
             JspCommentPattern = Pattern.compile("<%--.*?[^-]--%>", Pattern.DOTALL);
             JspScriptletPattern = Pattern.compile("<%[^@].*?%>", Pattern.DOTALL);
@@ -367,47 +370,50 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
      */
     void treatPageContent(String content, JspAnalyzer an) {
 
-        Matcher tags = JspTagPattern.matcher(content);
-        Matcher systemTags = JspSystemTagPattern.matcher(content);
-        Matcher jspELExpressions = JspExpressionLanguagePattern.matcher(content);
-        Matcher jsfELExpressions = JsfExpressionLanguagePattern.matcher(content);
+        Matcher[] match = { JspTagPattern.matcher(content), JspSystemTagPattern.matcher(content),
+                JspExpressionLanguagePattern.matcher(content), HTMLTagPattern.matcher(content) };
 
-        int tagStart = Integer.MAX_VALUE;
-        if (tags.find()) {
-            tagStart = tags.start();
-        }
-        int systemStart = Integer.MAX_VALUE;
-        if (systemTags.find()) {
-            systemStart = systemTags.start();
-        }
-        int jspELExpressionStart = Integer.MAX_VALUE;
-        if (jspELExpressions.find()) {
-            jspELExpressionStart = jspELExpressions.start();
+        int start[] = { Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE };
+
+        // put mx=4 for html and otehr tags to be analyzed as well! 
+        int mx = 3;
+        for (int i = 0; i < mx; i++) {
+            if (match[i].find()) {
+                start[i] = match[i].start();
+            }
         }
 
         while (true) {
-            if (tagStart < Math.min(systemStart, jspELExpressionStart)) {
-                treatTag(tags, content, an);
-                tagStart = Integer.MAX_VALUE;
-                if (tags.find()) {
-                    tagStart = tags.start();
-                }
-            } else if (systemStart < Math.min(tagStart, jspELExpressionStart)) {
-                treatSystemTag(systemTags, content, an);
-                systemStart = Integer.MAX_VALUE;
-                if (systemTags.find()) {
-                    systemStart = systemTags.start();
-                }
-            } else if (jspELExpressionStart < Math.min(tagStart, systemStart)) {
-                treatELExpression(jspELExpressions, content, an, false);
-                jspELExpressionStart = Integer.MAX_VALUE;
-                if (jspELExpressions.find()) {
-                    jspELExpressionStart = jspELExpressions.start();
+            int minimum = Integer.MAX_VALUE;
+            for (int i = 0; i < mx; i++) {
+                if (start[i] < minimum) {
+                    minimum = start[i];
                 }
             }
-            if (tagStart == Integer.MAX_VALUE && systemStart == Integer.MAX_VALUE
-                    && jspELExpressionStart == Integer.MAX_VALUE) {
+            if (minimum == Integer.MAX_VALUE) {
                 break;
+            }
+
+            for (int i = 0; i < mx; i++) {
+                if (start[i] == minimum) {
+                    switch (i) {
+                        case 0:
+                            treatTag(match[i], content, an, "Jsp", TagName);
+                            break;
+                        case 1:
+                            treatSystemTag(match[i], content, an);
+                            break;
+                        case 2:
+                            treatELExpression(match[i], content, an, false);
+                            break;
+                        case 3:
+                            treatTag(match[i], content, an, "HTML", Word);
+                    }
+                    start[i] = Integer.MAX_VALUE;
+                    if (match[i].find()) {
+                        start[i] = match[i].start();
+                    }
+                }
             }
         }
 
@@ -476,16 +482,17 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
      *            the content of the page
      * @param an
      *            the JspAnalyzer used to analyze the page
+     * @param tagType
      */
-    void treatTag(Matcher m, String content, JspAnalyzer an) {
+    void treatTag(Matcher m, String content, JspAnalyzer an, String tagType, Pattern pattern) {
         String tag = content.substring(m.start(), m.end());
         boolean tagEnd = tag.startsWith("</");
         boolean tagClosed = tag.endsWith("/>");
-        Matcher m1 = TagName.matcher(tag);
+        Matcher m1 = pattern.matcher(tag);
         m1.find();
-        syntaxPoints.addSyntaxPoints(m.start() + m1.start(), m.start() + m1.end(), "JSPTagName", null);
+        syntaxPoints.addSyntaxPoints(m.start() + m1.start(), m.start() + m1.end(), tagType + "TagName", null);
 
-        String type = tagEnd ? "JspTagEnd" : tagClosed ? "JspTagSimple" : "JspTagBegin";
+        String type = tagEnd ? tagType + "TagEnd" : tagClosed ? tagType + "TagSimple" : tagType + "TagBegin";
 
         SyntaxPoint end = syntaxPoints.addSyntaxPoints(m.start(), m.end(), type, null);
         SyntaxPoint start = (SyntaxPoint) end.getOtherInfo();
@@ -493,6 +500,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
         String tagName = tag.substring(m1.start(), m1.end());
 
         TagData td = new TagData(tagName, start, end, !tagEnd ? parseAttributes(tag, m.start()) : null);
+        // System.out.println(td);
 
         Logger log = java.util.logging.Logger.getLogger("org.makumba.jspparser.tags");
 
@@ -501,15 +509,17 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
             log.fine(uri + ":" + start.line + ":" + start.column + ": "
                     + (tagEnd ? "/" + tagName : td.name + " " + td.attributes));
         }
-        if (tagEnd) {
-            an.endTag(td, holder);
-            return;
-        }
+        if (pattern == TagName) { // if this is a JSP tag...
+            if (tagEnd) {
+                an.endTag(td, holder);
+                return;
+            }
 
-        if (tagClosed) {
-            an.simpleTag(td, holder);
-        } else {
-            an.startTag(td, holder);
+            if (tagClosed) {
+                an.simpleTag(td, holder);
+            } else {
+                an.startTag(td, holder);
+            }
         }
     }
 
