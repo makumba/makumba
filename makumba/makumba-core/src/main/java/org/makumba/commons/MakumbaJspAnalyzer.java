@@ -214,37 +214,40 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
                 String prefix = td.attributes.get("prefix");
                 String URI = td.attributes.get("uri");
 
-                // if this is an old makumba system-tag or a OQL list
-                if (URI.equals("http://www.makumba.org/presentation") || URI.equals("http://www.makumba.org/list")) {
-                    ((ParseStatus) status).makumbaPrefix = prefix;
-                    ((ParseStatus) status).makumbaURI = URI;
-                    ((ParseStatus) status).pageCache.cache(QUERY_LANGUAGE, QUERY_LANGUAGE, "oql");
-
-                    // if this is a hibernate tag or HQL list
-                } else if (URI.equals("http://www.makumba.org/view-hql")
-                        || URI.equals("http://www.makumba.org/hibernate")
-                        || URI.equals("http://www.makumba.org/list-hql")) {
-                    ((ParseStatus) status).makumbaPrefix = prefix;
-                    ((ParseStatus) status).makumbaURI = URI;
-                    ((ParseStatus) status).pageCache.cache(QUERY_LANGUAGE, QUERY_LANGUAGE, "hql");
-
-                    // if this is a forms declaration
-                } else if (URI.equals("http://www.makumba.org/forms")) {
-                    ((ParseStatus) status).formPrefix = prefix;
-                    ((ParseStatus) status).formMakumbaURI = URI;
-
-                    // FIXME: here we actually shouldn't store a query language because that's the list's business
-                    // however if there's a page that doesn't use lists but only forms, we have to do it because
-                    // for now we use a ListFormDataProvider running dummy queries and hence needing a query language
-
-                    if (((ParseStatus) status).pageCache.retrieve(QUERY_LANGUAGE, QUERY_LANGUAGE) == null) {
-                        ((ParseStatus) status).pageCache.cache(QUERY_LANGUAGE, QUERY_LANGUAGE, "oql");
-                    }
-
-                }
+                setPrefix(status, prefix, URI);
             }
         } else {
             handleNonMakumbaSystemTags(td, status);
+        }
+    }
+
+    void setPrefix(Object status, String prefix, String URI) {
+        // if this is an old makumba system-tag or a OQL list
+        if (URI.equals("http://www.makumba.org/presentation") || URI.equals("http://www.makumba.org/list")) {
+            ((ParseStatus) status).makumbaPrefix = prefix;
+            ((ParseStatus) status).makumbaURI = URI;
+            ((ParseStatus) status).pageCache.cache(QUERY_LANGUAGE, QUERY_LANGUAGE, "oql");
+
+            // if this is a hibernate tag or HQL list
+        } else if (URI.equals("http://www.makumba.org/view-hql") || URI.equals("http://www.makumba.org/hibernate")
+                || URI.equals("http://www.makumba.org/list-hql")) {
+            ((ParseStatus) status).makumbaPrefix = prefix;
+            ((ParseStatus) status).makumbaURI = URI;
+            ((ParseStatus) status).pageCache.cache(QUERY_LANGUAGE, QUERY_LANGUAGE, "hql");
+
+            // if this is a forms declaration
+        } else if (URI.equals("http://www.makumba.org/forms")) {
+            ((ParseStatus) status).formPrefix = prefix;
+            ((ParseStatus) status).formMakumbaURI = URI;
+
+            // FIXME: here we actually shouldn't store a query language because that's the list's business
+            // however if there's a page that doesn't use lists but only forms, we have to do it because
+            // for now we use a ListFormDataProvider running dummy queries and hence needing a query language
+
+            if (((ParseStatus) status).pageCache.retrieve(QUERY_LANGUAGE, QUERY_LANGUAGE) == null) {
+                ((ParseStatus) status).pageCache.cache(QUERY_LANGUAGE, QUERY_LANGUAGE, "oql");
+            }
+
         }
     }
 
@@ -261,8 +264,16 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
         String makumbaPrefix = ((ParseStatus) status).makumbaPrefix + ":";
         String formsPrefix = ((ParseStatus) status).formPrefix + ":";
 
+        if (td.name.equals("jsp:root")) {
+            for (String xmlns : td.attributes.keySet()) {
+                String uri = td.attributes.get(xmlns);
+                if (uri.startsWith("http://www.makumba.org")) {
+                    setPrefix(status, xmlns.substring(6), uri);
+                }
+            }
+        }
         // we handle only Makumba tags
-        if (!td.name.startsWith(makumbaPrefix) && !td.name.startsWith(formsPrefix)) {
+        else if (!td.name.startsWith(makumbaPrefix) && !td.name.startsWith(formsPrefix)) {
             handleNonMakumbaTags(td, status);
         } else {
             // we retrieve the name of the tag to fetch its class
