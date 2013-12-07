@@ -22,6 +22,7 @@
 /////////////////////////////////////
 package org.makumba.db;
 
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -33,6 +34,7 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.MakumbaError;
+import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.commons.ArrayMap;
 import org.makumba.commons.NameResolver;
@@ -220,13 +222,19 @@ public class NativeQuery {
         for (String nm : queryParameters.getParameterOrder()) {
             InvalidValueException ive = null;
 
+            FieldDefinition fd = queryParameters.getParameterTypes().getFieldDefinition(paramIndex);
             Object val = argsMap.get(nm);
             if (val == null) {
-                throw new ProgrammerError("The parameter '" + nm + "' should not be null");
+                if (!queryParameters.isMultiValue(paramIndex)) {
+                    throw new ProgrammerError("The parameter '" + nm + "' should not be null");
+                } else {
+                    List<Object> l = new ArrayList<Object>();
+                    l.add(Pointer.Null);
+                    val = l;
+                }
             }
             String name = QueryAnalysisProvider.getActualParameterName(nm);
 
-            FieldDefinition fd = queryParameters.getParameterTypes().getFieldDefinition(paramIndex);
             if (val instanceof List<?>) {
                 if (!queryParameters.isMultiValue(paramIndex)) {
                     throw new InvalidValueException("parameter " + queryParameters.getParameterOrder().get(paramIndex)
