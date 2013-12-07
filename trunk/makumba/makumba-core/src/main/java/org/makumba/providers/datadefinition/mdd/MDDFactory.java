@@ -43,6 +43,7 @@ public class MDDFactory {
     private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
         static MDDFactory singleton = new MDDFactory();
 
+        @Override
         public void release() {
             singleton = null;
         }
@@ -183,8 +184,8 @@ public class MDDFactory {
         InputStream o1 = null;
 
         try {
-            o = (InputStream) u.getContent();
-            o1 = (InputStream) u.getContent();
+            o = u.openConnection().getInputStream();
+            o1 = u.openConnection().getInputStream();
         } catch (IOException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
