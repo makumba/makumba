@@ -23,6 +23,7 @@
 
 package org.makumba.commons;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -48,6 +49,21 @@ public class ClassResource {
         }
         if (u == null) {
             u = ClassLoader.getSystemResource(s);
+        }
+
+        String addToCP = null;
+        try {
+            addToCP = System.getProperty("org.makumba.addToClassPath");
+        } catch (SecurityException e) {
+            // ignore
+        }
+        if (u == null && addToCP != null && new java.io.File(addToCP + "/" + s).exists()) {
+            try {
+                return new URL("file://" + addToCP + "/" + s);
+            } catch (MalformedURLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
         // new Throwable().printStackTrace();
         return u;

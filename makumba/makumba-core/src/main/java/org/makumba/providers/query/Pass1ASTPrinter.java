@@ -2,14 +2,13 @@ package org.makumba.providers.query;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import org.makumba.commons.ClassResource;
 import org.makumba.providers.QueryAnalysisProvider;
-import org.makumba.providers.QueryProvider;
 import org.makumba.providers.QueryAnalysisProvider.ASTTransformVisitor;
+import org.makumba.providers.QueryProvider;
 import org.makumba.providers.datadefinition.mdd.MakumbaDumpASTVisitor;
 import org.makumba.providers.query.mql.ASTUtil;
 import org.makumba.providers.query.mql.HqlASTFactory;
@@ -442,7 +441,7 @@ public class Pass1ASTPrinter {
     private static void testCorpus(String corpusFile, boolean inline) {
         try {
             BufferedReader rd = new BufferedReader(new InputStreamReader(
-                    (InputStream) ClassResource.get(corpusFile).getContent()));
+                    ClassResource.get(corpusFile).openConnection().getInputStream()));
             String query = null;
             int line = 1;
             while ((query = rd.readLine()) != null) {
