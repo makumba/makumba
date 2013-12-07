@@ -120,9 +120,12 @@ public class ComposedQueryAuthorization {
         }
         if (filter) {
             String separator = "";
-            if (where.trim().length() > 0) {
+            if (where != null && where.trim().length() > 0) {
                 separator = " AND ";
+            } else {
+                where = "";
             }
+
             for (AuthorizationInfo ai : authorizationInfos) {
                 where += separator;
                 where += ai.expr + ".canRead()";
@@ -145,8 +148,9 @@ public class ComposedQueryAuthorization {
     private static boolean isFiltered(String where, String expr) {
         // FIXME: this is a string hack, needs be done via tree analysis
         String canRead = expr + ".canRead()";
-        return where.trim().equals(canRead) || where.trim().startsWith(canRead + " AND")
-                || where.contains("AND " + canRead);
+        return where != null
+                && (where.trim().equals(canRead) || where.trim().startsWith(canRead + " AND") || where.contains("AND "
+                        + canRead));
 
     }
 
