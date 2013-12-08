@@ -33,6 +33,7 @@ import org.makumba.devel.relations.RelationParseStatus;
 public class WebappJSPAnalysisCrawler {
     /** A file filter that accepts JSP files and directories. */
     public static final class JSPFileFilter implements FileFilter {
+        @Override
         public boolean accept(File pathname) {
             return pathname.getName().endsWith(".jsp") || pathname.isDirectory();
         }
@@ -49,6 +50,8 @@ public class WebappJSPAnalysisCrawler {
         CommandLine line = parseCrawlParams(args, WebappJSPAnalysisCrawler.class.getName());
 
         String webappRoot = line.getOptionValue("w");
+        System.setProperty("org.makumba.addToClassPath", webappRoot + "/WEB-INF/classes/");
+
         String[] skipPaths = line.getOptionValues("s");
 
         // this seems to be a bug in commons CLI
@@ -70,10 +73,13 @@ public class WebappJSPAnalysisCrawler {
         String[] files = allFilesInDirectory.toArray(new String[allFilesInDirectory.size()]);
 
         for (String file : files) {
+            // JspParseData jpd = JspParseData.getParseData(webappRoot, file, MakumbaJspAnalyzer.getInstance());
             JspParseData jpd = JspParseData.getParseData(webappRoot, file, JspRelationsAnalyzer.getInstance());
             try {
+                // jpd.getAnalysisResult(new ParseStatus());
                 jpd.getAnalysisResult(new RelationParseStatus());
             } catch (Throwable t) {
+                t.printStackTrace();
                 // page analysis failed
                 logger.warning("Page analysis for page " + file + " failed due to error: " + t.getMessage());
                 JSPAnalysisErrors.put(file, t);
