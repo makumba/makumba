@@ -2,7 +2,6 @@ package org.makumba.devel;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
 
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -47,18 +46,15 @@ public class DevelUtils {
     public static void writeStyles(PrintWriter w, String contextPath, String... additionalStyles) {
         String path = contextPath + Configuration.getServletLocation(MakumbaServlet.RESOURCES) + "/"
                 + MakumbaResourceServlet.RESOURCE_PATH_CSS;
-        w.println("<link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"" + path
-                + "bootstrap.min.css\"/>");
+        w.println("<link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"" + path + "bootstrap.min.css\"/>");
         w.println("<link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"" + path
                 + "makumbaDevelStyles.css\"/>");
         if (additionalStyles != null) {
             for (String s : additionalStyles) {
-                w.println("<link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"" + path
-                        + s + "\"/>");
+                w.println("<link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"" + path + s + "\"/>");
             }
         }
     }
-
 
     public static void writeStylesAndScripts(PrintWriter w, String contextPath, String... additionalScripts) {
         writeScripts(w, contextPath, additionalScripts);
@@ -116,34 +112,34 @@ public class DevelUtils {
         w.println("      <li class=\"divider-vertical\"></li>");
     }
 
-    public static void printNavigationEnd(PrintWriter w){
+    public static void printNavigationEnd(PrintWriter w) {
         w.println("    </ul>");
         w.println("  </div>");
         w.println("</div>");
         w.println("<div class=\"wrapper\">");
     }
 
-    public static void printPopoverLink(PrintWriter w, String name, String title, String popoverId){
-       w.println("<li><a href=\"#\" rel=\"popover\" data-title=\"" + title + "\" data-popover-id=\""
-               + popoverId + "\" title=\"" + title + "\">" + name + "</a></li>");
+    public static void printPopoverLink(PrintWriter w, String name, String title, String popoverId) {
+        w.println("<li><a href=\"#\" rel=\"popover\" data-title=\"" + title + "\" data-popover-id=\"" + popoverId
+                + "\" title=\"" + title + "\">" + name + "</a></li>");
     }
 
     public static void printNavigationButton(PrintWriter w, String name, String link, String title, int type) {
         switch (type) {
             case 2:
-                w.println("<li class=\"disabled\"><a href=\"#\" title=\""+title+"\">"+name+"</a></li>");
+                w.println("<li class=\"disabled\"><a href=\"#\" title=\"" + title + "\">" + name + "</a></li>");
                 break;
             case 1:
-                w.println("<li class=\"active\"><a href=\"#\" title=\""+title+"\">"+name+"</a></li>");
+                w.println("<li class=\"active\"><a href=\"#\" title=\"" + title + "\">" + name + "</a></li>");
                 break;
             case 0:
-                w.println("<li><a href=\""+link+"\" title=\""+title+"\">"+name+"</a></li>");
+                w.println("<li><a href=\"" + link + "\" title=\"" + title + "\">" + name + "</a></li>");
                 break;
         }
     }
 
     public static void printErrorMessage(PrintWriter w, String note, String message) {
-        if(StringUtils.isBlank(note)){
+        if (StringUtils.isBlank(note)) {
             w.println("<div class=\"alert alert-error\"><strong>" + note + "</strong>" + message + "</div>");
         } else {
             w.println("<div class=\"alert alert-error\">" + message + "</div>");
@@ -167,11 +163,11 @@ public class DevelUtils {
             if (!t.getKey().equals(toolKey) && t.isGeneric()) {
                 if (Configuration.getToolLocation(t) == null
                         || Configuration.getToolLocation(t) == Configuration.PROPERTY_NOT_SET) {
-                    w.print("<li class=\"disabled\"><a tabindex=\"-1\" href=\"#\" title=\"Tool disabled via Makumba.conf\">" + t.getName()
-                            + "</a></li>");
+                    w.print("<li class=\"disabled\"><a tabindex=\"-1\" href=\"#\" title=\"Tool disabled via Makumba.conf\">"
+                            + t.getName() + "</a></li>");
                 } else if (t.isGeneric()) {
-                    w.print("<li><a tabindex=\"-1\" href=\"" + contextPath + Configuration.getToolLocation(t) + "\">" + t.getName()
-                            + "</a></li>");
+                    w.print("<li><a tabindex=\"-1\" href=\"" + contextPath + Configuration.getToolLocation(t) + "\">"
+                            + t.getName() + "</a></li>");
                 }
             }
         }

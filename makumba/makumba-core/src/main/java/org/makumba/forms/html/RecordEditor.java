@@ -207,7 +207,7 @@ public class RecordEditor extends RecordFormatter {
                 }
                 // special handling for not-empty sets
                 if (fd.isSetType() && fd.isNotEmpty()) {
-                    Vector values = (Vector) o;
+                    Vector<?> values = (Vector<?>) o;
                     // if the set input is present, but no option is selected, we get an empty vector instead of a null
                     // constant
                     if (values == null || values == Pointer.NullSet || values.size() == 0) {
