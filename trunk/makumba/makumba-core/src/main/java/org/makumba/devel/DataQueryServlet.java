@@ -39,7 +39,6 @@ import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.db.makumba.DBConnection;
-import org.makumba.providers.Configuration;
 import org.makumba.providers.DeveloperTool;
 import org.makumba.providers.TransactionProvider;
 
@@ -90,7 +89,8 @@ public class DataQueryServlet extends DataServlet {
         writer.println("  <div class=\"control-group\">");
         writer.println("    <label class=\"control-label\" for=\"query\">Query</label>");
         writer.println("    <div class=\"controls\">");
-        writer.println("      <textarea id=\"query\" name=\"query\" style=\"width: 100%\" rows=\"2\">" + query + "</textarea>");
+        writer.println("      <textarea id=\"query\" name=\"query\" style=\"width: 100%\" rows=\"2\">" + query
+                + "</textarea>");
         writer.println("    </div>");
         writer.println("  </div>");
         writer.println("  <div class=\"control-group\">");
@@ -126,7 +126,7 @@ public class DataQueryServlet extends DataServlet {
                         writer.println("<hr>");
                         org.makumba.db.makumba.sql.Query sqlQuery = (org.makumba.db.makumba.sql.Query) ((DBConnection) t).getQuery(query);
                         writer.println("<p><strong>SQL Query:</strong></p>");
-                        DevelUtils.printSQLQuery(writer,sqlQuery.getCommand(new HashMap<String, Object>()) + ";");
+                        DevelUtils.printSQLQuery(writer, sqlQuery.getCommand(new HashMap<String, Object>()) + ";");
                         writer.println("<hr>");
                     }
                 } else {
@@ -169,8 +169,8 @@ public class DataQueryServlet extends DataServlet {
                     for (String projection : projections) {
                         Object value = d.get(projection);
                         if (value instanceof Pointer) {
-                            writer.println("      <td>" + DevelUtils.writePointerValueLink(contextPath, (Pointer) value)
-                                    + "</td>");
+                            writer.println("      <td>"
+                                    + DevelUtils.writePointerValueLink(contextPath, (Pointer) value) + "</td>");
                         } else {
                             writer.println("      <td>" + value + "</td>");
                         }
@@ -195,7 +195,8 @@ public class DataQueryServlet extends DataServlet {
                 e.printStackTrace(writer);
                 writer.println("</pre>");
             } catch (org.makumba.OQLParseError e) {
-                writer.println("<div class=\"alert alert-error\"><strong>Incorrect OQL query:</strong> " + e.getMessage() + "</div>");
+                writer.println("<div class=\"alert alert-error\"><strong>Incorrect OQL query:</strong> "
+                        + e.getMessage() + "</div>");
             } finally {
                 t.close();
             }

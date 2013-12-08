@@ -64,6 +64,7 @@ import eu.medsea.util.MimeUtil;
  * @author Rudolf Mayer
  * @version $Id: MultipartHttpParameters.java 1726 2007-10-02 09:11:59Z manuel_gay $
  */
+@SuppressWarnings("deprecation")
 public class MultipartHttpParameters extends HttpParameters {
     Hashtable<String, Object> parameters = new Hashtable<String, Object>();
 
