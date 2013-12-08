@@ -43,6 +43,7 @@ import org.makumba.providers.TransactionProvider;
  * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id: HibernateTransaction.java,v 1.1 02.11.2007 14:08:53 Manuel Exp $
  */
+@SuppressWarnings("deprecation")
 public class HibernateTransaction extends TransactionImplementation {
 
     public org.hibernate.Transaction t;
