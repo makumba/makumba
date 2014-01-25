@@ -221,6 +221,9 @@ public class MqlNode extends CommonAST {
         if (fd.getType().equals("ptrIndex")) {
             fd = DataDefinitionProvider.getInstance().makeFieldDefinition("x", "ptr " + fd.getPointedType().getName());
         }
+        if (fd.isPointer() && fd.getPointedType().getName().equals("org.makumba.db.makumba.Sequence")) {
+            fd = DataDefinitionProvider.getInstance().makeFieldDefinition("x", "int");
+        }
         makType = fd;
     }
 
@@ -311,7 +314,10 @@ public class MqlNode extends CommonAST {
                 && !right.getMakType().isAssignableFrom(left.getMakType()) //
                 && !(right.getMakType().isNumberType() && left.getMakType().isNumberType()) //
                 && !(right.getMakType().isDateType() && left.getMakType().isDateType()) //
-                && !(left.getMakType().isNumberType() && right.getMakType().getIntegerType() == FieldDefinition._intEnum)) {
+                && !(left.getMakType().isNumberType() && right.getMakType().getIntegerType() == FieldDefinition._intEnum)
+        // && !(&& right.getMakType().isNumberType())
+
+        ) {
             throw new SemanticException("incompatible operands " + ASTUtil.getDebugString(left) + "("
                     + toStringType(left.getMakType()) + ") and " + ASTUtil.getDebugString(right) + " ("
                     + toStringType(right.getMakType()) + ")", "", getLine(), getColumn());

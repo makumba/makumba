@@ -301,6 +301,9 @@ public class QueryContext {
 
     public void addFrom(String frm, AST labelAST, int joinType) throws SemanticException {
         String label = labelAST.getText();
+        if (frm.equals("int")) {
+            frm = "org.makumba.db.makumba.Sequence";
+        }
         String iterator = frm;
         explicitLabels.add(label);
         paths.put(label, label);
