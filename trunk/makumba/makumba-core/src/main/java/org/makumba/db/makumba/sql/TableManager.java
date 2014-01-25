@@ -595,7 +595,21 @@ public class TableManager extends Table {
         if (!tblname.startsWith("temp")) {
             java.util.logging.Logger.getLogger("org.makumba.db.init.tablechecking").info(command);
         }
-        st.executeUpdate(command);
+        if (tblname.equals("org_makumba_db_makumba_Sequence_")) {
+            command = command.replace("AUTO_INCREMENT", "");
+            st.executeUpdate(command);
+            StringBuffer sb = new StringBuffer();
+            String sep = "";
+            for (int i = -4096; i < 4096; i++) {
+                sb.append(sep);
+                sb.append("(").append(i).append(")");
+                sep = ", ";
+            }
+            st.executeUpdate("insert into " + tblname + "(Sequence_) values " + sb);
+        } else {
+            st.executeUpdate(command);
+        }
+
         if (!tblname.startsWith("temp")) {
             dbc.commit();
         }
