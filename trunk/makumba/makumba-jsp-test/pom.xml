@@ -282,6 +282,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                <forkedProcessTimeoutInSeconds>3600</forkedProcessTimeoutInSeconds>
                     <!-- don't mess around with this, or you too will spend hours debugging
                          integration tests should NOT run during the test phase,
                          but only after, or they will fail due to a lack of container -->
