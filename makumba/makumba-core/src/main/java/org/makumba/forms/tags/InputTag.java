@@ -427,7 +427,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
             if (fd == null) {
                 fd = getTypeFromContext(AnalysableElement.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance()));
             }
-            if (fd.getType().contains("Enum")
+            if (!fd.getType().contains("Enum")
                     && !fd.isPointer()
                     && !fd.isSetType()
                     && !(this instanceof SearchFieldTag && org.apache.commons.lang.StringUtils.equals(
