@@ -54,7 +54,17 @@ public class MakumbaJspFactory extends JspFactory {
     // successfully set it
     // in that case the static synchronized does not help because there are 2 different classes
     static public Runnable checker = new Runnable() {
+        @Override
         public synchronized void run() {
+            // we invoke a class that we know has a static to the default tomcat factory
+            // otherwise PageContextImpl would keep a static to an object of this class, which would result in
+            // this class, and the entire class loader being leaked.
+            try {
+                Class.forName("org.apache.jasper.runtime.PageContextImpl");
+            } catch (ClassNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
 
             JspFactory fact = JspFactory.getDefaultFactory();
             if (fact != null) {
@@ -70,6 +80,7 @@ public class MakumbaJspFactory extends JspFactory {
     };
 
     static Runnable noop = new Runnable() {
+        @Override
         public void run() {
         }
     };
