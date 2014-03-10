@@ -43,16 +43,8 @@ public class binaryEditor extends FieldEditor {
         return paramValues;
     }
 
-    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+    private static final class SingletonHolder {
         static FieldEditor singleton = new binaryEditor();
-
-        public void release() {
-            singleton = null;
-        }
-
-        public SingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
     }
 
     private binaryEditor() {

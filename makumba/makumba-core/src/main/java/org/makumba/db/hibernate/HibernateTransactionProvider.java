@@ -16,29 +16,12 @@ import org.makumba.providers.TransactionProvider;
  */
 public class HibernateTransactionProvider extends TransactionProvider {
 
-    private static class SingletonHolder implements org.makumba.commons.SingletonHolder {
+    private static class SingletonHolder {
         private static TransactionProvider singleton = new HibernateTransactionProvider();
-
-        public void release() {
-            singleton = null;
-        }
-
-        public SingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
     }
 
-    private static class CRUDOperationProviderSingletonHolder implements org.makumba.commons.SingletonHolder {
+    private static class CRUDOperationProviderSingletonHolder {
         private static CRUDOperationProvider singleton = new HibernateCRUDOperationProvider();
-
-        public void release() {
-            singleton = null;
-        }
-
-        public CRUDOperationProviderSingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
-
     }
 
     public static TransactionProvider getInstance() {

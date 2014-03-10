@@ -40,16 +40,8 @@ import org.makumba.providers.datadefinition.mdd.validation.RangeValidationRule;
 
 public class intEditor extends charEditor {
 
-    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+    private static final class SingletonHolder {
         static FieldEditor singleton = new intEditor();
-
-        public void release() {
-            singleton = null;
-        }
-
-        public SingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
     }
 
     /** Don't use this, use getInstance() */

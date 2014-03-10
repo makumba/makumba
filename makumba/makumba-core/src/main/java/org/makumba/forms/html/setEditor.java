@@ -47,17 +47,8 @@ public class setEditor extends ptrEditor {
         return _paramValues;
     }
 
-    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+    private static final class SingletonHolder {
         static FieldEditor singleton = new setEditor();
-
-        @Override
-        public void release() {
-            singleton = null;
-        }
-
-        public SingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
     }
 
     private setEditor() {

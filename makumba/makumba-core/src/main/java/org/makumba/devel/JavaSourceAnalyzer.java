@@ -30,16 +30,8 @@ import org.makumba.analyser.interfaces.JavaAnalyzer;
  */
 public class JavaSourceAnalyzer implements JavaAnalyzer {
 
-    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+    private static final class SingletonHolder {
         static JavaAnalyzer singleton = new JavaSourceAnalyzer();
-
-        public void release() {
-            singleton = null;
-        }
-
-        public SingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
     }
 
     private JavaSourceAnalyzer() {
@@ -56,6 +48,7 @@ public class JavaSourceAnalyzer implements JavaAnalyzer {
      *            an initial status to be passed to the JspAnalyzer. for example, the pageContext for an example-based
      *            analyzer
      */
+    @Override
     public Object makeStatusHolder(Object initStatus) {
         return null;
     }
@@ -65,6 +58,7 @@ public class JavaSourceAnalyzer implements JavaAnalyzer {
      * 
      * @return the result of the analysis
      */
+    @Override
     public Object endPage(Object status) {
         return null;
     }

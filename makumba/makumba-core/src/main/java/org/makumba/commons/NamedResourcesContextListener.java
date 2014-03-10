@@ -37,14 +37,16 @@ public class NamedResourcesContextListener implements javax.servlet.ServletConte
         java.util.logging.Logger.getLogger("org.makumba.system").info("loading makumba context listener");
     }
 
+    @Override
     public void contextInitialized(ServletContextEvent sce) {
     }
 
+    @Override
     public void contextDestroyed(ServletContextEvent sce) {
         java.util.logging.Logger.getLogger("org.makumba.system").info("destroying makumba caches");
         NamedResources.cleanup();
         JDBCUnload();
-        releaseSingletons();
+        // releaseSingletons();
     }
 
     private void JDBCUnload() {
@@ -68,9 +70,9 @@ public class NamedResourcesContextListener implements javax.servlet.ServletConte
 
     }
 
-    /** nullifies all static references to singleton instances **/
-    private void releaseSingletons() {
-        SingletonReleaser.releaseAll();
+    // /** nullifies all static references to singleton instances **/
+    // private void releaseSingletons() {
+    // SingletonReleaser.releaseAll();
 
-    }
+    // }
 }

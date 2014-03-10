@@ -8,8 +8,7 @@ public class KruseCalendarEditor implements CalendarEditorProvider {
 
     public static final String calendarEditorClass = "calendarEditor";
 
-    private static CalendarEditorProvider singleton;
-
+    @Override
     public StringBuffer formatEditorCode(String inputName, Object formIdentifier, String calendarLinkFormatting) {
         StringBuffer sb = new StringBuffer();
         String inputNameVar = inputName.replace('.', '_'); // escape potential ptrField.someField inputs
@@ -48,23 +47,15 @@ public class KruseCalendarEditor implements CalendarEditorProvider {
         return sb;
     }
 
-    private static class SingletonHolder implements org.makumba.commons.SingletonHolder {
-
+    private static class SingletonHolder {
         public static CalendarEditorProvider singleton = new KruseCalendarEditor();
-
-        public void release() {
-            singleton = null;
-        }
-
-        public SingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
     }
 
     public static CalendarEditorProvider getInstance() {
         return SingletonHolder.singleton;
     }
 
+    @Override
     public String[] getNeededJavaScriptFileNames() {
         return new String[] { "kruseCalendarPopup_combined_compact.js", "makumbaDateFunctions.js" };
     }

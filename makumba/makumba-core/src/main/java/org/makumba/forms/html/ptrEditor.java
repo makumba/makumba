@@ -61,16 +61,8 @@ public class ptrEditor extends choiceEditor {
         return _paramValues;
     }
 
-    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+    private static final class SingletonHolder {
         static FieldEditor singleton = new ptrEditor();
-
-        public void release() {
-            singleton = null;
-        }
-
-        public SingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
     }
 
     /** Don't use this, use getInstance() */

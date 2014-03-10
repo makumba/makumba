@@ -170,17 +170,8 @@ public class MakumbaJspAnalyzer implements JspAnalyzer {
      * 
      * @author Cristian Bogdan
      */
-    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+    private static final class SingletonHolder {
         static JspAnalyzer singleton = new MakumbaJspAnalyzer();
-
-        @Override
-        public void release() {
-            singleton = null;
-        }
-
-        public SingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
     }
 
     public static final String QL_OQL = "OQL";

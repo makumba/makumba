@@ -324,17 +324,8 @@ public class ListFormDataProvider implements FormDataProvider {
         return QueryTag.getParentListKey(tag, null);
     }
 
-    private static class SingletonHolder implements org.makumba.commons.SingletonHolder {
+    private static class SingletonHolder {
         private static ListFormDataProvider singleton = new ListFormDataProvider();
-
-        @Override
-        public void release() {
-            singleton = null;
-        }
-
-        public SingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
     }
 
     public static ListFormDataProvider getInstance() {

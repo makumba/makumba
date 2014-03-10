@@ -34,16 +34,8 @@ import org.makumba.analyser.interfaces.JspAnalyzer;
  */
 public class JspxJspAnalyzer implements JspAnalyzer {
 
-    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+    private static final class SingletonHolder {
         static JspAnalyzer singleton = new JspxJspAnalyzer();
-
-        public void release() {
-            singleton = null;
-        }
-
-        public SingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
     }
 
     private JspxJspAnalyzer() {
@@ -60,6 +52,7 @@ public class JspxJspAnalyzer implements JspAnalyzer {
      *            an initial status to be passed to the JspAnalyzer. for example, the pageContext for an example-based
      *            analyzer
      */
+    @Override
     public Object makeStatusHolder(Object initStatus) {
         return null;
     }
@@ -69,22 +62,27 @@ public class JspxJspAnalyzer implements JspAnalyzer {
      * 
      * @see #endTag(JspParseData.TagData, Object)
      */
+    @Override
     public void startTag(TagData td, Object status) {
     }
 
     /** the end of a body tag, like </...> */
+    @Override
     public void endTag(TagData td, Object status) {
     }
 
     /** a simple tag, like <... /> */
+    @Override
     public void simpleTag(TagData td, Object status) {
     }
 
     /** a system tag, like <%@ ...%> */
+    @Override
     public void systemTag(TagData td, Object status) {
     }
 
     /** an EL expression, either ${...} or #{...} **/
+    @Override
     public void elExpression(ELData ed, Object status) {
     }
 
@@ -93,6 +91,7 @@ public class JspxJspAnalyzer implements JspAnalyzer {
      * 
      * @return the result of the analysis
      */
+    @Override
     public Object endPage(Object status) {
         return null;
     }
