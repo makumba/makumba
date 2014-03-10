@@ -10,6 +10,9 @@ import org.makumba.providers.QueryAnalysisProvider;
 import antlr.collections.AST;
 
 public class MqlQueryAnalysisProvider extends QueryAnalysisProvider {
+
+    private static final long serialVersionUID = 1L;
+
     public static int parsedQueries = NamedResources.makeStaticCache("MQL parsed queries", new NamedResourceFactory() {
 
         private static final long serialVersionUID = 1L;

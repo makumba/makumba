@@ -34,6 +34,8 @@ import java.util.List;
  */
 public class ComposedSubquery extends ComposedQuery {
 
+    private static final long serialVersionUID = 1L;
+
     /** The enclosing query */
     ComposedQuery superQuery;
 

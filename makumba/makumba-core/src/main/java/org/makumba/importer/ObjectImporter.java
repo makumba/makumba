@@ -193,6 +193,7 @@ public class ObjectImporter {
             while ((n = r.read(buffer)) != -1) {
                 sw.write(buffer, 0, n);
             }
+            r.close();
             String content = sw.toString().toString();
             java.util.logging.Logger.getLogger("org.makumba.import").finest(
                 ri.importFrom(content, null, null).toString());

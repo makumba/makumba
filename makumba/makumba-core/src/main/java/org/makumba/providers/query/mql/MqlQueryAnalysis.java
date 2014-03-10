@@ -155,7 +155,7 @@ public class MqlQueryAnalysis implements QueryAnalysis {
      */
     public void prepareForHQL() {
 
-        AST a = new ASTTransformVisitor(false) {
+        new ASTTransformVisitor(false) {
             @Override
             public AST visit(AST a) {
 

@@ -73,7 +73,7 @@ public class HibernateSFManager {
 
     private static Vector<String> externalConfigurationResources = new Vector<String>();
 
-    private static HashMap<String, Vector<Class<?>>> externalClasses = new HashMap<String, Vector<Class<?>>>();
+    // private static HashMap<String, Vector<Class<?>>> externalClasses = new HashMap<String, Vector<Class<?>>>();
 
     private static Configuration configuredConfiguration;
 
@@ -296,7 +296,7 @@ public class HibernateSFManager {
      *            Cat.class<br>
      */
     public static void setExternalMappingClasses(HashMap<String, Vector<Class<?>>> mappingClasses) {
-        externalClasses = mappingClasses;
+        // externalClasses = mappingClasses;
     }
 
     public static String getFullyQualifiedName(String className) {

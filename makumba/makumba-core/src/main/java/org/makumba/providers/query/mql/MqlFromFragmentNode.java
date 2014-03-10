@@ -6,6 +6,8 @@ import antlr.collections.AST;
 
 public class MqlFromFragmentNode extends MqlNode {
 
+    private static final long serialVersionUID = 1L;
+
     QueryContext queryContext;
 
     TextList hqlFrom;

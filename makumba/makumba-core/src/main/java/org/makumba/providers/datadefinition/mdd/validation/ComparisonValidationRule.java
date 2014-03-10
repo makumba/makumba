@@ -88,7 +88,7 @@ public class ComparisonValidationRule extends ValidationRuleNode {
                     return true;
                 }
 
-                compare = ((Date) left).compareTo(((Date) right));
+                compare = ((Date) left).compareTo((Date) right);
                 break;
 
             case NUMBER:
@@ -117,6 +117,7 @@ public class ComparisonValidationRule extends ValidationRuleNode {
                     return true;
                 }
                 break;
+            default:
         }
 
         int compareOperator = comparisonExpression.getOperatorType();

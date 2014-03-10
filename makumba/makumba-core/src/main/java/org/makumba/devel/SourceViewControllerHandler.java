@@ -54,7 +54,7 @@ import org.makumba.providers.DeveloperTool;
  * that the Java and JSP syntax colouring (and maybe Java linking) can be outsourced.
  */
 public class SourceViewControllerHandler extends ControllerHandler {
-    private static final long serialVersionUID = 1L;
+    // private static final long serialVersionUID = 1L;
 
     public static final String PARAM_REPOSITORY_URL = "repositoryURL";
 
@@ -161,7 +161,7 @@ public class SourceViewControllerHandler extends ControllerHandler {
         DevelUtils.writePageBegin(w);
         DevelUtils.writeStylesAndScripts(w, contextPath);
         DevelUtils.writeTitleAndHeaderEnd(w, relativeDirectory);
-        DevelUtils.printNavigationBegin(w,"Directory Listing");
+        DevelUtils.printNavigationBegin(w, "Directory Listing");
         DevelUtils.writeDevelUtilLinks(w, key, contextPath);
         DevelUtils.printNavigationEnd(w);
         w.println("  <h2><a href=\".\">" + relativeDirectory + "</a></h2>");
@@ -174,8 +174,8 @@ public class SourceViewControllerHandler extends ControllerHandler {
         Arrays.sort(list);
         for (File element : list) {
             if (extension == null || containsFilesWithExtension(element, extension)) {
-                w.println("<b><a href=\"" + element.getName() + "/\"><i class=\"icon-folder-close\"></i>" +
-                        element.getName() + "/</a></b>");
+                w.println("<b><a href=\"" + element.getName() + "/\"><i class=\"icon-folder-close\"></i>"
+                        + element.getName() + "/</a></b>");
             }
         }
     }
@@ -200,6 +200,7 @@ public class SourceViewControllerHandler extends ControllerHandler {
     }
 
     public static final class DirectoriesExcludingRepositoriesFilter implements FileFilter {
+        @Override
         public boolean accept(File f) {
             return f.isDirectory() && !f.getName().equals("CVS") && !f.getName().equals(".svn");
         }

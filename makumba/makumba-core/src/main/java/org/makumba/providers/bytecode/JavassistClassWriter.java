@@ -1,5 +1,10 @@
 package org.makumba.providers.bytecode;
 
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Vector;
+
 import javassist.CannotCompileException;
 import javassist.ClassClassPath;
 import javassist.ClassPool;
@@ -22,16 +27,13 @@ import javassist.bytecode.annotation.EnumMemberValue;
 import javassist.bytecode.annotation.IntegerMemberValue;
 import javassist.bytecode.annotation.MemberValue;
 import javassist.bytecode.annotation.StringMemberValue;
+
+import javax.persistence.ManyToMany;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.makumba.MakumbaError;
 import org.makumba.commons.NameResolver;
-
-import javax.persistence.ManyToMany;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Vector;
 
 /**
  * TODO optimize memory consumption if possible, read {@link ClassPool} documentation<br>
@@ -189,10 +191,10 @@ public class JavassistClassWriter extends AbstractClassWriter {
     private void addField(String name, String type, CtClass cc) throws CannotCompileException {
         String fieldName = NameResolver.checkReserved(name);
         cc.addField(CtField.make("private " + type + " " + fieldName + ";", cc));
-        cc.addMethod(CtNewMethod.getter("get" + StringUtils.capitalize(name), CtField.make("private " + type + " "
-                + fieldName + ";", cc)));
-        cc.addMethod(CtNewMethod.setter("set" + StringUtils.capitalize(name), CtField.make("private " + type + " "
-                + fieldName + ";", cc)));
+        cc.addMethod(CtNewMethod.getter("get" + StringUtils.capitalize(name),
+            CtField.make("private " + type + " " + fieldName + ";", cc)));
+        cc.addMethod(CtNewMethod.setter("set" + StringUtils.capitalize(name),
+            CtField.make("private " + type + " " + fieldName + ";", cc)));
     }
 
     private void removeField(String name, String type, CtClass cc) throws CannotCompileException {
@@ -281,7 +283,7 @@ public class JavassistClassWriter extends AbstractClassWriter {
         cp.insertClassPath(new ClassClassPath(EntityClassGenerator.class));
         CtClass cc = cp.makeClass("A");
         cc.stopPruning(true);
-        String type = null;
+        // String type = null;
         CtField fld = CtField.make("public java.util.List myField;", cc);
 
         ClassFile cf = cc.getClassFile();

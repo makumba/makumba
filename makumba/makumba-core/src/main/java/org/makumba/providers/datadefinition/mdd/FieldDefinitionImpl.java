@@ -64,6 +64,8 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
 
     static class SharedFieldData implements Serializable {
 
+        private static final long serialVersionUID = 1L;
+
         // TODO: this is unused but shared could be set to null if isEmpty() returns true.
         boolean isEmpty() {
             return defaultValue == null && notNullError == null && NaNError == null && uniqueError == null
@@ -1140,6 +1142,7 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
                 sb.append("== Subfield detail" + "\n\n");
                 sb.append(subfield.toString() + "\n");
                 break;
+            default:
         }
 
         return sb.toString();

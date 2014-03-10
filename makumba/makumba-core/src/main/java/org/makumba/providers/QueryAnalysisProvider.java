@@ -867,7 +867,8 @@ public abstract class QueryAnalysisProvider implements Serializable {
         }
     }
 
-    private static AST flatten(AST processedAST) {
+    // TODO: unused
+    static AST flatten(AST processedAST) {
         SubqueryReductionVisitor s = new SubqueryReductionVisitor();
         AST a = s.traverse(processedAST);
         s.fromWhere.addToTreeFromWhere(a, QueryProvider.getQueryAnalzyer("oql").getParameterSyntax());
@@ -955,7 +956,8 @@ public abstract class QueryAnalysisProvider implements Serializable {
         }
     }
 
-    private static void toOrdinalParam(AST a) {
+    // TODO: unused
+    static void toOrdinalParam(AST a) {
         a.setType(HqlTokenTypes.PARAM);
         a.setText("?");
         a.setFirstChild(null);

@@ -14,8 +14,6 @@ import org.makumba.commons.ClassResource;
 import org.makumba.commons.NameResolver;
 import org.makumba.db.NativeQuery;
 
-import antlr.collections.AST;
-
 /**
  * Test the Mql analyzer against a query corpus found in queries.txt. Compare the generated sql with the one of the old
  * OQL parser.
@@ -87,10 +85,10 @@ public class ParserTest {
     }
 
     private static void analyseQuery(int line, String query, boolean automaticLeftJoin) {
-        AST hql_sql = null;
-        boolean passedMql = false;
-        Throwable thr = null;
-        boolean printedError;
+        // AST hql_sql = null;
+        // boolean passedMql = false;
+        // Throwable thr = null;
+        // boolean printedError;
         String mql_sql = null;
 
         MqlQueryAnalysis mq = null;
@@ -149,7 +147,8 @@ public class ParserTest {
         }
     }
 
-    private static void compareMdds(String what, StringBuffer sb, DataDefinition mdd1, DataDefinition mdd2) {
+    // TODO: unused
+    static void compareMdds(String what, StringBuffer sb, DataDefinition mdd1, DataDefinition mdd2) {
         HashSet<String> fieldsDone = new HashSet<String>();
         for (FieldDefinition fd1 : mdd1.getFieldDefinitions()) {
             FieldDefinition fd2 = mdd2.getFieldDefinition(fd1.getName());

@@ -481,7 +481,8 @@ public class RelationCrawler {
         relations.clear();
     }
 
-    private void deleteExistingRelations(Pointer webappPointer) {
+    // TODO: unused code
+    protected void deleteExistingRelations(Pointer webappPointer) {
         Transaction tr = null;
 
         try {
@@ -752,6 +753,7 @@ public class RelationCrawler {
     /** A filenameFilter that accepts .jsp, .mdd and .java files, or directories. */
     public static final class MakumbaRelatedFileFilter implements FileFilter {
 
+        @Override
         public boolean accept(File pathname) {
             return pathname.getAbsolutePath().endsWith(".jsp") || pathname.getAbsolutePath().endsWith(".java")
                     || pathname.getAbsolutePath().endsWith(".mdd") || pathname.getAbsolutePath().endsWith(".idd")

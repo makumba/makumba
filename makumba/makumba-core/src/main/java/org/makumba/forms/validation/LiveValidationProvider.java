@@ -154,7 +154,7 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
 
                     switch (c.getComparisonExpression().getComparisonType()) {
 
-                        // FIXME: need to implement date comparisons
+                    // FIXME: need to implement date comparisons
                         case DATE:
                             continue;
 
@@ -174,9 +174,11 @@ public class LiveValidationProvider implements ClientsideValidationProvider, Ser
                             }
 
                             break;
+                        default:
                     }
 
                     break;
+                default:
             }
         }
     }

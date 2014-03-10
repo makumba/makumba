@@ -56,7 +56,7 @@ public class TextList {
         content.clear();
     }
 
-    private static NameResolver defaultNameResolver = new NameResolver();
+    // private static NameResolver defaultNameResolver = new NameResolver();
 
     /** resolve the TextList and flatten it so no TextLists remain inside it, just Strings and ParamInfo */
     public TextList resolve(NameResolver nr) {

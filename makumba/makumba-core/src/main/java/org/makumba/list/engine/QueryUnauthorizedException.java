@@ -11,14 +11,16 @@ import org.makumba.list.engine.ComposedQueryAuthorization.AuthorizationInfo;
 
 public class QueryUnauthorizedException extends UnauthorizedException {
 
-    private AuthorizationInfo ai;
+    private static final long serialVersionUID = 1L;
 
-    private Object object;
+    // private AuthorizationInfo ai;
+
+    // private Object object;
 
     public QueryUnauthorizedException(AuthorizationInfo ai, Object object) {
         super(makeMessage(ai, object));
-        this.ai = ai;
-        this.object = object;
+        // this.ai = ai;
+        // this.object = object;
 
     }
 

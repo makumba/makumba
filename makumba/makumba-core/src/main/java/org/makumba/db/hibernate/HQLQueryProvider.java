@@ -85,20 +85,25 @@ public class HQLQueryProvider extends QueryProvider {
         params.put("testPerson", new SQLPointer("test.Person", 345678));
         params.put("someDouble", new Double(2.0));
 
-        String query1 = "SELECT p.id as ID, p.name as name, p.surname as surname, p.birthdate as date, p.T_shirt as shirtSize FROM general.Person p where p.name = :name AND p.birthdate is not null AND p.birthdate > :date AND p.T_shirt = :someInt";
-        String query2 = "SELECT p.id as ID, p.name as name, p.surname as surname, p.birthdate as date, p.T_shirt as shirtSize FROM general.Person p where p.name = :name AND p.birthdate is not null AND p.birthdate > :date and p.T_shirt in (:someSet) order by p.surname DESC";
-        String query3 = "SELECT e.subject as subject, e.spamLevel AS spamLevel from general.archive.Email e WHERE e.spamLevel = :someDouble";
-        String query4 = "SELECT case when 1>2 then 1.5 else 2.0 end, i.id FROM test.Individual i";
-        String query5 = "SELECT lbg.id as col0, history.id as col1, history.status as col2, history.event.start as col3 from best.internal.Lbg lbg join lbg.membershipHistory history order by col3 DESC";
-        String query6 = "SELECT lbg.id as col0, lbg.name As col1, lbg.id AS col2, lbg.name aS col3 from best.internal.Lbg lbg order by col3, col2,col1 DESC";
-        String query7 = "SELECT p.id AS ID, p.driver AS col3, p.birthdate AS col4 FROM test.Person p";
-        String query8 = "SELECT 1 from test.Person p join p.indiv i WHERE i.name = 'john'";
-        String query9 = "SELECT p.id from test.Person p WHERE p = :testPerson";
-        String query10 = "SELECT p.indiv.name FROM test.Person p WHERE p.gender = 1";
-        String query11 = "SELECT p.indiv.person.indiv.name FROM test.Person p WHERE p.gender = 1";
+        // String query1 =
+        // "SELECT p.id as ID, p.name as name, p.surname as surname, p.birthdate as date, p.T_shirt as shirtSize FROM general.Person p where p.name = :name AND p.birthdate is not null AND p.birthdate > :date AND p.T_shirt = :someInt";
+        // String query2 =
+        // "SELECT p.id as ID, p.name as name, p.surname as surname, p.birthdate as date, p.T_shirt as shirtSize FROM general.Person p where p.name = :name AND p.birthdate is not null AND p.birthdate > :date and p.T_shirt in (:someSet) order by p.surname DESC";
+        // String query3 =
+        // "SELECT e.subject as subject, e.spamLevel AS spamLevel from general.archive.Email e WHERE e.spamLevel = :someDouble";
+        // String query4 = "SELECT case when 1>2 then 1.5 else 2.0 end, i.id FROM test.Individual i";
+        // String query5 =
+        // "SELECT lbg.id as col0, history.id as col1, history.status as col2, history.event.start as col3 from best.internal.Lbg lbg join lbg.membershipHistory history order by col3 DESC";
+        // String query6 =
+        // "SELECT lbg.id as col0, lbg.name As col1, lbg.id AS col2, lbg.name aS col3 from best.internal.Lbg lbg order by col3, col2,col1 DESC";
+        // String query7 = "SELECT p.id AS ID, p.driver AS col3, p.birthdate AS col4 FROM test.Person p";
+        // String query8 = "SELECT 1 from test.Person p join p.indiv i WHERE i.name = 'john'";
+        // String query9 = "SELECT p.id from test.Person p WHERE p = :testPerson";
+        // String query10 = "SELECT p.indiv.name FROM test.Person p WHERE p.gender = 1";
+        // String query11 = "SELECT p.indiv.person.indiv.name FROM test.Person p WHERE p.gender = 1";
         String query12 = "SELECT myIndiv.person.indiv.name FROM test.Person p join p.indiv as myIndiv";
 
-        String[] queries = new String[] { query8, query7 };
+        // String[] queries = new String[] { query8, query7 };
         /*
          * for (int i = 0; i < queries.length; i++) { System.out.println("Query " + queries[i] + " ==> \n" +
          * printQueryResults(qr.execute(queries[i], params, 0, 50)) + "\n\n"); }

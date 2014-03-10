@@ -525,7 +525,8 @@ public class QueryContext {
         text.append(makeTextList(j.label1, j.field1));
     }
 
-    private TextList findLabelText(String label) {
+    // TODO: unused
+    TextList findLabelText(String label) {
         if (labels.get(label) == null) {
             return parent.findLabelText(label);
         }

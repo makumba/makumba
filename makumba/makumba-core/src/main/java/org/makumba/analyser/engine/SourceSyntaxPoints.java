@@ -505,6 +505,7 @@ public class SourceSyntaxPoints implements Serializable {
             while ((n = rd.read(buffer)) != -1) {
                 sb.append(buffer, 0, n);
             }
+            rd.close();
         } catch (FileNotFoundException e) {
             String msg = "File '" + file.getName() + "' not found.\n\t(" + e.getMessage() + ")";
             if (includeDirective != null) {

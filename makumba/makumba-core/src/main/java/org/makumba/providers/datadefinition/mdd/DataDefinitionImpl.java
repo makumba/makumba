@@ -101,6 +101,8 @@ public class DataDefinitionImpl implements DataDefinition, ValidationDefinition,
 
     class SharedMddData implements Serializable {
 
+        private static final long serialVersionUID = 1L;
+
         protected LinkedHashMap<String, ValidationRule> validationRules = new LinkedHashMap<String, ValidationRule>();
 
         protected LinkedHashMap<Object, MultipleUniqueKeyDefinition> multiFieldUniqueList = new LinkedHashMap<Object, MultipleUniqueKeyDefinition>();

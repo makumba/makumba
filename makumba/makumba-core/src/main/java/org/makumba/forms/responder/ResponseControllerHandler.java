@@ -166,7 +166,8 @@ public class ResponseControllerHandler extends ControllerHandler {
      *            the form responder
      * @return a wrapped ServletResponse redirecting to the original page
      */
-    private ServletResponse getFormReloadResponse(ServletResponse resp, final String root, Responder responder) {
+    // TODO: unused
+    ServletResponse getFormReloadResponse(ServletResponse resp, final String root, Responder responder) {
         resp = new HttpServletResponseWrapper((HttpServletResponse) resp) {
             @Override
             public void sendRedirect(String s) throws java.io.IOException {
@@ -189,7 +190,8 @@ public class ResponseControllerHandler extends ControllerHandler {
      *            the form responder
      * @return a wrapped ServletRequest containing information about the originally submitted page
      */
-    private ServletRequest getFormReloadRequest(ServletRequest req, final Responder responder) {
+    // TODO:unused
+    ServletRequest getFormReloadRequest(ServletRequest req, final Responder responder) {
         //
         req = new HttpServletRequestWrapper((HttpServletRequest) req) {
 

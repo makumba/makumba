@@ -11,6 +11,8 @@ import antlr.collections.AST;
 
 public class HQLQueryAnalysisProvider extends QueryAnalysisProvider {
 
+    private static final long serialVersionUID = 1L;
+
     @Override
     public String getName() {
         return "hql";

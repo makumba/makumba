@@ -1,7 +1,6 @@
 package org.makumba.providers.datadefinition.mdd;
 
 import java.util.HashMap;
-import java.util.regex.Pattern;
 
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
@@ -84,7 +83,7 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
                 } else {
                     if (mdd.functions.get(title.functionName) == null) {
                         factory.doThrow(this.typeName, "Error resolving !title directive: function "
-                            + title.functionName + " not defined in type " + typeName, titleField);
+                                + title.functionName + " not defined in type " + typeName, titleField);
                     }
                 }
                 break;
@@ -250,7 +249,7 @@ public class MDDPostProcessorWalker extends MDDPostProcessorBaseWalker {
         compileFunction(f);
     }
 
-    private static final Pattern ident = Pattern.compile("[a-zA-Z]\\w*");
+    // private static final Pattern ident = Pattern.compile("[a-zA-Z]\\w*");
 
     private void compileFunction(FunctionNode funct) {
         // nothing to do, will be compiled at first use

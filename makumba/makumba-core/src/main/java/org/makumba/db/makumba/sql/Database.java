@@ -250,14 +250,15 @@ public class Database extends org.makumba.db.makumba.Database {
 
                 java.util.logging.Logger.getLogger("org.makumba.db.init").info(
                     "\tconnected to "
-                            + p.get("sql_engine.name")
-                            + " version: "
-                            + p.get("sql_engine.version")
-                            + "\n\tusing "
-                            + p.get("jdbc_driver.name")
-                            + " version: "
-                            + p.get("jdbc_driver.version")
-                            + ("\n\tusing " + (isAutoIncrement() ? "auto increment (no DBSV)" : "DBSV " + p.get("dbsv"))));
+                            //
+                            + p.get("sql_engine.name") //
+                            + " version: " //
+                            + p.get("sql_engine.version") //
+                            + "\n\tusing " //
+                            + p.get("jdbc_driver.name") //
+                            + " version: "//
+                            + p.get("jdbc_driver.version")//
+                            + "\n\tusing "+ (isAutoIncrement() ? "auto increment (no DBSV)" : "DBSV " + p.get("dbsv")));
                 if (!dbc.getMetaData().supportsTransactionIsolationLevel(DESIRED_TRANSACTION_LEVEL)) {
                     java.util.logging.Logger.getLogger("org.makumba.db.init").warning(
                         "transaction isolation level " + DESIRED_TRANSACTION_LEVEL + " not supported, using "
@@ -651,10 +652,6 @@ public class Database extends org.makumba.db.makumba.Database {
      */
     public Object get_char_Value(FieldDefinition fd, ResultSet rs, int i) throws SQLException {
         Object o = base_getValue(fd, rs, i);
-
-        if (o instanceof byte[]) {
-            String a = new String((byte[]) o);
-        }
 
         if (o == null) {
             return o;

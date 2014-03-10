@@ -229,9 +229,10 @@ public class MddToClass {
      * @param fd
      *            the field definition corresponding to the enum
      * @throws CannotCompileException
+     *             TODO: this is not used
      */
 
-    private void generateIntEnum(CtClass cc, String name, FieldDefinition fd) throws CannotCompileException {
+    protected void generateIntEnum(CtClass cc, String name, FieldDefinition fd) throws CannotCompileException {
 
         String enumName = name.substring(0, 1).toUpperCase() + name.substring(1, name.length());
 
@@ -271,7 +272,7 @@ public class MddToClass {
         cp.insertClassPath(new ClassClassPath(MddToClass.class));
         CtClass cc = cp.makeClass("A");
         cc.stopPruning(true);
-        String type = null;
+        // String type = null;
         CtField fld = CtField.make("public java.util.List myField;", cc);
 
         ClassFile cf = cc.getClassFile();

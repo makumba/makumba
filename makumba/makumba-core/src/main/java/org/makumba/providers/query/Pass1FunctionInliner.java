@@ -310,7 +310,7 @@ public class Pass1FunctionInliner {
             actorType = actorType.getFirstChild();
 
             String rt = QueryAnalysisProvider.getGeneratedActorName(actorType);
-            String parameterSyntax = QueryProvider.getQueryAnalzyer(queryAnalysisProvider).getParameterSyntax();
+            // String parameterSyntax = QueryProvider.getQueryAnalzyer(queryAnalysisProvider).getParameterSyntax();
 
             // the more complicated case: we have a actor(Type).something
             int type = getPath().peek().getType();
@@ -434,7 +434,7 @@ public class Pass1FunctionInliner {
                 }
 
                 AST firstAST = QueryAnalysisProvider.parseQuery(QueryAnalysisProvider.checkForFrom(query));
-                AST f = QueryAnalysisProvider.parseQuery(QueryAnalysisProvider.checkForFrom(query));
+                QueryAnalysisProvider.parseQuery(QueryAnalysisProvider.checkForFrom(query));
                 AST processedAST = inlineAST(firstAST, "oql");
                 QueryAnalysisProvider.reduceDummyFrom(processedAST);
 

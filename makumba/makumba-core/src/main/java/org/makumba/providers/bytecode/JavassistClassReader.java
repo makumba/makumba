@@ -9,7 +9,6 @@ import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.NotFoundException;
 import javassist.bytecode.AnnotationsAttribute;
-import javassist.bytecode.ClassFile;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.AnnotationMemberValue;
 import javassist.bytecode.annotation.ArrayMemberValue;
@@ -62,7 +61,7 @@ public class JavassistClassReader extends AbstractClassReader {
 
     private Annotation[] readVisibleAnnotations(String methodName, Clazz clazz) {
         CtClass cc = (CtClass) clazz.getClassObjectReference();
-        ClassFile cf = cc.getClassFile();
+        cc.getClassFile();
 
         CtMethod m = null;
         try {
