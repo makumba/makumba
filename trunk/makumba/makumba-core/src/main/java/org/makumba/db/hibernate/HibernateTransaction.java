@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -56,7 +55,7 @@ public class HibernateTransaction extends TransactionImplementation {
 
     private String dataSource;
 
-    private static NameResolver nr = new NameResolver();
+    // private static NameResolver nr = new NameResolver();
 
     public HibernateTransaction(TransactionProvider tp) {
         super(tp);
@@ -336,9 +335,8 @@ public class HibernateTransaction extends TransactionImplementation {
     private Vector<Dictionary<String, Object>> getConvertedQueryResult(NativeQuery nat, List<?> list) {
         Vector<Dictionary<String, Object>> results = new Vector<Dictionary<String, Object>>(list.size());
 
-        int i = 1;
-        for (Iterator<?> iter = list.iterator(); iter.hasNext(); i++) {
-            Object resultRow = iter.next();
+        // int i = 1;
+        for (Object resultRow : list) {
             Object[] resultFields;
             if (!(resultRow instanceof Object[])) { // our query result has only one field
                 resultFields = new Object[] { resultRow }; // we put it into an object[]
@@ -396,15 +394,15 @@ public class HibernateTransaction extends TransactionImplementation {
 
     }
 
-    private void setNamedParameters(Map<?, ?> args, DataDefinition paramsDef, org.hibernate.Query q) {
-        String[] queryParams = q.getNamedParameters();
-        for (String paramName : queryParams) {
-            Object paramValue = args.get(paramName);
-            FieldDefinition paramDef = paramsDef.getFieldDefinition(paramName);
-            assignParameter(paramName, paramValue, paramDef, q);
-
-        }
-    }
+    // private void setNamedParameters(Map<?, ?> args, DataDefinition paramsDef, org.hibernate.Query q) {
+    // String[] queryParams = q.getNamedParameters();
+    // for (String paramName : queryParams) {
+    // Object paramValue = args.get(paramName);
+    // FieldDefinition paramDef = paramsDef.getFieldDefinition(paramName);
+    // assignParameter(paramName, paramValue, paramDef, q);
+    //
+    // }
+    // }
 
     private void assignParameter(Object nameOrPosition, Object paramValue, FieldDefinition paramDef,
             org.hibernate.Query q) {

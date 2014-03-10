@@ -82,7 +82,7 @@ public class Query implements org.makumba.db.makumba.Query {
                                               // end.
         }
         final PreparedStatement ps = ((SQLDBConnection) dbc).getPreparedStatement(com);
-        final String comFinal = com;
+        // final String comFinal = com;
         // Parameters nap = nat.makeActualParameters(args);
 
         try {

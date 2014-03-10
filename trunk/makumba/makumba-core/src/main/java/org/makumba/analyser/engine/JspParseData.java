@@ -76,7 +76,10 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
     /** The patterns used to parse the page. */
     static private Pattern JspSystemTagPattern, JspTagPattern, HTMLTagPattern, JspCommentPattern, JspScriptletPattern,
             JspIncludePattern, JspTagAttributePattern, JspExpressionLanguagePattern, JSPELFunctionPattern,
-            JsfExpressionLanguagePattern, Word, TagName, MapExpression, DotExpression;
+            // JsfExpressionLanguagePattern,
+            Word, TagName, MapExpression
+            // DotExpression
+            ;
 
     static private String[] JspCommentPatternNames = { "JspComment", "JspScriptlet" };
 
@@ -151,7 +154,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
                     + functionParamElementRepeatment + RegExpUtils.LineWhitespaces;
             JSPELFunctionPattern = Pattern.compile("\\w+:\\w+\\(" + functionParamRegExp + "?\\)");
 
-            JsfExpressionLanguagePattern = Pattern.compile("\\#\\{[^\\}]*\\}");
+            // JsfExpressionLanguagePattern = Pattern.compile("\\#\\{[^\\}]*\\}");
             Pattern[] cp = { JspCommentPattern, JspScriptletPattern };
             JspCommentPatterns = cp;
             MapExpression = Pattern.compile("[A-Za-z]\\w*\\[[^]]*\\]");
@@ -375,7 +378,7 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
 
         int start[] = { Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE };
 
-        // put mx=4 for html and otehr tags to be analyzed as well! 
+        // put mx=4 for html and otehr tags to be analyzed as well!
         int mx = 3;
         for (int i = 0; i < mx; i++) {
             if (match[i].find()) {
@@ -434,8 +437,8 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
      */
     void treatELExpression(Matcher m, String content, JspAnalyzer an, boolean isJsf) {
 
-        SyntaxPoint end = syntaxPoints.addSyntaxPoints(m.start(), m.end(), "ExpressionLanguage", null);
-        SyntaxPoint start = (SyntaxPoint) end.getOtherInfo();
+        // SyntaxPoint end = syntaxPoints.addSyntaxPoints(m.start(), m.end(), "ExpressionLanguage", null);
+        // SyntaxPoint start = (SyntaxPoint) end.getOtherInfo();
         int elContentStart = m.start() + 2;
         String elContent = content.substring(elContentStart, m.end() - 1);
         Matcher map = MapExpression.matcher(elContent);
@@ -635,7 +638,8 @@ public class JspParseData implements SourceSyntaxPoints.PreprocessorClient {
                 m.invoke(t, args);
             } catch (java.lang.reflect.InvocationTargetException ite) {
                 java.util.logging.Logger.getLogger("org.makumba.jspparser").warning(
-                    ("error invoking method " + methodName + " on object of class " + c.getName() + " with argument " + args[0]));
+                    "error invoking method " + methodName + " on object of class " + c.getName() + " with argument "
+                            + args[0]);
                 throw new RuntimeWrappedException(ite.getTargetException());
             } catch (Throwable thr) {
                 java.util.logging.Logger.getLogger("org.makumba.jspparser").warning(

@@ -55,9 +55,9 @@ public class ResponderFactory {
     /**
      * Initialises the factory
      */
-    private void init() {
-        cacheManager.setFactory(this);
-    }
+    // private void init() {
+    // cacheManager.setFactory(this);
+    // }
 
     /**
      * Reads all responder codes from a request (all code_suffix values of __mak__responder__).
@@ -261,14 +261,14 @@ public class ResponderFactory {
         if (responderCodes.hasNext()) {
             String code = responderCodes.next();
             String suffix = "";
-            String parentSuffix = null;
+            // String parentSuffix = null;
             int n = code.indexOf(Responder.suffixSeparator);
             if (n != -1) {
                 suffix = code.substring(n);
-                parentSuffix = "";
+                // parentSuffix = "";
                 n = suffix.indexOf(Responder.suffixSeparator, 1);
                 if (n != -1) {
-                    parentSuffix = suffix.substring(n);
+                    // parentSuffix = suffix.substring(n);
                     suffix = suffix.substring(0, n);
                 }
             }

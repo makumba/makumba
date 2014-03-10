@@ -115,8 +115,8 @@ public class TaglibDocGenerator {
                         if (tagContent.attributeValue("name") != null
                                 && tagContent.attributeValue("specifiedIn") != null) {
                             // have a referring attribute
-                            MakumbaTLDGenerator.replaceReferencedAttribute(processedElements, errorMsg, e.element(
-                                getElementNameSyntax(isTag)).getText(), tagContent);
+                            MakumbaTLDGenerator.replaceReferencedAttribute(processedElements, errorMsg,
+                                e.element(getElementNameSyntax(isTag)).getText(), tagContent);
                         }
                     }
                 }
@@ -242,6 +242,7 @@ public class TaglibDocGenerator {
 
             s.println();
             s.println("%%(display:none;) [Category Documentation]%%");
+            s.close();
 
         } catch (IOException io) {
             throw new RuntimeException("Cannot create index file", io);

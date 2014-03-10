@@ -76,7 +76,7 @@ public class HqlAnalyzer implements QueryAnalysis {
 
         AST parsed = QueryProvider.getQueryAnalzyer("oql").inlineFunctions(query);
 
-        boolean noFrom = QueryAnalysisProvider.reduceDummyFrom(parsed);
+        QueryAnalysisProvider.reduceDummyFrom(parsed);
 
         init(parsed, null);
 

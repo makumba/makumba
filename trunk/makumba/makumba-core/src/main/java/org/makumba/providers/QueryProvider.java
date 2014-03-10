@@ -20,6 +20,9 @@ import org.makumba.commons.NamedResources;
 public abstract class QueryProvider {
 
     static Map<String, String> providerClasses = new HashMap<String, String>() {
+
+        private static final long serialVersionUID = 1L;
+
         {
             put("oql", "org.makumba.db.makumba.MQLQueryProvider");
             put("hql", "org.makumba.db.hibernate.HQLQueryProvider");

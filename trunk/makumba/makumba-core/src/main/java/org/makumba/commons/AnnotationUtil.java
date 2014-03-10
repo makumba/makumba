@@ -5,12 +5,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Vector;
 
-import javax.persistence.Column;
-
-import org.makumba.providers.bytecode.AbstractClassReader;
-import org.makumba.providers.bytecode.Clazz;
-import org.makumba.providers.bytecode.JavassistClassReader;
-
 public class AnnotationUtil {
 
     private final static Class<?>[] emptyClassArray = new Class<?>[] {};
@@ -50,9 +44,9 @@ public class AnnotationUtil {
 
         for (int i = 0; i < READS; i++) {
             long start = System.currentTimeMillis();
-            Class<?> c = Class.forName("test.Language");
-            Method m = c.getDeclaredMethod("getIsoCode", (Class<?>[]) null);
-            Object v = readAttributeValue(m, Column.class, "unique");
+            // Class<?> c = Class.forName("test.Language");
+            // Method m = c.getDeclaredMethod("getIsoCode", (Class<?>[]) null);
+            // Object v = readAttributeValue(m, Column.class, "unique");
             long end = System.currentTimeMillis();
             times.add(end - start);
         }
@@ -70,9 +64,9 @@ public class AnnotationUtil {
 
         for (int i = 0; i < READS; i++) {
             long start = System.currentTimeMillis();
-            AbstractClassReader acv = new JavassistClassReader();
-            Clazz clazz = acv.getClass("test.Language");
-            Object value = acv.getAnnotationAttributeValue(Column.class, "unique", "getIsoCode", clazz);
+            // AbstractClassReader acv = new JavassistClassReader();
+            // Clazz clazz = acv.getClass("test.Language");
+            // Object value = acv.getAnnotationAttributeValue(Column.class, "unique", "getIsoCode", clazz);
             long end = System.currentTimeMillis();
             times.add(end - start);
         }

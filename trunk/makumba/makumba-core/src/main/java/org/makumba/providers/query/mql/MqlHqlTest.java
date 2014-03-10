@@ -8,8 +8,6 @@ import java.io.InputStreamReader;
 import org.makumba.commons.ClassResource;
 import org.makumba.commons.NullNameResolver;
 import org.makumba.db.NativeQuery;
-import org.makumba.providers.QueryAnalysisProvider;
-import org.makumba.providers.QueryProvider;
 
 public class MqlHqlTest {
 
@@ -22,7 +20,7 @@ public class MqlHqlTest {
                 "org/makumba/providers/query/mql/mqlHqlCorpus.txt").getContent()));
             String query = null;
             int line = 0;
-            QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer("oql");
+            // QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer("oql");
 
             while ((query = rd.readLine()) != null) {
                 line++;

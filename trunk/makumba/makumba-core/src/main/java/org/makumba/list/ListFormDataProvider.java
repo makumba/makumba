@@ -47,6 +47,7 @@ public class ListFormDataProvider implements FormDataProvider {
      * @see org.makumba.list.FormDataProvider#onFormStartAnalyze(org.makumba.analyser.AnalysableTag,
      *      org.makumba.analyser.PageCache, java.lang.String)
      */
+    @Override
     public void onFormStartAnalyze(AnalysableTag tag, PageCache pageCache, String ptrExpr) {
         if (MakumbaJspAnalyzer.getQueryLanguage(pageCache).equals("hql")) {
             ptrExpr += ".id";
@@ -107,6 +108,7 @@ public class ListFormDataProvider implements FormDataProvider {
      * @see org.makumba.list.FormDataProvider#onBasicValueStartAnalyze(org.makumba.analyser.AnalysableTag, boolean,
      *      org.makumba.commons.MultipleKey, org.makumba.analyser.PageCache, java.lang.String)
      */
+    @Override
     public void onBasicValueStartAnalyze(AnalysableTag tag, boolean isNull, MultipleKey parentFormKey,
             PageCache pageCache, String ptrExpr) {
         MultipleKey parentListKey = getBasicValueParentListKey(tag, isNull, parentFormKey, pageCache);
@@ -138,6 +140,7 @@ public class ListFormDataProvider implements FormDataProvider {
      * @see org.makumba.list.FormDataProvider#onNonQueryStartAnalyze(org.makumba.analyser.AnalysableTag, boolean,
      *      org.makumba.commons.MultipleKey, org.makumba.analyser.PageCache, java.lang.String)
      */
+    @Override
     public void onNonQueryStartAnalyze(AnalysableTag tag, boolean isNull, MultipleKey parentFormKey,
             PageCache pageCache, String expr) {
         MultipleKey parentListKey = getBasicValueParentListKey(tag, isNull, parentFormKey, pageCache);
@@ -160,6 +163,7 @@ public class ListFormDataProvider implements FormDataProvider {
      * @see org.makumba.list.FormDataProvider#onFormEndAnalyze(org.makumba.commons.MultipleKey,
      *      org.makumba.analyser.PageCache)
      */
+    @Override
     public void onFormEndAnalyze(MultipleKey tagKey, PageCache pageCache) {
         ComposedQuery dummy = (ComposedQuery) pageCache.retrieve(MakumbaJspAnalyzer.QUERY, tagKey);
         if (dummy != null) {
@@ -173,6 +177,7 @@ public class ListFormDataProvider implements FormDataProvider {
      * @see org.makumba.list.FormDataProvider#onBasicValueEndAnalyze(org.makumba.commons.MultipleKey,
      *      org.makumba.analyser.PageCache)
      */
+    @Override
     public FieldDefinition onBasicValueEndAnalyze(MultipleKey tagKey, PageCache pageCache) {
         return getTypeOnEndAnalyze(tagKey, pageCache);
     }
@@ -183,6 +188,7 @@ public class ListFormDataProvider implements FormDataProvider {
      * @see org.makumba.list.FormDataProvider#onFormStartTag(org.makumba.commons.MultipleKey,
      *      org.makumba.analyser.PageCache, javax.servlet.jsp.PageContext)
      */
+    @Override
     public void onFormStartTag(MultipleKey tagKey, PageCache pageCache, PageContext pageContext) throws LogicException {
         // if we have a dummy query, we simulate an iteration
         if (pageCache.retrieve(MakumbaJspAnalyzer.QUERY, tagKey) != null) {
@@ -198,6 +204,7 @@ public class ListFormDataProvider implements FormDataProvider {
      * @see org.makumba.list.FormDataProvider#onFormEndTag(org.makumba.commons.MultipleKey,
      *      org.makumba.analyser.PageCache, javax.servlet.jsp.PageContext)
      */
+    @Override
     public void onFormEndTag(MultipleKey tagKey, PageCache pageCache, PageContext pageContext) {
         // if we have a dummy query, we simulate end iteration
         if (pageCache.retrieve(MakumbaJspAnalyzer.QUERY, tagKey) != null) {
@@ -212,6 +219,7 @@ public class ListFormDataProvider implements FormDataProvider {
      * @see org.makumba.list.FormDataProvider#getTypeOnEndAnalyze(org.makumba.commons.MultipleKey,
      *      org.makumba.analyser.PageCache)
      */
+    @Override
     public FieldDefinition getTypeOnEndAnalyze(MultipleKey tagKey, PageCache pageCache) {
         if (retrieveBaseObjectInputInfo(tagKey, pageCache) != null) {
             DataDefinition addToPtrInput = (DataDefinition) retrieveBaseObjectInputInfo(tagKey, pageCache)[0];
@@ -229,6 +237,7 @@ public class ListFormDataProvider implements FormDataProvider {
      * @see org.makumba.list.FormDataProvider#getBasePointerType(org.makumba.analyser.AnalysableTag,
      *      org.makumba.analyser.PageCache, java.lang.String)
      */
+    @Override
     public DataDefinition getBasePointerType(AnalysableTag tag, PageCache pageCache, String baseObject) {
         if (retrieveBaseObjectInputInfo(tag.getTagKey(), pageCache) != null) {
             return (DataDefinition) retrieveBaseObjectInputInfo(tag.getTagKey(), pageCache)[0];
@@ -243,6 +252,7 @@ public class ListFormDataProvider implements FormDataProvider {
      * @see org.makumba.list.FormDataProvider#computeBasePointer(org.makumba.commons.MultipleKey,
      *      javax.servlet.jsp.PageContext)
      */
+    @Override
     public String computeBasePointer(MultipleKey tagKey, PageContext pageContext) throws LogicException {
         PageCache pageCache = AnalysableElement.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance());
         if (retrieveBaseObjectInputInfo(tagKey, pageCache) != null) {
@@ -266,6 +276,7 @@ public class ListFormDataProvider implements FormDataProvider {
      * @see org.makumba.list.FormDataProvider#getValue(org.makumba.commons.MultipleKey, javax.servlet.jsp.PageContext,
      *      org.makumba.analyser.PageCache)
      */
+    @Override
     public Object getValue(MultipleKey tagKey, PageContext pageContext, PageCache pageCache) throws LogicException {
         return ((ValueComputer) pageCache.retrieve(MakumbaJspAnalyzer.VALUE_COMPUTERS, tagKey)).getValue(pageContext);
     }
@@ -276,6 +287,7 @@ public class ListFormDataProvider implements FormDataProvider {
      * @see org.makumba.list.FormDataProvider#getInputTypeAtAnalysis(org.makumba.DataDefinition, java.lang.String,
      *      org.makumba.analyser.PageCache)
      */
+    @Override
     public FieldDefinition getInputTypeAtAnalysis(AnalysableTag tag, DataDefinition dd, String fieldName,
             PageCache pageCache) {
         if (dd == null) {
@@ -307,6 +319,7 @@ public class ListFormDataProvider implements FormDataProvider {
      * 
      * @see org.makumba.list.FormDataProvider#getParentListKey(org.makumba.analyser.AnalysableTag)
      */
+    @Override
     public MultipleKey getParentListKey(AnalysableTag tag) {
         return QueryTag.getParentListKey(tag, null);
     }
@@ -314,6 +327,7 @@ public class ListFormDataProvider implements FormDataProvider {
     private static class SingletonHolder implements org.makumba.commons.SingletonHolder {
         private static ListFormDataProvider singleton = new ListFormDataProvider();
 
+        @Override
         public void release() {
             singleton = null;
         }

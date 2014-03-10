@@ -29,14 +29,14 @@ public class SubmitTag extends GenericMakumbaTag implements BodyTag {
 
     private BodyContent bc;
 
-    private String form;
+    // private String form;
 
     private String widget;
 
     private boolean hasBody = false;
 
     public void setForm(String form) {
-        this.form = form;
+        // this.form = form;
     }
 
     public void setWidget(String widget) {
@@ -48,10 +48,12 @@ public class SubmitTag extends GenericMakumbaTag implements BodyTag {
         return true;
     }
 
+    @Override
     public void doInitBody() throws JspException {
         this.hasBody = true;
     }
 
+    @Override
     public void setBodyContent(BodyContent b) {
         this.bc = b;
     }

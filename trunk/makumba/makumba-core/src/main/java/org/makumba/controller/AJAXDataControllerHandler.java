@@ -96,7 +96,8 @@ public class AJAXDataControllerHandler extends ControllerHandler {
         }
     }
 
-    private void handleFormPostback(HttpServletRequest req, HttpServletResponse response) {
+    // TODO: this is never used, kept here for reference
+    protected void handleFormPostback(HttpServletRequest req, HttpServletResponse response) {
         String partialPostback = (String) req.getAttribute(ResponseControllerHandler.MAKUMBA_FORM_PARTIAL_POSTBACK_EVENT);
         if (partialPostback != null) {
             logger.fine("partial form postback");

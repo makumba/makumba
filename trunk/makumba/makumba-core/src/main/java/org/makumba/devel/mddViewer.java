@@ -37,7 +37,6 @@ import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
-import org.makumba.ValidationDefinition;
 import org.makumba.commons.RegExpUtils;
 import org.makumba.controller.Logic;
 import org.makumba.providers.Configuration;
@@ -124,28 +123,29 @@ public class mddViewer extends LineViewer {
 
         if (dd != null) {
             w.println("<li>");
-            DevelUtils.printPopoverLink(w,"BL methods","BL Method signatures for " + dd.getName(),"blMethods");
+            DevelUtils.printPopoverLink(w, "BL methods", "BL Method signatures for " + dd.getName(), "blMethods");
             w.println("</li>");
             w.println("<div id=\"blMethods\" style=\"display: none;\">");
             writeBLHandlers(w, dd);
             w.println("</div>");
         } else if (dir.getName().endsWith(".idd")) { // we don't have a BL for for idd's
-            DevelUtils.printNavigationButton(w,"BL methods","#","There's no BL for .idd files!",2);
+            DevelUtils.printNavigationButton(w, "BL methods", "#", "There's no BL for .idd files!", 2);
         } else {
-            DevelUtils.printNavigationButton(w,"BL methods","#","Fix the errors in the MDD first!",2);
+            DevelUtils.printNavigationButton(w, "BL methods", "#", "Fix the errors in the MDD first!", 2);
         }
-        DevelUtils.printNavigationButton(w,"mdd","#","",1);
+        DevelUtils.printNavigationButton(w, "mdd", "#", "", 1);
 
         // link to code generator
         if (dd != null) {
-            DevelUtils.printNavigationButton(w,"code generator", contextPath + Configuration.getToolLocation(DeveloperTool.CODE_GENERATOR)
-                    + "/" + virtualPath,"",0);
+            DevelUtils.printNavigationButton(w, "code generator",
+                contextPath + Configuration.getToolLocation(DeveloperTool.CODE_GENERATOR) + "/" + virtualPath, "", 0);
         } else if (dir.getName().endsWith(".idd")) { // we don't have a BL for for idd's
-            DevelUtils.printNavigationButton(w,"code generator","#","There's no code to be generated for .idd files!",2);
+            DevelUtils.printNavigationButton(w, "code generator", "#",
+                "There's no code to be generated for .idd files!", 2);
         } else {
-            DevelUtils.printNavigationButton(w,"code generator","#","Fix the errors in the MDD first!",2);
+            DevelUtils.printNavigationButton(w, "code generator", "#", "Fix the errors in the MDD first!", 2);
         }
-        DevelUtils.printNavigationButton(w,"browse",browsePath,"",0);
+        DevelUtils.printNavigationButton(w, "browse", browsePath, "", 0);
 
         DevelUtils.writeDevelUtilLinks(w, DeveloperTool.MDD_VIEWER.getKey(), contextPath);
     }
@@ -258,11 +258,11 @@ public class mddViewer extends LineViewer {
         StringBuffer result = new StringBuffer();
         result.append("<span name=\"validationRule\" class=\"mddValidationLine\">");
         boolean endsWithComment = false;
-        String ruleName = s.trim();
+        // String ruleName = s.trim();
         StringTokenizer tokenizer = new StringTokenizer(s, " ", true);
         while (tokenizer.hasMoreElements()) {
             String token = tokenizer.nextToken();
-            ValidationDefinition vd = ddp.getValidationDefinition(dd.getName());
+            // ValidationDefinition vd = ddp.getValidationDefinition(dd.getName());
             if (ArrayUtils.contains(basicValidationRuleOperators, token.trim())) {
                 result.append("<span style=\"color:blue; font-weight: bold;\">" + htmlEscape(token) + "</span>");
             } else if (token.equals(";")) {

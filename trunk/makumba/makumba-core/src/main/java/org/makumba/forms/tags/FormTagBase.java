@@ -521,6 +521,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
                 }
 
                 break;
+            default:
         }
     }
 

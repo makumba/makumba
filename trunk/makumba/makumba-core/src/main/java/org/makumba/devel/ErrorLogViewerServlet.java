@@ -125,7 +125,7 @@ public class ErrorLogViewerServlet extends DataServlet {
         writer.println("  <div class=\"control-group\">");
         writer.println("    <label class=\"control-label\" for=\"query\">Query</label>");
         writer.println("    <div class=\"controls\">");
-        DevelUtils.printSQLQuery(writer,query);
+        DevelUtils.printSQLQuery(writer, query);
         writer.println("    </div>");
         writer.println("  </div>");
         writer.println("  <div class=\"control-group\">");
@@ -156,7 +156,7 @@ public class ErrorLogViewerServlet extends DataServlet {
             try {
                 Vector<Dictionary<String, Object>> results = t.executeQuery(query, null, 0, limit);
 
-                org.makumba.db.makumba.Query oqlQuery = ((DBConnection) t).getQuery(query);
+                ((DBConnection) t).getQuery(query);
 
                 // we need to figure out all the projection names used in the query
                 // the projection names are only present if that row also has a non-null value
@@ -188,8 +188,8 @@ public class ErrorLogViewerServlet extends DataServlet {
                     for (String projection : projections) {
                         Object value = d.get(projection);
                         if (value instanceof Pointer) {
-                            writer.println("      <td>" + DevelUtils.writePointerValueLink(contextPath, (Pointer) value)
-                                    + "</td>");
+                            writer.println("      <td>"
+                                    + DevelUtils.writePointerValueLink(contextPath, (Pointer) value) + "</td>");
                         } else {
                             writer.println("      <td>" + value + "</td>");
                         }
@@ -201,20 +201,21 @@ public class ErrorLogViewerServlet extends DataServlet {
                     }
                 }
                 if (results.size() > 0) {
-                    DevelUtils.printErrorMessage(writer,"Note:","only projections that have at least one value not null will be shown");
+                    DevelUtils.printErrorMessage(writer, "Note:",
+                        "only projections that have at least one value not null will be shown");
                 } else {
-                    DevelUtils.printErrorMessage(writer,"","No results found!");
+                    DevelUtils.printErrorMessage(writer, "", "No results found!");
                 }
 
             } catch (RuntimeWrappedException e) {
-                DevelUtils.printErrorMessage(writer,"",e.getMessage());
+                DevelUtils.printErrorMessage(writer, "", e.getMessage());
                 writer.println("<div id=\"showStackTrace\" style=\"display: inline;\"><a href=\"javascript:toggleStackTrace();\" title=\"Show full stack trace\">--></a></div>");
                 writer.println("<div id=\"hideStackTrace\" style=\"display: none\"><a href=\"javascript:toggleStackTrace();\" title=\"Hide stack trace\"><--</a></div>");
                 writer.println("<pre id=\"stackTrace\" style=\"display:none\">");
                 e.printStackTrace(writer);
                 writer.println("</pre>");
             } catch (org.makumba.OQLParseError e) {
-                DevelUtils.printErrorMessage(writer,"Incorrect OQL query:",e.getMessage());
+                DevelUtils.printErrorMessage(writer, "Incorrect OQL query:", e.getMessage());
             } finally {
                 t.close();
             }

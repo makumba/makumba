@@ -83,6 +83,7 @@ public class JavaMDDParser {
             while ((n = rd.read(buffer)) != -1) {
                 sb.append(buffer, 0, n);
             }
+            rd.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {

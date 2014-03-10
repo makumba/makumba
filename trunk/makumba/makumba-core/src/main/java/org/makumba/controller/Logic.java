@@ -483,8 +483,8 @@ public class Logic {
         }
         funcCall.append(")");
 
-        List<String> paramNames=qap.getQueryAnalysis(funcCall.toString()).getQueryParameters().getParameterOrder();
-        
+        // List<String> paramNames=qap.getQueryAnalysis(funcCall.toString()).getQueryParameters().getParameterOrder();
+
         Transaction connection = dbcp.getConnectionTo(db);
         Vector<Dictionary<String, Object>> v;
         try {
@@ -632,7 +632,7 @@ public class Logic {
             return;
         }
         AuthorizationConstraint constraint = (AuthorizationConstraint) o;
-        QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer(dbcp.getTransactionProvider().getQueryLanguage());
+        // QueryAnalysisProvider qap = QueryProvider.getQueryAnalzyer(dbcp.getTransactionProvider().getQueryLanguage());
 
         String query = "SELECT " + constraint.rule + " AS col1 ";
         if (constraint.fromWhere != null) {
