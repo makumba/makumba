@@ -11,8 +11,8 @@ import org.makumba.commons.NamedResources;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.providers.CRUDOperationProvider;
 import org.makumba.providers.Configuration;
-import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.Configuration.DataSourceType;
+import org.makumba.providers.TransactionProvider;
 
 /**
  * Makumba-specific implementation of the {@link TransactionProvider}.
@@ -22,16 +22,8 @@ import org.makumba.providers.Configuration.DataSourceType;
  */
 public class MakumbaTransactionProvider extends TransactionProvider {
 
-    private static class SingletonHolder implements org.makumba.commons.SingletonHolder {
+    private static class SingletonHolder {
         private static TransactionProvider singleton = new MakumbaTransactionProvider();
-
-        public void release() {
-            singleton = null;
-        }
-
-        public SingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
     }
 
     public static TransactionProvider getInstance() {
@@ -54,16 +46,8 @@ public class MakumbaTransactionProvider extends TransactionProvider {
 
     }
 
-    private static class CRUDOperationProviderSingletonHolder implements org.makumba.commons.SingletonHolder {
+    private static class CRUDOperationProviderSingletonHolder {
         private static CRUDOperationProvider singleton = new MakumbaCRUDOperationProvider();
-
-        public void release() {
-            singleton = null;
-        }
-
-        public CRUDOperationProviderSingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
     }
 
     static Class<?>[] theProp = { java.util.Properties.class };
@@ -235,9 +219,10 @@ public class MakumbaTransactionProvider extends TransactionProvider {
         return super.getConnectionTo(name, this);
     }
 
-/**
+    /**
      * Access the properties of a database. Besides the properties defined in the database connection file, the
-     * following are available <table border =1>
+     * following are available
+     * <table border =1>
      * <tr>
      * <td><code>sql_engine.name</code>
      * <td>name of the SQL engine used
@@ -258,7 +243,8 @@ public class MakumbaTransactionProvider extends TransactionProvider {
      * <td>JDBC url connected to
      * <tr>
      * <td><code>jdbc_connections</code>
-     * <td>number of jdbc connections open </table>
+     * <td>number of jdbc connections open
+     * </table>
      * 
      * @since makumba-0.5.5.7
      */

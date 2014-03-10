@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.makumba.Transaction;
-import org.makumba.commons.SingletonHolder;
 import org.makumba.providers.Configuration.DataSourceType;
 
 /**
@@ -14,7 +13,7 @@ import org.makumba.providers.Configuration.DataSourceType;
  * @author Manuel Bernhardt <manuel@makumba.org>
  * @version $Id$
  */
-public abstract class TransactionProvider implements SingletonHolder {
+public abstract class TransactionProvider {
 
     private static String[] transactionProviders = { "makumba", "org.makumba.db.makumba.MakumbaTransactionProvider",
             "hibernate", "org.makumba.db.hibernate.HibernateTransactionProvider" };
@@ -136,13 +135,5 @@ public abstract class TransactionProvider implements SingletonHolder {
     public abstract String getQueryLanguage();
 
     public abstract void closeDataSource(String dataSourceName);
-
-    public TransactionProvider() {
-        org.makumba.commons.SingletonReleaser.register(this);
-    }
-
-    public void release() {
-        providerInstances.clear();
-    }
 
 }

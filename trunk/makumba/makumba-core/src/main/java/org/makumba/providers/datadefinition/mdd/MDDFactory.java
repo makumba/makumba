@@ -40,17 +40,8 @@ public class MDDFactory {
 
     }
 
-    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+    private static final class SingletonHolder {
         static MDDFactory singleton = new MDDFactory();
-
-        @Override
-        public void release() {
-            singleton = null;
-        }
-
-        public SingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
     }
 
     public static MDDFactory getInstance() {

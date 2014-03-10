@@ -52,17 +52,8 @@ public class DataDefinitionProvider {
     private DataDefinitionProvider() {
     }
 
-    private static class SingletonHolder implements org.makumba.commons.SingletonHolder {
+    private static class SingletonHolder {
         private static DataDefinitionProvider singleton = new DataDefinitionProvider();
-
-        @Override
-        public void release() {
-            singleton = null;
-        }
-
-        public SingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
     }
 
     /**
@@ -413,7 +404,7 @@ public class DataDefinitionProvider {
     public static java.net.URL findDataDefinition(String s, String ext) {
         // must specify a filename, not a directory (or package), see bug 173
         java.net.URL u = findDataDefinitionOrDirectory(s, ext);
-        if (u != null && (s.endsWith("/") || org.makumba.commons.ClassResource.get((s + '/')) != null)) {
+        if (u != null && (s.endsWith("/") || org.makumba.commons.ClassResource.get(s + '/') != null)) {
             return null;
         }
         return u;
@@ -457,17 +448,17 @@ public class DataDefinitionProvider {
         }
 
         if (u == null) {
-            u = org.makumba.commons.ClassResource.get(("dataDefinitions/" + s.replace('.', '/') + "." + ext));
+            u = org.makumba.commons.ClassResource.get("dataDefinitions/" + s.replace('.', '/') + "." + ext);
 
             // this is maybe a directory?
             // FIXME: this doesn't work if the MDDs are not in the dataDefinitions directory, but in the classes folder
             // directly
             if (u == null) {
-                u = org.makumba.commons.ClassResource.get(("dataDefinitions" + (s.length() == 0 ? "" : "/") + s));
+                u = org.makumba.commons.ClassResource.get("dataDefinitions" + (s.length() == 0 ? "" : "/") + s);
             }
 
             if (u == null) {
-                u = org.makumba.commons.ClassResource.get((s.replace('.', '/') + "." + ext));
+                u = org.makumba.commons.ClassResource.get(s.replace('.', '/') + "." + ext);
             }
         }
         return u;

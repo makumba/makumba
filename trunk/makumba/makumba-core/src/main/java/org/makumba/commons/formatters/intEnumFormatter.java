@@ -30,16 +30,8 @@ public class intEnumFormatter extends FieldFormatter {
 
     static String[][] paramValues = { null, null, null };
 
-    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+    private static final class SingletonHolder {
         static FieldFormatter singleton = new intEnumFormatter();
-
-        public void release() {
-            singleton = null;
-        }
-
-        public SingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
     }
 
     private intEnumFormatter() {

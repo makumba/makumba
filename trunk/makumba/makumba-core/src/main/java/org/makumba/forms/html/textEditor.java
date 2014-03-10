@@ -34,16 +34,8 @@ import org.makumba.forms.tags.SearchFieldTag;
 
 public class textEditor extends FieldEditor {
 
-    private static final class SingletonHolder implements org.makumba.commons.SingletonHolder {
+    private static final class SingletonHolder {
         static FieldEditor singleton = new textEditor();
-
-        public void release() {
-            singleton = null;
-        }
-
-        public SingletonHolder() {
-            org.makumba.commons.SingletonReleaser.register(this);
-        }
     }
 
     private boolean forceInput;
