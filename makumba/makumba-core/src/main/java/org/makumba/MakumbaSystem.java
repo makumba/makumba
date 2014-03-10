@@ -23,6 +23,12 @@
 
 package org.makumba;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Date;
+import java.util.jar.Manifest;
+
 import org.hibernate.Hibernate;
 import org.makumba.forms.html.CalendarEditorProvider;
 import org.makumba.forms.html.KruseCalendarEditor;
@@ -31,12 +37,6 @@ import org.makumba.forms.validation.LiveValidationProvider;
 import org.makumba.importer.HtmlTableImporter;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Date;
-import java.util.jar.Manifest;
 
 /**
  * The makumba runtime system. Provides starter methods to obtain {@link Transaction} and {@link DataDefinition} objects
@@ -162,14 +162,6 @@ public class MakumbaSystem {
         return MDDFactory.makeFieldWithName(name, type, description);
     }
 
-    /**
-     * Get the DataDefinition of the records returned by the given OQL query
-     * 
-     * @deprecated use {@link OQLQueryProvider#getOQLAnalyzer} for better OQL functionality public static DataDefinition
-     *             getResultDataDefinition(String OQL) { return
-     *             OQLQueryProvider.getOQLAnalyzer(OQL).getProjectionType(); }
-     */
-
     /** Returns a Makumba version (derived from a SVN tag) */
     public static String getVersion() {
         return org.makumba.version.getVersion();
@@ -177,18 +169,20 @@ public class MakumbaSystem {
 
     /**
      * Returns build date (as recorded during building)
+     * 
      * @deprecated the build date is included in the manifest file
      */
+    @Deprecated
     public static java.util.Date getBuildDate() {
         return new Date();
     }
 
     static String loggingRoot = "org.makumba";
 
-/**
+    /**
      * Get a logger for logging during makumba operations. See {@link java.util.logging.Logger},
-     * {@link #setLoggingRoot(java.lang.String)}. This method is mostly used by makumba code. From application code,
-     * use {@link #getLogger(java.lang.String)} or {@link #getLogger() }.
+     * {@link #setLoggingRoot(java.lang.String)}. This method is mostly used by makumba code. From application code, use
+     * {@link #getLogger(java.lang.String)} or {@link #getLogger() }.
      * <p>
      * The table below describes when makumba logging occurs and at what logging {@link java.util.logging.Level} (note
      * also that {@link java.util.logging.Level#SEVERE} and {@link java.util.logging.Level#WARNING} logging is done in
@@ -215,7 +209,7 @@ public class MakumbaSystem {
      * <td>application operations
      * <td>loggingRoot + <code>apps</code>+ the parameter to {@link #getLogger(java.lang.String)}
      * <td>logging level used by applications that call {@link #getLogger(java.lang.String)} and {@link #getLogger()}
-     * <td> any, as required by the application
+     * <td>any, as required by the application
      * <tr>
      * <td>database opening
      * <td>loggingRoot + <code>db.init</code>, <code>db.init.tablechecking</code>
@@ -233,8 +227,7 @@ public class MakumbaSystem {
      <td>{@link java.util.logging.Level#INFO}
 
      <tr><td>database querying
-     <td>loggingRoot + <code>db.query.compilation</code>,
-     <code>db.query.execution</code>, <code>db.query.performance
+     <td>loggingRoot + <code>db.query.compilation</code>, <code>db.query.execution</code>, <code>db.query.performance
      <td>see {@link org.makumba.Transaction#executeQuery(java.lang.String, java.lang.Object)}, 
      {@link org.makumba.Transaction#read(org.makumba.Pointer, java.lang.Object)}
      <td>{@link java.util.logging.Level#FINE}
@@ -250,7 +243,8 @@ public class MakumbaSystem {
      <td>{@link java.util.logging.Level#FINE}
 
      <tr><td>database updating
-     <td>loggingRoot + <code>db.update.execution</code>, <code>db.update.performance
+     <td>loggingRoot + <code>db.update.execution</code>,
+     * <code>db.update.performance
      <td>see {@link org.makumba.Transaction}, all insert, delete, and update operations
      <td>{@link java.util.logging.Level#FINE}
 
@@ -268,8 +262,8 @@ public class MakumbaSystem {
      <td>loggingRoot + <code>util.longContent
      <td>tells when large content in {@link org.makumba.Text} or large content produced by a mak:list tag are swapped to disk
      <td>{@link java.util.logging.Level#FINE}
-
-     </table>
+     * </table>
+     * 
      * @since makumba-0.5.5.3
      */
     public static java.util.logging.Logger getMakumbaLogger(String suffix) {
