@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.jdt.junit.launchconfig">
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/makumba-core/src/test/java/org/makumba/test/component/ConfigurationTest.java"/>
+<listEntry value="/makumba-jsp-test/src/test/java/org/makumba/test/tags/ListOQLTest.java"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>
@@ -12,7 +12,8 @@
 <stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit3"/>
 <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
 <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.m2e.launchconfig.classpathProvider"/>
-<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.makumba.test.component.ConfigurationTest"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="makumba-core"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.makumba.test.tags.ListOQLTest"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="makumba-jsp-test"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.m2e.launchconfig.sourcepathProvider"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dcactus.contextURL=http://localhost:8080/tests"/>
 </launchConfiguration>
