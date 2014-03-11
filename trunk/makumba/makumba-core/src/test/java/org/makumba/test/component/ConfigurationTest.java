@@ -51,6 +51,7 @@ public class ConfigurationTest extends TestCase {
 
     private TransactionProvider tp = TransactionProvider.getInstance();
 
+    @SuppressWarnings("deprecation")
     public void testBuildInfo() {
         System.out.println("\nTesting Makumba version: " + MakumbaSystem.getVersion() + "\n		   built on: "
                 + MakumbaSystem.getBuildDate() + "\n	       using locale: " + MakumbaSystem.getLocale());
