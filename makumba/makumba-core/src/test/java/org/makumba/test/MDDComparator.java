@@ -64,11 +64,12 @@ public class MDDComparator {
                         continue;
                     }
 
-                    String type = ze.getName().substring((apps[i] + "/WEB-INF/classes/dataDefinitions/").length(),
-                        ze.getName().lastIndexOf(".")).replaceAll("/", ".");
+                    // String type = ze.getName().substring((apps[i] + "/WEB-INF/classes/dataDefinitions/").length(),
+                    // ze.getName().lastIndexOf(".")).replaceAll("/", ".");
 
                     // System.out.println("==== Reading MDD " + type);
                     // DataDefinition dd1 = RecordInfo.getRecordInfo(type);
+                    /*
                     DataDefinition dd1 = null;
                     DataDefinition dd2 = null;
                     try {
@@ -77,7 +78,7 @@ public class MDDComparator {
                         System.err.println("MDDProvider error on " + type + " : " + t.getMessage());
                     }
                     try {
-                        // dd2 = RecordInfo.getRecordInfo(type);
+                        dd2 = RecordInfo.getRecordInfo(type);
                     } catch (Throwable t) {
                         System.err.println("RecordInfo error on " + type + " : " + t.getMessage());
                     }
@@ -85,7 +86,7 @@ public class MDDComparator {
                     if (dd1 != null && dd2 != null) {
                         compare(dd1, dd2);
                     }
-
+                    */
                 }
             }
 
@@ -136,7 +137,8 @@ public class MDDComparator {
     /**
      * Compares the structure of two DataDefinition-s and their underlying FieldDefinition-s
      */
-    private static void compare(DataDefinition dd1, DataDefinition dd2) {
+    // TODO unused
+    static void compare(DataDefinition dd1, DataDefinition dd2) {
 
         String t = dd1.getName();
         check("getName", t, null, dd1.getName(), dd2.getName());

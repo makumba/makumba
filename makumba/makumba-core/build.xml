@@ -1,3 +1,4 @@
+<!DOCTYPE project>
 <project name="Makumba" default="compile" basedir=".">
 
 	<!-- Properties and task definitions -->
@@ -16,6 +17,7 @@
 
 	<property name="build.compiler.emacs" value="true" />
 
+	<!--
 	<taskdef resource="svntask.properties">
 		<classpath>
 			<fileset dir="${basedir}/lib/building/">
@@ -53,7 +55,7 @@
 			<fileset dir="lib/building/" includes="maven-ant-tasks-2.1.0.jar" />
 		</classpath>
 	</typedef>
-
+-->
 	<!-- Path definitions -->
 
 	<path id="project.class.path">
