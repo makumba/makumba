@@ -80,7 +80,7 @@
         <dependency>
             <groupId>org.codehaus.cargo</groupId>
             <artifactId>cargo-core-uberjar</artifactId>
-            <version>1.0.3</version>
+            <version>1.1.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -206,6 +206,32 @@
 
 
             <!-- Embedded Tomcat (tomcat:run) -->
+	        <plugin>
+	          <groupId>org.apache.tomcat.maven</groupId>
+	          <artifactId>tomcat6-maven-plugin</artifactId>
+	          <version>2.2</version>
+	                <configuration>
+	                <goalPrefix>tomcat6</goalPrefix>
+	                    <path>/tests</path>
+	                    <port>${server.port}</port>
+	                    <warSourceDirectory>${main.basedir}/makumba-jsp-test/src/test/webapp</warSourceDirectory>
+	                    <classesDir>${main.basedir}/makumba-jsp-test/target/test-classes</classesDir>
+	                    <url>http://localhost:${server.port}/manager</url>
+	                </configuration>
+	        </plugin>
+	        <plugin>
+	          <groupId>org.apache.tomcat.maven</groupId>
+	          <artifactId>tomcat7-maven-plugin</artifactId>
+	          <version>2.2</version>
+	                <configuration>
+	                    <path>/tests</path>
+	                    <port>${server.port}</port>
+	                    <warSourceDirectory>${main.basedir}/makumba-jsp-test/src/test/webapp</warSourceDirectory>
+	                    <classesDir>${main.basedir}/makumba-jsp-test/target/test-classes</classesDir>
+	                    <url>http://localhost:${server.port}/manager/text</url>
+	                </configuration>
+	        </plugin>
+
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>tomcat-maven-plugin</artifactId>
@@ -226,7 +252,7 @@
             <plugin>
                 <groupId>org.codehaus.cargo</groupId>
                 <artifactId>cargo-maven2-plugin</artifactId>
-                <version>1.0.3</version>
+                <version>1.1.0</version>
                 <executions>
                     <execution>
                         <id>start-container</id>
@@ -246,13 +272,17 @@
                 <configuration>
                     <wait>false</wait>
                     <container>
-                        <containerId>tomcat6x</containerId>
+                        <containerId>tomcat7x</containerId>
                         <log>${project.build.directory}/cargo.log</log>
                         <output>${project.build.directory}/output.log</output>
                         <!--If you don't want cargo to download the container, just comment
                                   the bottom lines and specify a [home] parameter -->
                         <zipUrlInstaller>
+                        			<url>http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.52/bin/apache-tomcat-7.0.52.zip</url>
+				                    <!-- 
+				                    for use with containerId tomcat6x
 				                    <url>http://archive.apache.org/dist/tomcat/tomcat-6/v6.0.35/bin/apache-tomcat-6.0.35.zip</url>
+				                    -->
 				                    <installDir>${project.basedir}/install</installDir>
                         </zipUrlInstaller>
                     </container>
