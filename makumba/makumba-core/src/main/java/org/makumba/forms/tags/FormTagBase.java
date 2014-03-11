@@ -481,6 +481,9 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
         responder.setReloadFormOnError(reloadFormOnError);
         String url = ((HttpServletRequest) pageContext.getRequest()).getRequestURI();
+        if (url.contains(";jsessionid=")) {
+            url = url.substring(0, url.lastIndexOf(";"));
+        }
         String queryString = ((HttpServletRequest) pageContext.getRequest()).getQueryString();
         if (queryString != null) {
             url += "?" + queryString;

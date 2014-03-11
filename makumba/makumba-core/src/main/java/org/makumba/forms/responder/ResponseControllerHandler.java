@@ -45,7 +45,8 @@ public class ResponseControllerHandler extends ControllerHandler {
     @Override
     public boolean beforeFilter(ServletRequest req, ServletResponse resp, FilterConfig conf,
             ServletObjects httpServletObjects) throws Exception {
-        Exception e = factory.getResponse((HttpServletRequest) req, (HttpServletResponse) resp);
+        HttpServletResponse httpResp = (HttpServletResponse) resp;
+        Exception e = factory.getResponse((HttpServletRequest) req, httpResp);
         FormResponder responder = (FormResponder) factory.getFirstResponder(req);
         if (responder != null) {
             req.setAttribute(MAKUMBA_FORM_ID, responder.getFormId());
@@ -125,7 +126,7 @@ public class ResponseControllerHandler extends ControllerHandler {
                     originatingPageName = originatingPageName.substring(0, k);
                 }
 
-                final String suffix = "_" + originatingPageName;
+                final String suffix = "_" + httpResp.encodeRedirectURL(originatingPageName);
                 String[] attributes = ResponderFactory.RESPONSE_ATTRIBUTE_NAMES;
                 attributes = (String[]) ArrayUtils.add(attributes, MAKUMBA_FORM_VALIDATION_ERRORS);
                 attributes = (String[]) ArrayUtils.add(attributes, MAKUMBA_FORM_RELOAD);
@@ -148,7 +149,7 @@ public class ResponseControllerHandler extends ControllerHandler {
 
                 logger.fine("Sending redirect from '" + httpServletRequest.getRequestURI() + "' to '"
                         + responder.getOriginatingPageName() + "'.");
-                ((HttpServletResponse) resp).sendRedirect(responder.getOriginatingPageName());
+                httpResp.sendRedirect(httpResp.encodeRedirectURL(responder.getOriginatingPageName()));
 
             }
         }
