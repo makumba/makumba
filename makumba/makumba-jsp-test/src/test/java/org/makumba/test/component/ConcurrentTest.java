@@ -44,7 +44,7 @@ public class ConcurrentTest extends TestCase {
         final CountDownLatch endGate = new CountDownLatch(THREADS);
 
         for (int i = 0; i < THREADS; i++) {
-            final int index = i;
+            // final int index = i;
             Thread thread = new Thread() {
                 @Override
                 public void run() {
@@ -53,7 +53,7 @@ public class ConcurrentTest extends TestCase {
                         // firing
                         startGate.await();
                         try {
-                            long start = System.currentTimeMillis();
+                            // long start = System.currentTimeMillis();
                             HttpClient httpClient = new HttpClient();
                             GetMethod getTestPage = new GetMethod(System.getProperty("cactus.contextURL")
                                     + CONCURRENT_TEST_URL);

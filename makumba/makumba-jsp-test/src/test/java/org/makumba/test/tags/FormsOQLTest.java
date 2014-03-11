@@ -23,12 +23,21 @@
 
 package org.makumba.test.tags;
 
-import com.meterware.httpunit.HTMLElement;
-import com.meterware.httpunit.WebConversation;
-import com.meterware.httpunit.WebForm;
-import com.meterware.httpunit.WebResponse;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Dictionary;
+import java.util.GregorianCalendar;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import javax.servlet.ServletException;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import org.apache.cactus.Request;
 import org.apache.commons.collections.CollectionUtils;
 import org.makumba.Transaction;
@@ -40,9 +49,10 @@ import org.makumba.test.util.MakumbaTestSetup;
 import org.makumba.test.util.MakumbaWebTestSetup;
 import org.xml.sax.SAXException;
 
-import javax.servlet.ServletException;
-import java.io.IOException;
-import java.util.*;
+import com.meterware.httpunit.HTMLElement;
+import com.meterware.httpunit.WebConversation;
+import com.meterware.httpunit.WebForm;
+import com.meterware.httpunit.WebResponse;
 
 /**
  * @author Johannes Peeters
@@ -438,7 +448,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
         // we will have subsequently a new instance of responderFactory (the one used until now is in tomcat-mak)
         // thus, we need to prepare the responder working dir
         // we don't have an HTTPServletRequest at hand, so we have to do this manually / partly hardcoded
-        String contextPath = "tests";
+        // String contextPath = "tests";
 
         ResponderFactory responderFactory = ResponderFactory.getInstance();
         responderFactory.setResponderWorkingDir(responderBaseDir);
