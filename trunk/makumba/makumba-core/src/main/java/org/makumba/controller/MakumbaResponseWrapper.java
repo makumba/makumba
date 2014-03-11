@@ -188,7 +188,8 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
 
             // we do the header modifications only for .jsp files
             // and only if we are not doing something related to makumba tools
-            if (request.getRequestURI().endsWith(".jsp")
+            if ((request.getRequestURI().endsWith(".jsp") || request.getRequestURI().endsWith(
+                ".jsp;jsessionid=" + request.getSession().getId()))
                     && !request.getRequestURI().startsWith(
                         request.getContextPath() + Configuration.getMakumbaToolsLocation())
                     && request.getAttribute(javax.servlet.jsp.PageContext.EXCEPTION) == null && writerState == null) {
