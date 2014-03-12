@@ -2,54 +2,69 @@ INSTALLATION INSTRUCTIONS
 =========================
 
 - install maven (http://maven.apache.org/download.html)
+- create empty makumba and makhib mysql test databases in mysql; on linux, you can use the "setup-mysql-db.sh" script
 
-== eclipse set-up
+== eclipse set-up (works with Kepler)  (see IntellJ below)
+(TODO: instructions on how to import the code formatting & cleanup templates)
 
 1) Prepare eclipse for maven
    =========================
-- install m2eclipse (http://m2eclipse.sonatype.org/sites/m2e/)
-- install m2eclipse-extras (http://m2eclipse.sonatype.org/sites/m2e-extras/)
-  - only install the "Project configurators for some commonly used maven plugins" (without the "Maven Integration for WTP" as it is buggy for the moment)
-- go to the eclipse maven preferences (Window->Preferences->Maven) and:
-  - in "Installations", add your maven installation instead of the embedded one (http://www.sonatype.com/books/m2eclipse-book/reference/eclipse-sect-maven-preferences.html)
-  - in "Maven" (main view) add the following goals for the fields "Goals to run on project import" and "Goals to run when updating the project configuration":
-    process-resources process-test-resources
+- install Subversive plugin
+- install m2eclipse
+http://www.eclipse.org/m2e/download/
+including antlr and subversive connectors
 
-2) Prepare eclipse for a green build with makumba
-   ================================================
-- go to Window->Preference->Validators and select "Suspend all validators" (or remove the validators you don't want to use, e.g. JSP, HTML, ...).
-  This is necessary because the JSP, HTML and EL validators are partly broken and can get very annoying
-
-3) Prepare & checkout makumba (https://makumba.svn.sourceforge.net/svnroot/makumba/trunk/makumba)
+2) Prepare & checkout makumba  (https://svn.code.sf.net/p/makumba/code/trunk/makumba/)
    ==========================
-- create empty makumba and makhib mysql test databases in mysql; on linux, you can use the "setup-mysql-db.sh" script
+- File/Import/Checkout maven project from SCM, choose SCM type svn
+(if you don't have the svn connector, click on "M2E narketplace" link at the low right, install also the antlr connector if you miss it)
+
+- from the URI above import makumba, makumba-core, makumba-shared-resources, makumba-jsp-test
+
+- you will get two kinds of errors. Choose quick-fix / "ignore in Eclipse"
+for 3 projects: Plugin execution not covered by lifecycle configuration: org.codehaus.mojo:properties-maven-plugin:1.0-alpha-2:read-project-properties
+for makumba-core: Plugin execution not covered by lifecycle configuration: org.codehaus.mojo:exec-maven-plugin:1.2:java 
+
+- rename the makumba Eclipse project to makumba-parent if it is not renamed already
+
+- due to the errors above, you need to compile outside eclipse first. in Terminal, cd to makumba-parent and execute
+mvn clean integration-test
+- refresh makumba-core and makumba-jsp-test
+
+Now you should be able to work in Eclipse on makumba-core and have other projects depend on makumba-core, including web projects like karamba (see below)
+What will probably not work is TLD changes, as well as changes in makumba-shared-resources/target/maven-archiver/pom.properties.
+If such changes are needed, execute again mvn clean integration-test, then refresh the makumba-core and makumba-jsp-test
+
 - if needed, configure makumba-parent/build.properties
   - this is important especially when releasing, where you need to have the makumba-documentation project checked out somewhere
     in order to generate documented TLDs
-- checkout the project from the above SVN URI, either through command-line or directly through File->New->Other->Maven->Checkout maven project from SCM.
-- if you checked out via commandline, go to File->Import->Existing maven projects and select the makumba project directory.
 
-- if you installed the Maven WTP extensions, you will get a NullPointerException during import due to https://issues.sonatype.org/browse/MECLIPSEWTP-41.
-  You have two options:
-  - uninstall the Maven WTP extensions (if you don't plan on using them with other maven projects) and re-iterate the import process
-  - right-click on makumba-jsp-test and select Maven->Disable Workspace Resolution. This should lead to a clean build.
+3) Use makumba-core with a WTP project 
+   ===================================
 
-4) Use makumba-core with a WTP project in eclipse Helios
-   =====================================================
+To run web projects that depend on your makumba checkout
+- install eclipse WTP
+http://download.eclipse.org/webtools/repository/juno/
+- from the servers view, configure a tomcat server
 - in order to use makumba directly as a dependency in a WTP project, go to the project properties->Deployment Assembly->Add->Project and add the makumba-core maven project
+- run the project on the tomcat server using Run As
 
-In order to run the test webapp:
+3) Run/debug makumba tests inside eclipse 
+   ====================================
+
+There is a "mvn tomcat7" launcher in makumba-parent/etc. Start that first, then you can start JSP tests like ListOQLTest, FormOQLTest, etc. 
+
+To make your own launchers:
 - right-click on makumba-jsp-test and go to Run As -> Maven build...
-- in the Goals field, enter 'jetty:run' for Jetty or 'tomcat:run' for Tomcat. Note that only Jetty supports hot-redeploy in this set-up.
+- in the Goals field, enter 'tomcat7:run' (recommended) 'tomcat6:run' or jetty:run'. Note that only Jetty supports hot-redeploy in this set-up.
+- right-click on a test class like ListOQLTest and choose Run As/Junit test. Note that you will have to add on the Run configuration the VM argument 
+-Dcactus.contextURL=http://localhost:8080/tests
 
-(TODO: instructions on how to import the code formatting & cleanup templates)
 
-track https://issues.sonatype.org/browse/MECLIPSEWTP-41
 
 
 == IntelliJ IDEA set-up
 
-- create empty makumba and makhib mysql test databases in mysql; on linux, you can use the "setup-mysql-db.sh" script
 - check out the project, don't let it be imported right away
 - if needed, configure build.properties
 - create a new project from the maven model based on the sources you checked out (select the makumba-parent directory)
