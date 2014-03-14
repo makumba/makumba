@@ -28,6 +28,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 
 import org.makumba.commons.LongData;
@@ -84,9 +85,29 @@ public class Text {
         }
     }
 
+    /** make a Text by reading the input stream. If there is a lot of data, it will be swapped to disk */
+    public Text(Reader is) {
+        try {
+            ld = new LongData();
+            ld.appendFrom(is);
+            this.source = ld.getInputStream();
+            this.len = ld.getLength();
+        } catch (IOException e) {
+            throw new RuntimeWrappedException(e);
+        }
+    }
+
     /** make a Text from the String. If there is a lot of data, it will be swapped to disk */
     public Text(String s) {
-        this(s.getBytes());
+
+        try {
+            byte[] b = s.getBytes("UTF-8");
+            init(b, 0, b.length);
+        } catch (UnsupportedEncodingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
     }
 
     /** make a Text from the given byte array. If there is a lot of data, it will be swapped to disk */
@@ -96,6 +117,11 @@ public class Text {
 
     /** make a Text from the given byte array. If there is a lot of data, it will be swapped to disk */
     public Text(byte[] b, int start, int length) {
+        init(b, start, length);
+
+    }
+
+    void init(byte[] b, int start, int length) {
         len = length;
         try {
             ld = new LongData();
@@ -133,8 +159,11 @@ public class Text {
         if (value instanceof Text) {
             return (Text) value;
         }
-        if (value instanceof java.io.InputStream) {
+        if (value instanceof InputStream) {
             return new Text((InputStream) value);
+        }
+        if (value instanceof Reader) {
+            return new Text((Reader) value);
         }
         if (value instanceof String) {
             return new Text((String) value);
