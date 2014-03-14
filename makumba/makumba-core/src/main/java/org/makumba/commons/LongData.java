@@ -57,7 +57,7 @@ public class LongData {
         char[] buffer = new char[org.makumba.Text.FILE_LIMIT];
         int n;
         while ((n = r.read(buffer, 0, buffer.length)) != -1) {
-            byte[] b = new String(buffer, 0, n).getBytes();
+            byte[] b = new String(buffer, 0, n).getBytes("UTF-8");
             ds.append(b, 0, b.length);
             length += b.length;
         }
@@ -87,10 +87,12 @@ public class LongData {
     }
 
     class EmptyStrategy implements LongDataStrategy {
+        @Override
         public InputStream getInputStream() throws IOException {
             return new ByteArrayInputStream(new byte[0], 0, 0);
         }
 
+        @Override
         public void append(byte[] b, int start, int len) throws IOException {
             if (length + len >= org.makumba.Text.FILE_LIMIT) {
                 ds = new FileStrategy();
@@ -108,10 +110,12 @@ public class LongData {
             bout = new ByteArrayOutputStream(n);
         }
 
+        @Override
         public InputStream getInputStream() throws IOException {
             return new ByteArrayInputStream(bout.toByteArray(), 0, bout.size());
         }
 
+        @Override
         public void append(byte[] b, int start, int len) throws IOException {
             if (length + len >= org.makumba.Text.FILE_LIMIT) {
                 ds = new FileStrategy();
@@ -137,10 +141,12 @@ public class LongData {
             out = new BufferedOutputStream(new FileOutputStream(temp), org.makumba.Text.FILE_LIMIT);
         }
 
+        @Override
         public void append(byte b[], int start, int len) throws IOException {
             out.write(b, start, len);
         }
 
+        @Override
         public InputStream getInputStream() throws IOException {
             out.close();
             return new BufferedInputStream(new FileInputStream(temp));
