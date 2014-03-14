@@ -76,7 +76,7 @@ public class TableTest extends TestCase {
     @Override
     public void setUp() {
         TransactionProvider tp = TransactionProvider.getInstance();
-        db = tp.getConnectionTo("testDatabaseDerby");
+        db = tp.getConnectionTo("testDatabase");
     }
 
     @Override
