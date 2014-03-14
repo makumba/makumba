@@ -2,14 +2,7 @@
 <!-- ============ THESE CHANGES ARE NOT YET PART OF A STABLE RELEASE ============= -->
 
 --------------------------------------
-
---------------------------------------
-
-TO BE RELEASED IMMEDIATELY (No need for more testing)
------------------------------------------------
-
-NOT TO BE RELEASED YET (need more testing)
-
+Possible future changes (to be moved in trac, or discarded)
 cristi's TODO:
 - "finish" modules
 - mak:form  object="type(unique fields)",  field initialValue
@@ -20,17 +13,43 @@ cristi's TODO:
 - design for $parameters used in functions...
 
 SECTION
+- section show in section reload fails at reload 
+- nameVar for forms and sections
+- form and section ID generation based on data (not on sequence)
+- automatic event names based on data? or semi-automatic reloadOn="${mak:event('refresh ')}"
+- no form id for non-root forms
 ???- no section name, generate an ID
 - remove iterationExpr since it is not useful for triggerEvent
-- error handling should be different on AJAX calls, JSON response with the error should lead to complete page replacement at the client
 
-Filip's TODO (mak editor):
-- actor function
+Filip's TODO 
+- error handling should be different on AJAX calls, JSON response with the error should lead to complete page replacement at the client
+mak Eclipse tools:
+- actor(MDD name) function does not work outside MDD
 - ContextTag extends ObjectTag (not added for that reason)
 - constants true, false
 - mysql functions like round(), if()
 - test(ptr peer.Student prr){ prr.grp=grp and prr.courseRound=courseRound } => no such field prr
 - func(real x){ case when x>0.5 then case when x<5.5 then (x+0.5) else 5 end else 0 end}
+
+--------------------------------------
+
+TO BE RELEASED IMMEDIATELY (No need for more testing)
+-----------------------------------------------
+
+NOT TO BE RELEASED YET (need more testing)
+
+
+cristi 140314
+- support for JavaDB/Apache Derby
+- refactoring of the insert code so only mentioned fields are inserted
+
+cristi 140311
+- using more standard servlet APIs to ensure work in tomcat 7
+- tests upgrade to tomcat 7
+- latest m2eclipse
+
+cristi 140125
+cristi fix for #1204 and #974, iteration in int (char, date) domains
 
 cristi 130318
 stable mak:section, with dynamic (rtexpr) event names
