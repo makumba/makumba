@@ -1,5 +1,6 @@
 package org.makumba.db.makumba;
 
+import java.sql.Timestamp;
 import java.util.Dictionary;
 import java.util.Enumeration;
 
@@ -43,6 +44,12 @@ public class MakumbaCRUDOperationProvider extends CRUDOperationProvider {
 
     @Override
     public int update1(Transaction t, Pointer p, DataDefinition typeDef, Dictionary<String, Object> dic) {
+        boolean added = false;
+        if (!((org.makumba.db.makumba.sql.Database) ((DBConnection) t).db).automaticUpdateTimestamp()
+                && dic.get("TS_modify") == null) {
+            dic.put("TS_modify", new Timestamp(System.currentTimeMillis()));
+            added = true;
+        }
         Object[] params = new Object[dic.size() + 1];
         params[0] = p;
         int n = 1;
@@ -54,6 +61,9 @@ public class MakumbaCRUDOperationProvider extends CRUDOperationProvider {
             params[n++] = dic.get(s);
             set += "this." + s + "=$" + n;
             comma = ",";
+        }
+        if (added) {
+            dic.remove("TS_modify");
         }
         if (set.trim().length() > 0) {
             return t.update(typeDef.getName() + " this", set, "this."

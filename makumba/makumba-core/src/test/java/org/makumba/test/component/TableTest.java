@@ -23,6 +23,7 @@ package org.makumba.test.component;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -60,8 +61,6 @@ public class TableTest extends TestCase {
 
     static Transaction db;
 
-    static long epsilon = 2000;
-
     public TableTest(String name) {
         super(name);
     }
@@ -77,7 +76,7 @@ public class TableTest extends TestCase {
     @Override
     public void setUp() {
         TransactionProvider tp = TransactionProvider.getInstance();
-        db = tp.getConnectionTo("testDatabase");
+        db = tp.getConnectionTo("testDatabaseDerby");
     }
 
     @Override
@@ -89,8 +88,6 @@ public class TableTest extends TestCase {
 
     static Pointer fptr1, fptr2, fptr;
 
-    static Date create;
-
     static String[] personFields = { "TS_modify", "TS_create", "extraData", "birthdate" };
 
     static String[] ptrOneFields = { "something" };
@@ -98,8 +95,6 @@ public class TableTest extends TestCase {
     static String[] subsetFields = { "description" };
 
     static Dictionary<String, Object> pc, pc1;
-
-    static Date now;
 
     static Pointer ptrOne;
 
@@ -192,11 +187,12 @@ public class TableTest extends TestCase {
         Vector<String> setcharElem = CollectionUtils.toVector("f", "e");
         p.put("charSet", setcharElem);
 
+        long before = System.currentTimeMillis();
         ptr = db.insert("test.Person", p);
+        long after = System.currentTimeMillis();
+
         assertNotNull(ptr);
         assertEquals(ptr.getType(), "test.Person");
-
-        now = new Date();
 
         Vector<Dictionary<String, Object>> v = db.executeQuery(readPerson1, ptr);
 
@@ -211,7 +207,6 @@ public class TableTest extends TestCase {
 
         pc = v.elementAt(0);
 
-        create = (Date) pc.get("TS_create");
         ptrOne = (Pointer) pc.get("extraData");
         assertEquals("Name", "john", pc.get("name"));
         assertEquals("Surname", "doe", pc.get("surname"));
@@ -231,24 +226,35 @@ public class TableTest extends TestCase {
         assertEquals("e", v.elementAt(0).get("member"));
         assertEquals("f", v.elementAt(1).get("member"));
 
+        Date create = (Date) pc.get("TS_create");
         assertEquals(create, pc.get("TS_modify"));
-        assertTrue(now.getTime() - create.getTime() < 3 * epsilon);
+        // should be < and > but ....
+        // http://bugs.mysql.com/bug.php?id=8523
+        assertTrue(before <= create.getTime() + 1000);
+        assertTrue(after >= create.getTime() - 1000);
 
         checkInternationalizedField(comment);
     }
 
     protected void checkInternationalizedField(Text comment) {
-        assertEquals("Comment text", pc.get("comment"), comment.getString());
+        assertEquals("Comment text", pc.get("comment").toString(), comment.getString());
     }
 
     public void testForeignKeys() {
-        checkFKSupport();
 
         // try to delete brother = that ID
         // try to delete the other brother
 
         // insert the first person
         Hashtable<String, Object> p = new Hashtable<String, Object>();
+
+        // insert two languages so the unique constraint on language will not be broken on databases that don't ignore
+        // nulls in unique
+        p.put("name", "vlach");
+        Pointer lang = db.insert("test.Language", p);
+        p.put("name", "urdu");
+        Pointer lang1 = db.insert("test.Language", p);
+        p.clear();
 
         Text comment = new Text("Hello world!!!!");
 
@@ -257,6 +263,14 @@ public class TableTest extends TestCase {
         p.put("indiv.name", "john");
         p.put("indiv.surname", "doe_1");
         p.put("extraData.something", "else");
+
+        // avoid unique issues for databases that don't ignore null in unique
+        p.put("uniqPtr", lang);
+        p.put("age", 21);
+        p.put("email", "dummy@xxx");
+        p.put("uniqDate", new Date());
+        p.put("uniqInt", 13);
+        p.put("uniqChar", "unique I mean");
 
         fptr = db.insert("test.Person", p);
 
@@ -278,6 +292,14 @@ public class TableTest extends TestCase {
         p.put("indiv.name", "john");
         p.put("indiv.surname", "doe_2");
         p.put("extraData.something", "else");
+
+        // avoid unique issues for databases that don't ignore null in unique
+        p.put("uniqPtr", lang1);
+        p.put("age", 22);
+        p.put("email", "dummy@yyy");
+        p.put("uniqDate", new Date(new Date().getTime() + 2000));
+        p.put("uniqInt", 14);
+        p.put("uniqChar", "unique I mean really");
 
         fptr1 = db.insert("test.Person", p);
         assertNotNull(fptr1);
@@ -308,15 +330,12 @@ public class TableTest extends TestCase {
         // delete the first guy again, this time he shouldn't be linked to from anywhere
         db.delete(fptr);
 
-    }
-
-    protected void checkFKSupport() {
-        assertTrue(org.makumba.db.makumba.sql.Database.supportsForeignKeys());
+        // cleanup the inserted languages
+        db.delete(lang);
+        db.delete(lang1);
     }
 
     public void testForeignKeysWithLongMDDName() {
-        checkFKSupport();
-
         // try to delete toy = that ID
         // try to delete the other toy
 
@@ -397,6 +416,11 @@ public class TableTest extends TestCase {
 
         p.put("description", "away");
 
+        // avoid unique issues for databases that don't ignore null in unique
+        p.put("sth.bbb", "xxx");
+        p.put("streetno", "10");
+
+        // now the test...
         set2 = db.insert(ptr, "address", p);
         assertNotNull(set2);
         assertEquals("away", db.read(set2, subsetFields).get("description"));
@@ -576,9 +600,10 @@ public class TableTest extends TestCase {
         Vector<String> setcharElem = CollectionUtils.toVector("d");
         pmod.put("charSet", setcharElem);
 
+        long before = System.currentTimeMillis();
         int updateReturn = db.update(ptr, pmod);
+        long after = System.currentTimeMillis();
 
-        now = new Date();
         Vector<Dictionary<String, Object>> v = db.executeQuery(readPerson, ptr);
         assertEquals(1, v.size());
         assertEquals(1, updateReturn);
@@ -586,10 +611,16 @@ public class TableTest extends TestCase {
         Dictionary<String, Object> modc = v.elementAt(0);
 
         assertNotNull(modc);
-        create = (Date) modc.get("TS_create");
         assertEquals(val, modc.get("name"));
         assertEquals("doe", modc.get("surname"));
-        assertTrue(now.getTime() - ((Date) modc.get("TS_modify")).getTime() < epsilon);
+
+        Date modify = (Timestamp) modc.get("TS_modify");
+
+        // should be < and > but ....
+        // http://bugs.mysql.com/bug.php?id=8523
+        assertTrue(before <= modify.getTime() + 1000);
+        assertTrue(after >= modify.getTime() - 1000);
+
         assertNotNull(db.read(ptrOne, ptrOneFields));
 
         v = db.executeQuery(readIntSet, ptr);
@@ -765,6 +796,7 @@ public class TableTest extends TestCase {
 
         db.insert(ptrPerson, "address", address);
         address.put("streetno", "Sesame Street 16");
+        address.put("sth.bbb", "someAAA");
         Pointer ptrAddress2 = db.insert(ptrPerson, "address", address);
         // check that we have two subsets
         assertEquals(2, db.executeQuery("SELECT a as a FROM test.Person p, p.address a WHERE p=$1", ptrPerson).size());
@@ -803,7 +835,6 @@ public class TableTest extends TestCase {
         ptr1 = db.insert("test.Person", p);
         assertNotNull(ptr1);
 
-        now = new Date();
         Vector<Dictionary<String, Object>> v = db.executeQuery(readPerson, ptr1);
         assertEquals(1, v.size());
 
@@ -835,13 +866,14 @@ public class TableTest extends TestCase {
             return;
         }
         Vector<Dictionary<String, Object>> v = db.executeQuery(
-            "SELECT l.name as name, l.family as family FROM test.Language l ORDER BY l.family", null);
+            "SELECT l.name as name, l.family as family FROM test.Language l ORDER BY l", null);
+
+        int m = db.delete("test.Language l", "1=1", null);
+        assertEquals(m, 2);
 
         assertEquals(v.size(), 2);
         assertNull(v.get(0).get("family"));
         assertEquals(10, v.get(1).get("family"));
-        int m = db.delete("test.Language l", "1=1", null);
-        assertEquals(m, 2);
     }
 
     private final MakumbaTestData testData = new MakumbaTestData();

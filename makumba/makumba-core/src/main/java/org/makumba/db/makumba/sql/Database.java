@@ -24,6 +24,8 @@
 package org.makumba.db.makumba.sql;
 
 import java.lang.reflect.Method;
+import java.sql.Blob;
+import java.sql.Clob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -85,6 +87,8 @@ public class Database extends org.makumba.db.makumba.Database {
 
     protected ComboPooledDataSource pooledDataSource;
 
+    private boolean requestForeignKeys;
+
     public String getEngine() {
         return eng;
     }
@@ -106,7 +110,7 @@ public class Database extends org.makumba.db.makumba.Database {
         return false;
     }
 
-    static public boolean supportsForeignKeys() {
+    public boolean supportsForeignKeys() {
         if (requestForeignKeys == false) {
             return false;
         }
@@ -248,17 +252,16 @@ public class Database extends org.makumba.db.makumba.Database {
                 p.put("jdbc_driver.name", dbc.getMetaData().getDriverName().trim());
                 p.put("jdbc_driver.version", dbc.getMetaData().getDriverVersion().trim());
 
-                java.util.logging.Logger.getLogger("org.makumba.db.init").info(
-                    "\tconnected to "
-                            //
-                            + p.get("sql_engine.name") //
-                            + " version: " //
-                            + p.get("sql_engine.version") //
-                            + "\n\tusing " //
-                            + p.get("jdbc_driver.name") //
-                            + " version: "//
-                            + p.get("jdbc_driver.version")//
-                            + "\n\tusing "+ (isAutoIncrement() ? "auto increment (no DBSV)" : "DBSV " + p.get("dbsv")));
+                java.util.logging.Logger.getLogger("org.makumba.db.init").info("\tconnected to "
+                //
+                        + p.get("sql_engine.name") //
+                        + " version: " //
+                        + p.get("sql_engine.version") //
+                        + "\n\tusing " //
+                        + p.get("jdbc_driver.name") //
+                        + " version: "//
+                        + p.get("jdbc_driver.version")//
+                        + "\n\tusing " + (isAutoIncrement() ? "auto increment (no DBSV)" : "DBSV " + p.get("dbsv")));
                 if (!dbc.getMetaData().supportsTransactionIsolationLevel(DESIRED_TRANSACTION_LEVEL)) {
                     java.util.logging.Logger.getLogger("org.makumba.db.init").warning(
                         "transaction isolation level " + DESIRED_TRANSACTION_LEVEL + " not supported, using "
@@ -459,12 +462,23 @@ public class Database extends org.makumba.db.makumba.Database {
             java.util.logging.Logger.getLogger("org.makumba.db.update.execution").fine(getWrappedStatementToString(ps));
             ps.execute();
             int n = ps.getUpdateCount();
-            ps.close();
+            // ps.close();
             return n;
         } catch (SQLException e) {
             if (isDuplicateException(e)) {
                 return -1;
             }
+            logException(e);
+            throw new DBError(e);
+        }
+    }
+
+    protected void close(PreparedStatement ps) {
+
+        try {
+            ps.close();
+        } catch (SQLException e) {
+
             logException(e);
             throw new DBError(e);
         }
@@ -524,15 +538,15 @@ public class Database extends org.makumba.db.makumba.Database {
 
     /** whether specific engine supports LIMIT & OFFSET extensions to the SQL-92 syntax */
     public boolean supportsLimitInQuery() {
-        return true;
+        return getLimitSyntax() != null;
     }
 
     public String getLimitSyntax() {
-        return "LIMIT ?, ?";
+        return Database.getEngineProperty(getEngine() + ".limitSyntax");
     }
 
     public boolean isLimitOffsetFirst() {
-        return true;
+        return !"false".equals(Database.getEngineProperty(getEngine() + ".offsetFirst"));
     }
 
     /** Implementing classes can override this method to extract a more readable error message on foreign key errors. */
@@ -672,6 +686,12 @@ public class Database extends org.makumba.db.makumba.Database {
         if (o == null) {
             return o;
         }
+        if (o instanceof Clob) {
+            return new Text(((Clob) o).getCharacterStream());
+        }
+        if (o instanceof char[]) {
+            return new Text(new String((char[]) o));
+        }
         if (o instanceof byte[]) {
             return new Text(new String((byte[]) o));
         }
@@ -690,7 +710,10 @@ public class Database extends org.makumba.db.makumba.Database {
         Object o = base_getValue(fd, rs, i);
 
         if (o == null) {
-            return o;
+            return null;
+        }
+        if (o instanceof Blob) {
+            o = ((Blob) o).getBinaryStream();
         }
         return Text.getText(o);
 
@@ -826,9 +849,12 @@ public class Database extends org.makumba.db.makumba.Database {
     // moved from timeStampManager
     public void set_timeStamp_InsertArgument(FieldDefinition fd, PreparedStatement ps, int n,
             java.util.Dictionary<String, Object> d) throws SQLException {
-        Object o = d.get(fd);
-        if (o instanceof java.util.Date && !(o instanceof Timestamp)) {
-            d.put(fd.getName(), new Timestamp(((java.util.Date) o).getTime()));
+        if (d.get(fd.getName()) != null) {
+
+            Object o = d.get(fd.getName());
+            if (o instanceof java.util.Date && !(o instanceof Timestamp)) {
+                d.put(fd.getName(), new Timestamp(((java.util.Date) o).getTime()));
+            }
         }
         base_setInsertArgument(fd, ps, n, d);
     }
@@ -854,6 +880,14 @@ public class Database extends org.makumba.db.makumba.Database {
     // moved from FieldManager
     /** what is the SQL type of this field? */
     protected int getSQLType(FieldDefinition fd) {
+        String s = Database.getEngineProperty(getEngine() + "." + fd.getDataType());
+        if (s != null) {
+            try {
+                return Types.class.getField(s).getInt(null);
+            } catch (Throwable e) {
+                // ignore
+            }
+        }
 
         switch (fd.getIntegerType()) {
             case FieldDefinition._ptr:
@@ -1039,6 +1073,9 @@ public class Database extends org.makumba.db.makumba.Database {
                 return in_boolean_Create(fd);
             case FieldDefinition._ptrIndex:
                 return in_primaryKeyCreate(fd);
+            case FieldDefinition._dateModify:
+            case FieldDefinition._dateCreate:
+                return in_timestamp_Create(fd);
             default:
                 return base_inCreate(fd);
         }
@@ -1072,10 +1109,14 @@ public class Database extends org.makumba.db.makumba.Database {
     private String in_primaryKeyCreate(FieldDefinition fd) {
         // FIXME: primary keys will have to be made in another step, before hibernate schema update
         if (isAutoIncrement() || usesHibernateIndexes()) {
-            return base_inCreate(fd) + " " + getCreateAutoIncrementSyntax();
+            return base_inCreate(fd) + " " + Database.getEngineProperty(getEngine() + ".autoIncrementSyntax");
         } else {
             return base_inCreate(fd);
         }
+    }
+
+    protected String in_timestamp_Create(FieldDefinition fd) {
+        return base_inCreate(fd);
     }
 
     // moved from FieldManager
@@ -1088,17 +1129,11 @@ public class Database extends org.makumba.db.makumba.Database {
 
     // moved from FieldManager
     /** what is the database level type of this field? */
-    protected String getFieldDBType(FieldDefinition fd, Database d) {
-        String s = Database.getEngineProperty(d.getEngine() + "." + fd.getDataType());
-        if (s == null) {
-            return getFieldDBType(fd);
-        }
-        return s;
-    }
-
-    // moved from FieldManager
-    /** what is the database level type of this field? */
     protected String getFieldDBType(FieldDefinition fd) {
+        String s = Database.getEngineProperty(getEngine() + "." + fd.getDataType());
+        if (s != null) {
+            return s;
+        }
         switch (fd.getIntegerType()) {
             case FieldDefinition._ptr:
             case FieldDefinition._ptrRel:
@@ -1180,14 +1215,6 @@ public class Database extends org.makumba.db.makumba.Database {
         return "TIMESTAMP";
     }
 
-    protected String getCreateAutoIncrementSyntax() {
-        return null;
-    }
-
-    protected String getQueryAutoIncrementSyntax() {
-        return null;
-    }
-
     protected String getColumnAlterKeyword() {
         return "MODIFY";
     }
@@ -1267,7 +1294,7 @@ public class Database extends org.makumba.db.makumba.Database {
      */
     public String getFieldDBIndexName(FieldDefinition fd) {
         // return rm.getDBName()+"_"+getDBName();
-        return getFieldDBName(fd);
+        return getIndexPrefix(fd) + getFieldDBName(fd);
     }
 
     // moved from FieldManager
@@ -1281,15 +1308,24 @@ public class Database extends org.makumba.db.makumba.Database {
     // moved from FieldManager
     /** Syntax for index creation. */
     public String indexCreateSyntax(FieldDefinition fd) {
-        return "CREATE INDEX " + getFieldDBIndexName(fd) + " ON " + getDBName(fd.getDataDefinition()) + " ("
-                + getFieldDBName(fd) + ")";
+        return "CREATE INDEX " + getFieldDBIndexName(fd) + " ON " + tableFieldIndex(fd);
     }
 
     // moved from FieldManager
     /** Syntax for unique index creation. */
     public String indexCreateUniqueSyntax(FieldDefinition fd) {
-        return "CREATE UNIQUE INDEX " + getFieldDBIndexName(fd) + " ON " + getDBName(fd.getDataDefinition()) + " ("
-                + getFieldDBName(fd) + ")";
+        return "CREATE UNIQUE INDEX " + getFieldDBIndexName(fd) + " ON " + tableFieldIndex(fd);
+    }
+
+    protected String getIndexPrefix(FieldDefinition fd) {
+        if ("true".equals(Database.getEngineProperty(getEngine() + ".indexTablePrefix"))) {
+            return getDBName(fd.getDataDefinition()) + "_";
+        }
+        return "";
+    }
+
+    protected String tableFieldIndex(FieldDefinition fd) {
+        return getDBName(fd.getDataDefinition()) + " (" + getFieldDBName(fd) + ")";
     }
 
     // moved from FieldManager
@@ -1312,7 +1348,7 @@ public class Database extends org.makumba.db.makumba.Database {
         getTable(foreign.getDataDefinition());
         return "ALTER TABLE " + getDBName(fd.getDataDefinition()) + " ADD FOREIGN KEY "
                 + shortIndexName(getDBName(foreign.getDataDefinition()), fd.getName()) + " (" + getFieldDBName(fd)
-                + ") REFERENCES " + getDBName(foreign.getDataDefinition()) + " (" + getFieldDBName(foreign) + ")";
+                + ") REFERENCES " + tableFieldIndex(foreign);
     }
 
     /** Makes a short index based on the table and field name, if needed **/
@@ -1407,5 +1443,31 @@ public class Database extends org.makumba.db.makumba.Database {
         }
         return "CREATE TABLE " + tblname + "(" + ret + ")";
 
+    }
+
+    public boolean writesDateModifyInInsert() {
+        return true;
+    }
+
+    public boolean writesDateCreateInInsert() {
+        return true;
+    }
+
+    public boolean automaticUpdateTimestamp() {
+        return false;
+    }
+
+    /**
+     * for databases that create a primary key, the primary key index will not be maintained, no unique key will be
+     * created for it, etc
+     * 
+     * @return
+     */
+    public boolean declaresPrimaryKey() {
+        return true;
+    }
+
+    public boolean commitBeforeAddingForeignKey() {
+        return false;
     }
 }

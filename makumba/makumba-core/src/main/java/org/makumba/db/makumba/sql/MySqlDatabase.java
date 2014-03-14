@@ -23,6 +23,7 @@
 
 package org.makumba.db.makumba.sql;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -35,6 +36,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
+import org.makumba.Pointer;
 
 /** the database adapter for MySQL Server */
 public class MySqlDatabase extends org.makumba.db.makumba.sql.Database {
@@ -50,6 +52,31 @@ public class MySqlDatabase extends org.makumba.db.makumba.sql.Database {
     @Override
     protected String createDbSpecific(String command) {
         return command + " ENGINE=InnoDB";
+    }
+
+    // trick: before mysql 5.6 writing a null in a timestamp will write the current timestamp
+    // we use this for TS_create
+    // TS_modify does not use this trick, it is simply not written and defaults to CURRENT_TIMESTAMP
+    // http://gusiev.com/2009/04/update-and-create-timestamps-with-mysql/
+    @Override
+    public void set_timeStamp_InsertArgument(FieldDefinition fd, PreparedStatement ps, int n,
+            java.util.Dictionary<String, Object> d) throws SQLException {
+        if (d.get(fd.getName()) == null && fd.getIntegerType() == FieldDefinition._dateCreate) {
+            d.put(fd.getName(), Pointer.NullDate);
+            super.base_setInsertArgument(fd, ps, n, d);
+        } else {
+            super.set_timeStamp_InsertArgument(fd, ps, n, d);
+        }
+    }
+
+    @Override
+    public boolean writesDateModifyInInsert() {
+        return false;
+    }
+
+    @Override
+    public boolean automaticUpdateTimestamp() {
+        return true;
     }
 
     @Override
@@ -107,16 +134,6 @@ public class MySqlDatabase extends org.makumba.db.makumba.sql.Database {
             default:
                 return super.getSQLType(fd);
         }
-    }
-
-    @Override
-    protected String getQueryAutoIncrementSyntax() {
-        return "SELECT LAST_INSERT_ID()";
-    }
-
-    @Override
-    protected String getCreateAutoIncrementSyntax() {
-        return "AUTO_INCREMENT PRIMARY KEY";
     }
 
     /** mysql needs to have it adjustable, depending on version (see bug 512) */
