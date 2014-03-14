@@ -24,8 +24,4 @@ public class HibernateTableTest2 extends TableTest {
         db = HibernateTransactionProvider.getInstance().getConnectionTo("testDatabaseHibernateTable");
     }
 
-    @Override
-    protected void checkFKSupport() {
-    }
-
 }

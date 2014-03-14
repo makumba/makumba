@@ -87,12 +87,6 @@ public abstract class Database {
 
     protected static boolean requestUTF8 = false;
 
-    protected static boolean requestForeignKeys = false;
-
-    static protected boolean supportsForeignKeys() {
-        return requestForeignKeys;
-    }
-
     protected abstract void closeResourcePool();
 
     protected abstract int getResourcePoolSize();

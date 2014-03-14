@@ -125,6 +125,14 @@ public class SQLDBConnection extends DBConnection {
         }
     }
 
+    public PreparedStatement getInsertPreparedStatement(String s) {
+        try {
+            return getConnection().prepareStatement(s, PreparedStatement.RETURN_GENERATED_KEYS);
+        } catch (SQLException e) {
+            org.makumba.db.makumba.sql.Database.logException(e);
+            throw new DBError(e);
+        }
+    }
     // try{
     // return (PreparedStatement)preparedStatements.getResource(s);
     // }catch(RuntimeWrappedException e)
@@ -137,7 +145,7 @@ public class SQLDBConnection extends DBConnection {
     // throw e;
     // }
     // }
-    //  
+    //
     // NamedResources preparedStatements= new NamedResources(new NamedResourceFactory()
     // {
     // protected Object makeResource(Object nm) throws SQLException {
