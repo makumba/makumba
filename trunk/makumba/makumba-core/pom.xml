@@ -308,7 +308,7 @@
                             <mainClass>org.makumba.commons.tags.MakumbaTLDGenerator</mainClass>
                             <arguments>
                                 <argument>${project.basedir}</argument>
-                                <argument>${project.basedir}/src/main/resources/META-INF</argument>
+                                <argument>${project.build.outputDirectory}/META-INF</argument>
                                 <argument>${documentation.path}/wikidoc/</argument>
                             </arguments>
                         </configuration>
