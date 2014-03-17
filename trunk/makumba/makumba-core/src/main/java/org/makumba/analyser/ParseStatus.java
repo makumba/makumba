@@ -21,7 +21,7 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.commons;
+package org.makumba.analyser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,13 +29,9 @@ import java.util.List;
 import javax.servlet.jsp.tagext.BodyTag;
 
 import org.makumba.ProgrammerError;
-import org.makumba.analyser.AnalysableElement;
-import org.makumba.analyser.AnalysableExpression;
-import org.makumba.analyser.AnalysableTag;
-import org.makumba.analyser.ELData;
-import org.makumba.analyser.PageCache;
-import org.makumba.analyser.TagData;
 import org.makumba.analyser.engine.JspParseData;
+import org.makumba.commons.GraphTS;
+import org.makumba.commons.MultipleKey;
 import org.makumba.list.tags.QueryTag;
 
 /**

@@ -5,7 +5,7 @@ import javax.servlet.jsp.PageContext;
 import org.makumba.LogicException;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.MultipleKey;
-import org.makumba.list.engine.QueryExecution;
+import org.makumba.list.tags.QueryExecution;
 
 /**
  * The manager of a nullableValueQuery

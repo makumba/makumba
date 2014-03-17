@@ -43,7 +43,7 @@ public class CriterionTag extends GenericMakumbaTag implements BodyTag {
     public CriterionTag() {
         // TODO move this somewhere else
         try {
-            this.fdp = (FormDataProvider) Class.forName("org.makumba.list.ListFormDataProvider").newInstance();
+            this.fdp = (FormDataProvider) Class.forName("org.makumba.list.tags.ListFormDataProvider").newInstance();
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -189,9 +189,11 @@ public class CriterionTag extends GenericMakumbaTag implements BodyTag {
         return split;
     }
 
+    @Override
     public void doInitBody() throws JspException {
     }
 
+    @Override
     public void setBodyContent(BodyContent b) {
         bodyContent = b;
     }

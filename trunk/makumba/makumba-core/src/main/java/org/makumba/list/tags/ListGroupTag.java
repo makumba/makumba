@@ -8,8 +8,8 @@ import java.util.List;
 import javax.servlet.jsp.JspException;
 
 import org.makumba.LogicException;
+import org.makumba.analyser.MakumbaJspAnalyzer;
 import org.makumba.analyser.PageCache;
-import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
 import org.makumba.list.engine.valuecomputer.ValueComputer;
 

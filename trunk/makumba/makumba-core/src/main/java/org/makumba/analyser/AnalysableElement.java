@@ -16,7 +16,6 @@ import org.makumba.ProgrammerError;
 import org.makumba.analyser.engine.JspParseData;
 import org.makumba.analyser.engine.TomcatJsp;
 import org.makumba.analyser.interfaces.JspAnalyzer;
-import org.makumba.commons.MakumbaJspAnalyzer;
 
 /**
  * An analyzable element of the page, e.g. a tag or an EL expression.<br>

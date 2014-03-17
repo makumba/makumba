@@ -28,8 +28,8 @@ import javax.servlet.jsp.tagext.Tag;
 
 import org.makumba.LogicException;
 import org.makumba.MakumbaError;
+import org.makumba.analyser.MakumbaJspAnalyzer;
 import org.makumba.analyser.PageCache;
-import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.valuecomputer.ValueComputer;

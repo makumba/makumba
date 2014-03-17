@@ -21,7 +21,7 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.commons;
+package org.makumba.commons.http;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletRequest;

@@ -4,8 +4,8 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.makumba.commons.ControllerHandler;
-import org.makumba.commons.ServletObjects;
+import org.makumba.commons.http.ControllerHandler;
+import org.makumba.commons.http.ServletObjects;
 import org.makumba.providers.Configuration;
 
 /**

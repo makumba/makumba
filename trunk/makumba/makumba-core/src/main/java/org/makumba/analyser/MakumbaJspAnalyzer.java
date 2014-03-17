@@ -21,20 +21,15 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.commons;
+package org.makumba.analyser;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.makumba.analyser.AnalysableElement;
-import org.makumba.analyser.AnalysableExpression;
-import org.makumba.analyser.AnalysableTag;
-import org.makumba.analyser.ELData;
-import org.makumba.analyser.PageCache;
-import org.makumba.analyser.TagData;
 import org.makumba.analyser.interfaces.JspAnalyzer;
+import org.makumba.commons.StringUtils;
 
 /**
  * This class analyzes a JSP taking into account the specifics of Makumba tags. When implementing a new Makumba tag, be

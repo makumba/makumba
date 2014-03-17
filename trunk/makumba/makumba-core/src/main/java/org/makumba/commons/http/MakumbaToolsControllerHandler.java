@@ -21,7 +21,7 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.commons;
+package org.makumba.commons.http;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -34,11 +34,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.makumba.commons.NamedResources;
 import org.makumba.db.makumba.UniquenessServlet;
 import org.makumba.devel.DevelUtils;
 import org.makumba.devel.relations.RelationCrawlerTool;
 import org.makumba.forms.responder.ValueEditor;
-import org.makumba.list.MakumbaDownloadServlet;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.DeveloperTool;
 import org.makumba.providers.MakumbaServlet;

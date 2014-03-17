@@ -24,7 +24,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
-import org.makumba.commons.MakumbaTLDGenerator;
+import org.makumba.commons.tags.MakumbaTLDGenerator;
 
 /**
  * This class generates the taglib documentation JSPWiki files based on the taglib-skeleton.tld file

@@ -39,7 +39,7 @@ import java.util.Vector;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionNotFoundError;
 import org.makumba.FieldDefinition;
-import org.makumba.commons.MakumbaJspAnalyzer;
+import org.makumba.analyser.MakumbaJspAnalyzer;
 import org.makumba.commons.StringUtils;
 import org.makumba.controller.Logic;
 import org.makumba.providers.DataDefinitionProvider;

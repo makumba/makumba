@@ -7,7 +7,7 @@ import org.makumba.analyser.PageCache;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.StringUtils;
 import org.makumba.controller.http.MakumbaJspFactory;
-import org.makumba.list.engine.QueryExecution;
+import org.makumba.list.tags.QueryExecution;
 import org.makumba.list.tags.QueryTag;
 
 /**

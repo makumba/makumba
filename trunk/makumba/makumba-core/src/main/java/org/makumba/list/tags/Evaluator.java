@@ -21,9 +21,11 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.list.engine;
+package org.makumba.list.tags;
 
 import javax.servlet.jsp.PageContext;
+
+import org.makumba.list.engine.ComposedQuery;
 
 /**
  * An evaluator using the EL engine to evaluate all occurences of #{...} in a string
@@ -38,6 +40,7 @@ public class Evaluator implements ComposedQuery.Evaluator {
         this.pc = pc;
     }
 
+    @Override
     public String evaluate(String s) {
         // FIXME: looking for #{....} may have to be rewritten
         StringBuffer ret = new StringBuffer();
