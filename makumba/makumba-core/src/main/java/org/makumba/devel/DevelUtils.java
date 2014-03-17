@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.makumba.Pointer;
-import org.makumba.commons.MakumbaResourceServlet;
+import org.makumba.commons.http.MakumbaResourceServlet;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.DeveloperTool;
 import org.makumba.providers.MakumbaServlet;

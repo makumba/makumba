@@ -38,8 +38,8 @@ import org.makumba.DataDefinition;
 import org.makumba.LogicException;
 import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
+import org.makumba.analyser.MakumbaJspAnalyzer;
 import org.makumba.analyser.PageCache;
-import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.StringUtils;
@@ -132,7 +132,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
     public FormTagBase() {
         // TODO move this somewhere else
         try {
-            this.fdp = (FormDataProvider) Class.forName("org.makumba.list.ListFormDataProvider").newInstance();
+            this.fdp = (FormDataProvider) Class.forName("org.makumba.list.tags.ListFormDataProvider").newInstance();
         } catch (InstantiationException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

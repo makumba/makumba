@@ -1,9 +1,9 @@
 package org.makumba.devel.relations;
 
 import org.makumba.analyser.ElementData;
-import org.makumba.commons.MakumbaJspAnalyzer;
+import org.makumba.analyser.MakumbaJspAnalyzer;
+import org.makumba.analyser.ParseStatus;
 import org.makumba.commons.MultipleKey;
-import org.makumba.commons.ParseStatus;
 
 public class RelationParseStatus extends ParseStatus {
 

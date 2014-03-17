@@ -18,9 +18,9 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.ArrayUtils;
 import org.makumba.CompositeValidationException;
 import org.makumba.InvalidValueException;
-import org.makumba.commons.ControllerHandler;
-import org.makumba.commons.ServletObjects;
 import org.makumba.commons.StringUtils;
+import org.makumba.commons.http.ControllerHandler;
+import org.makumba.commons.http.ServletObjects;
 import org.makumba.list.tags.SectionTag;
 
 /**

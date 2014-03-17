@@ -36,8 +36,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.filefilter.SuffixFileFilter;
-import org.makumba.commons.ControllerHandler;
-import org.makumba.commons.ServletObjects;
+import org.makumba.commons.http.ControllerHandler;
+import org.makumba.commons.http.ServletObjects;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.DeveloperTool;
 

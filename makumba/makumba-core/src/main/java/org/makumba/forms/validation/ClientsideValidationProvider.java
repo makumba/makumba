@@ -1,7 +1,7 @@
 package org.makumba.forms.validation;
 
 import org.makumba.FieldDefinition;
-import org.makumba.commons.MakumbaJspAnalyzer;
+import org.makumba.analyser.MakumbaJspAnalyzer;
 import org.makumba.forms.html.RecordEditor;
 import org.makumba.forms.responder.FormResponder;
 

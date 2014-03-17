@@ -29,8 +29,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.makumba.commons.ControllerHandler;
-import org.makumba.commons.ServletObjects;
+import org.makumba.commons.http.ControllerHandler;
+import org.makumba.commons.http.ServletObjects;
 
 /**
  * This {@link ControllerHandler} ensures that the analysis is initialised correctly at each access

@@ -29,8 +29,8 @@ import javax.servlet.jsp.tagext.BodyTag;
 
 import org.makumba.FieldDefinition;
 import org.makumba.ProgrammerError;
+import org.makumba.analyser.MakumbaJspAnalyzer;
 import org.makumba.analyser.PageCache;
-import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
 import org.makumba.providers.DataDefinitionProvider;
 

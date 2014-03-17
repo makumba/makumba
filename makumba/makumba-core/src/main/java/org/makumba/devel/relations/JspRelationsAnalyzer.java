@@ -1,8 +1,8 @@
 package org.makumba.devel.relations;
 
+import org.makumba.analyser.MakumbaJspAnalyzer;
 import org.makumba.analyser.TagData;
 import org.makumba.analyser.interfaces.JspAnalyzer;
-import org.makumba.commons.MakumbaJspAnalyzer;
 
 /**
  * Simple analyser for the relations of a page. We are interested only in the tags

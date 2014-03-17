@@ -1,4 +1,4 @@
-package org.makumba.list;
+package org.makumba.list.tags;
 
 import java.util.Map;
 
@@ -13,19 +13,16 @@ import org.makumba.Pointer;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.AnalysableElement;
 import org.makumba.analyser.AnalysableTag;
+import org.makumba.analyser.MakumbaJspAnalyzer;
 import org.makumba.analyser.PageCache;
 import org.makumba.analyser.TagData;
-import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
 import org.makumba.forms.tags.CriterionTag;
 import org.makumba.forms.tags.FormTagBase;
 import org.makumba.forms.tags.InputTag;
 import org.makumba.forms.tags.SearchFieldTag;
 import org.makumba.list.engine.ComposedQuery;
-import org.makumba.list.engine.QueryExecution;
 import org.makumba.list.engine.valuecomputer.ValueComputer;
-import org.makumba.list.tags.QueryTag;
-import org.makumba.list.tags.ValueTag;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.FormDataProvider;
 

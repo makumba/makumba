@@ -23,19 +23,19 @@
 
 package org.makumba.forms.tags;
 
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.TagSupport;
+
 import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.AnalysableTag;
+import org.makumba.analyser.MakumbaJspAnalyzer;
 import org.makumba.analyser.PageCache;
-import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.attributes.PageAttributes;
 import org.makumba.commons.tags.GenericMakumbaTag;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.FormDataProvider;
-
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
 
 /**
  * This is a a base class for InputTag and OptionTag but may be used for other tags that need to compute a value in
@@ -63,7 +63,7 @@ public abstract class BasicValueTag extends GenericMakumbaTag {
     public BasicValueTag() {
         // TODO move this somewhere else
         try {
-            this.fdp = (FormDataProvider) Class.forName("org.makumba.list.ListFormDataProvider").newInstance();
+            this.fdp = (FormDataProvider) Class.forName("org.makumba.list.tags.ListFormDataProvider").newInstance();
         } catch (InstantiationException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

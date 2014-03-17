@@ -12,8 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
 import org.makumba.analyser.AnalysableElement;
+import org.makumba.analyser.MakumbaJspAnalyzer;
 import org.makumba.analyser.PageCache;
-import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.forms.validation.LiveValidationProvider;
 import org.makumba.list.tags.SectionTag;
 import org.makumba.providers.Configuration;

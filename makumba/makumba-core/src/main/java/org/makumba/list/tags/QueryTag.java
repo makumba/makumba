@@ -42,15 +42,14 @@ import org.makumba.ProgrammerError;
 import org.makumba.analyser.AnalysableElement;
 import org.makumba.analyser.AnalysableExpression;
 import org.makumba.analyser.AnalysableTag;
+import org.makumba.analyser.MakumbaJspAnalyzer;
 import org.makumba.analyser.PageCache;
 import org.makumba.analyser.TagData;
-import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.controller.http.MakumbaJspFactory;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.ComposedSubquery;
-import org.makumba.list.engine.QueryExecution;
 import org.makumba.list.html.RecordViewer;
 import org.makumba.providers.DataDefinitionProvider;
 

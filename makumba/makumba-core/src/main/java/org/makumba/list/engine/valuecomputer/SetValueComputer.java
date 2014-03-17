@@ -7,12 +7,12 @@ import javax.servlet.jsp.PageContext;
 
 import org.makumba.FieldDefinition;
 import org.makumba.LogicException;
+import org.makumba.analyser.MakumbaJspAnalyzer;
 import org.makumba.analyser.PageCache;
-import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.attributes.PageAttributes;
 import org.makumba.list.engine.ComposedQuery;
-import org.makumba.list.engine.QueryExecution;
+import org.makumba.list.tags.QueryExecution;
 import org.makumba.list.tags.QueryTag;
 import org.makumba.list.tags.ValueTag;
 

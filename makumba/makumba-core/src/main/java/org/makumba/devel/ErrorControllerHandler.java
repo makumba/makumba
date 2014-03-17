@@ -15,9 +15,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.makumba.MakumbaError;
 import org.makumba.UnauthenticatedException;
-import org.makumba.commons.ControllerHandler;
 import org.makumba.commons.RuntimeWrappedException;
-import org.makumba.commons.ServletObjects;
+import org.makumba.commons.http.ControllerHandler;
+import org.makumba.commons.http.ServletObjects;
 import org.makumba.controller.MakumbaResponseWrapper;
 import org.makumba.list.tags.SectionTag;
 

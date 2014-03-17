@@ -21,7 +21,7 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.list;
+package org.makumba.commons.http;
 
 import java.io.IOException;
 import java.io.PrintWriter;

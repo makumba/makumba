@@ -35,9 +35,9 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.makumba.commons.ControllerHandler;
 import org.makumba.commons.RuntimeWrappedException;
-import org.makumba.commons.ServletObjects;
+import org.makumba.commons.http.ControllerHandler;
+import org.makumba.commons.http.ServletObjects;
 import org.makumba.controller.MakumbaResponseWrapper;
 
 /**

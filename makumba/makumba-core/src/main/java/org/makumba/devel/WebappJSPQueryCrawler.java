@@ -15,10 +15,10 @@ import java.util.Vector;
 import java.util.logging.Logger;
 
 import org.apache.commons.cli.CommandLine;
+import org.makumba.analyser.MakumbaJspAnalyzer;
 import org.makumba.analyser.PageCache;
 import org.makumba.analyser.engine.JspParseData;
 import org.makumba.commons.FileUtils;
-import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.ReadableFormatter;
 import org.makumba.devel.relations.JavaMDDParser;
 import org.makumba.devel.relations.JspRelationsAnalyzer;

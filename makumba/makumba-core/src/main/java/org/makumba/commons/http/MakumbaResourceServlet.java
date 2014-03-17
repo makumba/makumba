@@ -21,7 +21,7 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.commons;
+package org.makumba.commons.http;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -47,6 +47,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.makumba.commons.ClassResource;
+import org.makumba.commons.NamedResourceFactory;
+import org.makumba.commons.NamedResources;
 import org.makumba.devel.DevelUtils;
 import org.makumba.devel.SourceViewControllerHandler;
 import org.makumba.forms.html.KruseCalendarEditor;

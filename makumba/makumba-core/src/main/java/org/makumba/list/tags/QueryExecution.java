@@ -21,7 +21,7 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.list.engine;
+package org.makumba.list.tags;
 
 import java.util.Dictionary;
 import java.util.HashMap;
@@ -33,12 +33,12 @@ import javax.servlet.jsp.PageContext;
 import org.makumba.AttributeNotFoundException;
 import org.makumba.LogicException;
 import org.makumba.analyser.AnalysableElement;
+import org.makumba.analyser.MakumbaJspAnalyzer;
 import org.makumba.commons.ArrayMap;
-import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.attributes.PageAttributes;
-import org.makumba.list.tags.GenericListTag;
-import org.makumba.list.tags.QueryTag;
+import org.makumba.list.engine.ComposedQuery;
+import org.makumba.list.engine.Grouper;
 import org.makumba.providers.QueryProvider;
 
 /**
