@@ -13,7 +13,6 @@ import java.util.Vector;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaError;
-import org.makumba.commons.MakumbaJspAnalyzer;
 import org.makumba.commons.TextList;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryAnalysis;
@@ -268,7 +267,7 @@ public class MqlQueryAnalysis implements QueryAnalysis {
 
                 // FIXME will this work if the FROM contains subqueries?
                 String dummyQuery = "SELECT " + beforeLastDot + " AS projection FROM " + getFrom();
-                result = QueryProvider.getQueryAnalzyer(MakumbaJspAnalyzer.QL_OQL).getQueryAnalysis(dummyQuery).getProjectionType().getFieldDefinition(
+                result = QueryProvider.getQueryAnalzyer("OQL").getQueryAnalysis(dummyQuery).getProjectionType().getFieldDefinition(
                     "projection").getPointedType();
             }
             return result;
