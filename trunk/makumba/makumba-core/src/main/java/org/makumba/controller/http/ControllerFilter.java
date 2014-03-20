@@ -51,14 +51,14 @@ public class ControllerFilter implements Filter {
 
     private FilterConfig conf;
 
-    private String handlerClasses = "org.makumba.controller.AJAXDataControllerHandler," //
+    private String handlerClasses = "org.makumba.controller.http.AJAXDataControllerHandler," //
             + "org.makumba.devel.SourceViewControllerHandler," //
             + "org.makumba.devel.DataToolsControllerHandler," //
-            + "org.makumba.commons.MakumbaToolsControllerHandler," //
+            + "org.makumba.commons.http.MakumbaToolsControllerHandler," //
             + "org.makumba.devel.ErrorControllerHandler," //
             + "org.makumba.analyser.AnalysisInitControllerHandler," //
-            + "org.makumba.controller.FilterConditionControllerHandler," //
-            + "org.makumba.controller.CharsetControllerHandler," //
+            + "org.makumba.controller.http.FilterConditionControllerHandler," //
+            + "org.makumba.controller.http.CharsetControllerHandler," //
             + "org.makumba.commons.attributes.DatabaseConnectionControllerHandler," //
             + "org.makumba.commons.attributes.AttributesControllerHandler," //
             + "org.makumba.forms.responder.ResponseControllerHandler";
