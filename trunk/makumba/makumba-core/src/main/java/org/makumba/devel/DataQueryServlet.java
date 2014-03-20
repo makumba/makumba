@@ -39,7 +39,6 @@ import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.db.makumba.DBConnection;
-import org.makumba.providers.DeveloperTool;
 import org.makumba.providers.TransactionProvider;
 
 /**

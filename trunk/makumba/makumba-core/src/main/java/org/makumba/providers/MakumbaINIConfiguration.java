@@ -49,15 +49,31 @@ public class MakumbaINIConfiguration extends HierarchicalINIConfiguration {
         load();
     }
 
-    public boolean getBooleanProperty(String section, String property) {
-        String k = getSection(section).getString(property);
-        if (k == null) {
-            k = defaultConfiguration.getSection(section).getString(property);
-            if (k == null) {
-                return false;
-            }
+    Map<String, Object> results = new HashMap<String, Object>();
+
+    private void cachePut(String key, Runnable runnable) {
+        if (!results.containsKey(key)) {
+            runnable.run();
         }
-        return Boolean.parseBoolean(k);
+    }
+
+    public boolean getBooleanProperty(final String section, final String property) {
+        final String key = "boolean " + section + " " + property;
+        cachePut(key, new Runnable() {
+            @Override
+            public void run() {
+                String k = getSection(section).getString(property);
+                if (k == null) {
+                    k = defaultConfiguration.getSection(section).getString(property);
+                    if (k == null) {
+                        results.put(key, false);
+                        return;
+                    }
+                }
+                results.put(key, Boolean.parseBoolean(k));
+            }
+        });
+        return (Boolean) results.get(key);
     }
 
     /**
@@ -66,66 +82,105 @@ public class MakumbaINIConfiguration extends HierarchicalINIConfiguration {
      * @throws ConfigurationError
      *             if the section does not exist
      */
-    public Map<String, String> getPropertiesAsMap(String section) {
-        Map<String, String> m = new HashMap<String, String>();
-        SubnodeConfiguration s = getSection(section);
-        if (s == null) {
-            throw new ConfigurationError("Section " + section + " does not exist in Makumba.conf");
-        }
-        java.util.Iterator<?> i = s.getKeys();
-        while (i.hasNext()) {
-            String k = (String) i.next();
-            String originalK = k;
-            // the ini configuration escapes the property delimiters so we have to unescape them here
-            if (k.indexOf("..") > 0) {
-                k = StringUtils.replace(k, "..", ".");
+    @SuppressWarnings("unchecked")
+    public Map<String, String> getPropertiesAsMap(final String section) {
+        final String key = "asMap " + section;
+        cachePut(key, new Runnable() {
+            @Override
+            public void run() {
+
+                Map<String, String> m = new HashMap<String, String>();
+                SubnodeConfiguration s = getSection(section);
+                if (s == null) {
+                    throw new ConfigurationError("Section " + section + " does not exist in Makumba.conf");
+                }
+                java.util.Iterator<?> i = s.getKeys();
+                while (i.hasNext()) {
+                    String k = (String) i.next();
+                    String originalK = k;
+                    // the ini configuration escapes the property delimiters so we have to unescape them here
+                    if (k.indexOf("..") > 0) {
+                        k = StringUtils.replace(k, "..", ".");
+                    }
+                    m.put(k, getSection(section).getString(originalK));
+                }
+                results.put(key, m);
             }
-            m.put(k, getSection(section).getString(originalK));
-        }
-        return m;
+        });
+        return (Map<String, String>) results.get(key);
     }
 
     /**
      * Returns the properties of a section, enriched with the default properties
      */
-    public Map<String, String> getPropertiesAsMap(String section, MakumbaINIConfiguration defaultConfig) {
-        Map<String, String> defaults = defaultConfig.getPropertiesAsMap(section);
-        if (getSections().contains(section)) {
-            Map<String, String> application = getPropertiesAsMap(section);
-            final Set<String> keySet = application.keySet();
-            for (String string : keySet) {
-                if (application.get(string) != null) {
-                    defaults.put(string, application.get(string));
+    @SuppressWarnings("unchecked")
+    public Map<String, String> getPropertiesAsMap(final String section, final MakumbaINIConfiguration defaultConfig) {
+        final String key = "propertiesAsMapDefault" + section;
+        cachePut(key, new Runnable() {
+            @Override
+            public void run() {
+
+                Map<String, String> defaults = defaultConfig.getPropertiesAsMap(section);
+                if (getSections().contains(section)) {
+                    Map<String, String> application = getPropertiesAsMap(section);
+                    final Set<String> keySet = application.keySet();
+                    for (String string : keySet) {
+                        if (application.get(string) != null) {
+                            defaults.put(string, application.get(string));
+                        }
+                    }
+                } else {
+                    Configuration.logger.info("No application specific config found for '" + section
+                            + "', using only internal defaults.");
                 }
+                results.put(key, defaults);
             }
-        } else {
-            Configuration.logger.info("No application specific config found for '" + section
-                    + "', using only internal defaults.");
-        }
-        return defaults;
+        });
+        return (Map<String, String>) results.get(key);
     }
 
-    public Map<String, Map<String, String>> getPropertiesStartingWith(String sectionPrefix) {
-        LinkedHashMap<String, Map<String, String>> res = new LinkedHashMap<String, Map<String, String>>();
-        final Set<?> sectionNames = getSections();
-        for (Object s : sectionNames) {
-            String section = (String) s;
-            if (section.startsWith(sectionPrefix)) {
-                res.put(section.substring(sectionPrefix.length()), getPropertiesAsMap(section));
+    @SuppressWarnings("unchecked")
+    public Map<String, Map<String, String>> getPropertiesStartingWith(final String sectionPrefix) {
+
+        final String key = "propertiesWithPrefix" + sectionPrefix;
+        cachePut(key, new Runnable() {
+            @Override
+            public void run() {
+
+                LinkedHashMap<String, Map<String, String>> res = new LinkedHashMap<String, Map<String, String>>();
+                final Set<?> sectionNames = getSections();
+                for (Object s : sectionNames) {
+                    String section = (String) s;
+                    if (section.startsWith(sectionPrefix)) {
+                        res.put(section.substring(sectionPrefix.length()), getPropertiesAsMap(section));
+                    }
+                }
+                results.put(key, res);
             }
-        }
-        return res;
+        });
+
+        return (Map<String, Map<String, String>>) results.get(key);
+
     }
 
-    public String getProperty(String section, String property) {
-        String s = getSection(section).getString(property);
-        if (s == null) {
-            s = defaultConfiguration.getSection(section).getString(property);
-            if (s == null) {
-                return Configuration.PROPERTY_NOT_SET;
+    public String getProperty(final String section, final String property) {
+
+        final String key = "propertiesWithPrefix" + section + " " + property;
+        cachePut(key, new Runnable() {
+            @Override
+            public void run() {
+                String s = getSection(section).getString(property);
+                if (s == null) {
+                    s = defaultConfiguration.getSection(section).getString(property);
+                    if (s == null) {
+                        results.put(key, Configuration.PROPERTY_NOT_SET);
+                        return;
+                    }
+                }
+                results.put(key, s);
             }
-        }
-        return s;
+        });
+        return (String) results.get(key);
     }
 
     public String getSource() {

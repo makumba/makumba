@@ -28,7 +28,7 @@ import java.util.Dictionary;
 import org.makumba.Pointer;
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.RecordFormatter;
-import org.makumba.providers.Configuration;
+import org.makumba.commons.tags.MakumbaJspConfiguration;
 
 /**
  * This viewer creates a link to the download servlet serving the binary content.
@@ -65,7 +65,7 @@ public class binaryViewer extends FieldViewer {
     @Override
     public String formatNotNull(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
         Pointer pointer = (Pointer) o;
-        return Configuration.getMakumbaToolsLocation() + "/makumbaDownload?type=" + pointer.getType() + "&value="
-                + pointer.toExternalForm();
+        return MakumbaJspConfiguration.getMakumbaToolsLocation() + "/makumbaDownload?type=" + pointer.getType()
+                + "&value=" + pointer.toExternalForm();
     }
 }

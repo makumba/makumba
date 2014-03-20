@@ -20,14 +20,13 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.MakumbaSystem;
 import org.makumba.commons.SQLPointer;
+import org.makumba.commons.tags.MakumbaJspConfiguration;
 import org.makumba.db.makumba.DBConnection;
 import org.makumba.db.makumba.DBConnectionWrapper;
 import org.makumba.db.makumba.MakumbaTransactionProvider;
 import org.makumba.db.makumba.sql.SQLDBConnection;
 import org.makumba.db.makumba.sql.TableManager;
-import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
-import org.makumba.providers.DeveloperTool;
 import org.makumba.providers.TransactionProvider;
 
 /**
@@ -72,7 +71,7 @@ public class ReferenceChecker extends HttpServlet {
             resp.setContentType("text/html");
             PrintWriter w = resp.getWriter();
             DevelUtils.writePageBegin(w);
-            DevelUtils.writeStylesAndScripts(w, contextPath,"highlight.pack.js");
+            DevelUtils.writeStylesAndScripts(w, contextPath, "highlight.pack.js");
 
             String param = req.getParameter("mdd");
             if (param != null) { // check a specific MDD
@@ -195,8 +194,8 @@ public class ReferenceChecker extends HttpServlet {
             try {
                 DataDefinition dd = DataDefinitionProvider.getInstance().getDataDefinition(mddName);
                 w.println("<h3><a name=\"" + mddName + "\" href=\"" + contextPath
-                        + Configuration.getToolLocation(DeveloperTool.MDD_VIEWER) + "/" + mddName + "\">" + mddName
-                        + "</a> (" + count(sqlConnection, dd) + ")</h3>");
+                        + MakumbaJspConfiguration.getToolLocation(DeveloperTool.MDD_VIEWER) + "/" + mddName + "\">"
+                        + mddName + "</a> (" + count(sqlConnection, dd) + ")</h3>");
                 w.println("<ul>");
                 for (FieldDefinition f : getReferenceFields(dd)) {
                     w.println("<li>");
@@ -262,7 +261,7 @@ public class ReferenceChecker extends HttpServlet {
         w.println("<a id=\"" + idName + "Ref\" href=\"javascript:toggleSQLDisplay(" + idName + ", " + idName
                 + "Ref)\" title=\"Show SQL statement\">[+]</a>");
         w.println("<div id=\"" + idName + "\" style=\"display:none;\">");
-        DevelUtils.printSQLQuery(w,query);
+        DevelUtils.printSQLQuery(w, query);
         w.println("</div>");
     }
 
@@ -314,7 +313,6 @@ public class ReferenceChecker extends HttpServlet {
 
         String title = "Broken references in " + dd.getName() + "#" + fd.getName();
 
-
         writeHeader(w, title, contextPath);
         w.println("<h3>Type: " + dd.getName() + "</h3>");
         w.println("<h3>Field: " + fd.getName() + "</h3>");
@@ -356,7 +354,7 @@ public class ReferenceChecker extends HttpServlet {
     private void writeHeader(PrintWriter w, String title, String contextPath) throws IOException {
         DevelUtils.writeTitleAndHeaderEnd(w, title);
         DevelUtils.printNavigationBegin(w, DeveloperTool.REFERENCE_CHECKER.getName());
-        DevelUtils.writeDevelUtilLinks(w,DeveloperTool.REFERENCE_CHECKER.getKey(),contextPath);
+        DevelUtils.writeDevelUtilLinks(w, DeveloperTool.REFERENCE_CHECKER.getKey(), contextPath);
         DevelUtils.printNavigationEnd(w);
         w.println("<h2>" + title + "</h2>");
         w.println("<p class=\"lead\">Checking " + TransactionProvider.getInstance().getDefaultDataSourceName()

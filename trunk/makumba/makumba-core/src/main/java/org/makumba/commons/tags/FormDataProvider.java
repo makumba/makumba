@@ -1,4 +1,4 @@
-package org.makumba.providers;
+package org.makumba.commons.tags;
 
 import javax.servlet.jsp.PageContext;
 

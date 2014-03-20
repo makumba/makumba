@@ -49,13 +49,13 @@ import org.makumba.analyser.engine.SyntaxPoint;
 import org.makumba.analyser.engine.TomcatJsp;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.RuntimeWrappedException;
+import org.makumba.commons.tags.MakumbaJspConfiguration;
 import org.makumba.db.NativeQuery;
 import org.makumba.db.makumba.MakumbaTransactionProvider;
 import org.makumba.db.makumba.sql.Database;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.tags.QueryTag;
 import org.makumba.providers.Configuration;
-import org.makumba.providers.DeveloperTool;
 import org.makumba.providers.QueryAnalysisProvider;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProvider;
@@ -140,7 +140,7 @@ public class jspViewer extends LineViewer {
         jspSourceViewExtension = _servletPath.substring(_servletPath.length() - extraLength());
         realPath = servletContext.getRealPath(virtualPath);
         _servletPath = _servletPath.substring(0, _servletPath.indexOf(".")) + ".jsp";
-        logicPath = contextPath + Configuration.getToolLocation(DeveloperTool.LOGIC_DISCOVERY) + _servletPath;
+        logicPath = contextPath + MakumbaJspConfiguration.getToolLocation(DeveloperTool.LOGIC_DISCOVERY) + _servletPath;
         hasLogic = !(org.makumba.controller.Logic.getLogic(_servletPath) instanceof org.makumba.LogicNotFoundException);
         jspClasspath = TomcatJsp.getContextCompiledJSPDir(servletContext);
 
@@ -162,7 +162,7 @@ public class jspViewer extends LineViewer {
         String compiledJSPFile = findCompiledJSPClassName(TomcatJsp.getFullCompiledJSPDir(servletContext), virtualPath);
         if (compiledJSPFile != null) {
             additionalHeaderInfo = "<a style=\"font-size:smaller;\" href=\"" + request.getContextPath()
-                    + Configuration.getToolLocation(DeveloperTool.JAVA_VIEWER) + "/" + compiledJSPFile
+                    + MakumbaJspConfiguration.getToolLocation(DeveloperTool.JAVA_VIEWER) + "/" + compiledJSPFile
                     + "\">[Compiled Version]</a>";
         }
 
@@ -223,31 +223,31 @@ public class jspViewer extends LineViewer {
 
     @Override
     public void navigation(PrintWriter w) throws IOException {
-        //w.println("<td align=\"right\" style=\"color: darkblue; padding: 5px; padding-top: 10px\">");
+        // w.println("<td align=\"right\" style=\"color: darkblue; padding: 5px; padding-top: 10px\">");
         printFileRelations(w);
-        //w.println("&nbsp;&nbsp;&nbsp;");
+        // w.println("&nbsp;&nbsp;&nbsp;");
         String executePath = contextPath + virtualPath;
         if (StringUtils.isNotEmpty(request.getQueryString())) {
             executePath += "?" + request.getQueryString();
         }
-        DevelUtils.printNavigationButton(w,"execute",executePath,"Execute the page",0);
-        //w.println("<a href=\"" + executePath + "\">execute</a>&nbsp;&nbsp;&nbsp;");
-        DevelUtils.printNavigationButton(w,"source",null,"Source view",1);
-        //w.println("<span style=\"color:lightblue; background-color: darkblue; padding: 5px;\">source</span>&nbsp;&nbsp;&nbsp;");
-        DevelUtils.printNavigationButton(w,"business logic" + (hasLogic ? "" : " (none)"),logicPath,
-                "Show the available business logic",0);
-        //w.println("<a href=\"" + logicPath + "\">business logic" + (hasLogic ? "" : " (none)") + "</a>");
+        DevelUtils.printNavigationButton(w, "execute", executePath, "Execute the page", 0);
+        // w.println("<a href=\"" + executePath + "\">execute</a>&nbsp;&nbsp;&nbsp;");
+        DevelUtils.printNavigationButton(w, "source", null, "Source view", 1);
+        // w.println("<span style=\"color:lightblue; background-color: darkblue; padding: 5px;\">source</span>&nbsp;&nbsp;&nbsp;");
+        DevelUtils.printNavigationButton(w, "business logic" + (hasLogic ? "" : " (none)"), logicPath,
+            "Show the available business logic", 0);
+        // w.println("<a href=\"" + logicPath + "\">business logic" + (hasLogic ? "" : " (none)") + "</a>");
 
         String lg = org.makumba.devel.ErrorControllerHandler.getLoginPage(this.request, virtualPath);
         if (lg != null) {
-            DevelUtils.printNavigationButton(w,"login page",contextPath,"",0);
-            //w.println("&nbsp;&nbsp;&nbsp;<a href=\"" + contextPath + lg + "x\">login page</a>&nbsp;&nbsp;&nbsp;");
+            DevelUtils.printNavigationButton(w, "login page", contextPath, "", 0);
+            // w.println("&nbsp;&nbsp;&nbsp;<a href=\"" + contextPath + lg + "x\">login page</a>&nbsp;&nbsp;&nbsp;");
         }
 
-        //w.println("&nbsp;&nbsp;&nbsp;");
+        // w.println("&nbsp;&nbsp;&nbsp;");
         DevelUtils.writeDevelUtilLinks(w, "", contextPath);
 
-        //w.println("</td>");
+        // w.println("</td>");
         w.println("</tr>");
         w.println("<tr>");
         w.println("<td align=\"right\" style=\" font-size: smaller;\">");
@@ -380,7 +380,8 @@ public class jspViewer extends LineViewer {
                                         + "\" class=\"popup queryPopup\" style=\"display: none;\">");
 
                                 String queryOQL = ((ComposedQuery) queryCache.get(tagKey)).getComputedQuery();
-                                popupText.append("OQL: <pre><code class=\"sql\">" + StringEscapeUtils.escapeHtml(queryOQL) + "</code></pre>");
+                                popupText.append("OQL: <pre><code class=\"sql\">"
+                                        + StringEscapeUtils.escapeHtml(queryOQL) + "</code></pre>");
 
                                 // at non-runtime, we can't evaluate #{...}; thus, remove it
                                 String queryTransformedForInlining = removeExpressionsForInlining(queryOQL);
@@ -405,7 +406,8 @@ public class jspViewer extends LineViewer {
                                     if (!queryTransformedForInlining.equals(queryOQL)) {
                                         popupText.append(" <div class=\"alert alert-error\">(removed #{...} expressions)</div>");
                                     }
-                                    popupText.append(": <pre><code class=\"sql\">" + StringEscapeUtils.escapeHtml(queryInlined) + "</code></pre>");
+                                    popupText.append(": <pre><code class=\"sql\">"
+                                            + StringEscapeUtils.escapeHtml(queryInlined) + "</code></pre>");
                                 }
 
                                 try {
@@ -414,7 +416,9 @@ public class jspViewer extends LineViewer {
                                     if (db instanceof Database) {
                                         NativeQuery nat = NativeQuery.getNativeQuery(queryInlined, "mql", null,
                                             ((Database) db).getNameResolverHook());
-                                        popupText.append("SQL: <pre><code class=\"sql\">" + StringEscapeUtils.escapeHtml(nat.getCommand(null)) + "</code></pre><br/>");
+                                        popupText.append("SQL: <pre><code class=\"sql\">"
+                                                + StringEscapeUtils.escapeHtml(nat.getCommand(null))
+                                                + "</code></pre><br/>");
                                     }
                                 } catch (RuntimeWrappedException e) {
                                     if (e.getCause() instanceof OQLParseError
@@ -430,8 +434,8 @@ public class jspViewer extends LineViewer {
                                 }
 
                                 popupText.append("</div>");
-                                currentText.append("<a href=\"#\" data-toggle=\"popover\" rel=\"popover\" data-popover-id=\"" + divId
-                                        + "\" title=\"Generated queries\">");
+                                currentText.append("<a href=\"#\" data-toggle=\"popover\" rel=\"popover\" data-popover-id=\""
+                                        + divId + "\" title=\"Generated queries\">");
                             } else {
                                 currentText.append("<span class=\"" + tagClass + "\">");
                             }
@@ -462,7 +466,7 @@ public class jspViewer extends LineViewer {
             }
         }
 
-        printPageEnd(writer,popupText);
+        printPageEnd(writer, popupText);
         double time = new Date().getTime() - begin.getTime();
         logger.finer("Sourcecode viewer took :" + time / 1000 + " seconds");
     }

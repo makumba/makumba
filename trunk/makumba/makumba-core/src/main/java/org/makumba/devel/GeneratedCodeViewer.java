@@ -27,10 +27,9 @@ import org.makumba.analyser.engine.JavaParseData;
 import org.makumba.analyser.engine.JspParseData;
 import org.makumba.analyser.engine.SourceSyntaxPoints;
 import org.makumba.commons.RuntimeWrappedException;
+import org.makumba.commons.tags.MakumbaJspConfiguration;
 import org.makumba.controller.Logic;
-import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
-import org.makumba.providers.DeveloperTool;
 import org.makumba.providers.TransactionProvider;
 
 /**
@@ -52,9 +51,9 @@ public class GeneratedCodeViewer extends jspViewer {
 
     private static String[] selectableQueryLanguages = { "OQL", "HQL" };
 
-    private static Map<String, Map<String, String>> builtIn = Configuration.getInternalCodeGeneratorTemplates();
+    private static Map<String, Map<String, String>> builtIn = MakumbaJspConfiguration.getInternalCodeGeneratorTemplates();
 
-    private static Map<String, Map<String, String>> userDefined = Configuration.getApplicationSpecificCodeGeneratorTemplates();
+    private static Map<String, Map<String, String>> userDefined = MakumbaJspConfiguration.getApplicationSpecificCodeGeneratorTemplates();
 
     private static Map<String, Map<String, String>> all = new HashMap<String, Map<String, String>>();
 
@@ -64,8 +63,8 @@ public class GeneratedCodeViewer extends jspViewer {
 
     /** initialise code templates - read properties from file system */
     private static void initTemplates() {
-        builtIn = Configuration.getInternalCodeGeneratorTemplates();
-        userDefined = Configuration.getApplicationSpecificCodeGeneratorTemplates();
+        builtIn = MakumbaJspConfiguration.getInternalCodeGeneratorTemplates();
+        userDefined = MakumbaJspConfiguration.getApplicationSpecificCodeGeneratorTemplates();
         all = new HashMap<String, Map<String, String>>();
         for (String key : userDefined.keySet()) {
             if (builtIn.containsKey(key)) {
@@ -115,7 +114,8 @@ public class GeneratedCodeViewer extends jspViewer {
         setSearchLevels(false, false, false, true);
 
         contextPath = request.getContextPath();
-        virtualPath = DevelUtils.getVirtualPath(req, Configuration.getToolLocation(DeveloperTool.CODE_GENERATOR));
+        virtualPath = DevelUtils.getVirtualPath(req,
+            MakumbaJspConfiguration.getToolLocation(DeveloperTool.CODE_GENERATOR));
         if (virtualPath == null) {
             virtualPath = "/";
         }
@@ -289,14 +289,14 @@ public class GeneratedCodeViewer extends jspViewer {
     @Override
     public void navigation(PrintWriter w) {
         initTemplates();
-        String browsePath = contextPath + Configuration.getToolLocation(DeveloperTool.MDD_VIEWER)
+        String browsePath = contextPath + MakumbaJspConfiguration.getToolLocation(DeveloperTool.MDD_VIEWER)
                 + virtualPath.replace('.', '/').substring(0, virtualPath.lastIndexOf('.') + 1);
-        String mddViewerPath = contextPath + Configuration.getToolLocation(DeveloperTool.MDD_VIEWER) + "/"
+        String mddViewerPath = contextPath + MakumbaJspConfiguration.getToolLocation(DeveloperTool.MDD_VIEWER) + "/"
                 + virtualPath;
         // link to validation definition, if existing
-        DevelUtils.printNavigationButton(w,"mdd",mddViewerPath,"",0);
-        DevelUtils.printNavigationButton(w,"code generator","#","",1);
-        DevelUtils.printNavigationButton(w,"browse",browsePath,"",0);
+        DevelUtils.printNavigationButton(w, "mdd", mddViewerPath, "", 0);
+        DevelUtils.printNavigationButton(w, "code generator", "#", "", 1);
+        DevelUtils.printNavigationButton(w, "browse", browsePath, "", 0);
 
         DevelUtils.writeDevelUtilLinks(w, DeveloperTool.MDD_VIEWER.getKey(), contextPath);
     }
@@ -373,8 +373,8 @@ public class GeneratedCodeViewer extends jspViewer {
                     String queryHQL = "SELECT " + labelName + ".id AS " + labelName + " FROM " + dd.getName() + " "
                             + labelName;
 
-                    Vector<Dictionary<String, Object>> v = db.executeQuery(tp.getQueryLanguage().equals(
-                        MakumbaJspAnalyzer.QL_OQL) ? queryOQL : queryHQL, null, 0, 1);
+                    Vector<Dictionary<String, Object>> v = db.executeQuery(
+                        tp.getQueryLanguage().equals(MakumbaJspAnalyzer.QL_OQL) ? queryOQL : queryHQL, null, 0, 1);
                     if (v.size() > 0) {
                         cgiParams = "?" + labelName + "="
                                 + ((Pointer) v.firstElement().get(labelName)).toExternalForm();
@@ -410,8 +410,9 @@ public class GeneratedCodeViewer extends jspViewer {
             }
         }
         if (new File(classesDirectory.getPath() + logicDir + logicFileName).exists()) {
-            w.println("|&nbsp;<a target=\"_blank\" href=\"" + contextPath + Configuration.getToolLocation(DeveloperTool.JAVA_VIEWER)
-                    + logicDir + logicFileName + "\"><i>" + logicFileName + "</i></a>");
+            w.println("|&nbsp;<a target=\"_blank\" href=\"" + contextPath
+                    + MakumbaJspConfiguration.getToolLocation(DeveloperTool.JAVA_VIEWER) + logicDir + logicFileName
+                    + "\"><i>" + logicFileName + "</i></a>");
             w.println("</span>");
         }
     }

@@ -37,12 +37,11 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
+import org.makumba.commons.tags.MakumbaJspConfiguration;
 import org.makumba.db.makumba.DBConnectionWrapper;
 import org.makumba.db.makumba.Database;
 import org.makumba.db.makumba.sql.SQLDBConnection;
-import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
-import org.makumba.providers.DeveloperTool;
 import org.makumba.providers.TransactionProvider;
 
 /**
@@ -63,7 +62,8 @@ public class DataObjectViewerServlet extends DataServlet {
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         super.doGet(request, response);
-        browsePath = contextPath + Configuration.getToolLocation(DeveloperTool.DATA_LISTER) + "/" + browsePath;
+        browsePath = contextPath + MakumbaJspConfiguration.getToolLocation(DeveloperTool.DATA_LISTER) + "/"
+                + browsePath;
 
         PrintWriter writer = response.getWriter();
 
@@ -118,8 +118,8 @@ public class DataObjectViewerServlet extends DataServlet {
                 OQL = "SELECT " + OQL + " FROM " + type + " o WHERE o=$1";
                 Vector<Dictionary<String, Object>> v = t.executeQuery(OQL, dataPointer);
                 if (v.size() != 1) {
-                    DevelUtils.printErrorMessage(writer,"Problem executing query:"," found " + v.size() + " results!");
-                    DevelUtils.printSQLQuery(writer,OQL);
+                    DevelUtils.printErrorMessage(writer, "Problem executing query:", " found " + v.size() + " results!");
+                    DevelUtils.printSQLQuery(writer, OQL);
                 } else {
                     Dictionary<String, Object> values = v.firstElement();
 

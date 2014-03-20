@@ -14,8 +14,8 @@ import org.makumba.LogicException;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.MultipleKey;
+import org.makumba.commons.tags.FormDataProvider;
 import org.makumba.commons.tags.GenericMakumbaTag;
-import org.makumba.providers.FormDataProvider;
 
 /**
  * @author Rudolf Mayer

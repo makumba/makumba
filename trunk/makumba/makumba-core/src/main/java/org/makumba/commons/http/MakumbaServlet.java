@@ -1,4 +1,4 @@
-package org.makumba.providers;
+package org.makumba.commons.http;
 
 public enum MakumbaServlet {
 

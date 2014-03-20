@@ -21,7 +21,7 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.providers;
+package org.makumba.devel;
 
 /**
  * @author Rudolf Mayer

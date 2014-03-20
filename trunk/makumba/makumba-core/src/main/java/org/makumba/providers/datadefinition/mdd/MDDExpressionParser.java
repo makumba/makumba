@@ -4,8 +4,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import org.makumba.forms.html.dateEditor;
-
 import antlr.TokenStream;
 import antlr.collections.AST;
 
@@ -117,17 +115,20 @@ public class MDDExpressionParser extends MDDExpressionBaseParser {
         }
     }
 
+    public static final int[] components = { Calendar.DAY_OF_MONTH, Calendar.MONTH, Calendar.YEAR,
+            Calendar.HOUR_OF_DAY, Calendar.MINUTE, Calendar.SECOND };
+
     private void setDateComponent(GregorianCalendar c, int componentIndex, int value) {
         // Java treats months starting from 0, but the MDD expression uses natural values
-        if (dateEditor.components[componentIndex] == Calendar.MONTH) {
+        if (components[componentIndex] == Calendar.MONTH) {
             value = value - 1;
         }
-        c.set(dateEditor.components[componentIndex], value);
+        c.set(components[componentIndex], value);
     }
 
     private int getSummandValue(GregorianCalendar c, int level, AST lhs) {
         if (lhs.getType() == NOW) {
-            return c.get(dateEditor.components[level]);
+            return c.get(components[level]);
         } else if (lhs.getType() == POSITIVE_INTEGER || lhs.getType() == NEGATIVE_INTEGER) {
             return Integer.parseInt(lhs.getText());
         } else {

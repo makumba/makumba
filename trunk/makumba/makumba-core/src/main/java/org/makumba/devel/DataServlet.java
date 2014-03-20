@@ -14,8 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
-import org.makumba.providers.Configuration;
-import org.makumba.providers.DeveloperTool;
+import org.makumba.commons.tags.MakumbaJspConfiguration;
 
 /**
  * This class provides basic functionality for data viewing and querying servlets.
@@ -48,8 +47,8 @@ public abstract class DataServlet extends HttpServlet {
 
     public DataServlet(DeveloperTool toolType) {
         this.toolType = toolType;
-        toolLocation = Configuration.getToolLocation(toolType);
-        browsePath = contextPath + Configuration.getToolLocation(toolType);
+        toolLocation = MakumbaJspConfiguration.getToolLocation(toolType);
+        browsePath = contextPath + MakumbaJspConfiguration.getToolLocation(toolType);
         toolName = toolType.getName();
     }
 
@@ -76,22 +75,23 @@ public abstract class DataServlet extends HttpServlet {
         DevelUtils.writeTitleAndHeaderEnd(writer, toolName);
     }
 
-    protected void writePageContentHeader(String type, PrintWriter w, String dataBaseName, DeveloperTool tool) throws IOException {
+    protected void writePageContentHeader(String type, PrintWriter w, String dataBaseName, DeveloperTool tool)
+            throws IOException {
         DevelUtils.printNavigationBegin(w, toolName);
 
         if (tool == DeveloperTool.OBJECT_ID_CONVERTER) {
-            DevelUtils.printNavigationButton(w,"Pointer value converter","#","",1);
+            DevelUtils.printNavigationButton(w, "Pointer value converter", "#", "", 1);
         }
 
         if (tool == DeveloperTool.DATA_LISTER && !type.equals("") || tool == DeveloperTool.OBJECT_VIEWER) {
-            DevelUtils.printNavigationButton(w,"browse",browsePath,"",0);
-            DevelUtils.printNavigationButton(w,"data","#","",1);
+            DevelUtils.printNavigationButton(w, "browse", browsePath, "", 0);
+            DevelUtils.printNavigationButton(w, "data", "#", "", 1);
         } else if (tool == DeveloperTool.OBJECT_ID_CONVERTER || tool == DeveloperTool.DATA_QUERY) {
 
-            DevelUtils.printNavigationButton(w,"browse",browsePath,"",0);
+            DevelUtils.printNavigationButton(w, "browse", browsePath, "", 0);
         } else if (tool == DeveloperTool.REGEXP_TESTER) {
         } else {
-            DevelUtils.printNavigationButton(w,"browse","#","",1);
+            DevelUtils.printNavigationButton(w, "browse", "#", "", 1);
         }
 
         DevelUtils.writeDevelUtilLinks(w, tool.getKey(), contextPath);
@@ -99,8 +99,8 @@ public abstract class DataServlet extends HttpServlet {
 
         if (tool == DeveloperTool.OBJECT_VIEWER || tool == DeveloperTool.DATA_LISTER) {
             if (type != null && !type.equals("")) {
-                w.println("<h2><a href=\"" + contextPath + Configuration.getToolLocation(DeveloperTool.MDD_VIEWER)
-                        + "/" + type + "\">" + type
+                w.println("<h2><a href=\"" + contextPath
+                        + MakumbaJspConfiguration.getToolLocation(DeveloperTool.MDD_VIEWER) + "/" + type + "\">" + type
                         + "</a></h2>");
             } else {
                 w.println("  <p class=\"lead\">Browse to select type for data listing</p>");
@@ -108,8 +108,8 @@ public abstract class DataServlet extends HttpServlet {
             if (dataPointer != null) {
                 w.println(" <p class=\"lead\">Showing data for Pointer <em>" + dataPointer.toExternalForm()
                         + " <small>(<abbr title=\"DBSV:UID\">" + dataPointer
-                        + "</abbr> | <abbr title=\"Database value\">"
-                        + dataPointer.longValue() + "</abbr>)</small></em></p>");
+                        + "</abbr> | <abbr title=\"Database value\">" + dataPointer.longValue()
+                        + "</abbr>)</small></em></p>");
             }
         } else if (tool == DeveloperTool.DATA_QUERY) {
             w.println("      <p class=\"lead\">Insert your query in OQL here, and get the created SQL and the results of the query.</p>");

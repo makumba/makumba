@@ -30,8 +30,8 @@ import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.MakumbaJspAnalyzer;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.RuntimeWrappedException;
+import org.makumba.commons.tags.FormDataProvider;
 import org.makumba.commons.tags.GenericMakumbaTag;
-import org.makumba.providers.FormDataProvider;
 import org.makumba.providers.TransactionProvider;
 
 /**

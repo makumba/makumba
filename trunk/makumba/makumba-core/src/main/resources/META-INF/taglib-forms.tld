@@ -9,7 +9,7 @@
   <uri>http://www.makumba.org/forms</uri>
 
   <listener>
-    <listener-class>org.makumba.commons.NamedResourcesContextListener</listener-class>
+    <listener-class>org.makumba.commons.http.NamedResourcesContextListener</listener-class>
   </listener>
   <tag>
     <name>form</name>

@@ -27,19 +27,15 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.makumba.ConfigurationError;
-import org.makumba.MakumbaSystem;
 import org.makumba.commons.ClassResource;
 
 /**
@@ -62,19 +58,11 @@ public class Configuration implements Serializable {
 
     private static final String MAKUMBA_CONF_DEFAULT = MAKUMBA_CONF + ".default";
 
-    public static final String PLACEHOLDER_CONTEXT_PATH = "_CONTEXT_PATH_";
-
-    private static final String PATH = "path";
+    public static final String PATH = "path";
 
     private static final String HOST = "host";
 
     private static final String DATA_SOURCE = "dataSource";
-
-    public static final String KEY_CLIENT_SIDE_VALIDATION = "clientSideValidation";
-
-    public static final String KEY_RELOAD_FORM_ON_ERROR = "reloadFormOnError";
-
-    public static final String KEY_FORM_ANNOTATION = "formAnnotation";
 
     public static final String KEY_DEFAULT_DATABASE_LAYER = "defaultDatabaseLayer";
 
@@ -82,25 +70,7 @@ public class Configuration implements Serializable {
 
     public static final String KEY_QUERYFUNCTIONINLINER = "queryFunctionInliner";
 
-    public static final String MDD_DATADEFINITIONPROVIDER = "mdd";
-
-    public static final String RECORDINFO_DATADEFINITIONPROVIDER = "recordinfo";
-
     public static final String GENERATE_ENTITY_CLASSES = "generateEntityClasses";
-
-    // calendar editor
-    public static final String KEY_CALENDAR_EDITOR = "calendarEditor";
-
-    public static final String KEY_CALENDAR_EDITOR_LINK = "calendarEditorLink";
-
-    public static final String KEY_DISABLE_RESOURCES = "disableResources";
-
-    public static final String KEY_TOOLS_LOCATION = PATH;
-
-    // source code repository links
-    public static final String KEY_REPOSITORY_URL = "repositoryURL";
-
-    public static final String KEY_REPOSITORY_LINK_TEXT = "repositoryLinkText";
 
     // error logging to the database
     public static final String KEY_DB_ERROR_LOG = "logErrors";
@@ -125,43 +95,6 @@ public class Configuration implements Serializable {
 
     private static Object loadLock = new Object();
 
-    private static ConfigurationDTO d;
-
-    private static LinkedHashSet<String> requiredResources;
-
-    private static void populateConfigurationDTO() {
-        d = new ConfigurationDTO();
-        d.dataDefinitionProvider = applicationConfig.getProperty("providers", KEY_DATADEFINITIONPROVIDER);
-        d.queryInliner = applicationConfig.getProperty("providers", KEY_QUERYFUNCTIONINLINER);
-        d.pointerUIDStrategyClass = applicationConfig.getProperty("providers", KEY_POINTER_UID_STRATEGY_CLASS);
-        d.generateEntityClasses = applicationConfig.getBooleanProperty("providers", GENERATE_ENTITY_CLASSES);
-        d.defaultDatabaseLayer = applicationConfig.getProperty("dataSourceConfig", KEY_DEFAULT_DATABASE_LAYER);
-        d.defaultCalendarEditor = applicationConfig.getBooleanProperty("inputStyleConfig", KEY_CALENDAR_EDITOR);
-        d.calendarEditorLink = applicationConfig.getProperty("inputStyleConfig", KEY_CALENDAR_EDITOR_LINK);
-        d.repositoryURL = applicationConfig.getProperty("makumbaToolConfig", KEY_REPOSITORY_URL);
-        d.repositoryLinkText = applicationConfig.getProperty("makumbaToolConfig", KEY_REPOSITORY_LINK_TEXT);
-        d.errorLog = applicationConfig.getBooleanProperty("makumbaToolConfig", KEY_DB_ERROR_LOG);
-
-        d.makumbaToolsLocation = applicationConfig.getProperty("makumbaToolPaths", KEY_TOOLS_LOCATION);
-
-        for (DeveloperTool t : DeveloperTool.values()) {
-            d.developerToolsLocations.put(t, applicationConfig.getProperty("makumbaToolPaths", t.getKey()));
-        }
-
-        for (MakumbaServlet s : MakumbaServlet.values()) {
-            d.servletLocations.put(s, applicationConfig.getProperty("makumbaToolPaths", s.getKey()));
-        }
-
-        d.javaViewerSyntaxStyles = applicationConfig.getPropertiesAsMap("javaViewerSyntaxStyles", defaultConfig);
-        d.jspViewerSyntaxStyles = applicationConfig.getPropertiesAsMap("jspViewerSyntaxStyles", defaultConfig);
-        d.jspViewerSyntaxStylesTags = applicationConfig.getPropertiesAsMap("jspViewerSyntaxStylesTags", defaultConfig);
-        d.internalCodeGeneratorTemplates = defaultConfig.getPropertiesStartingWith("codeGeneratorTemplate:");
-        d.applicationSpecificCodeGeneratorTemplates = applicationConfig.getPropertiesStartingWith("codeGeneratorTemplate:");
-        d.logicPackages = applicationConfig.getPropertiesAsMap("businessLogicPackages");
-        d.authorizationDefinitions = applicationConfig.getPropertiesAsMap("authorization");
-
-    }
-
     /**
      * Sets a given property, for a specific section
      * 
@@ -178,6 +111,10 @@ public class Configuration implements Serializable {
 
     public static String getApplicationConfigurationSource() {
         return applicationConfig != null ? applicationConfig.getSource() : null;
+    }
+
+    public static MakumbaINIConfiguration getApolicationConfiguration() {
+        return applicationConfig;
     }
 
     static {
@@ -202,21 +139,7 @@ public class Configuration implements Serializable {
                         "Could not find application configuration file Makumba.conf in WEB-INF/classes!");
             }
 
-            populateConfigurationDTO();
-
-            d.defaultReloadFormOnError = applicationConfig.getBooleanProperty("controllerConfig",
-                KEY_RELOAD_FORM_ON_ERROR);
-            // FIXME: check if the value in the file is ok, throw an exception otherwise
-            d.defaultClientSideValidation = applicationConfig.getProperty("controllerConfig",
-                KEY_CLIENT_SIDE_VALIDATION);
-            // FIXME: check if the value in the file is ok, throw an exception otherwise
-            d.defaultFormAnnotation = applicationConfig.getProperty("controllerConfig", KEY_FORM_ANNOTATION);
-
-            d.disableResources = applicationConfig.getProperty("controllerConfig", KEY_DISABLE_RESOURCES);
-
             buildConfiguredDataSources();
-
-            requiredResources = buildRequiredResources();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -229,7 +152,7 @@ public class Configuration implements Serializable {
      * @return a String containing the class name of the data definition provider implementation
      */
     public static String getDataDefinitionProvider() {
-        return d.dataDefinitionProvider;
+        return applicationConfig.getProperty("providers", KEY_DATADEFINITIONPROVIDER);
     }
 
     /**
@@ -238,18 +161,18 @@ public class Configuration implements Serializable {
      * @return a String containing the type of query inliner implementation to use
      */
     public static String getQueryInliner() {
-        return d.queryInliner;
+        return applicationConfig.getProperty("providers", KEY_QUERYFUNCTIONINLINER);
     }
 
     /**
      * Whether or not to generate JPA entity classes
      */
     public static boolean getGenerateEntityClasses() {
-        return d.generateEntityClasses;
+        return applicationConfig.getBooleanProperty("providers", GENERATE_ENTITY_CLASSES);
     }
 
     public static String getPointerUIDStrategyClass() {
-        return d.pointerUIDStrategyClass;
+        return applicationConfig.getProperty("providers", KEY_POINTER_UID_STRATEGY_CLASS);
     }
 
     /**
@@ -259,95 +182,16 @@ public class Configuration implements Serializable {
      */
     public static String getDefaultDatabaseLayer() {
         synchronized (loadLock) {
-            return d.defaultDatabaseLayer;
+            return applicationConfig.getProperty("dataSourceConfig", KEY_DEFAULT_DATABASE_LAYER);
         }
     }
 
-    public static String getClientSideValidationDefault() {
-        return d.defaultClientSideValidation;
-    }
-
-    public static boolean getReloadFormOnErrorDefault() {
-        return d.defaultReloadFormOnError;
-    }
-
-    public static String getDefaultFormAnnotation() {
-        return d.defaultFormAnnotation;
-    }
-
-    public static boolean getCalendarEditorDefault() {
-        return d.defaultCalendarEditor;
-    }
-
-    public static String getDefaultCalendarEditorLink(String contextPath) {
-        return d.calendarEditorLink.replaceAll(PLACEHOLDER_CONTEXT_PATH, contextPath);
-    }
-
     public static Map<String, String> getLogicPackages() {
-        return d.logicPackages;
+        return applicationConfig.getPropertiesAsMap("businessLogicPackages");
     }
 
     public static Map<String, String> getAuthorizationDefinitions() {
-        return d.authorizationDefinitions;
-    }
-
-    public static String getMakumbaToolsLocation() {
-        final String property = d.makumbaToolsLocation;
-        return property.endsWith("/") ? property.substring(0, property.length() - 1) : property;
-    }
-
-    public static String getToolLocation(DeveloperTool t) {
-        return getCompletePath(d.developerToolsLocations.get(t));
-    }
-
-    /**
-     * @deprecated use {@link #getToolLocation(DeveloperTool)} with parameter {@link DeveloperTool#LOGIC_DISCOVERY})
-     *             instead
-     */
-    @Deprecated
-    public static String getLogicDiscoveryViewerLocation() {
-        return getToolLocation(DeveloperTool.LOGIC_DISCOVERY);
-    }
-
-    public static String getServletLocation(MakumbaServlet s) {
-        return getCompletePath(d.servletLocations.get(s));
-    }
-
-    public static String getRepositoryURL() {
-        return d.repositoryURL;
-    }
-
-    public static String getRepositoryLinkText() {
-        return d.repositoryLinkText;
-    }
-
-    public static boolean getErrorLog() {
-        return d.errorLog;
-    }
-
-    public static Map<String, String> getJavaViewerSyntaxStyles() {
-        return d.javaViewerSyntaxStyles;
-    }
-
-    public static Map<String, String> getJspViewerSyntaxStyles() {
-        return d.jspViewerSyntaxStyles;
-    }
-
-    public static Map<String, String> getJspViewerSyntaxStylesTags() {
-        return d.jspViewerSyntaxStylesTags;
-    }
-
-    public static Map<String, Map<String, String>> getInternalCodeGeneratorTemplates() {
-        return d.internalCodeGeneratorTemplates;
-    }
-
-    public static Map<String, Map<String, String>> getApplicationSpecificCodeGeneratorTemplates() {
-        return d.applicationSpecificCodeGeneratorTemplates;
-    }
-
-    private static String getCompletePath(String path) {
-        return StringUtils.isBlank(path) || path.equals(PROPERTY_NOT_SET) ? PROPERTY_NOT_SET
-                : getMakumbaToolsLocation() + path;
+        return applicationConfig.getPropertiesAsMap("authorization");
     }
 
     /**
@@ -628,44 +472,12 @@ public class Configuration implements Serializable {
         hibernate;
     }
 
-    /** Returns the list of JS and CSS resources needed by Makumba. */
-    public static LinkedHashSet<String> getRequiredResources() {
-        return requiredResources;
+    public static boolean getErrorLog() {
+        return applicationConfig.getBooleanProperty("makumbaToolConfig", KEY_DB_ERROR_LOG);
     }
 
-    /**
-     * Compiles a list of all JS and CSS resources needed by Makumba. Currently, this is all sources Makumba can
-     * potentially need.<br/>
-     * TODO: in the future, allow programmers to disable sourcing of specific resources via the {@link Configuration}
-     */
-    private static LinkedHashSet<String> buildRequiredResources() {
-        LinkedHashSet<String> resources = new LinkedHashSet<String>();
-        CollectionUtils.addAll(resources,
-            MakumbaSystem.getClientsideValidationProvider().getNeededJavaScriptFileNames());
-        CollectionUtils.addAll(resources, MakumbaSystem.getCalendarProvider().getNeededJavaScriptFileNames());
-        resources.add("makumbaSetChooser.js");
-        resources.add("prototype.js");
-        resources.add("scriptaculous.js");
-        resources.add("makumba-autocomplete.js");
-        resources.add("makumba-ajax.js");
-
-        resources.add("makumba.css");
-
-        if (d.disableResources != Configuration.PROPERTY_NOT_SET && StringUtils.isNotBlank(d.disableResources)) {
-            String[] disabledRes = d.disableResources.split(",");
-            logger.info("Disabling the following resources: " + Arrays.toString(disabledRes));
-            for (String r : disabledRes) {
-                if (!resources.remove(r.trim())) {
-                    logger.warning("Specified resource '" + r + "' not found!");
-                }
-            }
-        }
-
-        return resources;
-    }
-
-    public static void main(String[] args) {
-        System.out.println(Configuration.getRequiredResources());
+    public static MakumbaINIConfiguration getDefaultConfig() {
+        return defaultConfig;
     }
 
 }

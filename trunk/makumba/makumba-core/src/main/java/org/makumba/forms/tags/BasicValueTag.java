@@ -33,9 +33,9 @@ import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.MakumbaJspAnalyzer;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.attributes.PageAttributes;
+import org.makumba.commons.tags.FormDataProvider;
 import org.makumba.commons.tags.GenericMakumbaTag;
 import org.makumba.providers.DataDefinitionProvider;
-import org.makumba.providers.FormDataProvider;
 
 /**
  * This is a a base class for InputTag and OptionTag but may be used for other tags that need to compute a value in

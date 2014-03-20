@@ -50,13 +50,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.makumba.analyser.engine.JavaParseData;
+import org.makumba.commons.http.MakumbaServlet;
+import org.makumba.commons.tags.MakumbaJspConfiguration;
 import org.makumba.devel.relations.FileRelations;
-import org.makumba.devel.relations.RelationCrawler;
 import org.makumba.devel.relations.FileRelations.RelationOrigin;
+import org.makumba.devel.relations.RelationCrawler;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
-import org.makumba.providers.DeveloperTool;
-import org.makumba.providers.MakumbaServlet;
 
 /**
  * a viewer that shows everything per line
@@ -139,6 +139,7 @@ public abstract class LineViewer implements SourceViewer {
     }
 
     /** if this resource is actually a directory, returns not null */
+    @Override
     public File getDirectory() {
         if (dir != null && dir.isDirectory()) {
             return dir;
@@ -169,8 +170,8 @@ public abstract class LineViewer implements SourceViewer {
     public LineViewer(boolean printLineNumbers, HttpServletRequest request) {
         this.request = request;
         this.printLineNumbers = printLineNumbers;
-        versionControlRepositoryURL = Configuration.getRepositoryURL();
-        versionControlRepositoryLinkText = Configuration.getRepositoryLinkText();
+        versionControlRepositoryURL = MakumbaJspConfiguration.getRepositoryURL();
+        versionControlRepositoryLinkText = MakumbaJspConfiguration.getRepositoryLinkText();
 
         contextPath = request.getContextPath();
         hideLineNumbers = StringUtils.equals(request.getParameter(PARAM_HIDE_LINES), "true");
@@ -187,6 +188,7 @@ public abstract class LineViewer implements SourceViewer {
     /**
      * parse the text and write the output
      */
+    @Override
     public void parseText(PrintWriter writer) throws IOException {
         long begin = System.currentTimeMillis();
         printPageBegin(writer);
@@ -224,8 +226,8 @@ public abstract class LineViewer implements SourceViewer {
     }
 
     protected void writeLineNumber(PrintWriter writer, int n, boolean initialVisibility) {
-        writer.print("<a style=\"" + (initialVisibility ? "" : "display: none;") + " \" name=\""
-                + n + "\" href=\"#" + n + "\" class=\"lineNo\">" + n + ":\t</a>");
+        writer.print("<a style=\"" + (initialVisibility ? "" : "display: none;") + " \" name=\"" + n + "\" href=\"#"
+                + n + "\" class=\"lineNo\">" + n + ":\t</a>");
     }
 
     /**
@@ -233,12 +235,12 @@ public abstract class LineViewer implements SourceViewer {
      * @throws IOException
      */
     public void printPageEnd(PrintWriter writer) throws IOException {
-        printPageEnd(writer,null);
+        printPageEnd(writer, null);
     }
 
     public void printPageEnd(PrintWriter writer, StringBuffer extra) throws IOException {
         writer.println("</code></pre>");
-        if(extra != null) {
+        if (extra != null) {
             writer.println(extra);
         }
         footer(writer);
@@ -267,8 +269,7 @@ public abstract class LineViewer implements SourceViewer {
             if (!StringUtils.isBlank(title) && !title.equals(virtualPath)) {
                 writer.print("<h2><a class=\"brand\" href=\"#\">" + title + "</a></h2>");
             } else if (virtualPath != null) {
-                writer.print("<h2><a class=\"brand\" href=\"" + virtualPath + "\">" + virtualPath
-                        + "</a></h2>");
+                writer.print("<h2><a class=\"brand\" href=\"" + virtualPath + "\">" + virtualPath + "</a></h2>");
             }
 
             if (additionalHeaderInfo != null) {
@@ -309,8 +310,8 @@ public abstract class LineViewer implements SourceViewer {
                     urlParams = "?" + urlParams;
                 }
                 String linkText = (hideLineNumbers ? "Show" : "Hide") + " line numbers";
-                writer.println("<a href=\"" + request.getRequestURI() + urlParams + "\" onclick=\"toggleLineNumbers(); return false;\">" + linkText
-                        + "</a>");
+                writer.println("<a href=\"" + request.getRequestURI() + urlParams
+                        + "\" onclick=\"toggleLineNumbers(); return false;\">" + linkText + "</a>");
                 writeAdditionalLinks(writer);
             }
 
@@ -318,15 +319,13 @@ public abstract class LineViewer implements SourceViewer {
 
             writer.println(" </div>");
 
-
-
         }
         writer.print("<pre class=\"" + additionalCodeStyleClasses + "\"><code>");
     }
 
     protected void printFileRelations(PrintWriter writer) {
         writer.println("<li>");
-        DevelUtils.printPopoverLink(writer,"Relations","","fileRelations");
+        DevelUtils.printPopoverLink(writer, "Relations", "", "fileRelations");
         writer.println("</li>");
         writer.println("<div id=\"fileRelations\" style=\"display: none;\">");
         String webAppRoot = request.getSession().getServletContext().getRealPath("/");
@@ -350,12 +349,12 @@ public abstract class LineViewer implements SourceViewer {
                         // TODO make nicer, i.e. display something else while it crawls using some JS
                         // TODO: simply deactivating calling the crawler again would be a first step..
                         writer.println("No relations have been computed for this webapp.");
-                        if (Configuration.getServletLocation(MakumbaServlet.RELATION_CRAWLER).equals(
+                        if (MakumbaJspConfiguration.getServletLocation(MakumbaServlet.RELATION_CRAWLER).equals(
                             Configuration.PROPERTY_NOT_SET)) {
-                            DevelUtils.printErrorMessage(writer,"","Manually triggering crawling is disabled");
+                            DevelUtils.printErrorMessage(writer, "", "Manually triggering crawling is disabled");
                         } else {
                             writer.println("<br><a href=\"" + request.getContextPath()
-                                    + Configuration.getServletLocation(MakumbaServlet.RELATION_CRAWLER)
+                                    + MakumbaJspConfiguration.getServletLocation(MakumbaServlet.RELATION_CRAWLER)
                                     + "\">Crawl now</a> (this will take some time)");
                         }
                     } else {
@@ -417,11 +416,11 @@ public abstract class LineViewer implements SourceViewer {
             return contextPath + "/" + fileName + jspSourceViewExtension;
         } else if (fileType.equals(TYPE_MDD)) {
             fileName = removeFilenamePrefixes(fileName);
-            return contextPath + Configuration.getToolLocation(DeveloperTool.MDD_VIEWER) + "/"
+            return contextPath + MakumbaJspConfiguration.getToolLocation(DeveloperTool.MDD_VIEWER) + "/"
                     + fileName.replaceAll(".mdd", "").replaceAll("/", ".");
         } else if (fileType.equals(TYPE_JAVA)) {
             fileName = removeFilenamePrefixes(fileName);
-            return contextPath + Configuration.getToolLocation(DeveloperTool.JAVA_VIEWER) + "/" + fileName;
+            return contextPath + MakumbaJspConfiguration.getToolLocation(DeveloperTool.JAVA_VIEWER) + "/" + fileName;
         }
         return fileName;
     }
@@ -461,7 +460,7 @@ public abstract class LineViewer implements SourceViewer {
     protected void printAdditionalViewerOptions(PrintWriter printWriter) throws IOException {
     }
 
-    protected void printPageBeginAdditional(PrintWriter writer) throws IOException{
+    protected void printPageBeginAdditional(PrintWriter writer) throws IOException {
     }
 
     /** Prints a link to the page CVS/SVN for the file currently viewed. */
@@ -616,11 +615,11 @@ public abstract class LineViewer implements SourceViewer {
      */
     public String formatClassLink(String qualifiedClassName, String className, Integer lineNumber) {
         if (lineNumber != null) {
-            return "<a href=\"" + contextPath + Configuration.getToolLocation(DeveloperTool.JAVA_VIEWER) + "/"
-                    + qualifiedClassName + "#" + lineNumber + "\">" + className + "</a>";
+            return "<a href=\"" + contextPath + MakumbaJspConfiguration.getToolLocation(DeveloperTool.JAVA_VIEWER)
+                    + "/" + qualifiedClassName + "#" + lineNumber + "\">" + className + "</a>";
         } else {
-            return "<a href=\"" + contextPath + Configuration.getToolLocation(DeveloperTool.JAVA_VIEWER) + "/"
-                    + qualifiedClassName + "\">" + className + "</a>";
+            return "<a href=\"" + contextPath + MakumbaJspConfiguration.getToolLocation(DeveloperTool.JAVA_VIEWER)
+                    + "/" + qualifiedClassName + "\">" + className + "</a>";
         }
     }
 
@@ -630,7 +629,8 @@ public abstract class LineViewer implements SourceViewer {
      */
     public String formatMDDLink(String mddName) {
         return "<a class=\"classlink\" title=\"DataDefinition '" + mddName + "'\" href=\"" + contextPath
-                + Configuration.getToolLocation(DeveloperTool.MDD_VIEWER) + "/" + mddName + "\">" + mddName + "</a>";
+                + MakumbaJspConfiguration.getToolLocation(DeveloperTool.MDD_VIEWER) + "/" + mddName + "\">" + mddName
+                + "</a>";
     }
 
     /**
@@ -840,7 +840,7 @@ public abstract class LineViewer implements SourceViewer {
                     s += "#" + methodName + "()";
                 }
             } else {
-                s += contextPath + Configuration.getToolLocation(DeveloperTool.JAVA_VIEWER) + "/"
+                s += contextPath + MakumbaJspConfiguration.getToolLocation(DeveloperTool.JAVA_VIEWER) + "/"
                         + c.getName().replace('.', '/');
             }
             return s + "\" title=\"" + (methodName != null ? "Method in " : "") + c.getName() + "\">" + displayName

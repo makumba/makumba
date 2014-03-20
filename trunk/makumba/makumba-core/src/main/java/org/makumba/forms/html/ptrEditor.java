@@ -33,10 +33,10 @@ import org.makumba.Pointer;
 import org.makumba.commons.StringUtils;
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.RecordFormatter;
+import org.makumba.commons.http.MakumbaServlet;
+import org.makumba.commons.tags.MakumbaJspConfiguration;
 import org.makumba.forms.tags.SearchFieldTag;
-import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
-import org.makumba.providers.MakumbaServlet;
 import org.makumba.providers.QueryProvider;
 
 public class ptrEditor extends choiceEditor {
@@ -250,7 +250,7 @@ public class ptrEditor extends choiceEditor {
         res += "<div id=\"autocomplete_choices_" + id + "\" class=\"autocomplete\"></div>";
 
         res += "<script type=\"text/javascript\">MakumbaAutoComplete.AutoComplete(\"" + id + "\", \""
-                + Configuration.getServletLocation(MakumbaServlet.AUTOCOMPLETE) + "\", \""
+                + MakumbaJspConfiguration.getServletLocation(MakumbaServlet.AUTOCOMPLETE) + "\", \""
                 + rf.dd.getFieldDefinition(fieldIndex).getOriginalFieldDefinition().getDataDefinition().getName()
                 + "\", \"" + rf.dd.getFieldDefinition(fieldIndex).getOriginalFieldDefinition().getName()
                 + "\", \"ptr\", \"" + (String) formatParams.get("org.makumba.forms.queryLanguage") + "\");</script>";

@@ -17,6 +17,7 @@ import org.makumba.analyser.MakumbaJspAnalyzer;
 import org.makumba.analyser.PageCache;
 import org.makumba.analyser.TagData;
 import org.makumba.commons.MultipleKey;
+import org.makumba.commons.tags.FormDataProvider;
 import org.makumba.forms.tags.CriterionTag;
 import org.makumba.forms.tags.FormTagBase;
 import org.makumba.forms.tags.InputTag;
@@ -24,7 +25,6 @@ import org.makumba.forms.tags.SearchFieldTag;
 import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.valuecomputer.ValueComputer;
 import org.makumba.providers.DataDefinitionProvider;
-import org.makumba.providers.FormDataProvider;
 
 /**
  * Native implementation of the FormDataProvider by the list. We pass on an AnalysableTag to all our methods in order to
