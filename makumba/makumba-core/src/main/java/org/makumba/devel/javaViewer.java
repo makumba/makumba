@@ -41,9 +41,8 @@ import org.makumba.analyser.engine.SourceSyntaxPoints;
 import org.makumba.analyser.engine.SyntaxPoint;
 import org.makumba.analyser.engine.TomcatJsp;
 import org.makumba.commons.StringUtils;
-import org.makumba.providers.Configuration;
+import org.makumba.commons.tags.MakumbaJspConfiguration;
 import org.makumba.providers.DataDefinitionProvider;
-import org.makumba.providers.DeveloperTool;
 
 /**
  * the java viewer. It should be a filter from another (mb third-party) viewer that links known .java and .mdd sources.
@@ -54,7 +53,7 @@ import org.makumba.providers.DeveloperTool;
  * @author Rudolf Mayer
  */
 public class javaViewer extends LineViewer {
-    public static Map<String, String> javaSyntaxProperties = Configuration.getJavaViewerSyntaxStyles();
+    public static Map<String, String> javaSyntaxProperties = MakumbaJspConfiguration.getJavaViewerSyntaxStyles();
 
     private static DataDefinitionProvider ddp = DataDefinitionProvider.getInstance();
 
@@ -74,7 +73,7 @@ public class javaViewer extends LineViewer {
 
         viewerName = "Java Viewer";
         contextPath = req.getContextPath();
-        virtualPath = DevelUtils.getVirtualPath(req, Configuration.getToolLocation(DeveloperTool.JAVA_VIEWER));
+        virtualPath = DevelUtils.getVirtualPath(req, MakumbaJspConfiguration.getToolLocation(DeveloperTool.JAVA_VIEWER));
         if (virtualPath == null) {
             virtualPath = "/";
         } else {
@@ -254,18 +253,19 @@ public class javaViewer extends LineViewer {
                                 try {
                                     dd = ddp.getDataDefinition(mddName);
                                     writer.print(parts[0] + "<a href=\"" + contextPath
-                                            + Configuration.getToolLocation(DeveloperTool.MDD_VIEWER) + dd.getName()
-                                            + "\" title=\"'" + parts[2] + "'-handler for " + dd.getName()
-                                            + "\" class=\"classLink\">" + parts[1] + "</a>");
+                                            + MakumbaJspConfiguration.getToolLocation(DeveloperTool.MDD_VIEWER)
+                                            + dd.getName() + "\" title=\"'" + parts[2] + "'-handler for "
+                                            + dd.getName() + "\" class=\"classLink\">" + parts[1] + "</a>");
                                 } catch (DataDefinitionNotFoundError e) {
                                     mddName = findMddNameFromHandler(parts[1], true);
                                     try {
                                         dd = ddp.getDataDefinition(mddName);
                                         DataDefinition parentDd = dd.getParentField().getDataDefinition();
                                         writer.print(parts[0] + "<a href=\"" + contextPath
-                                                + Configuration.getToolLocation(DeveloperTool.MDD_VIEWER) + "/"
-                                                + parentDd.getName() + "\" title=\"'" + parts[2] + "'-handler for "
-                                                + dd.getName() + "\" class=\"classLink\">" + parts[1] + "</a>");
+                                                + MakumbaJspConfiguration.getToolLocation(DeveloperTool.MDD_VIEWER)
+                                                + "/" + parentDd.getName() + "\" title=\"'" + parts[2]
+                                                + "'-handler for " + dd.getName() + "\" class=\"classLink\">"
+                                                + parts[1] + "</a>");
                                     } catch (DataDefinitionNotFoundError e1) {
                                         // do nothing, just don't use this possible MDD
                                     } catch (NullPointerException e1) {
@@ -370,17 +370,18 @@ public class javaViewer extends LineViewer {
     public void navigation(PrintWriter w) {
 
         printFileRelations(w);
-        DevelUtils.printNavigationButton(w,"Java","#","",1);
+        DevelUtils.printNavigationButton(w, "Java", "#", "", 1);
         String p = virtualPath;
         if (p.endsWith(".java")) {
             p = p.substring(0, p.indexOf(".java"));
         }
         p = p.replaceAll("\\.", "/");
-        String path = contextPath + Configuration.getToolLocation(DeveloperTool.JAVA_VIEWER) + p.substring(0, p.lastIndexOf('/') + 1);
+        String path = contextPath + MakumbaJspConfiguration.getToolLocation(DeveloperTool.JAVA_VIEWER)
+                + p.substring(0, p.lastIndexOf('/') + 1);
         if (path.startsWith("/")) {
             path = path.substring(1);
         }
-        DevelUtils.printNavigationButton(w,"browse",path,"",0);
+        DevelUtils.printNavigationButton(w, "browse", path, "", 0);
         DevelUtils.writeDevelUtilLinks(w, DeveloperTool.JAVA_VIEWER.getKey(), contextPath);
     }
 

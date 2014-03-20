@@ -17,10 +17,9 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
 import org.makumba.Transaction;
+import org.makumba.commons.tags.MakumbaJspConfiguration;
 import org.makumba.db.makumba.DBConnection;
-import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
-import org.makumba.providers.DeveloperTool;
 import org.makumba.providers.TransactionProvider;
 
 /**
@@ -75,7 +74,6 @@ public class DataTypeListerServlet extends DataServlet {
                     otherField = dd.getTitleFieldName();
                 }
 
-
                 writer.println("<form method=\"get\" class=\"form-horizontal\">");
                 writer.println("  <input type=\"hidden\" name=\"type\" value=\"" + type + "\">");
                 writer.println("  <div class=\"control-group\">");
@@ -115,7 +113,8 @@ public class DataTypeListerServlet extends DataServlet {
                 writer.println("  <div class=\"control-group\">");
                 writer.println("    <label class=\"control-label\" for=\"limit\">Limit</label>");
                 writer.println("    <div class=\"controls\">");
-                writer.println("      <input id=\"limit\" name=\"limit\" type=\"text\" size=\"5\" value=\"" + limit + "\">");
+                writer.println("      <input id=\"limit\" name=\"limit\" type=\"text\" size=\"5\" value=\"" + limit
+                        + "\">");
                 writer.println("    </div>");
                 writer.println("  </div>");
                 writer.println("  <div class=\"control-group\">");
@@ -153,8 +152,8 @@ public class DataTypeListerServlet extends DataServlet {
                     writer.println("<td>" + (i + 1) + "</td>");
                     writer.println("<td>");
                     writer.println("<a href=\"" + contextPath
-                            + Configuration.getToolLocation(DeveloperTool.OBJECT_VIEWER) + "/" + type + "?ptr="
-                            + ((Pointer) results.elementAt(i).get("ptr")).toExternalForm() + "\">");
+                            + MakumbaJspConfiguration.getToolLocation(DeveloperTool.OBJECT_VIEWER) + "/" + type
+                            + "?ptr=" + ((Pointer) results.elementAt(i).get("ptr")).toExternalForm() + "\">");
                     Dictionary<String, Object> dictionary = results.elementAt(i);
                     Object value = dictionary.get("title");
                     if (value == null || value.equals("")) {
@@ -189,7 +188,7 @@ public class DataTypeListerServlet extends DataServlet {
                     writer.println("<hr>");
                     org.makumba.db.makumba.sql.Query sqlQuery = (org.makumba.db.makumba.sql.Query) ((DBConnection) t).getQuery(query);
                     writer.println("<p>SQL query:</p>");
-                    DevelUtils.printSQLQuery(writer,sqlQuery.getCommand(new HashMap<String, Object>()) + ";");
+                    DevelUtils.printSQLQuery(writer, sqlQuery.getCommand(new HashMap<String, Object>()) + ";");
                 }
 
             } finally {
@@ -201,7 +200,8 @@ public class DataTypeListerServlet extends DataServlet {
 
     private void doDirectoryListing(HttpServletRequest request, HttpServletResponse response, PrintWriter writer)
             throws IOException, FileNotFoundException {
-        String servletPath = request.getContextPath() + Configuration.getToolLocation(DeveloperTool.DATA_LISTER);
+        String servletPath = request.getContextPath()
+                + MakumbaJspConfiguration.getToolLocation(DeveloperTool.DATA_LISTER);
         String requestURI = request.getRequestURI();
         String pathInfo = requestURI.substring(requestURI.indexOf(servletPath) + servletPath.length());
         if (DevelUtils.redirected(request, response, pathInfo)) {
@@ -239,7 +239,8 @@ public class DataTypeListerServlet extends DataServlet {
             if (s.indexOf(".") != -1 && s.endsWith("dd")) {
                 String ddname = pathInfo + s;
                 ddname = ddname.substring(1, ddname.lastIndexOf(".")).replace('/', '.');
-                String addr = contextPath + Configuration.getToolLocation(DeveloperTool.DATA_LISTER) + "/" + ddname;
+                String addr = contextPath + MakumbaJspConfiguration.getToolLocation(DeveloperTool.DATA_LISTER) + "/"
+                        + ddname;
                 writer.println("<b><a href=\"" + addr + "\"><i class=\"icon-file\"></i>" + s + "</a></b>");
             }
         }

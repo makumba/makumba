@@ -1,4 +1,4 @@
-package org.makumba.controller;
+package org.makumba.controller.http;
 
 import java.io.IOException;
 import java.util.ArrayList;

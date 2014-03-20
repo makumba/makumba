@@ -36,7 +36,6 @@ import org.makumba.InvalidValueException;
 import org.makumba.Pointer;
 import org.makumba.commons.SQLPointer;
 import org.makumba.providers.DataDefinitionProvider;
-import org.makumba.providers.DeveloperTool;
 import org.makumba.providers.TransactionProvider;
 
 /**

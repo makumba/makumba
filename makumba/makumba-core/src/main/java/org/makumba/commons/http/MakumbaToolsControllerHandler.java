@@ -35,13 +35,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.makumba.commons.NamedResources;
-import org.makumba.db.makumba.UniquenessServlet;
+import org.makumba.commons.tags.MakumbaJspConfiguration;
 import org.makumba.devel.DevelUtils;
+import org.makumba.devel.DeveloperTool;
 import org.makumba.devel.relations.RelationCrawlerTool;
 import org.makumba.forms.responder.ValueEditor;
 import org.makumba.providers.Configuration;
-import org.makumba.providers.DeveloperTool;
-import org.makumba.providers.MakumbaServlet;
 
 /**
  * Handle access to makumba tools, like the {@link UniquenessServlet}.
@@ -57,25 +56,25 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
         HttpServletResponse response = (HttpServletResponse) res;
 
         String path = getPath(request);
-        if (path.startsWith(Configuration.getServletLocation(MakumbaServlet.UNIQUENESS))) {
+        if (path.startsWith(MakumbaJspConfiguration.getServletLocation(MakumbaServlet.UNIQUENESS))) {
             new UniquenessServlet().doGet(request, response);
             return false;
-        } else if (path.startsWith(Configuration.getServletLocation(MakumbaServlet.AUTOCOMPLETE))) {
+        } else if (path.startsWith(MakumbaJspConfiguration.getServletLocation(MakumbaServlet.AUTOCOMPLETE))) {
             new AutoCompleteServlet().doGet(request, response);
             return false;
-        } else if (path.startsWith(Configuration.getServletLocation(MakumbaServlet.RESOURCES))) {
+        } else if (path.startsWith(MakumbaJspConfiguration.getServletLocation(MakumbaServlet.RESOURCES))) {
             new MakumbaResourceServlet().doGet(request, response);
             return false;
-        } else if (path.startsWith(Configuration.getServletLocation(MakumbaServlet.DOWNLOAD))) {
+        } else if (path.startsWith(MakumbaJspConfiguration.getServletLocation(MakumbaServlet.DOWNLOAD))) {
             new MakumbaDownloadServlet().doGet(request, response);
             return false;
-        } else if (path.startsWith(Configuration.getServletLocation(MakumbaServlet.VALUE_EDITOR))) {
+        } else if (path.startsWith(MakumbaJspConfiguration.getServletLocation(MakumbaServlet.VALUE_EDITOR))) {
             new ValueEditor().doPost(request, response);
             return false;
-        } else if (path.startsWith(Configuration.getServletLocation(MakumbaServlet.RELATION_CRAWLER))) {
+        } else if (path.startsWith(MakumbaJspConfiguration.getServletLocation(MakumbaServlet.RELATION_CRAWLER))) {
             new RelationCrawlerTool().doPost(request, response);
             return false;
-        } else if (path.startsWith(Configuration.getToolLocation(DeveloperTool.CACHE_CLEANER))) {
+        } else if (path.startsWith(MakumbaJspConfiguration.getToolLocation(DeveloperTool.CACHE_CLEANER))) {
             // check if there is a specific cache
             String cacheName = request.getParameter("cacheName");
             ArrayList<String> cacheNames = NamedResources.getActiveCacheNames();
@@ -85,7 +84,7 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
                 PrintWriter w = res.getWriter();
                 res.setContentType("text/html");
                 DevelUtils.writePageBegin(w);
-                DevelUtils.writeStylesAndScripts(w,((HttpServletRequest) req).getContextPath());
+                DevelUtils.writeStylesAndScripts(w, ((HttpServletRequest) req).getContextPath());
                 DevelUtils.writeTitleAndHeaderEnd(w, "Makumba Cache Cleaner");
                 DevelUtils.printNavigationBegin(w, "Makumba Cache Cleaner");
                 DevelUtils.printNavigationEnd(w);
@@ -109,10 +108,11 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
             }
 
             return false;
-        } else if (path.startsWith(Configuration.getMakumbaToolsLocation())) {
+        } else if (path.startsWith(MakumbaJspConfiguration.getMakumbaToolsLocation())) {
             // redirect if we have a unknown path
-            if (!path.equals(Configuration.getMakumbaToolsLocation() + "/")) {
-                response.sendRedirect(request.getContextPath() + Configuration.getMakumbaToolsLocation() + "/");
+            if (!path.equals(MakumbaJspConfiguration.getMakumbaToolsLocation() + "/")) {
+                response.sendRedirect(request.getContextPath() + MakumbaJspConfiguration.getMakumbaToolsLocation()
+                        + "/");
                 return false;
             }
             // a page showing all makumba tools, and their location
@@ -129,7 +129,7 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
 
             writeSectionHeader(w, "Location", "Makumba Tools");
             for (DeveloperTool t : DeveloperTool.values()) {
-                writeDescr(w, t.getName(), t.getDescription(), t.getKey(), Configuration.getToolLocation(t),
+                writeDescr(w, t.getName(), t.getDescription(), t.getKey(), MakumbaJspConfiguration.getToolLocation(t),
                     request.getContextPath());
             }
             w.println("</table>");
@@ -137,8 +137,8 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
             writeSectionHeader(w, "Location", "Makumba servlets");
 
             for (MakumbaServlet s : MakumbaServlet.values()) {
-                writeDescr(w, s.getName(), s.getDescription(), s.getKey(), Configuration.getServletLocation(s),
-                    request.getContextPath());
+                writeDescr(w, s.getName(), s.getDescription(), s.getKey(),
+                    MakumbaJspConfiguration.getServletLocation(s), request.getContextPath());
             }
 
             w.println("  </tbody>");
@@ -146,20 +146,24 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
 
             writeSectionHeader(w, "Value", "Controller settings");
             writeDescr(w, "Form reload", "Whether forms shall be reloaded on validation errors",
-                Configuration.KEY_RELOAD_FORM_ON_ERROR, Configuration.getReloadFormOnErrorDefault());
+                MakumbaJspConfiguration.KEY_RELOAD_FORM_ON_ERROR, MakumbaJspConfiguration.getReloadFormOnErrorDefault());
             writeDescr(w, "Clientside validation",
                 "Whether client-side validation is enabled, and if it is live or on form submission",
-                Configuration.KEY_CLIENT_SIDE_VALIDATION, Configuration.getClientSideValidationDefault());
+                MakumbaJspConfiguration.KEY_CLIENT_SIDE_VALIDATION,
+                MakumbaJspConfiguration.getClientSideValidationDefault());
             w.println("  </tbody>");
             w.println("</table>");
 
             writeSectionHeader(w, "Value", "Input style settings");
             writeDescr(w, "Calendar editor",
                 "Whether the calendar-editor will be displayed by default for mak:input on date types",
-                Configuration.KEY_CALENDAR_EDITOR, Configuration.getCalendarEditorDefault());
-            writeDescr(w, "Calendar editor link", "The default link created for the calendar editor",
-                Configuration.KEY_CALENDAR_EDITOR_LINK,
-                StringEscapeUtils.escapeHtml(Configuration.getDefaultCalendarEditorLink(request.getContextPath())));
+                MakumbaJspConfiguration.KEY_CALENDAR_EDITOR, MakumbaJspConfiguration.getCalendarEditorDefault());
+            writeDescr(
+                w,
+                "Calendar editor link",
+                "The default link created for the calendar editor",
+                MakumbaJspConfiguration.KEY_CALENDAR_EDITOR_LINK,
+                StringEscapeUtils.escapeHtml(MakumbaJspConfiguration.getDefaultCalendarEditorLink(request.getContextPath())));
             w.println("  </tbody>");
             w.println("</table>");
 
@@ -171,9 +175,9 @@ public class MakumbaToolsControllerHandler extends ControllerHandler {
                 Configuration.KEY_QUERYFUNCTIONINLINER, Configuration.getQueryInliner());
             writeDescr(w, "Repository URL",
                 "The URL prefix to compose links from the source code viewers to the source code repository",
-                Configuration.KEY_REPOSITORY_URL, Configuration.getRepositoryURL());
+                MakumbaJspConfiguration.KEY_REPOSITORY_URL, MakumbaJspConfiguration.getRepositoryURL());
             writeDescr(w, "Repository Link Text", "The text displayed on the repository URL link",
-                Configuration.KEY_REPOSITORY_LINK_TEXT, Configuration.getRepositoryLinkText());
+                MakumbaJspConfiguration.KEY_REPOSITORY_LINK_TEXT, MakumbaJspConfiguration.getRepositoryLinkText());
             w.println("  </tbody>");
             w.println("</table>");
 

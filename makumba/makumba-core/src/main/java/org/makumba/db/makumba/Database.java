@@ -24,6 +24,8 @@
 package org.makumba.db.makumba;
 
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -97,10 +99,12 @@ public abstract class Database {
 
     protected abstract DBConnection getPooledDBConnection();
 
+    static final DateFormat debugTime = new SimpleDateFormat("d MMMM yyyy HH:mm:ss zzz",
+            org.makumba.MakumbaSystem.getLocale());
+
     public void close() {
         java.util.logging.Logger.getLogger("org.makumba.db.init").info(
-            "closing  " + getName() + "\n\tat "
-                    + org.makumba.commons.formatters.dateFormatter.debugTime.format(new java.util.Date()));
+            "closing  " + getName() + "\n\tat " + debugTime.format(new java.util.Date()));
         tables.close();
         // queries.close();
         updates.close();

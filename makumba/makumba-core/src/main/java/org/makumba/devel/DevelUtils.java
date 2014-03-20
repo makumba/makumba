@@ -10,9 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.makumba.Pointer;
 import org.makumba.commons.http.MakumbaResourceServlet;
+import org.makumba.commons.http.MakumbaServlet;
+import org.makumba.commons.tags.MakumbaJspConfiguration;
 import org.makumba.providers.Configuration;
-import org.makumba.providers.DeveloperTool;
-import org.makumba.providers.MakumbaServlet;
 
 /**
  * This class combines some methods to print pages used by various developer support tools in package org.makumba.devel.
@@ -30,7 +30,7 @@ public class DevelUtils {
     }
 
     public static void writeScripts(PrintWriter w, String contextPath, String... additionalScripts) {
-        String path = contextPath + Configuration.getServletLocation(MakumbaServlet.RESOURCES) + "/"
+        String path = contextPath + MakumbaJspConfiguration.getServletLocation(MakumbaServlet.RESOURCES) + "/"
                 + MakumbaResourceServlet.RESOURCE_PATH_JAVASCRIPT;
         w.println("<script type=\"text/javascript\" src=\"" + path + "jquery.min.js\"></script>");
         w.println("<script type=\"text/javascript\" src=\"" + path + "makumbaDevelScripts.js\"></script>");
@@ -44,7 +44,7 @@ public class DevelUtils {
     }
 
     public static void writeStyles(PrintWriter w, String contextPath, String... additionalStyles) {
-        String path = contextPath + Configuration.getServletLocation(MakumbaServlet.RESOURCES) + "/"
+        String path = contextPath + MakumbaJspConfiguration.getServletLocation(MakumbaServlet.RESOURCES) + "/"
                 + MakumbaResourceServlet.RESOURCE_PATH_CSS;
         w.println("<link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"" + path + "bootstrap.min.css\"/>");
         w.println("<link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"" + path
@@ -93,8 +93,8 @@ public class DevelUtils {
         }
         result += " <span style=\"color: green; afont-size: x-small;\">[";
         boolean haveTitle = StringUtils.isNotBlank(pointerTitle);
-        result += "<a href=\"" + contextPath + Configuration.getToolLocation(DeveloperTool.OBJECT_VIEWER) + "/"
-                + pointer.getType() + "?ptr=" + pointer.toExternalForm() + "\" style=\"color: green\" title=\""
+        result += "<a href=\"" + contextPath + MakumbaJspConfiguration.getToolLocation(DeveloperTool.OBJECT_VIEWER)
+                + "/" + pointer.getType() + "?ptr=" + pointer.toExternalForm() + "\" style=\"color: green\" title=\""
                 + (haveTitle ? "Pointer: " + pointer.toExternalForm() + "; " : "") + "Database Value: "
                 + pointer.longValue() + "; DBSV|Unique Index: " + pointer.getDbsv() + "|" + pointer.getUid() + "\">"
                 + (haveTitle ? pointerTitle : pointer.toExternalForm()) + "</a>";
@@ -161,13 +161,13 @@ public class DevelUtils {
         w.println("<ul class=\"dropdown-menu\">");
         for (DeveloperTool t : DeveloperTool.values()) {
             if (!t.getKey().equals(toolKey) && t.isGeneric()) {
-                if (Configuration.getToolLocation(t) == null
-                        || Configuration.getToolLocation(t) == Configuration.PROPERTY_NOT_SET) {
+                if (MakumbaJspConfiguration.getToolLocation(t) == null
+                        || MakumbaJspConfiguration.getToolLocation(t) == Configuration.PROPERTY_NOT_SET) {
                     w.print("<li class=\"disabled\"><a tabindex=\"-1\" href=\"#\" title=\"Tool disabled via Makumba.conf\">"
                             + t.getName() + "</a></li>");
                 } else if (t.isGeneric()) {
-                    w.print("<li><a tabindex=\"-1\" href=\"" + contextPath + Configuration.getToolLocation(t) + "\">"
-                            + t.getName() + "</a></li>");
+                    w.print("<li><a tabindex=\"-1\" href=\"" + contextPath + MakumbaJspConfiguration.getToolLocation(t)
+                            + "\">" + t.getName() + "</a></li>");
                 }
             }
         }

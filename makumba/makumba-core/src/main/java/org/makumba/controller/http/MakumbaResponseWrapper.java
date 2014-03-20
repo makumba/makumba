@@ -1,9 +1,10 @@
-package org.makumba.controller;
+package org.makumba.controller.http;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.logging.Logger;
 
@@ -11,13 +12,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.makumba.analyser.AnalysableElement;
 import org.makumba.analyser.MakumbaJspAnalyzer;
 import org.makumba.analyser.PageCache;
+import org.makumba.commons.http.MakumbaServlet;
+import org.makumba.commons.tags.MakumbaJspConfiguration;
 import org.makumba.forms.validation.LiveValidationProvider;
 import org.makumba.list.tags.SectionTag;
 import org.makumba.providers.Configuration;
-import org.makumba.providers.MakumbaServlet;
 
 /**
  * This class provides a wrapper around a {@link HttpServletResponse}, and modifies on the fly some of the output to be
@@ -191,7 +195,7 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
             if ((request.getRequestURI().endsWith(".jsp") || request.getRequestURI().endsWith(
                 ".jsp;jsessionid=" + request.getSession().getId()))
                     && !request.getRequestURI().startsWith(
-                        request.getContextPath() + Configuration.getMakumbaToolsLocation())
+                        request.getContextPath() + MakumbaJspConfiguration.getMakumbaToolsLocation())
                     && request.getAttribute(javax.servlet.jsp.PageContext.EXCEPTION) == null && writerState == null) {
                 writerState = beforeHeader;
                 initResourceReplacements();
@@ -215,18 +219,19 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
             request.getSession().getServletContext().getRealPath("/"), MakumbaJspAnalyzer.getInstance());
         if (pageCache != null) {
             // workaround to http://trac.makumba.org/ticket/1277: writing all potentially required resources
-            LinkedHashSet<String> resources = Configuration.getRequiredResources();
+            LinkedHashSet<String> resources = requiredResources;
             if (resources != null) {
                 for (Object object : resources) {
                     String resource = (String) object;
                     if (resource.endsWith(".js")) {
                         javaScriptResources += "  <script type=\"text/javascript\" src=\"" + request.getContextPath()
-                                + Configuration.getServletLocation(MakumbaServlet.RESOURCES) + "/javaScript/"
+                                + MakumbaJspConfiguration.getServletLocation(MakumbaServlet.RESOURCES) + "/javaScript/"
                                 + resource + "\"></script>\n";
                     } else if (resource.endsWith(".css")) {
                         cssResources += "  <link rel=\"StyleSheet\" type=\"text/css\" media=\"all\" href=\""
-                                + request.getContextPath() + Configuration.getServletLocation(MakumbaServlet.RESOURCES)
-                                + "/css/" + resource + "\"/>\n";
+                                + request.getContextPath()
+                                + MakumbaJspConfiguration.getServletLocation(MakumbaServlet.RESOURCES) + "/css/"
+                                + resource + "\"/>\n";
                     }
                 }
             }
@@ -324,6 +329,41 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
             writerState.warnOnClose();
         }
 
+    }
+
+    private static LinkedHashSet<String> requiredResources = buildRequiredResources();
+
+    /**
+     * Compiles a list of all JS and CSS resources needed by Makumba. Currently, this is all sources Makumba can
+     * potentially need.<br/>
+     * TODO: in the future, allow programmers to disable sourcing of specific resources via the {@link Configuration}
+     */
+    private static LinkedHashSet<String> buildRequiredResources() {
+        LinkedHashSet<String> resources = new LinkedHashSet<String>();
+        CollectionUtils.addAll(resources,
+            MakumbaJspConfiguration.getClientsideValidationProvider().getNeededJavaScriptFileNames());
+        CollectionUtils.addAll(resources, MakumbaJspConfiguration.getCalendarProvider().getNeededJavaScriptFileNames());
+        resources.add("makumbaSetChooser.js");
+        resources.add("prototype.js");
+        resources.add("scriptaculous.js");
+        resources.add("makumba-autocomplete.js");
+        resources.add("makumba-ajax.js");
+
+        resources.add("makumba.css");
+
+        String disableResources = Configuration.getApolicationConfiguration().getProperty("controllerConfig",
+            MakumbaJspConfiguration.KEY_DISABLE_RESOURCES);
+        if (disableResources != Configuration.PROPERTY_NOT_SET && StringUtils.isNotBlank(disableResources)) {
+            String[] disabledRes = disableResources.split(",");
+            logger.info("Disabling the following resources: " + Arrays.toString(disabledRes));
+            for (String r : disabledRes) {
+                if (!resources.remove(r.trim())) {
+                    logger.warning("Specified resource '" + r + "' not found!");
+                }
+            }
+        }
+
+        return resources;
     }
 
 }

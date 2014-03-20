@@ -21,7 +21,7 @@
 //  $Name$
 /////////////////////////////////////
 
-package org.makumba.commons;
+package org.makumba.commons.http;
 
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 
 import javax.servlet.ServletContextEvent;
+
+import org.makumba.commons.NamedResources;
 
 public class NamedResourcesContextListener implements javax.servlet.ServletContextListener {
     public NamedResourcesContextListener() {

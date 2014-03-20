@@ -38,7 +38,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.http.ControllerHandler;
 import org.makumba.commons.http.ServletObjects;
-import org.makumba.controller.MakumbaResponseWrapper;
 
 /**
  * The filter that controls each makumba HTTP access. Performs login, form response, exception handling. This filter

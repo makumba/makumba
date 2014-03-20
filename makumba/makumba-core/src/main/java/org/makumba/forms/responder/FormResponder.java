@@ -34,11 +34,11 @@ import org.makumba.CompositeValidationException;
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
-import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
 import org.makumba.Transaction;
 import org.makumba.commons.DbConnectionProvider;
 import org.makumba.commons.attributes.RequestAttributes;
+import org.makumba.commons.tags.MakumbaJspConfiguration;
 import org.makumba.forms.html.FieldEditor;
 import org.makumba.forms.html.RecordEditor;
 import org.makumba.forms.validation.ClientsideValidationProvider;
@@ -173,7 +173,7 @@ public class FormResponder extends Responder {
 
     StringBuffer extraFormatting;
 
-    private ClientsideValidationProvider provider = MakumbaSystem.getClientsideValidationProvider();
+    private ClientsideValidationProvider provider = MakumbaJspConfiguration.getClientsideValidationProvider();
 
     /**
      * Values of inputs that could not be resolved (yet), e.g. from nested form operations. Stores a formName->fieldName

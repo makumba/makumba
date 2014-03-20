@@ -19,10 +19,10 @@ import org.makumba.analyser.AnalysableTag;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.ClassResource;
 import org.makumba.commons.MultipleKey;
+import org.makumba.commons.http.MakumbaServlet;
 import org.makumba.commons.tags.GenericMakumbaTag;
+import org.makumba.commons.tags.MakumbaJspConfiguration;
 import org.makumba.list.tags.QueryTag;
-import org.makumba.providers.Configuration;
-import org.makumba.providers.MakumbaServlet;
 
 /**
  * This class provides pagination navigation links, i.e. links to the first, previous, next and last page of a paginated
@@ -183,7 +183,7 @@ public class PaginationTag extends GenericMakumbaTag {
                 if (showPageTitle) { // not show the message if it was deactivated by the user
                     sb.append("Showing ").append(itemName).append(" ").append(itemCountLower).append(" to ").append(
                         itemCountUpper).append("").append(" out of ").append(maxResults).append(" (Page ").append(
-                        (currentIndex + 1)).append(" out of ").append(pages).append(")\n");
+                        currentIndex + 1).append(" out of ").append(pages).append(")\n");
                 }
                 sb.append("  </div>\n");
 
@@ -204,30 +204,46 @@ public class PaginationTag extends GenericMakumbaTag {
     /** Initialise the link style, either reading from properties file or using the Makumba provided styles with images */
     private void initLinkStyle() throws IOException {
         String contextPath = ((HttpServletRequest) pageContext.getRequest()).getContextPath();
-        navigationLinkStyle.put(FIRST,
-            "<img border=\"0\" src=\"" + contextPath + Configuration.getServletLocation(MakumbaServlet.RESOURCES)
+        navigationLinkStyle.put(
+            FIRST,
+            "<img border=\"0\" src=\"" + contextPath
+                    + MakumbaJspConfiguration.getServletLocation(MakumbaServlet.RESOURCES)
                     + "/image/resultset_first.gif\" alt=\"" + FIRST + "\">");
-        navigationLinkStyle.put(NEXT,
-            "<img border=\"0\" src=\"" + contextPath + Configuration.getServletLocation(MakumbaServlet.RESOURCES)
+        navigationLinkStyle.put(
+            NEXT,
+            "<img border=\"0\" src=\"" + contextPath
+                    + MakumbaJspConfiguration.getServletLocation(MakumbaServlet.RESOURCES)
                     + "/image/resultset_next.gif\" alt=\"" + NEXT + "\">");
-        navigationLinkStyle.put(LAST,
-            "<img border=\"0\" src=\"" + contextPath + Configuration.getServletLocation(MakumbaServlet.RESOURCES)
+        navigationLinkStyle.put(
+            LAST,
+            "<img border=\"0\" src=\"" + contextPath
+                    + MakumbaJspConfiguration.getServletLocation(MakumbaServlet.RESOURCES)
                     + "/image/resultset_last.gif\" alt=\"" + LAST + "\">");
-        navigationLinkStyle.put(PREVIOUS,
-            "<img border=\"0\" src=\"" + contextPath + Configuration.getServletLocation(MakumbaServlet.RESOURCES)
+        navigationLinkStyle.put(
+            PREVIOUS,
+            "<img border=\"0\" src=\"" + contextPath
+                    + MakumbaJspConfiguration.getServletLocation(MakumbaServlet.RESOURCES)
                     + "/image/resultset_previous.gif\" alt=\"" + PREVIOUS + "\">");
 
-        navigationNALinkStyle.put(FIRST,
-            "<img border=\"0\" src=\"" + contextPath + Configuration.getServletLocation(MakumbaServlet.RESOURCES)
+        navigationNALinkStyle.put(
+            FIRST,
+            "<img border=\"0\" src=\"" + contextPath
+                    + MakumbaJspConfiguration.getServletLocation(MakumbaServlet.RESOURCES)
                     + "/image/resultset_first_na.gif\">");
-        navigationNALinkStyle.put(NEXT,
-            "<img border=\"0\" src=\"" + contextPath + Configuration.getServletLocation(MakumbaServlet.RESOURCES)
+        navigationNALinkStyle.put(
+            NEXT,
+            "<img border=\"0\" src=\"" + contextPath
+                    + MakumbaJspConfiguration.getServletLocation(MakumbaServlet.RESOURCES)
                     + "/image/resultset_next_na.gif\">");
-        navigationNALinkStyle.put(LAST,
-            "<img border=\"0\" src=\"" + contextPath + Configuration.getServletLocation(MakumbaServlet.RESOURCES)
+        navigationNALinkStyle.put(
+            LAST,
+            "<img border=\"0\" src=\"" + contextPath
+                    + MakumbaJspConfiguration.getServletLocation(MakumbaServlet.RESOURCES)
                     + "/image/resultset_last_na.gif\">");
-        navigationNALinkStyle.put(PREVIOUS,
-            "<img border=\"0\" src=\"" + contextPath + Configuration.getServletLocation(MakumbaServlet.RESOURCES)
+        navigationNALinkStyle.put(
+            PREVIOUS,
+            "<img border=\"0\" src=\"" + contextPath
+                    + MakumbaJspConfiguration.getServletLocation(MakumbaServlet.RESOURCES)
                     + "/image/resultset_previous_na.gif\">");
 
         Properties linkStyleProperties = new Properties();

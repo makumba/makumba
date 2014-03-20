@@ -31,8 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.makumba.commons.http.ControllerHandler;
 import org.makumba.commons.http.ServletObjects;
-import org.makumba.providers.Configuration;
-import org.makumba.providers.DeveloperTool;
+import org.makumba.commons.tags.MakumbaJspConfiguration;
 
 /**
  * Handle access to the data tools.
@@ -49,28 +48,28 @@ public class DataToolsControllerHandler extends ControllerHandler {
         HttpServletResponse response = (HttpServletResponse) res;
 
         String path = getPath(request);
-        if (path.startsWith(Configuration.getToolLocation(DeveloperTool.DATA_QUERY))) {
+        if (path.startsWith(MakumbaJspConfiguration.getToolLocation(DeveloperTool.DATA_QUERY))) {
             new DataQueryServlet().doGet(request, response);
             return false;
-        } else if (path.startsWith(Configuration.getToolLocation(DeveloperTool.DATA_LISTER))) {
+        } else if (path.startsWith(MakumbaJspConfiguration.getToolLocation(DeveloperTool.DATA_LISTER))) {
             new DataTypeListerServlet().doGet(request, response);
             return false;
-        } else if (path.startsWith(Configuration.getToolLocation(DeveloperTool.OBJECT_VIEWER))) {
+        } else if (path.startsWith(MakumbaJspConfiguration.getToolLocation(DeveloperTool.OBJECT_VIEWER))) {
             new DataObjectViewerServlet().doGet(request, response);
             return false;
-        } else if (path.startsWith(Configuration.getToolLocation(DeveloperTool.OBJECT_ID_CONVERTER))) {
+        } else if (path.startsWith(MakumbaJspConfiguration.getToolLocation(DeveloperTool.OBJECT_ID_CONVERTER))) {
             new DataPointerValueConverter().doGet(request, response);
             return false;
-        } else if (path.startsWith(Configuration.getToolLocation(DeveloperTool.REFERENCE_CHECKER))) {
+        } else if (path.startsWith(MakumbaJspConfiguration.getToolLocation(DeveloperTool.REFERENCE_CHECKER))) {
             new ReferenceChecker().doGet(request, response);
             return false;
-        } else if (path.startsWith(Configuration.getToolLocation(DeveloperTool.ERRORLOG_VIEWER))) {
+        } else if (path.startsWith(MakumbaJspConfiguration.getToolLocation(DeveloperTool.ERRORLOG_VIEWER))) {
             new ErrorLogViewerServlet().doGet(request, response);
             return false;
-        } else if (path.startsWith(Configuration.getToolLocation(DeveloperTool.REGEXP_TESTER))) {
+        } else if (path.startsWith(MakumbaJspConfiguration.getToolLocation(DeveloperTool.REGEXP_TESTER))) {
             new RegexpTester().doGet(request, response);
             return false;
-        } else if (path.startsWith(Configuration.getToolLocation(DeveloperTool.MDD_GRAPH_VIEWER))) {
+        } else if (path.startsWith(MakumbaJspConfiguration.getToolLocation(DeveloperTool.MDD_GRAPH_VIEWER))) {
             new MDDGraphServlet().doGet(request, response);
             return false;
         } else {

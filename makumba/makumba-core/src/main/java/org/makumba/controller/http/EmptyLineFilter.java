@@ -1,4 +1,4 @@
-package org.makumba.controller;
+package org.makumba.controller.http;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;

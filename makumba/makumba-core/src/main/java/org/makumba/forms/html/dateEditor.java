@@ -35,7 +35,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.makumba.HtmlChoiceWriter;
 import org.makumba.LogicException;
-import org.makumba.MakumbaSystem;
 import org.makumba.commons.ReadableFormatter;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.attributes.HttpParameters;
@@ -43,6 +42,7 @@ import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.InvalidValueException;
 import org.makumba.commons.formatters.RecordFormatter;
 import org.makumba.commons.formatters.dateFormatter;
+import org.makumba.commons.tags.MakumbaJspConfiguration;
 import org.makumba.forms.tags.BasicValueTag;
 import org.makumba.providers.DataDefinitionProvider;
 
@@ -157,7 +157,7 @@ public class dateEditor extends FieldEditor {
         // add calendar editor code, if calendarEditor="true" AND if we have all components of day, month & year
         if (calendarEditor != null && !"false".equals(calendarEditor) && format.contains("d") && format.contains("M")
                 && format.contains("y")) {
-            sb.append(MakumbaSystem.getCalendarProvider().formatEditorCode(inputName, rf.getFormIdentifier(),
+            sb.append(MakumbaJspConfiguration.getCalendarProvider().formatEditorCode(inputName, rf.getFormIdentifier(),
                 (String) formatParams.get("calendarEditorLink")));
         }
     }

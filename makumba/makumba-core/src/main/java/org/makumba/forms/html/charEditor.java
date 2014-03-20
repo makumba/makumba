@@ -31,8 +31,8 @@ import org.makumba.commons.StringUtils;
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.InvalidValueException;
 import org.makumba.commons.formatters.RecordFormatter;
-import org.makumba.providers.Configuration;
-import org.makumba.providers.MakumbaServlet;
+import org.makumba.commons.http.MakumbaServlet;
+import org.makumba.commons.tags.MakumbaJspConfiguration;
 
 public class charEditor extends FieldEditor {
 
@@ -123,7 +123,7 @@ public class charEditor extends FieldEditor {
             res += "<div id=\"autocomplete_choices_" + id + "\" class=\"autocomplete\"></div>";
 
             res += "<script type=\"text/javascript\">MakumbaAutoComplete.AutoComplete(\"" + id + "\", \""
-                    + Configuration.getServletLocation(MakumbaServlet.AUTOCOMPLETE) + "\", \""
+                    + MakumbaJspConfiguration.getServletLocation(MakumbaServlet.AUTOCOMPLETE) + "\", \""
                     + rf.dd.getFieldDefinition(fieldIndex).getOriginalFieldDefinition().getDataDefinition().getName()
                     + "\", \"" + rf.dd.getFieldDefinition(fieldIndex).getOriginalFieldDefinition().getName()
                     + "\", \"char\", \"" + (String) formatParams.get("org.makumba.forms.queryLanguage")

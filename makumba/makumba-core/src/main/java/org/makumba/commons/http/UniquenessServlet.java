@@ -1,4 +1,4 @@
-package org.makumba.db.makumba;
+package org.makumba.commons.http;
 
 import java.io.IOException;
 import java.io.PrintWriter;

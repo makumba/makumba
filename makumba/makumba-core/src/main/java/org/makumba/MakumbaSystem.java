@@ -30,10 +30,6 @@ import java.util.Date;
 import java.util.jar.Manifest;
 
 import org.hibernate.Hibernate;
-import org.makumba.forms.html.CalendarEditorProvider;
-import org.makumba.forms.html.KruseCalendarEditor;
-import org.makumba.forms.validation.ClientsideValidationProvider;
-import org.makumba.forms.validation.LiveValidationProvider;
 import org.makumba.importer.HtmlTableImporter;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
@@ -332,16 +328,6 @@ public class MakumbaSystem {
      */
     public static java.util.Vector<String> mddsInDirectory(String dirInClasspath) {
         return MDDFactory.getDataDefinitionsInLocation(dirInClasspath);
-    }
-
-    /** Get the default calendar editor. FIXME: read this from some config, or so. */
-    public static CalendarEditorProvider getCalendarProvider() {
-        return KruseCalendarEditor.getInstance();
-    }
-
-    /** Get the default client-side validation provider. */
-    public static ClientsideValidationProvider getClientsideValidationProvider() {
-        return new LiveValidationProvider();
     }
 
     /**

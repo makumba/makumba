@@ -35,7 +35,6 @@ import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.InvalidValueException;
 import org.makumba.LogicException;
-import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.AnalysableElement;
 import org.makumba.analyser.MakumbaJspAnalyzer;
@@ -46,9 +45,9 @@ import org.makumba.commons.StringUtils;
 import org.makumba.commons.attributes.HttpParameters;
 import org.makumba.commons.attributes.PageAttributes;
 import org.makumba.commons.attributes.RequestAttributes;
+import org.makumba.commons.tags.MakumbaJspConfiguration;
 import org.makumba.forms.html.dateEditor;
 import org.makumba.forms.responder.ResponseControllerHandler;
-import org.makumba.providers.Configuration;
 
 /**
  * mak:input tag
@@ -76,7 +75,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
 
     private String autoComplete = null;
 
-    protected boolean calendarEditor = Configuration.getCalendarEditorDefault();
+    protected boolean calendarEditor = MakumbaJspConfiguration.getCalendarEditorDefault();
 
     protected String nullOption;
 
@@ -175,7 +174,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     @Override
     public void setTagKey(PageCache pageCache) {
         if (calendarEditorLink == null && pageContext != null) { // initialise default calendar link text
-            calendarEditorLink = Configuration.getDefaultCalendarEditorLink(((HttpServletRequest) pageContext.getRequest()).getContextPath());
+            calendarEditorLink = MakumbaJspConfiguration.getDefaultCalendarEditorLink(((HttpServletRequest) pageContext.getRequest()).getContextPath());
         }
         expr = valueExprOriginal;
         // FIXME: this fix is rather a quick fix, it does not provide any information about the location of the error
@@ -256,7 +255,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         // if we have a date type and the calendarEditor is requested, request the inclusion of the needed resources
         if ((dataTypeIsDate || contextTypeIsDate) && calendarEditor
                 && !StringUtils.equals(params.get("type"), "hidden")) {
-            pageCache.cacheNeededResources(MakumbaSystem.getCalendarProvider().getNeededJavaScriptFileNames());
+            pageCache.cacheNeededResources(MakumbaJspConfiguration.getCalendarProvider().getNeededJavaScriptFileNames());
         }
 
         // if we use the JS set editor, request the inclusion of its resources
@@ -556,7 +555,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         bodyContent = null;
         choiceSet = null;
         name = nameVar = nullOption = display = calendarEditorLink = autoComplete = null;
-        calendarEditor = Configuration.getCalendarEditorDefault();
+        calendarEditor = MakumbaJspConfiguration.getCalendarEditorDefault();
     }
 
 }

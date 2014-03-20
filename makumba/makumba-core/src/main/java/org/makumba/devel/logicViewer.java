@@ -28,16 +28,16 @@ import java.io.StringReader;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.makumba.commons.tags.MakumbaJspConfiguration;
 import org.makumba.controller.Logic;
-import org.makumba.providers.Configuration;
-import org.makumba.providers.DeveloperTool;
 
 /** The java logic finder visualizer. It shows how the logic is searched for and which logic is finally used. */
 public class logicViewer extends LineViewer {
     public logicViewer(HttpServletRequest req) throws Exception {
         super(false, req);
         viewerName = "Logic Viewer";
-        virtualPath = DevelUtils.getVirtualPath(req, Configuration.getToolLocation(DeveloperTool.LOGIC_DISCOVERY));
+        virtualPath = DevelUtils.getVirtualPath(req,
+            MakumbaJspConfiguration.getToolLocation(DeveloperTool.LOGIC_DISCOVERY));
         contextPath = req.getContextPath();
         Logic.getLogic(virtualPath);
         reader = new StringReader(Logic.getSearchMessage(virtualPath));
@@ -46,7 +46,7 @@ public class logicViewer extends LineViewer {
 
     @Override
     public void navigation(PrintWriter w) {
-        DevelUtils.printNavigationButton(w,"page", contextPath + virtualPath + "x","",0);
+        DevelUtils.printNavigationButton(w, "page", contextPath + virtualPath + "x", "", 0);
         DevelUtils.writeDevelUtilLinks(w, DeveloperTool.LOGIC_DISCOVERY.getKey(), contextPath);
     }
 

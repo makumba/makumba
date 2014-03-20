@@ -43,11 +43,10 @@ import org.apache.commons.lang.StringUtils;
 import org.makumba.DataDefinition;
 import org.makumba.DataDefinitionParseError;
 import org.makumba.FieldDefinition;
-import org.makumba.MakumbaSystem;
 import org.makumba.ValidationDefinition;
 import org.makumba.ValidationRule;
+import org.makumba.commons.tags.MakumbaJspConfiguration;
 import org.makumba.providers.DataDefinitionProvider;
-import org.makumba.providers.DeveloperTool;
 import org.makumba.providers.TransactionProvider;
 import org.makumba.providers.datadefinition.mdd.validation.RegExpValidationRule;
 
@@ -63,7 +62,7 @@ public class RegexpTester extends DataServlet {
 
     public RegexpTester() {
         super(DeveloperTool.REGEXP_TESTER);
-        additionalScripts = MakumbaSystem.getClientsideValidationProvider().getNeededJavaScriptFileNames();
+        additionalScripts = MakumbaJspConfiguration.getClientsideValidationProvider().getNeededJavaScriptFileNames();
     }
 
     @Override
@@ -206,7 +205,7 @@ public class RegexpTester extends DataServlet {
                 // server-side testing
                 writer.println("<div style=\"width: 50%; float:right;\">");
                 writer.println("  <h2> Client-side Evaluation with "
-                        + MakumbaSystem.getClientsideValidationProvider().getClass().getSimpleName() + " </h2>");
+                        + MakumbaJspConfiguration.getClientsideValidationProvider().getClass().getSimpleName() + " </h2>");
                 writer.println("  <table>");
                 writer.println("    <tr>");
                 writer.println("      <th>Test</th>");
@@ -225,7 +224,7 @@ public class RegexpTester extends DataServlet {
                     // FIXME: the way below to evaluate the regexp is currently specific to the LiveValidationProvider
                     // A fix would be an additional method in ClientsideValidationProvider that provides that code
                     writer.println("          var pattern = "
-                            + MakumbaSystem.getClientsideValidationProvider().formatRegularExpression(regex) + ";");
+                            + MakumbaJspConfiguration.getClientsideValidationProvider().formatRegularExpression(regex) + ";");
                     writer.println("          document.getElementById('" + elementId + "').innerHTML = pattern.test('"
                             + testValue + "');");
                     writer.println("          if (pattern.test('" + testValue + "')) {");

@@ -36,7 +36,6 @@ import javax.servlet.jsp.tagext.BodyTag;
 
 import org.makumba.DataDefinition;
 import org.makumba.LogicException;
-import org.makumba.MakumbaSystem;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.MakumbaJspAnalyzer;
 import org.makumba.analyser.PageCache;
@@ -44,13 +43,14 @@ import org.makumba.commons.MultipleKey;
 import org.makumba.commons.RuntimeWrappedException;
 import org.makumba.commons.StringUtils;
 import org.makumba.commons.attributes.PageAttributes;
+import org.makumba.commons.tags.FormDataProvider;
 import org.makumba.commons.tags.GenericMakumbaTag;
+import org.makumba.commons.tags.MakumbaJspConfiguration;
 import org.makumba.forms.responder.FormResponder;
 import org.makumba.forms.responder.ResponderFactory;
 import org.makumba.forms.responder.ResponderOperation;
 import org.makumba.providers.Configuration;
 import org.makumba.providers.DataDefinitionProvider;
-import org.makumba.providers.FormDataProvider;
 
 /**
  * mak:form base tag<br>
@@ -90,7 +90,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
     String annotationSeparator;
 
-    private String clientSideValidation = Configuration.getClientSideValidationDefault();
+    private String clientSideValidation = MakumbaJspConfiguration.getClientSideValidationDefault();
 
     protected String multipleSubmitErrorMsg = null;
 
@@ -354,7 +354,8 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         }
 
         if (reloadFormOnError == null) {
-            reloadFormOnError = getOperation().equals("search") ? false : Configuration.getReloadFormOnErrorDefault();
+            reloadFormOnError = getOperation().equals("search") ? false
+                    : MakumbaJspConfiguration.getReloadFormOnErrorDefault();
         }
 
         if (org.apache.commons.lang.StringUtils.isNotBlank(formName)) {
@@ -393,7 +394,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         // pageCache.cacheSetValues(NEEDED_RESOURCES, new String[] { "makumba.css" });
 
         if (StringUtils.equalsAny(clientSideValidation, new String[] { "true", "live" })) {
-            pageCache.cacheNeededResources(MakumbaSystem.getClientsideValidationProvider().getNeededJavaScriptFileNames());
+            pageCache.cacheNeededResources(MakumbaJspConfiguration.getClientsideValidationProvider().getNeededJavaScriptFileNames());
         }
 
         if (triggerEvent != null) {
@@ -476,7 +477,8 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         responder.setFormName(formName);
 
         if (reloadFormOnError == null) {
-            reloadFormOnError = getOperation().equals("search") ? false : Configuration.getReloadFormOnErrorDefault();
+            reloadFormOnError = getOperation().equals("search") ? false
+                    : MakumbaJspConfiguration.getReloadFormOnErrorDefault();
         }
 
         responder.setReloadFormOnError(reloadFormOnError);
@@ -490,7 +492,7 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
         }
         responder.setOriginatingPageName(url);
         if (org.apache.commons.lang.StringUtils.isBlank(annotation)) {
-            annotation = Configuration.getDefaultFormAnnotation();
+            annotation = MakumbaJspConfiguration.getDefaultFormAnnotation();
         }
         responder.setShowFormAnnotated(StringUtils.equalsAny(annotation, new String[] { "before", "after", "both" }));
         responder.setClientSideValidation(clientSideValidation);

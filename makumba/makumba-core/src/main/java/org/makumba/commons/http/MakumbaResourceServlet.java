@@ -50,12 +50,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.makumba.commons.ClassResource;
 import org.makumba.commons.NamedResourceFactory;
 import org.makumba.commons.NamedResources;
+import org.makumba.commons.tags.MakumbaJspConfiguration;
 import org.makumba.devel.DevelUtils;
 import org.makumba.devel.SourceViewControllerHandler;
 import org.makumba.forms.html.KruseCalendarEditor;
 import org.makumba.forms.validation.LiveValidationProvider;
-import org.makumba.providers.Configuration;
-import org.makumba.providers.MakumbaServlet;
 
 /**
  * This servlet provides resources needed by makumba, e.g. JavaScript for the date editor {@link KruseCalendarEditor}
@@ -82,8 +81,9 @@ public class MakumbaResourceServlet extends HttpServlet {
     public static final SimpleDateFormat dfLastModified = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String servletPath = req.getContextPath() + Configuration.getServletLocation(MakumbaServlet.RESOURCES);
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String servletPath = req.getContextPath()
+                + MakumbaJspConfiguration.getServletLocation(MakumbaServlet.RESOURCES);
         String requestURI = req.getRequestURI();
         String resource = requestURI.substring(requestURI.indexOf(servletPath) + servletPath.length());
         URL url = ClassResource.get(resourceDirectory + resource);
@@ -226,20 +226,21 @@ public class MakumbaResourceServlet extends HttpServlet {
                     // exchange placeholders with dynamic values
                     String output = cachedResource.toString();
 
-                    if (output.contains(Configuration.PLACEHOLDER_CONTEXT_PATH)) {
-                        output = output.replaceAll(Configuration.PLACEHOLDER_CONTEXT_PATH, req.getContextPath());
+                    if (output.contains(MakumbaJspConfiguration.PLACEHOLDER_CONTEXT_PATH)) {
+                        output = output.replaceAll(MakumbaJspConfiguration.PLACEHOLDER_CONTEXT_PATH,
+                            req.getContextPath());
                     }
 
                     if (cachedResource.toString().contains(MakumbaResourceServlet.PLACEHOLDER_UNIQUENESS_SERVLET_PATH)) {
                         String uniquenessPath = req.getContextPath()
-                        + Configuration.getServletLocation(MakumbaServlet.UNIQUENESS);
+                                + MakumbaJspConfiguration.getServletLocation(MakumbaServlet.UNIQUENESS);
                         output = output.replaceAll(MakumbaResourceServlet.PLACEHOLDER_UNIQUENESS_SERVLET_PATH,
                             uniquenessPath);
                     }
 
                     if (cachedResource.toString().contains(PLACEHOLDER_RESOURCE_PATH)) {
                         output = output.replaceAll(PLACEHOLDER_RESOURCE_PATH,
-                            Configuration.getServletLocation(MakumbaServlet.RESOURCES));
+                            MakumbaJspConfiguration.getServletLocation(MakumbaServlet.RESOURCES));
                     }
 
                     outputStream.print(output);
@@ -282,56 +283,56 @@ public class MakumbaResourceServlet extends HttpServlet {
 
     public static int makumbaResources = NamedResources.makeStaticCache("Makumba resources",
         new NamedResourceFactory() {
-        private static final long serialVersionUID = 1L;
+            private static final long serialVersionUID = 1L;
 
-        @Override
-        public Object getHashObject(Object o) {
-            return ClassResource.get(resourceDirectory + o);
-        }
-
-        @Override
-        public Object makeResource(Object o, Object hashName) throws Throwable {
-            if (hashName == null) {
-                return null;
+            @Override
+            public Object getHashObject(Object o) {
+                return ClassResource.get(resourceDirectory + o);
             }
-            StringBuffer sb = new StringBuffer();
-            URL url = (URL) hashName;
-            InputStream stream;
 
-            if (url.toExternalForm().startsWith("jar:")) { // for jar files, open the entry
-                JarFile jf = ((JarURLConnection) url.openConnection()).getJarFile();
-                String[] jarURL = url.toExternalForm().split("!");
-                JarEntry je = jf.getJarEntry(jarURL[1].substring(1));
-                stream = jf.getInputStream(je);
-            } else { // for files, simply open a stream
-                stream = url.openStream();
-            }
-            if (isBinary(url)) {
-                ArrayList<Byte> bytesList = new ArrayList<Byte>();
-                byte[] b = new byte[16];
-                int readBytes = -1;
-                while ((readBytes = stream.read(b)) != -1) {
-                    for (int i = 0; i < readBytes; i++) {
-                        bytesList.add(b[i]);
+            @Override
+            public Object makeResource(Object o, Object hashName) throws Throwable {
+                if (hashName == null) {
+                    return null;
+                }
+                StringBuffer sb = new StringBuffer();
+                URL url = (URL) hashName;
+                InputStream stream;
+
+                if (url.toExternalForm().startsWith("jar:")) { // for jar files, open the entry
+                    JarFile jf = ((JarURLConnection) url.openConnection()).getJarFile();
+                    String[] jarURL = url.toExternalForm().split("!");
+                    JarEntry je = jf.getJarEntry(jarURL[1].substring(1));
+                    stream = jf.getInputStream(je);
+                } else { // for files, simply open a stream
+                    stream = url.openStream();
+                }
+                if (isBinary(url)) {
+                    ArrayList<Byte> bytesList = new ArrayList<Byte>();
+                    byte[] b = new byte[16];
+                    int readBytes = -1;
+                    while ((readBytes = stream.read(b)) != -1) {
+                        for (int i = 0; i < readBytes; i++) {
+                            bytesList.add(b[i]);
+                        }
                     }
+                    byte[] bytes = new byte[bytesList.size()];
+                    for (int i = 0; i < bytes.length; i++) {
+                        bytes[i] = bytesList.get(i);
+                    }
+                    return bytes;
+                } else {
+                    BufferedReader bis = new BufferedReader(new InputStreamReader(stream));
+                    byte b;
+                    while ((b = (byte) bis.read()) != -1) {
+                        sb.append(String.valueOf((char) b));
+                    }
+                    return sb.toString();
                 }
-                byte[] bytes = new byte[bytesList.size()];
-                for (int i = 0; i < bytes.length; i++) {
-                    bytes[i] = bytesList.get(i);
-                }
-                return bytes;
-            } else {
-                BufferedReader bis = new BufferedReader(new InputStreamReader(stream));
-                byte b;
-                while ((b = (byte) bis.read()) != -1) {
-                    sb.append(String.valueOf((char) b));
-                }
-                return sb.toString();
             }
-        }
-    }, true);
+        }, true);
 
     public static final String[] imageContentTypes = { "jpg", "jpeg", "png", "gif", "pjpeg", "tiff", "bmp", "x-emf",
-        "x-wmf", "x-xbitmap" };
+            "x-wmf", "x-xbitmap" };
 
 }
