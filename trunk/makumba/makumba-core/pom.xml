@@ -219,16 +219,6 @@
 
     <build>
 
-        <testResources>
-            <testResource>
-                <directory>../makumba-shared-resources/src/test/resources</directory>
-            </testResource>
-            <testResource>
-                <directory>${basedir}/src/test/resources</directory>
-            </testResource>
-        </testResources>
-
-
         <plugins>
 
             <!-- ANTLR compilation -->
@@ -291,28 +281,11 @@
                     </filesets>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.2</version>
                 <executions>
-                    <!-- TLD generation-->
-                    <execution>
-                        <id>TLD</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                        <configuration>
-                            <mainClass>org.makumba.commons.tags.MakumbaTLDGenerator</mainClass>
-                            <arguments>
-                                <argument>${project.basedir}</argument>
-                                <argument>${project.build.outputDirectory}/META-INF</argument>
-                                <argument>${documentation.path}/wikidoc/</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
                     <!-- MANIFEST.MF generation with correct version -->
                     <execution>
                         <id>MANIFEST</id>
@@ -336,12 +309,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>**/**/Makumba.conf</exclude>
-                    </excludes>
-                    <useDefaultManifestFile>true</useDefaultManifestFile>
-                </configuration>
                 <!-- Produces JAR of test classes, so that other submodules can re-use them -->
                 <executions>
                     <execution>
