@@ -20,18 +20,13 @@
     </properties>
 
     <!--
-    README FIRST before messing around with this
-
-    this is a test webapp, and its sources are in the test path (src/test/webapp). this is for a good reason: we depend on the
-    test classes of the makumba-core module for our execution, and will only inherit them if we too run in the test path.
-    thus, all of our configuration needs to be adapted to point towards the test classpath. this is because by default, maven
-    expects the webapp to sit in src/main/webapp.
+	This module produces a WAR for the sole purpose of integration testing. It does not install or deploy the WAR.
+	For reason explained below, all test source is exceptionally placed in src/main
     -->
 
 
     <dependencies>
 
-        <!-- dependency on makumba-core -->
         <dependency>
             <groupId>org.makumba</groupId>
             <artifactId>makumba-core</artifactId>
@@ -39,7 +34,22 @@
             <scope>compile</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.makumba</groupId>
+            <artifactId>makumba-jsp</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
         <!-- dependency on makumba-core test API -->
+        <dependency>
+            <groupId>org.makumba</groupId>
+            <artifactId>makumba-core</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>pre-integration-test</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.makumba</groupId>
             <artifactId>makumba-core</artifactId>
@@ -108,12 +118,6 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>jdom</groupId>
-            <artifactId>jdom</artifactId>
-            <version>1.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>htmlunit</groupId>
             <artifactId>htmlunit</artifactId>
             <version>1.10</version>
@@ -145,45 +149,110 @@
     </dependencies>
 
     <build>
-        <finalName>makumba-jsp-test</finalName>
-
-        <!-- set the test and source directory to be the same, so that all classes are bundled in the WAR -->
-        <sourceDirectory>src/test/java</sourceDirectory>
-        <testSourceDirectory>src/test/java</testSourceDirectory>
-
-        <resources>
-            <resource>
-                <directory>../makumba-shared-resources/src/test/resources</directory>
-            </resource>
-        </resources>
-
+	<!-- the WAR plugin takes content from src/main, and the test classes must be both in the war and in the client side of the tests, 
+	     so we exceptionally run tests from src/main, since this is a testing module anyway
+	  -->
+	<testSourceDirectory>src/main/java</testSourceDirectory>
         <plugins>
-
-            <!-- Produce WAR artifact for the integration tests
-                 Note: this will run twice, but it's ok! it runs once by default because this artifact
-                 is of type war, and once more, after the resources have been generated -->
+            <!-- Cargo plugin, to deploy the integration tests on a container. 
+		 Cargo will deploy by default the WAR created by the WAR plugin -->
             <plugin>
-                <artifactId>maven-war-plugin</artifactId>
+              <groupId>org.codehaus.cargo</groupId>
+              <artifactId>cargo-maven2-plugin</artifactId>
+              <version>1.1.0</version>
+              <executions>
+                <execution>
+                  <id>start-container</id>
+                  <phase>pre-integration-test</phase>
+                  <goals>
+                    <goal>start</goal>
+                  </goals>
+                </execution>
+                <execution>
+                  <id>stop-container</id>
+                  <phase>post-integration-test</phase>
+                  <goals>
+                    <goal>stop</goal>
+                  </goals>
+                </execution>
+              </executions>
+              <configuration>
+                <wait>false</wait>
+                <container>
+                  <containerId>tomcat7x</containerId>
+                  <log>${project.build.directory}/cargo.log</log>
+                  <output>${project.build.directory}/output.log</output>
+		  <artifactInstaller>
+		    <groupId>org.apache.tomcat</groupId>
+		    <artifactId>tomcat</artifactId>
+		    <version>7.0.52</version>
+		  </artifactInstaller>
+                </container>
                 <configuration>
-                    <useCache>false</useCache>
-                    <warSourceDirectory>src/test/webapp</warSourceDirectory>
-                    <webXml>src/test/webapp/WEB-INF/web.xml</webXml>
-                    <warSourceIncludes>
-                        *.jsp, */**/*.jsp, WEB-INF/classes/**,
-                        WEB-INF/lib/*
-                    </warSourceIncludes>
-                    <warName>${project.artifactId}-${project.version}</warName>
+                  <properties>
+                    <cargo.servlet.port>${server.port}</cargo.servlet.port>
+                  </properties>
+                </configuration>
+              </configuration>
+            </plugin>
+	    
+	    
+            <!-- Surefire plugin, to actually run the tests-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <!-- normally surefire runs in the test phase, we don't want that. It is configured below to run in the 
+			 integration-test phase -->
+                    <skip>true</skip>
+                    <excludes>
+                        <exclude>**/ExceptionTest.java</exclude>
+                        <exclude>**/FormsHQLTest.java</exclude>
+                        <exclude>**/ListHQLTest.java</exclude>
+                    </excludes>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>create-cargo-war-archive</id>
-                        <phase>pre-integration-test</phase>
+                        <id>surefire-it</id>
+                        <phase>integration-test</phase>
                         <goals>
-                            <goal>war</goal>
+                            <goal>test</goal>
                         </goals>
+                        <configuration>
+                            <skip>false</skip>
+                            <systemProperties>
+                                <property>
+				    <!-- the webapp context path is forced to /tests in src/main/webapp/META-INF/context.xml 
+					 no matter what the WAR name is! this is needed because expected HTML output contains tests paths
+				      -->
+                                    <name>cactus.contextURL</name>
+                                    <value>http://localhost:${server.port}/tests</value>
+                                </property>
+                            </systemProperties>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- skip installation -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <!-- skip deployment -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+
 
             <!-- Jetty plugin -->
             <plugin>
@@ -229,133 +298,9 @@
 	                    <url>http://localhost:${server.port}/manager/text</url>
 	                </configuration>
 	        </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>tomcat-maven-plugin</artifactId>
-                <configuration>
-                    <path>/tests</path>
-                    <port>${server.port}</port>
-                    <warSourceDirectory>${main.basedir}/makumba-jsp-test/src/test/webapp</warSourceDirectory>
-                    <classesDir>${main.basedir}/makumba-jsp-test/target/test-classes</classesDir>
-                    <!--
-                      The default authentication credentials for remote deployment are username "admin" with no password To
-                      override credentials, define a server in settings.xml and activate it using the <server> element
-                    -->
-                    <url>http://localhost:${server.port}/manager</url>
-                </configuration>
-            </plugin>
-
-            <!-- Cargo plugin, to deploy the integration tests on a container -->
-            <plugin>
-                <groupId>org.codehaus.cargo</groupId>
-                <artifactId>cargo-maven2-plugin</artifactId>
-                <version>1.1.0</version>
-                <executions>
-                    <execution>
-                        <id>start-container</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>start</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>stop-container</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>stop</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <wait>false</wait>
-                    <container>
-                        <containerId>tomcat7x</containerId>
-                        <log>${project.build.directory}/cargo.log</log>
-                        <output>${project.build.directory}/output.log</output>
-                        <!--If you don't want cargo to download the container, just comment
-                                  the bottom lines and specify a [home] parameter -->
-                        <zipUrlInstaller>
-                        			<url>http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.52/bin/apache-tomcat-7.0.52.zip</url>
-				                    <!-- 
-				                    for use with containerId tomcat6x
-				                    <url>http://archive.apache.org/dist/tomcat/tomcat-6/v6.0.35/bin/apache-tomcat-6.0.35.zip</url>
-				                    -->
-				                    <installDir>${project.basedir}/install</installDir>
-                        </zipUrlInstaller>
-                    </container>
-                    <configuration>
-                        <properties>
-                            <cargo.servlet.port>${server.port}</cargo.servlet.port>
-                        </properties>
-                        <deployables>
-                            <deployable>
-                                <location>
-                                    ${project.build.directory}/${project.artifactId}-${project.version}.war <!-- -cactified -->
-                                </location>
-                                <type>war</type>
-                                <properties>
-                                    <context>/tests</context>
-                                </properties>
-                                <pingURL>http://localhost:${server.port}/</pingURL>
-                            </deployable>
-                        </deployables>
-                    </configuration>
-                </configuration>
-            </plugin>
-
-
-            <!-- Surefire plugin, to actually run the tests-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                <forkedProcessTimeoutInSeconds>3600</forkedProcessTimeoutInSeconds>
-                    <!-- don't mess around with this, or you too will spend hours debugging
-                         integration tests should NOT run during the test phase,
-                         but only after, or they will fail due to a lack of container -->
-                    <skip>true</skip>
-                    <excludes>
-                        <exclude>**/ExceptionTest.java</exclude>
-                        <exclude>**/FormsHQLTest.java</exclude>
-                        <exclude>**/ListHQLTest.java</exclude>
-                    </excludes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>surefire-it</id>
-                        <phase>integration-test</phase>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                        <configuration>
-                            <skip>false</skip>
-                            <!--The next line is because we need the tests in src/main/java to
-                                       ensure that the classes are included in the archive. -->
-                            <testSourceDirectory>src/test/java</testSourceDirectory>
-                            <testClassesDirectory>target/test-classes</testClassesDirectory>
-                            <systemProperties>
-                                <property>
-                                    <name>cactus.contextURL</name>
-                                    <value>http://localhost:${server.port}/tests</value>
-                                </property>
-                            </systemProperties>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- skip deployment -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.4</version>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-
         </plugins>
+
+
     </build>
 
 </project>
