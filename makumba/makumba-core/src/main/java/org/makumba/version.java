@@ -139,6 +139,7 @@ public class version {
     public static void writeManifest(String path, String version) throws IOException {
         File mf = new File(path);
         if (!mf.exists()) {
+	    mf.getParentFile().mkdirs();
             mf.createNewFile();
         }
         FileOutputStream fos = new FileOutputStream(mf);
