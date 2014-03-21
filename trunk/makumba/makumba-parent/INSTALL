@@ -19,21 +19,19 @@ including antlr and subversive connectors
 - File/Import/Checkout maven project from SCM, choose SCM type svn
 (if you don't have the svn connector, click on "M2E narketplace" link at the low right, install also the antlr connector if you miss it)
 
-- from the URI above import makumba, makumba-core, makumba-shared-resources, makumba-jsp-test
+- from the URI above import makumba-parent, makumba-core, makumba-jsp, makumba-jsp-test
 
 - you will get two kinds of errors. Choose quick-fix / "ignore in Eclipse"
 for 3 projects: Plugin execution not covered by lifecycle configuration: org.codehaus.mojo:properties-maven-plugin:1.0-alpha-2:read-project-properties
 for makumba-core: Plugin execution not covered by lifecycle configuration: org.codehaus.mojo:exec-maven-plugin:1.2:java 
 
-- rename the makumba Eclipse project to makumba-parent if it is not renamed already
-
 - due to the errors above, you need to compile outside eclipse first. in Terminal, cd to makumba-parent and execute
-mvn clean integration-test
-- refresh makumba-core and makumba-jsp-test
+mvn clean install
+- go back to eclipse and refresh the four projects
 
-Now you should be able to work in Eclipse on makumba-core and have other projects depend on makumba-core, including web projects like karamba (see below)
-What will probably not work is TLD changes, as well as changes in makumba-shared-resources/target/maven-archiver/pom.properties.
-If such changes are needed, execute again mvn clean integration-test, then refresh the makumba-core and makumba-jsp-test
+Now you should be able to work in Eclipse on makumba-core and makmba-jsp, and have other projects depend on them, including web projects like karamba (see below)
+What will probably not work is TLD changes.
+If such changes are needed, execute again mvn clean install, then refresh the projects in Eclipe
 
 - if needed, configure makumba-parent/build.properties
   - this is important especially when releasing, where you need to have the makumba-documentation project checked out somewhere
@@ -46,7 +44,8 @@ To run web projects that depend on your makumba checkout
 - install eclipse WTP
 http://download.eclipse.org/webtools/repository/juno/
 - from the servers view, configure a tomcat server
-- in order to use makumba directly as a dependency in a WTP project, go to the project properties->Deployment Assembly->Add->Project and add the makumba-core maven project
+- in order to use makumba directly as a dependency in a WTP project, go to the project properties->Deployment Assembly->Add->Project 
+	and add the makumba-core and makumba-jsp maven projects
 - run the project on the tomcat server using Run As
 
 3) Run/debug makumba tests inside eclipse 
