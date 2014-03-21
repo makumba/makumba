@@ -188,7 +188,7 @@ public class MakumbaTLDGenerator {
         System.out.println("Writing general Makumba TLD at path " + jspTldPath);
         try {
             File path = new File(jspTldPath);
-            path.mkdirs();
+            path.getParentFile().mkdirs();
             XMLWriter output = new XMLWriter(new FileWriter(path), new OutputFormat("", false));
             output.write(document);
             output.close();
