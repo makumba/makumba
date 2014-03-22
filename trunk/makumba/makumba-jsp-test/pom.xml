@@ -272,8 +272,7 @@
             <!-- Embedded Tomcat (tomcat:run) -->
 	        <plugin>
 	          <groupId>org.apache.tomcat.maven</groupId>
-	          <artifactId>tomcat6-maven-plugin</artifactId>
-	          <version>2.2</version>
+	          <artifactId>tomcat6-maven-plugin</artifactId>	          
 	                <configuration>
 	                <goalPrefix>tomcat6</goalPrefix>
 	                    <path>/tests</path>
@@ -286,7 +285,6 @@
 	        <plugin>
 	          <groupId>org.apache.tomcat.maven</groupId>
 	          <artifactId>tomcat7-maven-plugin</artifactId>
-	          <version>2.2</version>
 	                <configuration>
 	                    <path>/tests</path>
 	                    <port>${server.port}</port>	                   

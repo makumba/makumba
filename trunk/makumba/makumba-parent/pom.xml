@@ -9,20 +9,23 @@
     <name>makumba core aggregator</name>
     <packaging>pom</packaging>
     <url>http://www.makumba.org</url>
-
-    <properties>
+	<prerequisites>
+		<maven>2.2.1</maven>
+	</prerequisites>
+	<properties>
         <main.basedir>${project.basedir}/../</main.basedir>
         <properties.location>${project.basedir}/build.properties</properties.location>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <!-- releasing to Sonatype -->
+    <!-- Commented out for now because it provokes a maven enforcer plugin Eclipse warning in all children modules.
     <parent>
         <groupId>org.sonatype.oss</groupId>
         <artifactId>oss-parent</artifactId>
         <version>5</version>
     </parent>
-
+ -->
     <organization>
         <name>makumba.org</name>
         <url>http://www.makumba.org</url>
@@ -77,7 +80,10 @@
     </scm>
 
     <build>
+        
         <defaultGoal>install</defaultGoal>
+        
+
         <extensions>
             <!-- Enables maven to send stuff to ssh servers -->
             <extension>
@@ -126,7 +132,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>2.3.2</version>
                 <dependencies>
                     <dependency>
                         <groupId>com.google.code.maven-scm-provider-svnjava</groupId>
@@ -151,7 +156,6 @@
                 <inherited>false</inherited>
                 <groupId>com.mycila.maven-license-plugin</groupId>
                 <artifactId>maven-license-plugin</artifactId>
-                <version>1.8.0</version>
                 <configuration>
 
                     <!-- TODO: reformat & commit the header -->
@@ -233,8 +237,61 @@
 		          <artifactId>tomcat7-maven-plugin</artifactId>
 		          <version>2.2</version>
 		        </plugin>
-		
-		  </plugins>
+
+		        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+		        <plugin>
+		        	<groupId>org.eclipse.m2e</groupId>
+		        	<artifactId>lifecycle-mapping</artifactId>
+		        	<version>1.0.0</version>
+		        	<configuration>
+		        		<lifecycleMappingMetadata>
+		        			<pluginExecutions>
+		        				<pluginExecution>
+
+		        					<pluginExecutionFilter>
+		        						<groupId>
+		        							org.codehaus.mojo
+		        						</groupId>
+		        						<artifactId>
+		        							exec-maven-plugin
+		        						</artifactId>
+		        						<versionRange>
+		        							[1.2,)
+		        						</versionRange>
+		        						<goals>
+		        							<goal>java</goal>
+		        						</goals>
+		        					</pluginExecutionFilter>
+		        					<action>
+		        						<ignore></ignore>
+		        					</action>
+		        				</pluginExecution>
+		        				<pluginExecution>
+		        					<pluginExecutionFilter>
+		        						<groupId>
+		        							org.codehaus.mojo
+		        						</groupId>
+		        						<artifactId>
+		        							properties-maven-plugin
+		        						</artifactId>
+		        						<versionRange>
+		        							[1.0-alpha-2,)
+		        						</versionRange>
+		        						<goals>
+		        							<goal>
+		        								read-project-properties
+		        							</goal>
+		        						</goals>
+		        					</pluginExecutionFilter>
+		        					<action>
+		        						<ignore></ignore>
+		        					</action>
+		        				</pluginExecution>
+		        			</pluginExecutions>
+		        		</lifecycleMappingMetadata>
+		        	</configuration>
+		        </plugin>
+            </plugins>
     </pluginManagement>
     </build>
 
