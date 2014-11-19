@@ -4,6 +4,7 @@
 --------------------------------------
 Possible future changes (to be moved in trac, or discarded)
 cristi's TODO:
+- BUG:  <mak:input type="radio> someText <mak:option value ="x" /> someOtherText</mak:input>  -> someText and someOtherText become options!!!
 - "finish" modules
 - mak:form  object="type(unique fields)",  field initialValue
 - report as a bug if $x is used in a mak:list/object but it is not present as a page parameter x, and it is not defined outside the list
