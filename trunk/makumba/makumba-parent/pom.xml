@@ -5,7 +5,7 @@
 
     <groupId>org.makumba</groupId>
     <artifactId>makumba</artifactId>
-    <version>0.9.8-SNAPSHOT</version>
+    <version>0.9.8</version>
     <name>makumba core aggregator</name>
     <packaging>pom</packaging>
     <url>http://www.makumba.org</url>
@@ -74,9 +74,9 @@
     </mailingLists>
 
     <scm>
-	    <connection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/trunk/makumba/makumba</connection>
-	    <developerConnection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/trunk/makumba/makumba</developerConnection>
-        <url>http://makumba.svn.sourceforge.net/viewvc/makumba/trunk/makumba</url>
+	    <connection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/makumba-0.9.8/makumba</connection>
+	    <developerConnection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/makumba-0.9.8/makumba</developerConnection>
+        <url>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/makumba-0.9.8/makumba</url>
     </scm>
 
     <build>
@@ -268,7 +268,7 @@
 		        						</goals>
 		        					</pluginExecutionFilter>
 		        					<action>
-		        						<ignore></ignore>
+		        						<ignore />
 		        					</action>
 		        				</pluginExecution>
 		        				<pluginExecution>
@@ -289,7 +289,7 @@
 		        						</goals>
 		        					</pluginExecutionFilter>
 		        					<action>
-		        						<ignore></ignore>
+		        						<ignore />
 		        					</action>
 		        				</pluginExecution>
 		        			</pluginExecutions>
