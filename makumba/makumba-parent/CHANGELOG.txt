@@ -37,8 +37,8 @@ mak Eclipse tools:
 TO BE RELEASED IMMEDIATELY (No need for more testing)
 -----------------------------------------------
 
-NOT TO BE RELEASED YET (need more testing)
 
+0.9.8
 
 cristi 140314
 - support for JavaDB/Apache Derby
