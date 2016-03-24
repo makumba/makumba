@@ -197,11 +197,10 @@
     <see>list</see>
     
         <attribute>
-      <name>separator</name>
+      <name>on</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
-      <description>Character string as separator between two list elements. It is not included before the first or after
-        the last</description>
+      <description>Expression to group the results on. ListGroup will only execute when the expression changes compared to the last iteration.</description>
     </attribute>
   </tag>
 
