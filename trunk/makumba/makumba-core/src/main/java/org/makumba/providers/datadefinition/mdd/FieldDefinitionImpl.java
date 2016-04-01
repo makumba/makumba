@@ -1276,6 +1276,10 @@ public class FieldDefinitionImpl implements FieldDefinition, Serializable {
 
     @Override
     public String getErrorMessage(FieldErrorMessageType t) {
+        if( this.shared == null) {
+            return null;
+        }
+
         switch (t) {
             case NOT_A_NUMBER:
                 return this.shared.NaNError;
