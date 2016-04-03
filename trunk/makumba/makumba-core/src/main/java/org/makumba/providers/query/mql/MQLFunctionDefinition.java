@@ -31,7 +31,7 @@ import org.makumba.commons.TextList;
 /**
  * This class represents an MQL function, with it's name, return type and required arguments. This definition is then
  * used to check for correct use of the MQL functions, and set the return type, types of parameters.
- * 
+ *
  * @author Rudolf Mayer
  * @version $Id: MQLFunction.java,v 1.1 Dec 20, 2008 1:19:31 AM rudi Exp $
  */
@@ -108,7 +108,7 @@ public class MQLFunctionDefinition {
      * This default implementation just renders the function by concatenating the function name and all arguments; for
      * functions that need to modify the name, the argument order, number of arguments, etc., this method provides an
      * entry point to rewrite it (possibly in a specific SQL dialect).
-     * 
+     *
      * @param hql
      */
     public TextList render(List<TextList> args, boolean hql) {
@@ -142,8 +142,8 @@ class SQLDialectFunction extends MQLFunctionDefinition {
 
 class DateArithmeticFunction extends SQLDialectFunction {
     protected DateArithmeticFunction(String name, String sqlCommand) {
-        super(name, sqlCommand, "date", new MQLFunctionArgument("date"), new MQLFunctionArgument("date"),
-                new MQLFunctionArgument("char", true, false));
+        super(name, sqlCommand, "date", new MQLFunctionArgument("date"), new MQLFunctionArgument("int"),
+            new MQLFunctionArgument("char", true, false));
     }
 
     @Override
