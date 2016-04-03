@@ -42,6 +42,21 @@ public class ClassResource {
             e1.printStackTrace();
         }
         */
+
+        String prependToCP = null;
+        try {
+            prependToCP = System.getProperty("org.makumba.prependToClassPath");
+        } catch (SecurityException e) {
+            // ignore
+        }
+        if (prependToCP != null && new java.io.File(prependToCP + "/" + s).exists()) {
+            try {
+                return new URL("file://" + prependToCP + "/" + s);
+            } catch (MalformedURLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
         URL u = null;
         try {
             u = ClassResource.class.getClassLoader().getResource(s);
