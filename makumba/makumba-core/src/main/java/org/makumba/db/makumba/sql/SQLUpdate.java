@@ -55,7 +55,7 @@ public class SQLUpdate implements Update {
      * compute a query SELECT a=b, c=d FROM type WHERE condition, analyze it and then transform it into UPDATE type SET
      * a=b, c=d WHERE condition or DELETE FROM type WHERE condition. This computes and caches and update command in
      * String format without expanded parameters.
-     * 
+     *
      * @param db
      *            the database whose name resovler hook to use
      * @param type
@@ -69,9 +69,8 @@ public class SQLUpdate implements Update {
         debugString = (set == null ? "delete" : "update") + " on type: <" + type + ">"
                 + (set == null ? " " : " setting: <" + set + ">") + " where: <" + where + ">";
 
-        // a primitive check, better one needs to be done after OQLAnalyzer's job
-        if (type != null && type.indexOf(',') >= 0) {
-            throw new org.makumba.OQLParseError("Only 1 table can be involved in " + debugString);
+        if (set == null && type != null && type.indexOf(',') >= 0) {
+            throw new org.makumba.OQLParseError("Only 1 table can be involved in delete statement " + debugString);
         }
 
         // make sure whitespace only consists of spaces
@@ -108,44 +107,48 @@ public class SQLUpdate implements Update {
         }
         fakeCommandUpper = fakeCommand.toUpperCase();
         StringBuffer replaceLabel = new StringBuffer();
-
-        // we remove all "label." sequences from the SELECT part of the command
         int n = 0;
-        int lastN;
-        int maxN = fakeCommandUpper.indexOf(" FROM ");
-        while (true) {
-            lastN = n;
-            n = fakeCommand.indexOf(label + ".", lastN);
-            if (n == -1 || n > maxN) {
-                replaceLabel.append(fakeCommand.substring(lastN, maxN));
-                break;
+
+        if (set == null)
+            // we remove all "label." sequences from the SELECT part of the command
+        {
+
+            int lastN;
+            int maxN = fakeCommandUpper.indexOf(" FROM ");
+            while (true) {
+                lastN = n;
+                n = fakeCommand.indexOf(label + ".", lastN);
+                if (n == -1 || n > maxN) {
+                    replaceLabel.append(fakeCommand.substring(lastN, maxN));
+                    break;
+                }
+                replaceLabel.append(fakeCommand.substring(lastN, n));
+                n += label.length() + 1;
             }
-            replaceLabel.append(fakeCommand.substring(lastN, n));
-            n += label.length() + 1;
-        }
 
-        // we remove the last instance of " label" from the FROM part of command
-        lastN = fakeCommandUpper.indexOf(" WHERE ");
-        if (lastN < 0) {
-            lastN = fakeCommand.length();
-        }
-        n = fakeCommand.lastIndexOf(" " + label, lastN);
-        replaceLabel.append(fakeCommand.substring(maxN, n));
-
-        // we remove all "label." sequences from the WHERE part of the command
-        n = lastN; // start where we left off above
-        while (true) {
-            lastN = n;
-            n = fakeCommand.indexOf(label + ".", lastN);
-            if (n == -1) {
-                replaceLabel.append(fakeCommand.substring(lastN));
-                break;
+            // we remove the last instance of " label" from the FROM part of command
+            lastN = fakeCommandUpper.indexOf(" WHERE ");
+            if (lastN < 0) {
+                lastN = fakeCommand.length();
             }
-            replaceLabel.append(fakeCommand.substring(lastN, n));
-            n += label.length() + 1;
-        }
+            n = fakeCommand.lastIndexOf(" " + label, lastN);
+            replaceLabel.append(fakeCommand.substring(maxN, n));
 
-        fakeCommand = replaceLabel.toString();
+            // we remove all "label." sequences from the WHERE part of the command
+            n = lastN; // start where we left off above
+            while (true) {
+                lastN = n;
+                n = fakeCommand.indexOf(label + ".", lastN);
+                if (n == -1) {
+                    replaceLabel.append(fakeCommand.substring(lastN));
+                    break;
+                }
+                replaceLabel.append(fakeCommand.substring(lastN, n));
+                n += label.length() + 1;
+            }
+
+            fakeCommand = replaceLabel.toString();
+        }
         fakeCommandUpper = fakeCommand.toUpperCase();
 
         // now we break the query SQL in pieces to form the update SQL
