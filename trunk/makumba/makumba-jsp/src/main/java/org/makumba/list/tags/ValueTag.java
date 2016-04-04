@@ -24,7 +24,6 @@
 package org.makumba.list.tags;
 
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.Tag;
 
 import org.makumba.LogicException;
 import org.makumba.MakumbaError;
@@ -98,30 +97,27 @@ public class ValueTag extends GenericListTag {
      */
     @Override
     public void doStartAnalyze(PageCache pageCache) {
+        startValueAnalyze(pageCache, tagKey, expr, QueryTag.getParentListKey(this, pageCache));
+    }
 
-        pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, tagKey,
-            ValueComputer.getValueComputerAtAnalysis(true, QueryTag.getParentListKey(this, pageCache), expr, pageCache));
-
-        Tag grp = findAncestorWithClass(this, ListGroupTag.class);
-        if (grp == null || grp.getParent() != QueryTag.getParentList(this)) {
-            ListGroupTag.addCandidateGroupValue(this, pageCache);
-        }
+    public static void startValueAnalyze(PageCache pageCache, MultipleKey key, String expression,
+            MultipleKey parentListKey) {
+        pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, key,
+            ValueComputer.getValueComputerAtAnalysis(true, parentListKey, expression, pageCache));
 
         // if we add a projection to a query, we also cache this so that we know where the projection comes from (for
         // the relation analysis)
         ComposedQuery query = null;
         try {
-            query = QueryTag.getQuery(pageCache, QueryTag.getParentListKey(this, pageCache));
+            query = QueryTag.getQuery(pageCache, parentListKey);
         } catch (MakumbaError me) {
             // this happens when there is no query for this mak:value
             // we ignore it, query will stay null anyway
         }
 
         if (query != null) {
-            pageCache.cache(MakumbaJspAnalyzer.PROJECTION_ORIGIN_CACHE,
-                new MultipleKey(QueryTag.getParentListKey(this, pageCache), expr), tagKey);
+            pageCache.cache(MakumbaJspAnalyzer.PROJECTION_ORIGIN_CACHE, new MultipleKey(parentListKey, expression), key);
         }
-
     }
 
     /**
@@ -132,8 +128,7 @@ public class ValueTag extends GenericListTag {
      */
     @Override
     public void doEndAnalyze(PageCache pageCache) {
-        ValueComputer vc = (ValueComputer) pageCache.retrieve(MakumbaJspAnalyzer.VALUE_COMPUTERS, tagKey);
-        vc.doEndAnalyze(pageCache);
+        ValueComputer vc = endValueAnalyze(pageCache, tagKey);
 
         if (var != null) {
             setType(pageCache, var, vc.getType());
@@ -143,6 +138,12 @@ public class ValueTag extends GenericListTag {
             setType(pageCache, printVar, DataDefinitionProvider.getInstance().makeFieldOfType(printVar, "char"));
         }
 
+    }
+
+    public static ValueComputer endValueAnalyze(PageCache pageCache, MultipleKey key) {
+        ValueComputer vc = (ValueComputer) pageCache.retrieve(MakumbaJspAnalyzer.VALUE_COMPUTERS, key);
+        vc.doEndAnalyze(pageCache);
+        return vc;
     }
 
     /**
