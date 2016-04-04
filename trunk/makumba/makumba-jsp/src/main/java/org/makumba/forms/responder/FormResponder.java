@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -304,6 +305,7 @@ public class FormResponder extends Responder {
 
     public void writeFormPostamble(StringBuffer sb, String basePointer, HttpServletRequest request) {
         String session = request.getSession().getId();
+        Random random = new Random();
         factory.setResponderWorkingDir(request);
         if (storedSuffix.equals("") && operation.equals("deleteLink")) {
             // a root deleteLink
@@ -320,7 +322,7 @@ public class FormResponder extends Responder {
         }
 
         String responderValue = getResponderValue();
-        String formSessionValue = responderValue + session; // gets the formSession value
+        String formSessionValue = responderValue + session + Integer.toString(random.nextInt()); // gets the formSession value
 
         writeInput(sb, responderName, responderValue, "");
         if (multipleSubmitErrorMsg != null && !multipleSubmitErrorMsg.equals("")) {
