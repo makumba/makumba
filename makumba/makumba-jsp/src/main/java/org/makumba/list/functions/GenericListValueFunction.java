@@ -2,7 +2,6 @@ package org.makumba.list.functions;
 
 import javax.servlet.jsp.PageContext;
 
-import org.makumba.MakumbaError;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.AnalysableElement;
 import org.makumba.analyser.AnalysableExpression;
@@ -11,9 +10,9 @@ import org.makumba.analyser.MakumbaJspAnalyzer;
 import org.makumba.analyser.PageCache;
 import org.makumba.commons.MultipleKey;
 import org.makumba.commons.StringUtils;
-import org.makumba.list.engine.ComposedQuery;
 import org.makumba.list.engine.valuecomputer.ValueComputer;
 import org.makumba.list.tags.QueryTag;
+import org.makumba.list.tags.ValueTag;
 
 /**
  * Provides a basic implementation for a EL function that uses a {@link ValueComputer} to compute some value from an
@@ -32,25 +31,7 @@ public abstract class GenericListValueFunction extends AnalysableExpression {
 
     /** Registers this function at the parent/enclosing mak:list/object. */
     protected void registerValueAtParentList(PageCache pageCache, String expr, QueryTag parentList) {
-        // analogously to ValueTag, we register a value computer
-        ValueComputer vc = ValueComputer.getValueComputerAtAnalysis(true, parentList.getTagKey(), expr, pageCache);
-        pageCache.cache(MakumbaJspAnalyzer.VALUE_COMPUTERS, key, vc);
-
-        // FIXME: the following code is similar to ValueTag.doStartAnalyze; unifying might make sense.
-        // if we add a projection to a query, we also cache this so that we know where the projection comes from (for
-        // the relation analysis)
-        ComposedQuery query = null;
-        try {
-            query = QueryTag.getQuery(pageCache, parentList.getTagKey());
-        } catch (MakumbaError me) {
-            // this happens when there is no query for this mak:value
-            // we ignore it, query will stay null anyway
-        }
-
-        if (query != null) {
-            pageCache.cache(MakumbaJspAnalyzer.PROJECTION_ORIGIN_CACHE, new MultipleKey(parentList.getTagKey(), expr),
-                key);
-        }
+        ValueTag.startValueAnalyze(pageCache, key, expr, parentList.getTagKey());
     }
 
     /**
@@ -61,9 +42,7 @@ public abstract class GenericListValueFunction extends AnalysableExpression {
      */
     @Override
     public void doEndAnalyze(PageCache pageCache) {
-        // analogously to ValueTag, we tell the value computer t a value computer
-        ValueComputer vc = (ValueComputer) pageCache.retrieve(MakumbaJspAnalyzer.VALUE_COMPUTERS, key);
-        vc.doEndAnalyze(pageCache);
+        ValueTag.endValueAnalyze(pageCache, key);
     }
 
     /** Finds the enclosing mak:list/object */

@@ -76,7 +76,7 @@ public class QueryTag extends GenericListTag implements IterationTag {
 
     String offset, limit;
 
-    private int defaultOffset = 0;
+    private final int defaultOffset = 0;
 
     private String defaultLimit = "-1";
 
@@ -341,7 +341,6 @@ public class QueryTag extends GenericListTag implements IterationTag {
      */
     @Override
     public int doAnalyzedStartTag(PageCache pageCache) throws LogicException, JspException {
-        ListGroupTag.startList(pageCache, this);
         initiateQueryExecution(pageContext, false);
         return doTagExecution(pageCache, pageContext);
     }
@@ -442,7 +441,6 @@ public class QueryTag extends GenericListTag implements IterationTag {
             pageContext.setAttribute(standardCountVar, one);
             pageContext.setAttribute(getListSpecificCountVar(this), one);
 
-            ListGroupTag.checkHideGroupHeader(this, pageCache);
             return EVAL_BODY_INCLUDE;
         } else {
             if (countVar != null) {
@@ -528,13 +526,11 @@ public class QueryTag extends GenericListTag implements IterationTag {
      */
     @Override
     public int doAfterBody() throws JspException {
-        ListGroupTag.checkHideGroupFooter(this);
         setRunningElementData(tagData);
         try {
             int n = execution.nextGroupIteration();
 
             if (n != -1) {
-                ListGroupTag.checkHideGroupHeader(this, getPageCache(pageContext, MakumbaJspAnalyzer.getInstance()));
                 // print the separator
                 try {
                     pageContext.getOut().print(separator);
@@ -593,8 +589,6 @@ public class QueryTag extends GenericListTag implements IterationTag {
         Stack<MultipleKey> currentListKeyStack = getRunningQueryTagStack(pageContext);
         // and set it as the last finished list
         pageContext.setAttribute(lastFinishedListKey, currentListKeyStack.pop());
-
-        ListGroupTag.endList(this);
 
         return EVAL_PAGE;
     }
