@@ -516,10 +516,11 @@ public class MqlSqlWalker extends MqlSqlBaseWalker {
                             constantValues.put(name, Long.parseLong(txt));
                             break;
                         case HqlSqlTokenTypes.QUOTED_STRING:
-                            constantValues.put(name, txt.substring(1, txt.length() - 2));
+                            constantValues.put(name, txt.substring(1, txt.length() - 1));
                             break;
 
-                        // TODO: date constants!
+                            // TODO: date constants!
+                            // TODO: pointer constants
 
                         default:
                             constantValues = null;
