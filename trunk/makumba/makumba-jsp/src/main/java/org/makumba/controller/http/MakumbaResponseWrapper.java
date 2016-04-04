@@ -43,7 +43,7 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
 
     private PrintWriter makumbaWriter;
 
-    private HttpServletRequest request;
+    private final HttpServletRequest request;
 
     private String cssResources = "";
 
@@ -192,7 +192,7 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
 
             // we do the header modifications only for .jsp files
             // and only if we are not doing something related to makumba tools
-            if ((request.getRequestURI().endsWith(".jsp") || request.getRequestURI().endsWith(
+            if ((request.getServletPath().endsWith(".jsp") || request.getRequestURI().endsWith(".jsp") || request.getRequestURI().endsWith(
                 ".jsp;jsessionid=" + request.getSession().getId()))
                     && !request.getRequestURI().startsWith(
                         request.getContextPath() + MakumbaJspConfiguration.getMakumbaToolsLocation())
