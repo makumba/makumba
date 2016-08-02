@@ -5,7 +5,7 @@
 
     <groupId>org.makumba</groupId>
     <artifactId>makumba</artifactId>
-    <version>0.9.9-SNAPSHOT</version>
+    <version>0.9.9</version>
     <name>makumba core aggregator</name>
     <packaging>pom</packaging>
     <url>http://www.makumba.org</url>
@@ -74,9 +74,9 @@
     </mailingLists>
 
     <scm>
-	    <connection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/makumba-0.9.8/makumba</connection>
-	    <developerConnection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/makumba-0.9.8/makumba</developerConnection>
-        <url>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/makumba-0.9.8/makumba</url>
+	    <connection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/0.9.9/makumba</connection>
+	    <developerConnection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/0.9.9/makumba</developerConnection>
+        <url>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/0.9.9/makumba</url>
     </scm>
 
     <build>
