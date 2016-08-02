@@ -5,7 +5,7 @@
 
     <groupId>org.makumba</groupId>
     <artifactId>makumba</artifactId>
-    <version>0.9.9</version>
+    <version>0.9.10-SNAPSHOT</version>
     <name>makumba core aggregator</name>
     <packaging>pom</packaging>
     <url>http://www.makumba.org</url>
@@ -74,9 +74,9 @@
     </mailingLists>
     
     <scm>
-        <connection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/makumba-0.9.9/makumba</connection>
-        <developerConnection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/makumba-0.9.9/makumba</developerConnection>
-        <url>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/makumba-0.9.9/makumba</url>
+        <connection>scm:svn:https://svn.code.sf.net/p/makumba/code/tags/0.9.9/makumba</connection>
+        <developerConnection>scm:svn:https://svn.code.sf.net/p/makumba/code/tags/makumba-0.9.7</developerConnection>
+        <url>scm:svn:https://svn.code.sf.net/p/makumba/code/tags/makumba-0.9.7/makumba</url>
     </scm>
 
     <build>
@@ -149,7 +149,7 @@
                     <allowTimestampedSnapshots>true</allowTimestampedSnapshots>
                     <checkModificationExcludeList>build.properties</checkModificationExcludeList>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
-                    <tagBase>https://makumba.svn.sf.net/svnroot/makumba/tags</tagBase>
+                    <tagBase>https://svn.code.sf.net/p/makumba/code/tags/makumba-</tagBase>
                     <providerImplementations>
                         <svn>javasvn</svn>
                     </providerImplementations>
