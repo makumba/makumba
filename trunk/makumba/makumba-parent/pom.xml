@@ -72,11 +72,11 @@
             <!-- <archive>TODO</archive> -->
         </mailingList>
     </mailingLists>
-
+    
     <scm>
-	    <connection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/0.9.9/makumba</connection>
-	    <developerConnection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/0.9.9/makumba</developerConnection>
-        <url>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/0.9.9/makumba</url>
+        <connection>scm:svn:https://svn.code.sf.net/p/makumba/tags/0.9.9/makumba</connection>
+        <developerConnection>scm:svn:https://svn.code.sf.net/p/makumba//tags/0.9.9/makumba</developerConnection>
+        <url>scm:svn:https://svn.code.sf.net/p/makumba/tags/0.9.9/makumba</url>
     </scm>
 
     <build>
