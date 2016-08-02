@@ -298,8 +298,8 @@
 
 
   <scm>
-    <connection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/0.9.9/makumba-jsp-test</connection>
-    <developerConnection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/0.9.9/makumba-jsp-test</developerConnection>
-    <url>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/0.9.9/makumba-jsp-test</url>
+    <connection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/makumba-0.9.9/makumba-jsp-test</connection>
+    <developerConnection>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/makumba-0.9.9/makumba-jsp-test</developerConnection>
+    <url>scm:svn:https://makumba.svn.sf.net/svnroot/makumba/tags/makumba-0.9.9/makumba-jsp-test</url>
   </scm>
 </project>
