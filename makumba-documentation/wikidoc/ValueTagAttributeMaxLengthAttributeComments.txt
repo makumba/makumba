@@ -1,1 +1,0 @@
-Only applies for char[] AND if it is not already HTML formatted (cfr. html).

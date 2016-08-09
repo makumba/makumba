@@ -1,1 +1,0 @@
-Arguments: (Dictionary formFields, Attributes restOfArguments, Database db) Not mandatory. A form without handler will simply set attributes (as makumba objects) for the next page
