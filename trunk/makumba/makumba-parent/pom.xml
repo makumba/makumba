@@ -302,7 +302,7 @@
     <distributionManagement>
       <site>
         <id>sourceforge</id>
-        <url>/tmp/makumba</url>
+        <url>file://tmp/makumba</url>
       </site>
     </distributionManagement>
     <modules>
