@@ -1,1 +1,0 @@
-Fixed. Works only for char[] and ptr.
