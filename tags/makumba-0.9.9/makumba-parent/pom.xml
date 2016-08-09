@@ -1,0 +1,309 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.makumba</groupId>
+    <artifactId>makumba</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>makumba core aggregator</name>
+    <packaging>pom</packaging>
+    <url>http://www.makumba.org</url>
+	<prerequisites>
+		<maven>2.2.1</maven>
+	</prerequisites>
+	<properties>
+        <main.basedir>${project.basedir}/../</main.basedir>
+        <properties.location>${project.basedir}/build.properties</properties.location>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <!-- releasing to Sonatype -->
+    <!-- Commented out for now because it provokes a maven enforcer plugin Eclipse warning in all children modules.
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>5</version>
+    </parent>
+ -->
+    <organization>
+        <name>makumba.org</name>
+        <url>http://www.makumba.org</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>LGPL</name>
+            <url>http://www.gnu.org/copyleft/lesser.html</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>manu</id>
+            <name>Manuel Bernhardt</name>
+            <email>manuel@makumba.org</email>
+        </developer>
+        <developer>
+            <id>rudi</id>
+            <name>Rudolf Mayer</name>
+            <email>mayer@ifs.tuwien.ac.at</email>
+        </developer>
+        <developer>
+            <id>cristi</id>
+            <name>Cristian Bogdan</name>
+            <email>cristi@csc.kth.se</email>
+        </developer>
+    </developers>
+
+    <mailingLists>
+        <mailingList>
+            <name>makumba users</name>
+            <post>makumba-user@lists.sourceforge.net</post>
+            <!-- <subscribe>TODO</subscribe> -->
+            <!-- <unsubscribe>TODO</unsubscribe> -->
+            <!-- <archive>TODO</archive> -->
+        </mailingList>
+        <mailingList>
+            <name>makumba developers</name>
+            <post>makumba-devel@lists.sourceforge.net</post>
+            <!-- <subscribe>TODO</subscribe> -->
+            <!-- <unsubscribe>TODO</unsubscribe> -->
+            <!-- <archive>TODO</archive> -->
+        </mailingList>
+    </mailingLists>
+    
+    <scm>
+        <connection>scm:svn:https://svn.code.sf.net/p/makumba/code/tags/makumba-0.9.8/</connection>
+        <developerConnection>scm:svn:https://svn.code.sf.net/p/makumba/code/tags/makumba-0.9.8/</developerConnection>
+        <url>scm:svn:https://svn.code.sf.net/p/makumba/code/tags/makumba-0.9.8/</url>
+    </scm>
+
+    <build>
+        
+        <defaultGoal>install</defaultGoal>
+        
+
+        <extensions>
+            <!-- Enables maven to send stuff to ssh servers -->
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh</artifactId>
+                <version>1.0-beta-6</version>
+            </extension>
+        </extensions>
+        <plugins>
+            <plugin>
+                <!-- Allows reading properties files and using the values in maven poms-->
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.0-alpha-2</version>
+                <configuration>
+                    <files>
+                        <file>${properties.location}</file>
+                    </files>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>read-project-properties</goal>
+                        </goals>
+                        <configuration>
+                            <files>
+                                <file>${properties.location}</file>
+                            </files>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Skip deployment of this aggregator -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+
+            <!-- Release -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.google.code.maven-scm-provider-svnjava</groupId>
+                        <artifactId>maven-scm-provider-svnjava</artifactId>
+                        <version>2.0.3</version>
+                    </dependency>
+		    <dependency>
+		      <groupId>org.tmatesoft.svnkit</groupId>
+		      <artifactId>svnkit</artifactId>
+		      <version>1.8.3-1</version>
+		    </dependency>
+                </dependencies>
+                <configuration>
+                    <arguments>-DskipTests</arguments>
+                    <allowTimestampedSnapshots>true</allowTimestampedSnapshots>
+                    <checkModificationExcludeList>build.properties</checkModificationExcludeList>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <tagBase>https://svn.code.sf.net/p/makumba/code/tags/</tagBase>
+                    <providerImplementations>
+                        <svn>javasvn</svn>
+                    </providerImplementations>
+                </configuration>
+            </plugin>
+
+            <!-- license insertion -->
+            <plugin>
+                <inherited>false</inherited>
+                <groupId>com.mycila.maven-license-plugin</groupId>
+                <artifactId>maven-license-plugin</artifactId>
+                <configuration>
+
+                    <!-- TODO: reformat & commit the header -->
+                    <skip>true</skip>
+                    
+                    <header>${main.basedir}/etc/header.txt</header>
+                    <failIfMissing>true</failIfMissing>
+                    <aggregate>true</aggregate>
+                    <properties>
+                        <url>${project.url}</url>
+                    </properties>
+                    <excludes>
+                        <exclude>LICENSE.txt</exclude>
+                        <exclude>CHANGELOG.txt</exclude>
+                        <exclude>RELEASE</exclude>
+                        <exclude>INSTALL</exclude>
+                        <exclude>**/src/test/resources/**</exclude>
+                        <exclude>**/install/**</exclude>
+                        <exclude>**/.idea/**</exclude>
+                        <exclude>**/.settings/**</exclude>
+                        <exclude>**/*.launch</exclude>
+                        <exclude>**/*.original</exclude>
+                    </excludes>
+                    <strictCheck>false</strictCheck>
+                    <mapping>
+                        <javadoc>DOUBLESLASH_STYLE</javadoc>
+                    </mapping>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>check-headers</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>2.5</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <source>1.6</source>
+                        <target>1.6</target>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>2.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>2.2-beta-2</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.mycila.maven-license-plugin</groupId>
+                    <artifactId>maven-license-plugin</artifactId>
+                    <version>1.8.0</version>
+                </plugin>
+		        <plugin>
+		          <groupId>org.apache.tomcat.maven</groupId>
+		          <artifactId>tomcat6-maven-plugin</artifactId>
+		          <version>2.0</version>
+		        </plugin>
+		        <plugin>
+		          <groupId>org.apache.tomcat.maven</groupId>
+		          <artifactId>tomcat7-maven-plugin</artifactId>
+		          <version>2.0</version>
+		        </plugin>
+
+		        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+		        <plugin>
+		        	<groupId>org.eclipse.m2e</groupId>
+		        	<artifactId>lifecycle-mapping</artifactId>
+		        	<version>1.0.0</version>
+		        	<configuration>
+		        		<lifecycleMappingMetadata>
+		        			<pluginExecutions>
+		        				<pluginExecution>
+
+		        					<pluginExecutionFilter>
+		        						<groupId>
+		        							org.codehaus.mojo
+		        						</groupId>
+		        						<artifactId>
+		        							exec-maven-plugin
+		        						</artifactId>
+		        						<versionRange>
+		        							[1.2,)
+		        						</versionRange>
+		        						<goals>
+		        							<goal>java</goal>
+		        						</goals>
+		        					</pluginExecutionFilter>
+		        					<action>
+		        						<ignore />
+		        					</action>
+		        				</pluginExecution>
+		        				<pluginExecution>
+		        					<pluginExecutionFilter>
+		        						<groupId>
+		        							org.codehaus.mojo
+		        						</groupId>
+		        						<artifactId>
+		        							properties-maven-plugin
+		        						</artifactId>
+		        						<versionRange>
+		        							[1.0-alpha-2,)
+		        						</versionRange>
+		        						<goals>
+		        							<goal>
+		        								read-project-properties
+		        							</goal>
+		        						</goals>
+		        					</pluginExecutionFilter>
+		        					<action>
+		        						<ignore />
+		        					</action>
+		        				</pluginExecution>
+		        			</pluginExecutions>
+		        		</lifecycleMappingMetadata>
+		        	</configuration>
+		        </plugin>
+            </plugins>
+    </pluginManagement>
+    </build>
+
+    <modules>
+        <module>../makumba-core</module>
+        <module>../makumba-jsp</module>
+        <module>../makumba-jsp-test</module>
+    </modules>
+
+</project>
