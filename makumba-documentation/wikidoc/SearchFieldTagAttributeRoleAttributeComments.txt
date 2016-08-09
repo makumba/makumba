@@ -1,1 +1,0 @@
-Only for range searches, values are 'rangeBegin' and 'rangeEnd'. Defaults to 'rangeBegin'.

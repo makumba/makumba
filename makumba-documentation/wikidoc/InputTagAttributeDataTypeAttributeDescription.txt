@@ -1,1 +1,0 @@
-The makumba type of the data (needed if there is no value, no default expression for the value, or no makumba type associated with an attribute)

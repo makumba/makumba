@@ -1,1 +1,0 @@
-The string that separates the tickbox (radio/check) from the label. Default is " " (space). The output will be < tick >< labelSeparator >< label >
