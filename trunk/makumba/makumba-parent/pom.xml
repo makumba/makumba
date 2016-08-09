@@ -302,7 +302,7 @@
     <distributionManagement>
       <site>
         <id>sourceforge</id>
-        <url>scm:svn:https://svn.code.sf.net/p/makumba/code/tags/makumba-0.9.9-release/makumba-parent</url>
+        <url>https://svn.code.sf.net/p/makumba/code/tags/makumba-0.9.9-release/makumba-parent</url>
       </site>
     </distributionManagement>
     <modules>
