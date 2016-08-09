@@ -1,4 +1,0 @@
-%%prettify
-{{{
-<mak:version />
-}}}%%

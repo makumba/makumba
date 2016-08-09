@@ -1,1 +1,0 @@
-The character string to print if the expr results in a NULL value. Default is default="" (i.e. zero-length string) Support not available for: date, "choice" = ptr, set, setCharEnum

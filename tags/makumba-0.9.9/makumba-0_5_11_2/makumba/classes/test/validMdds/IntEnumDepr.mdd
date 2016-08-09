@@ -1,2 +1,0 @@
-#$Id$
-n=int { "aa"=5, "bb"=2 deprecated, "cc"=10}	;bug 28

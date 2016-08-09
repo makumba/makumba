@@ -1,1 +1,0 @@
-Only for %%code ptr %% and %%code intEnum %% types

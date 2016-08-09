@@ -1,9 +1,0 @@
-!!! About makumba
-
-Here there will be some information about makumba:
-* how it came to exist
-* that it's about 9 years old
-* who's developing it
-* etc.
-
-%%(display:none;)[Category Main]%%

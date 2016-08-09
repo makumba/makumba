@@ -1,1 +1,0 @@
-Produces a form or a link to an action page that will delete the object indicated by any of the labels of the mandatory enclosing %%code <mak:object>%% or %%code <mak:list>%%

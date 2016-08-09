@@ -1,4 +1,0 @@
-# gives the location of the relations table
-
-webappRoot = char[255]
-relationDatabase = char[255]

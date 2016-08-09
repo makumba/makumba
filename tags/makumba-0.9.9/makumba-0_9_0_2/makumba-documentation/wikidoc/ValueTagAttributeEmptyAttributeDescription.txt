@@ -1,1 +1,0 @@
-The character string to print if the normal printed output would be empty (i.e. zero-length string). Therefore, this is also used for case expr=NULL and default="".

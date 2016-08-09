@@ -1,1 +1,0 @@
-Displays the value of an attribute, or sets it to a Java variable.

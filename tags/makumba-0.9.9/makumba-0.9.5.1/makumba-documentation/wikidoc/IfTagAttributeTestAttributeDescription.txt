@@ -1,2 +1,0 @@
-MQL SELECT projection expression. It must be a test, resulting in a 'boolean' in SQL : 0 or 1. 
-Operators for the test expressions: =, <>, <, <=, >, >=

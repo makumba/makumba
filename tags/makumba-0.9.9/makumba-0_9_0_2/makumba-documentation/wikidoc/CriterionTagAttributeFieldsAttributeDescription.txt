@@ -1,1 +1,0 @@
-The MDD fields to apply this criterion upon

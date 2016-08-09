@@ -1,8 +1,0 @@
-Here is a list of makumba concerns, and how they might evolve in the future.
-
-[{Table 
-||concern ||Present implementation || Future || Todo
-| query | MQL| |(background:yellow;)d
-|^ |b |^ |(background:yellow;)d
-
-}]

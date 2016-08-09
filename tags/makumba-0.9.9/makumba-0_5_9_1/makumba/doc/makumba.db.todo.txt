@@ -1,9 +1,0 @@
-move DBSV in MakumbaDatabase.properties 
-
-change main record date when adding/editing/deleting subrecords?
-
-database name in DB errors
-
-executeQuery return Dic[] instead of Vector? or better Array? or even Iterator?
-
-full text search

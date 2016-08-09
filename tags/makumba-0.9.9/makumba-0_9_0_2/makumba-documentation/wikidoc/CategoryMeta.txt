@@ -1,6 +1,0 @@
-!!!Pages in the category Meta
-
-[{ReferringPagesPlugin}]
-
-[{ALLOW view Documentation,Admin}]
-

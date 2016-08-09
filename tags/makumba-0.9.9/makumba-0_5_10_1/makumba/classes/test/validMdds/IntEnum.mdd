@@ -1,2 +1,0 @@
-#$Id$
-n=int { "aa"=5, "bb"=2, "cc"=-10}	;simple int enum

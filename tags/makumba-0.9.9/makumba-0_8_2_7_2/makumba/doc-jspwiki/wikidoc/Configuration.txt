@@ -1,6 +1,0 @@
-This section describes how to configure Makumba:
-
-* the configuration of the web-app descriptor file {{web.xml}}
-* the main Makumba configuration in {{Makumba.conf}}
-
-%%(display:none;)[Category Configuration]%%

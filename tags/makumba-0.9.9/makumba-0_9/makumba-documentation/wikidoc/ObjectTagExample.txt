@@ -1,6 +1,0 @@
-%%prettify
-{{{
-<mak:object from="company.Employee e" where="e=$employee">
-    ...
-</mak:object>
-}}}%%
