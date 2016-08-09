@@ -1,0 +1,88 @@
+RELEASE HOWTO
+=============
+
+PREREQUISITES
+-------------
+
+- gpg installed on your system so that the maven gpg plugin can use it
+-- in Debian: install package gnupg
+
+- the makumba public & private keys imported on your system
+-- gpg --import makumba-pubring.gpg 
+-- gpg --import makumba-secring.gpg 
+ 
+
+- don't use maven 2.2.0 since it contains a bug and generates invalid checksums
+
+- Sonatype and SourceForge user and password must be configured in ~/.m2/settings.xml:
+
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                      http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+  <servers>
+    <server>
+      <id>sourceforge</id>
+      <username>USER</username>
+      <password>PASSWORD</password>
+    <server>
+      <id>sonatype-nexus-snapshots</id>
+      <username>USER</username>
+      <password>PASSWORD</password>
+    </server>
+    <server>
+      <id>sonatype-nexus-staging</id>
+      <username>USER</username>
+      <password>PASSWORD</password>
+    </server>
+  </servers>
+</settings>
+
+-- the user & pass for sonatype are personal, i.e. you need to make an account at the Sonatype JIRA as described here:
+https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide#SonatypeOSSMavenRepositoryUsageGuide-2.Signup
+
+-- Then according to their doc, you need to ask for membership to the "org.makumba" repository like this:
+https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide#SonatypeOSSMavenRepositoryUsageGuide-3.CreateaJIRAticket
+
+"How does a new user ask for publish rights to existing repositories? 
+Follow step 2, sign up and then leave a comment on the JIRA ticket with the username. We will assign related roles to him and update the ticket"
+The respective ticket is at https://issues.sonatype.org/browse/OSSRH-182
+
+The makumba repository public URL is https://oss.sonatype.org/content/groups/public/org/makumba/
+
+COMMANDS
+--------
+
+=== deploying a snapshot on the sonatype server
+
+mvn clean deploy
+
+=== uploading the current artifacts to sourceforge
+
+This will upload the artifacts with the version number of the POM to sourceforge.
+For the moment, this only works for makumba-core.
+
+- open a connection to the FRS (or the upload will fail)
+
+  ssh -t <SF user>,makumba@shell.sourceforge.net create
+
+- run the upload
+
+  mvn wagon:upload
+
+=== releasing a version
+
+This will
+- create a new tag in SVN for the current version
+- update all POMs to the next development version
+- create artifacts and deploy them on Sonatype (where they might be synced with central)
+- upload the new artifacts to Sourceforge
+
+/!\ make sure you have the right version number in the artifacts you want to deploy
+
+mvn release:prepare -Dusername=<sourceforge username> -Dpassword=<sourceforge password>
+
+(in a separate terminal) ssh -t <SF user>,makumba@shell.sourceforge.net create
+
+mvn release:perform -Darguments="-Dgpg.passphrase=<makumba passphrase> -Dgpg.keyname=makumba-devel@lists.sourceforge.net" -Dusername=<sourceforge username> -Dpassword=<sourceforge password>
