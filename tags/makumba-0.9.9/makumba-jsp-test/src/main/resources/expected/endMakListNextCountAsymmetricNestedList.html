@@ -1,0 +1,48 @@
+
+
+<html>
+<head><title>Testing mak:nextCount() with asymmetricly long nested lists</title></head>
+<body>
+
+
+
+
+<b>Persons</b> list will have 2 items<br/>
+
+  &nbsp; # countPerson: 1/2<br/>
+  &nbsp; &nbsp; <b>Speaks</b> list will have 10 items<br/>
+  
+    &nbsp; &nbsp; &nbsp; # countSpeaks: 1/10<br/>
+  
+    &nbsp; &nbsp; &nbsp; # countSpeaks: 2/10<br/>
+  
+    &nbsp; &nbsp; &nbsp; # countSpeaks: 3/10<br/>
+  
+    &nbsp; &nbsp; &nbsp; # countSpeaks: 4/10<br/>
+  
+    &nbsp; &nbsp; &nbsp; # countSpeaks: 5/10<br/>
+  
+    &nbsp; &nbsp; &nbsp; # countSpeaks: 6/10<br/>
+  
+    &nbsp; &nbsp; &nbsp; # countSpeaks: 7/10<br/>
+  
+    &nbsp; &nbsp; &nbsp; # countSpeaks: 8/10<br/>
+  
+    &nbsp; &nbsp; &nbsp; # countSpeaks: 9/10<br/>
+  
+    &nbsp; &nbsp; &nbsp; # countSpeaks: 10/10<br/>
+  
+  &nbsp; &nbsp; <b>Speaks</b> list had 10 items<br/>
+  &nbsp; # countPerson 2: 1/2<br/>
+  <br/>
+
+  &nbsp; # countPerson: 2/2<br/>
+  &nbsp; &nbsp; <b>Speaks</b> list will have 0 items<br/>
+  
+  &nbsp; &nbsp; <b>Speaks</b> list had 0 items<br/>
+  &nbsp; # countPerson 2: 2/2<br/>
+  <br/>
+
+<b>Persons</b> list had 2 items<br/>
+</body>
+</html>

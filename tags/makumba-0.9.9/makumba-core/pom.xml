@@ -1,0 +1,433 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--
+
+     TODO:
+
+     - reformat headers & commit & enable check
+
+     useful resource:
+     http://simplewebspider.svn.sourceforge.net/viewvc/simplewebspider/trunk/pom.xml?revision=360&view=markup
+
+     later:
+     - filter for random order of cactus things in Jetty
+     - finish configuration of mvn javadoc: separate profile for user API docs
+
+      -->
+
+    <parent>
+        <groupId>org.makumba</groupId>
+        <artifactId>makumba</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../makumba-parent/pom.xml</relativePath>
+    </parent>
+
+    <artifactId>makumba-core</artifactId>
+    <name>makumba core</name>
+    <packaging>jar</packaging>
+
+    <properties>
+        <main.basedir>${project.basedir}/..</main.basedir>
+        <properties.location>${main.basedir}/makumba-parent/build.properties</properties.location>
+    </properties>
+
+    <dependencies>
+
+        <!-- Core -->
+        <dependency>
+            <groupId>antlr</groupId>
+            <artifactId>antlr</artifactId>
+            <version>2.7.6</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>c3p0</groupId>
+            <artifactId>c3p0</artifactId>
+            <version>0.9.1.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-cli</groupId>
+            <artifactId>commons-cli</artifactId>
+            <version>1.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-configuration</groupId>
+            <artifactId>commons-configuration</artifactId>
+            <version>1.7</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>1.4</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.5</version>
+            <scope>compile</scope>
+        </dependency>		
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>3.5.4-Final</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-annotations</artifactId>
+            <version>3.5.4-Final</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>4.1.0.Beta1</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.javax.persistence</groupId>
+            <artifactId>hibernate-jpa-2.0-api</artifactId>
+            <version>1.0.0.Final</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.5.6</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+            <version>1.5.6</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>1.0.0.GA</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <scope>compile</scope>
+            <version>3.8.0.GA</version>
+        </dependency>
+
+        <!-- Test -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Database drivers for tests -->
+
+        <dependency>
+            <groupId>org.hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
+            <version>2.0.0</version>
+            <scope>test</scope>
+        </dependency>
+
+		<dependency>
+			<groupId>org.apache.derby</groupId>
+			<artifactId>derby</artifactId>
+			<version>10.10.1.1</version>
+            <scope>test</scope>
+		</dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.13</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+ 
+    <build>
+
+        <plugins>
+
+            <!-- ANTLR compilation -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>antlr-maven-plugin</artifactId>
+                <!-- Older versions won't work due to a bug regarding multi-package grammars -->
+                <version>2.2</version>
+                <configuration>
+                    <grammars>
+                        hql.g,hql-analyze.g,mql-sql.g,mql-sql-gen.g,mdd.g,mdd-expression.g,mdd-analyze.g,mdd-postprocess.g
+                    </grammars>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Clean -->
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>2.4.1</version>
+                <configuration>
+                    <!-- clean up the ANTLR mess -->
+                    <filesets>
+                        <fileset>
+                            <directory>src/main/java/org/makumba/providers/query/mql</directory>
+                            <includes>
+                                <include>MqlSqlGeneratorBase.java</include>
+                                <include>MqlSqlBaseWalker.java</include>
+                                <include>SqlTokenTypes.java</include>
+                                <include>HqlSqlTokenTypes.java</include>
+                            </includes>
+                        </fileset>
+                        <fileset>
+                            <directory>src/main/java/org/makumba/providers/query/hql</directory>
+                            <includes>
+                                <include>HqlAnalyzeBaseWalker.java</include>
+                                <include>HqlAnalyzeTokenTypes.java</include>
+                            </includes>
+                        </fileset>
+                        <fileset>
+                            <directory>src/main/java/org/makumba/providers/datadefinition/mdd</directory>
+                            <includes>
+                                <include>MDDPostProcessorBaseWalker.java</include>
+                                <include>MDDAnalyzeBaseWalker.java</include>
+                                <include>MDDExpressionBaseParserTokenTypes.java</include>
+                                <include>MDDTokenTypes.java</include>
+                                <include>MDDLexer.java</include>
+                                <include>MDDPostProcessorBaseWalkerTokenTypes.java</include>
+                                <include>MDDAnalyzeBaseWalkerTokenTypes.java</include>
+                                <include>MDDExpressionBaseParser.java</include>
+                                <include>MDDBaseParser.java</include>
+                            </includes>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2</version>
+                <executions>
+                    <!-- MANIFEST.MF generation with correct version -->
+                    <execution>
+                        <id>MANIFEST</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>org.makumba.version</mainClass>
+                            <arguments>
+                                <argument>writeManifest</argument>
+                                <argument>${project.build.outputDirectory}/META-INF/MANIFEST.MF</argument>
+                                <argument>${project.version}</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Produce JAR artifact -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <!-- Produces JAR of test classes, so that other submodules can re-use them -->
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <notree>true</notree>
+                    <noindex />
+                    <nohelp>true</nohelp>
+                    <windowtitle>Makumba</windowtitle>
+                    <version>true</version>
+                    <author>true</author>
+                    <additionalparam>-breakiterator</additionalparam>
+                    <doctitle>Makumba API Documentation</doctitle>
+                </configuration>
+            </plugin>
+
+            <!-- Assembly plugin, generates distribution artifacts -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                	<tarLongFileMode>gnu</tarLongFileMode>
+                            <!--
+                    <descriptors>
+                        <descriptor>
+                            src/main/assembly/jar-with-sources.xml
+                        </descriptor>
+                        <descriptor>
+                        -->
+                            <descriptorRefs>
+                                <descriptorRef>src</descriptorRef>
+                            </descriptorRefs>
+                    <descriptors>
+                        <descriptor>
+                            src/main/assembly/distribution.xml
+                        </descriptor>
+                    </descriptors>
+                    <attach>false</attach>
+                    <!--
+                    <appendAssemblyId>false</appendAssemblyId>
+                    -->
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Deployment -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+
+            <!-- SCP upload -->
+            <!--
+
+            Make sure you configure your username and password in ~/.m2/settings.xml
+
+            <server>
+                    <id>sourceforge</id>
+                    <username>foo</username>
+                    <password>bar</password>
+            </server>
+
+            -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>wagon-maven-plugin</artifactId>
+                <version>1.0-beta-4</version>
+                <configuration>
+                    <serverId>sourceforge</serverId>
+                    <fromDir>${project.build.directory}/</fromDir>
+                    <includes>
+                        ${project.artifactId}-${project.version}.jar,${project.artifactId}-${project.version}-jar-with-sources.jar,${project.artifactId}-${project.version}-distribution.zip,${project.artifactId}-${project.version}-src.zip
+                    </includes>
+                    <url>sftp://frs.sourceforge.net</url>
+                    <toDir>home/frs/project/m/ma/makumba/Makumba/</toDir>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>sf-upload</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>upload</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <!-- mvn exec:java -DcreateTestData -->
+    <profiles>
+        <profile>
+            <id>createTestData</id>
+            <activation>
+                <property>
+                    <name>createTestData</name>
+                </property>
+            </activation>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.2</version>
+                        <configuration>
+                            <classpathScope>test</classpathScope>
+                            <mainClass>org.makumba.test.util.MakumbaTestData</mainClass>
+                            <arguments>
+                                <argument>create</argument>
+                            </arguments>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- mvn exec:java -DdeleteTestData -->
+        <profile>
+            <id>deleteTestData</id>
+            <activation>
+                <property>
+                    <name>deleteTestData</name>
+                </property>
+            </activation>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.2</version>
+                        <configuration>
+                            <classpathScope>test</classpathScope>
+                            <mainClass>org.makumba.test.util.MakumbaTestData</mainClass>
+                            <arguments>
+                                <argument>delete</argument>
+                            </arguments>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+
+        </profile>
+    </profiles>
+
+    <distributionManagement>
+      <site>
+        <id>sourceforge</id>
+        <url>file:///tmp/makumba</url>
+      </site>
+    </distributionManagement>
+</project>
