@@ -5,7 +5,7 @@
 
     <groupId>org.makumba</groupId>
     <artifactId>makumba</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.9.9-SNAPSHOT</version>
     <name>makumba core aggregator</name>
     <packaging>pom</packaging>
     <url>http://www.makumba.org</url>
