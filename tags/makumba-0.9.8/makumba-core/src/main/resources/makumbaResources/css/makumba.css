@@ -1,0 +1,138 @@
+/**
+ * MAKUMBA CSS STYLES
+ *
+ * TODO order, rename if needed, and complete this file
+ */
+ 
+
+.mak_tolink {
+  cursor: pointer;
+}
+
+.mak_onedit {
+  display: none;
+}
+
+form.mak_edit {
+  display: inline;
+}
+
+/** CALENDAR EDITOR WIDGET STYLES **/
+
+.calendarEditor {
+  background: url('../image/calendar.gif') left center no-repeat;
+  padding-left: 18px;
+  height: 17px;
+  text-decoration: none;
+}
+
+/** AUTO-COMPLETE WIDGET STYLES **/
+
+div.autocomplete {
+  position: absolute;
+  width: 250px;
+  background-color: white;
+  border: 1px solid #888;
+  margin: 0;
+  padding: 0;
+}
+
+div.autocomplete ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+div.autocomplete ul li.selected {
+  background-color: #ffb;
+}
+
+div.autocomplete ul li {
+  list-style-type: none;
+  display: block;
+  margin: 0;
+  padding: 2px;
+  height: 32px;
+  cursor: pointer;
+}
+
+/** AJAX WIDGET STYLES **/
+.sectionReload {
+  background: url('../image/ajax-loader.gif') center center no-repeat;
+  padding-left: 16px;
+  height: 16px;
+  text-decoration: none;
+}
+
+
+
+
+/** MAK:SUBMIT WIDGET STYLES **/
+
+a.makSubmitLink {
+	
+}
+
+button.makSubmitButton {
+
+}
+
+.makumbaResponder {
+  
+}
+
+.makumbaError {
+  color: red;
+}
+
+.makumbaSuccess {
+  color: green;
+}
+button.makSubmitButton {
+
+}
+
+/** MAK:PAGINATION STYLES **/
+
+.makumbaPagination {
+  background-color: #f5f5ff; border: thin; border-style: solid; border-color: #ddddff; padding: 1px;
+}
+
+/** FORM VALIDATION STYLES **/
+
+.LV_validation_message{
+  color: red;
+  font-weight: bold;
+  background: url(/tests/style/exclamation.gif) left center no-repeat;
+  padding-left: 16;  height: 16;
+  margin:0 0 0 5px;
+}
+
+.LV_valid {
+  color:#00CC00;
+}
+  
+.LV_invalid {
+  color:#CC0000;
+}
+    
+.LV_valid_field,input.LV_valid_field:hover,input.LV_valid_field:active,textarea.LV_valid_field:hover,textarea.LV_valid_field:active {
+  background: none;
+}
+
+.LV_invalid_field,input.LV_invalid_field:hover,input.LV_invalid_field:active,textarea.LV_invalid_field:hover,textarea.LV_invalid_field:active {
+  border: 1px solid #CC0000;
+}
+
+.LV_valid {
+  background: none;
+}
+
+.invalidValueException {
+  font-weight: bold;
+  background: url(/tests/style/exclamation.gif) left center no-repeat;
+  display: block;
+  padding-left: 16;  height: 16;
+  margin:0 0 0 5px;
+}
+
