@@ -1,0 +1,9 @@
+# Relations between files
+
+fromFile = char[255]
+toFile = char[255]
+fromURL = char[255]
+toURL = char[255]
+type = char[255]
+origin = set org.makumba.devel.relations.RelationOrigin
+webapp = ptr org.makumba.devel.relations.WebappDatabase
