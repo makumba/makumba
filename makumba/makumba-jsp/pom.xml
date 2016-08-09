@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>org.makumba</groupId>
 		<artifactId>makumba</artifactId>
-		<version>0.9.8-SNAPSHOT</version>
+		<version>0.9.9</version>
 		<relativePath>../makumba-parent/pom.xml</relativePath>
 	</parent>
 
 	<artifactId>makumba-jsp</artifactId>
-  <version>0.9.8</version>
+  <version>0.9.9</version>
 	<packaging>jar</packaging>
 
 	<name>makumba jsp</name>
@@ -108,8 +108,8 @@
 
 
   <scm>
-    <connection>scm:svn:https://svn.code.sf.net/p/makumba/code/tags/makumba-0.9.8/makumba/makumba-jsp</connection>
-    <developerConnection>scm:svn:https://svn.code.sf.net/p/makumba/code/tags/makumba-0.9.8/makumba/makumba-jsp</developerConnection>
-    <url>scm:svn:https://svn.code.sf.net/p/makumba/code/tags/makumba-0.9.8/makumba/makumba-jsp</url>
+    <connection>scm:svn:https://svn.code.sf.net/p/makumba/code/tags/makumba-0.9.9/makumba-jsp</connection>
+    <developerConnection>scm:svn:https://svn.code.sf.net/p/makumba/code/tags/makumba-0.9.9/makumba-jsp</developerConnection>
+    <url>scm:svn:https://svn.code.sf.net/p/makumba/code/tags/makumba-0.9.9/makumba-jsp</url>
   </scm>
 </project>
