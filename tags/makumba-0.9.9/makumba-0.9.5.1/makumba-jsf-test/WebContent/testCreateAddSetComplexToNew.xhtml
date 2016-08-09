@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:mak="http://www.makumba.org/jsf"
+	template="/WEB-INF/templates/default.xhtml">
+
+	<ui:define name="content">
+
+		<h:form>
+			<mak:object from="test.Person p" where="p.indiv = new()">
+			
+				<mak:object from="p.address a" where="a = new()">
+			
+				Description: <h:inputText value="#{a.description}" />
+				</mak:object>
+			</mak:object>
+
+			<h:commandButton value="submit" />
+
+		</h:form>
+		
+		<mak:list from="test.Person p, p.address a">#{a.description},</mak:list>
+		
+	</ui:define>
+</ui:composition>

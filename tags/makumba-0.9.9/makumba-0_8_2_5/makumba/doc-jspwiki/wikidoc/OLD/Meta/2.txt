@@ -1,0 +1,19 @@
+[{ALLOW view Documentation,Admin}]
+
+!!!Meta
+
+This is the meta-makumba site, where we talk about the documentation itself: guidelines, howto, etc...
+
+!!Readme first
+
+* [MetaGuidelines|Meta Guidelines - guidelines for the Meta section]
+* [MetaAdministration|Administration of this site]
+
+!!TODO
+* [Documentation TODO|MetaDocumentationTodo]
+
+!!Blog
+* [{WeblogEntryPlugin page='Blog' entrytext='Create new blog post'}]
+
+
+%%(display:none;)[Category Meta|CategoryMeta]%%

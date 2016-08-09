@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<section id="description">
+  <title>Description</title>
+  <p>
+    &lt;mak:response/&gt; prints information about the results of the actions that were performed by the makumba
+    controller (e.g. for a form submit or deleteLink): It either displays the message="..." parameter of the form tag
+    (in green) in case of success, or (in red) the message of a uncaught LogicException resulting from Business Logic.
+    Other exception types will provoke an exception page.
+    </p><p>
+    The unformatted message is available as request-scope attribute makumba.response. The jsp page can get hold of the
+    message using e.g.</p>
+<source><![CDATA[<% String s = (String) request.getAttribute("makumba.response") %>]]></source>
+<p>
+    Similarly, request-scope attribute
+    <code>makumba.successfulResponse</code> is set only in case of successful action execution.
+</p>
+<source><![CDATA[<% if (null == request.getAttribute("makumba.successfulResponse")) { /* action failed */ } %>]]></source>
+</section>

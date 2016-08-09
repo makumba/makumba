@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
+<document>
+  <header>
+    <title>Nested List &amp; Multiple forms</title>
+  </header>
+  <body>
+  <section id="NestedLists">
+    <title>Nested Lists</title>
+    <p>Makumba allows for several &lt;mak:list&gt; and &lt;mak:object&gt; tags to be nested inside each other.</p>
+  </section>
+  <section id="MultipleForms">
+    <title>Multiple Forms</title>
+    <p>Makumba allows creating or editing of several different types and objects at the same time, within a
+  single form. This is called "multiple forms" or "nested forms". For example, we can edit all the addresses of a person
+  at the same time, or we can create five new companies within a single form. This allows the user to accomplish several
+  actions with only one form submission.</p>
+    <p>Some properties of multiple forms are:</p>
+    <ul>
+      <li>Any number of levels of form inclusion is possible but only the outermost form can have an action,
+  onSubmit, and method and other attributes specific to HTML forms.</li>
+      <li>All form actions take place in a single database transaction, which is rolled back by Makumba if there is
+  an error in any of the single forms.</li>
+      <li>addForms can add to the subsets of object produced by the enclosing newForm.</li>
+      <li>After_ methods are not executed in correct order (bug 689)</li>
+    </ul>
+  <source>  
+      <![CDATA[
+<mak:form action="blabla">
+    <%-- the topmost form, will result in a HTML form --%>
+
+    <mak:input name="first" /> <%-- the topmost form can have fields of its own --%>
+
+    <mak:addForm object="bla" field="bla" >
+        <%-- we have a nested forms here --%>
+        <mak:input name="second" />
+    </mak:addForm>
+
+    <mak:list from="blo.bla bla"> 
+        <%-- We can add forms repeatedly in loops / mak:list --%>
+        <mak:addForm object="bla" field="bli" >
+            <%-- note that we can't define an action here, it's the action of the topmost form --%>
+            <%-- a normal on_add BL method will be called --%>
+            <mak:input name="second" />
+        ...
+        </mak:addForm>
+    </mak:list>
+
+    <mak:list .... > 
+        <%-- there can be more than one loop in a root form -- %>
+        ...
+    </mak:list>
+    
+    <input type=submit> <%-- it's easy to add a submit button anywhere --%>
+</mak:form>
+      ]]>
+  </source>
+
+  </section>
+    
+  </body>
+</document>

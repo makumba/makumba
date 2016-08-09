@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<section id="example">
+  <title>Example</title>
+  <source>
+      <![CDATA[
+<mak:searchForm in="best.Student" name="searchPerson">
+    <mak:criterion fields="name"> ... </mak:criterion>
+</mak:searchForm>
+      ]]>
+  </source>
+</section>

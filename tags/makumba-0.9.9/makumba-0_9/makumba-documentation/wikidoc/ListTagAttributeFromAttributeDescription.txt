@@ -1,0 +1,1 @@
+MQL FROM section. If the query is nested, the keys from the parent's query are added to this FROM section in the resulting query

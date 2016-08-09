@@ -1,0 +1,4 @@
+%%prettify
+{{{
+<mak:info applicationProperties="system.properties" />
+}}}%%

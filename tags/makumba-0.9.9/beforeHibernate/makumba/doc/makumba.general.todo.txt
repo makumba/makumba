@@ -1,0 +1,20 @@
+- use a set of JSPs as a template, set some layout attributes, headers, footers
+- extend the template BL to customize the BL to the situation of use.
+
+JSP-MDD-BL dependence
+	MDds could show which JSPs depend on them, and the other way around. Same for BLs.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

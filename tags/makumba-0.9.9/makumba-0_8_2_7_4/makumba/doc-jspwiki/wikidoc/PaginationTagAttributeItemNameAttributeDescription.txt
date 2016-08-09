@@ -1,0 +1,1 @@
+The name of the items displayed, to be used in the text "Showing 'itemName' x out of y (Page z)".

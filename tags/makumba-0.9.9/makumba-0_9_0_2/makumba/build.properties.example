@@ -1,0 +1,27 @@
+# Properties for tomcat
+# tomcat 5.5 is used by jspwiki and tomcat-mak tester
+# same catalina.home but different catalina.base
+# example values
+#../tomcat
+#../../util-java/apache-tomcat-5.5.26/
+tomcat.home= PLEASE FILL IN if you use tomcat 5.5
+
+# tomcat 6 is used by tomcat6-mak tester
+# example values
+#../../util-java/apache-tomcat-6.0.26/
+tomcat6.home= PLEASE FILL IN if you use tomcat 6
+tomcat.Xms=64M
+tomcat.Xmx=128M
+
+# path to the makumba-documentation project, for documentation generation or for complete TLD generation during release
+documentation.path = ../makumba-documentation
+
+# set this to false if you want to see the tomcat output. 
+# set it back to true if you want ant not to block after starting tomcat
+tomcat.spawn=true
+
+# the folder where to drop the tests.war before testing
+test.deploy=webapps.dynamic
+
+# the port on which tests will be available at http://localhost:PORT/tests
+test.port=8080

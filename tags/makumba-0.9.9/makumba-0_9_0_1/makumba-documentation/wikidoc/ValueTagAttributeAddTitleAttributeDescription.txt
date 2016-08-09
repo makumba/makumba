@@ -1,0 +1,1 @@
+If "true", add an HTML tooltip with the value, to the printed output. If "auto", add tooltip only if the printed output is cut (cfr maxLength). Default is "false".

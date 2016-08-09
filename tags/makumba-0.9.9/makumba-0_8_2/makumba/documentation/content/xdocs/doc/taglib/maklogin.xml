@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd"><document>
+    <header>
+        <title>mak:login tag documentation</title>
+    </header>
+    <body>
+        <section id="description">
+            <title>Description</title>
+            <p class="tagDescription">Login is done as a result of a missing attribute (possibly invoked in checkAttributes), when a find{AttributeName} method is called. The missing attribute is the principal that needs to log in. 
+If the attribute cannot be found due to wrong login information, org.makumba.UnauthenticatedException is usually thrown.
+
+The principal (the person who logs in) can have more members (e.g. group, Lbg, Company representatives). E.g. the findCompany() method will check to see if the authentication (email_address and password) corresponds to any company representative of that company. If yes, it will return that company.
+Login can be done in 2 ways:
+
+(Http basic authentication login: will set the attributes $username, $password ) 
+cookie login: done in a page called login.jsp, in the same directory or (if missing) in any of the parents. It should contain at least: 
+The login form will pass further (as hidden arguments) all the http parameters it got. Note that &lt;mak:login&gt; is only needed upon automatic login (a page displayed when the user requested another page, that needs authentication). If you wish to ask for login manually in a startup page, a normal HTML form is enough.
+
+To cancel out a certain attribute, in order to produce a new login, the logout tag is available
+You can remove (cancel-out, logout) multiple attributes from the session by using &lt;mak:logout actor="attribute name"&gt; several times and/or by using the star (*) wildcard, e.g.:
+(Later on, logout request might be done in the business logic, with a method deleteAttributes(param) that can accept either a String (with optional '*') or a String[]. ) 
+(Later: to accomodate servers that don't do session tracking, login can be done by a query condition rather than by doing a query (once per session) to find an attribute. This way, it won't need to do a query (to check the authentication) at every access, but that condition will make sure that authentication is done. )
+
+(&lt;mak:object from="best.Student stud" where ="stud.$login()"&gt; ...&lt;/mak:object&gt; 
+then methodBestSudentLogin("stud") will return "stud.auth.email=$username AND stud.auth.password=$password" 
+This can be used for http authentication with no session tracking. )
+(Later: if an attribute has multiple values, a choose{AttributeName}.jsp page is shown. For example, a super user (for that area) can choose to act as any student, Lbg, or company... A student member of more local Vivaldi teams can choose to act for any of the viv teams, etc. )
+</p>        </section>        <section id="attributes">            <title>Attributes</title>
+            <p>This tag has no attributes</p>
+        </section>
+    
+        <section id="seeAlso">
+            <title>See also</title>
+            <ul>
+                <li>
+                    <a href="/doc/taglib/maklogout.html">mak:logout</a>
+                </li>
+                <li>
+                    <a href="/doc/taglib/makattribute.html">mak:attribute</a>
+                </li>
+            </ul>
+        </section>
+      <section id="example">
+        <title>Example</title>
+        <source>
+      <![CDATA[
+<mak:login>
+    <input type="text" name="username">
+    <input type="password" name="password">
+    <input type="submit">
+</mak:login>
+      ]]>
+  </source>
+    </section>  </body>
+</document>

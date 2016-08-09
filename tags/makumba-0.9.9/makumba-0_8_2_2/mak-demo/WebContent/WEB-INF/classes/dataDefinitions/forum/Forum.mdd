@@ -1,0 +1,9 @@
+title = not null char[255]                 ;
+description = text                         ;
+
+admins = set                               ; Admin users
+admins->user = ptr user.User               ;
+ 
+threadCount = int                          ;
+postCount = int                            ;
+lastPost = ptr forum.Post                  ;

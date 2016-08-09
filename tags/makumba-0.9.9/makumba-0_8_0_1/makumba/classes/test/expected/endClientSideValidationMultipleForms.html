@@ -1,0 +1,87 @@
+
+
+<html>
+<head><title>Multiple forms</title></head>
+<body>
+
+<script type="text/javascript" src="/tests/makumbaResources/javaScript/livevalidation_1.2_standalone.js"></script>
+<script type="text/javascript" src="/tests/makumbaResources/javaScript/makumba-livevalidation.js"></script>
+<form action="testMakEditForm.jsp" method="post">
+  
+    
+      name: <input name="indiv.name_1" type="text" value="bart" maxlength="40" id="indiv.name_1" ><br>
+        surname: <input name="indiv.surname_1" type="password" value="" maxlength="5" id="indiv.surname_1" ><br>
+        gender: <INPUT TYPE=RADIO NAME="gender_1"  VALUE="0"  id="AutoLabel_form7_gender_1_0"> <LABEL for="AutoLabel_form7_gender_1_0">Female</LABEL> <INPUT TYPE=RADIO NAME="gender_1"  VALUE="1"  id="AutoLabel_form7_gender_1_1"> <LABEL for="AutoLabel_form7_gender_1_1">Male</LABEL><br>
+        birthdate: <input type="hidden" name="birthdate_1_null"><input type="text" name="birthdate_1_2" id="birthdate_1_2" value="1900" maxlength="4" size="4">-<select name="birthdate_1_1" id="birthdate_1_1"><option value="0" selected>01</option><option value="1">02</option><option value="2">03</option><option value="3">04</option><option value="4">05</option><option value="5">06</option><option value="6">07</option><option value="7">08</option><option value="8">09</option><option value="9">10</option><option value="10">11</option><option value="11">12</option></select>-<select name="birthdate_1_0" id="birthdate_1_0"><option value="1" selected>01</option><option value="2">02</option><option value="3">03</option><option value="4">04</option><option value="5">05</option><option value="6">06</option><option value="7">07</option><option value="8">08</option><option value="9">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option></select><br>
+        comment: <TEXTAREA name="comment_1" id="comment_1"  ></TEXTAREA><br>
+        weight: <input name="weight_1" type="text" value="" maxlength="10" id="weight_1" >
+    <script type="text/javascript">
+var indiv__name_1Validation = new LiveValidation('indiv.name_1', { validMessage: " " });
+indiv__name_1Validation.add( MakumbaValidate.StringComparison , { element1: "indiv.name", element2: "indiv.name", comparisonOperator: "!=", functionToApply: "lower",  failureMessage: "Your name can't be all lower cases!" } );
+
+var weight_1Validation = new LiveValidation('weight_1', { validMessage: " " });
+weight_1Validation.add( Validate.Numericality , {  failureMessage: "invalid integer" } );
+weight_1Validation.add( MakumbaValidate.NumberComparison , { element1: "weight", element2: "age", comparisonOperator: "<",  failureMessage: "You should not be more heavy than you're old!" } );
+
+function validateForm_indiv__name_1Validation_weight_1Validation() {
+  valid = LiveValidation.massValidate( [indiv__name_1Validation, weight_1Validation] );
+  if (!valid) { alert('Please correct all form errors first!'); }
+  return valid;
+}
+</script>
+<input type="hidden" name="__makumba__base___1" value="34dqsls"><input type="hidden" name="__makumba__responder__" value="1139381825_1">
+    <hr>
+  
+    
+      name: <input name="indiv.name_2" type="text" value="john" maxlength="40" id="indiv.name_2" ><br>
+        surname: <input name="indiv.surname_2" type="password" value="" maxlength="5" id="indiv.surname_2" ><br>
+        gender: <INPUT TYPE=RADIO NAME="gender_2"  VALUE="0"  id="AutoLabel_form19_gender_2_0"> <LABEL for="AutoLabel_form19_gender_2_0">Female</LABEL> <INPUT TYPE=RADIO NAME="gender_2"  VALUE="1" CHECKED  id="AutoLabel_form19_gender_2_1"> <LABEL for="AutoLabel_form19_gender_2_1">Male</LABEL><br>
+        birthdate: <input type="text" name="birthdate_2_2" id="birthdate_2_2" value="1977" maxlength="4" size="4">-<select name="birthdate_2_1" id="birthdate_2_1"><option value="0">01</option><option value="1">02</option><option value="2" selected>03</option><option value="3">04</option><option value="4">05</option><option value="5">06</option><option value="6">07</option><option value="7">08</option><option value="8">09</option><option value="9">10</option><option value="10">11</option><option value="11">12</option></select>-<select name="birthdate_2_0" id="birthdate_2_0"><option value="1">01</option><option value="2">02</option><option value="3">03</option><option value="4">04</option><option value="5" selected>05</option><option value="6">06</option><option value="7">07</option><option value="8">08</option><option value="9">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option></select><br>
+        comment: <TEXTAREA name="comment_2" id="comment_2"  >This is a text field. It's a comment about this person.</TEXTAREA><br>
+        weight: <input name="weight_2" type="text" value="85.7" maxlength="10" id="weight_2" >
+    <script type="text/javascript">
+var indiv__name_2Validation = new LiveValidation('indiv.name_2', { validMessage: " " });
+indiv__name_2Validation.add( MakumbaValidate.StringComparison , { element1: "indiv.name", element2: "indiv.name", comparisonOperator: "!=", functionToApply: "lower",  failureMessage: "Your name can't be all lower cases!" } );
+
+var weight_2Validation = new LiveValidation('weight_2', { validMessage: " " });
+weight_2Validation.add( Validate.Numericality , {  failureMessage: "invalid integer" } );
+weight_2Validation.add( MakumbaValidate.NumberComparison , { element1: "weight", element2: "age", comparisonOperator: "<",  failureMessage: "You should not be more heavy than you're old!" } );
+
+function validateForm_indiv__name_2Validation_weight_2Validation() {
+  valid = LiveValidation.massValidate( [indiv__name_2Validation, weight_2Validation] );
+  if (!valid) { alert('Please correct all form errors first!'); }
+  return valid;
+}
+</script>
+<input type="hidden" name="__makumba__base___2" value="34dqslv"><input type="hidden" name="__makumba__responder__" value="1929474728_2">
+    <hr>
+  
+    
+      name: <input name="indiv.name_3" type="text" value="addToNewPerson" maxlength="40" id="indiv.name_3" ><br>
+        surname: <input name="indiv.surname_3" type="password" value="" maxlength="5" id="indiv.surname_3" ><br>
+        gender: <INPUT TYPE=RADIO NAME="gender_3"  VALUE="0"  id="AutoLabel_form31_gender_3_0"> <LABEL for="AutoLabel_form31_gender_3_0">Female</LABEL> <INPUT TYPE=RADIO NAME="gender_3"  VALUE="1"  id="AutoLabel_form31_gender_3_1"> <LABEL for="AutoLabel_form31_gender_3_1">Male</LABEL><br>
+        birthdate: <input type="hidden" name="birthdate_3_null"><input type="text" name="birthdate_3_2" id="birthdate_3_2" value="1900" maxlength="4" size="4">-<select name="birthdate_3_1" id="birthdate_3_1"><option value="0" selected>01</option><option value="1">02</option><option value="2">03</option><option value="3">04</option><option value="4">05</option><option value="5">06</option><option value="6">07</option><option value="7">08</option><option value="8">09</option><option value="9">10</option><option value="10">11</option><option value="11">12</option></select>-<select name="birthdate_3_0" id="birthdate_3_0"><option value="1" selected>01</option><option value="2">02</option><option value="3">03</option><option value="4">04</option><option value="5">05</option><option value="6">06</option><option value="7">07</option><option value="8">08</option><option value="9">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option></select><br>
+        comment: <TEXTAREA name="comment_3" id="comment_3"  ></TEXTAREA><br>
+        weight: <input name="weight_3" type="text" value="" maxlength="10" id="weight_3" >
+    <script type="text/javascript">
+var indiv__name_3Validation = new LiveValidation('indiv.name_3', { validMessage: " " });
+indiv__name_3Validation.add( MakumbaValidate.StringComparison , { element1: "indiv.name", element2: "indiv.name", comparisonOperator: "!=", functionToApply: "lower",  failureMessage: "Your name can't be all lower cases!" } );
+
+var weight_3Validation = new LiveValidation('weight_3', { validMessage: " " });
+weight_3Validation.add( Validate.Numericality , {  failureMessage: "invalid integer" } );
+weight_3Validation.add( MakumbaValidate.NumberComparison , { element1: "weight", element2: "age", comparisonOperator: "<",  failureMessage: "You should not be more heavy than you're old!" } );
+
+function validateForm_weight_3Validation_indiv__name_3Validation() {
+  valid = LiveValidation.massValidate( [weight_3Validation, indiv__name_3Validation] );
+  if (!valid) { alert('Please correct all form errors first!'); }
+  return valid;
+}
+</script>
+<input type="hidden" name="__makumba__base___3" value="53euuky"><input type="hidden" name="__makumba__responder__" value="1929474728_3">
+    <hr>
+  
+<input type="hidden" name="__makumba__responder__" value="-623754003">
+</form>
+
+</body>
+</html>

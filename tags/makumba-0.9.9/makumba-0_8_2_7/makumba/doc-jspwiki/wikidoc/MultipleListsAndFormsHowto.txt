@@ -1,0 +1,66 @@
+!!!Nested Lists
+Makumba allows for several <mak:list> and <mak:object> tags to be nested inside each other. This allows you to display objects from a certain type, and then for each object to list all related objects. As an example, we might want to list all companies, and then for each company all the employees working at that specific company. 
+
+[{Code 
+      
+<ul>
+    <mak:list from="company.Company c" orderBy="name">
+        <li>
+            <mak:value expr="c.name">, employees:
+            <ul>
+                <mak:list from="company.Employee e" where="e.department.company=c" orderBy="e.department.name, e.name, e.surname">
+                    <li> <mak:value expr="e.name"> <mak:value expr="e.surname"> (<mak:value expr="e.department.name") </li>>
+                </mak:list>
+            </ul>
+        </li>>
+    </mak:list>
+</ul>
+}]
+
+The strength in nested <mak:lists> is that Makumba will take care of optimising the SQL statements needed for fetching the data. In an optimal case, for each root/top level <mak:list>, only 1 SQL statement is needed, fetching and grouping all the data needed for the nested lists.
+
+More statements are required if some of the pointers used in the statements can be null. More details can be found in the [<mak:list> implementation documentation|makListDetails].
+
+!!!Multiple Forms
+
+Makumba allows creating or editing of several different types and objects at the same time, within a single form. This is called "multiple forms" or "nested forms". For example, we can edit all the addresses of a person at the same time, or we can create five new companies within a single form. This allows the user to accomplish several actions with only one form submission.
+
+Some properties of multiple forms are:
+* Any number of levels of form inclusion is possible but only the outermost form can have an action, onSubmit, and method and other attributes specific to HTML forms.
+* All form actions take place in a single database transaction, which is rolled back by Makumba if there is an error in any of the single forms.
+* addForms can add to the subsets of object produced by the enclosing newForm.
+* After_ methods are not executed in correct order (bug 689)
+
+[{Code 
+      
+<mak:form action="blabla">
+    <%-- the topmost form, will result in a HTML form --%>
+
+    <mak:input name="first" /> <%-- the topmost form can have fields of its own --%>
+
+    <mak:addForm object="bla" field="bla" >
+        <%-- we have a nested forms here --%>
+        <mak:input name="second" />
+    </mak:addForm>
+
+    <mak:list from="blo.bla bla"> 
+        <%-- We can add forms repeatedly in loops / mak:list --%>
+        <mak:addForm object="bla" field="bli" >
+            <%-- note that we can't define an action here, it's the action of the topmost form --%>
+            <%-- a normal on_add BL method will be called --%>
+            <mak:input name="second" />
+        ...
+        </mak:addForm>
+    </mak:list>
+
+    <mak:list .... > 
+        <%-- there can be more than one loop in a root form -- %>
+        ...
+    </mak:list>
+    
+    <input type=submit> <%-- it's easy to add a submit button anywhere --%>
+</mak:form>
+}]
+
+
+%%(display:none;)[Category Usage]%%

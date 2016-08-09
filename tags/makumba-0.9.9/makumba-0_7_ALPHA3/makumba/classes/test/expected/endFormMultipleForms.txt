@@ -1,0 +1,30 @@
+
+
+<html>
+<head><title>Multiple forms</title></head>
+<body>
+
+
+    testMakEditFormStart!<form action="testMakEditForm.jsp" method="post">!endMakEditFormStart
+      testName!<input name="indiv.name" type="text" value="bart" maxlength="40" id="indiv.name" >!endName
+        testSurname!<input name="indiv.surname" type="password" value="" maxlength="5" id="indiv.surname" >!endSurname
+        testGender!<INPUT TYPE=RADIO NAME="gender" id="gender"  VALUE="0"  id="AutoLabel_47537810"> <LABEL for="AutoLabel_47537810">Female</LABEL> <INPUT TYPE=RADIO NAME="gender" id="gender"  VALUE="1"  id="AutoLabel_21944404"> <LABEL for="AutoLabel_21944404">Male</LABEL>!endGender
+        testBirthdate!<input type="hidden" name="birthdate_null"><input type="text" name="birthdate_2" id="birthdate_2" value="1900" maxlength="4" size="4">-<select name="birthdate_1" id="birthdate_1"><option value="0" selected>01</option><option value="1">02</option><option value="2">03</option><option value="3">04</option><option value="4">05</option><option value="5">06</option><option value="6">07</option><option value="7">08</option><option value="8">09</option><option value="9">10</option><option value="10">11</option><option value="11">12</option></select>-<select name="birthdate_0" id="birthdate_0"><option value="1" selected>01</option><option value="2">02</option><option value="3">03</option><option value="4">04</option><option value="5">05</option><option value="6">06</option><option value="7">07</option><option value="8">08</option><option value="9">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option></select>!endBirthdate
+        testComment!<TEXTAREA name="comment" id="comment"  ></TEXTAREA>!endComment
+        testWeight!<input name="weight" type="text" value="" maxlength="10" id="weight" >!endWeight
+    testMakEditFormEnd!<input type="hidden" name="__makumba__base__" value="34dqsls"><input type="hidden" name="__makumba__responder__" value="362051371">
+</form>!endMakEditFormEnd
+
+    testMakEditFormStart!<form action="testMakEditForm.jsp" method="post">!endMakEditFormStart
+      testName!<input name="indiv.name" type="text" value="john" maxlength="40" id="indiv.name" >!endName
+        testSurname!<input name="indiv.surname" type="password" value="" maxlength="5" id="indiv.surname" >!endSurname
+        testGender!<INPUT TYPE=RADIO NAME="gender" id="gender"  VALUE="0"  id="AutoLabel_90776859"> <LABEL for="AutoLabel_90776859">Female</LABEL> <INPUT TYPE=RADIO NAME="gender" id="gender"  VALUE="1" CHECKED  id="AutoLabel_54735540"> <LABEL for="AutoLabel_54735540">Male</LABEL>!endGender
+        testBirthdate!<input type="text" name="birthdate_2" id="birthdate_2" value="1977" maxlength="4" size="4">-<select name="birthdate_1" id="birthdate_1"><option value="0">01</option><option value="1">02</option><option value="2" selected>03</option><option value="3">04</option><option value="4">05</option><option value="5">06</option><option value="6">07</option><option value="7">08</option><option value="8">09</option><option value="9">10</option><option value="10">11</option><option value="11">12</option></select>-<select name="birthdate_0" id="birthdate_0"><option value="1">01</option><option value="2">02</option><option value="3">03</option><option value="4">04</option><option value="5" selected>05</option><option value="6">06</option><option value="7">07</option><option value="8">08</option><option value="9">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option></select>!endBirthdate
+        testComment!<TEXTAREA name="comment" id="comment"  >This is a text field. It's a comment about this person.</TEXTAREA>!endComment
+        testWeight!<input name="weight" type="text" value="85.7" maxlength="10" id="weight" >!endWeight
+    testMakEditFormEnd!<input type="hidden" name="__makumba__base__" value="34dqslv"><input type="hidden" name="__makumba__responder__" value="362051371">
+</form>!endMakEditFormEnd
+
+
+</body>
+</html>

@@ -1,0 +1,325 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Configuring your Makumba database</title>
+   <link rel="stylesheet" type="text/css" media="all" href="main.css">
+   <script type="text/javascript" src="main.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+   makeNavBar("");
+</script>
+
+<h1> Configuring your Makumba database</h1>
+
+<p>This file describes which database engines are supported, and in which
+conditions. Many new SQL engines can be supported and many existing support
+can be optimised dramatically. Please send your questions or contributions
+to <a href="mailto:makumba AT best.eu.org">makumba AT best.eu.org</a>. Thank you!
+</p>
+<p>Contents: </p>
+<blockquote>1. <a href="#Configuration">Database configuration files</a> <br>
+1.1 <a href="#ConfigFileNames">Database configuration file name</a>
+  <br>
+1.2 <a href="#ConfigProperties">Database configuration properties</a>
+  <br>
+1.3 <a href="#auto-database">Database lookup files</a> <br>
+1.4 <a href="#query-cache">Caching queries in database lookup files</a> <br>
+2 <a href="#intro">Supported SQL engines</a> <br>
+3. <a href="#Other">other SQL engines</a> <br>
+3.1 <a href="#new">adding support for new engines</a></blockquote>
+
+<h2> 1.&nbsp;<a name="Configuration"></a>Database configuration files</h2>
+ An application can be made to work with multiple databases, each one is instantiated
+with one<b> database configuration file</b>. Such files are <tt>java.util.Properties</tt>
+files and are passed to the method <a
+ href="api/org/makumba/MakumbaSystem.html#getConnectionTo%28java.lang.String%29">MakumbaSystem.getConnectionTo(String
+configName)</a>.
+<h3> <a name="ConfigFileNames"></a>1.1 Database configuration file
+names</h3>
+ The file name of configuration files should be as follows:
+<blockquote><tt>Host_SQLEngineType_DatabaseName.properties</tt></blockquote>
+ The extension is not indicated to the constructor. <br>
+For example
+<blockquote><tt>dbhost.yourdomain.org_mysql_makumba.properties</tt></blockquote>
+ will be used as
+<blockquote><tt>Database.getDatabase("dbhost.yourdomain.org_mysql_makumba");</tt></blockquote>
+ Such a call will automatically connect to the following JDBC URL:
+<blockquote><tt>jdbc:mysql://dbhost.yourdomain.org/makumba</tt></blockquote>
+ If SQL engine port numbers are needed, file names are like:
+<blockquote><tt>Host_port_SQLEngineType_DatabaseName.properties</tt></blockquote>
+ which will connect to JDBC URLs like:
+<blockquote><tt>jdbc:mysql//dbhost.yourdomain.org:8282/makumba</tt></blockquote>
+
+<h3> <a name="ConfigProperties"></a>1.2 Database configuration properties</h3>
+ In the configuation files, the following properties can be defined:
+<blockquote><tt>sql.<i>setting</i>=<i>value</i></tt>
+  <blockquote>sends a setting to the JDBC driver (for example user, password,
+create, etc). Such settings are JDBC driver specific</blockquote>
+  <tt>initConnections=<i>value</i></tt>
+  <blockquote>specifies the initial number of connections that makumba will open when connecting to the database. Default is 1, though some makumba versions will open 2-3 more connections pretty early in their activity. High server load will lead to more connections being open.</blockquote>
+
+ <i><tt>dbclass=javaClass</tt></i>
+  <blockquote>The main class of the makumba database driver. This is normally
+read from org/makumba/db/sql/sqlEngines.properties, but other, more powerful
+drivers can be plugged in.</blockquote>
+ <i><tt>tableclass=javaClass</tt></i>
+  <blockquote>Table handler of the database driver (optional, norlally known
+by the dbclass or read from org/makumba/db/sql/sqlEngines.properties)</blockquote>
+ <tt><i>typename</i>=<i>SQLtableName</i></tt>
+  <blockquote>Sets the name of the SQL table representing the given type to
+SQLtableName (to inhibit automatic table name generation)</blockquote>
+ <i><tt>typename-&gt;field=SQLfieldName</tt></i>
+  <blockquote>Sets the name of the SQL field representing the given object
+attribute to SQLfieldName (to inhibit automatic field name generation)</blockquote>
+ <tt><i>typenamePrefix</i>=<i>typenameShorthand</i></tt>
+  <blockquote>Before automatic tablename generation; shortens the names of
+all the types that begin with the indicated prefix by replacing it with the
+indicated shorthand. Usefull for SQL engines that have severe limitations
+on tablename length</blockquote>
+ <tt>alter#<i>typenameShorthand</i>=true|false</tt>
+  <blockquote>If true allows automatic alteration of the SQL table representing
+the type(s) when the SQL table doesn't match the type definition. For example:
+    <blockquote><tt>alter#=true</tt> <br>
+      <tt>alter#general=false</tt></blockquote>
+ will allow alteration of all tables from the database except for tables whose
+names begin with "general"</blockquote>
+ <tt>admin#<i>typenameShorthand</i>=true|false</tt>
+  <blockquote>If true allows deletion of multiple records of the respective
+typesduring org.makumba.delete and org.makumba.copy the type(s) when the
+SQL table doesn't match the type definition. </blockquote>
+ <tt>addUnderscore=true|false</tt>
+  <blockquote>Specifies whether to add an underscore at the end of the generated
+field and table names during automatic name generation. It is true by default.
+(Introduced to avoid conflicts with reserved words on some SQL engines)</blockquote>
+ </blockquote>
+
+<h3> 1.3&nbsp;<a name="auto-database"></a>Database lookup files</h3>
+ An application which runs in several places (machines and/or directories)
+with several database can discover its database automatically using <b>database
+lookup file</b>s. Then the <a
+ href="api/org/makumba/MakumbaSystem.html#getDefaultDatabaseName%28%29">MakumbaSystem.getDefaultDatabaseName()</a>
+family of methods can be used. The format of the entries in the lookup file
+is
+<blockquote><tt>Host#currentDirectory= configFileName</tt> <br>
+  <tt>Host#default= configFileName</tt> <br>
+  <tt>default= configFileName</tt></blockquote>
+ The local host and current directory are searched for. If that is not found,
+the default database configuration is used. For example
+<blockquote><tt>server.domain.com#/server/home= dbhost.yourdomain.com_pgsql_makumba</tt>
+  <br>
+  <tt>server.domain.com#default= dbhost.yourdomain.com_pgsql_makumba_test</tt>
+  <br>
+  <tt>default= localhost_mysql_makumba</tt></blockquote>
+ The non-argument <a
+ href="api/org/makumba/MakumbaSystem.html#getDefaultDatabaseName%28%29">MakumbaSystem.getDefaultDatabaseName()</a>
+will look in <b>MakumbaDatabase.properties</b>. Instead of this default, a
+String argument (a database lookup file in the classpath), or a Properties
+object read from a database lookup file can be indicated.
+<h3> 1.4&nbsp;<a name="query-cache"></a>Caching queries in database lookup
+files</h3>
+ In some applictations, some queries will always return the same values (ex.
+list of all countries). To make such queries not generate actual requests
+to the database, but return a cached result, one can write the query in OQL
+(thus SQL-engine independent) as a cache in the <b>database lookup file</b>
+(such as MakumbaDatabase.properties) as follows
+<blockquote><tt>cache.1= SELECT o FROM general.Country o</tt> <br>
+  <tt>cache.2= SELECT o FROM general.Language o</tt></blockquote>
+
+<h2> <a name="intro"></a><b>2. </b>Supported SQL engines</h2>
+ Only SQL engines or bridges are supported, although there are possibilities
+to use non-SQL databases with Makumba <br>
+A "makumba" database is assumed to exist in the SQL engine.
+<p>If you want to use one of the supported SQL engines, you should put its
+JDBC driver (URLs are provided) in the CLASSPATH. </p>
+<p>Whenever you instantiate a org.makumba.db.Database object, you need to
+supply a <a href="#Configuration">configuation file</a>. In this file you
+see what you need to include in the configuration for specific SQL engines.
+<br>
+&nbsp; <br>
+&nbsp;
+<table border="1" width="100%">
+ <tbody>
+    <tr>
+ <td valign="top" width="20%"><b>SQL Engine and JDBC driver and versions</b></td>
+  <td valign="top"><b>&nbsp;Database configuration file (*.properties)</b></td>
+  <td valign="top"><b>Observations</b></td>
+ </tr>
+  <tr>
+ <td valign="top"><b>MySQL <sup>TM</sup></b> <br>
+      <a href="http://www.mysql.com">www.mysql.com</a> <br>
+      <a href="http://www.mysql.com/downloads/api-jdbc.html">MySQL Connector/J</a> JDBC driver</td>
+  <td valign="top"><b>hostname_mysql_databasename </b>will connect to the
+indicated database on the indicated host.</td>
+  <td valign="top">The main driver tested. <br>
+Earlier versions of the JDBC driver have the maximum packet length limited
+to 64K <br>
+To get a development-like low memory footprint of the mysql daemon (it's
+initially made for 32 M memory), decrease <tt>key_buffer, flush_time, thread
+stack</tt>&nbsp; in the <b>c:\my.cnf</b> file, then restart the daemon. <br>
+If you work with large binary objects, increase <tt>max_allowed_packet</tt>
+so they can be transmitted in one shot...</td>
+ </tr>
+  <tr>
+ <td valign="top"><b>ODBC <sup>TM</sup></b>
+ <ul>
+ <li> The jdbc-odbc bridge that
+comes with the JDK is used.</li>
+  <li> The Windows ODBC Jet driver (used with access, excell, etc) lower
+than 4</li>
+  <li> Other, more serious ODBC drivers like MS SQL server and Oracle should
+work better</li>
+ </ul>
+ </td>
+  <td valign="top" width="20%"><b>hostname_odbc_data-source-name</b> <br>
+will connect to the repsective ODBC data source on the local host. The hostname
+is not used.</td>
+  <td valign="top">not tested since spring 2002. worked nicely though</td>
+ </tr>
+  <tr valign="top">
+ <td><b>PostgreSQL&nbsp;</b> <br>
+      <a href="http://www.postgresql.org">www.postgresql.org</a>
+	<ul>
+      <li> the
+        <a href="http://www.retep.org.uk/postgres/">JDBC driver</a> distributed
+with PostgreSQL is use</li>
+  <li> JDK 1.2 and higher need a specific driver</li>
+	</ul>
+ </td>
+  <td valign="top" width="20%"><b>hostname_postgresql_databasename</b>
+  <ul>
+  <li>
+will connect to the local (!) postgresql daemon and the indicated databas</li>
+  <li> If the PostgreSQL daemon runs on another machine than the Makumba
+application, any form of "repeating" to port 5432 of the local machine is
+known to work</li>
+  </ul>
+ </td>
+  <td>Limited JDBC functionality before version 7.1. Not tested with 7.1 yet.
+      <br>
+PostgreSQL has a limitation of table name length to 32 chars. Use table renaming:
+      <br>
+      <tt><i>some_org.some_application</i>= <i>so.sa</i></tt> <br>
+This will replace with the shorter "so.sa" the left part of the type names
+that begin with "some_org.some_application"</td>
+ </tr>
+  <tr valign="top">
+ <td><b>IBM DB2<sup>TM</sup></b> <br>
+      <b></b>&nbsp;</td>
+  <td width="20%"><b>hostname_db2_databasename</b></td>
+  <td>Was adapted to makumba very easily. Needs more testing.</td>
+ </tr>
+  <tr>
+ <td><a href="http://www-3.ibm.com/software/data/informix/"><b>Informix<sup>TM</sup></b></a> Dynamic Server, version 9.20.UC2,
+ using <a href="http://www6.software.ibm.com/devcon/devcon/docs/jdbcv221.htm">IBM Informix JDBC Driver/Embedded SQL V2.21</a></td>
+  <td><b>hostname_port_informix-sqli_databasename</b></td>
+  <td>Works, was easy to adapt. Tricky part was creating an informix db with transactions enabled and setting up a
+connection to it. See <a href="http://cvs.makumba.org/classes/test/somehost_1560_informix-sqli_dbname.properties.example">sample config file</a>.</td>
+ </tr>
+  <tr valign="top">
+ <td><b>Cloudscape<sup>TM</sup></b> <br>
+SQL engine written in Java <br>
+      <a href="http://www.cloudscape.com">www.cloudscape.com</a> <br>
+includes JDBC driver <br>
+requires JDK 1.2 or higher</td>
+  <td><b>hostname_cloudscape_databasename</b> <br>
+sql.create=true will create the named database <br>
+The host name is not significant</td>
+  <td valign="top">not tested lately, but can be get to work</td>
+ </tr>
+  <tr valign="top">
+ <td><b>QED<sup>TM</sup></b> <br>
+SQL engine written in Java <br>
+      <a href="http://www.quadcap.com/home.html">http://www.quadcap.com/home.html</a>
+      <br>
+includes JDBC driver <br>
+requires JDK 1.2 or higher</td>
+  <td><b>hostname_qed_databasename</b> <br>
+sql.create=true will create the named database <br>
+The host name is not significant</td>
+  <td>fast and full of features but not stable at the time of last tests
+(begining of 2001)<br>
+sensitive to Ctrl-C during operation (lockfile must be deleted)</td>
+ </tr>
+  <tr valign="top">
+ <td><b>FirstSQL<sup>TM</sup></b> <br>
+SQL engine written in Java <br>
+      <a href="http://www.firstsql.com/firstsqlj/">http://www.firstsql.com/firstsqlj/</a>
+      <br>
+includes JDBC driver <br>
+requires JDK 1.1, does not work with 1.2</td>
+  <td><b>hostname_dbcp_databasename</b> <br>
+Has only one database. Hostname and database name are not used. sql.user should
+be adm or beta</td>
+  <td>Not stable at the time of last tests (begining of 2001). Ctrl-C can
+corrupt database. Need careful databae closing for database not to be corrupted
+upon exceptions. <br>
+Incorrect responses on large data. Limited JDBC features (setBytes and setStream
+not supported)</td>
+ </tr>
+  <tr valign="top">
+ <td><b>mSQL<sup>TM</sup></b> <br>
+      <a href="http://www.hughes.com.au/">http://www.hughes.com.au/</a> <br>
+the <a href="http://www.imaginary.com/Java/Soul/">Imaginary JDBC driver </a>is
+used</td>
+  <td><br>
+      </td>
+  <td>hasn't been tested since 1999, but it shouldn't be difficult to get
+it work with the latest sql code. Still, its limitations at the time made
+it unsuitable for makumba.&nbsp;</td>
+ </tr>
+
+  </tbody>
+</table>
+
+<h2> <b>3.&nbsp;<a name="Other"></a>Other SQL engines</b></h2>
+ Lots of&nbsp; other SQL engines cab be supported, please contribute! You
+can test any database engine as follows (subprotocol is its JDBC subprotocol,
+such as odbc, mysql, etc)
+<ol>
+ <li> In <tt>org\makumba\db\sql\sqlEngines.properties</tt>
+	add <tt>subprotocol=JDBC_driver_class</tt></li>
+<li> make a database configuration
+file <b>hostname_subprotocol_databasename.properties</b></li>
+  <li> create the database <b>databasename</b></li>
+  <li> At this point you should be able to open a database. Create a "makumba"
+database in the db server and try to execute "ant test"</li>
+
+</ol>
+
+<h3> 3.1 Adding support for&nbsp;<a name="new"></a>new engines</h3>
+ After following section 3 above, after your JDBC driver loads correctly,
+and your database is found, you might still see errors while running the test
+cases (java test.table) unless your SQL engine is SQL-92 compatible (and
+few of them are...). To treat <a href="http://downloads.hemtech.co.za/jdo/manual/database_specific_information.html">particularities of your engine</a>, you will need
+to define a new handler family. To do that
+<ul>
+ <li> look in the <a href="api/API_users_guide.html#developer">developer
+documentation</a> about record handlers. Check out the other specific SQL
+handler families (org.makumba.db.sql.*)</li>
+  <li> make a new package "subprotocol"</li>
+  <li> mae a new class <tt>subprotocol.Database extends org.makumba.db.sql.Database</tt></li>
+  <li> make an empty class <tt>subprotocol.RecordManager extends org.makumba.db.sql.RecordManager</tt></li>
+  <li> make an empty class <tt>subprotocol.FieldManager extends org.makumba.db.sql.FieldManager</tt></li>
+  <li> Add the following to org\makumba\db\sql\sqlEngines.properties
+
+  <ul>
+ <li> <tt>subprotocl.dbclass= subprotocol.Database</tt></li>
+  <li> <tt>subprotocol.tableclass= subprotocol.RecordManager</tt></li>
+
+  </ul>
+  </li>
+
+  <li> overwriting certain methods in one of the three classes above should
+be able to express your SQL engine's specifics</li>
+  <li> if these specifics are related to certain types of fields, you should
+create a class for that type T (TManager extends FieldManager) and work with
+redirectManager.properties to indicate type similarities</li>
+
+</ul>
+
+<script type="text/javascript">
+   makeFooter("$Id$");
+</script>
+</body>
+</html>

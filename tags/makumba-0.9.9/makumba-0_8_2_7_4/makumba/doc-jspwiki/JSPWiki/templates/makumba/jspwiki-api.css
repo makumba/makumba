@@ -1,0 +1,14 @@
+/* style-sheet for the java doc, using the original style sheet from the XHTML-Javadoc and JSP Wiki */
+@import url(../templates/makumba/stylesheet-XHTML-javadoc.css);
+@import url(../templates/makumba/jspwiki.css);
+
+/* Specific styles to overwrite from above, to integrate the left menu with the java doc */
+#Navigation  {
+  padding-left:200px;
+}
+#Overview  {
+  padding-left:200px;
+}
+#Content  {
+  padding-left:200px;
+}

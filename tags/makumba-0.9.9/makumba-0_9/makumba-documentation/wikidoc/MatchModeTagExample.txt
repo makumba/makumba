@@ -1,0 +1,9 @@
+%%prettify
+{{{
+<mak:searchForm in="company.Employee" name="searchEmployee">
+    <mak:criterion fields="name">
+        <mak:matchMode matchModes="contains, equals, begins, ends">
+        <mak:searchField />
+    </mak:criterion>
+</mak:searchForm>
+}}}%%

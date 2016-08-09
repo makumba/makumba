@@ -1,0 +1,10 @@
+Proposed content by rudi:
+
+[{TableOfContents }]
+
+!!!Best-practices for keeping the same layout, inspired by BEST private area:
+* use a header & footer page that provides the layout elements, includes CSS, JS, ...
+* example how to make menus with automatically selecting a category
+
+!!!Error pages
+explain about error.jsp, ...

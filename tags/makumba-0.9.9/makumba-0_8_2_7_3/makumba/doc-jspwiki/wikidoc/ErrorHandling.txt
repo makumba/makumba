@@ -1,0 +1,7 @@
+[{Box type='fixme' author='manu'
+
+Describe error handling mechanism: error pages (customizable, link to conf) and error messages
+}]
+
+
+%%(display:none;)[Category Documentation]%%

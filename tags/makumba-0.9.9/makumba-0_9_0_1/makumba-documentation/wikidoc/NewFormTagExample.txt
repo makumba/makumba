@@ -1,0 +1,8 @@
+%%prettify
+{{{
+<mak:newForm type="company.Employee" action="employeeList.jsp" method="post">
+    <mak:input name="name"/>
+    <mak:input name="surname"/>
+    <input type="submit" value="Create new employee">
+</mak:newForm>
+}}}%%

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
+
+<document>
+	<header>
+		<title>Makumba Business Logics</title>
+	</header>
+	<body>
+	<section id="attributes">
+		<title>Attributes</title>
+		<p>
+		Java Server Pages use attributes to keep the state of the application. Makumba builds upon that its own notion of Attributes that keep the read-only state of a makumba task.
+		They represent the "environment" of that makumba task. The typical example is a JSP page during execution, with its HTTP and session parameters as attributes. 
+		Since other kinds of attributes are possible, the attribute specification is kept HTTP-independent.
+		Makumba BL code sees the attributes as an org.makumba.Attributes  object.
+		</p>
+	</section>
+
+	</body>
+</document>

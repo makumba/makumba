@@ -1,0 +1,1 @@
+This is a dummy file required for the hibernate database layer to initialise itself

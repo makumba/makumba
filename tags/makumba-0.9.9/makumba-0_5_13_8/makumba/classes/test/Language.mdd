@@ -1,0 +1,2 @@
+name=not null char[10]
+isoCode=unique char[2]

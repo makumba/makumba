@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
+<document>
+    <header>
+        <title>Download Makumba</title>
+    </header>
+    <body>
+        <p>Makumba is <a href="http://www.opensource.org/">open source</a> software. Both source
+            code and binaries can be downloaded under the terms of <a
+                href="http://www.gnu.org/copyleft/lesser.html">GNU Lesser General Public License</a>
+            (LGPL).</p>
+        <p>You can download Makumba at Sourceforge: <a
+                href="http://sourceforge.net/project/showfiles.php?group_id=25704"
+                >http://sourceforge.net/project/showfiles.php?group_id=25704</a>
+        </p>
+    </body>
+</document>

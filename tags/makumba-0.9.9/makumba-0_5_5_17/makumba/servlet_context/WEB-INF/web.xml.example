@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN"
+    "http://java.sun.com/j2ee/dtds/web-app_2.2.dtd">
+
+<web-app>
+
+    <servlet>
+        <servlet-name>
+            mddLinker
+        </servlet-name>
+        <servlet-class>
+	    org.makumba.devel.SourceViewServlet
+        </servlet-class>
+    </servlet>
+    <servlet-mapping>
+	<servlet-name>mddLinker</servlet-name>
+	<url-pattern>*.jspx</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+	<servlet-name>mddLinker</servlet-name>
+	<url-pattern>*.jspxp</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+	<servlet-name>mddLinker</servlet-name>
+	<url-pattern>/dataDefinitions/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+	<servlet-name>mddLinker</servlet-name>
+	<url-pattern>/classes/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+	<servlet-name>mddLinker</servlet-name>
+	<url-pattern>/logic/*</url-pattern>
+    </servlet-mapping>
+
+    <taglib>
+        <taglib-uri>
+	   http://www.makumba.org/presentation
+        </taglib-uri>
+        <taglib-location>
+           /WEB-INF/makumba.tld
+        </taglib-location>
+    </taglib>
+
+
+</web-app>

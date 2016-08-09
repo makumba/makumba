@@ -1,0 +1,22 @@
+address=set          ;Addresses
+  address->!title=description
+  address->description=char[30] ;Description (home address, study-time address, ...)
+  address->streetno=char[100]         ;Street  
+  address->zipcode=char[10]     ;Zipcode
+  address->city=char[40]        ;City
+  address->country=char[20]             ;Country
+  address->phone=char[20]       ;Phone
+  address->fax=char[20]         ;Fax
+  address->email=char[40]       ;E-Mail
+  address->usagestart=date      ;Use from
+  address->usageend=date        ;Use till
+  address->sth=ptr
+  address->homepage=char[50]
+  address->sth->aaa=char[20]
+#  address->sth->someSuperNestedFunction() { 1 + 2 } : "Some nested nested message"
+  address->languages = set test.Language ; languages spoken in that address
+
+name = char[255]
+supergroup = set test.ParserComparison
+
+myFunct() { name + ' ' + name }

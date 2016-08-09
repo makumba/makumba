@@ -1,0 +1,1 @@
+Format string, according to java.text.SimpleDateFormat Can only countain d, M, y, H, m, s formatting chars, and any kind of separators. Ex: 'the day' dd 'of the month' MMMM 'in the year' yyyy. Default is "dd MMMM yyyy"

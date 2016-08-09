@@ -1,0 +1,5 @@
+A section that can be hidden, shown or reloaded using events. It enables partial page rendering via asynchronous post-back.
+
+Sections that have a %%code showOn%% attribute will not be displayed until the event associated to the attribute is fired.
+
+Sections that have a %%code reloadOn%% attribute will be reloaded via partial rendering (i.e. without reloading the whole page via a new HTTP request, but by reloading only the given section using an asynchronous request).

@@ -1,0 +1,2736 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="makumba-dev group">
+   <title>Makumba Specification</title>
+   <link rel="stylesheet" type="text/css" media="all" href="main.css">
+   <script type="text/javascript" src="main.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+   makeNavBar("");
+</script>
+<h1>Makumba Specification</h1>
+
+<p><span class=oldfeat>OLDSTYLE features that are still accepted are presented in darkblue</span>
+<br><span class=futfeat>INTENDED features are presented in red</span>
+<div class="note">This is a note for users</div>
+<div class="internals note">This is a note about makumba internals for makumba developers</div>
+
+<h2><a name="content">Content</a></h2>
+
+<ul>
+  <li><b><a href="#Data_Description">Data Definition Language</a></b><i>... writing MDDs </i>
+    <ul>
+      <li> <a href="#Types_objects_databases">Types, objects, databases</a></li>
+      <li> <a href="#Fields">Fields</a></li>
+      <li> <a href="#DefaultFields">Default fields</a></li>
+      <li> <a href="#SimpleFieldTypes">Simple field types</a>
+              <ul>
+                  <li><a href="#int">int</a> - <a href="#char">char</a> - <a href="#text">text</a> - <a href="#date">date</a></li>
+              </ul>
+      </li>
+      <li> <a href="#StructuralTypes">Structural (relational) types</a>
+              <ul>
+                  <li><a href="#ptr">ptr</a> - <a href="#set">set</a></li>
+              </ul>
+      </li>
+      <li> <a href="#MacroTypes">Macro types</a></li>
+      <li> <a href="#FieldAttributes">Field attributes</a></li>
+      <li> <a href="#ObjectTitle">Object title</a></li>
+      <li> <a href="#Include">Include mechanism</a></li>
+    </ul>
+  </li>
+  <li><b><a href="#OQL">OQL language</a></b> <i>... getting data from the database </i> </li>
+
+  <li><b><a href="#Business">Business Logic</a></b> <i>... adding logic to basic operations </i>
+  <ul>
+      <li><a href="#Attributes">Attributes</a></li>
+      <li><a href="#javahand">Java Handler classes</a></li>
+      <li><a href="#Login">Login, &lt;mak:login>, &lt;mak:logout/></a></li>
+  </ul>
+  </li>
+  <li><b><a href="#PresentationSummary">Presentation and internal representation principles</a></b></li>
+
+  <li><b><a href="#Presentation">Presentation with JSP taglib</a></b> <i>... viewing/editing data thru HTML pages</i>
+  <ul>
+      <li><a href="#JspIntro">Makumba in Java Server Pages</a>
+        <ul>
+          <li><a href="#controller">Makumba Controller</a></li>
+          <li><a href="#tagparameters">JSP tag parameters</a></li>
+        </ul>
+      </li>
+
+      <li><a href="#maklist">&lt;mak:list></a>
+        <ul>
+          <li><a href="#makobject">&lt;mak:object></a></li>
+          <li><a href="#usageOFAttributes">Attributes and OQL in &lt;mak:list > and &lt;mak:object ></a></li>
+          <li><a href="#makvalue">&lt;mak:value/></a></li>
+          <li><a href="#makif">&lt;mak:if></a></li>
+          <li><a href="#mak_attrib">&lt;mak:attribute></a></li>
+        </ul>
+      </li>
+
+      <li><a href="#forms">Forms</a>
+      <ul>
+          <li><a href="#maknew">&lt;mak:newForm></a></li>
+          <li><a href="#makadd">&lt;mak:addForm></a></li>
+          <li><a href="#makedit">&lt;mak:editForm></a></li>
+          <li><a href="#makform">&lt;mak:form></a></li>
+          <li><a href="#input">&lt;mak:input/></a></li>
+          <li><a href="#action">&lt;mak:action/></a></li>
+      </ul>
+      </li>
+      <li><a href="#delete">&lt;mak:deleteLink/></a></li>
+      <li><a href="#response">&lt;mak:response/></a></li>
+   </ul>
+   </li>
+</ul>
+
+
+<h2>
+<a NAME="Data_Description">Data Definition Language</a></h2>
+(the Makumba abstract level)
+
+<h3>
+<a NAME="Types_objects_databases">Types, objects, databases</a></h3>
+<p>
+Data definitions describe <b>data types (or classes)</b>. They are placed
+in files contained in directory hierarchies, and the directory name is
+part of the type name (similar to Java packages). For example <b>the file
+best/Student.mdd </b>describes<b> the type best.Student</b>. Type names
+can contain letters, digits, underscores and dashes and cannot contain
+slashes and dots. Usually, the directories are used to separate organisations
+and projects.
+</p>
+<div class="note">
+Current Java implementation finds the data definition
+files as follows:
+
+<!-- FIXME: is this still correct? Bug 602 -->
+<ul>
+<li>the designated file extension is <code>.mdd</code> (Makumba Data Definition)</li>
+<li>relative to CLASSPATH (e.g. <code>classes/best/Student.mdd</code>)</li>
+<li>in a directory called "<b>dataDefinitions/</b>" in the CLASSPATH (e.g. <code>classes/dataDefinitions/best/Student.mdd</code>)</li>
+<li class="oldfeat">OLDSTYLE: if no mdd file is present, the no-extension file (i.e. best/Student) is looked up</li>
+</ul>
+
+</div>
+
+<p>
+<b>Data objects (records)</b> are stored in <b>databases</b>.
+</p>
+
+<p>
+The actual implementation of the database is not part of this specification
+but implementation suggestions will be made. <b>Data can be copied and/or replicated
+between different databases</b>, even between different DB engine types.
+</p>
+
+<div class="futfeat note">Replication is not yet implemented,
+but the design is prepared for it. Copying works.
+</div>
+
+<h3><a NAME="Fields">Fields</a></h3>
+<p>
+Every data definition file contains <b>field definitions</b>, separated
+by newline.
+</p>
+
+<p>
+A field definition looks like:
+</p>
+
+<pre class="example">
+<b>fieldname= [attributes] fieldtype [parameters] [; description]</b>
+</pre>
+
+<p>&nbsp;</p>
+
+<div class="note futfeat">
+default values are supported
+internally, but not by the mdd parser
+</div>
+
+<div class="internals note">
+As an implementation guideline, field names tend to stay approximately
+the same in:
+<ul>
+<li>http requests</li>
+<li>Record instances (java.util.Dictionary in the current Java API)</li>
+<li>database columns</li>
+<li>etc</li>
+</ul>
+</div>
+
+<p class="futfeat">Automatic labeling:
+The field description is used at interface levels to present that field.
+It is typically shown at the left of, or somewhere near to, the input control
+(text box, radio button, chooser, etc) that allows for data input in that
+field. If a field description is not present, its field name stands for
+its description by default.
+</p>
+<p>
+<b>Comment lines</b> can be inserted in the data definition files as
+follows:
+</p>
+<pre class="example">
+<b>#</b> <i>your comment...</i>
+</pre>
+
+
+<h3><a NAME="DefaultFields">Default fields</a></h3>
+<p>
+Every datatype has some additional fields by default, as follows:
+</p>
+
+<ul>
+<li>Index field, consisting of two parts:
+
+    <ul>
+    <li>Database identifier. It is unique (within the webapp) per database.
+            All objects created thru that webapp and in that database get the
+            same value. It is set by property dbsv in the database config
+            file.</li>
+
+    <li>Object identifier: unique id for the object in the given database.</li>
+    </ul>
+This combination ensures that no two objects of one type have the same
+Index field.
+
+<br>The name of the index field is the same with the last part of the type
+name. If another field by that name is defined by the makumba user, this field will be renamed in the database.
+</li>
+
+<li>Object creation time
+<div class="note">Can be accessed as TS_create.</div>
+ <!-- REMOVED. What did it mean anyway? (fred, 2003-10-13)
+      "This might change, but there are specific methods to retrieve it"
+ -->
+</li>
+
+<li>Last modification time. Updates whenever the object is changed
+<div class="note">Can be accessed as TS_modify.</div>
+<!-- REMOVED. What did it mean anyway? (fred, 2003-10-13)
+      "This might change, but there are specific methods to retrieve it"
+ -->
+</li>
+
+</ul>
+
+<h3><a NAME="SimpleFieldTypes">Simple field types</a></h3>
+
+<h4><a name="int">int</a></h4>
+<p>
+A 32-bit integer. For example
+</p>
+<pre class="example">
+shoeSize= int; Shoe size
+</pre>
+
+<p>
+If the int can have a limited number of values, it can be described as follows
+</p>
+
+<pre class="example">
+gender= int{ "male"=0, "female"=1 }; Sex
+</pre>
+
+<p>
+This will help the presentation layer to present a suitable input control
+(e.g. <select><option value="0">male</option><option value="1">female</option></select>)
+</p>
+
+<div class="internals note">In the present implementation, this type is called
+"intEnum" internally</div>
+
+<h4><a name="char">char</a></h4>
+<p>
+A char field contains a number of characters. Maximal width must be specified and is limited
+to 255. <span class="futfeat">Optionally a minimal number of characters (lesser than max)
+can be indicated.</span> Both must be positive integers.
+
+For example:
+<pre class="example">
+#<i>fieldName</i>= char[<i>maxWidth</i>]
+name= unique char[80]; Username
+#<span class="futfeat"><i>fieldName</i>= char[<i>minWidth</i>..<i>maxWidth</i>]</span>
+<span class="futfeat">password= encrypted char[6..10]; Secret password</span>
+</pre>
+
+<p>
+"<code>unique</code>" and "<code>encrypted</code>" are <a href="#FieldAttributes">field attributes</a>, explained below.
+</p>
+
+<div class="note">
+Pay close attention to the character set (charset) for encoding the characters.
+In Java the charset is Unicode, but the JSP/HTML pages have their own encoding settings,
+as well as the database, etc.
+</div>
+
+
+<p><b>DEPRECATED (use int{...} instead):</b> If the char can have a limited number of value, it can be described
+as follows
+</p>
+
+<pre class="example">
+gender= char{ "male", "female" }; Sex
+</pre>
+
+<p>
+This will help the presentation layer to present a suitable input control
+(e.g. a HTML SELECT)
+</p>
+
+<div class="internals note">in the present implementation, this type is called
+"charEnum" internally</div>
+
+
+<h4><a name="text">text</a></h4>
+<p>
+An unlimited-length string of bytes or characters. This type was
+designed to accomodate large text or binary content. It is implemented
+with LONGVARBINARY or its counterparts, depending on the underlying DB engine.
+</p>
+
+<pre class="example">
+application= text ; Application letter
+description=text  ; Description of object
+image= text	  ; Picture attachment</pre>
+
+<h4><a name="date">date</a></h4>
+<p>
+A date and/or time.
+</p>
+
+<pre class="example">
+birthdate= date; Date of birth
+arrivalTime= date; Arrival time
+</pre>
+
+<!-- FIXME. (fred, 2003-10-13) bug 606
+     Should there be a warning about "time".
+     Because it really isn't a "time", it would be a "date" where d/m/y fields
+     are not set explicitly... but they are filled in with 'random'/'current'
+     values. So comparison as "time" < 9am or so is not possible?
+ -->
+
+
+
+<h3><a NAME="StructuralTypes">Structural (relational) types</a></h3>
+
+<h4><a name="ptr">Pointers (ptr)</a></h4>
+<p>
+Pointers define a reference to an object of a certain type. For example
+</p>
+
+<pre class="example">
+citizenship= ptr general.Country; Citizenship
+</pre>
+
+<div class="note futfeat">the <code>ptr</code> keyword might be
+ommitted in future parsers</div>
+
+<p>
+The type can be defined on-the-spot for a single usage. For example
+</p>
+
+<pre class="example">
+addres= ptr ; Address
+address->street= char[80]; Street
+address->number= int; Number
+</pre>
+
+<!-- FIXME. Is there any relevance to this? bug 607 -->
+
+<div class="note futfeat">future parsers might read this:
+<pre class="example">
+address= ptr{
+    street= char[80]; Street
+    number= int; Number}; address
+</pre>
+</div>
+
+<div class="note internals">this type is known internally as ptrOne</div>
+
+
+<h4><a name="set">Sets (set, bag, list)</a></h4>
+<p>
+Sets define a number of references to multiple objects of a certain type.
+For example:
+</p>
+
+<pre class="example">
+language= set general.Language; Spoken languages
+</pre>
+
+<p>
+This type accomodates sets, bags and lists. The set and list constraints
+(sets have to contain only one element of a certain value and lists have
+to be ordered) have to be cared for by the programmer. Lists are easy to
+represent, just having an integer field, for the order.
+</p>
+
+<p>
+The type which the set is made of can be defined on the spot:
+</p>
+<pre class="example">
+addresses= set; Addresses
+  addresses->street= char[80]; Street
+  addresses-> number= int; Number
+</pre>
+
+<div class="note futfeat">the future parser might recognize this form:
+
+<pre class="example">
+addresses: set{
+    street: char[80]; Street
+    number: int; Number }; Addresses
+</pre>
+</div>
+
+<div class="internals note">this type is known internally as setComplex</div>
+
+<p>The set can contain enumerated int values :
+<pre class="example">
+place= set int {"home"=1, "away"=0} ; Home or away
+</pre>
+
+<div class="internals note">this is currently known
+internally as setintEnum</div>
+
+<p>
+<b>DEPRECATED:</b> The set can contain enumerated char values :
+<pre class="example">
+place= set char {"home", "away"} ; Home or away
+</pre>
+
+<div class="note">It means that place is a
+set that can take only the "home" and "away" values.
+</div>
+
+<div class="note internals">This is currently known internally as setcharEnum</div>
+
+
+
+<h3><a NAME="MacroTypes">Macro types</a></h3>
+<p>
+A name can be defined for a more complex type and it can be reused in the
+file. This can be done with a !type directive
+</p>
+
+<pre class="example">
+!type.yesno= int{"yes"=1, "no"=0}
+!type.rank= int{"neutral"=0, "very good"=5, "very bad"=-5}
+married=yesno
+happyInLife=rank
+</pre>
+
+<h3><a NAME="FieldAttributes">Field attributes</a></h3>
+
+<ul>
+<li>
+<b>fixed</b> fields can only set during the record's insertion
+in the database. The subsequent updates will not update the field</li>
+
+<li>
+<b>not null</b> fields will produce a exception if an attempt is made to
+insert/update without them being initialized</li>
+
+<li>
+<b>unique</b> fields have a unique value in the respective object, for
+the respective type</li>
+
+<li class="futfeat">
+<b>encrypted</b> fields are encrypted when written to the database and
+decrypted when read</li>
+
+</ul>
+<div class="note futfeat">
+Currently only <b>fixed</b> and <b>not null</b> field attributes are working,
+while support for <b>unique</b> is in progress.
+</div>
+
+
+<h3><a NAME="ObjectTitle">Object title</a></h3>
+<p>
+One of the fields is always the object title, and is normally presented
+differently from other fields in user interface. This is the field called "name"
+if that exists, otherwise it is the first non-pointer field in the record
+description. If another field needs to be title, it can be specified like
+</p>
+<pre class="example">
+!title=gender
+</pre>
+
+<div class="note">
+for the on-the spot types in the current implementation,
+the following notation works:
+<p>
+<pre class="example">
+address->!title= street
+</pre>
+</div>
+
+<h3><a NAME="Include">Include mechanism</a></h3>
+<p>
+A record description can include text from one or more files. This is declared as
+</p>
+
+<pre class="example">
+!include=name_of_included_type
+</pre>
+
+<p>
+The included file has the idd extension and is found in a similar way like the
+data definitions.
+</p>
+
+<p>The included file is inserted instead of the !include line. There can
+be more include lines in a record description file. If a field is
+defined that exists also in the included metadata, the defined field takes
+precedence. If
+</p>
+<pre class="example">
+fieldname=
+</pre>
+
+<p>
+it means that it does not actually exist. this can be used to cancel an
+included field.
+</p>
+
+<div class="note futfeat">
+include might be replaced by more advanced concepts
+such as inheritance and type inclusion (rather than reference in foreign
+table)
+</div>
+
+
+
+<h2><a NAME="OQL">OQL language</a></h2>
+<p>
+The database can be interrogated using the following language ( [] means
+optional, {} means any number of repetitions). OQL is similar to SQL, a
+specification can be found at <a href="http://www.odmg.org">http://www.odmg.org</a>
+. Makumba recognizes a subset of OQL at the moment, which it translates
+to the <a href="SQL-drivers.html">host SQL</a> when necessary.
+</p>
+
+<pre class="example">
+<b>SELECT</b> expression [[<b>AS</b>] label] {, expression [[<b>AS</b>] label] }
+<b>FROM</b> {type [<b>AS</b>] label | label.field{.field} [<b>AS</b>] label }
+[   <b>WHERE</b> expression
+    [    <b>GROUP BY</b> expression {,expression}
+        [  <b>HAVING</b> expression {,expression}  ]
+    ]
+]
+[<b>ORDER BY</b> expression {,expression} [(<b>ASC</b>|<b>DESC</b>)] ]
+</pre>
+
+<p>
+Notations like <code>label.field{.field}</code> only allow "<code>field</code>" to be of pointer
+type in <b><i>expression</i></b> and set type in <b>FROM</b>.
+In expressions, also <code>label.ptr{.ptr}.simplefield</code> is valid.
+</p>
+
+<!-- FIXME (fred, 2003-10-14):
+     ? add some warning about expressions (e.g. in WHERE or ORDERBY) across
+       nullable pointers
+       = result is not having the records with null value in the list)
+-->
+
+<p>If a label, representing a type, appears alone in an expression,
+a default field will be added. The default field depends on the type of the label:
+<ul>
+<li>for set XXX types (sets of foreign objects), the label denotes the pointer
+to the set member</li>
+
+<li>for set int { } and set char { } types, the label denotes the set member
+(i.e. and int or a string)</li>
+
+<li>for all other types, the label denotes the pointer to that object</li>
+
+</ul>
+
+
+<h2><a NAME="Business">Business Logic (BL)</a></h2>
+
+
+<h3><a NAME="Attributes">Attributes</a></h3>
+<p>
+Java Server Pages use attributes to keep the state of the application.
+Makumba builds upon that its own notion of Attributes that keep the read-only state
+of a makumba task. They represent the "environment" of that makumba task. The typical
+example is a JSP page during execution, with its HTTP and session parameters
+as attributes. Since other kinds of attributes are possible, the attribute
+specification is kept HTTP-independent. Makumba BL code sees the attributes
+as an <a href="api/org/makumba/Attributes.html"><code>org.makumba.Attributes</code></a>
+object.
+</p>
+
+<h3><a NAME="javahand">Java handler classes</a></h3>
+<p>
+Java handler classes are classes that implement the
+"business logic" of the organisation. Every makumba page will look for
+a handler, and will call its methods when needed.
+</p>
+
+
+<h4>Handler Discovery</h4>
+<p>
+Each page will determine its handler class on first access, after being compiled.
+If the class changes on disk, a webapp reload is generally needed for the new class to take effect.
+<p>
+The handler is 'discovered' by decomposing the full path of the JSP page,
+and finding a class with a matching name. Decomposition breaks the full path
+at every capital letter, or forward slash.
+For example, with the page path <b><code>/student/mycv/indexPersonal.jsp</code></b>,
+the following criteria are applied, in order:
+</p>
+
+<table class="tagParamDef" >
+<tr>
+<th>criterium</th>
+<th>Java classes checked for</th>
+</tr>
+
+<tr>
+<td>page name</td>
+
+<td><tt>StudentMycvIndexPersonalLogic</tt></td>
+</tr>
+
+<tr>
+<td>caps parts of page/directory name</td>
+
+<td><tt>StudentMycvIndexLogic</tt></td>
+</tr>
+
+<tr>
+<td>directory name</td>
+
+<td><tt>StudentMycvLogic</tt></td>
+</tr>
+
+<tr>
+<td>parent directory name(s)</td>
+
+<td><tt>StudentLogic</tt>
+<br><tt>Logic</tt></td>
+</tr>
+</table>
+
+<p>
+The class name prefix (e.g. java package name) can be regulated per parts of the site in a file
+called <b>MakumbaController.properties</b> which can be found in the CLASSPATH
+(just like MakumbaDatabase.properties). For example, the file can contain:
+</p>
+
+<pre class="example">
+/student=org.eu.best
+/makumba=org.makumba
+/=test
+</pre>
+
+<p>
+<table class="tagParamDef" >
+<tr>
+<th>path</th>
+<th>Java classes checked for</th>
+</tr>
+
+<tr>
+<td><tt>/student/mycv/index.jsp</tt></td>
+
+<td><tt>org.eu.best.MycvIndexLogic</tt>
+<br><tt>org.eu.best.MycvLogic</tt>
+<br><tt>org.eu.best.Logic</tt></td>
+</tr>
+
+<tr>
+<td><tt>/makumba/tests/x.jsp</tt></td>
+
+<td><tt>org.makumba.TestsXLogic</tt>
+<br><tt>org.makumba.TestsLogic</tt>
+<br><tt>org.makumba.Logic</tt></td>
+</tr>
+
+<tr>
+<td><tt>/some.jsp</tt></td>
+
+<td><tt>test.SomeLogic</tt>
+<br><tt>test.Logic</tt></td>
+</tr>
+</table>
+
+<p class="futfeat">There are good reasons to take into account the
+name of the response page of a form when looking for the business logic.
+Still, it is the name of the page that contains the form which matters.
+It is good practice for both pages to actually have the same handler class.
+</p>
+
+<p>
+All methods of the handlers are http-independent.
+Methods are non-static, so the handler classes can use inheritance to their advantage.
+Still, handler classes are singletons (only one instance of a certain class in a JVM).
+For example, the validation of a form can be in a class that is closer to the actual JSP
+application (view level) while the more view-independent methods can be
+in the parent of that class. For example:
+</p>
+
+<pre class="example">
+org.eu.best.minerva.StudentHandler extends org.eu.best.StudentHandler
+</pre>
+
+
+<h4>Role of Java handlers</h4>
+
+<ol>
+<li><b>find attributes</b> unknown by pages. e.g.
+<p><pre class="example">
+&lt;mak:object from="best.Student stud" where="stud=$student"> ...&lt;/mak:object>
+</pre>
+<p>
+If the <code>$student</code> attribute is not known in the
+page (from a http argument) or in the session, the <code>find{AttributeName}(Dictionary
+existingAttributes, Database d, String expression)</code> method is called for
+the Handler object. In this case findStudent(). The handler has to compute
+the attribute, based on existing attributes, making DB accesses.
+</p>
+<div class="note">
+The find{AttributeName} method's name is constructed literally from the name of the
+attribute (capitalising only the first letter),
+so dots and other illegal characters for java identifier names, are not
+to be used. Also, one shouldn't use 2 attribute names that differ only
+in the capitalisation of the first letter.
+</div>
+
+
+<p>
+For example "<code>lbg.$lbg_order</code>" (in an example elsewhere in the specs),
+will generate a call
+<code>findLbg_order(otherAttributes, db)</code>
+and the Java handler will return the default
+ordering for LBGs (say "name").
+</p>
+
+<p>
+If the attribute is computed successfully, it
+is associated with the session (i.e. set as JSP attribute in session scope)
+</p>
+
+<p>
+If not, an exception will be thrown (typically
+<a href="api/org/makumba/UnauthenticatedException.html"><code>org.makumba.UnauthenticatedException</code></a>),
+and the engine will act accordingly (i.e. ask for authentication).
+</p>
+</li>
+
+<li><b>execute action methods</b> in response to makumba
+forms. See <a href="#forms">makumba forms and actions</a> below. <p>
+</li>
+
+<li class="futfeat">
+later: return query parts, as methods.
+e.g. <code>&lt;mak:value expr="lbg.$title()" /></code>
+will generate a call to method <code>BestInternalLbgTitle(lbg)</code>
+which can return an OQL expression "<code>concat(lbg.id, \"-\" lbg.name)</code>"
+(such methods can be put directly in the Makumba data definitions)
+
+For now, OQL only accepts count() and sum(),
+but that can be easily fixed, till then, the method can be replaced by
+hand:
+<code>&lt;mak:value expr="lbg.id"/>-&lt;mak:value expr="lbg.name"/></code>
+</li>
+</ol>
+
+<h4>Handler Initialization</h4>
+<p>
+Whenever a handler is used in a new context (i.e.
+with a different set of attributes, e.g. a new page access), a method called
+<code>checkAttributes(Attributes a, Database db)</code> is looked for and executed,
+if it is defined.
+</p>
+
+<p><b><code>checkAttributes</code></b> can perform sanity checks
+for attributes used in the respective logic (in case of mismatches,
+<a href="api/org/makumba/UnauthorizedException.html"><code>org.makumba.UnauthorizedException</code></a>
+is usually thrown), can load attributes that are absolutely needed for
+page execution
+(<span class="oldfeat">formerly given by the requiredAttributes()
+method</span>), etc.
+
+
+<h3><a NAME="Login">Login</a></h3>
+Login is done as a result of a missing attribute
+(possibly invoked in <b><code>checkAttributes</code></b>), when a <code>find{AttributeName}</code> method is
+called. The missing attribute is the principal that needs to log in.
+
+<p>If the attribute cannot be found due to wrong login information,
+<a href="api/org/makumba/UnauthenticatedException.html"><code>org.makumba.UnauthenticatedException</code></a>
+is usually thrown.
+
+<p>
+The principal can have more members (e.g. group,
+Lbg, Company representatives). E.g. the findCompany() method will check
+to see if the authentication (email_address and password) corresponds to
+any company representative of that company. If yes, it will return that
+company.
+</p>
+
+<p class="futfeat">Login can be done in 2 ways:</p>
+<ol>
+<li class="futfeat">
+Http basic authentication login: will set the attributes $username,
+$password
+</li>
+
+<li>
+cookie login: done in a page called <code>login.jsp</code>,
+in the same directory or (if missing) in any of the parents.
+It should contain at least:
+<p>
+<pre class="example">
+&lt;mak:login>
+  &lt;input type=text name=username>
+  &lt;input type=password name=password>
+  &lt;input type=submit>
+&lt;/mak:login>
+</pre>
+
+<p>
+The login form will pass further (as hidden arguments)
+all the http parameters it got. Note that <code>&lt;mak:login></code> is only needed
+upon automatic login (a page displayed when the user requested another
+page, that needs authentication). If you wish to ask for login manually
+in a startup page, a normal HTML form is enough.
+</li>
+</ol>
+
+<p>
+To cancel out a certain attribute, in order to produce a new login,
+the logout tag is available
+</p>
+<pre class="example">
+&lt;mak:logout actor="student"/>
+</pre>
+
+<p>
+You can remove (cancel-out, logout) multiple attributes from the session by using
+<code>&lt;mak:logout></code> several times and/or by using the star (*) wildcard, e.g.:
+</p>
+
+<pre class="example">
+&lt;mak:logout actor="demo_*"/> (attributes whose names start with "demo_")
+&lt;mak:logout actor="*app"/> (attributes whose names end with "app")
+&lt;mak:logout actor="*"/> (all attributes; this "invalidates" the session)
+</pre>
+
+<p>
+
+<div class="futfeat">
+Later on, logout request might be done in the business logic,
+with a method <code>deleteAttributes(param)</code> that can accept
+either a String (with optional '*') or a String[].
+
+<p>Later: to accomodate servers that don't do
+session tracking, login can be done by a query condition rather than by
+doing a query (once per session) to find an attribute. This way, it won't
+need to do a query (to check the authentication) at every access, but that
+condition will make sure that authentication is done.
+
+<p><tt>&lt;mak:object from="best.Student stud" where
+="stud.$login()"> ...&lt;/mak:object></tt>
+<br>then methodBestSudentLogin("stud") will return
+"stud.auth.email=$username AND stud.auth.password=$password"
+<br>This can be used for http authentication
+with no session tracking.
+
+<p>Later: if an attribute has multiple values,
+a <code>choose{AttributeName}.jsp</code> page is shown. For example, a super user (for
+that area) can choose to act as any student, Lbg, or company... A student
+member of more local Vivaldi teams can choose to act for any of the viv
+teams, etc.
+</div>
+
+
+<h2><a NAME="PresentationSummary">Presentation and internal representation summary</a></h2>
+<p>
+This table describes the data types and their default user interface representation.
+That user interface can be altered with the <a href="#Presentation">Presentation
+language</a> described below. Orientative SQL and Java types are presented.
+</p>
+<br>&nbsp;
+
+<table class="tagParamDef">
+<tr>
+<th>Data definition type</th>
+<th>Default edit user interface</th>
+<th>Relational database type (orientative)</th>
+<th>Java type (orientative)</th>
+</tr>
+
+<tr>
+<td>type (table)</td>
+
+<td><span class="futfeat">list of records, with add, delete, edit controls; titles emphasized</span></td>
+
+<td>table</td>
+
+<td></td>
+</tr>
+
+<tr>
+<td>record</td>
+
+<td><span class="futfeat">all fields, as shown below</span></td>
+
+<td>record</td>
+
+<td>java.util.Dictionary</td>
+</tr>
+
+<tr>
+<td>int&nbsp;</td>
+
+<td>text field <span class="futfeat">or slider</span></td>
+
+<td ROWSPAN="2">integer</td>
+
+<td ROWSPAN="2">java.lang.Integer</td>
+</tr>
+
+<tr>
+<td>int{}&nbsp;</td>
+
+<td>dropdown choice or radio button</td>
+</tr>
+
+<tr>
+<td>char[]&nbsp;</td>
+
+<td>text field</td>
+
+<td ROWSPAN="2">limited char</td>
+
+<td ROWSPAN="2">java.lang.String</td>
+</tr>
+
+<tr>
+<td>char{}</td>
+
+<td>dropdown choice or radio button</td>
+</tr>
+
+<tr>
+<td>text</td>
+
+<td>text area&nbsp;
+<br>or file upload</td>
+
+<td>unlimited byte</td>
+
+<td>org.makumba.Text</td>
+</tr>
+
+<tr>
+<td>date</td>
+
+<td>date</td>
+
+<td>date and time</td>
+
+<td>java.util.Date</td>
+</tr>
+
+<tr>
+<td>ptr</td>
+
+<td>dropdown select of record titles</td>
+
+<td>preferably a long (foreign index)</td>
+
+<td ROWSPAN="3">org.makumba.Pointer</td>
+</tr>
+
+<tr>
+<td>xx=ptr
+<br>xx->...</td>
+
+<td><span class="futfeat">the record, if any</span></td>
+
+<td>preferably a long (foreign index)
+<br>+ table</td>
+</tr>
+
+<tr>
+<td>Index field</td>
+
+<td>(nothing)</td>
+
+<td>preferably long,
+<br>autoincrement, or other unique</td>
+</tr>
+
+<tr>
+<td>creation date
+<br>modification date</td>
+
+<td>date, not editable</td>
+
+<td>timestamp</td>
+
+<td>java.sql.Timestamp</td>
+</tr>
+
+<tr>
+<td>set</td>
+
+<td>multiple choice of record titles</td>
+
+<td>table with ptrRel to the parent table and ptr to the foreign table</td>
+
+<td>java.util.Vector of org.makumba.Pointer</td>
+</tr>
+
+<tr>
+<td>xx=set
+<br>xx-> ...</td>
+
+<td><span class="futfeat">like a table, under current record</span></td>
+
+<td>table with ptrRel to the parent table, and the rest of the fields</td>
+
+<td></td>
+</tr>
+
+<tr>
+<td>set int{ ...}</td>
+
+<td>multiple choice from values</td>
+
+<td>table with ptrRel to the parent table, and an int field</td>
+
+<td>java.util.Vector of java.lang.Integer</td>
+</tr>
+
+<tr>
+<td>set char{ ...}</td>
+
+<td>multiple choice from values</td>
+
+<td>table with ptrRel to the parent table, and a char field</td>
+
+<td>java.util.Vector of java.lang.String</td>
+</tr>
+</table>
+
+<h2><a NAME="Presentation">Presentation with JSP taglib</a></h2>
+Data can be presented and edited per record and field. The current presentation
+language uses JSP taglibs and corresponding notation, but principles can
+be applied in any other HTML-centric presentation language such as PHP.
+
+
+<h3>
+<a NAME="JspIntro">Makumba in Java Server Pages</a></h3>
+
+Makumba offers a JSP custom tag library, that allows easy interaction (viewing,
+editing) with the data in your database, right from your HTML (actually, JSP) document.
+Since Makumba pages, are essentially JSP pages, a basic understanding of JSP will
+be helpful to make more advanced use of makumba. Same goes for knowing a bit of Java itself.
+But you can get a long way with just a few notions! Really.
+
+<p>Makumba tags are written according to
+<a href="http://java.sun.com/products/servlet/">Servlet 2.3 specification</a>
+and <a href="http://java.sun.com/products/jsp/">JSP 1.1 specification</a>.
+You will need a so-called "servlet container" that supports them both, such as
+ <a href="http://jakarta.apache.org/tomcat/">Apache Tomcat</a>.
+
+The corresponding <b>WEB-INF/makumba.tld</b> is already included in the <a href="download.html">distribution</a>
+<code>makumba.jar</code>.
+ The example <b>WEB-INF/web.xml</b> can be found in Makumba cvs repository
+(<a href="http://cvs.makumba.org/servlet_context/WEB-INF/">http://cvs.makumba.org/servlet_context/WEB-INF/</a>).
+
+<p>Before using Makumba tags in your JSP pages you also need to declare the taglib with:
+<pre class="example">
+&lt;%@ taglib uri="http://www.makumba.org/presentation" prefix="mak" %&gt;
+</pre>
+
+<p>A few resources on JSPs (don't be afraid to try first, read later) :
+<ul>
+<li><a href="http://java.sun.com/products/jsp/docs.html">JSP documentation by Sun</a>
+<li><a href="http://java.sun.com/webservices/tutorial.html">J2EE web services documentation by Sun</a>. This is an introduction on the various technologies that you might use when building webapplications using Java2 (J2EE).
+<li><a href="http://www.apl.jhu.edu/~hall/java/Servlet-Tutorial/Servlet-Tutorial-JSP.html">Gentle introduction to JSPs</a>
+</ul>
+
+<h4>
+<a NAME="controller">Makumba Controller</a></h4>
+<p>
+The makumba controller is a component running in the 'servlet container'.
+When a request for a makumba page enters the servlet container,
+the controller will intercept the request, and perform its "controller"
+activities (cfr. the model-view-controller pattern) :
+</p>
+
+<ul>
+ <li>checking if the page has the appropriate attributes (see handler initialisation; e.g. force login).
+
+ <li>checking if the page request is the result of a form submit or a deleteLink.
+     If so, perform the relevant actions in the handler and database.
+
+ <li>deal with problems (exceptions) during the controller activity:
+     <ul>
+       <li>if <a href="api/org/makumba/LogicException.html"><code>org.makumba.LogicException</code></a>
+           is thrown, the Exception can write a message to the <a href="#response"><code>&lt;mak:response&gt;</code></a>
+           in the requested page.</li>
+       <li><a href="api/org/makumba/UnauthenticatedException.html"><code>org.makumba.UnauthenticatedException</code></a> and
+       <a href="api/org/makumba/UnauthorizedException.html"><code>org.makumba.UnauthorizedException</code></a> will force
+       login <span class="futfeat">(although UnauthorizedException probably shouldn't, <a href="http://bugzilla.makumba.org/show_bug.cgi?id=444">bug 444</a>)</span></li>
+       <li>if another exception occurs, an errorPage will be shown instead of the requested page.</li>
+     </ul>
+</ul>
+
+
+<p>For this to work, the correct configuration must be applied in <code>WEB-INF/web.xml</code>
+(<a href="http://cvs.makumba.org/servlet_context/WEB-INF/">example file</a>).
+The following would tell the makumba controller to filter all requests for .jsp files.
+</p>
+
+<pre class="example">
+  &lt;filter>
+     &lt;filter-name>makumba_controller&lt;/filter-name>
+     &lt;filter-class>org.makumba.controller.http.ControllerFilter&lt;/filter-class>
+  &lt;/filter>
+
+  &lt;filter-mapping>
+    &lt;filter-name>makumba_controller&lt;/filter-name>
+    &lt;url-pattern>*.jsp&lt;/url-pattern>
+  &lt;/filter-mapping>
+</pre>
+
+<p>
+Note that if (in this example) the result page for a makumba form would
+be an <code>.html</code> page, then the makumba controller would not intercept
+the <code>.html</code> page request, and the actions implied by the form,
+would not be performed.
+</p>
+
+<h4>
+<a NAME="tagparameters">JSP tag parameters</a></h4>
+<p>
+JSP-tag parameter values are either <b>FIXED</b> or <b>RTEXPR</b> (runtime expression).
+A <b>FIXED</b> tag parameter must have a constant, literal value, while an <b>RTEXPR</b>
+can also be of the form &lt;%= java_expression %&gt;. On the other hand, <i>some</i>
+FIXED parameters can contain jsp attributes like $attr in makumba tags.
+</p>
+
+<p>
+All parameters are <b>optional</b> unless specifically mentioned as being <b>mandatory</b>.
+</p>
+
+<p>
+Specific concern can be the <b>parameter quoting</b>. Tag parameters can be written as
+name="value" or name='value'. The choice of quote can be determined by the need
+to use either double or single quote as part of the value itself. If the quote is
+also present within the value, it must be escaped by a backslash.
+</p>
+
+<pre class="example">
+  &lt;mak:list from="best.Student s" where="s.gender=\"male\"" >
+  &lt;mak:list from="best.Student s" where='s.gender="male"' >
+  &lt;mak:list from="best.Student s" where="s.gender='male'" >
+  &lt;mak:list from="library.Book b" where="b.publisher=\"O'Reilly\" " >    <!-- FIXME (fred) I'm not 100% sure this is correct -->
+  &lt;mak:list from="library.Book b" where='b.publisher="O\'Reilly" ' >
+</pre>
+
+<p>
+Quotes in <b>extra HTML formatting</b> parameters, such as
+<code>styleClass</code>, <code>title</code>, <code>styleId</code>, <code>onClick</code> ...
+need some special attention with quotes.
+The parameter values are copied verbatim (with no modifications by makumba)
+to the resulting HTML, always surrounded with double quotes (").
+This means that you have to use other quotes, like single one ('),<br>
+If you need to pass a literal <b>backslash</b> (\) you have to escape it with a preceeding backslash (\\).
+</p>
+<pre class="example">
+  &lt;mak:input ... onClick="alert(this.value);"/>
+  &lt;mak:input ... onClick="alert('Hello world!');"/>
+  &lt;mak:input ... onClick="alert('Hello\\nWorld');"/>
+</pre>
+<p>
+Unfortunately the idea to use a sequence of escapes,
+eg writing \\\' in the JSP page to set the tag attribute to \',
+which could be handy for javascript tag attributes,
+is confusing the Tomcat servlet container.
+</p>
+
+
+<h3><a NAME="maklist">&lt;mak:list...>...&lt;/mak:list></a></h3>
+<p>
+Performs a query on the database. The body of the list, if present, is run
+once for every item in the resulting data (size 0..N), e.g. to display it.
+Queries are generated on the spot and can be nested.
+</p>
+
+<p>Example:</p>
+
+<pre class="example">
+&lt;mak:list from="best.Student s" where="s.gender=\"male\""
+          orderBy="s.name" countVar="counter" maxCountVar="number">
+
+    &lt;% if(counter.intValue()==1) { %>
+        There are &lt;%= number %> students: &lt;p>
+    &lt;% } %>
+
+    &lt;%= counter %>.
+    &lt;mak:value expr="s.person.surname"/>
+    &lt;mak:value expr="s.person.name"/> &lt;br>
+    &lt;mak:list from="s.person.addresses a">
+       &lt;mak:value expr="a.streetno"/> &lt;mak:value expr="a.city"/>
+    &lt;/mak:list>
+&lt;/mak:list>
+
+&lt;% if (number.intValue()==0) { %> There are no students. &lt;% } %>
+</pre>
+
+
+<br>
+<p>
+<table class="tagParamDef">
+<tr>
+<th>tag parameter</th>
+<th>description</th>
+<th>comments</th>
+</tr>
+
+<tr>
+<td><tt>db</tt></td>
+
+<td>The makumba database to connect to. The format is <code><i>Host_SQLEngineType_DatabaseName</i></code>
+
+<br>If not present, the default database is used.
+See <a href="SQL-drivers.html">database
+configuration and lookup</a>.</td>
+
+<td>Fixed, cannot contain attributes, for now.
+<br>The default database is chosen if this argument is not set.
+<br>Can only be set for top-level (root) query tags</td>
+</tr>
+
+<tr>
+<td><tt>from</tt></td>
+
+<td><a href="#OQL">OQL FROM</a> section. If the query is nested,
+the keys from the parent's query are added to this FROM section in the resulting query</td>
+
+<td>Fixed, Mandatory.</td>
+</tr>
+
+<tr>
+<td><tt>where</tt></td>
+
+<td><a href="#OQL">OQL WHERE</a> section. If the query is nested,
+the WHERE section from the parent's query, is added to this in the resulting query</td>
+
+<td>Fixed</td>
+</tr>
+
+<tr>
+<td><tt>groupBy</tt></td>
+
+<td><a href="#OQL">OQL GROUP BY</a>&nbsp; section</td>
+
+<td>Fixed</td>
+</tr>
+
+<tr>
+<td><tt><span class=futfeat>having</span></tt></td>
+
+<td><span class=futfeat><a href="#OQL">OQL HAVING</a>&nbsp; section</span></td>
+
+<td><span class=futfeat>Fixed</span></td>
+</tr>
+
+<tr>
+<td><tt>orderBy</tt></td>
+
+<td><a href="#OQL">OQL ORDER BY</a>&nbsp; section</td>
+
+<td>Fixed. Attributes are allowed in this way: groupBy="p.$sortby"</td>
+</tr>
+
+<tr>
+<td><tt>countVar</tt></td>
+
+<td>The <code>java.lang.Integer</code> variable that will contain the number of the current
+iteration.
+</td>
+
+<td>Fixed. A new Java variable is created, so no other variable by the same name can exist
+in the Java scope at that point in the JSP.
+<span class="oldfeat">Prior to version 0.5.6, counting iterations using simple Java counting might lead correct result.</span></td>
+</tr>
+
+<tr>
+<td><tt>maxCountVar</tt></td>
+
+<td>The <code>java.lang.Integer</code> variable that will contain the total number of iterations.</td>
+
+<td>Fixed. A new Java variable is created, so no other variable by the same name can exist
+in the Java scope at that point in the JSP.</td>
+</tr>
+
+<tr>
+<td><tt>separator</tt></td>
+
+<td>Character string as separator between two list elements.
+It is not included before the first or after the last
+</td>
+
+<td>Rtexpr.</td>
+</tr>
+
+<tr>
+<td><tt>id</tt></td>
+
+<td>Tag's identifier</td>
+
+<td>Fixed. Can be used to distinguish otherwise identical tags on a page
+(to avoid confusion by Makumba's JSP analyser)</td>
+</tr>
+
+</table>
+
+
+
+
+<h4>
+<a NAME="makobject">&lt;mak:object&nbsp; ...>.... &lt;/mak:object></a></h4>
+<p>
+Like list, but the query can only have zero or one result. A zero value
+for <code>maxCountVar</code> and <code>countVar</code> indicate that the object does not exist.
+</p>
+<p>Example: See <a href="#maklist"><code>&lt;mak:list></code></a>.
+</p>
+
+
+
+<!-- FIXME; fred: "this needs to be rewritten, assuming no knowledge of the concept of jsp attributes,
+                   thus with an intro on the subject. Explaining the diff between Java scope and Attribute scope." -->
+
+<h4><a NAME="usageOFAttributes">Attributes and OQL</a> in &lt;mak:list > and
+&lt;mak:object ></h4>
+<p>
+Attributes are accessible through <code>$AttributeName</code>
+to any makumba tag. Typically they will be present in OQL sections instead
+of <code>$number</code> attributes (therefore the OQL sections of these tags is not
+"pure"). For example:
+</p>
+
+<pre class="example">
+&lt;mak:list from="best.internal.Lbg"
+          where="lbg.country=$country"
+          orderBy="lbg.$lbg_order">
+  .....
+&lt;/mak:list>
+</pre>
+
+<p>If a <code>$</code> (dollar) sign needs to be in the string, the escape is <code>$$</code>.
+<br>If at the end of an attribute there has to be a Java identifier letter,
+the attribute name can be written as <code>text1$attrName$text2</code>, that is,
+with <code>$</code> at both ends.
+</p>
+
+<p>The http parameters are automatically set as page
+attributes. Other attributes can be set by the Java code as attributes in any scope
+(page, request, session, application) using
+<code><a title="external link, servlet API" href="http://java.sun.com/j2ee/1.4/docs/api/javax/servlet/jsp/PageContext.html">pageContext.setAttribute(name, value, scope)</a></code>.
+
+<p>The query generator is setting all the attributes
+that are logically possible as prepared query parameters. For example,
+the $country above is a query parameter since it's a value, but the $lbg_order
+will not be accepted as query parameter, since it's a field name.
+
+<p>If an attribute has multiple values, it is expanded
+into multiple OQL parameters. For example:
+</p>
+
+<pre class="example">
+&lt;mak:list from="best.internal.Lbg" where="lbg.status in set($status)" >
+</pre>
+
+<p>
+<div class=futfeat>
+For view-level attributes such as lbg_order
+above, the value range can be defined by : <br>&nbsp;&nbsp;&nbsp;<code>&lt;mak:defineAttribute name="lbg_order" values="name,
+id" default="name"/></code>
+<p>Later: Maybe the page might want to set attributes.
+Something like :
+<br>&nbsp;&nbsp;&nbsp;<code>&lt;mak:setAttr name="lbg" from="best.internal.Lbg lbg" where ... scope="session" /></code>
+<br>Then the attribute could be used as <code>$lbg</code>
+in the rest of the page/session/application... Con: such stuff is normally
+done by the Java code.
+</p>
+</div>
+
+
+<h4><a NAME="makvalue">&lt;mak:value&nbsp; .../></a></h4>
+<p>
+Displays the value of an expression from within the query.
+</p>
+
+<P>
+Example:
+</p>
+<pre class="example">
+&lt;mak:list from="best.Student s" where="s.gender=\"male\"" orderBy="s.name">
+    &lt;mak:value expr="s.person.name"/>
+    &lt;mak:value expr="s.person.surname"/>
+    &lt;mak:value expr="s.person.birthdate" var="birth" printVar="printBirth"/>
+    &lt;% // we only print the birthdate if it's after some date
+         if ( ((java.util.Date)birth).after(new java.util.Date(1980, 0, 1)) )
+             out.print(printBirth);
+    %>
+    &lt;mak:value expr="s.person.favoriteQuote" maxLength="60" addTitle="auto" />
+&lt;/mak:list></pre>
+
+
+<br>
+<p>
+<table class="tagParamDef">
+<tr>
+<th>tag parameter</th>
+<th>description</th>
+<th>comments</th>
+</tr>
+
+<tr>
+<td><tt>expr</tt></td>
+
+<td><a href="#OQL">OQL SELECT</a> projection expression.
+It will be displayed if <code>var</code> nor <code>printVar</code> are
+not specified.</td>
+
+<td>Fixed, Mandatory.</td>
+</tr>
+
+<tr>
+<td><tt>var</tt></td>
+
+<td>The value of the expression is set to a new <code>java.lang.Object</code> variable by this name, as
+well as to a page-scope attribute, also by the same name (accessible as <code>$attributename</code>).
+
+<!-- =================================================================
+     ================ THIS IS FIXED IN makumba-0.5.7+ ================
+
+<br><b>Warning: such objects may not be of the expected type at the first
+iteration after re-compiling the page. Casting to another type without
+checking (instanceof) first will result in a ClassCastException (though
+the page might work at later runs).</b>
+-->
+</td>
+
+<td>Fixed. A new Java variable is created, so no other variable by the same name can
+exist in the Java scope at that point in the JSP.
+<br>Note: the Java variable must be cast to its specific type (Integer, String,
+Date, Text, Pointer, Vector) before using it as such.
+</td>
+</tr>
+
+<tr>
+<td><tt>printVar</tt></td>
+
+<td>The formatted output as it would have been printed, is instead stored in a new <code>java.lang.String</code>
+variable by this name, as well as to a page-scope attribute by the same name (accessible as <code>$attributename</code>).
+
+
+<!-- =================================================================
+     ================ THIS IS FIXED IN makumba-0.5.7+ ================
+
+<br><b>Warning: such objects may be null at the first iteration after re-compiling
+the page. Calling a String method withoug checking for null will result
+in a NullPointerException (though the page might work at later runs).</b>
+-->
+</td>
+
+<td>Fixed.  A new Java variable is created, so no other variable by the same name can
+exist in the Java scope at that point in the JSP. </td>
+</tr>
+
+<tr>
+<td><tt>urlEncode</tt></td>
+
+<td>Indicates if the expression will be part of an URL or not. If "true", the output is URL-encoded. Default is "false". </td>
+
+<td>Rtexpr.</td>
+</tr>
+
+<tr>
+<td><tt>html</tt></td>
+
+<td>Normal behaviour is to transform character output to its HTML escaped form.
+If this is "<code>true</code>", content is assumed to be HTML, and is not escaped.
+If "<code>auto</code>", heuristically checks the content for HTML tags and inhibits escape if there are any.
+Default is "<code>false</code>".</td>
+
+<td>Rtexpr. Only char[] and text</td>
+</tr>
+
+<tr>
+<td><tt>format</tt></td>
+
+<td>Format string to specify the formatting of a date value, according to
+<code><a title="external link, servlet API" href="http://java.sun.com/j2se/1.4.2/docs/api/java/text/SimpleDateFormat.html">java.text.SimpleDateFormat</a></code>
+</td>
+
+<td>Rtexpr. Only for date. Defaults to "<code>dd MMMM yyyy</code>"</td>
+</tr>
+
+<tr>
+<td><tt>lineSeparator</tt></td>
+
+<td>Separator for long lines. If a text consists of short lines only, it will be surrounded by <code>&lt;pre>...&lt;/pre></code>.
+Default is "<code>&lt;p></code>".</td>
+
+<td>Rtexpr. Only for text. Current implementation is <a href="http://bugzilla.makumba.org/show_bug.cgi?id=38">buggy</a>:
+separator is added before every long line, instead of between every long line.</td>
+</tr>
+
+<tr>
+<td><tt>longLineLength</tt></td>
+
+<td>The length of a long line. If a text contains long lines, it will be
+printed differently. See <code>lineSeparator</code>. Default is "30"</td>
+
+<td>Rtexpr. Only for text.</td>
+</tr>
+
+<tr>
+<td><tt>maxLength</tt></td>
+
+<td>The maximum length (number of characters) to print. Longer output is cut off, and an <code>ellipsis</code>
+is added to indicate the cut. If not set (default), there is no maximum.</td>
+
+<td>Rtexpr. Only applies for char[] AND if it is not already HTML formatted (cfr. <code>html</code>).</td>
+</tr>
+
+<tr>
+<td><tt>ellipsis</tt></td>
+
+<td>The character string to print to indicate that the text extended the <code>maxLength</code>. Default is "...".
+The final printed string, including the <code>ellipsis</code>, will not exceed <code>maxLength</code>.</td>
+
+<td>Rtexpr</td>
+</tr>
+
+<tr>
+<td><tt>ellipsisLength</tt></td>
+
+<td>The equivalent character length of <code>ellipsis</code>.
+By default, this is the number of characters in <code>ellipsis</code>.
+But if <code>ellipsis</code> is e.g. HTML code, then that is not appropriate.
+</td>
+
+<td>Rtexpr.
+<br><u>Example</u>, the ellipsis is an image of approx 3 characters wide.
+<code>ellipsis="&lt;img src=icon.gif width=10 height=10>" ellipsisLength="3"</code>
+</td>
+</tr>
+
+<tr>
+<td><tt>addTitle</tt></td>
+
+<td>
+If "<code>true</code>", add an HTML tooltip with the value, to the printed output.
+If "<code>auto</code>", add tooltip only if the printed output
+is cut (cfr <code>maxLength</code>). Default is "<code>false</code>". <br>
+</td>
+
+<td>Rtexpr.
+Note: implementated by producing as output:
+<code>&lt;span title="<i>printVar</i>"><i>possibly-cut-printVar</i>&lt;/span></code>
+</td>
+</tr>
+
+<tr>
+<td><tt>default</tt></td>
+
+<td>The character string  to print if the <code>expr</code> results in a NULL value.
+Default is <code>default=""</code> (i.e. zero-length string)</td>
+
+<td>Rtexpr</td>
+</tr>
+
+<tr>
+<td><tt>empty</tt></td>
+
+<td>The character string to print if the normal printed output would be empty (i.e. zero-length string).
+Therefore, this is also used for case <code>expr=NULL</code> and <code>default=""</code>.</td>
+
+<td>Rtexpr<br>  </td>
+</tr>
+</table>
+
+
+<h4><a NAME="makif">&lt;mak:if&nbsp; ...> ... &lt;/mak:if></a></h4>
+<p>
+Displays the body of the tag only if the OQL expression evaluates to true.
+</p>
+
+<p>
+Example :
+</p>
+
+<pre class="example">
+&lt;mak:list from="best.Student s"
+	  where="s.person.birthdate &lt;> nil" orderBy="s.name">
+   &lt;mak:value expr="s.person.name"/>
+   &lt;mak:if test="s.person.hideAge = 0">
+      was born on &lt;mak:value expr="s.person.birthdate" />
+   &lt;/mak:if>
+&lt;/mak:list>
+</pre>
+
+<br>
+<p>
+<table class="tagParamDef">
+<tr>
+<th>tag parameter</th>
+<th>description</th>
+<th>comments</th>
+</tr>
+
+<tr>
+<td><tt>test</tt></td>
+
+<td><a href="#OQL">OQL SELECT</a>&nbsp; projection expression.
+It must be a test, resulting in a 'boolean' in SQL : 0 or 1. </td>
+
+<td>Fixed, Mandatory.
+    <br><i>(in first implementation, this was called <code>expr</code>,
+    but changed to reflect practice in XSL and <A
+href="http://java.sun.com/products/jsp/jstl/" title="JSP Standard Tag Library">JSTL</a>)</i>
+</td>
+</tr>
+
+</table>
+
+
+
+<h4><a NAME="mak_attrib">&lt;mak:attribute&nbsp; .../></a></h4>
+<!-- when bug 64 is fixed uncomment this:
+<b>DEPRECATED</b>, use <a href="#makvalue">&lt;mak:value></a> instead, like:
+<pre class="example">
+&lt;mak:value expr="$pattern" ... />
+</pre>
+<p>
+-->
+<p>
+Displays the value of an attribute, or sets it to a Java variable.
+</p>
+
+<p>
+Example:
+</p>
+
+<pre class="example">
+&lt;mak:attribute name="pattern" var="pattern" exceptionVar="exception"/>
+
+&lt;% if (exception!==null) {
+     pageContext.setAttribute("pattern", (String)pattern+"%");
+%>
+   &lt;mak:list from="type t" where="t.field like $pattern" >...&lt;/mak:list>
+
+&lt;% } else { %>
+   No pattern argument. Please indicate one.
+&lt;% } %>
+</pre>
+
+
+<br>
+<p>
+<table class="tagParamDef">
+<tr>
+<th>tag parameter</th>
+<th>description</th>
+<th>comments</th>
+</tr>
+
+<tr>
+<td><tt>name</tt></td>
+
+<td>the name of the attribute. Will be printed if <tt>var </tt>is not present
+and there is no exception when finding the argument. If there is an exception
+but <tt>exceptionVar</tt> is indicated, nothing will be printed.</td>
+
+<td>Fixed, Mandatory.</td>
+</tr>
+
+<tr>
+<td><tt>var</tt></td>
+
+<td>The name of the <code>java.lang.Object</code> variable where to store the attribute value.
+Note that you will have to cast it to its specific type.</td>
+
+<td>Fixed</td>
+</tr>
+
+<tr>
+<td><tt>exceptionVar</tt></td>
+
+<td>The name of the created <code>java.lang.Throwable</code> variable that will
+hold eventual exceptions
+raised when trying to compute the attribute. If <code>exceptionVar</code> is missing,
+any raised exception will stop page execution. If it is present, and <code>AttibuteNotFoundException</code>
+occurs, the attribute is set to <code>null</code> (so a next request for the attribute
+will return <code>null</code>)</td>
+
+<td>Fixed</td>
+</tr>
+
+<tr>
+<td><tt>db</tt></td>
+
+<td>The database in which the business logic (if any) will compute the
+attribute. The default database is normally used.</td>
+
+<td>Fixed</td>
+</tr>
+</table>
+
+
+
+<h3>
+<a NAME="forms"></a>Forms</h3>
+<p>
+Makumba can produce four types of forms: new, add, edit and generic forms.
+</p>
+
+<p>
+All forms have a number of common features:
+They can include <code>&lt;mak:input ></code> tags.
+They all can have "<code>action</code>", "<code>method</code>", "<code>handler</code>",
+"<code>name</code>" and "<code>message</code>"
+arguments.
+</p>
+
+<p>
+Handler methods (if they exist) are executed by the
+<a href="#controller">makumba controller</a>, when
+the form is submitted to another makumba page.
+
+<p><b>Non-generic (type specific) forms</b>
+<br>New, edit and add forms are type specific. Their fields must be named
+after the fields in the respective type (and related fields).
+</p>
+<p>If there is a <a href="#Business">business logic
+class</a>, the engine will look (once after each page compilation) for
+the corresponding <b>handler method</b>. The handler methods are executed
+before the default action and may prevent the action from being executed
+by throwing an exception. Some forms also have an after-action handler method.
+</p>
+
+<p>If the handler class exists but no handler method
+can be found, an error is thrown (the site is not allowed to do the operation,
+e.g. StudentHandler will never have a on_newLibraryBook() method).
+If the handler class wishes to allow the action, it can define an empty
+handler method.
+
+<p class="futfeat">Later, new and edit forms that have no body, will build default forms.
+</p>
+
+
+
+<h4><a NAME="maknew">&lt;mak:newForm&nbsp; ...>.... &lt;/mak:newForm></a></h4>
+<p>
+Makes a form for creating a new object of the indicated type.
+
+<!-- FIXME (fred 2003-10-18) should include description of
+ how also related object can be created at the same time
+
+   ptr.externalpointer (needs be fixed, notnull, ... ????)
+   ptr.internalpointer ????
+
+-->
+
+
+</p>
+
+<p>
+Example (personEdit.jsp):
+</p>
+
+<pre class="example">
+&lt;mak:newForm type="general.Person" action="personView.jsp" method="post">
+        &lt;mak:input field="name"/>
+        &lt;mak:input field="surname"/>
+        &lt;input type="submit"/>
+&lt;/mak:newForm>
+</pre>
+
+<br>
+<p>
+<table class="tagParamDef">
+<tr>
+<th>tag parameter</th>
+<th>description</th>
+<th>comments</th>
+</tr>
+
+<tr>
+<td><tt>type</tt></td>
+
+<td>Makumba type for record creation, or OQL label for subrecord creation</td>
+
+<td>Fixed, mandatory.</td>
+</tr>
+
+<tr>
+<td><tt><span class="futfeat">handler</span></tt></td>
+
+<td><span class="futfeat">the Java class.method that handles the response</span></td>
+
+<td>defaults to on_new+NameOfMakumbaType. Arguments:
+<br>(Dictionary newData,&nbsp; Attributes a, Database
+db)</td>
+</tr>
+
+<tr>
+<td><tt>action</tt></td>
+
+<td>the response page of the form</td>
+
+<td>Mandatory if a <a href="#action">&lt;mak:action></a> is absent</td>
+</tr>
+
+<tr>
+<td><tt>method</tt></td>
+
+<td>the HTTP method (<code>get</code> or <code>post</code>)</td>
+
+<td>Defaults to <code>get</code></td>
+</tr>
+
+<tr>
+<td><tt>name</tt></td>
+
+<td>the name of the created object in the response page</td>
+
+<td>Fixed. Defaults to __mak__edited__. If set, it is also used for the name of the html form (<code>&lt;form name="..." ...></code>)</td>
+</tr>
+
+<tr>
+<td><tt>message</tt></td>
+
+<td>the message that is displayed in the response page upon success</td>
+
+<td>Fixed. Defaults to "changes done".</td>
+</tr>
+
+
+<!--form specific:-->
+<tr><td><tt>target</tt></td>
+<td rowspan=3>Form-specific html tag attributes</td>
+<td rowspan="3">
+The content is copied to the resulting <code>&lt;form...></code> tag.
+Careful with (escaping) <a href="#tagparameters">quotes</a>.
+</td>
+</tr>
+
+<tr><td><tt>onReset</tt></td></tr>
+<tr><td><tt>onSubmit</tt></td></tr>
+
+<!-- generic: -->
+
+<tr>
+<td><tt>styleId</tt></td>
+<td rowspan="14">Generic HTML tag attributes.
+</td>
+
+<td>results in <code>id="..."</code></td>
+</tr>
+
+<tr>
+<td><tt>styleClass</tt></td>
+<td>results in <code>class="..."</code></td>
+</tr>
+
+<tr>
+<td><tt>style</tt></td>
+<td rowspan="12">
+The content is copied to the resulting html tags.
+Careful with (escaping) <a href="#tagparameters">quotes</a>.
+</td>
+</tr>
+<tr><td><tt>title</tt></td></tr>
+<tr><td><tt>onClick</tt></td></tr>
+<tr><td><tt>onDblClick</tt></td></tr>
+<tr><td><tt>onKeyDown</tt></td></tr>
+<tr><td><tt>onKeyUp</tt></td></tr>
+<tr><td><tt>onKeyPress</tt></td></tr>
+<tr><td><tt>onMouseDown</tt></td></tr>
+<tr><td><tt>onMouseUp</tt></td></tr>
+<tr><td><tt>onMouseMove</tt></td></tr>
+<tr><td><tt>onMouseOut</tt></td></tr>
+<tr><td><tt>onMouseOver</tt></td></tr>
+</table>
+
+
+<p>
+At form response, makumba (controller) invokes the following methods:
+
+<ol>
+<li>
+<p>By defining <code>on_new*</code>, the handler class gets the opportunity
+to validate/change the data.
+If the data is not correct, the handler can throw an exception to prevent insertion in database.
+</p>
+<pre class="example">
+handler.<b>on_new<i>TypeName</i>(data, attr, db)</b>;
+</pre>
+</li>
+<li><p>The standard Database call for insertion:</p>
+<pre class="example">
+Pointer created= <a href="api/org/makumba/Database.html#insert(java.lang.String, java.util.Dictionary)">db.insert(type, attr)</a>;
+</pre>
+</li>
+<li>
+<p>By defining <tt>after_new*</tt>, the handler class gets the opportunity
+to do supplementary operations with the inserted record.
+</p>
+<pre class="example">
+handler.<b>after_new<i>TypeName</i>(created, data, attr, db)</b>;
+</pre>
+</li>
+</ol>
+
+<br>
+
+<table class="tagParamDef">
+<tr>
+<th>argument</th>
+<th>Java type</th>
+<th>comments</th>
+</tr>
+
+<tr>
+<td><code>data</code></td>
+
+<td><code>java.util.Dictionary</code></td>
+
+<td>The new record to create. It is read from the HTTP query string by
+interpreting the form.</td>
+</tr>
+
+<tr>
+<td><code>attr</code></td>
+
+<td><a href="api/org/makumba/Attributes.html"><code>org.makumba.Attributes</code></a></td>
+
+<td>Other attributes in the page (sent as HTTP arguments or present in
+the HTTP session).</td>
+</tr>
+
+<tr>
+<td><code>db</code></td>
+
+<td><a href="api/org/makumba/Database.html"><code>org.makumba.Database</code></a></td>
+
+<td>The database where the record will be inserted</td>
+</tr>
+
+<tr>
+<td><code>created</code></td>
+
+<td><a href="api/org/makumba/Pointer.html"><code>org.makumba.Pointer</code></a></td>
+
+<td>The pointer to the created record. Only for <code>after_new</code></td>
+</tr>
+</table>
+
+<p>
+If the handler class is present but both handler methods are missing (<code>on_new</code>
+and <code>after_new</code>), the action is not allowed.
+</p>
+
+<p>
+At response the following calls are executed (in this order):
+</p>
+
+<pre class="example">
+PersonLogic handler_obj; // see <a href="#javahand">handler discovery</a>
+handler_obj.<b>checkAttributes(attr, db)</b>;
+handler_obj.<b>on_newGeneralPerson(data, attr, db)</b>;
+Pointer created= db.insert("general.Person", attr);
+handler_obj.<b>after_newGeneralPerson(created, data, attr, db)</b>;
+</pre>
+
+
+
+<h4><a NAME="makadd">&lt;mak:addForm&nbsp; ...>.... &lt;/mak:addForm></a></h4>
+<p>
+Makes a form for creating a sub-object of the mandatory enclosing <code>&lt;mak:object></code>
+(e.g. a language of a student, an address for a person).
+</p>
+
+<p>
+Example:
+</p>
+
+<pre class="example">
+&lt;mak:object from="best.Student s" where="s=$student">
+    &lt;mak:addForm object="s" field="languages"
+    		 action="studentView.jsp" method="post">
+        &lt;mak:value expr="s.name"/>
+        &lt;mak:input field="level"/>
+        &lt;mak:input field="comments"/>
+    &lt;/mak:addForm>
+&lt;/mak:object>
+</pre>
+
+<br>
+<p>
+<table class="tagParamDef">
+<tr>
+<th>tag parameter</th>
+<th>description</th>
+<th>comments</th>
+</tr>
+
+<tr>
+<td><tt>object</tt></td>
+
+<td>The label of the object whose sub-object will be created</td>
+
+<td>Fixed, mandatory</td>
+</tr>
+
+<tr>
+<td><tt>field</tt></td>
+
+<td>The field name that denotes the sub-object.</td>
+
+<td>Fixed, mandatory.</td>
+</tr>
+
+<tr>
+<td class="futfeat"><tt>handler</tt></td>
+
+<td class="futfeat">the Java class.method that handles the response</td>
+
+<td>defaults to <code>on_add+MakumbaType+fieldname</code>.
+Arguments:
+<code>(Pointer baseObject, Dictionary newData,&nbsp; Attributes a, Database db)</code></td>
+</tr>
+
+<tr>
+<td><tt>action</tt></td>
+
+<td COLSPAN="2" ROWSPAN="4">see <a href="#maknew"><code>newForm</code></a></td>
+</tr>
+
+<tr>
+<td><tt>method</tt></td>
+</tr>
+
+<tr>
+<td><tt>name</tt></td>
+</tr>
+
+<tr>
+<td><tt>message</tt></td>
+</tr>
+
+<!--form specific:-->
+<tr><td><tt>target</tt></td>
+<td rowspan="3" colspan="2">Form-specific html tag attributes, see <a href="#maknew"><code>newForm</code></a></td>
+</tr>
+
+<tr><td><tt>onReset</tt></td></tr>
+<tr><td><tt>onSubmit</tt></td></tr>
+
+<!-- generic: -->
+
+<tr>
+<td><tt>styleId</tt></td>
+<td rowspan="14" colspan="2">
+Generic html tag attributes, see <a href="#maknew"><code>newForm</code></a>
+</td>
+</tr>
+<tr><td><tt>styleClass</tt></td></tr>
+<tr><td><tt>style</tt></td></tr>
+<tr><td><tt>title</tt></td></tr>
+<tr><td><tt>onClick</tt></td></tr>
+<tr><td><tt>onDblClick</tt></td></tr>
+<tr><td><tt>onKeyDown</tt></td></tr>
+<tr><td><tt>onKeyUp</tt></td></tr>
+<tr><td><tt>onKeyPress</tt></td></tr>
+<tr><td><tt>onMouseDown</tt></td></tr>
+<tr><td><tt>onMouseUp</tt></td></tr>
+<tr><td><tt>onMouseMove</tt></td></tr>
+<tr><td><tt>onMouseOut</tt></td></tr>
+<tr><td><tt>onMouseOver</tt></td></tr>
+
+</table>
+
+<p>
+This will call the handler methods: (the argument names are adapted
+to the example. Note the changed pointer argument in the methods.)
+</p>
+
+<pre class="example">
+on_addBestStudentLang(Pointer student, Dictionary languageData, Attributes pageParams, Database db)
+after_addBestStudentLang(Pointer address, Dictionary languageData, Attributes pageParams, Database db)
+</pre>
+
+
+
+
+<h4><a NAME="makedit">&lt;mak:editForm&nbsp; ...>.... &lt;/mak:editForm></a></h4>
+<p>
+Makes a form for editing the object indicated by any of the labels of the
+mandatory enclosing <code>&lt;mak:object></code> or <code>&lt;mak:list></code>.
+Also linked objects can be edited through the same form.
+</p>
+
+<p>
+Example:
+</p>
+
+<pre class="example">
+&lt;mak:object from="best.Student s, s.person p" where="s=$student">
+    &lt;mak:editForm object="s" action="studentView.jsp" method="post">
+        &lt;mak:input field="person.name"/>
+        &lt;mak:input field="person.surname"/>
+        &lt;mak:input field="graduated"/>
+    &lt;/mak:editForm>
+&lt;/mak:object>
+</pre>
+
+
+<br>
+<p>
+<table class="tagParamDef">
+<tr>
+<th>tag parameter</th>
+<th>description</th>
+<th>comments</th>
+</tr>
+
+<tr>
+<td><tt>object</tt></td>
+
+<td>The label of the OQL object to edit</td>
+
+<td>Fixed, mandatory.</td>
+</tr>
+
+<tr>
+<td class="futfeat"><tt>handler</tt></td>
+
+<td class="futfeat">the Java class.method that handles the response</td>
+
+<td>defaults to <code>on_edit+MakumbaTypeOfEditedObject</code>.
+Arguments: <code>(Pointer object, Dictionary changedFields, Attributes a, Database db)</code></td>
+</tr>
+
+<tr>
+<td><tt>action</tt></td>
+
+<td COLSPAN="2" ROWSPAN="4">see <a href="#maknew"><code>newForm</code></a></td>
+</tr>
+
+<tr>
+<td><tt>method</tt></td>
+</tr>
+
+<tr>
+<td><tt>name</tt></td>
+</tr>
+
+<tr>
+<td><tt>message</tt></td>
+</tr>
+
+<!--form specific:-->
+<tr><td><tt>target</tt></td>
+<td rowspan="3" colspan="2">Form-specific html tag attributes, see <a href="#maknew"><code>newForm</code></a></td>
+</tr>
+
+<tr><td><tt>onReset</tt></td></tr>
+<tr><td><tt>onSubmit</tt></td></tr>
+
+<!-- generic: -->
+
+<tr>
+<td><tt>styleId</tt></td>
+<td rowspan="14" colspan="2">
+Generic html tag attributes, see <a href="#maknew"><code>newForm</code></a>
+</td>
+</tr>
+<tr><td><tt>styleClass</tt></td></tr>
+<tr><td><tt>style</tt></td></tr>
+<tr><td><tt>title</tt></td></tr>
+<tr><td><tt>onClick</tt></td></tr>
+<tr><td><tt>onDblClick</tt></td></tr>
+<tr><td><tt>onKeyDown</tt></td></tr>
+<tr><td><tt>onKeyUp</tt></td></tr>
+<tr><td><tt>onKeyPress</tt></td></tr>
+<tr><td><tt>onMouseDown</tt></td></tr>
+<tr><td><tt>onMouseUp</tt></td></tr>
+<tr><td><tt>onMouseMove</tt></td></tr>
+<tr><td><tt>onMouseOut</tt></td></tr>
+<tr><td><tt>onMouseOver</tt></td></tr>
+
+</table>
+
+
+<p>
+The response will call the handler method: (the argument names are adapted
+to the example)
+</p>
+
+<pre class="example">
+on_editBestStudent(Pointer student, Dictionary fieldsToChange, Attributes pageParams, Database db)
+</pre>
+
+
+
+<!-- ========================================================= -->
+<!-- ====================== mak:form ========================= -->
+
+<h4><a NAME="makform">&lt;mak:form&nbsp; ...>....&lt;/mak:form></a></h4>
+<p>
+Creates a <b>generic form</b>, that may call a handler
+method in response. Allows the JSP author to make any kind of form. They
+are suitable for more complex operations then new, add, edit.
+</p>
+
+<p>
+Example:
+</p>
+
+<pre class="example">
+&lt;mak:object from="best.Student s" where="s=$student">
+    &lt;mak:form handler="doSomething" action="studentView.jsp" method="post">
+        &lt;mak:input name="xxx" value="s.person.name"/>
+        &lt;input type=submit>
+    &lt;/mak:form>
+&lt;/mak:object>
+</pre>
+
+
+<br>
+<p>
+<table class="tagParamDef">
+<tr>
+<th>tag parameter</th>
+<th>description</th>
+<th>comments</th>
+</tr>
+
+<tr>
+<td><tt>handler</tt></td>
+<td>the Java method that handles the response</td>
+<td>Arguments: <code>(Dictionary formFields, Attributes restOfArguments, Database db)</code>
+<br>Not mandatory. A form without handler will simply
+set attributes (as makumba objects) for the next page</td>
+</tr>
+
+<tr>
+<td><tt>action</tt></td>
+
+<td COLSPAN="2" ROWSPAN="4">see <a href="#maknew"><code>newForm</code></a></td>
+</tr>
+
+<tr>
+<td><tt>method</tt></td>
+</tr>
+
+<tr>
+<td><tt>name</tt></td>
+</tr>
+
+<tr>
+<td><tt>message</tt></td>
+</tr>
+
+<!--form specific:-->
+<tr><td><tt>target</tt></td>
+<td rowspan="3" colspan="2">Form-specific html tag attributes, see <a href="#maknew"><code>newForm</code></a></td>
+</tr>
+
+<tr><td><tt>onReset</tt></td></tr>
+<tr><td><tt>onSubmit</tt></td></tr>
+
+<!-- generic: -->
+
+<tr>
+<td><tt>styleId</tt></td>
+<td rowspan="14" colspan="2">
+Generic html tag attributes, see <a href="#maknew"><code>newForm</code></a>
+</td>
+</tr>
+<tr><td><tt>styleClass</tt></td></tr>
+<tr><td><tt>style</tt></td></tr>
+<tr><td><tt>title</tt></td></tr>
+<tr><td><tt>onClick</tt></td></tr>
+<tr><td><tt>onDblClick</tt></td></tr>
+<tr><td><tt>onKeyDown</tt></td></tr>
+<tr><td><tt>onKeyUp</tt></td></tr>
+<tr><td><tt>onKeyPress</tt></td></tr>
+<tr><td><tt>onMouseDown</tt></td></tr>
+<tr><td><tt>onMouseUp</tt></td></tr>
+<tr><td><tt>onMouseMove</tt></td></tr>
+<tr><td><tt>onMouseOut</tt></td></tr>
+<tr><td><tt>onMouseOver</tt></td></tr>
+
+</table>
+
+
+
+<!-- ========================================================= -->
+<!-- ====================== mak:input ======================== -->
+
+<h4><a NAME="input">&lt;mak:input... /></a></h4>
+<p>
+An input field to be created, depending on the makumba type of the field.
+</p>
+
+<p>
+The difference between <code>&lt;mak:input ></code> and normal
+HTML <code>&lt;input></code> in a makumba form are:
+<ul>
+<li>
+<code>&lt;mak:input></code> produces objects prepared for setting/comparing
+makumba fields (e.g. Pointer, Date, Text).</li>
+
+<li>
+the fields produced by <code>&lt;input></code> will be available
+as page $attributes but will all be of type String</li>
+
+<li>
+the fields produced by <code>&lt;mak:input></code> are available
+separately as a Dictionary to the handler method</li>
+</ul>
+
+<pre class="example">
+&lt;mak:object from="best.Student s, s.person p" where="s=$student">
+    &lt;mak:editForm object="p" action="studentView.jsp" method="post">
+        name      &lt;mak:input field="name"/>
+        surname   &lt;mak:input field="surname"/>
+        gender    &lt;mak:input field="gender" type="tickbox" />
+        dob       &lt;mak:input field="birthdate" format="yyyy-MM-dd" />
+    &lt;/mak:editForm>
+&lt;/mak:object>
+</pre>
+
+
+<br>
+<p>
+<table class="tagParamDef">
+<tr>
+<th>tag parameter</th>
+<th>description</th>
+<th>comments</th>
+</tr>
+
+<tr>
+<td><tt>name</tt>
+<br><tt class="oldfeat">(or field)</tt></td>
+
+<td>Makumba field (from the edited record or via base pointers or sub-record
+pointers)</td>
+
+<td>Fixed, mandatory</td>
+</tr>
+
+<tr>
+<td><tt>value</tt></td>
+
+<!-- FIXME (fred 2003-10-19): can also be a constant, i think ? -->
+
+<td>OQL expression relative to enclosing query tags or a <code>$attribute</code> computed
+previously in the page (with <code>&lt;mak:value var=.../></code> or <code>pageContext.setAttribute(...)</code>),
+or read by in the previous page by an <code>&lt;mak:input /></code></td>
+
+<td>Fixed</td>
+</tr>
+
+<tr>
+<td><tt>type</tt></td>
+
+<td>HTML INPUT type to be used
+<ul>
+<li>
+"<code>hidden</code>" works for all fields</li>
+
+<li>
+for <code>char[]</code> , type can be "<code>text</code>" or "<code>password</code>", default is "<code>text</code>"</li>
+
+<li>
+default type for <code>[set]intEnum</code>, <code>[set]charEnum</code>, <code>ptr</code> and <code>set</code>
+is "<code>select</code>" (dropdown or scroll list depending on <code>size</code>).
+Alternative is "<code>tickbox</code>" (checkboxes or radio buttons)</li>
+
+<li>
+<code>date</code> is splitted in 3 inputs, <code>&lt;fieldname>_0</code> (day), <code>_1</code> (month),
+<code>_2</code> (year), and likewise for <code>time</code> elements</li>
+
+<li>
+for <code>text</code>, default is "<code>textarea</code>"; "<code>file</code>"
+will create file upload box, and
+will create supplementary attributes <code>&lt;fieldname>_filename</code>,
+<code>&lt;fieldname>_contentType</code> and <code>&lt;fieldname>_contentLength</code>
+that have to be handled separately by the handler method</li>
+</ul>
+</td>
+
+<td>Fixed</td>
+</tr>
+
+<tr>
+<td><tt>display</tt></td>
+
+<td>If "<code>false</code>", it will not show the &lt;input> but it will expect to read
+it in the next page. This allows the page designer to format the input
+control manually</td>
+
+<td>Rtexpr.</td>
+</tr>
+
+
+<tr>
+<td><tt>dataType</tt></td>
+
+<td>The makumba type of the data (needed if there
+is no value, no default expression for the value, or no makumba type associated
+with an attribute)</td>
+
+<td>Fixed. Can be <code>char, char[xx], int, date, text, ptr Type, set Type</code></td>
+</tr>
+
+
+<tr>
+<td><tt>format</tt></td>
+
+<td>Format string, according to java.text.SimpleDateFormat
+<br>Can only countain <code>d, M, y, H, m, s</code> formatting chars, and any kind of
+separators. Ex:
+<br><code>'the day' dd 'of the month' MMMM 'in the year' yyyy</code>.
+<br>Default is "<code>dd MMMM yyyy</code>"</td>
+
+<td>Rtexpr. Only for date.</td>
+</tr>
+
+
+<tr>
+<td><tt>size</tt></td>
+
+<td>Size of the input control</td>
+
+<td>Rtexpr. Only for <code>char[]</code>, <code>int</code> (size of the textbox)
+and <code>set</code>, <code>ptr</code> (height of the select)</td>
+</tr>
+
+
+<tr>
+<td><tt>maxLength</tt></td>
+
+<td>Max length of a text control</td>
+
+<td>Rtexpr. Only for <code>char[]</code> and <code>int</code>.
+Defaults to makumba width of the <code>char[]</code></td>
+</tr>
+
+
+<tr>
+<td><tt>labelSeparator</tt></td>
+
+<td>The string that separates the tickbox (radio/check) from the label. Default is <code>" "</code> (space).
+<br>The output will be <code>&lt; tick &gt;&lt; labelSeparator &gt;&lt; label &gt;</code></td>
+
+<td>Rtexpr. Only for <code>type="tickbox"</code>.</td>
+</tr>
+
+
+<tr>
+<td><tt>elementSeparator</tt></td>
+
+<td>The string that separates the different options. Default is <code>" "</code> (space).
+<br>The output will be <code>&lt; [x] label &gt;&lt; elementSeparator &gt;&lt; [x] label &gt;</code></td>
+
+<td>Rtexpr. Only for <code>type="tickbox"</code>.</td>
+</tr>
+
+
+<tr class="futfeat">
+<td><tt>elementSeparatorList</tt></td>
+
+<td>The list of strings that separates the different options. Not active by default.
+The format is "<code>!sep[1]!sep[2]!...!sep[n]!</code>" where any character
+(not appearing inside the separators) can be used as delimiter, e.g. '!'.
+<br>The output will be <br>
+<code>&lt; [x] label &gt;&lt; sep[1] &gt;&lt; [x] label &gt;&lt; sep[2] &gt; ... &lt; [x] label &gt;&lt; sep[n] &gt;&lt; [x] label &gt;&lt; sep[1] &gt; ...</code></td>
+
+<td>Rtexpr. Only for <code>type="tickbox"</code>. Overrides <code>elementSeparator</code> if it exists.</td>
+</tr>
+
+
+<tr>
+<td><tt>rows, cols</tt></td>
+
+<td>Number of textarea rows and columns</td>
+
+<td>only for <code>text</code></td>
+</tr>
+
+<tr>
+<td><tt>default</tt></td>
+
+<td>
+<!--
+The character string  to print if the <code>expr</code> results in a NULL value. Default is "" (i.e. zero-length string)
+--> FIXME
+</td>
+
+<td>Rtexpr</td>
+</tr>
+
+<tr>
+<td><tt>empty</tt></td>
+
+<td>
+<!--
+The character string to print if the normal printed output would be empty (i.e. zero-length string).
+Therefore, this is also used for case <code>expr=NULL<code> and <code>default</code> is not specified.
+--> FIXME
+</td>
+
+<td>Rtexpr<br>  </td>
+</tr>
+
+<!-- generic: -->
+
+<tr>
+<td><tt>styleId</tt></td>
+<td rowspan="14" colspan="2">
+Generic html tag attributes, see <a href="#maknew"><code>newForm</code></a>
+</td>
+</tr>
+<tr><td><tt>styleClass</tt></td></tr>
+<tr><td><tt>style</tt></td></tr>
+<tr><td><tt>title</tt></td></tr>
+<tr><td><tt>onClick</tt></td></tr>
+<tr><td><tt>onDblClick</tt></td></tr>
+<tr><td><tt>onKeyDown</tt></td></tr>
+<tr><td><tt>onKeyUp</tt></td></tr>
+<tr><td><tt>onKeyPress</tt></td></tr>
+<tr><td><tt>onMouseDown</tt></td></tr>
+<tr><td><tt>onMouseUp</tt></td></tr>
+<tr><td><tt>onMouseMove</tt></td></tr>
+<tr><td><tt>onMouseOut</tt></td></tr>
+<tr><td><tt>onMouseOver</tt></td></tr>
+
+</table>
+
+<p>
+Fields of related records can be reference and edited as well, via pointers.
+In this (somewhat strange) example, one can edit the name of the capital city
+of the country of which person is a citizen, through the person edit form :
+</p>
+
+<pre class="example">
+&lt;mak:input field="person.citizenship.capital.name" />
+</pre>
+
+
+<p>Restrictions for different field types:
+<ul>
+<li>
+fixed fields: cannot be edited</li>
+
+<li>
+relational and index pointer: cannot be edited</li>
+
+<li>
+timestamps (create and modify): cannot be edited</li>
+
+<li>
+subset, subpointer: cannot be edited as a field,
+only as a separate object</li>
+</ul>
+
+
+<!-- ========================================================= -->
+<!-- ====================== mak:action ======================= -->
+
+<h4><a NAME="action">&lt;mak:action>....&lt;/mak:action></a></h4>
+<p>
+If the action URI of a form or deleteLink is more complex, possibly
+including other makumba tags,
+the action parameter of the form tag can be omitted, and the action URI
+can be indicated in a <code>mak:action</code>, anywhere inside the form tag.
+</p>
+
+<p>
+Example:
+</p>
+
+<pre class="example">
+&lt;mak:editForm object="ins" method="post">
+  <b>&lt;mak:action></b>memberView.jsp?person=&lt;mak:value expr="p"/><b>&lt;/mak:action></b>
+...
+&lt;/mak:editForm>
+</pre>
+
+
+
+
+<!-- ========================================================= -->
+<!-- ==================== mak:deleteLink ===================== -->
+
+<h3><a NAME="delete">&lt;mak:deleteLink>...&lt;/mak:deleteLink></a></h3>
+<p>
+Produces a link to the page that will delete the object indicated by any
+of the labels of the mandatory enclosing <code>&lt;mak:object></code> or <code>&lt;mak:list></code>
+</p>
+
+<p>
+Example:
+</p>
+
+<pre class="example">
+&lt;mak:object from="best.Student s, s.languages l"
+	    where="s=$student AND l.lang.name=$langname">
+	&lt;mak:deleteLink object="l"  action="studentView.jsp">
+		Delete &lt;mak:value expr="l.lang.name"/>
+	&lt;/mak:deleteLink>
+&lt;/mak:object>
+</pre>
+
+
+<br>
+<p>
+<table class="tagParamDef">
+<tr>
+<th>tag parameter</th>
+<th>description</th>
+<th>comments</th>
+</tr>
+
+<tr>
+<td><tt>object</tt></td>
+
+<td>OQL label of the object to delete</td>
+
+<td>Fixed</td>
+</tr>
+
+<tr>
+<td class="futfeat"><tt>handler</tt></td>
+
+<td class="futfeat">the Java class.method that handles the response</td>
+
+<td>defaults to <code>on_delete+MakumbaTypeOfEditedObject</code>. Arguments:
+<code>(Pointer object, Attributes a, Database db)</code></td>
+</tr>
+
+<tr>
+<td><tt>action</tt></td>
+
+<td COLSPAN="2" ROWSPAN="4">see <a href="#maknew"><code>newForm</code></a></td>
+</tr>
+
+<tr>
+<td><tt>message</tt></td>
+</tr>
+<tr>
+<td><tt>target</tt></td>
+</tr>
+<tr>
+<td><tt>name</tt></td>
+</tr>
+
+<!-- generic: -->
+
+<tr>
+<td><tt>styleId</tt></td>
+<td rowspan="14" colspan="2">
+Generic html tag attributes, see <a href="#maknew"><code>newForm</code></a>
+</td>
+</tr>
+<tr><td><tt>styleClass</tt></td></tr>
+<tr><td><tt>style</tt></td></tr>
+<tr><td><tt>title</tt></td></tr>
+<tr><td><tt>onClick</tt></td></tr>
+<tr><td><tt>onDblClick</tt></td></tr>
+<tr><td><tt>onKeyDown</tt></td></tr>
+<tr><td><tt>onKeyUp</tt></td></tr>
+<tr><td><tt>onKeyPress</tt></td></tr>
+<tr><td><tt>onMouseDown</tt></td></tr>
+<tr><td><tt>onMouseUp</tt></td></tr>
+<tr><td><tt>onMouseMove</tt></td></tr>
+<tr><td><tt>onMouseOut</tt></td></tr>
+<tr><td><tt>onMouseOver</tt></td></tr>
+
+</table>
+
+<p>
+The response will call the handler method: (the argument names are adapted
+to the example)
+</p>
+<pre class="example">
+on_deleteBestStudentLang(Pointer lang, Attributes pageParams, Database db)
+</pre>
+
+
+
+
+<!-- ========================================================= -->
+<!-- ====================== mak:response ===================== -->
+
+<h3><a NAME="response">&lt;mak:response/></a></h3>
+<p>
+<code>&lt;mak:response/></code> prints information about the results of the actions
+that were performed by the <a href="#controller">makumba controller</a> (e.g. for a form submit or deleteLink):
+It either displays the <code>message="..."</code> parameter of the form tag (in green)
+in case of success,
+or (in red) the message of a uncaught <code>LogicException</code> resulting from
+Business Logic. Other exception types will provoke an exception page.
+
+<!-- Fred: not true:
+<p>Absence of the &lt;mak:response/> tag on a page that is the response to a form, will result in an run-time error.
+-->
+
+<p>The unformatted message is available as request-scope attribute <code>makumba.response</code>.
+The jsp page can get hold of the message using e.g. </p>
+<pre class="example">
+&lt;% String s = (String) request.getAttribute("makumba.response") %>
+</pre>
+
+<p>
+Similarly, request-scope attribute <code>makumba.successfulResponse</code> is set
+<i>only</i> in case of successful action execution.
+</p>
+
+<pre class="example">
+&lt;% if (null == request.getAttribute("makumba.successfulResponse")) { /* action failed */ } %>
+</pre>
+
+
+<p class="futfeat">
+A body-tag style (<code>&lt;mak:response>...&lt;/mak:response></code>) will be added later,
+to display different messages for different circumstances (errors). It will also be possible
+to get hold of the actual exception object.
+</p>
+
+
+
+<script type="text/javascript">
+   makeFooter("$Id$");
+</script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+BUG: enlargement of form field doesn't work in response.
+<mak:input type="char[20]">  and then you enlarge it, the response will fail.
+BUG: Some tags use ValueTag internally but their error messages report ValueTag instead of talking about the respective tag name (mak:input, mak:attribute)
+
+BUG: in counting with groupby, test/error-count.jsp on malaka?
+
+BUG: edit object="a.b.c" doesn't work. should be error or it should work
+
+BUG: Sometimes the list tag returns empty results when multiple reloads are done at start. This is a small bug, it occurs very infrequenlty. It has to do with the databae taking a long time to check all tables
+
+BUG/FEATURE: if handler method is not found, the form (not only the response) should show error
+
+Programmer interaction mode: 
+- view checkboxes turning features on-off at the top of the page
+- features: profiling, view queries, recommendations
+- view queries in JSPx as well
+- if makumba errors occur in page, show errors in red over the source file (jspx-like but w/ errors)
+
+mak:link for easier genertion of links 
+
+dataType compulsory in inputs?
+
+deleteLink needs to accept other arguments than the ones it generates itself
+
+conditional separator <mak:separator change="lbg.type="xxx" >...</mak:separators>
+
+allow <mak:input name="label.field" .../> (currently just field seems to be confusing. familiarity with mak:value expr=...
+
+<mak:input name="sddsfsfsd" type="best.minerva.Student#activityKinds" />
+<mak:input name="sddsfsfsd" type="set best.minerva.Student#activityKinds" />
+
+some makumba tags only print ---- on the log (e.g. forms). they should not print anything or they should print more info.
+
+distinct= true is not implemented
+
+generate views and forms automatically (in the order from the MDD) 
+have a <head > to configure fields
+
+makumba-aware includes
+<mak:list>
+  <jsp:include ...> knows in which list it is
+</mak:list>
+
+- mak:list implementation could detect html output and, if output is in html, eliminate empty spaces
+
+- save the form responders state between server restarts
+	writeObject and readObject for FormResponder
+	name of db, name of controller class
+	FieldEditor.readFrom takes the parameters as well
+	build the editor from the type, save the type.
+
+- better computation of root keys for subselects. the minimal set is needed (attachement->document->archive->owner only needs to select arhive to be able to connect owner).
+
+
+
+
+
+
+
+

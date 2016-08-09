@@ -1,0 +1,1 @@
+Makes a form for editing the object indicated by any of the labels of the mandatory enclosing <mak:object> or <mak:list>. Also linked objects can be edited through the same form.

@@ -1,0 +1,37 @@
+<web-app id="POC" version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+
+  <display-name>Makumba Archetype Created Web Application</display-name>
+  
+  <filter>
+    <filter-name>makumba_controller</filter-name>
+    <filter-class>org.makumba.controller.http.ControllerFilter</filter-class>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>makumba_controller</filter-name>
+    <url-pattern>*.jsp</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>makumba_controller</filter-name>
+    <url-pattern>*.jspx</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>makumba_controller</filter-name>
+    <url-pattern>/mak-tools</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>makumba_controller</filter-name>
+    <url-pattern>/mak-tools/*</url-pattern>
+  </filter-mapping>
+    
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>welcome.jsp</welcome-file>
+  </welcome-file-list>
+  
+</web-app>

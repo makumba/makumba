@@ -1,0 +1,2 @@
+name = char[50]
+manager = ptr company.Employee

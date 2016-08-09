@@ -1,0 +1,33 @@
+!!!Taglib documentation for tag mak:logout
+
+!!Description
+
+[{InsertPage page=LogoutTagDescription}]
+
+!!Attributes
+
+%%(display:none) makumba hackers: DO NOT CHANGE THESE ATTRIBUTES HERE since your changes will be lost! You have to edit the taglib-documented.xml file and re-generate the taglib doc! %%
+
+[{Table
+
+||Name||Required||Request-time||Description||Comments 
+
+|actor 
+|true 
+|true 
+|The name of the attribute to be removed from the session. You can remove multiple attributes by using the star (*) wildcard to partially match attributes. 
+|%%(color:red) DOCUMENT ME PLEASE! %% 
+
+
+}]
+
+!!See also
+
+[mak:login|LoginTag], [mak:attribute|AttributeTag]
+
+!!Examples
+
+[{InsertPage page=LogoutTagExample}]
+
+
+%%(display:none;)[Category Documentation]%%

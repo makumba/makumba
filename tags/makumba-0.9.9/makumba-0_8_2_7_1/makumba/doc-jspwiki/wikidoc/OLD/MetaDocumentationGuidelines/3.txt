@@ -1,0 +1,20 @@
+!!!Documentation guidelines
+
+* when creating a new page, always include the current category (configuration, documentation, usage...) at the bottom of the page using the following syntax, so that the left menu is displayed:
+
+{{{
+%%(display:none;)[Category Meta|CategoryDocumentation]%%
+}}}
+
+* check [MetaExamples] to see how to display elements (notes, tables, ...)
+
+* check the [MetaDocumentationTodo] for a list of things to do, and feel free to add more there if you feel something is lacking
+
+[{Box type='warning'
+
+Be aware that the Tag pages are __automatically generated__, so you should not edit them because __your changes will be lost__. Instead, you can edit the example and description pages by checking which pages they include. If you would like to edit attribute comments and descriptions, you can do so after asking a makumba hacker to replace the comment/description with an included page in taglib-documented.xml
+}]
+
+[{ALLOW view Documentation,Admin}]
+%%(display:none;)[Category Meta|CategoryMeta]%%
+

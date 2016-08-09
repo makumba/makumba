@@ -1,0 +1,1 @@
+Fixed ($attribute allowed). Only allowed for the outermost mak:list. if $attribute is not found, defaults to the value of defaultLimit, if present, or -1 otherwise. LIMIT can limit the query time dramatically, but the children mak:lists are not yet limited.

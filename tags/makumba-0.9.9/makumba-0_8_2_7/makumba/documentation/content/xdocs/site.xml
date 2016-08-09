@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!--
+Forrest site.xml
+
+This file contains an outline of the site's information content.  It is used to:
+- Generate the website menus (though these can be overridden - see docs)
+- Provide semantic, location-independent aliases for internal 'site:' URIs, eg
+<link href="site:changes"> links to changes.html (or ../changes.html if in
+  subdir).
+- Provide aliases for external URLs in the external-refs section.  Eg, <link
+  href="ext:cocoon"> links to http://cocoon.apache.org/ 
+
+See http://forrest.apache.org/docs/linking.html for more info
+-->
+<!-- The label attribute of the outer "site" element will only show
+  in the linkmap (linkmap.html).
+  Use elements project-name and group-name in skinconfig to change name of 
+  your site or project that is usually shown at the top of page.
+  No matter what you configure for the href attribute, Forrest will
+  always use index.html when you request http://yourHost/
+  See FAQ: "How can I use a start-up-page other than index.html?"
+-->
+<site label="Makumba" href="" xmlns="http://apache.org/forrest/linkmap/1.0" tab="Home">
+  
+  <about label="Welcome" dir="/" tab="home" description="Welcome to Makumba">
+    <index label="About Makumba" href="/index.html" description="Welcome to Makumba"/>
+    <supporters label="Supporters" href="/supporters.html" />
+    <example label="Documentation example" href="/example.html" tab="home"/>
+    <status label="Documentation status" href="/status.html" />
+  </about>
+  
+  <quickstart label="Quick start" href="/quickstart.html" description="Quick start" />
+  
+  <configuration label="Configuration" dir="/configuration" description="Configuring Makumba" tab="configuration">
+    <index label="Overview" href="/configuration/index.html" description="Configuration overview" />
+    <webapp label="Web-app configuration" href="/configuration/webapp.html" description="Makumba web-app" />
+    <conf label="Makumba configuration" href="/configuration/configuration.html" description="Makumba.conf" />
+    <libs label="Libraries" href="/configuration/libraries.html" description="Required and useful libraries" />
+  </configuration>
+  
+  <usage label="Using Makumba" dir="/usage" description="How to use Makumba" tab="usage">
+    <index label="Overview" href="/usage/index.html" description="Reference documentation overview" />
+    <manifesto label="Makumba manifesto" href="/manifesto.html" />
+    <model label="Defining the data model" href="/usage/model.html" description="Defining the data model with Makumba Data Definitions" />
+    <list label="Displaying data" href="/usage/list.html" description="Displaying data using the Makumba list" />
+    <forms label="Creating and editing data" href="/usage/forms.html" description="Creating and editing data using Makumba forms" />
+    <multiple label="Multiple forms and lists" href="/usage/multiple.html" description="Multiple forms and lists" />
+    <advanced label="Advanced features" href="/usage/advanced.html" />
+    <search label="Search forms" href="/usage/search.html" />
+    <mddfunct label="MDD functions" href="/usage/mddfunct.html" description="MDD Functions" />
+    <auth label="Authentication and authorisation" href="/usage/auth.html" />
+    <structure label="Layout and navigation" href="/usage/structure.html" description="How to structure your site" />
+  </usage>
+  
+  <documentation label="Documentation" dir="/doc" description="Makuma reference documentation" tab="documentation">
+    <overview label="Overview" href="/doc/index.html" description="Documentation overview" /> 
+    <datadef label="Data definitions" href="/doc/datadef.html" description="Makumba Data Definitions"/>
+    <valdef label="Validation rules" href="/doc/valrules.html" description="Makumba Validation Rules"/>
+    <querylang label="Query languages" href="/doc/querylang.html" description="Query languages"/>
+    <queryfrag label="Query fragments" href="/doc/queryfrag.html" description="Query fragments"/>
+    <taglib label="JSP tag library" dir="/doc/taglib/" description="Makumba tag library" tab="documentation">
+      <index label="Introduction" href="/doc/taglib/index.html"/>
+      <makaction label="mak:action" href="/doc/taglib/makaction.html"/>
+      <makaddForm label="mak:addForm" href="/doc/taglib/makaddForm.html"/>
+      <makattribute label="mak:attribute" href="/doc/taglib/makattribute.html"/>
+      <makcriterion label="mak:criterion" href="/doc/taglib/makcriterion.html"/>
+      <makdelete label="mak:delete" href="/doc/taglib/makdelete.html"/>
+      <makdeleteLink label="mak:deleteLink" href="/doc/taglib/makdeleteLink.html"/>
+      <makeditForm label="mak:editForm" href="/doc/taglib/makeditForm.html"/>
+      <makform label="mak:form" href="/doc/taglib/makform.html"/>
+      <makif label="mak:if" href="/doc/taglib/makif.html"/>
+      <makinfo label="mak:info" href="/doc/taglib/makinfo.html"/>
+      <makinput label="mak:input" href="/doc/taglib/makinput.html"/>
+      <maklist label="mak:list" href="/doc/taglib/maklist.html"/>
+      <maklogin label="mak:login" href="/doc/taglib/maklogin.html"/>
+      <maklogout label="mak:logout" href="/doc/taglib/maklogout.html"/>
+      <makmatchMode label="mak:matchMode" href="/doc/taglib/makmatchMode.html"/>
+      <maknewForm label="mak:newForm" href="/doc/taglib/maknewForm.html"/>
+      <makobject label="mak:object" href="/doc/taglib/makobject.html"/>
+      <makoption label="mak:option" href="/doc/taglib/makoption.html"/>
+      <makpagination label="mak:pagination" href="/doc/taglib/makpagination.html"/>
+      <makresponse label="mak:response" href="/doc/taglib/makresponse.html"/>
+      <makresultList label="mak:resultList" href="/doc/taglib/makresultList.html"/>
+      <maksearchField label="mak:searchField" href="/doc/taglib/maksearchField.html"/>
+      <maksearchForm label="mak:searchForm" href="/doc/taglib/maksearchForm.html"/>
+      <makvalue label="mak:value" href="/doc/taglib/makvalue.html"/>
+      <makversion label="mak:version" href="/doc/taglib/makversion.html"/>
+      <makversion label="mak:count()" href="/doc/taglib/makcount.html"/>
+      <makversion label="mak:maxCount()" href="/doc/taglib/makmaxCount.html"/>
+      <makversion label="mak:lastCount()" href="/doc/taglib/maklastCount.html"/>
+      <makversion label="mak:maxResults()" href="/doc/taglib/makmaxResults.html"/>
+    </taglib>
+    <controller label="Makumba Controller" href="/doc/controller/index.html">
+      <authentication label="Authentication" href="/doc/controller/authentication.html" />
+      <authorization label="Authorization" href="/doc/controller/authorization.html" />
+      <forms label="Form submission" href="/doc/controller/forms.html" />
+      <businessLogicClasses label="Java business logic" href="/doc/controller/businessLogicClasses.html"/>
+      <error label="Error handling" href="/doc/controller/error.html" />
+      <attributes label="Makumba Attributes" href="/doc/controller/attributes.html"/>
+    </controller>
+    <api label="Java API" tab="documentation" href="/apidocs/org/makumba/package-summary.html" />
+  </documentation>
+
+   <showcases label="Showcases" href="/showcases.html" description="Showcases" tab="showcases" />
+
+  <!-- develdoc label="Developer documentation" href="/develdoc/index.html" description="Developer documentation" tab="develdoc"/ -->
+  
+<!--
+  The href must be wholesite.html/pdf  You can change the labels and node names
+  <all label="All">
+    <whole_site_html label="Whole Site HTML" href="wholesite.html"/>
+    <whole_site_pdf label="Whole Site PDF" href="wholesite.pdf"/>
+  </all>
+  -->
+  <external-refs>
+    <forrest href="http://forrest.apache.org/">
+      <linking href="docs/linking.html"/>
+      <validation href="docs/validation.html"/>
+      <webapp href="docs/your-project.html#webapp"/>
+      <dtd-docs href="docs/dtd-docs.html"/>
+      <new_content_type href="docs/your-project.html#adding_new_content_type"/>
+      <buildPlugin href="docs/howto/howto-buildPlugin.html"/>
+    </forrest>
+    <forrest-zone href="http://forrest.zones.apache.org/"/>
+    <cocoon href="http://cocoon.apache.org/"/>
+    <xml.apache.org href="http://xml.apache.org/"/>
+    
+    <hibernate href="http://www.hibernate.org">
+      <hql href="hib_docs/reference/en/html/queryhql.html" />
+    </hibernate>
+    <mysql href="http://www.mysql.org">
+      <mysql-subqueries href="http://dev.mysql.com/doc/refman/5.0/en/subqueries.html" />
+    </mysql>
+    <odmg href="http://www.odmg.org" />
+    
+    <bug href="http://bugs.best.eu.org/cgi-bin/bugzilla/show_bug.cgi?id=">
+      <bug1052 href="1052"/>
+      <bug1053 href="1053"/>
+      <bug1060 href="1060"/>
+      <bug1061 href="1061"/>
+      <bug1063 href="1063"/>
+      <bug1064 href="1064"/>
+      <bug1056 href="1056"/>
+      <bug1059 href="1059"/>
+    </bug>
+    
+    <javaregexp href="http://java.sun.com/j2se/1.4.2/docs/api/java/util/regex/Pattern.html" />
+    <javaregexptutorial href="http://java.sun.com/docs/books/tutorial/essential/regex/"/>
+    
+    <getConnectionTo href="" />
+    <getDefaultDatabaseName href="" />
+    
+    <develdoc href="" />
+    
+  </external-refs>
+</site>

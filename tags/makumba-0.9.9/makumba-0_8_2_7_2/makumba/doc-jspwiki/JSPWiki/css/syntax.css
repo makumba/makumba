@@ -1,0 +1,79 @@
+body {
+	background: white;
+}
+
+.tag {
+	color: #5a7302;
+}
+
+.endtag {
+	color: blue;
+}
+
+.reference {
+	color: black;
+}
+
+.name {
+	font-weight: bold;
+	color: maroon;
+}
+
+.value {
+	font-style: italic;
+	color: maroon;
+}
+
+.text {
+	font-weight: bold;
+	color: black;
+}
+
+.reservedWord {
+	color: #0054E3;
+	font-weight: bold;
+}
+
+.identifier {
+	color: black;
+}
+
+.literal {
+	color: green;
+}
+
+.separator {
+	color: navy;
+}
+
+.operator {
+	color: navy;
+}
+
+.comment {
+	color: green;
+}
+
+.preprocessor {
+	color: purple;
+}
+
+.whitespace {
+	
+}
+
+.error {
+	color: red;
+}
+
+.unknown {
+	color: orange;
+}
+
+.function {
+	color: navy;
+}
+
+.markup {
+	color: darkgreen;
+}

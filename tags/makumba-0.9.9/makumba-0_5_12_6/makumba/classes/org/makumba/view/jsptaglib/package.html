@@ -1,0 +1,345 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<!--
+///////////////////////////////
+//  Makumba, Makumba tag library
+//  Copyright (C) 2000-2003  http://www.makumba.org
+//
+//  This library is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU Lesser General Public
+//  License as published by the Free Software Foundation; either
+//  version 2.1 of the License, or (at your option) any later version.
+//
+//  This library is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//  Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with this library; if not, write to the Free Software
+//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+//
+//  -------------
+//  $Id$
+//  $Name$
+/////////////////////////////////////
+
+-->
+  <title>org.makumba.view.jsptaglib</title>
+</head>
+<body style="background-color: white;">
+Implements the JSP Tag Library to use makumba in JSP pages.
+<h2>The Makumba JSP rendering engine</h2>
+<font size=-1>See also a <a href="http://www.makumba.org/Terms-org.makumba.view.jsptaglib.doc">graphical description</a> of the terms below.</font><br>
+The Makumba JSP rendering engine runs the algorithmic process of
+converting <span style="font-style: italic;">mak:list</span>,<span
+ style="font-style: italic;"> mak:object</span>, <span
+ style="font-style: italic;">mak:value</span>, <span
+ style="font-style: italic;">mak:input</span> to OQL queries and going
+through their results to display the data in pages . The rendering
+engine must overcome a wealth of deficinencies of the JSP standard. The
+JSP standard offers limited capabilities in regard to:<br>
+<ul>
+  <li>page identification: it is impossible to know which page has a
+tag been declared in. It is possible to find out which page has been
+requested, but if that page includes other pages, there is no way to
+find out if the tag is in an included file or not. The tomcat-dependent
+class {@link org.makumba.view.jsptaglib.TomcatJsp} solves the problem</li>
+  <li>page analysis: JSP provides a way to get access to an XML image
+of the JSP file, but whatever analysis is done there is not accessible
+to the tags at page runtime<br>
+  </li>
+  <li>tag identification: <span style="text-decoration: underline;">the
+javax.servlet.jsp.tagext.Tag</span> class has no way of identifying
+itself (e.g. it knows that "I'm a mak:list tag" but it does not know "I
+am the mak:list query from file F, line C, column L, my constant
+attributes are as follows: from=... where=....,&nbsp; I contain the
+following mak:list tags.... and the following mak:value tags:...., my
+mak:list parent is ...., therefore my query will be: .... ". This
+problem is solved by parsing the JSP page in classes like {@link
+org.makumba.util.JspParseData} and&nbsp; {@link
+org.makumba.view.jsptaglib.MakumbaJspAnalyzer }</li>
+  <li>communication between instances of the same tag: if two <span
+ style="text-decoration: underline;">javax.server.jsp.tagext.Tag</span>
+represent the same physical tag executing at different times within the
+same request, it is impossible for the first to leave some data for the
+other to pick up on and continue</li>
+</ul>
+<h2>Terms used for taglib implementation</h2>
+To explain in more detail how the above problems are solved, we will
+resort to a glossary of terms, which should be referred from the
+javadocs of the classes in this package.<br>
+<ul>
+  <li><span style="font-weight: bold;">iteration</span>: an iteration
+of a <span style="font-style: italic;">mak:list </span>(or <span
+ style="font-style: italic;">mak:object</span>, below all references to <span
+ style="font-style: italic;">mak:list</span> also stand for <span
+ style="font-style: italic;">mak:object</span>)</li>
+  <li><span style="font-weight: bold;">parentList</span>: below, A is
+the parent <span style="font-style: italic;">mak:list </span>of
+B&nbsp; (same goes for any combination of <span
+ style="font-style: italic;">mak:list</span> and <span
+ style="font-style: italic;">mak:object</span>)<br>
+    <pre>&lt;mak:list A &gt; <br>...&lt;some:otherTagThatIsNotMakListOrObject C &gt; ...<br>   &lt;mak:list B&gt;&nbsp;<br>   ...<br>   &lt;/mak:list&gt; <br>...&lt;/some:otherTagThatIsNotMakListOrObject&gt; ...<br>&lt;/mak:list&gt; <br
+ style="font-weight: bold;"></pre>
+  </li>
+  <li><span style="font-weight: bold;">rootList</span>: a <span
+ style="font-style: italic;">mak:list </span>that has no <span
+ style="font-weight: bold;">parentList</span><br>
+    <span style="font-weight: bold;"></span></li>
+  <li><span style="font-weight: bold;">parentIteration</span>: an
+iteration of the <span style="font-weight: bold;">parentList</span> of
+the <span style="font-style: italic;">mak:list</span>.<br>
+    <span style="font-weight: bold;">parentIterations</span> are
+important because the object that represents the <span
+ style="font-style: italic;">mak:list</span> (of type {@link
+org.makumba.view.jsptaglib.QueryTag} ) <span
+ style="text-decoration: underline;">changes </span>between one parent
+iteration and another. Due to that, makumba must keep somewhere the data
+iterated by a <span style="font-style: italic;">mak:list</span>, and
+retrieve it at each <span style="font-weight: bold;">parentIteration</span>.</li>
+  <li><span style="font-weight: bold;"> iterationGroup:</span> all
+iterations of a <span style="font-style: italic;">mak:list</span> that
+are done within the same <span style="font-weight: bold;">parentIteration</span>
+(by the same {@link org.makumba.view.jsptaglib.QueryTag}) </li>
+  <li> <span style="font-weight: bold;">listQuery</span>: every <span
+ style="font-style: italic;">mak:list</span> from the page produces a
+query.<br>
+The query is executed only once (if not repeated via some scriplet), no
+matter how many parent <span style="font-weight: bold;">iteration</span>s
+there are. </li>
+  <li> <span style="font-weight: bold;">parentQuery</span>: queries are
+derived from the query of the parent <span style="font-style: italic;">mak:list</span>
+tag, by adding the FROM and WHERE sections. This is done in {@link
+org.makumba.view.ComposedQuery} </li>
+  <li> <span style="font-weight: bold;">listData</span>: the results of
+the <span style="font-weight: bold;">listQuery</span> </li>
+  <li><span style="font-weight: bold;"> iterationGroupData</span>: the
+part of the <span style="font-weight: bold;">listData</span> that is
+iterated through during an <span style="font-weight: bold;">iterationGroup</span> </li>
+  <li><span style="font-weight: bold;"> nullableValueQuery</span>: if a <span
+ style="font-style: italic;">mak:value</span> or <span
+ style="font-style: italic;">mak:input</span> (mentioned only as <span
+ style="font-style: italic;">mak:value</span> in what follows) has an
+expression of the form label.ptr1.ptr2.ptr3.field and any of ptr1...N is
+nullable, that <span style="font-style: italic;">mak:value</span> will
+introduce a separate query, whose <span style="font-weight: bold;">parentQuery</span>
+is the <span style="font-weight: bold;">listQuery</span> of the parent <span
+ style="font-style: italic;">mak:list</span>. Consider the following
+example
+    <pre>RestaurantCook.mdd<br>  person = not null ptr Person<br>  favoriteDish = ptr Dish ; NULLABLE!<br><br>cookView.jsp<br>  &lt;mak:list from="general.RestaurantCook rc" /&gt;<br>    &lt;mak:value expr="rc.person.name" /&gt;<br>   &lt;mak:value expr="rc.favoriteDish.name" /&gt;<br>  &lt;/mak:list&gt;<br></pre>
+If there would be a single query, then the cooks who have no
+favoriteDish pointer filled in (nullable, so it's possible) would not be
+returned by the list query (simplified notation):<br>
+    <pre>  SELECT p.name, d.name<br>  FROM   RestaurantCook rc, Person p, Dish d<br>  WHERE  rc.person = p AND rc.favoriteDish = d ;<br></pre>
+because the where condition "rc.favoriteDish = d" cannot be fulfilled
+for those cooks that have rc.favoriteDish = NIL. So instead you do the <span
+ style="font-weight: bold;">listQuery</span>:<br>
+    <pre>  SELECT p.name<br>  FROM   RestaurantCook rc, Person p<br>  WHERE  rc.person = p ;<br></pre>
+and the <span style="font-weight: bold;">nullableValueQuery</span>:<br>
+    <pre>  SELECT p.name, d.name<br>  FROM   RestaurantCook rc, Person p, Dish d<br>  WHERE  rc.person = p AND rc.favoriteDish = d ;</pre>
+    <p>All <span style="font-style: italic;">mak:value</span>'s whose
+expression is nullable due to the same pointer should be computed as
+projections in the same <span style="font-weight: bold;">nullableValueQuery</span>.<br>
+    </p>
+  </li>
+  <li> <span style="font-weight: bold;">setFieldValueQuery</span>: if a <span
+ style="font-style: italic;">mak:value</span> or <span
+ style="font-style: italic;">mak:input</span> has an expression of the
+form label.ptr1...ptrN.setField, that <span style="font-style: italic;">mak:value</span><br>
+will introduce a separate query whose parent is the <span
+ style="font-weight: bold;">listQuery</span> of the parent <span
+ style="font-style: italic;">mak:list</span>. <span
+ style="font-weight: bold;">setFieldValueQueries </span>are especially
+used to generate HTML &lt;select&gt; for <span
+ style="font-style: italic;">mak:inputs</span><br>
+  </li>
+  <li> <span style="font-weight: bold;">valueQuery</span>: a <span
+ style="font-weight: bold;">nullableValueQuery</span> or <span
+ style="font-weight: bold;">setFieldValueQuery</span></li>
+  <li><span style="font-weight: bold;">queryMak:value</span>: <span
+ style="font-style: italic;">mak:value/input</span> that does generates
+a <span style="font-weight: bold;">valueQuery</span>, i.e. a query that
+is forced not by the mak:list per-se, but because of the special data
+type of the projections</li>
+  <li><span style="font-weight: bold;"> nonQueryMak:value</span>: <span
+ style="font-style: italic;">mak:value/input</span> that does not
+generate a <span style="font-weight: bold;">valueQuery</span></li>
+  <li><span style="font-weight: bold;"> valueProjection</span>: a query
+projection that corresponds to an <span style="font-weight: bold;">nonQueryMak:value</span>.<br>
+Basically every <span style="font-weight: bold;">nonQueryMak:value</span><span
+ style="font-style: italic;"><span style="font-weight: bold;"></span> </span>needs
+to know which query it should read its result from, and which
+projection (column) of that query corresponds to that <span
+ style="font-weight: bold;">nonQueryMak:value</span> <span
+ style="font-style: italic;"><span style="font-style: italic;"><span
+ style="font-style: italic;"><span style="font-style: italic;"><span
+ style="font-weight: bold;"><span style="font-weight: bold;"><span
+ style="font-style: italic;"><span style="font-style: italic;"></span></span></span></span></span></span></span></span>.
+The <span style="font-weight: bold;">queryMak:values </span>need to
+know their <span style="font-weight: bold;">valueQuery</span>. In
+addition<span style="font-style: italic;"> <span
+ style="font-weight: bold;"><span style="font-weight: bold;"><span
+ style="font-weight: bold;"></span></span></span></span><span
+ style="font-weight: bold;">queryMak:values</span> that introduce <span
+ style="font-weight: bold;"><span style="font-weight: bold;"><span
+ style="font-weight: bold;">nullableValueQueries </span></span></span>also
+need to know which projection of the <span style="font-weight: bold;">nullableValueQuery</span>
+corresponds to them, because a <span style="font-weight: bold;">nullableValueQuery</span>may
+be shared by more <span style="font-style: italic;">mak:values</span><br>
+  </li>
+  <li><span style="font-weight: bold;"> listGroup</span>: a <span
+ style="font-weight: bold;">rootList</span><span
+ style="font-style: italic; font-weight: bold;"></span> and all the
+children <span style="font-style: italic;">mak:lists</span> and <span
+ style="font-style: italic;">mak:values</span>. The <span
+ style="font-weight: bold;">rootList</span> has no parent, this is
+equivalent to having one single <span style="font-weight: bold;">parentIteration</span>.
+So the {@link org.makumba.view.jsptaglib.QueryTag} of a <span
+ style="font-weight: bold;">rootList </span>will never change due to <span
+ style="font-weight: bold;">parentIterations</span>. That makes it a
+good candidate to store the data of all its enclosed <span
+ style="font-weight: bold;">listQueries</span> and <span
+ style="font-weight: bold;">valueQueries</span>. Before storing them,
+it must execute the queries. So the <span style="font-weight: bold;">rootList</span>
+of the <span style="font-weight: bold;">listGroup</span> will execute
+all the<span style="font-weight: bold;"> listQueries</span> and <span
+ style="font-weight: bold;">valueQueries</span>.</li>
+  <li><span style="font-weight: bold;">queryProjection</span>: a column
+selected in a query (i.e. between SELECT and FROM, comma-separated)</li>
+  <li><span style="font-weight: bold;">currentListData</span>: the data
+row (all <span style="font-weight: bold;">queryProjections</span>) from
+the current <span style="font-weight: bold;">iteration </span>of a <span
+ style="font-style: italic;">mak:list </span>or <span
+ style="font-style: italic;">mak:object. </span>Also referred to as
+the data of an <span style="font-weight: bold;">iteration</span><br>
+    <span style="font-weight: bold;"></span></li>
+  <li><span style="font-weight: bold;"> currentDataSet</span>: a stack
+containing the the <span style="font-weight: bold;">currentListData </span>of
+each <span style="font-weight: bold;">listQuery </span>that is
+currently iterating: the data of the current <span
+ style="font-weight: bold;">iteration</span>, the data of the <span
+ style="font-weight: bold;">parentIteration</span>... and finally the <span
+ style="font-weight: bold;">currentDataSet </span>of the <span
+ style="font-style: italic;"></span> <span style="font-weight: bold;">rootList</span><span
+ style="font-weight: bold;"></span> at the bottom of the stack. A&nbsp; <span
+ style="font-style: italic;">mak:list</span> will push its current
+result in the stack at the begining of each <span
+ style="font-weight: bold;">iteration</span>, and will pop it out at
+the end.</li>
+  <li><span style="font-weight: bold;"> keyLabels</span>: the labels
+declared in the FROM of a query</li>
+</ul>
+<div style="margin-left: 80px;">
+<pre>&lt;mak:object from="best.johnny.Season ssn" where="ssn.name = $season" &gt;<br></pre>
+-&gt; key label is ssn <br>
+</div>
+<ul>
+  <li><span style="font-weight: bold;"> keyProjections</span>: <span
+ style="font-weight: bold;">queryProjections</span> made from <span
+ style="font-weight: bold;">keyLabels</span>.<br>
+The <span style="font-weight: bold;">keyLabels</span> are always (i
+think) selected as projections, whether they are requested in <span
+ style="font-style: italic;">mak:values </span>or not. All key
+projections selected in a parent are selected in the children, but not
+the reverse.<br>
+  </li>
+  <li>The rule of the query rendering engine:<br>
+In a <span style="font-weight: bold;">currentDataSet</span>, the value
+of a <span style="font-weight: bold;">keyProjection</span> in a <span
+ style="font-weight: bold;">listQuery currentListData</span> is equal to
+the value of that <span style="font-weight: bold;">keyProjection</span>
+in the <span style="font-weight: bold;">parentQuery</span><br>
+    <span style="font-weight: bold;">currentListData</span>, if it is
+selected there.<br>
+  </li>
+  <li><span style="font-weight: bold;">grouping:</span> to determine an <span
+ style="font-weight: bold;">iterationGroupData </span>from a<span
+ style="font-weight: bold;"> listData</span> (which a {@link
+org.makumba.view.jsptaglib.QueryTag} should do when it starts), one has
+to choose all rows from the list data that have the <span
+ style="font-weight: bold;">keyProjections</span> equal to those
+currently iterated by the <span style="font-weight: bold;">parentQueries</span>as
+stored in the<br>
+    <span style="font-weight: bold;"> currentDataSet</span>. This is
+done with the help of class {@link org.makumba.view.Grouper}. <br>
+  </li>
+</ul>
+<pre>	&lt;mak:list from="lbg l"&gt;&lt;mak:value "l.name"/&gt; <br>&nbsp; 		&lt;mak:list from="members m" where="m.homeLbg = l"&gt;<br>		&lt;mak:value "m.firstName" /&gt;<br>  		&lt;/mak:list&gt;<br>	&lt;/mak:list&gt;<br></pre>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; will result in
+2 queries: <br>
+<pre>	1/ SELECT l, l.name from Lbg l<br>	2/ SELECT l, l.name, m.firstName from Lbg l, Members m WHERE m.homeLbg=l ; <br></pre>
+<div style="margin-left: 40px;">When iterating thru the inner mak:list,
+the <span style="font-weight: bold;">iterationGroupData</span> is
+selected from the entire list data (of query 2) by selecting only that
+data for which 'l' (the <span style="font-weight: bold;">keyProjection</span>)
+is equal to the 'l' of the&nbsp; current parent iteration. In other
+words:<br>
+iterationGroupData=grouper(listData, currentDataSet)<br>
+where <span style="font-weight: bold;">listData</span> (for that <span
+ style="font-style: italic;">mak:list</span>) is computed by the root
+tag by running that<span style="font-style: italic;"> mak:list</span>'s <span
+ style="font-weight: bold;">listQuery</span>, and stored in the <span
+ style="font-weight: bold;">listGroup</span><br>
+actually what happens is <br>
+<pre>// at group list start<br>Grouper listDataGrouper= new Grouper(dataAboutKeys, listData)</pre>
+<pre>// then, for every parent iteration<br>iterationGroupData=listDataGrouper.getData(currentDataSet)<br></pre>
+</div>
+<ul>
+  <li>to determine a value displayed by <span
+ style="font-weight: bold;">queryMak:value</span>, we need to apply the
+same pattern<br>
+  </li>
+</ul>
+<pre>	valueQueryData=grouper(valueQueryResult, currentDataSet)<br></pre>
+<div style="margin-left: 40px;">where valueQueryResult (for that <span
+ style="font-style: italic;">mak:value</span>) is computed by the root
+tag by running that value query, and stored in the list group for <span
+ style="font-weight: bold;">nullableValueQuery</span><span
+ style="font-style: italic;">mak:value</span>s, the valueQueryData can
+be of length 0 (a null pointer) or 1 (not-null pointers). For <span
+ style="font-weight: bold;">setFieldValueQueries</span> it can be of any
+length. <br>
+</div>
+<ul>
+  <li><span style="font-weight: bold;">tagKey</span>: a key that
+uniquely identifies a <span style="font-style: italic;">mak:list/object</span>
+or<span style="font-style: italic;"> mak:value/input/editForm </span>tag
+within the page. The key is made from the tag attributes that cannot
+cahnge at execution time (<span style="font-style: italic;">mak:list </span>from,
+where, orderBy<span style="font-style: italic;">, mak:value </span>expr)
+and the key of the <span style="font-weight: bold;">parentList</span>.
+They key is used for the <span style="font-style: italic;">mak:list/value</span>to
+find its <span style="font-weight: bold;">listData </span>at the
+begining of a <span style="font-weight: bold;">parentIteration</span>
+(from which it computes the <span style="font-weight: bold;">iterationGroupData</span>),
+by <span style="font-style: italic;">mak:value/input/editForm </span>to
+find their value in the <span style="font-weight: bold;">iterationGroupData</span>
+of the <span style="font-weight: bold;">parentList </span>(for <span
+ style="font-weight: bold;">nonQueryMak:values</span>) or of their own <span
+ style="font-weight: bold;">valueQuery</span><br>
+  </li>
+  <li><span style="font-weight: bold;">queryKey</span>: a key that
+uniquely identifies a <span style="font-weight: bold;">listQuery</span>
+or <span style="font-weight: bold;">valueQuery</span> within the page.
+The <span style="font-weight: bold;">querykey</span> of <span
+ style="font-weight: bold;">listQueries</span> is the same with their <span
+ style="font-style: italic;">mak:list</span> <span
+ style="font-weight: bold;">tagKey</span>. The <span
+ style="font-weight: bold;">queryKey</span> of&nbsp; a <span
+ style="font-weight: bold;">valueQuery </span>is the <span
+ style="font-weight: bold;">queryKey </span>of the <span
+ style="font-weight: bold;">parentList </span>plus the path to the
+nullable pointer that lead to the creation of the <span
+ style="font-weight: bold;">nullableValueQuery </span>(this ensures
+that values that are nullable due to the same pointer will share the
+same query) or the set field for <span style="font-weight: bold;">setValueQuery</span>.<br>
+  </li>
+</ul>
+@see org.makumba.view
+<ul>
+  <br>
+</ul>
+</body>
+</html>

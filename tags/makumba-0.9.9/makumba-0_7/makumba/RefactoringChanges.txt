@@ -1,0 +1,20 @@
+This file describes the visible changes due to refactoring, that can have an impact outside of Makumba (for users).
+
+- in web.xml: the NamedResourcesContextListener is not anymore in util package but commons
+OR simply remove it as it is declared already in the TLDs
+
+- in org.makumba.MakumbaSystem:
+  - close() inlined
+  - getMakumbaLogger() inlined
+  - getDefaultDatabaseName deprecated, use getDefaultDataSource instead
+
+- org.makumba.abstr moved into org.makumba.providers.datadefinition.makumba
+
+- org.makumba.controller.http.ControllerFilter refactored
+  
+ - possible behavioural changes (needs testing): 
+  
+  - in GenericMakumbaTag: we don't treatException anymore (in treatException) but just throw a RuntimeWrappedException
+  - in ResponseTag: we don't treatException anymore (in treatException) but just throw a RuntimeWrappedException
+  - filter refactoring: exceptions are passed on, not treatException-ed anymore until the ErrorFilter handles them 
+  

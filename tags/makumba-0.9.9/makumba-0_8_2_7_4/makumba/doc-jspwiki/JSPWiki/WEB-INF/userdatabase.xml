@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<users>
+    <user uid="36b5dd70-4920-425a-96b7-674297775722" loginName="filip" wikiName="FilipKis" fullName="Filip Kis" email="filip.kis@best.eu.org" password="{SSHA}G6INePw3RwmI4BU+vFKjPjzqWnxcvMmm75XrBA==" created="2009.11.20 at 11:22:53:249 CET" lastModified="2009.11.20 at 11:22:53:249 CET" lockExpiry="" >
+    </user>
+    <user uid="ae6bfbaa-4ff4-4c67-b976-9f87008d36bd" loginName="Admin" wikiName="Admin" fullName="Admin" email="" password="{SSHA}GqUCgqqn8jXsIPkBqp8oVui/ZbloesJSw5sIig==" created="2009.11.20 at 12:04:08:619 CET" lastModified="2009.11.20 at 12:04:08:619 CET" lockExpiry="" >
+    </user>
+    <user uid="480287c2-b0eb-4743-8a08-e9fb86aa25aa" loginName="TestUser" wikiName="TestUser" fullName="Test User" email="" password="{SSHA}ItE/n4y00pcouYtIsXWGBnGQmBZ99onkMOko7A==" created="2009.11.20 at 12:27:33:150 CET" lastModified="2009.11.20 at 12:27:33:150 CET" lockExpiry="" >
+    </user>
+    <user uid="2553520a-62b9-4431-935a-4d85f5a69ff3" loginName="manu" wikiName="Manu" fullName="Manu" email="manuel@makumba.org" password="{SSHA}wXYXDfLVOu4Iyp88nwnt3SAnlvEyJiUvNi9YsA==" created="2009.11.20 at 13:00:50:994 CET" lastModified="2009.11.20 at 13:00:50:994 CET" lockExpiry="" >
+    </user>
+    <user uid="8bcf3c13-1e63-4018-ad1c-313a90747237" loginName="jasper" wikiName="Jasper" fullName="Jasper" email="van.bourgognie@gmail.com" password="{SSHA}FCBa2efpi4TVAMMQugL4g01NfbJRP8P0+eeGWA==" created="2009.11.29 at 15:32:29:806 CET" lastModified="2009.11.29 at 15:32:29:806 CET" lockExpiry="" >
+    </user>
+    <user uid="cf95884d-7338-4192-8500-5fc2e7a22aa6" loginName="viktor" wikiName="Viktor" fullName="Viktor" email="vfonic@gmail.com" password="{SSHA}rjrX2bJEUpcxM2xRMQ/MjdrQ23VA0eFVN00iYg==" created="2009.11.29 at 15:32:33:945 CET" lastModified="2009.11.29 at 15:32:33:945 CET" lockExpiry="" >
+    </user>
+    <user uid="c8574338-ff57-4dfe-bd37-7bee58448f61" loginName="cristi" wikiName="CristianBogdan" fullName="Cristian Bogdan" email="cristi@csc.kth.se" password="{SSHA}rDMGM+id+xh4q4HDj+XgOt6UNRxoSzqfCJto9w==" created="2009.11.29 at 15:32:36:425 CET" lastModified="2009.11.29 at 15:32:36:425 CET" lockExpiry="" >
+    </user>
+    <user uid="7e9f10ea-df36-4d29-af81-d316e0992a81" loginName="raul" wikiName="raulfiru" fullName="raul firu" email="raulfiru@gmail.com" password="{SSHA}Esfq1T115qTfNmVCzA9434igysObVrgadSCaGg==" created="2009.11.29 at 15:33:18:551 CET" lastModified="2009.11.29 at 15:33:18:551 CET" lockExpiry="" >
+    </user>
+    <user uid="3d757d73-b997-4db6-b3c9-f40448f02405" loginName="rudi" wikiName="RudolfMayer" fullName="Rudolf Mayer" email="rudolf.mayer@best.eu.org" password="{SSHA}QgpVt5TJRxuAXKOAWCGO/4l6/ZuJldwqHAn+Zw==" created="2009.11.29 at 15:33:20:581 CET" lastModified="2009.11.29 at 15:33:20:581 CET" lockExpiry="" >
+    </user>
+    <user uid="5bca77c8-86de-4a25-ae19-19c6e6594e33" loginName="gwen" wikiName="GwenaelAlizon" fullName="Gwenael Alizon" email="gwen@makumba.org" password="{SSHA}wBwzslJWnBZwbQOkcR4Bn+ZjcUUVION4omEMKQ==" created="2009.11.29 at 15:41:40:520 CET" lastModified="2009.11.29 at 15:41:40:520 CET" lockExpiry="" >
+    </user>
+</users>

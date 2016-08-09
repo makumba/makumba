@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
+<document>
+    <header>
+        <title>Status of the documentation</title>
+    </header>
+    <body>
+        <section id="status">
+            <title>Status</title>
+
+            <table>
+                <tr>
+                    <th>Old documentation</th>
+                    <th>New documentation</th>
+                    <th>Status</th>
+                    <th>Comments</th>
+                </tr>
+
+                <tr>
+                    <td></td>
+                    <td>mak:response</td>
+                    <td>not started</td>
+                    <td>rewrite the text and add info about the styles</td>
+                </tr>
+                
+                <tr>
+                    <td></td>
+                    <td>BL</td>
+                    <td>not started</td>
+                    <td>rewrite businessLogicClasses (RTF)</td>
+                </tr>
+                                
+                <tr>
+                    <td>Check and format taglib text</td>
+                    <td>Update the tag description</td>
+                    <td>Not started</td>
+                    <td></td>
+                </tr>
+                
+                <tr>
+                    <td>quickstart (makumba-install.html)</td>
+                    <td>quickstart.html</td>
+                    <td>Started</td>
+                    <td>needs to be mostly rewritten, totally outdated.</td>
+                </tr>
+                
+                <tr>
+                    <td></td>
+                    <td>makumba-template packaging and download</td>
+                    <td>not started</td>
+                    <td>make a target in build.xml to checkout &amp; make a zip of makumba-template, including the latest makumba.jar. might be good to actually make this part of the release cycle along with mak-sources.</td>
+                </tr>
+                
+                <tr>
+                    <td>query functions</td>
+                    <td>reference doc/query functions</td>
+                    <td>not started</td>
+                    <td>split in several parts: MDD functions, authentication, authorization</td>
+                </tr>
+                
+                <tr>
+                    <td>Showcases</td>
+                    <td>Schowcases</td>
+                    <td>not started</td>
+                    <td>Update showcase with case from russian site</td>
+                </tr>
+                
+			   <tr>
+                    <td>Update examples</td>
+                    <td>Use the new example data model everywhere!!</td>
+                    <td>Not started</td>
+                    <td>Update ALL examples!</td>
+                </tr>                
+                
+                <tr>
+                    <td>Welcome page (index.html)</td>
+                    <td>Welcome page (index.html)</td>
+                    <td>Not started</td>
+                    <td>Maybe better introduction, link to the mak philosophy</td>
+                </tr>
+                
+                <tr>
+                    <td>JSP tag lib: listing : makumba attributes</td>
+                    <td>usage / ?</td>
+                    <td>not started</td>
+                    <td>make entry</td>
+                </tr>
+
+                <tr>
+                    <td>JSP tag lib: forms : forms intro</td>
+                    <td>usage / makumba forms</td>
+                    <td>not started</td>
+                    <td>make entry</td>
+                </tr>
+
+                <tr>
+                    <td>JSP tag lib: forms : form tags : intro to mak:input etc</td>
+                    <td>usage / basics</td>
+                    <td>not started</td>
+                    <td>move it there</td>
+                </tr>
+                <tr>
+                    <td>JSP tag lib: search</td>
+                    <td>reference doc: tags</td>
+                    <td>generated. TODO: add examples</td>
+                    <td/>
+                </tr>
+                <tr>
+                    <td>Business logics</td>
+                    <td>reference doc: business logics</td>
+                    <td>mostly done. TODO: fix formatting</td>
+                    <td/>
+                </tr>
+                <tr>
+                    <td>reference doc: Summary</td>
+                    <td>reference doc / Type overview</td>
+                    <td>not started</td>
+                    <td>make entry</td>
+                </tr>
+                
+                <tr>
+                    <td>API doc</td>
+                    <td>API</td>
+                    <td>not started</td>
+                    <td>make link / integration</td>
+                </tr>
+                
+                <tr>
+                    <td>Bugzilla</td>
+                    <td>Bugzilla</td>
+                    <td>not done</td>
+                    <td>add link</td>
+                </tr>
+                <tr>
+                    <td>developer doc</td>
+                    <td>developer doc</td>
+                    <td>not started</td>
+                    <td>a shitload of things to clean up and rewrite.</td>
+                </tr>
+                
+                <tr>
+                    <td>documentation generation</td>
+                    <td>doc generation</td>
+                    <td>not started</td>
+                    <td>ant targets to generate forrest HTML (forrest site) and javadoc</td>
+                </tr>
+
+                <tr>
+                    <td/>
+                    <td/>
+                    <td/>
+                    <td/>
+                </tr>
+                <tr>
+                    <td/>
+                    <td/>
+                    <td/>
+                    <td/>
+                </tr>
+                <tr>
+                    <td/>
+                    <td/>
+                    <td/>
+                    <td/>
+                </tr>
+                
+                <tr>
+                    <td>FAQ</td>
+                    <td>-</td>
+                    <td/>
+                    <td>Dropped</td>
+                </tr>
+                
+                
+                <tr>
+                    <td></td>
+                    <td>configuration of error messages</td>
+                    <td>not started</td>
+                    <td><source>
+
+To enable the custom error for some pages of your application you only
+need to put error.jsp in root folder and it will be used also for all
+subfolders. In case you want a different error message for just some
+pages, they will need to be in their own folder and you will need to
+put a different error.jsp in that folder. In other words, makumba
+searches for error.jsp starting from the folder of the page that
+caused error and going to all the parent folders until it finds it or
+reaches the root of application in which case it shows the default
+error page.
+
+Content of the error.jsp
+
+It's advised that in the error.jsp be simple HTML document or with
+minimum of code. There are 3 attributes that should be placed
+somewhere in the page to get the error information:
+
+mak_error_title - giving the title of the error
+mak_error_description - giving the error description witch is normally
+content of the default error page
+mak_error_realpath - gives you the path to the file that has caused the error
+
+</source></td>
+                </tr>
+                
+                <tr>
+                    <td>Download</td>
+                    <td>Download</td>
+                    <td>not done</td>
+                    <td>add link</td>
+                </tr>
+                
+                <tr>
+                    <td></td>
+                    <td>usability: data model</td>
+                    <td>started</td>
+                    <td>finish to document it</td>
+                </tr>
+                
+                
+                <tr>
+                    <td></td>
+                    <td>fix broken links</td>
+                    <td>done</td>
+                    <td>links in several pages are broken, fix them</td>
+                </tr>
+                
+                
+                <tr>
+                    <td>Showcases</td>
+                    <td>Schowcases</td>
+                    <td>DONE</td>
+                    <td>Make a showcases.xml, should be the same content-wise</td>
+                </tr>
+                <tr>
+                    <td>Supporters</td>
+                    <td>Supporters</td>
+                    <td>DONE</td>
+                    <td>do it</td>
+                </tr>
+
+                <tr>
+                    <td>documentation.html</td>
+                    <td>doc/index.html, usage/index.html</td>
+                    <td>DONE</td>
+                    <td>Should give a quick overview of the doc</td>
+                </tr>
+                
+                <tr>
+                    <td>JSP tag lib: intro: JSP and JSP tag params</td>
+                    <td>reference doc / intro (index.html)</td>
+                    <td>done</td>
+                    <td>make an entry</td>
+                </tr>
+                
+                <tr>
+                    <td>JSP tag lib: intro : controller</td>
+                    <td>ref doc / controller</td>
+                    <td>done</td>
+                    <td>make the controller entry </td>
+                </tr>
+                
+                <tr>
+                    <td>Data def specification</td>
+                    <td>reference doc / data definitions</td>
+                    <td>DONE</td>
+                    <td>remove OLDSTYLE stuff, fix formatting</td>
+                </tr>
+                
+                <tr>
+                    <td>query languages</td>
+                    <td>reference doc/query languages</td>
+                    <td>done</td>
+                    <td>need to add the MQL functions</td>
+                </tr>
+                <tr>
+                    <td>Makumba example (makumba-example.html)</td>
+                    <td>Example?</td>
+                    <td>discarded</td>
+                    <td>we will go for a quick start using the MDD example described in model.xml</td>
+                </tr>
+                
+                <tr>
+                    <td>JSP tag lib: listing</td>
+                    <td>reference doc / tags</td>
+                    <td>generated, TODO: add the examples (copy-paste)</td>
+                    <td/>
+                </tr>
+                
+                <tr>
+                    <td>JSP tag lib: forms : form tags</td>
+                    <td>reference doc / tags</td>
+                    <td>generated. add examples</td>
+                    <td/>
+                </tr>
+                
+                <tr>
+                    <td>JSP tag lib: listing : mak:count() etc</td>
+                    <td>reference doc / JSP functions</td>
+                    <td>not started</td>
+                    <td>make entry</td>
+                </tr>
+                
+                <tr>
+                    <td>Config DB</td>
+                    <td>Configuration / Makumba configuration</td>
+                    <td>done</td>
+                    <td>all the DB doc is ported</td>
+                </tr>
+                
+
+            </table>
+        
+        
+        </section>
+    </body>
+</document>

@@ -1,0 +1,18 @@
+
+
+<html>
+<head><title>Test Bug 946</title></head>
+<body>
+
+
+
+<form action="" method="GET">
+  Gender: <SELECT NAME="gender" SIZE=1 id="gender" >
+	<OPTION value="0">Female</OPTION>
+	<OPTION value="1" SELECTED>Male</OPTION>
+</SELECT>
+<input type="hidden" name="__makumba__originatingPage__" value="/tests/JspRedirector?Cactus_TestMethod=testBug946&Cactus_TestClass=test.http.FormsOQLTest&Cactus_AutomaticSession=true&Cactus_Service=CALL_TEST">
+<input type="hidden" name="__makumba__responder__" value="267614536">
+</form>
+
+</body>

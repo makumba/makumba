@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
+<document>
+  <header>
+    <title>Makumba</title>
+  </header>
+  <body>
+    <section id="intro">
+      <title>Welcome</title>
+      <p>
+        Welcome to the new Makumba website!
+      </p>
+      <p>In this welcome page should appear:</p>
+      <ul>
+        <li>a short introduction to Makumba</li>
+        <li>the last blog entries</li>
+      </ul>
+    </section>
+  </body>
+</document>

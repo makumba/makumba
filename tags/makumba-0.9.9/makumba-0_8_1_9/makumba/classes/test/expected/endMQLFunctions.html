@@ -1,0 +1,63 @@
+
+
+
+<html>
+<head><title>MQL Functions</title></head>
+<body>
+
+
+
+
+<b>MQL Functions</b>
+<br><br><br>
+
+someBirthdate: Sat Mar 05 00:00:00 CET 1977<br/><br/>
+
+<i>list from="test.Person p" where="p.birthdate=$someBirthdate"</i><br/>
+
+  name: john, von Neumann, birthdate: 05 March 1977<br>
+
+<br/>
+ 
+<i>list from="test.Person p" where="p.birthdate=$someBirthdate OR (month(p.birthdate)=month($someBirthdate) AND dayOfMonth(p.birthdate)=dayOfMonth($someBirthdate))</i><br/>
+
+  name: john, von Neumann, birthdate: 05 March 1977<br>
+
+<br/>
+
+<i>list from="test.Person p" where="month(p.birthdate)=1</i><br/>
+
+<br/>
+
+<i>list from="test.Person p"</i><br/>
+
+  &nbsp;<b>name: bart, van Vandervanden, birthdate: </b><br/>
+  &nbsp;&nbsp;&nbsp;
+  year: , month: , dayOfMonth: <br/>
+  &nbsp;&nbsp;&nbsp;
+  year($someBirthdate) 1977<br/>
+  &nbsp;&nbsp;&nbsp;
+  year(p.birthdate)=year($someBirthdate): <br/>
+  &nbsp;&nbsp;&nbsp;
+  month(p.birthdate)=month($someBirthdate): <br/>
+  &nbsp;&nbsp;&nbsp;
+  dayOfMonth(p.birthdate)=dayOfMonth($someBirthdate): 
+  <br>
+
+  &nbsp;<b>name: john, von Neumann, birthdate: 05 March 1977</b><br/>
+  &nbsp;&nbsp;&nbsp;
+  year: 1977, month: 3, dayOfMonth: 5<br/>
+  &nbsp;&nbsp;&nbsp;
+  year($someBirthdate) 1977<br/>
+  &nbsp;&nbsp;&nbsp;
+  year(p.birthdate)=year($someBirthdate): Yes<br/>
+  &nbsp;&nbsp;&nbsp;
+  month(p.birthdate)=month($someBirthdate): Yes<br/>
+  &nbsp;&nbsp;&nbsp;
+  dayOfMonth(p.birthdate)=dayOfMonth($someBirthdate): Yes
+  <br>
+
+<br/>
+
+</body>
+</html>

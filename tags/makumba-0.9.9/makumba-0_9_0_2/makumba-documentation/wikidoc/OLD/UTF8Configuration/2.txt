@@ -1,0 +1,60 @@
+This page explains how the makumba web-app and the database layer should be configured in order to support UTF-8.
+
+!!! server.xml
+
+In makumba/tomcat/conf/server.xml add %%code URIEncoding="UTF-8" %% and %%code useBodyEncodingForURI="true" %% to the Connector definition.
+This is to pass utf-8 through the URL-s so that no characters get missing.
+[{Code 
+
+            <Connector URIEncoding="UTF-8" useBodyEncodingForURI="true" port="..." maxThreads="..." minSpareThreads="..." maxSpareThreads="..." enableLookups="..." redirectPort="..." acceptCount="..." connectionTimeout="..." disableUploadTimeout="..." /> %%
+}]
+
+!!! web.xml
+
+In public_html/WEB-INF/web.xml, the makumba_charset filter must be the first one in the list:
+[{Code 
+
+            <filter>
+                <filter-name>makumba_charset</filter-name>
+                <filter-class>org.makumba.controller.http.CharsetFilter</filter-class>
+            </filter>
+}]
+
+public/WEB-INF/web.xml also needs to contain the makumba_charset mapping:
+[{Code 
+
+            <filter-mapping>
+                <filter-name>makumba_charset</filter-name>
+                <url-pattern>*.jsp</url-pattern>
+            </filter-mapping>
+}]            
+
+!!! sqlEngines.properties
+
+In makumba/classes/org/makumba/db/sql/sqlEngines.properties, indicate that the db wrapper has utf-8 support by adding (for MySQL, adapt according to your DB engine):
+[{Code 
+
+            mysql.utf8=true
+}]
+
+!!! Database
+
+If you want to convert a previous database to have access to the utf-8
+character set,
+* do not forget to set all the binary fields in the db to binary so that no data is lost
+* set the collation to utf-8 everywhere using this command for every table (for MYSQL, adapt according to your DB engine):
+[{Code 
+
+            ALTER TABLE company_Emlpoyee_ SET CHARACTER SET utf8;
+}]
+
+!!! Makumba.conf
+
+In public_html/WEB-INF/classes/Makumba.conf set the encoding to UTF-8:
+[{Code 
+
+            encoding=utf8
+}]
+
+
+%%(display:none;)[Category Configuration]%%
