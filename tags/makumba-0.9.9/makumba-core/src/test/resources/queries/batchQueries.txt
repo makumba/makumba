@@ -1,0 +1,9 @@
+#This file is intended for tasting query generation or more correctly
+#tests if the queries pass. There is no check if the generated queries
+#are semantically correct. Lines starting with # are ignored. 
+
+#simple test, just have something
+SELECT p FROM test.Person p
+
+#http://trac.makumba.org/ticket/1273
+SELECT p.age = nil OR (SELECT 1=1 FROM p.groupMembers m) FROM test.Person p 
