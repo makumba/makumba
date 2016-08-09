@@ -1,0 +1,69 @@
+INSTALLATION INSTRUCTIONS
+=========================
+
+- install maven (http://maven.apache.org/download.html)
+- create empty makumba and makhib mysql test databases in mysql; on linux, you can use the "setup-mysql-db.sh" script
+
+== eclipse set-up (works with Kepler)  (see IntellJ below)
+(TODO: instructions on how to import the code formatting & cleanup templates)
+
+1) Prepare eclipse for maven
+   =========================
+- install Subversive plugin
+- install m2eclipse
+http://www.eclipse.org/m2e/download/
+including antlr and subversive connectors
+
+2) Prepare & checkout makumba  (https://svn.code.sf.net/p/makumba/code/trunk/makumba/)
+   ==========================
+- File/Import/Checkout maven project from SCM, choose SCM type svn
+(if you don't have the svn connector, click on "M2E narketplace" link at the low right, install also the antlr connector if you miss it)
+
+- from the URI above import makumba-parent, makumba-core, makumba-jsp, makumba-jsp-test
+
+- right-click on makumba-parent, choose Run As, Maven Build, Goals: clean install
+
+Now you should be able to work in Eclipse on makumba-core and makmba-jsp, and have other projects depend on them, including web projects like karamba 
+(see below)
+
+What will probably not work is TLD changes.
+If such changes are needed, execute again mvn clean install
+
+- if needed, configure makumba-parent/build.properties
+  - this is important especially when releasing, where you need to have the makumba-documentation project checked out somewhere
+    in order to generate documented TLDs
+
+- if you see warnings about the antlr-generated sources, revert from SVN the file makumba-core/.classpath 
+(or manually: makumba-core Properties, Java-Build Path, Source, target/generated-sources/antlr, Ignore optional compile problems)
+
+3) Use makumba-core with a WTP project 
+   ===================================
+
+To run web projects that depend on your makumba checkout
+- install eclipse WTP
+http://download.eclipse.org/webtools/repository/juno/
+- from the servers view, configure a tomcat server
+- in order to use makumba directly as a dependency in a WTP project, go to the project properties->Deployment Assembly->Add->Project 
+	and add the makumba-core and makumba-jsp eclipse projects
+- run the project on the tomcat server using Run As/Run on server
+
+3) Run/debug makumba tests inside eclipse 
+   ====================================
+
+There is a "mvn tomcat7" launcher in makumba-parent/etc/eclipse-launchers. 
+Start that first, then you can start JSP tests like ListOQLTest, FormOQLTest, etc. 
+
+To make your own launchers:
+- right-click on makumba-jsp-test and go to Run As -> Maven build...
+- in the Goals field, enter 'tomcat7:run' (recommended) 'tomcat6:run' or jetty:run'. Note that only Jetty supports hot-redeploy in this set-up.
+- right-click on a test class like ListOQLTest and choose Run As/Junit test. Note that you will have to add on the Run configuration the VM argument 
+-Dcactus.contextURL=http://localhost:8080/tests
+
+
+
+
+== IntelliJ IDEA set-up
+
+- check out the project, don't let it be imported right away
+- if needed, configure build.properties
+- create a new project from the maven model based on the sources you checked out (select the makumba-parent directory)
