@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.makumba</groupId>
         <artifactId>makumba</artifactId>
-        <version>0.9.9-SNAPSHOT</version>
+        <version>0.9.9</version>
         <relativePath>../makumba-parent/pom.xml</relativePath>
     </parent>
 
