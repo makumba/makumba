@@ -149,7 +149,7 @@
                     <allowTimestampedSnapshots>true</allowTimestampedSnapshots>
                     <checkModificationExcludeList>build.properties</checkModificationExcludeList>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
-                    <tagBase>https://svn.code.sf.net/p/makumba/code/tags/makumba-</tagBase>
+                    <tagBase>https://svn.code.sf.net/p/makumba/code/tags</tagBase>
                     <providerImplementations>
                         <svn>javasvn</svn>
                     </providerImplementations>
