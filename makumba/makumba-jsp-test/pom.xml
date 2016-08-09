@@ -5,12 +5,12 @@
     <parent>
         <groupId>org.makumba</groupId>
         <artifactId>makumba</artifactId>
-        <version>0.9.10-SNAPSHOT</version>
+        <version>0.9.8-SNAPSHOT</version>
         <relativePath>../makumba-parent/pom.xml</relativePath>
     </parent>
 
     <artifactId>makumba-jsp-test</artifactId>
-  <version>0.9.7</version>
+  <version>0.9.8</version>
     <packaging>war</packaging>
 
     <name>makumba jsp integration tests</name>

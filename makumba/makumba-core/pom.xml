@@ -20,12 +20,12 @@
     <parent>
         <groupId>org.makumba</groupId>
         <artifactId>makumba</artifactId>
-        <version>0.9.10-SNAPSHOT</version>
+        <version>0.9.8-SNAPSHOT</version>
         <relativePath>../makumba-parent/pom.xml</relativePath>
     </parent>
 
     <artifactId>makumba-core</artifactId>
-  <version>0.9.7</version>
+  <version>0.9.8</version>
     <name>makumba core</name>
     <packaging>jar</packaging>
 
