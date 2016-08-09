@@ -1,0 +1,2 @@
+#$Id$
+name=char[260]	;parser should complain
