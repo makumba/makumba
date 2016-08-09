@@ -20,12 +20,11 @@
     <parent>
         <groupId>org.makumba</groupId>
         <artifactId>makumba</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>0.9.8-SNAPSHOT</version>
         <relativePath>../makumba-parent/pom.xml</relativePath>
     </parent>
 
     <artifactId>makumba-core</artifactId>
-  <version>0.9.8</version>
     <name>makumba core</name>
     <packaging>jar</packaging>
 
@@ -425,10 +424,4 @@
         </profile>
     </profiles>
 
-
-  <scm>
-      <connection>scm:svn:http://svn.code.sf.net/p/makumba/code/tags/makumba-0.9.8/makumba-core/</connection>
-      <developerConnection>scm:svn:http://svn.code.sf.net/p/makumba/code/tags/makumba-0.9.8/makumba-core/</developerConnection>
-      <url>scm:svn:http://svn.code.sf.net/p/makumba/code/tags/makumba-0.9.8/makumba-core/</url>
-  </scm>
 </project>
