@@ -1,4 +1,0 @@
-Applicable for the following data types: 
-* text: 'input' forces an <input> tag rather than a <textArea>
-* ptr: 'multiple' forces a multiple-select rather than a single-select, and check-boxes rather than radio-buttons
-* set: 'single' forces a single-select rather than a multiple-select, and radio-buttons rather than check-boxes.
