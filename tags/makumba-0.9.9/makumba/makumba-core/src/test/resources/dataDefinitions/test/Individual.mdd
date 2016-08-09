@@ -1,0 +1,15 @@
+!title= fullName()
+
+surname=not empty char[40]         ;Family Name
+name=not empty char[40]            ;First Name
+person=ptr test.Person
+someDate=date
+
+someusername=char[80]
+
+nameMin3CharsLong() { character_length(name) > 3 } : "Your name is not long enough!"
+fullName() { CASE WHEN surname IS NULL THEN name ELSE concat(name, ' ', surname) END } 
+
+length(name) {3..?} : "Your name is not long enough!"
+
+scoreNameMatch(char term) { case when name=term then 10 else case when name like '%term' then 8 else case when name like '%name%' then 7 end end end}

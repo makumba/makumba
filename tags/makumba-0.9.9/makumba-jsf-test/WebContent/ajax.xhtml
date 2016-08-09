@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:mak="http://www.makumba.org/jsf"
+	template="/WEB-INF/templates/default.xhtml">
+
+	<ui:define name="content">
+		<h:form id="f">
+		<h:messages />
+			<ul>
+				<mak:list from="test.Person p" id="bigList">
+					<li><h:outputText value="#{p.indiv.surname}" id="surnameOut" /></li>
+					<h:inputText value="#{p.indiv.id}" id="indivId">
+						<f:ajax render="@form" event="change"/>
+					</h:inputText><h:message for="indivId" errorClass="invalid" />
+					<mak:object from="p.indiv i" >
+					#{i.id}
+					</mak:object>
+
+					<li>
+					<ul>
+						<li><h:inputText id="surname" value="#{p.indiv.surname}">
+							<f:ajax render="@form" event="change" />
+						</h:inputText> <h:message for="surname" errorClass="invalid" /></li>
+						
+						<li><h:inputText id="surname2" value="#{p.indiv.surname}">
+							<f:ajax render="@form" event="change" />
+						</h:inputText> <h:message for="surname2" errorClass="invalid" /></li>
+						
+						
+						<mak:list from="p.speaks s" id="smallList">
+							<li><h:outputText value="#{s.name}" id="langOut" />
+							 <h:inputText id="langIn" value="#{s.name}">
+								<f:ajax render="@form" event="change" />
+							</h:inputText><h:message for="langIn" errorClass="invalid" /></li>
+						</mak:list>
+					</ul>
+					</li>
+				</mak:list>
+			</ul>
+		</h:form>
+
+		<a href="http://localhost:8080/makumba-jsf-test/ajax.jsf">here</a>
+
+
+	</ui:define>
+</ui:composition>

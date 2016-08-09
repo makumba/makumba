@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:mak="http://www.makumba.org/jsf"
+	template="/WEB-INF/templates/default.xhtml">
+
+	<ui:define name="content">
+
+		<h:form id="f">
+			<h:messages />
+			<mak:list from="test.Person p" id="bigList">
+				Name: #{p.indiv.name}<br />
+				Language set: #{p.speaks}<br />
+				<br />
+				<h:selectManyListbox value="#{p.speaks}" id="selectMany">
+					<mak:list from="test.Language l" id="smallList">
+						<f:selectItem itemLabel="#{l.name}" itemValue="#{l.id}" id="selectGuy" />
+					</mak:list>
+				</h:selectManyListbox>
+				<hr />
+
+			</mak:list>
+			
+			<h:commandButton value="submit" />
+			
+			</h:form>
+	</ui:define>
+</ui:composition>
