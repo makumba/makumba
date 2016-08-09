@@ -1,0 +1,1 @@
+a dummy file to force makumba generate hibernate classes and mappings under this section of the classpath

@@ -1,0 +1,5 @@
+title = not null char[255]                 ;
+description = text                         ;
+admins = set user.User                     ;
+threadCount = int                          ;
+postCount = int                            ;

@@ -1,0 +1,49 @@
+!type.yesNo=int{"No"=0, "Yes"=1}
+!type.genTyp=int{"Female"=0, "Male"=1}
+
+indiv= unique fixed not null ptr test.Individual
+
+birthdate=date		 ;Birthdate
+gender=genTyp		 ;Gender
+all=char[25]             ;test a reserved word
+field=char[80]           ;another reserved word
+
+militarySucksAndEverybodyKnowsItButDoesNotSpeakOutLoudAboutIt=yesNo           ;A very long fieldname
+driver=yesNo		 ;Driving Licence
+
+hobbies=text             ;Hobbies
+comment=text		 ;Comments
+
+favouriteToy= ptr test.AllTheToysThatThisOrganisationPossiblyHasAtTheirDisposalForTheirMembers  ;Favourite toy in a long tablename
+
+brother= ptr test.Person
+
+extraData=ptr
+extraData->something=char[20]
+extraData->what=int
+
+#for uniqness tests:
+uniqInt=unique int		;test int uniqness
+uniqChar=unique char[33]	;test char uniqness
+uniqDate=unique date		;test date uniqness
+uniqPtr=unique ptr test.Language	;test ptr uniqness
+
+
+speaks=set test.Language
+intSet= set int {"a"=0, "b"=1, "c"=2 }
+charSet=set char{ "d", "e", "f" }
+
+address=set			 ;Addresses
+  address->!title=description
+  address->description=char[30]	;Description (home address, study-time address, ...)
+  address->streetno=char[100]	      ;Street
+  address->zipcode=char[10]		;Zipcode
+  address->city=char[40]		;City
+  address->country=char[20]             ;Country
+  address->phone=char[20]		;Phone
+  address->fax=char[20]			;Fax
+  address->email=char[40]		;E-Mail
+  address->usagestart=date		;Use from
+  address->usageend=date		;Use till
+  address->sth=ptr
+  address->sth->aaa=char[20]

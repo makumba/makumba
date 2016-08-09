@@ -1,0 +1,13 @@
+!!!The Makumba controller
+
+The Makumba controller is a component running in the 'servlet container'. When a request for a makumba page enters the servlet container, the controller will intercept the request, and perform its "controller" activities (cfr. the model-view-controller pattern) :
+
+* [authentication|Authentication]: check if a user is allowed to access the web-application as a whole
+* [authorisation|Authorisation]: check if the user is authorised to execute the specific page
+* [form submission handling|FormSubmissionHandling]: in case of a form submission, perform validation (implicit and explicit), execute form-specific business logic and handle form response
+* [Java Business Logic|JavaBusinessLogic]
+* [error handling|ErrorHandling]: if an error occurs (be it a programmer error or an internal error), handle the error by e.g. displaying the appropriate page
+* [Makumba attributes|MakumbaAttributes]
+
+
+%%(display:none;)[Category Documentation]%%

@@ -1,0 +1,101 @@
+
+
+
+
+<html>
+<head>
+<title>Testing In SET with ptrs</title>
+</head>
+<body>
+
+
+<b>Data</b><br/>
+
+   English (3vyr0id) 
+  
+       
+    
+  
+
+   French (3vyr0ie) 
+  
+    
+      
+  
+
+   German (5uzv2hj) 
+  
+    
+      
+  
+
+   Italian (3vyr0i8) 
+  
+    
+      
+  
+
+   Spanish (5uzv2hd) 
+  
+    
+      
+  
+
+<br/>
+
+<b>Variables</b><br />
+singlePtr: 3vyr0id<br />
+allPtrsString: '3vyr0id', '3vyr0ie', '5uzv2hj', '3vyr0i8', '5uzv2hd'<br /><br />
+allPtrsVector: [3vyr0id, 3vyr0ie, 5uzv2hj, 3vyr0i8, 5uzv2hd]<br /><br />
+
+<table border="1">
+  <tr>
+    <th>Left hand</th>
+    <th>Right hand</th>
+    <th>Result</th>
+  </tr>
+
+  <tr>
+    <td>Ptr label</td>
+    <td>Single ptr value, hard-coded ('5uzv2hd')</td>
+    <td> Spanish </td>
+  </tr>
+
+  <tr>
+    <td>Ptr label</td>
+    <td>Multiple ptr value, hard-coded ('3vyr0id', '3vyr0ie', '5uzv2hj', '3vyr0i8', '5uzv2hd')</td>
+    <td> English  French  German  Italian  Spanish </td>
+  </tr>
+
+  <tr>
+    <td>Ptr label</td>
+    <td>Single ptr value, parameter $singlePtr (3vyr0id)</td>
+    <td> English </td>
+  </tr>
+
+  <tr>
+    <td>Ptr label</td>
+    <td>Multiple ptr value, vector, parameter $allPtrsVector ([3vyr0id, 3vyr0ie, 5uzv2hj, 3vyr0i8, 5uzv2hd])</td>
+    <td> English  French  German  Italian  Spanish </td>
+  </tr>
+
+  <tr>
+    <td colspan="4">&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td>Single ptr value, hard-coded ('5uzv2hj')</td>
+    <td>Ptr label</td>
+    <td> German </td>
+  </tr>
+
+  <tr>
+    <td>Single ptr value, parameter $singlePtr (3vyr0id)</td>
+    <td>Ptr label</td>
+    <td> English </td>
+  </tr>
+
+</table>
+
+</body>
+</html>

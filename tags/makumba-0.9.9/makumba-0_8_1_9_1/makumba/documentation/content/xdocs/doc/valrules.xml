@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <!--
+    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements. See the NOTICE
+    file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file
+    to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+    the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+    applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language
+    governing permissions and limitations under the License.
+  -->
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
+<document>
+  <header>
+    <title>Makumba Documentation - Validation Rules</title>
+  </header>
+  <body>
+  
+    <p>Validation rules are defined inside a data definition, and allow Makumba to automatically validated form data
+    input.</p>
+    <p>The general syntax of a validation rule definition is as follows:</p>
+    <source>[validation rule name] : [validation rule] : [error message]</source>
+    
+    <section><title>Validation rule name</title>
+    <p>The validation rule name is an identifier which should be unique. The exact usage is not yet specified, but
+    it could be used in the future to centralise error messages or provide translations into other languages, etc.</p>
+    </section>
+    
+    <section><title>Validation rule</title>
+    <p>The validation rule specifies what should be validated, and can be one of the following</p>
+    <source>[range validation | string length | regular expression | comparison]</source>
+    
+    <section id="range"><title>Number range rule</title>
+    <p>The range definition rule applies for <code>Number</code> types, i.e. <em>int</em> and <em>real</em>. The
+    [validation rule] is defined as:</p>
+    <source>[fieldName]%range = [1..10]</source>
+    <p>Using <code>?</code> allows to keep one parameter unbound, which will default to java.lang.Integer.MIN_VALUE
+    and java.lang.Integer.MAX_VALUE, respectively, i.e. +/- 2<sup>31</sup>-1.</p>
+    <p>To require that the age needs to be between 12 and 99:</p>
+    <source>age%range = [12..99] : Age must be between 12 and 99!</source>
+    <p>To define that we need to be at least 5 year old, but without any upper limit:</p>
+    <source>age%range = [5..?] : Age must be at least 5!</source>
+    </section>
+
+    <section id="stringLength"><title>String length rule</title>
+    <p>The length definition rule is very similar to the range definition, but applies for <code>string</code> types, i.e. <code>char</code> and <code>text</code>.
+    The [validation rule] is defined as:</p>
+    <source>[fieldName]%length = [1..10]</source>
+    <p>Using <code>?</code> allows to keep one parameter unbound, which will default to a minimum length of 0 and a
+    maxium length of 255</p>
+    <p>To define that the CV needs to be at least 100 characters, define:</p>
+    <source>cv%length = [100..?] : CV must be of decent length!</source>
+    </section>
+
+    <section id="regexp"><title>Regular expression rule</title>
+    <p>The string regular expression rule applies for <code>string</code> types, primarily for <code>char</code>,
+    but also for <code>text</code>. The [validation rule] is defined as:</p>
+    <p>
+    <code>[fieldName]%matches = regular expression</code></p>
+    <p>Regular expressions must be valid regular expressions in Java, for more details please refer to the <a
+      href="ext:javaregexp">specification</a> and <a
+      href="ext:javaregexptutorial">tutorial</a>.</p>
+    <p>To compare if a field contains a valid e-mail address, define:</p>
+    <p>
+    <code>email%matches = .+@.+\.[a-z]+ : Email address is not valid!</code></p>
+    </section>
+
+  
+    <section id="comparison"><title>Comparison rule</title>
+    <p>This rule allows to compare a field to a constant value or simple function calls.</p>
+    <p>The following constants are currently available:</p>
+    <table>
+      <tr>
+        <th>Constants</th>
+        <th>Description</th>
+        <th>Valid</th>
+      </tr>
+      <tr>
+        <td>$now</td>
+        <td>The current date and time.</td>
+        <td rowspan="2"><code>date</code> types</td>
+      </tr>
+      <tr>
+        <td>$today</td>
+        <td>The current date, time set to 00:00.</td>
+      </tr>
+    </table>
+    
+    <p>The following functions are currently available:</p>
+    <table>
+      <tr>
+        <th>Function</th>
+        <th>Description</th>
+        <th>Valid</th>
+      </tr>
+      <tr>
+        <td>$date(.., .., .., .., .., ..)</td>
+        <td>Constructs a date.<br />
+        The function takes up to six arguments, for day, month, year, hours, minutes and seconds. If less than six
+        arguments are passed, the missing values will be automatically set to the current date.<br />
+        $now is available as a constant for the current date value, and + and - operators can be used to modify that
+        value. e.g. <source>date($now,$now,$now - 5)</source> evaluates as the current date 5 years
+        ago.</td>
+        <td><code>date</code> types</td>
+      </tr>
+      <tr>
+        <td>lower(..)</td>
+        <td>Converts a string to lower case.</td>
+        <td rowspan="2"><code>String</code>, i.e. 'char' and 'text' types</td>
+      </tr>
+      <tr>
+        <td>upper(..)</td>
+        <td>Converts a string to upper case.</td>
+      </tr>
+    </table>
+    
+    <p>Valid comparison operators are the ones defined in Java:</p>
+    <table>
+      <tr>
+        <th>Operator</th>
+        <th>Meaning</th>
+      </tr>
+      <tr>
+        <td>==</td>
+        <td>equal</td>
+      </tr>
+      <tr>
+        <td>!=</td>
+        <td>not equal</td>
+      </tr>
+      <tr>
+        <td>&lt;</td>
+        <td>less than</td>
+      </tr>
+      <tr>
+        <td>&gt;</td>
+        <td>less than</td>
+      </tr>
+      <tr>
+        <td>=&lt;</td>
+        <td>less than or equal</td>
+      </tr>
+      <tr>
+        <td>&gt;=</td>
+        <td>greater than or equal</td>
+      </tr>
+    </table>
+
+    <p>To compare if someone is at least 15 years old, define the following validation rule:</p>
+    <source>minimumAge%compare = birthdate >= date($now,$now,$now - 15) : You have to be at least 15 years old!</source>
+
+    <p>To ensure that a field doesn't contain only lower-case values, define this rule:</p>
+    <source>nameNotAllLower%compare = lower(name) != name : Your name must not contain only lower-case letters!</source>
+
+    <p>Two fields can be compared in a similar way</p>
+    <source>graduationCheck%compare = birthdate &lt; graduationDate : You cannot finish school before your birthdate!</source>
+    
+    </section>
+
+    <section><title>Multi-field uniqueness definition</title>
+    <p>Similar to the <a href="datadef.html#FieldAttributes"><em>unique</em> field attribute</a>, you can also define multi-field
+    uniqueness contraints. These constraints can even span over several data definitions, if they are related via
+    pointers.</p>
+
+    <p>Multi-field uniqueness can be defined as follows</p>
+    <source>uniqueAgeEmail%unique = age, email : the combination of age and email must be unique! </source>
+    
+    <note class="internals">If the fields are in the same data definition, the uniqueness definition will
+    translate into a database level multi-field key and uniqueness will be enforced there.<br />
+    Otherwise, Makumba will issue a query checking the uniqueness before new or edit operations.</note>
+
+</section>
+</section>
+<section id="error"><title>Error message</title>
+    <p>The error message that will be displayed if the validation fails.</p>
+</section>  
+
+  </body>
+</document>

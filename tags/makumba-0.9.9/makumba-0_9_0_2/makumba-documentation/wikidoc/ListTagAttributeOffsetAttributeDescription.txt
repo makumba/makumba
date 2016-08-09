@@ -1,0 +1,1 @@
+the offset of the result to show (0 for starting from the first result)

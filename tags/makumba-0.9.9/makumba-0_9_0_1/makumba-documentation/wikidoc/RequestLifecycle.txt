@@ -1,0 +1,11 @@
+!!!The makumba request lifecycle
+
+makumba's request lifecycle is orchestrated by the makumba controller, which is a component running in the servlet container (as a filter). When a request for a makumba page enters the servlet container, the controller will intercept the request, and perform its "controller" activities (cfr. the model-view-controller pattern) using the following lifecycle:
+
+# attributes handling: compute the [makumba Attributes] for the request
+# [authentication|Authentication]: check if a user is allowed to access the web-application as a whole
+# [authorisation|Authorization]: check if the user is authorised to execute the specific page
+# [form submission handling|FormSubmissionHandling]: in case of a form submission, perform validation (implicit and explicit), execute form-specific business logic and handle form response
+# [error handling|ErrorHandling]: if an error occurs (be it a programmer error or an internal error), handle the error by e.g. displaying the appropriate page
+
+%%(display:none;)[Category Documentation]%%

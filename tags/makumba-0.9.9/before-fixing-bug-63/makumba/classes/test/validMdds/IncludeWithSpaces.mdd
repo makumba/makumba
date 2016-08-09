@@ -1,0 +1,18 @@
+#testcase for bug 672
+!include=test.validMdds.Included
+!include= test.validMdds.Included
+!include=  	test.validMdds.Included
+!include =test.validMdds.Included
+!include	 =test.validMdds.Included
+!include = test.validMdds.Included
+ !include = test.validMdds.Included
+	 !include =test.validMdds.Included
+
+bla=ptr
+  bla->!include = test.validMdds.Included
+  bla->foo=char[22]	; some char field
+
+#do we really want also descriptions after semicolons:
+#perm_address=ptr
+#  perm_address->!include = test.validMdds.Included; including default types
+

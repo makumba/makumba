@@ -1,0 +1,767 @@
+/******************************* standard stuff *************************************/
+
+body{
+  font-family: arial, helvetica, sans-serif;
+  font-size:   13px;
+  line-height: 18px;
+  color: #666666;
+}
+
+h1 { font-size: 200%; letter-spacing: -2px; margin-bottom: 20px; }
+
+h2 { font-size: 180%; letter-spacing: -1px; margin-bottom: 20px; }
+
+h3 { font-size: 150%; letter-spacing: -1px; margin-bottom: 20px; }
+
+h4 { font-size: 120%; letter-spacing: -1px; margin-bottom: 20px; font-weight:bold;}
+
+a { 
+  outline:none;
+  color: #B9D420;
+  text-decoration: none;
+  border-bottom: 1px dotted #B9D420;
+}
+a:visited { color: #B9D420; }
+a:hover { 
+  /*color: #ffffff; 
+  background-color:#ff5398;*/
+  color: #009900;
+  border-bottom: 1px solid; 
+}
+
+strong {
+  font-weight:bold;
+}
+
+em {
+  font-style: italic;
+}
+
+p {
+  margin: 0.5em 0;
+  padding-bottom: 0.5em;
+}
+
+blockquote {
+    color:#888888;
+    text-indent:37px;
+    background:transparent url(../images/generic/blockquote.png) top left no-repeat;
+}
+
+cite {
+  font-weight: bold;
+}
+
+pre {
+  padding: 10px;
+  font-size: 11px;
+  background-color:#f7f7f7;
+  padding:2%;
+  border:1px solid #e3e3e3;
+  margin:0;
+  line-height:140%;
+ 
+  /* make lines wrap in pre tag - browser specific so not valid css - lousy browsers */
+  white-space: pre-wrap;       /* css-3 */
+  white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+  white-space: -pre-wrap;      /* Opera 4-6 */
+  white-space: -o-pre-wrap;    /* Opera 7 */
+  word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+
+code {
+  font-family: monaco,"lucida console","courier new",courier,serif;
+  font-size-adjust: none;    
+  font-stretch: normal;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: normal;
+  line-height: normal;
+}
+
+/*********************************** forms *****************************************/
+
+label { font-weight: bold; }
+
+input, select {
+  width:100px;
+}
+
+input, textarea, select {
+  border:1px solid #aaaaaa;
+  padding:2px;
+  background:#ffffff url(../images/generic/inputBg.gif) top left no-repeat;
+  margin-top:2px;
+}
+
+input.checkbox {
+  width:15px;
+  background:none;
+  border:0;
+}
+
+input.radio_button {
+  width:15px;
+  background:none;
+  border:0;
+}
+
+input.small, select.small {
+  width:50px;
+}
+
+input.large, select.large {
+  width:200px;
+}
+
+input.extra_large, select.extra_large {
+  width:300px;
+}
+
+input:hover, textarea:hover, select:hover {
+  border:1px solid #888888;
+}
+
+input:active, textarea:active, select:active {
+  border:1px solid #888888;
+}
+
+input.submit {
+  background:#ffffff url(../images/generic/submitBg.png) -20px 0 no-repeat;
+  color:#ffffff;
+}
+
+input.submit:hover {
+  
+  cursor: pointer;
+}
+
+textarea {
+  width:300px;
+  height: 200px;
+}
+
+textarea.deep {
+  height:350px;
+}
+
+textarea.shallow {
+  height:50px;
+}
+
+fieldset {
+  background:#f7f7f7;
+  padding:2%;
+  border:1px solid #e3e3e3;
+  margin:0;
+}
+
+legend {
+  font-weight:bold;
+  font-size: 120%; 
+  letter-spacing: -1px;
+  color:#666666;
+}
+
+/******************************** images ****************************************/
+
+img {
+  padding:2px;
+  border: 2px solid #cccccc;
+  background-color: #eeeeee;
+}
+
+/******************************** tables ***************************************/
+
+table {
+  border: 1px solid #999999;
+}
+
+thead {
+  color: #ffffff;
+  background: #999999 url(../images/generic/theadBg.jpg) top left repeat-x;
+  border-bottom: 1px solid #999999;
+}
+
+tr.odd { background-color: #eeeeee; }
+
+th, td {
+  padding:3px;
+  border-right: 1px solid #999999;
+}
+
+/********************************** lists **************************************/
+
+ol li {
+  list-style-type: decimal;
+}
+
+ul li {
+  list-style-type: disc;
+}
+
+ol, ul, dl {
+  padding-left: 30px;
+}
+
+dd {
+  margin:0 0 4px 0;
+  background-color: #eeeeee;
+  padding:10px;
+}
+
+/********************************* LiveValidation *************************************/
+
+.LV_valid {
+    color:#00CC00;
+}
+	
+.LV_invalid {
+	color:#CC0000;
+}
+	
+.LV_validation_message{
+    font-weight:bold;
+    margin:0 0 0 5px;
+}
+    
+.LV_valid_field,
+input.LV_valid_field:hover, 
+input.LV_valid_field:active,
+textarea.LV_valid_field:hover, 
+textarea.LV_valid_field:active,
+.fieldWithErrors input.LV_valid_field,
+.fieldWithErrors textarea.LV_valid_field {
+    border: 1px solid #00CC00;
+}
+    
+.LV_invalid_field, 
+input.LV_invalid_field:hover, 
+input.LV_invalid_field:active,
+textarea.LV_invalid_field:hover, 
+textarea.LV_invalid_field:active,
+.fieldWithErrors input.LV_invalid_field,
+.fieldWithErrors textarea.LV_invalid_field {
+    border: 1px solid #CC0000;
+}
+
+/************************************ HELPERS ***************************************/		
+
+.floatRight {
+  float:right;
+}
+
+.floatLeft {
+  float:left;
+}
+
+.clearBoth {
+  clear:both;
+}
+
+.clearLeft {
+  clear:left;
+}
+
+.clearRight {
+  clear:right;
+}
+
+.inline {
+  display:inline;
+}
+
+.block {
+  display:block;
+}
+
+.hidden {
+  display:none;
+}
+
+.invisible {
+  visibility:hidden;
+}
+
+.visible {
+  visibility:visible;
+}
+
+/** margin helpers (useful for floated images) **/
+
+.marginTop10 {
+  margin-top:10px;
+}
+
+.marginRight10 {
+  margin-right:10px;
+}
+
+.marginBottom10 {
+  margin-bottom:10px;
+}
+
+.marginleft10 {
+  margin-left:10px;
+}
+
+
+
+
+
+
+
+body {
+  background-color: #999999;
+  border-top:7px solid #999999;
+}
+
+#bg {
+  background-color: #f9f9f9;
+  padding-top:20px;
+}
+
+/********************* YAHOO USER INTERFACE GRIDS ELEMENTS *************************/
+
+/* see http://developer.yahoo.com/yui/grids/ */
+
+/* yui doc4 container
+   (don't use any positioning stuff for this, just colors etc) */
+#doc {
+  background-color:transparent;
+}
+
+/* yui hd header container 
+   (don't use any positioning stuff for this, just colors etc)
+   use an inner container to add any padding as this will screw up layout*/
+#hd { 
+  background-color: transparent; 
+}
+
+/* yui ft footer container 
+   (don't use any positioning stuff for this, just colors etc)
+   use an inner container to add any padding as this will screw up layout*/
+#ft { 
+  background-color: transparent;
+  text-align:center;
+  padding: 10px 0;
+  color: #cccccc;
+  /*color: #B9D420;*/
+}
+
+
+/************************ MY ELEMENTS ******************************************/
+
+/** header stuff *********************/
+
+
+/* navigation for head (set up like tabs) */
+#head_nav {
+ text-align:right;
+  padding:0;
+  width:auto;
+  margin:0 10px 0 0;
+}
+
+#head_nav li {
+  float: right;
+  margin: 0 0 0 1px;
+  list-style: none;
+}
+
+#head_nav a {
+  display: block;
+  padding: 0 1em 0.5em 1em;
+  text-align:center;
+  vertical-align:middle;
+  font-size:120%;
+  text-decoration: none;
+  border:0;
+  /*background:#eeeeee;*/
+  
+  font-weight: bold;
+}
+
+#head_nav a:visited { }
+#head_nav a:hover { 
+    /*background:#dddddd;*/
+}
+
+#hd h1 a {
+  text-indent:-5000px;
+  width:272px;
+  height:40px;
+  background:transparent url(../images/bgs/logo.gif) top left no-repeat;
+  margin:0 0 10px 0;
+  display:block;
+  border:0;
+}
+
+#hd h2 {
+  text-indent:-5000px;
+  width:349px;
+  height:39px;
+  /*float:left;*/
+  margin:0 0 0 0;
+  background:transparent url(../images/bgs/strapline.gif) top left no-repeat;
+}
+
+/** content stuff *********************/
+
+#topMain {
+  height:30px;
+  background:transparent url(../images/bgs/topMainBg.gif) top left no-repeat;
+  clear:both;
+}
+
+#bottomMain {
+  height:30px;
+  background:transparent url(../images/bgs/bottomMainBg.gif) top left no-repeat;
+}
+
+#main {
+  margin:0;
+  background:transparent url(../images/bgs/mainBg.gif) top left repeat-y;
+}
+
+.container_with_padding {
+  padding: 0px 30px;
+}
+
+#main li {
+  padding: 2px;
+  width:620px;
+  margin: 0 auto;
+}
+
+li.odd {
+  background:#FFE2C4;
+}
+
+.crumbs {
+  margin:0 0 20px 0;
+}
+
+cite {
+  color:#FF9422;
+}
+
+.last {
+	margin-bottom:0;
+}
+
+/** forms *****/
+
+.vote_button {
+  width:inherit;
+}
+
+input, select {
+  padding:3px;
+}
+
+input.radio_button {
+  margin-left:50px;
+}
+
+input.submit {
+  width: inherit;
+  background:#cccccc;
+  border:0;
+  border-bottom: 1px solid #999999;
+  border-right: 1px solid #999999;
+}
+
+textarea {
+  width:400px;
+}
+
+textarea.shallow {
+  height:100px;
+}
+
+
+/** footer stuff *********************/
+
+#foot_nav {
+	margin:0;
+	padding:0;
+}
+
+#foot_nav li {
+  display: inline;
+  list-style: none;
+  margin:0 0.5em;
+}
+
+
+/** megaFooter stuff *********************/
+
+#megaFooter{
+	margin:0;
+	padding:10px 5px 5px 5px;
+	background-color:#999999;
+	color:#ffffff;
+	text-align:center;
+}
+
+/** pagination ***********************/
+
+.pagination {
+  float:right;
+}
+
+.pagination a {
+  border: 1px solid #FFE2C4;
+  color: #FF9422;
+}
+
+.pagination a:hover, .pagination a:active {
+  border: 1px solid #FF9422;
+  color: #000;
+}
+
+.pagination span.current {
+  border: 1px solid #FF9422;
+  background-color: #FF9422;
+  color: #FFF;
+}
+
+.pagination span.disabled {
+
+}
+
+/** fonts ***************************/
+
+h1, h2, h3 {
+  color: #B9D420;
+}
+
+a { 
+  color: #B9D420;
+  border-bottom: 1px dotted #B9D420;
+}
+a:visited { color: #B9D420; }
+a:hover { 
+  color: #009900;
+  border-color:#009900;
+}
+
+/** specific ************************/
+
+a.gotoTop {
+	font-size:12px;
+	font-weight:normal;
+	float:right;
+	margin-top:3px;
+}
+
+
+
+input.sayHello {
+	width:100px;
+}
+
+#main h4 {
+	margin-bottom:10px;
+}
+
+#documentation h2, #results h2 {
+	padding:5px;
+	background: #B9D420;
+	color: #666666;
+}
+
+.section h3, #documentation h3 {
+	padding:3px;
+	background: #eeeeee;
+}
+
+.section h4, #documentation h4 {
+	border-top: 1px solid #eeeeee;
+	border-bottom: 1px solid #eeeeee;
+	margin-bottom:10px;
+	padding:3px 0;
+}
+
+form label {
+	display:block;
+}
+
+#hideForTests {
+    position:absolute;
+    top:-5000px;
+    left:-5000px;
+    visibility:hidden;
+}
+
+a.downloadButton {
+	border:0;
+	text-indent:-5000px;
+	display:block;
+	height:48px;
+	width:270px;
+	padding:0;
+	margin:0 auto;
+	background:transparent url(../images/downloadButton.gif) 0px 0px no-repeat;
+}
+
+a.downloadButton:hover {
+	background-position: 0px -60px;
+	border:0;
+}
+
+object.adsense {
+	width: 728px;
+	height:90px;
+	border:0;
+	padding:0;
+	margin:0;
+	overflow:hidden;
+}
+
+
+
+.date {
+	
+	float:left;
+	text-align:center;
+	width:50px;
+	background:#B9D420;
+	padding:10px 0;
+	margin-right:10px;
+}
+
+.date strong {
+  display:block;
+	font-size:200%;
+}
+
+.chatterBox {
+  float:left;
+	margin-bottom:20px;
+	width:625px;
+}
+
+hr.divider {
+	border:0;
+	border-top:1px solid #cccccc;
+	padding:0;
+	margin:15px 0 20px 0;
+	background:transparent;
+}
+
+
+p.update {
+	padding:10px;
+	background:#F9F9F9;
+	border: 1px solid #cccccc;
+	margin-bottom:15px;
+}
+
+/* support boxes *************/
+
+#main .supportBox {
+	float:left;
+	margin:0 0 20px 60px;
+	width:160px;
+}
+
+#main .supportBox ul {
+	margin-top:5px;
+	padding:0;
+
+}
+
+#main .supportBox ul li {
+	list-style:none;
+	width:160px;
+}
+
+#main .supportBox .versions {
+	display: none;
+	
+}
+
+/* browsers */
+
+.firefox, .ie6, .ie7, .safari, .opera, .camino, .netscape, .konqueror {
+	text-indent: 20px;
+	background-color: #ffffff;
+	background-position: 0 2px;
+	background-repeat: no-repeat;
+}
+
+.firefox {
+	background-image: url(../images/generic/browsers/firefox.gif);
+}
+
+.ie6 {
+	background-image: url(../images/generic/browsers/ie.gif);
+}
+
+.ie7 {
+	background-image: url(../images/generic/browsers/ie.gif);
+}
+
+.safari {
+	background-image: url(../images/generic/browsers/safari.gif);
+}
+
+.opera {
+	background-image: url(../images/generic/browsers/opera.gif);
+}
+
+.camino {
+	background-image: url(../images/generic/browsers/camino.gif);
+}
+
+.netscape {
+	background-image: url(../images/generic/browsers/netscape.gif);
+}
+
+.konqueror {
+	background-image: url(../images/generic/browsers/konqueror.gif);
+}
+
+/*** donation ***/
+#megaFooter input.donate {
+	width:62px;
+	height:31px;
+	padding:0;
+	border:0;
+	background:transparent;
+}
+
+#megaFooter img {
+	padding:0;
+	border:0;
+}
+
+
+
+/*** addthis ***/
+
+a#addThis img, div#addthis_dropdown15 img {
+	padding:0;
+	border:0;
+}
+
+
+a#addThis  {
+	margin: 0 0 0 0;
+	
+}
+
+div#addthis_dropdown15 a, a#addThis {
+	padding:0;
+	border:0;
+}
+
+div#addthis_dropdown15 table, 
+div#addthis_dropdown15 tr, 
+div#addthis_dropdown15 th, 
+div#addthis_dropdown15 td  {
+	padding:0;
+	border:0;
+}

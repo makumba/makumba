@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE securityfilter-config PUBLIC
+    "-//SecurityFilter.org//DTD Security Filter Configuration 2.0//EN"
+    "http://www.securityfilter.org/dtd/securityfilter-config_2_0.dtd">
+
+<securityfilter-config>
+
+   <security-constraint>
+      <web-resource-collection>
+         <web-resource-name>Admin Page</web-resource-name>
+         <url-pattern>/admin/*</url-pattern>
+      </web-resource-collection>
+      <auth-constraint>
+         <role-name>admin</role-name>
+      </auth-constraint>
+   </security-constraint>
+
+   <security-constraint>
+      <web-resource-collection>
+         <web-resource-name>Secure Page</web-resource-name>
+         <url-pattern>/generatedCode/*</url-pattern>
+      </web-resource-collection>
+      <auth-constraint>
+         <role-name>admin</role-name>
+      </auth-constraint>
+   </security-constraint>
+
+   <login-config>
+      <auth-method>FORM</auth-method>
+      <form-login-config>
+         <form-login-page>/welcome.jsp</form-login-page>
+         <form-error-page>/loginError.jsp</form-error-page>
+         <form-default-page>/welcome.jsp</form-default-page>
+      </form-login-config>
+   </login-config>
+
+   <!-- start with a Catalina realm adapter to wrap the Catalina realm defined below -->
+   <realm className="org.securityfilter.realm.catalina.CatalinaRealmAdapter" />
+
+   <!-- this is a Catalina realm that will be adapted to the securityfilter by the realm defined above -->
+   <realm className="org.makumba.demo.UserRealm" />
+
+</securityfilter-config>

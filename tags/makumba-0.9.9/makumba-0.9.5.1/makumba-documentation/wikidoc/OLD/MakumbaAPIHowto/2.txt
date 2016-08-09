@@ -1,0 +1,59 @@
+[{TableOfContents}]
+
+!!!Introduction
+makumba has a Java API that makes it possible to perform various database-related operations.
+
+!!![org.makumba.Pointer|api:Pointer]
+A makumba [org.makumba.Pointer|api:Pointer] is an object that uniquely identifies a database record. It can have different forms:
+* the internal form, which is used by makumba to access the object in the database
+* the Java form, as Pointer object
+* the external form, which is a 7 character long string that uniquely identifies the record and its type. This form is mostly used in JSP pages, as CGI parameters.
+
+For instance, let’s consider the following JSP page listProjects.jsp:
+
+%%prettify
+{{{
+<%@ taglib uri="http://www.makumba.org/presentation" prefix="mak"%>
+
+<mak:list from="company.Project p" where="p = $project">
+    <mak:value expr="p.name" />, pointer: <mak:value expr="p" /><br />
+    <mak:value expr="p" var="projectPointer" />
+</mak:list>
+}}}%%
+
+This page can then be called with the following URI: %%Code listProjects.jsp?projects=nxdcdc2%%
+
+%%code nxdcdc2%% is the external form of the makumba Pointer to a specific record.
+
+The %%Code <mak:value expr="p" />%% will also print this string, whereas the second [mak:value|ValueTag] will not result in any printed result, but will make "projectPointer" accessible as a Java page attribute inside the [mak:list|ListTag], having Pointer as its type. It could then be used by casting it to a Pointer, however, this is rarely needed, since the "project" page parameter can be used in all makumba tags through the %%Code $project%% attribute.
+
+
+!!![org.makumba.Attributes|api:Attributes]
+
+The makumba [Attributes|api:Attributes] are a facade to a number of in-memory attributes coming from the form submission, the session, or the business logic.
+
+!! Request submission Attributes
+These are the GET parameters that are submitted along with the form handled by a form handler. They can be either the form fields (however, those are accessible in the Dictionary of the handler) or additional hidden fields.
+
+!! Session Attributes
+Those are Attributes bound to the user session.
+
+!! Business Logic attributes
+It is possible to define special methods in the Business Logic of the following kind:
+
+%%prettify
+{{{
+public Object find_sessPtr_generalPerson(Attributes a, Database db) throws LogicException {
+  // code to lookup the Pointer of the Person based on the Attributes
+}
+}}}%%
+
+This mechanism is most useful for the legacy authentication & authorization mechanism using the [mak:login|LoginTag} and [mak:logout|LogoutTag].
+
+
+
+
+!!Transaction
+
+
+%%(display:none;)[Category Usage]%%

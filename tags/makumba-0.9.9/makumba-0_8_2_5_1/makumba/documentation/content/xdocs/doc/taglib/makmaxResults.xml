@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd"><document>
+    <header>
+        <title>mak:maxResults() function documentation</title>
+    </header>
+    <body>
+        <section id="description">
+            <title>Description</title>
+            <p class="tagDescription">FIXME: no description for this tag in taglib-documented.xml!</p>
+        </section>
+        <section id="attributes">
+            <title/>
+        </section>
+        <section id="example">
+      
+          <title>Example</title>      <source>
+      <![CDATA[
+      ]]>
+  </source>    </section>
+        <section id="seeAlso">
+            <title>See also</title>
+            <ul>
+                <li>
+                    <a href="/doc/taglib/makcount.html">mak:count</a>
+                </li>
+                <li>
+                    <a href="/doc/taglib/makmaxCount.html">mak:maxCount</a>
+                </li>
+                <li>
+                    <a href="/doc/taglib/maklastCount.html">mak:lastCount</a>
+                </li>
+            </ul>
+        </section>
+    </body>
+</document>

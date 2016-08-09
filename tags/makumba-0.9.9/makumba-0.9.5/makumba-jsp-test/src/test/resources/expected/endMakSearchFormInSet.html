@@ -1,0 +1,58 @@
+
+
+<html>
+<head>
+  <link rel="StyleSheet" type="text/css" media="all" href="/tests/mak-tools/makumbaResources/css/makumba.css"/>
+<title>Test Search Form, ptrs/intEnum in SETs</title>
+<link rel="StyleSheet" href="../style/style.css" type="text/css" media="all"/>
+</head>
+<body>
+
+
+
+
+<span class="makumbaResponder makumbaSuccess">Search done!</span>
+
+<form action="#results" id="_form1" method="GET" name="searchPerson" >
+  gender  <SELECT MULTIPLE NAME="gender" SIZE="5" id="gender_form1" >
+	<OPTION VALUE="0" SELECTED>Female</OPTION>
+	<OPTION VALUE="1" SELECTED>Male</OPTION>
+</SELECT>  <br/>
+  brother  <SELECT MULTIPLE NAME="brother" SIZE="5" id="brother_form1" >
+	<OPTION VALUE="53euuky">addToNewPerson</OPTION>
+	<OPTION VALUE="34dqsls" SELECTED>bart van Vandervanden</OPTION>
+	<OPTION VALUE="34dqslv">john von Neumann</OPTION>
+</SELECT>  <br/>
+  <input type="submit" value="search">
+<input type="hidden" name="__makumba__responder__" value="1005158539">
+</form>
+
+
+  <hr/>
+  <b>Search form attributes:</b><br/>
+  searchPersonDone: true<br/>
+  searchPersonFrom: test.Person o<br/>
+  searchPersonVariableFrom: <br/>
+  searchPersonWhere:  (o.brother=$brother)  AND  (o.gender IN SET ($gender)) <br/>
+  searchPersonQueryString: brother=34dqsls&gender=0&gender=1&__makumba__responder__=1305028474<br/>
+  sortby: <br/>
+  <hr/>
+  <table id="results">
+    <tr>
+      <th><a href="testMakSearchFormInSet.jsp?brother=34dqsls&gender=0&gender=1&__makumba__responder__=1305028474&sortby=o.TS_create" title="Sort by creation">#</a></th>
+      <th><a href="testMakSearchFormInSet.jsp?brother=34dqsls&gender=0&gender=1&__makumba__responder__=1305028474&sortby=o.indiv.name" title="Sort by name">Name</a></th>
+      <th><a href="testMakSearchFormInSet.jsp?brother=34dqsls&gender=0&gender=1&__makumba__responder__=1305028474&sortby=o.birthdate" title="Sort by birthdate">birthdate</a></th>
+    </tr>
+    
+      <tr>
+        <td>1</td>
+        <td>john von Neumann</td>
+        <td>05 March 1977</td>
+        <td></td>
+      </tr>
+    
+  </table>
+
+
+</body>
+</html>

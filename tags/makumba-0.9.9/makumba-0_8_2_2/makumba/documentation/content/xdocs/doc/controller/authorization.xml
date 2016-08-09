@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
+<document>
+    <header>
+        <title>Authorization</title>
+    </header>
+    <body>
+      
+      <p>makumba has two mechanisms through which it can trigger authorization mechanisms. The first one uses <a href="attributes.html">makumba attributes</a>
+      in order to check whether a user can perform authentication or not. The second, more recent mechanism is to use so called actors in combination with query 
+      functions in order to check whether a user is allowed to perform a given set of actions.</p>
+      
+      <section><title>Attributes-based authorization</title>
+      <note>This mechanism is the legacy mechanism that was in makumba since the very beginning. Since it brings some limitations and demands quite some work in order to be used properly,
+      the second mechanism was implemented in order to ease the task of handling webapp-wide authentication. We hence recommend using the second mechanism.</note>
+      
+      <p>makumba makes it possible to perform authorization using the <code>checkAttributes</code> method of the <a href="businessLogicClasses.html">Java business logic classes</a>.</p>
+      <p>When a page is executed, makumba will first check if there is any business logic class defined for it (see the 
+      <a href="businessLogicClasses.html#lookupMechanism">lookup mechanism for business logic classses</a>), and if yes, checks if there is a <code>checkAttributes</code> 
+      method defined, and if it is, executes it.</p>
+      <p>The method has following signature:</p>
+      <source>public void checkAttributes(Attributes a, Transaction t) throws LogicException</source>
+      <p>It makes it possible to check whether a specific <a href="attributes.html">makumba attribute</a> is set, look up data in the database, and if necessary, throw a 
+      <a href="/api/org/makumba/UnauthenticatedException.html"><code>org.makumba.UnauthorizedException</code></a></p>
+      
+      <note>When using this mechanism, it is highly recommended to build the business logic classes in such a way that they extend a common super-class that handles authentication.
+      In this way, specific pages can add additional checks by overwriting the checkAttributes method, but the overall method stays the same.</note>
+      
+      <p>An example of a checkAttributes method would be following:</p>
+      
+      <source><![CDATA[public void checkAttributes(Attributes a, Transaction t) throws LogicException {
+// check if generic employee-attribute is set
+try {
+    a.getAttribute("_sessPtr_company_Employee");
+} catch(AttributeNotFoundException anfe) {
+    throw new UnauthorizedException("You are not an employee of this company")
+}
+
+// if so, check whether he's an admin
+Vector<Dictionary<String, Object>> admin = t.executeQuery("select e.isAdmin as isAdmin from company.Employee e where e = $1", a.getAttribute("_sessPtr_company_Employee"));
+if(admin.size() == 1) {
+  if(!((Boolean)admin.get(0).get("isAdmin"))) {
+    throw new UnauthorizedException("You are not an administrator!");
+  }
+} else if(admin.size() == 0) {
+    throw new CompanyPortalException("Error: employee " + a.getAttribute("_sessPtr_company_Employee") + " does not exist");
+} else if(admin.size() > 1) {
+    throw new CompanyPortalException("Error: employee " + a.getAttribute("_sessPtr_company_Employee") + " saved more than once in the database");
+}]]></source>
+      
+      <p>The example above is complicated on purpose so as to illustrate some of the mechanisms that could be used. Let's have a closer look at it:</p>
+      <ul>
+      <li>the first call <code>a.getAttribute("_sessPtr_company_Employee");</code> tells makumba to try to retrieve the "_sessPtr_company_Employee" attribute.
+      If this fails, makumba will throw an <code>AttributeNotFoundException</code> which we catch and transform into an UnauthorizedExpcetion. The UnauthorizedException extends the generic LogicException,
+      and is used in order to perform specific error-handling on its</li>
+      <li>If the first call passed, we try to figure out whether this employee is an administrator or not. This is not a very good practice since it is not cost-effective, 
+      the better approach would be to set the attribute when the user accesses the site for the first time. In this example, we retrieve the isAdmin field of the MDD company.Employee and if the user is not an admin, we throw an UnauthorizedException.</li>
+      <li>We further handle the case where the user was not found in the database, and throw a <code>CompanyPortalException</code>, which is a custom exception for this web-application that extends LogicException.</li>
+      </ul>
+      </section>
+      
+      
+      <section><title>Actor-based authorization</title>
+      <p>In order to deal with authentication in a more effective manner, actor-based authentication was introduced. It uses the concept of roles, but in a flexible manner: there is no need to define a clear set of roles, instead, roles can be made up and defined using <a href="doc/queryfrag.html">query fragments</a></p>
+      <p>At this point, it is necessary to read the <a href="/doc/queryfrag.html">reference documentation on query fragments</a>, especially the <a href="doc/queryfrag.html#actor">actor functions</a> and <a href="/doc/queryfrag.html#explAutho">explicit authorization</a>.</p>
+      
+      <p>Let's take the following example: we want to ensure that only employees with administrative privileges can access the "admin" section of the site.</p>
+      <p>In order to achieve this, let's first define a MDD function that checks for this condition in the <code>company.Employee</code> MDD:</p>
+      <source>
+<![CDATA[isAdmin() { this.isAdmin and this.accountActive }]]></source>
+      <p>This MDD function will check whether the isAdmin field is set and the account is active.</p>
+      
+      <p>Now, we need to define an authorization constraint that will be launched whenever the admin directory is accessed.
+      We do so by defining the following constraint in the <code>[authorization]</code> section of the <a href="/configuration/configuration.html">Makumba.conf file</a>:</p>
+<source><![CDATA[[authorization]
+/admin={actor(company.Employee).isAdmin()}
+]]></source>
+
+      <p>We could of course have skipped the creation of the <code>isAdmin()</code> function, but this way ensures that we can re-use the query in other places.</p>
+      
+      </section>
+      
+
+    </body>
+</document>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<section id="example">
+  <title>Example</title>
+  <source>
+      <![CDATA[
+<mak:login>
+    <input type="text" name="username">
+    <input type="password" name="password">
+    <input type="submit">
+</mak:login>
+      ]]>
+  </source>
+</section>

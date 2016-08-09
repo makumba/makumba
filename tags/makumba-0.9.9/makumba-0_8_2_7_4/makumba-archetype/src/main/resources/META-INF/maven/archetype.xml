@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?><archetype>
+  <id>makumba-archetype</id>
+  <resources>
+    <resource>src/main/resources/dataDefinitions/general/Person.mdd</resource>
+    <resource>src/main/resources/Makumba.conf</resource>
+    <resource>src/main/webapp/index.jsp</resource>
+    <resource>src/main/webapp/META-INF/MANIFEST.MF</resource>
+    <resource>src/main/webapp/WEB-INF/web.xml</resource>
+  </resources>
+</archetype>

@@ -1,0 +1,30 @@
+=== FILE RELEASE
+
+In order to make a new makumba release, run the following ant targets:
+
+ant release -Duser=<your SF user> -Dpassword=<your SF password> -Dtag=makumba-0_8_2_1 (or whatever the release number is)
+
+in order to have ANT working with the FTP and SCP tasks, run
+
+ant installAntLibraries
+
+the required libs are:
+- ant-apache-oro.jar
+- ant-commons-net.jar
+- ant-jsch.jar
+
+- jsch.jar: http://www.jcraft.com/jsch/
+- commons-net.jar: http://commons.apache.org/downloads/download_net.cgi
+- oro.jar: http://jakarta.apache.org/site/downloads/downloads_oro.cgi
+
+
+=== MAVEN RELEASE
+
+If you're not familiar with the process, read http://www.makumba.org/page/MavenRepositoryHowTo first!
+
+ant mavenDeploy -Dtag=makumba-0_8_2_6 -Dkeyphrase=secret -Dusername=manu -Dpassword=myPassword
+
+* tag is the tag of the release to deploy. make sure that you have built the JAR before, e.g. by issuing a ant release
+* keyphrase is the keyphrase of the PGP key (it's not 'secret', of course)
+* username is your Sonatype login
+* password is your Sonatype password 

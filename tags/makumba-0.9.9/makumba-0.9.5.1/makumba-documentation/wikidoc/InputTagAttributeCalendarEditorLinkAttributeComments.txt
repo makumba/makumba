@@ -1,0 +1,1 @@
+Only for date types. Defaults to <img border="0" src="_CONTEXT_PATH_/mak-tools/makumbaResources/image/calendar.gif">

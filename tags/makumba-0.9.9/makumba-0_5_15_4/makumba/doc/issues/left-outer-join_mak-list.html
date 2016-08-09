@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>left-outer-join_mak-list</title>
+</head>
+<body>
+<h1>Left outer join embedded mak:lists</h1>
+Currently each mak:list is generating a query. If two mak:.lists are
+embedded, they generate two queries whose results are then combined
+(grouped) inside Makumba (i.e. not in the DB, so this is a bit of a
+performance penalty)<br>
+<pre>&lt;mak:list from="A a, B b" ...&gt;                -----&gt; SELECT ... FROM A a, B b<br>	&lt;mak:list from="C c, D d" ...&gt;        -----&gt; SELECT ... FROM A a, B b, C c, D d<br>	...<br>	&lt;/mak:list&gt;<br>&lt;/mak:list&gt;<br></pre>
+<br>
+If the two queries are joined simply (i.e. if only the second query
+above would be used), the results of
+the outer mak:list (a,b) that have no corresponding results in the
+inner
+mak:list (c or d) will not show up. For them to show up, a left outer
+join is
+needed. Such a join was not possible in mysql before. Once the left
+outer join is possible, a single-query implementation of
+embedded mak:lists should be possible, but Makumba's code still uses
+the simpler technique. <br>
+<br>
+Another issue that introduces more queries is the join over a nullable
+pointer.<br>
+<pre>&lt;mak:list from="A a" ...&gt;                            -----------&gt; SELECT ... FROM A a<br>	&lt;mak:value expr="a.nullablePtr.field" &gt;      -----------&gt; SELECT a.nullablePtr.field FROM A a<br>&lt;/mak:list&gt;<br></pre>
+If only the second query would be executed, the a's that have
+nullablePtr null will not show up. That's why the nullable field needs
+a query of its own. (So the actual total number of queries is <br>
+<pre>	numberOfMakLists+ numberOfNullablePointersUsed</pre>
+Potential advantages of the left join: <br>
+<ul>
+  <li>may simplify the iteration code</li>
+  <li>higher performance by elimination of resultset grouping<br>
+  </li>
+  <li>less database hits</li>
+  <li>no risk for data inconsistency due to changes made to the db in
+between queries<br>
+  </li>
+</ul>
+Brief:<br>
+<ul>
+  <li>think how the left outer join would look like. Probably in the
+example both C and D will need to be joined so?&nbsp; Or just C??? Look
+at DB theory.<br>
+  </li>
+  <ul>
+    <li>
+      <pre>SELECT ... FROM A a JOIN B b LEFT JOIN C c LEFT JOIN D d</pre>
+    </li>
+  </ul>
+  <li>think how the present grouping will be taken away, and how
+mak:list can be re-implemented to loop through the outer-join query
+results instead of the former org.makumba.view.Grouper</li>
+  <li>consider how to use left join for nullable pointers
+(straightforward I guess)<br>
+  </li>
+  <li>consider the problem of DISTINCT. If one query is used, it will
+force all mak:lists to DISTINCT. is this acceptable? Currently mak:list
+distinct="true" is not implemented anyway, but do consider how this
+would affect it.<br>
+  </li>
+</ul>
+<br>
+</body>
+</html>

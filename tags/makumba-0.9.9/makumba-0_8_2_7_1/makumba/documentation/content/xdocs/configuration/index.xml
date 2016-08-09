@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN" "document-v20-mak.dtd">
+<document>
+  <header>
+    <title>Makumba configuration</title>
+  </header>
+  <body>
+    <section id="status">
+      <title>Makumba configuration</title>
+      <p>
+        This section describes how to configure Makumba:
+      </p>
+		<ul>
+		  <li>the <a href="/configuration/webapp.html">configuration of the web-app descriptor file</a> <code>web.xml</code></li>
+		  <li>the <a href="/configuration/configuration.html">main Makumba configuration</a> in <code>Makumba.conf</code></li>
+		</ul>
+    </section>
+  </body>
+</document>

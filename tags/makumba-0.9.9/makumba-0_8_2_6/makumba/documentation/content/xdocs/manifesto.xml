@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE document PUBLIC "-//MAKUMBA//DTD Documentation V2.0//EN"
+	"document-v20-mak.dtd">
+<document>
+	<header>
+		<title>Makumba manifesto</title>
+	</header>
+	<body>
+		
+		<section id="Manifesto">
+			<title>Makumba manifesto</title>
+			
+			<p> When developing a webapp, coding should go <strong>directly to the most important
+				things</strong>. Reducing the amount of time necessary to develop a dynamic website
+				is crucial - complicated DAO objects are nice, but in 99% of the case you won't
+				need them in for a small/medium site. makumba cuts off the redundant and not
+				important code and lets you focus on what matters: bringing information to
+				the user.</p>
+			
+			<p>
+				<strong>Everything is a query</strong>. There's a lot of information you
+				want to store and show and queries are a simple way to do so. Just write down
+				what data you want, and makumba takes it from the database directly to the
+				page for you. It doesn't matter if what you are looking for is complex,
+				Makumba lets you query for everything you could think of. Plus, you can cut
+				your queries in smaller chunks and let makumba combine them for you.</p>
+			
+			<p>Developing a webapp should be
+				<strong>simple</strong>. Knowing complicated programming languages is
+				good, but it shouldn't be required to create advanced sites. You can learn to
+				use makumba in only a couple of hours, and its advanced developer support
+				will help you do many things without much hussle. With the code generator you
+				can even create entire parts of a site in no time, without coding
+				anything.</p>
+			
+			<p>Your webapps should be fast. Today's Internet users are expecting
+				<strong>performance</strong> and this is what Makumba delivers. It doesn't matter if your
+				page is complex, makumba optimises the operations it has to do so that
+				surfing your sites will feel smooth.</p>
+			
+		</section>
+		
+	</body>
+</document>

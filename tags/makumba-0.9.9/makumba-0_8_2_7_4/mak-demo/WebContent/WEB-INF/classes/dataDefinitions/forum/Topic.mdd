@@ -1,0 +1,10 @@
+forum = not null ptr forum.Forum           ;
+title = not null char[255]                 ;
+sticky = int{ "false"=0, "true"=1 }        ;
+
+topPost = ptr forum.Post                   ;
+lastPost = ptr forum.Post                  ;
+lastPostDate = date                        ;
+
+author = ptr user.User                     ;
+postCount = int                            ;

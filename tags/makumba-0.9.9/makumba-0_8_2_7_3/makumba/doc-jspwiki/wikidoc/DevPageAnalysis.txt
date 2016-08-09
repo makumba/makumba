@@ -1,0 +1,90 @@
+!!!Introduction
+
+The makumba page analysis is a mechanism that allows makumba tags to know (almost) everything about the JSP page they are executed in, in order to optimise their execution and provide accurate developer support.
+
+!!!Why page analysis?
+
+In order to optimise rendering of pages, especially the mak:list engine requires to know more about the page than what is provided to tag-library developers according to the JSP standard.
+
+the following example depicts this situation:
+
+[{Code
+
+<mak:list from="general.Person p" where="p.age > 18">
+  Name: <mak:value expr="p.name" /> <mak:value expr="p.surname" /><br/>
+</mak:list>
+}]
+
+mak:list is a custom tag, which is implemented by extending the [{JAVA class='javax.servlet.jsp.tagext.TagSupport'}] class.
+the API of TagSupport is designed in such a way that the tag can execute custom code when its doStartTag() and doEndTag() methods are called. Additionally it also knows about its parents, however, it has no knowledge about its children. Further, there's no information given regarding its position in the page (line and column number for instance).
+
+In the example above, where we want to execute a query on the database, it would be very expensive to run one query per projection (e.g. for p.name and p.surname). In fact, early implementations of the mak:list showed that in this case, pages became very slow, close to unusable. Hence, combining query fragments (such as projections or more complex MQL expressions passed in a mak:value expr attribute) is a much more suitable approach. In the example above, such a combined query would be %%code SELECT p.name, p.surname FROM general.Person p WHERE p.age > 18%%.
+
+Thus, the makumba page analysis provides this information to makumba tags. We will now present how this mechanism works.
+
+!!!General page analysis mechanism
+
+In order to benefit of the makumba page analysis, a tag needs to extend the [{DEV class='org.makumba.analyser.AnalysableTag'}] class. This gives access to a number of additional methods that can be used in order to prepare the tag for its execution. It also extends the original behavior of tag execution (i.e. the doStartTag() and doEndTag() methods), by introducing a new lifecycle phase to the tag useful for analysis.
+
+In what follows, we call __analysis time__ the moment during which the tag gets access to the analyzed page and can prepare itself, and __run-time__ the moment during which the tag is actually called.
+
+!!The PageCache
+In order to store information during analysis time, the [{DEV class='org.makumba.anlyser.PageCache'}] object provides methods to store and retrieve single values and collections of objects, using a [{DEV class='org.makumba.commons.MultipleKey'}]. Additionally, page analysis also caches relevant information about tags, such as its name, location in the page, attributes, etc. using the same PageCache. The cache types are all listed in [{DEV class='org.makumba.commons.MakumbaJspAnalyzer'}].
+
+!!makumba page analysis lifecycle
+
+During the execution of a makumba page, when the first makumba element (tag or EL epression) is called, it will try to retrieve the PageCache. If the PageCache object cannot be found in the global makumba cache, page analysis will parse the JSP page, identifying all the tag beginnings and endings, as well as all EL expressions and execute method calls on an implementation of [{DEV class='org.makumba.analyser.interfaces.JspAnalyzer'}].
+
+The JspAnalyzer implementation (in the case of makumba the [{DEV class='org.makumba.commons.MakumbaJspAnalyzer'}]) gets access to the element information provided in a [{DEV class='org.makumba.analyser.ElementData'}], and cache additional information on the element.
+
+Finally, when all the necessary state information is collected, the doStartAnalyze(PageCache pageCache) or doEndAnalyze(PageCache pageCache) method of an AnalysableTag are called.
+
+When all tags in the page are processed (i.e. the page analysis is finished), the runtime begins, this time by calling doAnalyzedStartTag(PageCache pageCache) and doAnalyzedEndTag(PageCache pageCache) on the tag. Hence, during runtime, tags can retrieve information from the PageCache using their tag key.
+
+A more detailed view on the AnalysableTag will be provided later.
+
+Additionally to tags, also EL expressions are subject to page analysis, by extending the [{DEV class='org.makumba.analyser.AnalysableExpression'}]. For the moment, only expressions that are accessed using  a map notation (%%code Prefix["value"]%%) are taken into account by the page analysis.
+
+The lifecycle for expressions is similar to the one for tags. Unlike tags, EL expressions don't have a start and end, thus only the analyze(PageCache pageCache) and resolve(PageContext pc, PageCache pageCache) methods are called. The resolve method gets hold on a PageContext element, since AnalysableExpression does not get directly to the PageContext, but is instead called at runtime by a subclass of [{DEV class='org.makumba.list.tags.MakumbaELResolver'}], which is an implementation of the JSP 2.1 standard [{JAVA java='javax.el.ELResolver'}].
+
+
+!!!Implementing a tag with page analysis support
+
+In order to implement a tag with page analysis support, you'll need to
+
+1) subclass the [{DEV class='org.makumba.analyser.AnalysableTag'}] class. Do make sure that:
+
+* you make setters and getters for all the tag attributes
+* if attributes should have default values, these should be set in the initialiseState() method, not directly in the class as default member values
+* you implement the setTagKey(PageCache pageCache) method so as to be able to retrieve [{DEV class='org.makumba.analyser.TagData'}] from the cache if you need it
+* you use the doAnalyzedStartTag(PageCache pageCache) and doAnalyzedEndTag(PageCache pageCache) methods instead of doStartTag() and doEndTag() methods
+* you cleanup all resources by overriding doAnalyzedCleanup(), without forgetting to call the super() method
+* you correctly describe the behavior of the tag by overriding the canHaveBody() and allowsIdenticalKey()
+* you check for the validity of attributes by overriding the registerPossibleAttributeValues() method, and registering possible attribute values using the registerAttributeValues(String attributeName, String... values) method.
+
+2) register the new tag in the [{DEV class='org.makumba.commons.MakumbaJspAnalyzer'}] by adding it in the relevant arrays in the beginning of the class (i.e. listTags, OR oldFormTags AND formTags AND formTagNames, OR elExpressions AND elExpressionNames). If you don't do this, makumba will be confused about these tags during analysis, and complain about a problem with nested tags.
+
+[{Box type='warning'
+
+Make sure you don't forget step 2 or you might spend a while trying to figure out what is going wrong!
+}]
+
+
+!!!Implementing an EL expression with page analysis support
+
+1) Subclass the [{DEV class='org.makumba.analyser.AnalysableExpression'}] and implement the required methods:
+
+2) Register the new EL expression in the [{DEV class='org.makumba.commons.MakumbaJspAnalyzer'}]
+
+3) Subclass the [{DEV class='org.makumba.list.tags.MakumbaELResolver}] and implement all required methods.
+
+4) Register the new ELResolver in [{DEV class='org.makumba.commons.MakumbaContextListener}]
+
+
+!!!Page analysis internals
+
+The page analysis parses the JSP page in order to collect all the necessary information. This is achieved in the [{DEV class='org.makumba.analyser.engine.JspParseData'}] class, which uses regular expressions in order to identify page elements.
+
+!!!A word on error handling
+
+The [{DEV class='org.makumba.analyser.AnalysableElement'}] class contains a number of methods that keep a hold on the element being currently analyzed or ran. This is useful when an exception occurs and detailed information should be provided to the user. It can then be achived, given that there is a reference to the [{DEV class='org.makumba.analyser.ElementData'}] being hold.

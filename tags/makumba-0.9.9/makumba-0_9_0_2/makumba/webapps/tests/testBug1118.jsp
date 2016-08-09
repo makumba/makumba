@@ -1,0 +1,2 @@
+<% response.getOutputStream().println("blabla"); %>
+

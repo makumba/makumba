@@ -1,0 +1,1 @@
+Fixed, can be one of button or link; defaults to link.

@@ -1,0 +1,21 @@
+!!!Introduction
+makumba's controller is using the filter pattern. All JSP, JSPX (source view) files, as well as the /mak-tools URIs are processed by this filter. Internally, the [{DEV class='org.makumba.controller.http.ControllerFilter'}] is invoking a chain of [{DEV class='org.makumba.commons.ControllerHandler'}] implementations. These are (in order of invocation):
+
+||ControllerHandler||Description
+|[{DEV class='org.makumba.controller.AJAXDataControllerHandler'}]|Handles partial page rendering and partial form post-back. In case of an AJAX request, will replace the response with a JSON string containing the necessary data
+|[{DEV class='org.makumba.devel.SourceViewControllerHandler'}]|Displays the source of a JSP page (if invoked with JSPX)
+|[{DEV class='org.makumba.devel.DataToolsControllerHandler'}]|Renders the view for makumba data tools, part of the developer tools
+|[{DEV class='org.makumba.commons.MakumbaToolsControllerHandler'}]|Renders the view for the makumba tools
+|[{DEV class='org.makumba.devel.ErrorControllerHandler'}]|Error handling. Processes the response and renders a human-readable error, enriched with information useful to the programmer
+|[{DEV class='org.makumba.analyser.AnalysisInitControllerHandler'}]|Initialises [page analysis|DevPageAnalysis]
+|[{DEV class='org.makumba.controller.FilterConditionControllerHandler'}]|Checks whether the request should be filtered further
+|[{DEV class='org.makumba.controller.CharsetControllerHandler'}]|Applies the UTF-8 charset to the resulting response
+|[{DEV class='org.makumba.commons.attributes.DatabaseConnectionControllerHandler'}]|Initialises one connection from the connection pool for the request, and closes it on response
+|[{DEV class='org.makumba.commons.attributes.AttributesControllerHandler'}]|Initialises makumba attributes
+|[{DEV class='org.makumba.forms.responder.ResponseControllerHandler'}]|Responds to the request, mainly by invoking the business logic, the form validation and the form response
+
+Depending on the different ControllerHandler outcomes, the chain gets executed until the end, or may return before (e.g. if the FilterConditionControllerHandler judges that a request should not get filtered any further, it won't get filtered any more in the chain).
+
+Some ControllerHandlers (such as the SourceViewControllerHandler and the DataToolsControllerHandler) are in fact servlets in disguise. The advantage to implement them as ControllerHandlers is that they do not need to be explicitely mapped in the web.xml, which simplifies the boilerplate configuration for makumba. The Servlet standard 3.0 may however address this issue.
+
+%%invisible [Category Documentation]%%

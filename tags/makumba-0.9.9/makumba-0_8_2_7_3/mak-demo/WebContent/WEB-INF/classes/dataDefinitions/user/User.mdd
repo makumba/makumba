@@ -1,0 +1,11 @@
+username = unique char[30];
+password = char[32];
+email = char[255];
+activated = int {"true" = 1, "false" = 0};
+isAdmin =  int {"true" = 1, "false" = 0};
+
+firstName = char[30];
+lastName = char[30];
+signature = text;
+avatar = ptr general.Image;
+

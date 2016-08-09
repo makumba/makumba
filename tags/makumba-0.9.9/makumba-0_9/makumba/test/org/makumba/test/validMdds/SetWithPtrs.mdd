@@ -1,0 +1,3 @@
+someSet=set
+someSet->owner = ptr test.Person
+someSet->language = ptr test.Language

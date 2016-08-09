@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<section id="description">
+  <title>Description</title>
+  <p>Provides
+    pagination of the results in an enclosing &lt;mak:list&gt;. The tag provides links to the first, previous, next and
+    last item in the result set, and the page number currently displayed. To achieve this, pagination makes use of the
+    information provided by the enclosing
+    &lt;mak:list&gt;, i.e. the offset and limit, and automatically computes the total of rows that would be returned by the
+      list, if no limit was specified.
+  </p>
+</section>

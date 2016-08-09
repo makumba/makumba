@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+   <title>Makumba FAQ</title>
+   <link rel="stylesheet" type="text/css" media="all" href="main.css">
+   <script type="text/javascript" src="main.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+   makeNavBar("");
+</script>
+
+<h1>Makumba FAQ</h1>
+Makumba Frequently Asked Questions
+<h2>Content</h2>
+
+<ul>
+  <li><b><a href="#Setup">Setting up</a></b> a Makumba webapp
+  <ul>
+      <li> <a href="#alter">I defined an MDD, but tables are not created</a></li>
+  </ul>
+  </li>
+
+  <li><b><a href="#Topic">More topics</a></b> coming
+  <ul>
+      <li> <a href="#question">You have a question?</a></li>
+  </ul>
+  </li>
+
+
+</ul>
+
+
+<h2><a NAME="Setup">&nbsp;</a>Setting up</h2>
+
+<b><a name="#alter">&nbsp;</a>I defined an MDD, but tables are not created. I keep getting <code>java.sql.SQLException: Base table or view not found,...</code> when trying to use that makumba type in my pages.
+</b>
+<br>
+Probably your webapp's DB config file (<code>&lt;host&gt;_&lt;dbtype&gt;_&lt;dbname&gt;.properties</code>) does not have
+<pre>alter#=true</pre>
+
+Put it there, then reload your webapp.
+See <a href="SQL-drivers.html#Configuration%20properties">SQL driver configuration properties</a> for details.
+
+
+<script type="text/javascript">
+   makeFooter("$Id$");
+</script>
+
+</body>
+</html>

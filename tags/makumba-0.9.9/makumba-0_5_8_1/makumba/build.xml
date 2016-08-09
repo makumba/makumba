@@ -1,0 +1,379 @@
+<!-- $Header$ -->
+
+<project name="Makumba" default="compile" basedir=".">
+
+       <path id="project.class.path">
+	 <fileset dir="../../util-java/lib">
+	  <include name="**/*.jar" />
+	  <exclude name="**/makumba.jar" />
+	 </fileset>	
+	 <fileset dir="../../util-java/tomcat-4.1/common/lib">
+	  <include name="**/servlet.jar" />
+	 </fileset>	
+       </path>
+
+	<!-- jikes as default compiler -->
+       	<property name="build.compiler" value="jikes" />
+
+	<!-- jikes options for ant -emacs  -->
+       	<property name="build.compiler.emacs" value="true" />
+
+	<property name="temp.dir" value="../../temp" />
+
+	<property environment="env"/>
+
+	<property name="jar.place" value="." />
+	<!-- check if the OQL grammar has changed since last OQL parser generation-->
+	<target name="checkAntlr">
+		<uptodate property="antlr.notRequired"
+		      targetfile="classes/org/makumba/db/sql/oql/OQLParser.java" >
+
+		      <srcfiles dir= "classes/org/makumba/db/sql/oql/" 
+				includes="**/OQL-translator.g"/>
+		</uptodate>
+	</target>
+
+	<!-- if the OQL grammar has changed, call antlr to re-generate the parser -->
+	<target name= "OQLParserGeneration" depends="checkAntlr"
+                unless="antlr.notRequired">
+
+		<java	classname="antlr.Tool" fork="true"  dir="classes/org/makumba/db/sql/oql/"
+			failonerror="true"
+		>
+		     <classpath refid="project.class.path" />
+			<arg value="OQL-translator.g"/>
+	 	</java>
+	</target>
+
+	<target name="compile" depends="OQLParserGeneration"
+		description="compile all java files"
+	>
+		<javac srcdir="classes">
+		     <classpath refid="project.class.path" />
+		</javac>
+	</target>
+
+       <target name="clean"
+	description="delete all generated files and backups"
+	>
+       <delete includeEmptyDirs="true" failonerror="false">
+       		<fileset dir="classes" 
+		includes="**/*.class,**/*.*~,org/makumba/db/sql/oql/OQLParser.java"
+		defaultExcludes="no"	
+		/>
+       		<fileset dir="doc/api" 
+		includes="**/*.html,**/*.css,**/package-list"
+		excludes="API_users_guide.html"
+		defaultExcludes="no"	
+		/>
+       		<fileset dir="doc/api/org" />
+       		<fileset dir="doc/hacking/javadoc" />
+       		<fileset dir="META-INF"/>
+       		<fileset dir="lib"/>
+       		<fileset dir="." includes="manifest-replace.properties,manifest.mf"/>
+       </delete>
+       </target>
+
+       <target name="checkManifest" >
+       <mkdir dir="META-INF"/>
+       <condition property="meta-inf.ok">
+       <and>
+       <uptodate srcfile="servlet_context/WEB-INF/makumba.tld" targetfile="META-INF/makumba.tld" />
+       <uptodate srcfile="manifest.template" targetfile="META-INF/manifest.mf" />
+       </and>
+       </condition>
+       </target>
+
+       <target name="makeManifest" depends="checkManifest" unless="meta-inf.ok" >
+        <java classname="org.makumba.version" fork="true" output="manifest-replace.properties">   
+        	<classpath>
+		<pathelement path="classes/"/>
+		<pathelement path="${java.class.path}"/>
+	</classpath>
+	</java>
+
+        <!-- Filters -->
+        <filter token="user" value="${user.name}"/>
+        <filter filtersfile="manifest-replace.properties"/>
+
+         <!-- Copy the manifest in order to replace the version token filter -->
+         <copy file="manifest.template" tofile="manifest.mf" filtering="on" overwrite="true"/>
+         <copy file="servlet_context/WEB-INF/makumba.tld" todir="META-INF" filtering="on" overwrite="true"/>
+
+       </target>
+
+       <target name="jar" description="make a jar in ./lib"  depends="compile">
+       <mkdir dir="${jar.place}/lib" />
+	<antcall target="makeManifest" />
+        <jar jarfile="${jar.place}/lib/makumba.jar" manifest="manifest.mf">
+   	<fileset dir="classes" 
+		includes="org/makumba/db/Catalog.mdd,org/**/*.class,org/**/*.properties"
+		defaultExcludes="no"
+		/>	
+   	<fileset dir="." 
+		includes="COPYING.txt"
+		defaultExcludes="no"
+		/>	
+   	<metainf dir="META-INF" 
+		includes="**/*.tld"
+		defaultExcludes="no"
+		/>	
+	</jar>
+       </target>
+
+
+	<target name="doc" depends="compile" 
+	description="generates documentation">
+        <tstamp>
+                <format property="javadoc.startup.time" pattern="yyyy-MM-dd HH:mm"/>
+        </tstamp>
+	<javadoc 
+		destdir="doc/api" 
+		sourcepath="classes" 	
+		packagenames="org.makumba"
+		notree="true"
+		noindex="true"
+		nohelp="true"
+		windowtitle="Makumba"
+		classpathref="project.class.path"
+		Version="true"
+		Author="true"
+		doctitle="Makumba API Documentation"
+	>
+            <bottom><![CDATA[
+                <TABLE BORDER="0" CELLSPACING=0 CELLPADDING=0 WIDTH="100%"><tr>
+                <td align=right><font size=-1><i>Docs generated on ${javadoc.startup.time}</i></font>
+                </td></tr></TABLE>
+            ]]></bottom>
+	    <link href="http://java.sun.com/j2se/1.4/docs/api/"/>
+	</javadoc> 
+
+	<javadoc 
+		destdir="doc/hacking/javadoc" 
+		sourcepath="classes" 	
+		packagenames="*"
+		windowtitle="Makumba [hacking docs]"
+		classpathref="project.class.path"
+		Version="true"
+		Author="true"
+		access="package"
+		doctitle="Documentation of Makumba classes for Makumba develpers"
+	>
+            <bottom><![CDATA[
+                <TABLE BORDER="0" CELLSPACING=0 CELLPADDING=0 WIDTH="100%"><tr>
+                <td align=right><font size=-1><i>Docs generated on ${javadoc.startup.time}</i></font>
+                </td></tr></TABLE>
+            ]]></bottom>
+            <header><![CDATA[
+                <TABLE BORDER="0" CELLPADDING="3" CELLSPACING="3">
+                <TD aCLASS="NavBarCell1" valign=top>
+		   <a href="http://www.makumba.org" target='_top'><img src="http://www.makumba.org/makumba-logo-small.gif" border=0></a>
+                </TD><TR>
+                <TD VALIGN="top" CLASS="NavBarCell3"><FONT SIZE="-2">
+                <script language="javascript">
+                   url=document.location.href;
+                   clas=url.substring(url.indexOf("/javadoc/"));
+                   clas=clas.substring(9);
+                   clas=clas.substring(0, clas.indexOf(".html") );
+                   //clas=clas.replace(new RegExp("/", "gi") ,".");
+                   //document.write(clas);
+                   //clasUrl=url.substring(0,url.indexOf("/javadoc/"));
+                   //clasUrl=clasUrl+"/classes/"+clas;
+                   clasUrl="";
+                   if((clas.indexOf("org/makumba")==0||clas.indexOf("test/")==0) )
+		   {
+                        cvsLink="";
+			if(clas.indexOf("package-summary")<0 && clas.indexOf("package-tree")<=0) 
+			{
+				clasUrl=clasUrl.concat("",clas,".java");
+				cvsLink=cvsLink.concat("<a href='http://cvs.makumba.org/cgi-bin/cvsweb.cgi/~checkout~/makumba/classes/",clasUrl,"?content-type=text/plain'>SOURCE</a> in ");
+			} else {
+				clasUrl=clas.substring(0, clas.lastIndexOf("/") );
+			}
+                        cvsLink=cvsLink.concat("<a href='http://cvs.makumba.org/cgi-bin/cvsweb.cgi/makumba/classes/",clasUrl,"'>CVS</a>");
+		   	document.write(cvsLink);
+		   } //else document.write('(no cvs)');
+                </script>
+                </font>
+                </td>
+                </table>
+            ]]></header>
+	    <link href="http://java.sun.com/j2se/1.4/docs/api/"/>
+	    <link href="http://jakarta.apache.org/tomcat/tomcat-4.1-doc/servletapi/"/>
+	    <!--link href="http://java.sun.com/products/servlet/2.3/javadoc/"/-->
+	    <link href="http://barracuda.enhydra.org/webdocs/junit3.7/javadoc/"/>
+	</javadoc> 
+
+	</target>
+
+	<target name="tagJar" depends="compile" if="tag" 
+	description="tags a version from the current checked out branch but doesn't publish it, just puts it in ./lib">
+
+	<cvs command="tag -d ${tag}" dest="." />
+	<cvs command="tag ${tag}" dest="." />
+	<antcall target="makeJar"><param name="jar.place" value="." /></antcall>
+	</target>
+
+	<target name="makeJar" if="tag" description="makes the jar and a src tarball of the given version">
+	<mkdir dir="../../makumba.distrib" />
+	<delete dir="../../makumba.distrib/makumba/" />
+	<cvs command="export -r ${tag} makumba" dest="../../makumba.distrib/"/>
+	<!-- make the source tarball: -->
+	<zip zipfile="lib/${tag}-src.zip">
+		<fileset dir="../../makumba.distrib/">
+		  <include name="makumba/**" />
+		</fileset>
+	</zip>
+	<!-- make the jar: -->
+	<java classname="org.apache.tools.ant.Main" fork="true" dir="../../makumba.distrib/makumba/" >
+        	<classpath>
+		<pathelement path="${project.class.path}"/>
+		<pathelement path="${java.class.path}"/>
+		</classpath>
+            <sysproperty key="jar.place" path="${jar.place}" />
+            <arg value="jar"/>
+	</java>
+	<delete dir="../../makumba.distrib" />
+	<copy file="${jar.place}/lib/makumba.jar" tofile="${jar.place}/lib/${tag}.jar"/>
+	</target>
+
+
+	<target name="publishJar" depends="compile" if="tag" 
+	description="tags a version from the current main branch, puts it in ./lib and publishes it on the web" >
+	<mkdir dir="../../makumba.distrib" />
+	<delete dir="../../makumba.distrib/makumba/" />
+	<cvs command="checkout makumba" dest="../../makumba.distrib/"/>
+	<cvs command="tag -d ${tag}" dest="../../makumba.distrib/makumba/" />
+	<cvs command="tag ${tag}" dest="../../makumba.distrib/makumba/" />
+
+	<antcall target="makeJar"><param name="jar.place" value="." /></antcall>
+
+	<ftp server="download.makumba.org"
+		userid="ftp-mak"
+		password="ftp-mak"
+		remotedir="makumba/doc/download"
+		binary="yes"
+	>
+    	<fileset dir="lib/">
+      		<include name="makumba.jar" />
+                <include name="${tag}.jar"/>
+                <include name="${tag}-src.zip"/>
+    	</fileset>
+	</ftp>
+
+	<ftp server="upload.sourceforge.net"
+		userid="anonymous"
+		password="makumba.developer@makumba.org"
+		remotedir="incoming"
+		binary="yes"
+	>
+    	<fileset dir="lib/">
+                <include name="${tag}.jar"/>
+                <include name="${tag}-src.zip"/>
+	</fileset>
+	</ftp>
+	<echo>${tag}.jar and ${tag}-src.zip uploaded to sourceforge.net. To make it a release visit:
+		http://sourceforge.net/project/admin/qrs.php?group_id=25704
+		within the next 24 hours.
+	</echo>
+        </target>
+
+	<target name="publishDoc" depends="doc" description="publishes the documentation">
+	<antcall target="zipdoc" />
+ <!--echo>updating individual files via ftp</echo>
+	<ftp server="download.makumba.org"
+		userid="ftp-mak"
+		password="ftp-mak"
+		remotedir="makumba/doc"
+		binary="no"
+		newer="yes"
+	>
+    	<fileset dir="doc/">
+      		<include name="api/**/*.html" />
+      		<include name="api/**/*.txt" />
+      		<include name="api/**/*.css" />
+      		<include name="api/**/package-list" />
+      		<exclude name="api/API_users_guide.html" />
+    	</fileset>
+	</ftp-->
+ <echo>updating zip for distribution</echo>
+	<ftp server="download.makumba.org"
+		userid="ftp-mak"
+		password="ftp-mak"
+		remotedir="makumba/doc/download"
+		binary="yes"
+	>
+	<fileset dir="${temp.dir}" includes="makumbadoc.zip"/>
+	</ftp>
+	</target>
+
+
+
+	<target name="zipdoc"  >
+	<delete file="${temp.dir}/makumbadoc.zip" />
+	<zip zipfile="${temp.dir}/makumbadoc.zip">
+		<fileset dir="..">
+		<include name="makumba/CHANGELOG.txt" />
+		<include name="makumba/COPYING.txt" />
+		<include name="makumba/README.txt" />
+     		<include name="makumba/doc/**/*.html" />
+     		<include name="makumba/doc/**/*.txt" />
+     		<include name="makumba/doc/**/*.doc" />
+     		<include name="makumba/doc/**/*.pdf" />
+     		<include name="makumba/doc/**/*.gif" />
+     		<include name="makumba/doc/api/**/*.html" />
+      		<include name="makumba/doc/api/**/*.txt" />
+      		<include name="makumba/doc/api/**/*.css" />
+      		<include name="makumba/doc/api/**/package-list" />
+      		<exclude name="makumba/doc/api/API_users_guide.html" />
+		</fileset>
+	</zip>
+        </target>	
+
+	<target name= "test" depends="compile" description="run the test cases" >	
+		<java	classname="test.table" fork="true"  
+			failonerror="true"
+		>
+		     <classpath>
+			<pathelement path="classes"/>			
+			<path refid="project.class.path" />
+		      </classpath>
+	 	</java>
+	</target>
+
+	<target name="insertLicense">
+	  <replace dir="classes" includes="**/*.java" summary="true">
+		    <not>
+		        <contains text="MERCHANTABILITY"/>
+		    </not>
+	    <replacetoken><![CDATA[package org.makumba]]></replacetoken>
+	    <replacevalue><![CDATA[///////////////////////////////
+//  Makumba, Makumba tag library
+//  Copyright (C) 2000-2003  http://www.makumba.org
+//
+//  This library is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU Lesser General Public
+//  License as published by the Free Software Foundation; either
+//  version 2.1 of the License, or (at your option) any later version.
+//
+//  This library is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//  Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with this library; if not, write to the Free Software
+//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+//
+//  -------------
+//  $Id$
+//  $Name$
+/////////////////////////////////////
+
+package org.makumba]]></replacevalue>
+	  </replace>
+	</target>
+
+</project>
+
+       

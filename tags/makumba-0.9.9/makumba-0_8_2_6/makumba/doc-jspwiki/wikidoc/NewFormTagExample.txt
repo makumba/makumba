@@ -1,0 +1,8 @@
+[{Code
+
+<mak:newForm type="general.Person" action="personList.jsp" method="post">
+    <mak:input name="name"/>
+    <mak:input name="surname"/>
+    <input type="submit">
+</mak:newForm>
+}]

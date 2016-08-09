@@ -1,0 +1,43 @@
+[{TableOfContents }]
+
+Makumba comes with a number of convenient developer tools.
+Those tools can be enabled or disabled at will (one might not want e.g. the data query tool to be enabled in a production environment) in the [configuration|MakumbaConfiguration#section-MakumbaConfiguration-MakumbaTools] file. The default location is under /mak-tools but this can be also changed if wished.\\
+In addition to the list below, more tools are expected to be developed in the future, allowing e.g. to clean up database columns not used anymore or to migrate the data when doing database structure refactoring (moving from a pointer to set). 
+
+
+!!! Code Viewers
+
+!! JSP Viewer
+The JSP code viewer provides handy highlighting of JSP, JSTL and of course Makumba tags. It also comes with convenient links to the data definitions used in the page, and to the logic discovery (see below).\\
+By default the .jspx extension is used for the JSP viewer.
+
+!! Data Definition Viewer
+
+!! Logic Discovery
+
+!! Java Viewer
+
+!! Relation Crawler
+
+
+!!! Code Generator
+
+
+!!! Database Tools 
+
+!! Data Query Tool
+
+!! Data Lister
+
+!! Object Viewer
+
+!! Pointer Value Converter
+
+!! Reference Checker
+
+
+!!! Makumba Cache Cleaner
+
+
+
+%%(display:none;)[Category Usage]%%

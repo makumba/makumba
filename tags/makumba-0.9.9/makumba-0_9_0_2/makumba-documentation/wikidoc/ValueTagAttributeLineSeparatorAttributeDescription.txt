@@ -1,0 +1,1 @@
+Separator for long lines. If a text consists of short lines only, it will be surrounded by <pre>...</pre>. Default is "<p>".
