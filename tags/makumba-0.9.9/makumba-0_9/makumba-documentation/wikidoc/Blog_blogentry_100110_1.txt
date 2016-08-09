@@ -1,3 +1,0 @@
-!!!New makumba release with web 2.0 features
-
-The latest makumba release 0.8.2.6 brings a number of web 2.0 features. Check out [this HowTo|Web20HowTo] for more information!

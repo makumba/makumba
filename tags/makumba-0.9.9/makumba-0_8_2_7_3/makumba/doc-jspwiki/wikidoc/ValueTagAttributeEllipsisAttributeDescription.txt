@@ -1,1 +1,0 @@
-The character string to print to indicate that the text extended the maxLength. Default is "...". The final printed string, including the ellipsis, will not exceed maxLength.

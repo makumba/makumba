@@ -1,1 +1,0 @@
-Whether to generate code for a calendar editor.

@@ -1,1 +1,0 @@
-Adds a search criterion to the form. This does not create any inputs, but should be used in combination with %%code <mak:searchField>%%

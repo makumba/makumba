@@ -1,1 +1,0 @@
-The name of the event that causes this section to be displayed

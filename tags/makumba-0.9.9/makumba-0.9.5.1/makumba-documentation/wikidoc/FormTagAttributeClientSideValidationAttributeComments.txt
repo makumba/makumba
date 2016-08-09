@@ -1,1 +1,0 @@
-Values are false (off), true (on submission) or live (while tpying).

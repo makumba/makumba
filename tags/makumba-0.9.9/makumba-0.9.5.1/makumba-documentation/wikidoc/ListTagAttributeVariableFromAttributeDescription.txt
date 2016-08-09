@@ -1,1 +1,0 @@
-supplementary, variable MQL FROM section.

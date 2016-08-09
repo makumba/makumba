@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<section id="description">
-  <title>Description</title>
-  <p>Similar
-    to, and based on the &lt;mak:list&gt;, this tag automatically iterates over the results from a specified search
-    form. On top of &lt;mak:list&gt;, the following attributes are available:
-  </p>
-</section>

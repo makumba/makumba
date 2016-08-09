@@ -1,5 +1,0 @@
-<?xml version="1.0"?>
-<!-- OASIS XML Catalog for Forrest -->
-<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
-  <public publicId="-//MAKUMBA//DTD Documentation V2.0//EN" uri="dtd/document-v20-makumba.dtd" />
-</catalog>

@@ -1,1 +1,0 @@
-Controls whether client side validation shall be used.

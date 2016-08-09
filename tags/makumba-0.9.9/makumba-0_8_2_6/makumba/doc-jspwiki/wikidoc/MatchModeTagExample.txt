@@ -1,9 +1,0 @@
-[{Code
-
-<mak:searchForm in="best.Student" name="searchPerson">
-    <mak:criterion fields="name">
-        <mak:matchMode matchModes="contains, equals, begins, ends">
-        <mak:searchField />
-    </mak:criterion>
-</mak:searchForm>
-}]

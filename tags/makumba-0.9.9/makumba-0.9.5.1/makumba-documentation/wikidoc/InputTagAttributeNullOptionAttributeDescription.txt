@@ -1,1 +1,0 @@
-A text that would be displayed as the "null option" in drop-down boxes, i.e. to add a null value to the other possible options. May be used to allow a ptr to be set to null, and/or require a deliberate action from the users to select a value, rather leaving the default (first) value selected.

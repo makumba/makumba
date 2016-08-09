@@ -1,1 +1,0 @@
-Fixed ($attribute allowed). Only allowed for the outermost mak:list.

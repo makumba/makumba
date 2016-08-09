@@ -1,1 +1,0 @@
-The name of the search form the results are taken from.

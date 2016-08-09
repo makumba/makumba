@@ -1,1 +1,0 @@
-The test to use for the pagination links. The default is 'page', creating e.g. 'previous page'. The text given in the attribute will be appended to the prefixes 'first', 'previous', 'next', 'last'.
