@@ -295,5 +295,10 @@
 
 
     </build>
-
+    <distributionManagement>
+      <site>
+        <id>sourceforge</id>
+        <url>file:///tmp/makumba</url>
+      </site>
+    </distributionManagement>
 </project>
