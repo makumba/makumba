@@ -1,0 +1,261 @@
+Statement :   QueryRule  
+	;
+
+UnionRule
+	: q+=QueryRule ('union' q+=QueryRule)*
+	;
+
+QueryRule
+	: SelectFrom
+		(where=WhereClause)?
+		(groupBy=GroupByClause)?
+		(orderBy=OrderByClause)?
+		;
+
+SelectFrom
+	:  {SelectFrom} (s=SelectClause)? (from=FromClause)? 
+	;
+
+SelectClause
+	: {SelectClause} SELECT DISTINCT? ( s=SelectedPropertiesList | n=NewExpression | SelectObject )
+	;
+
+NewExpression
+	: NEW (p=Path) '(' s=SelectedPropertiesList ')'
+	;
+
+SelectObject
+   : OBJECT '(' Identifier ')'
+   ;
+
+FromClause
+	: FROM fromRange+=FromRange ( fromJoin+=FromJoin | ',' fromRange+=FromRange )*
+	;
+
+FromJoin
+	: ( ( ( LEFT | RIGHT ) (OUTER)? ) | FULL | INNER )? JOIN (FETCH)? 
+	  FromClassOrOuterQueryPath (w=WithClause)?
+	;
+
+WithClause
+	: WITH e=Expression
+	;
+
+FromRange
+	: FromClassOrOuterQueryPath
+	| alias=Identifier IN_CLASS p=Path 
+	| IN '(' p=Path ')' alias=Identifier
+	| InCollectionElementsDeclaration
+	;
+	
+FromClassOrOuterQueryPath
+	: {FromClassOrOuterQueryPath}  path=Path  (name=AsAlias)? (propertyFetch=PropertyFetch)? 
+	;
+
+InCollectionElementsDeclaration
+	: alias=Identifier IN_ELEMENTS '(' p=Path ')' 
+    ;
+
+AsAlias
+	: (AS)? name=Identifier
+	;
+    
+PropertyFetch
+	: FETCH ALL PROPERTIES
+	;
+
+GroupByClause
+	: GROUP_BY e+=Expression ( ',' e+=Expression )*
+		(h=HavingClause)?
+	;
+
+OrderByClause
+	: ORDER_BY o+=OrderElement ( ',' o+=OrderElement )*
+	;
+
+OrderElement
+	: Expression ( AscendingOrDescending )?
+	;
+
+AscendingOrDescending
+	: ASC	
+	| DESC	
+	;
+
+HavingClause
+	: HAVING e=Expression
+	;
+
+WhereClause
+	: WHERE e=Expression
+	;
+
+SelectedPropertiesList
+	: a+=AliasedExpression ( ',' a+=AliasedExpression )*
+	;
+	
+AliasedExpression
+	: Expression ( AS id=Identifier )?
+	;
+
+Expression
+	: LogicalOrExpression
+	;
+
+LogicalOrExpression
+	: l+=LogicalAndExpression ( OR l+=LogicalAndExpression )*
+	;
+
+LogicalAndExpression
+	: n+=NegatedExpression ( AND n+=NegatedExpression )*
+	;
+
+NegatedExpression
+	: NOT n=NegatedExpression 
+	| EqualityExpression 
+	;
+
+EqualityExpression
+	: r+=RelationalExpression (
+		( '='
+		| IS	 (NOT  )?
+		| '!='
+		| '<>'	
+		) r+=RelationalExpression)* 
+	;
+
+RelationalExpression
+	: Concatenation (
+		( ( ( '<' | '>' | '<=' | '>=' ) a+=AdditiveExpression )* )
+		// Disable node production for the optional 'not'.
+		| (NOT)? (
+			// Represent the optional NOT prefix using the token type by
+			// testing 'n' and setting the token type accordingly.
+			(IN
+				i=CompoundExpr)
+			| (BETWEEN
+				b=BetweenList )
+			| (LIKE
+				c=Concatenation l=LikeEscape)
+			| (MEMBER (OF)? p=Path  ) )
+		)
+	;
+
+LikeEscape
+	: {LikeEscape}(ESCAPE c=Concatenation)?
+	;
+
+BetweenList
+	: c+=Concatenation AND c+=Concatenation
+	;
+
+Concatenation
+	: AdditiveExpression 
+	( '||'  
+	  a+=AdditiveExpression
+	  ( '||' a+=AdditiveExpression )* 
+	  )?
+	;
+
+AdditiveExpression
+	: m+=MultiplyExpression ( ( '+' | '-' ) m+=MultiplyExpression )*
+	;
+
+MultiplyExpression
+	: u+=UnaryExpression ( ( '*' | '/' ) u+=UnaryExpression )*
+	;
+	
+UnaryExpression
+	: '-'  u=UnaryExpression
+	| '+' u=UnaryExpression
+	| CaseExpression
+	| QuantifiedExpression
+	| Atom
+	;
+	
+CaseExpression
+	: CASE (w+=WhenClause)+ (e=ElseClause)? END
+	| CASE u=UnaryExpression (a+=AltWhenClause)+ (e=ElseClause)? END
+	;
+	
+WhenClause
+	: (WHEN whenExpr=Expression THEN thenExpr=UnaryExpression)
+	;
+	
+AltWhenClause
+	: (WHEN w=UnaryExpression THEN t=UnaryExpression)
+	;
+	
+ElseClause
+	: (ELSE u=UnaryExpression)
+	;
+	
+QuantifiedExpression
+	:{QuantifiedExpression} ( SOME | EXISTS | ALL | ANY ) 
+	( Identifier | CollectionExpr | ('(' ( s=UnionRule ) ')') )
+	;
+
+Atom
+	 : PrimaryExpression
+		(	'.' Identifier ( '('  e+=ExprList ')' )? |
+			'['  exp+=Expression ']'
+		)*
+	;
+
+PrimaryExpression
+	: {PrimaryExpression} ident=IdentPrimary ( '.' CLASS )?
+	|   Constant
+	|   ':' Identifier
+	|   '(' (ExpressionOrVector | s=UnionRule) ')'
+	|   '?' (INT)?
+	;
+
+ExpressionOrVector
+	: Expression ( v=VectorExpr )? 
+	;
+
+VectorExpr
+	: ',' e+=Expression (',' e+=Expression)*
+	;
+
+IdentPrimary
+	: {IdentPrimary} Identifier ( ('.' Identifier) | ('.' ELEMENTS) | ('.' OBJECT)   )* 
+		( '('  e=ExprList ')' )?
+	| 	Aggregate
+	;
+
+Aggregate
+	: {Aggregate} ( SUM | AVG | MAX | MIN ) '(' a=AdditiveExpression ')' 
+	// Special case for count - It's 'parameters' can be keywords.
+	|  COUNT '(' ( '*'  | ( ( DISTINCT | ALL )? ( Path | CollectionExpr ) ) ) ')'
+	|  CollectionExpr
+	;
+
+CollectionExpr
+	: (ELEMENTS | INDICES) '(' Path ')'
+	;
+                                           
+CompoundExpr
+	: CollectionExpr
+	| Path
+	| ('(' ( (e+=Expression (',' e+=Expression)*) | s=UnionRule ) ')')
+	;
+
+ExprList
+	: (TRAILING | LEADING  | BOTH )?
+	  ( e+=Expression ( (',' e+=Expression)+ | FROM  e+=Expression | AS id=Identifier )? 
+	  		| FROM  e+=Expression )?
+	;
+
+Constant
+	:  Number
+	| STRING
+	| NULL
+	| TRUE
+	| FALSE
+	| EMPTY
+	;
+
+Path
+	: Identifier ( '.' Identifier )*
+	;

@@ -1,0 +1,236 @@
+!!!POJO and concerns plan
+
+!!Objectives
+
+1. to move makumba from DD/FD to Class/Member+annotation. That is, POJO classes but not yet POJO instances.
+
+2. to remove the mixed type concerns on the occasion
+
+!!Plan outline
+
+1. POJO and DataDefinition
+
+1.1 Generate POJOs. This can be done in parallel with 1.2, 1.3, 1.4 and 2. The advantage of doing it early is that we can test JPA schema update on karamba early.
+
+1.2 remove all non-field concerns from DataDefinition (discuss with rudi). see detail 1.1.1
+
+1.3 Introduce FieldGroup to express a group of fields (not real types as in QueryAnalysis.getProjectionType(), getParameterType()), along with FieldMetadata and TypeMetadata
+
+1.4 make QueryAnalysis return FieldGroups, and make DDP.getDataDefinition() return FieldGroup wherever possible, and TypeMetadata otherwise (e.g. where more than the fields are needed). Can be done in two steps, first by introducing separate methods getTypeMetaData() and getFieldGroup() and replace all DDP.getDataDefinition() by those eagerly (by aiming for getFieldGroup() wherever possible).
+
+2. remove the mixed type concerns on the occasion
+
+
+
+!!Detailed plan
+
+!1.1 Generate POJOs
+
+This can be done in parallel with 1.2, 1.3 and 2
+
+For the (crucial) relational annotations of the MDD concepts see
+http://bugs.makumba.org/show_bug.cgi?id=1229#c9
+
+The current MddToClass can be developed (moved in the "right" package 
+first). Its main() method illustrates how to generate an annotation.
+
+the annotations we add should contain all MDD information that besides 
+type and name. annotations should be JPA annotations wherever possible. 
+some Makumba specific annotations might need to be generated:
+* @MakumbaEnum i would support here both char and int fields, i.e. the most general enum {"name"= value,...} where value can be any id or int. if all values are ints, then its an intEnum, if all values are the same as their id, it's a charEnum, but we also support any other id.
+* @MakumbaLimitedValueSet (for enums above, but targeted for the db layer... we can do without this but presentation values and limited values are really 2 different concerns)
+* @MakumbaDescription
+* @MakumbaBinary (to differentiate from "text" Texts)
+
+(more on enums [http://bugs.makumba.org/show_bug.cgi?id=1238])
+
+later: investigate JPA alternative to enum for "public" use. MakumbaEnum as internal, backwards-compatibility thing.
+
+At least for int enum we know by now that there is no equivalent. But maybe there are annotations for others.
+
+The proposal is not to use a Definition for this work, but a simple FieldData DTO (which FieldDefinition might extend?). this allows us at a later stage to generate .class directly from a parser.
+
+Therefore MddToClass will have to undergo a lot of changes and maybe Hibernate can keep using the current copy.
+
+To generate all POJOs for an app, just do this in a static{ } block (better than webapp listener since that won't work with non-webapps):
+
+{{{
+DataDefinitionProvider.makeClass(DataDefinitionProvider.getInstance().
+      getDataDefinitionsInLocation("dataDefinitions"));
+}}}
+
+later (add to config bug):
+
+Instead of a static block I propose a Bootstrap class which calls this. The webapp listener can use the Bootstrap class method. Then user X who wants to use makumba outside of a container gets informed in the doc that he has to Boostrap it first. The Bootstrap method for now can be static.
+
+The POJO work will go in parallel with (2) but it would be really cool when all JPA annotations are in place in our MDD POJOs to load all POJOs generated from Karamba into a JPA persistence provider (or more) and see how fast is the schema update of a karamba db  :)   (less the reindexing)
+
+
+----
+
+
+!1.2 Separate FunctionDefinition, ValidationDefinition and MultipleKeys from DataDefinition to allow DataDefinition to die peacefully (see 2.1)
+
+The proposal is to move access to them in DataDefinitionProvider 
+
+!1.3. Introduce FieldGroup to express a group of fields (not real types as in QueryAnalysis.getProjectionType(), getParameterType()), along with FieldMetadata and TypeMetadata
+
+These interfaces are detailed below.
+
+!1.4. make QueryAnalysis return FieldGroups, and make DDP.getDataDefinition() return FieldGroup wherever possible, and TypeMetadata otherwise (e.g. where more than the fields are needed)
+
+This will force the use of FieldMetadata almost everywhere. To retrieve the FieldDefinition, just use getFieldDefinition on it.
+
+!1.4.1. To factor FieldMetadata for projections and parameters, 
+QueryAnalysis should use
+* existing MDD fields
+* prototype scalar fields (in an internal DataDefinition for FD and in a dummy class for POJO)
+* one (cached) pointer field for each MDD for which a pointer is requested. for the POJO, the primary key of the targetEntity is good enough as a pointer
+
+
+!2. Remove the mixed type concerns on the occasion
+
+WARNING: there may be POJO JPA annotations that can't be read due to the class member being non-public. For now this is not a problem because we control the POJO. but for the future, bytecode inspection may be the way out
+
+later: for POJO property reading we can use
+
+[http://anonsvn.jboss.org/repos/hibernate/core/trunk/core/src/main/java/org/hibernate/property/DirectPropertyAccessor.java]
+
+Then starts the work to call FieldMetadata.getField() (or getMember()) instead of FieldMetadata.getFieldDefinition() and implement the  FD functionality needed at the respective place (and only that!) using:
+* the type of the Field/Member
+* its annotations
+
+Note here that there will be working code at all times, because the code that was not yet converted to Field/Member will still work with FieldDefinition.
+
+The proposal is to separate cross-cutting concerns while doing the FieldDefinition -> Field replacement.
+
+The solution we arrived at was to express the makumba use of metadata from the point of view of Makumba, not from the point of view of the metadata! this may _appear_ simplistic but it really makes a difference. Instead of trying to provide a universal API in FieldDefinition, which 
+fits the needs of all possible types, we just express the needs of makumba and we let the types and annotations cater for makumba needs, in a flexible way.
+
+For that, each makumba need (single concern) would be matched against the available types  and their annotations (cross-cutting concerns) like so:
+
+{{{
+"solveRelation", ? , @ManyToMany OR @OneToMany OR @ManyToOne OR 
+@OneToOne, TheSolver.returnTargetEntity()
+"solveRelation", ? , @Id, TheSolver.returnClassOfPrimaryKey()
+
+"isList", Integer OR String, @MakumbaEnum OR @ManyToOne, true
+"isMultiValueList", Collection, @MakumbaEnum OR @ManyToMany, true
+
+"toUser", ?, @ManyToOne OR @OneToOne, Pointer.writePointer()
+"toUser", ?, @Id, Pointer.writePointer(), Pointer.writePrimaryKey()
+"toUser", ?, @MakumbaEnum, MakumbaEnum.writeString()
+"toUser", ?, @Enumerate, MakumbaJPAEnum.writeString()
+}}}
+----
+Alternate proposal (manu) - first step:
+
+Makumba.conf:
+
+{{{
+concernRegisters = org.makumba.concern.RelationConcernRegister, com.myCompany.SomeConcernRegister, ...
+}}}
+
+{{{
+class RelationConcernRegister extends AbstractConcernRegister {
+
+@Override public void registerConcerns() {
+    addConcern("toUser", org.makumba.annotation.Enum.class, Pointer.getClass().getMethod("writePointer"), Pointer.getClass().getMethod("writePrimaryKey"));
+}
+}}}
+
+You see the idea. Advanced users should have enough java understanding to do something like this. then they register their additional concernRegisters in Makumba.conf. The default ones are in Makumba.conf.default. If they want to re-define new ones, they need to explicitely re-register the default ones, but I think that is ok. that way they can alter the behaviour, not register the default ones if they don't want to, etc.
+----
+
+Note that the latter lets me use the JPA enumerators like the makumba intEnums without having to change makumba everywhere...
+
+the general structure is
+{{{
+{ single-concern, type-s, annotation-s (in POJO), class . handler method or constant}
+}}}
+where type-s and annotation-s can contain AND or OR, or can be anything 
+(?). for starters, we can assume that OR is default and provide AND/OR 
+only when AND is really needed.
+
+the makumba needs are modeled as subclasses of SingleConcern like
+
+{{{
+public class RelationConcern extends SigleConcern {
+   public Class solveRelation(Member field)
+   ...
+}
+
+public class PresentationConcern extends SingleConcern{
+     public  Object toUser(Member field, Object value)
+     public boolean isList(Member field)
+     public boolean isMultiValueList(Member field)
+     ....
+}
+}}}
+and SingleConcern contains the type-annotation matching code.
+
+This allows us to solve cross-cutting concerns (type concerns) without 
+using AOP. During the discussion we also found that AOP does not always 
+fit well. It fits OK when e.g. you need to rewrite a Pointer or intEnum 
+value when it moves from db to presentation or back, but it doesn't fit 
+so well for other things like solveRelation and isList...
+
+Other advantages:
+* allows for pluggability of concerns
+* plugability of types
+* co-existance of makumba-specific types with others
+* we can have utility methods for concerns grouped, like e.g. RenderConcern.isMultiValue(Field)
+
+Another advantage of AOP is that you don't really need to declare the SingleConcern classes, just write
+
+{{{
+@toUser
+doSomethingWithValue(Member field, Object value)
+}}}
+
+and then the toUser interceptor would transform the value if any type-annotation pattern matches.
+
+anyway we thought that since we don't know how AOP can be used for the other cases than @toUser and @toDb, we go on without for now.
+
+!2.1 Once there is no more reference to FieldDefinition and DataDefinition, 
+remove them.
+
+
+! adapter interfaces
+
+{{{
+
+interface TypeMetadata{
+ public DataDefinition getDataDefinition();
+ public Class getClass();
+}
+
+interface FieldMetadata {
+  public FieldDefinition getFieldDefinition();
+  public Member getField();
+}
+
+interface FieldGroup {
+ public FieldMetadata getField(String name);
+ public Iterator<FieldMetaData> getFields();
+}
+
+}}}
+! simple implementations for the above with constructors
+{{{
+TypeMetaData
+ public TypeMetadata(String typeName){...}
+
+FieldMetaData
+  public FieldMetadata(String mddName, String fieldName){...}
+  public FieldMetadata(String scalarType){...}
+  public FieldMetadata(TypeMetadata pointTo){...}
+
+FieldGroup
+ public FieldGroup(OrderedMap<String, FieldMetadata>fields){..}
+ public FieldGroup(TypeMetadata fields){...}
+ 
+ }}}
+
+!issue with pointers
+it is a bit problematic for to make the pointer Field in the FieldMetadata(TypeMetadata pointTo) constructor. we could use the primary key of that type but that may have annotations that we may not want to have? well those annotations should not matter for query results anyway.

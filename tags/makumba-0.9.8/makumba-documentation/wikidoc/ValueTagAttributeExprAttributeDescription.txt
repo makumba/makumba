@@ -1,0 +1,1 @@
+MQL SELECT projection expression. It will be displayed if var nor printVar are not specified.

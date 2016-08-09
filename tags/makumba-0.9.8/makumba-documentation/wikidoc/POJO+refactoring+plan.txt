@@ -1,0 +1,5 @@
+[{ALLOW view Documentation}]
+[{ALLOW edit Documentation}]
+%%invisible [Category Meta]%%
+
+Moved to [http://trac.makumba.org/wiki/POJORefactoring]

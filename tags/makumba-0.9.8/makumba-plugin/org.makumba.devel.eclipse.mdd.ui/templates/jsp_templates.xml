@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<templates>
+  <template id="org.makumba.jsp.maktaglib" autoinsert="true" context="jsp_tag" deleted="false" description="Makumba taglib directive required for using makumba tag library" enabled="true" name="Makumba taglib directive">&lt;%@ taglib uri="http://www.makumba.org/presentation" prefix="mak" %&gt;</template>
+  <template id="org.makumba.jsp.makjsp" autoinsert="true" context="jsp_new" deleted="false" description="JSP file with Makumba taglib directive and html markup" enabled="true" name="New Makumba JSP File (html)">&lt;%@ page language="java" contentType="text/html; charset=${encoding}" pageEncoding="${encoding}"%&gt;
+&lt;%@ taglib uri="http://www.makumba.org/presentation" prefix="mak" %&gt;
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;meta http-equiv="Content-Type" content="text/html; charset=${encoding}"&gt;
+    &lt;title&gt;Insert title here&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    ${cursor}
+  &lt;/body&gt;
+&lt;/html&gt;</template>
+  <template id="org.makumba.jsp.generator" autoinsert="true" context="mak_generator" deleted="false" description="JSP file with Makumba taglib directive and html markup" enabled="true" name="New Makumba JSP File (html)">&lt;%@ taglib uri="http://www.makumba.org/presentation" prefix="mak" %&gt;
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;Insert title here&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    ${insert}
+  &lt;/body&gt;
+&lt;/html&gt;</template>
+</templates>

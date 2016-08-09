@@ -1,0 +1,1 @@
+Indicates for which [mak:list|ListTag] tag this pagination should be generated.
