@@ -1,238 +1,65 @@
-Array.prototype.inArray = function(x) { 
-    for(var i=0; i < this.length; i++) { 
-        if(x==undefined || x.trim()==this[i].trim()) return true; 
-    }
-    return false; 
-}; 
-
-// adds an element to the array if it does not already exist using a comparer 
-// function
-Array.prototype.pushIfNotExist = function(element) { 
-    if (!this.inArray(element)) {
-        this.push(element);
-    }
-}; 
-
-Mak = function() {
-  addMethod(this, "event", function(name) {
-    makEvent(name, null);
-  });
-  addMethod(this, "event", function(name, exprValue) {
-    makEvent(name, exprValue);
-  });
-  addMethod(this, "submit", function(formName) {
-	  makCheckOnSubmitAndSubmit(formName, 'false', null, null, null, null);
-  });
-  addMethod(this, "submit", function(formName, sectionEvent) {
-	  makCheckOnSubmitAndSubmit(formName, 'true', null, null, null, sectionEvent);
-  });
-  addMethod(this, "submit", function(formName, ajax, annotation, annotationSeparator, sectionEvent) {
-	  makCheckOnSubmitAndSubmit(formName, ajax, null, annotation, annotationSeparator, sectionEvent);
-  });
-  addMethod(this, "submit", function(formName, ajax, event, annotation, annotationSeparator, sectionEvent) {
-	  makCheckOnSubmitAndSubmit(formName, ajax, event, annotation, annotationSeparator, sectionEvent);
-  });
-  addMethod(this, "merge", function(h, h2){
-	  h2.each(function(pair){
-		  var arr= h.get(pair.key);
-		  if(arr==undefined)
-			  h.set(pair.key, pair.value);
-		  else
-			  arr.pushIfNotExist.apply(arr, pair.value);
-	  });
-  });
-}
-
 /**
- * makumba event - client-to-server-side event firing
- * - shows / hides / reloads sections depending on the event type
- * - when necessary makes an ajax request to the server with the given event and the page parameters,
- *   then updates the affected sections with the data
+ * Makumba-autocomplete
+ * This file handles the mak:section postback logic
  */
-makEvent = function(name, exprValue) {
-	
-	var eventName;
-	
-	if(exprValue == null) {
-		eventName = name;
-	} else {
-		eventName = name + "---" + exprValue;
-	}
-	
-	var eventParam = $H({__mak_event__: eventName});
-	var pageParameters = $H(_mak_page_params_);
-	
-	//eventParam.each(function(pair) {alert(pair.key + ' ' + pair.value)});
-	//pageParameters.each(function(pair) {alert(pair.key + ' ' + pair.value)});
-	
-	pageParameters = pageParameters.merge(eventParam);
-	
-	/*
-	// for each section we have to reload, display the waiting widget
-	toReload.each(function(id) {
-		$(id).update('<span class="sectionReload" ></span>');
-	});
-	*/
-	
-	
-	// AJAX callback on the page to fetch the new data
-	new Ajax.Request(_mak_page_url_, {
-		  method:'get',
-		  requestHeaders: {Accept: 'application/json'},
-		  parameters: pageParameters,
-		  onSuccess: function(transport) {
-			  doSections($H(transport.responseText.evalJSON()), eventName);
-		  }
-	});	
-}
-
-/**
- * submits a form, after checking its onSubmit method, either via partial postback or direct postback
- */
-makCheckOnSubmitAndSubmit = function(formId, ajax, event, annotation, annotationSeparator, eventName) {
-	var partialPostback = ajax != null && ajax == 'true';
-	if(event != null && partialPostback) {
-	    Event.stop(event);
-	}		
-    var onSubmitOk = true;
-    if($(formId).onsubmit instanceof Function) {
-    	onSubmitOk = $(formId).onsubmit();
-    }
-    if(onSubmitOk && partialPostback) {
-    	makSubmitAjax(formId, annotation, annotationSeparator, eventName);
-    } else if(onSubmitOk && !partialPostback) {
-    	$(formId).submit();
-    }
-}
-
-
-doSections= function(newContent, eventName) {
-	  
-	var eventToId = _mak_event_to_id_;
-	var idEventToType = _mak_idevent_to_type_;
-	var toReload = new Array();
-	var toShow = new Array();
-
-
-	var sections = eventToId.get(eventName);
-	if(sections == undefined) {
-		sections = new Array();
-	}
-
-	// for each section, hide it, show it, or schedule it for refresh
-	sections.each(function(id) {
-		var action = idEventToType.get(id + '___'+ eventName);
-		// alert("key: " + id + '___'+ name + " action:" + action);
-		if(action == 'show') {
-			toShow.push(id);
-		} else if(action == 'hide') {
-			$(id).hide();
-		} else if(action == 'reload') {
-			toReload.push(id);
-		}
-	});
-  	
-		// now go over the data and update the sections
-	newContent.each(function(pair) {
-		if(sections.indexOf(pair.key) != -1) {
-	 		$(pair.key).update(pair.value);
-	 		if(toShow.indexOf(pair.key) != -1) {
-	 			$(pair.key).show();
-	 		}
-		}
+(function($){
+	$(document).ready(function() {
+		// Bind event listener
+		$('[data-mak-hide-event]').each(function() {
+			var eventName = $(this).data('makHideEvent');
+			$(this).on(eventName, function(){
+				console.log('hiding');
+				$(this).hide();
+			});
 		});
-}
 
-/**
- * form submit via partial postback
- * - submits the form in an ajax request
- * - "fires" the returned event if everything went ok
- * - displays the form errors if there were errors (annotations and message)
- */
-makSubmitAjax = function(formName, annotation, annotationSeparator, eventName) {
-	$(formName).request({
-		  requestHeaders: {Accept: 'application/json'},
-		  onComplete: function(transport){
-			  doSections($H(transport.responseText.evalJSON()), eventName);
-		  }	 	
-	});		  
-}
-		  /*{
-			  var response = transport.responseText.evalJSON();
+		$('[data-mak-show-event]').each(function() {
+			console.log();
+			var eventName = $(this).data('makShowEvent');
+			$(this).on(eventName, function(){
+				console.log('showing');
+				$(this).show();
+			});
+		});
 
-			  // clear previous messages
-			  $(formName).select('span.makumba_field_annotation').each(function(e) {$(e).remove()});
-			  $(formName).select('div.makumba_form_message').each(function(e) {$(e).remove()});
+		// Bind event triggerers
+		$('[data-mak-on-click]').each(function() {
+			$(this).click(function() {
+				var eventName = $(this).data('makOnClick');
+				var eventList = [];
+				$.each(['show','hide'], function(i, ev){
+					eventList.push('[data-mak-' + ev +'-event=' + eventName + ']');
+				});
 
-			  if(response.event != undefined) {
-				  // TODO support for forms inside of a list that have a projection expression
-				  makEvent(response.event, null);
-				  insertMessage(formName, response.message);
-				  $(formName).reset();
-			  } else {
-				  insertMessage(formName, response.message);
-				  
-				  var fieldErrors = $H(response.fieldErrors);
-				  fieldErrors.each(function(pair) {
-					  var key = pair.key;
-					  var errors = pair.value;
-					  var sep = '<br>';
-					  if(annotationSeparator != null) {
-						  sep = annotationSeparator;
-					  }
-					  var inputSpan = new Element('span', {'class':'makumba_field_annotation'});
-					  for(var index = 0; index < errors.length; ++index) {
-						  var message = errors[index];
-						  var span = new Element('span', {'class':'LV_validation_message LV_invalid'}).update(message);
-						  $(inputSpan).insert({ bottom: span});
-						  if(index + 1 < errors.length) {
-							  $(span).insert({after: sep});
-						  }
-					  }
-					  
-					  var annotationPosition;
-					  if(annotation != null) {
-						  annotationPosition = annotation;
-					  } else {
-						  annotationPosition = 'after';
-					  }
-					  if(annotationPosition == 'before') {
-						  $(key).insert({before: inputSpan});
-					  } else if(annotationPosition == 'after') {
-						  $(key).insert({after: inputSpan});
-					  } else if(annotationPosition == 'both') {
-						  // FIXME doesn't actually work
-						  $(key).insert({before: inputSpan, after:inputSpan});
-					  }
-					  
-				  });
-			  }			  
-		  }*/
-	
+				$(eventList.join(',')).trigger(eventName);
+			});
+		});
 
+		// Bind the ajax call to the forms and prevent the actual POST call
+		$('.mak-ajax-form').each(function() {
+			$form = $(this);
+			$form.submit(function(e) {
+				e.preventDefault();
+				var response = $.ajax({
+					method: 'POST',
+					data: $form.serializeArray(),
+				}).done(function(){
+					responseHash = $.parseJSON(response.responseText);
+					updateSections($form.data('makTriggerEvent'), responseHash);
+				});
+			});
+		});
+	});
 
-/**
- * inserts the form submission message as first element inside of the form
- */
-insertMessage = function(formName, message) {
-	  var message = new String(message);
-	  if(!message.blank()) {
-		  var messageDiv = new Element('div', {'class':'makumba_form_message'});
-		  $(messageDiv).update(message);
-		  $(formName).insert({top: messageDiv});
-	  }
-
-}
-
-/**
- * addMethod - By John Resig (MIT Licensed)
- */
-function addMethod(object, name, fn) {
-    var old = object[ name ];
-    object[ name ] = function(){
-        if ( fn.length == arguments.length )
-            return fn.apply( this, arguments );
-        else if ( typeof old == 'function' )
-            return old.apply( this, arguments );
-    };
-}
+	/**
+	 * Update mak:section elements with the response of the AJAX request
+	 * @param {String} event    the event which triggered the refresh
+	 * @param {Object} response a hash with the responses for all sections, organized by form_id
+	 */
+	function updateSections(event, response) {
+		$('div[data-mak-reload-event=' + event + ']').each(function(){
+			var form_id = $(this).attr('id');
+			$(this).html(response[form_id]);
+		});
+	}
+})(jQuery);

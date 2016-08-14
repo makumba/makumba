@@ -229,4 +229,14 @@ public abstract class GenericMakumbaTag extends AnalysableTag {
     protected boolean isAttribute(String expression) {
         return expression != null && expression.startsWith("$");
     }
+    
+    protected String generateHTMLAttributes(Map<String, String> attributes) {
+    	String html = "";
+
+        for (Entry<String, String> attribute : attributes.entrySet()) {
+        	html += String.format("%s=\"%s\" ", attribute.getKey(), attribute.getValue());
+        }
+    	
+    	return html.trim();
+    }
 }

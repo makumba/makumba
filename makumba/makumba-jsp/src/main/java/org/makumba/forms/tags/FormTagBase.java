@@ -561,11 +561,10 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
         String suffix = "_form" + pageContext.getAttribute(FormTagBase.__MAKUMBA__FORM__COUNTER__);
         responder.setFormId(styleId != null ? styleId + suffix : suffix);
-
         fdp.onFormStartTag(getTagKey(), pageCache, pageContext);
 
         responder.setOperation(getOperation(), getResponderOperation(getOperation()));
-        responder.setExtraFormatting(extraFormatting);
+        responder.setExtraFormattingParams(extraFormattingParams);
         responder.setBasePointerType((String) pageCache.retrieve(MakumbaJspAnalyzer.BASE_POINTER_TYPES, tagKey));
 
         starttime = new java.util.Date().getTime();
@@ -635,14 +634,6 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
             sb = new StringBuffer();
             responder.writeFormPostamble(sb, basePointer, (HttpServletRequest) pageContext.getRequest());
-
-            // if this is a partial postback, watch the form submission to intercept it and do a custom mak:submit
-            // also catch the onSubmit as its needed for live validation
-            if (triggerEvent != null) {
-                sb.append("<script type=\"text/javascript\">").append("Event.observe('").append(responder.getFormId()).append(
-                    "', 'submit', function(event) {").append(getSubmitJavascriptCall("event", true)).append("});").append(
-                    "</script>");
-            }
 
             bodyContent.getEnclosingWriter().print(sb.toString());
             if (findParentForm() != null) {
