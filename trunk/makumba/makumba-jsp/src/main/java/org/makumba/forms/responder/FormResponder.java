@@ -27,7 +27,9 @@ import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Random;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -172,7 +174,7 @@ public class FormResponder extends Responder {
 
     protected boolean multipart;
 
-    StringBuffer extraFormatting;
+    Map<String, String> extraFormattingParams;
 
     private ClientsideValidationProvider provider = MakumbaJspConfiguration.getClientsideValidationProvider();
 
@@ -199,8 +201,18 @@ public class FormResponder extends Responder {
         this.method = method;
     }
 
-    public void setExtraFormatting(StringBuffer extraFormatting) {
-        this.extraFormatting = extraFormatting;
+    public void setExtraFormattingParams(Map<String, String> extraFormattingParams) {
+    	this.extraFormattingParams = extraFormattingParams;
+    }
+    
+    private StringBuffer stringifyExtraFormattingParams(Map<String, String> extraFormattingParams2) {
+        StringBuffer extraFormatting = new StringBuffer();
+
+        for (Entry<String, String> me : extraFormattingParams2.entrySet()) {
+            extraFormatting.append(" ").append(me.getKey()).append("=\"").append(me.getValue()).append("\" ");
+        }
+        
+        return extraFormatting;
     }
 
     public void writeFormPreamble(StringBuffer sb, String basePointer, HttpServletRequest request) {
@@ -220,6 +232,19 @@ public class FormResponder extends Responder {
         if (triggerEvent != null && action == null) {
             targetPage = request.getContextPath() + request.getServletPath();
             actionBase = targetPage;
+            String styleClass = extraFormattingParams.get("class");
+            
+            // add the mak-ajax-form class to the form if it's ajax enabled
+            if(styleClass == null) {
+            	styleClass = "mak-ajax-form";
+            } else {
+            	styleClass += " mak-ajax-form";
+            }
+            
+            extraFormattingParams.put("data-mak-trigger-event", triggerEvent);
+            
+            extraFormattingParams.put("class", styleClass);
+
             sep = "?";
         } else {
             targetPage = action;
@@ -233,6 +258,7 @@ public class FormResponder extends Responder {
             }
         }
 
+        StringBuffer extraFormatting = stringifyExtraFormattingParams(extraFormattingParams);
         if (operation.equals("deleteLink")) {
 
             // a root deleteLink
@@ -273,7 +299,6 @@ public class FormResponder extends Responder {
             if (operation.equals("search") && methodDefault) {
                 method = "GET";
             }
-
             sb.append("<form");
             if (triggerEvent == null) {
                 // also allowing anchors and query parameters in the actions of common forms (bug 1143)

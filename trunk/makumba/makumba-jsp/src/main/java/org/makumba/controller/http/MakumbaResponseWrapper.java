@@ -343,6 +343,7 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
         CollectionUtils.addAll(resources,
             MakumbaJspConfiguration.getClientsideValidationProvider().getNeededJavaScriptFileNames());
         CollectionUtils.addAll(resources, MakumbaJspConfiguration.getCalendarProvider().getNeededJavaScriptFileNames());
+        resources.add("jquery-3.1.0.min.js");
         resources.add("makumbaSetChooser.js");
         resources.add("prototype.js");
         resources.add("scriptaculous.js");

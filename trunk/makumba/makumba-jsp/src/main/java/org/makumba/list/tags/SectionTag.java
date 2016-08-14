@@ -2,6 +2,7 @@ package org.makumba.list.tags;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -12,7 +13,6 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyContent;
 import javax.servlet.jsp.tagext.BodyTag;
 
-import org.apache.commons.collections.map.MultiValueMap;
 import org.makumba.LogicException;
 import org.makumba.ProgrammerError;
 import org.makumba.analyser.MakumbaJspAnalyzer;
@@ -225,8 +225,6 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
             QueryTag parentList = getParentListTag();
             String exprValue = getIterationExpressionValue(pageCache, parentList);
 
-            writeJavascript(out, exprValue);
-
             // check if we are invoked, i.e. if an event has been "fired" that requires us to do stuff
             isInvoked = matches(getEvent(pageContext.getRequest()), exprValue);
 
@@ -237,8 +235,24 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
 
             if (!isInvoked) {
 
-                out.print("<div id=\"" + getSectionID(exprValue) + "\""
-                        + (showOn != null ? " style=\"display:none;\"" : "") + ">");
+            	Map<String, String> extraAttributes = new HashMap<String, String>();
+            	extraAttributes.put("id", getSectionID(exprValue));
+
+            	if(showOn != null) {
+            		extraAttributes.put("style", "display: none;");
+            		extraAttributes.put("data-mak-show-event", showOn);
+            	}
+
+            	if(hideOn != null) {
+            		extraAttributes.put("data-mak-hide-event", hideOn);
+            	}
+
+            	if(reloadOn != null) {
+            		extraAttributes.put("data-mak-reload-event", reloadOn);
+            	}
+
+            	String start_tag = String.format("<div %s>", generateHTMLAttributes(extraAttributes));
+            	out.print(start_tag);
             }
 
         } catch (IOException e) {
@@ -246,45 +260,6 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
         }
 
         return EVAL_BODY_BUFFERED;
-    }
-
-    void writeJavascript(JspWriter out, String exprValue) throws IOException, ProgrammerError {
-        String[] events = new String[] { showOn, hideOn, reloadOn };
-        String[] eventAction = new String[] { "show", "hide", "reload" };
-
-        out.println("<script type=\"text/javascript\">");
-        if (getEvent(pageContext.getRequest()) == null && pageContext.getRequest().getAttribute(SECTION_INIT) == null) {
-            pageContext.getRequest().setAttribute(SECTION_INIT, "x");
-            out.println("var mak = new Mak();");
-            out.println("var _mak_event_to_id_= $H();");
-            out.println("var _mak_idevent_to_type_= $H();");
-
-            HttpServletRequest req = (HttpServletRequest) pageContext.getRequest();
-            String pagePath = req.getContextPath() + req.getServletPath();
-            out.println("var _mak_page_url_ = '" + pagePath + "';\n");
-            out.println("var _mak_page_params_ = " + getQueryParameters(req) + ";\n");
-        }
-
-        MultiValueMap ev2Id = new MultiValueMap();
-        MultiValueMap idEvent2Type = new MultiValueMap();
-        for (int i = 0; i < events.length; i++) {
-            if (events[i] != null) {
-                if (events[i].indexOf("___") > -1) {
-                    throw new ProgrammerError("Invalid event name '" + events[i]
-                            + "', '___' is not allowed in event names");
-                }
-                if (events[i].indexOf(EXPR_SEPARATOR) > -1) {
-                    throw new ProgrammerError("Invalid event name '" + events[i]
-                            + "', '---' is not allowed in event names");
-                }
-                idEvent2Type.put(getSectionID(exprValue) + "___" + events[i], eventAction[i]);
-                ev2Id.put(events[i], getSectionID(exprValue));
-            }
-        }
-
-        out.println("mak.merge(_mak_event_to_id_, $H(" + gson.toJson(ev2Id) + "));");
-        out.println("mak.merge(_mak_idevent_to_type_, $H(" + gson.toJson(idEvent2Type) + "));");
-        out.println("</script>");
     }
 
     @Override
