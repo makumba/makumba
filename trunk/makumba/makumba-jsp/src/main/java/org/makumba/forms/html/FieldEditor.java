@@ -24,6 +24,8 @@
 package org.makumba.forms.html;
 
 import java.util.Dictionary;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.makumba.ProgrammerError;
 import org.makumba.commons.attributes.HttpParameters;
@@ -127,6 +129,21 @@ public class FieldEditor extends org.makumba.commons.formatters.FieldFormatter {
     public String formatValue(RecordFormatter rf, int fieldIndex, Object o, Dictionary<String, Object> formatParams) {
         // return super.format(o, formatParams);
         throw new ProgrammerError("If this method is needed, overload it in the inheriting class");
+    }
+    
+    /**
+     * Renders a map of attributes for the HTML tag to HTML format
+     * @param attributes key-value pairs of attributes to be rendered
+     * @return the attributes in string format
+     */
+    protected String renderHTMLAttributes(Map<String, String> attributes) {
+    	String html = "";
+
+        for (Entry<String, String> attribute : attributes.entrySet()) {
+        	html += String.format("%s=\"%s\" ", attribute.getKey(), attribute.getValue());
+        }
+    	
+    	return html.trim();
     }
 
     public void onStartup(RecordFormatter rf, int fieldIndex, Dictionary<String, Object> formatParams) {
