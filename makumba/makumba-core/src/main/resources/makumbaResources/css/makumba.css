@@ -33,6 +33,7 @@ div.autocomplete {
   width: 250px;
   background-color: white;
   border: 1px solid #888;
+  display: none;
   margin: 0;
   padding: 0;
 }
@@ -52,7 +53,6 @@ div.autocomplete ul li {
   display: block;
   margin: 0;
   padding: 2px;
-  height: 32px;
   cursor: pointer;
 }
 

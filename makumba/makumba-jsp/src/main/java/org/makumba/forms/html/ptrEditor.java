@@ -33,8 +33,6 @@ import org.makumba.Pointer;
 import org.makumba.commons.StringUtils;
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.RecordFormatter;
-import org.makumba.commons.http.MakumbaServlet;
-import org.makumba.commons.tags.MakumbaJspConfiguration;
 import org.makumba.forms.tags.SearchFieldTag;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryProvider;
@@ -222,38 +220,39 @@ public class ptrEditor extends choiceEditor {
             Dictionary<String, Object> formatParams) {
 
         String res = "", id = "", inputName = "";
+        Map<String,String> hiddenTagAttributes = new HashMap<String, String>();
+        Map<String,String> visibleTagAttributes = new HashMap<String, String>();
 
         inputName = getInputName(rf, fieldIndex, formatParams);
 
-        // TODO: add a hidden input with the right name and id
-        // extend the JS method for autocomplete to write the selected value in the hidden input
+        id = "mak-ac-choices-" + StringUtils.getParam("id", getExtraFormatting(rf, fieldIndex, formatParams));
 
-        id = StringUtils.getParam("id", getExtraFormatting(rf, fieldIndex, formatParams));
-
-        // we need to have a different id for the visible input field
         // dirty hack, because we get the id hardcoded in the extra formatting params
         String extraFormattingVisible = getExtraFormatting(rf, fieldIndex, formatParams);
-        int cutIndex = extraFormattingVisible.indexOf("id=") + 4 + id.length();
-        extraFormattingVisible = extraFormattingVisible.substring(0, cutIndex) + "_visible"
-                + extraFormattingVisible.substring(cutIndex);
+        extraFormattingVisible = extraFormattingVisible.replaceAll("id=\"\\S+\"", "");
 
-        res += "<input name=\"" + inputName + "_visible\" type=\"text\" value=\""
-                + formatValue(rf, fieldIndex, o, formatParams) + "\" " + extraFormattingVisible
-                + "autocomplete=\"off\">";
+        visibleTagAttributes.put("type", "text");
+        visibleTagAttributes.put("value", formatValue(rf, fieldIndex, o, formatParams));
+        visibleTagAttributes.put("autocomplete", "off");
+        visibleTagAttributes.put("autocomplete", "off");
+        visibleTagAttributes.put("data-mak-ac-target", id);
+        visibleTagAttributes.put("data-mak-ac-type", rf.dd.getFieldDefinition(fieldIndex).getOriginalFieldDefinition().getDataDefinition().getName());
+        visibleTagAttributes.put("data-mak-ac-field", rf.dd.getFieldDefinition(fieldIndex).getOriginalFieldDefinition().getName());
+        visibleTagAttributes.put("data-mak-ac-field-type","ptr");
+    	visibleTagAttributes.put("data-mak-ac", "on");
+    	visibleTagAttributes.put("data-mak-ac-query-lang", (String) formatParams.get("org.makumba.forms.queryLanguage"));
+        visibleTagAttributes.put("data-mak-ac-hidden-field", inputName);
 
-        res += "<input name=\"" + inputName + "\" type=\"hidden\" value=\""
-                + formatValue(rf, fieldIndex, o, formatParams) + "\" "
-                + getExtraFormatting(rf, fieldIndex, formatParams) + ">";
-
+        hiddenTagAttributes.put("name", inputName);
+        hiddenTagAttributes.put("type", "hidden");
+        hiddenTagAttributes.put("value", formatValue(rf, fieldIndex, o, formatParams));
+                
+        res += String.format("<input %s %s>", renderHTMLAttributes(visibleTagAttributes), extraFormattingVisible);
+        res += String.format("<input %s %s>", renderHTMLAttributes(hiddenTagAttributes), getExtraFormatting(rf, fieldIndex, formatParams));
+        
         // the second part of the auto-complete, i.e. the dropdown that appears
 
-        res += "<div id=\"autocomplete_choices_" + id + "\" class=\"autocomplete\"></div>";
-
-        res += "<script type=\"text/javascript\">MakumbaAutoComplete.AutoComplete(\"" + id + "\", \""
-                + MakumbaJspConfiguration.getServletLocation(MakumbaServlet.AUTOCOMPLETE) + "\", \""
-                + rf.dd.getFieldDefinition(fieldIndex).getOriginalFieldDefinition().getDataDefinition().getName()
-                + "\", \"" + rf.dd.getFieldDefinition(fieldIndex).getOriginalFieldDefinition().getName()
-                + "\", \"ptr\", \"" + (String) formatParams.get("org.makumba.forms.queryLanguage") + "\");</script>";
+        res += "<div id=\"" + id + "\" class=\"autocomplete\"></div>";
 
         return res;
     }

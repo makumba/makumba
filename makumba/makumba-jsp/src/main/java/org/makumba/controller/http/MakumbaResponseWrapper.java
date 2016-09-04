@@ -234,6 +234,10 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
                                 + resource + "\"/>\n";
                     }
                 }
+                javaScriptResources += "  <script type\"text/javascript\">\n"
+                		+ "Mak.AUTOCOMPLETE_LOCATION = '" + MakumbaJspConfiguration.getServletLocation(MakumbaServlet.AUTOCOMPLETE) + "';\n"
+                		+ "Mak.CONTEXT_PATH = '" + request.getContextPath() + "';\n";
+                javaScriptResources += "</script>";
             }
         }
     }
@@ -344,6 +348,7 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
             MakumbaJspConfiguration.getClientsideValidationProvider().getNeededJavaScriptFileNames());
         CollectionUtils.addAll(resources, MakumbaJspConfiguration.getCalendarProvider().getNeededJavaScriptFileNames());
         resources.add("jquery-3.1.0.min.js");
+        resources.add("makumba-mak.js");
         resources.add("makumbaSetChooser.js");
         resources.add("prototype.js");
         resources.add("scriptaculous.js");

@@ -24,6 +24,8 @@
 package org.makumba.forms.html;
 
 import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.makumba.HtmlUtils;
 import org.makumba.ProgrammerError;
@@ -31,8 +33,6 @@ import org.makumba.commons.StringUtils;
 import org.makumba.commons.formatters.FieldFormatter;
 import org.makumba.commons.formatters.InvalidValueException;
 import org.makumba.commons.formatters.RecordFormatter;
-import org.makumba.commons.http.MakumbaServlet;
-import org.makumba.commons.tags.MakumbaJspConfiguration;
 
 public class charEditor extends FieldEditor {
 
@@ -97,38 +97,35 @@ public class charEditor extends FieldEditor {
                 && formatParams.get("clearDefault").equals("true");
         String test = getParams(rf, fieldIndex, formatParams);
         String res = "", id = "";
-
-        res += "<input name=\""
-                + getInputName(rf, fieldIndex, formatParams)
-                + "\" type=\""
-                + getInputType(rf, fieldIndex, formatParams)
-                + "\" value=\""
-                + formatValue(rf, fieldIndex, o, formatParams)
-                + "\" "
-                + test
-                + getExtraFormatting(rf, fieldIndex, formatParams)
-                + (autoComplete ? "autocomplete=\"off\"" : "")
-                + (clearDefault ? "onBlur=\"if(this.value=='') this.value='"
-                        + HtmlUtils.escapeQuotes(HtmlUtils.string2html(getDefaultValueFormat(rf, fieldIndex,
-                            formatParams)))
-                        + "';\" onFocus=\"if(this.value=='"
-                        + HtmlUtils.escapeQuotes(HtmlUtils.string2html(getDefaultValueFormat(rf, fieldIndex,
-                            formatParams))) + "') this.value='';\"" : "") + ">";
+        Map<String,String> tagAttributes = new HashMap<String, String>();
+        
+        tagAttributes.put("name", getInputName(rf, fieldIndex, formatParams));
+        tagAttributes.put("type", getInputType(rf, fieldIndex, formatParams));
+        tagAttributes.put("value", formatValue(rf, fieldIndex, o, formatParams));
+        
+        if(clearDefault == true) {
+        	String defaultValue = HtmlUtils.escapeQuotes(HtmlUtils.string2html(getDefaultValueFormat(rf, fieldIndex, formatParams)));
+        	tagAttributes.put("onBlur", String.format("if(this.value=='') this.value='%s';", defaultValue));
+        	tagAttributes.put("onFocus", String.format("if(this.value=='%s') this.value=''", defaultValue));
+        }
+        
+        if(autoComplete == true) {
+            id = "mak-ac-choices-" + StringUtils.getParam("id", getExtraFormatting(rf, fieldIndex, formatParams));
+        	tagAttributes.put("autocomplete", "off");
+        	tagAttributes.put("data-mak-ac-target", id);
+        	tagAttributes.put("data-mak-ac-type", rf.dd.getFieldDefinition(fieldIndex).getOriginalFieldDefinition().getDataDefinition().getName());
+        	tagAttributes.put("data-mak-ac-field", rf.dd.getFieldDefinition(fieldIndex).getOriginalFieldDefinition().getName());
+        	tagAttributes.put("data-mak-ac-field-type","char");
+        	tagAttributes.put("data-mak-ac", "on");
+        	tagAttributes.put("data-mak-ac-query-lang", (String) formatParams.get("org.makumba.forms.queryLanguage"));
+        }
+        
+        res = String.format("<input %s %s %s>", renderHTMLAttributes(tagAttributes), test, getExtraFormatting(rf, fieldIndex, formatParams));
+        
 
         // the second part of the auto-complete, i.e. the dropdown that appears
         if (autoComplete && !getInputType(rf, fieldIndex, formatParams).equals("password")) {
-            // getting the id won't work for dates and the other type commented in the hack in FieldFormatter
-            id = StringUtils.getParam("id", getExtraFormatting(rf, fieldIndex, formatParams));
-
-            res += "<div id=\"autocomplete_choices_" + id + "\" class=\"autocomplete\"></div>";
-
-            res += "<script type=\"text/javascript\">MakumbaAutoComplete.AutoComplete(\"" + id + "\", \""
-                    + MakumbaJspConfiguration.getServletLocation(MakumbaServlet.AUTOCOMPLETE) + "\", \""
-                    + rf.dd.getFieldDefinition(fieldIndex).getOriginalFieldDefinition().getDataDefinition().getName()
-                    + "\", \"" + rf.dd.getFieldDefinition(fieldIndex).getOriginalFieldDefinition().getName()
-                    + "\", \"char\", \"" + (String) formatParams.get("org.makumba.forms.queryLanguage")
-                    + "\");</script>";
-
+            res += "<div id=\"" + id + "\" class=\"autocomplete\"></div>";
         } else if (autoComplete && getInputType(rf, fieldIndex, formatParams).equals("password")) {
             throw new ProgrammerError("Can't use auto-complete on an input field of type 'password'!");
         }

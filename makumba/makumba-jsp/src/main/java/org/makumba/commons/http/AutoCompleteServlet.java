@@ -43,6 +43,9 @@ import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.QueryProvider;
 import org.makumba.providers.TransactionProvider;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 /**
  * This servlet figures out a list of possible values given a beginning string on a field of a given type. Results are
  * returned as described at http://github.com/madrobby/scriptaculous/wikis/ajax-autocompleter TODO: this should work
@@ -72,9 +75,12 @@ public class AutoCompleteServlet extends HttpServlet {
         String fieldName = req.getParameter("field");
         String fieldType = req.getParameter("fieldType");
         String queryLang = req.getParameter("queryLang");
-
+        Map<String, Object> result = new HashMap<String, Object>();
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+       
         if (StringUtils.isBlank(typeName) || StringUtils.isBlank(fieldName)) {
-            writer.println("{error: \"All 'type' and 'field' parameters need to be not-empty!\"}");
+        	result.put("error", "All 'type' and 'field' parameters need to be not-empty!");
+            writer.println(gson.toJson(result));
             return;
         }
 
@@ -103,27 +109,18 @@ public class AutoCompleteServlet extends HttpServlet {
             }
 
             if (fieldType.equals("char")) {
-
                 String query = "select p." + fieldName + " as possibility from " + typeName + " p where p." + fieldName
                         + " like '" + value + "%' group by p." + fieldName;
-
+                
                 Vector<Dictionary<String, Object>> v = qp.execute(query, null, 0, -1);
 
-                if (v.size() > 0) {
-                    String result = "<ul>";
-                    for (Dictionary<String, Object> dictionary : v) {
-                        String possibility = (String) dictionary.get("possibility");
-                        result += "<li>" + possibility + "</li>";
-                    }
-                    result += "</ul>";
-
-                    writer.print(result);
-
-                } else {
-                    // we return an empty list
-                    writer.print("<ul></ul>");
+                Vector<String> matches = new Vector<String>();
+                for (Dictionary<String, Object> dictionary : v) {
+                    matches.addElement((String) dictionary.get("possibility"));
                 }
-
+                
+                result.put("result", matches);                
+                writer.print(gson.toJson(result));
             } else if (fieldType.equals("ptr")) {
 
                 // compose queries
@@ -149,20 +146,14 @@ public class AutoCompleteServlet extends HttpServlet {
                 Vector<Dictionary<String, Object>> v = new Vector<Dictionary<String, Object>>();
                 v = qp.execute(m.get(queryLang), null, 0, -1);
 
-                if (v.size() > 0) {
-                    String result = "<ul>";
-                    for (Dictionary<String, Object> dictionary : v) {
-                        result += "<li id=\"" + ((Pointer) dictionary.get("choice")).toExternalForm() + "\">"
-                                + (String) dictionary.get("title") + "</li>";
-                    }
-                    result += "</ul>";
-
-                    writer.print(result);
-
-                } else {
-                    // we return an empty list
-                    writer.print("<ul></ul>");
+                
+                Map<String,String> matches = new HashMap<String,String>();
+                
+                for (Dictionary<String, Object> dictionary : v) {
+                	matches.put(((Pointer) dictionary.get("choice")).toExternalForm(), (String) dictionary.get("title"));
                 }
+                result.put("result", matches);
+                writer.print(gson.toJson(result));                
             }
         } finally {
             if (qp != null) {

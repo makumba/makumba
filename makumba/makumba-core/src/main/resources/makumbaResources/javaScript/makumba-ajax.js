@@ -8,16 +8,13 @@
 		$('[data-mak-hide-event]').each(function() {
 			var eventName = $(this).data('makHideEvent');
 			$(this).on(eventName, function(){
-				console.log('hiding');
 				$(this).hide();
 			});
 		});
 
 		$('[data-mak-show-event]').each(function() {
-			console.log();
 			var eventName = $(this).data('makShowEvent');
 			$(this).on(eventName, function(){
-				console.log('showing');
 				$(this).show();
 			});
 		});

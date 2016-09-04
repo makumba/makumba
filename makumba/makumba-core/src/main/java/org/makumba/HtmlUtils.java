@@ -29,7 +29,7 @@ import org.makumba.commons.ReadableFormatter;
 /**
  * This class provides basic 'text-to-HTML' functionality.<br/>
  * Note: previously this was an existing class in the internal "util" package (fred, 2003-08-24).
- * 
+ *
  * @author
  * @version $Id$
  */
