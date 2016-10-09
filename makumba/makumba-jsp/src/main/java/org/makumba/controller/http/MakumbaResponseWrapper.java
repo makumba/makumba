@@ -236,6 +236,8 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
                 }
                 javaScriptResources += "  <script type\"text/javascript\">\n"
                 		+ "Mak.AUTOCOMPLETE_LOCATION = '" + MakumbaJspConfiguration.getServletLocation(MakumbaServlet.AUTOCOMPLETE) + "';\n"
+						+ "Mak.UNIQUENESS_LOCATION = '"
+						+ MakumbaJspConfiguration.getServletLocation(MakumbaServlet.UNIQUENESS) + "';\n"
                 		+ "Mak.CONTEXT_PATH = '" + request.getContextPath() + "';\n";
                 javaScriptResources += "</script>";
             }
@@ -344,9 +346,6 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
      */
     private static LinkedHashSet<String> buildRequiredResources() {
         LinkedHashSet<String> resources = new LinkedHashSet<String>();
-        CollectionUtils.addAll(resources,
-            MakumbaJspConfiguration.getClientsideValidationProvider().getNeededJavaScriptFileNames());
-        CollectionUtils.addAll(resources, MakumbaJspConfiguration.getCalendarProvider().getNeededJavaScriptFileNames());
         resources.add("jquery-3.1.0.min.js");
         resources.add("makumba-mak.js");
         resources.add("makumbaSetChooser.js");
@@ -354,6 +353,9 @@ public class MakumbaResponseWrapper extends HttpServletResponseWrapper {
         resources.add("scriptaculous.js");
         resources.add("makumba-autocomplete.js");
         resources.add("makumba-ajax.js");
+		CollectionUtils.addAll(resources,
+				MakumbaJspConfiguration.getClientsideValidationProvider().getNeededJavaScriptFileNames());
+		CollectionUtils.addAll(resources, MakumbaJspConfiguration.getCalendarProvider().getNeededJavaScriptFileNames());
 
         resources.add("makumba.css");
 

@@ -47,7 +47,7 @@ public class UniquenessServlet extends HttpServlet {
         String tableName = req.getParameter("table");
         String fieldName = req.getParameter("field");
         if (StringUtils.isBlank(value) || StringUtils.isBlank(tableName) || StringUtils.isBlank(fieldName)) {
-            writer.println("{error: \"All 'value', 'table' and 'field' parameters need to be not-empty!\"}");
+			writer.println("{\"error\": \"All 'value', 'table' and 'field' parameters need to be not-empty!\"}");
             return;
         }
 
@@ -60,18 +60,18 @@ public class UniquenessServlet extends HttpServlet {
             try {
                 dd = DataDefinitionProvider.getInstance().getDataDefinition(tableName);
                 if (dd == null) {
-                    writer.println("{error: \"No such table!\"}");
+					writer.println("{\"error\": \"No such table!\"}");
                     return;
                 }
             } catch (Throwable e) {
-                writer.println("{error: \"No such table!\"}");
+				writer.println("{\"error\": \"No such table!\"}");
                 return;
             }
 
             // check if the field exists
             FieldDefinition fd = dd.getFieldDefinition(fieldName);
             if (fd == null) {
-                writer.println("{error: \"No such field!\"}");
+				writer.println("{\"error\": \"No such field!\"}");
                 return;
             }
 
@@ -99,9 +99,12 @@ public class UniquenessServlet extends HttpServlet {
                     Date date = c.getTime();
                     v = transaction.executeQuery(OQL, date);
                 } else {
-                    writer.println("{error: \"incorrect date\"}");
+					writer.println("{\"error\": \"incorrect date\"}");
                     return;
                 }
+			} else if (fd.isRealType()) { // if it's a double
+				Double valueOf = Double.valueOf(value);
+				v = transaction.executeQuery(OQL, valueOf);
             }
             // if it's a string
             else {
@@ -109,9 +112,9 @@ public class UniquenessServlet extends HttpServlet {
             }
 
             if (v.size() > 0) {
-                writer.print("{success: \"not unique\"}");
+				writer.print("{\"success\": \"not unique\"}");
             } else {
-                writer.print("{success: \"unique\"}");
+				writer.print("{\"success\": \"unique\"}");
             }
         } finally {
             if (transaction != null) {
@@ -122,4 +125,8 @@ public class UniquenessServlet extends HttpServlet {
         writer.close();
     }
 
+	@Override
+	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    	doGet(req, resp);
+    }
 }
