@@ -28,8 +28,8 @@ import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Random;
 import java.util.Map.Entry;
+import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -117,11 +117,7 @@ public class FormResponder extends Responder {
                         "checkbox", "tickbox" })) {
             extraFormatting += "id=\"" + fname + formIdentifier + "\" ";
         }
-
-        FieldEditor.setSuffix(paramCopy, storedSuffix);
-        FieldEditor.setExtraFormatting(paramCopy, extraFormatting);
-        FieldEditor.setFormName(paramCopy, formName);
-
+        
         boolean display = formatParams.get("org.makumba.noDisplay") == null;
         Integer i = indexes.get(fname);
         if (i != null) {
@@ -150,9 +146,20 @@ public class FormResponder extends Responder {
         // add client side validation, but only for edit operations (not search), and for fields that are visible
         if (!operation.equals("search") && display
                 && org.makumba.commons.StringUtils.equalsAny(clientSideValidation, new String[] { "true", "live" })) {
-            provider.initField(fname, formIdentifier.toString(), ftype, clientSideValidation.equals("live"));
+
+			String dataValidationJSON = provider.getFieldValidationRules(fname, formIdentifier.toString(), ftype,
+					clientSideValidation.equals("live"));
+
+			if (dataValidationJSON != null) {
+				extraFormatting = "data-mak-validation='" + dataValidationJSON + "' ";
+			}
         }
         max++;
+
+		FieldEditor.setSuffix(paramCopy, storedSuffix);
+		FieldEditor.setExtraFormatting(paramCopy, extraFormatting);
+		FieldEditor.setFormName(paramCopy, formName);
+
         return display ? editor.format(max - 1, fval, paramCopy) : "";
     }
 
@@ -258,11 +265,10 @@ public class FormResponder extends Responder {
             }
         }
 
-        StringBuffer extraFormatting = stringifyExtraFormattingParams(extraFormattingParams);
         if (operation.equals("deleteLink")) {
 
             // a root deleteLink
-
+			StringBuffer extraFormatting = stringifyExtraFormattingParams(extraFormattingParams);
             sb.append("<a href=\"").append(actionBase).append(sep).append(basePointerName).append("=").append(
                 basePointer).append('&').append(responderName).append("=").append(getPrototype()).append(actionAnchor).append(
                 "\" ").append(extraFormatting).append(">");
@@ -288,6 +294,7 @@ public class FormResponder extends Responder {
             // formatting - we add it to the button instead of the form as per #986
             // this makes sense as a deleteForm renders as only visible element a button and hence any formatting should
             // be applied to it
+			StringBuffer extraFormatting = stringifyExtraFormattingParams(extraFormattingParams);
             sb.append(extraFormatting + " ");
 
             sb.append("value=\"");
@@ -314,15 +321,19 @@ public class FormResponder extends Responder {
             // but, do it only for edit operations (not search)
             if (!operation.equals("search")
                     && org.makumba.commons.StringUtils.equalsAny(clientSideValidation, new String[] { "true", "live" })) {
-                StringBuffer onSubmitValidation = provider.getOnSubmitValidation();
-                // we append it only if we actually have data
-                if (onSubmitValidation != null && onSubmitValidation.length() > 0) {
-                    sb.append(" onsubmit=\"return ");
-                    sb.append(onSubmitValidation);
-                    sb.append("\"");
-                }
-            }
 
+				String elementClass = extraFormattingParams.get("class");
+				String formValidationClasses = provider.getFormValidationClasses();
+
+				if (elementClass == null) {
+					elementClass = formValidationClasses;
+				} else {
+					elementClass += " " + formValidationClasses;
+				}
+
+				extraFormattingParams.put("class", elementClass);
+            }
+			StringBuffer extraFormatting = stringifyExtraFormattingParams(extraFormattingParams);
             sb.append(extraFormatting);
             sb.append(">");
         }
@@ -386,10 +397,6 @@ public class FormResponder extends Responder {
         if (editor != null) {
             editor.initFormatters();
         }
-    }
-
-    public void writeClientsideValidation(StringBuffer sb) {
-        sb.append(provider.getClientValidation(clientSideValidation.equals("live")));
     }
 
     public void setLazyEvaluatedInputs(HashMap<String, String> unresolvedInputValues) {

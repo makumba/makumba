@@ -628,7 +628,6 @@ public class FormTagBase extends GenericMakumbaTag implements BodyTag {
 
             if (!getOperation().equals("search") && !(this instanceof DeleteTag) && isClientSideValidation) {
                 sb = new StringBuffer();
-                responder.writeClientsideValidation(sb);
                 bodyContent.getEnclosingWriter().print(sb.toString());
             }
 

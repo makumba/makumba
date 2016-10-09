@@ -1,118 +1,145 @@
-/** $Id: AllowedException.java 1049 2005-06-25 13:16:52Z rosso_nero $
-adds functions to the livevalidation framework which are not defined there, e.g. comparison of strings and numbers. 
+/**
+ * Makumba liveValidation
+ * This file handles the makumba live validation
+ * @TODO: implement date comparison
+ */
+(function($){
+	'use strict';
 
-Issues to fix:
+	$(document).ready(function() {
+		$('.mak-live-validation').each(function(){
+			var $form = $(this);
+			$('input,textarea').each(function(){
+				if(!$(this).attr('data-mak-validation'))
+					return;
 
-- If we compare field1 with field2, then we add a validation only on field1 for the moment ==> there should be a way to trigger this validation when field2 is edited
+				$(this).focusout(function(){
+					$(this).next('.mak-validation').remove();
+					var ruleset = $(this).data('makValidation');
+					var errors = [];
+					for( var rule in ruleset) {
+						var error = $(this).checkRule(rule, ruleset[rule], $form);
+						if(error) {
+							errors.push(error);
+						}
+					}
+					$(this).displayMessage(errors);
+				});
+			});
+		});
+	});
 
-- comparison of dates should be implemented
+	$.fn.displayMessage = function(messages) {
+		var html = '<span class="mak-validation mak-validation-error">' + messages.join('; ') + '</span>';
+		$(this).after(html);
+	}
 
-*/
+	$.fn.checkRule = function(rule, ruleAttributes, $form) {
+		var $input = $(this);
+		switch(rule) {
+			case 'presence':
+					var value = $input.val();
+					if(!value) return(ruleAttributes.failureMessage);
+				break;
+			case 'length':
+				var value = $input.val();
+				if(value.length > ruleAttributes.maximum || value.length < ruleAttributes.minimum) {
+					return ruleAttributes.failureMessage;
+				}
+				break;
+			case 'uniqueness':
+				var response = $.ajax({
+					url: Mak.CONTEXT_PATH + Mak.UNIQUENESS_LOCATION,
+					method: 'GET',
+					data: {
+						field: ruleAttributes.field,
+						table: ruleAttributes.table,
+						value: $input.val(),
+					},
+				}).done(function(){
+					var responseHash = $.parseJSON(response.responseText);
+					if(responseHash.success && responseHash.success == 'not unique') {
+						return ruleAttributes.failureMessage;
+					}
+				});
+				break;
+			case 'numberComparison':
+				var thisValue = $input.val();
+				var otherValue;
+				if(ruleAttributes.value) {
+					otherValue = ruleAttributes.value;
+				} else {
+					otherValue = $form.children('[name=' + ruleAttributes.field + ']').val();
+				}
 
-var MakumbaValidate = {};
+				if(thisValue == '' || otherValue == '') return;
 
-// define a textual description of the comparison operators
-this.comparisonOperatorTextual = new Array();
-comparisonOperatorTextual["="] = "equal to";
-comparisonOperatorTextual[">"] = "greater than";
-comparisonOperatorTextual[">="] = "equal or greater than";
-comparisonOperatorTextual["<"] = "less than";
-comparisonOperatorTextual["<="] = "equal or less than";
-comparisonOperatorTextual["!="] = "not equal to";
+				if(_compare(ruleAttributes.comparisonOperator, Number(thisValue), Number(otherValue))) {
+					return ruleAttributes.failureMessage;
+				}
+				break;
+			case 'stringComparison':
+				var thisValue = $input.val();
+				var otherValue;
 
+				if(ruleAttributes.value) {
+					otherValue = ruleAttributes.value;
+				} else {
+					otherValue = $form.children('[name=' + ruleAttributes.field + ']').val();
+				}
 
-// compare two values, using the given operator
-MakumbaValidate.compare = function(comparisonOperator, value1, value2) {
-    if (comparisonOperator == "=") {
-        return value1 == value2;
-    } else if (comparisonOperator == ">") {
-        return value1 > value2;
-    } else if (comparisonOperator == ">=") {
-        return value1 > value2;
-    } else if (comparisonOperator == "<") {
-        return value1 < value2;
-    } else if (comparisonOperator == "<=") {
-        return value1 <= value2;
-    } else if (comparisonOperator == "!=") {
-        return value1 != value2;
-    } else {
-        throw new Error("MakumbaValidate::Compare - comparison operator must be present and valid! (given: '" + comparisonOperater + "')");
-    }
-}
+				if(thisValue == '' || otherValue == '') return;
 
-// perform a number comparison
-MakumbaValidate.NumberComparison = function(value1, paramsObj, e){
-    var paramsObj = paramsObj || {};
-    var value1 = Number(value1) || null;
-    var value2 = Number(document.getElementById(paramsObj.element2).value) || null;
-    var comparisonOperator = (paramsObj.comparisonOperator) || null;
-    if (value1 != null && value2 != null) {
-        var comparissionPassed = MakumbaValidate.compare(comparisonOperator, value1, value2);
-        var failureMessage = paramsObj.failureMessage || paramsObj.element1 + " must be " + comparisonOperatorTextual[comparisonOperator] + " " + paramsObj.element2 + "!";
-        if (!comparissionPassed) {
-            Validate.fail(failureMessage);
-        }
-    }
-    return true;
-}
+				if(ruleAttributes.functionToApply && ruleAttributes.functionToApply == 'lower') {
+					thisValue = thisValue.toLowerCase();
+				} else if(ruleAttributes.functionToApply && ruleAttributes.functionToApply == 'upper') {
+					thisValue = thisValue.toUpperCase();
+				}
 
+				if(_compare(ruleAttributes.comparisonOperator, thisValue, otherValue)) {
+					return ruleAttributes.failureMessage;
+				}
+				break;
+			case 'numericality':
+				var value = $input.val();
+				if(!value) return;
 
-MakumbaValidate.StringComparison = function(value1, paramsObj, e){
-    var paramsObj = paramsObj || {};
-    var value2 = (document.getElementById(paramsObj.element2).value) || null;
-    var comparisonOperator = (paramsObj.comparisonOperator) || null;
+				if(("minimum" in ruleAttributes && ruleAttributes.minimum > value)
+					|| ("maximum" in ruleAttributes && ruleAttributes.maximum < value)) {
+					return ruleAttributes.failureMessage;
+				}
+				break;
+			case 'format':
+				var value = $input.val();
+				if(!value) return;
 
-    var functionToApply = (paramsObj.functionToApply) || null;
-    // apply functions
-    if (functionToApply == "lower") {
-        value1 = value1.toLowerCase();
-    } else if (functionToApply == "upper") {
-        value1 = value1.toUpperCase();
-    }
-    
-    if (value1 != null && value2 != null) {
-        var comparissionPassed = MakumbaValidate.compare(comparisonOperator, value1, value2);
-        var field1 = paramsObj.element1;
-        if (functionToApply != null) {
-          field1 = functionToApply + "(" + field1 + ")";
-        }
-        var failureMessage = paramsObj.failureMessage || field1 + " must be " + comparisonOperatorTextual[comparisonOperator] + " " + paramsObj.element2 + "!";
-        if (!comparissionPassed) {
-            Validate.fail(failureMessage);
-        }
-    }
-    return true;
-}
+				var regex = ruleAttributes.pattern.split('/');
+				var re    = new RegExp(regex[1], regex[2]);
 
+				if(!value.match(re)) {
+					return ruleAttributes.failureMessage;
+				}
+				break;
+			default:
+				return;
+		}
+	}
 
-MakumbaValidate.Uniqueness = function(value, paramsObj, e, elem) {
-    var paramsObj = paramsObj || {};
-    
-    var table = (paramsObj.table) || "";
-    var field = (paramsObj.field) || "";
-    
-    new Ajax.Request("_UNIQUENESS_SERVLET_PATH_/?table="+encodeURIComponent(table)+"&field="+encodeURIComponent(field)+"&value="+encodeURIComponent(value), 
-    { 
-    	method:'get',
-    	onSuccess: function(transport)
-    	{
-    		var json = transport.responseText.evalJSON();
-    		
-    		if(json.success == "not unique")
-    		{
-    		    //alert(elem.id+"Validate.closeIt(e, paramsObj.failureMessage);");
-    		    eval(elem.id+"Validation.closeIt(e, paramsObj.failureMessage);");
-    		    
-//    			LiveValidation.closeIt(e, paramsObj.failureMessage);
-    			//Validate.fail();
-    		}
-	}});
-    
-    
-
-    return true;
-}
-
-
-
-
+	function _compare(operator, value1, value2) {
+		if (operator == "=") {
+			return value1 == value2;
+		} else if (operator == ">") {
+			return value1 > value2;
+		} else if (operator == ">=") {
+			return value1 > value2;
+		} else if (operator == "<") {
+			return value1 < value2;
+		} else if (operator == "<=") {
+			return value1 <= value2;
+		} else if (operator == "!=") {
+			return value1 != value2;
+		} else {
+			throw new Error("Mak-validate - comparison operator must be present and valid! (given: '" + comparisonOperater + "')");
+		}
+	}
+})(jQuery);
