@@ -26,7 +26,7 @@ package org.makumba.commons;
 import java.io.Serializable;
 import java.util.Collection;
 
-import org.apache.commons.collections.map.MultiValueMap;
+import org.apache.commons.collections4.map.MultiValueMap;
 
 /**
  * This class provides a serialized version of {@link MultiValueMap}, and adds generics support.
