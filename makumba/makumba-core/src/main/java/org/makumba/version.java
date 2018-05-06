@@ -49,6 +49,8 @@ import java.util.Properties;
  */
 public class version {
 
+    static int len ="$HeadURL: https://makumba.svn.sourceforge.net/svnroot/makumba/".length();
+
     /** @see MakumbaSystem#getVersion() */
     public static String getVersion() {
         String version = null;
@@ -83,7 +85,8 @@ public class version {
             // https://makumba.svn.sourceforge.net/svnroot/makumba/tags/makumba-0_5_10_2/makumba/classes/org/makumba/version.java
             // for a tagged version
 
-            vs = vs.substring("$HeadURL: https://makumba.svn.sourceforge.net/svnroot/makumba/".length());
+	    if (vs.length()>len)
+		vs = vs.substring(len);
 
             if (vs.startsWith("tags")) {
                 vs = vs.substring("tags/".length());
