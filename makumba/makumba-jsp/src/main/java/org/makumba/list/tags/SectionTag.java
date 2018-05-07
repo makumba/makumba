@@ -157,7 +157,8 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
                 } else {
                     matches = (reloadOn + exprValue).startsWith(event);
                 }
-            } else if (showOn != null) {
+            }
+            if (showOn != null) {
                 if (invokesIteration) {
                     matches = (showOn + exprValue).equals(event);
                 } else {
@@ -366,7 +367,7 @@ public class SectionTag extends GenericMakumbaTag implements BodyTag {
      */
     private String getQueryParameters(HttpServletRequest req) {
         if (req.getParameter(Responder.responderName) != null) {
-            return gson.toJson("");
+            return "{}";
         }
         return gson.toJson(req.getParameterMap());
     }
