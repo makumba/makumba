@@ -141,9 +141,9 @@ public abstract class MakumbaJspTestCase extends JspTestCase {
         // but we may run the cactus tests from within makumba-jsp-test
         File test = new File(".");
         if(test.getAbsolutePath().contains(MAKUMBA_JSP_TEST)) {
-            f = new File(test.getAbsolutePath() + "/src/test/resources/expected/" + testName + EXPECTED_RESULT_EXTENSION);
+            f = new File(test.getAbsolutePath() + "/src/main/resources/expected/" + testName + EXPECTED_RESULT_EXTENSION);
         } else {
-            f = new File(test.getAbsolutePath() + File.separator + MAKUMBA_JSP_TEST + "/src/test/resources/expected/" + testName + EXPECTED_RESULT_EXTENSION);
+            f = new File(test.getAbsolutePath() + File.separator + MAKUMBA_JSP_TEST + "/src/main/resources/expected/" + testName + EXPECTED_RESULT_EXTENSION);
         }
 
         return f;
