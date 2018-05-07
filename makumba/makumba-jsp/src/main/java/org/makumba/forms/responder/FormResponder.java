@@ -17,7 +17,7 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 //
 //  -------------
-//  $Id$
+//  $Id: FormResponder.java 6103 2016-04-04 15:10:26Z moscar09 $
 //  $Name$
 /////////////////////////////////////
 
@@ -25,6 +25,7 @@ package org.makumba.forms.responder;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Random;
@@ -68,6 +69,12 @@ public class FormResponder extends Responder {
             // then, fill in values from unresolved inputs (i.e. from nested forms)
             @SuppressWarnings("unchecked")
             HashMap<String, Object> results = (HashMap<String, Object>) req.getAttribute(Responder.FORM_RESULTS);
+
+            if (formName != null)
+                for (Enumeration<String> e = data.keys(); e.hasMoreElements();) {
+                    String nm = e.nextElement();
+                    results.put(formName + "." + nm, data.get(nm));
+                }
             if (lazyEvaluatedInputs != null) { // check for != null to be on the safe side
                 for (String key : lazyEvaluatedInputs.keySet()) {
                     if (results.get(key) != null) {
@@ -174,7 +181,7 @@ public class FormResponder extends Responder {
 
     StringBuffer extraFormatting;
 
-    private ClientsideValidationProvider provider = MakumbaJspConfiguration.getClientsideValidationProvider();
+    private final ClientsideValidationProvider provider = MakumbaJspConfiguration.getClientsideValidationProvider();
 
     /**
      * Values of inputs that could not be resolved (yet), e.g. from nested form operations. Stores a formName->fieldName
