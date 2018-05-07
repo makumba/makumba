@@ -1,0 +1,9 @@
+language: java
+dist: precise
+services: mysql
+before_install:
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS makumba;'
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS makhib;'
+  - 'cd makumba/makumba-parent'
+jdk: 
+  - oraclejdk8
