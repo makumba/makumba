@@ -17,7 +17,7 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 //
 //  -------------
-//  $Id$
+//  $Id: InputTag.java 6048 2014-03-20 16:30:54Z cristian_bogdan $
 //  $Name$
 /////////////////////////////////////
 
@@ -55,7 +55,7 @@ import org.makumba.forms.responder.ResponseControllerHandler;
  * @author Cristian Bogdan
  * @author Rudolf Mayer
  * @author Manuel Bernhardt <manuel@makumba.org>
- * @version $Id$
+ * @version $Id: InputTag.java 6048 2014-03-20 16:30:54Z cristian_bogdan $
  */
 public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.BodyTag {
 
@@ -174,7 +174,8 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
     @Override
     public void setTagKey(PageCache pageCache) {
         if (calendarEditorLink == null && pageContext != null) { // initialise default calendar link text
-            calendarEditorLink = MakumbaJspConfiguration.getDefaultCalendarEditorLink(((HttpServletRequest) pageContext.getRequest()).getContextPath());
+            calendarEditorLink = MakumbaJspConfiguration.getDefaultCalendarEditorLink(
+                ((HttpServletRequest) pageContext.getRequest()).getContextPath());
         }
         expr = valueExprOriginal;
         // FIXME: this fix is rather a quick fix, it does not provide any information about the location of the error
@@ -210,7 +211,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         }
         if (isValue()) {
             // check if the value is the same as a previous form name
-            if (getForm().getNestedFormNames(pageCache).keySet().contains(expr)) { // delay the evaluation
+            if (getForm().getNestedFormNames(pageCache).keySet().contains(getDotExpr())) { // delay the evaluation
                 // we delay finding the value for later
                 // String tagName = name + getForm().responder.getSuffix();
                 getForm().lazyEvaluatedInputs.put(expr, name);
@@ -220,6 +221,23 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
                 fdp.onNonQueryStartAnalyze(this, isNull(), getForm().getTagKey(), pageCache, expr);
             }
         }
+    }
+
+    public String getDotExpr() {
+        String obj = expr;
+        int dot = expr.indexOf('.');
+        if (dot != -1) {
+            obj = expr.substring(0, dot);
+        }
+        return obj;
+    }
+
+    public FieldDefinition getDotType(DataDefinition type, FieldDefinition fd) {
+        int dot = expr.indexOf('.');
+        if (dot != -1) {
+            fd = type.getFieldDefinition(expr.substring(dot + 1));
+        }
+        return fd;
     }
 
     /**
@@ -233,10 +251,9 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         if (getForm().lazyEvaluatedInputs.containsKey(expr)) {
             // set the input type as the form type
             TagData t = (TagData) pageCache.retrieve(MakumbaJspAnalyzer.TAG_DATA_CACHE,
-                getForm().getNestedFormNames(pageCache).get(expr));
+                getForm().getNestedFormNames(pageCache).get(getDotExpr()));
             DataDefinition type = ((FormTagBase) t.tagObject).type;
-            pageCache.cache(MakumbaJspAnalyzer.INPUT_TYPES, tagKey,
-                type.getFieldDefinition(type.getIndexPointerFieldName()));
+            pageCache.cache(MakumbaJspAnalyzer.INPUT_TYPES, tagKey, getDotType(type, type.getFieldDefinition(type.getIndexPointerFieldName())));
             return;
         }
 
@@ -255,7 +272,8 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
         // if we have a date type and the calendarEditor is requested, request the inclusion of the needed resources
         if ((dataTypeIsDate || contextTypeIsDate) && calendarEditor
                 && !StringUtils.equals(params.get("type"), "hidden")) {
-            pageCache.cacheNeededResources(MakumbaJspConfiguration.getCalendarProvider().getNeededJavaScriptFileNames());
+            pageCache.cacheNeededResources(
+                MakumbaJspConfiguration.getCalendarProvider().getNeededJavaScriptFileNames());
         }
 
         // if we use the JS set editor, request the inclusion of its resources
@@ -265,7 +283,8 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
 
         // if we use auto-complete, request the inclusion of its resources
         if (this.autoComplete != null && this.autoComplete.equals("true")) {
-            pageCache.cacheNeededResources(new String[] { "prototype.js", "scriptaculous.js", "makumba-autocomplete.js" });
+            pageCache.cacheNeededResources(
+                new String[] { "prototype.js", "scriptaculous.js", "makumba-autocomplete.js" });
         }
 
         super.doEndAnalyze(pageCache);
@@ -335,7 +354,7 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
 
         if (isValue()) {
             // check whether we shall evaluate the value now, or later
-            if (!getForm().getNestedFormNames(pageCache).containsKey(expr)) {
+            if (!getForm().getNestedFormNames(pageCache).containsKey(getDotExpr())) {
                 val = fdp.getValue(getTagKey(), getPageContext(), pageCache);
             }
         }
@@ -406,7 +425,8 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
      * @param type
      *            the type of the computed value
      * @throws JspException
-     * @throws {@link LogicException}
+     * @throws {@link
+     *             LogicException}
      */
     @Override
     int computedValue(Object val, FieldDefinition type) throws JspException, LogicException {
@@ -426,11 +446,11 @@ public class InputTag extends BasicValueTag implements javax.servlet.jsp.tagext.
             if (fd == null) {
                 fd = getTypeFromContext(AnalysableElement.getPageCache(pageContext, MakumbaJspAnalyzer.getInstance()));
             }
-            if (!fd.getType().contains("Enum")
-                    && !fd.isPointer()
-                    && !fd.isSetType()
-                    && !(this instanceof SearchFieldTag && org.apache.commons.lang.StringUtils.equals(
-                        ((SearchFieldTag) this).forceInputStyle, "single"))) {
+            if (!fd.getType().contains("Enum") //
+		&& !fd.isPointer() //
+		&& !fd.isSetType()
+		&& !(this instanceof SearchFieldTag && org.apache.commons.lang.StringUtils.equals( //
+												  ((SearchFieldTag) this).forceInputStyle, "single"))) {
                 throw new ProgrammerError(
                         "Attribute 'nullOption' is only applicable for 'charEnum', 'intEnum' and 'ptr' types, but input '"
                                 + fd.getName() + "' is of type '" + fd.getType() + "'!");
