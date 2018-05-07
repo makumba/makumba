@@ -17,7 +17,7 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 //
 //  -------------
-//  $Id$
+//  $Id: CollectionUtils.java 5160 2010-05-19 15:46:59Z rosso_nero $
 //  $Name$
 /////////////////////////////////////
 package org.makumba.commons;
@@ -28,7 +28,7 @@ import java.util.Vector;
 
 /**
  * @author Rudolf Mayer
- * @version $Id$
+ * @version $Id: CollectionUtils.java 5160 2010-05-19 15:46:59Z rosso_nero $
  */
 public class CollectionUtils {
 
@@ -40,14 +40,15 @@ public class CollectionUtils {
         for (int i = 0; i < array.length; i++) {
             String[] entry = array[i];
             if (entry.length < 2) {
-                throw new IllegalArgumentException("Array element " + i + ", '" + Arrays.toString(entry)
-                        + "', has a length less than 2");
+                throw new IllegalArgumentException(
+                        "Array element " + i + ", '" + Arrays.toString(entry) + "', has a length less than 2");
             }
             map.put(entry[0], entry[1]);
         }
         return map;
     }
 
+    @SafeVarargs
     public static <T> Vector<T> toVector(T... array) {
         Vector<T> vec = new Vector<T>();
         for (T element : array) {

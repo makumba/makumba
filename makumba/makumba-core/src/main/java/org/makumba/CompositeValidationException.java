@@ -17,7 +17,7 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 //
 //  -------------
-//  $Id$
+//  $Id: CompositeValidationException.java 5902 2011-04-08 15:08:23Z rosso_nero $
 //  $Name$
 /////////////////////////////////////
 package org.makumba;
@@ -32,9 +32,9 @@ import org.makumba.commons.SerializedGenericMultiValueMap;
  * When performing custom form validation in business logics, you should instantiate an instance of this class, and keep
  * on adding all {@link InvalidValueException} encountered. Finally, trigger the exception throwing by calling
  * {@link #throwCheck()}<br/>
- * 
+ *
  * @author Rudolf Mayer
- * @version $Id$
+ * @version $Id: CompositeValidationException.java 5902 2011-04-08 15:08:23Z rosso_nero $
  */
 
 public class CompositeValidationException extends RuntimeException {
@@ -65,6 +65,7 @@ public class CompositeValidationException extends RuntimeException {
     }
 
     /** Adds a new exception */
+    @SuppressWarnings({ "deprecation", "unchecked" })
     public void addException(InvalidValueException e) {
         if (e.getFieldName() != null) {
             exceptionsHash.put(e.getFieldName(), e);
