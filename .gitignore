@@ -1,0 +1,22 @@
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Intellij
+.idea/
+*.iml
+*.iws
+
+#VSCode
+.vscode/
+
+#Vagrant
+.vagrant/
+
+# Mac
+.DS_Store
+
+# Maven
+log/
+target/
