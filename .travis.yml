@@ -4,6 +4,6 @@ services: mysql
 before_install:
   - mysql -e 'CREATE DATABASE IF NOT EXISTS makumba;'
   - mysql -e 'CREATE DATABASE IF NOT EXISTS makhib;'
-  - 'cd makumba/makumba-parent'
+  - 'cd makumba-parent'
 jdk: 
   - oraclejdk8
