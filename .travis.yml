@@ -6,7 +6,7 @@ before_install:
   - mysql -e 'CREATE DATABASE IF NOT EXISTS makhib;'
   - 'cd makumba-parent'
 jdk: 
-  - oraclejdk9
+  - oraclejdk10
   - oraclejdk11
   - openjdk10
   - openjdk11
