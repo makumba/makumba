@@ -1,8 +1,5 @@
 language: java
-dist:
-  - precise
-  - trusty
-  - xenial
+dist: xenial
 services: mysql
 before_install:
   - mysql -e 'CREATE DATABASE IF NOT EXISTS makumba;'
