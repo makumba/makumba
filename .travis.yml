@@ -2,8 +2,10 @@ language: java
 dist: xenial
 services: mysql
 before_script:
-  - echo -e "[mysqld]\nsql_mode='MYSQL40'" | sudo tee -a /etc/mysql/my.cnf
-  - sudo service mysql restart
+  # - echo -e "[mysqld]\nsql_mode='MYSQL40'" | sudo tee -a /etc/mysql/my.cnf
+  # - sudo service mysql restart
+  # faster alternative, not requiring service restart:
+  - mysql -e "SET GLOBAL sql_mode='MYSQL40';"
   - mysql -e 'CREATE DATABASE IF NOT EXISTS makumba;'
   - mysql -e 'CREATE DATABASE IF NOT EXISTS makhib;'
   - 'cd makumba-parent'
