@@ -35,6 +35,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.makumba.DataDefinition;
+import org.makumba.db.makumba.DBConnection;
+import org.makumba.DBError;
 import org.makumba.FieldDefinition;
 import org.makumba.Pointer;
 
@@ -47,6 +49,19 @@ public class MySqlDatabase extends org.makumba.db.makumba.sql.Database {
 
     public MySqlDatabase(Properties p) {
         super(p);
+    }
+
+    @Override
+    protected DBConnection makeDBConnection() {
+        SQLDBConnection dbc = (SQLDBConnection) super.makeDBConnection();
+        try {
+            java.sql.Statement s = dbc.createStatement();
+            s.execute("SET GLOBAL sql_mode = 'MYSQL40';");
+        } catch (SQLException e) {
+            logException(e);
+            throw new DBError(e);
+        }
+        return dbc;
     }
 
     @Override
