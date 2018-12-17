@@ -1,5 +1,8 @@
 language: java
-dist: precise
+dist:
+  - precise
+  - trusty
+  - xenial
 services: mysql
 before_install:
   - mysql -e 'CREATE DATABASE IF NOT EXISTS makumba;'
@@ -7,6 +10,9 @@ before_install:
   - 'cd makumba-parent'
 jdk: 
   - oraclejdk8
+  - oraclejdk11
+  - openjdk10
+  - openjdk11
 
 script: "mvn cobertura:cobertura"
 
