@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.5.62, for osx10.13 (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.24, for Linux (x86_64)
 --
 -- Host: localhost    Database: makumba
 -- ------------------------------------------------------
--- Server version	5.5.62
+-- Server version	5.7.24-0ubuntu0.16.04.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -16,13 +16,13 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `org_makumba_db_makumba_catalog_`
+-- Table structure for table `org_makumba_db_makumba_Catalog_`
 --
 
-DROP TABLE IF EXISTS `org_makumba_db_makumba_catalog_`;
+DROP TABLE IF EXISTS `org_makumba_db_makumba_Catalog_`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `org_makumba_db_makumba_catalog_` (
+CREATE TABLE `org_makumba_db_makumba_Catalog_` (
   `Catalog_` int(11) NOT NULL AUTO_INCREMENT,
   `TS_modify_` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `TS_create_` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -31,27 +31,26 @@ CREATE TABLE `org_makumba_db_makumba_catalog_` (
   KEY `TS_modify_` (`TS_modify_`),
   KEY `TS_create_` (`TS_create_`),
   KEY `name_` (`name_`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `org_makumba_db_makumba_catalog_`
+-- Dumping data for table `org_makumba_db_makumba_Catalog_`
 --
 
-LOCK TABLES `org_makumba_db_makumba_catalog_` WRITE;
-/*!40000 ALTER TABLE `org_makumba_db_makumba_catalog_` DISABLE KEYS */;
-INSERT INTO `org_makumba_db_makumba_catalog_` VALUES (1,'2018-12-18 13:47:00','2018-12-18 13:47:00','test.Language'),(2,'2018-12-18 13:47:02','2018-12-18 13:47:02','test.Individual'),(3,'2018-12-18 13:47:06','2018-12-18 13:47:06','test.Person->someAttachment'),(4,'2018-12-18 13:47:07','2018-12-18 13:47:07','test.Person->extraData'),(5,'2018-12-18 13:47:09','2018-12-18 13:47:09','test.Person'),(6,'2018-12-18 13:47:10','2018-12-18 13:47:10','test.Person->intSet'),(7,'2018-12-18 13:47:14','2018-12-18 13:47:14','test.Person->address->sth'),(8,'2018-12-18 13:47:15','2018-12-18 13:47:15','test.Person->address'),(9,'2018-12-18 13:47:16','2018-12-18 13:47:16','test.Person->speaks'),(10,'2018-12-18 13:47:17','2018-12-18 13:47:17','test.Person->toys'),(11,'2018-12-18 13:47:18','2018-12-18 13:47:18','test.Person->charSet'),(12,'2018-12-18 13:47:20','2018-12-18 13:47:20','test.Person->address->languages'),(13,'2018-12-18 13:47:21','2018-12-18 13:47:21','test.Person->groupMembers'),(14,'2018-12-18 13:47:22','2018-12-18 13:47:22','org.makumba.db.makumba.Lock'),(16,'2018-12-18 13:47:34','2018-12-18 13:47:34','test.validMdds.CharWithLength'),(17,'2018-12-18 13:47:35','2018-12-18 13:47:35','test.validMdds.Real'),(18,'2018-12-18 13:47:36','2018-12-18 13:47:36','test.validMdds.Int');
-/*!40000 ALTER TABLE `org_makumba_db_makumba_catalog_` ENABLE KEYS */;
+LOCK TABLES `org_makumba_db_makumba_Catalog_` WRITE;
+/*!40000 ALTER TABLE `org_makumba_db_makumba_Catalog_` DISABLE KEYS */;
+/*!40000 ALTER TABLE `org_makumba_db_makumba_Catalog_` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `org_makumba_db_makumba_lock_`
+-- Table structure for table `org_makumba_db_makumba_Lock_`
 --
 
-DROP TABLE IF EXISTS `org_makumba_db_makumba_lock_`;
+DROP TABLE IF EXISTS `org_makumba_db_makumba_Lock_`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `org_makumba_db_makumba_lock_` (
+CREATE TABLE `org_makumba_db_makumba_Lock_` (
   `Lock_` int(11) NOT NULL AUTO_INCREMENT,
   `TS_modify_` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `TS_create_` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -60,153 +59,26 @@ CREATE TABLE `org_makumba_db_makumba_lock_` (
   UNIQUE KEY `name_` (`name_`),
   KEY `TS_modify_` (`TS_modify_`),
   KEY `TS_create_` (`TS_create_`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `org_makumba_db_makumba_lock_`
+-- Dumping data for table `org_makumba_db_makumba_Lock_`
 --
 
-LOCK TABLES `org_makumba_db_makumba_lock_` WRITE;
-/*!40000 ALTER TABLE `org_makumba_db_makumba_lock_` DISABLE KEYS */;
-/*!40000 ALTER TABLE `org_makumba_db_makumba_lock_` ENABLE KEYS */;
+LOCK TABLES `org_makumba_db_makumba_Lock_` WRITE;
+/*!40000 ALTER TABLE `org_makumba_db_makumba_Lock_` DISABLE KEYS */;
+/*!40000 ALTER TABLE `org_makumba_db_makumba_Lock_` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `test_Person__address__languages_`
+-- Table structure for table `test_Individual_`
 --
 
-DROP TABLE IF EXISTS `test_Person__address__languages_`;
+DROP TABLE IF EXISTS `test_Individual_`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `test_Person__address__languages_` (
-  `languages_` int(11) NOT NULL AUTO_INCREMENT,
-  `TS_modify_` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `TS_create_` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `address_` int(11) DEFAULT NULL,
-  `Language_` int(11) DEFAULT NULL,
-  PRIMARY KEY (`languages_`),
-  KEY `TS_modify_` (`TS_modify_`),
-  KEY `TS_create_` (`TS_create_`),
-  KEY `address_` (`address_`),
-  KEY `Language_` (`Language_`),
-  CONSTRAINT `test_person__address__languages__ibfk_2` FOREIGN KEY (`Language_`) REFERENCES `test_Language_` (`Language_`),
-  CONSTRAINT `test_person__address__languages__ibfk_1` FOREIGN KEY (`address_`) REFERENCES `test_Person__address_` (`address_`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `test_Person__address__languages_`
---
-
-LOCK TABLES `test_Person__address__languages_` WRITE;
-/*!40000 ALTER TABLE `test_Person__address__languages_` DISABLE KEYS */;
-/*!40000 ALTER TABLE `test_Person__address__languages_` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `test_Person__groupMembers_`
---
-
-DROP TABLE IF EXISTS `test_Person__groupMembers_`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `test_Person__groupMembers_` (
-  `groupMembers_` int(11) NOT NULL AUTO_INCREMENT,
-  `TS_modify_` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `TS_create_` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `Person_` int(11) DEFAULT NULL,
-  `Person__` int(11) DEFAULT NULL,
-  PRIMARY KEY (`groupMembers_`),
-  KEY `TS_modify_` (`TS_modify_`),
-  KEY `TS_create_` (`TS_create_`),
-  KEY `Person_` (`Person_`),
-  KEY `Person__` (`Person__`),
-  CONSTRAINT `test_person__groupmembers__ibfk_2` FOREIGN KEY (`Person__`) REFERENCES `test_Person_` (`Person_`),
-  CONSTRAINT `test_person__groupmembers__ibfk_1` FOREIGN KEY (`Person_`) REFERENCES `test_Person_` (`Person_`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `test_Person__groupMembers_`
---
-
-LOCK TABLES `test_Person__groupMembers_` WRITE;
-/*!40000 ALTER TABLE `test_Person__groupMembers_` DISABLE KEYS */;
-/*!40000 ALTER TABLE `test_Person__groupMembers_` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `test_Person__speaks_`
---
-
-DROP TABLE IF EXISTS `test_Person__speaks_`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `test_Person__speaks_` (
-  `speaks_` int(11) NOT NULL AUTO_INCREMENT,
-  `TS_modify_` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `TS_create_` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `Person_` int(11) DEFAULT NULL,
-  `Language_` int(11) DEFAULT NULL,
-  PRIMARY KEY (`speaks_`),
-  KEY `TS_modify_` (`TS_modify_`),
-  KEY `TS_create_` (`TS_create_`),
-  KEY `Person_` (`Person_`),
-  KEY `Language_` (`Language_`),
-  CONSTRAINT `test_person__speaks__ibfk_2` FOREIGN KEY (`Language_`) REFERENCES `test_Language_` (`Language_`),
-  CONSTRAINT `test_person__speaks__ibfk_1` FOREIGN KEY (`Person_`) REFERENCES `test_Person_` (`Person_`)
-) ENGINE=InnoDB AUTO_INCREMENT=98 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `test_Person__speaks_`
---
-
-LOCK TABLES `test_Person__speaks_` WRITE;
-/*!40000 ALTER TABLE `test_Person__speaks_` DISABLE KEYS */;
-/*!40000 ALTER TABLE `test_Person__speaks_` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `test_Person__toys_`
---
-
-DROP TABLE IF EXISTS `test_Person__toys_`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `test_Person__toys_` (
-  `toys_` int(11) NOT NULL AUTO_INCREMENT,
-  `TS_modify_` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `TS_create_` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `name_` varchar(30) DEFAULT NULL,
-  `Person_` int(11) DEFAULT NULL,
-  PRIMARY KEY (`toys_`),
-  KEY `TS_modify_` (`TS_modify_`),
-  KEY `TS_create_` (`TS_create_`),
-  KEY `name_` (`name_`),
-  KEY `Person_` (`Person_`),
-  CONSTRAINT `test_person__toys__ibfk_1` FOREIGN KEY (`Person_`) REFERENCES `test_Person_` (`Person_`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `test_Person__toys_`
---
-
-LOCK TABLES `test_Person__toys_` WRITE;
-/*!40000 ALTER TABLE `test_Person__toys_` DISABLE KEYS */;
-/*!40000 ALTER TABLE `test_Person__toys_` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `test_individual_`
---
-
-DROP TABLE IF EXISTS `test_individual_`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `test_individual_` (
+CREATE TABLE `test_Individual_` (
   `Individual_` int(11) NOT NULL AUTO_INCREMENT,
   `TS_modify_` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `TS_create_` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -223,27 +95,27 @@ CREATE TABLE `test_individual_` (
   KEY `person_` (`person_`),
   KEY `someDate_` (`someDate_`),
   KEY `someusername_` (`someusername_`),
-  CONSTRAINT `test_individual__ibfk_1` FOREIGN KEY (`person_`) REFERENCES `test_Person_` (`Person_`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8;
+  CONSTRAINT `test_Individual__ibfk_1` FOREIGN KEY (`person_`) REFERENCES `test_Person_` (`Person_`)
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `test_individual_`
+-- Dumping data for table `test_Individual_`
 --
 
-LOCK TABLES `test_individual_` WRITE;
-/*!40000 ALTER TABLE `test_individual_` DISABLE KEYS */;
-/*!40000 ALTER TABLE `test_individual_` ENABLE KEYS */;
+LOCK TABLES `test_Individual_` WRITE;
+/*!40000 ALTER TABLE `test_Individual_` DISABLE KEYS */;
+/*!40000 ALTER TABLE `test_Individual_` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `test_language_`
+-- Table structure for table `test_Language_`
 --
 
-DROP TABLE IF EXISTS `test_language_`;
+DROP TABLE IF EXISTS `test_Language_`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `test_language_` (
+CREATE TABLE `test_Language_` (
   `Language_` int(11) NOT NULL AUTO_INCREMENT,
   `TS_modify_` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `TS_create_` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -256,26 +128,26 @@ CREATE TABLE `test_language_` (
   KEY `name_` (`name_`),
   KEY `isoCode_` (`isoCode_`),
   KEY `family_` (`family_`)
-) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=112 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `test_language_`
+-- Dumping data for table `test_Language_`
 --
 
-LOCK TABLES `test_language_` WRITE;
-/*!40000 ALTER TABLE `test_language_` DISABLE KEYS */;
-/*!40000 ALTER TABLE `test_language_` ENABLE KEYS */;
+LOCK TABLES `test_Language_` WRITE;
+/*!40000 ALTER TABLE `test_Language_` DISABLE KEYS */;
+/*!40000 ALTER TABLE `test_Language_` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `test_person_`
+-- Table structure for table `test_Person_`
 --
 
-DROP TABLE IF EXISTS `test_person_`;
+DROP TABLE IF EXISTS `test_Person_`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `test_person_` (
+CREATE TABLE `test_Person_` (
   `Person_` int(11) NOT NULL AUTO_INCREMENT,
   `TS_modify_` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `TS_create_` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -336,31 +208,31 @@ CREATE TABLE `test_person_` (
   KEY `brother_` (`brother_`),
   KEY `extraData_` (`extraData_`),
   KEY `email_` (`email_`),
-  CONSTRAINT `test_person__ibfk_5` FOREIGN KEY (`uniqPtr_`) REFERENCES `test_Language_` (`Language_`),
-  CONSTRAINT `test_person__ibfk_1` FOREIGN KEY (`indiv_`) REFERENCES `test_Individual_` (`Individual_`),
-  CONSTRAINT `test_person__ibfk_2` FOREIGN KEY (`someAttachment_`) REFERENCES `test_Person__someAttachment_` (`someAttachment_`),
-  CONSTRAINT `test_person__ibfk_3` FOREIGN KEY (`brother_`) REFERENCES `test_Person_` (`Person_`),
-  CONSTRAINT `test_person__ibfk_4` FOREIGN KEY (`extraData_`) REFERENCES `test_Person__extraData_` (`extraData_`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8;
+  CONSTRAINT `test_Person__ibfk_1` FOREIGN KEY (`indiv_`) REFERENCES `test_Individual_` (`Individual_`),
+  CONSTRAINT `test_Person__ibfk_2` FOREIGN KEY (`someAttachment_`) REFERENCES `test_Person__someAttachment_` (`someAttachment_`),
+  CONSTRAINT `test_Person__ibfk_3` FOREIGN KEY (`brother_`) REFERENCES `test_Person_` (`Person_`),
+  CONSTRAINT `test_Person__ibfk_4` FOREIGN KEY (`extraData_`) REFERENCES `test_Person__extraData_` (`extraData_`),
+  CONSTRAINT `test_Person__ibfk_5` FOREIGN KEY (`uniqPtr_`) REFERENCES `test_Language_` (`Language_`)
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `test_person_`
+-- Dumping data for table `test_Person_`
 --
 
-LOCK TABLES `test_person_` WRITE;
-/*!40000 ALTER TABLE `test_person_` DISABLE KEYS */;
-/*!40000 ALTER TABLE `test_person_` ENABLE KEYS */;
+LOCK TABLES `test_Person_` WRITE;
+/*!40000 ALTER TABLE `test_Person_` DISABLE KEYS */;
+/*!40000 ALTER TABLE `test_Person_` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `test_person__address_`
+-- Table structure for table `test_Person__address_`
 --
 
-DROP TABLE IF EXISTS `test_person__address_`;
+DROP TABLE IF EXISTS `test_Person__address_`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `test_person__address_` (
+CREATE TABLE `test_Person__address_` (
   `address_` int(11) NOT NULL AUTO_INCREMENT,
   `TS_modify_` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `TS_create_` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -394,28 +266,60 @@ CREATE TABLE `test_person__address_` (
   KEY `homepage_` (`homepage_`),
   KEY `sth_` (`sth_`),
   KEY `Person_` (`Person_`),
-  CONSTRAINT `test_person__address__ibfk_2` FOREIGN KEY (`Person_`) REFERENCES `test_Person_` (`Person_`),
-  CONSTRAINT `test_person__address__ibfk_1` FOREIGN KEY (`sth_`) REFERENCES `test_Person__address__sth_` (`sth_`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+  CONSTRAINT `test_Person__address__ibfk_1` FOREIGN KEY (`sth_`) REFERENCES `test_Person__address__sth_` (`sth_`),
+  CONSTRAINT `test_Person__address__ibfk_2` FOREIGN KEY (`Person_`) REFERENCES `test_Person_` (`Person_`)
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `test_person__address_`
+-- Dumping data for table `test_Person__address_`
 --
 
-LOCK TABLES `test_person__address_` WRITE;
-/*!40000 ALTER TABLE `test_person__address_` DISABLE KEYS */;
-/*!40000 ALTER TABLE `test_person__address_` ENABLE KEYS */;
+LOCK TABLES `test_Person__address_` WRITE;
+/*!40000 ALTER TABLE `test_Person__address_` DISABLE KEYS */;
+/*!40000 ALTER TABLE `test_Person__address_` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `test_person__address__sth_`
+-- Table structure for table `test_Person__address__languages_`
 --
 
-DROP TABLE IF EXISTS `test_person__address__sth_`;
+DROP TABLE IF EXISTS `test_Person__address__languages_`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `test_person__address__sth_` (
+CREATE TABLE `test_Person__address__languages_` (
+  `languages_` int(11) NOT NULL AUTO_INCREMENT,
+  `TS_modify_` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `TS_create_` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `address_` int(11) DEFAULT NULL,
+  `Language_` int(11) DEFAULT NULL,
+  PRIMARY KEY (`languages_`),
+  KEY `TS_modify_` (`TS_modify_`),
+  KEY `TS_create_` (`TS_create_`),
+  KEY `address_` (`address_`),
+  KEY `Language_` (`Language_`),
+  CONSTRAINT `test_Person__address__languages__ibfk_1` FOREIGN KEY (`address_`) REFERENCES `test_Person__address_` (`address_`),
+  CONSTRAINT `test_Person__address__languages__ibfk_2` FOREIGN KEY (`Language_`) REFERENCES `test_Language_` (`Language_`)
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `test_Person__address__languages_`
+--
+
+LOCK TABLES `test_Person__address__languages_` WRITE;
+/*!40000 ALTER TABLE `test_Person__address__languages_` DISABLE KEYS */;
+/*!40000 ALTER TABLE `test_Person__address__languages_` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `test_Person__address__sth_`
+--
+
+DROP TABLE IF EXISTS `test_Person__address__sth_`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `test_Person__address__sth_` (
   `sth_` int(11) NOT NULL AUTO_INCREMENT,
   `TS_modify_` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `TS_create_` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -427,26 +331,26 @@ CREATE TABLE `test_person__address__sth_` (
   KEY `TS_create_` (`TS_create_`),
   KEY `aaa_` (`aaa_`),
   KEY `bbb_` (`bbb_`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `test_person__address__sth_`
+-- Dumping data for table `test_Person__address__sth_`
 --
 
-LOCK TABLES `test_person__address__sth_` WRITE;
-/*!40000 ALTER TABLE `test_person__address__sth_` DISABLE KEYS */;
-/*!40000 ALTER TABLE `test_person__address__sth_` ENABLE KEYS */;
+LOCK TABLES `test_Person__address__sth_` WRITE;
+/*!40000 ALTER TABLE `test_Person__address__sth_` DISABLE KEYS */;
+/*!40000 ALTER TABLE `test_Person__address__sth_` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `test_person__charset_`
+-- Table structure for table `test_Person__charSet_`
 --
 
-DROP TABLE IF EXISTS `test_person__charset_`;
+DROP TABLE IF EXISTS `test_Person__charSet_`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `test_person__charset_` (
+CREATE TABLE `test_Person__charSet_` (
   `charSet_` int(11) NOT NULL AUTO_INCREMENT,
   `TS_modify_` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `TS_create_` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -457,27 +361,27 @@ CREATE TABLE `test_person__charset_` (
   KEY `TS_create_` (`TS_create_`),
   KEY `Person_` (`Person_`),
   KEY `enum_` (`enum_`),
-  CONSTRAINT `test_person__charset__ibfk_1` FOREIGN KEY (`Person_`) REFERENCES `test_Person_` (`Person_`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+  CONSTRAINT `test_Person__charSet__ibfk_1` FOREIGN KEY (`Person_`) REFERENCES `test_Person_` (`Person_`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `test_person__charset_`
+-- Dumping data for table `test_Person__charSet_`
 --
 
-LOCK TABLES `test_person__charset_` WRITE;
-/*!40000 ALTER TABLE `test_person__charset_` DISABLE KEYS */;
-/*!40000 ALTER TABLE `test_person__charset_` ENABLE KEYS */;
+LOCK TABLES `test_Person__charSet_` WRITE;
+/*!40000 ALTER TABLE `test_Person__charSet_` DISABLE KEYS */;
+/*!40000 ALTER TABLE `test_Person__charSet_` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `test_person__extradata_`
+-- Table structure for table `test_Person__extraData_`
 --
 
-DROP TABLE IF EXISTS `test_person__extradata_`;
+DROP TABLE IF EXISTS `test_Person__extraData_`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `test_person__extradata_` (
+CREATE TABLE `test_Person__extraData_` (
   `extraData_` int(11) NOT NULL AUTO_INCREMENT,
   `TS_modify_` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `TS_create_` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -488,26 +392,58 @@ CREATE TABLE `test_person__extradata_` (
   KEY `TS_create_` (`TS_create_`),
   KEY `something_` (`something_`),
   KEY `what_` (`what_`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `test_person__extradata_`
+-- Dumping data for table `test_Person__extraData_`
 --
 
-LOCK TABLES `test_person__extradata_` WRITE;
-/*!40000 ALTER TABLE `test_person__extradata_` DISABLE KEYS */;
-/*!40000 ALTER TABLE `test_person__extradata_` ENABLE KEYS */;
+LOCK TABLES `test_Person__extraData_` WRITE;
+/*!40000 ALTER TABLE `test_Person__extraData_` DISABLE KEYS */;
+/*!40000 ALTER TABLE `test_Person__extraData_` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `test_person__intset_`
+-- Table structure for table `test_Person__groupMembers_`
 --
 
-DROP TABLE IF EXISTS `test_person__intset_`;
+DROP TABLE IF EXISTS `test_Person__groupMembers_`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `test_person__intset_` (
+CREATE TABLE `test_Person__groupMembers_` (
+  `groupMembers_` int(11) NOT NULL AUTO_INCREMENT,
+  `TS_modify_` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `TS_create_` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `Person_` int(11) DEFAULT NULL,
+  `Person__` int(11) DEFAULT NULL,
+  PRIMARY KEY (`groupMembers_`),
+  KEY `TS_modify_` (`TS_modify_`),
+  KEY `TS_create_` (`TS_create_`),
+  KEY `Person_` (`Person_`),
+  KEY `Person__` (`Person__`),
+  CONSTRAINT `test_Person__groupMembers__ibfk_1` FOREIGN KEY (`Person_`) REFERENCES `test_Person_` (`Person_`),
+  CONSTRAINT `test_Person__groupMembers__ibfk_2` FOREIGN KEY (`Person__`) REFERENCES `test_Person_` (`Person_`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `test_Person__groupMembers_`
+--
+
+LOCK TABLES `test_Person__groupMembers_` WRITE;
+/*!40000 ALTER TABLE `test_Person__groupMembers_` DISABLE KEYS */;
+/*!40000 ALTER TABLE `test_Person__groupMembers_` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `test_Person__intSet_`
+--
+
+DROP TABLE IF EXISTS `test_Person__intSet_`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `test_Person__intSet_` (
   `intSet_` int(11) NOT NULL AUTO_INCREMENT,
   `TS_modify_` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `TS_create_` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -518,27 +454,27 @@ CREATE TABLE `test_person__intset_` (
   KEY `TS_create_` (`TS_create_`),
   KEY `Person_` (`Person_`),
   KEY `enum_` (`enum_`),
-  CONSTRAINT `test_person__intset__ibfk_1` FOREIGN KEY (`Person_`) REFERENCES `test_Person_` (`Person_`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
+  CONSTRAINT `test_Person__intSet__ibfk_1` FOREIGN KEY (`Person_`) REFERENCES `test_Person_` (`Person_`)
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `test_person__intset_`
+-- Dumping data for table `test_Person__intSet_`
 --
 
-LOCK TABLES `test_person__intset_` WRITE;
-/*!40000 ALTER TABLE `test_person__intset_` DISABLE KEYS */;
-/*!40000 ALTER TABLE `test_person__intset_` ENABLE KEYS */;
+LOCK TABLES `test_Person__intSet_` WRITE;
+/*!40000 ALTER TABLE `test_Person__intSet_` DISABLE KEYS */;
+/*!40000 ALTER TABLE `test_Person__intSet_` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `test_person__someattachment_`
+-- Table structure for table `test_Person__someAttachment_`
 --
 
-DROP TABLE IF EXISTS `test_person__someattachment_`;
+DROP TABLE IF EXISTS `test_Person__someAttachment_`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `test_person__someattachment_` (
+CREATE TABLE `test_Person__someAttachment_` (
   `someAttachment_` int(11) NOT NULL AUTO_INCREMENT,
   `TS_modify_` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `TS_create_` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -558,54 +494,89 @@ CREATE TABLE `test_person__someattachment_` (
   KEY `name_` (`name_`),
   KEY `imageWidth_` (`imageWidth_`),
   KEY `imageHeight_` (`imageHeight_`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `test_person__someattachment_`
+-- Dumping data for table `test_Person__someAttachment_`
 --
 
-LOCK TABLES `test_person__someattachment_` WRITE;
-/*!40000 ALTER TABLE `test_person__someattachment_` DISABLE KEYS */;
-/*!40000 ALTER TABLE `test_person__someattachment_` ENABLE KEYS */;
+LOCK TABLES `test_Person__someAttachment_` WRITE;
+/*!40000 ALTER TABLE `test_Person__someAttachment_` DISABLE KEYS */;
+/*!40000 ALTER TABLE `test_Person__someAttachment_` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `test_validmdds_charwithlength_`
+-- Table structure for table `test_Person__speaks_`
 --
 
-DROP TABLE IF EXISTS `test_validmdds_charwithlength_`;
+DROP TABLE IF EXISTS `test_Person__speaks_`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `test_validmdds_charwithlength_` (
-  `CharWithLength_` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `test_Person__speaks_` (
+  `speaks_` int(11) NOT NULL AUTO_INCREMENT,
   `TS_modify_` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `TS_create_` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `name_` varchar(44) DEFAULT NULL,
-  PRIMARY KEY (`CharWithLength_`),
+  `Person_` int(11) DEFAULT NULL,
+  `Language_` int(11) DEFAULT NULL,
+  PRIMARY KEY (`speaks_`),
   KEY `TS_modify_` (`TS_modify_`),
   KEY `TS_create_` (`TS_create_`),
-  KEY `name_` (`name_`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  KEY `Person_` (`Person_`),
+  KEY `Language_` (`Language_`),
+  CONSTRAINT `test_Person__speaks__ibfk_1` FOREIGN KEY (`Person_`) REFERENCES `test_Person_` (`Person_`),
+  CONSTRAINT `test_Person__speaks__ibfk_2` FOREIGN KEY (`Language_`) REFERENCES `test_Language_` (`Language_`)
+) ENGINE=InnoDB AUTO_INCREMENT=140 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `test_validmdds_charwithlength_`
+-- Dumping data for table `test_Person__speaks_`
 --
 
-LOCK TABLES `test_validmdds_charwithlength_` WRITE;
-/*!40000 ALTER TABLE `test_validmdds_charwithlength_` DISABLE KEYS */;
-/*!40000 ALTER TABLE `test_validmdds_charwithlength_` ENABLE KEYS */;
+LOCK TABLES `test_Person__speaks_` WRITE;
+/*!40000 ALTER TABLE `test_Person__speaks_` DISABLE KEYS */;
+/*!40000 ALTER TABLE `test_Person__speaks_` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `test_validmdds_int_`
+-- Table structure for table `test_Person__toys_`
 --
 
-DROP TABLE IF EXISTS `test_validmdds_int_`;
+DROP TABLE IF EXISTS `test_Person__toys_`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `test_validmdds_int_` (
+CREATE TABLE `test_Person__toys_` (
+  `toys_` int(11) NOT NULL AUTO_INCREMENT,
+  `TS_modify_` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `TS_create_` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `name_` varchar(30) DEFAULT NULL,
+  `Person_` int(11) DEFAULT NULL,
+  PRIMARY KEY (`toys_`),
+  KEY `TS_modify_` (`TS_modify_`),
+  KEY `TS_create_` (`TS_create_`),
+  KEY `name_` (`name_`),
+  KEY `Person_` (`Person_`),
+  CONSTRAINT `test_Person__toys__ibfk_1` FOREIGN KEY (`Person_`) REFERENCES `test_Person_` (`Person_`)
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `test_Person__toys_`
+--
+
+LOCK TABLES `test_Person__toys_` WRITE;
+/*!40000 ALTER TABLE `test_Person__toys_` DISABLE KEYS */;
+/*!40000 ALTER TABLE `test_Person__toys_` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `test_validMdds_Int_`
+--
+
+DROP TABLE IF EXISTS `test_validMdds_Int_`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `test_validMdds_Int_` (
   `Int_` int(11) NOT NULL AUTO_INCREMENT,
   `TS_modify_` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `TS_create_` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -614,26 +585,26 @@ CREATE TABLE `test_validmdds_int_` (
   KEY `TS_modify_` (`TS_modify_`),
   KEY `TS_create_` (`TS_create_`),
   KEY `i_` (`i_`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `test_validmdds_int_`
+-- Dumping data for table `test_validMdds_Int_`
 --
 
-LOCK TABLES `test_validmdds_int_` WRITE;
-/*!40000 ALTER TABLE `test_validmdds_int_` DISABLE KEYS */;
-/*!40000 ALTER TABLE `test_validmdds_int_` ENABLE KEYS */;
+LOCK TABLES `test_validMdds_Int_` WRITE;
+/*!40000 ALTER TABLE `test_validMdds_Int_` DISABLE KEYS */;
+/*!40000 ALTER TABLE `test_validMdds_Int_` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `test_validmdds_real_`
+-- Table structure for table `test_validMdds_Real_`
 --
 
-DROP TABLE IF EXISTS `test_validmdds_real_`;
+DROP TABLE IF EXISTS `test_validMdds_Real_`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `test_validmdds_real_` (
+CREATE TABLE `test_validMdds_Real_` (
   `Real_` int(11) NOT NULL AUTO_INCREMENT,
   `TS_modify_` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `TS_create_` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -642,16 +613,16 @@ CREATE TABLE `test_validmdds_real_` (
   KEY `TS_modify_` (`TS_modify_`),
   KEY `TS_create_` (`TS_create_`),
   KEY `r_` (`r_`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `test_validmdds_real_`
+-- Dumping data for table `test_validMdds_Real_`
 --
 
-LOCK TABLES `test_validmdds_real_` WRITE;
-/*!40000 ALTER TABLE `test_validmdds_real_` DISABLE KEYS */;
-/*!40000 ALTER TABLE `test_validmdds_real_` ENABLE KEYS */;
+LOCK TABLES `test_validMdds_Real_` WRITE;
+/*!40000 ALTER TABLE `test_validMdds_Real_` DISABLE KEYS */;
+/*!40000 ALTER TABLE `test_validMdds_Real_` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -663,4 +634,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-12-18 14:52:56
+-- Dump completed on 2018-12-15  3:01:11
