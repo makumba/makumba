@@ -1,5 +1,6 @@
 language: java
-dist: xenial
+# https://docs.travis-ci.com/user/database-setup/#mysql
+dist: trusty
 services: mysql
 before_script:
   # - echo -e "[mysqld]\nsql_mode='MYSQL40'" | sudo tee -a /etc/mysql/my.cnf
