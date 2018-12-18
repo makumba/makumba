@@ -22,7 +22,11 @@ before_script:
   # - sudo service mysql restart
   # faster alternative, not requiring service restart:
   - mysql -e "SET GLOBAL sql_mode='MYSQL40';"
+
+  - mysql -e "DROP DATABASE IF EXISTS makumba;" # TEMP to make sure it is empty
   - mysql -e 'CREATE DATABASE IF NOT EXISTS makumba;'
+  - mysql -u root makumba < ci/makumba-test.sql # TEMP - populate DB to avoid "Table definition has changed, please retry transaction" during tests
+
   - mysql -e 'CREATE DATABASE IF NOT EXISTS makhib;'
   - 'cd makumba-parent'
 
