@@ -22,8 +22,8 @@ before_script:
   # - sudo service mysql restart
   # faster alternative, not requiring service restart:
   - mysql -e "SET GLOBAL sql_mode='MYSQL40';"
-  - mysql -e "SET GLOBAL SQL_MODE = 'NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';"
-  - mysql -e "SET GLOBAL explicit_defaults_for_timestamp=OFF;"
+  #- mysql -e "SET GLOBAL SQL_MODE = 'NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';"
+  #- mysql -e "SET GLOBAL explicit_defaults_for_timestamp=OFF;"
 
   - mysql -e "DROP DATABASE IF EXISTS makumba;" # TEMP to make sure it is empty
   - mysql -e 'CREATE DATABASE IF NOT EXISTS makumba;'
@@ -34,6 +34,7 @@ before_script:
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
+  - mysqldump makumba
 
 notifications:
   slack:
