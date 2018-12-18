@@ -1,6 +1,23 @@
 language: java
 # https://docs.travis-ci.com/user/database-setup/#mysql
-dist: trusty
+# https://docs.travis-ci.com/user/customizing-the-build/#build-matrix
+matrix:
+    include:
+        - os: linux
+          dist: precise
+        - os: linux
+          dist: trusty
+        - os: linux
+          dist: xenial
+
+    # https://docs.travis-ci.com/user/customizing-the-build/#excluding-jobs
+    exclude:
+        - dist: trusty
+          jdk: oraclejdk8
+        - dist: xenial
+          jdk: oraclejdk8
+          
+
 services: mysql
 before_script:
   # - echo -e "[mysqld]\nsql_mode='MYSQL40'" | sudo tee -a /etc/mysql/my.cnf
@@ -12,6 +29,7 @@ before_script:
   - 'cd makumba-parent'
 
 jdk:
+  - oraclejdk8
   - oraclejdk11
   - openjdk10
   - openjdk11
