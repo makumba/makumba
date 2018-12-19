@@ -60,7 +60,7 @@ CREATE TABLE `org_makumba_db_makumba_Lock_` (
   UNIQUE KEY `name_` (`name_`),
   KEY `TS_modify_` (`TS_modify_`),
   KEY `TS_create_` (`TS_create_`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -97,7 +97,7 @@ CREATE TABLE `test_Individual_` (
   KEY `someDate_` (`someDate_`),
   KEY `someusername_` (`someusername_`),
   CONSTRAINT `test_Individual__ibfk_1` FOREIGN KEY (`person_`) REFERENCES `test_Person_` (`Person_`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -129,7 +129,7 @@ CREATE TABLE `test_Language_` (
   KEY `name_` (`name_`),
   KEY `isoCode_` (`isoCode_`),
   KEY `family_` (`family_`)
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -214,7 +214,7 @@ CREATE TABLE `test_Person_` (
   CONSTRAINT `test_Person__ibfk_2` FOREIGN KEY (`someAttachment_`) REFERENCES `test_Person__someAttachment_` (`someAttachment_`),
   CONSTRAINT `test_Person__ibfk_3` FOREIGN KEY (`brother_`) REFERENCES `test_Person_` (`Person_`),
   CONSTRAINT `test_Person__ibfk_4` FOREIGN KEY (`extraData_`) REFERENCES `test_Person__extraData_` (`extraData_`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -269,7 +269,7 @@ CREATE TABLE `test_Person__address_` (
   KEY `Person_` (`Person_`),
   CONSTRAINT `test_Person__address__ibfk_2` FOREIGN KEY (`Person_`) REFERENCES `test_Person_` (`Person_`),
   CONSTRAINT `test_Person__address__ibfk_1` FOREIGN KEY (`sth_`) REFERENCES `test_Person__address__sth_` (`sth_`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -301,7 +301,7 @@ CREATE TABLE `test_Person__address__languages_` (
   KEY `Language_` (`Language_`),
   CONSTRAINT `test_Person__address__languages__ibfk_2` FOREIGN KEY (`Language_`) REFERENCES `test_Language_` (`Language_`),
   CONSTRAINT `test_Person__address__languages__ibfk_1` FOREIGN KEY (`address_`) REFERENCES `test_Person__address_` (`address_`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -332,7 +332,7 @@ CREATE TABLE `test_Person__address__sth_` (
   KEY `TS_create_` (`TS_create_`),
   KEY `aaa_` (`aaa_`),
   KEY `bbb_` (`bbb_`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -363,7 +363,7 @@ CREATE TABLE `test_Person__charSet_` (
   KEY `Person_` (`Person_`),
   KEY `enum_` (`enum_`),
   CONSTRAINT `test_Person__charSet__ibfk_1` FOREIGN KEY (`Person_`) REFERENCES `test_Person_` (`Person_`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -393,7 +393,7 @@ CREATE TABLE `test_Person__extraData_` (
   KEY `TS_create_` (`TS_create_`),
   KEY `something_` (`something_`),
   KEY `what_` (`what_`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -456,7 +456,7 @@ CREATE TABLE `test_Person__intSet_` (
   KEY `Person_` (`Person_`),
   KEY `enum_` (`enum_`),
   CONSTRAINT `test_Person__intSet__ibfk_1` FOREIGN KEY (`Person_`) REFERENCES `test_Person_` (`Person_`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -527,7 +527,7 @@ CREATE TABLE `test_Person__speaks_` (
   KEY `Language_` (`Language_`),
   CONSTRAINT `test_Person__speaks__ibfk_2` FOREIGN KEY (`Language_`) REFERENCES `test_Language_` (`Language_`),
   CONSTRAINT `test_Person__speaks__ibfk_1` FOREIGN KEY (`Person_`) REFERENCES `test_Person_` (`Person_`)
-) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -558,7 +558,7 @@ CREATE TABLE `test_Person__toys_` (
   KEY `name_` (`name_`),
   KEY `Person_` (`Person_`),
   CONSTRAINT `test_Person__toys__ibfk_1` FOREIGN KEY (`Person_`) REFERENCES `test_Person_` (`Person_`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -591,9 +591,8 @@ CREATE TABLE `test_validMdds_AllTheToysThatThisOrganisationPossiblyHa___zelg5k` 
   KEY `name_` (`name_`),
   KEY `color_` (`color_`),
   KEY `serial_` (`serial_`),
-  KEY `relatedToy_` (`relatedToy_`),
-  CONSTRAINT `test_validMdds_AllTheToysThatThisOrganisationPossiblyHa___zelg5k_ibfk_1` FOREIGN KEY (`relatedToy_`) REFERENCES `test_validMdds_AllTheToysThatThisOrganisationPossiblyHa___zelg5k` (`AllTheToysThatThisOrganisationPossiblyHasAtTheirDispos____pktk2q`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  KEY `relatedToy_` (`relatedToy_`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -649,7 +648,7 @@ CREATE TABLE `test_validMdds_Int_` (
   KEY `TS_modify_` (`TS_modify_`),
   KEY `TS_create_` (`TS_create_`),
   KEY `i_` (`i_`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -677,7 +676,7 @@ CREATE TABLE `test_validMdds_Real_` (
   KEY `TS_modify_` (`TS_modify_`),
   KEY `TS_create_` (`TS_create_`),
   KEY `r_` (`r_`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
