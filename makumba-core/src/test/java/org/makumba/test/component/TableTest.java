@@ -194,6 +194,8 @@ public class TableTest extends TestCase {
         assertNotNull(ptr);
         assertEquals(ptr.getType(), "test.Person");
 
+	System.out.println("*******1 ptr "+ptr); 
+
         Vector<Dictionary<String, Object>> v = db.executeQuery(readPerson1, ptr);
 
         assertEquals(1, v.size());
@@ -403,6 +405,8 @@ public class TableTest extends TestCase {
         Dictionary<String, Object> p = new Hashtable<String, Object>();
         p.put("description", "home");
         p.put("sth.aaa", "bbb");
+
+	System.out.println("*******2 ptr "+ptr); 
 
         set1 = db.insert(ptr, "address", p);
 
