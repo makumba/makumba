@@ -31,8 +31,6 @@ before_script:
   - if [ "$MySqlVer" -ge "56" ]; then echo "DB restore for MySql $MySqlVer"; mysql makumba < ci/makumba-test.sql; fi
   - 'cd makumba-parent'
 
-script:"mvn verify"
-
 after_success:
   - bash <(curl -s https://codecov.io/bash)
 
